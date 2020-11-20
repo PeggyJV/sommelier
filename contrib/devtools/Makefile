@@ -106,8 +106,8 @@ protoc-gen-buf-check-lint:
 	mv protoc-gen-buf-check-lint-${UNAME_S}-${UNAME_M} "${BIN}/protoc-gen-buf-check-lint"; \
 	chmod +x "${BIN}/protoc-gen-buf-check-lint")
 
-tools-clean:
-	rm -f $(RUNSIM)
-	rm -f tools-stamp
+# tools-clean:
+# 	rm -f $(RUNSIM)
+# 	rm -f tools-stamp
 
 .PHONY: all tools tools-clean protoc buf protoc-gen-buf-check-breaking protoc-gen-buf-check-lint protoc-gen-gocosmos
