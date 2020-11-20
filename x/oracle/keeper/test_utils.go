@@ -4,9 +4,9 @@ package keeper
 import (
 	"testing"
 
-	"github.com/stretchr/testify/require"
 	core "github.com/peggyjv/sommelier/types"
 	"github.com/peggyjv/sommelier/x/oracle//types"
+	"github.com/stretchr/testify/require"
 
 	"time"
 
@@ -20,11 +20,11 @@ import (
 	"github.com/cosmos/cosmos-sdk/store"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/auth"
+	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	"github.com/cosmos/cosmos-sdk/x/bank"
 	distr "github.com/cosmos/cosmos-sdk/x/distribution"
 	"github.com/cosmos/cosmos-sdk/x/params"
 	"github.com/cosmos/cosmos-sdk/x/staking"
-	"github.com/cosmos/cosmos-sdk/x/supply"
 )
 
 var (
@@ -65,7 +65,6 @@ type TestInput struct {
 	AccKeeper     auth.AccountKeeper
 	BankKeeper    bank.Keeper
 	OracleKeeper  Keeper
-	SupplyKeeper  supply.Keeper
 	StakingKeeper staking.Keeper
 	DistrKeeper   distr.Keeper
 }
@@ -77,7 +76,6 @@ func newTestCodec() *codec.Codec {
 	auth.RegisterCodec(cdc)
 	sdk.RegisterCodec(cdc)
 	codec.RegisterCrypto(cdc)
-	supply.RegisterCodec(cdc)
 	staking.RegisterCodec(cdc)
 	distr.RegisterCodec(cdc)
 	params.RegisterCodec(cdc)
@@ -93,7 +91,6 @@ func CreateTestInput(t *testing.T) TestInput {
 	keyOracle := sdk.NewKVStoreKey(types.StoreKey)
 	keyStaking := sdk.NewKVStoreKey(staking.StoreKey)
 	keyDistr := sdk.NewKVStoreKey(distr.StoreKey)
-	keySupply := sdk.NewKVStoreKey(supply.StoreKey)
 
 	cdc := newTestCodec()
 	db := dbm.NewMemDB()
@@ -106,7 +103,6 @@ func CreateTestInput(t *testing.T) TestInput {
 	ms.MountStoreWithDB(keyOracle, sdk.StoreTypeIAVL, db)
 	ms.MountStoreWithDB(keyStaking, sdk.StoreTypeIAVL, db)
 	ms.MountStoreWithDB(keyDistr, sdk.StoreTypeIAVL, db)
-	ms.MountStoreWithDB(keySupply, sdk.StoreTypeIAVL, db)
 
 	require.NoError(t, ms.LoadLatestVersion())
 
@@ -124,26 +120,25 @@ func CreateTestInput(t *testing.T) TestInput {
 
 	maccPerms := map[string][]string{
 		auth.FeeCollectorName:     nil,
-		staking.NotBondedPoolName: {supply.Burner, supply.Staking},
-		staking.BondedPoolName:    {supply.Burner, supply.Staking},
+		staking.NotBondedPoolName: {authtypes.Burner, authtypes.Staking},
+		staking.BondedPoolName:    {authtypes.Burner, authtypes.Staking},
 		distr.ModuleName:          nil,
 		types.ModuleName:          nil,
 	}
 
-	supplyKeeper := supply.NewKeeper(cdc, keySupply, accountKeeper, bankKeeper, maccPerms)
 	totalSupply := sdk.NewCoins(sdk.NewCoin(core.MicroLunaDenom, InitTokens.MulRaw(int64(len(Addrs)))))
-	supplyKeeper.SetSupply(ctx, supply.NewSupply(totalSupply))
+	bankKeeper.SetSupply(ctx, banktypes.NewSupply(totalSupply))
 
 	stakingKeeper := staking.NewKeeper(
 		cdc,
 		keyStaking,
-		supplyKeeper, paramsKeeper.Subspace(staking.DefaultParamspace),
+		accountKeeper, bankKeeper, paramsKeeper.Subspace(staking.DefaultParamspace),
 	)
 
 	distrKeeper := distr.NewKeeper(
 		cdc,
 		keyDistr, paramsKeeper.Subspace(distr.DefaultParamspace),
-		stakingKeeper, supplyKeeper, auth.FeeCollectorName, blackListAddrs)
+		accountKeeper, bankKeeper, stakingKeeper, auth.FeeCollectorName, blackListAddrs)
 
 	distrKeeper.SetFeePool(ctx, distr.InitialFeePool())
 	distrParams := distr.DefaultParams()
@@ -152,30 +147,30 @@ func CreateTestInput(t *testing.T) TestInput {
 	distrParams.BonusProposerReward = sdk.NewDecWithPrec(4, 2)
 	distrKeeper.SetParams(ctx, distrParams)
 
-	feeCollectorAcc := supply.NewEmptyModuleAccount(auth.FeeCollectorName)
-	notBondedPool := supply.NewEmptyModuleAccount(staking.NotBondedPoolName, supply.Burner, supply.Staking)
-	bondPool := supply.NewEmptyModuleAccount(staking.BondedPoolName, supply.Burner, supply.Staking)
-	distrAcc := supply.NewEmptyModuleAccount(distr.ModuleName)
-	oracleAcc := supply.NewEmptyModuleAccount(types.ModuleName, supply.Minter)
+	feeCollectorAcc := authtypes.NewEmptyModuleAccount(auth.FeeCollectorName)
+	notBondedPool := authtypes.NewEmptyModuleAccount(staking.NotBondedPoolName, authtypes.Burner, authtypes.Staking)
+	bondPool := authtypes.NewEmptyModuleAccount(staking.BondedPoolName, authtypes.Burner, authtypes.Staking)
+	distrAcc := authtypes.NewEmptyModuleAccount(distr.ModuleName)
+	oracleAcc := authtypes.NewEmptyModuleAccount(types.ModuleName, authtypes.Minter)
 
 	notBondedPool.SetCoins(sdk.NewCoins(sdk.NewCoin(core.MicroLunaDenom, InitTokens.MulRaw(int64(len(Addrs))))))
 
-	supplyKeeper.SetModuleAccount(ctx, feeCollectorAcc)
-	supplyKeeper.SetModuleAccount(ctx, bondPool)
-	supplyKeeper.SetModuleAccount(ctx, notBondedPool)
-	supplyKeeper.SetModuleAccount(ctx, distrAcc)
-	supplyKeeper.SetModuleAccount(ctx, oracleAcc)
+	accountKeeper.SetModuleAccount(ctx, feeCollectorAcc)
+	accountKeeper.SetModuleAccount(ctx, bondPool)
+	accountKeeper.SetModuleAccount(ctx, notBondedPool)
+	accountKeeper.SetModuleAccount(ctx, distrAcc)
+	accountKeeper.SetModuleAccount(ctx, oracleAcc)
 
 	genesis := staking.DefaultGenesisState()
 	genesis.Params.BondDenom = core.MicroLunaDenom
-	_ = staking.InitGenesis(ctx, stakingKeeper, accountKeeper, supplyKeeper, genesis)
+	_ = staking.InitGenesis(ctx, genesis)
 
 	for _, addr := range Addrs {
 		_, err := bankKeeper.AddCoins(ctx, sdk.AccAddress(addr), InitCoins)
 		require.NoError(t, err)
 	}
 
-	keeper := NewKeeper(cdc, keyOracle, paramsKeeper.Subspace(types.DefaultParamspace), distrKeeper, stakingKeeper, supplyKeeper, distr.ModuleName)
+	keeper := NewKeeper(cdc, keyOracle, paramsKeeper.Subspace(types.DefaultParamspace), distrKeeper, stakingKeeper, bankKeeper, distr.ModuleName)
 
 	defaults := types.DefaultParams()
 	keeper.SetParams(ctx, defaults)
@@ -186,7 +181,7 @@ func CreateTestInput(t *testing.T) TestInput {
 
 	stakingKeeper.SetHooks(staking.NewMultiStakingHooks(distrKeeper.Hooks()))
 
-	return TestInput{ctx, cdc, accountKeeper, bankKeeper, keeper, supplyKeeper, stakingKeeper, distrKeeper}
+	return TestInput{ctx, cdc, accountKeeper, bankKeeper, keeper, stakingKeeper, distrKeeper}
 }
 
 func NewTestMsgCreateValidator(address sdk.ValAddress, pubKey crypto.PubKey, amt sdk.Int) staking.MsgCreateValidator {

@@ -1,19 +1,21 @@
 package types
 
 import (
+	"sort"
 	"testing"
 
-	core "github.com/peggyjv/sommelier/types"
+	"github.com/cosmos/cosmos-sdk/x/auth"
+	"github.com/tendermint/tendermint/crypto"
+	"github.com/tendermint/tendermint/crypto/secp256k1"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/cosmos/cosmos-sdk/x/mock"
 	"github.com/stretchr/testify/require"
 )
 
 func TestMsgExchangeRatePrevote(t *testing.T) {
-	_, addrs, _, _ := mock.CreateGenAccounts(1, sdk.Coins{})
+	_, addrs, _, _ := CreateGenAccounts(1, sdk.Coins{})
 
-	bz := GetVoteHash("1", sdk.OneDec(), core.MicroSDRDenom, sdk.ValAddress(addrs[0]))
+	bz := GetVoteHash("1", sdk.OneDec(), MicroSDRDenom, sdk.ValAddress(addrs[0]))
 
 	tests := []struct {
 		hash       VoteHash
@@ -22,10 +24,10 @@ func TestMsgExchangeRatePrevote(t *testing.T) {
 		expectPass bool
 	}{
 		{bz, "", addrs[0], false},
-		{bz, core.MicroCNYDenom, addrs[0], true},
-		{bz, core.MicroCNYDenom, addrs[0], true},
-		{bz, core.MicroCNYDenom, sdk.AccAddress{}, false},
-		{VoteHash{}, core.MicroCNYDenom, addrs[0], false},
+		{bz, MicroCNYDenom, addrs[0], true},
+		{bz, MicroCNYDenom, addrs[0], true},
+		{bz, MicroCNYDenom, sdk.AccAddress{}, false},
+		{VoteHash{}, MicroCNYDenom, addrs[0], false},
 	}
 
 	for i, tc := range tests {
@@ -39,7 +41,7 @@ func TestMsgExchangeRatePrevote(t *testing.T) {
 }
 
 func TestMsgExchangeRateVote(t *testing.T) {
-	_, addrs, _, _ := mock.CreateGenAccounts(1, sdk.Coins{})
+	_, addrs, _, _ := CreateGenAccounts(1, sdk.Coins{})
 
 	overflowExchangeRate, _ := sdk.NewDecFromStr("100000000000000000000000000000000000000000000000000000000")
 
@@ -51,11 +53,11 @@ func TestMsgExchangeRateVote(t *testing.T) {
 		expectPass bool
 	}{
 		{"", addrs[0], "123", sdk.OneDec(), false},
-		{core.MicroCNYDenom, addrs[0], "123", sdk.OneDec().MulInt64(core.MicroUnit), true},
-		{core.MicroCNYDenom, addrs[0], "123", sdk.ZeroDec(), true},
-		{core.MicroCNYDenom, addrs[0], "123", overflowExchangeRate, false},
-		{core.MicroCNYDenom, sdk.AccAddress{}, "123", sdk.OneDec().MulInt64(core.MicroUnit), false},
-		{core.MicroCNYDenom, addrs[0], "", sdk.OneDec().MulInt64(core.MicroUnit), false},
+		{MicroCNYDenom, addrs[0], "123", sdk.OneDec().MulInt64(MicroUnit), true},
+		{MicroCNYDenom, addrs[0], "123", sdk.ZeroDec(), true},
+		{MicroCNYDenom, addrs[0], "123", overflowExchangeRate, false},
+		{MicroCNYDenom, sdk.AccAddress{}, "123", sdk.OneDec().MulInt64(MicroUnit), false},
+		{MicroCNYDenom, addrs[0], "", sdk.OneDec().MulInt64(MicroUnit), false},
 	}
 
 	for i, tc := range tests {
@@ -69,7 +71,7 @@ func TestMsgExchangeRateVote(t *testing.T) {
 }
 
 func TestMsgFeederDelegation(t *testing.T) {
-	_, addrs, _, _ := mock.CreateGenAccounts(2, sdk.Coins{})
+	_, addrs, _, _ := CreateGenAccounts(2, sdk.Coins{})
 
 	tests := []struct {
 		delegator  sdk.ValAddress
@@ -93,9 +95,9 @@ func TestMsgFeederDelegation(t *testing.T) {
 }
 
 func TestMsgAggregateExchangeRatePrevote(t *testing.T) {
-	_, addrs, _, _ := mock.CreateGenAccounts(1, sdk.Coins{})
+	_, addrs, _, _ := CreateGenAccounts(1, sdk.Coins{})
 
-	exchangeRates := sdk.DecCoins{sdk.NewDecCoinFromDec(core.MicroSDRDenom, sdk.OneDec()), sdk.NewDecCoinFromDec(core.MicroKRWDenom, sdk.NewDecWithPrec(32121, 1))}
+	exchangeRates := sdk.DecCoins{sdk.NewDecCoinFromDec(MicroSDRDenom, sdk.OneDec()), sdk.NewDecCoinFromDec(MicroKRWDenom, sdk.NewDecWithPrec(32121, 1))}
 	bz := GetAggregateVoteHash("1", exchangeRates.String(), sdk.ValAddress(addrs[0]))
 
 	tests := []struct {
@@ -121,7 +123,7 @@ func TestMsgAggregateExchangeRatePrevote(t *testing.T) {
 }
 
 func TestMsgAggregateExchangeRateVote(t *testing.T) {
-	_, addrs, _, _ := mock.CreateGenAccounts(1, sdk.Coins{})
+	_, addrs, _, _ := CreateGenAccounts(1, sdk.Coins{})
 
 	invalidExchangeRates := "a,b"
 	exchangeRates := "1.0foo,1232.132bar"
@@ -150,4 +152,34 @@ func TestMsgAggregateExchangeRateVote(t *testing.T) {
 			require.NotNil(t, msg.ValidateBasic(), "test: %v", i)
 		}
 	}
+}
+
+// CreateGenAccounts generates genesis accounts loaded with coins, and returns
+// their addresses, pubkeys, and privkeys.
+func CreateGenAccounts(numAccs int, genCoins sdk.Coins) (genAccs []authexported.Account,
+	addrs []sdk.AccAddress, pubKeys []crypto.PubKey, privKeys []crypto.PrivKey) {
+
+	addrKeysSlice := AddrKeysSlice{}
+
+	for i := 0; i < numAccs; i++ {
+		privKey := secp256k1.GenPrivKey()
+		pubKey := privKey.PubKey()
+		addr := sdk.AccAddress(pubKey.Address())
+
+		addrKeysSlice = append(addrKeysSlice, NewAddrKeys(addr, pubKey, privKey))
+	}
+
+	sort.Sort(addrKeysSlice)
+
+	for i := range addrKeysSlice {
+		addrs = append(addrs, addrKeysSlice[i].Address)
+		pubKeys = append(pubKeys, addrKeysSlice[i].PubKey)
+		privKeys = append(privKeys, addrKeysSlice[i].PrivKey)
+		genAccs = append(genAccs, &auth.BaseAccount{
+			Address: addrKeysSlice[i].Address,
+			Coins:   genCoins,
+		})
+	}
+
+	return
 }

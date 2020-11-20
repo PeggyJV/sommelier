@@ -9,8 +9,6 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	core "github.com/peggyjv/sommelier/types"
-
 	abci "github.com/tendermint/tendermint/abci/types"
 	"github.com/tendermint/tendermint/crypto/secp256k1"
 
@@ -27,7 +25,7 @@ func TestToMap(t *testing.T) {
 			{
 				ExchangeRateVote{
 					Voter:        sdk.ValAddress(secp256k1.GenPrivKey().PubKey().Address()),
-					Denom:        core.MicroKRWDenom,
+					Denom:        MicroKRWDenom,
 					ExchangeRate: sdk.NewDec(1600),
 				},
 				100,
@@ -35,7 +33,7 @@ func TestToMap(t *testing.T) {
 			{
 				ExchangeRateVote{
 					Voter:        sdk.ValAddress(secp256k1.GenPrivKey().PubKey().Address()),
-					Denom:        core.MicroKRWDenom,
+					Denom:        MicroKRWDenom,
 					ExchangeRate: sdk.ZeroDec(),
 				},
 				100,
@@ -43,7 +41,7 @@ func TestToMap(t *testing.T) {
 			{
 				ExchangeRateVote{
 					Voter:        sdk.ValAddress(secp256k1.GenPrivKey().PubKey().Address()),
-					Denom:        core.MicroKRWDenom,
+					Denom:        MicroKRWDenom,
 					ExchangeRate: sdk.NewDec(1500),
 				},
 				100,
@@ -94,15 +92,15 @@ func TestToCrossRate(t *testing.T) {
 	for _, data := range data {
 		valAddr := sdk.ValAddress(secp256k1.GenPrivKey().PubKey().Address())
 		if !data.base.IsZero() {
-			pbBase = append(pbBase, NewVoteForTally(NewExchangeRateVote(data.base, core.MicroKRWDenom, valAddr), 100))
+			pbBase = append(pbBase, NewVoteForTally(NewExchangeRateVote(data.base, MicroKRWDenom, valAddr), 100))
 		}
 
-		pbQuote = append(pbQuote, NewVoteForTally(NewExchangeRateVote(data.quote, core.MicroKRWDenom, valAddr), 100))
+		pbQuote = append(pbQuote, NewVoteForTally(NewExchangeRateVote(data.quote, MicroKRWDenom, valAddr), 100))
 
 		if !data.base.IsZero() && !data.quote.IsZero() {
-			cb = append(cb, NewVoteForTally(NewExchangeRateVote(data.base.Quo(data.quote), core.MicroKRWDenom, valAddr), 100))
+			cb = append(cb, NewVoteForTally(NewExchangeRateVote(data.base.Quo(data.quote), MicroKRWDenom, valAddr), 100))
 		} else {
-			cb = append(cb, NewVoteForTally(NewExchangeRateVote(sdk.ZeroDec(), core.MicroKRWDenom, valAddr), 0))
+			cb = append(cb, NewVoteForTally(NewExchangeRateVote(sdk.ZeroDec(), MicroKRWDenom, valAddr), 0))
 		}
 	}
 
@@ -134,7 +132,7 @@ func TestPBPower(t *testing.T) {
 		vote := NewVoteForTally(
 			NewExchangeRateVote(
 				sdk.ZeroDec(),
-				core.MicroSDRDenom,
+				MicroSDRDenom,
 				valAccAddrs[i],
 			),
 			power,
@@ -155,7 +153,7 @@ func TestPBPower(t *testing.T) {
 	fakeVote := NewVoteForTally(
 		NewExchangeRateVote(
 			sdk.OneDec(),
-			core.MicroSDRDenom,
+			MicroSDRDenom,
 			faceValAddr,
 		),
 		0,
@@ -215,7 +213,7 @@ func TestPBWeightedMedian(t *testing.T) {
 			vote := NewVoteForTally(
 				NewExchangeRateVote(
 					sdk.NewDec(int64(input)),
-					core.MicroSDRDenom,
+					MicroSDRDenom,
 					valAddr,
 				),
 				power,
@@ -279,7 +277,7 @@ func TestPBStandardDeviation(t *testing.T) {
 			vote := NewVoteForTally(
 				NewExchangeRateVote(
 					sdk.NewDecWithPrec(int64(input*base), int64(oracleDecPrecision)),
-					core.MicroSDRDenom,
+					MicroSDRDenom,
 					valAddr,
 				),
 				power,

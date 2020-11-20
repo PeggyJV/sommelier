@@ -2,8 +2,9 @@ package types
 
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
+	bankexported "github.com/cosmos/cosmos-sdk/x/bank/exported"
 	stakingexported "github.com/cosmos/cosmos-sdk/x/staking/exported"
-	supplyexported "github.com/cosmos/cosmos-sdk/x/supply/exported"
 )
 
 // StakingKeeper is expected keeper for staking module
@@ -23,9 +24,9 @@ type DistributionKeeper interface {
 // SupplyKeeper is expected keeper for supply module
 type SupplyKeeper interface {
 	GetModuleAddress(name string) sdk.AccAddress
-	GetModuleAccount(ctx sdk.Context, moduleName string) supplyexported.ModuleAccountI
-	SetModuleAccount(sdk.Context, supplyexported.ModuleAccountI)
-	GetSupply(ctx sdk.Context) (supply supplyexported.SupplyI)
-	SetSupply(ctx sdk.Context, supply supplyexported.SupplyI)
+	GetModuleAccount(ctx sdk.Context, moduleName string) authtypes.ModuleAccountI
+	SetModuleAccount(sdk.Context, authtypes.ModuleAccountI)
+	GetSupply(ctx sdk.Context) (supply bankexported.SupplyI)
+	SetSupply(ctx sdk.Context, supply bankexported.SupplyI)
 	SendCoinsFromModuleToModule(ctx sdk.Context, senderModule string, recipientModule string, amt sdk.Coins) error
 }

@@ -8,7 +8,6 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/bank"
-	"github.com/cosmos/cosmos-sdk/x/mock"
 
 	core "github.com/peggyjv/sommelier/types"
 	"github.com/peggyjv/sommelier/x/oracle//keeper"
@@ -36,7 +35,7 @@ func TestOracleFilters(t *testing.T) {
 	require.NoError(t, err)
 
 	// Case 4: a non-validator sending an oracle message fails
-	_, addrs := mock.GeneratePrivKeyAddressPairs(1)
+	_, addrs := types.GeneratePrivKeyAddressPairs(1)
 	salt = "2"
 	hash = GetVoteHash(salt, randomExchangeRate, core.MicroSDRDenom, sdk.ValAddress(addrs[0]))
 

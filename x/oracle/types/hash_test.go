@@ -3,15 +3,15 @@ package types
 import (
 	"encoding/hex"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/cosmos/cosmos-sdk/x/mock"
 	"github.com/stretchr/testify/require"
+	"github.com/tendermint/tendermint/crypto"
 	"gopkg.in/yaml.v2"
 
 	"testing"
 )
 
 func TestVoteHash(t *testing.T) {
-	_, addrs := mock.GeneratePrivKeyAddressPairs(1)
+	_, addrs := GeneratePrivKeyAddressPairs(1)
 
 	voteHash := GetVoteHash("salt", sdk.OneDec(), "denom", sdk.ValAddress(addrs[0]))
 	hexStr := hex.EncodeToString(voteHash)
@@ -30,7 +30,7 @@ func TestVoteHash(t *testing.T) {
 }
 
 func TestAggregateVoteHash(t *testing.T) {
-	_, addr := mock.GeneratePrivKeyAddressPairs(1)
+	_, addr := GeneratePrivKeyAddressPairs(1)
 	aggregateVoteHash := GetAggregateVoteHash("salt", "100ukrw,200uusd", sdk.ValAddress(addr[0]))
 	hexStr := hex.EncodeToString(aggregateVoteHash)
 	aggregateVoteHashRes, err := AggregateVoteHashFromHexString(hexStr)
@@ -53,4 +53,20 @@ func testMarshal(t *testing.T, original interface{}, res interface{}, marshal fu
 	err = unmarshal(bz)
 	require.Nil(t, err)
 	require.Equal(t, original, res)
+}
+
+// GeneratePrivKeyAddressPairs generates a total of n private key, address
+// pairs.
+func GeneratePrivKeyAddressPairs(n int) (keys []crypto.PrivKey, addrs []sdk.AccAddress) {
+	keys = make([]crypto.PrivKey, n)
+	addrs = make([]sdk.AccAddress, n)
+	for i := 0; i < n; i++ {
+		if rand.Int63()%2 == 0 {
+			keys[i] = secp256k1.GenPrivKey()
+		} else {
+			keys[i] = ed25519.GenPrivKey()
+		}
+		addrs[i] = sdk.AccAddress(keys[i].PubKey().Address())
+	}
+	return
 }
