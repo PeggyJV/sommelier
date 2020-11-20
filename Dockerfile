@@ -1,41 +1,34 @@
-# Simple usage with a mounted data directory:
-# > docker build -t gaia .
-# > docker run -it -p 46657:46657 -p 46656:46656 -v ~/.gaiad:/root/.gaiad -v ~/.gaiacli:/root/.gaiacli gaia gaiad init
-# > docker run -it -p 46657:46657 -p 46656:46656 -v ~/.gaiad:/root/.gaiad -v ~/.gaiacli:/root/.gaiacli gaia gaiad start
 FROM golang:alpine AS build-env
 
 # Set up dependencies
 ENV PACKAGES curl make git libc-dev bash gcc linux-headers eudev-dev python3
 
 # Set working directory for the build
-WORKDIR /go/src/github.com/cosmos/gaia
+WORKDIR /go/src/github.com/peggyjv/sommelier
 
 # Add source files
 COPY . .
 
 # Install minimum necessary dependencies, build Cosmos SDK, remove packages
 RUN apk add --no-cache $PACKAGES && \
-    make tools && \
     make install
 
 # Final image
 FROM alpine:edge
 
-ENV GAIA /gaia
+ENV SOMM /somm
 
 # Install ca-certificates
 RUN apk add --update ca-certificates
 
-RUN addgroup gaia && \
-    adduser -S -G gaia gaia -h "$GAIA"
+RUN addgroup sommuser && \
+    adduser -S -G sommuser sommuser -h "$SOMM"
+    
+USER sommuser
 
-USER gaia
-
-WORKDIR $GAIA
+WORKDIR $SOMM
 
 # Copy over binaries from the build-env
-COPY --from=build-env /go/bin/gaiad /usr/bin/gaiad
-COPY --from=build-env /go/bin/gaiacli /usr/bin/gaiacli
+COPY --from=build-env /go/bin/sommelier /usr/bin/sommelier
 
-# Run gaiad by default, omit entrypoint to ease using container with gaiacli
-CMD ["gaiad"]
+CMD ["sommelier"]

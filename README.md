@@ -1,72 +1,26 @@
-# Gaia
+# Sommelier 3.0 Stargate 
 
-Gaia is the first implementation of the Cosmos Hub, built using the [Cosmos SDK](https://github.com/cosmos/cosmos-sdk).  Gaia and other Cosmos Hubs allow fully sovereign blockchains to interact with one another using a protocol called [IBC](https://github.com/cosmos/ics/tree/master/ibc) that enables Inter-Blockchain Communication.
+Sommelier 3.0 is a test version of the Stargate binaries. It is intended to use in testing compatibiltiy with the post Stargate ugprade 
 
-[![CircleCI](https://circleci.com/gh/cosmos/gaia/tree/master.svg?style=shield)](https://circleci.com/gh/cosmos/gaia/tree/master)
-[![codecov](https://codecov.io/gh/cosmos/gaia/branch/master/graph/badge.svg)](https://codecov.io/gh/cosmos/gaia)
-[![Go Report Card](https://goreportcard.com/badge/github.com/cosmos/gaia)](https://goreportcard.com/report/github.com/cosmos/gaia)
-[![license](https://img.shields.io/github/license/cosmos/gaia.svg)](https://github.com/cosmos/gaia/blob/master/LICENSE)
-[![LoC](https://tokei.rs/b1/github/cosmos/gaia)](https://github.com/cosmos/gaia)
-[![GolangCI](https://golangci.com/badges/github.com/cosmos/gaia.svg)](https://golangci.com/r/github.com/cosmos/gaia)
+The biggest change is that there is no longer two seperate binaries. There is just `sommelier`.
 
-## Mainnet Full Node Quick Start
+The rest and new GRPC interfaces can be configured using the `app.toml`.
 
-This assumes that you're running Linux or MacOS and have installed [Go 1.14+](https://golang.org/dl/).  This guide helps you:
+You can interact via the cli interface using a second instance of the binary while a full node is running.
 
-* build and install Gaia
-* allow you to name your node
-* add seeds to your config file
-* download genesis state
-* start your node
-* use gaiacli to check the status of your node.
+Key an eye on our [audit](https://github.com/cosmosdevs/stargate/pull/8) of interface of changes to help with upgrading.
 
-Build, Install, and Name your Node:
+##
 
-```bash
-# Clone Gaia from the latest release found here: https://github.com/cosmos/gaia/releases
-git clone -b <latest_release> https://github.com/cosmos/gaia
-# Enter the folder Gaia was cloned into
-cd gaia
-# Compile and install Gaia
-make install
-# Initialize Gaiad in ~/.gaiad and name your node
-gaiad init yournodenamehere
-```
+Sommelier is the first implementation of the Cosmos Hub, built using the [Cosmos SDK](https://github.com/cosmos/cosmos-sdk).  Sommelier and other Cosmos Hubs allow fully sovereign blockchains to interact with one another using a protocol called [IBC](https://github.com/cosmos/ics/tree/master/ibc) that enables Inter-Blockchain Communication.
 
-Add Seeds:
+[![CircleCI](https://circleci.com/gh/peggyjv/sommelier/tree/master.svg?style=shield)](https://circleci.com/gh/peggyjv/sommelier/tree/master)
+[![codecov](https://codecov.io/gh/peggyjv/sommelier/branch/master/graph/badge.svg)](https://codecov.io/gh/peggyjv/sommelier)
+[![Go Report Card](https://goreportcard.com/badge/github.com/peggyjv/sommelier)](https://goreportcard.com/report/github.com/peggyjv/sommelier)
+[![license](https://img.shields.io/github/license/peggyjv/sommelier.svg)](https://github.com/peggyjv/sommelier/blob/master/LICENSE)
+[![LoC](https://tokei.rs/b1/github/peggyjv/sommelier)](https://github.com/peggyjv/sommelier)
+[![GolangCI](https://golangci.com/badges/github.com/peggyjv/sommelier.svg)](https://golangci.com/r/github.com/peggyjv/sommelier)
 
-```bash
-# Edit config.toml
-nano ~/.gaiad/config/config.toml
-```
-
-Scroll down to seeds in `config.toml`, and add some of these seeds as a comma-separated list:
-
-```toml
-ba3bacc714817218562f743178228f23678b2873@5.83.160.108:26656
-1e63e84945837b026f596ed8ae68708783d04ad4@51.75.145.123:26656
-d2d452e7c9c43fa5ef017552688de60a5c0053ee@34.245.217.163:26656
-dd36969b56c740bb40bb8badd4d4c6facc35dc24@206.189.115.41:26656
-a0aca8fb801c69653a290bd44872e8457f8b0982@47.99.180.54:26656
-27f8dd3bdbecbef7192291083706c156e523d8e0@3.122.248.21:26656
-aee0df1a660f301d456a0c2f805b372f7341e8ec@63.35.230.143:26656
-7d1f660b361d6286715c098a3a171e554e9642bb@34.254.205.37:26656
-fa105c2291ac4aa452552fa4835266300a8209e1@88.198.41.62:26656
-bd410d4564f7e0dd9a0eb16a64c337a059e11b80@47.103.35.130:26656
-```
-
-Download Genesis, Start your Node, Check your Node Status:
-
-```bash
-# Download genesis.json
-wget -O $HOME/.gaiad/config/genesis.json https://raw.githubusercontent.com/cosmos/launch/master/genesis.json
-# Start Gaiad
-gaiad start
-# Check your node's status with gaiacli
-gaiacli status
-```
-
-Welcome to the Cosmos!
 
 ## Talk to us!
 
@@ -82,4 +36,4 @@ With each version of the Cosmos Hub, the chain is restarted from a new Genesis s
 
 ## Disambiguation
 
-Gaia is not related to the [React-Cosmos](https://github.com/react-cosmos/react-cosmos) project (yet). Many thanks to Evan Coury and Ovidiu (@skidding) for this Github organization name. Per our agreement, this disambiguation notice will stay here.
+Sommelier is not related to the [React-Cosmos](https://github.com/react-cosmos/react-cosmos) project (yet). Many thanks to Evan Coury and Ovidiu (@skidding) for this Github organization name. Per our agreement, this disambiguation notice will stay here.

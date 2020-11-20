@@ -1,9 +1,9 @@
 name: Release Sims
-on:
-  pull_request:
-    branches:
-      - "rc**"
-
+on: 
+  pull_request: 
+    branches: 
+      - 'rc**'
+    
 jobs:
   cleanup-runs:
     runs-on: ubuntu-latest

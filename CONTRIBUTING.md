@@ -14,15 +14,15 @@
     - [Release Procedure](#release-procedure)
     - [Point Release Procedure](#point-release-procedure)
 
-Thank you for considering making contributions to Gaia and related
+Thank you for considering making contributions to Sommelier and related
 repositories!
 
 Contributing to this repo can mean many things such as participated in
 discussion or proposing code changes. To ensure a smooth workflow for all
 contributors, the general procedure for contributing has been established:
 
-1. Either [open](https://github.com/cosmos/gaia/issues/new/choose) or
-   [find](https://github.com/cosmos/gaia/issues) an issue you'd like to help with
+1. Either [open](https://github.com/peggyjv/sommelier/issues/new/choose) or
+   [find](https://github.com/peggyjv/sommelier/issues) an issue you'd like to help with
 2. Participate in thoughtful discussion on that issue
 3. If you would like to contribute:
    1. If a the issue is a proposal, ensure that the proposal has been accepted
@@ -32,7 +32,7 @@ contributors, the general procedure for contributing has been established:
       make a comment on the issue to inform the community of your intentions
       to begin work
    4. Follow standard Github best practices: fork the repo, branch from the
-      HEAD of `main`, make some commits, and submit a PR to `main`
+      HEAD of `master`, make some commits, and submit a PR to `master`
       - For core developers working within the cosmos-sdk repo, to ensure a clear
       ownership of branches, branches must be named with the convention
       `{moniker}/{issue#}-branch-name`
@@ -55,7 +55,7 @@ tools` for installing the linting tools.
 Other notes:
 
 - Looking for a good place to start contributing? How about checking out some
-  [good first issues](https://github.com/cosmos/gaia/issues?q=is%3Aopen+is%3Aissue+label%3A%22good+first+issue%22)
+  [good first issues](https://github.com/peggyjv/sommelier/issues?q=is%3Aopen+is%3Aissue+label%3A%22good+first+issue%22)
 - Please make sure to run `make format` before every commit - the easiest way
   to do this is have your editor run it for you upon saving a file. Additionally
   please ensure that your code is lint compliant by running `golangci-lint run`.
@@ -85,33 +85,33 @@ All PRs require two Reviews before merge (except docs changes, or variable name-
 
 ### Updating Documentation
 
-If you open a PR in Gaia, it is mandatory to update the relevant documentation in /docs.
+If you open a PR in Sommelier, it is mandatory to update the relevant documentation in /docs.
 
-- If your changes relate specifically to the gaia application, please modify the docs/ folder.
+- If your changes relate specifically to the Sommelier application, please modify the docs/ folder.
 
 ## Forking
 
 Please note that Go requires code to live under absolute paths, which complicates forking.
-While my fork lives at `https://github.com/rigeyrigerige/gaia`,
-the code should never exist at  `$GOPATH/src/github.com/rigeyrigerige/gaia`.
+While my fork lives at `https://github.com/rigeyrigerige/Sommelier`,
+the code should never exist at  `$GOPATH/src/github.com/rigeyrigerige/Sommelier`.
 Instead, we use `git remote` to add the fork as a new remote for the original repo,
-`$GOPATH/src/github.com/cosmos/gaia`, and do all the work there.
+`$GOPATH/src/github.com/peggyjv/sommelier`, and do all the work there.
 
 For instance, to create a fork and work on a branch of it, I would:
 
 - Create the fork on github, using the fork button.
-- Go to the original repo checked out locally (i.e. `$GOPATH/src/github.com/cosmos/gaia`)
+- Go to the original repo checked out locally (i.e. `$GOPATH/src/github.com/peggyjv/sommelier`)
 - `git remote rename origin upstream`
-- `git remote add origin git@github.com:rigeyrigerige/gaia.git`
+- `git remote add origin git@github.com:rigeyrigerige/Sommelier.git`
 
-Now `origin` refers to my fork and `upstream` refers to the Gaia version.
-So I can `git push -u origin main` to update my fork, and make pull requests to Gaia from there.
+Now `origin` refers to my fork and `upstream` refers to the Sommelier version.
+So I can `git push -u origin master` to update my fork, and make pull requests to Sommelier from there.
 Of course, replace `rigeyrigerige` with your git handle.
 
 To pull in updates from the origin repo, run
 
 - `git fetch upstream`
-- `git rebase upstream/main` (or whatever branch you want)
+- `git rebase upstream/master` (or whatever branch you want)
 
 Please don't make Pull Requests to `main`.
 
@@ -165,7 +165,7 @@ User-facing repos should adhere to the [trunk based development branching model]
 
 Libraries need not follow the model strictly, but would be wise to.
 
-Gaia utilizes [semantic versioning](https://semver.org/).
+Sommelier utilizes [semantic versioning](https://semver.org/).
 
 ### PR Targeting
 
@@ -177,33 +177,33 @@ only pull requests targeted directly against master.
 
 ### Development Procedure
 
-- the latest state of development is on `main`
-- `main` must never fail `make test` or `make test_cli`
-- `main` should not fail `make lint`
-- no `--force` onto `main` (except when reverting a broken commit, which should seldom happen)
-- create a development branch either on github.com/cosmos/gaia, or your fork (using `git remote add origin`)
-- before submitting a pull request, begin `git rebase` on top of `main`
+- the latest state of development is on `master`
+- `master` must never fail `make test` or `make test_cli`
+- `master` should not fail `make lint`
+- no `--force` onto `master` (except when reverting a broken commit, which should seldom happen)
+- create a development branch either on github.com/peggyjv/sommelier, or your fork (using `git remote add origin`)
+- before submitting a pull request, begin `git rebase` on top of `master`
 
 ### Pull Merge Procedure
 
-- ensure pull branch is rebased on `main`
+- ensure pull branch is rebased on `master`
 - run `make test` and `make test_cli` to ensure that all tests pass
 - merge pull request
 
 ### Release Procedure
 
-- Start on `main`
+- Start on `master`
 - Create the release candidate branch `rc/v*` (going forward known as **RC**)
   and ensure it's protected against pushing from anyone except the release
   manager/coordinator
   - **no PRs targeting this branch should be merged unless exceptional circumstances arise**
 - On the `RC` branch, prepare a new version section in the `CHANGELOG.md` and
   kick off a large round of simulation testing (e.g. 400 seeds for 2k blocks)
-- If errors are found during the simulation testing, commit the fixes to `main`
+- If errors are found during the simulation testing, commit the fixes to `master`
   and create a new `RC` branch (making sure to increment the `rcN`)
 - After simulation has successfully completed, create the release branch
   (`release/vX.XX.X`) from the `RC` branch
-- Merge the release branch to `main` to incorporate the `CHANGELOG.md` updates
+- Merge the release branch to `master` to incorporate the `CHANGELOG.md` updates
 - Delete the `RC` branches
 
 ### Point Release Procedure
@@ -213,7 +213,7 @@ releases will be based off of that release.
 
 - start on `vX.XX.X`
 - checkout a new branch `rcN/vX.X.X`
-- cherry pick the desired changes from `main`
+- cherry pick the desired changes from `master`
   - these changes should be small and NON-BREAKING (both API and state machine)
 - add entries to CHANGELOG.md and remove corresponding pending log entries
 - checkout a new branch `release/vX.X.X` based off of the previous release
@@ -221,5 +221,5 @@ releases will be based off of that release.
 - run tests and simulations (noted in [Release Procedure](#release-procedure))
 - after tests and simulation have successfully completed, merge the `RC` branch into `release/vX.X.X`
   - Make sure to delete the `RC` branch
-- create a PR into `main` containing ONLY the CHANGELOG.md updates
+- create a PR into `master` containing ONLY the CHANGELOG.md updates
 - tag (use `git tag -a`) then push the tags (`git push --tags`)

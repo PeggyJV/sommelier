@@ -8,17 +8,17 @@
 set -euo pipefail
 
 GITIAN_CACHE_DIRNAME='.gitian-builder-cache'
-GO_DEBIAN_RELEASE='1.12.5-1'
-GO_TARBALL="golang-debian-${GO_DEBIAN_RELEASE}.tar.gz"
-GO_TARBALL_URL="https://salsa.debian.org/go-team/compiler/golang/-/archive/debian/${GO_DEBIAN_RELEASE}/${GO_TARBALL}"
+GO_RELEASE='1.14'
+GO_TARBALL="go${GO_RELEASE}.linux-amd64.tar.gz"
+GO_TARBALL_URL="https://dl.google.com/go/${GO_TARBALL}"
 
 # Defaults
 
 DEFAULT_SIGN_COMMAND='gpg --detach-sign'
-DEFAULT_GAIA_SIGS=${GAIA_SIGS:-'gaia.sigs'}
-DEFAULT_GITIAN_REPO='https://github.com/devrandom/gitian-builder'
+DEFAULT_SOMM_SIGS=${SOMM_SIGS:-'somm.sigs'}
+DEFAULT_GITIAN_REPO='https://github.com/tendermint/gitian-builder'
 DEFAULT_GBUILD_FLAGS=''
-DEFAULT_SIGS_REPO='https://github.com/cosmos/gaia.sigs'
+DEFAULT_SIGS_REPO='https://github.com/peggyjv/sommelier.sigs'
 
 # Overrides
 
@@ -54,8 +54,8 @@ The following platforms are supported:
    -s IDENTITY      sign build as IDENTITY
 
 If a GPG identity is supplied via the -s flag, the build will be signed and verified.
-The signature will be saved in '${DEFAULT_GAIA_SIGS}/'. An alternative output directory
-for signatures can be supplied via the environment variable \$GAIA_SIGS.
+The signature will be saved in '${DEFAULT_SOMM_SIGS}/'. An alternative output directory
+for signatures can be supplied via the environment variable \$SOMM_SIGS.
 
 The default signing command used to sign the build is '$DEFAULT_SIGN_COMMAND'.
 An alternative signing command can be supplied via the environment
@@ -94,7 +94,7 @@ f_build() {
 
   l_descriptor=$1
 
-  bin/gbuild --commit gaia="$g_commit" ${GBUILD_FLAGS} "$l_descriptor"
+  bin/gbuild --commit somm="$g_commit" ${GBUILD_FLAGS} "$l_descriptor"
   libexec/stop-target || f_echo_stderr "warning: couldn't stop target"
 }
 
@@ -145,7 +145,7 @@ f_demangle_platforms() {
   case "${1}" in
   all)
     printf '%s' 'darwin linux windows' ;;
-  linux|darwin|windows)
+  linux|darwin|windows|multi)
     printf '%s' "${1}" ;;
   *)
     echo "invalid platform -- ${1}"
@@ -171,7 +171,7 @@ shift "$((OPTIND-1))"
 g_platforms=$(f_demangle_platforms "${1}")
 g_workdir="$(pwd)"
 g_commit="$(git rev-parse HEAD)"
-g_sigs_dir=${GAIA_SIGS:-"${g_workdir}/${DEFAULT_GAIA_SIGS}"}
+g_sigs_dir=${SOMM_SIGS:-"${g_workdir}/${DEFAULT_SOMM_SIGS}"}
 
 f_ensure_cache
 
