@@ -5,8 +5,7 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	core "github.com/peggyjv/sommelier/types"
-	"github.com/peggyjv/sommelier/x/oracle//types"
+	"github.com/peggyjv/sommelier/x/oracle/types"
 )
 
 // RewardBallotWinners implements
@@ -32,7 +31,7 @@ func (k Keeper) RewardBallotWinners(ctx sdk.Context, ballotWinners map[string]ty
 	}
 
 	// rewardCoin  = oraclePool * VotePeriod / RewardDistributionWindow
-	periodRewards := sdk.NewDecFromInt(rewardPool.AmountOf(core.MicroLunaDenom)).
+	periodRewards := sdk.NewDecFromInt(rewardPool.AmountOf(types.MicroLunaDenom)).
 		MulInt64(k.VotePeriod(ctx)).QuoInt64(k.RewardDistributionWindow(ctx))
 
 	// Dole out rewards
@@ -43,7 +42,7 @@ func (k Keeper) RewardBallotWinners(ctx sdk.Context, ballotWinners map[string]ty
 
 		// Reflects contribution
 		rewardAmt := periodRewards.QuoInt64(ballotPowerSum).MulInt64(winner.Weight).TruncateInt()
-		rewardCoins = append(rewardCoins, sdk.NewCoin(core.MicroLunaDenom, rewardAmt))
+		rewardCoins = append(rewardCoins, sdk.NewCoin(types.MicroLunaDenom, rewardAmt))
 
 		// In case absence of the validator, we just skip distribution
 		if rewardeeVal != nil && !rewardCoins.IsZero() {

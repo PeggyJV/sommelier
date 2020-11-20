@@ -15,7 +15,7 @@ import (
 
 	core "github.com/peggyjv/sommelier/types"
 	"github.com/peggyjv/sommelier/x/oracle//keeper"
-	"github.com/peggyjv/sommelier/x/oracle//types"
+	"github.com/peggyjv/sommelier/x/oracle/types"
 )
 
 // Simulation operation weights constants

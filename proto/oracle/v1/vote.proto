@@ -7,45 +7,6 @@ import "gogoproto/gogo.proto";
 
 option go_package = "github.com/peggyjv/sommelier/x/oracle/types";
 
-// ExchangeRatePrevote - struct to store a validator's prevote on the rate of Luna in the denom asset
-// type ExchangeRatePrevote struct {
-// 	Hash        VoteHash       `json:"hash"`  // Vote hex hash to protect centralize data source problem
-// 	Denom       string         `json:"denom"` // Ticker name of target fiat currency
-// 	Voter       sdk.ValAddress `json:"voter"` // Voter val address
-// 	SubmitBlock int64          `json:"submit_block"`
-// }
-message ExchangeRatePrevote {
-    bytes hash = 1;
-    string denom = 2;
-    string voter = 3;
-    int64 submit_block = 4;
-}
-
-
-// ExchangeRatePrevotes is a collection of ExchangeRatePrevote
-// type ExchangeRatePrevotes []ExchangeRatePrevote
-message ExchangeRatePrevotes {
-    repeated ExchangeRatePrevote exchange_rate_prevote = 1;
-}
-
-// ExchangeRateVote - struct to store a validator's vote on the rate of Luna in the denom asset
-// type ExchangeRateVote struct {
-// 	ExchangeRate sdk.Dec        `json:"exchange_rate"` // ExchangeRate of Luna in target fiat currency
-// 	Denom        string         `json:"denom"`         // Ticker name of target fiat currency
-// 	Voter        sdk.ValAddress `json:"voter"`         // voter val address of validator
-// }
-message ExchangeRateVote {
-    string exchange_rate  = 1 [(gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec", (gogoproto.nullable) = false];
-    string denom = 2;
-    string voter = 3;
-}
-
-
-// ExchangeRateVotes is a collection of ExchangeRateVote
-// type ExchangeRateVotes []ExchangeRateVote
-message ExchangeRateVotes {
-    repeated ExchangeRateVote exchange_rate_vote = 1;
-}
 
 // AggregateExchangeRatePrevote - struct to store a validator's aggregate prevote on the rate of Luna in the denom asset
 // type AggregateExchangeRatePrevote struct {
@@ -69,10 +30,6 @@ message ExchangeRateTuple {
     string exchange_rate  = 2 [(gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec", (gogoproto.nullable) = false];
 }
 
-// type ExchangeRateTuples []ExchangeRateTuple
-message ExchangeRateTuples {
-    repeated ExchangeRateTuple exchange_rate_tuple = 1;
-}
 
 // AggregateExchangeRateVote - struct to store a validator's aggregate vote on the rate of Luna in the denom asset
 // type AggregateExchangeRateVote struct {
@@ -82,4 +39,26 @@ message ExchangeRateTuples {
 message AggregateExchangeRateVote {
     repeated ExchangeRateTuple exchange_rate_tuples = 1;
     string voter = 2;
+}
+
+
+// // Denom is the object to hold configurations of each denom
+// type Denom struct {
+// 	Name     string  `json:"name" yaml:"name"`
+// 	TobinTax sdk.Dec `json:"tobin_tax" yaml:"tobin_tax"`
+// }
+message Denom {
+    string name = 1;
+    string tobin_tax = 2 [(gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec", (gogoproto.nullable) = false];
+}
+
+
+// Claim is an interface that directs its rewards to an attached bank account.
+// type Claim struct {
+// 	Weight    int64          `json:"weight"`
+// 	Recipient sdk.ValAddress `json:"recipient"`
+// }
+message Claim {
+    int64 weight = 1;
+    string recipient = 2;
 }

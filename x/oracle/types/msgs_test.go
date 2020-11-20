@@ -1,74 +1,18 @@
 package types
 
 import (
+	"bytes"
 	"sort"
 	"testing"
 
-	"github.com/cosmos/cosmos-sdk/x/auth"
+	"github.com/cosmos/cosmos-sdk/client"
+	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	"github.com/tendermint/tendermint/crypto"
 	"github.com/tendermint/tendermint/crypto/secp256k1"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/require"
 )
-
-func TestMsgExchangeRatePrevote(t *testing.T) {
-	_, addrs, _, _ := CreateGenAccounts(1, sdk.Coins{})
-
-	bz := GetVoteHash("1", sdk.OneDec(), MicroSDRDenom, sdk.ValAddress(addrs[0]))
-
-	tests := []struct {
-		hash       VoteHash
-		denom      string
-		voter      sdk.AccAddress
-		expectPass bool
-	}{
-		{bz, "", addrs[0], false},
-		{bz, MicroCNYDenom, addrs[0], true},
-		{bz, MicroCNYDenom, addrs[0], true},
-		{bz, MicroCNYDenom, sdk.AccAddress{}, false},
-		{VoteHash{}, MicroCNYDenom, addrs[0], false},
-	}
-
-	for i, tc := range tests {
-		msg := NewMsgExchangeRatePrevote(tc.hash, tc.denom, tc.voter, sdk.ValAddress(tc.voter))
-		if tc.expectPass {
-			require.Nil(t, msg.ValidateBasic(), "test: %v", i)
-		} else {
-			require.NotNil(t, msg.ValidateBasic(), "test: %v", i)
-		}
-	}
-}
-
-func TestMsgExchangeRateVote(t *testing.T) {
-	_, addrs, _, _ := CreateGenAccounts(1, sdk.Coins{})
-
-	overflowExchangeRate, _ := sdk.NewDecFromStr("100000000000000000000000000000000000000000000000000000000")
-
-	tests := []struct {
-		denom      string
-		voter      sdk.AccAddress
-		salt       string
-		rate       sdk.Dec
-		expectPass bool
-	}{
-		{"", addrs[0], "123", sdk.OneDec(), false},
-		{MicroCNYDenom, addrs[0], "123", sdk.OneDec().MulInt64(MicroUnit), true},
-		{MicroCNYDenom, addrs[0], "123", sdk.ZeroDec(), true},
-		{MicroCNYDenom, addrs[0], "123", overflowExchangeRate, false},
-		{MicroCNYDenom, sdk.AccAddress{}, "123", sdk.OneDec().MulInt64(MicroUnit), false},
-		{MicroCNYDenom, addrs[0], "", sdk.OneDec().MulInt64(MicroUnit), false},
-	}
-
-	for i, tc := range tests {
-		msg := NewMsgExchangeRateVote(tc.rate, tc.salt, tc.denom, tc.voter, sdk.ValAddress(tc.voter))
-		if tc.expectPass {
-			require.Nil(t, msg.ValidateBasic(), "test: %v", i)
-		} else {
-			require.NotNil(t, msg.ValidateBasic(), "test: %v", i)
-		}
-	}
-}
 
 func TestMsgFeederDelegation(t *testing.T) {
 	_, addrs, _, _ := CreateGenAccounts(2, sdk.Coins{})
@@ -101,7 +45,7 @@ func TestMsgAggregateExchangeRatePrevote(t *testing.T) {
 	bz := GetAggregateVoteHash("1", exchangeRates.String(), sdk.ValAddress(addrs[0]))
 
 	tests := []struct {
-		hash          AggregateVoteHash
+		hash          []byte
 		exchangeRates sdk.DecCoins
 		voter         sdk.AccAddress
 		expectPass    bool
@@ -109,7 +53,7 @@ func TestMsgAggregateExchangeRatePrevote(t *testing.T) {
 		{bz, exchangeRates, addrs[0], true},
 		{bz[1:], exchangeRates, addrs[0], false},
 		{bz, exchangeRates, sdk.AccAddress{}, false},
-		{AggregateVoteHash{}, exchangeRates, addrs[0], false},
+		{[]byte{}, exchangeRates, addrs[0], false},
 	}
 
 	for i, tc := range tests {
@@ -156,7 +100,7 @@ func TestMsgAggregateExchangeRateVote(t *testing.T) {
 
 // CreateGenAccounts generates genesis accounts loaded with coins, and returns
 // their addresses, pubkeys, and privkeys.
-func CreateGenAccounts(numAccs int, genCoins sdk.Coins) (genAccs []authexported.Account,
+func CreateGenAccounts(numAccs int, genCoins sdk.Coins) (genAccs []client.Account,
 	addrs []sdk.AccAddress, pubKeys []crypto.PubKey, privKeys []crypto.PrivKey) {
 
 	addrKeysSlice := AddrKeysSlice{}
@@ -175,11 +119,52 @@ func CreateGenAccounts(numAccs int, genCoins sdk.Coins) (genAccs []authexported.
 		addrs = append(addrs, addrKeysSlice[i].Address)
 		pubKeys = append(pubKeys, addrKeysSlice[i].PubKey)
 		privKeys = append(privKeys, addrKeysSlice[i].PrivKey)
-		genAccs = append(genAccs, &auth.BaseAccount{
-			Address: addrKeysSlice[i].Address,
-			Coins:   genCoins,
+		genAccs = append(genAccs, &authtypes.BaseAccount{
+			Address: addrKeysSlice[i].Address.String(),
 		})
+		// TODO use bank to add coins to these accounts?
 	}
 
 	return
+}
+
+// Type that combines an Address with the privKey and pubKey to that address
+type AddrKeys struct {
+	Address sdk.AccAddress
+	PubKey  crypto.PubKey
+	PrivKey crypto.PrivKey
+}
+
+func NewAddrKeys(address sdk.AccAddress, pubKey crypto.PubKey,
+	privKey crypto.PrivKey) AddrKeys {
+
+	return AddrKeys{
+		Address: address,
+		PubKey:  pubKey,
+		PrivKey: privKey,
+	}
+}
+
+// implement `Interface` in sort package.
+type AddrKeysSlice []AddrKeys
+
+func (b AddrKeysSlice) Len() int {
+	return len(b)
+}
+
+// Sorts lexographically by Address
+func (b AddrKeysSlice) Less(i, j int) bool {
+	// bytes package already implements Comparable for []byte.
+	switch bytes.Compare(b[i].Address.Bytes(), b[j].Address.Bytes()) {
+	case -1:
+		return true
+	case 0, 1:
+		return false
+	default:
+		panic("not fail-able with `bytes.Comparable` bounded [-1, 1].")
+	}
+}
+
+func (b AddrKeysSlice) Swap(i, j int) {
+	b[j], b[i] = b[i], b[j]
 }

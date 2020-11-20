@@ -8,8 +8,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/staking"
 
-	core "github.com/peggyjv/sommelier/types"
-	"github.com/peggyjv/sommelier/x/oracle//types"
+	"github.com/peggyjv/sommelier/x/oracle/types"
 )
 
 // Test a reward giving mechanism
@@ -49,7 +48,7 @@ func TestRewardBallotWinners(t *testing.T) {
 	}
 
 	// Prepare reward pool
-	givingAmt := sdk.NewCoins(sdk.NewInt64Coin(core.MicroLunaDenom, 30000000))
+	givingAmt := sdk.NewCoins(sdk.NewInt64Coin(types.MicroLunaDenom, 30000000))
 	acc := input.SupplyKeeper.GetModuleAccount(ctx, types.ModuleName)
 	err = acc.SetCoins(givingAmt)
 	require.NoError(t, err)
@@ -59,11 +58,11 @@ func TestRewardBallotWinners(t *testing.T) {
 	input.OracleKeeper.RewardBallotWinners(ctx, claims)
 	outstandingRewardsDec := input.DistrKeeper.GetValidatorOutstandingRewards(ctx, addr)
 	outstandingRewards, _ := outstandingRewardsDec.TruncateDecimal()
-	require.Equal(t, sdk.NewDecFromInt(givingAmt.AmountOf(core.MicroLunaDenom)).QuoInt64(votePeriodsPerWindow).QuoInt64(3).TruncateInt(),
-		outstandingRewards.AmountOf(core.MicroLunaDenom))
+	require.Equal(t, sdk.NewDecFromInt(givingAmt.AmountOf(types.MicroLunaDenom)).QuoInt64(votePeriodsPerWindow).QuoInt64(3).TruncateInt(),
+		outstandingRewards.AmountOf(types.MicroLunaDenom))
 
 	outstandingRewardsDec1 := input.DistrKeeper.GetValidatorOutstandingRewards(ctx, addr1)
 	outstandingRewards1, _ := outstandingRewardsDec1.TruncateDecimal()
-	require.Equal(t, sdk.NewDecFromInt(givingAmt.AmountOf(core.MicroLunaDenom)).QuoInt64(votePeriodsPerWindow).QuoInt64(3).MulInt64(2).TruncateInt(),
-		outstandingRewards1.AmountOf(core.MicroLunaDenom))
+	require.Equal(t, sdk.NewDecFromInt(givingAmt.AmountOf(types.MicroLunaDenom)).QuoInt64(votePeriodsPerWindow).QuoInt64(3).MulInt64(2).TruncateInt(),
+		outstandingRewards1.AmountOf(types.MicroLunaDenom))
 }

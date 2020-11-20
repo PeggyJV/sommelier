@@ -2,7 +2,7 @@ package keeper
 
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/peggyjv/sommelier/x/oracle//types"
+	"github.com/peggyjv/sommelier/x/oracle/types"
 )
 
 // VotePeriod returns the number of blocks during which voting takes place.
@@ -30,7 +30,7 @@ func (k Keeper) RewardDistributionWindow(ctx sdk.Context) (res int64) {
 }
 
 // Whitelist returns the denom list that can be activated
-func (k Keeper) Whitelist(ctx sdk.Context) (res types.DenomList) {
+func (k Keeper) Whitelist(ctx sdk.Context) (res []*types.Denom) {
 	k.paramSpace.Get(ctx, types.ParamStoreKeyWhitelist, &res)
 	return
 }

@@ -1,44 +1,7 @@
 syntax = "proto3";
 package oracle.v1;
 
-import "gogoproto/gogo.proto";
-// import "google/protobuf/any.proto";
-// import "cosmos_proto/cosmos.proto";
-
 option go_package = "github.com/peggyjv/sommelier/x/oracle/types";
-
-// // which is formatted as hex string in SHA256("{salt}:{exchange_rate}:{denom}:{voter}")
-// type MsgExchangeRatePrevote struct {
-// 	Hash      VoteHash       `json:"hash" yaml:"hash"`
-// 	Denom     string         `json:"denom" yaml:"denom"`
-// 	Feeder    sdk.AccAddress `json:"feeder" yaml:"feeder"`
-// 	Validator sdk.ValAddress `json:"validator" yaml:"validator"`
-// }
-message MsgExchangeRatePrevote {
-    bytes hash = 1;
-    string denom = 2;
-    string feeder = 3;
-    string validator =4;
-}
-
-// Deprecated: normal prevote and vote will be deprecated after columbus-4
-// MsgExchangeRateVote - struct for voting on the exchange rate of Luna denominated in various Terra assets.
-// For example, if the validator believes that the effective exchange rate of Luna in USD is 10.39, that's
-// what the exchange rate field would be, and if 1213.34 for KRW, same.
-// type MsgExchangeRateVote struct {
-// 	ExchangeRate sdk.Dec        `json:"exchange_rate" yaml:"exchange_rate"` // the effective rate of Luna in {Denom}
-// 	Salt         string         `json:"salt" yaml:"salt"`
-// 	Denom        string         `json:"denom" yaml:"denom"`
-// 	Feeder       sdk.AccAddress `json:"feeder" yaml:"feeder"`
-// 	Validator    sdk.ValAddress `json:"validator" yaml:"validator"`
-// }
-message MsgExchangeRateVote {
-    string exchange_rate = 1 [(gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec", (gogoproto.nullable) = false];
-    string salt = 2;
-    string denom = 3;
-    string feeder = 4;
-    string valdiator = 5;    
-}
 
 // MsgDelegateFeedConsent - struct for delegating oracle voting rights to another address.
 // type MsgDelegateFeedConsent struct {

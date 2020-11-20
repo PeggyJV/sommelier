@@ -4,8 +4,7 @@ package keeper
 import (
 	"testing"
 
-	core "github.com/peggyjv/sommelier/types"
-	"github.com/peggyjv/sommelier/x/oracle//types"
+	"github.com/peggyjv/sommelier/x/oracle/types"
 	"github.com/stretchr/testify/require"
 
 	"time"
@@ -53,7 +52,7 @@ var (
 	}
 
 	InitTokens = sdk.TokensFromConsensusPower(200)
-	InitCoins  = sdk.NewCoins(sdk.NewCoin(core.MicroLunaDenom, InitTokens))
+	InitCoins  = sdk.NewCoins(sdk.NewCoin(types.MicroLunaDenom, InitTokens))
 
 	OracleDecPrecision = 8
 )
@@ -126,7 +125,7 @@ func CreateTestInput(t *testing.T) TestInput {
 		types.ModuleName:          nil,
 	}
 
-	totalSupply := sdk.NewCoins(sdk.NewCoin(core.MicroLunaDenom, InitTokens.MulRaw(int64(len(Addrs)))))
+	totalSupply := sdk.NewCoins(sdk.NewCoin(types.MicroLunaDenom, InitTokens.MulRaw(int64(len(Addrs)))))
 	bankKeeper.SetSupply(ctx, banktypes.NewSupply(totalSupply))
 
 	stakingKeeper := staking.NewKeeper(
@@ -153,7 +152,7 @@ func CreateTestInput(t *testing.T) TestInput {
 	distrAcc := authtypes.NewEmptyModuleAccount(distr.ModuleName)
 	oracleAcc := authtypes.NewEmptyModuleAccount(types.ModuleName, authtypes.Minter)
 
-	notBondedPool.SetCoins(sdk.NewCoins(sdk.NewCoin(core.MicroLunaDenom, InitTokens.MulRaw(int64(len(Addrs))))))
+	notBondedPool.SetCoins(sdk.NewCoins(sdk.NewCoin(types.MicroLunaDenom, InitTokens.MulRaw(int64(len(Addrs))))))
 
 	accountKeeper.SetModuleAccount(ctx, feeCollectorAcc)
 	accountKeeper.SetModuleAccount(ctx, bondPool)
@@ -162,7 +161,7 @@ func CreateTestInput(t *testing.T) TestInput {
 	accountKeeper.SetModuleAccount(ctx, oracleAcc)
 
 	genesis := staking.DefaultGenesisState()
-	genesis.Params.BondDenom = core.MicroLunaDenom
+	genesis.Params.BondDenom = types.MicroLunaDenom
 	_ = staking.InitGenesis(ctx, genesis)
 
 	for _, addr := range Addrs {
@@ -187,7 +186,7 @@ func CreateTestInput(t *testing.T) TestInput {
 func NewTestMsgCreateValidator(address sdk.ValAddress, pubKey crypto.PubKey, amt sdk.Int) staking.MsgCreateValidator {
 	commission := staking.NewCommissionRates(sdk.ZeroDec(), sdk.ZeroDec(), sdk.ZeroDec())
 	return staking.NewMsgCreateValidator(
-		address, pubKey, sdk.NewCoin(core.MicroLunaDenom, amt),
+		address, pubKey, sdk.NewCoin(types.MicroLunaDenom, amt),
 		staking.Description{}, commission, sdk.OneInt(),
 	)
 }
