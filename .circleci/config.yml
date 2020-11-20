@@ -4,11 +4,11 @@ executors:
   golang:
     docker:
       - image: circleci/golang:1.14
-    working_directory: /go/src/github.com/cosmos/gaia
+    working_directory: /go/src/github.com/peggyjv/sommelier
   mac:
     macos:
       xcode: "10.3.0"
-    working_directory: /Users/distiller/project/src/github.com/cosmos/gaia
+    working_directory: /Users/distiller/project/src/github.com/peggyjv/sommelier
     environment:
       GO_VERSION: "1.14"
   docs:
@@ -16,7 +16,7 @@ executors:
       - image: tendermintdev/docker-website-deployment
     environment:
       AWS_REGION: us-east-1
-      LEDGER_ENABLED: false
+      LEDGER_ENABLED: "false"
 
 commands:
   make:
@@ -94,7 +94,7 @@ jobs:
             - "."
 
   localnet:
-    working_directory: /home/circleci/.go_workspace/src/github.com/cosmos/gaia
+    working_directory: /home/circleci/.go_workspace/src/github.com/peggyjv/sommelier
     machine:
       image: circleci/classic:latest
     environment:
@@ -153,10 +153,10 @@ jobs:
           command: source $BASH_ENV
             make test-build
       - run:
-          name: Test full gaia simulation
+          name: Test full somm simulation
           command: |
             source $BASH_ENV
-            make test-sim-gaia-fast
+            make test-sim-somm-fast
 
   docker-image:
     executor: golang
@@ -167,20 +167,20 @@ jobs:
       - setup_remote_docker:
           docker_layer_caching: true
       - run: |
-          GAIAD_VERSION=''
+          SOMM_VERSION=''
           if [ "${CIRCLE_BRANCH}" = "master" ]; then
-            GAIAD_VERSION="stable"
+            SOMM_VERSION="stable"
           elif [ "${CIRCLE_BRANCH}" = "develop" ]; then
-            GAIAD_VERSION="develop"
+            SOMM_VERSION="develop"
           elif [[ "${CIRCLE_BRANCH}" == release/v* ]]; then
-            GAIAD_VERSION="${CIRCLE_BRANCH}"
+            SOMM_VERSION="${CIRCLE_BRANCH}"
           fi
-          if [ -z "${GAIAD_VERSION}" ]; then
+          if [ -z "${SOMM_VERSION}" ]; then
             docker build .
           else
-            docker build -t tendermint/gaia:$GAIAD_VERSION .
+            docker build -t peggyjv/sommelier:$SOMM_VERSION .
             docker login --password-stdin -u $DOCKER_USER \<\<\<$DOCKER_PASS
-            docker push tendermint/gaia:$GAIAD_VERSION
+            docker push peggyjv/sommelier:$SOMM_VERSION
           fi
 
   docker-tagged:
@@ -192,9 +192,9 @@ jobs:
       - setup_remote_docker:
           docker_layer_caching: true
       - run: |
-          docker build -t tendermint/gaia:$CIRCLE_TAG .
+          docker build -t peggyjv/sommelier:$CIRCLE_TAG .
           docker login --password-stdin -u $DOCKER_USER \<\<\<$DOCKER_PASS
-          docker push tendermint/gaia:$CIRCLE_TAG
+          docker push peggyjv/sommelier:$CIRCLE_TAG
 
   reproducible-builds:
     executor: golang
@@ -205,18 +205,18 @@ jobs:
       - setup_remote_docker:
           docker_layer_caching: true
       - run:
-          name: Build gaia
+          name: Build sommelier
           no_output_timeout: 20m
           command: |
             sudo apt-get install -y ruby
             bash -x ./contrib/gitian-build.sh multi
-            cp gitian-build-multi/result/gaia-multi-res.yml .
+            cp gitian-build-multi/result/somm-multi-res.yml .
             rm -rf gitian-build-multi/
       - store_artifacts:
-          path: /go/src/github.com/cosmos/gaia/gaia-multi-res.yml
+          path: /go/src/github.com/peggyjv/sommelier/somm-multi-res.yml
 
 # FIXME: The `setup-contract-tests-data` make target is broken as it completely
-# overrides the .gaiad directory.
+# overrides the .sommelier directory.
 #
 #  contract_tests:
 #    executor: golang
@@ -259,13 +259,13 @@ workflows:
               only:
                 - master
       - deploy-docs:
-          context: gaia-docs-deployment-staging
+          context: somm-docs-deployment-staging
           filters:
             branches:
               only:
                 - docs-update
       - deploy-docs:
-          context: gaia-docs-deployment
+          context: somm-docs-deployment
           filters:
             branches:
               only:
