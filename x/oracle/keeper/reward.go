@@ -38,7 +38,11 @@ func (k Keeper) RewardBallotWinners(ctx sdk.Context, ballotWinners map[string]ty
 	var distributedReward sdk.Coins
 	for _, winner := range ballotWinners {
 		rewardCoins := sdk.NewCoins()
-		rewardeeVal := k.StakingKeeper.Validator(ctx, winner.Recipient)
+		valAddr, err := sdk.ValAddressFromBech32(winner.Recipient)
+		if err != nil {
+			panic(err)
+		}
+		rewardeeVal := k.StakingKeeper.Validator(ctx, valAddr)
 
 		// Reflects contribution
 		rewardAmt := periodRewards.QuoInt64(ballotPowerSum).MulInt64(winner.Weight).TruncateInt()
@@ -52,7 +56,7 @@ func (k Keeper) RewardBallotWinners(ctx sdk.Context, ballotWinners map[string]ty
 	}
 
 	// Move distributed reward to distribution module
-	err := k.supplyKeeper.SendCoinsFromModuleToModule(ctx, types.ModuleName, k.distrName, distributedReward)
+	err := k.bankKeeper.SendCoinsFromModuleToModule(ctx, types.ModuleName, k.distrName, distributedReward)
 	if err != nil {
 		panic(fmt.Sprintf("[oracle] Failed to send coins to distribution module %s", err.Error()))
 	}

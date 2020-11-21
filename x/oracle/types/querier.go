@@ -24,7 +24,7 @@ const (
 // QueryExchangeRateParams defines the params for the following queries:
 // - 'custom/oracle/exchange_rate'
 type QueryExchangeRateParams struct {
-	Denom string
+	Denom string `json:"denom"`
 }
 
 // NewQueryExchangeRateParams returns params for exchange_rate query
@@ -35,8 +35,8 @@ func NewQueryExchangeRateParams(denom string) QueryExchangeRateParams {
 // QueryPrevotesParams defines the params for the following queries:
 // - 'custom/oracle/prevotes'
 type QueryPrevotesParams struct {
-	Voter sdk.ValAddress
-	Denom string
+	Voter sdk.ValAddress `json:"voter"`
+	Denom string         `json:"denom"`
 }
 
 // NewQueryPrevotesParams returns params for exchange_rate prevotes query
@@ -47,8 +47,8 @@ func NewQueryPrevotesParams(voter sdk.ValAddress, denom string) QueryPrevotesPar
 // QueryVotesParams defines the params for the following queries:
 // - 'custom/oracle/votes'
 type QueryVotesParams struct {
-	Voter sdk.ValAddress
-	Denom string
+	Voter sdk.ValAddress `json:"voter"`
+	Denom string         `json:"denom"`
 }
 
 // NewQueryVotesParams returns params for exchange_rate votes query
@@ -59,7 +59,7 @@ func NewQueryVotesParams(voter sdk.ValAddress, denom string) QueryVotesParams {
 // QueryFeederDelegationParams defeins the params for the following queries:
 // - 'custom/oracle/feederDelegation'
 type QueryFeederDelegationParams struct {
-	Validator sdk.ValAddress
+	Validator sdk.ValAddress `json:"validator"`
 }
 
 // NewQueryFeederDelegationParams returns params for feeder delegation query
@@ -70,7 +70,7 @@ func NewQueryFeederDelegationParams(validator sdk.ValAddress) QueryFeederDelegat
 // QueryMissCounterParams defines the params for the following queries:
 // - 'custom/oracle/missCounter'
 type QueryMissCounterParams struct {
-	Validator sdk.ValAddress
+	Validator sdk.ValAddress `json:"validator"`
 }
 
 // NewQueryMissCounterParams returns params for feeder delegation query
@@ -81,7 +81,7 @@ func NewQueryMissCounterParams(validator sdk.ValAddress) QueryMissCounterParams 
 // QueryAggregatePrevoteParams defines the params for the following queries:
 // - 'custom/oracle/aggregatePrevote'
 type QueryAggregatePrevoteParams struct {
-	Validator sdk.ValAddress
+	Validator sdk.ValAddress `json:"validator"`
 }
 
 // NewQueryAggregatePrevoteParams returns params for feeder delegation query
@@ -92,7 +92,7 @@ func NewQueryAggregatePrevoteParams(validator sdk.ValAddress) QueryAggregatePrev
 // QueryAggregateVoteParams defines the params for the following queries:
 // - 'custom/oracle/aggregateVote'
 type QueryAggregateVoteParams struct {
-	Validator sdk.ValAddress
+	Validator sdk.ValAddress `json:"validator"`
 }
 
 // NewQueryAggregateVoteParams returns params for feeder delegation query
@@ -103,7 +103,7 @@ func NewQueryAggregateVoteParams(validator sdk.ValAddress) QueryAggregateVotePar
 // QueryTobinTaxParams defines the params for the following queries:
 // - 'custom/oracle/tobinTax'
 type QueryTobinTaxParams struct {
-	Denom string
+	Denom string `json:"denom"`
 }
 
 // NewQueryTobinTaxParams returns params for tobin tax query

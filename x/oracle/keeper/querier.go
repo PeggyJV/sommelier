@@ -1,7 +1,7 @@
 package keeper
 
 import (
-	"github.com/cosmos/cosmos-sdk/codec"
+	"encoding/json"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
@@ -21,10 +21,6 @@ func NewQuerier(keeper Keeper) sdk.Querier {
 			return queryExchangeRates(ctx, keeper)
 		case types.QueryActives:
 			return queryActives(ctx, keeper)
-		case types.QueryVotes:
-			return queryVotes(ctx, req, keeper)
-		case types.QueryPrevotes:
-			return queryPrevotes(ctx, req, keeper)
 		case types.QueryParameters:
 			return queryParameters(ctx, keeper)
 		case types.QueryFeederDelegation:
@@ -59,7 +55,7 @@ func queryExchangeRate(ctx sdk.Context, req abci.RequestQuery, keeper Keeper) ([
 		return nil, sdkerrors.Wrap(types.ErrUnknowDenom, params.Denom)
 	}
 
-	bz, err2 := codec.MarshalJSONIndent(keeper.cdc, rate)
+	bz, err2 := json.MarshalIndent(rate, "", "  ")
 	if err2 != nil {
 		return nil, sdkerrors.Wrap(sdkerrors.ErrJSONMarshal, err.Error())
 	}
@@ -75,7 +71,7 @@ func queryExchangeRates(ctx sdk.Context, keeper Keeper) ([]byte, error) {
 		return false
 	})
 
-	bz, err := codec.MarshalJSONIndent(keeper.cdc, rates)
+	bz, err := json.MarshalIndent(rates, "", "  ")
 	if err != nil {
 		return nil, sdkerrors.Wrap(sdkerrors.ErrJSONMarshal, err.Error())
 	}
@@ -91,98 +87,16 @@ func queryActives(ctx sdk.Context, keeper Keeper) ([]byte, error) {
 		return false
 	})
 
-	bz, err := codec.MarshalJSONIndent(keeper.cdc, denoms)
+	bz, err := json.MarshalIndent(denoms, "", "  ")
 	if err != nil {
 		return nil, sdkerrors.Wrap(sdkerrors.ErrJSONMarshal, err.Error())
 	}
 
-	return bz, nil
-}
-
-func queryVotes(ctx sdk.Context, req abci.RequestQuery, keeper Keeper) ([]byte, error) {
-	var params types.QueryVotesParams
-	err := keeper.cdc.UnmarshalJSON(req.Data, &params)
-	if err != nil {
-		return nil, sdkerrors.Wrap(sdkerrors.ErrJSONUnmarshal, err.Error())
-	}
-
-	filteredVotes := types.ExchangeRateVotes{}
-
-	// collects all votes without filter
-	prefix := types.VoteKey
-	handler := func(vote types.ExchangeRateVote) (stop bool) {
-		filteredVotes = append(filteredVotes, vote)
-		return false
-	}
-
-	// applies filter
-	if len(params.Denom) != 0 && !params.Voter.Empty() {
-		prefix = types.GetVoteKey(params.Denom, params.Voter)
-	} else if len(params.Denom) != 0 {
-		prefix = types.GetVoteKey(params.Denom, sdk.ValAddress{})
-	} else if !params.Voter.Empty() {
-		handler = func(vote types.ExchangeRateVote) (stop bool) {
-
-			if vote.Voter.Equals(params.Voter) {
-				filteredVotes = append(filteredVotes, vote)
-			}
-
-			return false
-		}
-	}
-
-	keeper.iterateExchangeRateVotesWithPrefix(ctx, prefix, handler)
-
-	bz, err := codec.MarshalJSONIndent(keeper.cdc, filteredVotes)
-	if err != nil {
-		return nil, sdkerrors.Wrap(sdkerrors.ErrJSONMarshal, err.Error())
-	}
-	return bz, nil
-}
-
-func queryPrevotes(ctx sdk.Context, req abci.RequestQuery, keeper Keeper) ([]byte, error) {
-	var params types.QueryPrevotesParams
-	err := keeper.cdc.UnmarshalJSON(req.Data, &params)
-	if err != nil {
-		return nil, sdkerrors.Wrap(sdkerrors.ErrJSONUnmarshal, err.Error())
-	}
-
-	filteredPrevotes := types.ExchangeRatePrevotes{}
-
-	// collects all prevotes without filter
-	prefix := types.PrevoteKey
-	handler := func(prevote types.ExchangeRatePrevote) (stop bool) {
-		filteredPrevotes = append(filteredPrevotes, prevote)
-		return false
-	}
-
-	// applies filter
-	if len(params.Denom) != 0 && !params.Voter.Empty() {
-		prefix = types.GetExchangeRatePrevoteKey(params.Denom, params.Voter)
-	} else if len(params.Denom) != 0 {
-		prefix = types.GetExchangeRatePrevoteKey(params.Denom, sdk.ValAddress{})
-	} else if !params.Voter.Empty() {
-		handler = func(prevote types.ExchangeRatePrevote) (stop bool) {
-
-			if prevote.Voter.Equals(params.Voter) {
-				filteredPrevotes = append(filteredPrevotes, prevote)
-			}
-
-			return false
-		}
-	}
-
-	keeper.iterateExchangeRatePrevotesWithPrefix(ctx, prefix, handler)
-
-	bz, err := codec.MarshalJSONIndent(keeper.cdc, filteredPrevotes)
-	if err != nil {
-		return nil, sdkerrors.Wrap(sdkerrors.ErrJSONMarshal, err.Error())
-	}
 	return bz, nil
 }
 
 func queryParameters(ctx sdk.Context, keeper Keeper) ([]byte, error) {
-	bz, err := codec.MarshalJSONIndent(keeper.cdc, keeper.GetParams(ctx))
+	bz, err := json.MarshalIndent(keeper.GetParams(ctx), "", "  ")
 	if err != nil {
 		return nil, sdkerrors.Wrap(sdkerrors.ErrJSONMarshal, err.Error())
 	}
@@ -191,13 +105,11 @@ func queryParameters(ctx sdk.Context, keeper Keeper) ([]byte, error) {
 
 func queryFeederDelegation(ctx sdk.Context, req abci.RequestQuery, keeper Keeper) ([]byte, error) {
 	var params types.QueryFeederDelegationParams
-	err := keeper.cdc.UnmarshalJSON(req.Data, &params)
-	if err != nil {
+	if err := json.Unmarshal(req.Data, &params); err != nil {
 		return nil, sdkerrors.Wrap(sdkerrors.ErrJSONUnmarshal, err.Error())
 	}
 
-	delegate := keeper.GetOracleDelegate(ctx, params.Validator)
-	bz, err := codec.MarshalJSONIndent(keeper.cdc, delegate)
+	bz, err := json.MarshalIndent(keeper.GetOracleDelegate(ctx, params.Validator), "", "  ")
 	if err != nil {
 		return nil, sdkerrors.Wrap(sdkerrors.ErrJSONMarshal, err.Error())
 	}
@@ -206,13 +118,11 @@ func queryFeederDelegation(ctx sdk.Context, req abci.RequestQuery, keeper Keeper
 
 func queryMissCounter(ctx sdk.Context, req abci.RequestQuery, keeper Keeper) ([]byte, error) {
 	var params types.QueryMissCounterParams
-	err := keeper.cdc.UnmarshalJSON(req.Data, &params)
-	if err != nil {
+	if err := json.Unmarshal(req.Data, &params); err != nil {
 		return nil, sdkerrors.Wrap(sdkerrors.ErrJSONUnmarshal, err.Error())
 	}
 
-	missCounter := keeper.GetMissCounter(ctx, params.Validator)
-	bz, err := codec.MarshalJSONIndent(keeper.cdc, missCounter)
+	bz, err := json.MarshalIndent(keeper.GetMissCounter(ctx, params.Validator), "", "  ")
 	if err != nil {
 		return nil, sdkerrors.Wrap(sdkerrors.ErrJSONMarshal, err.Error())
 	}
@@ -221,8 +131,7 @@ func queryMissCounter(ctx sdk.Context, req abci.RequestQuery, keeper Keeper) ([]
 
 func queryAggregatePrevote(ctx sdk.Context, req abci.RequestQuery, keeper Keeper) ([]byte, error) {
 	var params types.QueryAggregatePrevoteParams
-	err := keeper.cdc.UnmarshalJSON(req.Data, &params)
-	if err != nil {
+	if err := json.Unmarshal(req.Data, &params); err != nil {
 		return nil, sdkerrors.Wrap(sdkerrors.ErrJSONUnmarshal, err.Error())
 	}
 
@@ -231,7 +140,7 @@ func queryAggregatePrevote(ctx sdk.Context, req abci.RequestQuery, keeper Keeper
 		return nil, err
 	}
 
-	bz, err := codec.MarshalJSONIndent(keeper.cdc, aggregateExchangeRatePrevote)
+	bz, err := json.MarshalIndent(aggregateExchangeRatePrevote, "", "  ")
 	if err != nil {
 		return nil, sdkerrors.Wrap(sdkerrors.ErrJSONMarshal, err.Error())
 	}
@@ -240,8 +149,7 @@ func queryAggregatePrevote(ctx sdk.Context, req abci.RequestQuery, keeper Keeper
 
 func queryAggregateVote(ctx sdk.Context, req abci.RequestQuery, keeper Keeper) ([]byte, error) {
 	var params types.QueryAggregateVoteParams
-	err := keeper.cdc.UnmarshalJSON(req.Data, &params)
-	if err != nil {
+	if err := json.Unmarshal(req.Data, &params); err != nil {
 		return nil, sdkerrors.Wrap(sdkerrors.ErrJSONUnmarshal, err.Error())
 	}
 
@@ -250,7 +158,7 @@ func queryAggregateVote(ctx sdk.Context, req abci.RequestQuery, keeper Keeper) (
 		return nil, err
 	}
 
-	bz, err := codec.MarshalJSONIndent(keeper.cdc, aggregateExchangeRateVote)
+	bz, err := json.MarshalIndent(aggregateExchangeRateVote, "", "  ")
 	if err != nil {
 		return nil, sdkerrors.Wrap(sdkerrors.ErrJSONMarshal, err.Error())
 	}
@@ -258,8 +166,7 @@ func queryAggregateVote(ctx sdk.Context, req abci.RequestQuery, keeper Keeper) (
 }
 
 func queryVoteTargets(ctx sdk.Context, keeper Keeper) ([]byte, error) {
-	voteTargets := keeper.GetVoteTargets(ctx)
-	bz, err := codec.MarshalJSONIndent(keeper.cdc, voteTargets)
+	bz, err := json.MarshalIndent(keeper.GetVoteTargets(ctx), "", "  ")
 	if err != nil {
 		return nil, sdkerrors.Wrap(sdkerrors.ErrJSONMarshal, err.Error())
 	}
@@ -279,7 +186,7 @@ func queryTobinTax(ctx sdk.Context, req abci.RequestQuery, keeper Keeper) ([]byt
 		return nil, err
 	}
 
-	bz, err2 := codec.MarshalJSONIndent(keeper.cdc, tobinTax)
+	bz, err2 := json.MarshalIndent(tobinTax, "", "  ")
 	if err2 != nil {
 		return nil, sdkerrors.Wrap(sdkerrors.ErrJSONMarshal, err.Error())
 	}
@@ -288,14 +195,14 @@ func queryTobinTax(ctx sdk.Context, req abci.RequestQuery, keeper Keeper) ([]byt
 }
 
 func queryTobinTaxes(ctx sdk.Context, keeper Keeper) ([]byte, error) {
-	var denoms types.DenomList
+	var denoms []*types.Denom
 
 	keeper.IterateTobinTaxes(ctx, func(denom string, tobinTax sdk.Dec) (stop bool) {
-		denoms = append(denoms, types.Denom{Name: denom, TobinTax: tobinTax})
+		denoms = append(denoms, &types.Denom{Name: denom, TobinTax: tobinTax})
 		return false
 	})
 
-	bz, err := codec.MarshalJSONIndent(keeper.cdc, denoms)
+	bz, err := json.MarshalIndent(denoms, "", "  ")
 	if err != nil {
 		return nil, sdkerrors.Wrap(sdkerrors.ErrJSONMarshal, err.Error())
 	}

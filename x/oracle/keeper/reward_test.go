@@ -29,12 +29,13 @@ func TestRewardBallotWinners(t *testing.T) {
 	staking.EndBlocker(ctx, input.StakingKeeper)
 
 	require.Equal(
-		t, input.BankKeeper.GetCoins(ctx, sdk.AccAddress(addr)),
+		t, input.BankKeeper.GetAllBalances(ctx, sdk.AccAddress(addr)),
 		sdk.NewCoins(sdk.NewCoin(input.StakingKeeper.GetParams(ctx).BondDenom, InitTokens.Sub(amt))),
 	)
 	require.Equal(t, amt, input.StakingKeeper.Validator(ctx, addr).GetBondedTokens())
 	require.Equal(
-		t, input.BankKeeper.GetCoins(ctx, sdk.AccAddress(addr1)),
+
+		t, input.BankKeeper.GetAllBalances(ctx, sdk.AccAddress(addr1)),
 		sdk.NewCoins(sdk.NewCoin(input.StakingKeeper.GetParams(ctx).BondDenom, InitTokens.Sub(amt))),
 	)
 	require.Equal(t, amt, input.StakingKeeper.Validator(ctx, addr1).GetBondedTokens())
@@ -49,20 +50,19 @@ func TestRewardBallotWinners(t *testing.T) {
 
 	// Prepare reward pool
 	givingAmt := sdk.NewCoins(sdk.NewInt64Coin(types.MicroLunaDenom, 30000000))
-	acc := input.SupplyKeeper.GetModuleAccount(ctx, types.ModuleName)
-	err = acc.SetCoins(givingAmt)
-	require.NoError(t, err)
-	input.SupplyKeeper.SetModuleAccount(ctx, acc)
+	acc := input.AccKeeper.GetModuleAccount(ctx, types.ModuleName)
+	require.NoError(t, input.BankKeeper.SetBalances(input.Ctx, acc.GetAddress(), givingAmt))
+	input.AccKeeper.SetModuleAccount(ctx, acc)
 
 	votePeriodsPerWindow := sdk.NewDec(input.OracleKeeper.RewardDistributionWindow(input.Ctx)).QuoInt64(input.OracleKeeper.VotePeriod(input.Ctx)).TruncateInt64()
 	input.OracleKeeper.RewardBallotWinners(ctx, claims)
 	outstandingRewardsDec := input.DistrKeeper.GetValidatorOutstandingRewards(ctx, addr)
-	outstandingRewards, _ := outstandingRewardsDec.TruncateDecimal()
+	outstandingRewards, _ := outstandingRewardsDec.GetRewards().TruncateDecimal()
 	require.Equal(t, sdk.NewDecFromInt(givingAmt.AmountOf(types.MicroLunaDenom)).QuoInt64(votePeriodsPerWindow).QuoInt64(3).TruncateInt(),
 		outstandingRewards.AmountOf(types.MicroLunaDenom))
 
 	outstandingRewardsDec1 := input.DistrKeeper.GetValidatorOutstandingRewards(ctx, addr1)
-	outstandingRewards1, _ := outstandingRewardsDec1.TruncateDecimal()
+	outstandingRewards1, _ := outstandingRewardsDec1.GetRewards().TruncateDecimal()
 	require.Equal(t, sdk.NewDecFromInt(givingAmt.AmountOf(types.MicroLunaDenom)).QuoInt64(votePeriodsPerWindow).QuoInt64(3).MulInt64(2).TruncateInt(),
 		outstandingRewards1.AmountOf(types.MicroLunaDenom))
 }

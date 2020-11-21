@@ -11,143 +11,6 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
-func TestPrevoteAddDelete(t *testing.T) {
-	input := CreateTestInput(t)
-
-	hash := types.GetVoteHash("salt", sdk.NewDec(123), "foo", sdk.ValAddress(Addrs[0]))
-	prevote := types.NewExchangeRatePrevote(hash, types.MicroSDRDenom, sdk.ValAddress(Addrs[0]), 0)
-	input.OracleKeeper.AddExchangeRatePrevote(input.Ctx, prevote)
-
-	KPrevote, err := input.OracleKeeper.GetExchangeRatePrevote(input.Ctx, types.MicroSDRDenom, sdk.ValAddress(Addrs[0]))
-	require.NoError(t, err)
-	require.Equal(t, prevote, KPrevote)
-
-	input.OracleKeeper.DeleteExchangeRatePrevote(input.Ctx, prevote)
-	_, err = input.OracleKeeper.GetExchangeRatePrevote(input.Ctx, types.MicroSDRDenom, sdk.ValAddress(Addrs[0]))
-	require.Error(t, err)
-}
-
-func TestPrevoteIterate(t *testing.T) {
-	input := CreateTestInput(t)
-
-	hash := types.GetVoteHash("salt", sdk.NewDec(123), "foo", sdk.ValAddress(Addrs[0]))
-	prevote1 := types.NewExchangeRatePrevote(hash, types.MicroSDRDenom, sdk.ValAddress(Addrs[0]), 0)
-	input.OracleKeeper.AddExchangeRatePrevote(input.Ctx, prevote1)
-
-	hash2 := types.GetVoteHash("salt", sdk.NewDec(123), "foo", sdk.ValAddress(Addrs[1]))
-	prevote2 := types.NewExchangeRatePrevote(hash2, types.MicroSDRDenom, sdk.ValAddress(Addrs[1]), 0)
-	input.OracleKeeper.AddExchangeRatePrevote(input.Ctx, prevote2)
-
-	i := 0
-	bigger := bytes.Compare(Addrs[0], Addrs[1])
-	input.OracleKeeper.IterateExchangeRatePrevotes(input.Ctx, func(p types.ExchangeRatePrevote) (stop bool) {
-		if (i == 0 && bigger == -1) || (i == 1 && bigger == 1) {
-			require.Equal(t, prevote1, p)
-		} else {
-			require.Equal(t, prevote2, p)
-		}
-
-		i++
-		return false
-	})
-
-	hash3 := types.GetVoteHash("salt", sdk.NewDec(123), "foo", sdk.ValAddress(Addrs[2]))
-	prevote3 := types.NewExchangeRatePrevote(hash3, types.MicroLunaDenom, sdk.ValAddress(Addrs[2]), 0)
-	input.OracleKeeper.AddExchangeRatePrevote(input.Ctx, prevote3)
-
-	input.OracleKeeper.iterateExchangeRatePrevotesWithPrefix(input.Ctx, types.GetExchangeRatePrevoteKey(types.MicroLunaDenom, sdk.ValAddress{}), func(p types.ExchangeRatePrevote) (stop bool) {
-		require.Equal(t, prevote3, p)
-		return false
-	})
-}
-
-func TestVoteAddDelete(t *testing.T) {
-	input := CreateTestInput(t)
-
-	rate := sdk.NewDec(1700)
-	vote := types.NewExchangeRateVote(rate, types.MicroSDRDenom, sdk.ValAddress(Addrs[0]))
-	input.OracleKeeper.AddExchangeRateVote(input.Ctx, vote)
-
-	KVote, err := input.OracleKeeper.getExchangeRateVote(input.Ctx, types.MicroSDRDenom, sdk.ValAddress(Addrs[0]))
-	require.NoError(t, err)
-	require.Equal(t, vote, KVote)
-
-	input.OracleKeeper.DeleteExchangeRateVote(input.Ctx, vote)
-	_, err = input.OracleKeeper.getExchangeRateVote(input.Ctx, types.MicroSDRDenom, sdk.ValAddress(Addrs[0]))
-	require.Error(t, err)
-}
-
-func TestVoteIterate(t *testing.T) {
-	input := CreateTestInput(t)
-
-	rate := sdk.NewDec(1700)
-	vote1 := types.NewExchangeRateVote(rate, types.MicroSDRDenom, sdk.ValAddress(Addrs[0]))
-	input.OracleKeeper.AddExchangeRateVote(input.Ctx, vote1)
-
-	vote2 := types.NewExchangeRateVote(rate, types.MicroSDRDenom, sdk.ValAddress(Addrs[1]))
-	input.OracleKeeper.AddExchangeRateVote(input.Ctx, vote2)
-
-	i := 0
-	bigger := bytes.Compare(Addrs[0], Addrs[1])
-	input.OracleKeeper.IterateExchangeRateVotes(input.Ctx, func(p types.ExchangeRateVote) (stop bool) {
-		if (i == 0 && bigger == -1) || (i == 1 && bigger == 1) {
-			require.Equal(t, vote1, p)
-		} else {
-			require.Equal(t, vote2, p)
-		}
-
-		i++
-		return false
-	})
-
-	vote3 := types.NewExchangeRateVote(rate, types.MicroLunaDenom, sdk.ValAddress(Addrs[2]))
-	input.OracleKeeper.AddExchangeRateVote(input.Ctx, vote3)
-
-	input.OracleKeeper.iterateExchangeRateVotesWithPrefix(input.Ctx, types.GetVoteKey(types.MicroLunaDenom, sdk.ValAddress{}), func(p types.ExchangeRateVote) (stop bool) {
-		require.Equal(t, vote3, p)
-		return false
-	})
-}
-
-func TestVoteCollect(t *testing.T) {
-	input := CreateTestInput(t)
-
-	rate := sdk.NewDec(1700)
-	vote1 := types.NewExchangeRateVote(rate, types.MicroSDRDenom, sdk.ValAddress(Addrs[0]))
-	input.OracleKeeper.AddExchangeRateVote(input.Ctx, vote1)
-
-	vote2 := types.NewExchangeRateVote(rate, types.MicroSDRDenom, sdk.ValAddress(Addrs[1]))
-	input.OracleKeeper.AddExchangeRateVote(input.Ctx, vote2)
-
-	vote3 := types.NewExchangeRateVote(rate, types.MicroLunaDenom, sdk.ValAddress(Addrs[0]))
-	input.OracleKeeper.AddExchangeRateVote(input.Ctx, vote3)
-
-	vote4 := types.NewExchangeRateVote(rate, types.MicroLunaDenom, sdk.ValAddress(Addrs[1]))
-	input.OracleKeeper.AddExchangeRateVote(input.Ctx, vote4)
-
-	collectedVotes := input.OracleKeeper.OrganizeBallotByDenom(input.Ctx)
-
-	pb1 := collectedVotes[types.MicroSDRDenom]
-	pb2 := collectedVotes[types.MicroLunaDenom]
-
-	bigger := bytes.Compare(Addrs[0], Addrs[1])
-	for i, v := range pb1 {
-		if (i == 0 && bigger == -1) || (i == 1 && bigger == 1) {
-			require.Equal(t, vote1, v)
-		} else {
-			require.Equal(t, vote2, v)
-		}
-	}
-
-	for i, v := range pb2 {
-		if (i == 0 && bigger == -1) || (i == 1 && bigger == 1) {
-			require.Equal(t, vote3, v)
-		} else {
-			require.Equal(t, vote4, v)
-		}
-	}
-}
-
 func TestExchangeRate(t *testing.T) {
 	input := CreateTestInput(t)
 
@@ -224,13 +87,13 @@ func TestRewardPool(t *testing.T) {
 	input := CreateTestInput(t)
 
 	fees := sdk.NewCoins(sdk.NewCoin(types.MicroSDRDenom, sdk.NewInt(1000)))
-	acc := input.SupplyKeeper.GetModuleAccount(input.Ctx, types.ModuleName)
-	err := acc.SetCoins(fees)
-	if err != nil {
+	acc := input.AccKeeper.GetModuleAccount(input.Ctx, types.ModuleName)
+
+	if err := input.BankKeeper.SetBalances(input.Ctx, acc.GetAddress(), fees); err != nil {
 		panic(err) // nerver occurs
 	}
 
-	input.SupplyKeeper.SetModuleAccount(input.Ctx, acc)
+	input.AccKeeper.SetModuleAccount(input.Ctx, acc)
 
 	KFees := input.OracleKeeper.GetRewardPool(input.Ctx)
 	require.Equal(t, fees, KFees)
@@ -252,13 +115,13 @@ func TestParams(t *testing.T) {
 	slashFraction := sdk.NewDecWithPrec(1, 2)
 	slashWindow := int64(1000)
 	minValidPerWindow := sdk.NewDecWithPrec(1, 4)
-	whitelist := types.DenomList{
+	whitelist := []*types.Denom{
 		{Name: types.MicroSDRDenom, TobinTax: types.DefaultTobinTax},
 		{Name: types.MicroKRWDenom, TobinTax: types.DefaultTobinTax},
 	}
 
 	// Should really test validateParams, but skipping because obvious
-	newParams := types.Params{
+	newParams := &types.Params{
 		VotePeriod:               votePeriod,
 		VoteThreshold:            voteThreshold,
 		RewardBand:               oracleRewardBand,
@@ -380,7 +243,7 @@ func TestAggregatePrevoteIterate(t *testing.T) {
 
 	i := 0
 	bigger := bytes.Compare(Addrs[0], Addrs[1])
-	input.OracleKeeper.IterateAggregateExchangeRatePrevotes(input.Ctx, func(p types.AggregateExchangeRatePrevote) (stop bool) {
+	input.OracleKeeper.IterateAggregateExchangeRatePrevotes(input.Ctx, func(p *types.AggregateExchangeRatePrevote) (stop bool) {
 		if (i == 0 && bigger == -1) || (i == 1 && bigger == 1) {
 			require.Equal(t, aggregatePrevote1, p)
 		} else {
@@ -430,7 +293,7 @@ func TestAggregateVoteIterate(t *testing.T) {
 
 	i := 0
 	bigger := bytes.Compare(Addrs[0], Addrs[1])
-	input.OracleKeeper.IterateAggregateExchangeRateVotes(input.Ctx, func(p types.AggregateExchangeRateVote) (stop bool) {
+	input.OracleKeeper.IterateAggregateExchangeRateVotes(input.Ctx, func(p *types.AggregateExchangeRateVote) (stop bool) {
 		if (i == 0 && bigger == -1) || (i == 1 && bigger == 1) {
 			require.Equal(t, aggregateVote1, p)
 		} else {
