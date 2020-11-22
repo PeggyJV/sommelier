@@ -2,10 +2,11 @@ package oracle
 
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/peggyjv/sommelier/x/oracle/keeper"
 )
 
 // SlashAndResetMissCounters do salsh any operator who over criteria & clear all operators miss counter to zero
-func SlashAndResetMissCounters(ctx sdk.Context, k Keeper) {
+func SlashAndResetMissCounters(ctx sdk.Context, k keeper.Keeper) {
 	height := ctx.BlockHeight()
 	distributionHeight := height - sdk.ValidatorUpdateDelay - 1
 
@@ -22,12 +23,16 @@ func SlashAndResetMissCounters(ctx sdk.Context, k Keeper) {
 		// Penalize the validator whose the valid vote rate is smaller than min threshold
 		if validVoteRate.LT(minValidPerWindow) {
 			validator := k.StakingKeeper.Validator(ctx, operator)
+			consAddr, err := validator.GetConsAddr()
+			if err != nil {
+				panic(err)
+			}
 			if validator.IsBonded() && !validator.IsJailed() {
 				k.StakingKeeper.Slash(
-					ctx, validator.GetConsAddr(),
+					ctx, consAddr,
 					distributionHeight, validator.GetConsensusPower(), slashFraction,
 				)
-				k.StakingKeeper.Jail(ctx, validator.GetConsAddr())
+				k.StakingKeeper.Jail(ctx, consAddr)
 			}
 		}
 

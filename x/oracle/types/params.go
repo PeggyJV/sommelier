@@ -48,6 +48,11 @@ const (
 	MicroUnit = int64(1e6)
 )
 
+// IsPeriodLastBlock returns true if we are at the last block of the period
+func IsPeriodLastBlock(ctx sdk.Context, blocksPerPeriod int64) bool {
+	return (ctx.BlockHeight()+1)%blocksPerPeriod == 0
+}
+
 // Default parameter values
 var (
 	DefaultVoteThreshold = sdk.NewDecWithPrec(50, 2) // 50%

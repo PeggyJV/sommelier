@@ -7,13 +7,12 @@ import (
 	"github.com/peggyjv/sommelier/x/oracle/types"
 
 	"github.com/cosmos/cosmos-sdk/client"
-	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/spf13/cobra"
 )
 
 // GetQueryCmd returns the cli query commands for this module
-func GetQueryCmd(cdc *codec.LegacyAmino) *cobra.Command {
+func GetQueryCmd() *cobra.Command {
 	oracleQueryCmd := &cobra.Command{
 		Use:                        "oracle",
 		Short:                      "Querying commands for the oracle module",
@@ -23,17 +22,15 @@ func GetQueryCmd(cdc *codec.LegacyAmino) *cobra.Command {
 	}
 
 	oracleQueryCmd.AddCommand([]*cobra.Command{
-		GetCmdQueryExchangeRates(cdc),
-		GetCmdQueryVotes(cdc),
-		GetCmdQueryPrevotes(cdc),
-		GetCmdQueryActives(cdc),
-		GetCmdQueryParams(cdc),
-		GetCmdQueryFeederDelegation(cdc),
-		GetCmdQueryMissCounter(cdc),
-		GetCmdQueryAggregatePrevote(cdc),
-		GetCmdQueryAggregateVote(cdc),
-		GetCmdQueryVoteTargets(cdc),
-		GetCmdQueryTobinTaxes(cdc),
+		GetCmdQueryExchangeRates(),
+		GetCmdQueryActives(),
+		GetCmdQueryParams(),
+		GetCmdQueryFeederDelegation(),
+		GetCmdQueryMissCounter(),
+		GetCmdQueryAggregatePrevote(),
+		GetCmdQueryAggregateVote(),
+		GetCmdQueryVoteTargets(),
+		GetCmdQueryTobinTaxes(),
 	}...)
 
 	return oracleQueryCmd
@@ -41,7 +38,7 @@ func GetQueryCmd(cdc *codec.LegacyAmino) *cobra.Command {
 }
 
 // GetCmdQueryExchangeRates implements the query rate command.
-func GetCmdQueryExchangeRates(cdc *codec.LegacyAmino) *cobra.Command {
+func GetCmdQueryExchangeRates() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "exchange-rates [denom]",
 		Args:  cobra.RangeArgs(0, 1),
@@ -70,14 +67,14 @@ $ sommelier query oracle exchange-rates ukrw
 				}
 
 				var rate sdk.DecCoins
-				cdc.MustUnmarshalJSON(res, &rate)
-				return cliCtx.PrintOutput(rate)
+				cliCtx.LegacyAmino.MustUnmarshalJSON(res, &rate)
+				return cliCtx.PrintOutputLegacy(rate)
 			}
 
 			denom := args[0]
 			params := types.NewQueryExchangeRateParams(denom)
 
-			bz, err := cliCtx.Codec.MarshalJSON(params)
+			bz, err := cliCtx.LegacyAmino.MarshalJSON(params)
 			if err != nil {
 				return err
 			}
@@ -88,8 +85,8 @@ $ sommelier query oracle exchange-rates ukrw
 			}
 
 			var rates sdk.Dec
-			cdc.MustUnmarshalJSON(res, &rates)
-			return cliCtx.PrintOutput(rates)
+			cliCtx.LegacyAmino.MustUnmarshalJSON(res, &rates)
+			return cliCtx.PrintOutputLegacy(rates)
 
 		},
 	}
@@ -105,7 +102,7 @@ func (a Denoms) String() string {
 }
 
 // GetCmdQueryActives implements the query actives command.
-func GetCmdQueryActives(cdc *codec.LegacyAmino) *cobra.Command {
+func GetCmdQueryActives() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "actives",
 		Args:  cobra.NoArgs,
@@ -128,120 +125,8 @@ $ sommelier query oracle actives
 			}
 
 			var actives Denoms
-			cdc.MustUnmarshalJSON(res, &actives)
-			return cliCtx.PrintOutput(actives)
-		},
-	}
-
-	return cmd
-}
-
-// GetCmdQueryVotes implements the query vote command.
-func GetCmdQueryVotes(cdc *codec.LegacyAmino) *cobra.Command {
-	cmd := &cobra.Command{
-		Use:   "votes [denom] [validator]",
-		Args:  cobra.RangeArgs(1, 2),
-		Short: "Query outstanding oracle votes, filtered by denom and voter address.",
-		Long: strings.TrimSpace(`
-Query outstanding oracle votes, filtered by denom and voter address.
-
-$ sommelier query oracle votes uusd terravaloper...
-$ sommelier query oracle votes uusd 
-
-returns oracle votes submitted by the validator for the denom uusd 
-`),
-		RunE: func(cmd *cobra.Command, args []string) error {
-			cliCtx := client.GetClientContextFromCmd(cmd)
-			cliCtx, err := client.ReadQueryCommandFlags(cliCtx, cmd.Flags())
-			if err != nil {
-				return err
-			}
-
-			denom := args[0]
-
-			// Check voter address exists, then valids
-			var voterAddress sdk.ValAddress
-			if len(args) >= 2 {
-				bechVoterAddr := args[1]
-
-				var err error
-				voterAddress, err = sdk.ValAddressFromBech32(bechVoterAddr)
-				if err != nil {
-					return err
-				}
-			}
-
-			params := types.NewQueryVotesParams(voterAddress, denom)
-			bz, err := cdc.MarshalJSON(params)
-			if err != nil {
-				return err
-			}
-
-			res, _, err := cliCtx.QueryWithData(fmt.Sprintf("custom/%s/%s", types.QuerierRoute, types.QueryVotes), bz)
-			if err != nil {
-				return err
-			}
-
-			var matchingVotes types.ExchangeRateVotes
-			cdc.MustUnmarshalJSON(res, &matchingVotes)
-
-			return cliCtx.PrintOutput(matchingVotes)
-		},
-	}
-
-	return cmd
-}
-
-// GetCmdQueryPrevotes implements the query prevote command.
-func GetCmdQueryPrevotes(cdc *codec.LegacyAmino) *cobra.Command {
-	cmd := &cobra.Command{
-		Use:   "prevotes [denom] [validator]",
-		Args:  cobra.RangeArgs(1, 2),
-		Short: "Query outstanding oracle prevotes, filtered by denom and voter address.",
-		Long: strings.TrimSpace(`
-Query outstanding oracle prevotes, filtered by denom and voter address.
-
-$ sommelier query oracle prevotes uusd terravaloper...
-$ sommelier query oracle prevotes uusd
-
-returns oracle prevotes submitted by the validator for denom uusd 
-`),
-		RunE: func(cmd *cobra.Command, args []string) error {
-			cliCtx := client.GetClientContextFromCmd(cmd)
-			cliCtx, err := client.ReadQueryCommandFlags(cliCtx, cmd.Flags())
-			if err != nil {
-				return err
-			}
-
-			denom := args[0]
-
-			// Check voter address exists, then valids
-			var voterAddress sdk.ValAddress
-			if len(args) >= 2 {
-				bechVoterAddr := args[1]
-
-				var err error
-				voterAddress, err = sdk.ValAddressFromBech32(bechVoterAddr)
-				if err != nil {
-					return err
-				}
-			}
-
-			params := types.NewQueryPrevotesParams(voterAddress, denom)
-			bz, err := cdc.MarshalJSON(params)
-			if err != nil {
-				return err
-			}
-
-			res, _, err := cliCtx.QueryWithData(fmt.Sprintf("custom/%s/%s", types.QuerierRoute, types.QueryPrevotes), bz)
-			if err != nil {
-				return err
-			}
-
-			var matchingPrevotes types.ExchangeRatePrevotes
-			cdc.MustUnmarshalJSON(res, &matchingPrevotes)
-
-			return cliCtx.PrintOutput(matchingPrevotes)
+			cliCtx.LegacyAmino.MustUnmarshalJSON(res, &actives)
+			return cliCtx.PrintOutputLegacy(actives)
 		},
 	}
 
@@ -249,7 +134,7 @@ returns oracle prevotes submitted by the validator for denom uusd
 }
 
 // GetCmdQueryParams implements the query params command.
-func GetCmdQueryParams(cdc *codec.LegacyAmino) *cobra.Command {
+func GetCmdQueryParams() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "params",
 		Args:  cobra.NoArgs,
@@ -267,8 +152,8 @@ func GetCmdQueryParams(cdc *codec.LegacyAmino) *cobra.Command {
 			}
 
 			var params types.Params
-			cdc.MustUnmarshalJSON(res, &params)
-			return cliCtx.PrintOutput(params)
+			cliCtx.LegacyAmino.MustUnmarshalJSON(res, &params)
+			return cliCtx.PrintOutputLegacy(params)
 		},
 	}
 
@@ -276,7 +161,7 @@ func GetCmdQueryParams(cdc *codec.LegacyAmino) *cobra.Command {
 }
 
 // GetCmdQueryFeederDelegation implements the query feeder delegation command
-func GetCmdQueryFeederDelegation(cdc *codec.LegacyAmino) *cobra.Command {
+func GetCmdQueryFeederDelegation() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "feeder [validator]",
 		Args:  cobra.ExactArgs(1),
@@ -300,7 +185,7 @@ $ sommelier query oracle feeder terravaloper...
 			}
 
 			params := types.NewQueryFeederDelegationParams(validator)
-			bz, err := cdc.MarshalJSON(params)
+			bz, err := cliCtx.LegacyAmino.MarshalJSON(params)
 			if err != nil {
 				return err
 			}
@@ -311,8 +196,8 @@ $ sommelier query oracle feeder terravaloper...
 			}
 
 			var delegate sdk.AccAddress
-			cdc.MustUnmarshalJSON(res, &delegate)
-			return cliCtx.PrintOutput(delegate)
+			cliCtx.LegacyAmino.MustUnmarshalJSON(res, &delegate)
+			return cliCtx.PrintOutputLegacy(delegate)
 		},
 	}
 
@@ -320,7 +205,7 @@ $ sommelier query oracle feeder terravaloper...
 }
 
 // GetCmdQueryMissCounter implements the query miss counter of the validator command
-func GetCmdQueryMissCounter(cdc *codec.LegacyAmino) *cobra.Command {
+func GetCmdQueryMissCounter() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "miss [validator]",
 		Args:  cobra.ExactArgs(1),
@@ -344,7 +229,7 @@ $ sommelier query oracle miss terravaloper...
 			}
 
 			params := types.NewQueryMissCounterParams(validator)
-			bz, err := cdc.MarshalJSON(params)
+			bz, err := cliCtx.LegacyAmino.MarshalJSON(params)
 			if err != nil {
 				return err
 			}
@@ -355,8 +240,8 @@ $ sommelier query oracle miss terravaloper...
 			}
 
 			var missCounter int64
-			cdc.MustUnmarshalJSON(res, &missCounter)
-			return cliCtx.PrintOutput(sdk.NewInt(missCounter))
+			cliCtx.LegacyAmino.MustUnmarshalJSON(res, &missCounter)
+			return cliCtx.PrintOutputLegacy(sdk.NewInt(missCounter))
 		},
 	}
 
@@ -364,7 +249,7 @@ $ sommelier query oracle miss terravaloper...
 }
 
 // GetCmdQueryAggregatePrevote implements the query aggregate prevote of the validator command
-func GetCmdQueryAggregatePrevote(cdc *codec.LegacyAmino) *cobra.Command {
+func GetCmdQueryAggregatePrevote() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "aggregate-prevote [validator]",
 		Args:  cobra.ExactArgs(1),
@@ -388,7 +273,7 @@ $ sommelier query oracle aggregate-prevote terravaloper...
 			}
 
 			params := types.NewQueryAggregatePrevoteParams(validator)
-			bz, err := cdc.MarshalJSON(params)
+			bz, err := cliCtx.LegacyAmino.MarshalJSON(params)
 			if err != nil {
 				return err
 			}
@@ -399,8 +284,8 @@ $ sommelier query oracle aggregate-prevote terravaloper...
 			}
 
 			var aggregatePrevote types.AggregateExchangeRatePrevote
-			cdc.MustUnmarshalJSON(res, &aggregatePrevote)
-			return cliCtx.PrintOutput(aggregatePrevote)
+			cliCtx.LegacyAmino.MustUnmarshalJSON(res, &aggregatePrevote)
+			return cliCtx.PrintOutputLegacy(aggregatePrevote)
 		},
 	}
 
@@ -408,7 +293,7 @@ $ sommelier query oracle aggregate-prevote terravaloper...
 }
 
 // GetCmdQueryAggregateVote implements the query aggregate prevote of the validator command
-func GetCmdQueryAggregateVote(cdc *codec.LegacyAmino) *cobra.Command {
+func GetCmdQueryAggregateVote() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "aggregate-vote [validator]",
 		Args:  cobra.ExactArgs(1),
@@ -432,7 +317,7 @@ $ sommelier query oracle aggregate-vote terravaloper...
 			}
 
 			params := types.NewQueryAggregateVoteParams(validator)
-			bz, err := cdc.MarshalJSON(params)
+			bz, err := cliCtx.LegacyAmino.MarshalJSON(params)
 			if err != nil {
 				return err
 			}
@@ -443,8 +328,8 @@ $ sommelier query oracle aggregate-vote terravaloper...
 			}
 
 			var aggregateVote types.AggregateExchangeRateVote
-			cdc.MustUnmarshalJSON(res, &aggregateVote)
-			return cliCtx.PrintOutput(aggregateVote)
+			cliCtx.LegacyAmino.MustUnmarshalJSON(res, &aggregateVote)
+			return cliCtx.PrintOutputLegacy(aggregateVote)
 		},
 	}
 
@@ -452,7 +337,7 @@ $ sommelier query oracle aggregate-vote terravaloper...
 }
 
 // GetCmdQueryVoteTargets implements the query params command.
-func GetCmdQueryVoteTargets(cdc *codec.LegacyAmino) *cobra.Command {
+func GetCmdQueryVoteTargets() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "vote-targets",
 		Args:  cobra.NoArgs,
@@ -470,8 +355,8 @@ func GetCmdQueryVoteTargets(cdc *codec.LegacyAmino) *cobra.Command {
 			}
 
 			var voteTargets Denoms
-			cdc.MustUnmarshalJSON(res, &voteTargets)
-			return cliCtx.PrintOutput(voteTargets)
+			cliCtx.LegacyAmino.MustUnmarshalJSON(res, &voteTargets)
+			return cliCtx.PrintOutputLegacy(voteTargets)
 		},
 	}
 
@@ -479,7 +364,7 @@ func GetCmdQueryVoteTargets(cdc *codec.LegacyAmino) *cobra.Command {
 }
 
 // GetCmdQueryTobinTaxes implements the query params command.
-func GetCmdQueryTobinTaxes(cdc *codec.LegacyAmino) *cobra.Command {
+func GetCmdQueryTobinTaxes() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "tobin-taxes [denom]",
 		Args:  cobra.RangeArgs(0, 1),
@@ -508,15 +393,15 @@ Or, can
 					return err
 				}
 
-				var tobinTaxes types.DenomList
-				cdc.MustUnmarshalJSON(res, &tobinTaxes)
-				return cliCtx.PrintOutput(tobinTaxes)
+				var tobinTaxes []*types.Denom
+				cliCtx.LegacyAmino.MustUnmarshalJSON(res, &tobinTaxes)
+				return cliCtx.PrintOutputLegacy(tobinTaxes)
 			}
 
 			denom := args[0]
 			params := types.NewQueryTobinTaxParams(denom)
 
-			bz, err := cliCtx.Codec.MarshalJSON(params)
+			bz, err := cliCtx.LegacyAmino.MarshalJSON(params)
 			if err != nil {
 				return err
 			}
@@ -527,8 +412,8 @@ Or, can
 			}
 
 			var tobinTax sdk.Dec
-			cdc.MustUnmarshalJSON(res, &tobinTax)
-			return cliCtx.PrintOutput(tobinTax)
+			cliCtx.LegacyAmino.MustUnmarshalJSON(res, &tobinTax)
+			return cliCtx.PrintOutputLegacy(tobinTax)
 		},
 	}
 

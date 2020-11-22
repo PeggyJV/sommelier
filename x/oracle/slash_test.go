@@ -5,10 +5,11 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"github.com/peggyjv/sommelier/x/oracle//keeper"
+	"github.com/peggyjv/sommelier/x/oracle/keeper"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/staking"
+	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 )
 
 func TestSlashAndResetMissCounters(t *testing.T) {
@@ -34,7 +35,7 @@ func TestSlashAndResetMissCounters(t *testing.T) {
 
 	// Case 3, slash unbonded validator
 	validator, _ = input.StakingKeeper.GetValidator(input.Ctx, keeper.ValAddrs[0])
-	validator.Status = sdk.Unbonded
+	validator.Status = stakingtypes.Unbonded
 	validator.Jailed = false
 	validator.Tokens = stakingAmt
 	input.StakingKeeper.SetValidator(input.Ctx, validator)
@@ -47,7 +48,7 @@ func TestSlashAndResetMissCounters(t *testing.T) {
 
 	// Case 4, slash jailed validator
 	validator, _ = input.StakingKeeper.GetValidator(input.Ctx, keeper.ValAddrs[0])
-	validator.Status = sdk.Bonded
+	validator.Status = stakingtypes.Bonded
 	validator.Jailed = true
 	validator.Tokens = stakingAmt
 	input.StakingKeeper.SetValidator(input.Ctx, validator)

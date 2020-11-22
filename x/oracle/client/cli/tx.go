@@ -9,16 +9,14 @@ import (
 	"github.com/peggyjv/sommelier/x/oracle/types"
 
 	"github.com/cosmos/cosmos-sdk/client"
-	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/client/tx"
-	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	"github.com/spf13/cobra"
 )
 
 // GetTxCmd returns the transaction commands for this module
-func GetTxCmd(cdc *codec.Codec) *cobra.Command {
+func GetTxCmd() *cobra.Command {
 	oracleTxCmd := &cobra.Command{
 		Use:                        "oracle",
 		Short:                      "Oracle transaction subcommands",
@@ -27,144 +25,17 @@ func GetTxCmd(cdc *codec.Codec) *cobra.Command {
 		RunE:                       client.ValidateCmd,
 	}
 
-	oracleTxCmd.AddCommand(flags.PostCommands(
-		GetCmdExchangeRatePrevote(cdc),
-		GetCmdExchangeRateVote(cdc),
-		GetCmdDelegateFeederPermission(cdc),
-		GetCmdAggregateExchangeRatePrevote(cdc),
-		GetCmdAggregateExchangeRateVote(cdc),
-	)...)
+	oracleTxCmd.AddCommand([]*cobra.Command{
+		GetCmdDelegateFeederPermission(),
+		GetCmdAggregateExchangeRatePrevote(),
+		GetCmdAggregateExchangeRateVote(),
+	}...)
 
 	return oracleTxCmd
 }
 
-// GetCmdExchangeRatePrevote will create a exchangeRatePrevote tx and sign it with the given key.
-func GetCmdExchangeRatePrevote(cdc *codec.Codec) *cobra.Command {
-	cmd := &cobra.Command{
-		Use:   "prevote [salt] [exchange-rate] [validator]",
-		Args:  cobra.RangeArgs(2, 3),
-		Short: "Submit an oracle prevote for the exchange rate of Luna",
-		Long: strings.TrimSpace(`
-Submit an oracle prevote for the exchange rate of Luna denominated in the input denom.
-The purpose of prevote is to hide exchange rate vote with hash which is formatted 
-as hex string in SHA256("{salt}:{exchange_rate}:{denom}:{voter}")
-
-# Prevote
-$ terracli tx oracle prevote 1234 8888.0ukrw
-
-where "ukrw" is the denominating currency, and "8888.0" is the exchange rate of micro Luna in micro KRW from the voter's point of view.
-
-If voting from a voting delegate, set "validator" to the address of the validator to vote on behalf of:
-$ terracli tx oracle prevote 1234 8888.0ukrw terravaloper1...
-`),
-		RunE: func(cmd *cobra.Command, args []string) error {
-			cliCtx := client.GetClientContextFromCmd(cmd)
-			cliCtx, err := client.ReadTxCommandFlags(cliCtx, cmd.Flags())
-			if err != nil {
-				return err
-			}
-
-			salt := args[0]
-			rate, err := sdk.ParseDecCoin(args[1])
-			if err != nil {
-				return fmt.Errorf("given exchange_rate {%s} is not a valid format; exchange_rate should be formatted as DecCoin; %s", rate, err.Error())
-			}
-
-			// Get from address
-			voter := cliCtx.GetFromAddress()
-			denom := rate.Denom
-			amount := rate.Amount
-
-			// By default the voter is voting on behalf of itself
-			validator := sdk.ValAddress(voter)
-
-			// Override validator if validator is given
-			if len(args) == 3 {
-				parsedVal, err := sdk.ValAddressFromBech32(args[2])
-				if err != nil {
-					return errors.Wrap(err, "validator address is invalid")
-				}
-				validator = parsedVal
-			}
-
-			hash := types.GetVoteHash(salt, amount, denom, validator)
-
-			msg := types.NewMsgExchangeRatePrevote(hash, denom, voter, validator)
-			err = msg.ValidateBasic()
-			if err != nil {
-				return err
-			}
-
-			return tx.GenerateOrBroadcastTxCLI(cliCtx, txBldr, []sdk.Msg{msg})
-		},
-	}
-
-	return cmd
-}
-
-// GetCmdExchangeRateVote will create a exchangeRateVote tx and sign it with the given key.
-func GetCmdExchangeRateVote(cdc *codec.Codec) *cobra.Command {
-	cmd := &cobra.Command{
-		Use:   "vote [salt] [exchange-rate] [validator]",
-		Args:  cobra.RangeArgs(2, 3),
-		Short: "Submit an oracle vote for the exchange_rate of Luna",
-		Long: strings.TrimSpace(`
-Submit a vote for the exchange_rate of Luna w.r.t the input denom. Companion to a prevote submitted in the previous vote period. 
-
-$ terracli tx oracle vote 1234 8890.0ukrw
-
-where "ukrw" is the denominating currency, and "8890.0" is the exchange rate of micro Luna in micro KRW from the voter's point of view.
-
-"salt" should match the salt used to generate the SHA256 hex in the aggregated pre-vote. 
-
-If voting from a voting delegate, set "validator" to the address of the validator to vote on behalf of:
-$ terracli tx oracle vote 1234 8890.0ukrw terravaloper1....
-`),
-		RunE: func(cmd *cobra.Command, args []string) error {
-			cliCtx := client.GetClientContextFromCmd(cmd)
-			cliCtx, err := client.ReadTxCommandFlags(cliCtx, cmd.Flags())
-			if err != nil {
-				return err
-			}
-
-			salt := args[0]
-			rate, err := sdk.ParseDecCoin(args[1])
-			if err != nil {
-				return fmt.Errorf("given exchange_rate {%s} is not a valid format; exchange_rate should be formatted as DecCoin; %s", rate, err.Error())
-			}
-
-			// Get from address
-			voter := cliCtx.GetFromAddress()
-			denom := rate.Denom
-			amount := rate.Amount
-
-			// By default the voter is voting on behalf of itself
-			validator := sdk.ValAddress(voter)
-
-			// Override validator if validator is given
-			if len(args) == 3 {
-				parsedVal, err := sdk.ValAddressFromBech32(args[2])
-				if err != nil {
-					return errors.Wrap(err, "validator address is invalid")
-				}
-				validator = parsedVal
-			}
-
-			msg := types.NewMsgExchangeRateVote(amount, salt, denom, voter, validator)
-			err = msg.ValidateBasic()
-			if err != nil {
-				return err
-			}
-
-			return tx.GenerateOrBroadcastTxCLI(cliCtx, txBldr, []sdk.Msg{msg})
-		},
-	}
-
-	return cmd
-}
-
 // GetCmdDelegateFeederPermission will create a feeder permission delegation tx and sign it with the given key.
-func GetCmdDelegateFeederPermission(cdc *codec.Codec) *cobra.Command {
+func GetCmdDelegateFeederPermission() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "set-feeder [feeder]",
 		Args:  cobra.ExactArgs(1),
@@ -203,7 +74,7 @@ where "terra1..." is the address you want to delegate your voting rights to.
 				return err
 			}
 
-			return tx.GenerateOrBroadcastTxCLI(cliCtx, txBldr, []sdk.Msg{msg})
+			return tx.GenerateOrBroadcastTxCLI(cliCtx, cmd.Flags(), &msg)
 		},
 	}
 
@@ -211,7 +82,7 @@ where "terra1..." is the address you want to delegate your voting rights to.
 }
 
 // GetCmdAggregateExchangeRatePrevote will create a aggregateExchangeRatePrevote tx and sign it with the given key.
-func GetCmdAggregateExchangeRatePrevote(cdc *codec.Codec) *cobra.Command {
+func GetCmdAggregateExchangeRatePrevote() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "aggregate-prevote [salt] [exchange-rates] [validator]",
 		Args:  cobra.RangeArgs(2, 3),
@@ -266,7 +137,7 @@ $ terracli tx oracle aggregate-prevote 1234 8888.0ukrw,1.243uusd,0.99usdr terrav
 				return err
 			}
 
-			return tx.GenerateOrBroadcastTxCLI(cliCtx, txBldr, []sdk.Msg{msg})
+			return tx.GenerateOrBroadcastTxCLI(cliCtx, cmd.Flags(), &msg)
 		},
 	}
 
@@ -274,7 +145,7 @@ $ terracli tx oracle aggregate-prevote 1234 8888.0ukrw,1.243uusd,0.99usdr terrav
 }
 
 // GetCmdAggregateExchangeRateVote will create a aggregateExchangeRateVote tx and sign it with the given key.
-func GetCmdAggregateExchangeRateVote(cdc *codec.Codec) *cobra.Command {
+func GetCmdAggregateExchangeRateVote() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "aggregate-vote [salt] [exchange-rates] [validator]",
 		Args:  cobra.RangeArgs(2, 3),
@@ -326,7 +197,7 @@ $ terracli tx oracle aggregate-vote 1234 8888.0ukrw,1.243uusd,0.99usdr terravalo
 				return err
 			}
 
-			return tx.GenerateOrBroadcastTxCLI(cliCtx, txBldr, []sdk.Msg{msg})
+			return tx.GenerateOrBroadcastTxCLI(cliCtx, cmd.Flags(), &msg)
 		},
 	}
 

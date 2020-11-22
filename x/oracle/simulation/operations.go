@@ -10,10 +10,12 @@ import (
 	"github.com/cosmos/cosmos-sdk/simapp/helpers"
 	simappparams "github.com/cosmos/cosmos-sdk/simapp/params"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 	authkeeper "github.com/cosmos/cosmos-sdk/x/auth/keeper"
+	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
 	"github.com/cosmos/cosmos-sdk/x/simulation"
 
-	"github.com/peggyjv/sommelier/x/oracle//keeper"
+	"github.com/peggyjv/sommelier/x/oracle/keeper"
 	"github.com/peggyjv/sommelier/x/oracle/types"
 	core "github.com/peggyjv/sommelier/x/oracle/types"
 )
@@ -34,9 +36,10 @@ var (
 
 // WeightedOperations returns all the operations from the module with their respective weights
 func WeightedOperations(
-	appParams simulation.AppParams,
-	cdc *codec.Codec,
+	appParams simtypes.AppParams,
+	cdc codec.JSONMarshaler,
 	ak authkeeper.AccountKeeper,
+	bk bankkeeper.BaseKeeper,
 	k keeper.Keeper) simulation.WeightedOperations {
 	var (
 		weightMsgExchangeRatePrevote int
@@ -62,146 +65,24 @@ func WeightedOperations(
 	)
 
 	return simulation.WeightedOperations{
-		simulation.NewWeightedOperation(
-			weightMsgExchangeRatePrevote,
-			SimulateMsgExchangeRatePrevote(ak, k),
-		),
-		simulation.NewWeightedOperation(
-			weightMsgExchangeRateVote,
-			SimulateMsgExchangeRateVote(ak, k),
-		),
+		// TODO: simulate aggregatePrevote
+		// TODO: simulate aggregateVote
 		simulation.NewWeightedOperation(
 			weightMsgDelegateFeedConsent,
-			SimulateMsgDelegateFeedConsent(ak, k),
+			SimulateMsgDelegateFeedConsent(ak, bk, k, cdc),
 		),
-	}
-}
-
-// SimulateMsgExchangeRatePrevote generates a MsgExchangeRatePrevote with random values.
-// nolint: funlen
-func SimulateMsgExchangeRatePrevote(ak authkeeper.AccountKeeper, k keeper.Keeper) simulation.Operation {
-	return func(
-		r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accs []simulation.Account, chainID string,
-	) (simulation.OperationMsg, []simulation.FutureOperation, error) {
-
-		simAccount, _ := simulation.RandomAcc(r, accs)
-		address := sdk.ValAddress(simAccount.Address)
-
-		// ensure the validator exists
-		val := k.StakingKeeper.Validator(ctx, address)
-		if val == nil {
-			return simulation.NoOpMsg(types.ModuleName), nil, nil
-		}
-
-		denom := whitelist[simulation.RandIntBetween(r, 0, len(whitelist))]
-		price := sdk.NewDecWithPrec(int64(simulation.RandIntBetween(r, 1, 10000)), int64(1))
-		voteHash := types.GetVoteHash(salt, price, denom, address)
-
-		feederAddr := k.GetOracleDelegate(ctx, address)
-		feederSimAccount, _ := simulation.FindAccount(accs, feederAddr)
-		feederAccount := ak.GetAccount(ctx, feederAddr)
-
-		fees, err := simulation.RandomFees(r, ctx, feederAccount.SpendableCoins(ctx.BlockTime()))
-		if err != nil {
-			return simulation.NoOpMsg(types.ModuleName), nil, err
-		}
-
-		msg := types.NewMsgExchangeRatePrevote(voteHash, denom, feederAddr, address)
-
-		tx := helpers.GenTx(
-			[]sdk.Msg{msg},
-			fees,
-			helpers.DefaultGenTxGas,
-			chainID,
-			[]uint64{feederAccount.GetAccountNumber()},
-			[]uint64{feederAccount.GetSequence()},
-			feederSimAccount.PrivKey,
-		)
-
-		_, _, err = app.Deliver(tx)
-		if err != nil {
-			return simulation.NoOpMsg(types.ModuleName), nil, err
-		}
-
-		voteHashMap[denom+address.String()] = price
-
-		return simulation.NewOperationMsg(msg, true, ""), nil, nil
-	}
-}
-
-// SimulateMsgExchangeRateVote generates a MsgExchangeRateVote with random values.
-// nolint: funlen
-func SimulateMsgExchangeRateVote(ak authkeeper.AccountKeeper, k keeper.Keeper) simulation.Operation {
-	return func(
-		r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accs []simulation.Account, chainID string,
-	) (simulation.OperationMsg, []simulation.FutureOperation, error) {
-
-		simAccount, _ := simulation.RandomAcc(r, accs)
-		address := sdk.ValAddress(simAccount.Address)
-
-		// ensure the validator exists
-		val := k.StakingKeeper.Validator(ctx, address)
-		if val == nil {
-			return simulation.NoOpMsg(types.ModuleName), nil, nil
-		}
-
-		// ensure vote hash exists
-		denom := whitelist[simulation.RandIntBetween(r, 0, len(whitelist))]
-		price, ok := voteHashMap[denom+address.String()]
-		if !ok {
-			return simulation.NoOpMsg(types.ModuleName), nil, nil
-		}
-
-		// get prevote
-		prevote, err := k.GetExchangeRatePrevote(ctx, denom, address)
-		if err != nil {
-			return simulation.NoOpMsg(types.ModuleName), nil, nil
-		}
-
-		params := k.GetParams(ctx)
-		if (ctx.BlockHeight()/params.VotePeriod)-(prevote.SubmitBlock/params.VotePeriod) != 1 {
-			return simulation.NoOpMsg(types.ModuleName), nil, nil
-		}
-
-		feederAddr := k.GetOracleDelegate(ctx, address)
-		feederSimAccount, _ := simulation.FindAccount(accs, feederAddr)
-		feederAccount := ak.GetAccount(ctx, feederAddr)
-
-		fees, err := simulation.RandomFees(r, ctx, feederAccount.SpendableCoins(ctx.BlockTime()))
-		if err != nil {
-			return simulation.NoOpMsg(types.ModuleName), nil, err
-		}
-
-		msg := types.NewMsgExchangeRateVote(price, salt, denom, feederAddr, address)
-
-		tx := helpers.GenTx(
-			[]sdk.Msg{msg},
-			fees,
-			helpers.DefaultGenTxGas,
-			chainID,
-			[]uint64{feederAccount.GetAccountNumber()},
-			[]uint64{feederAccount.GetSequence()},
-			feederSimAccount.PrivKey,
-		)
-
-		_, _, err = app.Deliver(tx)
-		if err != nil {
-			return simulation.NoOpMsg(types.ModuleName), nil, err
-		}
-
-		return simulation.NewOperationMsg(msg, true, ""), nil, nil
 	}
 }
 
 // SimulateMsgDelegateFeedConsent generates a MsgDelegateFeedConsent with random values.
 // nolint: funlen
-func SimulateMsgDelegateFeedConsent(ak authkeeper.AccountKeeper, k keeper.Keeper) simulation.Operation {
+func SimulateMsgDelegateFeedConsent(ak authkeeper.AccountKeeper, bk bankkeeper.BaseKeeper, k keeper.Keeper, cdc codec.JSONMarshaler) simtypes.Operation {
 	return func(
-		r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accs []simulation.Account, chainID string,
-	) (simulation.OperationMsg, []simulation.FutureOperation, error) {
-
-		simAccount, _ := simulation.RandomAcc(r, accs)
-		delegateAccount, _ := simulation.RandomAcc(r, accs)
+		r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accs []simtypes.Account, chainID string,
+	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
+		txcfg := keeper.TestTxConfig()
+		simAccount, _ := simtypes.RandomAcc(r, accs)
+		delegateAccount, _ := simtypes.RandomAcc(r, accs)
 		valAddress := sdk.ValAddress(simAccount.Address)
 		delegateValAddress := sdk.ValAddress(delegateAccount.Address)
 		account := ak.GetAccount(ctx, simAccount.Address)
@@ -209,24 +90,28 @@ func SimulateMsgDelegateFeedConsent(ak authkeeper.AccountKeeper, k keeper.Keeper
 		// ensure the validator exists
 		val := k.StakingKeeper.Validator(ctx, valAddress)
 		if val == nil {
-			return simulation.NoOpMsg(types.ModuleName), nil, nil
+			// TODO: maybe this needs to be something else?
+			return simtypes.NoOpMsg(types.ModuleName, "", ""), nil, nil
 		}
 
 		// ensure the target address is not a validator
 		val2 := k.StakingKeeper.Validator(ctx, delegateValAddress)
 		if val2 != nil {
-			return simulation.NoOpMsg(types.ModuleName), nil, nil
+			// TODO: maybe this needs to be something else?
+			return simtypes.NoOpMsg(types.ModuleName, "", ""), nil, nil
 		}
-
-		fees, err := simulation.RandomFees(r, ctx, account.SpendableCoins(ctx.BlockTime()))
+		fees, err := simtypes.RandomFees(r, ctx, bk.SpendableCoins(ctx, account.GetAddress()))
 		if err != nil {
-			return simulation.NoOpMsg(types.ModuleName), nil, err
+			// TODO: maybe this needs to be something else?
+			return simtypes.NoOpMsg(types.ModuleName, "", ""), nil, err
 		}
 
 		msg := types.NewMsgDelegateFeedConsent(valAddress, delegateAccount.Address)
 
-		tx := helpers.GenTx(
-			[]sdk.Msg{msg},
+		// TODO: create txConfig
+		tx, err := helpers.GenTx(
+			txcfg,
+			[]sdk.Msg{&msg},
 			fees,
 			helpers.DefaultGenTxGas,
 			chainID,
@@ -234,12 +119,15 @@ func SimulateMsgDelegateFeedConsent(ak authkeeper.AccountKeeper, k keeper.Keeper
 			[]uint64{account.GetSequence()},
 			simAccount.PrivKey,
 		)
-
-		_, _, err = app.Deliver(tx)
 		if err != nil {
-			return simulation.NoOpMsg(types.ModuleName), nil, err
+			return simtypes.NoOpMsg(types.ModuleName, "", ""), nil, err
 		}
 
-		return simulation.NewOperationMsg(msg, true, ""), nil, nil
+		_, _, err = app.Deliver(txcfg.TxEncoder(), tx)
+		if err != nil {
+			return simtypes.NoOpMsg(types.ModuleName, "", ""), nil, err
+		}
+
+		return simtypes.NewOperationMsg(&msg, true, ""), nil, nil
 	}
 }

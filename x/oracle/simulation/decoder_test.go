@@ -1,6 +1,7 @@
 package simulation
 
 import (
+	"encoding/binary"
 	"fmt"
 	"testing"
 
@@ -10,8 +11,13 @@ import (
 	"github.com/tendermint/tendermint/crypto/ed25519"
 
 	"github.com/cosmos/cosmos-sdk/codec"
+	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
+	ccodec "github.com/cosmos/cosmos-sdk/crypto/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-
+	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
+	distrtypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
+	paramsproposal "github.com/cosmos/cosmos-sdk/x/params/types/proposal"
+	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 	"github.com/peggyjv/sommelier/x/oracle/types"
 	core "github.com/peggyjv/sommelier/x/oracle/types"
 )
@@ -22,23 +28,33 @@ var (
 	valAddr    = sdk.ValAddress(delPk.Address())
 )
 
-func makeTestCodec() (cdc *codec.Codec) {
-	cdc = codec.New()
-	sdk.RegisterCodec(cdc)
-	codec.RegisterCrypto(cdc)
-	types.RegisterCodec(cdc)
+func makeTestCodec() (cdc *codec.LegacyAmino) {
+	cdc = codec.NewLegacyAmino()
+	sdk.RegisterLegacyAminoCodec(cdc)
+	ccodec.RegisterCrypto(cdc)
+	types.RegisterLegacyAminoCodec(cdc)
 	return
 }
 
-func TestDecodeDistributionStore(t *testing.T) {
-	cdc := makeTestCodec()
+func newTestMarshaler() codec.ProtoCodecMarshaler {
+	ir := codectypes.NewInterfaceRegistry()
+	types.RegisterInterfaces(ir)
+	authtypes.RegisterInterfaces(ir)
+	sdk.RegisterInterfaces(ir)
+	ccodec.RegisterInterfaces(ir)
+	stakingtypes.RegisterInterfaces(ir)
+	distrtypes.RegisterInterfaces(ir)
+	paramsproposal.RegisterInterfaces(ir)
+	return codec.NewProtoCodec(ir)
+}
 
-	prevote := types.NewExchangeRatePrevote(types.VoteHash([]byte("12345")), core.MicroKRWDenom, valAddr, 123)
-	vote := types.NewExchangeRateVote(sdk.NewDecWithPrec(1234, 1), core.MicroKRWDenom, valAddr)
+func TestDecodeDistributionStore(t *testing.T) {
+	cdc := newTestMarshaler()
+
 	exchangeRate := sdk.NewDecWithPrec(1234, 1)
 	missCounter := 123
 
-	aggregatePrevote := types.NewAggregateExchangeRatePrevote(types.AggregateVoteHash([]byte("12345")), valAddr, 123)
+	aggregatePrevote := types.NewAggregateExchangeRatePrevote([]byte("12345"), valAddr, 123)
 	aggregateVote := types.NewAggregateExchangeRateVote(types.ExchangeRateTuples{
 		{core.MicroKRWDenom, sdk.NewDecWithPrec(1234, 1)},
 		{core.MicroKRWDenom, sdk.NewDecWithPrec(4321, 1)},
@@ -46,24 +62,26 @@ func TestDecodeDistributionStore(t *testing.T) {
 
 	tobinTax := sdk.NewDecWithPrec(2, 2)
 
-	kvPairs := tmkv.Pairs{
-		tmkv.Pair{Key: types.PrevoteKey, Value: cdc.MustMarshalBinaryLengthPrefixed(prevote)},
-		tmkv.Pair{Key: types.VoteKey, Value: cdc.MustMarshalBinaryLengthPrefixed(vote)},
-		tmkv.Pair{Key: types.ExchangeRateKey, Value: cdc.MustMarshalBinaryLengthPrefixed(exchangeRate)},
-		tmkv.Pair{Key: types.FeederDelegationKey, Value: cdc.MustMarshalBinaryLengthPrefixed(feederAddr)},
-		tmkv.Pair{Key: types.MissCounterKey, Value: cdc.MustMarshalBinaryLengthPrefixed(missCounter)},
-		tmkv.Pair{Key: types.AggregateExchangeRatePrevoteKey, Value: cdc.MustMarshalBinaryLengthPrefixed(aggregatePrevote)},
-		tmkv.Pair{Key: types.AggregateExchangeRateVoteKey, Value: cdc.MustMarshalBinaryLengthPrefixed(aggregateVote)},
-		tmkv.Pair{Key: types.TobinTaxKey, Value: cdc.MustMarshalBinaryLengthPrefixed(tobinTax)},
-		tmkv.Pair{Key: []byte{0x99}, Value: []byte{0x99}},
+	marEr, err := exchangeRate.Marshal()
+	require.NoError(t, err)
+	missCounterBz := make([]byte, 8)
+	binary.BigEndian.PutUint64(missCounterBz, uint64(missCounter))
+	marTt, err := tobinTax.Marshal()
+	require.NoError(t, err)
+	kvPairs := []tmkv.Pair{
+		{types.ExchangeRateKey, marEr},
+		{types.FeederDelegationKey, []byte(feederAddr.String())},
+		{types.MissCounterKey, missCounterBz},
+		{types.AggregateExchangeRatePrevoteKey, cdc.MustMarshalBinaryLengthPrefixed(aggregatePrevote)},
+		{types.AggregateExchangeRateVoteKey, cdc.MustMarshalBinaryLengthPrefixed(aggregateVote)},
+		{types.TobinTaxKey, marTt},
+		{[]byte{0x99}, []byte{0x99}},
 	}
 
 	tests := []struct {
 		name        string
 		expectedLog string
 	}{
-		{"Prevote", fmt.Sprintf("%v\n%v", prevote, prevote)},
-		{"Vote", fmt.Sprintf("%v\n%v", vote, vote)},
 		{"ExchangeRate", fmt.Sprintf("%v\n%v", exchangeRate, exchangeRate)},
 		{"FeederDelegation", fmt.Sprintf("%v\n%v", feederAddr, feederAddr)},
 		{"MissCounter", fmt.Sprintf("%v\n%v", missCounter, missCounter)},
@@ -78,9 +96,9 @@ func TestDecodeDistributionStore(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			switch i {
 			case len(tests) - 1:
-				require.Panics(t, func() { DecodeStore(cdc, kvPairs[i], kvPairs[i]) }, tt.name)
+				require.Panics(t, func() { DecodeStore(cdc)(kvPairs[i], kvPairs[i]) }, tt.name)
 			default:
-				require.Equal(t, tt.expectedLog, DecodeStore(cdc, kvPairs[i], kvPairs[i]), tt.name)
+				require.Equal(t, tt.expectedLog, DecodeStore(cdc)(kvPairs[i], kvPairs[i]), tt.name)
 			}
 		})
 	}

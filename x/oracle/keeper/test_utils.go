@@ -16,12 +16,14 @@ import (
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
 	dbm "github.com/tendermint/tm-db"
 
+	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/codec"
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	ccodec "github.com/cosmos/cosmos-sdk/crypto/codec"
 	"github.com/cosmos/cosmos-sdk/store"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authkeeper "github.com/cosmos/cosmos-sdk/x/auth/keeper"
+	"github.com/cosmos/cosmos-sdk/x/auth/tx"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
@@ -99,7 +101,8 @@ func newTestCodec() *codec.LegacyAmino {
 	return cdc
 }
 
-func newTestMarshaler() codec.Marshaler {
+// NewTestMarshaler returns a new ProtoCodecMarshaler
+func NewTestMarshaler() codec.ProtoCodecMarshaler {
 	ir := codectypes.NewInterfaceRegistry()
 	types.RegisterInterfaces(ir)
 	authtypes.RegisterInterfaces(ir)
@@ -109,6 +112,11 @@ func newTestMarshaler() codec.Marshaler {
 	distrtypes.RegisterInterfaces(ir)
 	paramsproposal.RegisterInterfaces(ir)
 	return codec.NewProtoCodec(ir)
+}
+
+// TestTxConfig returns a tx config for testing
+func TestTxConfig() client.TxConfig {
+	return tx.NewTxConfig(NewTestMarshaler(), tx.DefaultSignModes)
 }
 
 // CreateTestInput nolint
@@ -121,7 +129,7 @@ func CreateTestInput(t *testing.T) TestInput {
 	keyStaking := sdk.NewKVStoreKey(stakingtypes.StoreKey)
 	keyDistr := sdk.NewKVStoreKey(distrtypes.StoreKey)
 
-	cdc := newTestMarshaler()
+	cdc := NewTestMarshaler()
 	amino := newTestCodec()
 	db := dbm.NewMemDB()
 	ms := store.NewCommitMultiStore(db)

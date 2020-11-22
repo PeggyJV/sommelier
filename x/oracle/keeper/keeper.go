@@ -9,6 +9,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
 
 	"github.com/peggyjv/sommelier/x/oracle/types"
@@ -377,4 +378,16 @@ func (k Keeper) ClearTobinTaxes(ctx sdk.Context) {
 	for ; iter.Valid(); iter.Next() {
 		store.Delete(iter.Key())
 	}
+}
+
+// Alias functions
+
+// GetOracleAccount returns oracle ModuleAccount
+func (k Keeper) GetOracleAccount(ctx sdk.Context) authtypes.ModuleAccountI {
+	return k.accountKeeper.GetModuleAccount(ctx, types.ModuleName)
+}
+
+// GetRewardPool retrieves the balance of the oracle module account
+func (k Keeper) GetRewardPool(ctx sdk.Context) sdk.Coins {
+	return k.bankKeeper.GetAllBalances(ctx, k.accountKeeper.GetModuleAccount(ctx, types.ModuleName).GetAddress())
 }
