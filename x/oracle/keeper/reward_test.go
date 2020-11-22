@@ -15,37 +15,42 @@ import (
 func TestRewardBallotWinners(t *testing.T) {
 	// initial setup
 	input := CreateTestInput(t)
-	addr, val := ValAddrs[0], PubKeys[0]
-	addr1, val1 := ValAddrs[1], PubKeys[1]
 	amt := sdk.TokensFromConsensusPower(100)
 	sh := staking.NewHandler(input.StakingKeeper)
 	ctx := input.Ctx
+	bondDenom := input.StakingKeeper.GetParams(ctx).BondDenom
+
+	// Set the account in state
+	input.AccKeeper.SetAccount(ctx, input.AccKeeper.NewAccountWithAddress(ctx, Addrs[0]))
+	input.AccKeeper.SetAccount(ctx, input.AccKeeper.NewAccountWithAddress(ctx, Addrs[1]))
+	require.NoError(t, input.BankKeeper.SetBalances(ctx, Addrs[0], InitCoins))
+	require.NoError(t, input.BankKeeper.SetBalances(ctx, Addrs[1], InitCoins))
 
 	// Validator created
-	_, err := sh(ctx, NewTestMsgCreateValidator(addr, val, amt))
+	_, err := sh(ctx, NewTestMsgCreateValidator(ValAddrs[0], PubKeys[0], amt))
 	require.NoError(t, err)
-	_, err = sh(ctx, NewTestMsgCreateValidator(addr1, val1, amt))
+	_, err = sh(ctx, NewTestMsgCreateValidator(ValAddrs[1], PubKeys[1], amt))
 	require.NoError(t, err)
 	staking.EndBlocker(ctx, input.StakingKeeper)
 
 	require.Equal(
-		t, input.BankKeeper.GetAllBalances(ctx, sdk.AccAddress(addr)),
-		sdk.NewCoins(sdk.NewCoin(input.StakingKeeper.GetParams(ctx).BondDenom, InitTokens.Sub(amt))),
+		t, input.BankKeeper.GetAllBalances(ctx, Addrs[0]),
+		sdk.NewCoins(sdk.NewCoin(bondDenom, InitTokens.Sub(amt))),
 	)
-	require.Equal(t, amt, input.StakingKeeper.Validator(ctx, addr).GetBondedTokens())
+	require.Equal(t, amt, input.StakingKeeper.Validator(ctx, ValAddrs[0]).GetBondedTokens())
 	require.Equal(
 
-		t, input.BankKeeper.GetAllBalances(ctx, sdk.AccAddress(addr1)),
-		sdk.NewCoins(sdk.NewCoin(input.StakingKeeper.GetParams(ctx).BondDenom, InitTokens.Sub(amt))),
+		t, input.BankKeeper.GetAllBalances(ctx, Addrs[1]),
+		sdk.NewCoins(sdk.NewCoin(bondDenom, InitTokens.Sub(amt))),
 	)
-	require.Equal(t, amt, input.StakingKeeper.Validator(ctx, addr1).GetBondedTokens())
+	require.Equal(t, amt, input.StakingKeeper.Validator(ctx, ValAddrs[1]).GetBondedTokens())
 
 	// Add claim pools
-	claim := types.NewClaim(10, addr)
-	claim2 := types.NewClaim(20, addr1)
+	claim := types.NewClaim(10, ValAddrs[0])
+	claim2 := types.NewClaim(20, ValAddrs[1])
 	claims := map[string]types.Claim{
-		addr.String():  claim,
-		addr1.String(): claim2,
+		ValAddrs[0].String(): claim,
+		ValAddrs[1].String(): claim2,
 	}
 
 	// Prepare reward pool
@@ -56,12 +61,12 @@ func TestRewardBallotWinners(t *testing.T) {
 
 	votePeriodsPerWindow := sdk.NewDec(input.OracleKeeper.RewardDistributionWindow(input.Ctx)).QuoInt64(input.OracleKeeper.VotePeriod(input.Ctx)).TruncateInt64()
 	input.OracleKeeper.RewardBallotWinners(ctx, claims)
-	outstandingRewardsDec := input.DistrKeeper.GetValidatorOutstandingRewards(ctx, addr)
+	outstandingRewardsDec := input.DistrKeeper.GetValidatorOutstandingRewards(ctx, ValAddrs[0])
 	outstandingRewards, _ := outstandingRewardsDec.GetRewards().TruncateDecimal()
 	require.Equal(t, sdk.NewDecFromInt(givingAmt.AmountOf(types.MicroLunaDenom)).QuoInt64(votePeriodsPerWindow).QuoInt64(3).TruncateInt(),
 		outstandingRewards.AmountOf(types.MicroLunaDenom))
 
-	outstandingRewardsDec1 := input.DistrKeeper.GetValidatorOutstandingRewards(ctx, addr1)
+	outstandingRewardsDec1 := input.DistrKeeper.GetValidatorOutstandingRewards(ctx, ValAddrs[1])
 	outstandingRewards1, _ := outstandingRewardsDec1.GetRewards().TruncateDecimal()
 	require.Equal(t, sdk.NewDecFromInt(givingAmt.AmountOf(types.MicroLunaDenom)).QuoInt64(votePeriodsPerWindow).QuoInt64(3).MulInt64(2).TruncateInt(),
 		outstandingRewards1.AmountOf(types.MicroLunaDenom))

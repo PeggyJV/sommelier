@@ -13,9 +13,9 @@ import (
 	authkeeper "github.com/cosmos/cosmos-sdk/x/auth/keeper"
 	"github.com/cosmos/cosmos-sdk/x/simulation"
 
-	core "github.com/peggyjv/sommelier/types"
 	"github.com/peggyjv/sommelier/x/oracle//keeper"
 	"github.com/peggyjv/sommelier/x/oracle/types"
+	core "github.com/peggyjv/sommelier/x/oracle/types"
 )
 
 // Simulation operation weights constants

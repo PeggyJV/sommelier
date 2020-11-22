@@ -2,17 +2,18 @@ package oracle
 
 import (
 	"encoding/json"
-	sim "github.com/cosmos/cosmos-sdk/x/simulation"
-	"github.com/peggyjv/sommelier/x/auth"
-	"github.com/peggyjv/sommelier/x/oracle/simulation"
 	"math/rand"
+
+	"github.com/cosmos/cosmos-sdk/x/auth"
+	sim "github.com/cosmos/cosmos-sdk/x/simulation"
+	"github.com/peggyjv/sommelier/x/oracle/simulation"
 
 	"github.com/gorilla/mux"
 	"github.com/spf13/cobra"
 
 	abci "github.com/tendermint/tendermint/abci/types"
 
-	"github.com/cosmos/cosmos-sdk/client/context"
+	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
@@ -57,7 +58,7 @@ func (AppModuleBasic) ValidateGenesis(bz json.RawMessage) error {
 }
 
 // RegisterRESTRoutes registers the REST routes for the oracle module.
-func (AppModuleBasic) RegisterRESTRoutes(ctx context.CLIContext, rtr *mux.Router) {
+func (AppModuleBasic) RegisterRESTRoutes(ctx client.Context, rtr *mux.Router) {
 	rest.RegisterRoutes(ctx, rtr)
 }
 

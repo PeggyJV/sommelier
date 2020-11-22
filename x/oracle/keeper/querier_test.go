@@ -30,7 +30,7 @@ func TestQueryParams(t *testing.T) {
 	cdc := codec.NewLegacyAmino()
 	input := CreateTestInput(t)
 
-	var params types.Params
+	var params *types.Params
 
 	res, errRes := queryParameters(input.Ctx, input.OracleKeeper)
 	require.NoError(t, errRes)
@@ -278,11 +278,11 @@ func TestQueryAggregatePrevote(t *testing.T) {
 	input := CreateTestInput(t)
 	querier := NewQuerier(input.OracleKeeper)
 
-	prevote1 := types.NewAggregateExchangeRatePrevote([]byte{}, ValAddrs[0], 0)
+	prevote1 := types.NewAggregateExchangeRatePrevote([]byte(nil), ValAddrs[0], 0)
 	input.OracleKeeper.AddAggregateExchangeRatePrevote(input.Ctx, prevote1)
-	prevote2 := types.NewAggregateExchangeRatePrevote([]byte{}, ValAddrs[1], 0)
+	prevote2 := types.NewAggregateExchangeRatePrevote([]byte(nil), ValAddrs[1], 0)
 	input.OracleKeeper.AddAggregateExchangeRatePrevote(input.Ctx, prevote2)
-	prevote3 := types.NewAggregateExchangeRatePrevote([]byte{}, ValAddrs[2], 0)
+	prevote3 := types.NewAggregateExchangeRatePrevote([]byte(nil), ValAddrs[2], 0)
 	input.OracleKeeper.AddAggregateExchangeRatePrevote(input.Ctx, prevote3)
 
 	// validator 0 address params
@@ -298,7 +298,7 @@ func TestQueryAggregatePrevote(t *testing.T) {
 	res, err := querier(input.Ctx, []string{types.QueryAggregatePrevote}, req)
 	require.NoError(t, err)
 
-	var prevote types.AggregateExchangeRatePrevote
+	var prevote *types.AggregateExchangeRatePrevote
 	err = cdc.UnmarshalJSON(res, &prevote)
 	require.NoError(t, err)
 	require.Equal(t, prevote1, prevote)
@@ -346,7 +346,7 @@ func TestQueryAggregateVote(t *testing.T) {
 	res, err := querier(input.Ctx, []string{types.QueryAggregateVote}, req)
 	require.NoError(t, err)
 
-	var vote types.AggregateExchangeRateVote
+	var vote *types.AggregateExchangeRateVote
 	err = cdc.UnmarshalJSON(res, &vote)
 	require.NoError(t, err)
 	require.Equal(t, vote1, vote)

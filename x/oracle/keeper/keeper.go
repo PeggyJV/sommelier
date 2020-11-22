@@ -198,7 +198,7 @@ func (k Keeper) GetMissCounter(ctx sdk.Context, operator sdk.ValAddress) (missCo
 // SetMissCounter updates the # of vote periods missed in this oracle slash window
 func (k Keeper) SetMissCounter(ctx sdk.Context, operator sdk.ValAddress, missCounter int64) {
 	store := ctx.KVStore(k.storeKey)
-	var bz []byte
+	bz := make([]byte, 8)
 	// TODO: review int marshaling here
 	binary.BigEndian.PutUint64(bz, uint64(missCounter))
 	store.Set(types.GetMissCounterKey(operator), bz)
@@ -232,15 +232,14 @@ func (k Keeper) IterateMissCounters(ctx sdk.Context,
 // AggregateExchangeRatePrevote logic
 
 // GetAggregateExchangeRatePrevote retrieves an oracle prevote from the store
-func (k Keeper) GetAggregateExchangeRatePrevote(ctx sdk.Context, voter sdk.ValAddress) (aggregatePrevote *types.AggregateExchangeRatePrevote, err error) {
-	store := ctx.KVStore(k.storeKey)
-	b := store.Get(types.GetAggregateExchangeRatePrevoteKey(voter))
+func (k Keeper) GetAggregateExchangeRatePrevote(ctx sdk.Context, voter sdk.ValAddress) (*types.AggregateExchangeRatePrevote, error) {
+	out := types.AggregateExchangeRatePrevote{}
+	b := ctx.KVStore(k.storeKey).Get(types.GetAggregateExchangeRatePrevoteKey(voter))
 	if b == nil {
-		err = sdkerrors.Wrap(types.ErrNoAggregatePrevote, voter.String())
-		return
+		return &out, sdkerrors.Wrap(types.ErrNoAggregatePrevote, voter.String())
 	}
-	k.cdc.MustUnmarshalBinaryLengthPrefixed(b, aggregatePrevote)
-	return
+	k.cdc.MustUnmarshalBinaryLengthPrefixed(b, &out)
+	return &out, nil
 }
 
 // AddAggregateExchangeRatePrevote adds an oracle aggregate prevote to the store
@@ -283,14 +282,13 @@ func (k Keeper) IterateAggregateExchangeRatePrevotes(ctx sdk.Context, handler fu
 
 // GetAggregateExchangeRateVote retrieves an oracle prevote from the store
 func (k Keeper) GetAggregateExchangeRateVote(ctx sdk.Context, voter sdk.ValAddress) (aggregateVote *types.AggregateExchangeRateVote, err error) {
-	store := ctx.KVStore(k.storeKey)
-	b := store.Get(types.GetAggregateExchangeRateVoteKey(voter))
+	out := types.AggregateExchangeRateVote{}
+	b := ctx.KVStore(k.storeKey).Get(types.GetAggregateExchangeRateVoteKey(voter))
 	if b == nil {
-		err = sdkerrors.Wrap(types.ErrNoAggregateVote, voter.String())
-		return
+		return &out, sdkerrors.Wrap(types.ErrNoAggregateVote, voter.String())
 	}
-	k.cdc.MustUnmarshalBinaryLengthPrefixed(b, aggregateVote)
-	return
+	k.cdc.MustUnmarshalBinaryLengthPrefixed(b, &out)
+	return &out, nil
 }
 
 // AddAggregateExchangeRateVote adds an oracle aggregate prevote to the store

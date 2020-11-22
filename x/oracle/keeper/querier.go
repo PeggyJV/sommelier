@@ -96,7 +96,8 @@ func queryActives(ctx sdk.Context, keeper Keeper) ([]byte, error) {
 }
 
 func queryParameters(ctx sdk.Context, keeper Keeper) ([]byte, error) {
-	bz, err := json.MarshalIndent(keeper.GetParams(ctx), "", "  ")
+	bz, err := types.ModuleCdc.MarshalJSONIndent(keeper.GetParams(ctx), "", "  ")
+	// bz, err := json.MarshalIndent(keeper.GetParams(ctx), "", "  ")
 	if err != nil {
 		return nil, sdkerrors.Wrap(sdkerrors.ErrJSONMarshal, err.Error())
 	}

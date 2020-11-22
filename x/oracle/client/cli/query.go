@@ -7,15 +7,13 @@ import (
 	"github.com/peggyjv/sommelier/x/oracle/types"
 
 	"github.com/cosmos/cosmos-sdk/client"
-	"github.com/cosmos/cosmos-sdk/client/context"
-	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/spf13/cobra"
 )
 
 // GetQueryCmd returns the cli query commands for this module
-func GetQueryCmd(cdc *codec.Codec) *cobra.Command {
+func GetQueryCmd(cdc *codec.LegacyAmino) *cobra.Command {
 	oracleQueryCmd := &cobra.Command{
 		Use:                        "oracle",
 		Short:                      "Querying commands for the oracle module",
@@ -24,7 +22,7 @@ func GetQueryCmd(cdc *codec.Codec) *cobra.Command {
 		RunE:                       client.ValidateCmd,
 	}
 
-	oracleQueryCmd.AddCommand(flags.GetCommands(
+	oracleQueryCmd.AddCommand([]*cobra.Command{
 		GetCmdQueryExchangeRates(cdc),
 		GetCmdQueryVotes(cdc),
 		GetCmdQueryPrevotes(cdc),
@@ -36,14 +34,14 @@ func GetQueryCmd(cdc *codec.Codec) *cobra.Command {
 		GetCmdQueryAggregateVote(cdc),
 		GetCmdQueryVoteTargets(cdc),
 		GetCmdQueryTobinTaxes(cdc),
-	)...)
+	}...)
 
 	return oracleQueryCmd
 
 }
 
 // GetCmdQueryExchangeRates implements the query rate command.
-func GetCmdQueryExchangeRates(cdc *codec.Codec) *cobra.Command {
+func GetCmdQueryExchangeRates(cdc *codec.LegacyAmino) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "exchange-rates [denom]",
 		Args:  cobra.RangeArgs(0, 1),
@@ -59,7 +57,11 @@ Or, can filter with denom
 $ sommelier query oracle exchange-rates ukrw
 `),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			cliCtx := context.NewCLIContext().WithCodec(cdc)
+			cliCtx := client.GetClientContextFromCmd(cmd)
+			cliCtx, err := client.ReadQueryCommandFlags(cliCtx, cmd.Flags())
+			if err != nil {
+				return err
+			}
 
 			if len(args) == 0 {
 				res, _, err := cliCtx.QueryWithData(fmt.Sprintf("custom/%s/%s", types.QuerierRoute, types.QueryExchangeRates), nil)
@@ -103,7 +105,7 @@ func (a Denoms) String() string {
 }
 
 // GetCmdQueryActives implements the query actives command.
-func GetCmdQueryActives(cdc *codec.Codec) *cobra.Command {
+func GetCmdQueryActives(cdc *codec.LegacyAmino) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "actives",
 		Args:  cobra.NoArgs,
@@ -114,7 +116,11 @@ Query the active list of Terra assets recognized by the types.
 $ sommelier query oracle actives
 `),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			cliCtx := context.NewCLIContext().WithCodec(cdc)
+			cliCtx := client.GetClientContextFromCmd(cmd)
+			cliCtx, err := client.ReadQueryCommandFlags(cliCtx, cmd.Flags())
+			if err != nil {
+				return err
+			}
 
 			res, _, err := cliCtx.QueryWithData(fmt.Sprintf("custom/%s/%s", types.QuerierRoute, types.QueryActives), nil)
 			if err != nil {
@@ -131,7 +137,7 @@ $ sommelier query oracle actives
 }
 
 // GetCmdQueryVotes implements the query vote command.
-func GetCmdQueryVotes(cdc *codec.Codec) *cobra.Command {
+func GetCmdQueryVotes(cdc *codec.LegacyAmino) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "votes [denom] [validator]",
 		Args:  cobra.RangeArgs(1, 2),
@@ -145,7 +151,11 @@ $ sommelier query oracle votes uusd
 returns oracle votes submitted by the validator for the denom uusd 
 `),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			cliCtx := context.NewCLIContext().WithCodec(cdc)
+			cliCtx := client.GetClientContextFromCmd(cmd)
+			cliCtx, err := client.ReadQueryCommandFlags(cliCtx, cmd.Flags())
+			if err != nil {
+				return err
+			}
 
 			denom := args[0]
 
@@ -183,7 +193,7 @@ returns oracle votes submitted by the validator for the denom uusd
 }
 
 // GetCmdQueryPrevotes implements the query prevote command.
-func GetCmdQueryPrevotes(cdc *codec.Codec) *cobra.Command {
+func GetCmdQueryPrevotes(cdc *codec.LegacyAmino) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "prevotes [denom] [validator]",
 		Args:  cobra.RangeArgs(1, 2),
@@ -197,7 +207,11 @@ $ sommelier query oracle prevotes uusd
 returns oracle prevotes submitted by the validator for denom uusd 
 `),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			cliCtx := context.NewCLIContext().WithCodec(cdc)
+			cliCtx := client.GetClientContextFromCmd(cmd)
+			cliCtx, err := client.ReadQueryCommandFlags(cliCtx, cmd.Flags())
+			if err != nil {
+				return err
+			}
 
 			denom := args[0]
 
@@ -235,13 +249,17 @@ returns oracle prevotes submitted by the validator for denom uusd
 }
 
 // GetCmdQueryParams implements the query params command.
-func GetCmdQueryParams(cdc *codec.Codec) *cobra.Command {
+func GetCmdQueryParams(cdc *codec.LegacyAmino) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "params",
 		Args:  cobra.NoArgs,
 		Short: "Query the current Oracle params",
 		RunE: func(cmd *cobra.Command, args []string) error {
-			cliCtx := context.NewCLIContext().WithCodec(cdc)
+			cliCtx := client.GetClientContextFromCmd(cmd)
+			cliCtx, err := client.ReadQueryCommandFlags(cliCtx, cmd.Flags())
+			if err != nil {
+				return err
+			}
 
 			res, _, err := cliCtx.QueryWithData(fmt.Sprintf("custom/%s/%s", types.QuerierRoute, types.QueryParameters), nil)
 			if err != nil {
@@ -258,7 +276,7 @@ func GetCmdQueryParams(cdc *codec.Codec) *cobra.Command {
 }
 
 // GetCmdQueryFeederDelegation implements the query feeder delegation command
-func GetCmdQueryFeederDelegation(cdc *codec.Codec) *cobra.Command {
+func GetCmdQueryFeederDelegation(cdc *codec.LegacyAmino) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "feeder [validator]",
 		Args:  cobra.ExactArgs(1),
@@ -269,7 +287,11 @@ Query the account the validator's oracle voting right is delegated to.
 $ sommelier query oracle feeder terravaloper...
 `),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			cliCtx := context.NewCLIContext().WithCodec(cdc)
+			cliCtx := client.GetClientContextFromCmd(cmd)
+			cliCtx, err := client.ReadQueryCommandFlags(cliCtx, cmd.Flags())
+			if err != nil {
+				return err
+			}
 
 			valString := args[0]
 			validator, err := sdk.ValAddressFromBech32(valString)
@@ -298,7 +320,7 @@ $ sommelier query oracle feeder terravaloper...
 }
 
 // GetCmdQueryMissCounter implements the query miss counter of the validator command
-func GetCmdQueryMissCounter(cdc *codec.Codec) *cobra.Command {
+func GetCmdQueryMissCounter(cdc *codec.LegacyAmino) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "miss [validator]",
 		Args:  cobra.ExactArgs(1),
@@ -309,7 +331,11 @@ Query the # of vote periods missed in this oracle slash window.
 $ sommelier query oracle miss terravaloper...
 `),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			cliCtx := context.NewCLIContext().WithCodec(cdc)
+			cliCtx := client.GetClientContextFromCmd(cmd)
+			cliCtx, err := client.ReadQueryCommandFlags(cliCtx, cmd.Flags())
+			if err != nil {
+				return err
+			}
 
 			valString := args[0]
 			validator, err := sdk.ValAddressFromBech32(valString)
@@ -338,7 +364,7 @@ $ sommelier query oracle miss terravaloper...
 }
 
 // GetCmdQueryAggregatePrevote implements the query aggregate prevote of the validator command
-func GetCmdQueryAggregatePrevote(cdc *codec.Codec) *cobra.Command {
+func GetCmdQueryAggregatePrevote(cdc *codec.LegacyAmino) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "aggregate-prevote [validator]",
 		Args:  cobra.ExactArgs(1),
@@ -349,7 +375,11 @@ Query outstanding oracle aggregate prevote, filtered by voter address.
 $ sommelier query oracle aggregate-prevote terravaloper...
 `),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			cliCtx := context.NewCLIContext().WithCodec(cdc)
+			cliCtx := client.GetClientContextFromCmd(cmd)
+			cliCtx, err := client.ReadQueryCommandFlags(cliCtx, cmd.Flags())
+			if err != nil {
+				return err
+			}
 
 			valString := args[0]
 			validator, err := sdk.ValAddressFromBech32(valString)
@@ -378,7 +408,7 @@ $ sommelier query oracle aggregate-prevote terravaloper...
 }
 
 // GetCmdQueryAggregateVote implements the query aggregate prevote of the validator command
-func GetCmdQueryAggregateVote(cdc *codec.Codec) *cobra.Command {
+func GetCmdQueryAggregateVote(cdc *codec.LegacyAmino) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "aggregate-vote [validator]",
 		Args:  cobra.ExactArgs(1),
@@ -389,7 +419,11 @@ Query outstanding oracle aggregate vote, filtered by voter address.
 $ sommelier query oracle aggregate-vote terravaloper...
 `),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			cliCtx := context.NewCLIContext().WithCodec(cdc)
+			cliCtx := client.GetClientContextFromCmd(cmd)
+			cliCtx, err := client.ReadQueryCommandFlags(cliCtx, cmd.Flags())
+			if err != nil {
+				return err
+			}
 
 			valString := args[0]
 			validator, err := sdk.ValAddressFromBech32(valString)
@@ -418,13 +452,17 @@ $ sommelier query oracle aggregate-vote terravaloper...
 }
 
 // GetCmdQueryVoteTargets implements the query params command.
-func GetCmdQueryVoteTargets(cdc *codec.Codec) *cobra.Command {
+func GetCmdQueryVoteTargets(cdc *codec.LegacyAmino) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "vote-targets",
 		Args:  cobra.NoArgs,
 		Short: "Query the current Oracle vote targets",
 		RunE: func(cmd *cobra.Command, args []string) error {
-			cliCtx := context.NewCLIContext().WithCodec(cdc)
+			cliCtx := client.GetClientContextFromCmd(cmd)
+			cliCtx, err := client.ReadQueryCommandFlags(cliCtx, cmd.Flags())
+			if err != nil {
+				return err
+			}
 
 			res, _, err := cliCtx.QueryWithData(fmt.Sprintf("custom/%s/%s", types.QuerierRoute, types.QueryVoteTargets), nil)
 			if err != nil {
@@ -441,7 +479,7 @@ func GetCmdQueryVoteTargets(cdc *codec.Codec) *cobra.Command {
 }
 
 // GetCmdQueryTobinTaxes implements the query params command.
-func GetCmdQueryTobinTaxes(cdc *codec.Codec) *cobra.Command {
+func GetCmdQueryTobinTaxes(cdc *codec.LegacyAmino) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "tobin-taxes [denom]",
 		Args:  cobra.RangeArgs(0, 1),
@@ -458,7 +496,11 @@ $ sommelier query oracle tobin-taxes ukrw
 Or, can 
 `),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			cliCtx := context.NewCLIContext().WithCodec(cdc)
+			cliCtx := client.GetClientContextFromCmd(cmd)
+			cliCtx, err := client.ReadQueryCommandFlags(cliCtx, cmd.Flags())
+			if err != nil {
+				return err
+			}
 
 			if len(args) == 0 {
 				res, _, err := cliCtx.QueryWithData(fmt.Sprintf("custom/%s/%s", types.QuerierRoute, types.QueryTobinTaxes), nil)

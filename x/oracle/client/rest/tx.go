@@ -6,15 +6,15 @@ import (
 
 	"github.com/peggyjv/sommelier/x/oracle/types"
 
-	"github.com/cosmos/cosmos-sdk/client/context"
+	"github.com/cosmos/cosmos-sdk/client"
+	"github.com/cosmos/cosmos-sdk/client/tx"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/rest"
-	"github.com/cosmos/cosmos-sdk/x/auth/client/utils"
 
 	"github.com/gorilla/mux"
 )
 
-func resgisterTxRoute(cliCtx context.CLIContext, r *mux.Router) {
+func resgisterTxRoute(cliCtx client.Context, r *mux.Router) {
 	r.HandleFunc(fmt.Sprintf("/oracle/denoms/{%s}/prevotes", RestDenom), submitPrevoteHandlerFunction(cliCtx)).Methods("POST")
 	r.HandleFunc(fmt.Sprintf("/oracle/denoms/{%s}/votes", RestDenom), submitVoteHandlerFunction(cliCtx)).Methods("POST")
 	r.HandleFunc(fmt.Sprintf("/oracle/voters/{%s}/feeder", RestVoter), submitDelegateHandlerFunction(cliCtx)).Methods("POST")
@@ -33,7 +33,7 @@ type PrevoteReq struct {
 	Validator sdk.ValAddress `json:"validator"`
 }
 
-func submitPrevoteHandlerFunction(cliCtx context.CLIContext) http.HandlerFunc {
+func submitPrevoteHandlerFunction(cliCtx client.Context) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		denom := vars[RestDenom]
@@ -82,7 +82,7 @@ func submitPrevoteHandlerFunction(cliCtx context.CLIContext) http.HandlerFunc {
 			return
 		}
 
-		utils.WriteGenerateStdTxResponse(w, cliCtx, req.BaseReq, []sdk.Msg{msg})
+		tx.WriteGenerateStdTxResponse(w, cliCtx, req.BaseReq, []sdk.Msg{msg})
 	}
 }
 
@@ -96,7 +96,7 @@ type VoteReq struct {
 	Validator sdk.ValAddress `json:"validator"`
 }
 
-func submitVoteHandlerFunction(cliCtx context.CLIContext) http.HandlerFunc {
+func submitVoteHandlerFunction(cliCtx client.Context) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		denom := vars[RestDenom]
@@ -132,7 +132,7 @@ func submitVoteHandlerFunction(cliCtx context.CLIContext) http.HandlerFunc {
 			return
 		}
 
-		utils.WriteGenerateStdTxResponse(w, cliCtx, req.BaseReq, []sdk.Msg{msg})
+		tx.WriteGenerateStdTxResponse(w, cliCtx, req.BaseReq, []sdk.Msg{msg})
 	}
 }
 
@@ -142,7 +142,7 @@ type DelegateReq struct {
 	Feeder  string       `json:"feeder"`
 }
 
-func submitDelegateHandlerFunction(cliCtx context.CLIContext) http.HandlerFunc {
+func submitDelegateHandlerFunction(cliCtx client.Context) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		voter := vars[RestVoter]
@@ -192,7 +192,7 @@ func submitDelegateHandlerFunction(cliCtx context.CLIContext) http.HandlerFunc {
 			return
 		}
 
-		utils.WriteGenerateStdTxResponse(w, cliCtx, req.BaseReq, []sdk.Msg{msg})
+		tx.WriteGenerateStdTxResponse(w, cliCtx, req.BaseReq, []sdk.Msg{msg})
 	}
 }
 
@@ -205,7 +205,7 @@ type AggregatePrevoteReq struct {
 	Salt          string `json:"salt"`
 }
 
-func submitAggregatePrevoteHandlerFunction(cliCtx context.CLIContext) http.HandlerFunc {
+func submitAggregatePrevoteHandlerFunction(cliCtx client.Context) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		voter := vars[RestVoter]
@@ -260,7 +260,7 @@ func submitAggregatePrevoteHandlerFunction(cliCtx context.CLIContext) http.Handl
 			return
 		}
 
-		utils.WriteGenerateStdTxResponse(w, cliCtx, req.BaseReq, []sdk.Msg{msg})
+		tx.WriteGenerateStdTxResponse(w, cliCtx, req.BaseReq, []sdk.Msg{msg})
 	}
 }
 
@@ -272,7 +272,7 @@ type AggregateVoteReq struct {
 	Salt          string `json:"salt"`
 }
 
-func submitAggregateVoteHandlerFunction(cliCtx context.CLIContext) http.HandlerFunc {
+func submitAggregateVoteHandlerFunction(cliCtx client.Context) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		voter := vars[RestVoter]
@@ -315,6 +315,6 @@ func submitAggregateVoteHandlerFunction(cliCtx context.CLIContext) http.HandlerF
 			return
 		}
 
-		utils.WriteGenerateStdTxResponse(w, cliCtx, req.BaseReq, []sdk.Msg{msg})
+		tx.WriteGenerateStdTxResponse(w, cliCtx, req.BaseReq, []sdk.Msg{msg})
 	}
 }

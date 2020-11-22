@@ -9,7 +9,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/bank"
 
-	core "github.com/peggyjv/sommelier/types"
+	core "github.com/peggyjv/sommelier/x/oracle/types"
 	"github.com/peggyjv/sommelier/x/oracle//keeper"
 )
 

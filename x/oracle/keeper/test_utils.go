@@ -9,8 +9,9 @@ import (
 
 	"time"
 
+	"github.com/cosmos/cosmos-sdk/crypto/keys/ed25519"
+	"github.com/cosmos/cosmos-sdk/crypto/keys/secp256k1"
 	"github.com/tendermint/tendermint/crypto"
-	"github.com/tendermint/tendermint/crypto/secp256k1"
 	"github.com/tendermint/tendermint/libs/log"
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
 	dbm "github.com/tendermint/tm-db"
@@ -36,6 +37,14 @@ import (
 
 var (
 	PubKeys = []crypto.PubKey{
+		ed25519.GenPrivKey().PubKey(),
+		ed25519.GenPrivKey().PubKey(),
+		ed25519.GenPrivKey().PubKey(),
+		ed25519.GenPrivKey().PubKey(),
+		ed25519.GenPrivKey().PubKey(),
+	}
+
+	accPubKeys = []crypto.PubKey{
 		secp256k1.GenPrivKey().PubKey(),
 		secp256k1.GenPrivKey().PubKey(),
 		secp256k1.GenPrivKey().PubKey(),
@@ -44,19 +53,19 @@ var (
 	}
 
 	Addrs = []sdk.AccAddress{
-		sdk.AccAddress(PubKeys[0].Address()),
-		sdk.AccAddress(PubKeys[1].Address()),
-		sdk.AccAddress(PubKeys[2].Address()),
-		sdk.AccAddress(PubKeys[3].Address()),
-		sdk.AccAddress(PubKeys[4].Address()),
+		sdk.AccAddress(accPubKeys[0].Address()),
+		sdk.AccAddress(accPubKeys[1].Address()),
+		sdk.AccAddress(accPubKeys[2].Address()),
+		sdk.AccAddress(accPubKeys[3].Address()),
+		sdk.AccAddress(accPubKeys[4].Address()),
 	}
 
 	ValAddrs = []sdk.ValAddress{
-		sdk.ValAddress(PubKeys[0].Address()),
-		sdk.ValAddress(PubKeys[1].Address()),
-		sdk.ValAddress(PubKeys[2].Address()),
-		sdk.ValAddress(PubKeys[3].Address()),
-		sdk.ValAddress(PubKeys[4].Address()),
+		sdk.ValAddress(accPubKeys[0].Address()),
+		sdk.ValAddress(accPubKeys[1].Address()),
+		sdk.ValAddress(accPubKeys[2].Address()),
+		sdk.ValAddress(accPubKeys[3].Address()),
+		sdk.ValAddress(accPubKeys[4].Address()),
 	}
 
 	InitTokens = sdk.TokensFromConsensusPower(200)
@@ -116,11 +125,13 @@ func CreateTestInput(t *testing.T) TestInput {
 	amino := newTestCodec()
 	db := dbm.NewMemDB()
 	ms := store.NewCommitMultiStore(db)
+
 	ctx := sdk.NewContext(ms, tmproto.Header{Time: time.Now().UTC()}, false, log.NewNopLogger())
 
 	ms.MountStoreWithDB(keyAcc, sdk.StoreTypeIAVL, db)
-	ms.MountStoreWithDB(tKeyParams, sdk.StoreTypeTransient, db)
+	ms.MountStoreWithDB(keyBank, sdk.StoreTypeIAVL, db)
 	ms.MountStoreWithDB(keyParams, sdk.StoreTypeIAVL, db)
+	ms.MountStoreWithDB(tKeyParams, sdk.StoreTypeTransient, db)
 	ms.MountStoreWithDB(keyOracle, sdk.StoreTypeIAVL, db)
 	ms.MountStoreWithDB(keyStaking, sdk.StoreTypeIAVL, db)
 	ms.MountStoreWithDB(keyDistr, sdk.StoreTypeIAVL, db)
@@ -150,17 +161,33 @@ func CreateTestInput(t *testing.T) TestInput {
 	paramsKeeper.Subspace(distrtypes.ModuleName)
 	paramsKeeper.Subspace(types.ModuleName)
 
-	authsub, _ := paramsKeeper.GetSubspace(authtypes.ModuleName)
-	banksub, _ := paramsKeeper.GetSubspace(banktypes.ModuleName)
-	stakingsub, _ := paramsKeeper.GetSubspace(stakingtypes.ModuleName)
-	distrsub, _ := paramsKeeper.GetSubspace(distrtypes.ModuleName)
-	typessub, _ := paramsKeeper.GetSubspace(types.ModuleName)
+	authsub, ok := paramsKeeper.GetSubspace(authtypes.ModuleName)
+	if !ok {
+		panic("NOT OK")
+	}
+	banksub, ok := paramsKeeper.GetSubspace(banktypes.ModuleName)
+	if !ok {
+		panic("NOT OK")
+	}
+	stakingsub, ok := paramsKeeper.GetSubspace(stakingtypes.ModuleName)
+	if !ok {
+		panic("NOT OK")
+	}
+	distrsub, ok := paramsKeeper.GetSubspace(distrtypes.ModuleName)
+	if !ok {
+		panic("NOT OK")
+	}
+	oraclesub, ok := paramsKeeper.GetSubspace(types.ModuleName)
+	if !ok {
+		panic("NOT OK")
+	}
 
 	accountKeeper := authkeeper.NewAccountKeeper(cdc, keyAcc, authsub, authtypes.ProtoBaseAccount, maccPerms)
 	bankKeeper := bankkeeper.NewBaseKeeper(cdc, keyBank, accountKeeper, banksub, blackListAddrs)
 
+	ctx = ctx.WithMultiStore(ms)
 	totalSupply := sdk.NewCoins(sdk.NewCoin(types.MicroLunaDenom, InitTokens.MulRaw(int64(len(Addrs)))))
-	bankKeeper.SetSupply(ctx, banktypes.NewSupply(totalSupply))
+	bankKeeper.SetSupply(ctx.WithMultiStore(ms), banktypes.NewSupply(totalSupply))
 
 	stakingKeeper := stakingkeeper.NewKeeper(
 		cdc,
@@ -202,7 +229,7 @@ func CreateTestInput(t *testing.T) TestInput {
 		require.NoError(t, bankKeeper.AddCoins(ctx, sdk.AccAddress(addr), InitCoins))
 	}
 
-	keeper := NewKeeper(cdc, keyOracle, typessub, distrKeeper, stakingKeeper, accountKeeper, bankKeeper, distrtypes.ModuleName)
+	keeper := NewKeeper(cdc, keyOracle, oraclesub, distrKeeper, stakingKeeper, accountKeeper, bankKeeper, distrtypes.ModuleName)
 
 	defaults := types.DefaultParams()
 	keeper.SetParams(ctx, defaults)
@@ -218,9 +245,12 @@ func CreateTestInput(t *testing.T) TestInput {
 
 func NewTestMsgCreateValidator(address sdk.ValAddress, pubKey crypto.PubKey, amt sdk.Int) *stakingtypes.MsgCreateValidator {
 	commission := stakingtypes.NewCommissionRates(sdk.ZeroDec(), sdk.ZeroDec(), sdk.ZeroDec())
-	out, _ := stakingtypes.NewMsgCreateValidator(
+	out, err := stakingtypes.NewMsgCreateValidator(
 		address, pubKey, sdk.NewCoin(types.MicroLunaDenom, amt),
 		stakingtypes.Description{}, commission, sdk.OneInt(),
 	)
+	if err != nil {
+		panic(err)
+	}
 	return out
 }

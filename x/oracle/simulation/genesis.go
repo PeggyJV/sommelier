@@ -10,8 +10,8 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 
-	core "github.com/peggyjv/sommelier/types"
 	"github.com/peggyjv/sommelier/x/oracle/types"
+	core "github.com/peggyjv/sommelier/x/oracle/types"
 )
 
 // Simulation parameter constants

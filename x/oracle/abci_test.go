@@ -8,9 +8,9 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/require"
 
-	core "github.com/peggyjv/sommelier/types"
 	"github.com/peggyjv/sommelier/x/oracle//keeper"
 	"github.com/peggyjv/sommelier/x/oracle/types"
+	core "github.com/peggyjv/sommelier/x/oracle/types"
 )
 
 func TestOracleThreshold(t *testing.T) {

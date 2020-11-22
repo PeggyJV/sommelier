@@ -6,7 +6,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/staking/exported"
 
-	core "github.com/peggyjv/sommelier/types"
+	core "github.com/peggyjv/sommelier/x/oracle/types"
 )
 
 // EndBlocker is called at the end of every block

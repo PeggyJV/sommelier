@@ -9,8 +9,8 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/staking"
 
-	core "github.com/peggyjv/sommelier/types"
-	"github.com/peggyjv/sommelier/x/oracle//keeper"
+	"github.com/peggyjv/sommelier/x/oracle/keeper"
+	core "github.com/peggyjv/sommelier/x/oracle/types"
 )
 
 var (

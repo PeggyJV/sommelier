@@ -54,9 +54,10 @@ func (k Keeper) MinValidPerWindow(ctx sdk.Context) (res sdk.Dec) {
 }
 
 // GetParams returns the total set of oracle parameters.
-func (k Keeper) GetParams(ctx sdk.Context) (params *types.Params) {
-	k.paramSpace.GetParamSet(ctx, params)
-	return params
+func (k Keeper) GetParams(ctx sdk.Context) *types.Params {
+	params := types.Params{}
+	k.paramSpace.GetParamSet(ctx, &params)
+	return &params
 }
 
 // SetParams sets the total set of oracle parameters.
