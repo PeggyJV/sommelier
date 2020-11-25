@@ -90,7 +90,6 @@ func TestOracleRewardBand(t *testing.T) {
 
 	// no one will miss the vote
 	// Account 1, KRW
-
 	makeAggregatePrevoteAndVote(t, input, h, 0, sdk.NewDecCoins(sdk.NewDecCoinFromDec(core.MicroKRWDenom, randomExchangeRate.Sub(rewardSpread))), 0)
 
 	// Account 2, KRW

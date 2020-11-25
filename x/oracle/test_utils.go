@@ -30,6 +30,9 @@ func setup_with_small_voting_power(t *testing.T) (keeper.TestInput, sdk.Handler)
 	input.OracleKeeper.SetParams(input.Ctx, params)
 	h := NewHandler(input.OracleKeeper)
 
+	input.AccKeeper.SetAccount(input.Ctx, input.AccKeeper.NewAccountWithAddress(input.Ctx, keeper.Addrs[0]))
+	require.NoError(t, input.BankKeeper.SetBalances(input.Ctx, keeper.Addrs[0], keeper.InitCoins))
+
 	sh := staking.NewHandler(input.StakingKeeper)
 	_, err := sh(input.Ctx, keeper.NewTestMsgCreateValidator(keeper.ValAddrs[0], keeper.PubKeys[0], sdk.TokensFromConsensusPower(1)))
 	require.NoError(t, err)
@@ -49,6 +52,13 @@ func setup(t *testing.T) (keeper.TestInput, sdk.Handler) {
 	h := NewHandler(input.OracleKeeper)
 
 	sh := staking.NewHandler(input.StakingKeeper)
+
+	input.AccKeeper.SetAccount(input.Ctx, input.AccKeeper.NewAccountWithAddress(input.Ctx, keeper.Addrs[0]))
+	input.AccKeeper.SetAccount(input.Ctx, input.AccKeeper.NewAccountWithAddress(input.Ctx, keeper.Addrs[1]))
+	input.AccKeeper.SetAccount(input.Ctx, input.AccKeeper.NewAccountWithAddress(input.Ctx, keeper.Addrs[2]))
+	require.NoError(t, input.BankKeeper.SetBalances(input.Ctx, keeper.Addrs[0], keeper.InitCoins))
+	require.NoError(t, input.BankKeeper.SetBalances(input.Ctx, keeper.Addrs[1], keeper.InitCoins))
+	require.NoError(t, input.BankKeeper.SetBalances(input.Ctx, keeper.Addrs[2], keeper.InitCoins))
 
 	// Validator created
 	_, err := sh(input.Ctx, keeper.NewTestMsgCreateValidator(keeper.ValAddrs[0], keeper.PubKeys[0], stakingAmt))
@@ -72,6 +82,17 @@ func setupVal5(t *testing.T) (keeper.TestInput, sdk.Handler) {
 	h := NewHandler(input.OracleKeeper)
 
 	sh := staking.NewHandler(input.StakingKeeper)
+
+	input.AccKeeper.SetAccount(input.Ctx, input.AccKeeper.NewAccountWithAddress(input.Ctx, keeper.Addrs[0]))
+	input.AccKeeper.SetAccount(input.Ctx, input.AccKeeper.NewAccountWithAddress(input.Ctx, keeper.Addrs[1]))
+	input.AccKeeper.SetAccount(input.Ctx, input.AccKeeper.NewAccountWithAddress(input.Ctx, keeper.Addrs[2]))
+	input.AccKeeper.SetAccount(input.Ctx, input.AccKeeper.NewAccountWithAddress(input.Ctx, keeper.Addrs[3]))
+	input.AccKeeper.SetAccount(input.Ctx, input.AccKeeper.NewAccountWithAddress(input.Ctx, keeper.Addrs[4]))
+	require.NoError(t, input.BankKeeper.SetBalances(input.Ctx, keeper.Addrs[0], keeper.InitCoins))
+	require.NoError(t, input.BankKeeper.SetBalances(input.Ctx, keeper.Addrs[1], keeper.InitCoins))
+	require.NoError(t, input.BankKeeper.SetBalances(input.Ctx, keeper.Addrs[2], keeper.InitCoins))
+	require.NoError(t, input.BankKeeper.SetBalances(input.Ctx, keeper.Addrs[3], keeper.InitCoins))
+	require.NoError(t, input.BankKeeper.SetBalances(input.Ctx, keeper.Addrs[4], keeper.InitCoins))
 
 	// Validator created
 	_, err := sh(input.Ctx, keeper.NewTestMsgCreateValidator(keeper.ValAddrs[0], keeper.PubKeys[0], stakingAmt))
