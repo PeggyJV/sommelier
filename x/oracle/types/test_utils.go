@@ -7,7 +7,7 @@ import (
 	"time"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/cosmos/cosmos-sdk/x/staking/exported"
+	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 	"github.com/tendermint/tendermint/crypto"
 	"github.com/tendermint/tendermint/crypto/secp256k1"
 )
@@ -61,7 +61,7 @@ func (sk DummyStakingKeeper) Validators() []MockValidator {
 }
 
 // Validator nolint
-func (sk DummyStakingKeeper) Validator(ctx sdk.Context, address sdk.ValAddress) exported.ValidatorI {
+func (sk DummyStakingKeeper) Validator(ctx sdk.Context, address sdk.ValAddress) stakingtypes.ValidatorI {
 	for _, validator := range sk.validators {
 		if validator.GetOperator().Equals(address) {
 			return validator
@@ -80,7 +80,7 @@ func (DummyStakingKeeper) TotalBondedTokens(_ sdk.Context) sdk.Int {
 func (DummyStakingKeeper) Slash(sdk.Context, sdk.ConsAddress, int64, int64, sdk.Dec) {}
 
 // IterateValidators nolint
-func (DummyStakingKeeper) IterateValidators(sdk.Context, func(index int64, validator exported.ValidatorI) (stop bool)) {
+func (DummyStakingKeeper) IterateValidators(sdk.Context, func(index int64, validator stakingtypes.ValidatorI) (stop bool)) {
 }
 
 // Jail nolint
@@ -92,20 +92,21 @@ type MockValidator struct {
 	operator sdk.ValAddress
 }
 
-var _ exported.ValidatorI = MockValidator{}
+var _ stakingtypes.ValidatorI = MockValidator{}
 
 func (MockValidator) IsJailed() bool                                  { return false }
 func (MockValidator) GetMoniker() string                              { return "" }
-func (MockValidator) GetStatus() sdk.BondStatus                       { return sdk.Bonded }
+func (MockValidator) GetStatus() stakingtypes.BondStatus              { return stakingtypes.Bonded }
 func (MockValidator) IsBonded() bool                                  { return true }
 func (MockValidator) IsUnbonded() bool                                { return false }
 func (MockValidator) IsUnbonding() bool                               { return false }
 func (v MockValidator) GetOperator() sdk.ValAddress                   { return v.operator }
 func (MockValidator) GetConsPubKey() crypto.PubKey                    { return nil }
-func (MockValidator) GetConsAddr() sdk.ConsAddress                    { return nil }
+func (MockValidator) GetConsAddr() (sdk.ConsAddress, error)           { return nil, nil }
 func (v MockValidator) GetTokens() sdk.Int                            { return sdk.TokensFromConsensusPower(v.power) }
 func (v MockValidator) GetBondedTokens() sdk.Int                      { return sdk.TokensFromConsensusPower(v.power) }
 func (v MockValidator) GetConsensusPower() int64                      { return v.power }
+func (v MockValidator) TmConsPubKey() (crypto.PubKey, error)          { return nil, nil }
 func (v MockValidator) GetCommission() sdk.Dec                        { return sdk.ZeroDec() }
 func (v MockValidator) GetMinSelfDelegation() sdk.Int                 { return sdk.OneInt() }
 func (v MockValidator) GetDelegatorShares() sdk.Dec                   { return sdk.NewDec(v.power) }

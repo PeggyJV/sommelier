@@ -3,10 +3,8 @@ package types
 import (
 	"fmt"
 
-	"gopkg.in/yaml.v2"
-
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/cosmos/cosmos-sdk/x/params"
+	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
 )
 
 // DefaultParamspace defines default space for oracle params
@@ -64,19 +62,7 @@ var (
 	DefaultMinValidPerWindow = sdk.NewDecWithPrec(5, 2) // 5%
 )
 
-var _ params.ParamSet = &Params{}
-
-// Params oracle parameters
-type Params struct {
-	VotePeriod               int64     `json:"vote_period" yaml:"vote_period"`                               // the number of blocks during which voting takes place.
-	VoteThreshold            sdk.Dec   `json:"vote_threshold" yaml:"vote_threshold"`                         // the minimum percentage of votes that must be received for a ballot to pass.
-	RewardBand               sdk.Dec   `json:"reward_band" yaml:"reward_band"`                               // the ratio of allowable exchange rate error that can be rewarded.
-	RewardDistributionWindow int64     `json:"reward_distribution_window" yaml:"reward_distribution_window"` // the number of blocks during which seigniorage reward comes in and then is distributed.
-	Whitelist                DenomList `json:"whitelist" yaml:"whitelist"`                                   // the denom list that can be activated,
-	SlashFraction            sdk.Dec   `json:"slash_fraction" yaml:"slash_fraction"`                         // the ratio of penalty on bonded tokens
-	SlashWindow              int64     `json:"slash_window" yaml:"slash_window"`                             // the number of blocks for slashing tallying
-	MinValidPerWindow        sdk.Dec   `json:"min_valid_per_window" yaml:"min_valid_per_window"`             // the ratio of minimum valid oracle votes per slash window to avoid slashing
-}
+var _ paramtypes.ParamSet = &Params{}
 
 // DefaultParams creates default oracle module parameters
 func DefaultParams() Params {
@@ -93,28 +79,22 @@ func DefaultParams() Params {
 }
 
 // ParamSetPairs returns the parameter set pairs.
-func (p *Params) ParamSetPairs() params.ParamSetPairs {
-	return params.ParamSetPairs{
-		params.NewParamSetPair(ParamStoreKeyVotePeriod, &p.VotePeriod, validateVotePeriod),
-		params.NewParamSetPair(ParamStoreKeyVoteThreshold, &p.VoteThreshold, validateVoteThreshold),
-		params.NewParamSetPair(ParamStoreKeyRewardBand, &p.RewardBand, validateRewardBand),
-		params.NewParamSetPair(ParamStoreKeyRewardDistributionWindow, &p.RewardDistributionWindow, validateRewardDistributionWindow),
-		params.NewParamSetPair(ParamStoreKeyWhitelist, &p.Whitelist, validateWhitelist),
-		params.NewParamSetPair(ParamStoreKeySlashFraction, &p.SlashFraction, validateSlashFraction),
-		params.NewParamSetPair(ParamStoreKeySlashWindow, &p.SlashWindow, validateSlashWindow),
-		params.NewParamSetPair(ParamStoreKeyMinValidPerWindow, &p.MinValidPerWindow, validateMinValidPerWindow),
+func (p *Params) ParamSetPairs() paramtypes.ParamSetPairs {
+	return paramtypes.ParamSetPairs{
+		paramtypes.NewParamSetPair(ParamStoreKeyVotePeriod, &p.VotePeriod, validateVotePeriod),
+		paramtypes.NewParamSetPair(ParamStoreKeyVoteThreshold, &p.VoteThreshold, validateVoteThreshold),
+		paramtypes.NewParamSetPair(ParamStoreKeyRewardBand, &p.RewardBand, validateRewardBand),
+		paramtypes.NewParamSetPair(ParamStoreKeyRewardDistributionWindow, &p.RewardDistributionWindow, validateRewardDistributionWindow),
+		paramtypes.NewParamSetPair(ParamStoreKeyWhitelist, &p.Whitelist, validateWhitelist),
+		paramtypes.NewParamSetPair(ParamStoreKeySlashFraction, &p.SlashFraction, validateSlashFraction),
+		paramtypes.NewParamSetPair(ParamStoreKeySlashWindow, &p.SlashWindow, validateSlashWindow),
+		paramtypes.NewParamSetPair(ParamStoreKeyMinValidPerWindow, &p.MinValidPerWindow, validateMinValidPerWindow),
 	}
 }
 
 // ParamKeyTable returns the parameter key table.
-func ParamKeyTable() params.KeyTable {
-	return params.NewKeyTable().RegisterParamSet(&Params{})
-}
-
-// String implements fmt.Stringer interface
-func (p Params) String() string {
-	out, _ := yaml.Marshal(p)
-	return string(out)
+func ParamKeyTable() paramtypes.KeyTable {
+	return paramtypes.NewKeyTable().RegisterParamSet(&Params{})
 }
 
 // ValidateBasic performs basic validation on oracle parameters.

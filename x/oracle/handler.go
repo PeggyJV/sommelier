@@ -17,10 +17,6 @@ func NewHandler(k Keeper) sdk.Handler {
 		ctx = ctx.WithEventManager(sdk.NewEventManager())
 
 		switch msg := msg.(type) {
-		case MsgExchangeRatePrevote:
-			return handleMsgExchangeRatePrevote(ctx, k, msg)
-		case MsgExchangeRateVote:
-			return handleMsgExchangeRateVote(ctx, k, msg)
 		case MsgDelegateFeedConsent:
 			return handleMsgDelegateFeedConsent(ctx, k, msg)
 		case MsgAggregateExchangeRatePrevote:
@@ -31,103 +27,6 @@ func NewHandler(k Keeper) sdk.Handler {
 			return nil, sdkerrors.Wrapf(sdkerrors.ErrUnknownRequest, "unrecognized distribution message type: %T", msg)
 		}
 	}
-}
-
-// handleMsgExchangeRatePrevote handles a MsgExchangeRatePrevote
-
-func handleMsgExchangeRatePrevote(ctx sdk.Context, keeper Keeper, msg MsgExchangeRatePrevote) (*sdk.Result, error) {
-
-	// check the denom is in the vote target
-	if !keeper.IsVoteTarget(ctx, msg.Denom) {
-		return nil, sdkerrors.Wrap(ErrUnknowDenom, msg.Denom)
-	}
-
-	if !msg.Feeder.Equals(msg.Validator) {
-		delegate := keeper.GetOracleDelegate(ctx, msg.Validator)
-		if !delegate.Equals(msg.Feeder) {
-			return nil, sdkerrors.Wrap(ErrNoVotingPermission, msg.Feeder.String())
-		}
-	}
-
-	// Check that the given validator exists
-	val := keeper.StakingKeeper.Validator(ctx, msg.Validator)
-	if val == nil {
-		return nil, sdkerrors.Wrap(staking.ErrNoValidatorFound, msg.Validator.String())
-	}
-
-	prevote := NewExchangeRatePrevote(msg.Hash, msg.Denom, msg.Validator, ctx.BlockHeight())
-	keeper.AddExchangeRatePrevote(ctx, prevote)
-
-	ctx.EventManager().EmitEvents(sdk.Events{
-		sdk.NewEvent(
-			types.EventTypePrevote,
-			sdk.NewAttribute(types.AttributeKeyDenom, msg.Denom),
-			sdk.NewAttribute(types.AttributeKeyVoter, msg.Validator.String()),
-			sdk.NewAttribute(types.AttributeKeyFeeder, msg.Feeder.String()),
-		),
-		sdk.NewEvent(
-			sdk.EventTypeMessage,
-			sdk.NewAttribute(sdk.AttributeKeyModule, types.AttributeValueCategory),
-		),
-	})
-
-	return &sdk.Result{Events: ctx.EventManager().Events()}, nil
-}
-
-// handleMsgExchangeRateVote handles a MsgExchangeRateVote
-func handleMsgExchangeRateVote(ctx sdk.Context, keeper Keeper, msg MsgExchangeRateVote) (*sdk.Result, error) {
-	if !msg.Feeder.Equals(msg.Validator) {
-		delegate := keeper.GetOracleDelegate(ctx, msg.Validator)
-		if !delegate.Equals(msg.Feeder) {
-			return nil, sdkerrors.Wrap(ErrNoVotingPermission, msg.Feeder.String())
-		}
-	}
-
-	// Check that the given validator exists
-	val := keeper.StakingKeeper.Validator(ctx, msg.Validator)
-	if val == nil {
-		return nil, sdkerrors.Wrap(staking.ErrNoValidatorFound, msg.Validator.String())
-	}
-
-	params := keeper.GetParams(ctx)
-
-	// Get prevote
-	prevote, err := keeper.GetExchangeRatePrevote(ctx, msg.Denom, msg.Validator)
-	if err != nil {
-		return nil, sdkerrors.Wrap(ErrNoPrevote, fmt.Sprintf("(%s, %s)", msg.Validator, msg.Denom))
-	}
-
-	// Check a msg is submitted proper period
-	if (ctx.BlockHeight()/params.VotePeriod)-(prevote.SubmitBlock/params.VotePeriod) != 1 {
-		return nil, ErrRevealPeriodMissMatch
-	}
-
-	// If there is an prevote, we verify a exchange rate with prevote hash and move prevote to vote with given exchange rate
-	hash := GetVoteHash(msg.Salt, msg.ExchangeRate, msg.Denom, msg.Validator)
-	if !prevote.Hash.Equal(hash) {
-		return nil, sdkerrors.Wrap(ErrVerificationFailed, fmt.Sprintf("must be given %s not %s", prevote.Hash, hash))
-	}
-
-	// Add the vote to the store
-	vote := NewExchangeRateVote(msg.ExchangeRate, msg.Denom, msg.Validator)
-	keeper.DeleteExchangeRatePrevote(ctx, prevote)
-	keeper.AddExchangeRateVote(ctx, vote)
-
-	ctx.EventManager().EmitEvents(sdk.Events{
-		sdk.NewEvent(
-			types.EventTypeVote,
-			sdk.NewAttribute(types.AttributeKeyDenom, msg.Denom),
-			sdk.NewAttribute(types.AttributeKeyVoter, msg.Validator.String()),
-			sdk.NewAttribute(types.AttributeKeyExchangeRate, msg.ExchangeRate.String()),
-			sdk.NewAttribute(types.AttributeKeyFeeder, msg.Feeder.String()),
-		),
-		sdk.NewEvent(
-			sdk.EventTypeMessage,
-			sdk.NewAttribute(sdk.AttributeKeyModule, types.AttributeValueCategory),
-		),
-	})
-
-	return &sdk.Result{Events: ctx.EventManager().Events()}, nil
 }
 
 // handleMsgDelegateFeedConsent handles a MsgDelegateFeedConsent

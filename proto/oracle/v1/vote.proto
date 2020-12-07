@@ -21,13 +21,6 @@ message ExchangeRatePrevote {
     int64 submit_block = 4;
 }
 
-
-// ExchangeRatePrevotes is a collection of ExchangeRatePrevote
-// type ExchangeRatePrevotes []ExchangeRatePrevote
-message ExchangeRatePrevotes {
-    repeated ExchangeRatePrevote exchange_rate_prevote = 1;
-}
-
 // ExchangeRateVote - struct to store a validator's vote on the rate of Luna in the denom asset
 // type ExchangeRateVote struct {
 // 	ExchangeRate sdk.Dec        `json:"exchange_rate"` // ExchangeRate of Luna in target fiat currency
@@ -62,17 +55,12 @@ message ExchangeRateTuple {
     string exchange_rate  = 2 [(gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec", (gogoproto.nullable) = false];
 }
 
-// type ExchangeRateTuples []ExchangeRateTuple
-message ExchangeRateTuples {
-    repeated ExchangeRateTuple exchange_rate_tuple = 1;
-}
-
 // AggregateExchangeRateVote - struct to store a validator's aggregate vote on the rate of Luna in the denom asset
 // type AggregateExchangeRateVote struct {
 // 	ExchangeRateTuples ExchangeRateTuples `json:"exchange_rate_tuples"` // ExchangeRates of Luna in target fiat currencies
 // 	Voter              sdk.ValAddress     `json:"voter"`                // voter val address of validator
 // }
 message AggregateExchangeRateVote {
-    repeated ExchangeRateTuple exchange_rate_tuples = 1;
+    repeated ExchangeRateTuple exchange_rate_tuples = 1 [(gogoproto.nullable) = false];
     string voter = 2;
 }

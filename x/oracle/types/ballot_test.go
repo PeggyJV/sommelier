@@ -9,8 +9,8 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	abci "github.com/tendermint/tendermint/abci/types"
 	"github.com/tendermint/tendermint/crypto/secp256k1"
+	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
@@ -24,7 +24,7 @@ func TestToMap(t *testing.T) {
 		[]VoteForTally{
 			{
 				ExchangeRateVote{
-					Voter:        sdk.ValAddress(secp256k1.GenPrivKey().PubKey().Address()),
+					Voter:        sdk.ValAddress(secp256k1.GenPrivKey().PubKey().Address()).String(),
 					Denom:        MicroKRWDenom,
 					ExchangeRate: sdk.NewDec(1600),
 				},
@@ -32,7 +32,7 @@ func TestToMap(t *testing.T) {
 			},
 			{
 				ExchangeRateVote{
-					Voter:        sdk.ValAddress(secp256k1.GenPrivKey().PubKey().Address()),
+					Voter:        sdk.ValAddress(secp256k1.GenPrivKey().PubKey().Address()).String(),
 					Denom:        MicroKRWDenom,
 					ExchangeRate: sdk.ZeroDec(),
 				},
@@ -40,7 +40,7 @@ func TestToMap(t *testing.T) {
 			},
 			{
 				ExchangeRateVote{
-					Voter:        sdk.ValAddress(secp256k1.GenPrivKey().PubKey().Address()),
+					Voter:        sdk.ValAddress(secp256k1.GenPrivKey().PubKey().Address()).String(),
 					Denom:        MicroKRWDenom,
 					ExchangeRate: sdk.NewDec(1500),
 				},
@@ -122,7 +122,7 @@ func TestSqrt(t *testing.T) {
 
 func TestPBPower(t *testing.T) {
 
-	ctx := sdk.NewContext(nil, abci.Header{}, false, nil)
+	ctx := sdk.NewContext(nil, tmproto.Header{}, false, nil)
 	_, valAccAddrs, sk := GenerateRandomTestCase()
 	pb := ExchangeRateBallot{}
 	ballotPower := int64(0)

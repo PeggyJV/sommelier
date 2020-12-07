@@ -23,15 +23,13 @@ option go_package = "github.com/peggyjv/sommelier/x/oracle/types";
 // 	TobinTaxes                    map[string]sdk.Dec             `json:"tobin_taxes" yaml:"tobin_taxes"`
 // }
 message GenesisState {
-    Params params = 1;
-    map<string, string> feeder_delegations = 2;
-    repeated ExchangeRateTuple exchange_rates = 3 [(gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec", (gogoproto.nullable) = false];
-    repeated ExchangeRatePrevote exchange_rate_prevotes = 4;
-    repeated ExchangeRateVote exchange_rate_votes = 5;
-    map<string, int64> miss_counters = 6;
-    repeated AggregateExchangeRatePrevote aggregate_exchange_rate_prevotes = 7;
-    repeated AggregateExchangeRateVote aggregate_exchange_rate_votes = 8;
-    repeated ExchangeRateTuple tobin_taxes = 9;
+    Params                                params                           = 1 [(gogoproto.nullable) = false];
+    map<string, string>                   feeder_delegations               = 2 [(gogoproto.nullable) = false];
+    repeated ExchangeRateTuple            exchange_rates                   = 3 [(gogoproto.nullable) = false];
+    map<string, int64>                    miss_counters                    = 4 [(gogoproto.nullable) = false];
+    repeated AggregateExchangeRatePrevote aggregate_exchange_rate_prevotes = 5 [(gogoproto.nullable) = false];
+    repeated AggregateExchangeRateVote    aggregate_exchange_rate_votes    = 6 [(gogoproto.nullable) = false];
+    repeated ExchangeRateTuple            tobin_taxes                      = 7 [(gogoproto.nullable) = false];
 
 }
 
@@ -51,7 +49,7 @@ message Params {
     string vote_threshold = 2 [(gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec", (gogoproto.nullable) = false];
     string reward_band = 3 [(gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec", (gogoproto.nullable) = false];
     int64 reward_distribution_window = 4; 
-    DenomList whitelist = 5;
+    repeated Denom whitelist = 5 [(gogoproto.nullable) = false];
     string slash_fraction = 6 [(gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec", (gogoproto.nullable) = false];
     int64 slash_window = 7;
     string min_valid_per_window = 8 [(gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec", (gogoproto.nullable) = false];
