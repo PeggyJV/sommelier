@@ -13,7 +13,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	core "github.com/peggyjv/sommelier/types"
-	"github.com/peggyjv/sommelier/x/oracle//types"
+	"github.com/peggyjv/sommelier/x/oracle/types"
 )
 
 var (

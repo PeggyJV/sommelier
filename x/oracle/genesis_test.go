@@ -1,7 +1,7 @@
 package oracle
 
 import (
-	"github.com/peggyjv/sommelier/x/oracle//types"
+	"github.com/peggyjv/sommelier/x/oracle/types"
 	"testing"
 
 	"github.com/stretchr/testify/require"

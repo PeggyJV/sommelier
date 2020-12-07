@@ -4,7 +4,7 @@ import (
 	"sort"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/peggyjv/sommelier/x/oracle//types"
+	"github.com/peggyjv/sommelier/x/oracle/types"
 )
 
 // Calculates the median and returns it. Sets the set of voters to be rewarded, i.e. voted within

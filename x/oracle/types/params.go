@@ -198,7 +198,7 @@ func validateRewardDistributionWindow(i interface{}) error {
 }
 
 func validateWhitelist(i interface{}) error {
-	v, ok := i.(DenomList)
+	v, ok := i.([]Denom)
 	if !ok {
 		return fmt.Errorf("invalid parameter type: %T", i)
 	}

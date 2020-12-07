@@ -8,7 +8,7 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/peggyjv/sommelier/x/oracle//types"
+	"github.com/peggyjv/sommelier/x/oracle/types"
 )
 
 // DecodeStore unmarshals the KVPair's Value to the corresponding distribution type

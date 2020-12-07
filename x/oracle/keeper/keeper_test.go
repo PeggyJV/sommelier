@@ -4,77 +4,24 @@ import (
 	"bytes"
 	"testing"
 
-	"github.com/stretchr/testify/require"
-
-	core "github.com/peggyjv/sommelier/types"
-	"github.com/peggyjv/sommelier/x/oracle//types"
-
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/peggyjv/sommelier/x/oracle/types"
+	"github.com/stretchr/testify/require"
 )
-
-func TestPrevoteAddDelete(t *testing.T) {
-	input := CreateTestInput(t)
-
-	hash := types.GetVoteHash("salt", sdk.NewDec(123), "foo", sdk.ValAddress(Addrs[0]))
-	prevote := types.NewExchangeRatePrevote(hash, core.MicroSDRDenom, sdk.ValAddress(Addrs[0]), 0)
-	input.OracleKeeper.AddExchangeRatePrevote(input.Ctx, prevote)
-
-	KPrevote, err := input.OracleKeeper.GetExchangeRatePrevote(input.Ctx, core.MicroSDRDenom, sdk.ValAddress(Addrs[0]))
-	require.NoError(t, err)
-	require.Equal(t, prevote, KPrevote)
-
-	input.OracleKeeper.DeleteExchangeRatePrevote(input.Ctx, prevote)
-	_, err = input.OracleKeeper.GetExchangeRatePrevote(input.Ctx, core.MicroSDRDenom, sdk.ValAddress(Addrs[0]))
-	require.Error(t, err)
-}
-
-func TestPrevoteIterate(t *testing.T) {
-	input := CreateTestInput(t)
-
-	hash := types.GetVoteHash("salt", sdk.NewDec(123), "foo", sdk.ValAddress(Addrs[0]))
-	prevote1 := types.NewExchangeRatePrevote(hash, core.MicroSDRDenom, sdk.ValAddress(Addrs[0]), 0)
-	input.OracleKeeper.AddExchangeRatePrevote(input.Ctx, prevote1)
-
-	hash2 := types.GetVoteHash("salt", sdk.NewDec(123), "foo", sdk.ValAddress(Addrs[1]))
-	prevote2 := types.NewExchangeRatePrevote(hash2, core.MicroSDRDenom, sdk.ValAddress(Addrs[1]), 0)
-	input.OracleKeeper.AddExchangeRatePrevote(input.Ctx, prevote2)
-
-	i := 0
-	bigger := bytes.Compare(Addrs[0], Addrs[1])
-	input.OracleKeeper.IterateExchangeRatePrevotes(input.Ctx, func(p types.ExchangeRatePrevote) (stop bool) {
-		if (i == 0 && bigger == -1) || (i == 1 && bigger == 1) {
-			require.Equal(t, prevote1, p)
-		} else {
-			require.Equal(t, prevote2, p)
-		}
-
-		i++
-		return false
-	})
-
-	hash3 := types.GetVoteHash("salt", sdk.NewDec(123), "foo", sdk.ValAddress(Addrs[2]))
-	prevote3 := types.NewExchangeRatePrevote(hash3, core.MicroLunaDenom, sdk.ValAddress(Addrs[2]), 0)
-	input.OracleKeeper.AddExchangeRatePrevote(input.Ctx, prevote3)
-
-	input.OracleKeeper.iterateExchangeRatePrevotesWithPrefix(input.Ctx, types.GetExchangeRatePrevoteKey(core.MicroLunaDenom, sdk.ValAddress{}), func(p types.ExchangeRatePrevote) (stop bool) {
-		require.Equal(t, prevote3, p)
-		return false
-	})
-}
 
 func TestVoteAddDelete(t *testing.T) {
 	input := CreateTestInput(t)
 
 	rate := sdk.NewDec(1700)
-	vote := types.NewExchangeRateVote(rate, core.MicroSDRDenom, sdk.ValAddress(Addrs[0]))
+	vote := types.NewExchangeRateVote(rate, types.MicroSDRDenom, sdk.ValAddress(Addrs[0]))
 	input.OracleKeeper.AddExchangeRateVote(input.Ctx, vote)
 
-	KVote, err := input.OracleKeeper.getExchangeRateVote(input.Ctx, core.MicroSDRDenom, sdk.ValAddress(Addrs[0]))
+	KVote, err := input.OracleKeeper.getExchangeRateVote(input.Ctx, types.MicroSDRDenom, sdk.ValAddress(Addrs[0]))
 	require.NoError(t, err)
 	require.Equal(t, vote, KVote)
 
 	input.OracleKeeper.DeleteExchangeRateVote(input.Ctx, vote)
-	_, err = input.OracleKeeper.getExchangeRateVote(input.Ctx, core.MicroSDRDenom, sdk.ValAddress(Addrs[0]))
+	_, err = input.OracleKeeper.getExchangeRateVote(input.Ctx, types.MicroSDRDenom, sdk.ValAddress(Addrs[0]))
 	require.Error(t, err)
 }
 
@@ -82,10 +29,10 @@ func TestVoteIterate(t *testing.T) {
 	input := CreateTestInput(t)
 
 	rate := sdk.NewDec(1700)
-	vote1 := types.NewExchangeRateVote(rate, core.MicroSDRDenom, sdk.ValAddress(Addrs[0]))
+	vote1 := types.NewExchangeRateVote(rate, types.MicroSDRDenom, sdk.ValAddress(Addrs[0]))
 	input.OracleKeeper.AddExchangeRateVote(input.Ctx, vote1)
 
-	vote2 := types.NewExchangeRateVote(rate, core.MicroSDRDenom, sdk.ValAddress(Addrs[1]))
+	vote2 := types.NewExchangeRateVote(rate, types.MicroSDRDenom, sdk.ValAddress(Addrs[1]))
 	input.OracleKeeper.AddExchangeRateVote(input.Ctx, vote2)
 
 	i := 0
@@ -101,10 +48,10 @@ func TestVoteIterate(t *testing.T) {
 		return false
 	})
 
-	vote3 := types.NewExchangeRateVote(rate, core.MicroLunaDenom, sdk.ValAddress(Addrs[2]))
+	vote3 := types.NewExchangeRateVote(rate, types.MicroLunaDenom, sdk.ValAddress(Addrs[2]))
 	input.OracleKeeper.AddExchangeRateVote(input.Ctx, vote3)
 
-	input.OracleKeeper.iterateExchangeRateVotesWithPrefix(input.Ctx, types.GetVoteKey(core.MicroLunaDenom, sdk.ValAddress{}), func(p types.ExchangeRateVote) (stop bool) {
+	input.OracleKeeper.iterateExchangeRateVotesWithPrefix(input.Ctx, types.GetVoteKey(types.MicroLunaDenom, sdk.ValAddress{}), func(p types.ExchangeRateVote) (stop bool) {
 		require.Equal(t, vote3, p)
 		return false
 	})
@@ -114,22 +61,22 @@ func TestVoteCollect(t *testing.T) {
 	input := CreateTestInput(t)
 
 	rate := sdk.NewDec(1700)
-	vote1 := types.NewExchangeRateVote(rate, core.MicroSDRDenom, sdk.ValAddress(Addrs[0]))
+	vote1 := types.NewExchangeRateVote(rate, types.MicroSDRDenom, sdk.ValAddress(Addrs[0]))
 	input.OracleKeeper.AddExchangeRateVote(input.Ctx, vote1)
 
-	vote2 := types.NewExchangeRateVote(rate, core.MicroSDRDenom, sdk.ValAddress(Addrs[1]))
+	vote2 := types.NewExchangeRateVote(rate, types.MicroSDRDenom, sdk.ValAddress(Addrs[1]))
 	input.OracleKeeper.AddExchangeRateVote(input.Ctx, vote2)
 
-	vote3 := types.NewExchangeRateVote(rate, core.MicroLunaDenom, sdk.ValAddress(Addrs[0]))
+	vote3 := types.NewExchangeRateVote(rate, types.MicroLunaDenom, sdk.ValAddress(Addrs[0]))
 	input.OracleKeeper.AddExchangeRateVote(input.Ctx, vote3)
 
-	vote4 := types.NewExchangeRateVote(rate, core.MicroLunaDenom, sdk.ValAddress(Addrs[1]))
+	vote4 := types.NewExchangeRateVote(rate, types.MicroLunaDenom, sdk.ValAddress(Addrs[1]))
 	input.OracleKeeper.AddExchangeRateVote(input.Ctx, vote4)
 
 	collectedVotes := input.OracleKeeper.OrganizeBallotByDenom(input.Ctx)
 
-	pb1 := collectedVotes[core.MicroSDRDenom]
-	pb2 := collectedVotes[core.MicroLunaDenom]
+	pb1 := collectedVotes[types.MicroSDRDenom]
+	pb2 := collectedVotes[types.MicroLunaDenom]
 
 	bigger := bytes.Compare(Addrs[0], Addrs[1])
 	for i, v := range pb1 {
@@ -152,33 +99,33 @@ func TestVoteCollect(t *testing.T) {
 func TestExchangeRate(t *testing.T) {
 	input := CreateTestInput(t)
 
-	cnyExchangeRate := sdk.NewDecWithPrec(839, int64(OracleDecPrecision)).MulInt64(core.MicroUnit)
-	gbpExchangeRate := sdk.NewDecWithPrec(4995, int64(OracleDecPrecision)).MulInt64(core.MicroUnit)
-	krwExchangeRate := sdk.NewDecWithPrec(2838, int64(OracleDecPrecision)).MulInt64(core.MicroUnit)
-	lunaExchangeRate := sdk.NewDecWithPrec(3282384, int64(OracleDecPrecision)).MulInt64(core.MicroUnit)
+	cnyExchangeRate := sdk.NewDecWithPrec(839, int64(OracleDecPrecision)).MulInt64(types.MicroUnit)
+	gbpExchangeRate := sdk.NewDecWithPrec(4995, int64(OracleDecPrecision)).MulInt64(types.MicroUnit)
+	krwExchangeRate := sdk.NewDecWithPrec(2838, int64(OracleDecPrecision)).MulInt64(types.MicroUnit)
+	lunaExchangeRate := sdk.NewDecWithPrec(3282384, int64(OracleDecPrecision)).MulInt64(types.MicroUnit)
 
 	// Set & get rates
-	input.OracleKeeper.SetLunaExchangeRate(input.Ctx, core.MicroCNYDenom, cnyExchangeRate)
-	rate, err := input.OracleKeeper.GetLunaExchangeRate(input.Ctx, core.MicroCNYDenom)
+	input.OracleKeeper.SetLunaExchangeRate(input.Ctx, types.MicroCNYDenom, cnyExchangeRate)
+	rate, err := input.OracleKeeper.GetLunaExchangeRate(input.Ctx, types.MicroCNYDenom)
 	require.NoError(t, err)
 	require.Equal(t, cnyExchangeRate, rate)
 
-	input.OracleKeeper.SetLunaExchangeRate(input.Ctx, core.MicroGBPDenom, gbpExchangeRate)
-	rate, err = input.OracleKeeper.GetLunaExchangeRate(input.Ctx, core.MicroGBPDenom)
+	input.OracleKeeper.SetLunaExchangeRate(input.Ctx, types.MicroGBPDenom, gbpExchangeRate)
+	rate, err = input.OracleKeeper.GetLunaExchangeRate(input.Ctx, types.MicroGBPDenom)
 	require.NoError(t, err)
 	require.Equal(t, gbpExchangeRate, rate)
 
-	input.OracleKeeper.SetLunaExchangeRate(input.Ctx, core.MicroKRWDenom, krwExchangeRate)
-	rate, err = input.OracleKeeper.GetLunaExchangeRate(input.Ctx, core.MicroKRWDenom)
+	input.OracleKeeper.SetLunaExchangeRate(input.Ctx, types.MicroKRWDenom, krwExchangeRate)
+	rate, err = input.OracleKeeper.GetLunaExchangeRate(input.Ctx, types.MicroKRWDenom)
 	require.NoError(t, err)
 	require.Equal(t, krwExchangeRate, rate)
 
-	input.OracleKeeper.SetLunaExchangeRate(input.Ctx, core.MicroLunaDenom, lunaExchangeRate)
-	rate, _ = input.OracleKeeper.GetLunaExchangeRate(input.Ctx, core.MicroLunaDenom)
+	input.OracleKeeper.SetLunaExchangeRate(input.Ctx, types.MicroLunaDenom, lunaExchangeRate)
+	rate, _ = input.OracleKeeper.GetLunaExchangeRate(input.Ctx, types.MicroLunaDenom)
 	require.Equal(t, sdk.OneDec(), rate)
 
-	input.OracleKeeper.DeleteLunaExchangeRate(input.Ctx, core.MicroKRWDenom)
-	_, err = input.OracleKeeper.GetLunaExchangeRate(input.Ctx, core.MicroKRWDenom)
+	input.OracleKeeper.DeleteLunaExchangeRate(input.Ctx, types.MicroKRWDenom)
+	_, err = input.OracleKeeper.GetLunaExchangeRate(input.Ctx, types.MicroKRWDenom)
 	require.Error(t, err)
 
 	numExchangeRates := 0
@@ -194,26 +141,26 @@ func TestExchangeRate(t *testing.T) {
 func TestIterateLunaExchangeRates(t *testing.T) {
 	input := CreateTestInput(t)
 
-	cnyExchangeRate := sdk.NewDecWithPrec(839, int64(OracleDecPrecision)).MulInt64(core.MicroUnit)
-	gbpExchangeRate := sdk.NewDecWithPrec(4995, int64(OracleDecPrecision)).MulInt64(core.MicroUnit)
-	krwExchangeRate := sdk.NewDecWithPrec(2838, int64(OracleDecPrecision)).MulInt64(core.MicroUnit)
-	lunaExchangeRate := sdk.NewDecWithPrec(3282384, int64(OracleDecPrecision)).MulInt64(core.MicroUnit)
+	cnyExchangeRate := sdk.NewDecWithPrec(839, int64(OracleDecPrecision)).MulInt64(types.MicroUnit)
+	gbpExchangeRate := sdk.NewDecWithPrec(4995, int64(OracleDecPrecision)).MulInt64(types.MicroUnit)
+	krwExchangeRate := sdk.NewDecWithPrec(2838, int64(OracleDecPrecision)).MulInt64(types.MicroUnit)
+	lunaExchangeRate := sdk.NewDecWithPrec(3282384, int64(OracleDecPrecision)).MulInt64(types.MicroUnit)
 
 	// Set & get rates
-	input.OracleKeeper.SetLunaExchangeRate(input.Ctx, core.MicroCNYDenom, cnyExchangeRate)
-	input.OracleKeeper.SetLunaExchangeRate(input.Ctx, core.MicroGBPDenom, gbpExchangeRate)
-	input.OracleKeeper.SetLunaExchangeRate(input.Ctx, core.MicroKRWDenom, krwExchangeRate)
-	input.OracleKeeper.SetLunaExchangeRate(input.Ctx, core.MicroLunaDenom, lunaExchangeRate)
+	input.OracleKeeper.SetLunaExchangeRate(input.Ctx, types.MicroCNYDenom, cnyExchangeRate)
+	input.OracleKeeper.SetLunaExchangeRate(input.Ctx, types.MicroGBPDenom, gbpExchangeRate)
+	input.OracleKeeper.SetLunaExchangeRate(input.Ctx, types.MicroKRWDenom, krwExchangeRate)
+	input.OracleKeeper.SetLunaExchangeRate(input.Ctx, types.MicroLunaDenom, lunaExchangeRate)
 
 	input.OracleKeeper.IterateLunaExchangeRates(input.Ctx, func(denom string, rate sdk.Dec) (stop bool) {
 		switch denom {
-		case core.MicroCNYDenom:
+		case types.MicroCNYDenom:
 			require.Equal(t, cnyExchangeRate, rate)
-		case core.MicroGBPDenom:
+		case types.MicroGBPDenom:
 			require.Equal(t, gbpExchangeRate, rate)
-		case core.MicroKRWDenom:
+		case types.MicroKRWDenom:
 			require.Equal(t, krwExchangeRate, rate)
-		case core.MicroLunaDenom:
+		case types.MicroLunaDenom:
 			require.Equal(t, lunaExchangeRate, rate)
 		}
 		return false
@@ -224,14 +171,14 @@ func TestIterateLunaExchangeRates(t *testing.T) {
 func TestRewardPool(t *testing.T) {
 	input := CreateTestInput(t)
 
-	fees := sdk.NewCoins(sdk.NewCoin(core.MicroSDRDenom, sdk.NewInt(1000)))
-	acc := input.SupplyKeeper.GetModuleAccount(input.Ctx, types.ModuleName)
-	err := acc.SetCoins(fees)
+	fees := sdk.NewCoins(sdk.NewCoin(types.MicroSDRDenom, sdk.NewInt(1000)))
+	acc := input.AccKeeper.GetModuleAccount(input.Ctx, types.ModuleName)
+	err := input.BankKeeper.SetBalances(input.Ctx, acc.GetAddress(), fees)
 	if err != nil {
 		panic(err) // nerver occurs
 	}
 
-	input.SupplyKeeper.SetModuleAccount(input.Ctx, acc)
+	input.AccKeeper.SetModuleAccount(input.Ctx, acc)
 
 	KFees := input.OracleKeeper.GetRewardPool(input.Ctx)
 	require.Equal(t, fees, KFees)
@@ -254,8 +201,8 @@ func TestParams(t *testing.T) {
 	slashWindow := int64(1000)
 	minValidPerWindow := sdk.NewDecWithPrec(1, 4)
 	whitelist := types.DenomList{
-		{Name: core.MicroSDRDenom, TobinTax: types.DefaultTobinTax},
-		{Name: core.MicroKRWDenom, TobinTax: types.DefaultTobinTax},
+		{Name: types.MicroSDRDenom, TobinTax: types.DefaultTobinTax},
+		{Name: types.MicroKRWDenom, TobinTax: types.DefaultTobinTax},
 	}
 
 	// Should really test validateParams, but skipping because obvious
@@ -447,10 +394,10 @@ func TestTobinTaxGetSet(t *testing.T) {
 	input := CreateTestInput(t)
 
 	tobinTaxes := map[string]sdk.Dec{
-		core.MicroSDRDenom: sdk.NewDec(1),
-		core.MicroUSDDenom: sdk.NewDecWithPrec(1, 3),
-		core.MicroKRWDenom: sdk.NewDecWithPrec(123, 3),
-		core.MicroMNTDenom: sdk.NewDecWithPrec(1423, 4),
+		types.MicroSDRDenom: sdk.NewDec(1),
+		types.MicroUSDDenom: sdk.NewDecWithPrec(1, 3),
+		types.MicroKRWDenom: sdk.NewDecWithPrec(123, 3),
+		types.MicroMNTDenom: sdk.NewDecWithPrec(1423, 4),
 	}
 
 	for denom, tobinTax := range tobinTaxes {

@@ -7,6 +7,8 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
+type ExchangeRateVotes []ExchangeRateVote
+
 // NewExchangeRateVote creates a ExchangeRateVote instance
 func NewExchangeRateVote(rate sdk.Dec, denom string, voter sdk.ValAddress) ExchangeRateVote {
 	return ExchangeRateVote{

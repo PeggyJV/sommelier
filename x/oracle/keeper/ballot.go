@@ -2,7 +2,7 @@ package keeper
 
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/peggyjv/sommelier/x/oracle//types"
+	"github.com/peggyjv/sommelier/x/oracle/types"
 )
 
 // OrganizeBallotByDenom collects all oracle votes for the period, categorized by the votes' denom parameter
@@ -12,7 +12,12 @@ func (k Keeper) OrganizeBallotByDenom(ctx sdk.Context) (votes map[string]types.E
 
 	// Organize aggregate votes
 	aggregateHandler := func(vote types.AggregateExchangeRateVote) (stop bool) {
-		validator := k.StakingKeeper.Validator(ctx, vote.Voter)
+		voter, err := sdk.ValAddressFromBech32(vote.Voter)
+		if err != nil {
+			// TODO: state machine panics still OK?
+			panic(err)
+		}
+		validator := k.StakingKeeper.Validator(ctx, voter)
 
 		// organize ballot only for the active validators
 		if validator != nil && validator.IsBonded() && !validator.IsJailed() {
@@ -28,7 +33,7 @@ func (k Keeper) OrganizeBallotByDenom(ctx sdk.Context) (votes map[string]types.E
 
 				votes[tuple.Denom] = append(votes[tuple.Denom],
 					types.NewVoteForTally(
-						types.NewExchangeRateVote(tuple.ExchangeRate, tuple.Denom, vote.Voter),
+						types.NewExchangeRateVote(tuple.ExchangeRate, tuple.Denom, voter),
 						tmpPower,
 					),
 				)
@@ -42,7 +47,12 @@ func (k Keeper) OrganizeBallotByDenom(ctx sdk.Context) (votes map[string]types.E
 
 	// organize individual votes
 	handler := func(vote types.ExchangeRateVote) (stop bool) {
-		validator := k.StakingKeeper.Validator(ctx, vote.Voter)
+		voter, err := sdk.ValAddressFromBech32(vote.Voter)
+		if err != nil {
+			// TODO: state machine panics still OK?
+			panic(err)
+		}
+		validator := k.StakingKeeper.Validator(ctx, voter)
 
 		// organize ballot only for the active validators
 		if validator != nil && validator.IsBonded() && !validator.IsJailed() {
