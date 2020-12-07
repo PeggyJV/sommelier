@@ -3,25 +3,9 @@ package oracle.v1;
 
 import "gogoproto/gogo.proto";
 // import "google/protobuf/any.proto";
-import "oracle/v1/vote.proto";
 // import "cosmos_proto/cosmos.proto";
 
 option go_package = "github.com/peggyjv/sommelier/x/oracle/types";
-
-
-// type VoteForTally struct {
-// 	ExchangeRateVote
-// 	Power int64
-// }
-message VoteForTally {
-    ExchangeRateVote exchange_rate_vote = 1;
-    int64 power = 2;
-}
-
-// type ExchangeRateBallot []VoteForTally
-message ExchangeRateBallot {
-    repeated VoteForTally vote_for_tally = 1;
-}
 
 // // Claim is an interface that directs its rewards to an attached bank account.
 // type Claim struct {
@@ -32,7 +16,6 @@ message Claim {
     int64 weight = 1;
     string recipient = 2; 
 }
-
 
 // // Denom is the object to hold configurations of each denom
 // type Denom struct {

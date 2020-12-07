@@ -4,23 +4,50 @@ package oracle.v1;
 // import "gogoproto/gogo.proto";
 // import "google/protobuf/any.proto";
 // import "cosmos_proto/cosmos.proto";
+import "google/api/annotations.proto";
 
 option go_package = "github.com/peggyjv/sommelier/x/oracle/types";
 
 service Query {
-    rpc ExchangeRate(QueryExchangeRateRequest) returns (QueryExchangeRateResponse) {}
-    rpc ExchangeRates(QueryExchangeRatesRequest) returns (QueryExchangeRatesResponse) {}
-    rpc Actives(QueryActivesRequest) returns (QueryActivesResponse) {}
-    rpc Votes(QueryVotesRequest) returns (QueryVotesResponse) {}
-    rpc Prevotes(QueryPrevotesRequest) returns (QueryPrevotesResponse) {}
-    rpc Parameters(QueryParametersRequest) returns (QueryParametersResponse) {}
-    rpc FeederDelegation(QueryFeederDelegationRequest) returns (QueryFeederDelegationResponse) {}
-    rpc MissCounter(QueryMissCounterRequest) returns (QueryMissCounterResponse) {}
-    rpc AggregatePrevote(QueryAggregatePrevoteRequest) returns (QueryAggregatePrevoteResponse) {}
-    rpc AggregateVote(QueryAggregateVoteRequest) returns (QueryAggregateVoteResponse) {}
-    rpc VoteTargets(QueryVoteTargetsRequest) returns (QueryVoteTargetsResponse) {}
-    rpc TobinTax(QueryTobinTaxRequest) returns (QueryTobinTaxResponse) {}
-    rpc TobinTaxes(QueryTobinTaxesRequest) returns (QueryTobinTaxesResponse) {}
+    rpc ExchangeRate(QueryExchangeRateRequest) returns (QueryExchangeRateResponse) {
+        option(google.api.http).get = "/oracle/v1/ExchangeRate";
+    }
+    rpc ExchangeRates(QueryExchangeRatesRequest) returns (QueryExchangeRatesResponse) {
+        option(google.api.http).get = "/oracle/v1/ExchangeRates";
+    }
+    rpc Actives(QueryActivesRequest) returns (QueryActivesResponse) {
+        option(google.api.http).get = "/oracle/v1/Actives";
+    }
+    rpc Votes(QueryVotesRequest) returns (QueryVotesResponse) {
+        option(google.api.http).get = "/oracle/v1/Votes";
+    }
+    rpc Prevotes(QueryPrevotesRequest) returns (QueryPrevotesResponse) {
+        option(google.api.http).get = "/oracle/v1/Prevotes";
+    }
+    rpc Parameters(QueryParametersRequest) returns (QueryParametersResponse) {
+        option(google.api.http).get = "/oracle/v1/Parameters";
+    }
+    rpc FeederDelegation(QueryFeederDelegationRequest) returns (QueryFeederDelegationResponse) {
+        option(google.api.http).get = "/oracle/v1/FeederDelegation";
+    }
+    rpc MissCounter(QueryMissCounterRequest) returns (QueryMissCounterResponse) {
+        option(google.api.http).get = "/oracle/v1/MissCounter";
+    }
+    rpc AggregatePrevote(QueryAggregatePrevoteRequest) returns (QueryAggregatePrevoteResponse) {
+        option(google.api.http).get = "/oracle/v1/AggregatePrevote";
+    }
+    rpc AggregateVote(QueryAggregateVoteRequest) returns (QueryAggregateVoteResponse) {
+        option(google.api.http).get = "/oracle/v1/AggregateVote";
+    }
+    rpc VoteTargets(QueryVoteTargetsRequest) returns (QueryVoteTargetsResponse) {
+        option(google.api.http).get = "/oracle/v1/VoteTargets";
+    }
+    rpc TobinTax(QueryTobinTaxRequest) returns (QueryTobinTaxResponse) {
+        option(google.api.http).get = "/oracle/v1/TobinTax";
+    }
+    rpc TobinTaxes(QueryTobinTaxesRequest) returns (QueryTobinTaxesResponse) {
+        option(google.api.http).get = "/oracle/v1/TobinTaxes";
+    }
 }
 
 message QueryExchangeRateRequest {
