@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	"github.com/cosmos/cosmos-sdk/x/staking"
 	"github.com/peggyjv/sommelier/x/oracle/types"
 	"github.com/stretchr/testify/require"
@@ -17,6 +18,14 @@ func TestOrganize(t *testing.T) {
 	amt := sdk.TokensFromConsensusPower(power)
 	sh := staking.NewHandler(input.StakingKeeper)
 	ctx := input.Ctx
+
+	// TODO: Do this initialization in the test_utils file?
+	bd := input.StakingKeeper.GetParams(ctx).BondDenom
+	for i := range []int{0, 1, 2} {
+		acc := input.AccKeeper.NewAccount(ctx, authtypes.NewBaseAccount(Addrs[i], accPubKeys[i], uint64(i), 0))
+		input.BankKeeper.SetBalances(ctx, acc.GetAddress(), sdk.NewCoins(sdk.NewCoin(bd, amt)))
+		input.AccKeeper.SetAccount(ctx, acc)
+	}
 
 	// Validator created
 	_, err := sh(ctx, NewTestMsgCreateValidator(ValAddrs[0], PubKeys[0], amt))
@@ -66,6 +75,14 @@ func TestOrganizeAggregate(t *testing.T) {
 	sh := staking.NewHandler(input.StakingKeeper)
 	ctx := input.Ctx
 
+	// TODO: Do this initialization in the test_utils file?
+	bd := input.StakingKeeper.GetParams(ctx).BondDenom
+	for i := range []int{0, 1, 2} {
+		acc := input.AccKeeper.NewAccount(ctx, authtypes.NewBaseAccount(Addrs[i], accPubKeys[i], uint64(i), 0))
+		input.BankKeeper.SetBalances(ctx, acc.GetAddress(), sdk.NewCoins(sdk.NewCoin(bd, amt)))
+		input.AccKeeper.SetAccount(ctx, acc)
+	}
+
 	// Validator created
 	_, err := sh(ctx, NewTestMsgCreateValidator(ValAddrs[0], PubKeys[0], amt))
 	require.NoError(t, err)
@@ -113,6 +130,14 @@ func TestDuplicateVote(t *testing.T) {
 	amt := sdk.TokensFromConsensusPower(power)
 	sh := staking.NewHandler(input.StakingKeeper)
 	ctx := input.Ctx
+
+	// TODO: Do this initialization in the test_utils file?
+	bd := input.StakingKeeper.GetParams(ctx).BondDenom
+	for i := range []int{0, 1, 2} {
+		acc := input.AccKeeper.NewAccount(ctx, authtypes.NewBaseAccount(Addrs[i], accPubKeys[i], uint64(i), 0))
+		input.BankKeeper.SetBalances(ctx, acc.GetAddress(), sdk.NewCoins(sdk.NewCoin(bd, amt)))
+		input.AccKeeper.SetAccount(ctx, acc)
+	}
 
 	// Validator created
 	_, err := sh(ctx, NewTestMsgCreateValidator(ValAddrs[0], PubKeys[0], amt))

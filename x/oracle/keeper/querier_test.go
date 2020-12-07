@@ -1,6 +1,7 @@
 package keeper
 
 import (
+	"encoding/json"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -26,7 +27,6 @@ func TestNewQuerier(t *testing.T) {
 }
 
 func TestQueryParams(t *testing.T) {
-	cdc := codec.NewLegacyAmino()
 	input := CreateTestInput(t)
 
 	var params types.Params
@@ -34,77 +34,9 @@ func TestQueryParams(t *testing.T) {
 	res, errRes := queryParameters(input.Ctx, input.OracleKeeper)
 	require.NoError(t, errRes)
 
-	err := cdc.UnmarshalJSON(res, &params)
+	err := json.Unmarshal(res, &params)
 	require.NoError(t, err)
 	require.Equal(t, input.OracleKeeper.GetParams(input.Ctx), params)
-}
-
-func TestQueryVotes(t *testing.T) {
-	cdc := codec.NewLegacyAmino()
-	input := CreateTestInput(t)
-	querier := NewQuerier(input.OracleKeeper)
-
-	vote1 := types.NewExchangeRateVote(sdk.NewDec(1700), types.MicroSDRDenom, ValAddrs[0])
-	input.OracleKeeper.AddExchangeRateVote(input.Ctx, vote1)
-	vote2 := types.NewExchangeRateVote(sdk.NewDec(1700), types.MicroSDRDenom, ValAddrs[1])
-	input.OracleKeeper.AddExchangeRateVote(input.Ctx, vote2)
-	vote3 := types.NewExchangeRateVote(sdk.NewDec(1700), types.MicroLunaDenom, ValAddrs[2])
-	input.OracleKeeper.AddExchangeRateVote(input.Ctx, vote3)
-
-	// voter denom both query params
-	queryParams := types.NewQueryVotesParams(ValAddrs[0], types.MicroSDRDenom)
-	bz, err := cdc.MarshalJSON(queryParams)
-	require.NoError(t, err)
-
-	req := abci.RequestQuery{
-		Path: "",
-		Data: bz,
-	}
-
-	res, err := querier(input.Ctx, []string{types.QueryVotes}, req)
-	require.NoError(t, err)
-
-	var filteredVotes types.ExchangeRateVotes
-	err = cdc.UnmarshalJSON(res, &filteredVotes)
-	require.NoError(t, err)
-	require.Equal(t, 1, len(filteredVotes))
-	require.Equal(t, vote1, filteredVotes[0])
-
-	// voter query params
-	queryParams = types.NewQueryVotesParams(ValAddrs[0], "")
-	bz, err = cdc.MarshalJSON(queryParams)
-	require.NoError(t, err)
-
-	req = abci.RequestQuery{
-		Path: "",
-		Data: bz,
-	}
-
-	res, err = querier(input.Ctx, []string{types.QueryVotes}, req)
-	require.NoError(t, err)
-
-	err = cdc.UnmarshalJSON(res, &filteredVotes)
-	require.NoError(t, err)
-	require.Equal(t, 1, len(filteredVotes))
-	require.Equal(t, vote1, filteredVotes[0])
-
-	// denom query params
-	queryParams = types.NewQueryVotesParams(sdk.ValAddress{}, types.MicroLunaDenom)
-	bz, err = cdc.MarshalJSON(queryParams)
-	require.NoError(t, err)
-
-	req = abci.RequestQuery{
-		Path: "",
-		Data: bz,
-	}
-
-	res, err = querier(input.Ctx, []string{types.QueryVotes}, req)
-	require.NoError(t, err)
-
-	err = cdc.UnmarshalJSON(res, &filteredVotes)
-	require.NoError(t, err)
-	require.Equal(t, 1, len(filteredVotes))
-	require.Equal(t, vote3, filteredVotes[0])
 }
 
 func TestQueryExchangeRate(t *testing.T) {
@@ -230,9 +162,11 @@ func TestQueryAggregatePrevote(t *testing.T) {
 	require.NoError(t, err)
 
 	var prevote types.AggregateExchangeRatePrevote
-	err = cdc.UnmarshalJSON(res, &prevote)
+	err = json.Unmarshal(res, &prevote)
 	require.NoError(t, err)
-	require.Equal(t, prevote1, prevote)
+	require.Equal(t, prevote1.Voter, prevote.Voter)
+	require.Equal(t, prevote1.SubmitBlock, prevote.SubmitBlock)
+	require.Equal(t, len(prevote1.Hash), len(prevote.Hash))
 
 	// validator 1 address params
 	queryParams = types.NewQueryAggregatePrevoteParams(ValAddrs[1])
@@ -249,7 +183,9 @@ func TestQueryAggregatePrevote(t *testing.T) {
 
 	err = cdc.UnmarshalJSON(res, &prevote)
 	require.NoError(t, err)
-	require.Equal(t, prevote2, prevote)
+	require.Equal(t, prevote2.Voter, prevote.Voter)
+	require.Equal(t, prevote2.SubmitBlock, prevote.SubmitBlock)
+	require.Equal(t, len(prevote2.Hash), len(prevote.Hash))
 }
 
 func TestQueryAggregateVote(t *testing.T) {

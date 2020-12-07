@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	"github.com/cosmos/cosmos-sdk/x/staking"
 	"github.com/peggyjv/sommelier/x/oracle/types"
 	"github.com/stretchr/testify/require"
@@ -19,6 +20,12 @@ func TestRewardBallotWinners(t *testing.T) {
 	sh := staking.NewHandler(input.StakingKeeper)
 	ctx := input.Ctx
 
+	// TODO: Do this initialization in the test_utils file?
+	for i := range []int{0, 1} {
+		acc := input.AccKeeper.NewAccount(ctx, authtypes.NewBaseAccount(Addrs[i], accPubKeys[i], uint64(i), 0))
+		input.BankKeeper.SetBalances(ctx, acc.GetAddress(), InitCoins)
+		input.AccKeeper.SetAccount(ctx, acc)
+	}
 	// Validator created
 	_, err := sh(ctx, NewTestMsgCreateValidator(addr, val, amt))
 	require.NoError(t, err)
