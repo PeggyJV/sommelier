@@ -20,15 +20,14 @@ func EndBlocker(ctx sdk.Context, k keeper.Keeper) {
 	// Build valid votes counter and winner map over all validators in active set
 	validVotesCounterMap := make(map[string]int)
 	winnerMap := make(map[string]types.Claim)
-	k.StakingKeeper.IterateValidators(ctx, func(_ int64, validator stakingtypes.ValidatorI) bool {
-
+	k.StakingKeeper.IterateValidators(ctx, func(i int64, validator stakingtypes.ValidatorI) bool {
 		// Exclude not bonded validator or jailed validators from tallying
 		if validator.IsBonded() && !validator.IsJailed() {
 
 			// NOTE: we directly stringify byte to string to prevent unnecessary bech32fy works
 			valAddr := validator.GetOperator()
-			validVotesCounterMap[string(valAddr)] = 0
-			winnerMap[string(valAddr)] = types.NewClaim(0, valAddr)
+			validVotesCounterMap[valAddr.String()] = 0
+			winnerMap[valAddr.String()] = types.NewClaim(0, valAddr)
 		}
 
 		return false

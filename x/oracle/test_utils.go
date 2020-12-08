@@ -29,6 +29,11 @@ func setup_with_small_voting_power(t *testing.T) (keeper.TestInput, sdk.Handler)
 	input.OracleKeeper.SetParams(input.Ctx, params)
 	h := NewHandler(input.OracleKeeper)
 
+	bd := input.StakingKeeper.GetParams(input.Ctx).BondDenom
+	acc := input.AccKeeper.NewAccount(input.Ctx, authtypes.NewBaseAccount(keeper.Addrs[0], keeper.AccPubKeys[0], 0, 0))
+	input.BankKeeper.SetBalances(input.Ctx, acc.GetAddress(), sdk.NewCoins(sdk.NewCoin(bd, stakingAmt.Add(sdk.NewInt(100)))))
+	input.AccKeeper.SetAccount(input.Ctx, acc)
+
 	sh := staking.NewHandler(input.StakingKeeper)
 	_, err := sh(input.Ctx, keeper.NewTestMsgCreateValidator(keeper.ValAddrs[0], keeper.PubKeys[0], sdk.TokensFromConsensusPower(1)))
 	require.NoError(t, err)
