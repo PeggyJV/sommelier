@@ -6,134 +6,18 @@ import (
 
 	"github.com/peggyjv/sommelier/x/oracle/types"
 
-	"github.com/cosmos/cosmos-sdk/client/context"
+	"github.com/cosmos/cosmos-sdk/client"
+	"github.com/cosmos/cosmos-sdk/client/tx"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/rest"
-	"github.com/cosmos/cosmos-sdk/x/auth/client/utils"
 
 	"github.com/gorilla/mux"
 )
 
 func resgisterTxRoute(cliCtx client.Context, r *mux.Router) {
-	r.HandleFunc(fmt.Sprintf("/oracle/denoms/{%s}/prevotes", RestDenom), submitPrevoteHandlerFunction(cliCtx)).Methods("POST")
-	r.HandleFunc(fmt.Sprintf("/oracle/denoms/{%s}/votes", RestDenom), submitVoteHandlerFunction(cliCtx)).Methods("POST")
 	r.HandleFunc(fmt.Sprintf("/oracle/voters/{%s}/feeder", RestVoter), submitDelegateHandlerFunction(cliCtx)).Methods("POST")
 	r.HandleFunc(fmt.Sprintf("/oracle/voters/{%s}/aggregate_prevote", RestVoter), submitAggregatePrevoteHandlerFunction(cliCtx)).Methods("POST")
 	r.HandleFunc(fmt.Sprintf("/oracle/voters/{%s}/aggregate_vote", RestVoter), submitAggregateVoteHandlerFunction(cliCtx)).Methods("POST")
-}
-
-// PrevoteReq ...
-type PrevoteReq struct {
-	BaseReq rest.BaseReq `json:"base_req"`
-
-	Hash         string  `json:"hash"`
-	ExchangeRate sdk.Dec `json:"exchange_rate"`
-	Salt         string  `json:"salt"`
-
-	Validator sdk.ValAddress `json:"validator"`
-}
-
-func submitPrevoteHandlerFunction(cliCtx client.Context) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		vars := mux.Vars(r)
-		denom := vars[RestDenom]
-
-		var req PrevoteReq
-		if !rest.ReadRESTReq(w, r, cliCtx.Codec, &req) {
-			return
-		}
-
-		req.BaseReq = req.BaseReq.Sanitize()
-
-		if !req.BaseReq.ValidateBasic(w) {
-			return
-		}
-
-		fromAddress, err := sdk.AccAddressFromBech32(req.BaseReq.From)
-		if err != nil {
-			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
-			return
-		}
-
-		// Default validator is self address
-		valAddress := req.Validator
-		if len(req.Validator) == 0 {
-			valAddress = sdk.ValAddress(fromAddress)
-		}
-
-		var hash types.VoteHash
-
-		// If hash is not given, then retrieve hash from exchange_rate and salt
-		if len(req.Hash) == 0 && (!req.ExchangeRate.Equal(sdk.ZeroDec()) && len(req.Salt) > 0) {
-			hash = types.GetVoteHash(req.Salt, req.ExchangeRate, denom, valAddress)
-		} else {
-			hash, err = types.VoteHashFromHexString(req.Hash)
-			if err != nil {
-				rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
-				return
-			}
-		}
-
-		// create the message
-		msg := types.NewMsgExchangeRatePrevote(hash, denom, fromAddress, valAddress)
-		err = msg.ValidateBasic()
-		if err != nil {
-			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
-			return
-		}
-
-		utils.WriteGenerateStdTxResponse(w, cliCtx, req.BaseReq, []sdk.Msg{msg})
-	}
-}
-
-//VoteReq ...
-type VoteReq struct {
-	BaseReq rest.BaseReq `json:"base_req"`
-
-	ExchangeRate sdk.Dec `json:"exchange_rate"`
-	Salt         string  `json:"salt"`
-
-	Validator sdk.ValAddress `json:"validator"`
-}
-
-func submitVoteHandlerFunction(cliCtx client.Context) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		vars := mux.Vars(r)
-		denom := vars[RestDenom]
-
-		var req VoteReq
-		if !rest.ReadRESTReq(w, r, cliCtx.Codec, &req) {
-			return
-		}
-
-		req.BaseReq = req.BaseReq.Sanitize()
-
-		if !req.BaseReq.ValidateBasic(w) {
-			return
-		}
-
-		fromAddress, err := sdk.AccAddressFromBech32(req.BaseReq.From)
-		if err != nil {
-			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
-			return
-		}
-
-		// Default validator is self address
-		valAddress := req.Validator
-		if len(req.Validator) == 0 {
-			valAddress = sdk.ValAddress(fromAddress)
-		}
-
-		// create the message
-		msg := types.NewMsgExchangeRateVote(req.ExchangeRate, req.Salt, denom, fromAddress, valAddress)
-		err = msg.ValidateBasic()
-		if err != nil {
-			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
-			return
-		}
-
-		utils.WriteGenerateStdTxResponse(w, cliCtx, req.BaseReq, []sdk.Msg{msg})
-	}
 }
 
 // DelegateReq is request body to set feeder of validator
@@ -155,7 +39,7 @@ func submitDelegateHandlerFunction(cliCtx client.Context) http.HandlerFunc {
 		}
 
 		var req DelegateReq
-		if !rest.ReadRESTReq(w, r, cliCtx.Codec, &req) {
+		if !rest.ReadRESTReq(w, r, cliCtx.LegacyAmino, &req) {
 			return
 		}
 
@@ -192,7 +76,7 @@ func submitDelegateHandlerFunction(cliCtx client.Context) http.HandlerFunc {
 			return
 		}
 
-		utils.WriteGenerateStdTxResponse(w, cliCtx, req.BaseReq, []sdk.Msg{msg})
+		tx.WriteGeneratedTxResponse(cliCtx, w, req.BaseReq, &msg)
 	}
 }
 
@@ -217,7 +101,7 @@ func submitAggregatePrevoteHandlerFunction(cliCtx client.Context) http.HandlerFu
 		}
 
 		var req AggregatePrevoteReq
-		if !rest.ReadRESTReq(w, r, cliCtx.Codec, &req) {
+		if !rest.ReadRESTReq(w, r, cliCtx.LegacyAmino, &req) {
 			return
 		}
 
@@ -260,7 +144,7 @@ func submitAggregatePrevoteHandlerFunction(cliCtx client.Context) http.HandlerFu
 			return
 		}
 
-		utils.WriteGenerateStdTxResponse(w, cliCtx, req.BaseReq, []sdk.Msg{msg})
+		tx.WriteGeneratedTxResponse(cliCtx, w, req.BaseReq, &msg)
 	}
 }
 
@@ -284,7 +168,7 @@ func submitAggregateVoteHandlerFunction(cliCtx client.Context) http.HandlerFunc 
 		}
 
 		var req AggregateVoteReq
-		if !rest.ReadRESTReq(w, r, cliCtx.Codec, &req) {
+		if !rest.ReadRESTReq(w, r, cliCtx.LegacyAmino, &req) {
 			return
 		}
 
@@ -315,6 +199,6 @@ func submitAggregateVoteHandlerFunction(cliCtx client.Context) http.HandlerFunc 
 			return
 		}
 
-		utils.WriteGenerateStdTxResponse(w, cliCtx, req.BaseReq, []sdk.Msg{msg})
+		tx.WriteGeneratedTxResponse(cliCtx, w, req.BaseReq, &msg)
 	}
 }

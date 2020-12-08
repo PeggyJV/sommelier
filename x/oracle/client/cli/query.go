@@ -22,7 +22,7 @@ func GetQueryCmd() *cobra.Command {
 		RunE:                       client.ValidateCmd,
 	}
 
-	oracleQueryCmd.AddCommand([]*cobra.Command(
+	oracleQueryCmd.AddCommand([]*cobra.Command{
 		GetCmdQueryExchangeRates(),
 		GetCmdQueryActives(),
 		GetCmdQueryParams(),
@@ -32,7 +32,7 @@ func GetQueryCmd() *cobra.Command {
 		GetCmdQueryAggregateVote(),
 		GetCmdQueryVoteTargets(),
 		GetCmdQueryTobinTaxes(),
-	)...)
+	}...)
 
 	return oracleQueryCmd
 
@@ -177,9 +177,8 @@ $ sommelier query oracle feeder terravaloper...
 				return err
 			}
 
-			var delegate sdk.AccAddress
-			clientCtx.JSONMarshaler.MustUnmarshalJSON(res, &delegate)
-			return clientCtx.PrintOutput(delegate)
+			fmt.Println(string(res))
+			return nil
 		},
 	}
 
@@ -210,8 +209,7 @@ $ sommelier query oracle miss terravaloper...
 				return err
 			}
 
-			params := types.NewQueryMissCounterParams(validator)
-			bz, err := clientCtx.JSONMarshaler.MarshalJSON(params)
+			bz, err := json.Marshal(types.NewQueryMissCounterParams(validator))
 			if err != nil {
 				return err
 			}
@@ -221,9 +219,8 @@ $ sommelier query oracle miss terravaloper...
 				return err
 			}
 
-			var missCounter int64
-			clientCtx.JSONMarshaler.MustUnmarshalJSON(res, &missCounter)
-			return clientCtx.PrintOutput(sdk.NewInt(missCounter))
+			fmt.Println(string(res))
+			return nil
 		},
 	}
 
@@ -254,8 +251,7 @@ $ sommelier query oracle aggregate-prevote terravaloper...
 				return err
 			}
 
-			params := types.NewQueryAggregatePrevoteParams(validator)
-			bz, err := clientCtx.JSONMarshaler.MarshalJSON(params)
+			bz, err := json.Marshal(types.NewQueryAggregatePrevoteParams(validator))
 			if err != nil {
 				return err
 			}
@@ -267,7 +263,7 @@ $ sommelier query oracle aggregate-prevote terravaloper...
 
 			var aggregatePrevote types.AggregateExchangeRatePrevote
 			clientCtx.JSONMarshaler.MustUnmarshalJSON(res, &aggregatePrevote)
-			return clientCtx.PrintOutput(aggregatePrevote)
+			return clientCtx.PrintOutput(&aggregatePrevote)
 		},
 	}
 
@@ -298,8 +294,7 @@ $ sommelier query oracle aggregate-vote terravaloper...
 				return err
 			}
 
-			params := types.NewQueryAggregateVoteParams(validator)
-			bz, err := clientCtx.JSONMarshaler.MarshalJSON(params)
+			bz, err := json.Marshal(types.NewQueryAggregateVoteParams(validator))
 			if err != nil {
 				return err
 			}
@@ -311,7 +306,7 @@ $ sommelier query oracle aggregate-vote terravaloper...
 
 			var aggregateVote types.AggregateExchangeRateVote
 			clientCtx.JSONMarshaler.MustUnmarshalJSON(res, &aggregateVote)
-			return clientCtx.PrintOutput(aggregateVote)
+			return clientCtx.PrintOutput(&aggregateVote)
 		},
 	}
 
@@ -336,9 +331,8 @@ func GetCmdQueryVoteTargets() *cobra.Command {
 				return err
 			}
 
-			var voteTargets Denoms
-			clientCtx.JSONMarshaler.MustUnmarshalJSON(res, &voteTargets)
-			return clientCtx.PrintOutput(voteTargets)
+			fmt.Println(string(res))
+			return nil
 		},
 	}
 
@@ -375,15 +369,15 @@ Or, can
 					return err
 				}
 
-				var tobinTaxes types.DenomList
-				clientCtx.JSONMarshaler.MustUnmarshalJSON(res, &tobinTaxes)
-				return clientCtx.PrintOutput(tobinTaxes)
+				out, err := sdk.ParseDecCoins(string(res))
+				if err != nil {
+					return err
+				}
+
+				return clientCtx.PrintOutput(&types.QueryTobinTaxesResponse{Rates: out})
 			}
 
-			denom := args[0]
-			params := types.NewQueryTobinTaxParams(denom)
-
-			bz, err := clientCtx.JSONMarshaler.MarshalJSON(params)
+			bz, err := json.Marshal(types.NewQueryTobinTaxParams(args[0]))
 			if err != nil {
 				return err
 			}
@@ -393,9 +387,8 @@ Or, can
 				return err
 			}
 
-			var tobinTax sdk.Dec
-			clientCtx.JSONMarshaler.MustUnmarshalJSON(res, &tobinTax)
-			return clientCtx.PrintOutput(tobinTax)
+			fmt.Println(string(res))
+			return nil
 		},
 	}
 

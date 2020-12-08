@@ -9,7 +9,6 @@ import (
 	"github.com/peggyjv/sommelier/x/oracle/types"
 
 	"github.com/cosmos/cosmos-sdk/client"
-	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/client/tx"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
@@ -26,11 +25,11 @@ func GetTxCmd() *cobra.Command {
 		RunE:                       client.ValidateCmd,
 	}
 
-	oracleTxCmd.AddCommand(flags.PostCommands(
+	oracleTxCmd.AddCommand([]*cobra.Command{
 		GetCmdDelegateFeederPermission(),
 		GetCmdAggregateExchangeRatePrevote(),
 		GetCmdAggregateExchangeRateVote(),
-	)...)
+	}...)
 
 	return oracleTxCmd
 }
@@ -58,7 +57,7 @@ where "terra1..." is the address you want to delegate your voting rights to.
 			}
 
 			// Get from address
-			voter := cliCtx.GetFromAddress()
+			voter := clientCtx.GetFromAddress()
 
 			// The address the right is being delegated from
 			validator := sdk.ValAddress(voter)
@@ -75,7 +74,7 @@ where "terra1..." is the address you want to delegate your voting rights to.
 				return err
 			}
 
-			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), msg)
+			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), &msg)
 		},
 	}
 
@@ -115,7 +114,7 @@ $ sommelier tx oracle aggregate-prevote 1234 8888.0ukrw,1.243uusd,0.99usdr terra
 			}
 
 			// Get from address
-			voter := cliCtx.GetFromAddress()
+			voter := clientCtx.GetFromAddress()
 
 			// By default the voter is voting on behalf of itself
 			validator := sdk.ValAddress(voter)
@@ -137,7 +136,7 @@ $ sommelier tx oracle aggregate-prevote 1234 8888.0ukrw,1.243uusd,0.99usdr terra
 				return err
 			}
 
-			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), msg)
+			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), &msg)
 		},
 	}
 
@@ -176,7 +175,7 @@ $ sommelier tx oracle aggregate-vote 1234 8888.0ukrw,1.243uusd,0.99usdr terraval
 			}
 
 			// Get from address
-			voter := cliCtx.GetFromAddress()
+			voter := clientCtx.GetFromAddress()
 
 			// By default the voter is voting on behalf of itself
 			validator := sdk.ValAddress(voter)
@@ -196,7 +195,7 @@ $ sommelier tx oracle aggregate-vote 1234 8888.0ukrw,1.243uusd,0.99usdr terraval
 				return err
 			}
 
-			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), msg)
+			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), &msg)
 		},
 	}
 

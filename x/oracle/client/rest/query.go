@@ -1,12 +1,13 @@
 package rest
 
 import (
+	"encoding/json"
 	"fmt"
 	"net/http"
 
 	"github.com/peggyjv/sommelier/x/oracle/types"
 
-	"github.com/cosmos/cosmos-sdk/client/context"
+	"github.com/cosmos/cosmos-sdk/client"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/rest"
 	"github.com/gorilla/mux"
@@ -56,7 +57,7 @@ func queryVotesHandlerFunction(cliCtx client.Context) http.HandlerFunc {
 			params.Voter = voterAddress
 		}
 
-		bz, err := cliCtx.Codec.MarshalJSON(params)
+		bz, err := json.Marshal(params)
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
 			return
@@ -98,7 +99,7 @@ func queryPrevotesHandlerFunction(cliCtx client.Context) http.HandlerFunc {
 			params.Voter = voterAddress
 		}
 
-		bz, err := cliCtx.Codec.MarshalJSON(params)
+		bz, err := json.Marshal(params)
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
 			return
@@ -126,7 +127,7 @@ func queryExchangeRateHandlerFunction(cliCtx client.Context) http.HandlerFunc {
 		denom := vars[RestDenom]
 
 		params := types.NewQueryExchangeRateParams(denom)
-		bz, err := cliCtx.Codec.MarshalJSON(params)
+		bz, err := json.Marshal(params)
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
 			return
@@ -197,7 +198,7 @@ func queryVoterPrevotesHandlerFunction(cliCtx client.Context) http.HandlerFunc {
 
 		params := types.NewQueryPrevotesParams(voterAddress, "")
 
-		bz, err := cliCtx.Codec.MarshalJSON(params)
+		bz, err := json.Marshal(params)
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
 			return
@@ -232,7 +233,7 @@ func queryVoterVotesHandlerFunction(cliCtx client.Context) http.HandlerFunc {
 
 		params := types.NewQueryVotesParams(voterAddress, "")
 
-		bz, err := cliCtx.Codec.MarshalJSON(params)
+		bz, err := json.Marshal(params)
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
 			return
@@ -284,7 +285,7 @@ func queryFeederDelegationHandlerFn(cliCtx client.Context) http.HandlerFunc {
 		}
 
 		params := types.NewQueryFeederDelegationParams(validator)
-		bz, err := cliCtx.Codec.MarshalJSON(params)
+		bz, err := json.Marshal(params)
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
 			return
@@ -318,7 +319,7 @@ func queryMissHandlerFn(cliCtx client.Context) http.HandlerFunc {
 		}
 
 		params := types.NewQueryMissCounterParams(validator)
-		bz, err := cliCtx.Codec.MarshalJSON(params)
+		bz, err := json.Marshal(params)
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
 			return
@@ -352,7 +353,7 @@ func queryAggregatePrevoteHandlerFn(cliCtx client.Context) http.HandlerFunc {
 		}
 
 		params := types.NewQueryAggregatePrevoteParams(validator)
-		bz, err := cliCtx.Codec.MarshalJSON(params)
+		bz, err := json.Marshal(params)
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
 			return
@@ -386,7 +387,7 @@ func queryAggregateVoteHandlerFn(cliCtx client.Context) http.HandlerFunc {
 		}
 
 		params := types.NewQueryAggregateVoteParams(validator)
-		bz, err := cliCtx.Codec.MarshalJSON(params)
+		bz, err := json.Marshal(params)
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
 			return
@@ -450,7 +451,7 @@ func queryTobinTaxHandlerFunction(cliCtx client.Context) http.HandlerFunc {
 		denom := vars[RestDenom]
 
 		params := types.NewQueryTobinTaxParams(denom)
-		bz, err := cliCtx.Codec.MarshalJSON(params)
+		bz, err := json.Marshal(params)
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
 			return
