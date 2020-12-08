@@ -2,27 +2,20 @@ syntax = "proto3";
 package oracle.v1;
 
 import "gogoproto/gogo.proto";
-// import "google/protobuf/any.proto";
-// import "cosmos_proto/cosmos.proto";
 
 option go_package = "github.com/peggyjv/sommelier/x/oracle/types";
 
 // // Claim is an interface that directs its rewards to an attached bank account.
-// type Claim struct {
-// 	Weight    int64          `json:"weight"`
-// 	Recipient sdk.ValAddress `json:"recipient"`
-// }
 message Claim {
-    int64 weight = 1;
+    int64  weight    = 1;
     string recipient = 2; 
 }
 
 // // Denom is the object to hold configurations of each denom
-// type Denom struct {
-// 	Name     string  `json:"name" yaml:"name"`
-// 	TobinTax sdk.Dec `json:"tobin_tax" yaml:"tobin_tax"`
-// }
 message Denom {
-    string name = 1;
-    string tobin_tax = 2 [(gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec", (gogoproto.nullable) = false];
+    string name      = 1;
+    string tobin_tax = 2 [
+        (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec", 
+        (gogoproto.nullable) = false
+    ];
 }

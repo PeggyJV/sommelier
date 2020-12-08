@@ -31,19 +31,26 @@ var _ = runtime.String
 var _ = utilities.NewDoubleArray
 var _ = descriptor.ForMessage
 
-var (
-	filter_Query_ExchangeRate_0 = &utilities.DoubleArray{Encoding: map[string]int{}, Base: []int(nil), Check: []int(nil)}
-)
-
 func request_Query_ExchangeRate_0(ctx context.Context, marshaler runtime.Marshaler, client QueryClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var protoReq QueryExchangeRateRequest
 	var metadata runtime.ServerMetadata
 
-	if err := req.ParseForm(); err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
+	var (
+		val string
+		ok  bool
+		err error
+		_   = err
+	)
+
+	val, ok = pathParams["denom"]
+	if !ok {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "denom")
 	}
-	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_Query_ExchangeRate_0); err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
+
+	protoReq.Denom, err = runtime.String(val)
+
+	if err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "denom", err)
 	}
 
 	msg, err := client.ExchangeRate(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
@@ -55,11 +62,22 @@ func local_request_Query_ExchangeRate_0(ctx context.Context, marshaler runtime.M
 	var protoReq QueryExchangeRateRequest
 	var metadata runtime.ServerMetadata
 
-	if err := req.ParseForm(); err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
+	var (
+		val string
+		ok  bool
+		err error
+		_   = err
+	)
+
+	val, ok = pathParams["denom"]
+	if !ok {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "denom")
 	}
-	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_Query_ExchangeRate_0); err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
+
+	protoReq.Denom, err = runtime.String(val)
+
+	if err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "denom", err)
 	}
 
 	msg, err := server.ExchangeRate(ctx, &protoReq)
@@ -121,19 +139,26 @@ func local_request_Query_Parameters_0(ctx context.Context, marshaler runtime.Mar
 
 }
 
-var (
-	filter_Query_FeederDelegation_0 = &utilities.DoubleArray{Encoding: map[string]int{}, Base: []int(nil), Check: []int(nil)}
-)
-
 func request_Query_FeederDelegation_0(ctx context.Context, marshaler runtime.Marshaler, client QueryClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var protoReq QueryFeederDelegationRequest
 	var metadata runtime.ServerMetadata
 
-	if err := req.ParseForm(); err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
+	var (
+		val string
+		ok  bool
+		err error
+		_   = err
+	)
+
+	val, ok = pathParams["validator"]
+	if !ok {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "validator")
 	}
-	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_Query_FeederDelegation_0); err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
+
+	protoReq.Validator, err = runtime.String(val)
+
+	if err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "validator", err)
 	}
 
 	msg, err := client.FeederDelegation(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
@@ -145,11 +170,22 @@ func local_request_Query_FeederDelegation_0(ctx context.Context, marshaler runti
 	var protoReq QueryFeederDelegationRequest
 	var metadata runtime.ServerMetadata
 
-	if err := req.ParseForm(); err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
+	var (
+		val string
+		ok  bool
+		err error
+		_   = err
+	)
+
+	val, ok = pathParams["validator"]
+	if !ok {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "validator")
 	}
-	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_Query_FeederDelegation_0); err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
+
+	protoReq.Validator, err = runtime.String(val)
+
+	if err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "validator", err)
 	}
 
 	msg, err := server.FeederDelegation(ctx, &protoReq)
@@ -157,19 +193,26 @@ func local_request_Query_FeederDelegation_0(ctx context.Context, marshaler runti
 
 }
 
-var (
-	filter_Query_MissCounter_0 = &utilities.DoubleArray{Encoding: map[string]int{}, Base: []int(nil), Check: []int(nil)}
-)
-
 func request_Query_MissCounter_0(ctx context.Context, marshaler runtime.Marshaler, client QueryClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var protoReq QueryMissCounterRequest
 	var metadata runtime.ServerMetadata
 
-	if err := req.ParseForm(); err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
+	var (
+		val string
+		ok  bool
+		err error
+		_   = err
+	)
+
+	val, ok = pathParams["validator"]
+	if !ok {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "validator")
 	}
-	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_Query_MissCounter_0); err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
+
+	protoReq.Validator, err = runtime.String(val)
+
+	if err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "validator", err)
 	}
 
 	msg, err := client.MissCounter(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
@@ -181,11 +224,22 @@ func local_request_Query_MissCounter_0(ctx context.Context, marshaler runtime.Ma
 	var protoReq QueryMissCounterRequest
 	var metadata runtime.ServerMetadata
 
-	if err := req.ParseForm(); err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
+	var (
+		val string
+		ok  bool
+		err error
+		_   = err
+	)
+
+	val, ok = pathParams["validator"]
+	if !ok {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "validator")
 	}
-	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_Query_MissCounter_0); err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
+
+	protoReq.Validator, err = runtime.String(val)
+
+	if err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "validator", err)
 	}
 
 	msg, err := server.MissCounter(ctx, &protoReq)
@@ -193,19 +247,26 @@ func local_request_Query_MissCounter_0(ctx context.Context, marshaler runtime.Ma
 
 }
 
-var (
-	filter_Query_AggregatePrevote_0 = &utilities.DoubleArray{Encoding: map[string]int{}, Base: []int(nil), Check: []int(nil)}
-)
-
 func request_Query_AggregatePrevote_0(ctx context.Context, marshaler runtime.Marshaler, client QueryClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var protoReq QueryAggregatePrevoteRequest
 	var metadata runtime.ServerMetadata
 
-	if err := req.ParseForm(); err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
+	var (
+		val string
+		ok  bool
+		err error
+		_   = err
+	)
+
+	val, ok = pathParams["validator"]
+	if !ok {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "validator")
 	}
-	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_Query_AggregatePrevote_0); err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
+
+	protoReq.Validator, err = runtime.String(val)
+
+	if err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "validator", err)
 	}
 
 	msg, err := client.AggregatePrevote(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
@@ -217,11 +278,22 @@ func local_request_Query_AggregatePrevote_0(ctx context.Context, marshaler runti
 	var protoReq QueryAggregatePrevoteRequest
 	var metadata runtime.ServerMetadata
 
-	if err := req.ParseForm(); err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
+	var (
+		val string
+		ok  bool
+		err error
+		_   = err
+	)
+
+	val, ok = pathParams["validator"]
+	if !ok {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "validator")
 	}
-	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_Query_AggregatePrevote_0); err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
+
+	protoReq.Validator, err = runtime.String(val)
+
+	if err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "validator", err)
 	}
 
 	msg, err := server.AggregatePrevote(ctx, &protoReq)
@@ -229,19 +301,26 @@ func local_request_Query_AggregatePrevote_0(ctx context.Context, marshaler runti
 
 }
 
-var (
-	filter_Query_AggregateVote_0 = &utilities.DoubleArray{Encoding: map[string]int{}, Base: []int(nil), Check: []int(nil)}
-)
-
 func request_Query_AggregateVote_0(ctx context.Context, marshaler runtime.Marshaler, client QueryClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var protoReq QueryAggregateVoteRequest
 	var metadata runtime.ServerMetadata
 
-	if err := req.ParseForm(); err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
+	var (
+		val string
+		ok  bool
+		err error
+		_   = err
+	)
+
+	val, ok = pathParams["validator"]
+	if !ok {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "validator")
 	}
-	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_Query_AggregateVote_0); err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
+
+	protoReq.Validator, err = runtime.String(val)
+
+	if err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "validator", err)
 	}
 
 	msg, err := client.AggregateVote(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
@@ -253,11 +332,22 @@ func local_request_Query_AggregateVote_0(ctx context.Context, marshaler runtime.
 	var protoReq QueryAggregateVoteRequest
 	var metadata runtime.ServerMetadata
 
-	if err := req.ParseForm(); err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
+	var (
+		val string
+		ok  bool
+		err error
+		_   = err
+	)
+
+	val, ok = pathParams["validator"]
+	if !ok {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "validator")
 	}
-	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_Query_AggregateVote_0); err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
+
+	protoReq.Validator, err = runtime.String(val)
+
+	if err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "validator", err)
 	}
 
 	msg, err := server.AggregateVote(ctx, &protoReq)
@@ -283,19 +373,26 @@ func local_request_Query_VoteTargets_0(ctx context.Context, marshaler runtime.Ma
 
 }
 
-var (
-	filter_Query_TobinTax_0 = &utilities.DoubleArray{Encoding: map[string]int{}, Base: []int(nil), Check: []int(nil)}
-)
-
 func request_Query_TobinTax_0(ctx context.Context, marshaler runtime.Marshaler, client QueryClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var protoReq QueryTobinTaxRequest
 	var metadata runtime.ServerMetadata
 
-	if err := req.ParseForm(); err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
+	var (
+		val string
+		ok  bool
+		err error
+		_   = err
+	)
+
+	val, ok = pathParams["denom"]
+	if !ok {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "denom")
 	}
-	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_Query_TobinTax_0); err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
+
+	protoReq.Denom, err = runtime.String(val)
+
+	if err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "denom", err)
 	}
 
 	msg, err := client.TobinTax(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
@@ -307,11 +404,22 @@ func local_request_Query_TobinTax_0(ctx context.Context, marshaler runtime.Marsh
 	var protoReq QueryTobinTaxRequest
 	var metadata runtime.ServerMetadata
 
-	if err := req.ParseForm(); err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
+	var (
+		val string
+		ok  bool
+		err error
+		_   = err
+	)
+
+	val, ok = pathParams["denom"]
+	if !ok {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "denom")
 	}
-	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_Query_TobinTax_0); err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
+
+	protoReq.Denom, err = runtime.String(val)
+
+	if err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "denom", err)
 	}
 
 	msg, err := server.TobinTax(ctx, &protoReq)
@@ -828,27 +936,27 @@ func RegisterQueryHandlerClient(ctx context.Context, mux *runtime.ServeMux, clie
 }
 
 var (
-	pattern_Query_ExchangeRate_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"oracle", "v1", "ExchangeRate"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_ExchangeRate_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 1, 5, 3}, []string{"oracle", "v1", "exchange_rate", "denom"}, "", runtime.AssumeColonVerbOpt(true)))
 
-	pattern_Query_ExchangeRates_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"oracle", "v1", "ExchangeRates"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_ExchangeRates_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"oracle", "v1", "exchange_rates"}, "", runtime.AssumeColonVerbOpt(true)))
 
-	pattern_Query_Actives_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"oracle", "v1", "Actives"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_Actives_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"oracle", "v1", "actives"}, "", runtime.AssumeColonVerbOpt(true)))
 
-	pattern_Query_Parameters_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"oracle", "v1", "Parameters"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_Parameters_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"oracle", "v1", "parameters"}, "", runtime.AssumeColonVerbOpt(true)))
 
-	pattern_Query_FeederDelegation_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"oracle", "v1", "FeederDelegation"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_FeederDelegation_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 1, 5, 3}, []string{"oracle", "v1", "feeder_delegation", "validator"}, "", runtime.AssumeColonVerbOpt(true)))
 
-	pattern_Query_MissCounter_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"oracle", "v1", "MissCounter"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_MissCounter_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 1, 5, 3}, []string{"oracle", "v1", "miss_counter", "validator"}, "", runtime.AssumeColonVerbOpt(true)))
 
-	pattern_Query_AggregatePrevote_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"oracle", "v1", "AggregatePrevote"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_AggregatePrevote_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 1, 5, 3}, []string{"oracle", "v1", "aggregate_prevote", "validator"}, "", runtime.AssumeColonVerbOpt(true)))
 
-	pattern_Query_AggregateVote_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"oracle", "v1", "AggregateVote"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_AggregateVote_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 1, 5, 3}, []string{"oracle", "v1", "aggregate_vote", "validator"}, "", runtime.AssumeColonVerbOpt(true)))
 
-	pattern_Query_VoteTargets_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"oracle", "v1", "VoteTargets"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_VoteTargets_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"oracle", "v1", "vote_targets"}, "", runtime.AssumeColonVerbOpt(true)))
 
-	pattern_Query_TobinTax_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"oracle", "v1", "TobinTax"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_TobinTax_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 1, 5, 3}, []string{"oracle", "v1", "tobin_tax", "denom"}, "", runtime.AssumeColonVerbOpt(true)))
 
-	pattern_Query_TobinTaxes_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"oracle", "v1", "TobinTaxes"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_TobinTaxes_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"oracle", "v1", "tobin_taxes"}, "", runtime.AssumeColonVerbOpt(true)))
 )
 
 var (

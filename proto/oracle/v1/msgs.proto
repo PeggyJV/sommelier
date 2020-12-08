@@ -1,65 +1,50 @@
 syntax = "proto3";
 package oracle.v1;
 
-// import "gogoproto/gogo.proto";
 import "google/api/annotations.proto";
-// import "google/protobuf/any.proto";
-// import "cosmos_proto/cosmos.proto";
 
 option go_package = "github.com/peggyjv/sommelier/x/oracle/types";
 
 service Msg {
   rpc DelegateFeedConsent(MsgDelegateFeedConsent) returns (MsgDelegateFeedConsent) {
-    option(google.api.http).post = "/oracle/v1/DelegatefeedConsent";
+    option (google.api.http).post = "/oracle/v1/delegate_feed_consent";
   }
   rpc AggregateExchangeRatePrevote(MsgAggregateExchangeRatePrevote) returns (MsgAggregateExchangeRatePrevoteResponse) {
-    option(google.api.http).post = "/oracle/v1/AggregateExchangeRatePrevote";
+    option (google.api.http).post = "/oracle/v1/aggregate_exchange_rate_prevote";
   }
   rpc AggregateExchangeRateVote(MsgAggregateExchangeRateVote) returns (MsgAggregateExchangeRateVoteResponse) {
-    option(google.api.http).post = "/oracle/v1/AggregateExchangeRateVote";
+    option (google.api.http).post = "/oracle/v1/aggregate_exchange_rate_vote";
   }
 }
 
 // MsgDelegateFeedConsent - struct for delegating oracle voting rights to another address.
-// type MsgDelegateFeedConsent struct {
-// 	Operator sdk.ValAddress `json:"operator" yaml:"operator"`
-// 	Delegate sdk.AccAddress `json:"delegate" yaml:"delegate"`
-// }
 message MsgDelegateFeedConsent {
     string operator = 1;
     string delegate = 2;
 }
 
+// TODO: return data
 message MsgDelegateFeedConsentResponse {}
 
 // MsgAggregateExchangeRatePrevote - struct for aggregate prevoting on the ExchangeRateVote.
 // The purpose of aggregate prevote is to hide vote exchange rates with hash
 // which is formatted as hex string in SHA256("{salt}:{exchange rate}{denom},...,{exchange rate}{denom}:{voter}")
-// type MsgAggregateExchangeRatePrevote struct {
-// 	Hash      AggregateVoteHash `json:"hash" yaml:"hash"`
-// 	Feeder    sdk.AccAddress    `json:"feeder" yaml:"feeder"`
-// 	Validator sdk.ValAddress    `json:"validator" yaml:"validator"`
-// }
 message MsgAggregateExchangeRatePrevote {
-    bytes hash = 1;
-    string feeder = 2;
+    bytes  hash      = 1;
+    string feeder    = 2;
     string validator = 3;
 }
 
+// TODO: return data
 message MsgAggregateExchangeRatePrevoteResponse {}
 
 // MsgAggregateExchangeRateVote - struct for voting on the exchange rates of Luna denominated in various Terra assets.
-// type MsgAggregateExchangeRateVote struct {
-// 	Salt          string         `json:"salt" yaml:"salt"`
-// 	ExchangeRates string         `json:"exchange_rates" yaml:"exchange_rates"` // comma separated dec coins
-// 	Feeder        sdk.AccAddress `json:"feeder" yaml:"feeder"`
-// 	Validator     sdk.ValAddress `json:"validator" yaml:"validator"`
-// }
 message MsgAggregateExchangeRateVote {
-    string salt = 1;
+    string salt           = 1;
     string exchange_rates = 2;
-    string feeder = 3;
-    string validator = 4;
+    string feeder         = 3;
+    string validator      = 4;
 }
 
+// TODO: return data
 message MsgAggregateExchangeRateVoteResponse {}

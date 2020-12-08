@@ -25,10 +25,6 @@ var _ = math.Inf
 const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
 // // Claim is an interface that directs its rewards to an attached bank account.
-// type Claim struct {
-// 	Weight    int64          `json:"weight"`
-// 	Recipient sdk.ValAddress `json:"recipient"`
-// }
 type Claim struct {
 	Weight    int64  `protobuf:"varint,1,opt,name=weight,proto3" json:"weight,omitempty"`
 	Recipient string `protobuf:"bytes,2,opt,name=recipient,proto3" json:"recipient,omitempty"`
@@ -82,10 +78,6 @@ func (m *Claim) GetRecipient() string {
 }
 
 // // Denom is the object to hold configurations of each denom
-// type Denom struct {
-// 	Name     string  `json:"name" yaml:"name"`
-// 	TobinTax sdk.Dec `json:"tobin_tax" yaml:"tobin_tax"`
-// }
 type Denom struct {
 	Name     string                                 `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	TobinTax github_com_cosmos_cosmos_sdk_types.Dec `protobuf:"bytes,2,opt,name=tobin_tax,json=tobinTax,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Dec" json:"tobin_tax"`

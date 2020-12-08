@@ -2,8 +2,6 @@ syntax = "proto3";
 package oracle.v1;
 
 import "gogoproto/gogo.proto";
-// import "google/protobuf/any.proto";
-// import "cosmos_proto/cosmos.proto";
 import "oracle/v1/genesis.proto";
 import "oracle/v1/vote.proto";
 import "google/api/annotations.proto";
@@ -14,103 +12,84 @@ option go_package = "github.com/peggyjv/sommelier/x/oracle/types";
 
 service Query {
     rpc ExchangeRate(QueryExchangeRateRequest) returns (QueryExchangeRateResponse) {
-        option(google.api.http).get = "/oracle/v1/ExchangeRate";
+        option (google.api.http).get = "/oracle/v1/exchange_rate/{denom}";
     }
     rpc ExchangeRates(QueryExchangeRatesRequest) returns (QueryExchangeRatesResponse) {
-        option(google.api.http).get = "/oracle/v1/ExchangeRates";
+        option (google.api.http).get = "/oracle/v1/exchange_rates";
     }
     rpc Actives(QueryActivesRequest) returns (QueryActivesResponse) {
-        option(google.api.http).get = "/oracle/v1/Actives";
+        option (google.api.http).get = "/oracle/v1/actives";
     }
     rpc Parameters(QueryParametersRequest) returns (QueryParametersResponse) {
-        option(google.api.http).get = "/oracle/v1/Parameters";
+        option (google.api.http).get = "/oracle/v1/parameters";
     }
     rpc FeederDelegation(QueryFeederDelegationRequest) returns (QueryFeederDelegationResponse) {
-        option(google.api.http).get = "/oracle/v1/FeederDelegation";
+        option (google.api.http).get = "/oracle/v1/feeder_delegation/{validator}";
     }
     rpc MissCounter(QueryMissCounterRequest) returns (QueryMissCounterResponse) {
-        option(google.api.http).get = "/oracle/v1/MissCounter";
+        option (google.api.http).get = "/oracle/v1/miss_counter/{validator}";
     }
     rpc AggregatePrevote(QueryAggregatePrevoteRequest) returns (QueryAggregatePrevoteResponse) {
-        option(google.api.http).get = "/oracle/v1/AggregatePrevote";
+        option (google.api.http).get = "/oracle/v1/aggregate_prevote/{validator}";
     }
     rpc AggregateVote(QueryAggregateVoteRequest) returns (QueryAggregateVoteResponse) {
-        option(google.api.http).get = "/oracle/v1/AggregateVote";
+        option (google.api.http).get = "/oracle/v1/aggregate_vote/{validator}";
     }
     rpc VoteTargets(QueryVoteTargetsRequest) returns (QueryVoteTargetsResponse) {
-        option(google.api.http).get = "/oracle/v1/VoteTargets";
+        option (google.api.http).get = "/oracle/v1/vote_targets";
     }
     rpc TobinTax(QueryTobinTaxRequest) returns (QueryTobinTaxResponse) {
-        option(google.api.http).get = "/oracle/v1/TobinTax";
+        option (google.api.http).get = "/oracle/v1/tobin_tax/{denom}";
     }
     rpc TobinTaxes(QueryTobinTaxesRequest) returns (QueryTobinTaxesResponse) {
-        option(google.api.http).get = "/oracle/v1/TobinTaxes";
+        option (google.api.http).get = "/oracle/v1/tobin_taxes";
     }
 }
 
-message QueryExchangeRateRequest {
-    string denom = 1;
-}
-message QueryExchangeRateResponse {
-    string rate = 2 [(gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec", (gogoproto.nullable) = false];
+message QueryExchangeRateRequest { string denom = 1; }
+message QueryExchangeRateResponse { 
+    string rate = 2 [
+        (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec", 
+        (gogoproto.nullable) = false
+    ]; 
 }
 
 message QueryExchangeRatesRequest {}
-message QueryExchangeRatesResponse {
-    repeated cosmos.base.v1beta1.DecCoin rates = 2 [(gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.DecCoins", (gogoproto.nullable) = false];
+message QueryExchangeRatesResponse { 
+    repeated cosmos.base.v1beta1.DecCoin rates = 2 [
+        (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.DecCoins", 
+        (gogoproto.nullable) = false
+    ]; 
 }
 
 message QueryActivesRequest {}
-message QueryActivesResponse {
-    repeated string denoms = 1;
-}
+message QueryActivesResponse { repeated string denoms = 1; }
 
 message QueryParametersRequest {}
-message QueryParametersResponse {
-    Params params = 1 [(gogoproto.nullable) = false];
-}
+message QueryParametersResponse { Params params = 1 [(gogoproto.nullable) = false]; }
 
-message QueryFeederDelegationRequest {
-    string validator = 1;
-}
-message QueryFeederDelegationResponse {
-    string address = 1;
-}
+message QueryFeederDelegationRequest { string validator = 1; }
+message QueryFeederDelegationResponse { string address = 1; }
 
-message QueryMissCounterRequest {
-    string validator = 1;
-}
-message QueryMissCounterResponse {
-    int64 counter = 1;
-}
+message QueryMissCounterRequest { string validator = 1; }
+message QueryMissCounterResponse { int64 counter = 1; }
 
-message QueryAggregatePrevoteRequest {
-    string validator = 1;
-}
-message QueryAggregatePrevoteResponse {
-    AggregateExchangeRatePrevote prevote = 1 [(gogoproto.nullable) = false];
-}
+message QueryAggregatePrevoteRequest { string validator = 1; }
+message QueryAggregatePrevoteResponse { AggregateExchangeRatePrevote prevote = 1 [(gogoproto.nullable) = false]; }
 
-message QueryAggregateVoteRequest {
-    string validator = 1;
-}
-message QueryAggregateVoteResponse {
-    AggregateExchangeRateVote vote = 1 [(gogoproto.nullable) = false];
-}
+message QueryAggregateVoteRequest { string validator = 1; }
+message QueryAggregateVoteResponse { AggregateExchangeRateVote vote = 1 [(gogoproto.nullable) = false]; }
 
 message QueryVoteTargetsRequest {}
-message QueryVoteTargetsResponse {
-    repeated string targets = 1;
-}
+message QueryVoteTargetsResponse { repeated string targets = 1; }
 
-message QueryTobinTaxRequest {
-    string denom = 1;
-}
-message QueryTobinTaxResponse {
-    string rate = 2 [(gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec", (gogoproto.nullable) = false];
-}
+message QueryTobinTaxRequest { string denom = 1; }
+message QueryTobinTaxResponse { string rate = 2 [(gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec", (gogoproto.nullable) = false]; }
 
 message QueryTobinTaxesRequest {}
 message QueryTobinTaxesResponse {
-    repeated cosmos.base.v1beta1.DecCoin rates = 2 [(gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.DecCoins", (gogoproto.nullable) = false];
+    repeated cosmos.base.v1beta1.DecCoin rates = 2 [
+        (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.DecCoins", 
+        (gogoproto.nullable) = false
+    ];
 }

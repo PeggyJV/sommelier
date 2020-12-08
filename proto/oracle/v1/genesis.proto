@@ -4,53 +4,63 @@ package oracle.v1;
 import "oracle/v1/vote.proto";
 import "oracle/v1/ballot.proto";
 import "gogoproto/gogo.proto";
-// import "google/protobuf/any.proto";
-// import "cosmos_proto/cosmos.proto";
 
 option go_package = "github.com/peggyjv/sommelier/x/oracle/types";
 
 
 // // GenesisState - all oracle state that must be provided at genesis
-// type GenesisState struct {
-// 	Params                        Params                         `json:"params" yaml:"params"`
-// 	FeederDelegations             map[string]sdk.AccAddress      `json:"feeder_delegations" yaml:"feeder_delegations"`
-// 	ExchangeRates                 map[string]sdk.Dec             `json:"exchange_rates" yaml:"exchange_rates"`
-// 	ExchangeRatePrevotes          []ExchangeRatePrevote          `json:"exchange_rate_prevotes" yaml:"exchange_rate_prevotes"`
-// 	ExchangeRateVotes             []ExchangeRateVote             `json:"exchange_rate_votes" yaml:"exchange_rate_votes"`
-// 	MissCounters                  map[string]int64               `json:"miss_counters" yaml:"miss_counters"`
-// 	AggregateExchangeRatePrevotes []AggregateExchangeRatePrevote `json:"aggregate_exchange_rate_prevotes" yaml:"aggregate_exchange_rate_prevotes"`
-// 	AggregateExchangeRateVotes    []AggregateExchangeRateVote    `json:"aggregate_exchange_rate_votes" yaml:"aggregate_exchange_rate_votes"`
-// 	TobinTaxes                    map[string]sdk.Dec             `json:"tobin_taxes" yaml:"tobin_taxes"`
-// }
 message GenesisState {
-    Params                                params                           = 1 [(gogoproto.nullable) = false];
-    map<string, string>                   feeder_delegations               = 2 [(gogoproto.nullable) = false];
-    repeated ExchangeRateTuple            exchange_rates                   = 3 [(gogoproto.nullable) = false];
-    map<string, int64>                    miss_counters                    = 4 [(gogoproto.nullable) = false];
-    repeated AggregateExchangeRatePrevote aggregate_exchange_rate_prevotes = 5 [(gogoproto.nullable) = false];
-    repeated AggregateExchangeRateVote    aggregate_exchange_rate_votes    = 6 [(gogoproto.nullable) = false];
-    repeated ExchangeRateTuple            tobin_taxes                      = 7 [(gogoproto.nullable) = false];
+    Params                                params                           = 1 [
+        (gogoproto.nullable) = false
+    ];
+    map<string, string>                   feeder_delegations               = 2 [
+        (gogoproto.nullable) = false
+    ];
+    repeated ExchangeRateTuple            exchange_rates                   = 3 [
+        (gogoproto.nullable)     = false,
+        (gogoproto.castrepeated) = "[]ExchangeRateTuple"
+    ];
+    map<string, int64>                    miss_counters                    = 4 [
+        (gogoproto.nullable) = false
+    ];
+    repeated AggregateExchangeRatePrevote aggregate_exchange_rate_prevotes = 5 [
+        (gogoproto.nullable)     = false,
+        (gogoproto.castrepeated) = "[]AggregateExchangeRatePrevote"
+    ];
+    repeated AggregateExchangeRateVote    aggregate_exchange_rate_votes    = 6 [
+        (gogoproto.nullable)     = false,
+        (gogoproto.castrepeated) = "[]AggregateExchangeRateVote"
+    ];
+    repeated ExchangeRateTuple            tobin_taxes                      = 7 [
+        (gogoproto.nullable)     = false,
+        (gogoproto.castrepeated) = "[]ExchangeRateTuple"
+    ];
 
 }
 
 // Params oracle parameters
-// type Params struct {
-// 	VotePeriod               int64     `json:"vote_period" yaml:"vote_period"`                               // the number of blocks during which voting takes place.
-// 	VoteThreshold            sdk.Dec   `json:"vote_threshold" yaml:"vote_threshold"`                         // the minimum percentage of votes that must be received for a ballot to pass.
-// 	RewardBand               sdk.Dec   `json:"reward_band" yaml:"reward_band"`                               // the ratio of allowable exchange rate error that can be rewarded.
-// 	RewardDistributionWindow int64     `json:"reward_distribution_window" yaml:"reward_distribution_window"` // the number of blocks during which seigniorage reward comes in and then is distributed.
-// 	Whitelist                DenomList `json:"whitelist" yaml:"whitelist"`                                   // the denom list that can be activated,
-// 	SlashFraction            sdk.Dec   `json:"slash_fraction" yaml:"slash_fraction"`                         // the ratio of penalty on bonded tokens
-// 	SlashWindow              int64     `json:"slash_window" yaml:"slash_window"`                             // the number of blocks for slashing tallying
-// 	MinValidPerWindow        sdk.Dec   `json:"min_valid_per_window" yaml:"min_valid_per_window"`             // the ratio of minimum valid oracle votes per slash window to avoid slashing
-// }
 message Params {
-    int64 vote_period = 1;
-    string vote_threshold = 2 [(gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec", (gogoproto.nullable) = false];
-    string reward_band = 3 [(gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec", (gogoproto.nullable) = false];
-    int64 reward_distribution_window = 4; 
-    repeated Denom whitelist = 5 [(gogoproto.nullable) = false];
-    string slash_fraction = 6 [(gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec", (gogoproto.nullable) = false];
-    int64 slash_window = 7;
-    string min_valid_per_window = 8 [(gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec", (gogoproto.nullable) = false];
+    int64          vote_period                = 1;
+    string         vote_threshold             = 2 [
+        (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec", 
+        (gogoproto.nullable) = false
+    ];
+    string         reward_band                = 3 [
+        (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec", 
+        (gogoproto.nullable)   = false
+    ];
+    int64          reward_distribution_window = 4; 
+    repeated Denom whitelist                  = 5 [
+        (gogoproto.nullable)     = false,
+        (gogoproto.castrepeated) = "[]Denom"
+    ];
+    string         slash_fraction             = 6 [
+        (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec", 
+        (gogoproto.nullable) = false
+    ];
+    int64          slash_window               = 7;
+    string         min_valid_per_window       = 8 [
+        (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec", 
+        (gogoproto.nullable) = false
+    ];
 }

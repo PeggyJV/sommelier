@@ -310,11 +310,11 @@ func RegisterMsgHandlerClient(ctx context.Context, mux *runtime.ServeMux, client
 }
 
 var (
-	pattern_Msg_DelegateFeedConsent_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"oracle", "v1", "DelegatefeedConsent"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Msg_DelegateFeedConsent_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"oracle", "v1", "delegate_feed_consent"}, "", runtime.AssumeColonVerbOpt(true)))
 
-	pattern_Msg_AggregateExchangeRatePrevote_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"oracle", "v1", "AggregateExchangeRatePrevote"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Msg_AggregateExchangeRatePrevote_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"oracle", "v1", "aggregate_exchange_rate_prevote"}, "", runtime.AssumeColonVerbOpt(true)))
 
-	pattern_Msg_AggregateExchangeRateVote_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"oracle", "v1", "AggregateExchangeRateVote"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Msg_AggregateExchangeRateVote_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"oracle", "v1", "aggregate_exchange_rate_vote"}, "", runtime.AssumeColonVerbOpt(true)))
 )
 
 var (
