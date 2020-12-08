@@ -12,7 +12,7 @@ import (
 	"github.com/gorilla/mux"
 )
 
-func registerQueryRoute(cliCtx context.CLIContext, r *mux.Router) {
+func registerQueryRoute(cliCtx client.Context, r *mux.Router) {
 	r.HandleFunc(fmt.Sprintf("/oracle/denoms/{%s}/prevotes", RestDenom), queryPrevotesHandlerFunction(cliCtx)).Methods("GET")
 	r.HandleFunc(fmt.Sprintf("/oracle/denoms/{%s}/prevotes/{%s}", RestDenom, RestVoter), queryPrevotesHandlerFunction(cliCtx)).Methods("GET")
 	r.HandleFunc(fmt.Sprintf("/oracle/denoms/{%s}/votes", RestDenom), queryVotesHandlerFunction(cliCtx)).Methods("GET")
@@ -32,7 +32,7 @@ func registerQueryRoute(cliCtx context.CLIContext, r *mux.Router) {
 	r.HandleFunc("/oracle/parameters", queryParamsHandlerFn(cliCtx)).Methods("GET")
 }
 
-func queryVotesHandlerFunction(cliCtx context.CLIContext) http.HandlerFunc {
+func queryVotesHandlerFunction(cliCtx client.Context) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		cliCtx, ok := rest.ParseQueryHeightOrReturnBadRequest(w, cliCtx, r)
 		if !ok {
@@ -73,7 +73,7 @@ func queryVotesHandlerFunction(cliCtx context.CLIContext) http.HandlerFunc {
 	}
 }
 
-func queryPrevotesHandlerFunction(cliCtx context.CLIContext) http.HandlerFunc {
+func queryPrevotesHandlerFunction(cliCtx client.Context) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		cliCtx, ok := rest.ParseQueryHeightOrReturnBadRequest(w, cliCtx, r)
 		if !ok {
@@ -115,7 +115,7 @@ func queryPrevotesHandlerFunction(cliCtx context.CLIContext) http.HandlerFunc {
 	}
 }
 
-func queryExchangeRateHandlerFunction(cliCtx context.CLIContext) http.HandlerFunc {
+func queryExchangeRateHandlerFunction(cliCtx client.Context) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		cliCtx, ok := rest.ParseQueryHeightOrReturnBadRequest(w, cliCtx, r)
 		if !ok {
@@ -143,7 +143,7 @@ func queryExchangeRateHandlerFunction(cliCtx context.CLIContext) http.HandlerFun
 	}
 }
 
-func queryExchangeRatesHandlerFunction(cliCtx context.CLIContext) http.HandlerFunc {
+func queryExchangeRatesHandlerFunction(cliCtx client.Context) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		cliCtx, ok := rest.ParseQueryHeightOrReturnBadRequest(w, cliCtx, r)
 		if !ok {
@@ -161,7 +161,7 @@ func queryExchangeRatesHandlerFunction(cliCtx context.CLIContext) http.HandlerFu
 	}
 }
 
-func queryActivesHandlerFunction(cliCtx context.CLIContext) http.HandlerFunc {
+func queryActivesHandlerFunction(cliCtx client.Context) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		cliCtx, ok := rest.ParseQueryHeightOrReturnBadRequest(w, cliCtx, r)
 		if !ok {
@@ -179,7 +179,7 @@ func queryActivesHandlerFunction(cliCtx context.CLIContext) http.HandlerFunc {
 	}
 }
 
-func queryVoterPrevotesHandlerFunction(cliCtx context.CLIContext) http.HandlerFunc {
+func queryVoterPrevotesHandlerFunction(cliCtx client.Context) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		cliCtx, ok := rest.ParseQueryHeightOrReturnBadRequest(w, cliCtx, r)
 		if !ok {
@@ -214,7 +214,7 @@ func queryVoterPrevotesHandlerFunction(cliCtx context.CLIContext) http.HandlerFu
 	}
 }
 
-func queryVoterVotesHandlerFunction(cliCtx context.CLIContext) http.HandlerFunc {
+func queryVoterVotesHandlerFunction(cliCtx client.Context) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		cliCtx, ok := rest.ParseQueryHeightOrReturnBadRequest(w, cliCtx, r)
 		if !ok {
@@ -249,7 +249,7 @@ func queryVoterVotesHandlerFunction(cliCtx context.CLIContext) http.HandlerFunc 
 	}
 }
 
-func queryParamsHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
+func queryParamsHandlerFn(cliCtx client.Context) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		cliCtx, ok := rest.ParseQueryHeightOrReturnBadRequest(w, cliCtx, r)
 		if !ok {
@@ -267,7 +267,7 @@ func queryParamsHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
 	}
 }
 
-func queryFeederDelegationHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
+func queryFeederDelegationHandlerFn(cliCtx client.Context) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		cliCtx, ok := rest.ParseQueryHeightOrReturnBadRequest(w, cliCtx, r)
 		if !ok {
@@ -301,7 +301,7 @@ func queryFeederDelegationHandlerFn(cliCtx context.CLIContext) http.HandlerFunc 
 	}
 }
 
-func queryMissHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
+func queryMissHandlerFn(cliCtx client.Context) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		cliCtx, ok := rest.ParseQueryHeightOrReturnBadRequest(w, cliCtx, r)
 		if !ok {
@@ -335,7 +335,7 @@ func queryMissHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
 	}
 }
 
-func queryAggregatePrevoteHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
+func queryAggregatePrevoteHandlerFn(cliCtx client.Context) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		cliCtx, ok := rest.ParseQueryHeightOrReturnBadRequest(w, cliCtx, r)
 		if !ok {
@@ -369,7 +369,7 @@ func queryAggregatePrevoteHandlerFn(cliCtx context.CLIContext) http.HandlerFunc 
 	}
 }
 
-func queryAggregateVoteHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
+func queryAggregateVoteHandlerFn(cliCtx client.Context) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		cliCtx, ok := rest.ParseQueryHeightOrReturnBadRequest(w, cliCtx, r)
 		if !ok {
@@ -403,7 +403,7 @@ func queryAggregateVoteHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
 	}
 }
 
-func queryVoteTargetsHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
+func queryVoteTargetsHandlerFn(cliCtx client.Context) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		cliCtx, ok := rest.ParseQueryHeightOrReturnBadRequest(w, cliCtx, r)
 		if !ok {
@@ -421,7 +421,7 @@ func queryVoteTargetsHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
 	}
 }
 
-func queryTobinTaxesHandlerFunction(cliCtx context.CLIContext) http.HandlerFunc {
+func queryTobinTaxesHandlerFunction(cliCtx client.Context) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		cliCtx, ok := rest.ParseQueryHeightOrReturnBadRequest(w, cliCtx, r)
 		if !ok {
@@ -439,7 +439,7 @@ func queryTobinTaxesHandlerFunction(cliCtx context.CLIContext) http.HandlerFunc 
 	}
 }
 
-func queryTobinTaxHandlerFunction(cliCtx context.CLIContext) http.HandlerFunc {
+func queryTobinTaxHandlerFunction(cliCtx client.Context) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		cliCtx, ok := rest.ParseQueryHeightOrReturnBadRequest(w, cliCtx, r)
 		if !ok {

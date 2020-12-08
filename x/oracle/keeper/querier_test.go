@@ -40,7 +40,6 @@ func TestQueryParams(t *testing.T) {
 }
 
 func TestQueryExchangeRate(t *testing.T) {
-	cdc := codec.NewLegacyAmino()
 	input := CreateTestInput(t)
 	querier := NewQuerier(input.OracleKeeper)
 
@@ -49,25 +48,15 @@ func TestQueryExchangeRate(t *testing.T) {
 
 	// denom query params
 	queryParams := types.NewQueryExchangeRateParams(types.MicroSDRDenom)
-	bz, err := cdc.MarshalJSON(queryParams)
+	bz, err := json.Marshal(queryParams)
 	require.NoError(t, err)
 
-	req := abci.RequestQuery{
-		Path: "",
-		Data: bz,
-	}
-
-	res, err := querier(input.Ctx, []string{types.QueryExchangeRate}, req)
+	res, err := querier(input.Ctx, []string{types.QueryExchangeRate}, abci.RequestQuery{Path: "", Data: bz})
 	require.NoError(t, err)
-
-	var rrate sdk.Dec
-	err = cdc.UnmarshalJSON(res, &rrate)
-	require.NoError(t, err)
-	require.Equal(t, rate, rrate)
+	require.Equal(t, rate.String(), string(res))
 }
 
 func TestQueryExchangeRates(t *testing.T) {
-	cdc := codec.NewLegacyAmino()
 	input := CreateTestInput(t)
 	querier := NewQuerier(input.OracleKeeper)
 
@@ -78,9 +67,8 @@ func TestQueryExchangeRates(t *testing.T) {
 	res, err := querier(input.Ctx, []string{types.QueryExchangeRates}, abci.RequestQuery{})
 	require.NoError(t, err)
 
-	var rrate sdk.DecCoins
-	err2 := cdc.UnmarshalJSON(res, &rrate)
-	require.NoError(t, err2)
+	rrate, err := sdk.ParseDecCoins(string(res))
+	require.NoError(t, err)
 	require.Equal(t, sdk.DecCoins{
 		sdk.NewDecCoinFromDec(types.MicroSDRDenom, rate),
 		sdk.NewDecCoinFromDec(types.MicroUSDDenom, rate),
@@ -113,27 +101,14 @@ func TestQueryActives(t *testing.T) {
 }
 
 func TestQueryFeederDelegation(t *testing.T) {
-	cdc := codec.NewLegacyAmino()
 	input := CreateTestInput(t)
 	querier := NewQuerier(input.OracleKeeper)
-
 	input.OracleKeeper.SetOracleDelegate(input.Ctx, ValAddrs[0], Addrs[1])
-
-	queryParams := types.NewQueryFeederDelegationParams(ValAddrs[0])
-	bz, err := cdc.MarshalJSON(queryParams)
+	bz, err := json.Marshal(types.NewQueryFeederDelegationParams(ValAddrs[0]))
 	require.NoError(t, err)
-
-	req := abci.RequestQuery{
-		Path: "",
-		Data: bz,
-	}
-
-	res, err := querier(input.Ctx, []string{types.QueryFeederDelegation}, req)
+	res, err := querier(input.Ctx, []string{types.QueryFeederDelegation}, abci.RequestQuery{Path: "", Data: bz})
 	require.NoError(t, err)
-
-	var delegate sdk.AccAddress
-	cdc.UnmarshalJSON(res, &delegate)
-	require.Equal(t, Addrs[1], delegate)
+	require.Equal(t, Addrs[1].String(), string(res))
 }
 
 func TestQueryAggregatePrevote(t *testing.T) {
@@ -264,29 +239,22 @@ func TestQueryVoteTargets(t *testing.T) {
 }
 
 func TestQueryTobinTaxes(t *testing.T) {
-	cdc := codec.NewLegacyAmino()
 	input := CreateTestInput(t)
 	querier := NewQuerier(input.OracleKeeper)
-
-	// clear tobin taxes
 	input.OracleKeeper.ClearTobinTaxes(input.Ctx)
-
-	tobinTaxes := types.DenomList{{types.MicroKRWDenom, sdk.OneDec()}, {types.MicroSDRDenom, sdk.NewDecWithPrec(123, 2)}}
+	tobinTaxes := sdk.DecCoins{
+		sdk.NewDecCoinFromDec(types.MicroKRWDenom, sdk.OneDec()),
+		sdk.NewDecCoinFromDec(types.MicroSDRDenom, sdk.NewDecWithPrec(123, 2)),
+	}
 	for _, item := range tobinTaxes {
-		input.OracleKeeper.SetTobinTax(input.Ctx, item.Name, item.TobinTax)
+		input.OracleKeeper.SetTobinTax(input.Ctx, item.Denom, item.Amount)
 	}
 
-	req := abci.RequestQuery{
-		Path: "",
-		Data: nil,
-	}
-
-	res, err := querier(input.Ctx, []string{types.QueryTobinTaxes}, req)
+	res, err := querier(input.Ctx, []string{types.QueryTobinTaxes}, abci.RequestQuery{Path: "", Data: nil})
 	require.NoError(t, err)
 
-	var tobinTaxesRes types.DenomList
-	err2 := cdc.UnmarshalJSON(res, &tobinTaxesRes)
-	require.NoError(t, err2)
+	tobinTaxesRes, err := sdk.ParseDecCoins(string(res))
+	require.NoError(t, err)
 	require.Equal(t, tobinTaxes, tobinTaxesRes)
 }
 
@@ -302,15 +270,7 @@ func TestQueryTobinTax(t *testing.T) {
 	bz, err := cdc.MarshalJSON(queryParams)
 	require.NoError(t, err)
 
-	req := abci.RequestQuery{
-		Path: "",
-		Data: bz,
-	}
-
-	res, err := querier(input.Ctx, []string{types.QueryTobinTax}, req)
+	res, err := querier(input.Ctx, []string{types.QueryTobinTax}, abci.RequestQuery{Path: "", Data: bz})
 	require.NoError(t, err)
-
-	var tobinTaxRes sdk.Dec
-	cdc.UnmarshalJSON(res, &tobinTaxRes)
-	require.Equal(t, denom.TobinTax, tobinTaxRes)
+	require.Equal(t, denom.TobinTax.String(), string(res))
 }

@@ -1,10 +1,14 @@
 syntax = "proto3";
 package oracle.v1;
 
-// import "gogoproto/gogo.proto";
+import "gogoproto/gogo.proto";
 // import "google/protobuf/any.proto";
 // import "cosmos_proto/cosmos.proto";
+import "oracle/v1/genesis.proto";
+import "oracle/v1/vote.proto";
 import "google/api/annotations.proto";
+import "cosmos/base/v1beta1/coin.proto";
+
 
 option go_package = "github.com/peggyjv/sommelier/x/oracle/types";
 
@@ -17,12 +21,6 @@ service Query {
     }
     rpc Actives(QueryActivesRequest) returns (QueryActivesResponse) {
         option(google.api.http).get = "/oracle/v1/Actives";
-    }
-    rpc Votes(QueryVotesRequest) returns (QueryVotesResponse) {
-        option(google.api.http).get = "/oracle/v1/Votes";
-    }
-    rpc Prevotes(QueryPrevotesRequest) returns (QueryPrevotesResponse) {
-        option(google.api.http).get = "/oracle/v1/Prevotes";
     }
     rpc Parameters(QueryParametersRequest) returns (QueryParametersResponse) {
         option(google.api.http).get = "/oracle/v1/Parameters";
@@ -53,56 +51,66 @@ service Query {
 message QueryExchangeRateRequest {
     string denom = 1;
 }
-message QueryExchangeRateResponse {}
+message QueryExchangeRateResponse {
+    string rate = 2 [(gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec", (gogoproto.nullable) = false];
+}
 
 message QueryExchangeRatesRequest {}
-message QueryExchangeRatesResponse {}
+message QueryExchangeRatesResponse {
+    repeated cosmos.base.v1beta1.DecCoin rates = 2 [(gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.DecCoins", (gogoproto.nullable) = false];
+}
 
 message QueryActivesRequest {}
-message QueryActivesResponse {}
-
-message QueryVotesRequest {
-    string voter = 1;
-    string denom = 2;
+message QueryActivesResponse {
+    repeated string denoms = 1;
 }
-message QueryVotesResponse {}
-
-message QueryPrevotesRequest {
-    string voter = 1;
-    string denom = 2;
-}
-message QueryPrevotesResponse {}
 
 message QueryParametersRequest {}
-message QueryParametersResponse {}
+message QueryParametersResponse {
+    Params params = 1 [(gogoproto.nullable) = false];
+}
 
 message QueryFeederDelegationRequest {
     string validator = 1;
 }
-message QueryFeederDelegationResponse {}
+message QueryFeederDelegationResponse {
+    string address = 1;
+}
 
 message QueryMissCounterRequest {
     string validator = 1;
 }
-message QueryMissCounterResponse {}
+message QueryMissCounterResponse {
+    int64 counter = 1;
+}
 
 message QueryAggregatePrevoteRequest {
     string validator = 1;
 }
-message QueryAggregatePrevoteResponse {}
+message QueryAggregatePrevoteResponse {
+    AggregateExchangeRatePrevote prevote = 1 [(gogoproto.nullable) = false];
+}
 
 message QueryAggregateVoteRequest {
     string validator = 1;
 }
-message QueryAggregateVoteResponse {}
+message QueryAggregateVoteResponse {
+    AggregateExchangeRateVote vote = 1 [(gogoproto.nullable) = false];
+}
 
 message QueryVoteTargetsRequest {}
-message QueryVoteTargetsResponse {}
+message QueryVoteTargetsResponse {
+    repeated string targets = 1;
+}
 
 message QueryTobinTaxRequest {
     string denom = 1;
 }
-message QueryTobinTaxResponse {}
+message QueryTobinTaxResponse {
+    string rate = 2 [(gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec", (gogoproto.nullable) = false];
+}
 
 message QueryTobinTaxesRequest {}
-message QueryTobinTaxesResponse {}
+message QueryTobinTaxesResponse {
+    repeated cosmos.base.v1beta1.DecCoin rates = 2 [(gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.DecCoins", (gogoproto.nullable) = false];
+}

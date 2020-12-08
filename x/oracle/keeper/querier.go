@@ -2,6 +2,7 @@ package keeper
 
 import (
 	"encoding/json"
+	"fmt"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
@@ -21,10 +22,6 @@ func NewQuerier(keeper Keeper) sdk.Querier {
 			return queryExchangeRates(ctx, keeper)
 		case types.QueryActives:
 			return queryActives(ctx, keeper)
-		// case types.QueryVotes:
-		// 	return queryVotes(ctx, req, keeper)
-		// case types.QueryPrevotes:
-		//  return queryPrevotes(ctx, req, keeper)
 		case types.QueryParameters:
 			return queryParameters(ctx, keeper)
 		case types.QueryFeederDelegation:
@@ -49,56 +46,39 @@ func NewQuerier(keeper Keeper) sdk.Querier {
 
 func queryExchangeRate(ctx sdk.Context, req abci.RequestQuery, keeper Keeper) ([]byte, error) {
 	var params types.QueryExchangeRateParams
-	err := types.ModuleCdc.UnmarshalJSON(req.Data, &params)
-	if err != nil {
+	if err := json.Unmarshal(req.Data, &params); err != nil {
 		return nil, sdkerrors.Wrap(sdkerrors.ErrJSONUnmarshal, err.Error())
 	}
-
 	rate, err := keeper.GetLunaExchangeRate(ctx, params.Denom)
 	if err != nil {
 		return nil, sdkerrors.Wrap(types.ErrUnknowDenom, params.Denom)
 	}
-
-	bz, err2 := json.MarshalIndent(rate, "", "  ")
-	if err2 != nil {
-		return nil, sdkerrors.Wrap(sdkerrors.ErrJSONMarshal, err.Error())
-	}
-
-	return bz, nil
+	return []byte(rate.String()), nil
 }
 
 func queryExchangeRates(ctx sdk.Context, keeper Keeper) ([]byte, error) {
 	var rates sdk.DecCoins
-
 	keeper.IterateLunaExchangeRates(ctx, func(denom string, rate sdk.Dec) (stop bool) {
 		rates = append(rates, sdk.NewDecCoinFromDec(denom, rate))
 		return false
 	})
-
-	bz, err := json.MarshalIndent(rates, "", "  ")
-	if err != nil {
-		return nil, sdkerrors.Wrap(sdkerrors.ErrJSONMarshal, err.Error())
-	}
-
-	return bz, nil
+	return []byte(rates.String()), nil
 }
 
 func queryActives(ctx sdk.Context, keeper Keeper) ([]byte, error) {
-	denoms := []string{}
-
+	var denoms []string
 	keeper.IterateLunaExchangeRates(ctx, func(denom string, rate sdk.Dec) (stop bool) {
 		denoms = append(denoms, denom)
 		return false
 	})
-
 	bz, err := json.MarshalIndent(denoms, "", "  ")
 	if err != nil {
 		return nil, sdkerrors.Wrap(sdkerrors.ErrJSONMarshal, err.Error())
 	}
-
 	return bz, nil
 }
 
+// TODO: investigate param returns
 func queryParameters(ctx sdk.Context, keeper Keeper) ([]byte, error) {
 	bz, err := json.Marshal(keeper.GetParams(ctx))
 	if err != nil {
@@ -109,32 +89,18 @@ func queryParameters(ctx sdk.Context, keeper Keeper) ([]byte, error) {
 
 func queryFeederDelegation(ctx sdk.Context, req abci.RequestQuery, keeper Keeper) ([]byte, error) {
 	var params types.QueryFeederDelegationParams
-	err := json.Unmarshal(req.Data, &params)
-	if err != nil {
+	if err := json.Unmarshal(req.Data, &params); err != nil {
 		return nil, sdkerrors.Wrap(sdkerrors.ErrJSONUnmarshal, err.Error())
 	}
-
-	delegate := keeper.GetOracleDelegate(ctx, params.Validator)
-	bz, err := json.MarshalIndent(delegate, "", "  ")
-	if err != nil {
-		return nil, sdkerrors.Wrap(sdkerrors.ErrJSONMarshal, err.Error())
-	}
-	return bz, nil
+	return []byte(keeper.GetOracleDelegate(ctx, params.Validator).String()), nil
 }
 
 func queryMissCounter(ctx sdk.Context, req abci.RequestQuery, keeper Keeper) ([]byte, error) {
 	var params types.QueryMissCounterParams
-	err := json.Unmarshal(req.Data, &params)
-	if err != nil {
+	if err := json.Unmarshal(req.Data, &params); err != nil {
 		return nil, sdkerrors.Wrap(sdkerrors.ErrJSONUnmarshal, err.Error())
 	}
-
-	missCounter := keeper.GetMissCounter(ctx, params.Validator)
-	bz, err := json.MarshalIndent(missCounter, "", "  ")
-	if err != nil {
-		return nil, sdkerrors.Wrap(sdkerrors.ErrJSONMarshal, err.Error())
-	}
-	return bz, nil
+	return []byte(fmt.Sprint(keeper.GetMissCounter(ctx, params.Validator))), nil
 }
 
 func queryAggregatePrevote(ctx sdk.Context, req abci.RequestQuery, keeper Keeper) ([]byte, error) {
@@ -142,12 +108,10 @@ func queryAggregatePrevote(ctx sdk.Context, req abci.RequestQuery, keeper Keeper
 	if err := json.Unmarshal(req.Data, &params); err != nil {
 		return nil, sdkerrors.Wrap(sdkerrors.ErrJSONUnmarshal, err.Error())
 	}
-
 	aggregateExchangeRatePrevote, err := keeper.GetAggregateExchangeRatePrevote(ctx, params.Validator)
 	if err != nil {
 		return nil, err
 	}
-
 	bz, err := json.MarshalIndent(aggregateExchangeRatePrevote, "", "  ")
 	if err != nil {
 		return nil, sdkerrors.Wrap(sdkerrors.ErrJSONMarshal, err.Error())
@@ -155,18 +119,17 @@ func queryAggregatePrevote(ctx sdk.Context, req abci.RequestQuery, keeper Keeper
 	return bz, nil
 }
 
+// TODO: make this print { "voter": "cosmos1u94xef3cp9thkcpxecuvhtpwnmg8mhlja8hzkd", "rates": "92992.1103umon/foo,3014.893umosn/foosd" }
 func queryAggregateVote(ctx sdk.Context, req abci.RequestQuery, keeper Keeper) ([]byte, error) {
 	var params types.QueryAggregateVoteParams
 	if err := json.Unmarshal(req.Data, &params); err != nil {
 		return nil, sdkerrors.Wrap(sdkerrors.ErrJSONUnmarshal, err.Error())
 	}
-
-	aggregateExchangeRateVote, err := keeper.GetAggregateExchangeRateVote(ctx, params.Validator)
+	vote, err := keeper.GetAggregateExchangeRateVote(ctx, params.Validator)
 	if err != nil {
 		return nil, err
 	}
-
-	bz, err := json.MarshalIndent(aggregateExchangeRateVote, "", "  ")
+	bz, err := json.MarshalIndent(vote, "", "  ")
 	if err != nil {
 		return nil, sdkerrors.Wrap(sdkerrors.ErrJSONMarshal, err.Error())
 	}
@@ -174,47 +137,30 @@ func queryAggregateVote(ctx sdk.Context, req abci.RequestQuery, keeper Keeper) (
 }
 
 func queryVoteTargets(ctx sdk.Context, keeper Keeper) ([]byte, error) {
-	voteTargets := keeper.GetVoteTargets(ctx)
-	bz, err := json.MarshalIndent(voteTargets, "", "  ")
+	bz, err := json.MarshalIndent(keeper.GetVoteTargets(ctx), "", "  ")
 	if err != nil {
 		return nil, sdkerrors.Wrap(sdkerrors.ErrJSONMarshal, err.Error())
 	}
-
 	return bz, nil
 }
 
 func queryTobinTax(ctx sdk.Context, req abci.RequestQuery, keeper Keeper) ([]byte, error) {
 	var params types.QueryTobinTaxParams
-	err := types.ModuleCdc.UnmarshalJSON(req.Data, &params)
-	if err != nil {
+	if err := json.Unmarshal(req.Data, &params); err != nil {
 		return nil, sdkerrors.Wrap(sdkerrors.ErrJSONUnmarshal, err.Error())
 	}
-
 	tobinTax, err := keeper.GetTobinTax(ctx, params.Denom)
 	if err != nil {
 		return nil, err
 	}
-
-	bz, err2 := json.MarshalIndent(tobinTax, "", "  ")
-	if err2 != nil {
-		return nil, sdkerrors.Wrap(sdkerrors.ErrJSONMarshal, err.Error())
-	}
-
-	return bz, nil
+	return []byte(tobinTax.String()), nil
 }
 
 func queryTobinTaxes(ctx sdk.Context, keeper Keeper) ([]byte, error) {
-	var denoms types.DenomList
-
+	var denoms sdk.DecCoins
 	keeper.IterateTobinTaxes(ctx, func(denom string, tobinTax sdk.Dec) (stop bool) {
-		denoms = append(denoms, types.Denom{Name: denom, TobinTax: tobinTax})
+		denoms = append(denoms, sdk.NewDecCoinFromDec(denom, tobinTax))
 		return false
 	})
-
-	bz, err := json.MarshalIndent(denoms, "", "  ")
-	if err != nil {
-		return nil, sdkerrors.Wrap(sdkerrors.ErrJSONMarshal, err.Error())
-	}
-
-	return bz, nil
+	return []byte(denoms.String()), nil
 }

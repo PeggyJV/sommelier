@@ -12,7 +12,7 @@ const (
 )
 
 // RegisterRoutes registers oracle-related REST handlers to a router
-func RegisterRoutes(cliCtx context.CLIContext, r *mux.Router) {
+func RegisterRoutes(cliCtx client.Context, r *mux.Router) {
 	resgisterTxRoute(cliCtx, r)
 	registerQueryRoute(cliCtx, r)
 }
