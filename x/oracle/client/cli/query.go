@@ -1,6 +1,7 @@
 package cli
 
 import (
+	"encoding/json"
 	"fmt"
 	"strings"
 
@@ -66,39 +67,27 @@ $ sommelier query oracle exchange-rates ukrw
 					return err
 				}
 
-				var rate sdk.DecCoins
-				clientCtx.JSONMarshaler.MustUnmarshalJSON(res, &rate)
-				return clientCtx.PrintOutput(rate)
+				rates, err := sdk.ParseDecCoins(string(res))
+				if err != nil {
+					return err
+				}
+				return clientCtx.PrintOutput(&types.QueryExchangeRatesResponse{Rates: rates})
 			}
 
-			denom := args[0]
-			params := types.NewQueryExchangeRateParams(denom)
-
-			bz, err := clientCtx.JSONMarshaler.MarshalJSON(params)
+			bz, err := json.Marshal(types.NewQueryExchangeRateParams(args[0]))
 			if err != nil {
 				return err
 			}
-
 			res, _, err := clientCtx.QueryWithData(fmt.Sprintf("custom/%s/%s", types.QuerierRoute, types.QueryExchangeRate), bz)
 			if err != nil {
 				return err
 			}
-
-			var rates sdk.Dec
-			clientCtx.JSONMarshaler.MustUnmarshalJSON(res, &rates)
-			return clientCtx.PrintOutput(rates)
+			fmt.Println(res)
+			return nil
 
 		},
 	}
 	return cmd
-}
-
-// Actives receiver struct
-type Denoms []string
-
-// String implements fmt.Stringer interface
-func (a Denoms) String() string {
-	return strings.Join(a, ",")
 }
 
 // GetCmdQueryActives implements the query actives command.
@@ -123,10 +112,8 @@ $ sommelier query oracle actives
 			if err != nil {
 				return err
 			}
-
-			var actives Denoms
-			clientCtx.JSONMarshaler.MustUnmarshalJSON(res, &actives)
-			return clientCtx.PrintOutput(actives)
+			fmt.Println(res)
+			return nil
 		},
 	}
 
@@ -145,15 +132,12 @@ func GetCmdQueryParams() *cobra.Command {
 			if err != nil {
 				return err
 			}
-
 			res, _, err := clientCtx.QueryWithData(fmt.Sprintf("custom/%s/%s", types.QuerierRoute, types.QueryParameters), nil)
 			if err != nil {
 				return err
 			}
-
-			var params types.Params
-			clientCtx.JSONMarshaler.MustUnmarshalJSON(res, &params)
-			return clientCtx.PrintOutput(params)
+			fmt.Println(res)
+			return nil
 		},
 	}
 
@@ -178,14 +162,12 @@ $ sommelier query oracle feeder terravaloper...
 				return err
 			}
 
-			valString := args[0]
-			validator, err := sdk.ValAddressFromBech32(valString)
+			validator, err := sdk.ValAddressFromBech32(args[0])
 			if err != nil {
 				return err
 			}
 
-			params := types.NewQueryFeederDelegationParams(validator)
-			bz, err := clientCtx.JSONMarshaler.MarshalJSON(params)
+			bz, err := json.Marshal(types.NewQueryFeederDelegationParams(validator))
 			if err != nil {
 				return err
 			}
