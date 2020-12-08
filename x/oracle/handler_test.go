@@ -10,7 +10,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/bank"
 
 	core "github.com/peggyjv/sommelier/types"
-	"github.com/peggyjv/sommelier/x/oracle//keeper"
+	"github.com/peggyjv/sommelier/x/oracle/keeper"
 )
 
 func TestOracleFilters(t *testing.T) {

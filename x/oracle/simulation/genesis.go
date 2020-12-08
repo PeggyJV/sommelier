@@ -6,12 +6,11 @@ import (
 	"fmt"
 	"math/rand"
 
-	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 
-	core "github.com/peggyjv/sommelier/types"
 	"github.com/peggyjv/sommelier/x/oracle/types"
+	core "github.com/peggyjv/sommelier/x/oracle/types"
 )
 
 // Simulation parameter constants
@@ -111,7 +110,7 @@ func RandomizedGenState(simState *module.SimulationState) {
 			VoteThreshold:            voteThreshold,
 			RewardBand:               rewardBand,
 			RewardDistributionWindow: rewardDistributionWindow,
-			Whitelist: types.DenomList{
+			Whitelist: []types.Denom{
 				{core.MicroKRWDenom, types.DefaultTobinTax},
 				{core.MicroSDRDenom, types.DefaultTobinTax},
 				{core.MicroUSDDenom, types.DefaultTobinTax},
@@ -120,16 +119,14 @@ func RandomizedGenState(simState *module.SimulationState) {
 			SlashWindow:       slashWindow,
 			MinValidPerWindow: minValidPerWindow,
 		},
-		[]types.ExchangeRatePrevote{},
-		[]types.ExchangeRateVote{},
-		map[string]sdk.Dec{},
-		map[string]sdk.AccAddress{},
+		[]types.ExchangeRateTuple{},
+		map[string]string{},
 		map[string]int64{},
 		[]types.AggregateExchangeRatePrevote{},
 		[]types.AggregateExchangeRateVote{},
-		map[string]sdk.Dec{},
+		[]types.ExchangeRateTuple{},
 	)
 
-	fmt.Printf("Selected randomly generated oracle parameters:\n%s\n", codec.MustMarshalJSONIndent(simState.Cdc, oracleGenesis))
-	simState.GenState[types.ModuleName] = simState.Cdc.MustMarshalJSON(oracleGenesis)
+	fmt.Printf("Selected randomly generated oracle parameters:\n%s\n", simState.Cdc.MustMarshalJSON(&oracleGenesis))
+	simState.GenState[types.ModuleName] = simState.Cdc.MustMarshalJSON(&oracleGenesis)
 }
