@@ -4,10 +4,8 @@ import (
 	"fmt"
 	"testing"
 
-	mock "github.com/cosmos/cosmos-sdk/tests/mocks"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
-	gomock "github.com/golang/mock/gomock"
 	"github.com/peggyjv/sommelier/x/oracle/keeper"
 	"github.com/peggyjv/sommelier/x/oracle/types"
 	"github.com/stretchr/testify/require"
@@ -36,11 +34,11 @@ func TestOracleFilters(t *testing.T) {
 	require.NoError(t, err)
 
 	// Case 4: a non-validator sending an oracle message fails
-	addr := mock.NewMockAccount(gomock.NewController(t))
+	addr := keeper.Addrs[3]
 	salt = "2"
-	hash = types.GetAggregateVoteHash(salt, er.String(), sdk.ValAddress(addr.GetAddress()))
+	hash = types.GetAggregateVoteHash(salt, er.String(), sdk.ValAddress(addr))
 
-	prevoteMsg = types.NewMsgAggregateExchangeRatePrevote(hash, addr.GetAddress(), sdk.ValAddress(addr.GetAddress()))
+	prevoteMsg = types.NewMsgAggregateExchangeRatePrevote(hash, addr, keeper.ValAddrs[3])
 	_, err = h(input.Ctx, &prevoteMsg)
 	require.Error(t, err)
 }
