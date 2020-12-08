@@ -1,27 +1,26 @@
 package oracle
 
 import (
+	"github.com/peggyjv/sommelier/x/oracle/keeper"
 	"github.com/peggyjv/sommelier/x/oracle/types"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/cosmos/cosmos-sdk/x/staking/exported"
-
-	core "github.com/peggyjv/sommelier/types"
+	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 )
 
 // EndBlocker is called at the end of every block
-func EndBlocker(ctx sdk.Context, k Keeper) {
+func EndBlocker(ctx sdk.Context, k keeper.Keeper) {
 	params := k.GetParams(ctx)
 
 	// Not yet time for a tally
-	if !core.IsPeriodLastBlock(ctx, params.VotePeriod) {
+	if !IsPeriodLastBlock(ctx, params.VotePeriod) {
 		return
 	}
 
 	// Build valid votes counter and winner map over all validators in active set
 	validVotesCounterMap := make(map[string]int)
 	winnerMap := make(map[string]types.Claim)
-	k.StakingKeeper.IterateValidators(ctx, func(_ int64, validator exported.ValidatorI) bool {
+	k.StakingKeeper.IterateValidators(ctx, func(_ int64, validator stakingtypes.ValidatorI) bool {
 
 		// Exclude not bonded validator or jailed validators from tallying
 		if validator.IsBonded() && !validator.IsJailed() {
@@ -99,7 +98,7 @@ func EndBlocker(ctx sdk.Context, k Keeper) {
 
 	// Do slash who did miss voting over threshold and
 	// reset miss counters of all validators at the last block of slash window
-	if core.IsPeriodLastBlock(ctx, params.SlashWindow) {
+	if IsPeriodLastBlock(ctx, params.SlashWindow) {
 		SlashAndResetMissCounters(ctx, k)
 	}
 
@@ -116,7 +115,7 @@ func EndBlocker(ctx sdk.Context, k Keeper) {
 }
 
 // clearBallots clears all tallied prevotes and votes from the store
-func clearBallots(ctx sdk.Context, k Keeper, votePeriod int64) {
+func clearBallots(ctx sdk.Context, k keeper.Keeper, votePeriod int64) {
 	// Clear all prevotes
 	k.IterateExchangeRatePrevotes(ctx, func(prevote types.ExchangeRatePrevote) (stop bool) {
 		if ctx.BlockHeight() > prevote.SubmitBlock+votePeriod {
@@ -149,7 +148,7 @@ func clearBallots(ctx sdk.Context, k Keeper, votePeriod int64) {
 }
 
 // applyWhitelist update vote target denom list and set tobin tax with params whitelist
-func applyWhitelist(ctx sdk.Context, k Keeper, whitelist types.DenomList, voteTargets map[string]sdk.Dec) {
+func applyWhitelist(ctx sdk.Context, k keeper.Keeper, whitelist types.DenomList, voteTargets map[string]sdk.Dec) {
 
 	// check is there any update in whitelist params
 	updateRequired := false
@@ -171,4 +170,9 @@ func applyWhitelist(ctx sdk.Context, k Keeper, whitelist types.DenomList, voteTa
 			k.SetTobinTax(ctx, item.Name, item.TobinTax)
 		}
 	}
+}
+
+// IsPeriodLastBlock returns true if we are at the last block of the period
+func IsPeriodLastBlock(ctx sdk.Context, blocksPerPeriod int64) bool {
+	return (ctx.BlockHeight()+1)%blocksPerPeriod == 0
 }

@@ -4,6 +4,7 @@ import (
 	"sort"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/peggyjv/sommelier/x/oracle/keeper"
 	"github.com/peggyjv/sommelier/x/oracle/types"
 )
 
@@ -58,7 +59,7 @@ func updateWinnerMap(ballotWinningClaims []types.Claim, validVotesCounterMap map
 }
 
 // ballot for the asset is passing the threshold amount of voting power
-func ballotIsPassing(ctx sdk.Context, ballot types.ExchangeRateBallot, k Keeper) (sdk.Int, bool) {
+func ballotIsPassing(ctx sdk.Context, ballot types.ExchangeRateBallot, k keeper.Keeper) (sdk.Int, bool) {
 	totalBondedPower := sdk.TokensToConsensusPower(k.StakingKeeper.TotalBondedTokens(ctx))
 	voteThreshold := k.VoteThreshold(ctx)
 	thresholdVotes := voteThreshold.MulInt64(totalBondedPower).RoundInt()
@@ -69,7 +70,7 @@ func ballotIsPassing(ctx sdk.Context, ballot types.ExchangeRateBallot, k Keeper)
 // choose Reference Terra with the highest voter turnout
 // If the voting power of the two denominations is the same,
 // select reference Terra in alphabetical order.
-func pickReferenceTerra(ctx sdk.Context, k Keeper, voteTargets map[string]sdk.Dec, voteMap map[string]types.ExchangeRateBallot) string {
+func pickReferenceTerra(ctx sdk.Context, k keeper.Keeper, voteTargets map[string]sdk.Dec, voteMap map[string]types.ExchangeRateBallot) string {
 	largestBallotPower := int64(0)
 	referenceTerra := ""
 

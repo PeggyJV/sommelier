@@ -1,25 +1,27 @@
 package oracle
 
 import (
+	"context"
 	"encoding/json"
 	"math/rand"
 
 	"github.com/cosmos/cosmos-sdk/client"
-	sim "github.com/cosmos/cosmos-sdk/x/simulation"
-	"github.com/peggyjv/sommelier/x/auth"
-	"github.com/peggyjv/sommelier/x/oracle/simulation"
-
-	"github.com/gorilla/mux"
-	"github.com/spf13/cobra"
-
-	abci "github.com/tendermint/tendermint/abci/types"
-
 	"github.com/cosmos/cosmos-sdk/codec"
+	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
-
+	sim "github.com/cosmos/cosmos-sdk/types/simulation"
+	authkeeper "github.com/cosmos/cosmos-sdk/x/auth/keeper"
+	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
+	"github.com/gorilla/mux"
+	"github.com/grpc-ecosystem/grpc-gateway/runtime"
 	"github.com/peggyjv/sommelier/x/oracle/client/cli"
 	"github.com/peggyjv/sommelier/x/oracle/client/rest"
+	"github.com/peggyjv/sommelier/x/oracle/keeper"
+	"github.com/peggyjv/sommelier/x/oracle/simulation"
+	"github.com/peggyjv/sommelier/x/oracle/types"
+	"github.com/spf13/cobra"
+	abci "github.com/tendermint/tendermint/abci/types"
 )
 
 var (
@@ -33,28 +35,28 @@ type AppModuleBasic struct{}
 
 // Name returns the oracle module's name
 func (AppModuleBasic) Name() string {
-	return ModuleName
+	return types.ModuleName
 }
 
-// RegisterCodec registers the oracle module's types for the given codec.
-func (AppModuleBasic) RegisterCodec(cdc *codec.Codec) {
-	RegisterCodec(cdc)
+// RegisterLegacyAminoCodec registers the oracle module's types for the given codec.
+func (AppModuleBasic) RegisterLegacyAminoCodec(cdc *codec.LegacyAmino) {
+	types.RegisterLegacyAminoCodec(cdc)
 }
 
 // DefaultGenesis returns default genesis state as raw bytes for the oracle
 // module.
-func (AppModuleBasic) DefaultGenesis() json.RawMessage {
-	return ModuleCdc.MustMarshalJSON(DefaultGenesisState())
+func (AppModuleBasic) DefaultGenesis(cdc codec.JSONMarshaler) json.RawMessage {
+	gen := types.DefaultGenesisState()
+	return cdc.MustMarshalJSON(&gen)
 }
 
 // ValidateGenesis performs genesis state validation for the oracle module.
-func (AppModuleBasic) ValidateGenesis(bz json.RawMessage) error {
-	var data GenesisState
-	err := ModuleCdc.UnmarshalJSON(bz, &data)
-	if err != nil {
+func (AppModuleBasic) ValidateGenesis(cdc codec.JSONMarshaler, _ client.TxEncodingConfig, bz json.RawMessage) error {
+	var data types.GenesisState
+	if err := cdc.UnmarshalJSON(bz, &data); err != nil {
 		return err
 	}
-	return ValidateGenesis(data)
+	return types.ValidateGenesis(data)
 }
 
 // RegisterRESTRoutes registers the REST routes for the oracle module.
@@ -63,13 +65,24 @@ func (AppModuleBasic) RegisterRESTRoutes(ctx client.Context, rtr *mux.Router) {
 }
 
 // GetTxCmd returns the root tx command for the oracle module.
-func (AppModuleBasic) GetTxCmd(cdc *codec.Codec) *cobra.Command {
-	return cli.GetTxCmd(cdc)
+func (AppModuleBasic) GetTxCmd() *cobra.Command {
+	return cli.GetTxCmd()
 }
 
 // GetQueryCmd returns the root query command for the oracle module.
-func (AppModuleBasic) GetQueryCmd(cdc *codec.Codec) *cobra.Command {
-	return cli.GetQueryCmd(cdc)
+func (AppModuleBasic) GetQueryCmd() *cobra.Command {
+	return cli.GetQueryCmd()
+}
+
+// RegisterGRPCGatewayRoutes registers the gRPC Gateway routes for the distribution module.
+// also implements app modeul basic
+func (AppModuleBasic) RegisterGRPCGatewayRoutes(clientCtx client.Context, mux *runtime.ServeMux) {
+	types.RegisterQueryHandlerClient(context.Background(), mux, types.NewQueryClient(clientCtx))
+}
+
+// RegisterInterfaces implements app bmodule basic
+func (b AppModuleBasic) RegisterInterfaces(registry codectypes.InterfaceRegistry) {
+	types.RegisterInterfaces(registry)
 }
 
 //___________________________
@@ -77,45 +90,50 @@ func (AppModuleBasic) GetQueryCmd(cdc *codec.Codec) *cobra.Command {
 // AppModule implements an application module for the oracle module.
 type AppModule struct {
 	AppModuleBasic
-	keeper        Keeper
-	accountKeeper auth.AccountKeeper
+	keeper        keeper.Keeper
+	accountKeeper authkeeper.AccountKeeper
+	bankKeeper    bankkeeper.BaseKeeper
+	cdc           codec.Marshaler
 }
 
 // NewAppModule creates a new AppModule object
-func NewAppModule(keeper Keeper, accountKeeper auth.AccountKeeper) AppModule {
+func NewAppModule(keeper keeper.Keeper, accountKeeper authkeeper.AccountKeeper, bankKeeper bankkeeper.BaseKeeper, cdc codec.Marshaler) AppModule {
 	return AppModule{
 		AppModuleBasic: AppModuleBasic{},
 		keeper:         keeper,
 		accountKeeper:  accountKeeper,
+		bankKeeper:     bankKeeper,
+		cdc:            cdc,
 	}
 }
 
 // Name returns the oracle module's name.
-func (AppModule) Name() string { return ModuleName }
+func (AppModule) Name() string { return types.ModuleName }
 
 // RegisterInvariants performs a no-op.
 func (AppModule) RegisterInvariants(_ sdk.InvariantRegistry) {}
 
 // Route returns the message routing key for the oracle module.
-func (AppModule) Route() string { return RouterKey }
-
-// NewHandler returns an sdk.Handler for the oracle module.
-func (am AppModule) NewHandler() sdk.Handler {
-	return NewHandler(am.keeper)
-}
+func (am AppModule) Route() sdk.Route { return sdk.NewRoute(types.RouterKey, NewHandler(am.keeper)) }
 
 // QuerierRoute returns the oracle module's querier route name.
-func (AppModule) QuerierRoute() string { return RouterKey }
+func (AppModule) QuerierRoute() string { return types.QuerierRoute }
 
-// NewQuerierHandler returns the oracle module sdk.Querier.
-func (am AppModule) NewQuerierHandler() sdk.Querier {
-	return NewQuerier(am.keeper)
+// LegacyQuerierHandler returns the oracle module sdk.Querier.
+func (am AppModule) LegacyQuerierHandler(_ *codec.LegacyAmino) sdk.Querier {
+	return keeper.NewQuerier(am.keeper)
+}
+
+// RegisterServices registers module services.
+func (am AppModule) RegisterServices(cfg module.Configurator) {
+	// types.RegisterMsgServer(cfg.MsgServer(), keeper.NewMsgServerImpl(am.keeper))
+	types.RegisterQueryServer(cfg.QueryServer(), am.keeper)
 }
 
 // InitGenesis performs genesis initialization for the oracle module.
-func (am AppModule) InitGenesis(ctx sdk.Context, data json.RawMessage) []abci.ValidatorUpdate {
-	var genesisState GenesisState
-	ModuleCdc.MustUnmarshalJSON(data, &genesisState)
+func (am AppModule) InitGenesis(ctx sdk.Context, cdc codec.JSONMarshaler, data json.RawMessage) []abci.ValidatorUpdate {
+	var genesisState types.GenesisState
+	cdc.MustUnmarshalJSON(data, &genesisState)
 	InitGenesis(ctx, am.keeper, genesisState)
 
 	return []abci.ValidatorUpdate{}
@@ -123,10 +141,9 @@ func (am AppModule) InitGenesis(ctx sdk.Context, data json.RawMessage) []abci.Va
 
 // ExportGenesis returns the exported genesis state as raw bytes for the oracle
 // module.
-func (am AppModule) ExportGenesis(ctx sdk.Context) json.RawMessage {
+func (am AppModule) ExportGenesis(ctx sdk.Context, cdc codec.JSONMarshaler) json.RawMessage {
 	genesisState := ExportGenesis(ctx, am.keeper)
-	data := ModuleCdc.MustMarshalJSON(genesisState)
-	return data
+	return cdc.MustMarshalJSON(&genesisState)
 }
 
 // BeginBlock returns the begin blocker for the oracle module.
@@ -159,14 +176,14 @@ func (AppModule) RandomizedParams(r *rand.Rand) []sim.ParamChange {
 }
 
 // RegisterStoreDecoder registers a decoder for distribution module's types
-func (AppModule) RegisterStoreDecoder(sdr sdk.StoreDecoderRegistry) {
-	sdr[StoreKey] = simulation.DecodeStore
+func (am AppModule) RegisterStoreDecoder(sdr sdk.StoreDecoderRegistry) {
+	sdr[types.StoreKey] = simulation.DecodeStore(am.cdc)
 }
 
 // WeightedOperations returns the all the gov module operations with their respective weights.
 func (am AppModule) WeightedOperations(simState module.SimulationState) []sim.WeightedOperation {
 	return simulation.WeightedOperations(
 		simState.AppParams, simState.Cdc,
-		am.accountKeeper, am.keeper,
+		am.accountKeeper, am.bankKeeper, am.keeper,
 	)
 }

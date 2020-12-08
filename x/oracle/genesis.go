@@ -4,49 +4,27 @@ import (
 	"fmt"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/peggyjv/sommelier/x/oracle/keeper"
+	"github.com/peggyjv/sommelier/x/oracle/types"
 )
 
 // InitGenesis initialize default parameters
 // and the keeper's address to pubkey map
-func InitGenesis(ctx sdk.Context, keeper Keeper, data GenesisState) {
-	for delegatorBechAddr, delegate := range data.FeederDelegations {
+func InitGenesis(ctx sdk.Context, keeper keeper.Keeper, data types.GenesisState) {
+	for delegatorBechAddr, delegateBechAddr := range data.FeederDelegations {
 		delegator, err := sdk.ValAddressFromBech32(delegatorBechAddr)
+		if err != nil {
+			panic(err)
+		}
+		delegate, err := sdk.AccAddressFromBech32(delegateBechAddr)
 		if err != nil {
 			panic(err)
 		}
 		keeper.SetOracleDelegate(ctx, delegator, delegate)
 	}
 
-	for _, prevote := range data.ExchangeRatePrevotes {
-		keeper.AddExchangeRatePrevote(ctx, prevote)
-	}
-
-	for _, vote := range data.ExchangeRateVotes {
-		keeper.AddExchangeRateVote(ctx, vote)
-	}
-
-	for denom, rate := range data.ExchangeRates {
-		keeper.SetLunaExchangeRate(ctx, denom, rate)
-	}
-
-	for delegatorBechAddr, delegate := range data.FeederDelegations {
-		delegator, err := sdk.ValAddressFromBech32(delegatorBechAddr)
-		if err != nil {
-			panic(err)
-		}
-		keeper.SetOracleDelegate(ctx, delegator, delegate)
-	}
-
-	for _, prevote := range data.ExchangeRatePrevotes {
-		keeper.AddExchangeRatePrevote(ctx, prevote)
-	}
-
-	for _, vote := range data.ExchangeRateVotes {
-		keeper.AddExchangeRateVote(ctx, vote)
-	}
-
-	for denom, rate := range data.ExchangeRates {
-		keeper.SetLunaExchangeRate(ctx, denom, rate)
+	for _, rate := range data.ExchangeRates {
+		keeper.SetLunaExchangeRate(ctx, rate.Denom, rate.ExchangeRate)
 	}
 
 	for operatorBechAddr, missCounter := range data.MissCounters {
@@ -66,8 +44,8 @@ func InitGenesis(ctx sdk.Context, keeper Keeper, data GenesisState) {
 	}
 
 	if len(data.TobinTaxes) > 0 {
-		for denom, tobinTax := range data.TobinTaxes {
-			keeper.SetTobinTax(ctx, denom, tobinTax)
+		for _, tt := range data.TobinTaxes {
+			keeper.SetTobinTax(ctx, tt.Denom, tt.ExchangeRate)
 		}
 	} else {
 		for _, item := range data.Params.Whitelist {
@@ -80,37 +58,25 @@ func InitGenesis(ctx sdk.Context, keeper Keeper, data GenesisState) {
 	// check if the module account exists
 	moduleAcc := keeper.GetOracleAccount(ctx)
 	if moduleAcc == nil {
-		panic(fmt.Sprintf("%s module account has not been set", ModuleName))
+		panic(fmt.Sprintf("%s module account has not been set", types.ModuleName))
 	}
 }
 
 // ExportGenesis writes the current store values
 // to a genesis file, which can be imported again
 // with InitGenesis
-func ExportGenesis(ctx sdk.Context, keeper Keeper) (data GenesisState) {
+func ExportGenesis(ctx sdk.Context, keeper keeper.Keeper) (data types.GenesisState) {
 	params := keeper.GetParams(ctx)
-	feederDelegations := make(map[string]sdk.AccAddress)
+	feederDelegations := make(map[string]string)
 	keeper.IterateOracleDelegates(ctx, func(delegator sdk.ValAddress, delegate sdk.AccAddress) (stop bool) {
 		bechAddr := delegator.String()
-		feederDelegations[bechAddr] = delegate
+		feederDelegations[bechAddr] = delegate.String()
 		return false
 	})
 
-	var exchangeRatePrevotes []ExchangeRatePrevote
-	keeper.IterateExchangeRatePrevotes(ctx, func(prevote ExchangeRatePrevote) (stop bool) {
-		exchangeRatePrevotes = append(exchangeRatePrevotes, prevote)
-		return false
-	})
-
-	var exchangeRateVotes []ExchangeRateVote
-	keeper.IterateExchangeRateVotes(ctx, func(vote ExchangeRateVote) (stop bool) {
-		exchangeRateVotes = append(exchangeRateVotes, vote)
-		return false
-	})
-
-	rates := make(map[string]sdk.Dec)
+	rates := make([]types.ExchangeRateTuple, 0)
 	keeper.IterateLunaExchangeRates(ctx, func(denom string, rate sdk.Dec) (stop bool) {
-		rates[denom] = rate
+		rates = append(rates, types.ExchangeRateTuple{ExchangeRate: rate, Denom: denom})
 		return false
 	})
 
@@ -120,23 +86,23 @@ func ExportGenesis(ctx sdk.Context, keeper Keeper) (data GenesisState) {
 		return false
 	})
 
-	var aggregateExchangeRatePrevotes []AggregateExchangeRatePrevote
-	keeper.IterateAggregateExchangeRatePrevotes(ctx, func(aggregatePrevote AggregateExchangeRatePrevote) (stop bool) {
+	var aggregateExchangeRatePrevotes []types.AggregateExchangeRatePrevote
+	keeper.IterateAggregateExchangeRatePrevotes(ctx, func(aggregatePrevote types.AggregateExchangeRatePrevote) (stop bool) {
 		aggregateExchangeRatePrevotes = append(aggregateExchangeRatePrevotes, aggregatePrevote)
 		return false
 	})
 
-	var aggregateExchangeRateVotes []AggregateExchangeRateVote
-	keeper.IterateAggregateExchangeRateVotes(ctx, func(aggregateVote AggregateExchangeRateVote) bool {
+	var aggregateExchangeRateVotes []types.AggregateExchangeRateVote
+	keeper.IterateAggregateExchangeRateVotes(ctx, func(aggregateVote types.AggregateExchangeRateVote) bool {
 		aggregateExchangeRateVotes = append(aggregateExchangeRateVotes, aggregateVote)
 		return false
 	})
 
-	tobinTaxes := make(map[string]sdk.Dec)
+	tobinTaxes := make([]types.ExchangeRateTuple, 0)
 	keeper.IterateTobinTaxes(ctx, func(denom string, tobinTax sdk.Dec) (stop bool) {
-		tobinTaxes[denom] = tobinTax
+		tobinTaxes = append(tobinTaxes, types.ExchangeRateTuple{ExchangeRate: tobinTax, Denom: denom})
 		return false
 	})
 
-	return NewGenesisState(params, exchangeRatePrevotes, exchangeRateVotes, rates, feederDelegations, missCounters, aggregateExchangeRatePrevotes, aggregateExchangeRateVotes, tobinTaxes)
+	return types.NewGenesisState(params, rates, feederDelegations, missCounters, aggregateExchangeRatePrevotes, aggregateExchangeRateVotes, tobinTaxes)
 }

@@ -22,7 +22,7 @@ func TestOrganize(t *testing.T) {
 	// TODO: Do this initialization in the test_utils file?
 	bd := input.StakingKeeper.GetParams(ctx).BondDenom
 	for i := range []int{0, 1, 2} {
-		acc := input.AccKeeper.NewAccount(ctx, authtypes.NewBaseAccount(Addrs[i], accPubKeys[i], uint64(i), 0))
+		acc := input.AccKeeper.NewAccount(ctx, authtypes.NewBaseAccount(Addrs[i], AccPubKeys[i], uint64(i), 0))
 		input.BankKeeper.SetBalances(ctx, acc.GetAddress(), sdk.NewCoins(sdk.NewCoin(bd, amt)))
 		input.AccKeeper.SetAccount(ctx, acc)
 	}
@@ -78,7 +78,7 @@ func TestOrganizeAggregate(t *testing.T) {
 	// TODO: Do this initialization in the test_utils file?
 	bd := input.StakingKeeper.GetParams(ctx).BondDenom
 	for i := range []int{0, 1, 2} {
-		acc := input.AccKeeper.NewAccount(ctx, authtypes.NewBaseAccount(Addrs[i], accPubKeys[i], uint64(i), 0))
+		acc := input.AccKeeper.NewAccount(ctx, authtypes.NewBaseAccount(Addrs[i], AccPubKeys[i], uint64(i), 0))
 		input.BankKeeper.SetBalances(ctx, acc.GetAddress(), sdk.NewCoins(sdk.NewCoin(bd, amt)))
 		input.AccKeeper.SetAccount(ctx, acc)
 	}
@@ -134,7 +134,7 @@ func TestDuplicateVote(t *testing.T) {
 	// TODO: Do this initialization in the test_utils file?
 	bd := input.StakingKeeper.GetParams(ctx).BondDenom
 	for i := range []int{0, 1, 2} {
-		acc := input.AccKeeper.NewAccount(ctx, authtypes.NewBaseAccount(Addrs[i], accPubKeys[i], uint64(i), 0))
+		acc := input.AccKeeper.NewAccount(ctx, authtypes.NewBaseAccount(Addrs[i], AccPubKeys[i], uint64(i), 0))
 		input.BankKeeper.SetBalances(ctx, acc.GetAddress(), sdk.NewCoins(sdk.NewCoin(bd, amt)))
 		input.AccKeeper.SetAccount(ctx, acc)
 	}

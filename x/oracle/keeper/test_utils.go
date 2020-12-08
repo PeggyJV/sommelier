@@ -46,7 +46,7 @@ var (
 		ed25519.GenPrivKey().PubKey(),
 	}
 
-	accPubKeys = []crypto.PubKey{
+	AccPubKeys = []crypto.PubKey{
 		secp256k1.GenPrivKey().PubKey(),
 		secp256k1.GenPrivKey().PubKey(),
 		secp256k1.GenPrivKey().PubKey(),
@@ -55,19 +55,19 @@ var (
 	}
 
 	Addrs = []sdk.AccAddress{
-		sdk.AccAddress(accPubKeys[0].Address()),
-		sdk.AccAddress(accPubKeys[1].Address()),
-		sdk.AccAddress(accPubKeys[2].Address()),
-		sdk.AccAddress(accPubKeys[3].Address()),
-		sdk.AccAddress(accPubKeys[4].Address()),
+		sdk.AccAddress(AccPubKeys[0].Address()),
+		sdk.AccAddress(AccPubKeys[1].Address()),
+		sdk.AccAddress(AccPubKeys[2].Address()),
+		sdk.AccAddress(AccPubKeys[3].Address()),
+		sdk.AccAddress(AccPubKeys[4].Address()),
 	}
 
 	ValAddrs = []sdk.ValAddress{
-		sdk.ValAddress(accPubKeys[0].Address()),
-		sdk.ValAddress(accPubKeys[1].Address()),
-		sdk.ValAddress(accPubKeys[2].Address()),
-		sdk.ValAddress(accPubKeys[3].Address()),
-		sdk.ValAddress(accPubKeys[4].Address()),
+		sdk.ValAddress(AccPubKeys[0].Address()),
+		sdk.ValAddress(AccPubKeys[1].Address()),
+		sdk.ValAddress(AccPubKeys[2].Address()),
+		sdk.ValAddress(AccPubKeys[3].Address()),
+		sdk.ValAddress(AccPubKeys[4].Address()),
 	}
 
 	InitTokens = sdk.TokensFromConsensusPower(200)
@@ -92,6 +92,7 @@ func newTestCodec() *codec.LegacyAmino {
 
 	types.RegisterLegacyAminoCodec(cdc)
 	authtypes.RegisterLegacyAminoCodec(cdc)
+	banktypes.RegisterLegacyAminoCodec(cdc)
 	sdk.RegisterLegacyAminoCodec(cdc)
 	ccodec.RegisterCrypto(cdc)
 	stakingtypes.RegisterLegacyAminoCodec(cdc)
@@ -106,6 +107,7 @@ func NewTestMarshaler() codec.ProtoCodecMarshaler {
 	ir := codectypes.NewInterfaceRegistry()
 	types.RegisterInterfaces(ir)
 	authtypes.RegisterInterfaces(ir)
+	banktypes.RegisterInterfaces(ir)
 	sdk.RegisterInterfaces(ir)
 	ccodec.RegisterInterfaces(ir)
 	stakingtypes.RegisterInterfaces(ir)

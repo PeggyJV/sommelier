@@ -4,17 +4,16 @@ package oracle
 import (
 	"testing"
 
-	"github.com/stretchr/testify/require"
-
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	"github.com/cosmos/cosmos-sdk/x/staking"
-
-	core "github.com/peggyjv/sommelier/types"
 	"github.com/peggyjv/sommelier/x/oracle/keeper"
+	"github.com/peggyjv/sommelier/x/oracle/types"
+	"github.com/stretchr/testify/require"
 )
 
 var (
-	uSDRAmt    = sdk.NewInt(1005 * core.MicroUnit)
+	uSDRAmt    = sdk.NewInt(1005 * types.MicroUnit)
 	stakingAmt = sdk.TokensFromConsensusPower(10)
 
 	randomExchangeRate        = sdk.NewDec(1700)
@@ -50,6 +49,13 @@ func setup(t *testing.T) (keeper.TestInput, sdk.Handler) {
 
 	sh := staking.NewHandler(input.StakingKeeper)
 
+	bd := input.StakingKeeper.GetParams(input.Ctx).BondDenom
+	for i := range []int{0, 1, 2} {
+		acc := input.AccKeeper.NewAccount(input.Ctx, authtypes.NewBaseAccount(keeper.Addrs[i], keeper.AccPubKeys[i], uint64(i), 0))
+		input.BankKeeper.SetBalances(input.Ctx, acc.GetAddress(), sdk.NewCoins(sdk.NewCoin(bd, stakingAmt.Add(sdk.NewInt(100)))))
+		input.AccKeeper.SetAccount(input.Ctx, acc)
+	}
+
 	// Validator created
 	_, err := sh(input.Ctx, keeper.NewTestMsgCreateValidator(keeper.ValAddrs[0], keeper.PubKeys[0], stakingAmt))
 	require.NoError(t, err)
@@ -72,6 +78,13 @@ func setupVal5(t *testing.T) (keeper.TestInput, sdk.Handler) {
 	h := NewHandler(input.OracleKeeper)
 
 	sh := staking.NewHandler(input.StakingKeeper)
+
+	bd := input.StakingKeeper.GetParams(input.Ctx).BondDenom
+	for i := range []int{0, 1, 2, 3, 4} {
+		acc := input.AccKeeper.NewAccount(input.Ctx, authtypes.NewBaseAccount(keeper.Addrs[i], keeper.AccPubKeys[i], uint64(i), 0))
+		input.BankKeeper.SetBalances(input.Ctx, acc.GetAddress(), sdk.NewCoins(sdk.NewCoin(bd, stakingAmt.Add(sdk.NewInt(100)))))
+		input.AccKeeper.SetAccount(input.Ctx, acc)
+	}
 
 	// Validator created
 	_, err := sh(input.Ctx, keeper.NewTestMsgCreateValidator(keeper.ValAddrs[0], keeper.PubKeys[0], stakingAmt))

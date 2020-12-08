@@ -22,7 +22,7 @@ func TestRewardBallotWinners(t *testing.T) {
 
 	// TODO: Do this initialization in the test_utils file?
 	for i := range []int{0, 1} {
-		acc := input.AccKeeper.NewAccount(ctx, authtypes.NewBaseAccount(Addrs[i], accPubKeys[i], uint64(i), 0))
+		acc := input.AccKeeper.NewAccount(ctx, authtypes.NewBaseAccount(Addrs[i], AccPubKeys[i], uint64(i), 0))
 		input.BankKeeper.SetBalances(ctx, acc.GetAddress(), InitCoins)
 		input.AccKeeper.SetAccount(ctx, acc)
 	}
