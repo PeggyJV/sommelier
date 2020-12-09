@@ -2,15 +2,17 @@ package types
 
 import (
 	"bytes"
+
+	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
 // NewGenesisState creates a new GenesisState object
 func NewGenesisState(
-	params Params, rates []ExchangeRateTuple,
+	params Params, rates sdk.DecCoins,
 	feederDelegations map[string]string, missCounters map[string]int64,
 	aggregateExchangeRatePrevotes []AggregateExchangeRatePrevote,
 	aggregateExchangeRateVotes []AggregateExchangeRateVote,
-	TobinTaxes []ExchangeRateTuple,
+	TobinTaxes sdk.DecCoins,
 ) GenesisState {
 
 	return GenesisState{
@@ -28,12 +30,12 @@ func NewGenesisState(
 func DefaultGenesisState() GenesisState {
 	return GenesisState{
 		Params:                        DefaultParams(),
-		ExchangeRates:                 make([]ExchangeRateTuple, 0),
+		ExchangeRates:                 make(sdk.DecCoins, 0),
 		FeederDelegations:             make(map[string]string),
 		MissCounters:                  make(map[string]int64),
 		AggregateExchangeRatePrevotes: []AggregateExchangeRatePrevote{},
 		AggregateExchangeRateVotes:    []AggregateExchangeRateVote{},
-		TobinTaxes:                    make([]ExchangeRateTuple, 0),
+		TobinTaxes:                    make(sdk.DecCoins, 0),
 	}
 }
 

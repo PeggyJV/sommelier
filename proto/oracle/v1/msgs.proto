@@ -30,6 +30,7 @@ message MsgAggregateExchangeRatePrevoteResponse {}
 // MsgAggregateExchangeRateVote - struct for voting on the exchange rates of Luna denominated in various Terra assets.
 message MsgAggregateExchangeRateVote {
     string salt           = 1;
+    // NOTE: this exchange rates string is a DecCoins.String()
     string exchange_rates = 2;
     string feeder         = 3;
     string validator      = 4;

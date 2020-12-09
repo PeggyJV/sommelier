@@ -10,12 +10,3 @@ message Claim {
     int64  weight    = 1;
     string recipient = 2; 
 }
-
-// // Denom is the object to hold configurations of each denom
-message Denom {
-    string name      = 1;
-    string tobin_tax = 2 [
-        (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec", 
-        (gogoproto.nullable) = false
-    ];
-}

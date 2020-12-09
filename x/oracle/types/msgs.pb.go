@@ -80,7 +80,6 @@ func (m *MsgDelegateFeedConsent) GetDelegate() string {
 	return ""
 }
 
-// TODO: return data
 type MsgDelegateFeedConsentResponse struct {
 }
 
@@ -180,7 +179,6 @@ func (m *MsgAggregateExchangeRatePrevote) GetValidator() string {
 	return ""
 }
 
-// TODO: return data
 type MsgAggregateExchangeRatePrevoteResponse struct {
 }
 
@@ -221,7 +219,8 @@ var xxx_messageInfo_MsgAggregateExchangeRatePrevoteResponse proto.InternalMessag
 
 // MsgAggregateExchangeRateVote - struct for voting on the exchange rates of Luna denominated in various Terra assets.
 type MsgAggregateExchangeRateVote struct {
-	Salt          string `protobuf:"bytes,1,opt,name=salt,proto3" json:"salt,omitempty"`
+	Salt string `protobuf:"bytes,1,opt,name=salt,proto3" json:"salt,omitempty"`
+	// NOTE: this exchange rates string is a DecCoins.String()
 	ExchangeRates string `protobuf:"bytes,2,opt,name=exchange_rates,json=exchangeRates,proto3" json:"exchange_rates,omitempty"`
 	Feeder        string `protobuf:"bytes,3,opt,name=feeder,proto3" json:"feeder,omitempty"`
 	Validator     string `protobuf:"bytes,4,opt,name=validator,proto3" json:"validator,omitempty"`
@@ -288,7 +287,6 @@ func (m *MsgAggregateExchangeRateVote) GetValidator() string {
 	return ""
 }
 
-// TODO: return data
 type MsgAggregateExchangeRateVoteResponse struct {
 }
 

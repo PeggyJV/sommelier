@@ -56,13 +56,13 @@ func TestParamsEqual(t *testing.T) {
 
 	// non-positive tobin tax
 	p8 := DefaultParams()
-	p8.Whitelist[0].TobinTax = sdk.NewDec(-1)
+	p8.Whitelist[0].Amount = sdk.NewDec(-1)
 	err = p8.ValidateBasic()
 	require.Error(t, err)
 
 	// empty name
 	p9 := DefaultParams()
-	p9.Whitelist[0].Name = ""
+	p9.Whitelist[0].Denom = ""
 	err = p9.ValidateBasic()
 	require.Error(t, err)
 

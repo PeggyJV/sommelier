@@ -53,11 +53,12 @@ var (
 	DefaultVoteThreshold = sdk.NewDecWithPrec(50, 2) // 50%
 	DefaultRewardBand    = sdk.NewDecWithPrec(2, 2)  // 2% (-1, 1)
 	DefaultTobinTax      = sdk.NewDecWithPrec(25, 4) // 0.25%
-	DefaultWhitelist     = DenomList{
-		{Name: MicroKRWDenom, TobinTax: DefaultTobinTax},
-		{Name: MicroSDRDenom, TobinTax: DefaultTobinTax},
-		{Name: MicroUSDDenom, TobinTax: DefaultTobinTax},
-		{Name: MicroMNTDenom, TobinTax: DefaultTobinTax.MulInt64(8)}}
+	// TODO: need a better default whitelist
+	DefaultWhitelist = sdk.NewDecCoins(
+		sdk.NewDecCoinFromDec(MicroKRWDenom, DefaultTobinTax),
+		sdk.NewDecCoinFromDec(MicroSDRDenom, DefaultTobinTax),
+		sdk.NewDecCoinFromDec(MicroUSDDenom, DefaultTobinTax),
+		sdk.NewDecCoinFromDec(MicroMNTDenom, DefaultTobinTax.MulInt64(8)))
 	DefaultSlashFraction     = sdk.NewDecWithPrec(1, 4) // 0.01%
 	DefaultMinValidPerWindow = sdk.NewDecWithPrec(5, 2) // 5%
 )
@@ -127,10 +128,10 @@ func (p Params) ValidateBasic() error {
 	}
 
 	for _, denom := range p.Whitelist {
-		if denom.TobinTax.LT(sdk.ZeroDec()) || denom.TobinTax.GT(sdk.OneDec()) {
+		if denom.Amount.LT(sdk.ZeroDec()) || denom.Amount.GT(sdk.OneDec()) {
 			return fmt.Errorf("oracle parameter Whitelist Denom must have TobinTax between [0, 1]")
 		}
-		if len(denom.Name) == 0 {
+		if len(denom.Denom) == 0 {
 			return fmt.Errorf("oracle parameter Whitelist Denom must have name")
 		}
 	}
@@ -198,16 +199,16 @@ func validateRewardDistributionWindow(i interface{}) error {
 }
 
 func validateWhitelist(i interface{}) error {
-	v, ok := i.([]Denom)
+	v, ok := i.(sdk.DecCoins)
 	if !ok {
 		return fmt.Errorf("invalid parameter type: %T", i)
 	}
 
 	for _, d := range v {
-		if d.TobinTax.LT(sdk.ZeroDec()) || d.TobinTax.GT(sdk.OneDec()) {
+		if d.Amount.LT(sdk.ZeroDec()) || d.Amount.GT(sdk.OneDec()) {
 			return fmt.Errorf("oracle parameter Whitelist Denom must have TobinTax between [0, 1]")
 		}
-		if len(d.Name) == 0 {
+		if len(d.Denom) == 0 {
 			return fmt.Errorf("oracle parameter Whitelist Denom must have name")
 		}
 	}

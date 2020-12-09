@@ -155,7 +155,7 @@ func (msg MsgAggregateExchangeRateVote) ValidateBasic() error {
 
 	for _, tuple := range exchangeRateTuples {
 		// Check overflow bit length
-		if tuple.ExchangeRate.BigInt().BitLen() > 100+sdk.DecimalPrecisionBits {
+		if tuple.Amount.BigInt().BitLen() > 100+sdk.DecimalPrecisionBits {
 			return sdkerrors.Wrap(ErrInvalidExchangeRate, "overflow")
 		}
 	}

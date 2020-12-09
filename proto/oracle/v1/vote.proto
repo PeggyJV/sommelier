@@ -2,6 +2,7 @@ syntax = "proto3";
 package oracle.v1;
 
 import "gogoproto/gogo.proto";
+import "cosmos/base/v1beta1/coin.proto";
 
 option go_package = "github.com/peggyjv/sommelier/x/oracle/types";
 
@@ -30,20 +31,12 @@ message AggregateExchangeRatePrevote {
     int64  submit_block = 3;
 }
 
-// ExchangeRateTuple - struct to represent a exchange rate of Luna in the denom asset
-message ExchangeRateTuple {
-    string denom          = 1;
-    string exchange_rate  = 2 [
-        (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec", 
-        (gogoproto.nullable) = false
-    ];
-}
-
 // AggregateExchangeRateVote - struct to store a validator's aggregate vote on the rate of Luna in the denom asset
 message AggregateExchangeRateVote {
-    string                                    voter = 1;
-    repeated ExchangeRateTuple exchange_rate_tuples = 2 [
-        (gogoproto.nullable) = false,
-        (gogoproto.castrepeated) = "[]ExchangeRateTuple"
+    string                                    voter                = 1;
+    repeated cosmos.base.v1beta1.DecCoin      exchange_rate_tuples = 2 [
+        (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.DecCoins", 
+        (gogoproto.nullable) = false
     ];
+
 }
