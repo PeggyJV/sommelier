@@ -6,7 +6,7 @@ import "google/api/annotations.proto";
 option go_package = "github.com/peggyjv/sommelier/x/oracle/types";
 
 service Msg {
-  rpc DelegateFeedConsent(MsgDelegateFeedConsent) returns (MsgDelegateFeedConsent) {
+  rpc DelegateFeedConsent(MsgDelegateFeedConsent) returns (MsgDelegateFeedConsentResponse) {
     option (google.api.http).post = "/oracle/v1/delegate_feed_consent";
   }
   rpc AggregateExchangeRatePrevote(MsgAggregateExchangeRatePrevote) returns (MsgAggregateExchangeRatePrevoteResponse) {

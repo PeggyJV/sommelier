@@ -86,6 +86,7 @@ func SimulateMsgAggregateExchangeRatePrevote(ak authkeeper.AccountKeeper, bk ban
 	return func(
 		r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accs []simtypes.Account, chainID string,
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
+		fmt.Println("EXCHANGE RATE PREVOTE")
 		txcfg := keeper.TestTxConfig()
 		simAccount, _ := simtypes.RandomAcc(r, accs)
 		address := sdk.ValAddress(simAccount.Address)
@@ -142,6 +143,7 @@ func SimulateMsgExchangeRateVote(ak authkeeper.AccountKeeper, bk bankkeeper.Keep
 	return func(
 		r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accs []simtypes.Account, chainID string,
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
+		fmt.Println("EXCHANGE RATE VOTE")
 		txcfg := keeper.TestTxConfig()
 		simAccount, _ := simtypes.RandomAcc(r, accs)
 		address := sdk.ValAddress(simAccount.Address)
@@ -211,13 +213,15 @@ func SimulateMsgDelegateFeedConsent(ak authkeeper.AccountKeeper, bk bankkeeper.K
 	return func(
 		r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accs []simtypes.Account, chainID string,
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
+		fmt.Println("Delegate Feed Consent")
 		txcfg := keeper.TestTxConfig()
 		simAccount, _ := simtypes.RandomAcc(r, accs)
+		fmt.Println("  - Validator", simAccount.Address)
 		delegateAccount, _ := simtypes.RandomAcc(r, accs)
 		valAddress := sdk.ValAddress(simAccount.Address)
 		delegateValAddress := sdk.ValAddress(delegateAccount.Address)
+		fmt.Println("  - Delegate", delegateAccount.Address)
 		account := ak.GetAccount(ctx, simAccount.Address)
-
 		// ensure the validator exists
 		val := k.StakingKeeper.Validator(ctx, valAddress)
 		if val == nil {
@@ -245,7 +249,7 @@ func SimulateMsgDelegateFeedConsent(ak authkeeper.AccountKeeper, bk bankkeeper.K
 			chainID,
 			[]uint64{account.GetAccountNumber()},
 			[]uint64{account.GetSequence()},
-			simAccount.PrivKey,
+			delegateAccount.PrivKey,
 		)
 		if err != nil {
 			return simtypes.NoOpMsg(types.ModuleName, "", ""), nil, err
