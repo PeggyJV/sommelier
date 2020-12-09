@@ -39,7 +39,7 @@ func WeightedOperations(
 	appParams simtypes.AppParams,
 	cdc codec.JSONMarshaler,
 	ak authkeeper.AccountKeeper,
-	bk bankkeeper.BaseKeeper,
+	bk bankkeeper.Keeper,
 	k keeper.Keeper) simulation.WeightedOperations {
 	var (
 		weightMsgAggregateExchangeRatePrevote int
@@ -82,7 +82,7 @@ func WeightedOperations(
 
 // SimulateMsgAggregateExchangeRatePrevote generates a MsgExchangeRatePrevote with random values.
 // nolint: funlen
-func SimulateMsgAggregateExchangeRatePrevote(ak authkeeper.AccountKeeper, bk bankkeeper.BaseKeeper, k keeper.Keeper) simtypes.Operation {
+func SimulateMsgAggregateExchangeRatePrevote(ak authkeeper.AccountKeeper, bk bankkeeper.Keeper, k keeper.Keeper) simtypes.Operation {
 	return func(
 		r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accs []simtypes.Account, chainID string,
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
@@ -138,7 +138,7 @@ func SimulateMsgAggregateExchangeRatePrevote(ak authkeeper.AccountKeeper, bk ban
 
 // SimulateMsgExchangeRateVote generates a MsgExchangeRateVote with random values.
 // nolint: funlen
-func SimulateMsgExchangeRateVote(ak authkeeper.AccountKeeper, bk bankkeeper.BaseKeeper, k keeper.Keeper) simtypes.Operation {
+func SimulateMsgExchangeRateVote(ak authkeeper.AccountKeeper, bk bankkeeper.Keeper, k keeper.Keeper) simtypes.Operation {
 	return func(
 		r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accs []simtypes.Account, chainID string,
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
@@ -207,7 +207,7 @@ func SimulateMsgExchangeRateVote(ak authkeeper.AccountKeeper, bk bankkeeper.Base
 
 // SimulateMsgDelegateFeedConsent generates a MsgDelegateFeedConsent with random values.
 // nolint: funlen
-func SimulateMsgDelegateFeedConsent(ak authkeeper.AccountKeeper, bk bankkeeper.BaseKeeper, k keeper.Keeper) simtypes.Operation {
+func SimulateMsgDelegateFeedConsent(ak authkeeper.AccountKeeper, bk bankkeeper.Keeper, k keeper.Keeper) simtypes.Operation {
 	return func(
 		r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accs []simtypes.Account, chainID string,
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
