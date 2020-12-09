@@ -2,7 +2,6 @@
 
 Sommelier 3.0 is a test version of the Stargate binaries.
 
-[![CircleCI](https://circleci.com/gh/peggyjv/sommelier/tree/master.svg?style=shield)](https://circleci.com/gh/peggyjv/sommelier/tree/master)
 [![codecov](https://codecov.io/gh/peggyjv/sommelier/branch/master/graph/badge.svg)](https://codecov.io/gh/peggyjv/sommelier)
 [![Go Report Card](https://goreportcard.com/badge/github.com/peggyjv/sommelier)](https://goreportcard.com/report/github.com/peggyjv/sommelier)
 [![license](https://img.shields.io/github/license/peggyjv/sommelier.svg)](https://github.com/peggyjv/sommelier/blob/master/LICENSE)
