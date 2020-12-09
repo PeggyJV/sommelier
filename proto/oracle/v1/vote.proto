@@ -1,0 +1,49 @@
+syntax = "proto3";
+package oracle.v1;
+
+import "gogoproto/gogo.proto";
+
+option go_package = "github.com/peggyjv/sommelier/x/oracle/types";
+
+// ExchangeRatePrevote - struct to store a validator's prevote on the rate of Luna in the denom asset
+message ExchangeRatePrevote {
+    bytes  hash         = 1;
+    string denom        = 2;
+    string voter        = 3;
+    int64  submit_block = 4;
+}
+
+// ExchangeRateVote - struct to store a validator's vote on the rate of Luna in the denom asset
+message ExchangeRateVote {
+    string exchange_rate  = 1 [
+        (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec", 
+        (gogoproto.nullable) = false
+    ];
+    string denom          = 2;
+    string voter          = 3;
+}
+
+// AggregateExchangeRatePrevote - struct to store a validator's aggregate prevote on the rate of Luna in the denom asset
+message AggregateExchangeRatePrevote {
+    bytes  hash         = 1;
+    string voter        = 2; 
+    int64  submit_block = 3;
+}
+
+// ExchangeRateTuple - struct to represent a exchange rate of Luna in the denom asset
+message ExchangeRateTuple {
+    string denom          = 1;
+    string exchange_rate  = 2 [
+        (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec", 
+        (gogoproto.nullable) = false
+    ];
+}
+
+// AggregateExchangeRateVote - struct to store a validator's aggregate vote on the rate of Luna in the denom asset
+message AggregateExchangeRateVote {
+    string                                    voter = 1;
+    repeated ExchangeRateTuple exchange_rate_tuples = 2 [
+        (gogoproto.nullable) = false,
+        (gogoproto.castrepeated) = "[]ExchangeRateTuple"
+    ];
+}

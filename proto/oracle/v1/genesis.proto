@@ -1,0 +1,66 @@
+syntax = "proto3";
+package oracle.v1;
+
+import "oracle/v1/vote.proto";
+import "oracle/v1/ballot.proto";
+import "gogoproto/gogo.proto";
+
+option go_package = "github.com/peggyjv/sommelier/x/oracle/types";
+
+
+// // GenesisState - all oracle state that must be provided at genesis
+message GenesisState {
+    Params                                params                           = 1 [
+        (gogoproto.nullable) = false
+    ];
+    map<string, string>                   feeder_delegations               = 2 [
+        (gogoproto.nullable) = false
+    ];
+    repeated ExchangeRateTuple            exchange_rates                   = 3 [
+        (gogoproto.nullable)     = false,
+        (gogoproto.castrepeated) = "[]ExchangeRateTuple"
+    ];
+    map<string, int64>                    miss_counters                    = 4 [
+        (gogoproto.nullable) = false
+    ];
+    repeated AggregateExchangeRatePrevote aggregate_exchange_rate_prevotes = 5 [
+        (gogoproto.nullable)     = false,
+        (gogoproto.castrepeated) = "[]AggregateExchangeRatePrevote"
+    ];
+    repeated AggregateExchangeRateVote    aggregate_exchange_rate_votes    = 6 [
+        (gogoproto.nullable)     = false,
+        (gogoproto.castrepeated) = "[]AggregateExchangeRateVote"
+    ];
+    repeated ExchangeRateTuple            tobin_taxes                      = 7 [
+        (gogoproto.nullable)     = false,
+        (gogoproto.castrepeated) = "[]ExchangeRateTuple"
+    ];
+
+}
+
+// Params oracle parameters
+message Params {
+    int64          vote_period                = 1;
+    string         vote_threshold             = 2 [
+        (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec", 
+        (gogoproto.nullable) = false
+    ];
+    string         reward_band                = 3 [
+        (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec", 
+        (gogoproto.nullable)   = false
+    ];
+    int64          reward_distribution_window = 4; 
+    repeated Denom whitelist                  = 5 [
+        (gogoproto.nullable)     = false,
+        (gogoproto.castrepeated) = "[]Denom"
+    ];
+    string         slash_fraction             = 6 [
+        (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec", 
+        (gogoproto.nullable) = false
+    ];
+    int64          slash_window               = 7;
+    string         min_valid_per_window       = 8 [
+        (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec", 
+        (gogoproto.nullable) = false
+    ];
+}
