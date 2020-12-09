@@ -5,9 +5,9 @@ option go_package = "github.com/peggyjv/sommelier/x/oracle/types";
 
 // MsgService defines the msgs that the oracle module handles.
 service Msg {
-  rpc DelegateFeedConsent         (MsgDelegateFeedConsent)          returns (MsgDelegateFeedConsentResponse);
-  rpc AggregateExchangeRatePrevote(MsgAggregateExchangeRatePrevote) returns (MsgAggregateExchangeRatePrevoteResponse);
-  rpc AggregateExchangeRateVote   (MsgAggregateExchangeRateVote)    returns (MsgAggregateExchangeRateVoteResponse);
+  rpc DelegateFeedConsent          (MsgDelegateFeedConsent)          returns (MsgDelegateFeedConsentResponse);
+  rpc AggregateExchangeRatePrevote (MsgAggregateExchangeRatePrevote) returns (MsgAggregateExchangeRatePrevoteResponse);
+  rpc AggregateExchangeRateVote    (MsgAggregateExchangeRateVote)    returns (MsgAggregateExchangeRateVoteResponse);
 }
 
 // MsgDelegateFeedConsent - struct for delegating oracle voting rights to another address.
