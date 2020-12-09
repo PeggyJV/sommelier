@@ -91,7 +91,10 @@ func EndBlocker(ctx sdk.Context, k keeper.Keeper) {
 		}
 
 		// Increase miss counter
-		operator := sdk.ValAddress(operatorAddrByteStr) // error never occur
+		operator, err := sdk.ValAddressFromBech32(operatorAddrByteStr)
+		if err != nil {
+			panic(err)
+		}
 		k.SetMissCounter(ctx, operator, k.GetMissCounter(ctx, operator)+1)
 	}
 

@@ -284,7 +284,7 @@ func TestOracleRewardDistribution(t *testing.T) {
 	EndBlocker(input.Ctx.WithBlockHeight(1), input.OracleKeeper)
 
 	votePeriodsPerWindow := sdk.NewDec(input.OracleKeeper.RewardDistributionWindow(input.Ctx)).QuoInt64(input.OracleKeeper.VotePeriod(input.Ctx)).TruncateInt64()
-	expectedRewardAmt := sdk.NewDecFromInt(rewardsAmt.QuoRaw(2)).QuoInt64(votePeriodsPerWindow).TruncateInt()
+	expectedRewardAmt := sdk.NewDecFromInt(rewardsAmt.QuoRaw(3)).QuoInt64(votePeriodsPerWindow).TruncateInt()
 	rewards := input.DistrKeeper.GetValidatorOutstandingRewards(input.Ctx.WithBlockHeight(2), keeper.ValAddrs[0])
 	require.Equal(t, expectedRewardAmt, rewards.Rewards.AmountOf(types.MicroLunaDenom).TruncateInt())
 	rewards = input.DistrKeeper.GetValidatorOutstandingRewards(input.Ctx.WithBlockHeight(2), keeper.ValAddrs[1])
@@ -302,7 +302,6 @@ func TestOracleRewardBand(t *testing.T) {
 	input.OracleKeeper.SetTobinTax(input.Ctx, types.MicroKRWDenom, types.DefaultTobinTax)
 
 	rewardSpread := randomExchangeRate.Mul(input.OracleKeeper.RewardBand(input.Ctx).QuoInt64(2))
-
 	// no one will miss the vote
 	// Account 1, KRW
 	makePrevoteAndVote(t, input, h, 0, types.MicroKRWDenom, randomExchangeRate.Sub(rewardSpread), 0)
@@ -330,7 +329,6 @@ func TestOracleRewardBand(t *testing.T) {
 	makePrevoteAndVote(t, input, h, 0, types.MicroKRWDenom, randomExchangeRate.Add(rewardSpread), 2)
 
 	EndBlocker(input.Ctx, input.OracleKeeper)
-
 	require.Equal(t, int64(1), input.OracleKeeper.GetMissCounter(input.Ctx, keeper.ValAddrs[0]))
 	require.Equal(t, int64(0), input.OracleKeeper.GetMissCounter(input.Ctx, keeper.ValAddrs[1]))
 	require.Equal(t, int64(0), input.OracleKeeper.GetMissCounter(input.Ctx, keeper.ValAddrs[2]))
@@ -342,10 +340,13 @@ func TestOracleMultiRewardDistribution(t *testing.T) {
 
 	// SDR and KRW have the same voting power, but KRW has been chosen as referenceTerra by alphabetical order.
 	// Account 1, SDR
-	makePrevoteAndVote(t, input, h, 0, types.MicroSDRDenom, randomExchangeRate, 0)
+	cnz := sdk.NewDecCoins(
+		sdk.NewDecCoinFromDec(types.MicroSDRDenom, randomExchangeRate),
+		sdk.NewDecCoinFromDec(types.MicroKRWDenom, randomExchangeRate),
+	)
 
-	// Account 1, KRW
-	makePrevoteAndVote(t, input, h, 0, types.MicroKRWDenom, randomExchangeRate, 0)
+	// Account 1, KRW+SDR
+	makeAggregatePrevoteAndVote(t, input, h, 0, cnz, 0)
 
 	// Account 2, SDR
 	makePrevoteAndVote(t, input, h, 0, types.MicroSDRDenom, randomExchangeRate, 1)
@@ -383,16 +384,21 @@ func TestOracleExchangeRate(t *testing.T) {
 
 	// KRW has been chosen as referenceTerra by highest voting power
 	// Account 1, USD, KRW
-	makePrevoteAndVote(t, input, h, 0, types.MicroUSDDenom, uswRandomExchangeRate, 0)
-	makePrevoteAndVote(t, input, h, 0, types.MicroKRWDenom, krwRandomExchangeRate, 0)
+	cnz := sdk.NewDecCoins(
+		sdk.NewDecCoinFromDec(types.MicroUSDDenom, uswRandomExchangeRate),
+		sdk.NewDecCoinFromDec(types.MicroKRWDenom, krwRandomExchangeRate),
+	)
+	makeAggregatePrevoteAndVote(t, input, h, 0, cnz, 0)
 
 	// Account 2, USD, KRW
-	makePrevoteAndVote(t, input, h, 0, types.MicroUSDDenom, uswRandomExchangeRate, 1)
-	makePrevoteAndVote(t, input, h, 0, types.MicroKRWDenom, krwRandomExchangeRate, 1)
+	makeAggregatePrevoteAndVote(t, input, h, 0, cnz, 1)
 
 	// Account 3, KRW, SDR
-	makePrevoteAndVote(t, input, h, 0, types.MicroKRWDenom, krwRandomExchangeRate, 2)
-	makePrevoteAndVote(t, input, h, 0, types.MicroSDRDenom, randomExchangeRate, 2)
+	cnz = sdk.NewDecCoins(
+		sdk.NewDecCoinFromDec(types.MicroSDRDenom, randomExchangeRate),
+		sdk.NewDecCoinFromDec(types.MicroKRWDenom, krwRandomExchangeRate),
+	)
+	makeAggregatePrevoteAndVote(t, input, h, 0, cnz, 2)
 
 	rewardAmt := sdk.NewInt(100000000)
 	moduleAcc := input.AccKeeper.GetModuleAccount(input.Ctx.WithBlockHeight(1), types.ModuleName)
@@ -423,8 +429,11 @@ func TestOracleExchangeRateVal5(t *testing.T) {
 
 	// KRW has been chosen as referenceTerra by highest voting power
 	// Account 1, KRW, USD
-	makePrevoteAndVote(t, input, h, 0, types.MicroKRWDenom, krwExchangeRate, 0)
-	makePrevoteAndVote(t, input, h, 0, types.MicroUSDDenom, usdExchangeRate, 0)
+	val1 := sdk.NewDecCoins(
+		sdk.NewDecCoinFromDec(types.MicroKRWDenom, krwExchangeRate),
+		sdk.NewDecCoinFromDec(types.MicroUSDDenom, usdExchangeRate),
+	)
+	makeAggregatePrevoteAndVote(t, input, h, 0, val1, 0)
 
 	// Account 2, KRW
 	makePrevoteAndVote(t, input, h, 0, types.MicroKRWDenom, krwExchangeRate, 1)
@@ -433,12 +442,14 @@ func TestOracleExchangeRateVal5(t *testing.T) {
 	makePrevoteAndVote(t, input, h, 0, types.MicroKRWDenom, krwExchangeRate, 2)
 
 	// Account 4, KRW, USD
-	makePrevoteAndVote(t, input, h, 0, types.MicroKRWDenom, krwExchangeRateWithErr, 3)
-	makePrevoteAndVote(t, input, h, 0, types.MicroUSDDenom, usdExchangeRateWithErr, 3)
+	val4 := sdk.NewDecCoins(
+		sdk.NewDecCoinFromDec(types.MicroKRWDenom, krwExchangeRateWithErr),
+		sdk.NewDecCoinFromDec(types.MicroUSDDenom, usdExchangeRateWithErr),
+	)
+	makeAggregatePrevoteAndVote(t, input, h, 0, val4, 3)
 
 	// Account 5, KRW, USD
-	makePrevoteAndVote(t, input, h, 0, types.MicroKRWDenom, krwExchangeRateWithErr, 4)
-	makePrevoteAndVote(t, input, h, 0, types.MicroUSDDenom, usdExchangeRateWithErr, 4)
+	makeAggregatePrevoteAndVote(t, input, h, 0, val4, 4)
 
 	rewardAmt := sdk.NewInt(100000000)
 	moduleAcc := input.AccKeeper.GetModuleAccount(input.Ctx.WithBlockHeight(1), types.ModuleName)

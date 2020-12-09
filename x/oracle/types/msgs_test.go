@@ -2,7 +2,6 @@ package types
 
 import (
 	"bytes"
-	"fmt"
 	"sort"
 	"testing"
 
@@ -62,7 +61,6 @@ func TestMsgAggregateExchangeRatePrevote(t *testing.T) {
 		if tc.expectPass {
 			require.NoError(t, msg.ValidateBasic(), "test: %v", i)
 		} else {
-			fmt.Println("HERERERER", tc.voter.String())
 			require.Error(t, msg.ValidateBasic(), "test: %v", i)
 		}
 	}
