@@ -1,20 +1,13 @@
 syntax = "proto3";
 package oracle.v1;
 
-import "google/api/annotations.proto";
-
 option go_package = "github.com/peggyjv/sommelier/x/oracle/types";
 
+// MsgService defines the msgs that the oracle module handles.
 service Msg {
-  rpc DelegateFeedConsent(MsgDelegateFeedConsent) returns (MsgDelegateFeedConsentResponse) {
-    option (google.api.http).post = "/oracle/v1/delegate_feed_consent";
-  }
-  rpc AggregateExchangeRatePrevote(MsgAggregateExchangeRatePrevote) returns (MsgAggregateExchangeRatePrevoteResponse) {
-    option (google.api.http).post = "/oracle/v1/aggregate_exchange_rate_prevote";
-  }
-  rpc AggregateExchangeRateVote(MsgAggregateExchangeRateVote) returns (MsgAggregateExchangeRateVoteResponse) {
-    option (google.api.http).post = "/oracle/v1/aggregate_exchange_rate_vote";
-  }
+  rpc DelegateFeedConsent         (MsgDelegateFeedConsent)          returns (MsgDelegateFeedConsentResponse);
+  rpc AggregateExchangeRatePrevote(MsgAggregateExchangeRatePrevote) returns (MsgAggregateExchangeRatePrevoteResponse);
+  rpc AggregateExchangeRateVote   (MsgAggregateExchangeRateVote)    returns (MsgAggregateExchangeRateVoteResponse);
 }
 
 // MsgDelegateFeedConsent - struct for delegating oracle voting rights to another address.
@@ -22,8 +15,6 @@ message MsgDelegateFeedConsent {
     string operator = 1;
     string delegate = 2;
 }
-
-// TODO: return data
 message MsgDelegateFeedConsentResponse {}
 
 // MsgAggregateExchangeRatePrevote - struct for aggregate prevoting on the ExchangeRateVote.
@@ -34,8 +25,6 @@ message MsgAggregateExchangeRatePrevote {
     string feeder    = 2;
     string validator = 3;
 }
-
-// TODO: return data
 message MsgAggregateExchangeRatePrevoteResponse {}
 
 // MsgAggregateExchangeRateVote - struct for voting on the exchange rates of Luna denominated in various Terra assets.
@@ -45,6 +34,4 @@ message MsgAggregateExchangeRateVote {
     string feeder         = 3;
     string validator      = 4;
 }
-
-// TODO: return data
 message MsgAggregateExchangeRateVoteResponse {}
