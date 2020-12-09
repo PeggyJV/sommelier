@@ -168,11 +168,11 @@ func TestQueryAggregateVote(t *testing.T) {
 	input := CreateTestInput(t)
 	querier := NewQuerier(input.OracleKeeper)
 
-	vote1 := types.NewAggregateExchangeRateVote(types.ExchangeRateTuples{{"", sdk.OneDec()}}, ValAddrs[0])
+	vote1 := types.NewAggregateExchangeRateVote(sdk.NewDecCoins(sdk.NewDecCoinFromDec("foo", sdk.OneDec())), ValAddrs[0])
 	input.OracleKeeper.AddAggregateExchangeRateVote(input.Ctx, vote1)
-	vote2 := types.NewAggregateExchangeRateVote(types.ExchangeRateTuples{{"", sdk.OneDec()}}, ValAddrs[1])
+	vote2 := types.NewAggregateExchangeRateVote(sdk.NewDecCoins(sdk.NewDecCoinFromDec("foo", sdk.OneDec())), ValAddrs[1])
 	input.OracleKeeper.AddAggregateExchangeRateVote(input.Ctx, vote2)
-	vote3 := types.NewAggregateExchangeRateVote(types.ExchangeRateTuples{{"", sdk.OneDec()}}, ValAddrs[2])
+	vote3 := types.NewAggregateExchangeRateVote(sdk.NewDecCoins(sdk.NewDecCoinFromDec("foo", sdk.OneDec())), ValAddrs[2])
 	input.OracleKeeper.AddAggregateExchangeRateVote(input.Ctx, vote3)
 
 	// validator 0 address params
@@ -263,8 +263,8 @@ func TestQueryTobinTax(t *testing.T) {
 	input := CreateTestInput(t)
 	querier := NewQuerier(input.OracleKeeper)
 
-	denom := types.Denom{types.MicroKRWDenom, sdk.OneDec()}
-	input.OracleKeeper.SetTobinTax(input.Ctx, denom.Name, denom.TobinTax)
+	denom := sdk.NewDecCoinFromDec(types.MicroKRWDenom, sdk.OneDec())
+	input.OracleKeeper.SetTobinTax(input.Ctx, denom.Denom, denom.Amount)
 
 	queryParams := types.NewQueryTobinTaxParams(types.MicroKRWDenom)
 	bz, err := cdc.MarshalJSON(queryParams)
@@ -272,5 +272,5 @@ func TestQueryTobinTax(t *testing.T) {
 
 	res, err := querier(input.Ctx, []string{types.QueryTobinTax}, abci.RequestQuery{Path: "", Data: bz})
 	require.NoError(t, err)
-	require.Equal(t, denom.TobinTax.String(), string(res))
+	require.Equal(t, denom.Amount.String(), string(res))
 }

@@ -181,7 +181,7 @@ func SimulateMsgExchangeRateVote(ak authkeeper.AccountKeeper, bk bankkeeper.Keep
 			return simtypes.NoOpMsg(types.ModuleName, "", ""), nil, err
 		}
 
-		er := &types.ExchangeRateTuple{Denom: denom, ExchangeRate: price}
+		er := &sdk.DecCoin{Denom: denom, Amount: price}
 		msg := types.NewMsgAggregateExchangeRateVote(salt, er.String(), feederAddr, address)
 
 		tx, err := helpers.GenTx(

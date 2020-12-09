@@ -150,7 +150,7 @@ func clearBallots(ctx sdk.Context, k keeper.Keeper, votePeriod int64) {
 }
 
 // applyWhitelist update vote target denom list and set tobin tax with params whitelist
-func applyWhitelist(ctx sdk.Context, k keeper.Keeper, whitelist types.DenomList, voteTargets map[string]sdk.Dec) {
+func applyWhitelist(ctx sdk.Context, k keeper.Keeper, whitelist sdk.DecCoins, voteTargets map[string]sdk.Dec) {
 
 	// check is there any update in whitelist params
 	updateRequired := false
@@ -158,7 +158,7 @@ func applyWhitelist(ctx sdk.Context, k keeper.Keeper, whitelist types.DenomList,
 		updateRequired = true
 	} else {
 		for _, item := range whitelist {
-			if tobinTax, ok := voteTargets[item.Name]; !ok || !tobinTax.Equal(item.TobinTax) {
+			if tobinTax, ok := voteTargets[item.Denom]; !ok || !tobinTax.Equal(item.Amount) {
 				updateRequired = true
 				break
 			}
@@ -169,7 +169,7 @@ func applyWhitelist(ctx sdk.Context, k keeper.Keeper, whitelist types.DenomList,
 		k.ClearTobinTaxes(ctx)
 
 		for _, item := range whitelist {
-			k.SetTobinTax(ctx, item.Name, item.TobinTax)
+			k.SetTobinTax(ctx, item.Denom, item.Amount)
 		}
 	}
 }

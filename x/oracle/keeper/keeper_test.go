@@ -200,10 +200,10 @@ func TestParams(t *testing.T) {
 	slashFraction := sdk.NewDecWithPrec(1, 2)
 	slashWindow := int64(1000)
 	minValidPerWindow := sdk.NewDecWithPrec(1, 4)
-	whitelist := types.DenomList{
-		{Name: types.MicroSDRDenom, TobinTax: types.DefaultTobinTax},
-		{Name: types.MicroKRWDenom, TobinTax: types.DefaultTobinTax},
-	}
+	whitelist := sdk.NewDecCoins(
+		sdk.NewDecCoinFromDec(types.MicroSDRDenom, types.DefaultTobinTax),
+		sdk.NewDecCoinFromDec(types.MicroKRWDenom, types.DefaultTobinTax),
+	)
 
 	// Should really test validateParams, but skipping because obvious
 	newParams := types.Params{
@@ -343,10 +343,10 @@ func TestAggregatePrevoteIterate(t *testing.T) {
 func TestAggregateVoteAddDelete(t *testing.T) {
 	input := CreateTestInput(t)
 
-	aggregateVote := types.NewAggregateExchangeRateVote(types.ExchangeRateTuples{
-		{Denom: "foo", ExchangeRate: sdk.NewDec(-1)},
-		{Denom: "foo", ExchangeRate: sdk.NewDec(0)},
-		{Denom: "foo", ExchangeRate: sdk.NewDec(1)},
+	aggregateVote := types.NewAggregateExchangeRateVote(sdk.DecCoins{
+		sdk.DecCoin{"foo", sdk.NewDec(-1)},
+		sdk.NewDecCoinFromDec("foo", sdk.NewDec(0)),
+		sdk.NewDecCoinFromDec("foo", sdk.NewDec(1)),
 	}, sdk.ValAddress(Addrs[0]))
 	input.OracleKeeper.AddAggregateExchangeRateVote(input.Ctx, aggregateVote)
 
@@ -362,17 +362,17 @@ func TestAggregateVoteAddDelete(t *testing.T) {
 func TestAggregateVoteIterate(t *testing.T) {
 	input := CreateTestInput(t)
 
-	aggregateVote1 := types.NewAggregateExchangeRateVote(types.ExchangeRateTuples{
-		{Denom: "foo", ExchangeRate: sdk.NewDec(-1)},
-		{Denom: "foo", ExchangeRate: sdk.NewDec(0)},
-		{Denom: "foo", ExchangeRate: sdk.NewDec(1)},
+	aggregateVote1 := types.NewAggregateExchangeRateVote(sdk.DecCoins{
+		sdk.DecCoin{"foo", sdk.NewDec(-1)},
+		sdk.NewDecCoinFromDec("foo", sdk.NewDec(0)),
+		sdk.NewDecCoinFromDec("foo", sdk.NewDec(1)),
 	}, sdk.ValAddress(Addrs[0]))
 	input.OracleKeeper.AddAggregateExchangeRateVote(input.Ctx, aggregateVote1)
 
-	aggregateVote2 := types.NewAggregateExchangeRateVote(types.ExchangeRateTuples{
-		{Denom: "foo", ExchangeRate: sdk.NewDec(-1)},
-		{Denom: "foo", ExchangeRate: sdk.NewDec(0)},
-		{Denom: "foo", ExchangeRate: sdk.NewDec(1)},
+	aggregateVote2 := types.NewAggregateExchangeRateVote(sdk.DecCoins{
+		sdk.DecCoin{"foo", sdk.NewDec(-1)},
+		sdk.NewDecCoinFromDec("foo", sdk.NewDec(0)),
+		sdk.NewDecCoinFromDec("foo", sdk.NewDec(1)),
 	}, sdk.ValAddress(Addrs[1]))
 	input.OracleKeeper.AddAggregateExchangeRateVote(input.Ctx, aggregateVote2)
 

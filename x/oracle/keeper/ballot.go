@@ -26,14 +26,14 @@ func (k Keeper) OrganizeBallotByDenom(ctx sdk.Context) (votes map[string]types.E
 			power := validator.GetConsensusPower()
 			for _, tuple := range vote.ExchangeRateTuples {
 				tmpPower := power
-				if !tuple.ExchangeRate.IsPositive() {
+				if !tuple.Amount.IsPositive() {
 					// Make the power of abstain vote zero
 					tmpPower = 0
 				}
 
 				votes[tuple.Denom] = append(votes[tuple.Denom],
 					types.NewVoteForTally(
-						types.NewExchangeRateVote(tuple.ExchangeRate, tuple.Denom, voter),
+						types.NewExchangeRateVote(tuple.Amount, tuple.Denom, voter),
 						tmpPower,
 					),
 				)

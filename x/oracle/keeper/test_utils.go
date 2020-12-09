@@ -245,7 +245,7 @@ func CreateTestInput(t *testing.T) TestInput {
 	keeper.SetParams(ctx, defaults)
 
 	for _, denom := range defaults.Whitelist {
-		keeper.SetTobinTax(ctx, denom.Name, denom.TobinTax)
+		keeper.SetTobinTax(ctx, denom.Denom, denom.Amount)
 	}
 
 	stakingKeeper.SetHooks(stakingtypes.NewMultiStakingHooks(distrKeeper.Hooks()))

@@ -54,7 +54,7 @@ func TestDecodeDistributionStore(t *testing.T) {
 	missCounter := 123
 
 	aggregatePrevote := types.NewAggregateExchangeRatePrevote(types.AggregateVoteHash([]byte("12345")), valAddr, 123)
-	aggregateVote := types.NewAggregateExchangeRateVote(types.ExchangeRateTuples{
+	aggregateVote := types.NewAggregateExchangeRateVote(sdk.DecCoins{
 		{types.MicroKRWDenom, sdk.NewDecWithPrec(1234, 1)},
 		{types.MicroKRWDenom, sdk.NewDecWithPrec(4321, 1)},
 	}, valAddr)
