@@ -12,7 +12,7 @@ var _ types.QueryServer = Keeper{}
 
 // ExchangeRate returns the current exchange rate for a given denom
 func (k Keeper) ExchangeRate(c context.Context, req *types.QueryExchangeRateRequest) (*types.QueryExchangeRateResponse, error) {
-	rate, err := k.GetLunaExchangeRate(sdk.UnwrapSDKContext(c), req.Denom)
+	rate, err := k.GetUSDExchangeRate(sdk.UnwrapSDKContext(c), req.Denom)
 	if err != nil {
 		return nil, sdkerrors.Wrap(types.ErrUnknowDenom, req.Denom)
 	}
@@ -23,7 +23,7 @@ func (k Keeper) ExchangeRate(c context.Context, req *types.QueryExchangeRateRequ
 // ExchangeRates returns all the exchange rates tracked by the system
 func (k Keeper) ExchangeRates(c context.Context, req *types.QueryExchangeRatesRequest) (*types.QueryExchangeRatesResponse, error) {
 	var rates sdk.DecCoins
-	k.IterateLunaExchangeRates(sdk.UnwrapSDKContext(c), func(denom string, rate sdk.Dec) (stop bool) {
+	k.IterateUSDExchangeRates(sdk.UnwrapSDKContext(c), func(denom string, rate sdk.Dec) (stop bool) {
 		rates = append(rates, sdk.NewDecCoinFromDec(denom, rate))
 		return false
 	})
@@ -33,7 +33,7 @@ func (k Keeper) ExchangeRates(c context.Context, req *types.QueryExchangeRatesRe
 // Actives returns the active denoms
 func (k Keeper) Actives(c context.Context, req *types.QueryActivesRequest) (*types.QueryActivesResponse, error) {
 	denoms := []string{}
-	k.IterateLunaExchangeRates(sdk.UnwrapSDKContext(c), func(denom string, rate sdk.Dec) (stop bool) {
+	k.IterateUSDExchangeRates(sdk.UnwrapSDKContext(c), func(denom string, rate sdk.Dec) (stop bool) {
 		denoms = append(denoms, denom)
 		return false
 	})

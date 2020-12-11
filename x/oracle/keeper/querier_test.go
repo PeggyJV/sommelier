@@ -44,7 +44,7 @@ func TestQueryExchangeRate(t *testing.T) {
 	querier := NewQuerier(input.OracleKeeper)
 
 	rate := sdk.NewDec(1700)
-	input.OracleKeeper.SetLunaExchangeRate(input.Ctx, types.MicroSDRDenom, rate)
+	input.OracleKeeper.SetUSDExchangeRate(input.Ctx, types.MicroSDRDenom, rate)
 
 	// denom query params
 	queryParams := types.NewQueryExchangeRateParams(types.MicroSDRDenom)
@@ -61,8 +61,8 @@ func TestQueryExchangeRates(t *testing.T) {
 	querier := NewQuerier(input.OracleKeeper)
 
 	rate := sdk.NewDec(1700)
-	input.OracleKeeper.SetLunaExchangeRate(input.Ctx, types.MicroSDRDenom, rate)
-	input.OracleKeeper.SetLunaExchangeRate(input.Ctx, types.MicroUSDDenom, rate)
+	input.OracleKeeper.SetUSDExchangeRate(input.Ctx, types.MicroSDRDenom, rate)
+	input.OracleKeeper.SetUSDExchangeRate(input.Ctx, types.MicroUSDDenom, rate)
 
 	res, err := querier(input.Ctx, []string{types.QueryExchangeRates}, abci.RequestQuery{})
 	require.NoError(t, err)
@@ -81,9 +81,9 @@ func TestQueryActives(t *testing.T) {
 	querier := NewQuerier(input.OracleKeeper)
 
 	rate := sdk.NewDec(1700)
-	input.OracleKeeper.SetLunaExchangeRate(input.Ctx, types.MicroSDRDenom, rate)
-	input.OracleKeeper.SetLunaExchangeRate(input.Ctx, types.MicroKRWDenom, rate)
-	input.OracleKeeper.SetLunaExchangeRate(input.Ctx, types.MicroUSDDenom, rate)
+	input.OracleKeeper.SetUSDExchangeRate(input.Ctx, types.MicroSDRDenom, rate)
+	input.OracleKeeper.SetUSDExchangeRate(input.Ctx, types.MicroKRWDenom, rate)
+	input.OracleKeeper.SetUSDExchangeRate(input.Ctx, types.MicroUSDDenom, rate)
 
 	res, err := querier(input.Ctx, []string{types.QueryActives}, abci.RequestQuery{})
 	require.NoError(t, err)

@@ -105,27 +105,27 @@ func TestExchangeRate(t *testing.T) {
 	lunaExchangeRate := sdk.NewDecWithPrec(3282384, int64(OracleDecPrecision)).MulInt64(types.MicroUnit)
 
 	// Set & get rates
-	input.OracleKeeper.SetLunaExchangeRate(input.Ctx, types.MicroCNYDenom, cnyExchangeRate)
-	rate, err := input.OracleKeeper.GetLunaExchangeRate(input.Ctx, types.MicroCNYDenom)
+	input.OracleKeeper.SetUSDExchangeRate(input.Ctx, types.MicroCNYDenom, cnyExchangeRate)
+	rate, err := input.OracleKeeper.GetUSDExchangeRate(input.Ctx, types.MicroCNYDenom)
 	require.NoError(t, err)
 	require.Equal(t, cnyExchangeRate, rate)
 
-	input.OracleKeeper.SetLunaExchangeRate(input.Ctx, types.MicroGBPDenom, gbpExchangeRate)
-	rate, err = input.OracleKeeper.GetLunaExchangeRate(input.Ctx, types.MicroGBPDenom)
+	input.OracleKeeper.SetUSDExchangeRate(input.Ctx, types.MicroGBPDenom, gbpExchangeRate)
+	rate, err = input.OracleKeeper.GetUSDExchangeRate(input.Ctx, types.MicroGBPDenom)
 	require.NoError(t, err)
 	require.Equal(t, gbpExchangeRate, rate)
 
-	input.OracleKeeper.SetLunaExchangeRate(input.Ctx, types.MicroKRWDenom, krwExchangeRate)
-	rate, err = input.OracleKeeper.GetLunaExchangeRate(input.Ctx, types.MicroKRWDenom)
+	input.OracleKeeper.SetUSDExchangeRate(input.Ctx, types.MicroKRWDenom, krwExchangeRate)
+	rate, err = input.OracleKeeper.GetUSDExchangeRate(input.Ctx, types.MicroKRWDenom)
 	require.NoError(t, err)
 	require.Equal(t, krwExchangeRate, rate)
 
-	input.OracleKeeper.SetLunaExchangeRate(input.Ctx, types.MicroLunaDenom, lunaExchangeRate)
-	rate, _ = input.OracleKeeper.GetLunaExchangeRate(input.Ctx, types.MicroLunaDenom)
+	input.OracleKeeper.SetUSDExchangeRate(input.Ctx, types.MicroUSDDenom, lunaExchangeRate)
+	rate, _ = input.OracleKeeper.GetUSDExchangeRate(input.Ctx, types.MicroUSDDenom)
 	require.Equal(t, sdk.OneDec(), rate)
 
-	input.OracleKeeper.DeleteLunaExchangeRate(input.Ctx, types.MicroKRWDenom)
-	_, err = input.OracleKeeper.GetLunaExchangeRate(input.Ctx, types.MicroKRWDenom)
+	input.OracleKeeper.DeleteUSDExchangeRate(input.Ctx, types.MicroKRWDenom)
+	_, err = input.OracleKeeper.GetUSDExchangeRate(input.Ctx, types.MicroKRWDenom)
 	require.Error(t, err)
 
 	numExchangeRates := 0
@@ -133,12 +133,12 @@ func TestExchangeRate(t *testing.T) {
 		numExchangeRates = numExchangeRates + 1
 		return false
 	}
-	input.OracleKeeper.IterateLunaExchangeRates(input.Ctx, handler)
+	input.OracleKeeper.IterateUSDExchangeRates(input.Ctx, handler)
 
 	require.True(t, numExchangeRates == 3)
 }
 
-func TestIterateLunaExchangeRates(t *testing.T) {
+func TestIterateUSDExchangeRates(t *testing.T) {
 	input := CreateTestInput(t)
 
 	cnyExchangeRate := sdk.NewDecWithPrec(839, int64(OracleDecPrecision)).MulInt64(types.MicroUnit)
@@ -147,12 +147,12 @@ func TestIterateLunaExchangeRates(t *testing.T) {
 	lunaExchangeRate := sdk.NewDecWithPrec(3282384, int64(OracleDecPrecision)).MulInt64(types.MicroUnit)
 
 	// Set & get rates
-	input.OracleKeeper.SetLunaExchangeRate(input.Ctx, types.MicroCNYDenom, cnyExchangeRate)
-	input.OracleKeeper.SetLunaExchangeRate(input.Ctx, types.MicroGBPDenom, gbpExchangeRate)
-	input.OracleKeeper.SetLunaExchangeRate(input.Ctx, types.MicroKRWDenom, krwExchangeRate)
-	input.OracleKeeper.SetLunaExchangeRate(input.Ctx, types.MicroLunaDenom, lunaExchangeRate)
+	input.OracleKeeper.SetUSDExchangeRate(input.Ctx, types.MicroCNYDenom, cnyExchangeRate)
+	input.OracleKeeper.SetUSDExchangeRate(input.Ctx, types.MicroGBPDenom, gbpExchangeRate)
+	input.OracleKeeper.SetUSDExchangeRate(input.Ctx, types.MicroKRWDenom, krwExchangeRate)
+	input.OracleKeeper.SetUSDExchangeRate(input.Ctx, types.MicroLunaDenom, lunaExchangeRate)
 
-	input.OracleKeeper.IterateLunaExchangeRates(input.Ctx, func(denom string, rate sdk.Dec) (stop bool) {
+	input.OracleKeeper.IterateUSDExchangeRates(input.Ctx, func(denom string, rate sdk.Dec) (stop bool) {
 		switch denom {
 		case types.MicroCNYDenom:
 			require.Equal(t, cnyExchangeRate, rate)

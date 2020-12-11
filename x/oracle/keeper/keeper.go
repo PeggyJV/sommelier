@@ -192,9 +192,9 @@ func (k Keeper) DeleteExchangeRateVote(ctx sdk.Context, vote types.ExchangeRateV
 //-----------------------------------
 // ExchangeRate logic
 
-// GetLunaExchangeRate gets the consensus exchange rate of Luna denominated in the denom asset from the store.
-func (k Keeper) GetLunaExchangeRate(ctx sdk.Context, denom string) (exchangeRate sdk.Dec, err error) {
-	if denom == types.MicroLunaDenom {
+// GetUSDExchangeRate gets the consensus exchange rate of USD denominated in the denom asset from the store.
+func (k Keeper) GetUSDExchangeRate(ctx sdk.Context, denom string) (exchangeRate sdk.Dec, err error) {
+	if denom == types.MicroUSDDenom {
 		return sdk.OneDec(), nil
 	}
 
@@ -211,8 +211,8 @@ func (k Keeper) GetLunaExchangeRate(ctx sdk.Context, denom string) (exchangeRate
 	return
 }
 
-// SetLunaExchangeRate sets the consensus exchange rate of Luna denominated in the denom asset to the store.
-func (k Keeper) SetLunaExchangeRate(ctx sdk.Context, denom string, exchangeRate sdk.Dec) {
+// SetUSDExchangeRate sets the consensus exchange rate of USD denominated in the denom asset to the store.
+func (k Keeper) SetUSDExchangeRate(ctx sdk.Context, denom string, exchangeRate sdk.Dec) {
 	store := ctx.KVStore(k.storeKey)
 	// TODO: review echange rate marshal/unmarshal
 	bz, err := exchangeRate.Marshal()
@@ -222,9 +222,9 @@ func (k Keeper) SetLunaExchangeRate(ctx sdk.Context, denom string, exchangeRate 
 	store.Set(types.GetExchangeRateKey(denom), bz)
 }
 
-// SetLunaExchangeRateWithEvent sets the consensus exchange rate of Luna denominated in the denom asset to the store with ABCI event
-func (k Keeper) SetLunaExchangeRateWithEvent(ctx sdk.Context, denom string, exchangeRate sdk.Dec) {
-	k.SetLunaExchangeRate(ctx, denom, exchangeRate)
+// SetUSDExchangeRateWithEvent sets the consensus exchange rate of USD denominated in the denom asset to the store with ABCI event
+func (k Keeper) SetUSDExchangeRateWithEvent(ctx sdk.Context, denom string, exchangeRate sdk.Dec) {
+	k.SetUSDExchangeRate(ctx, denom, exchangeRate)
 	ctx.EventManager().EmitEvent(
 		sdk.NewEvent(types.EventTypeExchangeRateUpdate,
 			sdk.NewAttribute(types.AttributeKeyDenom, denom),
@@ -233,14 +233,14 @@ func (k Keeper) SetLunaExchangeRateWithEvent(ctx sdk.Context, denom string, exch
 	)
 }
 
-// DeleteLunaExchangeRate deletes the consensus exchange rate of Luna denominated in the denom asset from the store.
-func (k Keeper) DeleteLunaExchangeRate(ctx sdk.Context, denom string) {
+// DeleteUSDExchangeRate deletes the consensus exchange rate of usd denominated in the denom asset from the store.
+func (k Keeper) DeleteUSDExchangeRate(ctx sdk.Context, denom string) {
 	store := ctx.KVStore(k.storeKey)
 	store.Delete(types.GetExchangeRateKey(denom))
 }
 
-// IterateLunaExchangeRates iterates over luna rates in the store
-func (k Keeper) IterateLunaExchangeRates(ctx sdk.Context, handler func(denom string, exchangeRate sdk.Dec) (stop bool)) {
+// IterateUSDExchangeRates iterates over usd rates in the store
+func (k Keeper) IterateUSDExchangeRates(ctx sdk.Context, handler func(denom string, exchangeRate sdk.Dec) (stop bool)) {
 	store := ctx.KVStore(k.storeKey)
 	iter := sdk.KVStorePrefixIterator(store, types.ExchangeRateKey)
 	defer iter.Close()

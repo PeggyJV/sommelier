@@ -32,7 +32,7 @@ func TestOracleThreshold(t *testing.T) {
 
 	EndBlocker(input.Ctx.WithBlockHeight(1), input.OracleKeeper)
 
-	_, err = input.OracleKeeper.GetLunaExchangeRate(input.Ctx.WithBlockHeight(1), types.MicroSDRDenom)
+	_, err = input.OracleKeeper.GetUSDExchangeRate(input.Ctx.WithBlockHeight(1), types.MicroSDRDenom)
 	require.NotNil(t, err)
 
 	// More than the threshold signs, msg succeeds
@@ -65,7 +65,7 @@ func TestOracleThreshold(t *testing.T) {
 
 	EndBlocker(input.Ctx.WithBlockHeight(1), input.OracleKeeper)
 
-	rate, err := input.OracleKeeper.GetLunaExchangeRate(input.Ctx.WithBlockHeight(1), types.MicroSDRDenom)
+	rate, err := input.OracleKeeper.GetUSDExchangeRate(input.Ctx.WithBlockHeight(1), types.MicroSDRDenom)
 	require.Nil(t, err)
 	require.Equal(t, randomExchangeRate, rate)
 
@@ -92,7 +92,7 @@ func TestOracleThreshold(t *testing.T) {
 
 	EndBlocker(input.Ctx.WithBlockHeight(1), input.OracleKeeper)
 
-	rate, err = input.OracleKeeper.GetLunaExchangeRate(input.Ctx.WithBlockHeight(1), types.MicroSDRDenom)
+	rate, err = input.OracleKeeper.GetUSDExchangeRate(input.Ctx.WithBlockHeight(1), types.MicroSDRDenom)
 	require.NotNil(t, err)
 }
 
@@ -155,7 +155,7 @@ func TestOracleMultiVote(t *testing.T) {
 
 	EndBlocker(input.Ctx, input.OracleKeeper)
 
-	rate, err := input.OracleKeeper.GetLunaExchangeRate(input.Ctx, types.MicroSDRDenom)
+	rate, err := input.OracleKeeper.GetUSDExchangeRate(input.Ctx, types.MicroSDRDenom)
 	require.Nil(t, err)
 	require.Equal(t, rate, anotherRandomExchangeRate)
 }
@@ -163,7 +163,7 @@ func TestOracleMultiVote(t *testing.T) {
 func TestOracleDrop(t *testing.T) {
 	input, h := setup(t)
 
-	input.OracleKeeper.SetLunaExchangeRate(input.Ctx, types.MicroKRWDenom, randomExchangeRate)
+	input.OracleKeeper.SetUSDExchangeRate(input.Ctx, types.MicroKRWDenom, randomExchangeRate)
 
 	// Account 1, KRW
 	makePrevoteAndVote(t, input, h, 0, types.MicroKRWDenom, randomExchangeRate, 0)
@@ -171,7 +171,7 @@ func TestOracleDrop(t *testing.T) {
 	// Immediately swap halt after an illiquid oracle vote
 	EndBlocker(input.Ctx, input.OracleKeeper)
 
-	_, err := input.OracleKeeper.GetLunaExchangeRate(input.Ctx, types.MicroKRWDenom)
+	_, err := input.OracleKeeper.GetUSDExchangeRate(input.Ctx, types.MicroKRWDenom)
 	require.NotNil(t, err)
 }
 
@@ -253,13 +253,13 @@ func TestOracleTallyTiming(t *testing.T) {
 	require.Equal(t, 0, int(input.Ctx.BlockHeight()))
 
 	EndBlocker(input.Ctx, input.OracleKeeper)
-	_, err := input.OracleKeeper.GetLunaExchangeRate(input.Ctx, types.MicroSDRDenom)
+	_, err := input.OracleKeeper.GetUSDExchangeRate(input.Ctx, types.MicroSDRDenom)
 	require.Error(t, err)
 
 	input.Ctx = input.Ctx.WithBlockHeight(params.VotePeriod - 1)
 
 	EndBlocker(input.Ctx, input.OracleKeeper)
-	_, err = input.OracleKeeper.GetLunaExchangeRate(input.Ctx, types.MicroSDRDenom)
+	_, err = input.OracleKeeper.GetUSDExchangeRate(input.Ctx, types.MicroSDRDenom)
 	require.NoError(t, err)
 }
 
@@ -424,14 +424,14 @@ func TestOracleExchangeRateVal5(t *testing.T) {
 
 	krwExchangeRate := sdk.NewDecWithPrec(505000, int64(6)).MulInt64(types.MicroUnit)
 	krwExchangeRateWithErr := sdk.NewDecWithPrec(500000, int64(6)).MulInt64(types.MicroUnit)
-	usdExchangeRate := sdk.NewDecWithPrec(505, int64(6)).MulInt64(types.MicroUnit)
-	usdExchangeRateWithErr := sdk.NewDecWithPrec(500, int64(6)).MulInt64(types.MicroUnit)
+	lunaExchangeRate := sdk.NewDecWithPrec(505, int64(6)).MulInt64(types.MicroUnit)
+	lunaExchangeRateWithErr := sdk.NewDecWithPrec(500, int64(6)).MulInt64(types.MicroUnit)
 
 	// KRW has been chosen as referenceTerra by highest voting power
 	// Account 1, KRW, USD
 	val1 := sdk.NewDecCoins(
 		sdk.NewDecCoinFromDec(types.MicroKRWDenom, krwExchangeRate),
-		sdk.NewDecCoinFromDec(types.MicroUSDDenom, usdExchangeRate),
+		sdk.NewDecCoinFromDec(types.MicroSDRDenom, lunaExchangeRate),
 	)
 	makeAggregatePrevoteAndVote(t, input, h, 0, val1, 0)
 
@@ -444,7 +444,7 @@ func TestOracleExchangeRateVal5(t *testing.T) {
 	// Account 4, KRW, USD
 	val4 := sdk.NewDecCoins(
 		sdk.NewDecCoinFromDec(types.MicroKRWDenom, krwExchangeRateWithErr),
-		sdk.NewDecCoinFromDec(types.MicroUSDDenom, usdExchangeRateWithErr),
+		sdk.NewDecCoinFromDec(types.MicroSDRDenom, lunaExchangeRateWithErr),
 	)
 	makeAggregatePrevoteAndVote(t, input, h, 0, val4, 3)
 
@@ -453,23 +453,23 @@ func TestOracleExchangeRateVal5(t *testing.T) {
 
 	rewardAmt := sdk.NewInt(100000000)
 	moduleAcc := input.AccKeeper.GetModuleAccount(input.Ctx.WithBlockHeight(1), types.ModuleName)
-	require.NoError(t, input.BankKeeper.SetBalances(input.Ctx, moduleAcc.GetAddress(), sdk.NewCoins(sdk.NewCoin(types.MicroLunaDenom, rewardAmt))))
+	require.NoError(t, input.BankKeeper.SetBalances(input.Ctx, moduleAcc.GetAddress(), sdk.NewCoins(sdk.NewCoin(types.MicroSDRDenom, rewardAmt))))
 
 	input.AccKeeper.SetModuleAccount(input.Ctx.WithBlockHeight(1), moduleAcc)
 
 	EndBlocker(input.Ctx.WithBlockHeight(1), input.OracleKeeper)
 
-	krw, err := input.OracleKeeper.GetLunaExchangeRate(input.Ctx, types.MicroKRWDenom)
+	krw, err := input.OracleKeeper.GetUSDExchangeRate(input.Ctx, types.MicroKRWDenom)
 	require.NoError(t, err)
-	usd, err := input.OracleKeeper.GetLunaExchangeRate(input.Ctx, types.MicroUSDDenom)
+	usd, err := input.OracleKeeper.GetUSDExchangeRate(input.Ctx, types.MicroSDRDenom)
 	require.NoError(t, err)
 
 	// legacy version case
-	require.NotEqual(t, usdExchangeRateWithErr, usd)
+	require.NotEqual(t, lunaExchangeRateWithErr, usd)
 
 	// new version case
 	require.Equal(t, krwExchangeRate, krw)
-	require.Equal(t, usdExchangeRate, usd)
+	require.Equal(t, lunaExchangeRate, usd)
 
 	rewardDistributedWindow := input.OracleKeeper.RewardDistributionWindow(input.Ctx)
 	expectedRewardAmt := sdk.NewDecFromInt(rewardAmt.QuoRaw(8).MulRaw(2)).QuoInt64(rewardDistributedWindow).TruncateInt()
@@ -702,7 +702,7 @@ func TestAbstainWithSmallStakingPower(t *testing.T) {
 	makePrevoteAndVote(t, input, h, 0, types.MicroKRWDenom, sdk.ZeroDec(), 0)
 
 	EndBlocker(input.Ctx, input.OracleKeeper)
-	_, err := input.OracleKeeper.GetLunaExchangeRate(input.Ctx, types.MicroKRWDenom)
+	_, err := input.OracleKeeper.GetUSDExchangeRate(input.Ctx, types.MicroKRWDenom)
 	require.Error(t, err)
 }
 

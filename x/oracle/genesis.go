@@ -24,7 +24,7 @@ func InitGenesis(ctx sdk.Context, keeper keeper.Keeper, data types.GenesisState)
 	}
 
 	for _, rate := range data.ExchangeRates {
-		keeper.SetLunaExchangeRate(ctx, rate.Denom, rate.Amount)
+		keeper.SetUSDExchangeRate(ctx, rate.Denom, rate.Amount)
 	}
 
 	for operatorBechAddr, missCounter := range data.MissCounters {
@@ -75,7 +75,7 @@ func ExportGenesis(ctx sdk.Context, keeper keeper.Keeper) (data types.GenesisSta
 	})
 
 	rates := make(sdk.DecCoins, 0)
-	keeper.IterateLunaExchangeRates(ctx, func(denom string, rate sdk.Dec) (stop bool) {
+	keeper.IterateUSDExchangeRates(ctx, func(denom string, rate sdk.Dec) (stop bool) {
 		rates = append(rates, sdk.DecCoin{Amount: rate, Denom: denom})
 		return false
 	})

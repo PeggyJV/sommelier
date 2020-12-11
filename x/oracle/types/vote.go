@@ -48,7 +48,6 @@ func ParseExchangeRateTuples(tuplesStr string) (sdk.DecCoins, error) {
 		}
 		duplicateCheckMap[decCoin.Denom] = true
 	}
-	fmt.Println(tuples.String())
 	return tuples, nil
 }
 

@@ -41,8 +41,8 @@ func EndBlocker(ctx sdk.Context, k keeper.Keeper) {
 	})
 
 	// Clear all exchange rates
-	k.IterateLunaExchangeRates(ctx, func(denom string, _ sdk.Dec) (stop bool) {
-		k.DeleteLunaExchangeRate(ctx, denom)
+	k.IterateUSDExchangeRates(ctx, func(denom string, _ sdk.Dec) (stop bool) {
+		k.DeleteUSDExchangeRate(ctx, denom)
 		return false
 	})
 
@@ -77,7 +77,7 @@ func EndBlocker(ctx sdk.Context, k keeper.Keeper) {
 			}
 
 			// Set the exchange rate, emit ABCI event
-			k.SetLunaExchangeRateWithEvent(ctx, denom, exchangeRate)
+			k.SetUSDExchangeRateWithEvent(ctx, denom, exchangeRate)
 		}
 	}
 
