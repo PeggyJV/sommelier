@@ -32,7 +32,8 @@ func SlashAndResetMissCounters(ctx sdk.Context, k keeper.Keeper) {
 					ctx, cons,
 					distributionHeight, validator.GetConsensusPower(), slashFraction,
 				)
-				k.StakingKeeper.Jail(ctx, cons)
+				// TODO: Reenable jailing
+				// k.StakingKeeper.Jail(ctx, cons)
 			}
 		}
 
