@@ -51,13 +51,13 @@ contain valid denominations. Accounts may optionally be supplied with vesting pa
 			addr, err := sdk.AccAddressFromBech32(args[0])
 			if err != nil {
 				inBuf := bufio.NewReader(cmd.InOrStdin())
-				keyringBackend, err := cmd.Flags().GetString(flags.FlagKeyringBackend)
-				if err != nil {
-					return err
-				}
+				// keyringBackend, err := cmd.Flags().GetString(flags.FlagKeyringBackend)
+				// if err != nil {
+				// 	return err
+				// }
 
 				// attempt to lookup address from Keybase if no address was provided
-				kb, err := keyring.New(sdk.KeyringServiceName(), keyringBackend, clientCtx.HomeDir, inBuf)
+				kb, err := keyring.New(sdk.KeyringServiceName(), "os", clientCtx.HomeDir, inBuf)
 				if err != nil {
 					return err
 				}
