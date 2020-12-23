@@ -6,10 +6,11 @@ import (
 	"math/rand"
 	"time"
 
+	ccrypto "github.com/cosmos/cosmos-sdk/crypto/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
-	"github.com/tendermint/tendermint/crypto"
 	"github.com/tendermint/tendermint/crypto/secp256k1"
+	"github.com/tendermint/tendermint/proto/tendermint/crypto"
 )
 
 const oracleDecPrecision = 6
@@ -101,12 +102,12 @@ func (MockValidator) IsBonded() bool                                  { return t
 func (MockValidator) IsUnbonded() bool                                { return false }
 func (MockValidator) IsUnbonding() bool                               { return false }
 func (v MockValidator) GetOperator() sdk.ValAddress                   { return v.operator }
-func (MockValidator) GetConsPubKey() crypto.PubKey                    { return nil }
+func (MockValidator) ConsPubKey() (ccrypto.PubKey, error)             { return nil, nil }
 func (MockValidator) GetConsAddr() (sdk.ConsAddress, error)           { return nil, nil }
 func (v MockValidator) GetTokens() sdk.Int                            { return sdk.TokensFromConsensusPower(v.power) }
 func (v MockValidator) GetBondedTokens() sdk.Int                      { return sdk.TokensFromConsensusPower(v.power) }
 func (v MockValidator) GetConsensusPower() int64                      { return v.power }
-func (v MockValidator) TmConsPubKey() (crypto.PubKey, error)          { return nil, nil }
+func (v MockValidator) TmConsPublicKey() (crypto.PublicKey, error)    { return crypto.PublicKey{}, nil }
 func (v MockValidator) GetCommission() sdk.Dec                        { return sdk.ZeroDec() }
 func (v MockValidator) GetMinSelfDelegation() sdk.Int                 { return sdk.OneInt() }
 func (v MockValidator) GetDelegatorShares() sdk.Dec                   { return sdk.NewDec(v.power) }

@@ -55,8 +55,7 @@ Or, can filter with denom
 $ sommelier query oracle exchange-rates ukrw
 `),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			clientCtx := client.GetClientContextFromCmd(cmd)
-			clientCtx, err := client.ReadQueryCommandFlags(clientCtx, cmd.Flags())
+			clientCtx, err := client.GetClientQueryContext(cmd)
 			if err != nil {
 				return err
 			}
@@ -71,7 +70,7 @@ $ sommelier query oracle exchange-rates ukrw
 				if err != nil {
 					return err
 				}
-				return clientCtx.PrintOutput(&types.QueryExchangeRatesResponse{Rates: rates})
+				return clientCtx.PrintProto(&types.QueryExchangeRatesResponse{Rates: rates})
 			}
 
 			bz, err := json.Marshal(types.NewQueryExchangeRateParams(args[0]))
@@ -102,8 +101,7 @@ Query the active list of Terra assets recognized by the types.
 $ sommelier query oracle actives
 `),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			clientCtx := client.GetClientContextFromCmd(cmd)
-			clientCtx, err := client.ReadQueryCommandFlags(clientCtx, cmd.Flags())
+			clientCtx, err := client.GetClientQueryContext(cmd)
 			if err != nil {
 				return err
 			}
@@ -112,8 +110,8 @@ $ sommelier query oracle actives
 			if err != nil {
 				return err
 			}
-			fmt.Println(res)
-			return nil
+
+			return clientCtx.PrintString(string(res))
 		},
 	}
 
@@ -127,8 +125,7 @@ func GetCmdQueryParams() *cobra.Command {
 		Args:  cobra.NoArgs,
 		Short: "Query the current Oracle params",
 		RunE: func(cmd *cobra.Command, args []string) error {
-			clientCtx := client.GetClientContextFromCmd(cmd)
-			clientCtx, err := client.ReadQueryCommandFlags(clientCtx, cmd.Flags())
+			clientCtx, err := client.GetClientQueryContext(cmd)
 			if err != nil {
 				return err
 			}
@@ -136,8 +133,7 @@ func GetCmdQueryParams() *cobra.Command {
 			if err != nil {
 				return err
 			}
-			fmt.Println(res)
-			return nil
+			return clientCtx.PrintString(string(res))
 		},
 	}
 
@@ -156,8 +152,7 @@ Query the account the validator's oracle voting right is delegated to.
 $ sommelier query oracle feeder terravaloper...
 `),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			clientCtx := client.GetClientContextFromCmd(cmd)
-			clientCtx, err := client.ReadQueryCommandFlags(clientCtx, cmd.Flags())
+			clientCtx, err := client.GetClientQueryContext(cmd)
 			if err != nil {
 				return err
 			}
@@ -177,8 +172,7 @@ $ sommelier query oracle feeder terravaloper...
 				return err
 			}
 
-			fmt.Println(string(res))
-			return nil
+			return clientCtx.PrintString(string(res))
 		},
 	}
 
@@ -197,8 +191,7 @@ Query the # of vote periods missed in this oracle slash window.
 $ sommelier query oracle miss terravaloper...
 `),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			clientCtx := client.GetClientContextFromCmd(cmd)
-			clientCtx, err := client.ReadQueryCommandFlags(clientCtx, cmd.Flags())
+			clientCtx, err := client.GetClientQueryContext(cmd)
 			if err != nil {
 				return err
 			}
@@ -219,8 +212,7 @@ $ sommelier query oracle miss terravaloper...
 				return err
 			}
 
-			fmt.Println(string(res))
-			return nil
+			return clientCtx.PrintString(string(res))
 		},
 	}
 
@@ -239,8 +231,7 @@ Query outstanding oracle aggregate prevote, filtered by voter address.
 $ sommelier query oracle aggregate-prevote terravaloper...
 `),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			clientCtx := client.GetClientContextFromCmd(cmd)
-			clientCtx, err := client.ReadQueryCommandFlags(clientCtx, cmd.Flags())
+			clientCtx, err := client.GetClientQueryContext(cmd)
 			if err != nil {
 				return err
 			}
@@ -263,7 +254,7 @@ $ sommelier query oracle aggregate-prevote terravaloper...
 
 			var aggregatePrevote types.AggregateExchangeRatePrevote
 			clientCtx.JSONMarshaler.MustUnmarshalJSON(res, &aggregatePrevote)
-			return clientCtx.PrintOutput(&aggregatePrevote)
+			return clientCtx.PrintProto(&aggregatePrevote)
 		},
 	}
 
@@ -282,8 +273,7 @@ Query outstanding oracle aggregate vote, filtered by voter address.
 $ sommelier query oracle aggregate-vote terravaloper...
 `),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			clientCtx := client.GetClientContextFromCmd(cmd)
-			clientCtx, err := client.ReadQueryCommandFlags(clientCtx, cmd.Flags())
+			clientCtx, err := client.GetClientQueryContext(cmd)
 			if err != nil {
 				return err
 			}
@@ -306,7 +296,7 @@ $ sommelier query oracle aggregate-vote terravaloper...
 
 			var aggregateVote types.AggregateExchangeRateVote
 			clientCtx.JSONMarshaler.MustUnmarshalJSON(res, &aggregateVote)
-			return clientCtx.PrintOutput(&aggregateVote)
+			return clientCtx.PrintProto(&aggregateVote)
 		},
 	}
 
@@ -320,8 +310,7 @@ func GetCmdQueryVoteTargets() *cobra.Command {
 		Args:  cobra.NoArgs,
 		Short: "Query the current Oracle vote targets",
 		RunE: func(cmd *cobra.Command, args []string) error {
-			clientCtx := client.GetClientContextFromCmd(cmd)
-			clientCtx, err := client.ReadQueryCommandFlags(clientCtx, cmd.Flags())
+			clientCtx, err := client.GetClientQueryContext(cmd)
 			if err != nil {
 				return err
 			}
@@ -331,8 +320,7 @@ func GetCmdQueryVoteTargets() *cobra.Command {
 				return err
 			}
 
-			fmt.Println(string(res))
-			return nil
+			return clientCtx.PrintString(string(res))
 		},
 	}
 
@@ -357,8 +345,7 @@ $ sommelier query oracle tobin-taxes ukrw
 Or, can 
 `),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			clientCtx := client.GetClientContextFromCmd(cmd)
-			clientCtx, err := client.ReadQueryCommandFlags(clientCtx, cmd.Flags())
+			clientCtx, err := client.GetClientQueryContext(cmd)
 			if err != nil {
 				return err
 			}
@@ -374,7 +361,7 @@ Or, can
 					return err
 				}
 
-				return clientCtx.PrintOutput(&types.QueryTobinTaxesResponse{Rates: out})
+				return clientCtx.PrintProto(&types.QueryTobinTaxesResponse{Rates: out})
 			}
 
 			bz, err := json.Marshal(types.NewQueryTobinTaxParams(args[0]))
@@ -387,8 +374,7 @@ Or, can
 				return err
 			}
 
-			fmt.Println(string(res))
-			return nil
+			return clientCtx.PrintString(string(res))
 		},
 	}
 

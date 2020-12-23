@@ -50,8 +50,7 @@ $ sommelier tx oracle set-feeder terra1...
 where "terra1..." is the address you want to delegate your voting rights to.
 `),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			clientCtx := client.GetClientContextFromCmd(cmd)
-			clientCtx, err := client.ReadTxCommandFlags(clientCtx, cmd.Flags())
+			clientCtx, err := client.GetClientTxContext(cmd)
 			if err != nil {
 				return err
 			}
@@ -101,8 +100,7 @@ If voting from a voting delegate, set "validator" to the address of the validato
 $ sommelier tx oracle aggregate-prevote 1234 8888.0ukrw,1.243uusd,0.99usdr terravaloper1...
 `),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			clientCtx := client.GetClientContextFromCmd(cmd)
-			clientCtx, err := client.ReadTxCommandFlags(clientCtx, cmd.Flags())
+			clientCtx, err := client.GetClientTxContext(cmd)
 			if err != nil {
 				return err
 			}
@@ -162,8 +160,7 @@ If voting from a voting delegate, set "validator" to the address of the validato
 $ sommelier tx oracle aggregate-vote 1234 8888.0ukrw,1.243uusd,0.99usdr terravaloper1....
 `),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			clientCtx := client.GetClientContextFromCmd(cmd)
-			clientCtx, err := client.ReadTxCommandFlags(clientCtx, cmd.Flags())
+			clientCtx, err := client.GetClientTxContext(cmd)
 			if err != nil {
 				return err
 			}

@@ -4,7 +4,7 @@ import (
 	"math/rand"
 	"time"
 
-	"github.com/tendermint/tendermint/crypto"
+	ccrypto "github.com/cosmos/cosmos-sdk/crypto/types"
 
 	"github.com/cosmos/cosmos-sdk/client"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -20,7 +20,7 @@ const (
 )
 
 // GenTx generates a signed mock transaction.
-func GenTx(gen client.TxConfig, msgs []sdk.Msg, feeAmt sdk.Coins, gas uint64, chainID string, accnums, seq []uint64, priv ...crypto.PrivKey) (sdk.Tx, error) {
+func GenTx(gen client.TxConfig, msgs []sdk.Msg, feeAmt sdk.Coins, gas uint64, chainID string, accnums, seq []uint64, priv ...ccrypto.PrivKey) (sdk.Tx, error) {
 	sigs := make([]signing.SignatureV2, len(priv))
 
 	// create a random length memo
