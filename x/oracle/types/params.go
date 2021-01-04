@@ -131,8 +131,8 @@ func (p Params) ValidateBasic() error {
 		if denom.Amount.LT(sdk.ZeroDec()) || denom.Amount.GT(sdk.OneDec()) {
 			return fmt.Errorf("oracle parameter Whitelist Denom must have TobinTax between [0, 1]")
 		}
-		if len(denom.Denom) == 0 {
-			return fmt.Errorf("oracle parameter Whitelist Denom must have name")
+		if err := sdk.ValidateDenom(denom.Denom); err != nil {
+			return err
 		}
 	}
 	return nil

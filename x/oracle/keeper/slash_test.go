@@ -1,4 +1,4 @@
-package oracle
+package keeper
 
 import (
 	"testing"

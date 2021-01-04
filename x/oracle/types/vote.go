@@ -37,6 +37,7 @@ func ParseExchangeRateTuples(tuplesStr string) (sdk.DecCoins, error) {
 	tupleStrs := strings.Split(tuplesStr, ",")
 	tuples := make(sdk.DecCoins, len(tupleStrs))
 	duplicateCheckMap := make(map[string]bool)
+	
 	for i, tupleStr := range tupleStrs {
 		decCoin, err := sdk.ParseDecCoin(tupleStr)
 		if err != nil {

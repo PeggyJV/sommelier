@@ -114,7 +114,7 @@ func SimulateMsgAggregateExchangeRatePrevote(ak authkeeper.AccountKeeper, bk ban
 
 		tx, err := helpers.GenTx(
 			txcfg,
-			[]sdk.Msg{&msg},
+			[]sdk.Msg{msg},
 			fees,
 			helpers.DefaultGenTxGas,
 			chainID,
@@ -133,7 +133,7 @@ func SimulateMsgAggregateExchangeRatePrevote(ak authkeeper.AccountKeeper, bk ban
 
 		voteHashMap[denom+address.String()] = price
 
-		return simtypes.NewOperationMsg(&msg, true, ""), nil, nil
+		return simtypes.NewOperationMsg(msg, true, ""), nil, nil
 	}
 }
 
@@ -186,7 +186,7 @@ func SimulateMsgExchangeRateVote(ak authkeeper.AccountKeeper, bk bankkeeper.Keep
 
 		tx, err := helpers.GenTx(
 			txcfg,
-			[]sdk.Msg{&msg},
+			[]sdk.Msg{msg},
 			fees,
 			helpers.DefaultGenTxGas,
 			chainID,
@@ -203,7 +203,7 @@ func SimulateMsgExchangeRateVote(ak authkeeper.AccountKeeper, bk bankkeeper.Keep
 			return simtypes.NoOpMsg(types.ModuleName, "", ""), nil, err
 		}
 
-		return simtypes.NewOperationMsg(&msg, true, ""), nil, nil
+		return simtypes.NewOperationMsg(msg, true, ""), nil, nil
 	}
 }
 
@@ -243,7 +243,7 @@ func SimulateMsgDelegateFeedConsent(ak authkeeper.AccountKeeper, bk bankkeeper.K
 
 		tx, err := helpers.GenTx(
 			txcfg,
-			[]sdk.Msg{&msg},
+			[]sdk.Msg{msg},
 			fees,
 			helpers.DefaultGenTxGas,
 			chainID,
@@ -260,6 +260,6 @@ func SimulateMsgDelegateFeedConsent(ak authkeeper.AccountKeeper, bk bankkeeper.K
 			return simtypes.NoOpMsg(types.ModuleName, "", ""), nil, err
 		}
 
-		return simtypes.NewOperationMsg(&msg, true, ""), nil, nil
+		return simtypes.NewOperationMsg(msg, true, ""), nil, nil
 	}
 }

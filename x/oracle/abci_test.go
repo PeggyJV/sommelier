@@ -22,12 +22,12 @@ func TestOracleThreshold(t *testing.T) {
 	hash := types.GetAggregateVoteHash(salt, exchangeRates.String(), keeper.ValAddrs[0])
 
 	prevoteMsg := types.NewMsgAggregateExchangeRatePrevote(hash, keeper.Addrs[0], keeper.ValAddrs[0])
-	_, err := h(input.Ctx.WithBlockHeight(0), &prevoteMsg)
+	_, err := h(input.Ctx.WithBlockHeight(0), prevoteMsg)
 	require.NoError(t, err)
 
 	// Vote and new Prevote
 	voteMsg := types.NewMsgAggregateExchangeRateVote(salt, exchangeRates.String(), keeper.Addrs[0], keeper.ValAddrs[0])
-	_, err = h(input.Ctx.WithBlockHeight(1), &voteMsg)
+	_, err = h(input.Ctx.WithBlockHeight(1), voteMsg)
 	require.NoError(t, err)
 
 	EndBlocker(input.Ctx.WithBlockHeight(1), input.OracleKeeper)
@@ -40,28 +40,28 @@ func TestOracleThreshold(t *testing.T) {
 	hash = types.GetAggregateVoteHash(salt, exchangeRates.String(), keeper.ValAddrs[0])
 
 	prevoteMsg = types.NewMsgAggregateExchangeRatePrevote(hash, keeper.Addrs[0], keeper.ValAddrs[0])
-	h(input.Ctx.WithBlockHeight(0), &prevoteMsg)
+	h(input.Ctx.WithBlockHeight(0), prevoteMsg)
 
 	voteMsg = types.NewMsgAggregateExchangeRateVote(salt, exchangeRates.String(), keeper.Addrs[0], keeper.ValAddrs[0])
-	h(input.Ctx.WithBlockHeight(1), &voteMsg)
+	h(input.Ctx.WithBlockHeight(1), voteMsg)
 
 	salt = "2"
 	hash = types.GetAggregateVoteHash(salt, exchangeRates.String(), keeper.ValAddrs[1])
 
 	prevoteMsg = types.NewMsgAggregateExchangeRatePrevote(hash, keeper.Addrs[1], keeper.ValAddrs[1])
-	h(input.Ctx.WithBlockHeight(0), &prevoteMsg)
+	h(input.Ctx.WithBlockHeight(0), prevoteMsg)
 
 	voteMsg = types.NewMsgAggregateExchangeRateVote(salt, exchangeRates.String(), keeper.Addrs[1], keeper.ValAddrs[1])
-	h(input.Ctx.WithBlockHeight(1), &voteMsg)
+	h(input.Ctx.WithBlockHeight(1), voteMsg)
 
 	salt = "3"
 	hash = types.GetAggregateVoteHash(salt, exchangeRates.String(), keeper.ValAddrs[2])
 
 	prevoteMsg = types.NewMsgAggregateExchangeRatePrevote(hash, keeper.Addrs[2], keeper.ValAddrs[2])
-	h(input.Ctx.WithBlockHeight(0), &prevoteMsg)
+	h(input.Ctx.WithBlockHeight(0), prevoteMsg)
 
 	voteMsg = types.NewMsgAggregateExchangeRateVote(salt, exchangeRates.String(), keeper.Addrs[2], keeper.ValAddrs[2])
-	h(input.Ctx.WithBlockHeight(1), &voteMsg)
+	h(input.Ctx.WithBlockHeight(1), voteMsg)
 
 	EndBlocker(input.Ctx.WithBlockHeight(1), input.OracleKeeper)
 
@@ -76,19 +76,19 @@ func TestOracleThreshold(t *testing.T) {
 	hash = types.GetAggregateVoteHash(salt, exchangeRates.String(), keeper.ValAddrs[0])
 
 	prevoteMsg = types.NewMsgAggregateExchangeRatePrevote(hash, keeper.Addrs[0], keeper.ValAddrs[0])
-	h(input.Ctx.WithBlockHeight(0), &prevoteMsg)
+	h(input.Ctx.WithBlockHeight(0), prevoteMsg)
 
 	voteMsg = types.NewMsgAggregateExchangeRateVote(salt, exchangeRates.String(), keeper.Addrs[0], keeper.ValAddrs[0])
-	h(input.Ctx.WithBlockHeight(1), &voteMsg)
+	h(input.Ctx.WithBlockHeight(1), voteMsg)
 
 	salt = "2"
 	hash = types.GetAggregateVoteHash(salt, exchangeRates.String(), keeper.ValAddrs[1])
 
 	prevoteMsg = types.NewMsgAggregateExchangeRatePrevote(hash, keeper.Addrs[1], keeper.ValAddrs[1])
-	h(input.Ctx.WithBlockHeight(0), &prevoteMsg)
+	h(input.Ctx.WithBlockHeight(0), prevoteMsg)
 
 	voteMsg = types.NewMsgAggregateExchangeRateVote(salt, exchangeRates.String(), keeper.Addrs[1], keeper.ValAddrs[1])
-	h(input.Ctx.WithBlockHeight(1), &voteMsg)
+	h(input.Ctx.WithBlockHeight(1), voteMsg)
 
 	EndBlocker(input.Ctx.WithBlockHeight(1), input.OracleKeeper)
 
@@ -106,51 +106,51 @@ func TestOracleMultiVote(t *testing.T) {
 	hash := types.GetAggregateVoteHash(salt, exchangeRates.String(), keeper.ValAddrs[0])
 
 	prevoteMsg := types.NewMsgAggregateExchangeRatePrevote(hash, keeper.Addrs[0], keeper.ValAddrs[0])
-	_, err := h(input.Ctx, &prevoteMsg)
+	_, err := h(input.Ctx, prevoteMsg)
 	require.NoError(t, err)
 
 	hash = types.GetAggregateVoteHash(salt, exchangeRates.String(), keeper.ValAddrs[1])
 
 	prevoteMsg = types.NewMsgAggregateExchangeRatePrevote(hash, keeper.Addrs[1], keeper.ValAddrs[1])
-	_, err = h(input.Ctx, &prevoteMsg)
+	_, err = h(input.Ctx, prevoteMsg)
 	require.NoError(t, err)
 
 	hash = types.GetAggregateVoteHash(salt, exchangeRates.String(), keeper.ValAddrs[2])
 
 	prevoteMsg = types.NewMsgAggregateExchangeRatePrevote(hash, keeper.Addrs[2], keeper.ValAddrs[2])
-	_, err = h(input.Ctx, &prevoteMsg)
+	_, err = h(input.Ctx, prevoteMsg)
 	require.NoError(t, err)
 
 	hash = types.GetAggregateVoteHash(salt, anotherExchangeRates.String(), keeper.ValAddrs[0])
 
 	prevoteMsg = types.NewMsgAggregateExchangeRatePrevote(hash, keeper.Addrs[0], keeper.ValAddrs[0])
-	_, err = h(input.Ctx, &prevoteMsg)
+	_, err = h(input.Ctx, prevoteMsg)
 	require.NoError(t, err)
 
 	hash = types.GetAggregateVoteHash(salt, anotherExchangeRates.String(), keeper.ValAddrs[1])
 
 	prevoteMsg = types.NewMsgAggregateExchangeRatePrevote(hash, keeper.Addrs[1], keeper.ValAddrs[1])
-	_, err = h(input.Ctx, &prevoteMsg)
+	_, err = h(input.Ctx, prevoteMsg)
 	require.NoError(t, err)
 
 	hash = types.GetAggregateVoteHash(salt, anotherExchangeRates.String(), keeper.ValAddrs[2])
 
 	prevoteMsg = types.NewMsgAggregateExchangeRatePrevote(hash, keeper.Addrs[2], keeper.ValAddrs[2])
-	_, err = h(input.Ctx, &prevoteMsg)
+	_, err = h(input.Ctx, prevoteMsg)
 	require.NoError(t, err)
 
 	// Reveal ExchangeRate
 	input.Ctx = input.Ctx.WithBlockHeight(1)
 	voteMsg := types.NewMsgAggregateExchangeRateVote(salt, anotherExchangeRates.String(), keeper.Addrs[0], keeper.ValAddrs[0])
-	_, err = h(input.Ctx, &voteMsg)
+	_, err = h(input.Ctx, voteMsg)
 	require.NoError(t, err)
 
 	voteMsg = types.NewMsgAggregateExchangeRateVote(salt, anotherExchangeRates.String(), keeper.Addrs[1], keeper.ValAddrs[1])
-	_, err = h(input.Ctx, &voteMsg)
+	_, err = h(input.Ctx, voteMsg)
 	require.NoError(t, err)
 
 	voteMsg = types.NewMsgAggregateExchangeRateVote(salt, anotherExchangeRates.String(), keeper.Addrs[2], keeper.ValAddrs[2])
-	_, err = h(input.Ctx, &voteMsg)
+	_, err = h(input.Ctx, voteMsg)
 	require.NoError(t, err)
 
 	EndBlocker(input.Ctx, input.OracleKeeper)
@@ -196,7 +196,7 @@ func TestOracleTally(t *testing.T) {
 			valAddrs[i],
 		)
 
-		_, err := h(input.Ctx.WithBlockHeight(0), &prevoteMsg)
+		_, err := h(input.Ctx.WithBlockHeight(0), prevoteMsg)
 		require.NoError(t, err)
 
 		voteMsg := types.NewMsgAggregateExchangeRateVote(
@@ -206,7 +206,7 @@ func TestOracleTally(t *testing.T) {
 			valAddrs[i],
 		)
 
-		_, err = h(input.Ctx.WithBlockHeight(1), &voteMsg)
+		_, err = h(input.Ctx.WithBlockHeight(1), voteMsg)
 		require.NoError(t, err)
 
 		vote := types.NewVoteForTally(types.NewExchangeRateVote(decExchangeRate, types.MicroSDRDenom, valAddrs[i]), stakingAmt.QuoRaw(types.MicroUnit).Int64())
@@ -713,11 +713,11 @@ func makePrevoteAndVote(t *testing.T, input keeper.TestInput, h sdk.Handler, hei
 	hash := types.GetAggregateVoteHash(salt, exchangeRates.String(), keeper.ValAddrs[idx])
 
 	prevoteMsg := types.NewMsgAggregateExchangeRatePrevote(hash, keeper.Addrs[idx], keeper.ValAddrs[idx])
-	_, err := h(input.Ctx.WithBlockHeight(height), &prevoteMsg)
+	_, err := h(input.Ctx.WithBlockHeight(height), prevoteMsg)
 	require.NoError(t, err)
 
 	voteMsg := types.NewMsgAggregateExchangeRateVote(salt, exchangeRates.String(), keeper.Addrs[idx], keeper.ValAddrs[idx])
-	_, err = h(input.Ctx.WithBlockHeight(height+1), &voteMsg)
+	_, err = h(input.Ctx.WithBlockHeight(height+1), voteMsg)
 	require.NoError(t, err)
 }
 
@@ -727,10 +727,10 @@ func makeAggregatePrevoteAndVote(t *testing.T, input keeper.TestInput, h sdk.Han
 	hash := types.GetAggregateVoteHash(salt, rates.String(), keeper.ValAddrs[idx])
 
 	prevoteMsg := types.NewMsgAggregateExchangeRatePrevote(hash, keeper.Addrs[idx], keeper.ValAddrs[idx])
-	_, err := h(input.Ctx.WithBlockHeight(height), &prevoteMsg)
+	_, err := h(input.Ctx.WithBlockHeight(height), prevoteMsg)
 	require.NoError(t, err)
 
 	voteMsg := types.NewMsgAggregateExchangeRateVote(salt, rates.String(), keeper.Addrs[idx], keeper.ValAddrs[idx])
-	_, err = h(input.Ctx.WithBlockHeight(height+1), &voteMsg)
+	_, err = h(input.Ctx.WithBlockHeight(height+1), voteMsg)
 	require.NoError(t, err)
 }
