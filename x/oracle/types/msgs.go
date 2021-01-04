@@ -16,8 +16,8 @@ var (
 //-------------------------------------------------
 
 // NewMsgDelegateFeedConsent creates a MsgDelegateFeedConsent instance
-func NewMsgDelegateFeedConsent(operatorAddress sdk.ValAddress, feederAddress sdk.AccAddress) MsgDelegateFeedConsent {
-	return MsgDelegateFeedConsent{
+func NewMsgDelegateFeedConsent(operatorAddress sdk.ValAddress, feederAddress sdk.AccAddress) *MsgDelegateFeedConsent {
+	return &MsgDelegateFeedConsent{
 		Operator: operatorAddress.String(),
 		Delegate: feederAddress.String(),
 	}
@@ -56,8 +56,8 @@ func (msg MsgDelegateFeedConsent) ValidateBasic() error {
 }
 
 // NewMsgAggregateExchangeRatePrevote returns MsgAggregateExchangeRatePrevote instance
-func NewMsgAggregateExchangeRatePrevote(hash AggregateVoteHash, feeder sdk.AccAddress, validator sdk.ValAddress) MsgAggregateExchangeRatePrevote {
-	return MsgAggregateExchangeRatePrevote{
+func NewMsgAggregateExchangeRatePrevote(hash AggregateVoteHash, feeder sdk.AccAddress, validator sdk.ValAddress) *MsgAggregateExchangeRatePrevote {
+	return &MsgAggregateExchangeRatePrevote{
 		Hash:      hash,
 		Feeder:    feeder.String(),
 		Validator: validator.String(),
@@ -103,8 +103,8 @@ func (msg MsgAggregateExchangeRatePrevote) ValidateBasic() error {
 }
 
 // NewMsgAggregateExchangeRateVote returns MsgAggregateExchangeRateVote instance
-func NewMsgAggregateExchangeRateVote(salt string, exchangeRates string, feeder sdk.AccAddress, validator sdk.ValAddress) MsgAggregateExchangeRateVote {
-	return MsgAggregateExchangeRateVote{
+func NewMsgAggregateExchangeRateVote(salt string, exchangeRates string, feeder sdk.AccAddress, validator sdk.ValAddress) *MsgAggregateExchangeRateVote {
+	return &MsgAggregateExchangeRateVote{
 		Salt:          salt,
 		ExchangeRates: exchangeRates,
 		Feeder:        feeder.String(),
@@ -131,7 +131,6 @@ func (msg MsgAggregateExchangeRateVote) GetSigners() []sdk.AccAddress {
 
 // ValidateBasic implements sdk.Msg
 func (msg MsgAggregateExchangeRateVote) ValidateBasic() error {
-
 	feeder, err := sdk.AccAddressFromBech32(msg.Feeder)
 	if err != nil || feeder.Empty() {
 		return sdkerrors.Wrap(sdkerrors.ErrInvalidAddress, "must give valid feeder address")

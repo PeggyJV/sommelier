@@ -39,7 +39,7 @@ func DefaultGenesisState() GenesisState {
 	}
 }
 
-// ValidateGenesis validates the oracle genesis parameters
-func ValidateGenesis(data GenesisState) error {
-	return data.Params.ValidateBasic()
+// Validate validates the oracle genesis state fields.
+func (gs GenesisState) Validate() error {
+	return gs.Params.ValidateBasic()
 }

@@ -8,5 +8,5 @@ import (
 
 func TestGenesisValidation(t *testing.T) {
 	genState := DefaultGenesisState()
-	require.NoError(t, ValidateGenesis(genState))
+	require.NoError(t, genState.Validate())
 }
