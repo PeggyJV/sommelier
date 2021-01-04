@@ -31,13 +31,13 @@ func DecodeStore(cdc codec.Marshaler) func(kvA, kvB kv.Pair) string {
 			return fmt.Sprintf("%v\n%v", counterA, counterB)
 		case bytes.Equal(kvA.Key[:1], types.AggregateExchangeRatePrevoteKey):
 			var prevoteA, prevoteB types.AggregateExchangeRatePrevote
-			cdc.MustUnmarshalBinaryLengthPrefixed(kvA.Value, &prevoteA)
-			cdc.MustUnmarshalBinaryLengthPrefixed(kvB.Value, &prevoteB)
+			cdc.MustUnmarshalBinaryBare(kvA.Value, &prevoteA)
+			cdc.MustUnmarshalBinaryBare(kvB.Value, &prevoteB)
 			return fmt.Sprintf("%v\n%v", prevoteA, prevoteB)
 		case bytes.Equal(kvA.Key[:1], types.AggregateExchangeRateVoteKey):
 			var voteA, voteB types.AggregateExchangeRateVote
-			cdc.MustUnmarshalBinaryLengthPrefixed(kvA.Value, &voteA)
-			cdc.MustUnmarshalBinaryLengthPrefixed(kvB.Value, &voteB)
+			cdc.MustUnmarshalBinaryBare(kvA.Value, &voteA)
+			cdc.MustUnmarshalBinaryBare(kvB.Value, &voteB)
 			return fmt.Sprintf("%v\n%v", voteA, voteB)
 		case bytes.Equal(kvA.Key[:1], types.TobinTaxKey):
 			var tobinTaxA, tobinTaxB sdk.Dec

@@ -71,8 +71,8 @@ func TestDecodeDistributionStore(t *testing.T) {
 		{types.ExchangeRateKey, marEr},
 		{types.FeederDelegationKey, []byte(feederAddr.String())},
 		{types.MissCounterKey, missCounterBz},
-		{types.AggregateExchangeRatePrevoteKey, cdc.MustMarshalBinaryLengthPrefixed(&aggregatePrevote)},
-		{types.AggregateExchangeRateVoteKey, cdc.MustMarshalBinaryLengthPrefixed(&aggregateVote)},
+		{types.AggregateExchangeRatePrevoteKey, cdc.MustMarshalBinaryBare(&aggregatePrevote)},
+		{types.AggregateExchangeRateVoteKey, cdc.MustMarshalBinaryBare(&aggregateVote)},
 		{types.TobinTaxKey, marTt},
 		{[]byte{0x99}, []byte{0x99}},
 	}
