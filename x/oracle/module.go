@@ -16,7 +16,6 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
 	"github.com/peggyjv/sommelier/x/oracle/client/cli"
-	"github.com/peggyjv/sommelier/x/oracle/client/rest"
 	"github.com/peggyjv/sommelier/x/oracle/keeper"
 	"github.com/peggyjv/sommelier/x/oracle/simulation"
 	"github.com/peggyjv/sommelier/x/oracle/types"
@@ -38,10 +37,8 @@ func (AppModuleBasic) Name() string {
 	return types.ModuleName
 }
 
-// RegisterLegacyAminoCodec registers the oracle module's types for the given codec.
-func (AppModuleBasic) RegisterLegacyAminoCodec(cdc *codec.LegacyAmino) {
-	types.RegisterLegacyAminoCodec(cdc)
-}
+// RegisterLegacyAminoCodec doesn't support amino
+func (AppModuleBasic) RegisterLegacyAminoCodec(cdc *codec.LegacyAmino) {}
 
 // DefaultGenesis returns default genesis state as raw bytes for the oracle
 // module.
@@ -59,9 +56,8 @@ func (AppModuleBasic) ValidateGenesis(cdc codec.JSONMarshaler, _ client.TxEncodi
 	return types.ValidateGenesis(data)
 }
 
-// RegisterRESTRoutes registers the REST routes for the oracle module.
-func (AppModuleBasic) RegisterRESTRoutes(ctx client.Context, rtr *mux.Router) {
-	rest.RegisterRoutes(ctx, rtr)
+// RegisterRESTRoutes doesn't support legacy REST routes.
+func (AppModuleBasic) RegisterRESTRoutes(_ client.Context, _ *mux.Router) {
 }
 
 // GetTxCmd returns the root tx command for the oracle module.
@@ -119,9 +115,9 @@ func (am AppModule) Route() sdk.Route { return sdk.NewRoute(types.RouterKey, New
 // QuerierRoute returns the oracle module's querier route name.
 func (AppModule) QuerierRoute() string { return types.QuerierRoute }
 
-// LegacyQuerierHandler returns the oracle module sdk.Querier.
+// LegacyQuerierHandler returns a nil Querier.
 func (am AppModule) LegacyQuerierHandler(_ *codec.LegacyAmino) sdk.Querier {
-	return keeper.NewQuerier(am.keeper)
+	return nil
 }
 
 // RegisterServices registers module services.

@@ -31,7 +31,7 @@ func (msg MsgDelegateFeedConsent) Type() string { return "delegatefeeder" }
 
 // GetSignBytes implements sdk.Msg
 func (msg MsgDelegateFeedConsent) GetSignBytes() []byte {
-	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(msg))
+	panic("oracle messages do not support amino")
 }
 
 // GetSigners implements sdk.Msg
@@ -72,7 +72,7 @@ func (msg MsgAggregateExchangeRatePrevote) Type() string { return "aggregateexch
 
 // GetSignBytes implements sdk.Msg
 func (msg MsgAggregateExchangeRatePrevote) GetSignBytes() []byte {
-	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(msg))
+	panic("oracle messages do not support amino")
 }
 
 // GetSigners implements sdk.Msg
@@ -120,7 +120,7 @@ func (msg MsgAggregateExchangeRateVote) Type() string { return "aggregateexchang
 
 // GetSignBytes implements sdk.Msg
 func (msg MsgAggregateExchangeRateVote) GetSignBytes() []byte {
-	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(msg))
+	panic("oracle messages do not support amino")
 }
 
 // GetSigners implements sdk.Msg

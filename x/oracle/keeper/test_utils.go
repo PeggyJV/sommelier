@@ -90,7 +90,6 @@ type TestInput struct {
 func newTestCodec() *codec.LegacyAmino {
 	cdc := codec.NewLegacyAmino()
 
-	types.RegisterLegacyAminoCodec(cdc)
 	authtypes.RegisterLegacyAminoCodec(cdc)
 	banktypes.RegisterLegacyAminoCodec(cdc)
 	sdk.RegisterLegacyAminoCodec(cdc)

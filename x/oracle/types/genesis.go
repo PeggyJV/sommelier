@@ -1,15 +1,15 @@
 package types
 
 import (
-	"bytes"
-
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
 // NewGenesisState creates a new GenesisState object
 func NewGenesisState(
-	params Params, rates sdk.DecCoins,
-	feederDelegations map[string]string, missCounters map[string]int64,
+	params Params,
+	rates sdk.DecCoins,
+	feederDelegations map[string]string,
+	missCounters map[string]int64,
 	aggregateExchangeRatePrevotes []AggregateExchangeRatePrevote,
 	aggregateExchangeRateVotes []AggregateExchangeRateVote,
 	TobinTaxes sdk.DecCoins,
@@ -42,17 +42,4 @@ func DefaultGenesisState() GenesisState {
 // ValidateGenesis validates the oracle genesis parameters
 func ValidateGenesis(data GenesisState) error {
 	return data.Params.ValidateBasic()
-}
-
-// Equal checks whether 2 GenesisState structs are equivalent.
-func (data GenesisState) Equal(data2 GenesisState) bool {
-	b1 := ModuleCdc.MustMarshalBinaryBare(data)
-	b2 := ModuleCdc.MustMarshalBinaryBare(data2)
-	return bytes.Equal(b1, b2)
-}
-
-// IsEmpty returns if a GenesisState is empty or has data in it
-func (data GenesisState) IsEmpty() bool {
-	emptyGenState := GenesisState{}
-	return data.Equal(emptyGenState)
 }
