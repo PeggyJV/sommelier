@@ -11,8 +11,6 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	sim "github.com/cosmos/cosmos-sdk/types/simulation"
-	authkeeper "github.com/cosmos/cosmos-sdk/x/auth/keeper"
-	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
 	"github.com/gorilla/mux"
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
 	"github.com/peggyjv/sommelier/x/oracle/client/cli"
@@ -49,11 +47,11 @@ func (AppModuleBasic) DefaultGenesis(cdc codec.JSONMarshaler) json.RawMessage {
 
 // ValidateGenesis performs genesis state validation for the oracle module.
 func (AppModuleBasic) ValidateGenesis(cdc codec.JSONMarshaler, _ client.TxEncodingConfig, bz json.RawMessage) error {
-	var data types.GenesisState
-	if err := cdc.UnmarshalJSON(bz, &data); err != nil {
+	var gs types.GenesisState
+	if err := cdc.UnmarshalJSON(bz, &gs); err != nil {
 		return err
 	}
-	return types.ValidateGenesis(data)
+	return gs.Validate()
 }
 
 // RegisterRESTRoutes doesn't support legacy REST routes.
@@ -76,7 +74,7 @@ func (AppModuleBasic) RegisterGRPCGatewayRoutes(clientCtx client.Context, mux *r
 	types.RegisterQueryHandlerClient(context.Background(), mux, types.NewQueryClient(clientCtx))
 }
 
-// RegisterInterfaces implements app bmodule basic
+// RegisterInterfaces implements app module basic
 func (b AppModuleBasic) RegisterInterfaces(registry codectypes.InterfaceRegistry) {
 	types.RegisterInterfaces(registry)
 }
@@ -87,13 +85,13 @@ func (b AppModuleBasic) RegisterInterfaces(registry codectypes.InterfaceRegistry
 type AppModule struct {
 	AppModuleBasic
 	keeper        keeper.Keeper
-	accountKeeper authkeeper.AccountKeeper
-	bankKeeper    bankkeeper.Keeper
+	accountKeeper types.AccountKeeper
+	bankKeeper    types.BankKeeper
 	cdc           codec.Marshaler
 }
 
 // NewAppModule creates a new AppModule object
-func NewAppModule(keeper keeper.Keeper, accountKeeper authkeeper.AccountKeeper, bankKeeper bankkeeper.Keeper, cdc codec.Marshaler) AppModule {
+func NewAppModule(keeper keeper.Keeper, accountKeeper types.AccountKeeper, bankKeeper types.BankKeeper, cdc codec.Marshaler) AppModule {
 	return AppModule{
 		AppModuleBasic: AppModuleBasic{},
 		keeper:         keeper,

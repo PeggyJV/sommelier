@@ -23,6 +23,7 @@ type DistributionKeeper interface {
 
 // AccountKeeper is the expected account keeper
 type AccountKeeper interface {
+	GetAccount(ctx sdk.Context, address sdk.AccAddress) authtypes.AccountI
 	GetModuleAddress(name string) sdk.AccAddress
 	GetModuleAccount(ctx sdk.Context, moduleName string) authtypes.ModuleAccountI
 	SetModuleAccount(sdk.Context, authtypes.ModuleAccountI)
@@ -32,6 +33,7 @@ type AccountKeeper interface {
 type BankKeeper interface {
 	GetSupply(ctx sdk.Context) (supply bankexported.SupplyI)
 	SetSupply(ctx sdk.Context, supply bankexported.SupplyI)
+	SpendableCoins(ctx sdk.Context, addr sdk.AccAddress) sdk.Coins
 	GetAllBalances(ctx sdk.Context, addr sdk.AccAddress) sdk.Coins
 	SendCoinsFromModuleToModule(ctx sdk.Context, senderModule string, recipientModule string, amt sdk.Coins) error
 }
