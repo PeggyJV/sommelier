@@ -10,7 +10,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/types/module"
 
 	"github.com/peggyjv/sommelier/x/oracle/types"
-	core "github.com/peggyjv/sommelier/x/oracle/types"
 )
 
 // Simulation parameter constants
@@ -111,10 +110,10 @@ func RandomizedGenState(simState *module.SimulationState) {
 			RewardBand:               rewardBand,
 			RewardDistributionWindow: rewardDistributionWindow,
 			Whitelist: sdk.NewDecCoins(
-				sdk.NewDecCoinFromDec(core.MicroKRWDenom, types.DefaultTobinTax),
-				sdk.NewDecCoinFromDec(core.MicroSDRDenom, types.DefaultTobinTax),
-				sdk.NewDecCoinFromDec(core.MicroUSDDenom, types.DefaultTobinTax),
-				sdk.NewDecCoinFromDec(core.MicroMNTDenom, sdk.NewDecWithPrec(2, 2))),
+				sdk.NewDecCoinFromDec(types.MicroKRWDenom, types.DefaultTobinTax),
+				sdk.NewDecCoinFromDec(types.MicroSDRDenom, types.DefaultTobinTax),
+				sdk.NewDecCoinFromDec(types.MicroUSDDenom, types.DefaultTobinTax),
+				sdk.NewDecCoinFromDec(types.MicroMNTDenom, sdk.NewDecWithPrec(2, 2))),
 			SlashFraction:     slashFraction,
 			SlashWindow:       slashWindow,
 			MinValidPerWindow: minValidPerWindow,

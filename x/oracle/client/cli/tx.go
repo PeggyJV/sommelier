@@ -73,7 +73,7 @@ where "terra1..." is the address you want to delegate your voting rights to.
 				return err
 			}
 
-			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), &msg)
+			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), msg)
 		},
 	}
 
@@ -134,7 +134,7 @@ $ sommelier tx oracle aggregate-prevote 1234 8888.0ukrw,1.243uusd,0.99usdr terra
 				return err
 			}
 
-			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), &msg)
+			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), msg)
 		},
 	}
 
@@ -192,7 +192,7 @@ $ sommelier tx oracle aggregate-vote 1234 8888.0ukrw,1.243uusd,0.99usdr terraval
 				return err
 			}
 
-			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), &msg)
+			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), msg)
 		},
 	}
 

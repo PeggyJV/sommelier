@@ -1,13 +1,13 @@
 package cli
 
 import (
-	"encoding/json"
-	"fmt"
+	"context"
 	"strings"
 
 	"github.com/peggyjv/sommelier/x/oracle/types"
 
 	"github.com/cosmos/cosmos-sdk/client"
+	"github.com/cosmos/cosmos-sdk/client/flags"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/spf13/cobra"
 )
@@ -43,7 +43,7 @@ func GetCmdQueryExchangeRates() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "exchange-rates [denom]",
 		Args:  cobra.RangeArgs(0, 1),
-		Short: "Query the current Luna exchange rate w.r.t an asset",
+		Short: "Query the current Luna exchange rate w.r.t an asset", // TODO: update "Luna"
 		Long: strings.TrimSpace(`
 Query the current exchange rate of Luna with an asset. 
 You can find the current list of active denoms by running
@@ -60,32 +60,40 @@ $ sommelier query oracle exchange-rates ukrw
 				return err
 			}
 
+			queryClient := types.NewQueryClient(clientCtx)
+
 			if len(args) == 0 {
-				res, _, err := clientCtx.QueryWithData(fmt.Sprintf("custom/%s/%s", types.QuerierRoute, types.QueryExchangeRates), nil)
+				// pageReq, err := client.ReadPageRequest(cmd.Flags())
+				// if err != nil {
+				// 	return err
+				// }
+
+				req := &types.QueryExchangeRatesRequest{
+					// Pagination: pageReq,
+				}
+
+				res, err := queryClient.ExchangeRates(context.Background(), req)
 				if err != nil {
 					return err
 				}
 
-				rates, err := sdk.ParseDecCoins(string(res))
-				if err != nil {
-					return err
-				}
-				return clientCtx.PrintProto(&types.QueryExchangeRatesResponse{Rates: rates})
+				return clientCtx.PrintProto(res)
 			}
 
-			bz, err := json.Marshal(types.NewQueryExchangeRateParams(args[0]))
+			req := &types.QueryExchangeRateRequest{
+				Denom: args[0],
+			}
+
+			res, err := queryClient.ExchangeRate(context.Background(), req)
 			if err != nil {
 				return err
 			}
-			res, _, err := clientCtx.QueryWithData(fmt.Sprintf("custom/%s/%s", types.QuerierRoute, types.QueryExchangeRate), bz)
-			if err != nil {
-				return err
-			}
-			fmt.Println(res)
-			return nil
 
+			return clientCtx.PrintProto(res)
 		},
 	}
+	flags.AddQueryFlagsToCmd(cmd)
+	flags.AddPaginationFlagsToCmd(cmd, "exchange rates")
 	return cmd
 }
 
@@ -94,9 +102,9 @@ func GetCmdQueryActives() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "actives",
 		Args:  cobra.NoArgs,
-		Short: "Query the active list of Terra assets recognized by the oracle",
+		Short: "Query the active list of Sommelier assets recognized by the oracle",
 		Long: strings.TrimSpace(`
-Query the active list of Terra assets recognized by the types.
+Query the active list of Sommelier assets recognized by the types.
 
 $ sommelier query oracle actives
 `),
@@ -105,16 +113,28 @@ $ sommelier query oracle actives
 			if err != nil {
 				return err
 			}
+			queryClient := types.NewQueryClient(clientCtx)
 
-			res, _, err := clientCtx.QueryWithData(fmt.Sprintf("custom/%s/%s", types.QuerierRoute, types.QueryActives), nil)
+			// pageReq, err := client.ReadPageRequest(cmd.Flags())
+			// if err != nil {
+			// 	return err
+			// }
+
+			req := &types.QueryActivesRequest{
+				// Pagination: pageReq,
+			}
+
+			res, err := queryClient.Actives(context.Background(), req)
 			if err != nil {
 				return err
 			}
 
-			return clientCtx.PrintString(string(res))
+			return clientCtx.PrintProto(res)
 		},
 	}
 
+	flags.AddQueryFlagsToCmd(cmd)
+	flags.AddPaginationFlagsToCmd(cmd, "actives")
 	return cmd
 }
 
@@ -123,17 +143,22 @@ func GetCmdQueryParams() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "params",
 		Args:  cobra.NoArgs,
-		Short: "Query the current Oracle params",
+		Short: "Query the current oracle module parameters",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			clientCtx, err := client.GetClientQueryContext(cmd)
 			if err != nil {
 				return err
 			}
-			res, _, err := clientCtx.QueryWithData(fmt.Sprintf("custom/%s/%s", types.QuerierRoute, types.QueryParameters), nil)
+
+			queryClient := types.NewQueryClient(clientCtx)
+
+			req := &types.QueryParametersRequest{}
+			res, err := queryClient.Parameters(context.Background(), req)
 			if err != nil {
 				return err
 			}
-			return clientCtx.PrintString(string(res))
+
+			return clientCtx.PrintProto(res)
 		},
 	}
 
@@ -162,17 +187,18 @@ $ sommelier query oracle feeder terravaloper...
 				return err
 			}
 
-			bz, err := json.Marshal(types.NewQueryFeederDelegationParams(validator))
+			queryClient := types.NewQueryClient(clientCtx)
+
+			req := &types.QueryFeederDelegationRequest{
+				Validator: validator.String(),
+			}
+
+			res, err := queryClient.FeederDelegation(context.Background(), req)
 			if err != nil {
 				return err
 			}
 
-			res, _, err := clientCtx.QueryWithData(fmt.Sprintf("custom/%s/%s", types.QuerierRoute, types.QueryFeederDelegation), bz)
-			if err != nil {
-				return err
-			}
-
-			return clientCtx.PrintString(string(res))
+			return clientCtx.PrintProto(res)
 		},
 	}
 
@@ -202,17 +228,18 @@ $ sommelier query oracle miss terravaloper...
 				return err
 			}
 
-			bz, err := json.Marshal(types.NewQueryMissCounterParams(validator))
+			queryClient := types.NewQueryClient(clientCtx)
+
+			req := &types.QueryMissCounterRequest{
+				Validator: validator.String(),
+			}
+
+			res, err := queryClient.MissCounter(context.Background(), req)
 			if err != nil {
 				return err
 			}
 
-			res, _, err := clientCtx.QueryWithData(fmt.Sprintf("custom/%s/%s", types.QuerierRoute, types.QueryMissCounter), bz)
-			if err != nil {
-				return err
-			}
-
-			return clientCtx.PrintString(string(res))
+			return clientCtx.PrintProto(res)
 		},
 	}
 
@@ -242,19 +269,18 @@ $ sommelier query oracle aggregate-prevote terravaloper...
 				return err
 			}
 
-			bz, err := json.Marshal(types.NewQueryAggregatePrevoteParams(validator))
+			queryClient := types.NewQueryClient(clientCtx)
+
+			req := &types.QueryAggregatePrevoteRequest{
+				Validator: validator.String(),
+			}
+
+			res, err := queryClient.AggregatePrevote(context.Background(), req)
 			if err != nil {
 				return err
 			}
 
-			res, _, err := clientCtx.QueryWithData(fmt.Sprintf("custom/%s/%s", types.QuerierRoute, types.QueryAggregatePrevote), bz)
-			if err != nil {
-				return err
-			}
-
-			var aggregatePrevote types.AggregateExchangeRatePrevote
-			clientCtx.JSONMarshaler.MustUnmarshalJSON(res, &aggregatePrevote)
-			return clientCtx.PrintProto(&aggregatePrevote)
+			return clientCtx.PrintProto(res)
 		},
 	}
 
@@ -284,19 +310,18 @@ $ sommelier query oracle aggregate-vote terravaloper...
 				return err
 			}
 
-			bz, err := json.Marshal(types.NewQueryAggregateVoteParams(validator))
+			queryClient := types.NewQueryClient(clientCtx)
+
+			req := &types.QueryAggregateVoteRequest{
+				Validator: validator.String(),
+			}
+
+			res, err := queryClient.AggregateVote(context.Background(), req)
 			if err != nil {
 				return err
 			}
 
-			res, _, err := clientCtx.QueryWithData(fmt.Sprintf("custom/%s/%s", types.QuerierRoute, types.QueryAggregateVote), bz)
-			if err != nil {
-				return err
-			}
-
-			var aggregateVote types.AggregateExchangeRateVote
-			clientCtx.JSONMarshaler.MustUnmarshalJSON(res, &aggregateVote)
-			return clientCtx.PrintProto(&aggregateVote)
+			return clientCtx.PrintProto(res)
 		},
 	}
 
@@ -315,15 +340,28 @@ func GetCmdQueryVoteTargets() *cobra.Command {
 				return err
 			}
 
-			res, _, err := clientCtx.QueryWithData(fmt.Sprintf("custom/%s/%s", types.QuerierRoute, types.QueryVoteTargets), nil)
+			// pageReq, err := client.ReadPageRequest(cmd.Flags())
+			// if err != nil {
+			// 	return err
+			// }
+
+			queryClient := types.NewQueryClient(clientCtx)
+
+			req := &types.QueryVoteTargetsRequest{
+				// Pagination: pageReq,
+			}
+
+			res, err := queryClient.VoteTargets(context.Background(), req)
 			if err != nil {
 				return err
 			}
 
-			return clientCtx.PrintString(string(res))
+			return clientCtx.PrintProto(res)
 		},
 	}
 
+	flags.AddQueryFlagsToCmd(cmd)
+	flags.AddPaginationFlagsToCmd(cmd, "vote targets")
 	return cmd
 }
 
@@ -350,31 +388,36 @@ Or, can
 				return err
 			}
 
+			queryClient := types.NewQueryClient(clientCtx)
+
 			if len(args) == 0 {
-				res, _, err := clientCtx.QueryWithData(fmt.Sprintf("custom/%s/%s", types.QuerierRoute, types.QueryTobinTaxes), nil)
+				// pageReq, err := client.ReadPageRequest(cmd.Flags())
+				// if err != nil {
+				// 	return err
+				// }
+
+				req := &types.QueryTobinTaxesRequest{
+					// Pagination: pageReq,
+				}
+
+				res, err := queryClient.TobinTaxes(context.Background(), req)
 				if err != nil {
 					return err
 				}
 
-				out, err := sdk.ParseDecCoins(string(res))
-				if err != nil {
-					return err
-				}
-
-				return clientCtx.PrintProto(&types.QueryTobinTaxesResponse{Rates: out})
+				return clientCtx.PrintProto(res)
 			}
 
-			bz, err := json.Marshal(types.NewQueryTobinTaxParams(args[0]))
+			req := &types.QueryTobinTaxRequest{
+				Denom: args[0],
+			}
+
+			res, err := queryClient.TobinTax(context.Background(), req)
 			if err != nil {
 				return err
 			}
 
-			res, _, err := clientCtx.QueryWithData(fmt.Sprintf("custom/%s/%s", types.QuerierRoute, types.QueryTobinTax), bz)
-			if err != nil {
-				return err
-			}
-
-			return clientCtx.PrintString(string(res))
+			return clientCtx.PrintProto(res)
 		},
 	}
 

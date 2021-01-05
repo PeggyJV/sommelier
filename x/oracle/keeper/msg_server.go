@@ -129,7 +129,7 @@ func (m msgServer) AggregateExchangeRateVote(c context.Context, msg *types.MsgAg
 		return nil, sdkerrors.Wrap(types.ErrNoAggregatePrevote, msg.Validator)
 	}
 
-	// Check a msg is submitted porper period
+	// Check a msg is submitted proper period
 	if (ctx.BlockHeight()/params.VotePeriod)-(aggregatePrevote.SubmitBlock/params.VotePeriod) != 1 {
 		return nil, types.ErrRevealPeriodMissMatch
 	}
@@ -174,5 +174,5 @@ func (m msgServer) AggregateExchangeRateVote(c context.Context, msg *types.MsgAg
 		),
 	})
 
-	return nil, nil
+	return &types.MsgAggregateExchangeRateVoteResponse{}, nil
 }

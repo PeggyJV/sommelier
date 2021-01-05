@@ -100,42 +100,35 @@ func ParamKeyTable() paramtypes.KeyTable {
 
 // ValidateBasic performs basic validation on oracle parameters.
 func (p Params) ValidateBasic() error {
-	if p.VotePeriod <= 0 {
-		return fmt.Errorf("oracle parameter VotePeriod must be > 0, is %d", p.VotePeriod)
-	}
-	if p.VoteThreshold.LTE(sdk.NewDecWithPrec(33, 2)) {
-		return fmt.Errorf("oracle parameter VoteTheshold must be greater than 33 percent")
+	if err := validateVotePeriod(p.VotePeriod); err != nil {
+		return err
 	}
 
-	if p.RewardBand.IsNegative() || p.RewardBand.GT(sdk.OneDec()) {
-		return fmt.Errorf("oracle parameter RewardBand must be between [0, 1]")
+	if err := validateVoteThreshold(p.VoteThreshold); err != nil {
+		return err
+	}
+
+	if err := validateRewardBand(p.RewardBand); err != nil {
+		return err
+	}
+
+	if err := validateSlashFraction(p.SlashFraction); err != nil {
+		return err
+	}
+
+	if err := validateMinValidPerWindow(p.MinValidPerWindow); err != nil {
+		return err
 	}
 
 	if p.RewardDistributionWindow < p.VotePeriod {
-		return fmt.Errorf("oracle parameter RewardDistributionWindow must be greater than or equal with votes period")
-	}
-
-	if p.SlashFraction.GT(sdk.OneDec()) || p.SlashFraction.IsNegative() {
-		return fmt.Errorf("oracle parameter SlashRraction must be between [0, 1]")
+		return fmt.Errorf("oracle RewardDistributionWindow parameter must be ≥ VotePeriod parameter")
 	}
 
 	if p.SlashWindow < p.VotePeriod {
-		return fmt.Errorf("oracle parameter SlashWindow must be greater than or equal with votes period")
+		return fmt.Errorf("oracle SlashWindow parameter must be ≥ VotePeriod parameter")
 	}
 
-	if p.MinValidPerWindow.GT(sdk.NewDecWithPrec(5, 1)) || p.MinValidPerWindow.IsNegative() {
-		return fmt.Errorf("oracle parameter MinValidPerWindow must be between [0, 0.5]")
-	}
-
-	for _, denom := range p.Whitelist {
-		if denom.Amount.LT(sdk.ZeroDec()) || denom.Amount.GT(sdk.OneDec()) {
-			return fmt.Errorf("oracle parameter Whitelist Denom must have TobinTax between [0, 1]")
-		}
-		if len(denom.Denom) == 0 {
-			return fmt.Errorf("oracle parameter Whitelist Denom must have name")
-		}
-	}
-	return nil
+	return validateWhitelist(p.Whitelist)
 }
 
 func validateVotePeriod(i interface{}) error {
@@ -157,12 +150,8 @@ func validateVoteThreshold(i interface{}) error {
 		return fmt.Errorf("invalid parameter type: %T", i)
 	}
 
-	if v.LT(sdk.NewDecWithPrec(33, 2)) {
-		return fmt.Errorf("vote threshold must be bigger than 33%%: %s", v)
-	}
-
-	if v.GT(sdk.OneDec()) {
-		return fmt.Errorf("vote threshold too large: %s", v)
+	if v.LT(sdk.NewDecWithPrec(33, 2)) || v.GT(sdk.OneDec()) {
+		return fmt.Errorf("reward band must be between [0.33, 1], got %s", v)
 	}
 
 	return nil
@@ -174,12 +163,8 @@ func validateRewardBand(i interface{}) error {
 		return fmt.Errorf("invalid parameter type: %T", i)
 	}
 
-	if v.IsNegative() {
-		return fmt.Errorf("reward band must be positive: %s", v)
-	}
-
-	if v.GT(sdk.OneDec()) {
-		return fmt.Errorf("reward band is too large: %s", v)
+	if v.IsNegative() || v.GT(sdk.OneDec()) {
+		return fmt.Errorf("reward band must be between [0, 1], got %s", v)
 	}
 
 	return nil
@@ -206,14 +191,11 @@ func validateWhitelist(i interface{}) error {
 
 	for _, d := range v {
 		if d.Amount.LT(sdk.ZeroDec()) || d.Amount.GT(sdk.OneDec()) {
-			return fmt.Errorf("oracle parameter Whitelist Denom must have TobinTax between [0, 1]")
-		}
-		if len(d.Denom) == 0 {
-			return fmt.Errorf("oracle parameter Whitelist Denom must have name")
+			return fmt.Errorf("whitelist denom must have TobinTax between [0, 1]")
 		}
 	}
 
-	return nil
+	return v.Validate()
 }
 
 func validateSlashFraction(i interface{}) error {
@@ -222,12 +204,8 @@ func validateSlashFraction(i interface{}) error {
 		return fmt.Errorf("invalid parameter type: %T", i)
 	}
 
-	if v.IsNegative() {
-		return fmt.Errorf("slash fraction must be positive: %s", v)
-	}
-
-	if v.GT(sdk.OneDec()) {
-		return fmt.Errorf("slash fraction is too large: %s", v)
+	if v.GT(sdk.OneDec()) || v.IsNegative() {
+		return fmt.Errorf("slash fraction must be between [0, 1], got %s", v)
 	}
 
 	return nil
@@ -252,12 +230,8 @@ func validateMinValidPerWindow(i interface{}) error {
 		return fmt.Errorf("invalid parameter type: %T", i)
 	}
 
-	if v.IsNegative() {
-		return fmt.Errorf("min valid per window must be positive: %s", v)
-	}
-
-	if v.GT(sdk.NewDecWithPrec(5, 1)) {
-		return fmt.Errorf("min valid per window is too large: %s", v)
+	if v.GT(sdk.NewDecWithPrec(5, 1)) || v.IsNegative() {
+		return fmt.Errorf("min valid perWindow must be between [0, 0.5], got %s", v)
 	}
 
 	return nil

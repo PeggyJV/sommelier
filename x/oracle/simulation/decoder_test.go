@@ -31,7 +31,6 @@ func makeTestCodec() (cdc *codec.LegacyAmino) {
 	cdc = codec.NewLegacyAmino()
 	sdk.RegisterLegacyAminoCodec(cdc)
 	ccodec.RegisterCrypto(cdc)
-	types.RegisterLegacyAminoCodec(cdc)
 	return
 }
 
@@ -55,8 +54,8 @@ func TestDecodeDistributionStore(t *testing.T) {
 
 	aggregatePrevote := types.NewAggregateExchangeRatePrevote(types.AggregateVoteHash([]byte("12345")), valAddr, 123)
 	aggregateVote := types.NewAggregateExchangeRateVote(sdk.DecCoins{
-		{types.MicroKRWDenom, sdk.NewDecWithPrec(1234, 1)},
-		{types.MicroKRWDenom, sdk.NewDecWithPrec(4321, 1)},
+		{Denom: types.MicroKRWDenom, Amount: sdk.NewDecWithPrec(1234, 1)},
+		{Denom: types.MicroKRWDenom, Amount: sdk.NewDecWithPrec(4321, 1)},
 	}, valAddr)
 
 	tobinTax := sdk.NewDecWithPrec(2, 2)
@@ -68,13 +67,13 @@ func TestDecodeDistributionStore(t *testing.T) {
 	require.NoError(t, err)
 
 	kvPairs := []tmkv.Pair{
-		{types.ExchangeRateKey, marEr},
-		{types.FeederDelegationKey, []byte(feederAddr.String())},
-		{types.MissCounterKey, missCounterBz},
-		{types.AggregateExchangeRatePrevoteKey, cdc.MustMarshalBinaryLengthPrefixed(&aggregatePrevote)},
-		{types.AggregateExchangeRateVoteKey, cdc.MustMarshalBinaryLengthPrefixed(&aggregateVote)},
-		{types.TobinTaxKey, marTt},
-		{[]byte{0x99}, []byte{0x99}},
+		{Key: types.ExchangeRateKey, Value: marEr},
+		{Key: types.FeederDelegationKey, Value: []byte(feederAddr.String())},
+		{Key: types.MissCounterKey, Value: missCounterBz},
+		{Key: types.AggregateExchangeRatePrevoteKey, Value: cdc.MustMarshalBinaryBare(&aggregatePrevote)},
+		{Key: types.AggregateExchangeRateVoteKey, Value: cdc.MustMarshalBinaryBare(&aggregateVote)},
+		{Key: types.TobinTaxKey, Value: marTt},
+		{Key: []byte{0x99}, Value: []byte{0x99}},
 	}
 
 	tests := []struct {
