@@ -489,7 +489,7 @@ func TestOracleExchangeRateVal5(t *testing.T) {
 func TestInvalidVotesSlashing(t *testing.T) {
 	input, h := setup(t)
 	params := input.OracleKeeper.GetParams(input.Ctx)
-	params.Whitelist = sdk.DecCoins{{types.MicroKRWDenom, types.DefaultTobinTax}}
+	params.Whitelist = sdk.DecCoins{sdk.NewDecCoinFromDec(types.MicroKRWDenom, types.DefaultTobinTax)}
 	input.OracleKeeper.SetParams(input.Ctx, params)
 	input.OracleKeeper.SetTobinTax(input.Ctx, types.MicroKRWDenom, types.DefaultTobinTax)
 

@@ -111,20 +111,6 @@ func (k Keeper) IterateExchangeRatePrevotes(ctx sdk.Context, handler func(prevot
 	}
 }
 
-// iterateExchangeRatePrevotesWithPrefix iterates over prevotes in the store with given prefix
-func (k Keeper) iterateExchangeRatePrevotesWithPrefix(ctx sdk.Context, prefix []byte, handler func(vote types.ExchangeRatePrevote) (stop bool)) {
-	store := ctx.KVStore(k.storeKey)
-	iter := sdk.KVStorePrefixIterator(store, prefix)
-	defer iter.Close()
-	for ; iter.Valid(); iter.Next() {
-		var prevote types.ExchangeRatePrevote
-		k.cdc.MustUnmarshalBinaryBare(iter.Value(), &prevote)
-		if handler(prevote) {
-			break
-		}
-	}
-}
-
 //-----------------------------------
 // ExchangeRateVotes logic
 

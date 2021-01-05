@@ -22,7 +22,7 @@ func EndBlocker(ctx sdk.Context, k keeper.Keeper) {
 	// Build valid votes counter and winner map over all validators in active set
 	validVotesCounterMap := make(map[string]int)
 	winnerMap := make(map[string]types.Claim)
-	k.StakingKeeper.IterateValidators(ctx, func(i int64, validator stakingtypes.ValidatorI) bool {
+	k.StakingKeeper.IterateValidators(ctx, func(_ int64, validator stakingtypes.ValidatorI) bool {
 		// Exclude not bonded validator or jailed validators from tallying
 		if validator != nil && validator.IsBonded() && !validator.IsJailed() {
 
@@ -114,8 +114,6 @@ func EndBlocker(ctx sdk.Context, k keeper.Keeper) {
 
 	// Update vote targets and tobin tax
 	applyWhitelist(ctx, k, params.Whitelist, voteTargets)
-
-	return
 }
 
 // clearBallots clears all tallied prevotes and votes from the store
@@ -183,12 +181,12 @@ func IsPeriodLastBlock(ctx sdk.Context, blocksPerPeriod int64) bool {
 
 // Calculates the median and returns it. Sets the set of voters to be rewarded, i.e. voted within
 // a reasonable spread from the weighted median to the store
-func tally(exchangeRateBallot types.ExchangeRateBallot, rewardBand sdk.Dec) (weightedMedian sdk.Dec, ballotWinners []types.Claim) {
+func tally(exchangeRateBallot types.ExchangeRateBallot, rewardBand sdk.Dec) (sdk.Dec, []types.Claim) {
 	if !sort.IsSorted(exchangeRateBallot) {
 		sort.Sort(exchangeRateBallot)
 	}
 
-	weightedMedian = exchangeRateBallot.WeightedMedian()
+	weightedMedian := exchangeRateBallot.WeightedMedian()
 	standardDeviation := exchangeRateBallot.StandardDeviation()
 	rewardSpread := weightedMedian.Mul(rewardBand.QuoInt64(2))
 
@@ -196,6 +194,7 @@ func tally(exchangeRateBallot types.ExchangeRateBallot, rewardBand sdk.Dec) (wei
 		rewardSpread = standardDeviation
 	}
 
+	var ballotWinners []types.Claim
 	for _, vote := range exchangeRateBallot {
 		// Filter ballot winners & abstain voters
 		if (vote.ExchangeRate.GTE(weightedMedian.Sub(rewardSpread)) &&
@@ -211,7 +210,7 @@ func tally(exchangeRateBallot types.ExchangeRateBallot, rewardBand sdk.Dec) (wei
 		}
 	}
 
-	return
+	return weightedMedian, ballotWinners
 }
 
 func updateWinnerMap(ballotWinningClaims []types.Claim, validVotesCounterMap map[string]int, winnerMap map[string]types.Claim) {
