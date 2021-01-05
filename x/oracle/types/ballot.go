@@ -9,7 +9,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
-// VoteForTally is a convinience wrapper to reduct redundant lookup cost
+// VoteForTally is a convenience wrapper to reduct redundant lookup cost
 type VoteForTally struct {
 	ExchangeRateVote
 	Power int64
@@ -23,7 +23,7 @@ func NewVoteForTally(vote ExchangeRateVote, power int64) VoteForTally {
 	}
 }
 
-// ExchangeRateBallot is a convinience wrapper around a ExchangeRateVote slice
+// ExchangeRateBallot is a convenience wrapper around a ExchangeRateVote slice
 type ExchangeRateBallot []VoteForTally
 
 // ToMap return organized exchange rate map by validator
@@ -31,7 +31,7 @@ func (pb ExchangeRateBallot) ToMap() map[string]sdk.Dec {
 	exchangeRateMap := make(map[string]sdk.Dec)
 	for _, vote := range pb {
 		if vote.ExchangeRate.IsPositive() {
-			exchangeRateMap[string(vote.Voter)] = vote.ExchangeRate
+			exchangeRateMap[vote.Voter] = vote.ExchangeRate
 		}
 	}
 
@@ -43,10 +43,10 @@ func (pb ExchangeRateBallot) ToCrossRate(bases map[string]sdk.Dec) (cb ExchangeR
 	for i := range pb {
 		vote := pb[i]
 
-		if exchangeRateRT, ok := bases[string(vote.Voter)]; ok && vote.ExchangeRate.IsPositive() {
+		if exchangeRateRT, ok := bases[vote.Voter]; ok && vote.ExchangeRate.IsPositive() {
 			vote.ExchangeRate = exchangeRateRT.Quo(vote.ExchangeRate)
 		} else {
-			// If we can't get reference terra exhcnage rate, we just convert the vote as abstain vote
+			// If we can't get reference terra exchnage rate, we just convert the vote as abstain vote
 			vote.ExchangeRate = sdk.ZeroDec()
 			vote.Power = 0
 		}

@@ -36,7 +36,10 @@ func (msg MsgDelegateFeedConsent) GetSignBytes() []byte {
 
 // GetSigners implements sdk.Msg
 func (msg MsgDelegateFeedConsent) GetSigners() []sdk.AccAddress {
-	addr, _ := sdk.AccAddressFromBech32(msg.Operator)
+	addr, err := sdk.AccAddressFromBech32(msg.Operator)
+	if err != nil {
+		return nil
+	}
 	return []sdk.AccAddress{addr}
 }
 
@@ -77,7 +80,10 @@ func (msg MsgAggregateExchangeRatePrevote) GetSignBytes() []byte {
 
 // GetSigners implements sdk.Msg
 func (msg MsgAggregateExchangeRatePrevote) GetSigners() []sdk.AccAddress {
-	addr, _ := sdk.AccAddressFromBech32(msg.Feeder)
+	addr, err := sdk.AccAddressFromBech32(msg.Feeder)
+	if err != nil {
+		return nil
+	}
 	return []sdk.AccAddress{addr}
 }
 
@@ -125,7 +131,10 @@ func (msg MsgAggregateExchangeRateVote) GetSignBytes() []byte {
 
 // GetSigners implements sdk.Msg
 func (msg MsgAggregateExchangeRateVote) GetSigners() []sdk.AccAddress {
-	addr, _ := sdk.AccAddressFromBech32(msg.Feeder)
+	addr, err := sdk.AccAddressFromBech32(msg.Feeder)
+	if err != nil {
+		return nil
+	}
 	return []sdk.AccAddress{addr}
 }
 

@@ -18,8 +18,8 @@ func DecodeStore(cdc codec.Marshaler) func(kvA, kvB kv.Pair) string {
 		switch {
 		case bytes.Equal(kvA.Key[:1], types.ExchangeRateKey):
 			var exchangeRateA, exchangeRateB sdk.Dec
-			exchangeRateA.Unmarshal(kvA.Value)
-			exchangeRateB.Unmarshal(kvB.Value)
+			_ = exchangeRateA.Unmarshal(kvA.Value)
+			_ = exchangeRateB.Unmarshal(kvB.Value)
 			return fmt.Sprintf("%v\n%v", exchangeRateA, exchangeRateB)
 		case bytes.Equal(kvA.Key[:1], types.FeederDelegationKey):
 			addressA, _ := sdk.AccAddressFromBech32(string(kvA.Value))
@@ -41,8 +41,8 @@ func DecodeStore(cdc codec.Marshaler) func(kvA, kvB kv.Pair) string {
 			return fmt.Sprintf("%v\n%v", voteA, voteB)
 		case bytes.Equal(kvA.Key[:1], types.TobinTaxKey):
 			var tobinTaxA, tobinTaxB sdk.Dec
-			tobinTaxA.Unmarshal(kvA.Value)
-			tobinTaxB.Unmarshal(kvB.Value)
+			_ = tobinTaxA.Unmarshal(kvA.Value)
+			_ = tobinTaxB.Unmarshal(kvB.Value)
 			return fmt.Sprintf("%v\n%v", tobinTaxA, tobinTaxB)
 		default:
 			panic(fmt.Sprintf("invalid oracle key prefix %X", kvA.Key[:1]))
