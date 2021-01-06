@@ -2,8 +2,7 @@ syntax = "proto3";
 package oracle.v1;
 
 import "gogoproto/gogo.proto";
-import "oracle/v1/genesis.proto";
-import "oracle/v1/vote.proto";
+import "oracle/v1/oracle.proto";
 import "google/api/annotations.proto";
 import "cosmos/base/v1beta1/coin.proto";
 

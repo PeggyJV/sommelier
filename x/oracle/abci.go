@@ -1,6 +1,8 @@
 package oracle
 
 import (
+	"sort"
+
 	"github.com/peggyjv/sommelier/x/oracle/keeper"
 	"github.com/peggyjv/sommelier/x/oracle/types"
 
@@ -20,9 +22,9 @@ func EndBlocker(ctx sdk.Context, k keeper.Keeper) {
 	// Build valid votes counter and winner map over all validators in active set
 	validVotesCounterMap := make(map[string]int)
 	winnerMap := make(map[string]types.Claim)
-	k.StakingKeeper.IterateValidators(ctx, func(i int64, validator stakingtypes.ValidatorI) bool {
+	k.StakingKeeper.IterateValidators(ctx, func(_ int64, validator stakingtypes.ValidatorI) bool {
 		// Exclude not bonded validator or jailed validators from tallying
-		if validator.IsBonded() && !validator.IsJailed() {
+		if validator != nil && validator.IsBonded() && !validator.IsJailed() {
 
 			// NOTE: we directly stringify byte to string to prevent unnecessary bech32fy works
 			valAddr := validator.GetOperator()
@@ -41,8 +43,8 @@ func EndBlocker(ctx sdk.Context, k keeper.Keeper) {
 	})
 
 	// Clear all exchange rates
-	k.IterateLunaExchangeRates(ctx, func(denom string, _ sdk.Dec) (stop bool) {
-		k.DeleteLunaExchangeRate(ctx, denom)
+	k.IterateUSDExchangeRates(ctx, func(denom string, _ sdk.Dec) (stop bool) {
+		k.DeleteUSDExchangeRate(ctx, denom)
 		return false
 	})
 
@@ -51,7 +53,7 @@ func EndBlocker(ctx sdk.Context, k keeper.Keeper) {
 	// NOTE: **Make abstain votes to have zero vote power**
 	voteMap := k.OrganizeBallotByDenom(ctx)
 
-	if referenceTerra := pickReferenceTerra(ctx, k, voteTargets, voteMap); referenceTerra != "" {
+	if referenceTerra := k.PickReferenceTerra(ctx, voteTargets, voteMap); referenceTerra != "" {
 		// make voteMap of Reference Terra to calculate cross exchange rates
 		ballotRT := voteMap[referenceTerra]
 		voteMapRT := ballotRT.ToMap()
@@ -66,7 +68,7 @@ func EndBlocker(ctx sdk.Context, k keeper.Keeper) {
 			}
 
 			// Get weighted median of cross exchange rates
-			exchangeRate, ballotWinningClaims := tally(ctx, ballot, params.RewardBand)
+			exchangeRate, ballotWinningClaims := tally(ballot, params.RewardBand)
 
 			// Update winnerMap, validVotesCounterMap using ballotWinningClaims of cross exchange rate ballot
 			updateWinnerMap(ballotWinningClaims, validVotesCounterMap, winnerMap)
@@ -77,7 +79,7 @@ func EndBlocker(ctx sdk.Context, k keeper.Keeper) {
 			}
 
 			// Set the exchange rate, emit ABCI event
-			k.SetLunaExchangeRateWithEvent(ctx, denom, exchangeRate)
+			k.SetUSDExchangeRateWithEvent(ctx, denom, exchangeRate)
 		}
 	}
 
@@ -101,7 +103,7 @@ func EndBlocker(ctx sdk.Context, k keeper.Keeper) {
 	// Do slash who did miss voting over threshold and
 	// reset miss counters of all validators at the last block of slash window
 	if IsPeriodLastBlock(ctx, params.SlashWindow) {
-		SlashAndResetMissCounters(ctx, k)
+		k.SlashAndResetMissCounters(ctx)
 	}
 
 	// Distribute rewards to ballot winners
@@ -112,8 +114,6 @@ func EndBlocker(ctx sdk.Context, k keeper.Keeper) {
 
 	// Update vote targets and tobin tax
 	applyWhitelist(ctx, k, params.Whitelist, voteTargets)
-
-	return
 }
 
 // clearBallots clears all tallied prevotes and votes from the store
@@ -150,7 +150,7 @@ func clearBallots(ctx sdk.Context, k keeper.Keeper, votePeriod int64) {
 }
 
 // applyWhitelist update vote target denom list and set tobin tax with params whitelist
-func applyWhitelist(ctx sdk.Context, k keeper.Keeper, whitelist types.DenomList, voteTargets map[string]sdk.Dec) {
+func applyWhitelist(ctx sdk.Context, k keeper.Keeper, whitelist sdk.DecCoins, voteTargets map[string]sdk.Dec) {
 
 	// check is there any update in whitelist params
 	updateRequired := false
@@ -158,7 +158,7 @@ func applyWhitelist(ctx sdk.Context, k keeper.Keeper, whitelist types.DenomList,
 		updateRequired = true
 	} else {
 		for _, item := range whitelist {
-			if tobinTax, ok := voteTargets[item.Name]; !ok || !tobinTax.Equal(item.TobinTax) {
+			if tobinTax, ok := voteTargets[item.Denom]; !ok || !tobinTax.Equal(item.Amount) {
 				updateRequired = true
 				break
 			}
@@ -169,7 +169,7 @@ func applyWhitelist(ctx sdk.Context, k keeper.Keeper, whitelist types.DenomList,
 		k.ClearTobinTaxes(ctx)
 
 		for _, item := range whitelist {
-			k.SetTobinTax(ctx, item.Name, item.TobinTax)
+			k.SetTobinTax(ctx, item.Denom, item.Amount)
 		}
 	}
 }
@@ -177,4 +177,53 @@ func applyWhitelist(ctx sdk.Context, k keeper.Keeper, whitelist types.DenomList,
 // IsPeriodLastBlock returns true if we are at the last block of the period
 func IsPeriodLastBlock(ctx sdk.Context, blocksPerPeriod int64) bool {
 	return (ctx.BlockHeight()+1)%blocksPerPeriod == 0
+}
+
+// Calculates the median and returns it. Sets the set of voters to be rewarded, i.e. voted within
+// a reasonable spread from the weighted median to the store
+func tally(exchangeRateBallot types.ExchangeRateBallot, rewardBand sdk.Dec) (sdk.Dec, []types.Claim) {
+	if !sort.IsSorted(exchangeRateBallot) {
+		sort.Sort(exchangeRateBallot)
+	}
+
+	weightedMedian := exchangeRateBallot.WeightedMedian()
+	standardDeviation := exchangeRateBallot.StandardDeviation()
+	rewardSpread := weightedMedian.Mul(rewardBand.QuoInt64(2))
+
+	if standardDeviation.GT(rewardSpread) {
+		rewardSpread = standardDeviation
+	}
+
+	var ballotWinners []types.Claim
+	for _, vote := range exchangeRateBallot {
+		// Filter ballot winners & abstain voters
+		if (vote.ExchangeRate.GTE(weightedMedian.Sub(rewardSpread)) &&
+			vote.ExchangeRate.LTE(weightedMedian.Add(rewardSpread))) ||
+			!vote.ExchangeRate.IsPositive() {
+
+			claim := types.Claim{
+				Recipient: vote.Voter,
+				Weight:    vote.Power,
+			}
+			// Abstain votes have zero vote power
+			ballotWinners = append(ballotWinners, claim)
+		}
+	}
+
+	return weightedMedian, ballotWinners
+}
+
+func updateWinnerMap(ballotWinningClaims []types.Claim, validVotesCounterMap map[string]int, winnerMap map[string]types.Claim) {
+	// Collect claims of ballot winners
+	for _, ballotWinningClaim := range ballotWinningClaims {
+		recipient := ballotWinningClaim.Recipient
+
+		// Update claim
+		prevClaim := winnerMap[recipient]
+		prevClaim.Weight += ballotWinningClaim.Weight
+		winnerMap[recipient] = prevClaim
+
+		// Increase valid votes counter
+		validVotesCounterMap[recipient]++
+	}
 }

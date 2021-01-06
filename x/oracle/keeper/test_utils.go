@@ -11,7 +11,7 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/crypto/keys/ed25519"
 	"github.com/cosmos/cosmos-sdk/crypto/keys/secp256k1"
-	"github.com/tendermint/tendermint/crypto"
+	crypto "github.com/cosmos/cosmos-sdk/crypto/types"
 	"github.com/tendermint/tendermint/libs/log"
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
 	dbm "github.com/tendermint/tm-db"
@@ -90,7 +90,6 @@ type TestInput struct {
 func newTestCodec() *codec.LegacyAmino {
 	cdc := codec.NewLegacyAmino()
 
-	types.RegisterLegacyAminoCodec(cdc)
 	authtypes.RegisterLegacyAminoCodec(cdc)
 	banktypes.RegisterLegacyAminoCodec(cdc)
 	sdk.RegisterLegacyAminoCodec(cdc)
@@ -245,7 +244,7 @@ func CreateTestInput(t *testing.T) TestInput {
 	keeper.SetParams(ctx, defaults)
 
 	for _, denom := range defaults.Whitelist {
-		keeper.SetTobinTax(ctx, denom.Name, denom.TobinTax)
+		keeper.SetTobinTax(ctx, denom.Denom, denom.Amount)
 	}
 
 	stakingKeeper.SetHooks(stakingtypes.NewMultiStakingHooks(distrKeeper.Hooks()))

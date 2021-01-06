@@ -35,7 +35,7 @@ func BenchmarkFullAppSimulation(b *testing.B) {
 		b,
 		os.Stdout,
 		app.BaseApp,
-		AppStateFn(app.AppCodec(), app.SimulationManager()),
+		simapp.AppStateFn(app.AppCodec(), app.SimulationManager()),
 		simtypes.RandomAccounts, // Replace with own random account function if using keys other than secp256k1
 		SimulationOperations(app, app.AppCodec(), config),
 		app.ModuleAccountAddrs(),
@@ -80,7 +80,7 @@ func BenchmarkInvariants(b *testing.B) {
 		b,
 		os.Stdout,
 		app.BaseApp,
-		AppStateFn(app.AppCodec(), app.SimulationManager()),
+		simapp.AppStateFn(app.AppCodec(), app.SimulationManager()),
 		simtypes.RandomAccounts, // Replace with own random account function if using keys other than secp256k1
 		SimulationOperations(app, app.AppCodec(), config),
 		app.ModuleAccountAddrs(),

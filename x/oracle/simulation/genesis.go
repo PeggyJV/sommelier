@@ -10,7 +10,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/types/module"
 
 	"github.com/peggyjv/sommelier/x/oracle/types"
-	core "github.com/peggyjv/sommelier/x/oracle/types"
 )
 
 // Simulation parameter constants
@@ -110,21 +109,21 @@ func RandomizedGenState(simState *module.SimulationState) {
 			VoteThreshold:            voteThreshold,
 			RewardBand:               rewardBand,
 			RewardDistributionWindow: rewardDistributionWindow,
-			Whitelist: []types.Denom{
-				{core.MicroKRWDenom, types.DefaultTobinTax},
-				{core.MicroSDRDenom, types.DefaultTobinTax},
-				{core.MicroUSDDenom, types.DefaultTobinTax},
-				{core.MicroMNTDenom, sdk.NewDecWithPrec(2, 2)}},
+			Whitelist: sdk.NewDecCoins(
+				sdk.NewDecCoinFromDec(types.MicroKRWDenom, types.DefaultTobinTax),
+				sdk.NewDecCoinFromDec(types.MicroSDRDenom, types.DefaultTobinTax),
+				sdk.NewDecCoinFromDec(types.MicroUSDDenom, types.DefaultTobinTax),
+				sdk.NewDecCoinFromDec(types.MicroMNTDenom, sdk.NewDecWithPrec(2, 2))),
 			SlashFraction:     slashFraction,
 			SlashWindow:       slashWindow,
 			MinValidPerWindow: minValidPerWindow,
 		},
-		[]types.ExchangeRateTuple{},
+		sdk.DecCoins{},
 		map[string]string{},
 		map[string]int64{},
 		[]types.AggregateExchangeRatePrevote{},
 		[]types.AggregateExchangeRateVote{},
-		[]types.ExchangeRateTuple{},
+		sdk.DecCoins{},
 	)
 
 	fmt.Printf("Selected randomly generated oracle parameters:\n%s\n", simState.Cdc.MustMarshalJSON(&oracleGenesis))

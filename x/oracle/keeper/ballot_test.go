@@ -104,10 +104,10 @@ func TestOrganizeAggregate(t *testing.T) {
 	}
 
 	for i := range sdrBallot {
-		input.OracleKeeper.AddAggregateExchangeRateVote(input.Ctx, types.NewAggregateExchangeRateVote(types.ExchangeRateTuples{
-			{Denom: sdrBallot[i].Denom, ExchangeRate: sdrBallot[i].ExchangeRate},
-			{Denom: krwBallot[i].Denom, ExchangeRate: krwBallot[i].ExchangeRate},
-		}, ValAddrs[i]))
+		input.OracleKeeper.AddAggregateExchangeRateVote(input.Ctx, types.NewAggregateExchangeRateVote(sdk.NewDecCoins(
+			sdk.NewDecCoinFromDec(sdrBallot[i].Denom, sdrBallot[i].ExchangeRate),
+			sdk.NewDecCoinFromDec(krwBallot[i].Denom, krwBallot[i].ExchangeRate),
+		), ValAddrs[i]))
 	}
 
 	// organize votes by denom
@@ -169,10 +169,10 @@ func TestDuplicateVote(t *testing.T) {
 			input.OracleKeeper.AddExchangeRateVote(input.Ctx, vote.ExchangeRateVote)
 		}
 
-		input.OracleKeeper.AddAggregateExchangeRateVote(input.Ctx, types.NewAggregateExchangeRateVote(types.ExchangeRateTuples{
-			{Denom: sdrBallot[i].Denom, ExchangeRate: sdrBallot[i].ExchangeRate},
-			{Denom: krwBallot[i].Denom, ExchangeRate: krwBallot[i].ExchangeRate},
-		}, ValAddrs[i]))
+		input.OracleKeeper.AddAggregateExchangeRateVote(input.Ctx, types.NewAggregateExchangeRateVote(sdk.NewDecCoins(
+			sdk.NewDecCoinFromDec(sdrBallot[i].Denom, sdrBallot[i].ExchangeRate),
+			sdk.NewDecCoinFromDec(krwBallot[i].Denom, krwBallot[i].ExchangeRate),
+		), ValAddrs[i]))
 	}
 
 	// organize votes by denom

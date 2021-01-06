@@ -12,8 +12,6 @@ import (
 	simappparams "github.com/cosmos/cosmos-sdk/simapp/params"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
-	authkeeper "github.com/cosmos/cosmos-sdk/x/auth/keeper"
-	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
 	"github.com/cosmos/cosmos-sdk/x/simulation"
 
 	"github.com/peggyjv/sommelier/x/oracle/keeper"
@@ -38,8 +36,8 @@ var (
 func WeightedOperations(
 	appParams simtypes.AppParams,
 	cdc codec.JSONMarshaler,
-	ak authkeeper.AccountKeeper,
-	bk bankkeeper.Keeper,
+	ak types.AccountKeeper,
+	bk types.BankKeeper,
 	k keeper.Keeper) simulation.WeightedOperations {
 	var (
 		weightMsgAggregateExchangeRatePrevote int
@@ -82,7 +80,7 @@ func WeightedOperations(
 
 // SimulateMsgAggregateExchangeRatePrevote generates a MsgExchangeRatePrevote with random values.
 // nolint: funlen
-func SimulateMsgAggregateExchangeRatePrevote(ak authkeeper.AccountKeeper, bk bankkeeper.Keeper, k keeper.Keeper) simtypes.Operation {
+func SimulateMsgAggregateExchangeRatePrevote(ak types.AccountKeeper, bk types.BankKeeper, k keeper.Keeper) simtypes.Operation {
 	return func(
 		r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accs []simtypes.Account, chainID string,
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
@@ -114,7 +112,7 @@ func SimulateMsgAggregateExchangeRatePrevote(ak authkeeper.AccountKeeper, bk ban
 
 		tx, err := helpers.GenTx(
 			txcfg,
-			[]sdk.Msg{&msg},
+			[]sdk.Msg{msg},
 			fees,
 			helpers.DefaultGenTxGas,
 			chainID,
@@ -133,13 +131,13 @@ func SimulateMsgAggregateExchangeRatePrevote(ak authkeeper.AccountKeeper, bk ban
 
 		voteHashMap[denom+address.String()] = price
 
-		return simtypes.NewOperationMsg(&msg, true, ""), nil, nil
+		return simtypes.NewOperationMsg(msg, true, ""), nil, nil
 	}
 }
 
 // SimulateMsgExchangeRateVote generates a MsgExchangeRateVote with random values.
 // nolint: funlen
-func SimulateMsgExchangeRateVote(ak authkeeper.AccountKeeper, bk bankkeeper.Keeper, k keeper.Keeper) simtypes.Operation {
+func SimulateMsgExchangeRateVote(ak types.AccountKeeper, bk types.BankKeeper, k keeper.Keeper) simtypes.Operation {
 	return func(
 		r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accs []simtypes.Account, chainID string,
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
@@ -181,12 +179,12 @@ func SimulateMsgExchangeRateVote(ak authkeeper.AccountKeeper, bk bankkeeper.Keep
 			return simtypes.NoOpMsg(types.ModuleName, "", ""), nil, err
 		}
 
-		er := &types.ExchangeRateTuple{Denom: denom, ExchangeRate: price}
+		er := &sdk.DecCoin{Denom: denom, Amount: price}
 		msg := types.NewMsgAggregateExchangeRateVote(salt, er.String(), feederAddr, address)
 
 		tx, err := helpers.GenTx(
 			txcfg,
-			[]sdk.Msg{&msg},
+			[]sdk.Msg{msg},
 			fees,
 			helpers.DefaultGenTxGas,
 			chainID,
@@ -203,13 +201,13 @@ func SimulateMsgExchangeRateVote(ak authkeeper.AccountKeeper, bk bankkeeper.Keep
 			return simtypes.NoOpMsg(types.ModuleName, "", ""), nil, err
 		}
 
-		return simtypes.NewOperationMsg(&msg, true, ""), nil, nil
+		return simtypes.NewOperationMsg(msg, true, ""), nil, nil
 	}
 }
 
 // SimulateMsgDelegateFeedConsent generates a MsgDelegateFeedConsent with random values.
 // nolint: funlen
-func SimulateMsgDelegateFeedConsent(ak authkeeper.AccountKeeper, bk bankkeeper.Keeper, k keeper.Keeper) simtypes.Operation {
+func SimulateMsgDelegateFeedConsent(ak types.AccountKeeper, bk types.BankKeeper, k keeper.Keeper) simtypes.Operation {
 	return func(
 		r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accs []simtypes.Account, chainID string,
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
@@ -243,7 +241,7 @@ func SimulateMsgDelegateFeedConsent(ak authkeeper.AccountKeeper, bk bankkeeper.K
 
 		tx, err := helpers.GenTx(
 			txcfg,
-			[]sdk.Msg{&msg},
+			[]sdk.Msg{msg},
 			fees,
 			helpers.DefaultGenTxGas,
 			chainID,
@@ -260,6 +258,6 @@ func SimulateMsgDelegateFeedConsent(ak authkeeper.AccountKeeper, bk bankkeeper.K
 			return simtypes.NoOpMsg(types.ModuleName, "", ""), nil, err
 		}
 
-		return simtypes.NewOperationMsg(&msg, true, ""), nil, nil
+		return simtypes.NewOperationMsg(msg, true, ""), nil, nil
 	}
 }

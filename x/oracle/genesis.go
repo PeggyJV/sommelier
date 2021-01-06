@@ -24,7 +24,7 @@ func InitGenesis(ctx sdk.Context, keeper keeper.Keeper, data types.GenesisState)
 	}
 
 	for _, rate := range data.ExchangeRates {
-		keeper.SetLunaExchangeRate(ctx, rate.Denom, rate.ExchangeRate)
+		keeper.SetUSDExchangeRate(ctx, rate.Denom, rate.Amount)
 	}
 
 	for operatorBechAddr, missCounter := range data.MissCounters {
@@ -45,11 +45,11 @@ func InitGenesis(ctx sdk.Context, keeper keeper.Keeper, data types.GenesisState)
 
 	if len(data.TobinTaxes) > 0 {
 		for _, tt := range data.TobinTaxes {
-			keeper.SetTobinTax(ctx, tt.Denom, tt.ExchangeRate)
+			keeper.SetTobinTax(ctx, tt.Denom, tt.Amount)
 		}
 	} else {
 		for _, item := range data.Params.Whitelist {
-			keeper.SetTobinTax(ctx, item.Name, item.TobinTax)
+			keeper.SetTobinTax(ctx, item.Denom, item.Amount)
 		}
 	}
 
@@ -74,9 +74,9 @@ func ExportGenesis(ctx sdk.Context, keeper keeper.Keeper) (data types.GenesisSta
 		return false
 	})
 
-	rates := make([]types.ExchangeRateTuple, 0)
-	keeper.IterateLunaExchangeRates(ctx, func(denom string, rate sdk.Dec) (stop bool) {
-		rates = append(rates, types.ExchangeRateTuple{ExchangeRate: rate, Denom: denom})
+	rates := make(sdk.DecCoins, 0)
+	keeper.IterateUSDExchangeRates(ctx, func(denom string, rate sdk.Dec) (stop bool) {
+		rates = append(rates, sdk.DecCoin{Amount: rate, Denom: denom})
 		return false
 	})
 
@@ -98,9 +98,9 @@ func ExportGenesis(ctx sdk.Context, keeper keeper.Keeper) (data types.GenesisSta
 		return false
 	})
 
-	tobinTaxes := make([]types.ExchangeRateTuple, 0)
+	tobinTaxes := make(sdk.DecCoins, 0)
 	keeper.IterateTobinTaxes(ctx, func(denom string, tobinTax sdk.Dec) (stop bool) {
-		tobinTaxes = append(tobinTaxes, types.ExchangeRateTuple{ExchangeRate: tobinTax, Denom: denom})
+		tobinTaxes = append(tobinTaxes, sdk.DecCoin{Amount: tobinTax, Denom: denom})
 		return false
 	})
 

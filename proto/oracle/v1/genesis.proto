@@ -1,14 +1,14 @@
 syntax = "proto3";
 package oracle.v1;
 
-import "oracle/v1/vote.proto";
-import "oracle/v1/ballot.proto";
+import "oracle/v1/oracle.proto";
 import "gogoproto/gogo.proto";
+import "cosmos/base/v1beta1/coin.proto";
 
 option go_package = "github.com/peggyjv/sommelier/x/oracle/types";
 
 
-// // GenesisState - all oracle state that must be provided at genesis
+// GenesisState - all oracle state that must be provided at genesis
 message GenesisState {
     Params                                params                           = 1 [
         (gogoproto.nullable) = false
@@ -16,9 +16,9 @@ message GenesisState {
     map<string, string>                   feeder_delegations               = 2 [
         (gogoproto.nullable) = false
     ];
-    repeated ExchangeRateTuple            exchange_rates                   = 3 [
-        (gogoproto.nullable)     = false,
-        (gogoproto.castrepeated) = "[]ExchangeRateTuple"
+    repeated cosmos.base.v1beta1.DecCoin  exchange_rates                   = 3 [
+        (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.DecCoins", 
+        (gogoproto.nullable) = false
     ];
     map<string, int64>                    miss_counters                    = 4 [
         (gogoproto.nullable) = false
@@ -31,35 +31,9 @@ message GenesisState {
         (gogoproto.nullable)     = false,
         (gogoproto.castrepeated) = "[]AggregateExchangeRateVote"
     ];
-    repeated ExchangeRateTuple            tobin_taxes                      = 7 [
-        (gogoproto.nullable)     = false,
-        (gogoproto.castrepeated) = "[]ExchangeRateTuple"
-    ];
-}
-
-// Params oracle parameters
-message Params {
-    int64          vote_period                = 1;
-    string         vote_threshold             = 2 [
-        (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec", 
-        (gogoproto.nullable) = false
-    ];
-    string         reward_band                = 3 [
-        (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec", 
-        (gogoproto.nullable)   = false
-    ];
-    int64          reward_distribution_window = 4; 
-    repeated Denom whitelist                  = 5 [
-        (gogoproto.nullable)     = false,
-        (gogoproto.castrepeated) = "[]Denom"
-    ];
-    string         slash_fraction             = 6 [
-        (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec", 
-        (gogoproto.nullable) = false
-    ];
-    int64          slash_window               = 7;
-    string         min_valid_per_window       = 8 [
-        (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec", 
+    // NOTE: the amounts here indicate the tobin tax for a given USD/{denom} pair
+    repeated cosmos.base.v1beta1.DecCoin tobin_taxes                       = 7 [
+        (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.DecCoins", 
         (gogoproto.nullable) = false
     ];
 }

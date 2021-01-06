@@ -22,17 +22,17 @@ func TestOracleThreshold(t *testing.T) {
 	hash := types.GetAggregateVoteHash(salt, exchangeRates.String(), keeper.ValAddrs[0])
 
 	prevoteMsg := types.NewMsgAggregateExchangeRatePrevote(hash, keeper.Addrs[0], keeper.ValAddrs[0])
-	_, err := h(input.Ctx.WithBlockHeight(0), &prevoteMsg)
+	_, err := h(input.Ctx.WithBlockHeight(0), prevoteMsg)
 	require.NoError(t, err)
 
 	// Vote and new Prevote
 	voteMsg := types.NewMsgAggregateExchangeRateVote(salt, exchangeRates.String(), keeper.Addrs[0], keeper.ValAddrs[0])
-	_, err = h(input.Ctx.WithBlockHeight(1), &voteMsg)
+	_, err = h(input.Ctx.WithBlockHeight(1), voteMsg)
 	require.NoError(t, err)
 
 	EndBlocker(input.Ctx.WithBlockHeight(1), input.OracleKeeper)
 
-	_, err = input.OracleKeeper.GetLunaExchangeRate(input.Ctx.WithBlockHeight(1), types.MicroSDRDenom)
+	_, err = input.OracleKeeper.GetUSDExchangeRate(input.Ctx.WithBlockHeight(1), types.MicroSDRDenom)
 	require.NotNil(t, err)
 
 	// More than the threshold signs, msg succeeds
@@ -40,32 +40,32 @@ func TestOracleThreshold(t *testing.T) {
 	hash = types.GetAggregateVoteHash(salt, exchangeRates.String(), keeper.ValAddrs[0])
 
 	prevoteMsg = types.NewMsgAggregateExchangeRatePrevote(hash, keeper.Addrs[0], keeper.ValAddrs[0])
-	h(input.Ctx.WithBlockHeight(0), &prevoteMsg)
+	h(input.Ctx.WithBlockHeight(0), prevoteMsg)
 
 	voteMsg = types.NewMsgAggregateExchangeRateVote(salt, exchangeRates.String(), keeper.Addrs[0], keeper.ValAddrs[0])
-	h(input.Ctx.WithBlockHeight(1), &voteMsg)
+	h(input.Ctx.WithBlockHeight(1), voteMsg)
 
 	salt = "2"
 	hash = types.GetAggregateVoteHash(salt, exchangeRates.String(), keeper.ValAddrs[1])
 
 	prevoteMsg = types.NewMsgAggregateExchangeRatePrevote(hash, keeper.Addrs[1], keeper.ValAddrs[1])
-	h(input.Ctx.WithBlockHeight(0), &prevoteMsg)
+	h(input.Ctx.WithBlockHeight(0), prevoteMsg)
 
 	voteMsg = types.NewMsgAggregateExchangeRateVote(salt, exchangeRates.String(), keeper.Addrs[1], keeper.ValAddrs[1])
-	h(input.Ctx.WithBlockHeight(1), &voteMsg)
+	h(input.Ctx.WithBlockHeight(1), voteMsg)
 
 	salt = "3"
 	hash = types.GetAggregateVoteHash(salt, exchangeRates.String(), keeper.ValAddrs[2])
 
 	prevoteMsg = types.NewMsgAggregateExchangeRatePrevote(hash, keeper.Addrs[2], keeper.ValAddrs[2])
-	h(input.Ctx.WithBlockHeight(0), &prevoteMsg)
+	h(input.Ctx.WithBlockHeight(0), prevoteMsg)
 
 	voteMsg = types.NewMsgAggregateExchangeRateVote(salt, exchangeRates.String(), keeper.Addrs[2], keeper.ValAddrs[2])
-	h(input.Ctx.WithBlockHeight(1), &voteMsg)
+	h(input.Ctx.WithBlockHeight(1), voteMsg)
 
 	EndBlocker(input.Ctx.WithBlockHeight(1), input.OracleKeeper)
 
-	rate, err := input.OracleKeeper.GetLunaExchangeRate(input.Ctx.WithBlockHeight(1), types.MicroSDRDenom)
+	rate, err := input.OracleKeeper.GetUSDExchangeRate(input.Ctx.WithBlockHeight(1), types.MicroSDRDenom)
 	require.Nil(t, err)
 	require.Equal(t, randomExchangeRate, rate)
 
@@ -76,23 +76,23 @@ func TestOracleThreshold(t *testing.T) {
 	hash = types.GetAggregateVoteHash(salt, exchangeRates.String(), keeper.ValAddrs[0])
 
 	prevoteMsg = types.NewMsgAggregateExchangeRatePrevote(hash, keeper.Addrs[0], keeper.ValAddrs[0])
-	h(input.Ctx.WithBlockHeight(0), &prevoteMsg)
+	h(input.Ctx.WithBlockHeight(0), prevoteMsg)
 
 	voteMsg = types.NewMsgAggregateExchangeRateVote(salt, exchangeRates.String(), keeper.Addrs[0], keeper.ValAddrs[0])
-	h(input.Ctx.WithBlockHeight(1), &voteMsg)
+	h(input.Ctx.WithBlockHeight(1), voteMsg)
 
 	salt = "2"
 	hash = types.GetAggregateVoteHash(salt, exchangeRates.String(), keeper.ValAddrs[1])
 
 	prevoteMsg = types.NewMsgAggregateExchangeRatePrevote(hash, keeper.Addrs[1], keeper.ValAddrs[1])
-	h(input.Ctx.WithBlockHeight(0), &prevoteMsg)
+	h(input.Ctx.WithBlockHeight(0), prevoteMsg)
 
 	voteMsg = types.NewMsgAggregateExchangeRateVote(salt, exchangeRates.String(), keeper.Addrs[1], keeper.ValAddrs[1])
-	h(input.Ctx.WithBlockHeight(1), &voteMsg)
+	h(input.Ctx.WithBlockHeight(1), voteMsg)
 
 	EndBlocker(input.Ctx.WithBlockHeight(1), input.OracleKeeper)
 
-	rate, err = input.OracleKeeper.GetLunaExchangeRate(input.Ctx.WithBlockHeight(1), types.MicroSDRDenom)
+	rate, err = input.OracleKeeper.GetUSDExchangeRate(input.Ctx.WithBlockHeight(1), types.MicroSDRDenom)
 	require.NotNil(t, err)
 }
 
@@ -106,56 +106,56 @@ func TestOracleMultiVote(t *testing.T) {
 	hash := types.GetAggregateVoteHash(salt, exchangeRates.String(), keeper.ValAddrs[0])
 
 	prevoteMsg := types.NewMsgAggregateExchangeRatePrevote(hash, keeper.Addrs[0], keeper.ValAddrs[0])
-	_, err := h(input.Ctx, &prevoteMsg)
+	_, err := h(input.Ctx, prevoteMsg)
 	require.NoError(t, err)
 
 	hash = types.GetAggregateVoteHash(salt, exchangeRates.String(), keeper.ValAddrs[1])
 
 	prevoteMsg = types.NewMsgAggregateExchangeRatePrevote(hash, keeper.Addrs[1], keeper.ValAddrs[1])
-	_, err = h(input.Ctx, &prevoteMsg)
+	_, err = h(input.Ctx, prevoteMsg)
 	require.NoError(t, err)
 
 	hash = types.GetAggregateVoteHash(salt, exchangeRates.String(), keeper.ValAddrs[2])
 
 	prevoteMsg = types.NewMsgAggregateExchangeRatePrevote(hash, keeper.Addrs[2], keeper.ValAddrs[2])
-	_, err = h(input.Ctx, &prevoteMsg)
+	_, err = h(input.Ctx, prevoteMsg)
 	require.NoError(t, err)
 
 	hash = types.GetAggregateVoteHash(salt, anotherExchangeRates.String(), keeper.ValAddrs[0])
 
 	prevoteMsg = types.NewMsgAggregateExchangeRatePrevote(hash, keeper.Addrs[0], keeper.ValAddrs[0])
-	_, err = h(input.Ctx, &prevoteMsg)
+	_, err = h(input.Ctx, prevoteMsg)
 	require.NoError(t, err)
 
 	hash = types.GetAggregateVoteHash(salt, anotherExchangeRates.String(), keeper.ValAddrs[1])
 
 	prevoteMsg = types.NewMsgAggregateExchangeRatePrevote(hash, keeper.Addrs[1], keeper.ValAddrs[1])
-	_, err = h(input.Ctx, &prevoteMsg)
+	_, err = h(input.Ctx, prevoteMsg)
 	require.NoError(t, err)
 
 	hash = types.GetAggregateVoteHash(salt, anotherExchangeRates.String(), keeper.ValAddrs[2])
 
 	prevoteMsg = types.NewMsgAggregateExchangeRatePrevote(hash, keeper.Addrs[2], keeper.ValAddrs[2])
-	_, err = h(input.Ctx, &prevoteMsg)
+	_, err = h(input.Ctx, prevoteMsg)
 	require.NoError(t, err)
 
 	// Reveal ExchangeRate
 	input.Ctx = input.Ctx.WithBlockHeight(1)
 	voteMsg := types.NewMsgAggregateExchangeRateVote(salt, anotherExchangeRates.String(), keeper.Addrs[0], keeper.ValAddrs[0])
-	_, err = h(input.Ctx, &voteMsg)
+	_, err = h(input.Ctx, voteMsg)
 	require.NoError(t, err)
 
 	voteMsg = types.NewMsgAggregateExchangeRateVote(salt, anotherExchangeRates.String(), keeper.Addrs[1], keeper.ValAddrs[1])
-	_, err = h(input.Ctx, &voteMsg)
+	_, err = h(input.Ctx, voteMsg)
 	require.NoError(t, err)
 
 	voteMsg = types.NewMsgAggregateExchangeRateVote(salt, anotherExchangeRates.String(), keeper.Addrs[2], keeper.ValAddrs[2])
-	_, err = h(input.Ctx, &voteMsg)
+	_, err = h(input.Ctx, voteMsg)
 	require.NoError(t, err)
 
 	EndBlocker(input.Ctx, input.OracleKeeper)
 
-	rate, err := input.OracleKeeper.GetLunaExchangeRate(input.Ctx, types.MicroSDRDenom)
+	rate, err := input.OracleKeeper.GetUSDExchangeRate(input.Ctx, types.MicroSDRDenom)
 	require.Nil(t, err)
 	require.Equal(t, rate, anotherRandomExchangeRate)
 }
@@ -163,7 +163,7 @@ func TestOracleMultiVote(t *testing.T) {
 func TestOracleDrop(t *testing.T) {
 	input, h := setup(t)
 
-	input.OracleKeeper.SetLunaExchangeRate(input.Ctx, types.MicroKRWDenom, randomExchangeRate)
+	input.OracleKeeper.SetUSDExchangeRate(input.Ctx, types.MicroKRWDenom, randomExchangeRate)
 
 	// Account 1, KRW
 	makePrevoteAndVote(t, input, h, 0, types.MicroKRWDenom, randomExchangeRate, 0)
@@ -171,7 +171,7 @@ func TestOracleDrop(t *testing.T) {
 	// Immediately swap halt after an illiquid oracle vote
 	EndBlocker(input.Ctx, input.OracleKeeper)
 
-	_, err := input.OracleKeeper.GetLunaExchangeRate(input.Ctx, types.MicroKRWDenom)
+	_, err := input.OracleKeeper.GetUSDExchangeRate(input.Ctx, types.MicroKRWDenom)
 	require.NotNil(t, err)
 }
 
@@ -196,7 +196,7 @@ func TestOracleTally(t *testing.T) {
 			valAddrs[i],
 		)
 
-		_, err := h(input.Ctx.WithBlockHeight(0), &prevoteMsg)
+		_, err := h(input.Ctx.WithBlockHeight(0), prevoteMsg)
 		require.NoError(t, err)
 
 		voteMsg := types.NewMsgAggregateExchangeRateVote(
@@ -206,7 +206,7 @@ func TestOracleTally(t *testing.T) {
 			valAddrs[i],
 		)
 
-		_, err = h(input.Ctx.WithBlockHeight(1), &voteMsg)
+		_, err = h(input.Ctx.WithBlockHeight(1), voteMsg)
 		require.NoError(t, err)
 
 		vote := types.NewVoteForTally(types.NewExchangeRateVote(decExchangeRate, types.MicroSDRDenom, valAddrs[i]), stakingAmt.QuoRaw(types.MicroUnit).Int64())
@@ -233,7 +233,7 @@ func TestOracleTally(t *testing.T) {
 		}
 	}
 
-	tallyMedian, ballotWinner := tally(input.Ctx, ballot, input.OracleKeeper.RewardBand(input.Ctx))
+	tallyMedian, ballotWinner := tally(ballot, input.OracleKeeper.RewardBand(input.Ctx))
 
 	require.Equal(t, len(rewardees), len(ballotWinner))
 	require.Equal(t, tallyMedian.MulInt64(100).TruncateInt(), weightedMedian.MulInt64(100).TruncateInt())
@@ -253,13 +253,13 @@ func TestOracleTallyTiming(t *testing.T) {
 	require.Equal(t, 0, int(input.Ctx.BlockHeight()))
 
 	EndBlocker(input.Ctx, input.OracleKeeper)
-	_, err := input.OracleKeeper.GetLunaExchangeRate(input.Ctx, types.MicroSDRDenom)
+	_, err := input.OracleKeeper.GetUSDExchangeRate(input.Ctx, types.MicroSDRDenom)
 	require.Error(t, err)
 
 	input.Ctx = input.Ctx.WithBlockHeight(params.VotePeriod - 1)
 
 	EndBlocker(input.Ctx, input.OracleKeeper)
-	_, err = input.OracleKeeper.GetLunaExchangeRate(input.Ctx, types.MicroSDRDenom)
+	_, err = input.OracleKeeper.GetUSDExchangeRate(input.Ctx, types.MicroSDRDenom)
 	require.NoError(t, err)
 }
 
@@ -294,7 +294,7 @@ func TestOracleRewardDistribution(t *testing.T) {
 func TestOracleRewardBand(t *testing.T) {
 	input, h := setup(t)
 	params := input.OracleKeeper.GetParams(input.Ctx)
-	params.Whitelist = types.DenomList{{Name: types.MicroKRWDenom, TobinTax: types.DefaultTobinTax}}
+	params.Whitelist = sdk.DecCoins{{types.MicroKRWDenom, types.DefaultTobinTax}}
 	input.OracleKeeper.SetParams(input.Ctx, params)
 
 	// clear tobin tax to reset vote targets
@@ -424,14 +424,14 @@ func TestOracleExchangeRateVal5(t *testing.T) {
 
 	krwExchangeRate := sdk.NewDecWithPrec(505000, int64(6)).MulInt64(types.MicroUnit)
 	krwExchangeRateWithErr := sdk.NewDecWithPrec(500000, int64(6)).MulInt64(types.MicroUnit)
-	usdExchangeRate := sdk.NewDecWithPrec(505, int64(6)).MulInt64(types.MicroUnit)
-	usdExchangeRateWithErr := sdk.NewDecWithPrec(500, int64(6)).MulInt64(types.MicroUnit)
+	lunaExchangeRate := sdk.NewDecWithPrec(505, int64(6)).MulInt64(types.MicroUnit)
+	lunaExchangeRateWithErr := sdk.NewDecWithPrec(500, int64(6)).MulInt64(types.MicroUnit)
 
 	// KRW has been chosen as referenceTerra by highest voting power
 	// Account 1, KRW, USD
 	val1 := sdk.NewDecCoins(
 		sdk.NewDecCoinFromDec(types.MicroKRWDenom, krwExchangeRate),
-		sdk.NewDecCoinFromDec(types.MicroUSDDenom, usdExchangeRate),
+		sdk.NewDecCoinFromDec(types.MicroSDRDenom, lunaExchangeRate),
 	)
 	makeAggregatePrevoteAndVote(t, input, h, 0, val1, 0)
 
@@ -444,7 +444,7 @@ func TestOracleExchangeRateVal5(t *testing.T) {
 	// Account 4, KRW, USD
 	val4 := sdk.NewDecCoins(
 		sdk.NewDecCoinFromDec(types.MicroKRWDenom, krwExchangeRateWithErr),
-		sdk.NewDecCoinFromDec(types.MicroUSDDenom, usdExchangeRateWithErr),
+		sdk.NewDecCoinFromDec(types.MicroSDRDenom, lunaExchangeRateWithErr),
 	)
 	makeAggregatePrevoteAndVote(t, input, h, 0, val4, 3)
 
@@ -453,23 +453,23 @@ func TestOracleExchangeRateVal5(t *testing.T) {
 
 	rewardAmt := sdk.NewInt(100000000)
 	moduleAcc := input.AccKeeper.GetModuleAccount(input.Ctx.WithBlockHeight(1), types.ModuleName)
-	require.NoError(t, input.BankKeeper.SetBalances(input.Ctx, moduleAcc.GetAddress(), sdk.NewCoins(sdk.NewCoin(types.MicroLunaDenom, rewardAmt))))
+	require.NoError(t, input.BankKeeper.SetBalances(input.Ctx, moduleAcc.GetAddress(), sdk.NewCoins(sdk.NewCoin(types.MicroSDRDenom, rewardAmt))))
 
 	input.AccKeeper.SetModuleAccount(input.Ctx.WithBlockHeight(1), moduleAcc)
 
 	EndBlocker(input.Ctx.WithBlockHeight(1), input.OracleKeeper)
 
-	krw, err := input.OracleKeeper.GetLunaExchangeRate(input.Ctx, types.MicroKRWDenom)
+	krw, err := input.OracleKeeper.GetUSDExchangeRate(input.Ctx, types.MicroKRWDenom)
 	require.NoError(t, err)
-	usd, err := input.OracleKeeper.GetLunaExchangeRate(input.Ctx, types.MicroUSDDenom)
+	usd, err := input.OracleKeeper.GetUSDExchangeRate(input.Ctx, types.MicroSDRDenom)
 	require.NoError(t, err)
 
 	// legacy version case
-	require.NotEqual(t, usdExchangeRateWithErr, usd)
+	require.NotEqual(t, lunaExchangeRateWithErr, usd)
 
 	// new version case
 	require.Equal(t, krwExchangeRate, krw)
-	require.Equal(t, usdExchangeRate, usd)
+	require.Equal(t, lunaExchangeRate, usd)
 
 	rewardDistributedWindow := input.OracleKeeper.RewardDistributionWindow(input.Ctx)
 	expectedRewardAmt := sdk.NewDecFromInt(rewardAmt.QuoRaw(8).MulRaw(2)).QuoInt64(rewardDistributedWindow).TruncateInt()
@@ -489,7 +489,7 @@ func TestOracleExchangeRateVal5(t *testing.T) {
 func TestInvalidVotesSlashing(t *testing.T) {
 	input, h := setup(t)
 	params := input.OracleKeeper.GetParams(input.Ctx)
-	params.Whitelist = types.DenomList{{Name: types.MicroKRWDenom, TobinTax: types.DefaultTobinTax}}
+	params.Whitelist = sdk.DecCoins{sdk.NewDecCoinFromDec(types.MicroKRWDenom, types.DefaultTobinTax)}
 	input.OracleKeeper.SetParams(input.Ctx, params)
 	input.OracleKeeper.SetTobinTax(input.Ctx, types.MicroKRWDenom, types.DefaultTobinTax)
 
@@ -570,7 +570,7 @@ func TestWhitelistSlashing(t *testing.T) {
 func TestNotPassedBallotSlashing(t *testing.T) {
 	input, h := setup(t)
 	params := input.OracleKeeper.GetParams(input.Ctx)
-	params.Whitelist = types.DenomList{{Name: types.MicroKRWDenom, TobinTax: types.DefaultTobinTax}}
+	params.Whitelist = sdk.DecCoins{{types.MicroKRWDenom, types.DefaultTobinTax}}
 	input.OracleKeeper.SetParams(input.Ctx, params)
 
 	// clear tobin tax to reset vote targets
@@ -591,7 +591,7 @@ func TestNotPassedBallotSlashing(t *testing.T) {
 func TestAbstainSlashing(t *testing.T) {
 	input, h := setup(t)
 	params := input.OracleKeeper.GetParams(input.Ctx)
-	params.Whitelist = types.DenomList{{Name: types.MicroKRWDenom, TobinTax: types.DefaultTobinTax}}
+	params.Whitelist = sdk.DecCoins{{types.MicroKRWDenom, types.DefaultTobinTax}}
 	input.OracleKeeper.SetParams(input.Ctx, params)
 
 	// clear tobin tax to reset vote targets
@@ -624,7 +624,7 @@ func TestAbstainSlashing(t *testing.T) {
 func TestVoteTargets(t *testing.T) {
 	input, h := setup(t)
 	params := input.OracleKeeper.GetParams(input.Ctx)
-	params.Whitelist = types.DenomList{{Name: types.MicroKRWDenom, TobinTax: types.DefaultTobinTax}, {Name: types.MicroSDRDenom, TobinTax: types.DefaultTobinTax}}
+	params.Whitelist = sdk.DecCoins{{types.MicroKRWDenom, types.DefaultTobinTax}, {types.MicroSDRDenom, types.DefaultTobinTax}}
 	input.OracleKeeper.SetParams(input.Ctx, params)
 
 	// clear tobin tax to reset vote targets
@@ -652,7 +652,7 @@ func TestVoteTargets(t *testing.T) {
 	require.Equal(t, types.DefaultTobinTax, sdrTobinTax)
 
 	// delete SDR
-	params.Whitelist = types.DenomList{{Name: types.MicroKRWDenom, TobinTax: types.DefaultTobinTax}}
+	params.Whitelist = sdk.DecCoins{{types.MicroKRWDenom, types.DefaultTobinTax}}
 	input.OracleKeeper.SetParams(input.Ctx, params)
 
 	// KRW, missing
@@ -673,7 +673,7 @@ func TestVoteTargets(t *testing.T) {
 	require.Error(t, err)
 
 	// change KRW tobin tax
-	params.Whitelist = types.DenomList{{Name: types.MicroKRWDenom, TobinTax: sdk.ZeroDec()}}
+	params.Whitelist = sdk.DecCoins{{types.MicroKRWDenom, sdk.ZeroDec()}}
 	input.OracleKeeper.SetParams(input.Ctx, params)
 
 	// KRW, no missing
@@ -702,7 +702,7 @@ func TestAbstainWithSmallStakingPower(t *testing.T) {
 	makePrevoteAndVote(t, input, h, 0, types.MicroKRWDenom, sdk.ZeroDec(), 0)
 
 	EndBlocker(input.Ctx, input.OracleKeeper)
-	_, err := input.OracleKeeper.GetLunaExchangeRate(input.Ctx, types.MicroKRWDenom)
+	_, err := input.OracleKeeper.GetUSDExchangeRate(input.Ctx, types.MicroKRWDenom)
 	require.Error(t, err)
 }
 
@@ -713,11 +713,11 @@ func makePrevoteAndVote(t *testing.T, input keeper.TestInput, h sdk.Handler, hei
 	hash := types.GetAggregateVoteHash(salt, exchangeRates.String(), keeper.ValAddrs[idx])
 
 	prevoteMsg := types.NewMsgAggregateExchangeRatePrevote(hash, keeper.Addrs[idx], keeper.ValAddrs[idx])
-	_, err := h(input.Ctx.WithBlockHeight(height), &prevoteMsg)
+	_, err := h(input.Ctx.WithBlockHeight(height), prevoteMsg)
 	require.NoError(t, err)
 
 	voteMsg := types.NewMsgAggregateExchangeRateVote(salt, exchangeRates.String(), keeper.Addrs[idx], keeper.ValAddrs[idx])
-	_, err = h(input.Ctx.WithBlockHeight(height+1), &voteMsg)
+	_, err = h(input.Ctx.WithBlockHeight(height+1), voteMsg)
 	require.NoError(t, err)
 }
 
@@ -727,10 +727,10 @@ func makeAggregatePrevoteAndVote(t *testing.T, input keeper.TestInput, h sdk.Han
 	hash := types.GetAggregateVoteHash(salt, rates.String(), keeper.ValAddrs[idx])
 
 	prevoteMsg := types.NewMsgAggregateExchangeRatePrevote(hash, keeper.Addrs[idx], keeper.ValAddrs[idx])
-	_, err := h(input.Ctx.WithBlockHeight(height), &prevoteMsg)
+	_, err := h(input.Ctx.WithBlockHeight(height), prevoteMsg)
 	require.NoError(t, err)
 
 	voteMsg := types.NewMsgAggregateExchangeRateVote(salt, rates.String(), keeper.Addrs[idx], keeper.ValAddrs[idx])
-	_, err = h(input.Ctx.WithBlockHeight(height+1), &voteMsg)
+	_, err = h(input.Ctx.WithBlockHeight(height+1), voteMsg)
 	require.NoError(t, err)
 }

@@ -72,14 +72,14 @@ func (k Keeper) GetExchangeRatePrevote(ctx sdk.Context, denom string, voter sdk.
 		err = sdkerrors.Wrap(types.ErrNoPrevote, fmt.Sprintf("(%s, %s)", voter, denom))
 		return
 	}
-	k.cdc.MustUnmarshalBinaryLengthPrefixed(b, &prevote)
+	k.cdc.MustUnmarshalBinaryBare(b, &prevote)
 	return
 }
 
 // AddExchangeRatePrevote adds an oracle prevote to the store
 func (k Keeper) AddExchangeRatePrevote(ctx sdk.Context, prevote types.ExchangeRatePrevote) {
 	store := ctx.KVStore(k.storeKey)
-	bz := k.cdc.MustMarshalBinaryLengthPrefixed(&prevote)
+	bz := k.cdc.MustMarshalBinaryBare(&prevote)
 	voter, err := sdk.ValAddressFromBech32(prevote.Voter)
 	if err != nil {
 		panic(err)
@@ -104,21 +104,7 @@ func (k Keeper) IterateExchangeRatePrevotes(ctx sdk.Context, handler func(prevot
 	defer iter.Close()
 	for ; iter.Valid(); iter.Next() {
 		var prevote types.ExchangeRatePrevote
-		k.cdc.MustUnmarshalBinaryLengthPrefixed(iter.Value(), &prevote)
-		if handler(prevote) {
-			break
-		}
-	}
-}
-
-// iterateExchangeRatePrevotesWithPrefix iterates over prevotes in the store with given prefix
-func (k Keeper) iterateExchangeRatePrevotesWithPrefix(ctx sdk.Context, prefix []byte, handler func(vote types.ExchangeRatePrevote) (stop bool)) {
-	store := ctx.KVStore(k.storeKey)
-	iter := sdk.KVStorePrefixIterator(store, prefix)
-	defer iter.Close()
-	for ; iter.Valid(); iter.Next() {
-		var prevote types.ExchangeRatePrevote
-		k.cdc.MustUnmarshalBinaryLengthPrefixed(iter.Value(), &prevote)
+		k.cdc.MustUnmarshalBinaryBare(iter.Value(), &prevote)
 		if handler(prevote) {
 			break
 		}
@@ -135,7 +121,7 @@ func (k Keeper) IterateExchangeRateVotes(ctx sdk.Context, handler func(vote type
 	defer iter.Close()
 	for ; iter.Valid(); iter.Next() {
 		var vote types.ExchangeRateVote
-		k.cdc.MustUnmarshalBinaryLengthPrefixed(iter.Value(), &vote)
+		k.cdc.MustUnmarshalBinaryBare(iter.Value(), &vote)
 		if handler(vote) {
 			break
 		}
@@ -149,7 +135,7 @@ func (k Keeper) iterateExchangeRateVotesWithPrefix(ctx sdk.Context, prefix []byt
 	defer iter.Close()
 	for ; iter.Valid(); iter.Next() {
 		var vote types.ExchangeRateVote
-		k.cdc.MustUnmarshalBinaryLengthPrefixed(iter.Value(), &vote)
+		k.cdc.MustUnmarshalBinaryBare(iter.Value(), &vote)
 		if handler(vote) {
 			break
 		}
@@ -164,14 +150,14 @@ func (k Keeper) getExchangeRateVote(ctx sdk.Context, denom string, voter sdk.Val
 		err = sdkerrors.Wrap(types.ErrNoVote, fmt.Sprintf("(%s, %s)", voter, denom))
 		return
 	}
-	k.cdc.MustUnmarshalBinaryLengthPrefixed(b, &vote)
+	k.cdc.MustUnmarshalBinaryBare(b, &vote)
 	return
 }
 
 // AddExchangeRateVote adds an oracle vote to the store
 func (k Keeper) AddExchangeRateVote(ctx sdk.Context, vote types.ExchangeRateVote) {
 	store := ctx.KVStore(k.storeKey)
-	bz := k.cdc.MustMarshalBinaryLengthPrefixed(&vote)
+	bz := k.cdc.MustMarshalBinaryBare(&vote)
 	voter, err := sdk.ValAddressFromBech32(vote.Voter)
 	if err != nil {
 		panic(err)
@@ -192,9 +178,9 @@ func (k Keeper) DeleteExchangeRateVote(ctx sdk.Context, vote types.ExchangeRateV
 //-----------------------------------
 // ExchangeRate logic
 
-// GetLunaExchangeRate gets the consensus exchange rate of Luna denominated in the denom asset from the store.
-func (k Keeper) GetLunaExchangeRate(ctx sdk.Context, denom string) (exchangeRate sdk.Dec, err error) {
-	if denom == types.MicroLunaDenom {
+// GetUSDExchangeRate gets the consensus exchange rate of USD denominated in the denom asset from the store.
+func (k Keeper) GetUSDExchangeRate(ctx sdk.Context, denom string) (exchangeRate sdk.Dec, err error) {
+	if denom == types.MicroUSDDenom {
 		return sdk.OneDec(), nil
 	}
 
@@ -211,8 +197,8 @@ func (k Keeper) GetLunaExchangeRate(ctx sdk.Context, denom string) (exchangeRate
 	return
 }
 
-// SetLunaExchangeRate sets the consensus exchange rate of Luna denominated in the denom asset to the store.
-func (k Keeper) SetLunaExchangeRate(ctx sdk.Context, denom string, exchangeRate sdk.Dec) {
+// SetUSDExchangeRate sets the consensus exchange rate of USD denominated in the denom asset to the store.
+func (k Keeper) SetUSDExchangeRate(ctx sdk.Context, denom string, exchangeRate sdk.Dec) {
 	store := ctx.KVStore(k.storeKey)
 	// TODO: review echange rate marshal/unmarshal
 	bz, err := exchangeRate.Marshal()
@@ -222,9 +208,9 @@ func (k Keeper) SetLunaExchangeRate(ctx sdk.Context, denom string, exchangeRate 
 	store.Set(types.GetExchangeRateKey(denom), bz)
 }
 
-// SetLunaExchangeRateWithEvent sets the consensus exchange rate of Luna denominated in the denom asset to the store with ABCI event
-func (k Keeper) SetLunaExchangeRateWithEvent(ctx sdk.Context, denom string, exchangeRate sdk.Dec) {
-	k.SetLunaExchangeRate(ctx, denom, exchangeRate)
+// SetUSDExchangeRateWithEvent sets the consensus exchange rate of USD denominated in the denom asset to the store with ABCI event
+func (k Keeper) SetUSDExchangeRateWithEvent(ctx sdk.Context, denom string, exchangeRate sdk.Dec) {
+	k.SetUSDExchangeRate(ctx, denom, exchangeRate)
 	ctx.EventManager().EmitEvent(
 		sdk.NewEvent(types.EventTypeExchangeRateUpdate,
 			sdk.NewAttribute(types.AttributeKeyDenom, denom),
@@ -233,14 +219,14 @@ func (k Keeper) SetLunaExchangeRateWithEvent(ctx sdk.Context, denom string, exch
 	)
 }
 
-// DeleteLunaExchangeRate deletes the consensus exchange rate of Luna denominated in the denom asset from the store.
-func (k Keeper) DeleteLunaExchangeRate(ctx sdk.Context, denom string) {
+// DeleteUSDExchangeRate deletes the consensus exchange rate of usd denominated in the denom asset from the store.
+func (k Keeper) DeleteUSDExchangeRate(ctx sdk.Context, denom string) {
 	store := ctx.KVStore(k.storeKey)
 	store.Delete(types.GetExchangeRateKey(denom))
 }
 
-// IterateLunaExchangeRates iterates over luna rates in the store
-func (k Keeper) IterateLunaExchangeRates(ctx sdk.Context, handler func(denom string, exchangeRate sdk.Dec) (stop bool)) {
+// IterateUSDExchangeRates iterates over usd rates in the store
+func (k Keeper) IterateUSDExchangeRates(ctx sdk.Context, handler func(denom string, exchangeRate sdk.Dec) (stop bool)) {
 	store := ctx.KVStore(k.storeKey)
 	iter := sdk.KVStorePrefixIterator(store, types.ExchangeRateKey)
 	defer iter.Close()
@@ -362,14 +348,14 @@ func (k Keeper) GetAggregateExchangeRatePrevote(ctx sdk.Context, voter sdk.ValAd
 		err = sdkerrors.Wrap(types.ErrNoAggregatePrevote, voter.String())
 		return
 	}
-	k.cdc.MustUnmarshalBinaryLengthPrefixed(b, &aggregatePrevote)
+	k.cdc.MustUnmarshalBinaryBare(b, &aggregatePrevote)
 	return
 }
 
 // AddAggregateExchangeRatePrevote adds an oracle aggregate prevote to the store
 func (k Keeper) AddAggregateExchangeRatePrevote(ctx sdk.Context, aggregatePrevote types.AggregateExchangeRatePrevote) {
 	store := ctx.KVStore(k.storeKey)
-	bz := k.cdc.MustMarshalBinaryLengthPrefixed(&aggregatePrevote)
+	bz := k.cdc.MustMarshalBinaryBare(&aggregatePrevote)
 	voter, err := sdk.ValAddressFromBech32(aggregatePrevote.Voter)
 	if err != nil {
 		panic(err)
@@ -394,7 +380,7 @@ func (k Keeper) IterateAggregateExchangeRatePrevotes(ctx sdk.Context, handler fu
 	defer iter.Close()
 	for ; iter.Valid(); iter.Next() {
 		var aggregatePrevote types.AggregateExchangeRatePrevote
-		k.cdc.MustUnmarshalBinaryLengthPrefixed(iter.Value(), &aggregatePrevote)
+		k.cdc.MustUnmarshalBinaryBare(iter.Value(), &aggregatePrevote)
 		if handler(aggregatePrevote) {
 			break
 		}
@@ -412,14 +398,14 @@ func (k Keeper) GetAggregateExchangeRateVote(ctx sdk.Context, voter sdk.ValAddre
 		err = sdkerrors.Wrap(types.ErrNoAggregateVote, voter.String())
 		return
 	}
-	k.cdc.MustUnmarshalBinaryLengthPrefixed(b, &aggregateVote)
+	k.cdc.MustUnmarshalBinaryBare(b, &aggregateVote)
 	return
 }
 
 // AddAggregateExchangeRateVote adds an oracle aggregate prevote to the store
 func (k Keeper) AddAggregateExchangeRateVote(ctx sdk.Context, aggregateVote types.AggregateExchangeRateVote) {
 	store := ctx.KVStore(k.storeKey)
-	bz := k.cdc.MustMarshalBinaryLengthPrefixed(&aggregateVote)
+	bz := k.cdc.MustMarshalBinaryBare(&aggregateVote)
 	voter, err := sdk.ValAddressFromBech32(aggregateVote.Voter)
 	if err != nil {
 		panic(err)
@@ -444,7 +430,7 @@ func (k Keeper) IterateAggregateExchangeRateVotes(ctx sdk.Context, handler func(
 	defer iter.Close()
 	for ; iter.Valid(); iter.Next() {
 		var aggregateVote types.AggregateExchangeRateVote
-		k.cdc.MustUnmarshalBinaryLengthPrefixed(iter.Value(), &aggregateVote)
+		k.cdc.MustUnmarshalBinaryBare(iter.Value(), &aggregateVote)
 		if handler(aggregateVote) {
 			break
 		}
