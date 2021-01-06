@@ -7,6 +7,9 @@ LEDGER_ENABLED ?= true
 SDK_PACK := $(shell go list -m github.com/cosmos/cosmos-sdk | sed  's/ /\@/g')
 BUILDDIR ?= $(CURDIR)/build
 TEST_DOCKER_REPO=jackzampolin/sommtest
+HTTPS_GIT := https://github.com/peggyjv/sommelier.git
+DOCKER := $(shell which docker)
+DOCKER_BUF := $(DOCKER) run --rm -v $(CURDIR):/workspace --workdir /workspace bufbuild/buf
 
 export GO111MODULE = on
 
@@ -211,19 +214,31 @@ test-docker-push: test-docker
 ###                           Protobuf                                    ###
 ###############################################################################
 
+proto-all: proto-format proto-lint proto-gen
+
 proto-gen:
-	./contrib/protocgen.sh
+	@echo "Generating Protobuf files"
+	$(DOCKER) run --rm -v $(CURDIR):/workspace --workdir /workspace tendermintdev/sdk-proto-gen sh ./scripts/protocgen.sh
+
+proto-format:
+	@echo "Formatting Protobuf files"
+	$(DOCKER) run --rm -v $(CURDIR):/workspace \
+	--workdir /workspace tendermintdev/docker-build-proto \
+	find ./ -not -path "./third_party/*" -name *.proto -exec .clang-format -i {} \;
+
+proto-swagger-gen:
+	@./scripts/protoc-swagger-gen.sh
 
 proto-lint:
-	buf check lint --error-format=json
+	@$(DOCKER_BUF) check lint --error-format=json
 
 proto-check-breaking:
-	buf check breaking --against-input '.git#branch=master'
+	@$(DOCKER_BUF) check breaking --against-input $(HTTPS_GIT)#branch=master
 
-TM_URL           = https://raw.githubusercontent.com/tendermint/tendermint/v0.34.0-rc3/proto/tendermint
+TM_URL           = https://raw.githubusercontent.com/tendermint/tendermint/v0.34.0/proto/tendermint
 GOGO_PROTO_URL   = https://raw.githubusercontent.com/regen-network/protobuf/cosmos
 COSMOS_PROTO_URL = https://raw.githubusercontent.com/regen-network/cosmos-proto/master
-COSMOS_SDK_PROTO_URL = https://raw.githubusercontent.com/cosmos/cosmos-sdk/master/proto/cosmos/base
+COSMOS_SDK_PROTO_URL = https://raw.githubusercontent.com/cosmos/cosmos-sdk/v0.40.0-rc6/proto/cosmos/base
 
 TM_CRYPTO_TYPES     = third_party/proto/tendermint/crypto
 TM_ABCI_TYPES       = third_party/proto/tendermint/abci
@@ -323,3 +338,5 @@ buf-stamp:
 
 tools-clean:
 	rm -f proto-tools-stamp buf-stampmodule
+
+.PHONY: proto-all proto-gen proto-swagger-gen proto-format proto-lint proto-check-breaking proto-update-deps
