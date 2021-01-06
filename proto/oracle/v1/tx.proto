@@ -15,6 +15,7 @@ message MsgDelegateFeedConsent {
     string operator = 1;
     string delegate = 2;
 }
+
 message MsgDelegateFeedConsentResponse {}
 
 // MsgAggregateExchangeRatePrevote - struct for aggregate prevoting on the ExchangeRateVote.
@@ -25,6 +26,7 @@ message MsgAggregateExchangeRatePrevote {
     string feeder    = 2;
     string validator = 3;
 }
+
 message MsgAggregateExchangeRatePrevoteResponse {}
 
 // MsgAggregateExchangeRateVote - struct for voting on the exchange rates of Luna denominated in various Terra assets.
@@ -35,4 +37,5 @@ message MsgAggregateExchangeRateVote {
     string feeder         = 3;
     string validator      = 4;
 }
+
 message MsgAggregateExchangeRateVoteResponse {}
