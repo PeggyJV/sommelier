@@ -1,6 +1,8 @@
 package types
 
 import (
+	"fmt"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
@@ -12,7 +14,7 @@ func NewGenesisState(
 	missCounters []ValidatorMissCounter,
 	aggregateExchangeRatePrevotes []AggregateExchangeRatePrevote,
 	aggregateExchangeRateVotes []AggregateExchangeRateVote,
-	TobinTaxes sdk.DecCoins,
+	tobinTaxes sdk.DecCoins,
 ) GenesisState {
 
 	return GenesisState{
@@ -22,7 +24,7 @@ func NewGenesisState(
 		MissCounters:                  missCounters,
 		AggregateExchangeRatePrevotes: aggregateExchangeRatePrevotes,
 		AggregateExchangeRateVotes:    aggregateExchangeRateVotes,
-		TobinTaxes:                    TobinTaxes,
+		TobinTaxes:                    tobinTaxes,
 	}
 }
 
@@ -41,5 +43,49 @@ func DefaultGenesisState() GenesisState {
 
 // Validate validates the oracle genesis state fields.
 func (gs GenesisState) Validate() error {
+	if !gs.ExchangeRates.IsValid() {
+		return fmt.Errorf("invalid exchange rates coins: %s", gs.ExchangeRates)
+	}
+
+	for _, delegation := range gs.FeederDelegations {
+		_, err := sdk.ValAddressFromBech32(delegation.DelegatorAddress)
+		if err != nil {
+			return err
+		}
+
+		_, err = sdk.AccAddressFromBech32(delegation.DelegateAddress)
+		if err != nil {
+			return err
+		}
+	}
+
+	for _, missCounter := range gs.MissCounters {
+		_, err := sdk.ValAddressFromBech32(missCounter.ValAddress)
+		if err != nil {
+			return err
+		}
+	}
+
+	for _, prevote := range gs.AggregateExchangeRatePrevotes {
+		_, err := sdk.ValAddressFromBech32(prevote.Voter)
+		if err != nil {
+			return err
+		}
+		if prevote.SubmitBlock < 0 {
+			return fmt.Errorf("prevote submit block cannot be negative, got %d", prevote.SubmitBlock)
+		}
+	}
+
+	for _, vote := range gs.AggregateExchangeRateVotes {
+		_, err := sdk.ValAddressFromBech32(vote.Voter)
+		if err != nil {
+			return err
+		}
+
+		if !vote.ExchangeRateTuples.IsValid() {
+			return fmt.Errorf("invalid exchange rates tuple coins: %s", vote.ExchangeRateTuples)
+		}
+	}
+
 	return gs.Params.ValidateBasic()
 }
