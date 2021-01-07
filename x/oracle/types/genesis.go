@@ -8,8 +8,8 @@ import (
 func NewGenesisState(
 	params Params,
 	rates sdk.DecCoins,
-	feederDelegations map[string]string,
-	missCounters map[string]int64,
+	feederDelegations []OracleDelegation,
+	missCounters []ValidatorMissCounter,
 	aggregateExchangeRatePrevotes []AggregateExchangeRatePrevote,
 	aggregateExchangeRateVotes []AggregateExchangeRateVote,
 	TobinTaxes sdk.DecCoins,
@@ -31,8 +31,8 @@ func DefaultGenesisState() GenesisState {
 	return GenesisState{
 		Params:                        DefaultParams(),
 		ExchangeRates:                 make(sdk.DecCoins, 0),
-		FeederDelegations:             make(map[string]string),
-		MissCounters:                  make(map[string]int64),
+		FeederDelegations:             []OracleDelegation{},
+		MissCounters:                  []ValidatorMissCounter{},
 		AggregateExchangeRatePrevotes: []AggregateExchangeRatePrevote{},
 		AggregateExchangeRateVotes:    []AggregateExchangeRateVote{},
 		TobinTaxes:                    make(sdk.DecCoins, 0),
