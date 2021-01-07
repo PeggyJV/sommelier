@@ -197,6 +197,16 @@ func (k Keeper) GetUSDExchangeRate(ctx sdk.Context, denom string) (exchangeRate 
 	return
 }
 
+// GetUSDExchangeRates returns all the exchange rates for USD
+func (k Keeper) GetUSDExchangeRates(ctx sdk.Context) sdk.DecCoins {
+	rates := make(sdk.DecCoins, 0)
+	k.IterateUSDExchangeRates(ctx, func(denom string, rate sdk.Dec) (stop bool) {
+		rates = rates.Add(sdk.NewDecCoinFromDec(denom, rate))
+		return false
+	})
+	return rates
+}
+
 // SetUSDExchangeRate sets the consensus exchange rate of USD denominated in the denom asset to the store.
 func (k Keeper) SetUSDExchangeRate(ctx sdk.Context, denom string, exchangeRate sdk.Dec) {
 	store := ctx.KVStore(k.storeKey)
@@ -262,6 +272,20 @@ func (k Keeper) GetOracleDelegate(ctx sdk.Context, operator sdk.ValAddress) (del
 	return out
 }
 
+// GetOracleDelegations returns all the oracle delegation pairs.
+func (k Keeper) GetOracleDelegations(ctx sdk.Context) []types.OracleDelegation {
+	delegations := make([]types.OracleDelegation, 0)
+	k.IterateOracleDelegates(ctx, func(delegator sdk.ValAddress, delegate sdk.AccAddress) (stop bool) {
+		delegation := types.OracleDelegation{
+			DelegatorAddress: delegator.String(),
+			DelegateAddress:  delegate.String(),
+		}
+		delegations = append(delegations, delegation)
+		return false
+	})
+	return delegations
+}
+
 // SetOracleDelegate sets the account address that the validator operator delegated oracle vote rights to
 func (k Keeper) SetOracleDelegate(ctx sdk.Context, operator sdk.ValAddress, delegatedFeeder sdk.AccAddress) {
 	store := ctx.KVStore(k.storeKey)
@@ -303,6 +327,17 @@ func (k Keeper) GetMissCounter(ctx sdk.Context, operator sdk.ValAddress) (missCo
 	}
 	// TODO: Review store marshaling
 	return int64(binary.BigEndian.Uint64(b))
+}
+
+// GetMissCounters iterates over the miss counters and performs a callback function.
+func (k Keeper) GetMissCounters(ctx sdk.Context) []types.ValidatorMissCounter {
+	missCounters := make([]types.ValidatorMissCounter, 0)
+	k.IterateMissCounters(ctx, func(operator sdk.ValAddress, missCounter int64) (stop bool) {
+		missedCounter := types.ValidatorMissCounter{ValAddress: operator.String(), MissedCounter: missCounter}
+		missCounters = append(missCounters, missedCounter)
+		return false
+	})
+	return missCounters
 }
 
 // SetMissCounter updates the # of vote periods missed in this oracle slash window
@@ -350,6 +385,17 @@ func (k Keeper) GetAggregateExchangeRatePrevote(ctx sdk.Context, voter sdk.ValAd
 	}
 	k.cdc.MustUnmarshalBinaryBare(b, &aggregatePrevote)
 	return
+}
+
+// GetAggregateExchangeRatePrevotes returns all the prevotes for aggregate exchange rates.
+func (k Keeper) GetAggregateExchangeRatePrevotes(ctx sdk.Context) []types.AggregateExchangeRatePrevote {
+	var aggregateExchangeRatePrevotes []types.AggregateExchangeRatePrevote
+	k.IterateAggregateExchangeRatePrevotes(ctx, func(aggregatePrevote types.AggregateExchangeRatePrevote) bool {
+		aggregateExchangeRatePrevotes = append(aggregateExchangeRatePrevotes, aggregatePrevote)
+		return false
+	})
+
+	return aggregateExchangeRatePrevotes
 }
 
 // AddAggregateExchangeRatePrevote adds an oracle aggregate prevote to the store
@@ -400,6 +446,17 @@ func (k Keeper) GetAggregateExchangeRateVote(ctx sdk.Context, voter sdk.ValAddre
 	}
 	k.cdc.MustUnmarshalBinaryBare(b, &aggregateVote)
 	return
+}
+
+// GetAggregateExchangeRateVotes returns all the votes for aggregate exchange rates.
+func (k Keeper) GetAggregateExchangeRateVotes(ctx sdk.Context) []types.AggregateExchangeRateVote {
+	var aggregateExchangeRateVotes []types.AggregateExchangeRateVote
+	k.IterateAggregateExchangeRateVotes(ctx, func(aggregateVote types.AggregateExchangeRateVote) bool {
+		aggregateExchangeRateVotes = append(aggregateExchangeRateVotes, aggregateVote)
+		return false
+	})
+
+	return aggregateExchangeRateVotes
 }
 
 // AddAggregateExchangeRateVote adds an oracle aggregate prevote to the store
@@ -459,6 +516,18 @@ func (k Keeper) SetTobinTax(ctx sdk.Context, denom string, tobinTax sdk.Dec) {
 		panic(err)
 	}
 	store.Set(types.GetTobinTaxKey(denom), bz)
+}
+
+// GetTobinTaxes returns all the TobinTaxes as SDK DecCoins
+func (k Keeper) GetTobinTaxes(ctx sdk.Context) sdk.DecCoins {
+	tobinTaxes := make(sdk.DecCoins, 0)
+
+	k.IterateTobinTaxes(ctx, func(denom string, tobinTax sdk.Dec) (stop bool) {
+		tobinTaxes = tobinTaxes.Add(sdk.NewDecCoinFromDec(denom, tobinTax))
+		return false
+	})
+
+	return tobinTaxes
 }
 
 // IterateTobinTaxes iterates rate over tobin taxes in the store

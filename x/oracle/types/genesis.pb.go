@@ -28,9 +28,9 @@ const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 // GenesisState - all oracle state that must be provided at genesis
 type GenesisState struct {
 	Params                        Params                                      `protobuf:"bytes,1,opt,name=params,proto3" json:"params"`
-	FeederDelegations             map[string]string                           `protobuf:"bytes,2,rep,name=feeder_delegations,json=feederDelegations,proto3" json:"feeder_delegations" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
+	FeederDelegations             []OracleDelegation                          `protobuf:"bytes,2,rep,name=feeder_delegations,json=feederDelegations,proto3" json:"feeder_delegations"`
 	ExchangeRates                 github_com_cosmos_cosmos_sdk_types.DecCoins `protobuf:"bytes,3,rep,name=exchange_rates,json=exchangeRates,proto3,castrepeated=github.com/cosmos/cosmos-sdk/types.DecCoins" json:"exchange_rates"`
-	MissCounters                  map[string]int64                            `protobuf:"bytes,4,rep,name=miss_counters,json=missCounters,proto3" json:"miss_counters" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"varint,2,opt,name=value,proto3"`
+	MissCounters                  []ValidatorMissCounter                      `protobuf:"bytes,4,rep,name=miss_counters,json=missCounters,proto3" json:"miss_counters"`
 	AggregateExchangeRatePrevotes []AggregateExchangeRatePrevote              `protobuf:"bytes,5,rep,name=aggregate_exchange_rate_prevotes,json=aggregateExchangeRatePrevotes,proto3,castrepeated=[]AggregateExchangeRatePrevote" json:"aggregate_exchange_rate_prevotes"`
 	AggregateExchangeRateVotes    []AggregateExchangeRateVote                 `protobuf:"bytes,6,rep,name=aggregate_exchange_rate_votes,json=aggregateExchangeRateVotes,proto3,castrepeated=[]AggregateExchangeRateVote" json:"aggregate_exchange_rate_votes"`
 	// NOTE: the amounts here indicate the tobin tax for a given USD/{denom} pair
@@ -77,7 +77,7 @@ func (m *GenesisState) GetParams() Params {
 	return Params{}
 }
 
-func (m *GenesisState) GetFeederDelegations() map[string]string {
+func (m *GenesisState) GetFeederDelegations() []OracleDelegation {
 	if m != nil {
 		return m.FeederDelegations
 	}
@@ -91,7 +91,7 @@ func (m *GenesisState) GetExchangeRates() github_com_cosmos_cosmos_sdk_types.Dec
 	return nil
 }
 
-func (m *GenesisState) GetMissCounters() map[string]int64 {
+func (m *GenesisState) GetMissCounters() []ValidatorMissCounter {
 	if m != nil {
 		return m.MissCounters
 	}
@@ -119,49 +119,164 @@ func (m *GenesisState) GetTobinTaxes() github_com_cosmos_cosmos_sdk_types.DecCoi
 	return nil
 }
 
+// OracleDelegation represents a delegator-delegate pair for an oracle delegation
+type OracleDelegation struct {
+	// validator delegator address
+	DelegatorAddress string `protobuf:"bytes,1,opt,name=delegator_address,json=delegatorAddress,proto3" json:"delegator_address,omitempty" yaml:"delegator_address"`
+	// account delegate address
+	DelegateAddress string `protobuf:"bytes,2,opt,name=delegate_address,json=delegateAddress,proto3" json:"delegate_address,omitempty" yaml:"delegate_address"`
+}
+
+func (m *OracleDelegation) Reset()         { *m = OracleDelegation{} }
+func (m *OracleDelegation) String() string { return proto.CompactTextString(m) }
+func (*OracleDelegation) ProtoMessage()    {}
+func (*OracleDelegation) Descriptor() ([]byte, []int) {
+	return fileDescriptor_14b982a0a6345d1d, []int{1}
+}
+func (m *OracleDelegation) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *OracleDelegation) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_OracleDelegation.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *OracleDelegation) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_OracleDelegation.Merge(m, src)
+}
+func (m *OracleDelegation) XXX_Size() int {
+	return m.Size()
+}
+func (m *OracleDelegation) XXX_DiscardUnknown() {
+	xxx_messageInfo_OracleDelegation.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_OracleDelegation proto.InternalMessageInfo
+
+func (m *OracleDelegation) GetDelegatorAddress() string {
+	if m != nil {
+		return m.DelegatorAddress
+	}
+	return ""
+}
+
+func (m *OracleDelegation) GetDelegateAddress() string {
+	if m != nil {
+		return m.DelegateAddress
+	}
+	return ""
+}
+
+// ValidatorMissCounter represents a per validator miss counter
+type ValidatorMissCounter struct {
+	// validator operator address
+	ValAddress string `protobuf:"bytes,1,opt,name=val_address,json=valAddress,proto3" json:"val_address,omitempty" yaml:"val_address"`
+	// missed oracle counter
+	MissedCounter int64 `protobuf:"varint,2,opt,name=missed_counter,json=missedCounter,proto3" json:"missed_counter,omitempty" yaml:"missed_counter"`
+}
+
+func (m *ValidatorMissCounter) Reset()         { *m = ValidatorMissCounter{} }
+func (m *ValidatorMissCounter) String() string { return proto.CompactTextString(m) }
+func (*ValidatorMissCounter) ProtoMessage()    {}
+func (*ValidatorMissCounter) Descriptor() ([]byte, []int) {
+	return fileDescriptor_14b982a0a6345d1d, []int{2}
+}
+func (m *ValidatorMissCounter) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *ValidatorMissCounter) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_ValidatorMissCounter.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *ValidatorMissCounter) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_ValidatorMissCounter.Merge(m, src)
+}
+func (m *ValidatorMissCounter) XXX_Size() int {
+	return m.Size()
+}
+func (m *ValidatorMissCounter) XXX_DiscardUnknown() {
+	xxx_messageInfo_ValidatorMissCounter.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_ValidatorMissCounter proto.InternalMessageInfo
+
+func (m *ValidatorMissCounter) GetValAddress() string {
+	if m != nil {
+		return m.ValAddress
+	}
+	return ""
+}
+
+func (m *ValidatorMissCounter) GetMissedCounter() int64 {
+	if m != nil {
+		return m.MissedCounter
+	}
+	return 0
+}
+
 func init() {
 	proto.RegisterType((*GenesisState)(nil), "oracle.v1.GenesisState")
-	proto.RegisterMapType((map[string]string)(nil), "oracle.v1.GenesisState.FeederDelegationsEntry")
-	proto.RegisterMapType((map[string]int64)(nil), "oracle.v1.GenesisState.MissCountersEntry")
+	proto.RegisterType((*OracleDelegation)(nil), "oracle.v1.OracleDelegation")
+	proto.RegisterType((*ValidatorMissCounter)(nil), "oracle.v1.ValidatorMissCounter")
 }
 
 func init() { proto.RegisterFile("oracle/v1/genesis.proto", fileDescriptor_14b982a0a6345d1d) }
 
 var fileDescriptor_14b982a0a6345d1d = []byte{
-	// 526 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xb4, 0x54, 0x4f, 0x6f, 0xd3, 0x30,
-	0x1c, 0x6d, 0xd6, 0xad, 0xd3, 0xdc, 0x0d, 0x51, 0x6b, 0x1a, 0x51, 0x61, 0x59, 0x05, 0x08, 0x86,
-	0x10, 0x8e, 0xba, 0x5d, 0x10, 0x17, 0x44, 0xd7, 0xc2, 0x09, 0x69, 0x0a, 0x13, 0x07, 0x10, 0x8a,
-	0xdc, 0xf4, 0xb7, 0x2c, 0xac, 0x89, 0x2b, 0xff, 0xdc, 0xaa, 0xfd, 0x0e, 0x1c, 0x38, 0xc2, 0x57,
-	0xe0, 0x93, 0xec, 0xb8, 0x23, 0x27, 0x40, 0xed, 0x17, 0x41, 0x76, 0x5c, 0x16, 0xfe, 0x74, 0x3b,
-	0x71, 0xaa, 0xeb, 0xf7, 0xde, 0xef, 0xbd, 0x97, 0xd8, 0x21, 0x37, 0x84, 0xe4, 0x51, 0x1f, 0xfc,
-	0x51, 0xd3, 0x8f, 0x21, 0x03, 0x4c, 0x90, 0x0d, 0xa4, 0x50, 0x82, 0xae, 0xe5, 0x00, 0x1b, 0x35,
-	0xeb, 0x5b, 0x17, 0x1c, 0xbb, 0x69, 0x28, 0xf5, 0xcd, 0x58, 0xc4, 0xc2, 0x2c, 0x7d, 0xbd, 0xb2,
-	0xbb, 0x5e, 0x24, 0x30, 0x15, 0xe8, 0x77, 0x39, 0x6a, 0x49, 0x17, 0x14, 0x6f, 0xfa, 0x91, 0x48,
-	0xb2, 0x1c, 0xbf, 0xfd, 0x79, 0x95, 0xac, 0xbf, 0xc8, 0xad, 0x5e, 0x29, 0xae, 0x80, 0xfa, 0xa4,
-	0x32, 0xe0, 0x92, 0xa7, 0xe8, 0x3a, 0x0d, 0x67, 0xb7, 0xba, 0x57, 0x63, 0xbf, 0xac, 0xd9, 0xa1,
-	0x01, 0x5a, 0xcb, 0x67, 0xdf, 0x76, 0x4a, 0x81, 0xa5, 0xd1, 0x88, 0xd0, 0x63, 0x80, 0x1e, 0xc8,
-	0xb0, 0x07, 0x7d, 0x88, 0xb9, 0x4a, 0x44, 0x86, 0xee, 0x52, 0xa3, 0xbc, 0x5b, 0xdd, 0x63, 0x05,
-	0x71, 0xd1, 0x85, 0x3d, 0x37, 0x8a, 0xf6, 0x85, 0xa0, 0x93, 0x29, 0x39, 0xb1, 0x93, 0x6b, 0xc7,
-	0x7f, 0xa2, 0x74, 0x4c, 0xae, 0xc1, 0x38, 0x3a, 0xe1, 0x59, 0x0c, 0xa1, 0xe4, 0x0a, 0xd0, 0x2d,
-	0x1b, 0x83, 0x5b, 0x2c, 0xef, 0xc7, 0x74, 0x3f, 0x66, 0xfb, 0xb1, 0x36, 0x44, 0x07, 0x22, 0xc9,
-	0x5a, 0xfb, 0x7a, 0xdc, 0x97, 0xef, 0x3b, 0x0f, 0xe3, 0x44, 0x9d, 0x0c, 0xbb, 0x2c, 0x12, 0xa9,
-	0x6f, 0x9f, 0x47, 0xfe, 0xf3, 0x08, 0x7b, 0xa7, 0xbe, 0x9a, 0x0c, 0x00, 0xe7, 0x1a, 0x0c, 0x36,
-	0xe6, 0x46, 0x81, 0xf6, 0xa1, 0x47, 0x64, 0x23, 0x4d, 0x10, 0xc3, 0x48, 0x0c, 0x33, 0x05, 0x12,
-	0xdd, 0x65, 0x63, 0xfc, 0x60, 0x51, 0xb3, 0x97, 0x09, 0xe2, 0x81, 0xe5, 0x16, 0x4b, 0xad, 0xa7,
-	0x05, 0x80, 0x7e, 0x72, 0x48, 0x83, 0xc7, 0xb1, 0xd4, 0x05, 0x21, 0xfc, 0xad, 0x5a, 0x38, 0x90,
-	0x30, 0x12, 0xba, 0xe2, 0x8a, 0x71, 0xba, 0x5f, 0x70, 0x7a, 0x36, 0x97, 0x74, 0x0a, 0x19, 0x0f,
-	0x73, 0x7e, 0xeb, 0x9e, 0x6d, 0xeb, 0xbd, 0x7d, 0x77, 0x19, 0x2f, 0xd8, 0xe6, 0x97, 0xa0, 0x48,
-	0x3f, 0x38, 0x64, 0x7b, 0x51, 0xb4, 0x3c, 0x57, 0xc5, 0xe4, 0xba, 0x7b, 0x55, 0xae, 0xd7, 0x3a,
-	0xd4, 0x1d, 0x1b, 0xea, 0xe6, 0x82, 0x50, 0x9a, 0x14, 0xd4, 0xf9, 0x22, 0x08, 0xa9, 0x24, 0x55,
-	0x25, 0xba, 0x49, 0x16, 0x2a, 0x3e, 0x06, 0x74, 0x57, 0xff, 0xd7, 0x6b, 0x27, 0xc6, 0xe5, 0x48,
-	0x9b, 0xd4, 0xdb, 0x64, 0xeb, 0xdf, 0x07, 0x94, 0x5e, 0x27, 0xe5, 0x53, 0x98, 0x98, 0xab, 0xb1,
-	0x16, 0xe8, 0x25, 0xdd, 0x24, 0x2b, 0x23, 0xde, 0x1f, 0x82, 0xbb, 0x64, 0xf6, 0xf2, 0x3f, 0x4f,
-	0x96, 0x1e, 0x3b, 0xf5, 0xa7, 0xa4, 0xf6, 0xd7, 0x61, 0xb8, 0x6a, 0x40, 0xb9, 0x30, 0xa0, 0xd5,
-	0x39, 0x9b, 0x7a, 0xce, 0xf9, 0xd4, 0x73, 0x7e, 0x4c, 0x3d, 0xe7, 0xe3, 0xcc, 0x2b, 0x9d, 0xcf,
-	0xbc, 0xd2, 0xd7, 0x99, 0x57, 0x7a, 0x53, 0x6c, 0x36, 0x80, 0x38, 0x9e, 0xbc, 0x1f, 0xf9, 0x28,
-	0xd2, 0x14, 0xfa, 0x09, 0x48, 0x7f, 0x6c, 0x3f, 0x0c, 0x79, 0xc5, 0x6e, 0xc5, 0xdc, 0xf4, 0xfd,
-	0x9f, 0x01, 0x00, 0x00, 0xff, 0xff, 0x2b, 0x46, 0xe8, 0x30, 0x5d, 0x04, 0x00, 0x00,
+	// 608 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xb4, 0x54, 0x4d, 0x4f, 0xd4, 0x40,
+	0x18, 0xde, 0xf2, 0x65, 0x98, 0x05, 0x84, 0x09, 0xc2, 0xca, 0x47, 0x4b, 0xaa, 0x51, 0x12, 0x63,
+	0x1b, 0xe0, 0x60, 0xe2, 0x49, 0x16, 0xd0, 0x68, 0x62, 0x24, 0xd5, 0x70, 0xd0, 0x98, 0x66, 0xb6,
+	0x7d, 0x2d, 0xd5, 0xb6, 0xb3, 0x99, 0x19, 0x9a, 0xe5, 0x3f, 0x78, 0xd0, 0x9b, 0x7f, 0xc0, 0x8b,
+	0xbf, 0x84, 0x23, 0x47, 0x4f, 0xab, 0x81, 0x7f, 0xb0, 0x89, 0x77, 0xd3, 0x99, 0xe9, 0x6e, 0x41,
+	0x17, 0x4f, 0x9e, 0x3a, 0x79, 0xde, 0xe7, 0x7d, 0xde, 0xe7, 0xc9, 0xbc, 0x1d, 0xb4, 0x48, 0x19,
+	0x09, 0x12, 0x70, 0xf3, 0x0d, 0x37, 0x82, 0x0c, 0x78, 0xcc, 0x9d, 0x36, 0xa3, 0x82, 0xe2, 0x49,
+	0x55, 0x70, 0xf2, 0x8d, 0xa5, 0x85, 0x01, 0x47, 0x83, 0x92, 0xb2, 0x34, 0x1f, 0xd1, 0x88, 0xca,
+	0xa3, 0x5b, 0x9c, 0x34, 0x6a, 0x06, 0x94, 0xa7, 0x94, 0xbb, 0x2d, 0xc2, 0x8b, 0x96, 0x16, 0x08,
+	0xb2, 0xe1, 0x06, 0x34, 0xce, 0x54, 0xdd, 0xfe, 0x35, 0x8e, 0xa6, 0x9e, 0xa8, 0x51, 0x2f, 0x05,
+	0x11, 0x80, 0x5d, 0x34, 0xd1, 0x26, 0x8c, 0xa4, 0xbc, 0x61, 0xac, 0x19, 0xeb, 0xf5, 0xcd, 0x39,
+	0xa7, 0x3f, 0xda, 0xd9, 0x97, 0x85, 0xe6, 0xd8, 0x49, 0xd7, 0xaa, 0x79, 0x9a, 0x86, 0xf7, 0x11,
+	0x7e, 0x07, 0x10, 0x02, 0xf3, 0x43, 0x48, 0x20, 0x22, 0x22, 0xa6, 0x19, 0x6f, 0x8c, 0xac, 0x8d,
+	0xae, 0xd7, 0x37, 0x97, 0x2b, 0xcd, 0x2f, 0xe4, 0x69, 0xb7, 0xcf, 0xd1, 0x32, 0x73, 0xaa, 0x79,
+	0x80, 0x73, 0xdc, 0x41, 0x33, 0xd0, 0x09, 0x0e, 0x49, 0x16, 0x81, 0xcf, 0x88, 0x00, 0xde, 0x18,
+	0x95, 0x6a, 0x2b, 0x8e, 0x0a, 0xe3, 0x14, 0x61, 0x1c, 0x1d, 0xc6, 0xd9, 0x85, 0x60, 0x87, 0xc6,
+	0x59, 0x73, 0xab, 0x90, 0xfb, 0xf6, 0xc3, 0xba, 0x17, 0xc5, 0xe2, 0xf0, 0xa8, 0xe5, 0x04, 0x34,
+	0x75, 0x75, 0x78, 0xf5, 0xb9, 0xcf, 0xc3, 0x0f, 0xae, 0x38, 0x6e, 0x03, 0x2f, 0x7b, 0xb8, 0x37,
+	0x5d, 0x0e, 0xf2, 0x8a, 0x39, 0xf8, 0x19, 0x9a, 0x4e, 0x63, 0xce, 0xfd, 0x80, 0x1e, 0x65, 0x02,
+	0x18, 0x6f, 0x8c, 0xc9, 0xc1, 0x56, 0x25, 0xc6, 0x01, 0x49, 0xe2, 0x90, 0x08, 0xca, 0x9e, 0xc7,
+	0x9c, 0xef, 0x28, 0x9e, 0x8e, 0x32, 0x95, 0x0e, 0x20, 0x8e, 0xbf, 0x18, 0x68, 0x8d, 0x44, 0x11,
+	0x2b, 0x62, 0x81, 0x7f, 0x21, 0x90, 0xdf, 0x66, 0x90, 0xd3, 0x22, 0xd8, 0xb8, 0xd4, 0xbf, 0x5b,
+	0xd1, 0xdf, 0x2e, 0x5b, 0xf6, 0x2a, 0xce, 0xf6, 0x15, 0xbf, 0x79, 0x47, 0x67, 0x34, 0xdf, 0xbc,
+	0xbd, 0x8a, 0xe7, 0xad, 0x92, 0x2b, 0xaa, 0x1c, 0x7f, 0x34, 0xd0, 0xea, 0x30, 0x6b, 0xca, 0xd7,
+	0x84, 0xf4, 0x75, 0xfb, 0x5f, 0xbe, 0x0e, 0x0a, 0x53, 0xb7, 0xb4, 0xa9, 0xe5, 0x21, 0xa6, 0x0a,
+	0x92, 0xb7, 0x44, 0x86, 0x95, 0x38, 0x66, 0xa8, 0x2e, 0x68, 0x2b, 0xce, 0x7c, 0x41, 0x3a, 0xc0,
+	0x1b, 0xd7, 0xfe, 0xd7, 0x65, 0x23, 0x39, 0xe5, 0x55, 0x31, 0xc4, 0xfe, 0x6a, 0xa0, 0xd9, 0xcb,
+	0x1b, 0x89, 0x9f, 0xa2, 0x39, 0xbd, 0xc3, 0x94, 0xf9, 0x24, 0x0c, 0x19, 0x70, 0xf5, 0x1b, 0x4c,
+	0x36, 0x57, 0x7a, 0x5d, 0xab, 0x71, 0x4c, 0xd2, 0xe4, 0xa1, 0xfd, 0x07, 0xc5, 0xf6, 0x66, 0xfb,
+	0xd8, 0xb6, 0x82, 0xf0, 0x63, 0x54, 0x62, 0xd0, 0x57, 0x1a, 0x91, 0x4a, 0xcb, 0xbd, 0xae, 0xb5,
+	0x78, 0x41, 0x09, 0x06, 0x42, 0xd7, 0x4b, 0x48, 0xeb, 0xd8, 0x9f, 0x0d, 0x34, 0xff, 0xb7, 0x95,
+	0xc3, 0x0f, 0x50, 0x3d, 0x27, 0xc9, 0x25, 0x97, 0x0b, 0xbd, 0xae, 0x85, 0x95, 0x76, 0xa5, 0x68,
+	0x7b, 0x28, 0x27, 0x49, 0xe9, 0xec, 0x11, 0x9a, 0x29, 0xf6, 0x14, 0xc2, 0x72, 0xcb, 0xa5, 0xaf,
+	0xd1, 0xe6, 0xcd, 0x5e, 0xd7, 0xba, 0xa1, 0x7a, 0x2f, 0xd6, 0x6d, 0x6f, 0x5a, 0x01, 0xe5, 0xb6,
+	0xef, 0x9d, 0x9c, 0x99, 0xc6, 0xe9, 0x99, 0x69, 0xfc, 0x3c, 0x33, 0x8d, 0x4f, 0xe7, 0x66, 0xed,
+	0xf4, 0xdc, 0xac, 0x7d, 0x3f, 0x37, 0x6b, 0xaf, 0xab, 0xd7, 0xd1, 0x86, 0x28, 0x3a, 0x7e, 0x9f,
+	0xbb, 0x9c, 0xa6, 0x29, 0x24, 0x31, 0x30, 0xb7, 0xa3, 0x1f, 0x2c, 0x75, 0x2f, 0xad, 0x09, 0xf9,
+	0x02, 0x6d, 0xfd, 0x0e, 0x00, 0x00, 0xff, 0xff, 0x3e, 0x9a, 0xdb, 0xf6, 0xf5, 0x04, 0x00, 0x00,
 }
 
 func (m *GenesisState) Marshal() (dAtA []byte, err error) {
@@ -227,18 +342,15 @@ func (m *GenesisState) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 		}
 	}
 	if len(m.MissCounters) > 0 {
-		for k := range m.MissCounters {
-			v := m.MissCounters[k]
-			baseI := i
-			i = encodeVarintGenesis(dAtA, i, uint64(v))
-			i--
-			dAtA[i] = 0x10
-			i -= len(k)
-			copy(dAtA[i:], k)
-			i = encodeVarintGenesis(dAtA, i, uint64(len(k)))
-			i--
-			dAtA[i] = 0xa
-			i = encodeVarintGenesis(dAtA, i, uint64(baseI-i))
+		for iNdEx := len(m.MissCounters) - 1; iNdEx >= 0; iNdEx-- {
+			{
+				size, err := m.MissCounters[iNdEx].MarshalToSizedBuffer(dAtA[:i])
+				if err != nil {
+					return 0, err
+				}
+				i -= size
+				i = encodeVarintGenesis(dAtA, i, uint64(size))
+			}
 			i--
 			dAtA[i] = 0x22
 		}
@@ -258,20 +370,15 @@ func (m *GenesisState) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 		}
 	}
 	if len(m.FeederDelegations) > 0 {
-		for k := range m.FeederDelegations {
-			v := m.FeederDelegations[k]
-			baseI := i
-			i -= len(v)
-			copy(dAtA[i:], v)
-			i = encodeVarintGenesis(dAtA, i, uint64(len(v)))
-			i--
-			dAtA[i] = 0x12
-			i -= len(k)
-			copy(dAtA[i:], k)
-			i = encodeVarintGenesis(dAtA, i, uint64(len(k)))
-			i--
-			dAtA[i] = 0xa
-			i = encodeVarintGenesis(dAtA, i, uint64(baseI-i))
+		for iNdEx := len(m.FeederDelegations) - 1; iNdEx >= 0; iNdEx-- {
+			{
+				size, err := m.FeederDelegations[iNdEx].MarshalToSizedBuffer(dAtA[:i])
+				if err != nil {
+					return 0, err
+				}
+				i -= size
+				i = encodeVarintGenesis(dAtA, i, uint64(size))
+			}
 			i--
 			dAtA[i] = 0x12
 		}
@@ -286,6 +393,78 @@ func (m *GenesisState) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	}
 	i--
 	dAtA[i] = 0xa
+	return len(dAtA) - i, nil
+}
+
+func (m *OracleDelegation) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *OracleDelegation) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *OracleDelegation) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.DelegateAddress) > 0 {
+		i -= len(m.DelegateAddress)
+		copy(dAtA[i:], m.DelegateAddress)
+		i = encodeVarintGenesis(dAtA, i, uint64(len(m.DelegateAddress)))
+		i--
+		dAtA[i] = 0x12
+	}
+	if len(m.DelegatorAddress) > 0 {
+		i -= len(m.DelegatorAddress)
+		copy(dAtA[i:], m.DelegatorAddress)
+		i = encodeVarintGenesis(dAtA, i, uint64(len(m.DelegatorAddress)))
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *ValidatorMissCounter) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *ValidatorMissCounter) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *ValidatorMissCounter) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if m.MissedCounter != 0 {
+		i = encodeVarintGenesis(dAtA, i, uint64(m.MissedCounter))
+		i--
+		dAtA[i] = 0x10
+	}
+	if len(m.ValAddress) > 0 {
+		i -= len(m.ValAddress)
+		copy(dAtA[i:], m.ValAddress)
+		i = encodeVarintGenesis(dAtA, i, uint64(len(m.ValAddress)))
+		i--
+		dAtA[i] = 0xa
+	}
 	return len(dAtA) - i, nil
 }
 
@@ -309,11 +488,9 @@ func (m *GenesisState) Size() (n int) {
 	l = m.Params.Size()
 	n += 1 + l + sovGenesis(uint64(l))
 	if len(m.FeederDelegations) > 0 {
-		for k, v := range m.FeederDelegations {
-			_ = k
-			_ = v
-			mapEntrySize := 1 + len(k) + sovGenesis(uint64(len(k))) + 1 + len(v) + sovGenesis(uint64(len(v)))
-			n += mapEntrySize + 1 + sovGenesis(uint64(mapEntrySize))
+		for _, e := range m.FeederDelegations {
+			l = e.Size()
+			n += 1 + l + sovGenesis(uint64(l))
 		}
 	}
 	if len(m.ExchangeRates) > 0 {
@@ -323,11 +500,9 @@ func (m *GenesisState) Size() (n int) {
 		}
 	}
 	if len(m.MissCounters) > 0 {
-		for k, v := range m.MissCounters {
-			_ = k
-			_ = v
-			mapEntrySize := 1 + len(k) + sovGenesis(uint64(len(k))) + 1 + sovGenesis(uint64(v))
-			n += mapEntrySize + 1 + sovGenesis(uint64(mapEntrySize))
+		for _, e := range m.MissCounters {
+			l = e.Size()
+			n += 1 + l + sovGenesis(uint64(l))
 		}
 	}
 	if len(m.AggregateExchangeRatePrevotes) > 0 {
@@ -347,6 +522,39 @@ func (m *GenesisState) Size() (n int) {
 			l = e.Size()
 			n += 1 + l + sovGenesis(uint64(l))
 		}
+	}
+	return n
+}
+
+func (m *OracleDelegation) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.DelegatorAddress)
+	if l > 0 {
+		n += 1 + l + sovGenesis(uint64(l))
+	}
+	l = len(m.DelegateAddress)
+	if l > 0 {
+		n += 1 + l + sovGenesis(uint64(l))
+	}
+	return n
+}
+
+func (m *ValidatorMissCounter) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.ValAddress)
+	if l > 0 {
+		n += 1 + l + sovGenesis(uint64(l))
+	}
+	if m.MissedCounter != 0 {
+		n += 1 + sovGenesis(uint64(m.MissedCounter))
 	}
 	return n
 }
@@ -448,103 +656,10 @@ func (m *GenesisState) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			if m.FeederDelegations == nil {
-				m.FeederDelegations = make(map[string]string)
+			m.FeederDelegations = append(m.FeederDelegations, OracleDelegation{})
+			if err := m.FeederDelegations[len(m.FeederDelegations)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
 			}
-			var mapkey string
-			var mapvalue string
-			for iNdEx < postIndex {
-				entryPreIndex := iNdEx
-				var wire uint64
-				for shift := uint(0); ; shift += 7 {
-					if shift >= 64 {
-						return ErrIntOverflowGenesis
-					}
-					if iNdEx >= l {
-						return io.ErrUnexpectedEOF
-					}
-					b := dAtA[iNdEx]
-					iNdEx++
-					wire |= uint64(b&0x7F) << shift
-					if b < 0x80 {
-						break
-					}
-				}
-				fieldNum := int32(wire >> 3)
-				if fieldNum == 1 {
-					var stringLenmapkey uint64
-					for shift := uint(0); ; shift += 7 {
-						if shift >= 64 {
-							return ErrIntOverflowGenesis
-						}
-						if iNdEx >= l {
-							return io.ErrUnexpectedEOF
-						}
-						b := dAtA[iNdEx]
-						iNdEx++
-						stringLenmapkey |= uint64(b&0x7F) << shift
-						if b < 0x80 {
-							break
-						}
-					}
-					intStringLenmapkey := int(stringLenmapkey)
-					if intStringLenmapkey < 0 {
-						return ErrInvalidLengthGenesis
-					}
-					postStringIndexmapkey := iNdEx + intStringLenmapkey
-					if postStringIndexmapkey < 0 {
-						return ErrInvalidLengthGenesis
-					}
-					if postStringIndexmapkey > l {
-						return io.ErrUnexpectedEOF
-					}
-					mapkey = string(dAtA[iNdEx:postStringIndexmapkey])
-					iNdEx = postStringIndexmapkey
-				} else if fieldNum == 2 {
-					var stringLenmapvalue uint64
-					for shift := uint(0); ; shift += 7 {
-						if shift >= 64 {
-							return ErrIntOverflowGenesis
-						}
-						if iNdEx >= l {
-							return io.ErrUnexpectedEOF
-						}
-						b := dAtA[iNdEx]
-						iNdEx++
-						stringLenmapvalue |= uint64(b&0x7F) << shift
-						if b < 0x80 {
-							break
-						}
-					}
-					intStringLenmapvalue := int(stringLenmapvalue)
-					if intStringLenmapvalue < 0 {
-						return ErrInvalidLengthGenesis
-					}
-					postStringIndexmapvalue := iNdEx + intStringLenmapvalue
-					if postStringIndexmapvalue < 0 {
-						return ErrInvalidLengthGenesis
-					}
-					if postStringIndexmapvalue > l {
-						return io.ErrUnexpectedEOF
-					}
-					mapvalue = string(dAtA[iNdEx:postStringIndexmapvalue])
-					iNdEx = postStringIndexmapvalue
-				} else {
-					iNdEx = entryPreIndex
-					skippy, err := skipGenesis(dAtA[iNdEx:])
-					if err != nil {
-						return err
-					}
-					if skippy < 0 {
-						return ErrInvalidLengthGenesis
-					}
-					if (iNdEx + skippy) > postIndex {
-						return io.ErrUnexpectedEOF
-					}
-					iNdEx += skippy
-				}
-			}
-			m.FeederDelegations[mapkey] = mapvalue
 			iNdEx = postIndex
 		case 3:
 			if wireType != 2 {
@@ -609,89 +724,10 @@ func (m *GenesisState) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			if m.MissCounters == nil {
-				m.MissCounters = make(map[string]int64)
+			m.MissCounters = append(m.MissCounters, ValidatorMissCounter{})
+			if err := m.MissCounters[len(m.MissCounters)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
 			}
-			var mapkey string
-			var mapvalue int64
-			for iNdEx < postIndex {
-				entryPreIndex := iNdEx
-				var wire uint64
-				for shift := uint(0); ; shift += 7 {
-					if shift >= 64 {
-						return ErrIntOverflowGenesis
-					}
-					if iNdEx >= l {
-						return io.ErrUnexpectedEOF
-					}
-					b := dAtA[iNdEx]
-					iNdEx++
-					wire |= uint64(b&0x7F) << shift
-					if b < 0x80 {
-						break
-					}
-				}
-				fieldNum := int32(wire >> 3)
-				if fieldNum == 1 {
-					var stringLenmapkey uint64
-					for shift := uint(0); ; shift += 7 {
-						if shift >= 64 {
-							return ErrIntOverflowGenesis
-						}
-						if iNdEx >= l {
-							return io.ErrUnexpectedEOF
-						}
-						b := dAtA[iNdEx]
-						iNdEx++
-						stringLenmapkey |= uint64(b&0x7F) << shift
-						if b < 0x80 {
-							break
-						}
-					}
-					intStringLenmapkey := int(stringLenmapkey)
-					if intStringLenmapkey < 0 {
-						return ErrInvalidLengthGenesis
-					}
-					postStringIndexmapkey := iNdEx + intStringLenmapkey
-					if postStringIndexmapkey < 0 {
-						return ErrInvalidLengthGenesis
-					}
-					if postStringIndexmapkey > l {
-						return io.ErrUnexpectedEOF
-					}
-					mapkey = string(dAtA[iNdEx:postStringIndexmapkey])
-					iNdEx = postStringIndexmapkey
-				} else if fieldNum == 2 {
-					for shift := uint(0); ; shift += 7 {
-						if shift >= 64 {
-							return ErrIntOverflowGenesis
-						}
-						if iNdEx >= l {
-							return io.ErrUnexpectedEOF
-						}
-						b := dAtA[iNdEx]
-						iNdEx++
-						mapvalue |= int64(b&0x7F) << shift
-						if b < 0x80 {
-							break
-						}
-					}
-				} else {
-					iNdEx = entryPreIndex
-					skippy, err := skipGenesis(dAtA[iNdEx:])
-					if err != nil {
-						return err
-					}
-					if skippy < 0 {
-						return ErrInvalidLengthGenesis
-					}
-					if (iNdEx + skippy) > postIndex {
-						return io.ErrUnexpectedEOF
-					}
-					iNdEx += skippy
-				}
-			}
-			m.MissCounters[mapkey] = mapvalue
 			iNdEx = postIndex
 		case 5:
 			if wireType != 2 {
@@ -795,6 +831,227 @@ func (m *GenesisState) Unmarshal(dAtA []byte) error {
 				return err
 			}
 			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipGenesis(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if skippy < 0 {
+				return ErrInvalidLengthGenesis
+			}
+			if (iNdEx + skippy) < 0 {
+				return ErrInvalidLengthGenesis
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *OracleDelegation) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowGenesis
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: OracleDelegation: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: OracleDelegation: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field DelegatorAddress", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowGenesis
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthGenesis
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthGenesis
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.DelegatorAddress = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field DelegateAddress", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowGenesis
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthGenesis
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthGenesis
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.DelegateAddress = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipGenesis(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if skippy < 0 {
+				return ErrInvalidLengthGenesis
+			}
+			if (iNdEx + skippy) < 0 {
+				return ErrInvalidLengthGenesis
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *ValidatorMissCounter) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowGenesis
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: ValidatorMissCounter: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: ValidatorMissCounter: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field ValAddress", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowGenesis
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthGenesis
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthGenesis
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.ValAddress = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 2:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field MissedCounter", wireType)
+			}
+			m.MissedCounter = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowGenesis
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.MissedCounter |= int64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
 		default:
 			iNdEx = preIndex
 			skippy, err := skipGenesis(dAtA[iNdEx:])

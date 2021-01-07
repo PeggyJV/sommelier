@@ -16,7 +16,7 @@ require (
 	github.com/stretchr/testify v1.6.1
 	github.com/tendermint/tendermint v0.34.0
 	github.com/tendermint/tm-db v0.6.3
-	google.golang.org/genproto v0.0.0-20201214200347-8c77b98c765d
+	google.golang.org/genproto v0.0.0-20210106152847-07624b53cd92
 	google.golang.org/grpc v1.33.2
 	gopkg.in/yaml.v2 v2.4.0
 )

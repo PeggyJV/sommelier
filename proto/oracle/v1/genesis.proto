@@ -13,14 +13,14 @@ message GenesisState {
     Params                                params                           = 1 [
         (gogoproto.nullable) = false
     ];
-    map<string, string>                   feeder_delegations               = 2 [
+    repeated OracleDelegation             feeder_delegations               = 2 [
         (gogoproto.nullable) = false
     ];
     repeated cosmos.base.v1beta1.DecCoin  exchange_rates                   = 3 [
         (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.DecCoins", 
         (gogoproto.nullable) = false
     ];
-    map<string, int64>                    miss_counters                    = 4 [
+    repeated ValidatorMissCounter   miss_counters                           = 4 [
         (gogoproto.nullable) = false
     ];
     repeated AggregateExchangeRatePrevote aggregate_exchange_rate_prevotes = 5 [
@@ -36,4 +36,20 @@ message GenesisState {
         (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.DecCoins", 
         (gogoproto.nullable) = false
     ];
+}
+
+// OracleDelegation represents a delegator-delegate pair for an oracle delegation
+message OracleDelegation {
+    // validator delegator address
+    string delegator_address = 1 [(gogoproto.moretags) = "yaml:\"delegator_address\""];
+    // account delegate address
+    string  delegate_address = 2 [(gogoproto.moretags) = "yaml:\"delegate_address\""];
+}
+
+// ValidatorMissCounter represents a per validator miss counter
+message ValidatorMissCounter {
+    // validator operator address
+    string val_address = 1 [(gogoproto.moretags) = "yaml:\"val_address\""];
+    // missed oracle counter
+    int64  missed_counter = 2 [(gogoproto.moretags) = "yaml:\"missed_counter\""];
 }
