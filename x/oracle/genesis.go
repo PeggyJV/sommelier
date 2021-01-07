@@ -92,17 +92,8 @@ func ExportGenesis(ctx sdk.Context, keeper keeper.Keeper) (data types.GenesisSta
 		return false
 	})
 
-	var aggregateExchangeRateVotes []types.AggregateExchangeRateVote
-	keeper.IterateAggregateExchangeRateVotes(ctx, func(aggregateVote types.AggregateExchangeRateVote) bool {
-		aggregateExchangeRateVotes = append(aggregateExchangeRateVotes, aggregateVote)
-		return false
-	})
-
-	tobinTaxes := make(sdk.DecCoins, 0)
-	keeper.IterateTobinTaxes(ctx, func(denom string, tobinTax sdk.Dec) (stop bool) {
-		tobinTaxes = append(tobinTaxes, sdk.DecCoin{Amount: tobinTax, Denom: denom})
-		return false
-	})
+	aggregateExchangeRateVotes := keeper.GetAggregateExchangeRateVotes(ctx)
+	tobinTaxes := keeper.GetTobinTaxes(ctx)
 
 	return types.NewGenesisState(params, rates, feederDelegations, missCounters, aggregateExchangeRatePrevotes, aggregateExchangeRateVotes, tobinTaxes)
 }

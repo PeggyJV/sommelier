@@ -197,6 +197,15 @@ func (k Keeper) GetUSDExchangeRate(ctx sdk.Context, denom string) (exchangeRate 
 	return
 }
 
+func (k Keeper) GetUSDExchangeRates(ctx sdk.Context) sdk.DecCoins {
+	rates := make(sdk.DecCoins, 0)
+	k.IterateUSDExchangeRates(ctx, func(denom string, rate sdk.Dec) (stop bool) {
+		rates = rates.Add(sdk.NewDecCoinFromDec(denom, rate))
+		return false
+	})
+	return rates
+}
+
 // SetUSDExchangeRate sets the consensus exchange rate of USD denominated in the denom asset to the store.
 func (k Keeper) SetUSDExchangeRate(ctx sdk.Context, denom string, exchangeRate sdk.Dec) {
 	store := ctx.KVStore(k.storeKey)
@@ -423,6 +432,17 @@ func (k Keeper) DeleteAggregateExchangeRateVote(ctx sdk.Context, aggregateVote t
 	store.Delete(types.GetAggregateExchangeRateVoteKey(voter))
 }
 
+// GetAggregateExchangeRateVotes returns all the votes for aggregate exchange rates.
+func (k Keeper) GetAggregateExchangeRateVotes(ctx sdk.Context) []types.AggregateExchangeRateVote {
+	var aggregateExchangeRateVotes []types.AggregateExchangeRateVote
+	k.IterateAggregateExchangeRateVotes(ctx, func(aggregateVote types.AggregateExchangeRateVote) bool {
+		aggregateExchangeRateVotes = append(aggregateExchangeRateVotes, aggregateVote)
+		return false
+	})
+
+	return aggregateExchangeRateVotes
+}
+
 // IterateAggregateExchangeRateVotes iterates rate over prevotes in the store
 func (k Keeper) IterateAggregateExchangeRateVotes(ctx sdk.Context, handler func(aggregateVote types.AggregateExchangeRateVote) (stop bool)) {
 	store := ctx.KVStore(k.storeKey)
@@ -459,6 +479,18 @@ func (k Keeper) SetTobinTax(ctx sdk.Context, denom string, tobinTax sdk.Dec) {
 		panic(err)
 	}
 	store.Set(types.GetTobinTaxKey(denom), bz)
+}
+
+// GetTobinTaxes returns all the TobinTaxes as SDK DecCoins
+func (k Keeper) GetTobinTaxes(ctx sdk.Context) sdk.DecCoins {
+	tobinTaxes := make(sdk.DecCoins, 0)
+
+	k.IterateTobinTaxes(ctx, func(denom string, tobinTax sdk.Dec) (stop bool) {
+		tobinTaxes = tobinTaxes.Add(sdk.NewDecCoinFromDec(denom, tobinTax))
+		return false
+	})
+
+	return tobinTaxes
 }
 
 // IterateTobinTaxes iterates rate over tobin taxes in the store
