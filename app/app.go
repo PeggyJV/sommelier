@@ -8,6 +8,7 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/codec/types"
+	"github.com/cosmos/cosmos-sdk/simapp"
 	"github.com/gorilla/mux"
 	"github.com/rakyll/statik/fs"
 
@@ -143,7 +144,7 @@ var (
 )
 
 var (
-	_ App                     = (*SommelierApp)(nil)
+	_ simapp.App              = (*SommelierApp)(nil)
 	_ servertypes.Application = (*SommelierApp)(nil)
 )
 

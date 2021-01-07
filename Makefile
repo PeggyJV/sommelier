@@ -233,11 +233,11 @@ proto-lint:
 	@$(DOCKER_BUF) check lint --error-format=json
 
 proto-check-breaking:
-	@$(DOCKER_BUF) check breaking --against-input $(HTTPS_GIT)#branch=master
+	@$(DOCKER_BUF) check breaking --against-input $(HTTPS_GIT)#branch=main
 
 TM_URL           = https://raw.githubusercontent.com/tendermint/tendermint/v0.34.0/proto/tendermint
 GOGO_PROTO_URL   = https://raw.githubusercontent.com/regen-network/protobuf/cosmos
-COSMOS_PROTO_URL = https://raw.githubusercontent.com/regen-network/cosmos-proto/master
+COSMOS_PROTO_URL = https://raw.githubusercontent.com/regen-network/cosmos-proto/main
 COSMOS_SDK_PROTO_URL = https://raw.githubusercontent.com/cosmos/cosmos-sdk/v0.40.0-rc6/proto/cosmos/base
 
 TM_CRYPTO_TYPES     = third_party/proto/tendermint/crypto
