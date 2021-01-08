@@ -107,8 +107,9 @@ $ sommelier tx oracle aggregate-prevote 1234 8888.0ukrw,1.243uusd,0.99usdr terra
 
 			salt := args[0]
 			exchangeRatesStr := args[1]
-			if _, err := types.ParseExchangeRateTuples(exchangeRatesStr); err != nil {
-				return fmt.Errorf("given exchange_rates {%s} is not a valid format; exchange_rate should be formatted as DecCoins; %s", exchangeRatesStr, err.Error())
+			_, err = sdk.ParseDecCoins(exchangeRatesStr)
+			if err != nil {
+				return fmt.Errorf("invalid exchange rates: %w", err)
 			}
 
 			// Get from address
@@ -167,8 +168,9 @@ $ sommelier tx oracle aggregate-vote 1234 8888.0ukrw,1.243uusd,0.99usdr terraval
 
 			salt := args[0]
 			exchangeRatesStr := args[1]
-			if _, err := types.ParseExchangeRateTuples(exchangeRatesStr); err != nil {
-				return fmt.Errorf("given exchange_rate {%s} is not a valid format; exchange rate should be formatted as DecCoin; %s", exchangeRatesStr, err.Error())
+			_, err = sdk.ParseDecCoins(exchangeRatesStr)
+			if err != nil {
+				return fmt.Errorf("invalid exchange rates: %w", err)
 			}
 
 			// Get from address

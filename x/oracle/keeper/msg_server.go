@@ -3,7 +3,6 @@ package keeper
 import (
 	"bytes"
 	"context"
-	"fmt"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
@@ -130,14 +129,12 @@ func (m msgServer) AggregateExchangeRateVote(c context.Context, msg *types.MsgAg
 	}
 
 	// Check a msg is submitted proper period
-	if (ctx.BlockHeight()/params.VotePeriod)-(aggregatePrevote.SubmitBlock/params.VotePeriod) != 1 {
+	if ctx.BlockHeight()-aggregatePrevote.SubmitBlock/params.VotePeriod != 1 {
 		return nil, types.ErrRevealPeriodMissMatch
 	}
 
-	exchangeRateTuples, err := types.ParseExchangeRateTuples(msg.ExchangeRates)
-	if err != nil {
-		return nil, sdkerrors.Wrap(sdkerrors.ErrInvalidCoins, err.Error())
-	}
+	// NOTE: error checked on msg validation
+	exchangeRateTuples, _ := sdk.ParseDecCoins(msg.ExchangeRates)
 
 	// check all denoms are in the vote target
 	for _, tuple := range exchangeRateTuples {
@@ -154,7 +151,7 @@ func (m msgServer) AggregateExchangeRateVote(c context.Context, msg *types.MsgAg
 	// Verify a exchange rate with aggregate prevote hash
 	hash := types.GetAggregateVoteHash(msg.Salt, msg.ExchangeRates, voter)
 	if !bytes.Equal(aggregatePrevote.Hash, hash.Bytes()) {
-		return nil, sdkerrors.Wrap(types.ErrVerificationFailed, fmt.Sprintf("must be given %s not %s", aggregatePrevote.Hash, hash))
+		return nil, sdkerrors.Wrapf(types.ErrVerificationFailed, "must be given %s not %s", aggregatePrevote.Hash, hash)
 	}
 
 	// Move aggregate prevote to aggregate vote with given exchange rates
