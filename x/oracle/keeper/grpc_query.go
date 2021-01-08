@@ -6,8 +6,11 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
+	"github.com/cosmos/cosmos-sdk/store/prefix"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	"github.com/cosmos/cosmos-sdk/types/query"
+
 	"github.com/peggyjv/sommelier/x/oracle/types"
 )
 
@@ -33,8 +36,32 @@ func (k Keeper) ExchangeRates(c context.Context, req *types.QueryExchangeRatesRe
 		return nil, status.Error(codes.InvalidArgument, "empty request")
 	}
 
-	rates := k.GetUSDExchangeRates(sdk.UnwrapSDKContext(c))
-	return &types.QueryExchangeRatesResponse{Rates: rates}, nil
+	ctx := sdk.UnwrapSDKContext(c)
+	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.ExchangeRateKey)
+
+	rates := sdk.DecCoins{}
+	pageRes, err := query.Paginate(store, req.Pagination, func(key, value []byte) error {
+		var result sdk.Dec
+		err := result.Unmarshal(value)
+		if err != nil {
+			return err
+		}
+
+		denom := string(key)
+		rate := sdk.NewDecCoinFromDec(denom, result)
+
+		rates = rates.Add(rate)
+		return nil
+	})
+
+	if err != nil {
+		return nil, err
+	}
+
+	return &types.QueryExchangeRatesResponse{
+		Rates:      rates,
+		Pagination: pageRes,
+	}, nil
 }
 
 // Actives returns the active denoms
@@ -43,21 +70,27 @@ func (k Keeper) Actives(c context.Context, req *types.QueryActivesRequest) (*typ
 		return nil, status.Error(codes.InvalidArgument, "empty request")
 	}
 
-	denoms := []string{}
-	k.IterateUSDExchangeRates(sdk.UnwrapSDKContext(c), func(denom string, _ sdk.Dec) (stop bool) {
-		denoms = append(denoms, denom)
-		return false
+	ctx := sdk.UnwrapSDKContext(c)
+	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.ExchangeRateKey)
+
+	actives := []string{}
+	pageRes, err := query.Paginate(store, req.Pagination, func(key, _ []byte) error {
+		actives = append(actives, string(key))
+		return nil
 	})
 
-	return &types.QueryActivesResponse{Denoms: denoms}, nil
+	if err != nil {
+		return nil, err
+	}
+
+	return &types.QueryActivesResponse{
+		Denoms:     actives,
+		Pagination: pageRes,
+	}, nil
 }
 
 // Parameters returns the oracle module parameters
-func (k Keeper) Parameters(c context.Context, req *types.QueryParametersRequest) (*types.QueryParametersResponse, error) {
-	if req == nil {
-		return nil, status.Error(codes.InvalidArgument, "empty request")
-	}
-
+func (k Keeper) Parameters(c context.Context, _ *types.QueryParametersRequest) (*types.QueryParametersResponse, error) {
 	return &types.QueryParametersResponse{Params: k.GetParams(sdk.UnwrapSDKContext(c))}, nil
 }
 
@@ -87,7 +120,15 @@ func (k Keeper) MissCounter(c context.Context, req *types.QueryMissCounterReques
 	if err != nil {
 		return nil, status.Error(codes.InvalidArgument, err.Error())
 	}
-	return &types.QueryMissCounterResponse{Counter: k.GetMissCounter(sdk.UnwrapSDKContext(c), addr)}, nil
+
+	ctx := sdk.UnwrapSDKContext(c)
+
+	counter, found := k.GetMissCounter(ctx, addr)
+	if !found {
+		return nil, status.Error(codes.NotFound, req.Validator)
+	}
+
+	return &types.QueryMissCounterResponse{Counter: counter}, nil
 }
 
 // AggregatePrevote returns the latest aggregate prevote from a given validator
@@ -134,8 +175,23 @@ func (k Keeper) VoteTargets(c context.Context, req *types.QueryVoteTargetsReques
 		return nil, status.Error(codes.InvalidArgument, "empty request")
 	}
 
+	ctx := sdk.UnwrapSDKContext(c)
+	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.TobinTaxKey)
+
+	targets := []string{}
+	pageRes, err := query.Paginate(store, req.Pagination, func(key, _ []byte) error {
+		denom := string(key)
+		targets = append(targets, denom)
+		return nil
+	})
+
+	if err != nil {
+		return nil, err
+	}
+
 	return &types.QueryVoteTargetsResponse{
-		Targets: k.GetVoteTargets(sdk.UnwrapSDKContext(c)),
+		Targets:    targets,
+		Pagination: pageRes,
 	}, nil
 }
 
@@ -159,6 +215,29 @@ func (k Keeper) TobinTaxes(c context.Context, req *types.QueryTobinTaxesRequest)
 		return nil, status.Error(codes.InvalidArgument, "empty request")
 	}
 
-	denoms := k.GetTobinTaxes(sdk.UnwrapSDKContext(c))
-	return &types.QueryTobinTaxesResponse{Rates: denoms}, nil
+	ctx := sdk.UnwrapSDKContext(c)
+	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.TobinTaxKey)
+
+	taxes := sdk.DecCoins{}
+	pageRes, err := query.Paginate(store, req.Pagination, func(key, value []byte) error {
+		var result sdk.Dec
+		err := result.Unmarshal(value)
+		if err != nil {
+			return err
+		}
+
+		denom := string(key)
+		rate := sdk.NewDecCoinFromDec(denom, result)
+
+		taxes = taxes.Add(rate)
+		return nil
+	})
+
+	if err != nil {
+		return nil, err
+	}
+	return &types.QueryTobinTaxesResponse{
+		Rates:      taxes,
+		Pagination: pageRes,
+	}, nil
 }

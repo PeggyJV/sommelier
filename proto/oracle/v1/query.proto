@@ -5,6 +5,7 @@ import "gogoproto/gogo.proto";
 import "oracle/v1/oracle.proto";
 import "google/api/annotations.proto";
 import "cosmos/base/v1beta1/coin.proto";
+import "cosmos/base/query/v1beta1/pagination.proto";
 
 
 option go_package = "github.com/peggyjv/sommelier/x/oracle/types";
@@ -45,24 +46,42 @@ service Query {
     }
 }
 
-message QueryExchangeRateRequest { string denom = 1; }
-message QueryExchangeRateResponse { 
-    string rate = 2 [
+message QueryExchangeRateRequest {
+    // token denomination
+    string denom = 1;
+}
+message QueryExchangeRateResponse {
+    // token exchange rate
+    string rate = 1 [
         (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec", 
         (gogoproto.nullable) = false
     ]; 
 }
 
-message QueryExchangeRatesRequest {}
-message QueryExchangeRatesResponse { 
-    repeated cosmos.base.v1beta1.DecCoin rates = 2 [
-        (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.DecCoins", 
-        (gogoproto.nullable) = false
-    ]; 
+message QueryExchangeRatesRequest {
+    // pagination request
+    cosmos.base.query.v1beta1.PageRequest pagination = 1;
 }
 
-message QueryActivesRequest {}
-message QueryActivesResponse { repeated string denoms = 1; }
+message QueryExchangeRatesResponse {
+    repeated cosmos.base.v1beta1.DecCoin rates = 1 [
+        (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.DecCoins", 
+        (gogoproto.nullable) = false
+    ];
+    // pagination response
+    cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
+message QueryActivesRequest {
+    // pagination request
+    cosmos.base.query.v1beta1.PageRequest pagination = 1;
+}
+
+message QueryActivesResponse {
+    repeated string denoms = 1;
+    // pagination response
+    cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
 
 message QueryParametersRequest {}
 message QueryParametersResponse { Params params = 1 [(gogoproto.nullable) = false]; }
@@ -79,16 +98,29 @@ message QueryAggregatePrevoteResponse { AggregateExchangeRatePrevote prevote = 1
 message QueryAggregateVoteRequest { string validator = 1; }
 message QueryAggregateVoteResponse { AggregateExchangeRateVote vote = 1 [(gogoproto.nullable) = false]; }
 
-message QueryVoteTargetsRequest {}
-message QueryVoteTargetsResponse { repeated string targets = 1; }
+message QueryVoteTargetsRequest {
+    // pagination request
+    cosmos.base.query.v1beta1.PageRequest pagination = 1;
+}
+message QueryVoteTargetsResponse {
+    repeated string targets = 1;
+    // pagination response
+    cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
 
 message QueryTobinTaxRequest { string denom = 1; }
-message QueryTobinTaxResponse { string rate = 2 [(gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec", (gogoproto.nullable) = false]; }
+message QueryTobinTaxResponse { string rate = 1 [(gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec", (gogoproto.nullable) = false]; }
 
-message QueryTobinTaxesRequest {}
+message QueryTobinTaxesRequest {
+    // pagination request
+    cosmos.base.query.v1beta1.PageRequest pagination = 1;
+}
+
 message QueryTobinTaxesResponse {
-    repeated cosmos.base.v1beta1.DecCoin rates = 2 [
+    repeated cosmos.base.v1beta1.DecCoin rates = 1 [
         (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.DecCoins", 
         (gogoproto.nullable) = false
     ];
+     // pagination response
+     cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }

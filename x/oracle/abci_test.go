@@ -314,9 +314,17 @@ func TestOracleRewardBand(t *testing.T) {
 
 	EndBlocker(input.Ctx, input.OracleKeeper)
 
-	require.Equal(t, int64(0), input.OracleKeeper.GetMissCounter(input.Ctx, keeper.ValAddrs[0]))
-	require.Equal(t, int64(0), input.OracleKeeper.GetMissCounter(input.Ctx, keeper.ValAddrs[1]))
-	require.Equal(t, int64(0), input.OracleKeeper.GetMissCounter(input.Ctx, keeper.ValAddrs[2]))
+	counter, found := input.OracleKeeper.GetMissCounter(input.Ctx, keeper.ValAddrs[0])
+	require.Equal(t, int64(0), counter)
+	require.False(t, found)
+
+	counter, found = input.OracleKeeper.GetMissCounter(input.Ctx, keeper.ValAddrs[1])
+	require.Equal(t, int64(0), counter)
+	require.False(t, found)
+
+	counter, found = input.OracleKeeper.GetMissCounter(input.Ctx, keeper.ValAddrs[2])
+	require.Equal(t, int64(0), counter)
+	require.False(t, found)
 
 	// Account 1 will miss the vote due to raward band condition
 	// Account 1, KRW
@@ -329,9 +337,18 @@ func TestOracleRewardBand(t *testing.T) {
 	makePrevoteAndVote(t, input, h, 0, types.MicroKRWDenom, randomExchangeRate.Add(rewardSpread), 2)
 
 	EndBlocker(input.Ctx, input.OracleKeeper)
-	require.Equal(t, int64(1), input.OracleKeeper.GetMissCounter(input.Ctx, keeper.ValAddrs[0]))
-	require.Equal(t, int64(0), input.OracleKeeper.GetMissCounter(input.Ctx, keeper.ValAddrs[1]))
-	require.Equal(t, int64(0), input.OracleKeeper.GetMissCounter(input.Ctx, keeper.ValAddrs[2]))
+
+	counter, found = input.OracleKeeper.GetMissCounter(input.Ctx, keeper.ValAddrs[0])
+	require.Equal(t, int64(1), counter)
+	require.True(t, found)
+
+	counter, found = input.OracleKeeper.GetMissCounter(input.Ctx, keeper.ValAddrs[1])
+	require.Equal(t, int64(0), counter)
+	require.False(t, found)
+
+	counter, found = input.OracleKeeper.GetMissCounter(input.Ctx, keeper.ValAddrs[2])
+	require.Equal(t, int64(0), counter)
+	require.False(t, found)
 
 }
 
@@ -510,7 +527,8 @@ func TestInvalidVotesSlashing(t *testing.T) {
 		makePrevoteAndVote(t, input, h, 0, types.MicroKRWDenom, randomExchangeRate, 2)
 
 		EndBlocker(input.Ctx, input.OracleKeeper)
-		require.Equal(t, i+1, input.OracleKeeper.GetMissCounter(input.Ctx, keeper.ValAddrs[1]))
+		counter, _ := input.OracleKeeper.GetMissCounter(input.Ctx, keeper.ValAddrs[1])
+		require.Equal(t, i+1, counter)
 	}
 
 	validator := input.StakingKeeper.Validator(input.Ctx, keeper.ValAddrs[1])
@@ -548,7 +566,8 @@ func TestWhitelistSlashing(t *testing.T) {
 		makePrevoteAndVote(t, input, h, 0, types.MicroKRWDenom, randomExchangeRate, 2)
 
 		EndBlocker(input.Ctx, input.OracleKeeper)
-		require.Equal(t, i+1, input.OracleKeeper.GetMissCounter(input.Ctx, keeper.ValAddrs[0]))
+		counter, _ := input.OracleKeeper.GetMissCounter(input.Ctx, keeper.ValAddrs[1])
+		require.Equal(t, i+1, counter)
 	}
 
 	validator := input.StakingKeeper.Validator(input.Ctx, keeper.ValAddrs[0])
@@ -583,9 +602,18 @@ func TestNotPassedBallotSlashing(t *testing.T) {
 	makePrevoteAndVote(t, input, h, 0, types.MicroKRWDenom, randomExchangeRate, 0)
 
 	EndBlocker(input.Ctx, input.OracleKeeper)
-	require.Equal(t, int64(0), input.OracleKeeper.GetMissCounter(input.Ctx, keeper.ValAddrs[0]))
-	require.Equal(t, int64(0), input.OracleKeeper.GetMissCounter(input.Ctx, keeper.ValAddrs[1]))
-	require.Equal(t, int64(0), input.OracleKeeper.GetMissCounter(input.Ctx, keeper.ValAddrs[2]))
+	counter, found := input.OracleKeeper.GetMissCounter(input.Ctx, keeper.ValAddrs[0])
+	require.Equal(t, int64(0), counter)
+	require.False(t, found)
+
+	counter, found = input.OracleKeeper.GetMissCounter(input.Ctx, keeper.ValAddrs[1])
+	require.Equal(t, int64(0), counter)
+	require.False(t, found)
+
+	counter, found = input.OracleKeeper.GetMissCounter(input.Ctx, keeper.ValAddrs[2])
+	require.Equal(t, int64(0), counter)
+	require.False(t, found)
+
 }
 
 func TestAbstainSlashing(t *testing.T) {
@@ -614,7 +642,8 @@ func TestAbstainSlashing(t *testing.T) {
 		makePrevoteAndVote(t, input, h, 0, types.MicroKRWDenom, randomExchangeRate, 2)
 
 		EndBlocker(input.Ctx, input.OracleKeeper)
-		require.Equal(t, int64(0), input.OracleKeeper.GetMissCounter(input.Ctx, keeper.ValAddrs[1]))
+		counter, _ := input.OracleKeeper.GetMissCounter(input.Ctx, keeper.ValAddrs[1])
+		require.Equal(t, int64(0), counter)
 	}
 
 	validator := input.StakingKeeper.Validator(input.Ctx, keeper.ValAddrs[1])
@@ -639,9 +668,17 @@ func TestVoteTargets(t *testing.T) {
 	EndBlocker(input.Ctx, input.OracleKeeper)
 
 	// no missing current
-	require.Equal(t, int64(0), input.OracleKeeper.GetMissCounter(input.Ctx, keeper.ValAddrs[0]))
-	require.Equal(t, int64(0), input.OracleKeeper.GetMissCounter(input.Ctx, keeper.ValAddrs[1]))
-	require.Equal(t, int64(0), input.OracleKeeper.GetMissCounter(input.Ctx, keeper.ValAddrs[2]))
+	counter, found := input.OracleKeeper.GetMissCounter(input.Ctx, keeper.ValAddrs[0])
+	require.Equal(t, int64(0), counter)
+	require.False(t, found)
+
+	counter, found = input.OracleKeeper.GetMissCounter(input.Ctx, keeper.ValAddrs[1])
+	require.Equal(t, int64(0), counter)
+	require.False(t, found)
+
+	counter, found = input.OracleKeeper.GetMissCounter(input.Ctx, keeper.ValAddrs[2])
+	require.Equal(t, int64(0), counter)
+	require.False(t, found)
 
 	// vote targets are {KRW, SDR}
 	require.Equal(t, []string{types.MicroKRWDenom, types.MicroSDRDenom}, input.OracleKeeper.GetVoteTargets(input.Ctx))
@@ -662,9 +699,17 @@ func TestVoteTargets(t *testing.T) {
 
 	EndBlocker(input.Ctx, input.OracleKeeper)
 
-	require.Equal(t, int64(1), input.OracleKeeper.GetMissCounter(input.Ctx, keeper.ValAddrs[0]))
-	require.Equal(t, int64(1), input.OracleKeeper.GetMissCounter(input.Ctx, keeper.ValAddrs[1]))
-	require.Equal(t, int64(1), input.OracleKeeper.GetMissCounter(input.Ctx, keeper.ValAddrs[2]))
+	counter, found = input.OracleKeeper.GetMissCounter(input.Ctx, keeper.ValAddrs[0])
+	require.Equal(t, int64(1), counter)
+	require.True(t, found)
+
+	counter, found = input.OracleKeeper.GetMissCounter(input.Ctx, keeper.ValAddrs[1])
+	require.Equal(t, int64(1), counter)
+	require.True(t, found)
+
+	counter, found = input.OracleKeeper.GetMissCounter(input.Ctx, keeper.ValAddrs[2])
+	require.Equal(t, int64(1), counter)
+	require.True(t, found)
 
 	// SDR must be deleted
 	require.Equal(t, []string{types.MicroKRWDenom}, input.OracleKeeper.GetVoteTargets(input.Ctx))
@@ -683,9 +728,17 @@ func TestVoteTargets(t *testing.T) {
 
 	EndBlocker(input.Ctx, input.OracleKeeper)
 
-	require.Equal(t, int64(1), input.OracleKeeper.GetMissCounter(input.Ctx, keeper.ValAddrs[0]))
-	require.Equal(t, int64(1), input.OracleKeeper.GetMissCounter(input.Ctx, keeper.ValAddrs[1]))
-	require.Equal(t, int64(1), input.OracleKeeper.GetMissCounter(input.Ctx, keeper.ValAddrs[2]))
+	counter, found = input.OracleKeeper.GetMissCounter(input.Ctx, keeper.ValAddrs[0])
+	require.Equal(t, int64(1), counter)
+	require.True(t, found)
+
+	counter, found = input.OracleKeeper.GetMissCounter(input.Ctx, keeper.ValAddrs[1])
+	require.Equal(t, int64(1), counter)
+	require.True(t, found)
+
+	counter, found = input.OracleKeeper.GetMissCounter(input.Ctx, keeper.ValAddrs[2])
+	require.Equal(t, int64(1), counter)
+	require.True(t, found)
 
 	// KRW tobin tax must be 0
 	tobinTax, err := input.OracleKeeper.GetTobinTax(input.Ctx, types.MicroKRWDenom)

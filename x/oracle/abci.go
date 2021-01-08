@@ -97,7 +97,9 @@ func EndBlocker(ctx sdk.Context, k keeper.Keeper) {
 		if err != nil {
 			panic(err)
 		}
-		k.SetMissCounter(ctx, operator, k.GetMissCounter(ctx, operator)+1)
+
+		counter, _ := k.GetMissCounter(ctx, operator)
+		k.SetMissCounter(ctx, operator, counter+1)
 	}
 
 	// Do slash who did miss voting over threshold and
