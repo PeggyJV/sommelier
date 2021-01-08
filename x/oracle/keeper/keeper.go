@@ -499,13 +499,14 @@ func (k Keeper) GetTobinTax(ctx sdk.Context, denom string) (tobinTax sdk.Dec, er
 	store := ctx.KVStore(k.storeKey)
 	bz := store.Get(types.GetTobinTaxKey(denom))
 	if bz == nil {
-		err = sdkerrors.Wrap(types.ErrNoTobinTax, denom)
-		return
+		return sdk.ZeroDec(), sdkerrors.Wrap(types.ErrNoTobinTax, denom)
 	}
+
 	if err := tobinTax.Unmarshal(bz); err != nil {
-		panic(err)
+		return sdk.ZeroDec(), err
 	}
-	return
+
+	return tobinTax, nil
 }
 
 // SetTobinTax updates tobin tax for the denom
