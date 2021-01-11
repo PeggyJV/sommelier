@@ -3,7 +3,7 @@ module github.com/peggyjv/sommelier
 go 1.15
 
 require (
-	github.com/cosmos/cosmos-sdk v0.40.0-rc7
+	github.com/cosmos/cosmos-sdk v0.40.0
 	github.com/gogo/protobuf v1.3.1
 	github.com/golang/protobuf v1.4.3
 	github.com/google/gofuzz v1.1.1-0.20200604201612-c04b05f3adfa // indirect
