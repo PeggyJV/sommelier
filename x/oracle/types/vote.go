@@ -1,12 +1,10 @@
 package types
 
 import (
-	"fmt"
-	"strings"
-
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
+// ExchangeRateVotes represents a
 type ExchangeRateVotes []ExchangeRateVote
 
 // NewExchangeRateVote creates a ExchangeRateVote instance
@@ -25,31 +23,6 @@ func NewAggregateExchangeRatePrevote(hash AggregateVoteHash, voter sdk.ValAddres
 		Voter:       voter.String(),
 		SubmitBlock: submitBlock,
 	}
-}
-
-// ParseExchangeRateTuples ExchangeRateTuple parser
-func ParseExchangeRateTuples(tuplesStr string) (sdk.DecCoins, error) {
-	tuplesStr = strings.TrimSpace(tuplesStr)
-	if len(tuplesStr) == 0 {
-		return nil, nil
-	}
-
-	tupleStrs := strings.Split(tuplesStr, ",")
-	tuples := make(sdk.DecCoins, len(tupleStrs))
-	duplicateCheckMap := make(map[string]bool)
-
-	for i, tupleStr := range tupleStrs {
-		decCoin, err := sdk.ParseDecCoin(tupleStr)
-		if err != nil {
-			return nil, err
-		}
-		tuples[i] = decCoin
-		if _, ok := duplicateCheckMap[decCoin.Denom]; ok {
-			return nil, fmt.Errorf("duplicated denom %s", decCoin.Denom)
-		}
-		duplicateCheckMap[decCoin.Denom] = true
-	}
-	return tuples, nil
 }
 
 // NewAggregateExchangeRateVote creates a AggregateExchangeRateVote instance

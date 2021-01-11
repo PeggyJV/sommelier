@@ -262,25 +262,29 @@ func TestMissCounter(t *testing.T) {
 	input := CreateTestInput(t)
 
 	// Test default getters and setters
-	counter := input.OracleKeeper.GetMissCounter(input.Ctx, ValAddrs[0])
+	counter, found := input.OracleKeeper.GetMissCounter(input.Ctx, ValAddrs[0])
 	require.Equal(t, int64(0), counter)
+	require.False(t, found)
 
 	missCounter := int64(10)
 	input.OracleKeeper.SetMissCounter(input.Ctx, ValAddrs[0], missCounter)
-	counter = input.OracleKeeper.GetMissCounter(input.Ctx, ValAddrs[0])
+	counter, found = input.OracleKeeper.GetMissCounter(input.Ctx, ValAddrs[0])
 	require.Equal(t, missCounter, counter)
+	require.False(t, found)
 
 	input.OracleKeeper.DeleteMissCounter(input.Ctx, ValAddrs[0])
-	counter = input.OracleKeeper.GetMissCounter(input.Ctx, ValAddrs[0])
+	counter, found = input.OracleKeeper.GetMissCounter(input.Ctx, ValAddrs[0])
 	require.Equal(t, int64(0), counter)
+	require.True(t, found)
 }
 
 func TestIterateMissCounters(t *testing.T) {
 	input := CreateTestInput(t)
 
 	// Test default getters and setters
-	counter := input.OracleKeeper.GetMissCounter(input.Ctx, ValAddrs[0])
+	counter, found := input.OracleKeeper.GetMissCounter(input.Ctx, ValAddrs[0])
 	require.Equal(t, int64(0), counter)
+	require.False(t, found)
 
 	missCounter := int64(10)
 	input.OracleKeeper.SetMissCounter(input.Ctx, ValAddrs[1], missCounter)

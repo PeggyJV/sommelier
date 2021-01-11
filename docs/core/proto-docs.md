@@ -261,6 +261,11 @@ ValidatorMissCounter represents a per validator miss counter
 
 
 
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `pagination` | [cosmos.base.query.v1beta1.PageRequest](#cosmos.base.query.v1beta1.PageRequest) |  | pagination request |
+
+
 
 
 
@@ -274,6 +279,7 @@ ValidatorMissCounter represents a per validator miss counter
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | `denoms` | [string](#string) | repeated |  |
+| `pagination` | [cosmos.base.query.v1beta1.PageResponse](#cosmos.base.query.v1beta1.PageResponse) |  | pagination response |
 
 
 
@@ -348,7 +354,7 @@ ValidatorMissCounter represents a per validator miss counter
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| `denom` | [string](#string) |  |  |
+| `denom` | [string](#string) |  | token denomination |
 
 
 
@@ -363,7 +369,7 @@ ValidatorMissCounter represents a per validator miss counter
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| `rate` | [string](#string) |  |  |
+| `rate` | [string](#string) |  | token exchange rate |
 
 
 
@@ -374,6 +380,11 @@ ValidatorMissCounter represents a per validator miss counter
 
 ### QueryExchangeRatesRequest
 
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `pagination` | [cosmos.base.query.v1beta1.PageRequest](#cosmos.base.query.v1beta1.PageRequest) |  | pagination request |
 
 
 
@@ -389,6 +400,7 @@ ValidatorMissCounter represents a per validator miss counter
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | `rates` | [cosmos.base.v1beta1.DecCoin](#cosmos.base.v1beta1.DecCoin) | repeated |  |
+| `pagination` | [cosmos.base.query.v1beta1.PageResponse](#cosmos.base.query.v1beta1.PageResponse) |  | pagination response |
 
 
 
@@ -516,6 +528,11 @@ ValidatorMissCounter represents a per validator miss counter
 
 
 
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `pagination` | [cosmos.base.query.v1beta1.PageRequest](#cosmos.base.query.v1beta1.PageRequest) |  | pagination request |
+
+
 
 
 
@@ -529,6 +546,7 @@ ValidatorMissCounter represents a per validator miss counter
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | `rates` | [cosmos.base.v1beta1.DecCoin](#cosmos.base.v1beta1.DecCoin) | repeated |  |
+| `pagination` | [cosmos.base.query.v1beta1.PageResponse](#cosmos.base.query.v1beta1.PageResponse) |  | pagination response |
 
 
 
@@ -539,6 +557,11 @@ ValidatorMissCounter represents a per validator miss counter
 
 ### QueryVoteTargetsRequest
 
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `pagination` | [cosmos.base.query.v1beta1.PageRequest](#cosmos.base.query.v1beta1.PageRequest) |  | pagination request |
 
 
 
@@ -554,6 +577,7 @@ ValidatorMissCounter represents a per validator miss counter
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | `targets` | [string](#string) | repeated |  |
+| `pagination` | [cosmos.base.query.v1beta1.PageResponse](#cosmos.base.query.v1beta1.PageResponse) |  | pagination response |
 
 
 

@@ -156,9 +156,13 @@ func (msg MsgAggregateExchangeRateVote) ValidateBasic() error {
 		return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "exchange rates string can not exceed 4096 characters")
 	}
 
-	exchangeRateTuples, err := ParseExchangeRateTuples(msg.ExchangeRates)
+	exchangeRateTuples, err := sdk.ParseDecCoins(msg.ExchangeRates)
 	if err != nil {
-		return sdkerrors.Wrap(sdkerrors.ErrInvalidCoins, "failed to parse exchange rates string cause:"+err.Error())
+		return sdkerrors.Wrap(err, "failed to parse exchange rates string")
+	}
+
+	if exchangeRateTuples.Empty() {
+		return sdkerrors.Wrap(sdkerrors.ErrInvalidCoins, "exchange rate coins cannot be empty")
 	}
 
 	for _, tuple := range exchangeRateTuples {

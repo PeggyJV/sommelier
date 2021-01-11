@@ -3,7 +3,6 @@ package keeper
 import (
 	"bytes"
 	"context"
-	"fmt"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
@@ -11,19 +10,11 @@ import (
 	"github.com/peggyjv/sommelier/x/oracle/types"
 )
 
-type msgServer struct {
-	Keeper
-}
-
-// NewMsgServerImpl returns an implementation of the distribution MsgServer interface
-// for the provided Keeper.
-func NewMsgServerImpl(keeper Keeper) types.MsgServer {
-	return &msgServer{Keeper: keeper}
-}
+var _ types.MsgServer = Keeper{}
 
 // MsgServer is the server API for Msg service.
 
-func (m msgServer) DelegateFeedConsent(c context.Context, msg *types.MsgDelegateFeedConsent) (*types.MsgDelegateFeedConsentResponse, error) {
+func (k Keeper) DelegateFeedConsent(c context.Context, msg *types.MsgDelegateFeedConsent) (*types.MsgDelegateFeedConsentResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
 	signer, err := sdk.ValAddressFromBech32(msg.Operator)
 	if err != nil {
@@ -31,7 +22,7 @@ func (m msgServer) DelegateFeedConsent(c context.Context, msg *types.MsgDelegate
 	}
 
 	// Check the delegator is a validator
-	val := m.StakingKeeper.Validator(ctx, signer)
+	val := k.StakingKeeper.Validator(ctx, signer)
 	if val == nil {
 		return nil, sdkerrors.Wrap(stakingtypes.ErrNoValidatorFound, signer.String())
 	}
@@ -42,7 +33,7 @@ func (m msgServer) DelegateFeedConsent(c context.Context, msg *types.MsgDelegate
 	}
 
 	// Set the delegation
-	m.SetOracleDelegate(ctx, signer, delegate)
+	k.SetOracleDelegate(ctx, signer, delegate)
 
 	ctx.EventManager().EmitEvents(sdk.Events{
 		sdk.NewEvent(
@@ -59,31 +50,28 @@ func (m msgServer) DelegateFeedConsent(c context.Context, msg *types.MsgDelegate
 	return &types.MsgDelegateFeedConsentResponse{}, nil
 }
 
-func (m msgServer) AggregateExchangeRatePrevote(c context.Context, msg *types.MsgAggregateExchangeRatePrevote) (*types.MsgAggregateExchangeRatePrevoteResponse, error) {
+func (k Keeper) AggregateExchangeRatePrevote(c context.Context, msg *types.MsgAggregateExchangeRatePrevote) (*types.MsgAggregateExchangeRatePrevoteResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
-	feeder, err := sdk.AccAddressFromBech32(msg.Feeder)
-	if err != nil {
-		return nil, sdkerrors.Wrap(sdkerrors.ErrInvalidAddress, err.Error())
-	}
-	validator, err := sdk.ValAddressFromBech32(msg.Validator)
-	if err != nil {
-		return nil, sdkerrors.Wrap(sdkerrors.ErrInvalidAddress, err.Error())
-	}
+
+	// NOTE: error checked on msg validation
+	feeder, _ := sdk.AccAddressFromBech32(msg.Feeder)
+	validator, _ := sdk.ValAddressFromBech32(msg.Validator)
+
 	if !feeder.Equals(validator) {
-		delegate := m.GetOracleDelegate(ctx, validator)
+		delegate := k.GetOracleDelegate(ctx, validator)
 		if !delegate.Equals(feeder) {
 			return nil, sdkerrors.Wrap(types.ErrNoVotingPermission, msg.Feeder)
 		}
 	}
 
 	// Check that the given validator exists
-	val := m.StakingKeeper.Validator(ctx, validator)
+	val := k.StakingKeeper.Validator(ctx, validator)
 	if val == nil {
 		return nil, sdkerrors.Wrap(stakingtypes.ErrNoValidatorFound, msg.Validator)
 	}
 
 	aggregatePrevote := types.NewAggregateExchangeRatePrevote(msg.Hash, validator, ctx.BlockHeight())
-	m.AddAggregateExchangeRatePrevote(ctx, aggregatePrevote)
+	k.AddAggregateExchangeRatePrevote(ctx, aggregatePrevote)
 
 	ctx.EventManager().EmitEvents(sdk.Events{
 		sdk.NewEvent(
@@ -96,52 +84,47 @@ func (m msgServer) AggregateExchangeRatePrevote(c context.Context, msg *types.Ms
 			sdk.NewAttribute(sdk.AttributeKeyModule, types.AttributeValueCategory),
 		),
 	})
+
 	return &types.MsgAggregateExchangeRatePrevoteResponse{}, nil
 }
 
-func (m msgServer) AggregateExchangeRateVote(c context.Context, msg *types.MsgAggregateExchangeRateVote) (*types.MsgAggregateExchangeRateVoteResponse, error) {
+func (k Keeper) AggregateExchangeRateVote(c context.Context, msg *types.MsgAggregateExchangeRateVote) (*types.MsgAggregateExchangeRateVoteResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
-	feeder, err := sdk.AccAddressFromBech32(msg.Feeder)
-	if err != nil {
-		return nil, sdkerrors.Wrap(sdkerrors.ErrInvalidAddress, err.Error())
-	}
-	validator, err := sdk.ValAddressFromBech32(msg.Validator)
-	if err != nil {
-		return nil, sdkerrors.Wrap(sdkerrors.ErrInvalidAddress, err.Error())
-	}
+
+	feeder, _ := sdk.AccAddressFromBech32(msg.Feeder)
+	validator, _ := sdk.ValAddressFromBech32(msg.Validator)
+
 	if !feeder.Equals(validator) {
-		delegate := m.GetOracleDelegate(ctx, validator)
+		delegate := k.GetOracleDelegate(ctx, validator)
 		if !delegate.Equals(feeder) {
 			return nil, sdkerrors.Wrap(types.ErrNoVotingPermission, msg.Feeder)
 		}
 	}
 
 	// Check that the given validator exists
-	val := m.StakingKeeper.Validator(ctx, validator)
+	val := k.StakingKeeper.Validator(ctx, validator)
 	if val == nil {
 		return nil, sdkerrors.Wrap(stakingtypes.ErrNoValidatorFound, msg.Validator)
 	}
 
-	params := m.GetParams(ctx)
+	params := k.GetParams(ctx)
 
-	aggregatePrevote, err := m.GetAggregateExchangeRatePrevote(ctx, validator)
+	aggregatePrevote, err := k.GetAggregateExchangeRatePrevote(ctx, validator)
 	if err != nil {
 		return nil, sdkerrors.Wrap(types.ErrNoAggregatePrevote, msg.Validator)
 	}
 
 	// Check a msg is submitted proper period
-	if (ctx.BlockHeight()/params.VotePeriod)-(aggregatePrevote.SubmitBlock/params.VotePeriod) != 1 {
+	if ctx.BlockHeight()-aggregatePrevote.SubmitBlock != params.VotePeriod {
 		return nil, types.ErrRevealPeriodMissMatch
 	}
 
-	exchangeRateTuples, err := types.ParseExchangeRateTuples(msg.ExchangeRates)
-	if err != nil {
-		return nil, sdkerrors.Wrap(sdkerrors.ErrInvalidCoins, err.Error())
-	}
+	// NOTE: error checked on msg validation
+	exchangeRateTuples, _ := sdk.ParseDecCoins(msg.ExchangeRates)
 
 	// check all denoms are in the vote target
 	for _, tuple := range exchangeRateTuples {
-		if !m.IsVoteTarget(ctx, tuple.Denom) {
+		if !k.IsVoteTarget(ctx, tuple.Denom) {
 			return nil, sdkerrors.Wrap(types.ErrUnknowDenom, tuple.Denom)
 		}
 	}
@@ -154,12 +137,12 @@ func (m msgServer) AggregateExchangeRateVote(c context.Context, msg *types.MsgAg
 	// Verify a exchange rate with aggregate prevote hash
 	hash := types.GetAggregateVoteHash(msg.Salt, msg.ExchangeRates, voter)
 	if !bytes.Equal(aggregatePrevote.Hash, hash.Bytes()) {
-		return nil, sdkerrors.Wrap(types.ErrVerificationFailed, fmt.Sprintf("must be given %s not %s", aggregatePrevote.Hash, hash))
+		return nil, sdkerrors.Wrapf(types.ErrVerificationFailed, "must be given %s not %s", aggregatePrevote.Hash, hash)
 	}
 
 	// Move aggregate prevote to aggregate vote with given exchange rates
-	m.AddAggregateExchangeRateVote(ctx, types.NewAggregateExchangeRateVote(exchangeRateTuples, voter))
-	m.DeleteAggregateExchangeRatePrevote(ctx, aggregatePrevote)
+	k.AddAggregateExchangeRateVote(ctx, types.NewAggregateExchangeRateVote(exchangeRateTuples, voter))
+	k.DeleteAggregateExchangeRatePrevote(ctx, aggregatePrevote)
 
 	ctx.EventManager().EmitEvents(sdk.Events{
 		sdk.NewEvent(

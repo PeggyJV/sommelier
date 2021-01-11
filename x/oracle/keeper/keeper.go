@@ -318,15 +318,14 @@ func (k Keeper) IterateOracleDelegates(ctx sdk.Context,
 // Miss counter logic
 
 // GetMissCounter retrieves the # of vote periods missed in this oracle slash window
-func (k Keeper) GetMissCounter(ctx sdk.Context, operator sdk.ValAddress) (missCounter int64) {
+func (k Keeper) GetMissCounter(ctx sdk.Context, operator sdk.ValAddress) (int64, bool) {
 	store := ctx.KVStore(k.storeKey)
 	b := store.Get(types.GetMissCounterKey(operator))
 	if b == nil {
-		// By default the counter is zero
-		return 0
+		return 0, false
 	}
 	// TODO: Review store marshaling
-	return int64(binary.BigEndian.Uint64(b))
+	return int64(binary.BigEndian.Uint64(b)), true
 }
 
 // GetMissCounters iterates over the miss counters and performs a callback function.
@@ -499,13 +498,14 @@ func (k Keeper) GetTobinTax(ctx sdk.Context, denom string) (tobinTax sdk.Dec, er
 	store := ctx.KVStore(k.storeKey)
 	bz := store.Get(types.GetTobinTaxKey(denom))
 	if bz == nil {
-		err = sdkerrors.Wrap(types.ErrNoTobinTax, denom)
-		return
+		return sdk.ZeroDec(), sdkerrors.Wrap(types.ErrNoTobinTax, denom)
 	}
+
 	if err := tobinTax.Unmarshal(bz); err != nil {
-		panic(err)
+		return sdk.ZeroDec(), err
 	}
-	return
+
+	return tobinTax, nil
 }
 
 // SetTobinTax updates tobin tax for the denom
