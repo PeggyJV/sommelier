@@ -5,7 +5,7 @@ import (
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
-// ensure Msg interface compliance at compile time
+// Ensure Msg interface compliance at compile time
 var (
 	_ sdk.Msg = &MsgStoploss{}
 )
