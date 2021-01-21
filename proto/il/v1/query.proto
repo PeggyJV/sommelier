@@ -1,0 +1,50 @@
+syntax = "proto3";
+package il.v1;
+
+import "gogoproto/gogo.proto";
+import "il/v1/il.proto";
+import "google/api/annotations.proto";
+import "cosmos/base/query/v1beta1/pagination.proto";
+
+
+option go_package = "github.com/peggyjv/sommelier/x/il/types";
+
+service Query {
+    rpc Stoploss(QueryStoplossRequest) returns (QueryStoplossResponse) {
+        option (google.api.http).get = "/il/v1/stoploss_positions/{address}/{uniswap_pair}";
+    }
+    rpc StoplossPositions(QueryStoplossPositionsRequest) returns (QueryStoplossPositionsResponse) {
+        option (google.api.http).get = "/il/v1/stoploss_positions/{address}";
+    }
+}
+
+message QueryStoplossRequest {
+    // account address that owns the stoploss position
+    string address = 1;
+    // uniswap pair of the position
+    string uniswap_pair = 2;
+}
+message QueryStoplossResponse {
+    // token exchange rate
+    Stoploss stoploss = 1 [
+        (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec", 
+        (gogoproto.nullable) = false
+    ]; 
+}
+
+message QueryStoplossPositionsRequest {
+    // account address that owns the stoploss positions
+    string address = 1;
+    // pagination request
+    cosmos.base.query.v1beta1.PageRequest pagination = 2;
+}
+
+message QueryStoplossPositionsResponse {
+    repeated Stoploss stoploss_positions = 1 [(gogoproto.nullable) = false];
+    // pagination response
+    cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
+
+// message QueryParametersRequest {}
+// message QueryParametersResponse { Params params = 1 [(gogoproto.nullable) = false]; }

@@ -1,0 +1,19 @@
+syntax = "proto3";
+package il.v1;
+
+import "il/v1/il.proto";
+
+option go_package = "github.com/peggyjv/sommelier/x/il/types";
+
+// MsgService defines the msgs that the oracle module handles.
+service Msg {
+  rpc CreateStoploss          (MsgStoploss)          returns (MsgStoplossResponse);
+}
+
+// MsgStoploss defines a stoploss position
+message MsgStoploss {
+    string address = 1;
+    Stoploss stoploss = 2;
+}
+
+message MsgStoplossResponse {}

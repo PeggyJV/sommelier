@@ -1,0 +1,23 @@
+syntax = "proto3";
+package il.v1;
+
+import "gogoproto/gogo.proto";
+import "il/v1/il.proto";
+
+option go_package = "github.com/peggyjv/sommelier/x/il/types";
+
+
+// GenesisState all impermanent loss state that must be provided at genesis.
+message GenesisState {
+    repeated StoplossPosition stoploss_positions = 1 [
+        (gogoproto.nullable) = false
+    ];
+}
+
+// StoplossPosition represents an impermanent loss stop position for a given address and uniswap pair.
+message StoplossPosition {
+    // account address 
+    string address = 1;
+    // account delegate address
+    Stoploss stoploss = 2;
+}
