@@ -13,7 +13,7 @@ import (
 
 // GetQueryCmd returns the cli query commands for this module
 func GetQueryCmd() *cobra.Command {
-	oracleQueryCmd := &cobra.Command{
+	ilQueryCmd := &cobra.Command{
 		Use:                        types.ModuleName,
 		Short:                      "Querying commands for the impermanent loss module",
 		DisableFlagParsing:         true,
@@ -21,28 +21,27 @@ func GetQueryCmd() *cobra.Command {
 		RunE:                       client.ValidateCmd,
 	}
 
-	oracleQueryCmd.AddCommand([]*cobra.Command{
-		GetCmdQueryStoplossPositions(),
+	ilQueryCmd.AddCommand([]*cobra.Command{
+		GetCmdQueryStoploss(),
 		GetCmdQueryParams(),
 	}...)
 
-	return oracleQueryCmd
+	return ilQueryCmd
 
 }
 
-// GetCmdQueryStoplossPositions implements the query rate command.
-func GetCmdQueryStoplossPositions() *cobra.Command {
+// GetCmdQueryStoploss implements the query rate command.
+func GetCmdQueryStoploss() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "stoploss [address] [il]",
+		Use:   "stoploss [address] [uniswap_pair]",
 		Args:  cobra.RangeArgs(1, 2),
 		Short: "Query the stoploss positions for a given address", // TODO: update "Luna"
 		Long: strings.TrimSpace(`
-Query the current exchange rate of Luna with an asset. 
-You can find the current list of active denoms by running
+Query the stoploss positions for a given address and uniswap pair
 
-$ sommelier query il stoploss <address> <denom>
+$ sommelier query il stoploss <address> <uniswap_pair>
 
-Or, can retrieve all the positions for an address
+Or, you can retrieve all the positions for the address
 
 $ sommelier query il stoploss <address>
 `),
@@ -75,7 +74,8 @@ $ sommelier query il stoploss <address>
 			}
 
 			req := &types.QueryStoplossRequest{
-				Address: address,
+				Address:     address,
+				UniswapPair: args[1],
 			}
 
 			res, err := queryClient.Stoploss(cmd.Context(), req)
