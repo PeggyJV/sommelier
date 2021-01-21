@@ -106,8 +106,8 @@ Stoploss defines a set of parameters that together trigger a stoploss withdrawal
 | ----- | ---- | ----- | ----------- |
 | `uniswap_pair_id` | [string](#string) |  | uniswap pair identifier |
 | `liquidity_pool_shares` | [int64](#int64) |  | amount of shares from the liquidity pool to redeem if current slippage > max slipage |
-| `max_slippage` | [cosmos.base.v1beta1.DecCoin](#cosmos.base.v1beta1.DecCoin) |  | max slippage allowed before the stoploss is triggered |
-| `reference_pair_ratio` | [cosmos.base.v1beta1.DecCoin](#cosmos.base.v1beta1.DecCoin) |  | starting token pair ration of the uniswap pool |
+| `max_slippage` | [string](#string) |  | max slippage allowed before the stoploss is triggered |
+| `reference_pair_ratio` | [string](#string) |  | starting token pair ration of the uniswap pool |
 
 
 
