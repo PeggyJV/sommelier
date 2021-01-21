@@ -13,14 +13,12 @@ var _ types.MsgServer = Keeper{}
 
 // MsgServer is the server API for Msg service.
 
-// CreateStoplossPosition for a given uniswap pair
-func (k Keeper) CreateStoplossPosition(c context.Context, msg *types.MsgStoploss) (*types.MsgStoplossResponse, error) {
+// CreateStoploss for a given uniswap pair
+func (k Keeper) CreateStoploss(c context.Context, msg *types.MsgStoploss) (*types.MsgStoplossResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
 
-	address, err := sdk.AccAddressFromBech32(msg.Address)
-	if err != nil {
-		return nil, sdkerrors.Wrap(sdkerrors.ErrInvalidAddress, err.Error())
-	}
+	// NOTE: error checked during msg validation
+	address, _ := sdk.AccAddressFromBech32(msg.Address)
 
 	// Set the delegation
 	if k.HasStoplossPosition(ctx, address, msg.Stoploss.UniswapPairId) {
@@ -28,7 +26,7 @@ func (k Keeper) CreateStoplossPosition(c context.Context, msg *types.MsgStoploss
 	}
 
 	// Set the delegation
-	k.SetStoplossPosition(ctx, address, msg.Stoploss)
+	k.SetStoplossPosition(ctx, address, *msg.Stoploss)
 
 	ctx.EventManager().EmitEvents(sdk.Events{
 		sdk.NewEvent(
@@ -42,5 +40,5 @@ func (k Keeper) CreateStoplossPosition(c context.Context, msg *types.MsgStoploss
 		),
 	})
 
-	return &types.MsgDelegateFeedConsentResponse{}, nil
+	return &types.MsgStoplossResponse{}, nil
 }

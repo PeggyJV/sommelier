@@ -5,6 +5,7 @@
 ## Table of Contents
 
 - [il/v1/il.proto](#il/v1/il.proto)
+    - [Params](#il.v1.Params)
     - [Stoploss](#il.v1.Stoploss)
   
 - [il/v1/genesis.proto](#il/v1/genesis.proto)
@@ -85,6 +86,21 @@
 
 
 
+<a name="il.v1.Params"></a>
+
+### Params
+Params define the impermanent loss module parameters
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `contract_address` | [string](#string) |  | contract address for impermanent loss handling on ethereum |
+
+
+
+
+
+
 <a name="il.v1.Stoploss"></a>
 
 ### Stoploss
@@ -127,6 +143,7 @@ GenesisState all impermanent loss state that must be provided at genesis.
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
+| `params` | [Params](#il.v1.Params) |  |  |
 | `stoploss_positions` | [StoplossPosition](#il.v1.StoplossPosition) | repeated |  |
 
 

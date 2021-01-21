@@ -1,21 +1,9 @@
-//noalias
 package types
 
-// Oracle module event types
+// IL module event types
 const (
-	EventTypeExchangeRateUpdate = "exchange_rate_update"
-	EventTypePrevote            = "prevote"
-	EventTypeVote               = "vote"
-	EventTypeFeedDelegate       = "feed_delegate"
-	EventTypeAggregatePrevote   = "aggregate_prevote"
-	EventTypeAggregateVote      = "aggregate_vote"
+	EventTypeCreateStoploss = "crate-stoploss"
 
-	AttributeKeyDenom         = "denom"
-	AttributeKeyVoter         = "voter"
-	AttributeKeyExchangeRate  = "exchange_rate"
-	AttributeKeyExchangeRates = "exchange_rates"
-	AttributeKeyOperator      = "operator"
-	AttributeKeyFeeder        = "feeder"
-
-	AttributeValueCategory = ModuleName
+	AttributeKeyUniswapPair = "uniswap-pair"
+	AttributeValueCategory  = ModuleName
 )
