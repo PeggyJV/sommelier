@@ -1,0 +1,42 @@
+syntax = "proto3";
+package uniswap_oracle.v1;
+
+import "uniswap_oracle/v1/oracle.proto";
+
+option go_package = "x/uniswap_oracle/types";
+
+// MsgService defines the msgs that the oracle module handles.
+service Msg {
+    rpc DelegateFeedConsent (MsgDelegateFeedConsent) returns (MsgDelegateFeedConsentResponse);
+    rpc UniswapDataPrevote  (MsgUniswapDataPrevote)  returns (MsgUniswapDataPrevoteResponse);
+    rpc UniswapDataVote     (MsgUniswapDataVote)     returns (MsgUniswapDataVoteResponse);
+}
+
+// MsgDelegateFeedConsent - struct for delegating oracle voting rights to another address.
+message MsgDelegateFeedConsent {
+    string operator = 1;
+    string delegate = 2;
+}
+
+message MsgDelegateFeedConsentResponse {}
+
+// MsgUniswapDataPrevote - struct for aggregate prevoting on the ExchangeRateVote.
+// The purpose of aggregate prevote is to hide vote exchange rates with hash
+// which is formatted as hex string in SHA256("{salt}:{exchange rate}{denom},...,{exchange rate}{denom}:{voter}")
+message MsgUniswapDataPrevote {
+    bytes  hash      = 1;
+    string feeder    = 2;
+    string validator = 3;
+}
+
+message MsgUniswapDataPrevoteResponse {}
+
+// MsgUniswapDataVote - struct for voting on the exchange rates of Luna denominated in various Terra assets.
+message MsgUniswapDataVote {
+    string        salt      = 1;
+    repeated Pair pairs     = 2;
+    string        feeder    = 3;
+    string        validator = 4;
+}
+
+message MsgUniswapDataVoteResponse {}

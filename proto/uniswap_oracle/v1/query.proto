@@ -1,0 +1,19 @@
+syntax = "proto3";
+package uniswap_oracle.v1;
+
+import "gogoproto/gogo.proto";
+import "uniswap_oracle/v1/oracle.proto";
+import "google/api/annotations.proto";
+import "cosmos/base/v1beta1/coin.proto";
+
+
+option go_package = "x/uniswap_oracle/types";
+
+service Query {
+    rpc UniswapData(QueryUniswapDataRequest) returns (QueryUniswapDataResponse) {
+        option (google.api.http).get = "/uniswap-oracle/v1/uniswap-data";
+    }
+}
+
+message QueryUniswapDataRequest  {}
+message QueryUniswapDataResponse {}
