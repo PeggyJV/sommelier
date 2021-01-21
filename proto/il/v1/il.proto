@@ -15,13 +15,11 @@ message Stoploss {
     // max slippage allowed before the stoploss is triggered
     cosmos.base.v1beta1.DecCoin max_slippage = 3 [
         (gogoproto.moretags) = "yaml:\"max_slippage\"",
-        (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec", 
         (gogoproto.nullable) = false
     ];
     // starting token pair ration of the uniswap pool
     cosmos.base.v1beta1.DecCoin reference_pair_ratio = 4 [
         (gogoproto.moretags) = "yaml:\"reference_pair_ratio\"",
-        (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec", 
         (gogoproto.nullable) = false
     ];
 }
@@ -29,5 +27,5 @@ message Stoploss {
 // Params define the impermanent loss module parameters
 message Params {
     // contract address for impermanent loss handling on ethereum
-    string contract_address = 1 [(gogoproto.moretags) = "yaml:\"vote_threshold\""];
+    string contract_address = 1 [(gogoproto.moretags) = "yaml:\"contract_address\""];
 }
