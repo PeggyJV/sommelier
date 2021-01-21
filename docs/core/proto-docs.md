@@ -4,6 +4,27 @@
 
 ## Table of Contents
 
+- [il/v1/il.proto](#il/v1/il.proto)
+    - [Stoploss](#il.v1.Stoploss)
+  
+- [il/v1/genesis.proto](#il/v1/genesis.proto)
+    - [GenesisState](#il.v1.GenesisState)
+    - [StoplossPosition](#il.v1.StoplossPosition)
+  
+- [il/v1/query.proto](#il/v1/query.proto)
+    - [QueryStoplossPositionsRequest](#il.v1.QueryStoplossPositionsRequest)
+    - [QueryStoplossPositionsResponse](#il.v1.QueryStoplossPositionsResponse)
+    - [QueryStoplossRequest](#il.v1.QueryStoplossRequest)
+    - [QueryStoplossResponse](#il.v1.QueryStoplossResponse)
+  
+    - [Query](#il.v1.Query)
+  
+- [il/v1/tx.proto](#il/v1/tx.proto)
+    - [MsgStoploss](#il.v1.MsgStoploss)
+    - [MsgStoplossResponse](#il.v1.MsgStoplossResponse)
+  
+    - [Msg](#il.v1.Msg)
+  
 - [oracle/v1/oracle.proto](#oracle/v1/oracle.proto)
     - [OracleFeed](#oracle.v1.OracleFeed)
     - [OraclePrevote](#oracle.v1.OraclePrevote)
@@ -47,6 +68,229 @@
     - [Query](#oracle.v1.Query)
   
 - [Scalar Value Types](#scalar-value-types)
+
+
+
+<a name="il/v1/il.proto"></a>
+<p align="right"><a href="#top">Top</a></p>
+
+## il/v1/il.proto
+
+
+
+<a name="il.v1.Stoploss"></a>
+
+### Stoploss
+Stoploss defines a set of parameters that together trigger a stoploss withdrawal.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `uniswap_pair_id` | [string](#string) |  | uniswap pair identifier |
+| `liquidity_pool_shares` | [int64](#int64) |  | amount of shares from the liquidity pool to redeem if current slippage > max slipage |
+| `max_slippage` | [cosmos.base.v1beta1.DecCoin](#cosmos.base.v1beta1.DecCoin) |  | max slippage allowed before the stoploss is triggered |
+| `reference_pair_ratio` | [cosmos.base.v1beta1.DecCoin](#cosmos.base.v1beta1.DecCoin) |  | starting token pair ration of the uniswap pool |
+
+
+
+
+
+ <!-- end messages -->
+
+ <!-- end enums -->
+
+ <!-- end HasExtensions -->
+
+ <!-- end services -->
+
+
+
+<a name="il/v1/genesis.proto"></a>
+<p align="right"><a href="#top">Top</a></p>
+
+## il/v1/genesis.proto
+
+
+
+<a name="il.v1.GenesisState"></a>
+
+### GenesisState
+GenesisState all impermanent loss state that must be provided at genesis.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `stoploss_positions` | [StoplossPosition](#il.v1.StoplossPosition) | repeated |  |
+
+
+
+
+
+
+<a name="il.v1.StoplossPosition"></a>
+
+### StoplossPosition
+StoplossPosition represents an impermanent loss stop position for a given address and uniswap pair.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `address` | [string](#string) |  | account address |
+| `stoploss` | [Stoploss](#il.v1.Stoploss) |  | account delegate address |
+
+
+
+
+
+ <!-- end messages -->
+
+ <!-- end enums -->
+
+ <!-- end HasExtensions -->
+
+ <!-- end services -->
+
+
+
+<a name="il/v1/query.proto"></a>
+<p align="right"><a href="#top">Top</a></p>
+
+## il/v1/query.proto
+
+
+
+<a name="il.v1.QueryStoplossPositionsRequest"></a>
+
+### QueryStoplossPositionsRequest
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `address` | [string](#string) |  | account address that owns the stoploss positions |
+| `pagination` | [cosmos.base.query.v1beta1.PageRequest](#cosmos.base.query.v1beta1.PageRequest) |  | pagination request |
+
+
+
+
+
+
+<a name="il.v1.QueryStoplossPositionsResponse"></a>
+
+### QueryStoplossPositionsResponse
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `stoploss_positions` | [Stoploss](#il.v1.Stoploss) | repeated |  |
+| `pagination` | [cosmos.base.query.v1beta1.PageResponse](#cosmos.base.query.v1beta1.PageResponse) |  | pagination response |
+
+
+
+
+
+
+<a name="il.v1.QueryStoplossRequest"></a>
+
+### QueryStoplossRequest
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `address` | [string](#string) |  | account address that owns the stoploss position |
+| `uniswap_pair` | [string](#string) |  | uniswap pair of the position |
+
+
+
+
+
+
+<a name="il.v1.QueryStoplossResponse"></a>
+
+### QueryStoplossResponse
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `stoploss` | [Stoploss](#il.v1.Stoploss) |  | token exchange rate |
+
+
+
+
+
+ <!-- end messages -->
+
+ <!-- end enums -->
+
+ <!-- end HasExtensions -->
+
+
+<a name="il.v1.Query"></a>
+
+### Query
+
+
+| Method Name | Request Type | Response Type | Description | HTTP Verb | Endpoint |
+| ----------- | ------------ | ------------- | ------------| ------- | -------- |
+| `Stoploss` | [QueryStoplossRequest](#il.v1.QueryStoplossRequest) | [QueryStoplossResponse](#il.v1.QueryStoplossResponse) |  | GET|/il/v1/stoploss_positions/{address}/{uniswap_pair}|
+| `StoplossPositions` | [QueryStoplossPositionsRequest](#il.v1.QueryStoplossPositionsRequest) | [QueryStoplossPositionsResponse](#il.v1.QueryStoplossPositionsResponse) |  | GET|/il/v1/stoploss_positions/{address}|
+
+ <!-- end services -->
+
+
+
+<a name="il/v1/tx.proto"></a>
+<p align="right"><a href="#top">Top</a></p>
+
+## il/v1/tx.proto
+
+
+
+<a name="il.v1.MsgStoploss"></a>
+
+### MsgStoploss
+MsgStoploss defines a stoploss position
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `address` | [string](#string) |  |  |
+| `stoploss` | [Stoploss](#il.v1.Stoploss) |  |  |
+
+
+
+
+
+
+<a name="il.v1.MsgStoplossResponse"></a>
+
+### MsgStoplossResponse
+
+
+
+
+
+
+ <!-- end messages -->
+
+ <!-- end enums -->
+
+ <!-- end HasExtensions -->
+
+
+<a name="il.v1.Msg"></a>
+
+### Msg
+MsgService defines the msgs that the oracle module handles.
+
+| Method Name | Request Type | Response Type | Description | HTTP Verb | Endpoint |
+| ----------- | ------------ | ------------- | ------------| ------- | -------- |
+| `CreateStoploss` | [MsgStoploss](#il.v1.MsgStoploss) | [MsgStoplossResponse](#il.v1.MsgStoplossResponse) |  | |
+
+ <!-- end services -->
 
 
 
