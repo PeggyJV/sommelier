@@ -25,3 +25,9 @@ message Stoploss {
         (gogoproto.nullable) = false
     ];
 }
+
+// Params define the impermanent loss module parameters
+message Params {
+    // contract address for impermanent loss handling on ethereum
+    string contract_address = 1 [(gogoproto.moretags) = "yaml:\"vote_threshold\""];
+}

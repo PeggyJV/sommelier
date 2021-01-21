@@ -9,9 +9,8 @@ option go_package = "github.com/peggyjv/sommelier/x/il/types";
 
 // GenesisState all impermanent loss state that must be provided at genesis.
 message GenesisState {
-    repeated StoplossPosition stoploss_positions = 1 [
-        (gogoproto.nullable) = false
-    ];
+    Params params = 1 [(gogoproto.nullable) = false];
+    repeated StoplossPosition stoploss_positions = 2 [(gogoproto.nullable) = false];
 }
 
 // StoplossPosition represents an impermanent loss stop position for a given address and uniswap pair.

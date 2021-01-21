@@ -6,12 +6,10 @@ import (
 	"github.com/cosmos/cosmos-sdk/types/msgservice"
 )
 
-// RegisterInterfaces registers the x/oracle interfaces types with the interface registry
+// RegisterInterfaces registers the x/il interfaces types with the interface registry
 func RegisterInterfaces(registry types.InterfaceRegistry) {
 	registry.RegisterImplementations((*sdk.Msg)(nil),
-		&MsgDelegateFeedConsent{},
-		&MsgAggregateExchangeRatePrevote{},
-		&MsgAggregateExchangeRateVote{},
+		&MsgStoploss{},
 	)
 
 	msgservice.RegisterMsgServiceDesc(registry, &_Msg_serviceDesc)
