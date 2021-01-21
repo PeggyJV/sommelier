@@ -9,12 +9,16 @@ import "cosmos/base/query/v1beta1/pagination.proto";
 
 option go_package = "github.com/peggyjv/sommelier/x/il/types";
 
+// Query defines a gRPC query service for the impermanent loss module.
 service Query {
     rpc Stoploss(QueryStoplossRequest) returns (QueryStoplossResponse) {
         option (google.api.http).get = "/il/v1/stoploss_positions/{address}/{uniswap_pair}";
     }
     rpc StoplossPositions(QueryStoplossPositionsRequest) returns (QueryStoplossPositionsResponse) {
         option (google.api.http).get = "/il/v1/stoploss_positions/{address}";
+    }
+    rpc Parameters(QueryParametersRequest) returns (QueryParametersResponse) {
+        option (google.api.http).get = "/il/v1/parameters";
     }
 }
 
@@ -25,11 +29,8 @@ message QueryStoplossRequest {
     string uniswap_pair = 2;
 }
 message QueryStoplossResponse {
-    // token exchange rate
-    Stoploss stoploss = 1 [
-        (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec", 
-        (gogoproto.nullable) = false
-    ]; 
+    // stoploss position for the given address and pair.
+    Stoploss stoploss = 1 [(gogoproto.nullable) = false];
 }
 
 message QueryStoplossPositionsRequest {
@@ -40,11 +41,17 @@ message QueryStoplossPositionsRequest {
 }
 
 message QueryStoplossPositionsResponse {
+    // set of possitions owned by the given address
     repeated Stoploss stoploss_positions = 1 [(gogoproto.nullable) = false];
     // pagination response
     cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
 
+// QueryParametersRequest is an empty request to query for the impermanent loss params 
+message QueryParametersRequest {}
 
-// message QueryParametersRequest {}
-// message QueryParametersResponse { Params params = 1 [(gogoproto.nullable) = false]; }
+// QueryParametersResponse 
+message QueryParametersResponse {
+    // impermanent loss parameters
+    Params params = 1 [(gogoproto.nullable) = false];
+}

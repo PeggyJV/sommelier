@@ -2,7 +2,7 @@ package keeper
 
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/peggyjv/sommelier/x/oracle/types"
+	"github.com/peggyjv/sommelier/x/il/types"
 )
 
 // GetParams returns the total set of oracle parameters.

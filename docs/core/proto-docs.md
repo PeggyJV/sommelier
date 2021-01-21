@@ -13,6 +13,8 @@
     - [StoplossPosition](#il.v1.StoplossPosition)
   
 - [il/v1/query.proto](#il/v1/query.proto)
+    - [QueryParametersRequest](#il.v1.QueryParametersRequest)
+    - [QueryParametersResponse](#il.v1.QueryParametersResponse)
     - [QueryStoplossPositionsRequest](#il.v1.QueryStoplossPositionsRequest)
     - [QueryStoplossPositionsResponse](#il.v1.QueryStoplossPositionsResponse)
     - [QueryStoplossRequest](#il.v1.QueryStoplossRequest)
@@ -176,6 +178,31 @@ StoplossPosition represents an impermanent loss stop position for a given addres
 
 
 
+<a name="il.v1.QueryParametersRequest"></a>
+
+### QueryParametersRequest
+QueryParametersRequest is an empty request to query for the impermanent loss params
+
+
+
+
+
+
+<a name="il.v1.QueryParametersResponse"></a>
+
+### QueryParametersResponse
+QueryParametersResponse
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `params` | [Params](#il.v1.Params) |  | impermanent loss parameters |
+
+
+
+
+
+
 <a name="il.v1.QueryStoplossPositionsRequest"></a>
 
 ### QueryStoplossPositionsRequest
@@ -200,7 +227,7 @@ StoplossPosition represents an impermanent loss stop position for a given addres
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| `stoploss_positions` | [Stoploss](#il.v1.Stoploss) | repeated |  |
+| `stoploss_positions` | [Stoploss](#il.v1.Stoploss) | repeated | set of possitions owned by the given address |
 | `pagination` | [cosmos.base.query.v1beta1.PageResponse](#cosmos.base.query.v1beta1.PageResponse) |  | pagination response |
 
 
@@ -232,7 +259,7 @@ StoplossPosition represents an impermanent loss stop position for a given addres
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| `stoploss` | [Stoploss](#il.v1.Stoploss) |  | token exchange rate |
+| `stoploss` | [Stoploss](#il.v1.Stoploss) |  | stoploss position for the given address and pair. |
 
 
 
@@ -248,12 +275,13 @@ StoplossPosition represents an impermanent loss stop position for a given addres
 <a name="il.v1.Query"></a>
 
 ### Query
-
+Query defines a gRPC query service for the impermanent loss module.
 
 | Method Name | Request Type | Response Type | Description | HTTP Verb | Endpoint |
 | ----------- | ------------ | ------------- | ------------| ------- | -------- |
 | `Stoploss` | [QueryStoplossRequest](#il.v1.QueryStoplossRequest) | [QueryStoplossResponse](#il.v1.QueryStoplossResponse) |  | GET|/il/v1/stoploss_positions/{address}/{uniswap_pair}|
 | `StoplossPositions` | [QueryStoplossPositionsRequest](#il.v1.QueryStoplossPositionsRequest) | [QueryStoplossPositionsResponse](#il.v1.QueryStoplossPositionsResponse) |  | GET|/il/v1/stoploss_positions/{address}|
+| `Parameters` | [QueryParametersRequest](#il.v1.QueryParametersRequest) | [QueryParametersResponse](#il.v1.QueryParametersResponse) |  | GET|/il/v1/parameters|
 
  <!-- end services -->
 
