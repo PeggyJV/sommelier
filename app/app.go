@@ -85,9 +85,9 @@ import (
 	upgradekeeper "github.com/cosmos/cosmos-sdk/x/upgrade/keeper"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
 	appParams "github.com/peggyjv/sommelier/app/params"
-	"github.com/peggyjv/sommelier/x/oracle"
-	oraclekeeper "github.com/peggyjv/sommelier/x/oracle/keeper"
-	oracletypes "github.com/peggyjv/sommelier/x/oracle/types"
+	"github.com/peggyjv/sommelier/x/uniswap_oracle"
+	oraclekeeper "github.com/peggyjv/sommelier/x/uniswap_oracle/keeper"
+	oracletypes "github.com/peggyjv/sommelier/x/uniswap_oracle/types"
 
 	// unnamed import of statik for swagger UI support
 	_ "github.com/cosmos/cosmos-sdk/client/docs/statik"

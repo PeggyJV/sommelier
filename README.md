@@ -18,7 +18,7 @@ We have active, helpful communities on Twitter, Discord, and Telegram.
 ## The Plan:
 
 `sommelier` chain will consist of the `gaia` modules as well as the following custom modules:
-- [`x/oracle`](https://github.com/peggyjv/sommelier/x/oracle) - A price oracle forked from the [Terra](https://terra.money) price oracle. The base denom for all prices is change from `luna` to `usd` and much of the internal code has been refactored to use more standard SDK types. This oracle will bring in price data to support our usecases (@jackzampolin)
+- [`x/oracle`](https://github.com/peggyjv/sommelier/x/uniswap_oracle) - A price oracle forked from the [Terra](https://terra.money) price oracle. The base denom for all prices is change from `luna` to `usd` and much of the internal code has been refactored to use more standard SDK types. This oracle will bring in price data to support our usecases (@jackzampolin)
     - [x] Import and stargate migration
     - [ ] Refactors to simplify internal code for more extensibility/stability
     - [ ] [`delphi`](https://github.com/iqlusioninc/delphi) support for updated oracle module
