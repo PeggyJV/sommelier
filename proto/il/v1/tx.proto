@@ -7,7 +7,7 @@ option go_package = "github.com/peggyjv/sommelier/x/il/types";
 
 // MsgService defines the msgs that the oracle module handles.
 service Msg {
-  rpc CreateStoploss          (MsgStoploss)          returns (MsgStoplossResponse);
+  rpc CreateStoploss  (MsgStoploss)   returns (MsgStoplossResponse);
 }
 
 // MsgStoploss defines a stoploss position
