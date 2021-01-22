@@ -10,7 +10,7 @@
   
 - [il/v1/genesis.proto](#il/v1/genesis.proto)
     - [GenesisState](#il.v1.GenesisState)
-    - [StoplossPosition](#il.v1.StoplossPosition)
+    - [StoplossPositions](#il.v1.StoplossPositions)
   
 - [il/v1/query.proto](#il/v1/query.proto)
     - [QueryParametersRequest](#il.v1.QueryParametersRequest)
@@ -139,23 +139,23 @@ GenesisState all impermanent loss state that must be provided at genesis.
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | `params` | [Params](#il.v1.Params) |  |  |
-| `stoploss_positions` | [StoplossPosition](#il.v1.StoplossPosition) | repeated |  |
+| `lps_stoploss_positions` | [StoplossPositions](#il.v1.StoplossPositions) | repeated |  |
 
 
 
 
 
 
-<a name="il.v1.StoplossPosition"></a>
+<a name="il.v1.StoplossPositions"></a>
 
-### StoplossPosition
-StoplossPosition represents an impermanent loss stop position for a given address and uniswap pair.
+### StoplossPositions
+StoplossPosition represents all the impermanent loss stop positions for a given LP address and uniswap pair.
 
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| `address` | [string](#string) |  | account address |
-| `stoploss` | [Stoploss](#il.v1.Stoploss) |  | account delegate address |
+| `address` | [string](#string) |  | LP account address |
+| `stoploss_positions` | [Stoploss](#il.v1.Stoploss) | repeated | set of possitions owned by the address |
 
 
 
