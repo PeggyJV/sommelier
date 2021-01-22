@@ -84,7 +84,15 @@ import (
 	upgradeclient "github.com/cosmos/cosmos-sdk/x/upgrade/client"
 	upgradekeeper "github.com/cosmos/cosmos-sdk/x/upgrade/keeper"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
+
+	ethbridge "github.com/althea-net/peggy/module/x/peggy"
+	ethbridgekeeper "github.com/althea-net/peggy/module/x/peggy/keeper"
+	ethbridgetypes "github.com/althea-net/peggy/module/x/peggy/types"
+
 	appParams "github.com/peggyjv/sommelier/app/params"
+	"github.com/peggyjv/sommelier/x/il"
+	ilkeeper "github.com/peggyjv/sommelier/x/il/keeper"
+	iltypes "github.com/peggyjv/sommelier/x/il/types"
 	"github.com/peggyjv/sommelier/x/oracle"
 	oraclekeeper "github.com/peggyjv/sommelier/x/oracle/keeper"
 	oracletypes "github.com/peggyjv/sommelier/x/oracle/types"
@@ -121,7 +129,9 @@ var (
 		evidence.AppModuleBasic{},
 		transfer.AppModuleBasic{},
 		vesting.AppModuleBasic{},
+		ethbridge.AppModuleBasic{},
 		oracle.AppModuleBasic{},
+		il.AppModuleBasic{},
 	)
 
 	// module account permissions
@@ -133,12 +143,12 @@ var (
 		stakingtypes.NotBondedPoolName: {authtypes.Burner, authtypes.Staking},
 		govtypes.ModuleName:            {authtypes.Burner},
 		ibctransfertypes.ModuleName:    {authtypes.Minter, authtypes.Burner},
-		oracletypes.ModuleName:         nil,
+		oracletypes.ModuleName:         nil, // TODO:??
 	}
 
 	// module accounts that are allowed to receive tokens
 	allowedReceivingModAcc = map[string]bool{
-		oracletypes.ModuleName: true,
+		oracletypes.ModuleName: true, // TODO: why?
 		distrtypes.ModuleName:  true,
 	}
 )
@@ -164,7 +174,7 @@ type SommelierApp struct {
 	tkeys   map[string]*sdk.TransientStoreKey
 	memKeys map[string]*sdk.MemoryStoreKey
 
-	// keepers
+	// SDK keepers
 	AccountKeeper    authkeeper.AccountKeeper
 	BankKeeper       bankkeeper.Keeper
 	CapabilityKeeper *capabilitykeeper.Keeper
@@ -179,9 +189,15 @@ type SommelierApp struct {
 	IBCKeeper        *ibckeeper.Keeper // IBC Keeper must be a pointer in the app, so we can SetRouter on it correctly
 	EvidenceKeeper   evidencekeeper.Keeper
 	TransferKeeper   ibctransferkeeper.Keeper
-	OracleKeeper     oraclekeeper.Keeper
 
-	// make scoped keepers public for test purposes
+	// gravity Ethereum bridge keeper
+	EthBridgeKeeper ethbridgekeeper.Keeper
+
+	// Sommelier keepers
+	OracleKeeper oraclekeeper.Keeper
+	ILKeeper     ilkeeper.Keeper
+
+	// make capability scoped keepers public for test purposes (IBC only)
 	ScopedIBCKeeper      capabilitykeeper.ScopedKeeper
 	ScopedTransferKeeper capabilitykeeper.ScopedKeeper
 
@@ -221,7 +237,8 @@ func NewSommelierApp(
 		minttypes.StoreKey, distrtypes.StoreKey, slashingtypes.StoreKey,
 		govtypes.StoreKey, paramstypes.StoreKey, ibchost.StoreKey, upgradetypes.StoreKey,
 		evidencetypes.StoreKey, ibctransfertypes.StoreKey, capabilitytypes.StoreKey,
-		oracletypes.StoreKey,
+		ethbridgetypes.ModuleName,
+		oracletypes.StoreKey, iltypes.ModuleName,
 	)
 	tkeys := sdk.NewTransientStoreKeys(paramstypes.TStoreKey)
 	memKeys := sdk.NewMemoryStoreKeys(capabilitytypes.MemStoreKey)
@@ -303,9 +320,17 @@ func NewSommelierApp(
 	)
 	transferModule := transfer.NewAppModule(app.TransferKeeper)
 
+	app.EthBridgeKeeper = ethbridgekeeper.NewKeeper(
+		appCodec, keys[ethbridgetypes.StoreKey], app.GetSubspace(ethbridgetypes.ModuleName), app.AccountKeeper, app.BankKeeper,
+	)
+
 	app.OracleKeeper = oraclekeeper.NewKeeper(
 		appCodec, keys[oracletypes.StoreKey], app.GetSubspace(oracletypes.ModuleName), app.DistrKeeper,
 		app.StakingKeeper, app.AccountKeeper, app.BankKeeper, distrtypes.ModuleName,
+	)
+
+	app.ILKeeper = ilkeeper.NewKeeper(
+		appCodec, keys[iltypes.StoreKey], app.GetSubspace(iltypes.ModuleName), app.OracleKeeper, app.EthBridgeKeeper,
 	)
 	// Create static IBC router, add transfer route, then set and seal it
 	ibcRouter := porttypes.NewRouter()
@@ -353,6 +378,7 @@ func NewSommelierApp(
 		params.NewAppModule(app.ParamsKeeper),
 		transferModule,
 		oracle.NewAppModule(app.OracleKeeper, app.AccountKeeper, app.BankKeeper, appCodec),
+		il.NewAppModule(app.ILKeeper, appCodec),
 	)
 
 	// During begin block slashing happens after distr.BeginBlocker so that
@@ -614,8 +640,10 @@ func initParamsKeeper(appCodec codec.BinaryMarshaler, legacyAmino *codec.LegacyA
 	paramsKeeper.Subspace(govtypes.ModuleName).WithKeyTable(govtypes.ParamKeyTable())
 	paramsKeeper.Subspace(crisistypes.ModuleName)
 	paramsKeeper.Subspace(ibctransfertypes.ModuleName)
-	paramsKeeper.Subspace(oracletypes.ModuleName)
 	paramsKeeper.Subspace(ibchost.ModuleName)
+	paramsKeeper.Subspace(ethbridgetypes.ModuleName)
+	paramsKeeper.Subspace(oracletypes.ModuleName)
+	paramsKeeper.Subspace(iltypes.ModuleName)
 
 	return paramsKeeper
 }
