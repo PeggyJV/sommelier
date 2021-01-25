@@ -1,9 +1,9 @@
 syntax = "proto3";
 package uniswap_oracle.v1;
 
-import "uniswap_oracle/v1/oracle.proto";
+import "uniswap-oracle/v1/oracle.proto";
 
-option go_package = "x/uniswap_oracle/types";
+option go_package = "github.com/peggyjv/sommelier/x/uniswap-oracle/types";
 
 // MsgService defines the msgs that the oracle module handles.
 service Msg {

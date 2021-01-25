@@ -4,7 +4,7 @@
 
 ## Table of Contents
 
-- [uniswap_oracle/v1/oracle.proto](#uniswap_oracle/v1/oracle.proto)
+- [uniswap-oracle/v1/oracle.proto](#uniswap-oracle/v1/oracle.proto)
     - [Claim](#uniswap_oracle.v1.Claim)
     - [Pair](#uniswap_oracle.v1.Pair)
     - [Params](#uniswap_oracle.v1.Params)
@@ -12,18 +12,18 @@
     - [UniswapPrevote](#uniswap_oracle.v1.UniswapPrevote)
     - [UniswapVote](#uniswap_oracle.v1.UniswapVote)
   
-- [uniswap_oracle/v1/genesis.proto](#uniswap_oracle/v1/genesis.proto)
+- [uniswap-oracle/v1/genesis.proto](#uniswap-oracle/v1/genesis.proto)
     - [GenesisState](#uniswap_oracle.v1.GenesisState)
     - [OracleDelegation](#uniswap_oracle.v1.OracleDelegation)
     - [ValidatorMissCounter](#uniswap_oracle.v1.ValidatorMissCounter)
   
-- [uniswap_oracle/v1/query.proto](#uniswap_oracle/v1/query.proto)
+- [uniswap-oracle/v1/query.proto](#uniswap-oracle/v1/query.proto)
     - [QueryUniswapDataRequest](#uniswap_oracle.v1.QueryUniswapDataRequest)
     - [QueryUniswapDataResponse](#uniswap_oracle.v1.QueryUniswapDataResponse)
   
     - [Query](#uniswap_oracle.v1.Query)
   
-- [uniswap_oracle/v1/tx.proto](#uniswap_oracle/v1/tx.proto)
+- [uniswap-oracle/v1/tx.proto](#uniswap-oracle/v1/tx.proto)
     - [MsgDelegateFeedConsent](#uniswap_oracle.v1.MsgDelegateFeedConsent)
     - [MsgDelegateFeedConsentResponse](#uniswap_oracle.v1.MsgDelegateFeedConsentResponse)
     - [MsgUniswapDataPrevote](#uniswap_oracle.v1.MsgUniswapDataPrevote)
@@ -37,10 +37,10 @@
 
 
 
-<a name="uniswap_oracle/v1/oracle.proto"></a>
+<a name="uniswap-oracle/v1/oracle.proto"></a>
 <p align="right"><a href="#top">Top</a></p>
 
-## uniswap_oracle/v1/oracle.proto
+## uniswap-oracle/v1/oracle.proto
 
 
 
@@ -151,10 +151,10 @@ UniswapVote - struct to store a validator's vote on uniswap data
 
 
 
-<a name="uniswap_oracle/v1/genesis.proto"></a>
+<a name="uniswap-oracle/v1/genesis.proto"></a>
 <p align="right"><a href="#top">Top</a></p>
 
-## uniswap_oracle/v1/genesis.proto
+## uniswap-oracle/v1/genesis.proto
 
 
 
@@ -219,10 +219,10 @@ ValidatorMissCounter represents a per validator miss counter
 
 
 
-<a name="uniswap_oracle/v1/query.proto"></a>
+<a name="uniswap-oracle/v1/query.proto"></a>
 <p align="right"><a href="#top">Top</a></p>
 
-## uniswap_oracle/v1/query.proto
+## uniswap-oracle/v1/query.proto
 
 
 
@@ -265,10 +265,10 @@ ValidatorMissCounter represents a per validator miss counter
 
 
 
-<a name="uniswap_oracle/v1/tx.proto"></a>
+<a name="uniswap-oracle/v1/tx.proto"></a>
 <p align="right"><a href="#top">Top</a></p>
 
-## uniswap_oracle/v1/tx.proto
+## uniswap-oracle/v1/tx.proto
 
 
 
