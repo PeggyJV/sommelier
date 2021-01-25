@@ -1,0 +1,67 @@
+syntax = "proto3";
+package oracle.v1;
+
+import "oracle/v1/oracle.proto";
+import "oracle/v1/tx.proto";
+import "gogoproto/gogo.proto";
+import "cosmos/base/v1beta1/coin.proto";
+
+option go_package = "github.com/peggyjv/sommelier/x/oracle/types";
+
+
+// GenesisState - all oracle state that must be provided at genesis
+// GenesisState - all oracle state that must be provided at genesis
+message GenesisState {
+    Params                          params             = 1 [
+        (gogoproto.nullable) = false
+    ];
+    repeated MsgDelegateFeedConsent feeder_delegations = 2 [
+        (gogoproto.nullable) = false
+    ];
+    repeated MissCounter            miss_counters      = 3 [
+        (gogoproto.nullable) = false
+    ];
+}
+
+// Params oracle parameters
+message Params {
+	// TODO: Define params
+	// required data proto formats
+    // miss counter params
+    // 
+    // int64                                vote_period                = 1 [
+    //     (gogoproto.moretags) = "yaml:\"exchange_rate_tuples\""
+    // ];
+    // string                               vote_threshold             = 2 [
+    //     (gogoproto.moretags) = "yaml:\"vote_threshold\"",
+    //     (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec", 
+    //     (gogoproto.nullable) = false
+    // ];
+    // string                               reward_band                = 3 [
+    //     (gogoproto.moretags) = "yaml:\"reward_band\"",
+    //     (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec", 
+    //     (gogoproto.nullable)   = false
+    // ];
+    // int64                                reward_distribution_window = 4 [
+    //     (gogoproto.moretags) = "yaml:\"reward_distribution_window\""
+    // ]; 
+    // string                               slash_fraction             = 6 [
+    //     (gogoproto.moretags) = "yaml:\"slash_fraction\"",
+    //     (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec", 
+    //     (gogoproto.nullable) = false
+    // ];
+    // int64                                slash_window               = 7 [
+    //     (gogoproto.moretags) = "yaml:\"slash_window\""
+    // ];
+    // string                               min_valid_per_window       = 8 [
+    //     (gogoproto.moretags) = "yaml:\"min_valid_per_window\"",
+    //     (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec", 
+    //     (gogoproto.nullable) = false
+    // ];
+}
+
+// MissCounter stores the validator address and the number of associated misses
+message MissCounter {
+    string validator = 1;
+    int64  misses    = 2;
+}

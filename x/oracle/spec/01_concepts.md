@@ -6,9 +6,9 @@ order: 1
 
 ## Voting Procedure
 
-During each `VotePeriod`, the Oracle module obtains consensus on the exchange rate of Luna against denominations specified in `Whitelist` by requiring all members of the validator set to submit a vote for Luna exchange rate before the end of the interval.
+During each `VotePeriod`, the Oracle module obtains consensus on supported types of `OracleData` specified in `Whitelist` by requiring all members of the validator set to submit a vote for each data type in that whitelist.
 
-Validators must first pre-commit to a exchange rate, then in the subsequent `VotePeriod` submit and reveal their exchange rate alongside a proof that they had pre-commited at that price. This scheme forces the voter to commit to a submission before knowing the votes of others and thereby reduces centralization and free-rider risk in the Oracle.
+Validators must first pre-commit to each type of `OracleData`, using a `MsgOracleDataPrevote` then in the subsequent `VotePeriod` submit and reveal their `OracleData` alongside a proof that they had pre-commited at that price. This scheme forces the voter to commit to a submission before knowing the votes of others and thereby reduces centralization and free-rider risk in the Oracle.
 
 * Prevote and Vote
 
@@ -23,17 +23,15 @@ Validators must first pre-commit to a exchange rate, then in the subsequent `Vot
 
     The submitted salt of each vote is used to verify consistency with the prevote submitted by the validator in `P_t-1`. If the validator has not submitted a prevote, or the SHA256 resulting from the salt does not match the hash from the prevote, the vote is dropped.
 
-    For each denomination, if the total voting power of submitted votes exceeds 50%, the weighted median of the votes is recorded on-chain as the effective exchange rate for Luna against that denomination for the following `VotePeriod` `P_t+1`.
+    For each `OracleData` type, if the total voting power of submitted votes exceeds 50%, the weighted median of the votes is recorded on-chain as the authoritative representation of that data follwing `VotePeriod` `P_t+1`.
 
-    Denominations receiving fewer than `VoteThreshold` total voting power have their exchange rates deleted from the store, and no swaps can be made with it during the next VotePeriod `P_t+1`.
+    `OracleData` types receiving fewer than `VoteThreshold` total voting power have their representations deleted from the store, and no usage can be made with it during the next VotePeriod `P_t+1`.
 
 * Ballot Rewards
 
     After the votes are tallied, the winners of the ballots are determined with `tally()`.
 
     Voters that have managed to vote within a narrow band around the weighted median, are rewarded with a portion of the collected seigniorage. See `k.RewardBallotWinners()` for more details.
-
-    > Starting from Columbus-3, fees from [Market](../../market/spec/README.md) swaps are no longer are included in the oracle reward pool, and are immediately burned during the swap operation.
 
 ## Reward Band
 
