@@ -1,0 +1,24 @@
+syntax = "proto3";
+package oracle.v1;
+
+import "gogoproto/gogo.proto";
+import "oracle/v1/oracle.proto";
+import "google/api/annotations.proto";
+import "cosmos/base/v1beta1/coin.proto";
+import "cosmos_proto/cosmos.proto";
+import "google/protobuf/any.proto";
+
+option go_package = "github.com/peggyjv/sommelier/x/oracle/types";
+
+service Query {
+    rpc OracleData(QueryOracleDataRequest) returns (QueryOracleDataResponse) {
+        option (google.api.http).get = "/oracle/v1/oracle-data";
+    }
+}
+
+message QueryOracleDataRequest  {}
+message QueryOracleDataResponse {
+    repeated google.protobuf.Any oracle_data = 1 [
+        (cosmos_proto.accepts_interface) = "OracleData"
+    ];
+}

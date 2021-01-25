@@ -4,66 +4,62 @@
 
 ## Table of Contents
 
-- [uniswap-oracle/v1/oracle.proto](#uniswap-oracle/v1/oracle.proto)
-    - [Claim](#uniswap_oracle.v1.Claim)
-    - [Pair](#uniswap_oracle.v1.Pair)
-    - [Params](#uniswap_oracle.v1.Params)
-    - [Token](#uniswap_oracle.v1.Token)
-    - [UniswapPrevote](#uniswap_oracle.v1.UniswapPrevote)
-    - [UniswapVote](#uniswap_oracle.v1.UniswapVote)
+- [oracle/v1/oracle.proto](#oracle/v1/oracle.proto)
+    - [UniswapData](#oracle.v1.UniswapData)
+    - [UniswapPair](#oracle.v1.UniswapPair)
+    - [UniswapToken](#oracle.v1.UniswapToken)
   
-- [uniswap-oracle/v1/genesis.proto](#uniswap-oracle/v1/genesis.proto)
-    - [GenesisState](#uniswap_oracle.v1.GenesisState)
-    - [OracleDelegation](#uniswap_oracle.v1.OracleDelegation)
-    - [ValidatorMissCounter](#uniswap_oracle.v1.ValidatorMissCounter)
+- [oracle/v1/tx.proto](#oracle/v1/tx.proto)
+    - [MsgDelegateFeedConsent](#oracle.v1.MsgDelegateFeedConsent)
+    - [MsgDelegateFeedConsentResponse](#oracle.v1.MsgDelegateFeedConsentResponse)
+    - [MsgOracleDataPrevote](#oracle.v1.MsgOracleDataPrevote)
+    - [MsgOracleDataPrevoteResponse](#oracle.v1.MsgOracleDataPrevoteResponse)
+    - [MsgOracleDataVote](#oracle.v1.MsgOracleDataVote)
+    - [MsgOracleDataVoteResponse](#oracle.v1.MsgOracleDataVoteResponse)
   
-- [uniswap-oracle/v1/query.proto](#uniswap-oracle/v1/query.proto)
-    - [QueryUniswapDataRequest](#uniswap_oracle.v1.QueryUniswapDataRequest)
-    - [QueryUniswapDataResponse](#uniswap_oracle.v1.QueryUniswapDataResponse)
+    - [Msg](#oracle.v1.Msg)
   
-    - [Query](#uniswap_oracle.v1.Query)
+- [oracle/v1/genesis.proto](#oracle/v1/genesis.proto)
+    - [GenesisState](#oracle.v1.GenesisState)
+    - [MissCounter](#oracle.v1.MissCounter)
+    - [Params](#oracle.v1.Params)
   
-- [uniswap-oracle/v1/tx.proto](#uniswap-oracle/v1/tx.proto)
-    - [MsgDelegateFeedConsent](#uniswap_oracle.v1.MsgDelegateFeedConsent)
-    - [MsgDelegateFeedConsentResponse](#uniswap_oracle.v1.MsgDelegateFeedConsentResponse)
-    - [MsgUniswapDataPrevote](#uniswap_oracle.v1.MsgUniswapDataPrevote)
-    - [MsgUniswapDataPrevoteResponse](#uniswap_oracle.v1.MsgUniswapDataPrevoteResponse)
-    - [MsgUniswapDataVote](#uniswap_oracle.v1.MsgUniswapDataVote)
-    - [MsgUniswapDataVoteResponse](#uniswap_oracle.v1.MsgUniswapDataVoteResponse)
+- [oracle/v1/query.proto](#oracle/v1/query.proto)
+    - [QueryOracleDataRequest](#oracle.v1.QueryOracleDataRequest)
+    - [QueryOracleDataResponse](#oracle.v1.QueryOracleDataResponse)
   
-    - [Msg](#uniswap_oracle.v1.Msg)
+    - [Query](#oracle.v1.Query)
   
 - [Scalar Value Types](#scalar-value-types)
 
 
 
-<a name="uniswap-oracle/v1/oracle.proto"></a>
+<a name="oracle/v1/oracle.proto"></a>
 <p align="right"><a href="#top">Top</a></p>
 
-## uniswap-oracle/v1/oracle.proto
+## oracle/v1/oracle.proto
 
 
 
-<a name="uniswap_oracle.v1.Claim"></a>
+<a name="oracle.v1.UniswapData"></a>
 
-### Claim
-Claim is an interface that directs its rewards to an attached bank account.
+### UniswapData
+UniswapData is an implementation of OracleData
 
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| `weight` | [int64](#int64) |  |  |
-| `recipient` | [string](#string) |  |  |
+| `pairs` | [UniswapPair](#oracle.v1.UniswapPair) | repeated |  |
 
 
 
 
 
 
-<a name="uniswap_oracle.v1.Pair"></a>
+<a name="oracle.v1.UniswapPair"></a>
 
-### Pair
-
+### UniswapPair
+UniswapPair represents the necessary data for a uniswap pair
 
 
 | Field | Type | Label | Description |
@@ -72,8 +68,8 @@ Claim is an interface that directs its rewards to an attached bank account.
 | `reserve0` | [string](#string) |  |  |
 | `reserve1` | [string](#string) |  |  |
 | `reserve_usd` | [string](#string) |  |  |
-| `token0` | [Token](#uniswap_oracle.v1.Token) |  |  |
-| `token1` | [Token](#uniswap_oracle.v1.Token) |  |  |
+| `token0` | [UniswapToken](#oracle.v1.UniswapToken) |  |  |
+| `token1` | [UniswapToken](#oracle.v1.UniswapToken) |  |  |
 | `token0_price` | [string](#string) |  |  |
 | `token1_price` | [string](#string) |  |  |
 | `total_supply` | [string](#string) |  |  |
@@ -83,20 +79,10 @@ Claim is an interface that directs its rewards to an attached bank account.
 
 
 
-<a name="uniswap_oracle.v1.Params"></a>
+<a name="oracle.v1.UniswapToken"></a>
 
-### Params
-Params oracle parameters
-
-
-
-
-
-
-<a name="uniswap_oracle.v1.Token"></a>
-
-### Token
-Token is the returned uniswap token representation
+### UniswapToken
+UniswapToken is the returned uniswap token representation
 
 
 | Field | Type | Label | Description |
@@ -108,39 +94,6 @@ Token is the returned uniswap token representation
 
 
 
-
-<a name="uniswap_oracle.v1.UniswapPrevote"></a>
-
-### UniswapPrevote
-UniswapPrevote - struct to store a validator's prevote on uniswap data
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| `hash` | [bytes](#bytes) |  |  |
-| `voter` | [string](#string) |  |  |
-| `submit_block` | [int64](#int64) |  |  |
-
-
-
-
-
-
-<a name="uniswap_oracle.v1.UniswapVote"></a>
-
-### UniswapVote
-UniswapVote - struct to store a validator's vote on uniswap data
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| `voter` | [string](#string) |  |  |
-| `pairs` | [Pair](#uniswap_oracle.v1.Pair) | repeated |  |
-
-
-
-
-
  <!-- end messages -->
 
  <!-- end enums -->
@@ -151,144 +104,31 @@ UniswapVote - struct to store a validator's vote on uniswap data
 
 
 
-<a name="uniswap-oracle/v1/genesis.proto"></a>
+<a name="oracle/v1/tx.proto"></a>
 <p align="right"><a href="#top">Top</a></p>
 
-## uniswap-oracle/v1/genesis.proto
+## oracle/v1/tx.proto
 
 
 
-<a name="uniswap_oracle.v1.GenesisState"></a>
-
-### GenesisState
-GenesisState - all oracle state that must be provided at genesis
-GenesisState - all oracle state that must be provided at genesis
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| `params` | [Params](#uniswap_oracle.v1.Params) |  |  |
-| `feeder_delegations` | [OracleDelegation](#uniswap_oracle.v1.OracleDelegation) | repeated |  |
-| `miss_counters` | [ValidatorMissCounter](#uniswap_oracle.v1.ValidatorMissCounter) | repeated |  |
-| `uniswap_prevote` | [UniswapPrevote](#uniswap_oracle.v1.UniswapPrevote) | repeated |  |
-| `uniswap_vote` | [UniswapVote](#uniswap_oracle.v1.UniswapVote) | repeated |  |
-
-
-
-
-
-
-<a name="uniswap_oracle.v1.OracleDelegation"></a>
-
-### OracleDelegation
-OracleDelegation represents a delegator-delegate pair for an oracle delegation
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| `validator_address` | [string](#string) |  | validator address which is delegating it's authority to vote |
-| `delegate_address` | [string](#string) |  | account delegate address |
-
-
-
-
-
-
-<a name="uniswap_oracle.v1.ValidatorMissCounter"></a>
-
-### ValidatorMissCounter
-ValidatorMissCounter represents a per validator miss counter
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| `val_address` | [string](#string) |  | validator operator address |
-| `missed_counter` | [int64](#int64) |  | missed oracle counter |
-
-
-
-
-
- <!-- end messages -->
-
- <!-- end enums -->
-
- <!-- end HasExtensions -->
-
- <!-- end services -->
-
-
-
-<a name="uniswap-oracle/v1/query.proto"></a>
-<p align="right"><a href="#top">Top</a></p>
-
-## uniswap-oracle/v1/query.proto
-
-
-
-<a name="uniswap_oracle.v1.QueryUniswapDataRequest"></a>
-
-### QueryUniswapDataRequest
-
-
-
-
-
-
-
-<a name="uniswap_oracle.v1.QueryUniswapDataResponse"></a>
-
-### QueryUniswapDataResponse
-
-
-
-
-
-
- <!-- end messages -->
-
- <!-- end enums -->
-
- <!-- end HasExtensions -->
-
-
-<a name="uniswap_oracle.v1.Query"></a>
-
-### Query
-
-
-| Method Name | Request Type | Response Type | Description | HTTP Verb | Endpoint |
-| ----------- | ------------ | ------------- | ------------| ------- | -------- |
-| `UniswapData` | [QueryUniswapDataRequest](#uniswap_oracle.v1.QueryUniswapDataRequest) | [QueryUniswapDataResponse](#uniswap_oracle.v1.QueryUniswapDataResponse) |  | GET|/uniswap-oracle/v1/uniswap-data|
-
- <!-- end services -->
-
-
-
-<a name="uniswap-oracle/v1/tx.proto"></a>
-<p align="right"><a href="#top">Top</a></p>
-
-## uniswap-oracle/v1/tx.proto
-
-
-
-<a name="uniswap_oracle.v1.MsgDelegateFeedConsent"></a>
+<a name="oracle.v1.MsgDelegateFeedConsent"></a>
 
 ### MsgDelegateFeedConsent
-MsgDelegateFeedConsent - struct for delegating oracle voting rights to another address.
+MsgDelegateFeedConsent - sdk.Msg for delegating oracle voting rights from a validator
+to another address, must be signed by an active validator
 
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| `operator` | [string](#string) |  |  |
 | `delegate` | [string](#string) |  |  |
+| `validator` | [string](#string) |  |  |
 
 
 
 
 
 
-<a name="uniswap_oracle.v1.MsgDelegateFeedConsentResponse"></a>
+<a name="oracle.v1.MsgDelegateFeedConsentResponse"></a>
 
 ### MsgDelegateFeedConsentResponse
 
@@ -298,56 +138,54 @@ MsgDelegateFeedConsent - struct for delegating oracle voting rights to another a
 
 
 
-<a name="uniswap_oracle.v1.MsgUniswapDataPrevote"></a>
+<a name="oracle.v1.MsgOracleDataPrevote"></a>
 
-### MsgUniswapDataPrevote
-MsgUniswapDataPrevote - struct for aggregate prevoting on the ExchangeRateVote.
-The purpose of aggregate prevote is to hide vote exchange rates with hash
-which is formatted as hex string in SHA256("{salt}:{exchange rate}{denom},...,{exchange rate}{denom}:{voter}")
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| `hash` | [bytes](#bytes) |  |  |
-| `feeder` | [string](#string) |  |  |
-| `validator` | [string](#string) |  |  |
-
-
-
-
-
-
-<a name="uniswap_oracle.v1.MsgUniswapDataPrevoteResponse"></a>
-
-### MsgUniswapDataPrevoteResponse
-
-
-
-
-
-
-
-<a name="uniswap_oracle.v1.MsgUniswapDataVote"></a>
-
-### MsgUniswapDataVote
-MsgUniswapDataVote - struct for voting on the exchange rates of Luna denominated in various Terra assets.
+### MsgOracleDataPrevote
+MsgOracleDataPrevote - sdk.Msg for prevoting on an array of oracle data types.
+The purpose of the prevote is to hide vote for data with hashes formatted as hex string: 
+SHA256("{salt}:{data_cannonical_json}:{voter}")
 
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| `salt` | [string](#string) |  |  |
-| `pairs` | [Pair](#uniswap_oracle.v1.Pair) | repeated |  |
-| `feeder` | [string](#string) |  |  |
-| `validator` | [string](#string) |  |  |
+| `hashes` | [bytes](#bytes) | repeated |  |
+| `signer` | [string](#string) |  |  |
 
 
 
 
 
 
-<a name="uniswap_oracle.v1.MsgUniswapDataVoteResponse"></a>
+<a name="oracle.v1.MsgOracleDataPrevoteResponse"></a>
 
-### MsgUniswapDataVoteResponse
+### MsgOracleDataPrevoteResponse
+
+
+
+
+
+
+
+<a name="oracle.v1.MsgOracleDataVote"></a>
+
+### MsgOracleDataVote
+MsgOracleDataVote - sdk.Msg for submitting arbitrary oracle data that has been prevoted on
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `salt` | [string](#string) | repeated |  |
+| `oracle_data` | [google.protobuf.Any](#google.protobuf.Any) | repeated |  |
+| `signer` | [string](#string) |  |  |
+
+
+
+
+
+
+<a name="oracle.v1.MsgOracleDataVoteResponse"></a>
+
+### MsgOracleDataVoteResponse
 
 
 
@@ -361,16 +199,127 @@ MsgUniswapDataVote - struct for voting on the exchange rates of Luna denominated
  <!-- end HasExtensions -->
 
 
-<a name="uniswap_oracle.v1.Msg"></a>
+<a name="oracle.v1.Msg"></a>
 
 ### Msg
 MsgService defines the msgs that the oracle module handles.
 
 | Method Name | Request Type | Response Type | Description | HTTP Verb | Endpoint |
 | ----------- | ------------ | ------------- | ------------| ------- | -------- |
-| `DelegateFeedConsent` | [MsgDelegateFeedConsent](#uniswap_oracle.v1.MsgDelegateFeedConsent) | [MsgDelegateFeedConsentResponse](#uniswap_oracle.v1.MsgDelegateFeedConsentResponse) |  | |
-| `UniswapDataPrevote` | [MsgUniswapDataPrevote](#uniswap_oracle.v1.MsgUniswapDataPrevote) | [MsgUniswapDataPrevoteResponse](#uniswap_oracle.v1.MsgUniswapDataPrevoteResponse) |  | |
-| `UniswapDataVote` | [MsgUniswapDataVote](#uniswap_oracle.v1.MsgUniswapDataVote) | [MsgUniswapDataVoteResponse](#uniswap_oracle.v1.MsgUniswapDataVoteResponse) |  | |
+| `DelegateFeedConsent` | [MsgDelegateFeedConsent](#oracle.v1.MsgDelegateFeedConsent) | [MsgDelegateFeedConsentResponse](#oracle.v1.MsgDelegateFeedConsentResponse) |  | |
+| `OracleDataPrevote` | [MsgOracleDataPrevote](#oracle.v1.MsgOracleDataPrevote) | [MsgOracleDataPrevoteResponse](#oracle.v1.MsgOracleDataPrevoteResponse) |  | |
+| `OracleDataVote` | [MsgOracleDataVote](#oracle.v1.MsgOracleDataVote) | [MsgOracleDataVoteResponse](#oracle.v1.MsgOracleDataVoteResponse) |  | |
+
+ <!-- end services -->
+
+
+
+<a name="oracle/v1/genesis.proto"></a>
+<p align="right"><a href="#top">Top</a></p>
+
+## oracle/v1/genesis.proto
+
+
+
+<a name="oracle.v1.GenesisState"></a>
+
+### GenesisState
+GenesisState - all oracle state that must be provided at genesis
+GenesisState - all oracle state that must be provided at genesis
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `params` | [Params](#oracle.v1.Params) |  |  |
+| `feeder_delegations` | [MsgDelegateFeedConsent](#oracle.v1.MsgDelegateFeedConsent) | repeated |  |
+| `miss_counters` | [MissCounter](#oracle.v1.MissCounter) | repeated |  |
+
+
+
+
+
+
+<a name="oracle.v1.MissCounter"></a>
+
+### MissCounter
+MissCounter stores the validator address and the number of associated misses
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `validator` | [string](#string) |  |  |
+| `misses` | [int64](#int64) |  |  |
+
+
+
+
+
+
+<a name="oracle.v1.Params"></a>
+
+### Params
+Params oracle parameters
+
+
+
+
+
+ <!-- end messages -->
+
+ <!-- end enums -->
+
+ <!-- end HasExtensions -->
+
+ <!-- end services -->
+
+
+
+<a name="oracle/v1/query.proto"></a>
+<p align="right"><a href="#top">Top</a></p>
+
+## oracle/v1/query.proto
+
+
+
+<a name="oracle.v1.QueryOracleDataRequest"></a>
+
+### QueryOracleDataRequest
+
+
+
+
+
+
+
+<a name="oracle.v1.QueryOracleDataResponse"></a>
+
+### QueryOracleDataResponse
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `oracle_data` | [google.protobuf.Any](#google.protobuf.Any) | repeated |  |
+
+
+
+
+
+ <!-- end messages -->
+
+ <!-- end enums -->
+
+ <!-- end HasExtensions -->
+
+
+<a name="oracle.v1.Query"></a>
+
+### Query
+
+
+| Method Name | Request Type | Response Type | Description | HTTP Verb | Endpoint |
+| ----------- | ------------ | ------------- | ------------| ------- | -------- |
+| `OracleData` | [QueryOracleDataRequest](#oracle.v1.QueryOracleDataRequest) | [QueryOracleDataResponse](#oracle.v1.QueryOracleDataResponse) |  | GET|/oracle/v1/oracle-data|
 
  <!-- end services -->
 

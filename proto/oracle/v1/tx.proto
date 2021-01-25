@@ -1,0 +1,45 @@
+syntax = "proto3";
+package oracle.v1;
+
+import "oracle/v1/oracle.proto";
+import "cosmos_proto/cosmos.proto";
+import "google/protobuf/any.proto";
+
+option go_package = "github.com/peggyjv/sommelier/x/oracle/types";
+
+// MsgService defines the msgs that the oracle module handles.
+service Msg {
+    rpc DelegateFeedConsent (MsgDelegateFeedConsent) returns (MsgDelegateFeedConsentResponse);
+    rpc OracleDataPrevote   (MsgOracleDataPrevote)   returns (MsgOracleDataPrevoteResponse);
+    rpc OracleDataVote      (MsgOracleDataVote)      returns (MsgOracleDataVoteResponse);
+}
+
+// MsgDelegateFeedConsent - sdk.Msg for delegating oracle voting rights from a validator
+// to another address, must be signed by an active validator
+message MsgDelegateFeedConsent {
+    string delegate  = 1;
+    string validator = 2;
+}
+
+message MsgDelegateFeedConsentResponse {}
+
+// MsgOracleDataPrevote - sdk.Msg for prevoting on an array of oracle data types.
+// The purpose of the prevote is to hide vote for data with hashes formatted as hex string: 
+// SHA256("{salt}:{data_cannonical_json}:{voter}")
+message MsgOracleDataPrevote {
+    repeated bytes  hashes = 1;
+    string          signer = 2;
+}
+
+message MsgOracleDataPrevoteResponse {}
+
+// MsgOracleDataVote - sdk.Msg for submitting arbitrary oracle data that has been prevoted on
+message MsgOracleDataVote {
+    repeated string              salt       = 1;
+    repeated google.protobuf.Any oracle_data = 2 [
+        (cosmos_proto.accepts_interface) = "OracleData"
+    ];
+    string                       signer     = 3;
+}
+
+message MsgOracleDataVoteResponse {}
