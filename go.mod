@@ -8,6 +8,7 @@ require (
 	github.com/Masterminds/sprig v2.22.0+incompatible // indirect
 	github.com/aokoli/goutils v1.1.0 // indirect
 	github.com/cosmos/cosmos-sdk v0.40.0-rc7
+	github.com/cosmos/relayer v0.6.1
 	github.com/envoyproxy/protoc-gen-validate v0.4.1 // indirect
 	github.com/gogo/protobuf v1.3.2
 	github.com/golang/protobuf v1.4.3

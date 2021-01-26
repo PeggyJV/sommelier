@@ -5,8 +5,8 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	"github.com/peggyjv/sommelier/x/uniswap_oracle/keeper"
-	"github.com/peggyjv/sommelier/x/uniswap_oracle/types"
+	"github.com/peggyjv/sommelier/x/oracle/keeper"
+	"github.com/peggyjv/sommelier/x/oracle/types"
 )
 
 // NewHandler returns a handler for "oracle" type messages.
@@ -18,11 +18,11 @@ func NewHandler(k keeper.Keeper) sdk.Handler {
 		case *types.MsgDelegateFeedConsent:
 			res, err := msgServer.DelegateFeedConsent(sdk.WrapSDKContext(ctx), msg)
 			return sdk.WrapServiceResult(ctx, res, err)
-		case *types.MsgAggregateExchangeRatePrevote:
-			res, err := msgServer.AggregateExchangeRatePrevote(sdk.WrapSDKContext(ctx), msg)
+		case *types.MsgOracleDataPrevote:
+			res, err := msgServer.OracleDataPrevote(sdk.WrapSDKContext(ctx), msg)
 			return sdk.WrapServiceResult(ctx, res, err)
-		case *types.MsgAggregateExchangeRateVote:
-			res, err := msgServer.AggregateExchangeRateVote(sdk.WrapSDKContext(ctx), msg)
+		case *types.MsgOracleDataVote:
+			res, err := msgServer.OracleDataVote(sdk.WrapSDKContext(ctx), msg)
 			return sdk.WrapServiceResult(ctx, res, err)
 		default:
 			return nil, sdkerrors.Wrapf(sdkerrors.ErrUnknownRequest, "unrecognized distribution message type: %T", msg)

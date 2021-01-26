@@ -5,14 +5,19 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
+	"os"
+	"path/filepath"
 
-	"github.com/machinebox/graphql"
-	oracle "github.com/peggyjv/sommelier/x/oracle/types"
-	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
-	"github.com/spf13/cobra"
-	"github.com/peggyjv/sommelier/app"
 	"github.com/cosmos/cosmos-sdk/client"
+	"github.com/cosmos/cosmos-sdk/client/flags"
+	kr "github.com/cosmos/cosmos-sdk/crypto/keyring"
+	authclient "github.com/cosmos/cosmos-sdk/x/auth/client"
+	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
+	"github.com/machinebox/graphql"
+	"github.com/peggyjv/sommelier/app"
 	"github.com/peggyjv/sommelier/app/params"
+	oracle "github.com/peggyjv/sommelier/x/oracle/types"
+	"github.com/spf13/cobra"
 	tmcli "github.com/tendermint/tendermint/libs/cli"
 )
 
@@ -34,6 +39,10 @@ func init() {
 // main function.
 func NewRootCmd() (*cobra.Command, params.EncodingConfig) {
 	encodingConfig := app.MakeEncodingConfig()
+	keyring, err := kr.New("oracle-feeder", "test", FeederHome, os.Stdin)
+	if err != nil {
+		panic(err)
+	}
 	initClientCtx := client.Context{}.
 		WithJSONMarshaler(encodingConfig.Marshaler).
 		WithInterfaceRegistry(encodingConfig.InterfaceRegistry).
@@ -42,7 +51,8 @@ func NewRootCmd() (*cobra.Command, params.EncodingConfig) {
 		WithInput(os.Stdin).
 		WithAccountRetriever(authtypes.AccountRetriever{}).
 		WithBroadcastMode(flags.BroadcastBlock).
-		WithHomeDir(FeederHome)
+		WithHomeDir(FeederHome).
+		WithKeyring(keyring)
 
 	rootCmd := &cobra.Command{
 		Use:   "oracle-feeder",
@@ -75,13 +85,11 @@ func Execute(rootCmd *cobra.Command) error {
 func initRootCmd(rootCmd *cobra.Command, encodingConfig params.EncodingConfig) {
 	authclient.Codec = encodingConfig.Marshaler
 
-
 	// add keybase, auxiliary RPC, query, and tx child commands
 	rootCmd.AddCommand(
-		keys.Commands(FeederHome),
+		keysCmd(),
 	)
 }
-
 
 // Config is the configuration for the graphql querier
 type Config struct {
