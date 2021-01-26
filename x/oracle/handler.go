@@ -5,8 +5,8 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	"github.com/peggyjv/sommelier/x/uniswap_oracle/keeper"
-	"github.com/peggyjv/sommelier/x/uniswap_oracle/types"
+	"github.com/peggyjv/sommelier/x/oracle/keeper"
+	"github.com/peggyjv/sommelier/x/oracle/types"
 )
 
 // NewHandler returns a handler for "oracle" type messages.

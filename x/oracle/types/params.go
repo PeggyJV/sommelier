@@ -19,12 +19,10 @@ package types
 // 	return paramtypes.NewKeyTable().RegisterParamSet(&Params{})
 // }
 
-// // DefaultParams returns default distribution parameters
-// func DefaultParams() Params {
-// 	return Params{
-// 		CommunityTax:        sdk.NewDecWithPrec(2, 2), // 2%
-// 	}
-// }
+// DefaultParams returns default distribution parameters
+func DefaultParams() Params {
+	return Params{}
+}
 
 // // ParamSetPairs returns the parameter set pairs.
 // func (p *Params) ParamSetPairs() paramtypes.ParamSetPairs {

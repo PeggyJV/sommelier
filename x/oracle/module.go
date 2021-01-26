@@ -13,10 +13,10 @@ import (
 	sim "github.com/cosmos/cosmos-sdk/types/simulation"
 	"github.com/gorilla/mux"
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
-	"github.com/peggyjv/sommelier/x/uniswap_oracle/client/cli"
-	"github.com/peggyjv/sommelier/x/uniswap_oracle/keeper"
-	"github.com/peggyjv/sommelier/x/uniswap_oracle/simulation"
-	"github.com/peggyjv/sommelier/x/uniswap_oracle/types"
+	"github.com/peggyjv/sommelier/x/oracle/client/cli"
+	"github.com/peggyjv/sommelier/x/oracle/keeper"
+	"github.com/peggyjv/sommelier/x/oracle/simulation"
+	"github.com/peggyjv/sommelier/x/oracle/types"
 	"github.com/spf13/cobra"
 	abci "github.com/tendermint/tendermint/abci/types"
 )
@@ -41,8 +41,7 @@ func (AppModuleBasic) RegisterLegacyAminoCodec(cdc *codec.LegacyAmino) {}
 // DefaultGenesis returns default genesis state as raw bytes for the oracle
 // module.
 func (AppModuleBasic) DefaultGenesis(cdc codec.JSONMarshaler) json.RawMessage {
-	gen := types.DefaultGenesisState()
-	return cdc.MustMarshalJSON(&gen)
+	return cdc.MustMarshalJSON(types.DefaultGenesisState())
 }
 
 // ValidateGenesis performs genesis state validation for the oracle module.
@@ -51,7 +50,7 @@ func (AppModuleBasic) ValidateGenesis(cdc codec.JSONMarshaler, _ client.TxEncodi
 	if err := cdc.UnmarshalJSON(bz, &gs); err != nil {
 		return err
 	}
-	return gs.Validate()
+	return types.ValidateGenesis(&gs)
 }
 
 // RegisterRESTRoutes doesn't support legacy REST routes.
@@ -84,19 +83,15 @@ func (b AppModuleBasic) RegisterInterfaces(registry codectypes.InterfaceRegistry
 // AppModule implements an application module for the oracle module.
 type AppModule struct {
 	AppModuleBasic
-	keeper        keeper.Keeper
-	accountKeeper types.AccountKeeper
-	bankKeeper    types.BankKeeper
-	cdc           codec.Marshaler
+	keeper keeper.Keeper
+	cdc    codec.Marshaler
 }
 
 // NewAppModule creates a new AppModule object
-func NewAppModule(keeper keeper.Keeper, accountKeeper types.AccountKeeper, bankKeeper types.BankKeeper, cdc codec.Marshaler) AppModule {
+func NewAppModule(keeper keeper.Keeper, cdc codec.Marshaler) AppModule {
 	return AppModule{
 		AppModuleBasic: AppModuleBasic{},
 		keeper:         keeper,
-		accountKeeper:  accountKeeper,
-		bankKeeper:     bankKeeper,
 		cdc:            cdc,
 	}
 }
@@ -178,6 +173,6 @@ func (am AppModule) RegisterStoreDecoder(sdr sdk.StoreDecoderRegistry) {
 func (am AppModule) WeightedOperations(simState module.SimulationState) []sim.WeightedOperation {
 	return simulation.WeightedOperations(
 		simState.AppParams, simState.Cdc,
-		am.accountKeeper, am.bankKeeper, am.keeper,
+		am.keeper,
 	)
 }
