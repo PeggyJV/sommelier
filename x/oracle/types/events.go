@@ -9,6 +9,7 @@ const (
 	AttributeKeySigner    = "signer"
 	AttributeKeyDeleagte  = "delegate"
 	AttributeKeyValidator = "validator"
+	AttributeKeyHashes    = "hashes"
 
 	AttributeValueCategory = ModuleName
 )

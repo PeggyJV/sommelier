@@ -31,7 +31,7 @@ require (
 	github.com/tendermint/tendermint v0.34.1
 	github.com/tendermint/tm-db v0.6.3
 	golang.org/x/sync v0.0.0-20190911185100-cd5d95a43a6e
-	google.golang.org/genproto v0.0.0-20210125195502-f46fe6c6624a
+	google.golang.org/genproto v0.0.0-20210126160654-44e461bb6506
 	google.golang.org/grpc v1.33.2
 	gopkg.in/yaml.v2 v2.4.0
 )

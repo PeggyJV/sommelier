@@ -32,14 +32,235 @@ var _ = math.Inf
 // proto package needs to be updated.
 const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
+type QueryDelegeateAddressRequest struct {
+	Validator string `protobuf:"bytes,1,opt,name=validator,proto3" json:"validator,omitempty"`
+}
+
+func (m *QueryDelegeateAddressRequest) Reset()         { *m = QueryDelegeateAddressRequest{} }
+func (m *QueryDelegeateAddressRequest) String() string { return proto.CompactTextString(m) }
+func (*QueryDelegeateAddressRequest) ProtoMessage()    {}
+func (*QueryDelegeateAddressRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_34238c8dfdfcd7ec, []int{0}
+}
+func (m *QueryDelegeateAddressRequest) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *QueryDelegeateAddressRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_QueryDelegeateAddressRequest.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *QueryDelegeateAddressRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryDelegeateAddressRequest.Merge(m, src)
+}
+func (m *QueryDelegeateAddressRequest) XXX_Size() int {
+	return m.Size()
+}
+func (m *QueryDelegeateAddressRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryDelegeateAddressRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QueryDelegeateAddressRequest proto.InternalMessageInfo
+
+func (m *QueryDelegeateAddressRequest) GetValidator() string {
+	if m != nil {
+		return m.Validator
+	}
+	return ""
+}
+
+type QueryDelegeateAddressResponse struct {
+	Delegate string `protobuf:"bytes,2,opt,name=delegate,proto3" json:"delegate,omitempty"`
+}
+
+func (m *QueryDelegeateAddressResponse) Reset()         { *m = QueryDelegeateAddressResponse{} }
+func (m *QueryDelegeateAddressResponse) String() string { return proto.CompactTextString(m) }
+func (*QueryDelegeateAddressResponse) ProtoMessage()    {}
+func (*QueryDelegeateAddressResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_34238c8dfdfcd7ec, []int{1}
+}
+func (m *QueryDelegeateAddressResponse) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *QueryDelegeateAddressResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_QueryDelegeateAddressResponse.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *QueryDelegeateAddressResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryDelegeateAddressResponse.Merge(m, src)
+}
+func (m *QueryDelegeateAddressResponse) XXX_Size() int {
+	return m.Size()
+}
+func (m *QueryDelegeateAddressResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryDelegeateAddressResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QueryDelegeateAddressResponse proto.InternalMessageInfo
+
+func (m *QueryDelegeateAddressResponse) GetDelegate() string {
+	if m != nil {
+		return m.Delegate
+	}
+	return ""
+}
+
+type QueryOracleDataPrevoteRequest struct {
+	Validator string `protobuf:"bytes,1,opt,name=validator,proto3" json:"validator,omitempty"`
+}
+
+func (m *QueryOracleDataPrevoteRequest) Reset()         { *m = QueryOracleDataPrevoteRequest{} }
+func (m *QueryOracleDataPrevoteRequest) String() string { return proto.CompactTextString(m) }
+func (*QueryOracleDataPrevoteRequest) ProtoMessage()    {}
+func (*QueryOracleDataPrevoteRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_34238c8dfdfcd7ec, []int{2}
+}
+func (m *QueryOracleDataPrevoteRequest) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *QueryOracleDataPrevoteRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_QueryOracleDataPrevoteRequest.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *QueryOracleDataPrevoteRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryOracleDataPrevoteRequest.Merge(m, src)
+}
+func (m *QueryOracleDataPrevoteRequest) XXX_Size() int {
+	return m.Size()
+}
+func (m *QueryOracleDataPrevoteRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryOracleDataPrevoteRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QueryOracleDataPrevoteRequest proto.InternalMessageInfo
+
+func (m *QueryOracleDataPrevoteRequest) GetValidator() string {
+	if m != nil {
+		return m.Validator
+	}
+	return ""
+}
+
+type QueryOracleDataPrevoteResponse struct {
+	Hashes [][]byte `protobuf:"bytes,1,rep,name=hashes,proto3" json:"hashes,omitempty"`
+}
+
+func (m *QueryOracleDataPrevoteResponse) Reset()         { *m = QueryOracleDataPrevoteResponse{} }
+func (m *QueryOracleDataPrevoteResponse) String() string { return proto.CompactTextString(m) }
+func (*QueryOracleDataPrevoteResponse) ProtoMessage()    {}
+func (*QueryOracleDataPrevoteResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_34238c8dfdfcd7ec, []int{3}
+}
+func (m *QueryOracleDataPrevoteResponse) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *QueryOracleDataPrevoteResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_QueryOracleDataPrevoteResponse.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *QueryOracleDataPrevoteResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryOracleDataPrevoteResponse.Merge(m, src)
+}
+func (m *QueryOracleDataPrevoteResponse) XXX_Size() int {
+	return m.Size()
+}
+func (m *QueryOracleDataPrevoteResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryOracleDataPrevoteResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QueryOracleDataPrevoteResponse proto.InternalMessageInfo
+
+func (m *QueryOracleDataPrevoteResponse) GetHashes() [][]byte {
+	if m != nil {
+		return m.Hashes
+	}
+	return nil
+}
+
+type QueryOracleDataVoteRequest struct {
+	Validator string `protobuf:"bytes,1,opt,name=validator,proto3" json:"validator,omitempty"`
+}
+
+func (m *QueryOracleDataVoteRequest) Reset()         { *m = QueryOracleDataVoteRequest{} }
+func (m *QueryOracleDataVoteRequest) String() string { return proto.CompactTextString(m) }
+func (*QueryOracleDataVoteRequest) ProtoMessage()    {}
+func (*QueryOracleDataVoteRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_34238c8dfdfcd7ec, []int{4}
+}
+func (m *QueryOracleDataVoteRequest) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *QueryOracleDataVoteRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_QueryOracleDataVoteRequest.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *QueryOracleDataVoteRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryOracleDataVoteRequest.Merge(m, src)
+}
+func (m *QueryOracleDataVoteRequest) XXX_Size() int {
+	return m.Size()
+}
+func (m *QueryOracleDataVoteRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryOracleDataVoteRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QueryOracleDataVoteRequest proto.InternalMessageInfo
+
+func (m *QueryOracleDataVoteRequest) GetValidator() string {
+	if m != nil {
+		return m.Validator
+	}
+	return ""
+}
+
 type QueryOracleDataRequest struct {
+	Type string `protobuf:"bytes,1,opt,name=type,proto3" json:"type,omitempty"`
 }
 
 func (m *QueryOracleDataRequest) Reset()         { *m = QueryOracleDataRequest{} }
 func (m *QueryOracleDataRequest) String() string { return proto.CompactTextString(m) }
 func (*QueryOracleDataRequest) ProtoMessage()    {}
 func (*QueryOracleDataRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_34238c8dfdfcd7ec, []int{0}
+	return fileDescriptor_34238c8dfdfcd7ec, []int{5}
 }
 func (m *QueryOracleDataRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -68,15 +289,22 @@ func (m *QueryOracleDataRequest) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_QueryOracleDataRequest proto.InternalMessageInfo
 
+func (m *QueryOracleDataRequest) GetType() string {
+	if m != nil {
+		return m.Type
+	}
+	return ""
+}
+
 type QueryOracleDataResponse struct {
-	OracleData []*types.Any `protobuf:"bytes,1,rep,name=oracle_data,json=oracleData,proto3" json:"oracle_data,omitempty"`
+	OracleData *types.Any `protobuf:"bytes,1,opt,name=oracle_data,json=oracleData,proto3" json:"oracle_data,omitempty"`
 }
 
 func (m *QueryOracleDataResponse) Reset()         { *m = QueryOracleDataResponse{} }
 func (m *QueryOracleDataResponse) String() string { return proto.CompactTextString(m) }
 func (*QueryOracleDataResponse) ProtoMessage()    {}
 func (*QueryOracleDataResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_34238c8dfdfcd7ec, []int{1}
+	return fileDescriptor_34238c8dfdfcd7ec, []int{6}
 }
 func (m *QueryOracleDataResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -105,7 +333,7 @@ func (m *QueryOracleDataResponse) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_QueryOracleDataResponse proto.InternalMessageInfo
 
-func (m *QueryOracleDataResponse) GetOracleData() []*types.Any {
+func (m *QueryOracleDataResponse) GetOracleData() *types.Any {
 	if m != nil {
 		return m.OracleData
 	}
@@ -113,6 +341,11 @@ func (m *QueryOracleDataResponse) GetOracleData() []*types.Any {
 }
 
 func init() {
+	proto.RegisterType((*QueryDelegeateAddressRequest)(nil), "oracle.v1.QueryDelegeateAddressRequest")
+	proto.RegisterType((*QueryDelegeateAddressResponse)(nil), "oracle.v1.QueryDelegeateAddressResponse")
+	proto.RegisterType((*QueryOracleDataPrevoteRequest)(nil), "oracle.v1.QueryOracleDataPrevoteRequest")
+	proto.RegisterType((*QueryOracleDataPrevoteResponse)(nil), "oracle.v1.QueryOracleDataPrevoteResponse")
+	proto.RegisterType((*QueryOracleDataVoteRequest)(nil), "oracle.v1.QueryOracleDataVoteRequest")
 	proto.RegisterType((*QueryOracleDataRequest)(nil), "oracle.v1.QueryOracleDataRequest")
 	proto.RegisterType((*QueryOracleDataResponse)(nil), "oracle.v1.QueryOracleDataResponse")
 }
@@ -120,28 +353,38 @@ func init() {
 func init() { proto.RegisterFile("oracle/v1/query.proto", fileDescriptor_34238c8dfdfcd7ec) }
 
 var fileDescriptor_34238c8dfdfcd7ec = []byte{
-	// 330 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x7c, 0x90, 0xc1, 0x4a, 0xc3, 0x40,
-	0x10, 0x86, 0x1b, 0x45, 0xc1, 0x2d, 0x78, 0x08, 0xb5, 0xd6, 0x22, 0x8b, 0xe6, 0x24, 0x48, 0x77,
-	0x68, 0x7d, 0x02, 0x8b, 0x3d, 0x8b, 0x1e, 0xbd, 0xd4, 0x4d, 0x5c, 0xd7, 0x48, 0xb3, 0x93, 0x66,
-	0x37, 0xc5, 0x80, 0x27, 0x9f, 0x40, 0xf0, 0x55, 0x7c, 0x08, 0xf1, 0x54, 0xf0, 0xe2, 0x51, 0x5a,
-	0x1f, 0x44, 0x92, 0x4d, 0x6a, 0x51, 0xf1, 0xb6, 0x33, 0xff, 0x3f, 0xf3, 0x7f, 0x3b, 0x64, 0x0b,
-	0x13, 0x1e, 0x8c, 0x04, 0x4c, 0xba, 0x30, 0x4e, 0x45, 0x92, 0xb1, 0x38, 0x41, 0x83, 0xee, 0x86,
-	0x6d, 0xb3, 0x49, 0xb7, 0xdd, 0x90, 0x28, 0xb1, 0xe8, 0x42, 0xfe, 0xb2, 0x86, 0x76, 0xf3, 0x7b,
-	0xae, 0xb4, 0xda, 0xfe, 0xae, 0x44, 0x94, 0x23, 0x01, 0x3c, 0x0e, 0x81, 0x2b, 0x85, 0x86, 0x9b,
-	0x10, 0x95, 0x2e, 0x55, 0x1a, 0xa0, 0x8e, 0x50, 0x83, 0xcf, 0x75, 0x3e, 0xea, 0x0b, 0xc3, 0xbb,
-	0x10, 0x60, 0xa8, 0x4a, 0x7d, 0xc7, 0xea, 0x43, 0x1b, 0x67, 0x8b, 0x4a, 0x2a, 0x17, 0x17, 0x95,
-	0x9f, 0x5e, 0x03, 0x57, 0x25, 0xac, 0xd7, 0x22, 0xcd, 0xb3, 0x9c, 0xfd, 0xb4, 0x00, 0x39, 0xe1,
-	0x86, 0x9f, 0x8b, 0x71, 0x2a, 0xb4, 0xf1, 0x2e, 0xc9, 0xf6, 0x2f, 0x45, 0xc7, 0xa8, 0xb4, 0x70,
-	0x07, 0xa4, 0x6e, 0xc1, 0x87, 0x57, 0xdc, 0xf0, 0x96, 0xb3, 0xb7, 0x7a, 0x50, 0xef, 0x35, 0x98,
-	0x4d, 0x61, 0x55, 0x0a, 0x3b, 0x56, 0x59, 0x7f, 0xf3, 0xf5, 0xb9, 0x43, 0x96, 0x56, 0x10, 0x5c,
-	0xbc, 0x7b, 0xf7, 0x64, 0xad, 0x48, 0x70, 0x35, 0x59, 0xb2, 0xb8, 0xfb, 0x6c, 0x71, 0x40, 0xf6,
-	0x37, 0x5b, 0xdb, 0xfb, 0xcf, 0x62, 0x21, 0x3d, 0xfa, 0xf0, 0xf6, 0xf9, 0xb4, 0xd2, 0x72, 0x9b,
-	0xf0, 0xf3, 0xdc, 0x9d, 0x9c, 0xba, 0x3f, 0x78, 0x99, 0x51, 0x67, 0x3a, 0xa3, 0xce, 0xc7, 0x8c,
-	0x3a, 0x8f, 0x73, 0x5a, 0x9b, 0xce, 0x69, 0xed, 0x7d, 0x4e, 0x6b, 0x17, 0x87, 0x32, 0x34, 0x37,
-	0xa9, 0xcf, 0x02, 0x8c, 0x20, 0x16, 0x52, 0x66, 0xb7, 0x13, 0xd0, 0x18, 0x45, 0x62, 0x14, 0x8a,
-	0x04, 0xee, 0xaa, 0x7d, 0x26, 0x8b, 0x85, 0xf6, 0xd7, 0x8b, 0xef, 0x1e, 0x7d, 0x05, 0x00, 0x00,
-	0xff, 0xff, 0xfb, 0x57, 0x7b, 0xe6, 0x0d, 0x02, 0x00, 0x00,
+	// 494 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x8c, 0x54, 0xcd, 0x6e, 0xd3, 0x40,
+	0x10, 0x8e, 0x29, 0x54, 0x64, 0x8a, 0x38, 0x2c, 0x6d, 0x08, 0x56, 0xb0, 0x8a, 0x25, 0x44, 0x10,
+	0xe0, 0x55, 0xca, 0x05, 0xf1, 0x73, 0x68, 0xd5, 0x1e, 0x11, 0x10, 0x09, 0x0e, 0x08, 0xa9, 0xac,
+	0xe3, 0xc1, 0x31, 0x72, 0x3c, 0xae, 0x77, 0x63, 0x35, 0x6f, 0xc1, 0x9d, 0xd7, 0xe0, 0x21, 0x10,
+	0xa7, 0x1e, 0x39, 0xa2, 0xe4, 0x45, 0x90, 0xbd, 0xeb, 0x24, 0x34, 0x75, 0xc9, 0x6d, 0x67, 0xe6,
+	0xfb, 0xbe, 0x19, 0xcf, 0x37, 0x32, 0xec, 0x50, 0x26, 0x06, 0x31, 0xf2, 0xbc, 0xc7, 0x4f, 0xc6,
+	0x98, 0x4d, 0xbc, 0x34, 0x23, 0x45, 0xac, 0xa9, 0xd3, 0x5e, 0xde, 0xb3, 0xb7, 0x43, 0x0a, 0xa9,
+	0xcc, 0xf2, 0xe2, 0xa5, 0x01, 0x76, 0x6b, 0xc1, 0x33, 0x50, 0x9d, 0x67, 0x8b, 0xbc, 0x3a, 0x35,
+	0xb9, 0x4e, 0x48, 0x14, 0xc6, 0xc8, 0x45, 0x1a, 0x71, 0x91, 0x24, 0xa4, 0x84, 0x8a, 0x28, 0x91,
+	0xa6, 0xea, 0x0c, 0x48, 0x8e, 0x48, 0x72, 0x5f, 0xc8, 0x82, 0xe6, 0xa3, 0x12, 0x3d, 0x3e, 0xa0,
+	0x28, 0x31, 0xf5, 0x3b, 0xba, 0x7e, 0xac, 0x47, 0xd0, 0x41, 0x55, 0x32, 0xc2, 0x65, 0xe4, 0x8f,
+	0xbf, 0x70, 0x91, 0x98, 0x0f, 0x70, 0x5f, 0x42, 0xe7, 0x5d, 0xf1, 0x3d, 0x87, 0x18, 0x63, 0x88,
+	0x42, 0xe1, 0x7e, 0x10, 0x64, 0x28, 0x65, 0x1f, 0x4f, 0xc6, 0x28, 0x15, 0xeb, 0x40, 0x33, 0x17,
+	0x71, 0x14, 0x08, 0x45, 0x59, 0xdb, 0xda, 0xb5, 0xba, 0xcd, 0xfe, 0x22, 0xe1, 0xbe, 0x80, 0xbb,
+	0x35, 0x6c, 0x99, 0x52, 0x22, 0x91, 0xd9, 0x70, 0x3d, 0x28, 0x6a, 0x42, 0x61, 0xfb, 0x4a, 0xc9,
+	0x9e, 0xc7, 0xee, 0x2b, 0x43, 0x7e, 0x53, 0x6e, 0xe2, 0x50, 0x28, 0xf1, 0x36, 0xc3, 0x9c, 0x14,
+	0xae, 0xd7, 0xfb, 0x19, 0x38, 0x75, 0x74, 0xd3, 0xbc, 0x05, 0x9b, 0x43, 0x21, 0x87, 0x28, 0xdb,
+	0xd6, 0xee, 0x46, 0xf7, 0x46, 0xdf, 0x44, 0xee, 0x73, 0xb0, 0xcf, 0x31, 0x3f, 0xac, 0xdd, 0xf5,
+	0x31, 0xb4, 0xce, 0x71, 0x2b, 0x1e, 0x83, 0xab, 0x6a, 0x92, 0xa2, 0xa1, 0x94, 0x6f, 0xf7, 0x33,
+	0xdc, 0x5e, 0x41, 0x9b, 0xe1, 0x8e, 0x60, 0x4b, 0x9f, 0xc0, 0x71, 0x20, 0x94, 0x28, 0x59, 0x5b,
+	0x7b, 0xdb, 0x9e, 0x76, 0xca, 0xab, 0x9c, 0xf2, 0xf6, 0x93, 0xc9, 0xc1, 0xcd, 0x5f, 0x3f, 0x9e,
+	0xc0, 0x92, 0x04, 0xd0, 0xfc, 0xbd, 0xf7, 0x7d, 0x03, 0xae, 0x95, 0x2d, 0x58, 0x0c, 0x3b, 0x17,
+	0x7a, 0xc1, 0x1e, 0x78, 0xf3, 0x23, 0xf5, 0x2e, 0xf3, 0xda, 0xee, 0xfe, 0x1f, 0xa8, 0x87, 0x77,
+	0x1b, 0x8c, 0x56, 0xf6, 0x60, 0xb6, 0xcf, 0x56, 0x54, 0xea, 0xfc, 0xb5, 0x1f, 0xae, 0x81, 0x9c,
+	0x37, 0xfc, 0x04, 0xb7, 0x2e, 0x30, 0x8d, 0xdd, 0xaf, 0xd7, 0x58, 0x32, 0xd5, 0xee, 0x2c, 0xc1,
+	0x5e, 0xcb, 0xf0, 0x5f, 0x90, 0xdb, 0x60, 0xef, 0x61, 0x69, 0xc1, 0xec, 0x5e, 0xbd, 0x68, 0x25,
+	0xe8, 0x5e, 0x06, 0xa9, 0x86, 0x3e, 0x38, 0xfa, 0x39, 0x75, 0xac, 0xb3, 0xa9, 0x63, 0xfd, 0x99,
+	0x3a, 0xd6, 0xb7, 0x99, 0xd3, 0x38, 0x9b, 0x39, 0x8d, 0xdf, 0x33, 0xa7, 0xf1, 0xf1, 0x51, 0x18,
+	0xa9, 0xe1, 0xd8, 0xf7, 0x06, 0x34, 0xe2, 0x29, 0x86, 0xe1, 0xe4, 0x6b, 0xce, 0x25, 0x8d, 0x46,
+	0x18, 0x47, 0x98, 0xf1, 0x53, 0xf3, 0xb3, 0xe0, 0xc5, 0x15, 0x49, 0x7f, 0xb3, 0x3c, 0x87, 0xa7,
+	0x7f, 0x03, 0x00, 0x00, 0xff, 0xff, 0x65, 0x03, 0x56, 0xcb, 0x85, 0x04, 0x00, 0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -156,6 +399,9 @@ const _ = grpc.SupportPackageIsVersion4
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
 type QueryClient interface {
+	QueryDelegeateAddress(ctx context.Context, in *QueryDelegeateAddressRequest, opts ...grpc.CallOption) (*QueryDelegeateAddressResponse, error)
+	QueryOracleDataPrevote(ctx context.Context, in *QueryOracleDataPrevoteRequest, opts ...grpc.CallOption) (*QueryOracleDataPrevoteResponse, error)
+	QueryOracleDataVote(ctx context.Context, in *QueryOracleDataVoteRequest, opts ...grpc.CallOption) (*MsgOracleDataVote, error)
 	OracleData(ctx context.Context, in *QueryOracleDataRequest, opts ...grpc.CallOption) (*QueryOracleDataResponse, error)
 }
 
@@ -165,6 +411,33 @@ type queryClient struct {
 
 func NewQueryClient(cc grpc1.ClientConn) QueryClient {
 	return &queryClient{cc}
+}
+
+func (c *queryClient) QueryDelegeateAddress(ctx context.Context, in *QueryDelegeateAddressRequest, opts ...grpc.CallOption) (*QueryDelegeateAddressResponse, error) {
+	out := new(QueryDelegeateAddressResponse)
+	err := c.cc.Invoke(ctx, "/oracle.v1.Query/QueryDelegeateAddress", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *queryClient) QueryOracleDataPrevote(ctx context.Context, in *QueryOracleDataPrevoteRequest, opts ...grpc.CallOption) (*QueryOracleDataPrevoteResponse, error) {
+	out := new(QueryOracleDataPrevoteResponse)
+	err := c.cc.Invoke(ctx, "/oracle.v1.Query/QueryOracleDataPrevote", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *queryClient) QueryOracleDataVote(ctx context.Context, in *QueryOracleDataVoteRequest, opts ...grpc.CallOption) (*MsgOracleDataVote, error) {
+	out := new(MsgOracleDataVote)
+	err := c.cc.Invoke(ctx, "/oracle.v1.Query/QueryOracleDataVote", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
 }
 
 func (c *queryClient) OracleData(ctx context.Context, in *QueryOracleDataRequest, opts ...grpc.CallOption) (*QueryOracleDataResponse, error) {
@@ -178,6 +451,9 @@ func (c *queryClient) OracleData(ctx context.Context, in *QueryOracleDataRequest
 
 // QueryServer is the server API for Query service.
 type QueryServer interface {
+	QueryDelegeateAddress(context.Context, *QueryDelegeateAddressRequest) (*QueryDelegeateAddressResponse, error)
+	QueryOracleDataPrevote(context.Context, *QueryOracleDataPrevoteRequest) (*QueryOracleDataPrevoteResponse, error)
+	QueryOracleDataVote(context.Context, *QueryOracleDataVoteRequest) (*MsgOracleDataVote, error)
 	OracleData(context.Context, *QueryOracleDataRequest) (*QueryOracleDataResponse, error)
 }
 
@@ -185,12 +461,75 @@ type QueryServer interface {
 type UnimplementedQueryServer struct {
 }
 
+func (*UnimplementedQueryServer) QueryDelegeateAddress(ctx context.Context, req *QueryDelegeateAddressRequest) (*QueryDelegeateAddressResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method QueryDelegeateAddress not implemented")
+}
+func (*UnimplementedQueryServer) QueryOracleDataPrevote(ctx context.Context, req *QueryOracleDataPrevoteRequest) (*QueryOracleDataPrevoteResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method QueryOracleDataPrevote not implemented")
+}
+func (*UnimplementedQueryServer) QueryOracleDataVote(ctx context.Context, req *QueryOracleDataVoteRequest) (*MsgOracleDataVote, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method QueryOracleDataVote not implemented")
+}
 func (*UnimplementedQueryServer) OracleData(ctx context.Context, req *QueryOracleDataRequest) (*QueryOracleDataResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method OracleData not implemented")
 }
 
 func RegisterQueryServer(s grpc1.Server, srv QueryServer) {
 	s.RegisterService(&_Query_serviceDesc, srv)
+}
+
+func _Query_QueryDelegeateAddress_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryDelegeateAddressRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QueryServer).QueryDelegeateAddress(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/oracle.v1.Query/QueryDelegeateAddress",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServer).QueryDelegeateAddress(ctx, req.(*QueryDelegeateAddressRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Query_QueryOracleDataPrevote_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryOracleDataPrevoteRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QueryServer).QueryOracleDataPrevote(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/oracle.v1.Query/QueryOracleDataPrevote",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServer).QueryOracleDataPrevote(ctx, req.(*QueryOracleDataPrevoteRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Query_QueryOracleDataVote_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryOracleDataVoteRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QueryServer).QueryOracleDataVote(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/oracle.v1.Query/QueryOracleDataVote",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServer).QueryOracleDataVote(ctx, req.(*QueryOracleDataVoteRequest))
+	}
+	return interceptor(ctx, in, info, handler)
 }
 
 func _Query_OracleData_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
@@ -216,12 +555,176 @@ var _Query_serviceDesc = grpc.ServiceDesc{
 	HandlerType: (*QueryServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
+			MethodName: "QueryDelegeateAddress",
+			Handler:    _Query_QueryDelegeateAddress_Handler,
+		},
+		{
+			MethodName: "QueryOracleDataPrevote",
+			Handler:    _Query_QueryOracleDataPrevote_Handler,
+		},
+		{
+			MethodName: "QueryOracleDataVote",
+			Handler:    _Query_QueryOracleDataVote_Handler,
+		},
+		{
 			MethodName: "OracleData",
 			Handler:    _Query_OracleData_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
 	Metadata: "oracle/v1/query.proto",
+}
+
+func (m *QueryDelegeateAddressRequest) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *QueryDelegeateAddressRequest) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *QueryDelegeateAddressRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.Validator) > 0 {
+		i -= len(m.Validator)
+		copy(dAtA[i:], m.Validator)
+		i = encodeVarintQuery(dAtA, i, uint64(len(m.Validator)))
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *QueryDelegeateAddressResponse) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *QueryDelegeateAddressResponse) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *QueryDelegeateAddressResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.Delegate) > 0 {
+		i -= len(m.Delegate)
+		copy(dAtA[i:], m.Delegate)
+		i = encodeVarintQuery(dAtA, i, uint64(len(m.Delegate)))
+		i--
+		dAtA[i] = 0x12
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *QueryOracleDataPrevoteRequest) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *QueryOracleDataPrevoteRequest) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *QueryOracleDataPrevoteRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.Validator) > 0 {
+		i -= len(m.Validator)
+		copy(dAtA[i:], m.Validator)
+		i = encodeVarintQuery(dAtA, i, uint64(len(m.Validator)))
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *QueryOracleDataPrevoteResponse) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *QueryOracleDataPrevoteResponse) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *QueryOracleDataPrevoteResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.Hashes) > 0 {
+		for iNdEx := len(m.Hashes) - 1; iNdEx >= 0; iNdEx-- {
+			i -= len(m.Hashes[iNdEx])
+			copy(dAtA[i:], m.Hashes[iNdEx])
+			i = encodeVarintQuery(dAtA, i, uint64(len(m.Hashes[iNdEx])))
+			i--
+			dAtA[i] = 0xa
+		}
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *QueryOracleDataVoteRequest) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *QueryOracleDataVoteRequest) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *QueryOracleDataVoteRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.Validator) > 0 {
+		i -= len(m.Validator)
+		copy(dAtA[i:], m.Validator)
+		i = encodeVarintQuery(dAtA, i, uint64(len(m.Validator)))
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
 }
 
 func (m *QueryOracleDataRequest) Marshal() (dAtA []byte, err error) {
@@ -244,6 +747,13 @@ func (m *QueryOracleDataRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) 
 	_ = i
 	var l int
 	_ = l
+	if len(m.Type) > 0 {
+		i -= len(m.Type)
+		copy(dAtA[i:], m.Type)
+		i = encodeVarintQuery(dAtA, i, uint64(len(m.Type)))
+		i--
+		dAtA[i] = 0xa
+	}
 	return len(dAtA) - i, nil
 }
 
@@ -267,19 +777,17 @@ func (m *QueryOracleDataResponse) MarshalToSizedBuffer(dAtA []byte) (int, error)
 	_ = i
 	var l int
 	_ = l
-	if len(m.OracleData) > 0 {
-		for iNdEx := len(m.OracleData) - 1; iNdEx >= 0; iNdEx-- {
-			{
-				size, err := m.OracleData[iNdEx].MarshalToSizedBuffer(dAtA[:i])
-				if err != nil {
-					return 0, err
-				}
-				i -= size
-				i = encodeVarintQuery(dAtA, i, uint64(size))
+	if m.OracleData != nil {
+		{
+			size, err := m.OracleData.MarshalToSizedBuffer(dAtA[:i])
+			if err != nil {
+				return 0, err
 			}
-			i--
-			dAtA[i] = 0xa
+			i -= size
+			i = encodeVarintQuery(dAtA, i, uint64(size))
 		}
+		i--
+		dAtA[i] = 0xa
 	}
 	return len(dAtA) - i, nil
 }
@@ -295,12 +803,83 @@ func encodeVarintQuery(dAtA []byte, offset int, v uint64) int {
 	dAtA[offset] = uint8(v)
 	return base
 }
+func (m *QueryDelegeateAddressRequest) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.Validator)
+	if l > 0 {
+		n += 1 + l + sovQuery(uint64(l))
+	}
+	return n
+}
+
+func (m *QueryDelegeateAddressResponse) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.Delegate)
+	if l > 0 {
+		n += 1 + l + sovQuery(uint64(l))
+	}
+	return n
+}
+
+func (m *QueryOracleDataPrevoteRequest) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.Validator)
+	if l > 0 {
+		n += 1 + l + sovQuery(uint64(l))
+	}
+	return n
+}
+
+func (m *QueryOracleDataPrevoteResponse) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if len(m.Hashes) > 0 {
+		for _, b := range m.Hashes {
+			l = len(b)
+			n += 1 + l + sovQuery(uint64(l))
+		}
+	}
+	return n
+}
+
+func (m *QueryOracleDataVoteRequest) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.Validator)
+	if l > 0 {
+		n += 1 + l + sovQuery(uint64(l))
+	}
+	return n
+}
+
 func (m *QueryOracleDataRequest) Size() (n int) {
 	if m == nil {
 		return 0
 	}
 	var l int
 	_ = l
+	l = len(m.Type)
+	if l > 0 {
+		n += 1 + l + sovQuery(uint64(l))
+	}
 	return n
 }
 
@@ -310,11 +889,9 @@ func (m *QueryOracleDataResponse) Size() (n int) {
 	}
 	var l int
 	_ = l
-	if len(m.OracleData) > 0 {
-		for _, e := range m.OracleData {
-			l = e.Size()
-			n += 1 + l + sovQuery(uint64(l))
-		}
+	if m.OracleData != nil {
+		l = m.OracleData.Size()
+		n += 1 + l + sovQuery(uint64(l))
 	}
 	return n
 }
@@ -324,6 +901,431 @@ func sovQuery(x uint64) (n int) {
 }
 func sozQuery(x uint64) (n int) {
 	return sovQuery(uint64((x << 1) ^ uint64((int64(x) >> 63))))
+}
+func (m *QueryDelegeateAddressRequest) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuery
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: QueryDelegeateAddressRequest: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: QueryDelegeateAddressRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Validator", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Validator = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuery(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if skippy < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *QueryDelegeateAddressResponse) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuery
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: QueryDelegeateAddressResponse: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: QueryDelegeateAddressResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Delegate", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Delegate = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuery(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if skippy < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *QueryOracleDataPrevoteRequest) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuery
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: QueryOracleDataPrevoteRequest: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: QueryOracleDataPrevoteRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Validator", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Validator = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuery(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if skippy < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *QueryOracleDataPrevoteResponse) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuery
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: QueryOracleDataPrevoteResponse: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: QueryOracleDataPrevoteResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Hashes", wireType)
+			}
+			var byteLen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				byteLen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if byteLen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + byteLen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Hashes = append(m.Hashes, make([]byte, postIndex-iNdEx))
+			copy(m.Hashes[len(m.Hashes)-1], dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuery(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if skippy < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *QueryOracleDataVoteRequest) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuery
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: QueryOracleDataVoteRequest: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: QueryOracleDataVoteRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Validator", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Validator = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuery(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if skippy < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
 }
 func (m *QueryOracleDataRequest) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
@@ -354,6 +1356,38 @@ func (m *QueryOracleDataRequest) Unmarshal(dAtA []byte) error {
 			return fmt.Errorf("proto: QueryOracleDataRequest: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Type", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Type = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
 			skippy, err := skipQuery(dAtA[iNdEx:])
@@ -436,8 +1470,10 @@ func (m *QueryOracleDataResponse) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.OracleData = append(m.OracleData, &types.Any{})
-			if err := m.OracleData[len(m.OracleData)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+			if m.OracleData == nil {
+				m.OracleData = &types.Any{}
+			}
+			if err := m.OracleData.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex
