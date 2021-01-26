@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"log"
 
@@ -22,7 +23,11 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	fmt.Println(out)
+	bz, err := json.MarshalIndent(out, "", "  ")
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println(string(bz))
 }
 
 // GetPairs returns the top N pairs from the Uniswap Subgraph
