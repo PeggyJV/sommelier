@@ -4,6 +4,7 @@ import (
 	"bytes"
 
 	"github.com/cosmos/cosmos-sdk/codec"
+	cdctypes "github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
 	"github.com/peggyjv/sommelier/x/oracle/types"
@@ -12,6 +13,8 @@ import (
 
 // Keeper of the oracle store
 type Keeper struct {
+	StakingKeeper types.StakingKeeper
+
 	storeKey   sdk.StoreKey
 	cdc        codec.BinaryMarshaler
 	paramSpace paramtypes.Subspace
@@ -20,6 +23,7 @@ type Keeper struct {
 // NewKeeper creates a new distribution Keeper instance
 func NewKeeper(
 	cdc codec.BinaryMarshaler, key sdk.StoreKey, paramSpace paramtypes.Subspace,
+	stakingKeeper types.StakingKeeper,
 ) Keeper {
 
 	// // set KeyTable if it has not already been set
@@ -28,9 +32,10 @@ func NewKeeper(
 	// }
 
 	return Keeper{
-		storeKey:   key,
-		cdc:        cdc,
-		paramSpace: paramSpace,
+		StakingKeeper: stakingKeeper,
+		storeKey:      key,
+		cdc:           cdc,
+		paramSpace:    paramSpace,
 	}
 }
 
@@ -43,19 +48,46 @@ func (k Keeper) Logger(ctx sdk.Context) log.Logger {
 // MsgDelegateAddress //
 ////////////////////////
 
-// SetDelegateAddress sets a new address that will have the power to send data on behalf of the validator
-func (k Keeper) SetDelegateAddress(ctx sdk.Context, val, del sdk.AccAddress) {
-	ctx.KVStore(k.storeKey).Set(types.GetFeedDelegateKey(val), del.Bytes())
+// SetValidatorDelegateAddress sets a new address that will have the power to send data on behalf of the validator
+func (k Keeper) SetValidatorDelegateAddress(ctx sdk.Context, val, del sdk.AccAddress) {
+	ctx.KVStore(k.storeKey).Set(types.GetFeedDelegateKey(del), val.Bytes())
 }
 
-// GetDelegateAddress returns the delegate address for a given validator
-func (k Keeper) GetDelegateAddress(ctx sdk.Context, val sdk.AccAddress) sdk.AccAddress {
-	return sdk.AccAddress(ctx.KVStore(k.storeKey).Get(types.GetFeedDelegateKey(val)))
+// GetValidatorAddressFromDelegate returns the delegate address for a given validator
+func (k Keeper) GetValidatorAddressFromDelegate(ctx sdk.Context, del sdk.AccAddress) sdk.AccAddress {
+	return sdk.AccAddress(ctx.KVStore(k.storeKey).Get(types.GetFeedDelegateKey(del)))
 }
 
-// HasDelegateAddress returns true if the validator has delegated their feed to an address
-func (k Keeper) HasDelegateAddress(ctx sdk.Context, val sdk.AccAddress) bool {
-	return ctx.KVStore(k.storeKey).Has(types.GetFeedDelegateKey(val))
+// GetDelegateAddressFromValidator returns the valdiator address for a given delegate
+func (k Keeper) GetDelegateAddressFromValidator(ctx sdk.Context, val sdk.AccAddress) sdk.AccAddress {
+	var out sdk.AccAddress
+	k.IterateDelegateAddresses(ctx, func(del, sval sdk.AccAddress) bool {
+		if val.Equals(sval) {
+			out = del
+			return true
+		}
+		return false
+	})
+	return out
+}
+
+// IsDelegateAddress returns true if the validator has delegated their feed to an address
+func (k Keeper) IsDelegateAddress(ctx sdk.Context, del sdk.AccAddress) bool {
+	return ctx.KVStore(k.storeKey).Has(types.GetFeedDelegateKey(del))
+}
+
+// IterateDelegateAddresses iterates over all delegate address pairs in the store
+func (k Keeper) IterateDelegateAddresses(ctx sdk.Context, handler func(del, val sdk.AccAddress) (stop bool)) {
+	store := ctx.KVStore(k.storeKey)
+	iter := sdk.KVStorePrefixIterator(store, types.OracleDataPrevoteKeyPrefix)
+	defer iter.Close()
+	for ; iter.Valid(); iter.Next() {
+		del := sdk.AccAddress(iter.Key())
+		val := sdk.AccAddress(iter.Value())
+		if handler(del, val) {
+			break
+		}
+	}
 }
 
 //////////////////////////
@@ -142,4 +174,33 @@ func (k Keeper) IterateOracleDataVotes(ctx sdk.Context, handler func(val sdk.Acc
 			break
 		}
 	}
+}
+
+////////////////
+// OracleData //
+////////////////
+
+// SetOracleData sets the oracle data in the store
+func (k Keeper) SetOracleData(ctx sdk.Context, od types.OracleData) {
+	oda, err := types.PackOracleData(od)
+	if err != nil {
+		panic(err)
+	}
+	ctx.KVStore(k.storeKey).Set(types.GetOracleDataKey(od.Type()), k.cdc.MustMarshalBinaryBare(oda))
+}
+
+// GetOracleData gets oracle data stored for a given type
+func (k Keeper) GetOracleData(ctx sdk.Context, typ string) types.OracleData {
+	var any *cdctypes.Any
+	k.cdc.MustUnmarshalBinaryBare(ctx.KVStore(k.storeKey).Get(types.GetOracleDataKey(typ)), any)
+	od, err := types.UnpackOracleData(any)
+	if err != nil {
+		panic(err)
+	}
+	return od
+}
+
+// HasOracleData returns true if a given type exists in the store
+func (k Keeper) HasOracleData(ctx sdk.Context, typ string) bool {
+	return ctx.KVStore(k.storeKey).Has(types.GetOracleDataKey(typ))
 }

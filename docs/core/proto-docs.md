@@ -25,8 +25,13 @@
     - [Params](#oracle.v1.Params)
   
 - [oracle/v1/query.proto](#oracle/v1/query.proto)
+    - [QueryDelegeateAddressRequest](#oracle.v1.QueryDelegeateAddressRequest)
+    - [QueryDelegeateAddressResponse](#oracle.v1.QueryDelegeateAddressResponse)
+    - [QueryOracleDataPrevoteRequest](#oracle.v1.QueryOracleDataPrevoteRequest)
+    - [QueryOracleDataPrevoteResponse](#oracle.v1.QueryOracleDataPrevoteResponse)
     - [QueryOracleDataRequest](#oracle.v1.QueryOracleDataRequest)
     - [QueryOracleDataResponse](#oracle.v1.QueryOracleDataResponse)
+    - [QueryOracleDataVoteRequest](#oracle.v1.QueryOracleDataVoteRequest)
   
     - [Query](#oracle.v1.Query)
   
@@ -506,10 +511,75 @@ Params oracle parameters
 
 
 
+<a name="oracle.v1.QueryDelegeateAddressRequest"></a>
+
+### QueryDelegeateAddressRequest
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `validator` | [string](#string) |  |  |
+
+
+
+
+
+
+<a name="oracle.v1.QueryDelegeateAddressResponse"></a>
+
+### QueryDelegeateAddressResponse
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `delegate` | [string](#string) |  |  |
+
+
+
+
+
+
+<a name="oracle.v1.QueryOracleDataPrevoteRequest"></a>
+
+### QueryOracleDataPrevoteRequest
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `validator` | [string](#string) |  |  |
+
+
+
+
+
+
+<a name="oracle.v1.QueryOracleDataPrevoteResponse"></a>
+
+### QueryOracleDataPrevoteResponse
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `hashes` | [bytes](#bytes) | repeated |  |
+
+
+
+
+
+
 <a name="oracle.v1.QueryOracleDataRequest"></a>
 
 ### QueryOracleDataRequest
 
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `type` | [string](#string) |  |  |
 
 
 
@@ -524,7 +594,22 @@ Params oracle parameters
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| `oracle_data` | [google.protobuf.Any](#google.protobuf.Any) | repeated |  |
+| `oracle_data` | [google.protobuf.Any](#google.protobuf.Any) |  |  |
+
+
+
+
+
+
+<a name="oracle.v1.QueryOracleDataVoteRequest"></a>
+
+### QueryOracleDataVoteRequest
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `validator` | [string](#string) |  |  |
 
 
 
@@ -544,7 +629,10 @@ Params oracle parameters
 
 | Method Name | Request Type | Response Type | Description | HTTP Verb | Endpoint |
 | ----------- | ------------ | ------------- | ------------| ------- | -------- |
-| `OracleData` | [QueryOracleDataRequest](#oracle.v1.QueryOracleDataRequest) | [QueryOracleDataResponse](#oracle.v1.QueryOracleDataResponse) |  | GET|/oracle/v1/oracle-data|
+| `QueryDelegeateAddress` | [QueryDelegeateAddressRequest](#oracle.v1.QueryDelegeateAddressRequest) | [QueryDelegeateAddressResponse](#oracle.v1.QueryDelegeateAddressResponse) |  | |
+| `QueryOracleDataPrevote` | [QueryOracleDataPrevoteRequest](#oracle.v1.QueryOracleDataPrevoteRequest) | [QueryOracleDataPrevoteResponse](#oracle.v1.QueryOracleDataPrevoteResponse) |  | |
+| `QueryOracleDataVote` | [QueryOracleDataVoteRequest](#oracle.v1.QueryOracleDataVoteRequest) | [MsgOracleDataVote](#oracle.v1.MsgOracleDataVote) |  | |
+| `OracleData` | [QueryOracleDataRequest](#oracle.v1.QueryOracleDataRequest) | [QueryOracleDataResponse](#oracle.v1.QueryOracleDataResponse) |  | |
 
  <!-- end services -->
 
