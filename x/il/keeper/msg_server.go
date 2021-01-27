@@ -20,7 +20,9 @@ func (k Keeper) CreateStoploss(c context.Context, msg *types.MsgStoploss) (*type
 	// NOTE: error checked during msg validation
 	address, _ := sdk.AccAddressFromBech32(msg.Address)
 
-	// Set the delegation
+	// TODO: check if uniswap pair exists on the oracle
+
+	// check if there's already a position for that pair
 	if k.HasStoplossPosition(ctx, address, msg.Stoploss.UniswapPairId) {
 		return nil, sdkerrors.Wrapf(types.ErrStoplossExists, "address: %s, uniswap pair id %s", address, msg.Stoploss.UniswapPairId)
 	}

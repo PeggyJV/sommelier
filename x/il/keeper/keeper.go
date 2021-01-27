@@ -78,3 +78,76 @@ func (k Keeper) DeleteStoplossPosition(ctx sdk.Context, address sdk.AccAddress, 
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.StoplossKeyPrefix)
 	store.Delete(types.StoplossKey(address, uniswapPair))
 }
+
+// IterateStoplossPositions iterates over the all the stoploss keys and performs a callback.
+func (k Keeper) IterateStoplossPositions(ctx sdk.Context, cb func(sdk.AccAddress, types.Stoploss) (stop bool)) {
+	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.StoplossKeyPrefix)
+
+	iterator := store.Iterator(nil, nil)
+	defer iterator.Close()
+
+	for ; iterator.Valid(); iterator.Next() {
+		lpAddress := types.LPAddressFromStoplossKey(iterator.Key())
+		var stoploss types.Stoploss
+		k.cdc.MustUnmarshalBinaryBare(iterator.Value(), &stoploss)
+
+		if cb(lpAddress, stoploss) {
+			break
+		}
+	}
+}
+
+// IterateStoplossPositionsByAddress iterates over the all the stoploss owned by an address and performs a callback.
+func (k Keeper) IterateStoplossPositionsByAddress(ctx sdk.Context, address sdk.AccAddress, cb func(types.Stoploss) (stop bool)) {
+	keyPrefix := append(types.StoplossKeyPrefix, address.Bytes()...)
+	store := prefix.NewStore(ctx.KVStore(k.storeKey), keyPrefix)
+
+	iterator := store.Iterator(nil, nil)
+	defer iterator.Close()
+
+	for ; iterator.Valid(); iterator.Next() {
+		var stoploss types.Stoploss
+		k.cdc.MustUnmarshalBinaryBare(iterator.Value(), &stoploss)
+
+		if cb(stoploss) {
+			break
+		}
+	}
+}
+
+// GetLPStoplossPositions retrieves all the positions owned by a given LPs.
+func (k Keeper) GetLPStoplossPositions(ctx sdk.Context, address sdk.AccAddress) []types.Stoploss {
+	positions := []types.Stoploss{}
+
+	k.IterateStoplossPositionsByAddress(ctx, address, func(stoploss types.Stoploss) bool {
+		positions = append(positions, stoploss)
+		return false
+	})
+
+	return positions
+}
+
+// GetLPsStoplossPositions retrieves all the positions from the LPs.
+func (k Keeper) GetLPsStoplossPositions(ctx sdk.Context) types.LPsStoplossPositions {
+	lps := types.LPsStoplossPositions{}
+
+	// NOTE: keys are sorted so the iterator will iterate over all the stoploss positions in by address and by pair
+	k.IterateStoplossPositions(ctx, func(lpAddress sdk.AccAddress, stoploss types.Stoploss) bool {
+		// check if the last element of the array has the same address and add a new position for that LP
+		// if so
+		if len(lps) == 0 || (lps[len(lps)-1].Address != lpAddress.String()) {
+			// new LP position entry
+			lps = append(lps, types.StoplossPositions{
+				Address:           lpAddress.String(),
+				StoplossPositions: []types.Stoploss{stoploss},
+			})
+		} else {
+			// new position for the same LP
+			lps[len(lps)-1].StoplossPositions = append(lps[len(lps)-1].StoplossPositions, stoploss)
+		}
+
+		return false
+	})
+
+	return lps
+}
