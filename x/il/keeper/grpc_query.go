@@ -43,8 +43,13 @@ func (k Keeper) StoplossPositions(c context.Context, req *types.QueryStoplossPos
 		return nil, status.Error(codes.InvalidArgument, "empty request")
 	}
 
+	address, err := sdk.AccAddressFromBech32(req.Address)
+	if err != nil {
+		return nil, status.Error(codes.InvalidArgument, err.Error())
+	}
+
 	ctx := sdk.UnwrapSDKContext(c)
-	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.StoplossKeyPrefix)
+	store := prefix.NewStore(ctx.KVStore(k.storeKey), append(types.StoplossKeyPrefix, address.Bytes()...))
 
 	stoplossPositions := []types.Stoploss{}
 	pageRes, err := query.Paginate(store, req.Pagination, func(_, value []byte) error {

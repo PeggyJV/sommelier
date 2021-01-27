@@ -29,3 +29,12 @@ var (
 func StoplossKey(address sdk.AccAddress, uniswapPair string) []byte {
 	return append(address.Bytes(), []byte(uniswapPair)...)
 }
+
+// LPAddressFromStoplossKey d
+func LPAddressFromStoplossKey(key []byte) sdk.AccAddress {
+	if len(key[1:]) < sdk.AddrLen {
+		return nil
+	}
+
+	return sdk.AccAddress(key[1 : 1+sdk.AddrLen])
+}
