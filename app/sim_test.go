@@ -7,7 +7,6 @@ import (
 	"testing"
 
 	sommelier "github.com/peggyjv/sommelier/app"
-	"github.com/peggyjv/sommelier/app/helpers"
 
 	"github.com/stretchr/testify/require"
 	"github.com/tendermint/tendermint/libs/log"
@@ -86,7 +85,7 @@ func TestAppStateDeterminism(t *testing.T) {
 	config.ExportParamsPath = ""
 	config.OnOperation = false
 	config.AllInvariants = false
-	config.ChainID = helpers.SimAppChainID
+	config.ChainID = "sommerlier-1"
 
 	numSeeds := 3
 	numTimesToRunPerSeed := 5
