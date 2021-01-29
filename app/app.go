@@ -88,9 +88,6 @@ import (
 	upgradekeeper "github.com/cosmos/cosmos-sdk/x/upgrade/keeper"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
 	appParams "github.com/peggyjv/sommelier/app/params"
-	"github.com/peggyjv/sommelier/x/oracle"
-	oraclekeeper "github.com/peggyjv/sommelier/x/oracle/keeper"
-	oracletypes "github.com/peggyjv/sommelier/x/oracle/types"
 
 	// unnamed import of statik for swagger UI support
 	_ "github.com/cosmos/cosmos-sdk/client/docs/statik"
@@ -124,7 +121,7 @@ var (
 		evidence.AppModuleBasic{},
 		transfer.AppModuleBasic{},
 		vesting.AppModuleBasic{},
-		oracle.AppModuleBasic{},
+		//oracle.AppModuleBasic{},
 		peggy.AppModuleBasic{},
 	)
 
@@ -137,14 +134,14 @@ var (
 		stakingtypes.NotBondedPoolName: {authtypes.Burner, authtypes.Staking},
 		govtypes.ModuleName:            {authtypes.Burner},
 		ibctransfertypes.ModuleName:    {authtypes.Minter, authtypes.Burner},
-		oracletypes.ModuleName:         nil,
-		peggytypes.ModuleName:          {authtypes.Minter, authtypes.Burner},
+		//oracletypes.ModuleName:         nil,
+		peggytypes.ModuleName: {authtypes.Minter, authtypes.Burner},
 	}
 
 	// module accounts that are allowed to receive tokens
 	allowedReceivingModAcc = map[string]bool{
-		oracletypes.ModuleName: true,
-		distrtypes.ModuleName:  true,
+		//oracletypes.ModuleName: true,
+		distrtypes.ModuleName: true,
 	}
 )
 
@@ -184,8 +181,8 @@ type SommelierApp struct {
 	IBCKeeper        *ibckeeper.Keeper // IBC Keeper must be a pointer in the app, so we can SetRouter on it correctly
 	EvidenceKeeper   evidencekeeper.Keeper
 	TransferKeeper   ibctransferkeeper.Keeper
-	OracleKeeper     oraclekeeper.Keeper
-	PeggyKeeper      peggykeeper.Keeper
+	//OracleKeeper     oraclekeeper.Keeper
+	PeggyKeeper peggykeeper.Keeper
 
 	// make scoped keepers public for test purposes
 	ScopedIBCKeeper      capabilitykeeper.ScopedKeeper
@@ -227,7 +224,7 @@ func NewSommelierApp(
 		minttypes.StoreKey, distrtypes.StoreKey, slashingtypes.StoreKey,
 		govtypes.StoreKey, paramstypes.StoreKey, ibchost.StoreKey, upgradetypes.StoreKey,
 		evidencetypes.StoreKey, ibctransfertypes.StoreKey, capabilitytypes.StoreKey,
-		oracletypes.StoreKey,
+		//oracletypes.StoreKey,
 		peggytypes.StoreKey,
 	)
 	tkeys := sdk.NewTransientStoreKeys(paramstypes.TStoreKey)
@@ -310,10 +307,10 @@ func NewSommelierApp(
 	)
 	transferModule := transfer.NewAppModule(app.TransferKeeper)
 
-	app.OracleKeeper = oraclekeeper.NewKeeper(
-		appCodec, keys[oracletypes.StoreKey], app.GetSubspace(oracletypes.ModuleName), app.DistrKeeper,
-		app.StakingKeeper, app.AccountKeeper, app.BankKeeper, distrtypes.ModuleName,
-	)
+	// app.OracleKeeper = oraclekeeper.NewKeeper(
+	// 	appCodec, keys[oracletypes.StoreKey], app.GetSubspace(oracletypes.ModuleName), app.DistrKeeper,
+	// 	app.StakingKeeper, app.AccountKeeper, app.BankKeeper, distrtypes.ModuleName,
+	// )
 	// Create static IBC router, add transfer route, then set and seal it
 	ibcRouter := porttypes.NewRouter()
 	ibcRouter.AddRoute(ibctransfertypes.ModuleName, transferModule)
@@ -364,7 +361,7 @@ func NewSommelierApp(
 		ibc.NewAppModule(app.IBCKeeper),
 		params.NewAppModule(app.ParamsKeeper),
 		transferModule,
-		oracle.NewAppModule(app.OracleKeeper, app.AccountKeeper, app.BankKeeper, appCodec),
+		//oracle.NewAppModule(app.OracleKeeper, app.AccountKeeper, app.BankKeeper, appCodec),
 		peggy.NewAppModule(app.PeggyKeeper, app.BankKeeper),
 	)
 
@@ -377,7 +374,7 @@ func NewSommelierApp(
 		evidencetypes.ModuleName, stakingtypes.ModuleName, ibchost.ModuleName,
 	)
 	app.mm.SetOrderEndBlockers(
-		crisistypes.ModuleName, oracletypes.ModuleName, govtypes.ModuleName, stakingtypes.ModuleName, peggytypes.ModuleName,
+		crisistypes.ModuleName, govtypes.ModuleName, stakingtypes.ModuleName, peggytypes.ModuleName,
 	)
 
 	// NOTE: The genutils module must occur after staking so that pools are
@@ -387,7 +384,7 @@ func NewSommelierApp(
 	// can do so safely.
 	app.mm.SetOrderInitGenesis(
 		capabilitytypes.ModuleName, authtypes.ModuleName, banktypes.ModuleName, distrtypes.ModuleName, stakingtypes.ModuleName,
-		slashingtypes.ModuleName, govtypes.ModuleName, minttypes.ModuleName, crisistypes.ModuleName, oracletypes.ModuleName,
+		slashingtypes.ModuleName, govtypes.ModuleName, minttypes.ModuleName, crisistypes.ModuleName,
 		ibchost.ModuleName, genutiltypes.ModuleName, evidencetypes.ModuleName, ibctransfertypes.ModuleName, peggytypes.ModuleName,
 	)
 
@@ -412,7 +409,7 @@ func NewSommelierApp(
 		evidence.NewAppModule(app.EvidenceKeeper),
 		ibc.NewAppModule(app.IBCKeeper),
 		transferModule,
-		oracle.NewAppModule(app.OracleKeeper, app.AccountKeeper, app.BankKeeper, appCodec),
+		//oracle.NewAppModule(app.OracleKeeper, app.AccountKeeper, app.BankKeeper, appCodec),
 	)
 
 	app.sm.RegisterStoreDecoders()
@@ -627,7 +624,7 @@ func initParamsKeeper(appCodec codec.BinaryMarshaler, legacyAmino *codec.LegacyA
 	paramsKeeper.Subspace(govtypes.ModuleName).WithKeyTable(govtypes.ParamKeyTable())
 	paramsKeeper.Subspace(crisistypes.ModuleName)
 	paramsKeeper.Subspace(ibctransfertypes.ModuleName)
-	paramsKeeper.Subspace(oracletypes.ModuleName)
+	//paramsKeeper.Subspace(oracletypes.ModuleName)
 	paramsKeeper.Subspace(ibchost.ModuleName)
 	paramsKeeper.Subspace(peggytypes.ModuleName)
 
