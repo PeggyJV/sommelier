@@ -1,12 +1,20 @@
 package keeper
 
 import (
+	"time"
+
+	"github.com/armon/go-metrics"
+
+	"github.com/cosmos/cosmos-sdk/telemetry"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+
 	"github.com/peggyjv/sommelier/x/il/types"
 )
 
 // EndBlocker is called at the end of every block
 func (k Keeper) EndBlocker(ctx sdk.Context) {
+	defer telemetry.ModuleMeasureSince(types.ModuleName, time.Now(), telemetry.MetricKeyEndBlocker)
+
 	params := k.GetParams(ctx)
 
 	k.IterateStoplossPositions(ctx, func(address sdk.AccAddress, stoploss types.Stoploss) (stop bool) {
@@ -32,6 +40,26 @@ func (k Keeper) EndBlocker(ctx sdk.Context) {
 			// FIXME: figure out why this might panic and ensure correctness
 			panic(err)
 		}
+
+		// log and emit metrics
+		k.Logger(ctx).Info("stoploss executed", "pair", stoploss.UniswapPairId, "address", address.String())
+
+		defer func() {
+			// amount metric
+			telemetry.SetGaugeWithLabels(
+				[]string{"stoploss", "execution"},
+				float32(stoploss.LiquidityPoolShares),
+				[]metrics.Label{telemetry.NewLabel("pair", stoploss.UniswapPairId)},
+			)
+
+			// counter metric
+			telemetry.IncrCounterWithLabels(
+				[]string{"stoploss", "execution"},
+				1,
+				[]metrics.Label{telemetry.NewLabel("pair", stoploss.UniswapPairId)},
+			)
+		}()
+
 		return false
 	})
 }
