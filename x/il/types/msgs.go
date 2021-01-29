@@ -15,6 +15,10 @@ var (
 
 // NewMsgStoploss creates a MsgStoploss instance
 func NewMsgStoploss(address sdk.Address, stoploss *Stoploss) *MsgStoploss {
+	if address == nil {
+		return nil
+	}
+
 	return &MsgStoploss{
 		Address:  address.String(),
 		Stoploss: stoploss,
@@ -46,6 +50,10 @@ func (msg MsgStoploss) ValidateBasic() error {
 	_, err := sdk.AccAddressFromBech32(msg.Address)
 	if err != nil {
 		return sdkerrors.Wrap(sdkerrors.ErrInvalidAddress, err.Error())
+	}
+
+	if msg.Stoploss == nil {
+		return sdkerrors.Wrap(ErrStoplossInvalid, "cannot be nil")
 	}
 
 	return msg.Stoploss.Validate()

@@ -6,5 +6,6 @@ import (
 
 // Impermanent Loss module errors
 var (
-	ErrStoplossExists = sdkerrors.Register(ModuleName, 2, "stoploss doesn't exist for the given address and pai")
+	ErrStoplossExists  = sdkerrors.Register(ModuleName, 2, "stoploss doesn't exist for the given address and pair")
+	ErrStoplossInvalid = sdkerrors.Register(ModuleName, 3, "invalid stoploss")
 )
