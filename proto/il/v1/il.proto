@@ -7,7 +7,7 @@ option go_package = "github.com/peggyjv/sommelier/x/il/types";
 
 // Stoploss defines a set of parameters that together trigger a stoploss withdrawal.
 message Stoploss {
-    // uniswap pair identifier 
+    // uniswap pair hex address 
     string uniswap_pair_id = 1 [(gogoproto.moretags) = "yaml:\"uniswap_pair\""];
     // amount of shares from the liquidity pool to redeem if current slippage > max slipage
     int64 liquidity_pool_shares = 2 [(gogoproto.moretags) = "yaml:\"liquidity_pool_shares\""];
@@ -17,7 +17,7 @@ message Stoploss {
         (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
         (gogoproto.nullable) = false
     ];
-    // starting token pair ration of the uniswap pool
+    // starting token pair ratio of the uniswap pool
     string reference_pair_ratio = 4 [
         (gogoproto.moretags) = "yaml:\"reference_pair_ratio\"",
         (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
