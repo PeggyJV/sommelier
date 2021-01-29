@@ -12,7 +12,7 @@ func NewGenesisState(
 	}
 }
 
-// DefaultGenesisState - default GenesisState used by columbus-2
+// DefaultGenesisState is the default GenesisState used by the IL module
 func DefaultGenesisState() GenesisState {
 	return GenesisState{
 		Params:               DefaultParams(),
