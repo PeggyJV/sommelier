@@ -4,6 +4,7 @@ go 1.15
 
 require (
 	github.com/althea-net/peggy/module v0.0.0-20210120133104-a23f0c343c3a
+	github.com/armon/go-metrics v0.3.6
 	github.com/cosmos/cosmos-sdk v0.41.0
 	github.com/ethereum/go-ethereum v1.9.21
 	github.com/gogo/protobuf v1.3.3
