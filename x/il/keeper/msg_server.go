@@ -44,3 +44,35 @@ func (k Keeper) CreateStoploss(c context.Context, msg *types.MsgStoploss) (*type
 
 	return &types.MsgStoplossResponse{}, nil
 }
+
+// DeleteStoploss for a given uniswap pair
+func (k Keeper) DeleteStoploss(c context.Context, msg *types.MsgDeleteStoploss) (*types.MsgDeleteStoplossResponse, error) {
+	ctx := sdk.UnwrapSDKContext(c)
+
+	// NOTE: error checked during msg validation
+	address, _ := sdk.AccAddressFromBech32(msg.Address)
+
+	// TODO: check if uniswap pair exists on the oracle
+
+	// check if the position exists for the pair
+	if !k.HasStoplossPosition(ctx, address, msg.Stoploss.UniswapPairId) {
+		return nil, sdkerrors.Wrapf(types.ErrStoplossExists, "address: %s, uniswap pair id %s", address, msg.Stoploss.UniswapPairId)
+	}
+
+	// Set the delegation
+	k.DeleteStoplossPosition(ctx, address, msg.Stoploss.UniswapPairId)
+
+	ctx.EventManager().EmitEvents(sdk.Events{
+		sdk.NewEvent(
+			types.EventTypeDeleteStoploss,
+			sdk.NewAttribute(sdk.AttributeKeySender, msg.Address),
+			sdk.NewAttribute(types.AttributeKeyUniswapPair, msg.Stoploss.UniswapPairId),
+		),
+		sdk.NewEvent(
+			sdk.EventTypeMessage,
+			sdk.NewAttribute(sdk.AttributeKeyModule, types.ModuleName),
+		),
+	})
+
+	return &types.MsgDeleteStoplossResponse{}, nil
+}
