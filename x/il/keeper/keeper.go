@@ -131,23 +131,27 @@ func (k Keeper) GetLPStoplossPositions(ctx sdk.Context, address sdk.AccAddress) 
 func (k Keeper) GetLPsStoplossPositions(ctx sdk.Context) types.LPsStoplossPositions {
 	lps := types.LPsStoplossPositions{}
 
+	addresses := make([]string, 0)
+	positionsMap := make(map[string][]types.Stoploss)
 	// NOTE: keys are sorted so the iterator will iterate over all the stoploss positions in by address and by pair
 	k.IterateStoplossPositions(ctx, func(lpAddress sdk.AccAddress, stoploss types.Stoploss) bool {
-		// check if the last element of the array has the same address and add a new position for that LP
-		// if so
-		if len(lps) == 0 || (lps[len(lps)-1].Address != lpAddress.String()) {
-			// new LP position entry
-			lps = append(lps, types.StoplossPositions{
-				Address:           lpAddress.String(),
-				StoplossPositions: []types.Stoploss{stoploss},
-			})
+		address := lpAddress.String()
+		positions, found := positionsMap[address]
+		if !found {
+			positionsMap[address] = []types.Stoploss{stoploss}
+			addresses = append(addresses, address)
 		} else {
-			// new position for the same LP
-			lps[len(lps)-1].StoplossPositions = append(lps[len(lps)-1].StoplossPositions, stoploss)
+			positionsMap[address] = append(positions, stoploss)
 		}
-
 		return false
 	})
 
-	return lps
+	for _, addr := range addresses {
+		lps = append(lps, types.StoplossPositions{
+			Address:           addr,
+			StoplossPositions: positionsMap[addr],
+		})
+	}
+
+	return lps.Sort()
 }

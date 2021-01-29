@@ -87,3 +87,66 @@ func (suite *KeeperTestSuite) TestGetStoplossPositions() {
 	res := suite.app.ILKeeper.GetLPStoplossPositions(suite.ctx, suite.account.GetAddress())
 	suite.Require().Equal(stoplossPositions, res)
 }
+
+func (suite *KeeperTestSuite) TestGetLPsStoplossPositions() {
+	_, _, addr1 := testdata.KeyTestPubAddr()
+	_, _, addr2 := testdata.KeyTestPubAddr()
+
+	lpsStoplossPositions := types.LPsStoplossPositions{
+		{
+			Address: suite.account.GetAddress().String(),
+			StoplossPositions: []types.Stoploss{
+				{
+					UniswapPairId:      "pair0",
+					MaxSlippage:        sdk.OneDec(),
+					ReferencePairRatio: sdk.OneDec(),
+				},
+				{
+					UniswapPairId:      "pair1",
+					MaxSlippage:        sdk.OneDec(),
+					ReferencePairRatio: sdk.OneDec(),
+				},
+			},
+		},
+		{
+			Address: addr1.String(),
+			StoplossPositions: []types.Stoploss{
+				{
+					UniswapPairId:      "pair1",
+					MaxSlippage:        sdk.OneDec(),
+					ReferencePairRatio: sdk.OneDec(),
+				},
+				{
+					UniswapPairId:      "pair2",
+					MaxSlippage:        sdk.OneDec(),
+					ReferencePairRatio: sdk.OneDec(),
+				},
+				{
+					UniswapPairId:      "pair3",
+					MaxSlippage:        sdk.OneDec(),
+					ReferencePairRatio: sdk.OneDec(),
+				},
+			},
+		},
+		{
+			Address: addr2.String(),
+			StoplossPositions: []types.Stoploss{
+				{
+					UniswapPairId:      "pair8",
+					MaxSlippage:        sdk.OneDec(),
+					ReferencePairRatio: sdk.OneDec(),
+				},
+			},
+		},
+	}
+
+	for _, lpPositions := range lpsStoplossPositions {
+		addr, _ := sdk.AccAddressFromBech32(lpPositions.Address)
+		for _, position := range lpPositions.StoplossPositions {
+			suite.app.ILKeeper.SetStoplossPosition(suite.ctx, addr, position)
+		}
+	}
+
+	res := suite.app.ILKeeper.GetLPsStoplossPositions(suite.ctx)
+	suite.Require().Equal(lpsStoplossPositions, res)
+}
