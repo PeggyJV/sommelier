@@ -148,5 +148,5 @@ func (suite *KeeperTestSuite) TestGetLPsStoplossPositions() {
 	}
 
 	res := suite.app.ILKeeper.GetLPsStoplossPositions(suite.ctx)
-	suite.Require().Equal(lpsStoplossPositions, res)
+	suite.Require().Equal(lpsStoplossPositions.Sort(), res)
 }

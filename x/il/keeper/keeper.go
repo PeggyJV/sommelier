@@ -87,7 +87,7 @@ func (k Keeper) IterateStoplossPositions(ctx sdk.Context, cb func(sdk.AccAddress
 	defer iterator.Close()
 
 	for ; iterator.Valid(); iterator.Next() {
-		lpAddress := types.LPAddressFromStoplossKey(iterator.Key())
+		lpAddress := types.LPAddressFromStoplossKey(append(types.StoplossKeyPrefix, iterator.Key()...))
 		var stoploss types.Stoploss
 		k.cdc.MustUnmarshalBinaryBare(iterator.Value(), &stoploss)
 
@@ -133,7 +133,7 @@ func (k Keeper) GetLPsStoplossPositions(ctx sdk.Context) types.LPsStoplossPositi
 
 	addresses := make([]string, 0)
 	positionsMap := make(map[string][]types.Stoploss)
-	// NOTE: keys are sorted so the iterator will iterate over all the stoploss positions in by address and by pair
+
 	k.IterateStoplossPositions(ctx, func(lpAddress sdk.AccAddress, stoploss types.Stoploss) bool {
 		address := lpAddress.String()
 		positions, found := positionsMap[address]
