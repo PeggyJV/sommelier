@@ -2,9 +2,6 @@ package cmd
 
 import (
 	"context"
-	"encoding/json"
-	"fmt"
-	"log"
 	"os"
 	"path/filepath"
 
@@ -13,10 +10,8 @@ import (
 	kr "github.com/cosmos/cosmos-sdk/crypto/keyring"
 	authclient "github.com/cosmos/cosmos-sdk/x/auth/client"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
-	"github.com/machinebox/graphql"
 	"github.com/peggyjv/sommelier/app"
 	"github.com/peggyjv/sommelier/app/params"
-	oracle "github.com/peggyjv/sommelier/x/oracle/types"
 	"github.com/spf13/cobra"
 	tmcli "github.com/tendermint/tendermint/libs/cli"
 )
@@ -24,6 +19,8 @@ import (
 var (
 	// FeederHome is the home directory for the oracle feeder
 	FeederHome string
+	AppName    string
+	config     *Config
 )
 
 func init() {
@@ -31,7 +28,7 @@ func init() {
 	if err != nil {
 		panic(err)
 	}
-
+	AppName = "oracle-feeder"
 	FeederHome = filepath.Join(userHomeDir, ".oracle-feeder")
 }
 
@@ -39,7 +36,7 @@ func init() {
 // main function.
 func NewRootCmd() (*cobra.Command, params.EncodingConfig) {
 	encodingConfig := app.MakeEncodingConfig()
-	keyring, err := kr.New("oracle-feeder", "test", FeederHome, os.Stdin)
+	keyring, err := kr.New(AppName, "test", FeederHome, os.Stdin)
 	if err != nil {
 		panic(err)
 	}
@@ -55,14 +52,23 @@ func NewRootCmd() (*cobra.Command, params.EncodingConfig) {
 		WithKeyring(keyring)
 
 	rootCmd := &cobra.Command{
-		Use:   "oracle-feeder",
+		Use:   AppName,
 		Short: "data feeder program for the sommelier oracle",
 		PersistentPreRunE: func(cmd *cobra.Command, _ []string) error {
-			return client.SetCmdClientContextHandler(initClientCtx, cmd)
+			if err := initConfig(cmd); err != nil {
+				return err
+			}
+			return client.SetCmdClientContext(cmd, initClientCtx)
 		},
 	}
 
-	initRootCmd(rootCmd, encodingConfig)
+	authclient.Codec = encodingConfig.Marshaler
+
+	// add keybase, auxiliary RPC, query, and tx child commands
+	rootCmd.AddCommand(
+		keysCmd(),
+		configCmd(),
+	)
 
 	return rootCmd, encodingConfig
 }
@@ -80,60 +86,4 @@ func Execute(rootCmd *cobra.Command) error {
 
 	executor := tmcli.PrepareBaseCmd(rootCmd, "", FeederHome)
 	return executor.ExecuteContext(ctx)
-}
-
-func initRootCmd(rootCmd *cobra.Command, encodingConfig params.EncodingConfig) {
-	authclient.Codec = encodingConfig.Marshaler
-
-	// add keybase, auxiliary RPC, query, and tx child commands
-	rootCmd.AddCommand(
-		keysCmd(),
-	)
-}
-
-// Config is the configuration for the graphql querier
-type Config struct {
-	Client *graphql.Client
-}
-
-// GetPairs gets the pairs
-func GetPairs() {
-	clnt := graphql.NewClient("https://api.thegraph.com/subgraphs/name/uniswap/uniswap-v2")
-	// clnt.Log = func(s string) { fmt.Println(s) }
-	config := Config{clnt}
-	out, err := config.GetPairs(context.Background(), 100, 0)
-	if err != nil {
-		log.Fatal(err)
-	}
-	bz, err := json.MarshalIndent(out, "", "  ")
-	if err != nil {
-		log.Fatal(err)
-	}
-	fmt.Println(string(bz))
-}
-
-// GetPairs returns the top N pairs from the Uniswap Subgraph
-func (c Config) GetPairs(ctx context.Context, first, skip int) (*oracle.UniswapData, error) {
-	req := graphql.NewRequest(fmt.Sprintf(`{ 
-		pairs(first: %d, skip: %d, orderBy: volumeUSD, orderDirection: desc) {
-			id
-			reserveUSD
-			totalSupply
-			reserve0
-			reserve1
-			token0Price
-			token1Price
-			token0 {
-				id
-				decimals
-			}
-			token1 {
-				id
-				decimals
-			}
-		}
-	}`, first, skip))
-	out := &oracle.UniswapData{}
-	err := c.Client.Run(ctx, req, out)
-	return out, err
 }
