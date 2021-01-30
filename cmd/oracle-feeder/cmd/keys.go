@@ -1,7 +1,20 @@
 package cmd
 
 import (
+	"encoding/json"
+	"fmt"
+
+	"github.com/cosmos/cosmos-sdk/client"
+	"github.com/cosmos/cosmos-sdk/crypto/hd"
+	cryptokeyring "github.com/cosmos/cosmos-sdk/crypto/keyring"
+	"github.com/cosmos/go-bip39"
 	"github.com/spf13/cobra"
+)
+
+var (
+	flagCoinType        = "coin-type"
+	flagCoinTypeHelp    = "coin type number for HD derivation"
+	flagCoinTypeDefault = uint32(118)
 )
 
 // keysCmd represents the keys command
@@ -30,16 +43,37 @@ func keysAddCmd() *cobra.Command {
 		Short:   "adds a key to the keychain",
 		Args:    cobra.RangeArgs(1, 2),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			// ctx, err := client.GetClientQueryContext(cmd)
-			// if err != nil {
-			// 	return err
-			// }
+			ctx := client.GetClientContextFromCmd(cmd)
+			mnemonic, err := CreateMnemonic()
+			if err != nil {
+				return err
+			}
 
+			coinType, _ := cmd.Flags().GetUint32(flagCoinType)
+
+			info, err := ctx.Keyring.NewAccount(args[0], mnemonic, "", hd.CreateHDPath(coinType, 0, 0).String(), hd.Secp256k1)
+			if err != nil {
+				return err
+			}
+
+			ko := keyOutput{Mnemonic: mnemonic, Address: info.GetAddress().String()}
+
+			out, err := json.Marshal(&ko)
+			if err != nil {
+				return err
+			}
+
+			fmt.Println(string(out))
 			return nil
 		},
 	}
-
+	cmd.Flags().Uint32(flagCoinType, flagCoinTypeDefault, flagCoinTypeHelp)
 	return cmd
+}
+
+type keyOutput struct {
+	Mnemonic string `json:"mnemonic" yaml:"mnemonic"`
+	Address  string `json:"address" yaml:"address"`
 }
 
 // keysRestoreCmd respresents the `keys add` command
@@ -50,15 +84,22 @@ func keysRestoreCmd() *cobra.Command {
 		Short:   "restores a mnemonic to the keychain",
 		Args:    cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			// ctx, err := client.GetClientQueryContext(cmd)
-			// if err != nil {
-			// 	return err
-			// }
+			ctx := client.GetClientContextFromCmd(cmd)
+			coinType, _ := cmd.Flags().GetUint32(flagCoinType)
+			info, err := ctx.Keyring.NewAccount(
+				args[0], args[1], "",
+				hd.CreateHDPath(coinType, 0, 0).String(), hd.Secp256k1,
+			)
 
+			if err != nil {
+				return err
+			}
+			fmt.Println(info.GetAddress().String())
 			return nil
 		},
 	}
 
+	cmd.Flags().Uint32(flagCoinType, flagCoinTypeDefault, flagCoinTypeHelp)
 	return cmd
 }
 
@@ -70,11 +111,11 @@ func keysDeleteCmd() *cobra.Command {
 		Short:   "deletes a key from the keychain",
 		Args:    cobra.RangeArgs(1, 2),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			// ctx, err := client.GetClientQueryContext(cmd)
-			// if err != nil {
-			// 	return err
-			// }
-
+			ctx := client.GetClientContextFromCmd(cmd)
+			if err := ctx.Keyring.Delete(args[0]); err != nil {
+				return err
+			}
+			fmt.Printf("Key %s deleted for good...\n", args[0])
 			return nil
 		},
 	}
@@ -90,14 +131,23 @@ func keysListCmd() *cobra.Command {
 		Short:   "lists keys from the keychain associated with a particular chain",
 		Args:    cobra.ExactArgs(0),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			// ctx, err := client.GetClientQueryContext(cmd)
-			// if err != nil {
-			// 	return err
-			// }
+			ctx := client.GetClientContextFromCmd(cmd)
+			infos, err := ctx.Keyring.List()
+			if err != nil {
+				return err
+			}
+			kos, err := cryptokeyring.Bech32KeysOutput(infos)
+			if err != nil {
+				return err
+			}
+			bz, err := ctx.LegacyAmino.MarshalJSON(kos)
+			if err != nil {
+				return err
+			}
+			fmt.Println(string(bz))
 			return nil
 		},
 	}
-
 	return cmd
 }
 
@@ -109,11 +159,12 @@ func keysShowCmd() *cobra.Command {
 		Short:   "shows a key from the keychain",
 		Args:    cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			// ctx, err := client.GetClientQueryContext(cmd)
-			// if err != nil {
-			// 	return err
-			// }
-
+			ctx := client.GetClientContextFromCmd(cmd)
+			info, err := ctx.Keyring.Key(args[0])
+			if err != nil {
+				return err
+			}
+			fmt.Println(info.GetAddress().String())
 			return nil
 		},
 	}
@@ -129,14 +180,22 @@ func keysExportCmd() *cobra.Command {
 		Short:   "exports a privkey from the keychain associated with a particular chain",
 		Args:    cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			// ctx, err := client.GetClientQueryContext(cmd)
-			// if err != nil {
-			// 	return err
-			// }
-
-			return nil
+			panic("TODO IMPLEMENT")
 		},
 	}
 
 	return cmd
+}
+
+// CreateMnemonic creates a new mnemonic
+func CreateMnemonic() (string, error) {
+	entropySeed, err := bip39.NewEntropy(256)
+	if err != nil {
+		return "", err
+	}
+	mnemonic, err := bip39.NewMnemonic(entropySeed)
+	if err != nil {
+		return "", err
+	}
+	return mnemonic, nil
 }

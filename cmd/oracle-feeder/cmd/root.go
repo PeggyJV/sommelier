@@ -96,7 +96,8 @@ type Config struct {
 	Client *graphql.Client
 }
 
-func main() {
+// GetPairs gets the pairs
+func GetPairs() {
 	clnt := graphql.NewClient("https://api.thegraph.com/subgraphs/name/uniswap/uniswap-v2")
 	// clnt.Log = func(s string) { fmt.Println(s) }
 	config := Config{clnt}

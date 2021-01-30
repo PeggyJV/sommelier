@@ -8,6 +8,7 @@ require (
 	github.com/Masterminds/sprig v2.22.0+incompatible // indirect
 	github.com/aokoli/goutils v1.1.0 // indirect
 	github.com/cosmos/cosmos-sdk v0.40.0-rc7
+	github.com/cosmos/go-bip39 v1.0.0
 	github.com/cosmos/relayer v0.6.1
 	github.com/envoyproxy/protoc-gen-validate v0.4.1 // indirect
 	github.com/gogo/protobuf v1.3.2
@@ -38,3 +39,4 @@ require (
 )
 
 replace github.com/gogo/protobuf => github.com/regen-network/protobuf v1.3.2-alpha.regen.4
+replace github.com/keybase/go-keychain => github.com/99designs/go-keychain v0.0.0-20191008050251-8e49817e8af4
