@@ -68,6 +68,7 @@ func NewRootCmd() (*cobra.Command, params.EncodingConfig) {
 	rootCmd.AddCommand(
 		keysCmd(),
 		configCmd(),
+		queryCmd(),
 	)
 
 	return rootCmd, encodingConfig

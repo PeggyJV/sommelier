@@ -2,6 +2,7 @@ package oracle
 
 import (
 	"github.com/peggyjv/sommelier/x/oracle/keeper"
+	"github.com/peggyjv/sommelier/x/oracle/types"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )

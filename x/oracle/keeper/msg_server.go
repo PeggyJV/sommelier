@@ -90,11 +90,11 @@ func (k msgServer) OracleDataPrevote(c context.Context, msg *types.MsgOracleData
 // OracleDataVote implements types.MsgServer
 func (k msgServer) OracleDataVote(c context.Context, msg *types.MsgOracleDataVote) (*types.MsgOracleDataVoteResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
-
 	if err := msg.ValidateBasic(); err != nil {
 		return nil, sdkerrors.Wrap(err, "validate basic failed")
 	}
 
+	// Make sure that the message was properly signed
 	signer := msg.MustGetSigner()
 	valaddr := k.GetValidatorAddressFromDelegate(ctx, signer)
 	if valaddr == nil {
@@ -105,6 +105,47 @@ func (k msgServer) OracleDataVote(c context.Context, msg *types.MsgOracleDataVot
 		valaddr = sdk.AccAddress(sval.GetOperator())
 	}
 
+	// Get the prevote for that validator from the store
+	hashes := k.GetOracleDataPrevote(ctx, valaddr)
+
+	// check that there is a prevote
+	if hashes == nil || len(hashes) == 0 {
+		return nil, sdkerrors.Wrap(types.ErrNoPrevote, valaddr.String())
+	}
+
+	// ensure that the right number of data is in the msg
+	if len(hashes) != len(msg.OracleData) {
+		return nil, sdkerrors.Wrap(
+			types.ErrWrongNumber,
+			fmt.Sprintf("oracle data exp(%d) got(%d)", len(hashes), len(msg.OracleData)),
+		)
+	}
+
+	// ensure that the right number of salts is in the msg
+	if len(hashes) != len(msg.Salt) {
+		return nil, sdkerrors.Wrap(
+			types.ErrWrongNumber,
+			fmt.Sprintf("salt exp(%d) got(%d)", len(hashes), len(msg.Salt)),
+		)
+	}
+
+	// validate the hashes
+	for i := range msg.OracleData {
+		salt := msg.Salt[i]
+		od, err := types.UnpackOracleData(msg.OracleData[i])
+		if err != nil {
+			return nil, sdkerrors.Wrap(types.ErrUnpackOracleData, fmt.Sprintf("index %d", i))
+		}
+		voteHash := types.DataHash(salt, od.CannonicalJSON(), valaddr)
+		if !bytes.Equal(voteHash, hashes[i]) {
+			return nil, sdkerrors.Wrap(
+				types.ErrHashMismatch,
+				fmt.Sprintf("precommit(%x) commit(%x)", hashes[i], voteHash),
+			)
+		}
+	}
+
+	// set the vote in the store
 	k.SetOracleDataVote(ctx, valaddr, msg)
 
 	ctx.EventManager().EmitEvent(

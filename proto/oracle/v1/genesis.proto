@@ -10,7 +10,6 @@ option go_package = "github.com/peggyjv/sommelier/x/oracle/types";
 
 
 // GenesisState - all oracle state that must be provided at genesis
-// GenesisState - all oracle state that must be provided at genesis
 message GenesisState {
     Params                          params             = 1 [
         (gogoproto.nullable) = false
@@ -25,39 +24,36 @@ message GenesisState {
 
 // Params oracle parameters
 message Params {
-	// TODO: Define params
-	// required data proto formats
-    // miss counter params
-    // 
-    // int64                                vote_period                = 1 [
-    //     (gogoproto.moretags) = "yaml:\"exchange_rate_tuples\""
-    // ];
-    // string                               vote_threshold             = 2 [
-    //     (gogoproto.moretags) = "yaml:\"vote_threshold\"",
-    //     (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec", 
-    //     (gogoproto.nullable) = false
-    // ];
-    // string                               reward_band                = 3 [
-    //     (gogoproto.moretags) = "yaml:\"reward_band\"",
-    //     (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec", 
-    //     (gogoproto.nullable)   = false
-    // ];
-    // int64                                reward_distribution_window = 4 [
-    //     (gogoproto.moretags) = "yaml:\"reward_distribution_window\""
-    // ]; 
-    // string                               slash_fraction             = 6 [
-    //     (gogoproto.moretags) = "yaml:\"slash_fraction\"",
-    //     (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec", 
-    //     (gogoproto.nullable) = false
-    // ];
-    // int64                                slash_window               = 7 [
-    //     (gogoproto.moretags) = "yaml:\"slash_window\""
-    // ];
-    // string                               min_valid_per_window       = 8 [
-    //     (gogoproto.moretags) = "yaml:\"min_valid_per_window\"",
-    //     (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec", 
-    //     (gogoproto.nullable) = false
-    // ];
+    // VotePeriod defines the number of blocks to wait for votes before attempting to tally
+    int64  vote_period          = 1;
+
+    // VoteThreshold defines the percentage of bonded stake required to vote each period
+    string vote_threshold       = 2 [
+        (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec", 
+        (gogoproto.nullable)   = false
+    ];
+
+    // SlashWindow defines the number of blocks for the slashing window
+    int64  slash_window         = 3;
+
+    // MinValidPerWindow defines the number of misses a validator is allowed during
+    // each SlashWindow
+    string min_valid_per_window = 4 [
+        (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec", 
+        (gogoproto.nullable)   = false
+    ];
+
+    // SlashFraction defines the percentage of slash that a validator will suffer if it fails
+    // to send a vote
+    string slash_fraction       = 5 [
+        (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec", 
+        (gogoproto.nullable)   = false
+    ];
+
+    // DataTypes defines which data types validators must submit each voting period
+    repeated string data_types  = 6 [
+        (gogoproto.nullable) = false
+    ];
 }
 
 // MissCounter stores the validator address and the number of associated misses
