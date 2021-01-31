@@ -1,6 +1,8 @@
 package oracle
 
 import (
+	"fmt"
+
 	"github.com/peggyjv/sommelier/x/oracle/keeper"
 	"github.com/peggyjv/sommelier/x/oracle/types"
 
@@ -99,17 +101,20 @@ func EndBlocker(ctx sdk.Context, k keeper.Keeper) {
 		k.IterateMissCounters(ctx, func(val sdk.AccAddress, counter int64) bool {
 			// if the validator has missed more than the params.MinValidPerWindow over the last
 			if params.MinValidPerWindow.LT(sdk.NewDec(counter).Quo(sdk.NewDec(params.SlashWindow))) {
-				sval := k.StakingKeeper.Validator(ctx, sdk.ValAddress(val))
-				cons, _ := sval.GetConsAddr()
-				k.StakingKeeper.Slash(ctx, cons, ctx.BlockHeight(), sval.GetConsensusPower(), params.SlashFraction)
+				// TODO: reenable slashing for now just print if this condition is hit
+				// sval := k.StakingKeeper.Validator(ctx, sdk.ValAddress(val))
+				// cons, _ := sval.GetConsAddr()
+				// k.StakingKeeper.Slash(ctx, cons, ctx.BlockHeight(), sval.GetConsensusPower(), params.SlashFraction)
+				fmt.Println("SLASHING VALIDATOR", val.String())
 			}
 			return false
 		})
 
 		// TODO: reward validators
+		// TODO: Setup module account for oracle module
+		// TODO: Fork off some of the community pool to (i.e. if community tax is 4% take 1/4 of that amount each block for paying to oracle)
 
 		// Reset state prior to next round
-
 		// After the tallying is done, reset the vote period start height
 		k.SetVotePeriodStart(ctx, ctx.BlockHeight())
 
