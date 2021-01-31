@@ -35,6 +35,7 @@ func init() {
 // NewRootCmd creates a new root command for simd. It is called once in the
 // main function.
 func NewRootCmd() (*cobra.Command, params.EncodingConfig) {
+	
 	encodingConfig := app.MakeEncodingConfig()
 	keyring, err := kr.New(AppName, "test", FeederHome, os.Stdin)
 	if err != nil {

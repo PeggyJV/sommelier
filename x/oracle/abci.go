@@ -1,6 +1,8 @@
 package oracle
 
 import (
+	"fmt"
+
 	"github.com/peggyjv/sommelier/x/oracle/keeper"
 	"github.com/peggyjv/sommelier/x/oracle/types"
 

@@ -9,6 +9,7 @@ import (
 	"github.com/machinebox/graphql"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
+	"google.golang.org/grpc"
 	"gopkg.in/yaml.v2"
 )
 
@@ -102,10 +103,12 @@ func configInitCmd() *cobra.Command {
 type Config struct {
 	UniswapSubgraph string `yaml:"uniswap-subgraph" json:"uniswap-subgraph"`
 	SigningKey      string `yaml:"signing-key" json:"signing-key"`
+	ChainGRPC       string `yaml:"chain-grpc" json:"chain-grpc"`
 	ChainRPC        string `yaml:"chain-rpc" json:"chain-rpc"`
 	ChainID         string `yaml:"chain-id" json:"chain-id"`
 
 	graphClient *graphql.Client
+	grpcConn    *grpc.ClientConn
 }
 
 // initConfig reads in config file and ENV variables if set.
@@ -146,9 +149,10 @@ func validateConfig(c *Config) error {
 func defaultConfig() []byte {
 	return Config{
 		UniswapSubgraph: "https://api.thegraph.com/subgraphs/name/uniswap/uniswap-v2",
+		ChainGRPC:       "http://localhost:9090",
 		ChainRPC:        "http://localhost:26657",
 		ChainID:         "sommelier-test",
-		SigningKey:      "mykey",
+		SigningKey:      "feeder-key",
 	}.MustYAML()
 }
 
