@@ -225,4 +225,5 @@ func updateWinnerMap(ballotWinningClaims []types.Claim, validVotesCounterMap map
 		// Increase valid votes counter
 		validVotesCounterMap[recipient]++
 	}
+	return false
 }

@@ -201,6 +201,11 @@ func (k Keeper) GetOracleData(ctx sdk.Context, typ string) types.OracleData {
 	return od
 }
 
+// DeleteOracleData deletes the data from the oracle of a given type
+func (k Keeper) DeleteOracleData(ctx sdk.Context, typ string) {
+	ctx.KVStore(k.storeKey).Delete(types.GetOracleDataKey(typ))
+}
+
 // HasOracleData returns true if a given type exists in the store
 func (k Keeper) HasOracleData(ctx sdk.Context, typ string) bool {
 	return ctx.KVStore(k.storeKey).Has(types.GetOracleDataKey(typ))
@@ -260,6 +265,20 @@ func (k Keeper) HasMissCounter(ctx sdk.Context, val sdk.AccAddress) bool {
 // DeleteMissCounter removes a validators miss counter
 func (k Keeper) DeleteMissCounter(ctx sdk.Context, val sdk.AccAddress) {
 	ctx.KVStore(k.storeKey).Delete(types.GetMissCounterKey(val))
+}
+
+// IterateMissCounters iterates over the miss counters
+func (k Keeper) IterateMissCounters(ctx sdk.Context, handler func(val sdk.AccAddress, counter int64) (stop bool)) {
+	store := ctx.KVStore(k.storeKey)
+	iter := sdk.KVStorePrefixIterator(store, types.MissCounterKeyPrefix)
+	defer iter.Close()
+	for ; iter.Valid(); iter.Next() {
+		count := binary.BigEndian.Uint64(iter.Value())
+		val := sdk.AccAddress(iter.Key())
+		if handler(val, int64(count)) {
+			break
+		}
+	}
 }
 
 ////////////

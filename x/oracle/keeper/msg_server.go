@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
+	"sort"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
@@ -130,6 +131,7 @@ func (k msgServer) OracleDataVote(c context.Context, msg *types.MsgOracleDataVot
 	}
 
 	// validate the hashes
+	got := []string{}
 	for i := range msg.OracleData {
 		salt := msg.Salt[i]
 		od, err := types.UnpackOracleData(msg.OracleData[i])
@@ -141,6 +143,28 @@ func (k msgServer) OracleDataVote(c context.Context, msg *types.MsgOracleDataVot
 			return nil, sdkerrors.Wrap(
 				types.ErrHashMismatch,
 				fmt.Sprintf("precommit(%x) commit(%x)", hashes[i], voteHash),
+			)
+		}
+		got = append(got, od.Type())
+	}
+
+	// ensure that the right number of data types have been submitted
+	exp := k.GetParamSet(ctx).DataTypes
+	if len(exp) != len(got) {
+		return nil, sdkerrors.Wrap(
+			types.ErrWrongNumber,
+			fmt.Sprintf("oracle data types exp(%d) got(%d)", len(exp), len(got)),
+		)
+	}
+
+	// ensure that all of the right data types have been submitted
+	sort.Strings(exp)
+	sort.Strings(got)
+	for i := range exp {
+		if exp[i] != got[i] {
+			return nil, sdkerrors.Wrap(
+				types.ErrWrongDataType,
+				fmt.Sprintf("exp(%s) got(%s)", exp[i], got[i]),
 			)
 		}
 	}
