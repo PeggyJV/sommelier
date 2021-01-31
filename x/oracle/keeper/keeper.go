@@ -2,6 +2,7 @@ package keeper
 
 import (
 	"bytes"
+	"encoding/binary"
 
 	"github.com/cosmos/cosmos-sdk/codec"
 	cdctypes "github.com/cosmos/cosmos-sdk/codec/types"
@@ -203,4 +204,71 @@ func (k Keeper) GetOracleData(ctx sdk.Context, typ string) types.OracleData {
 // HasOracleData returns true if a given type exists in the store
 func (k Keeper) HasOracleData(ctx sdk.Context, typ string) bool {
 	return ctx.KVStore(k.storeKey).Has(types.GetOracleDataKey(typ))
+}
+
+////////////////
+// VotePeriod //
+////////////////
+
+// SetVotePeriodStart sets the vote period start height
+func (k Keeper) SetVotePeriodStart(ctx sdk.Context, h int64) {
+	bz := make([]byte, 8)
+	binary.BigEndian.PutUint64(bz, uint64(h))
+	ctx.KVStore(k.storeKey).Set(types.VotePeriodStartKey, bz)
+}
+
+// GetVotePeriodStart returns the vote period start height
+func (k Keeper) GetVotePeriodStart(ctx sdk.Context) int64 {
+	return int64(binary.BigEndian.Uint64(ctx.KVStore(k.storeKey).Get(types.VotePeriodStartKey)))
+}
+
+// HasVotePeriodStart returns true if the vote period start has been set
+func (k Keeper) HasVotePeriodStart(ctx sdk.Context) bool {
+	return ctx.KVStore(k.storeKey).Has(types.VotePeriodStartKey)
+}
+
+/////////////////
+// MissCounter //
+/////////////////
+
+// IncrementMissCounter increments the miss counter for a validator
+func (k Keeper) IncrementMissCounter(ctx sdk.Context, val sdk.AccAddress) {
+	if !k.HasMissCounter(ctx, val) {
+		k.SetMissCounter(ctx, val, 1)
+		return
+	}
+	k.SetMissCounter(ctx, val, k.GetMissCounter(ctx, val)+1)
+}
+
+// GetMissCounter return the miss counter for a validator
+func (k Keeper) GetMissCounter(ctx sdk.Context, val sdk.AccAddress) int64 {
+	return int64(binary.BigEndian.Uint64(ctx.KVStore(k.storeKey).Get(types.GetMissCounterKey(val))))
+}
+
+// SetMissCounter sets the miss counter for a given validator
+func (k Keeper) SetMissCounter(ctx sdk.Context, val sdk.AccAddress, misses int64) {
+	bz := make([]byte, 8)
+	binary.BigEndian.PutUint64(bz, uint64(misses))
+	ctx.KVStore(k.storeKey).Set(types.GetMissCounterKey(val), bz)
+}
+
+// HasMissCounter checks if a validator has an existing miss counter
+func (k Keeper) HasMissCounter(ctx sdk.Context, val sdk.AccAddress) bool {
+	return ctx.KVStore(k.storeKey).Has(types.GetMissCounterKey(val))
+}
+
+// DeleteMissCounter removes a validators miss counter
+func (k Keeper) DeleteMissCounter(ctx sdk.Context, val sdk.AccAddress) {
+	ctx.KVStore(k.storeKey).Delete(types.GetMissCounterKey(val))
+}
+
+////////////
+// Params //
+////////////
+
+// GetParamSet returns the vote period from the parameters
+func (k Keeper) GetParamSet(ctx sdk.Context) types.Params {
+	var p types.Params
+	k.paramSpace.GetParamSet(ctx, &p)
+	return p
 }

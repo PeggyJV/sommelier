@@ -29,6 +29,12 @@ var (
 
 	// - 0x03<val_address> -> <oracle_data_vote>
 	OracleDataVoteKeyPrefix = []byte{0x03} // key for oracle votes
+
+	// - 0x04 -> int64(height)
+	VotePeriodStartKey = []byte{0x04} // key for vote period height start
+
+	// - 0x05<val_address> -> int64(misses)
+	MissCounterKeyPrefix = []byte{0x05} // key for validator miss counters
 )
 
 // GetFeedDelegateKey returns the validator for a given delegate key
@@ -49,4 +55,9 @@ func GetOracleDataVoteKey(val sdk.AccAddress) []byte {
 // GetOracleDataKey returns the key for the stored oracle data
 func GetOracleDataKey(typ string) []byte {
 	return append(OracleDataKeyPrefix, []byte(typ)...)
+}
+
+// GetMissCounterKey returns the key for the stored miss counter for a given validator
+func GetMissCounterKey(val sdk.AccAddress) []byte {
+	return append(MissCounterKeyPrefix, val.Bytes()...)
 }

@@ -2,6 +2,7 @@ package keeper
 
 import (
 	"context"
+	"fmt"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/peggyjv/sommelier/x/oracle/types"
@@ -26,6 +27,12 @@ func (k Keeper) QueryOracleDataPrevote(c context.Context, req *types.QueryOracle
 	if err != nil {
 		return nil, err
 	}
+	if k.StakingKeeper.Validator(ctx, sdk.ValAddress(val)) == nil {
+		val = k.GetValidatorAddressFromDelegate(ctx, val)
+		if val == nil {
+			return nil, fmt.Errorf("not a validator")
+		}
+	}
 	return &types.QueryOracleDataPrevoteResponse{Hashes: k.GetOracleDataPrevote(ctx, val)}, nil
 }
 
@@ -35,6 +42,12 @@ func (k Keeper) QueryOracleDataVote(c context.Context, req *types.QueryOracleDat
 	val, err := sdk.AccAddressFromBech32(req.Validator)
 	if err != nil {
 		return nil, err
+	}
+	if k.StakingKeeper.Validator(ctx, sdk.ValAddress(val)) == nil {
+		val = k.GetValidatorAddressFromDelegate(ctx, val)
+		if val == nil {
+			return nil, fmt.Errorf("not a validator")
+		}
 	}
 	return k.GetOracleDataVote(ctx, val), nil
 }
@@ -47,4 +60,37 @@ func (k Keeper) OracleData(c context.Context, req *types.QueryOracleDataRequest)
 		return nil, err
 	}
 	return &types.QueryOracleDataResponse{OracleData: oda}, nil
+}
+
+// QueryParams implements QueryServer
+func (k Keeper) QueryParams(c context.Context, req *types.QueryParamsRequest) (*types.QueryParamsResponse, error) {
+	return &types.QueryParamsResponse{Params: k.GetParamSet(sdk.UnwrapSDKContext(c))}, nil
+
+}
+
+// QueryVotePeriod implements QueryServer
+func (k Keeper) QueryVotePeriod(c context.Context, req *types.QueryVotePeriodRequest) (*types.QueryVotePeriodResponse, error) {
+	ctx := sdk.UnwrapSDKContext(c)
+	vps := k.GetVotePeriodStart(ctx)
+	return &types.QueryVotePeriodResponse{
+		VotePeriodStart: vps,
+		VotePeriodEnd:   vps + k.GetParamSet(ctx).VotePeriod,
+		CurrentHeight:   ctx.BlockHeight(),
+	}, nil
+}
+
+// QueryMissCounter implements QueryServer
+func (k Keeper) QueryMissCounter(c context.Context, req *types.QueryMissCounterRequest) (*types.QueryMissCounterResponse, error) {
+	ctx := sdk.UnwrapSDKContext(c)
+	val, err := sdk.AccAddressFromBech32(req.Validator)
+	if err != nil {
+		return nil, err
+	}
+	if k.StakingKeeper.Validator(ctx, sdk.ValAddress(val)) == nil {
+		val = k.GetValidatorAddressFromDelegate(ctx, val)
+		if val == nil {
+			return nil, fmt.Errorf("not a validator")
+		}
+	}
+	return &types.QueryMissCounterResponse{MissCounter: k.GetMissCounter(ctx, val)}, nil
 }

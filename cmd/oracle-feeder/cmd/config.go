@@ -5,7 +5,6 @@ import (
 	"io/ioutil"
 	"os"
 	"path"
-	"strings"
 
 	"github.com/machinebox/graphql"
 	"github.com/spf13/cobra"
@@ -34,9 +33,6 @@ func configShowCmd() *cobra.Command {
 		Use:     "show",
 		Aliases: []string{"s", "list", "l"},
 		Short:   "Prints current configuration",
-		Example: strings.TrimSpace(fmt.Sprintf(`
-$ %s config show --home %s
-$ %s cfg list`, AppName, FeederHome, AppName)),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			cfgPath := path.Join(FeederHome, "config.yaml")
 			if _, err := os.Stat(cfgPath); os.IsNotExist(err) {
@@ -65,9 +61,6 @@ func configInitCmd() *cobra.Command {
 		Use:     "init",
 		Aliases: []string{"i"},
 		Short:   "Creates a default home directory at path defined by --home",
-		Example: strings.TrimSpace(fmt.Sprintf(`
-$ %s config init --home %s
-$ %s cfg i`, AppName, FeederHome, AppName)),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			cfgPath := path.Join(FeederHome, "config.yaml")
 

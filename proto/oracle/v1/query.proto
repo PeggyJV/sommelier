@@ -3,6 +3,7 @@ package oracle.v1;
 
 import "gogoproto/gogo.proto";
 import "oracle/v1/oracle.proto";
+import "oracle/v1/genesis.proto";
 import "oracle/v1/tx.proto";
 import "google/api/annotations.proto";
 import "cosmos/base/v1beta1/coin.proto";
@@ -12,10 +13,34 @@ import "google/protobuf/any.proto";
 option go_package = "github.com/peggyjv/sommelier/x/oracle/types";
 
 service Query {
+    rpc QueryParams(QueryParamsRequest) returns (QueryParamsResponse) {}
     rpc QueryDelegeateAddress(QueryDelegeateAddressRequest) returns (QueryDelegeateAddressResponse) {}
     rpc QueryOracleDataPrevote(QueryOracleDataPrevoteRequest) returns (QueryOracleDataPrevoteResponse) {}
     rpc QueryOracleDataVote(QueryOracleDataVoteRequest) returns (MsgOracleDataVote) {}
+    rpc QueryVotePeriod(QueryVotePeriodRequest) returns (QueryVotePeriodResponse) {}
+    rpc QueryMissCounter(QueryMissCounterRequest) returns (QueryMissCounterResponse) {}
     rpc OracleData(QueryOracleDataRequest) returns (QueryOracleDataResponse) {}
+}
+
+message QueryParamsRequest {}
+message QueryParamsResponse {
+    Params params = 1 [
+        (gogoproto.nullable) = false
+    ];
+}
+
+message QueryVotePeriodRequest {}
+message QueryVotePeriodResponse {
+    int64 current_height    = 1;
+    int64 vote_period_start = 2;
+    int64 vote_period_end   = 3; 
+}
+
+message QueryMissCounterRequest {
+    string validator = 1;
+}
+message QueryMissCounterResponse {
+    int64 miss_counter = 1;
 }
 
 message QueryDelegeateAddressRequest {

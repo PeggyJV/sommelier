@@ -27,11 +27,17 @@
 - [oracle/v1/query.proto](#oracle/v1/query.proto)
     - [QueryDelegeateAddressRequest](#oracle.v1.QueryDelegeateAddressRequest)
     - [QueryDelegeateAddressResponse](#oracle.v1.QueryDelegeateAddressResponse)
+    - [QueryMissCounterRequest](#oracle.v1.QueryMissCounterRequest)
+    - [QueryMissCounterResponse](#oracle.v1.QueryMissCounterResponse)
     - [QueryOracleDataPrevoteRequest](#oracle.v1.QueryOracleDataPrevoteRequest)
     - [QueryOracleDataPrevoteResponse](#oracle.v1.QueryOracleDataPrevoteResponse)
     - [QueryOracleDataRequest](#oracle.v1.QueryOracleDataRequest)
     - [QueryOracleDataResponse](#oracle.v1.QueryOracleDataResponse)
     - [QueryOracleDataVoteRequest](#oracle.v1.QueryOracleDataVoteRequest)
+    - [QueryParamsRequest](#oracle.v1.QueryParamsRequest)
+    - [QueryParamsResponse](#oracle.v1.QueryParamsResponse)
+    - [QueryVotePeriodRequest](#oracle.v1.QueryVotePeriodRequest)
+    - [QueryVotePeriodResponse](#oracle.v1.QueryVotePeriodResponse)
   
     - [Query](#oracle.v1.Query)
   
@@ -230,7 +236,6 @@ MsgService defines the msgs that the oracle module handles.
 
 ### GenesisState
 GenesisState - all oracle state that must be provided at genesis
-GenesisState - all oracle state that must be provided at genesis
 
 
 | Field | Type | Label | Description |
@@ -264,6 +269,16 @@ MissCounter stores the validator address and the number of associated misses
 
 ### Params
 Params oracle parameters
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `vote_period` | [int64](#int64) |  | VotePeriod defines the number of blocks to wait for votes before attempting to tally |
+| `vote_threshold` | [string](#string) |  | VoteThreshold defines the percentage of bonded stake required to vote each period |
+| `slash_window` | [int64](#int64) |  | SlashWindow defines the number of blocks for the slashing window |
+| `min_valid_per_window` | [string](#string) |  | MinValidPerWindow defines the number of misses a validator is allowed during each SlashWindow |
+| `slash_fraction` | [string](#string) |  | SlashFraction defines the percentage of slash that a validator will suffer if it fails to send a vote |
+| `data_types` | [string](#string) | repeated | DataTypes defines which data types validators must submit each voting period |
 
 
 
@@ -310,6 +325,36 @@ Params oracle parameters
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | `delegate` | [string](#string) |  |  |
+
+
+
+
+
+
+<a name="oracle.v1.QueryMissCounterRequest"></a>
+
+### QueryMissCounterRequest
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `validator` | [string](#string) |  |  |
+
+
+
+
+
+
+<a name="oracle.v1.QueryMissCounterResponse"></a>
+
+### QueryMissCounterResponse
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `miss_counter` | [int64](#int64) |  |  |
 
 
 
@@ -390,6 +435,58 @@ Params oracle parameters
 
 
 
+
+<a name="oracle.v1.QueryParamsRequest"></a>
+
+### QueryParamsRequest
+
+
+
+
+
+
+
+<a name="oracle.v1.QueryParamsResponse"></a>
+
+### QueryParamsResponse
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `params` | [Params](#oracle.v1.Params) |  |  |
+
+
+
+
+
+
+<a name="oracle.v1.QueryVotePeriodRequest"></a>
+
+### QueryVotePeriodRequest
+
+
+
+
+
+
+
+<a name="oracle.v1.QueryVotePeriodResponse"></a>
+
+### QueryVotePeriodResponse
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `current_height` | [int64](#int64) |  |  |
+| `vote_period_start` | [int64](#int64) |  |  |
+| `vote_period_end` | [int64](#int64) |  |  |
+
+
+
+
+
  <!-- end messages -->
 
  <!-- end enums -->
@@ -404,9 +501,12 @@ Params oracle parameters
 
 | Method Name | Request Type | Response Type | Description | HTTP Verb | Endpoint |
 | ----------- | ------------ | ------------- | ------------| ------- | -------- |
+| `QueryParams` | [QueryParamsRequest](#oracle.v1.QueryParamsRequest) | [QueryParamsResponse](#oracle.v1.QueryParamsResponse) |  | |
 | `QueryDelegeateAddress` | [QueryDelegeateAddressRequest](#oracle.v1.QueryDelegeateAddressRequest) | [QueryDelegeateAddressResponse](#oracle.v1.QueryDelegeateAddressResponse) |  | |
 | `QueryOracleDataPrevote` | [QueryOracleDataPrevoteRequest](#oracle.v1.QueryOracleDataPrevoteRequest) | [QueryOracleDataPrevoteResponse](#oracle.v1.QueryOracleDataPrevoteResponse) |  | |
 | `QueryOracleDataVote` | [QueryOracleDataVoteRequest](#oracle.v1.QueryOracleDataVoteRequest) | [MsgOracleDataVote](#oracle.v1.MsgOracleDataVote) |  | |
+| `QueryVotePeriod` | [QueryVotePeriodRequest](#oracle.v1.QueryVotePeriodRequest) | [QueryVotePeriodResponse](#oracle.v1.QueryVotePeriodResponse) |  | |
+| `QueryMissCounter` | [QueryMissCounterRequest](#oracle.v1.QueryMissCounterRequest) | [QueryMissCounterResponse](#oracle.v1.QueryMissCounterResponse) |  | |
 | `OracleData` | [QueryOracleDataRequest](#oracle.v1.QueryOracleDataRequest) | [QueryOracleDataResponse](#oracle.v1.QueryOracleDataResponse) |  | |
 
  <!-- end services -->

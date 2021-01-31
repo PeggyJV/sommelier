@@ -2,9 +2,9 @@ package types
 
 import (
 	"crypto/sha256"
+	"encoding/json"
 	fmt "fmt"
 
-	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
@@ -20,7 +20,7 @@ var (
 
 // OracleData represents a data type that is supported by the oracle
 type OracleData interface {
-	CannonicalJSON(cdc codec.JSONMarshaler) string
+	CannonicalJSON() string
 	ValidateBasic() error
 	ValidateGroup([]OracleData) error
 	Type() string
@@ -37,13 +37,12 @@ func DataHash(salt string, jsn string, signer sdk.AccAddress) []byte {
 }
 
 // CannonicalJSON implements OracleData
-func (ud *UniswapData) CannonicalJSON(cdc codec.JSONMarshaler) string {
-	// TODO: do we need to sort here?
-	bz, err := cdc.MarshalJSON(ud)
+func (ud *UniswapData) CannonicalJSON() string {
+	bz, err := json.Marshal(ud)
 	if err != nil {
 		panic(err)
 	}
-	return string(bz)
+	return string(sdk.MustSortJSON(bz))
 }
 
 // ValidateBasic implements OracleData
