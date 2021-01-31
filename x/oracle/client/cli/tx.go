@@ -1,7 +1,12 @@
 package cli
 
 import (
+	"fmt"
+
 	"github.com/cosmos/cosmos-sdk/client"
+	"github.com/cosmos/cosmos-sdk/client/tx"
+	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/peggyjv/sommelier/x/oracle/types"
 
 	"github.com/spf13/cobra"
 )
@@ -16,9 +21,35 @@ func GetTxCmd() *cobra.Command {
 		RunE:                       client.ValidateCmd,
 	}
 
-	// oracleTxCmd.AddCommand([]*cobra.Command{
-	// 	GetCmdDelegateFeederPermission(),
-	// }...)
+	oracleTxCmd.AddCommand([]*cobra.Command{
+		txDelegateFeedPermission(),
+	}...)
 
 	return oracleTxCmd
+}
+
+func txDelegateFeedPermission() *cobra.Command {
+	return &cobra.Command{
+		Use:  "delegate-feeder [address]",
+		Args: cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			ctx, err := client.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			del, err := sdk.AccAddressFromBech32(args[0])
+			if err != nil {
+				return err
+			}
+
+			msg := types.NewMsgDelegateFeedConsent(ctx.GetFromAddress(), del)
+			if err = msg.ValidateBasic(); err != nil {
+				return fmt.Errorf("message validation failed: %w", err)
+			}
+
+			return tx.GenerateOrBroadcastTxCLI(ctx, cmd.Flags(), msg)
+
+		},
+	}
 }

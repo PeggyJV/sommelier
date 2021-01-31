@@ -7,7 +7,7 @@ require (
 	github.com/Masterminds/semver v1.5.0 // indirect
 	github.com/Masterminds/sprig v2.22.0+incompatible // indirect
 	github.com/aokoli/goutils v1.1.0 // indirect
-	github.com/cosmos/cosmos-sdk v0.40.0-rc7
+	github.com/cosmos/cosmos-sdk v0.40.0
 	github.com/cosmos/go-bip39 v1.0.0
 	github.com/cosmos/relayer v0.6.1
 	github.com/envoyproxy/protoc-gen-validate v0.4.1 // indirect
