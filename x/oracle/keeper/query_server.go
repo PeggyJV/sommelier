@@ -20,6 +20,16 @@ func (k Keeper) QueryDelegeateAddress(c context.Context, req *types.QueryDelegea
 	return &types.QueryDelegeateAddressResponse{Delegate: k.GetDelegateAddressFromValidator(ctx, val).String()}, nil
 }
 
+// QueryValidatorAddress implements QueryServer
+func (k Keeper) QueryValidatorAddress(c context.Context, req *types.QueryValidatorAddressRequest) (*types.QueryValidatorAddressResponse, error) {
+	ctx := sdk.UnwrapSDKContext(c)
+	del, err := sdk.AccAddressFromBech32(req.Delegate)
+	if err != nil {
+		return nil, err
+	}
+	return &types.QueryValidatorAddressResponse{Validator: k.GetValidatorAddressFromDelegate(ctx, del).String()}, nil
+}
+
 // QueryOracleDataPrevote implements QueryServer
 func (k Keeper) QueryOracleDataPrevote(c context.Context, req *types.QueryOracleDataPrevoteRequest) (*types.QueryOracleDataPrevoteResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)

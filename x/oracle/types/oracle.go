@@ -23,6 +23,7 @@ type OracleData interface {
 	CannonicalJSON() string
 	ValidateBasic() error
 	ValidateGroup([]OracleData) error
+	Valid(OracleData) bool
 	Type() string
 
 	// TODO: figure out if we need a sorting function here
@@ -34,6 +35,35 @@ func DataHash(salt string, jsn string, signer sdk.AccAddress) []byte {
 	h := sha256.New()
 	h.Write([]byte(fmt.Sprintf("%s:%s:%s", salt, jsn, signer.String())))
 	return h.Sum(nil)
+}
+
+// GetAverageFunction registers the collection functions for each of the data types
+func GetAverageFunction(typ string) func([]OracleData) OracleData {
+	switch typ {
+	case UniswapDataType:
+		return UniswapDataCollection
+	default:
+		return nil
+	}
+}
+
+// UniswapDataCollection averages a collection of uniswap data
+func UniswapDataCollection(uds []OracleData) OracleData {
+	// TODO: for now just return the first instance
+	return uds[0]
+}
+
+// Valid uses a cannonical UniswapData instance to validate instances passed in
+func (ud *UniswapData) Valid(ud1 OracleData) bool {
+	v, ok := ud1.(*UniswapData)
+	if !ok {
+		return false
+	}
+	if len(v.Pairs) != len(ud.Pairs) {
+		return false
+	}
+	// TODO: validate more things here
+	return true
 }
 
 // CannonicalJSON implements OracleData

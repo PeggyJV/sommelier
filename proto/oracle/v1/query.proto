@@ -15,11 +15,19 @@ option go_package = "github.com/peggyjv/sommelier/x/oracle/types";
 service Query {
     rpc QueryParams(QueryParamsRequest) returns (QueryParamsResponse) {}
     rpc QueryDelegeateAddress(QueryDelegeateAddressRequest) returns (QueryDelegeateAddressResponse) {}
+    rpc QueryValidatorAddress(QueryValidatorAddressRequest) returns (QueryValidatorAddressResponse) {}
     rpc QueryOracleDataPrevote(QueryOracleDataPrevoteRequest) returns (QueryOracleDataPrevoteResponse) {}
     rpc QueryOracleDataVote(QueryOracleDataVoteRequest) returns (MsgOracleDataVote) {}
     rpc QueryVotePeriod(QueryVotePeriodRequest) returns (QueryVotePeriodResponse) {}
     rpc QueryMissCounter(QueryMissCounterRequest) returns (QueryMissCounterResponse) {}
     rpc OracleData(QueryOracleDataRequest) returns (QueryOracleDataResponse) {}
+}
+
+message QueryValidatorAddressRequest {
+    string delegate = 1;
+}
+message QueryValidatorAddressResponse {
+    string validator = 1;
 }
 
 message QueryParamsRequest {}
