@@ -96,3 +96,8 @@ func (ud *UniswapData) ValidateGroup(unds []OracleData) error {
 func (ud *UniswapData) Type() string {
 	return UniswapDataType
 }
+
+// BlocksTillNextPeriod helper
+func (vp *QueryVotePeriodResponse) BlocksTillNextPeriod() int64 {
+	return vp.VotePeriodEnd - vp.CurrentHeight
+}

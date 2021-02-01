@@ -27,10 +27,10 @@ func NewKeeper(
 	stakingKeeper types.StakingKeeper,
 ) Keeper {
 
-	// // set KeyTable if it has not already been set
-	// if !paramSpace.HasKeyTable() {
-	// 	paramSpace = paramSpace.WithKeyTable(types.ParamKeyTable())
-	// }
+	// set KeyTable if it has not already been set
+	if !paramSpace.HasKeyTable() {
+		paramSpace = paramSpace.WithKeyTable(types.ParamKeyTable())
+	}
 
 	return Keeper{
 		StakingKeeper: stakingKeeper,
@@ -80,7 +80,7 @@ func (k Keeper) IsDelegateAddress(ctx sdk.Context, del sdk.AccAddress) bool {
 // IterateDelegateAddresses iterates over all delegate address pairs in the store
 func (k Keeper) IterateDelegateAddresses(ctx sdk.Context, handler func(del, val sdk.AccAddress) (stop bool)) {
 	store := ctx.KVStore(k.storeKey)
-	iter := sdk.KVStorePrefixIterator(store, types.OracleDataPrevoteKeyPrefix)
+	iter := sdk.KVStorePrefixIterator(store, types.FeedDelegateKeyPrefix)
 	defer iter.Close()
 	for ; iter.Valid(); iter.Next() {
 		del := sdk.AccAddress(iter.Key())
@@ -165,7 +165,7 @@ func (k Keeper) HasOracleDataVote(ctx sdk.Context, val sdk.AccAddress) bool {
 // IterateOracleDataVotes iterates over all votes in the store
 func (k Keeper) IterateOracleDataVotes(ctx sdk.Context, handler func(val sdk.AccAddress, vote *types.MsgOracleDataVote) (stop bool)) {
 	store := ctx.KVStore(k.storeKey)
-	iter := sdk.KVStorePrefixIterator(store, types.OracleDataPrevoteKeyPrefix)
+	iter := sdk.KVStorePrefixIterator(store, types.OracleDataVoteKeyPrefix)
 	defer iter.Close()
 	for ; iter.Valid(); iter.Next() {
 		var vote *types.MsgOracleDataVote
@@ -290,4 +290,9 @@ func (k Keeper) GetParamSet(ctx sdk.Context) types.Params {
 	var p types.Params
 	k.paramSpace.GetParamSet(ctx, &p)
 	return p
+}
+
+// SetParams sets the parameters in the store
+func (k Keeper) SetParams(ctx sdk.Context, params types.Params) {
+	k.paramSpace.SetParamSet(ctx, &params)
 }
