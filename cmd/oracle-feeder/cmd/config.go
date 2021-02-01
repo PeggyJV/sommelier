@@ -6,6 +6,7 @@ import (
 	"os"
 	"path"
 
+	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/machinebox/graphql"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -106,9 +107,11 @@ type Config struct {
 	ChainGRPC       string `yaml:"chain-grpc" json:"chain-grpc"`
 	ChainRPC        string `yaml:"chain-rpc" json:"chain-rpc"`
 	ChainID         string `yaml:"chain-id" json:"chain-id"`
+	GasPrices       string `yaml:"gas-prices" json:"gas-prices"`
 
 	graphClient *graphql.Client
 	grpcConn    *grpc.ClientConn
+	gasPrices   sdk.DecCoin
 }
 
 // initConfig reads in config file and ENV variables if set.
@@ -143,6 +146,11 @@ func initConfig(cmd *cobra.Command) error {
 
 func validateConfig(c *Config) error {
 	c.graphClient = graphql.NewClient(c.UniswapSubgraph)
+	coin, err := sdk.ParseDecCoin(c.GasPrices)
+	if err != nil {
+		return err
+	}
+	c.gasPrices = coin
 	return nil
 }
 
@@ -153,6 +161,7 @@ func defaultConfig() []byte {
 		ChainRPC:        "http://localhost:26657",
 		ChainID:         "sommelier-test",
 		SigningKey:      "feeder-key",
+		GasPrices:       "0.025stake",
 	}.MustYAML()
 }
 

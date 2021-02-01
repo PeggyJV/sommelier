@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/cosmos/cosmos-sdk/client"
+	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/client/tx"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/peggyjv/sommelier/x/oracle/types"
@@ -21,15 +22,15 @@ func GetTxCmd() *cobra.Command {
 		RunE:                       client.ValidateCmd,
 	}
 
-	oracleTxCmd.AddCommand([]*cobra.Command{
+	oracleTxCmd.AddCommand(
 		txDelegateFeedPermission(),
-	}...)
+	)
 
 	return oracleTxCmd
 }
 
 func txDelegateFeedPermission() *cobra.Command {
-	return &cobra.Command{
+	cmd := &cobra.Command{
 		Use:  "delegate-feeder [address]",
 		Args: cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -52,4 +53,6 @@ func txDelegateFeedPermission() *cobra.Command {
 
 		},
 	}
+	flags.AddTxFlagsToCmd(cmd)
+	return cmd
 }

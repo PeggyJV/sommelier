@@ -9,12 +9,12 @@ import (
 
 // Parameter keys
 var (
-	PSKVotePeriod        = []byte("VotePeriod")
-	PSKVoteThreshold     = []byte("VoteThreshold")
-	PSKSlashWindow       = []byte("SlashWindow")
-	PSKMinValidPerWindow = []byte("MinValidPerWindow")
-	PSKSlashFraction     = []byte("SlashFraction")
-	PSKDataTypes         = []byte("DataTypes")
+	PSKVotePeriod        = []byte("voteperiod")
+	PSKVoteThreshold     = []byte("votethreshold")
+	PSKSlashWindow       = []byte("slashwindow")
+	PSKMinValidPerWindow = []byte("minvalidperwindow")
+	PSKSlashFraction     = []byte("slashfraction")
+	PSKDataTypes         = []byte("datatypes")
 )
 
 // ParamKeyTable returns the parameter key table.
@@ -47,7 +47,7 @@ func (p *Params) ParamSetPairs() paramtypes.ParamSetPairs {
 }
 
 // ValidateBasic performs basic validation on distribution parameters.
-func (p Params) ValidateBasic() error {
+func (p *Params) ValidateBasic() error {
 	if p.VotePeriod < 4 || p.VotePeriod > 10 {
 		return fmt.Errorf(
 			"vote period should be between 4 and 10 blocks: %d", p.VotePeriod,
