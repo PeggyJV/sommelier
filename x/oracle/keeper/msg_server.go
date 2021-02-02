@@ -95,7 +95,6 @@ func (k msgServer) OracleDataPrevote(c context.Context, msg *types.MsgOracleData
 
 // OracleDataVote implements types.MsgServer
 func (k msgServer) OracleDataVote(c context.Context, msg *types.MsgOracleDataVote) (*types.MsgOracleDataVoteResponse, error) {
-	fmt.Println("Handling oracle data vote")
 	ctx := sdk.UnwrapSDKContext(c)
 	if err := msg.ValidateBasic(); err != nil {
 		return nil, sdkerrors.Wrap(err, "validate basic failed")
@@ -111,17 +110,14 @@ func (k msgServer) OracleDataVote(c context.Context, msg *types.MsgOracleDataVot
 		}
 		valaddr = sdk.AccAddress(sval.GetOperator())
 	}
-	fmt.Println("Passsed signer stanza")
 
 	// Get the prevote for that validator from the store
 	hashes := k.GetOracleDataPrevote(ctx, valaddr)
-	fmt.Println("Got prevote")
 
 	// check that there is a prevote
 	if hashes == nil || len(hashes) == 0 {
 		return nil, sdkerrors.Wrap(types.ErrNoPrevote, valaddr.String())
 	}
-	fmt.Println("Got hash hashes")
 
 	// ensure that the right number of data is in the msg
 	if len(hashes) != len(msg.OracleData) {
