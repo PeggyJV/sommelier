@@ -1,6 +1,8 @@
 package types
 
 import (
+	fmt "fmt"
+
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
@@ -16,10 +18,12 @@ func RegisterInterfaces(registry codectypes.InterfaceRegistry) {
 		&MsgOracleDataPrevote{},
 		&MsgOracleDataVote{},
 	)
-	registry.RegisterImplementations(
+	registry.RegisterInterface(
+		"oracle.v1.OracleData",
 		(*OracleData)(nil),
 		&UniswapData{},
 	)
+
 	msgservice.RegisterMsgServiceDesc(registry, &_Msg_serviceDesc)
 }
 
@@ -49,6 +53,7 @@ func UnpackOracleData(any *codectypes.Any) (OracleData, error) {
 
 	oracleData, ok := any.GetCachedValue().(OracleData)
 	if !ok {
+		fmt.Println("FAILING IN GET CACHE VALUE")
 		return nil, sdkerrors.Wrapf(sdkerrors.ErrUnpackAny, "cannot Unpack Any into OracleData %T", any)
 	}
 
