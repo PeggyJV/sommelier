@@ -35,12 +35,13 @@ func init() {
 // NewRootCmd creates a new root command for simd. It is called once in the
 // main function.
 func NewRootCmd() (*cobra.Command, params.EncodingConfig) {
-	
+
 	encodingConfig := app.MakeEncodingConfig()
 	keyring, err := kr.New(AppName, "test", FeederHome, os.Stdin)
 	if err != nil {
 		panic(err)
 	}
+
 	initClientCtx := client.Context{}.
 		WithJSONMarshaler(encodingConfig.Marshaler).
 		WithInterfaceRegistry(encodingConfig.InterfaceRegistry).
@@ -50,7 +51,8 @@ func NewRootCmd() (*cobra.Command, params.EncodingConfig) {
 		WithAccountRetriever(authtypes.AccountRetriever{}).
 		WithBroadcastMode(flags.BroadcastBlock).
 		WithHomeDir(FeederHome).
-		WithKeyring(keyring)
+		WithKeyring(keyring).
+		WithSkipConfirmation(true)
 
 	rootCmd := &cobra.Command{
 		Use:   AppName,
@@ -63,6 +65,8 @@ func NewRootCmd() (*cobra.Command, params.EncodingConfig) {
 		},
 	}
 
+	rootCmd.SilenceUsage = true
+
 	authclient.Codec = encodingConfig.Marshaler
 
 	// add keybase, auxiliary RPC, query, and tx child commands
@@ -70,6 +74,7 @@ func NewRootCmd() (*cobra.Command, params.EncodingConfig) {
 		keysCmd(),
 		configCmd(),
 		queryCmd(),
+		startOracleFeederCmd(),
 	)
 
 	return rootCmd, encodingConfig

@@ -1,15 +1,20 @@
 package cmd
 
 import (
+	"context"
 	"fmt"
 	"io/ioutil"
 	"os"
 	"path"
+	"time"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/machinebox/graphql"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
+	rpchttp "github.com/tendermint/tendermint/rpc/client/http"
+	ctypes "github.com/tendermint/tendermint/rpc/core/types"
+	libclient "github.com/tendermint/tendermint/rpc/jsonrpc/client"
 	"google.golang.org/grpc"
 	"gopkg.in/yaml.v2"
 )
@@ -159,8 +164,8 @@ func defaultConfig() []byte {
 		UniswapSubgraph: "https://api.thegraph.com/subgraphs/name/uniswap/uniswap-v2",
 		ChainGRPC:       "http://localhost:9090",
 		ChainRPC:        "http://localhost:26657",
-		ChainID:         "sommelier-test",
-		SigningKey:      "feeder-key",
+		ChainID:         "somm",
+		SigningKey:      "feeder",
 		GasPrices:       "0.025stake",
 	}.MustYAML()
 }
@@ -173,4 +178,21 @@ func (c Config) MustYAML() []byte {
 	}
 	fmt.Println(string(out))
 	return out
+}
+
+// Subscribe returns channel of events from the sommlier chain given a query (TX or BLOCK)
+func (c Config) Subscribe(ctx context.Context, clnt *rpchttp.HTTP, query string) (<-chan ctypes.ResultEvent, context.CancelFunc, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	ch, err := clnt.Subscribe(ctx, fmt.Sprintf("feeder-%s", genrandstr(8)), query, 1000)
+	return ch, cancel, err
+}
+
+// NewRPCClient returns a new instance of the tendermint RPC client
+func (c Config) NewRPCClient(timeout time.Duration) (*rpchttp.HTTP, error) {
+	httpClient, err := libclient.DefaultHTTPClient(c.ChainRPC)
+	if err != nil {
+		return nil, err
+	}
+	httpClient.Timeout = timeout
+	return rpchttp.NewWithClient(c.ChainRPC, "/websocket", httpClient)
 }

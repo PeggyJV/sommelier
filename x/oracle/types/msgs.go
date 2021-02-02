@@ -1,6 +1,9 @@
 package types
 
 import (
+	fmt "fmt"
+
+	cdctypes "github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
@@ -88,12 +91,6 @@ func (m *MsgOracleDataPrevote) Type() string { return TypeMsgOracleDataPrevote }
 
 // ValidateBasic implements sdk.Msg
 func (m *MsgOracleDataPrevote) ValidateBasic() error {
-	for _, h := range m.Hashes {
-		if len(h) != 64 {
-			return ErrInvalidHash
-		}
-	}
-
 	if _, err := sdk.AccAddressFromBech32(m.Signer); err != nil {
 		return sdkerrors.ErrInvalidAddress
 	}
@@ -121,6 +118,15 @@ func (m *MsgOracleDataPrevote) MustGetSigner() sdk.AccAddress {
 // MsgOracleDataVote //
 ///////////////////////
 
+// NewMsgOracleDataVote return a new MsgOracleDataPrevote
+func NewMsgOracleDataVote(salt []string, data []*cdctypes.Any, signer sdk.AccAddress) *MsgOracleDataVote {
+	return &MsgOracleDataVote{
+		Salt:       salt,
+		OracleData: data,
+		Signer:     signer.String(),
+	}
+}
+
 // Route implements sdk.Msg
 func (m *MsgOracleDataVote) Route() string { return ModuleName }
 
@@ -135,9 +141,11 @@ func (m *MsgOracleDataVote) ValidateBasic() error {
 	for _, a := range m.OracleData {
 		od, err := UnpackOracleData(a)
 		if err != nil {
+			fmt.Println("Failed to unpack")
 			return ErrInvalidOracleData
 		}
 		if err = od.ValidateBasic(); err != nil {
+			fmt.Println("failed to validate")
 			return ErrInvalidOracleData
 		}
 	}

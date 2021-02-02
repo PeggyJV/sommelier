@@ -78,8 +78,13 @@ func (k msgServer) OracleDataPrevote(c context.Context, msg *types.MsgOracleData
 		sdk.NewEvent(
 			sdk.EventTypeMessage,
 			sdk.NewAttribute(sdk.AttributeKeyModule, types.AttributeValueCategory),
-			sdk.NewAttribute(sdk.AttributeKeyAction, types.EventTypeOracleDataPrevote),
-			sdk.NewAttribute(sdk.AttributeKeySender, msg.Signer),
+		),
+	)
+
+	ctx.EventManager().EmitEvent(
+		sdk.NewEvent(
+			types.EventTypeOracleDataPrevote,
+			sdk.NewAttribute(types.AttributeKeySigner, signer.String()),
 			sdk.NewAttribute(types.AttributeKeyValidator, valaddr.String()),
 			sdk.NewAttribute(types.AttributeKeyHashes, fmt.Sprintf("%x", bytes.Join(msg.Hashes, []byte(",")))),
 		),
@@ -90,6 +95,7 @@ func (k msgServer) OracleDataPrevote(c context.Context, msg *types.MsgOracleData
 
 // OracleDataVote implements types.MsgServer
 func (k msgServer) OracleDataVote(c context.Context, msg *types.MsgOracleDataVote) (*types.MsgOracleDataVoteResponse, error) {
+	fmt.Println("Handling oracle data vote")
 	ctx := sdk.UnwrapSDKContext(c)
 	if err := msg.ValidateBasic(); err != nil {
 		return nil, sdkerrors.Wrap(err, "validate basic failed")
@@ -105,14 +111,17 @@ func (k msgServer) OracleDataVote(c context.Context, msg *types.MsgOracleDataVot
 		}
 		valaddr = sdk.AccAddress(sval.GetOperator())
 	}
+	fmt.Println("Passsed signer stanza")
 
 	// Get the prevote for that validator from the store
 	hashes := k.GetOracleDataPrevote(ctx, valaddr)
+	fmt.Println("Got prevote")
 
 	// check that there is a prevote
 	if hashes == nil || len(hashes) == 0 {
 		return nil, sdkerrors.Wrap(types.ErrNoPrevote, valaddr.String())
 	}
+	fmt.Println("Got hash hashes")
 
 	// ensure that the right number of data is in the msg
 	if len(hashes) != len(msg.OracleData) {
@@ -121,6 +130,7 @@ func (k msgServer) OracleDataVote(c context.Context, msg *types.MsgOracleDataVot
 			fmt.Sprintf("oracle data exp(%d) got(%d)", len(hashes), len(msg.OracleData)),
 		)
 	}
+	fmt.Println("Right number")
 
 	// ensure that the right number of salts is in the msg
 	if len(hashes) != len(msg.Salt) {
@@ -130,6 +140,7 @@ func (k msgServer) OracleDataVote(c context.Context, msg *types.MsgOracleDataVot
 		)
 	}
 
+	fmt.Println("Has salt, right number")
 	// validate the hashes
 	got := []string{}
 	for i := range msg.OracleData {
@@ -147,6 +158,7 @@ func (k msgServer) OracleDataVote(c context.Context, msg *types.MsgOracleDataVot
 		}
 		got = append(got, od.Type())
 	}
+	fmt.Println("Hashes correct")
 
 	// ensure that the right number of data types have been submitted
 	exp := k.GetParamSet(ctx).DataTypes
@@ -156,6 +168,7 @@ func (k msgServer) OracleDataVote(c context.Context, msg *types.MsgOracleDataVot
 			fmt.Sprintf("oracle data types exp(%d) got(%d)", len(exp), len(got)),
 		)
 	}
+	fmt.Println("datatypes correct")
 
 	// ensure that all of the right data types have been submitted
 	sort.Strings(exp)
@@ -168,9 +181,11 @@ func (k msgServer) OracleDataVote(c context.Context, msg *types.MsgOracleDataVot
 			)
 		}
 	}
+	fmt.Println("datatypes submitted")
 
 	// set the vote in the store
 	k.SetOracleDataVote(ctx, valaddr, msg)
+	fmt.Println("vote set")
 
 	ctx.EventManager().EmitEvent(
 		sdk.NewEvent(

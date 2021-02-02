@@ -217,9 +217,18 @@ func (k Keeper) HasOracleData(ctx sdk.Context, typ string) bool {
 
 // SetVotePeriodStart sets the vote period start height
 func (k Keeper) SetVotePeriodStart(ctx sdk.Context, h int64) {
+	// p := k.GetParamSet(ctx)
 	bz := make([]byte, 8)
 	binary.BigEndian.PutUint64(bz, uint64(h))
 	ctx.KVStore(k.storeKey).Set(types.VotePeriodStartKey, bz)
+	// ctx.EventManager().EmitEvent(
+	// 	sdk.NewEvent(
+	// 		sdk.EventTypeMessage,
+	// 		sdk.NewAttribute(types.AttributeKeyVotePeriodStart, fmt.Sprintf("%d", ctx.BlockHeight())),
+	// 		sdk.NewAttribute(types.AttributeKeyVotePeriodEnd, fmt.Sprintf("%d", ctx.BlockHeight()+p.VotePeriod)),
+	// 	),
+	// )
+
 }
 
 // GetVotePeriodStart returns the vote period start height
