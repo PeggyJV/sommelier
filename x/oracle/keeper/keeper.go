@@ -83,7 +83,7 @@ func (k Keeper) IterateDelegateAddresses(ctx sdk.Context, handler func(del, val 
 	iter := sdk.KVStorePrefixIterator(store, types.FeedDelegateKeyPrefix)
 	defer iter.Close()
 	for ; iter.Valid(); iter.Next() {
-		del := sdk.AccAddress(iter.Key())
+		del := sdk.AccAddress(bytes.TrimPrefix(iter.Key(), types.FeedDelegateKeyPrefix))
 		val := sdk.AccAddress(iter.Value())
 		if handler(del, val) {
 			break
@@ -125,7 +125,7 @@ func (k Keeper) IterateOracleDataPrevotes(ctx sdk.Context, handler func(val sdk.
 	iter := sdk.KVStorePrefixIterator(store, types.OracleDataPrevoteKeyPrefix)
 	defer iter.Close()
 	for ; iter.Valid(); iter.Next() {
-		val := sdk.AccAddress(iter.Key())
+		val := sdk.AccAddress(bytes.TrimPrefix(iter.Key(), types.OracleDataPrevoteKeyPrefix))
 		hashes := bytes.Split(iter.Value(), []byte(","))
 		if handler(val, hashes) {
 			break
@@ -169,7 +169,7 @@ func (k Keeper) IterateOracleDataVotes(ctx sdk.Context, handler func(val sdk.Acc
 	defer iter.Close()
 	for ; iter.Valid(); iter.Next() {
 		var vote *types.MsgOracleDataVote
-		val := sdk.AccAddress(iter.Key())
+		val := sdk.AccAddress(bytes.TrimPrefix(iter.Key(), types.OracleDataVoteKeyPrefix))
 		k.cdc.MustUnmarshalBinaryBare(iter.Value(), vote)
 		if handler(val, vote) {
 			break
@@ -217,18 +217,9 @@ func (k Keeper) HasOracleData(ctx sdk.Context, typ string) bool {
 
 // SetVotePeriodStart sets the vote period start height
 func (k Keeper) SetVotePeriodStart(ctx sdk.Context, h int64) {
-	// p := k.GetParamSet(ctx)
 	bz := make([]byte, 8)
 	binary.BigEndian.PutUint64(bz, uint64(h))
 	ctx.KVStore(k.storeKey).Set(types.VotePeriodStartKey, bz)
-	// ctx.EventManager().EmitEvent(
-	// 	sdk.NewEvent(
-	// 		sdk.EventTypeMessage,
-	// 		sdk.NewAttribute(types.AttributeKeyVotePeriodStart, fmt.Sprintf("%d", ctx.BlockHeight())),
-	// 		sdk.NewAttribute(types.AttributeKeyVotePeriodEnd, fmt.Sprintf("%d", ctx.BlockHeight()+p.VotePeriod)),
-	// 	),
-	// )
-
 }
 
 // GetVotePeriodStart returns the vote period start height
@@ -283,7 +274,7 @@ func (k Keeper) IterateMissCounters(ctx sdk.Context, handler func(val sdk.AccAdd
 	defer iter.Close()
 	for ; iter.Valid(); iter.Next() {
 		count := binary.BigEndian.Uint64(iter.Value())
-		val := sdk.AccAddress(iter.Key())
+		val := sdk.AccAddress(bytes.TrimPrefix(iter.Key(), types.MissCounterKeyPrefix))
 		if handler(val, int64(count)) {
 			break
 		}

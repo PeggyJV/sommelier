@@ -36,16 +36,20 @@ func queryCmd() *cobra.Command {
 }
 
 func queryUniswapData() *cobra.Command {
-	return &cobra.Command{
+	cmd := &cobra.Command{
 		Use:     "uniswap-data",
 		Aliases: []string{"ud"},
 		Short:   "queries uniswap data for the transactions",
 		RunE: func(cmd *cobra.Command, args []string) error {
-			out, err := config.GetPairs(context.Background(), 100, 0)
+			n, err := cmd.Flags().GetInt("num-markets")
+			if err != nil {
+				return err
+			}
+			out, err := config.GetPairs(context.Background(), n, 0)
 			if err != nil {
 				log.Fatal(err)
 			}
-			bz, err := json.MarshalIndent(out, "", "  ")
+			bz, err := json.Marshal(out)
 			if err != nil {
 				log.Fatal(err)
 			}
@@ -53,6 +57,8 @@ func queryUniswapData() *cobra.Command {
 			return nil
 		},
 	}
+	cmd.Flags().IntP("num-markets", "n", 5, "number of markets to query")
+	return cmd
 }
 
 func queryParams() *cobra.Command {

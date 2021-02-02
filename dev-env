@@ -27,7 +27,7 @@ EOF
               sommelier gentx val 100000000000stake --keyring-backend test --chain-id somm > /dev/null 2>&1
               sommelier collect-gentxs > /dev/null 2>&1
               echo "starting sommelier..."
-              sommelier start --pruning nothing > ~/.sommelier/somm.log & 
+              sommelier start --pruning nothing --log_level warn > ~/.sommelier/somm.log 2>&1 &
               echo "waiting for chain start..."
               sleep 10 
               echo "delegating feed perms to oracle-feeder..."
