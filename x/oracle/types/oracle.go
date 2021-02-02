@@ -18,7 +18,6 @@ var (
 type OracleData interface {
 	CannonicalJSON() string
 	ValidateBasic() error
-	ValidateGroup([]OracleData) error
 	Valid(OracleData) bool
 	Type() string
 }
@@ -171,14 +170,6 @@ func (ud *UniswapData) ValidateBasic() error {
 	// 	return fmt.Errorf("Must input 1000 markets")
 	// }
 	// TODO: other basic validation
-	return nil
-}
-
-// ValidateGroup implements OracleData
-func (ud *UniswapData) ValidateGroup(unds []OracleData) error {
-	// TODO: Ensure that []OracleData is []UniswapData
-	// TODO: figure out what metrics an individual vote needs to hit
-	// in order to be considered valid
 	return nil
 }
 
