@@ -39,7 +39,7 @@
     - [QueryValidatorAddressRequest](#oracle.v1.QueryValidatorAddressRequest)
     - [QueryValidatorAddressResponse](#oracle.v1.QueryValidatorAddressResponse)
     - [QueryVotePeriodRequest](#oracle.v1.QueryVotePeriodRequest)
-    - [QueryVotePeriodResponse](#oracle.v1.QueryVotePeriodResponse)
+    - [VotePeriod](#oracle.v1.VotePeriod)
   
     - [Query](#oracle.v1.Query)
   
@@ -503,9 +503,9 @@ Params oracle parameters
 
 
 
-<a name="oracle.v1.QueryVotePeriodResponse"></a>
+<a name="oracle.v1.VotePeriod"></a>
 
-### QueryVotePeriodResponse
+### VotePeriod
 
 
 
@@ -538,7 +538,7 @@ Params oracle parameters
 | `QueryValidatorAddress` | [QueryValidatorAddressRequest](#oracle.v1.QueryValidatorAddressRequest) | [QueryValidatorAddressResponse](#oracle.v1.QueryValidatorAddressResponse) |  | |
 | `QueryOracleDataPrevote` | [QueryOracleDataPrevoteRequest](#oracle.v1.QueryOracleDataPrevoteRequest) | [QueryOracleDataPrevoteResponse](#oracle.v1.QueryOracleDataPrevoteResponse) |  | |
 | `QueryOracleDataVote` | [QueryOracleDataVoteRequest](#oracle.v1.QueryOracleDataVoteRequest) | [MsgOracleDataVote](#oracle.v1.MsgOracleDataVote) |  | |
-| `QueryVotePeriod` | [QueryVotePeriodRequest](#oracle.v1.QueryVotePeriodRequest) | [QueryVotePeriodResponse](#oracle.v1.QueryVotePeriodResponse) |  | |
+| `QueryVotePeriod` | [QueryVotePeriodRequest](#oracle.v1.QueryVotePeriodRequest) | [VotePeriod](#oracle.v1.VotePeriod) |  | |
 | `QueryMissCounter` | [QueryMissCounterRequest](#oracle.v1.QueryMissCounterRequest) | [QueryMissCounterResponse](#oracle.v1.QueryMissCounterResponse) |  | |
 | `OracleData` | [QueryOracleDataRequest](#oracle.v1.QueryOracleDataRequest) | [QueryOracleDataResponse](#oracle.v1.QueryOracleDataResponse) |  | |
 

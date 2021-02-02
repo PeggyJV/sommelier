@@ -79,10 +79,10 @@ func (k Keeper) QueryParams(c context.Context, req *types.QueryParamsRequest) (*
 }
 
 // QueryVotePeriod implements QueryServer
-func (k Keeper) QueryVotePeriod(c context.Context, req *types.QueryVotePeriodRequest) (*types.QueryVotePeriodResponse, error) {
+func (k Keeper) QueryVotePeriod(c context.Context, req *types.QueryVotePeriodRequest) (*types.VotePeriod, error) {
 	ctx := sdk.UnwrapSDKContext(c)
 	vps := k.GetVotePeriodStart(ctx)
-	return &types.QueryVotePeriodResponse{
+	return &types.VotePeriod{
 		VotePeriodStart: vps,
 		VotePeriodEnd:   vps + k.GetParamSet(ctx).VotePeriod,
 		CurrentHeight:   ctx.BlockHeight(),

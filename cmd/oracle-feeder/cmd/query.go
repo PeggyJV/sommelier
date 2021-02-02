@@ -140,7 +140,7 @@ func queryValidatorAddress() *cobra.Command {
 			if err != nil {
 				return err
 			}
-			fmt.Println(val)
+			fmt.Println(val.String())
 			return nil
 		},
 	}
@@ -253,7 +253,7 @@ func queryVotePeriod() *cobra.Command {
 }
 
 // GetVotePeriod helper
-func GetVotePeriod(ctx client.Context) (*oracle.QueryVotePeriodResponse, error) {
+func GetVotePeriod(ctx client.Context) (*oracle.VotePeriod, error) {
 	return oracle.NewQueryClient(ctx).QueryVotePeriod(context.Background(), &oracle.QueryVotePeriodRequest{})
 }
 
@@ -330,7 +330,7 @@ func GetData(ctx client.Context, typ string) (oracle.OracleData, error) {
 }
 
 // GetPairs returns the top N pairs from the Uniswap Subgraph
-func (c Config) GetPairs(ctx context.Context, first, skip int) (*oracle.UniswapData, error) {
+func (c *Config) GetPairs(ctx context.Context, first, skip int) (*oracle.UniswapData, error) {
 	req := graphql.NewRequest(fmt.Sprintf(`{ 
 		pairs(first: %d, skip: %d, orderBy: volumeUSD, orderDirection: desc) {
 			id

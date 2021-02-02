@@ -9,14 +9,31 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
-// EndBlocker is called at the end of every block
-func EndBlocker(ctx sdk.Context, k keeper.Keeper) {
-	params := k.GetParamSet(ctx)
-
+// BeginBlocker is called at the beginning of every block
+func BeginBlocker(ctx sdk.Context, k keeper.Keeper) {
 	// if there is not a vote period set, initialize it with current block height
 	if !k.HasVotePeriodStart(ctx) {
 		k.SetVotePeriodStart(ctx, ctx.BlockHeight())
 	}
+
+	// On begin block, if we are tallying, emit the new vote period data
+	params := k.GetParamSet(ctx)
+	if (ctx.BlockHeight() - k.GetVotePeriodStart(ctx)) >= params.VotePeriod {
+		ctx.EventManager().EmitEvent(
+			sdk.NewEvent(
+				types.EventTypeVotePeriod,
+				sdk.NewAttribute(types.AttributeKeyVotePeriodStart, fmt.Sprintf("%d", ctx.BlockHeight())),
+				sdk.NewAttribute(types.AttributeKeyVotePeriodEnd, fmt.Sprintf("%d", ctx.BlockHeight()+params.VotePeriod)),
+			),
+		)
+	}
+
+}
+
+// EndBlocker is called at the end of every block
+func EndBlocker(ctx sdk.Context, k keeper.Keeper) {
+	fmt.Printf("----------END BLOCKER %d---------\n", ctx.BlockHeight())
+	params := k.GetParamSet(ctx)
 
 	// if the vote period has ended, tally the votes
 	if (ctx.BlockHeight() - k.GetVotePeriodStart(ctx)) >= params.VotePeriod {

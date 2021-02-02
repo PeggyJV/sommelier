@@ -18,7 +18,7 @@ service Query {
     rpc QueryValidatorAddress(QueryValidatorAddressRequest) returns (QueryValidatorAddressResponse) {}
     rpc QueryOracleDataPrevote(QueryOracleDataPrevoteRequest) returns (QueryOracleDataPrevoteResponse) {}
     rpc QueryOracleDataVote(QueryOracleDataVoteRequest) returns (MsgOracleDataVote) {}
-    rpc QueryVotePeriod(QueryVotePeriodRequest) returns (QueryVotePeriodResponse) {}
+    rpc QueryVotePeriod(QueryVotePeriodRequest) returns (VotePeriod) {}
     rpc QueryMissCounter(QueryMissCounterRequest) returns (QueryMissCounterResponse) {}
     rpc OracleData(QueryOracleDataRequest) returns (QueryOracleDataResponse) {}
 }
@@ -38,7 +38,7 @@ message QueryParamsResponse {
 }
 
 message QueryVotePeriodRequest {}
-message QueryVotePeriodResponse {
+message VotePeriod {
     int64 current_height    = 1;
     int64 vote_period_start = 2;
     int64 vote_period_end   = 3; 
