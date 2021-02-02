@@ -4,6 +4,7 @@ import (
 	fmt "fmt"
 
 	cdctypes "github.com/cosmos/cosmos-sdk/codec/types"
+	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
@@ -165,4 +166,21 @@ func (m *MsgOracleDataVote) MustGetSigner() sdk.AccAddress {
 		panic(err)
 	}
 	return addr
+}
+
+// UnpackInterfaces implements UnpackInterfacesMessage.UnpackInterfaces
+func (m *MsgOracleDataVote) UnpackInterfaces(unpacker codectypes.AnyUnpacker) (err error) {
+	for _, oda := range m.OracleData {
+		var od OracleData
+		if err = unpacker.UnpackAny(oda, &od); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+// UnpackInterfaces implements UnpackInterfacesMessage.UnpackInterfaces
+func (m *QueryOracleDataResponse) UnpackInterfaces(unpacker codectypes.AnyUnpacker) error {
+	var od OracleData
+	return unpacker.UnpackAny(m.OracleData, od)
 }

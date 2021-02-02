@@ -4,7 +4,6 @@ import (
 	"context"
 	"crypto/rand"
 	"encoding/base64"
-	"encoding/json"
 	"fmt"
 	"os"
 	"os/signal"
@@ -78,15 +77,13 @@ func (c *Coordinator) handleTx(txEvent ctypes.ResultEvent) error {
 	if !ok {
 		return fmt.Errorf("tx event not tx data")
 	}
-	fmt.Println("TX DETECTED")
-	bz, _ := json.Marshal(tx.Result.Events)
-	fmt.Println(string(bz))
 	for _, ev := range tx.Result.Events {
-		fmt.Println(ev.Type)
-		for _, att := range ev.Attributes {
-			fmt.Printf("  - %s \n", att.String())
-		}
 		if ev.Type == oracle.EventTypeOracleDataPrevote {
+			// for _, att := range ev.Attributes {
+			// 	if string(att.Key) == oracle.AttributeKeyValidator && string(att.Value) == c.Val.String() {
+
+			// 	}
+			// }
 			fmt.Println("Submitting Oracle Data Vote")
 			if err := c.SubmitOracleDataVote(); err != nil {
 				return err
@@ -138,7 +135,7 @@ func (c *Coordinator) SubmitOracleDataPrevote() error {
 	}
 	c.UD = ud
 	c.Salt = genrandstr(6)
-	c.Hash = oracle.DataHash(c.Salt, ud.CannonicalJSON(), c.Addr)
+	c.Hash = oracle.DataHash(c.Salt, ud.CannonicalJSON(), c.Val)
 	return config.BroadcastTx(c.Ctx, c,
 		oracle.NewMsgOracleDataPrevote([][]byte{c.Hash}, c.Addr))
 }
@@ -226,12 +223,10 @@ func (c Config) OracleFeederLoop(goctx context.Context, cancel context.CancelFun
 		select {
 		case txEvent := <-txEventsChan:
 			if err = coord.handleTx(txEvent); err != nil {
-				fmt.Println("ERROR HANDLING TX", err)
 				return err
 			}
 		case blockEvent := <-blEventsChan:
 			if err = coord.handleBlock(blockEvent); err != nil {
-				fmt.Println("ERROR HANDLING BLOCK", err)
 				return err
 			}
 		case <-goctx.Done():

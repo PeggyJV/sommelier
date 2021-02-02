@@ -182,3 +182,9 @@ func (ud *UniswapData) Type() string {
 func (vp *VotePeriod) BlocksTillNextPeriod() int64 {
 	return vp.VotePeriodEnd - vp.CurrentHeight
 }
+
+// // UnpackInterfaces implements UnpackInterfacesMessage.UnpackInterfaces
+// func (p Proposal) UnpackInterfaces(unpacker types.AnyUnpacker) error {
+// 	var content Content
+// 	return unpacker.UnpackAny(p.Content, &content)
+// }
