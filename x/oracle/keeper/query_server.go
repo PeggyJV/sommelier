@@ -43,7 +43,7 @@ func (k Keeper) QueryOracleDataPrevote(c context.Context, req *types.QueryOracle
 			return nil, fmt.Errorf("not a validator")
 		}
 	}
-	return &types.QueryOracleDataPrevoteResponse{Hashes: k.GetOracleDataPrevote(ctx, val)}, nil
+	return &types.QueryOracleDataPrevoteResponse{Hashes: k.GetOracleDataPrevote(ctx, val).Hashes}, nil
 }
 
 // QueryOracleDataVote implements QueryServer

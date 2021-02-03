@@ -33,11 +33,13 @@ func RegisterInterfaces(registry codectypes.InterfaceRegistry) {
 func PackOracleData(oracleData OracleData) (*codectypes.Any, error) {
 	msg, ok := oracleData.(proto.Message)
 	if !ok {
+		fmt.Println("MARSHAL")
 		return nil, sdkerrors.Wrapf(sdkerrors.ErrPackAny, "cannot proto marshal %T", oracleData)
 	}
 
 	anyoracleData, err := codectypes.NewAnyWithValue(msg)
 	if err != nil {
+		fmt.Println("ANY")
 		return nil, sdkerrors.Wrap(sdkerrors.ErrPackAny, err.Error())
 	}
 

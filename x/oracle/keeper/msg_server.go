@@ -72,7 +72,7 @@ func (k msgServer) OracleDataPrevote(c context.Context, msg *types.MsgOracleData
 		valaddr = sdk.AccAddress(sval.GetOperator())
 	}
 
-	k.SetOracleDataPrevote(ctx, valaddr, msg.Hashes)
+	k.SetOracleDataPrevote(ctx, valaddr, msg)
 
 	ctx.EventManager().EmitEvent(
 		sdk.NewEvent(
@@ -112,27 +112,27 @@ func (k msgServer) OracleDataVote(c context.Context, msg *types.MsgOracleDataVot
 	}
 
 	// Get the prevote for that validator from the store
-	hashes := k.GetOracleDataPrevote(ctx, valaddr)
+	prevote := k.GetOracleDataPrevote(ctx, valaddr)
 
 	// check that there is a prevote
-	if hashes == nil || len(hashes) == 0 {
+	if prevote == nil || len(prevote.Hashes) == 0 {
 		return nil, sdkerrors.Wrap(types.ErrNoPrevote, valaddr.String())
 	}
 
 	// ensure that the right number of data is in the msg
-	if len(hashes) != len(msg.OracleData) {
+	if len(prevote.Hashes) != len(msg.OracleData) {
 		return nil, sdkerrors.Wrap(
 			types.ErrWrongNumber,
-			fmt.Sprintf("oracle data exp(%d) got(%d)", len(hashes), len(msg.OracleData)),
+			fmt.Sprintf("oracle data exp(%d) got(%d)", len(prevote.Hashes), len(msg.OracleData)),
 		)
 	}
 	fmt.Println("Right number")
 
 	// ensure that the right number of salts is in the msg
-	if len(hashes) != len(msg.Salt) {
+	if len(prevote.Hashes) != len(msg.Salt) {
 		return nil, sdkerrors.Wrap(
 			types.ErrWrongNumber,
-			fmt.Sprintf("salt exp(%d) got(%d)", len(hashes), len(msg.Salt)),
+			fmt.Sprintf("salt exp(%d) got(%d)", len(prevote.Hashes), len(msg.Salt)),
 		)
 	}
 
@@ -146,10 +146,10 @@ func (k msgServer) OracleDataVote(c context.Context, msg *types.MsgOracleDataVot
 			return nil, sdkerrors.Wrap(types.ErrUnpackOracleData, fmt.Sprintf("index %d", i))
 		}
 		voteHash := types.DataHash(salt, od.CannonicalJSON(), valaddr)
-		if !bytes.Equal(voteHash, hashes[i]) {
+		if !bytes.Equal(voteHash, prevote.Hashes[i]) {
 			return nil, sdkerrors.Wrap(
 				types.ErrHashMismatch,
-				fmt.Sprintf("precommit(%x) commit(%x)", hashes[i], voteHash),
+				fmt.Sprintf("precommit(%x) commit(%x)", prevote.Hashes[i], voteHash),
 			)
 		}
 		got = append(got, od.Type())

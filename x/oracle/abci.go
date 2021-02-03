@@ -136,7 +136,7 @@ func EndBlocker(ctx sdk.Context, k keeper.Keeper) {
 		k.SetVotePeriodStart(ctx, ctx.BlockHeight())
 
 		// ... and delete all the prevotes
-		k.IterateOracleDataPrevotes(ctx, func(val sdk.AccAddress, _ [][]byte) bool {
+		k.IterateOracleDataPrevotes(ctx, func(val sdk.AccAddress, _ *types.MsgOracleDataPrevote) bool {
 			k.DeleteOracleDataPrevote(ctx, val)
 			return false
 		})
