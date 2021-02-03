@@ -18,9 +18,11 @@ protoc_gen_doc() {
 protoc_gen_gocosmos
 protoc_gen_doc
 
+echo "generating proto and gRPC gateway files..."
+
 proto_dirs=$(find ./proto -path -prune -o -name '*.proto' -print0 | xargs -0 -n1 dirname | sort | uniq)
 for dir in $proto_dirs; do
-  buf protoc \
+  protoc \
   -I "proto" \
   -I "third_party/proto" \
   --gocosmos_out=plugins=interfacetype+grpc,\
@@ -28,7 +30,8 @@ Mgoogle/protobuf/any.proto=github.com/cosmos/cosmos-sdk/codec/types:. \
   $(find "${dir}" -maxdepth 1 -name '*.proto')
 
   # command to generate gRPC gateway (*.pb.gw.go in respective modules) files
-  buf protoc \
+
+  protoc \
   -I "proto" \
   -I "third_party/proto" \
   --grpc-gateway_out=logtostderr=true:. \
@@ -36,15 +39,19 @@ Mgoogle/protobuf/any.proto=github.com/cosmos/cosmos-sdk/codec/types:. \
 
 done
 
+echo "generating proto docs..."
 # command to generate docs using protoc-gen-doc
-buf protoc \
--I "proto" \
--I "third_party/proto" \
---doc_out=./docs/core \
---doc_opt=./docs/protodoc-markdown.tmpl,proto-docs.md \
-$(find "$(pwd)/proto" -maxdepth 5 -name '*.proto')
-# go mod tidy
+# protoc \
+# -I "proto" \
+# -I "third_party/proto" \
+# --doc_out=./docs/core \
+# --doc_opt=./docs/protodoc-markdown.tmpl,proto-docs.md \
+# $(find "$(pwd)/proto" -maxdepth 5 -name '*.proto')
+
+echo "moving proto files.."
 
 # move proto files to the right places
 cp -r github.com/peggyjv/sommelier/* ./
 rm -rf github.com
+
+echo "done"

@@ -28,6 +28,7 @@ message QueryStoplossRequest {
     // uniswap pair of the position
     string uniswap_pair = 2;
 }
+
 message QueryStoplossResponse {
     // stoploss position for the given address and pair.
     Stoploss stoploss = 1 [(gogoproto.nullable) = false];

@@ -26,13 +26,13 @@ const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
 // Stoploss defines a set of parameters that together trigger a stoploss withdrawal.
 type Stoploss struct {
-	// uniswap pair identifier
+	// uniswap pair hex address
 	UniswapPairId string `protobuf:"bytes,1,opt,name=uniswap_pair_id,json=uniswapPairId,proto3" json:"uniswap_pair_id,omitempty" yaml:"uniswap_pair"`
 	// amount of shares from the liquidity pool to redeem if current slippage > max slipage
 	LiquidityPoolShares int64 `protobuf:"varint,2,opt,name=liquidity_pool_shares,json=liquidityPoolShares,proto3" json:"liquidity_pool_shares,omitempty" yaml:"liquidity_pool_shares"`
 	// max slippage allowed before the stoploss is triggered
 	MaxSlippage github_com_cosmos_cosmos_sdk_types.Dec `protobuf:"bytes,3,opt,name=max_slippage,json=maxSlippage,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Dec" json:"max_slippage" yaml:"max_slippage"`
-	// starting token pair ration of the uniswap pool
+	// starting token pair ratio of the uniswap pool
 	ReferencePairRatio github_com_cosmos_cosmos_sdk_types.Dec `protobuf:"bytes,4,opt,name=reference_pair_ratio,json=referencePairRatio,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Dec" json:"reference_pair_ratio" yaml:"reference_pair_ratio"`
 }
 
