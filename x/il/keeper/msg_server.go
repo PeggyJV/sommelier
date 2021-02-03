@@ -52,11 +52,9 @@ func (k Keeper) DeleteStoploss(c context.Context, msg *types.MsgDeleteStoploss) 
 	// NOTE: error checked during msg validation
 	address, _ := sdk.AccAddressFromBech32(msg.Address)
 
-	// TODO: check if uniswap pair exists on the oracle
-
-	// check if the position exists for the pair
+	// error if the stoploss doesn't exist
 	if !k.HasStoplossPosition(ctx, address, msg.UniswapPairId) {
-		return nil, sdkerrors.Wrapf(types.ErrStoplossExists, "address: %s, uniswap pair id %s", address, msg.UniswapPairId)
+		return nil, sdkerrors.Wrapf(types.ErrStoplossNotFound, "address: %s, uniswap pair id %s", address, msg.UniswapPairId)
 	}
 
 	// Set the delegation
