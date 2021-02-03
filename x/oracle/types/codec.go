@@ -1,8 +1,6 @@
 package types
 
 import (
-	fmt "fmt"
-
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
@@ -33,16 +31,12 @@ func RegisterInterfaces(registry codectypes.InterfaceRegistry) {
 func PackOracleData(oracleData OracleData) (*codectypes.Any, error) {
 	msg, ok := oracleData.(proto.Message)
 	if !ok {
-		fmt.Println("MARSHAL")
 		return nil, sdkerrors.Wrapf(sdkerrors.ErrPackAny, "cannot proto marshal %T", oracleData)
 	}
-
 	anyoracleData, err := codectypes.NewAnyWithValue(msg)
 	if err != nil {
-		fmt.Println("ANY")
 		return nil, sdkerrors.Wrap(sdkerrors.ErrPackAny, err.Error())
 	}
-
 	return anyoracleData, nil
 }
 
@@ -52,12 +46,9 @@ func UnpackOracleData(any *codectypes.Any) (OracleData, error) {
 	if any == nil {
 		return nil, sdkerrors.Wrap(sdkerrors.ErrUnpackAny, "protobuf Any message cannot be nil")
 	}
-
 	oracleData, ok := any.GetCachedValue().(OracleData)
 	if !ok {
-		fmt.Println("FAILING IN GET CACHE VALUE")
 		return nil, sdkerrors.Wrapf(sdkerrors.ErrUnpackAny, "cannot Unpack Any into OracleData %T", any)
 	}
-
 	return oracleData, nil
 }

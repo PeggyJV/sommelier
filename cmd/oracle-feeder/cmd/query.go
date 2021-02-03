@@ -314,11 +314,11 @@ func queryOracleData() *cobra.Command {
 			if err != nil {
 				return err
 			}
-			bz, err := ctx.JSONMarshaler.MarshalJSON(res.OracleData)
+			od, err := oracle.UnpackOracleData(res.OracleData)
 			if err != nil {
 				return err
 			}
-			fmt.Println(string(bz))
+			fmt.Println(od.CannonicalJSON())
 			return nil
 		},
 	}
