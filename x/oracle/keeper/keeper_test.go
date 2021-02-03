@@ -1,7 +1,6 @@
 package keeper_test
 
 import (
-	"encoding/json"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -9,6 +8,7 @@ import (
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
+	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	"github.com/cosmos/cosmos-sdk/crypto/keys/ed25519"
 	"github.com/cosmos/cosmos-sdk/crypto/keys/secp256k1"
 	crypto "github.com/cosmos/cosmos-sdk/crypto/types"
@@ -69,27 +69,68 @@ func (suite *KeeperTestSuite) TestDelegateAddresses() {
 	require.True(t, k.IsDelegateAddress(ctx, Addrs[1]))
 	require.True(t, k.IsDelegateAddress(ctx, Addrs[3]))
 	require.False(t, k.IsDelegateAddress(ctx, Addrs[4]))
-
-	var delAddrs []sdk.AccAddress
-	var valAddrs []sdk.AccAddress
-	k.IterateDelegateAddresses(ctx, func(del, val sdk.AccAddress) bool {
-		delAddrs = append(delAddrs, del)
-		valAddrs = append(valAddrs, val)
-		return false
-	})
-	require.Equal(t, []sdk.AccAddress{Addrs[1], Addrs[3]}, delAddrs)
-	require.Equal(t, []sdk.AccAddress{Addrs[0], Addrs[2]}, valAddrs)
 }
 func (suite *KeeperTestSuite) TestPrevotes() {
+	ctx := suite.ctx
+	k := suite.app.OracleKeeper
+	t := suite.T()
+	udjson := GetTestUniswapData().CannonicalJSON()
+	zro := types.DataHash("0", udjson, Addrs[0])
+	one := types.DataHash("1", udjson, Addrs[1])
+	k.SetOracleDataPrevote(ctx, Addrs[0], types.NewMsgOracleDataPrevote([][]byte{zro}, Addrs[0]))
+	k.SetOracleDataPrevote(ctx, Addrs[1], types.NewMsgOracleDataPrevote([][]byte{one}, Addrs[1]))
 
-	// SetOracleDataPrevote
-	// GetOracleDataPrevote
-	// DeleteOracleDataPrevote
-	// HasOracleDataPrevote
-	// IterateOracleDataPrevotes
+	require.Equal(t, zro, k.GetOracleDataPrevote(ctx, Addrs[0]).Hashes[0])
+	require.Equal(t, one, k.GetOracleDataPrevote(ctx, Addrs[1]).Hashes[0])
 
+	require.True(t, k.HasOracleDataPrevote(ctx, Addrs[0]))
+	require.True(t, k.HasOracleDataPrevote(ctx, Addrs[1]))
+
+	pvs := []*types.MsgOracleDataPrevote{}
+	k.IterateOracleDataPrevotes(ctx, func(val sdk.AccAddress, msg *types.MsgOracleDataPrevote) bool {
+		pvs = append(pvs, msg)
+		return false
+	})
+	require.Equal(t, 2, len(pvs))
+
+	k.DeleteOracleDataPrevote(ctx, Addrs[0])
+	k.DeleteOracleDataPrevote(ctx, Addrs[1])
+
+	require.False(t, k.HasOracleDataPrevote(ctx, Addrs[0]))
+	require.False(t, k.HasOracleDataPrevote(ctx, Addrs[1]))
 }
 func (suite *KeeperTestSuite) TestVotes() {
+	ctx := suite.ctx
+	k := suite.app.OracleKeeper
+	t := suite.T()
+
+	uda, err := types.PackOracleData(testuniswapdata)
+	require.NoError(t, err)
+	zro := types.NewMsgOracleDataVote([]string{"0"}, []*codectypes.Any{uda}, Addrs[0])
+	one := types.NewMsgOracleDataVote([]string{"1"}, []*codectypes.Any{uda}, Addrs[1])
+
+	k.SetOracleDataVote(ctx, Addrs[0], zro)
+	k.SetOracleDataVote(ctx, Addrs[1], one)
+
+	require.Equal(t, zro, k.GetOracleDataVote(ctx, Addrs[0]))
+	require.Equal(t, one, k.GetOracleDataVote(ctx, Addrs[1]))
+
+	require.True(t, k.HasOracleDataVote(ctx, Addrs[0]))
+	require.True(t, k.HasOracleDataVote(ctx, Addrs[1]))
+
+	pvs := []*types.MsgOracleDataVote{}
+	k.IterateOracleDataVotes(ctx, func(val sdk.AccAddress, msg *types.MsgOracleDataVote) bool {
+		pvs = append(pvs, msg)
+		return false
+	})
+	require.Equal(t, 2, len(pvs))
+
+	k.DeleteOracleDataVote(ctx, Addrs[0])
+	k.DeleteOracleDataVote(ctx, Addrs[1])
+
+	require.False(t, k.HasOracleDataVote(ctx, Addrs[0]))
+	require.False(t, k.HasOracleDataVote(ctx, Addrs[1]))
+
 	// SetOracleDataVote
 	// GetOracleDataVote
 	// DeleteOracleDataVote
@@ -163,6 +204,95 @@ var (
 
 // GetTestUniswapData returns some realistic uniswap data for testing
 func GetTestUniswapData() (out *types.UniswapData) {
-	_ = json.Unmarshal([]byte(`{"pairs":[{"id":"0xb4e16d0168e52d35cacd2c6185b44281ec28c9dc","reserve0":"149168502.127692","reserve1":"98914.728571090173772608","reserveUSD":"298465076.2726070256620710867523966","token0":{"decimals":"6","id":"0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48"},"token1":{"decimals":"18","id":"0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2"},"token0Price":"1508.051473047154536981217254417823","token1Price":"0.0006631073394195288720366013950579345","totalSupply":"2.776928042758313339"},{"id":"0x0d4a11d5eeaac28ec3f61d100daf4d40471f1852","reserve0":"64388.028406657774747257","reserve1":"97110195.980325","reserveUSD":"194286280.6014220933152549537931338","token0":{"decimals":"18","id":"0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2"},"token1":{"decimals":"6","id":"0xdac17f958d2ee523a2206206994597c13d831ec7"},"token0Price":"0.0006630408656543449235650418867565894","token1Price":"1508.202664119526393031771820896357","totalSupply":"1.809722368239841107"},{"id":"0xa478c2975ab1ea89e8196811f51a7b7ade33eb11","reserve0":"69666576.790413028896587687","reserve1":"46112.974337848761758699","reserveUSD":"139139424.218685770965493537968932","token0":{"decimals":"18","id":"0x6b175474e89094c44da98b954eedeac495271d0f"},"token1":{"decimals":"18","id":"0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2"},"token0Price":"1510.780377773893936581451470552918","token1Price":"0.0006619095764756230959440895211021876","totalSupply":"1397637.606496882484285926"},{"id":"0xbb2b8038a1640196fbe3e38816f3e67cba72d940","reserve0":"3702.00263419","reserve1":"87578.554975281578154217","reserveUSD":"263970026.5503400767005757489435989","token0":{"decimals":"8","id":"0x2260fac5e5542a773aa44fbcfedf7c193bc2c599"},"token1":{"decimals":"18","id":"0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2"},"token0Price":"0.04227065216176338844401836197546882","token1Price":"23.65707527229888347304731067895859","totalSupply":"0.159912392338326095"},{"id":"0xd3d2e2692501a5c9ca623199d38826e513033a17","reserve0":"6723450.906791595454903831","reserve1":"83341.073955279932726161","reserveUSD":"251486860.9475119406522283429396433","token0":{"decimals":"18","id":"0x1f9840a85d5af5bf1d1762f925bdaddc4201f984"},"token1":{"decimals":"18","id":"0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2"},"token0Price":"80.67391728596320300811372353718798","token1Price":"0.01239558005414959861899222059722421","totalSupply":"381314.494595180173933409"}]}`), out)
-	return
+	return testuniswapdata
+}
+
+var testuniswapdata = &types.UniswapData{
+	Pairs: []types.UniswapPair{
+		types.UniswapPair{
+			Id:         "0xb4e16d0168e52d35cacd2c6185b44281ec28c9dc",
+			Reserve0:   "148681992.765143",
+			Reserve1:   "97709.503398661101176213",
+			ReserveUsd: "297632095.4398610329641308505948537",
+			Token0: types.UniswapToken{
+				Decimals: "6",
+				Id:       "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+			},
+			Token1: types.UniswapToken{
+				Decimals: "18",
+				Id:       "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+			},
+			Token0Price: "1521.673814659673802831294654725591",
+			Token1Price: "0.0006571710641045975606382036411013578",
+			TotalSupply: "2.754869216896965436",
+		},
+		types.UniswapPair{
+			Id:         "0x0d4a11d5eeaac28ec3f61d100daf4d40471f1852",
+			Reserve0:   "64052.148928752869718841",
+			Reserve1:   "97675312.070397",
+			ReserveUsd: "195116448.3284569661435357469623931",
+			Token0: types.UniswapToken{
+				Decimals: "18",
+				Id:       "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+			},
+			Token1: types.UniswapToken{
+				Decimals: "6",
+				Id:       "0xdac17f958d2ee523a2206206994597c13d831ec7",
+			},
+			Token0Price: "0.0006557660023915655416435420299954565",
+			Token1Price: "1524.934193527904663377910319564834",
+			TotalSupply: "1.80992106067496882",
+		},
+		types.UniswapPair{
+			Id:         "0xa478c2975ab1ea89e8196811f51a7b7ade33eb11",
+			Reserve0:   "69453224.061579510781012891",
+			Reserve1:   "45584.711379804929448746",
+			ReserveUsd: "138883455.9382328581978198800889056",
+			Token0: types.UniswapToken{
+				Decimals: "18",
+				Id:       "0x6b175474e89094c44da98b954eedeac495271d0f",
+			},
+			Token1: types.UniswapToken{
+				Decimals: "18",
+				Id:       "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+			},
+			Token0Price: "1523.607849195440530703001829222234",
+			Token1Price: "0.0006563368655051639699748790273756903",
+			TotalSupply: "1387139.630260982742563912",
+		},
+		types.UniswapPair{
+			Id:         "0xbb2b8038a1640196fbe3e38816f3e67cba72d940",
+			Reserve0:   "3677.00380811",
+			Reserve1:   "87751.610676879397734011",
+			ReserveUsd: "267295991.4968480122080814610109883",
+			Token0: types.UniswapToken{
+				Decimals: "8",
+				Id:       "0x2260fac5e5542a773aa44fbcfedf7c193bc2c599",
+			},
+			Token1: types.UniswapToken{
+				Decimals: "18",
+				Id:       "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+			},
+			Token0Price: "0.04190240816945835175733332440293728",
+			Token1Price: "23.86497682796369034462936135803174",
+			TotalSupply: "0.159515800042228218",
+		},
+		types.UniswapPair{
+			Id:         "0xd3d2e2692501a5c9ca623199d38826e513033a17",
+			Reserve0:   "6727806.05368655342316",
+			Reserve1:   "83188.043794789543616929",
+			ReserveUsd: "253452781.802854374271358539030316",
+			Token0: types.UniswapToken{
+				Decimals: "18",
+				Id:       "0x1f9840a85d5af5bf1d1762f925bdaddc4201f984",
+			},
+			Token1: types.UniswapToken{
+				Decimals: "18",
+				Id:       "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+			},
+			Token0Price: "80.87467557577002901879232854141164",
+			Token1Price: "0.01236481003331034057706013245120429",
+			TotalSupply: "381065.480646149140512768",
+		},
+	},
 }
