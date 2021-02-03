@@ -16,6 +16,9 @@ func NewHandler(k keeper.Keeper) sdk.Handler {
 		case *types.MsgStoploss:
 			res, err := k.CreateStoploss(sdk.WrapSDKContext(ctx), msg)
 			return sdk.WrapServiceResult(ctx, res, err)
+		case *types.MsgDeleteStoploss:
+			res, err := k.DeleteStoploss(sdk.WrapSDKContext(ctx), msg)
+			return sdk.WrapServiceResult(ctx, res, err)
 		default:
 			return nil, sdkerrors.Wrapf(sdkerrors.ErrUnknownRequest, "unrecognized impermanent loss message type: %T", msg)
 		}

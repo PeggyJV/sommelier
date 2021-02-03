@@ -8,6 +8,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/telemetry"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
+	peggytypes "github.com/althea-net/peggy/module/x/peggy/types"
 	"github.com/peggyjv/sommelier/x/il/types"
 )
 
@@ -24,7 +25,7 @@ func (k Keeper) EndBlocker(ctx sdk.Context) {
 		currentSlippage := stoploss.ReferencePairRatio
 
 		if currentSlippage.LTE(stoploss.MaxSlippage) {
-			//
+			// threshold not met, continue with the next position
 			return false
 		}
 
@@ -32,13 +33,25 @@ func (k Keeper) EndBlocker(ctx sdk.Context) {
 		// that is suffering impermanent loss
 
 		// peggy-0x... ?
-		uniswapSharesCoin := sdk.NewInt64Coin(stoploss.UniswapPairId, stoploss.LiquidityPoolShares) // TODO: What's the name of the uniswap coin
-		fee := sdk.Coin{}                                                                           //                                                                             // TODO: which coin should we use as fees?
+		uniswapERC20Pair := peggytypes.NewERC20Token(uint64(stoploss.LiquidityPoolShares), stoploss.UniswapPairId)
+		uniswapCoin := uniswapERC20Pair.PeggyCoin()
+
+		// NOTE: denom must always match coin
+		fee := sdk.NewInt64Coin(uniswapCoin.Denom, 0)
+
 		// send eth transaction to withdraw lp_shares liquidity for pair_id
-		_, err := k.ethBridgeKeeper.AddToOutgoingPool(ctx, address, params.ContractAddress, uniswapSharesCoin, fee)
+		_, err := k.ethBridgeKeeper.AddToOutgoingPool(ctx, address, params.ContractAddress, uniswapCoin, fee)
 		if err != nil {
-			// FIXME: figure out why this might panic and ensure correctness
-			panic(err)
+			// FIXME: figure out why this might error and ensure correctness
+			k.Logger(ctx).Error(
+				"failed to send to eth bridge's outgoing pool",
+				"sender-address", address.String(),
+				"uniswap-coin", uniswapCoin.String(),
+				"error", err.Error(),
+			)
+
+			// continue with the next position
+			return false
 		}
 
 		// log and emit metrics
