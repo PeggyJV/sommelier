@@ -1,8 +1,8 @@
 package cli
 
 import (
+	"fmt"
 	"strconv"
-	"strings"
 
 	"github.com/spf13/cobra"
 
@@ -35,16 +35,7 @@ func GetCmdCreateStoploss() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "create-stoploss [uniswap-pair] [liquidity-pool-shares] [max-slippage] [ref-pair-ratio]",
 		Args:  cobra.ExactArgs(4),
-		Short: "Delegate the permission to vote for the oracle to an address",
-		Long: strings.TrimSpace(`
-Delegate the permission to submit exchange rate votes for the oracle to an address.
-
-Delegation can keep your validator operator key offline and use a separate replaceable key online.
-
-$ sommelier tx oracle set-feeder terra1...
-
-where "terra1..." is the address you want to delegate your voting rights to.
-`),
+		Short: "Create a stoploss position for a given LP provider",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			clientCtx, err := client.GetClientTxContext(cmd)
 			if err != nil {
@@ -55,17 +46,17 @@ where "terra1..." is the address you want to delegate your voting rights to.
 
 			shares, err := strconv.ParseInt(args[1], 10, 64)
 			if err != nil {
-				return err
+				return fmt.Errorf("invalid liquidity pool shares: %w", err)
 			}
 
 			maxSlippage, err := sdk.NewDecFromStr(args[2])
 			if err != nil {
-				return err
+				return fmt.Errorf("invalid max slippage: %w", err)
 			}
 
 			ratio, err := sdk.NewDecFromStr(args[3])
 			if err != nil {
-				return err
+				return fmt.Errorf("invalid reference pair ratio: %w", err)
 			}
 
 			stoploss := &types.Stoploss{
@@ -76,6 +67,33 @@ where "terra1..." is the address you want to delegate your voting rights to.
 			}
 
 			msg := types.NewMsgStoploss(clientCtx.FromAddress, stoploss)
+			err = msg.ValidateBasic()
+			if err != nil {
+				return err
+			}
+
+			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), msg)
+		},
+	}
+
+	return cmd
+}
+
+// GetCmdDeleteStoploss
+func GetCmdDeleteStoploss() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "delete-stoploss [uniswap-pair]",
+		Args:  cobra.ExactArgs(1),
+		Short: "Delete an existing stoploss position",
+		RunE: func(cmd *cobra.Command, args []string) error {
+			clientCtx, err := client.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			uniswapPairID := args[0]
+
+			msg := types.NewMsgDeleteStoploss(clientCtx.FromAddress, uniswapPairID)
 			err = msg.ValidateBasic()
 			if err != nil {
 				return err
