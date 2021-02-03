@@ -42,6 +42,7 @@ func GetAverageFunction(typ string) func([]OracleData) OracleData {
 // UniswapDataCollection averages a collection of uniswap data
 func UniswapDataCollection(uds []OracleData) OracleData {
 	if len(uds) == 1 {
+		fmt.Println("One length uniswap data")
 		return uds[0]
 	}
 	foo := [][]UniswapPairParsed{}

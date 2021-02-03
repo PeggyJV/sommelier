@@ -32,13 +32,13 @@ func BeginBlocker(ctx sdk.Context, k keeper.Keeper) {
 
 // EndBlocker is called at the end of every block
 func EndBlocker(ctx sdk.Context, k keeper.Keeper) {
-	fmt.Printf("----------END BLOCKER %d---------\n", ctx.BlockHeight())
 	params := k.GetParamSet(ctx)
 
 	// if the vote period has ended, tally the votes
 	if (ctx.BlockHeight() - k.GetVotePeriodStart(ctx)) >= params.VotePeriod {
+		fmt.Printf("----------TALLY AT HEIGHT %d---------\n", ctx.BlockHeight())
 		voted := []string{}
-		votedPower := sdk.NewInt(0)
+		votedPower := int64(0)
 		detailedMap := make(map[string]map[string]types.OracleData)
 		collectionMap := make(map[string][]types.OracleData)
 		averageMap := make(map[string]types.OracleData)
@@ -58,7 +58,9 @@ func EndBlocker(ctx sdk.Context, k keeper.Keeper) {
 			k.DeleteMissCounter(ctx, val)
 
 			// find total voting votedPower
-			votedPower.Add(sdk.NewInt(k.StakingKeeper.Validator(ctx, sdk.ValAddress(val)).GetConsensusPower()))
+			fmt.Println("Adding to voted power")
+
+			votedPower += k.StakingKeeper.Validator(ctx, sdk.ValAddress(val)).GetConsensusPower()
 
 			// save the oracle data for later processing
 			for _, oda := range msg.OracleData {
@@ -76,15 +78,17 @@ func EndBlocker(ctx sdk.Context, k keeper.Keeper) {
 		})
 
 		// iterate over the full list of validators to increment miss counters
+		totalPower := int64(0)
 		for _, val := range k.StakingKeeper.GetBondedValidatorsByPower(ctx) {
+			totalPower += val.GetConsensusPower()
 			valaddr := sdk.AccAddress(val.GetOperator())
 			if !contains(voted, valaddr.String()) {
 				k.IncrementMissCounter(ctx, valaddr)
 			}
 		}
 
-		// if the voted_power/total_power < params.VoteThreshold then we store the averages in the store
-		storeAverages := votedPower.Quo(k.StakingKeeper.GetLastTotalPower(ctx)).LT(params.VoteThreshold.TruncateInt())
+		// if the voted_power/total_power > params.VoteThreshold then we store the averages in the store
+		storeAverages := sdk.NewDec(votedPower).Quo(sdk.NewDec(totalPower)).GT(params.VoteThreshold)
 
 		// compute the averages for each type of data tracked by the oracle
 		for typ, dataCollection := range collectionMap {
@@ -96,6 +100,7 @@ func EndBlocker(ctx sdk.Context, k keeper.Keeper) {
 
 			// once we have an "average" we set it in the store
 			if storeAverages {
+				fmt.Println("Storing oracle data")
 				k.SetOracleData(ctx, avg)
 			}
 

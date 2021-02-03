@@ -139,28 +139,14 @@ func (suite *KeeperTestSuite) TestOracleData() {
 	k.SetOracleData(ctx, testuniswapdata)
 	require.True(t, k.HasOracleData(ctx, types.UniswapDataType))
 
-	require.Equal(t, testuniswapdata, k.GetOracleData(ctx, types.UniswapDataType))
+	val, ok := k.GetOracleData(ctx, types.UniswapDataType).(*types.UniswapData)
+	require.True(t, ok)
+	require.Equal(t, testuniswapdata, val)
+	require.Equal(t, testuniswapdata.Pairs[2].Id, val.Pairs[2].Id)
 
 	k.DeleteOracleData(ctx, types.UniswapDataType)
 
 	require.False(t, k.HasOracleData(ctx, types.UniswapDataType))
-}
-func (suite *KeeperTestSuite) TestVotePeriod() {
-	// SetVotePeriodStart
-	// GetVotePeriodStart
-	// HasVotePeriodStart
-}
-func (suite *KeeperTestSuite) TestMissCounters() {
-	// IncrementMissCounter
-	// GetMissCounter
-	// SetMissCounter
-	// HasMissCounter
-	// DeleteMissCounter
-	// IterateMissCounters
-}
-func (suite *KeeperTestSuite) TestParams() {
-	// GetParamSet
-	// SetParams
 }
 
 //////////////
@@ -211,7 +197,7 @@ func GetTestUniswapData() (out *types.UniswapData) {
 
 var testuniswapdata = &types.UniswapData{
 	Pairs: []types.UniswapPair{
-		types.UniswapPair{
+		{
 			Id:         "0xb4e16d0168e52d35cacd2c6185b44281ec28c9dc",
 			Reserve0:   "148681992.765143",
 			Reserve1:   "97709.503398661101176213",
@@ -228,7 +214,7 @@ var testuniswapdata = &types.UniswapData{
 			Token1Price: "0.0006571710641045975606382036411013578",
 			TotalSupply: "2.754869216896965436",
 		},
-		types.UniswapPair{
+		{
 			Id:         "0x0d4a11d5eeaac28ec3f61d100daf4d40471f1852",
 			Reserve0:   "64052.148928752869718841",
 			Reserve1:   "97675312.070397",
@@ -245,7 +231,7 @@ var testuniswapdata = &types.UniswapData{
 			Token1Price: "1524.934193527904663377910319564834",
 			TotalSupply: "1.80992106067496882",
 		},
-		types.UniswapPair{
+		{
 			Id:         "0xa478c2975ab1ea89e8196811f51a7b7ade33eb11",
 			Reserve0:   "69453224.061579510781012891",
 			Reserve1:   "45584.711379804929448746",
@@ -262,7 +248,7 @@ var testuniswapdata = &types.UniswapData{
 			Token1Price: "0.0006563368655051639699748790273756903",
 			TotalSupply: "1387139.630260982742563912",
 		},
-		types.UniswapPair{
+		{
 			Id:         "0xbb2b8038a1640196fbe3e38816f3e67cba72d940",
 			Reserve0:   "3677.00380811",
 			Reserve1:   "87751.610676879397734011",
@@ -279,7 +265,7 @@ var testuniswapdata = &types.UniswapData{
 			Token1Price: "23.86497682796369034462936135803174",
 			TotalSupply: "0.159515800042228218",
 		},
-		types.UniswapPair{
+		{
 			Id:         "0xd3d2e2692501a5c9ca623199d38826e513033a17",
 			Reserve0:   "6727806.05368655342316",
 			Reserve1:   "83188.043794789543616929",
