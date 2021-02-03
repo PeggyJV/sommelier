@@ -55,6 +55,7 @@
 
 
 <a name="oracle.v1.UniswapData"></a>
+<<<<<<< HEAD
 
 ### UniswapData
 UniswapData is an implementation of OracleData
@@ -96,10 +97,56 @@ UniswapPair represents the necessary data for a uniswap pair
 
 ### UniswapToken
 UniswapToken is the returned uniswap token representation
+=======
+
+### UniswapData
+UniswapData is an implementation of OracleData
+>>>>>>> 80d76df335316d61841ce9bca513aaf530ec40d3
 
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
+<<<<<<< HEAD
+=======
+| `pairs` | [UniswapPair](#oracle.v1.UniswapPair) | repeated |  |
+
+
+
+
+
+
+<a name="oracle.v1.UniswapPair"></a>
+
+### UniswapPair
+UniswapPair represents the necessary data for a uniswap pair
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `id` | [string](#string) |  |  |
+| `reserve0` | [string](#string) |  |  |
+| `reserve1` | [string](#string) |  |  |
+| `reserve_usd` | [string](#string) |  |  |
+| `token0` | [UniswapToken](#oracle.v1.UniswapToken) |  |  |
+| `token1` | [UniswapToken](#oracle.v1.UniswapToken) |  |  |
+| `token0_price` | [string](#string) |  |  |
+| `token1_price` | [string](#string) |  |  |
+| `total_supply` | [string](#string) |  |  |
+
+
+
+
+
+
+<a name="oracle.v1.UniswapToken"></a>
+
+### UniswapToken
+UniswapToken is the returned uniswap token representation
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+>>>>>>> 80d76df335316d61841ce9bca513aaf530ec40d3
 | `decimals` | [string](#string) |  |  |
 | `id` | [string](#string) |  |  |
 
@@ -168,6 +215,7 @@ SHA256("{salt}:{data_cannonical_json}:{voter}")
 
 
 
+<<<<<<< HEAD
 
 <a name="oracle.v1.MsgOracleDataPrevoteResponse"></a>
 
@@ -178,12 +226,14 @@ SHA256("{salt}:{data_cannonical_json}:{voter}")
 
 
 ## oracle/v1/query.proto
+=======
+>>>>>>> 80d76df335316d61841ce9bca513aaf530ec40d3
+
+<a name="oracle.v1.MsgOracleDataPrevoteResponse"></a>
+
+### MsgOracleDataPrevoteResponse
 
 
-
-<a name="oracle.v1.QueryActivesRequest"></a>
-
-### QueryActivesRequest
 
 
 
@@ -194,7 +244,9 @@ SHA256("{salt}:{data_cannonical_json}:{voter}")
 
 
 
+<a name="oracle.v1.MsgOracleDataVote"></a>
 
+<<<<<<< HEAD
 
 <a name="oracle.v1.QueryActivesResponse"></a>
 
@@ -216,125 +268,10 @@ SHA256("{salt}:{data_cannonical_json}:{voter}")
 
 ### QueryAggregatePrevoteRequest
 
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| `validator` | [string](#string) |  |  |
-
-
-
-
-
-
-<a name="oracle.v1.QueryAggregatePrevoteResponse"></a>
-
-### QueryAggregatePrevoteResponse
-
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| `prevote` | [AggregateExchangeRatePrevote](#oracle.v1.AggregateExchangeRatePrevote) |  |  |
-
-
-
-
-
-
-<a name="oracle.v1.QueryAggregateVoteRequest"></a>
-
-### QueryAggregateVoteRequest
-
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| `validator` | [string](#string) |  |  |
-
-
-
-
-
-
-<a name="oracle.v1.QueryAggregateVoteResponse"></a>
-
-### QueryAggregateVoteResponse
-
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| `vote` | [AggregateExchangeRateVote](#oracle.v1.AggregateExchangeRateVote) |  |  |
-
-
-
-
-
-
-<a name="oracle.v1.QueryExchangeRateRequest"></a>
-
-### QueryExchangeRateRequest
-
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| `denom` | [string](#string) |  | token denomination |
-
-
-
-
-
-
-<a name="oracle.v1.QueryExchangeRateResponse"></a>
-
-### QueryExchangeRateResponse
-
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| `rate` | [string](#string) |  | token exchange rate |
-
-
-
-
-
-
-<a name="oracle.v1.QueryExchangeRatesRequest"></a>
-
-### QueryExchangeRatesRequest
-
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| `pagination` | [cosmos.base.query.v1beta1.PageRequest](#cosmos.base.query.v1beta1.PageRequest) |  | pagination request |
-
-
-
-
-
-
-<a name="oracle.v1.QueryExchangeRatesResponse"></a>
-
-### QueryExchangeRatesResponse
-
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| `rates` | [cosmos.base.v1beta1.DecCoin](#cosmos.base.v1beta1.DecCoin) | repeated |  |
-| `pagination` | [cosmos.base.query.v1beta1.PageResponse](#cosmos.base.query.v1beta1.PageResponse) |  | pagination response |
-
-
-
-
-<a name="oracle.v1.MsgOracleDataVote"></a>
-
+=======
 ### MsgOracleDataVote
 MsgOracleDataVote - sdk.Msg for submitting arbitrary oracle data that has been prevoted on
+>>>>>>> 80d76df335316d61841ce9bca513aaf530ec40d3
 
 
 | Field | Type | Label | Description |
@@ -352,79 +289,6 @@ MsgOracleDataVote - sdk.Msg for submitting arbitrary oracle data that has been p
 
 ### MsgOracleDataVoteResponse
 
-
-
-<a name="oracle.v1.QueryTobinTaxResponse"></a>
-
-### QueryTobinTaxResponse
-
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| `rate` | [string](#string) |  |  |
-
-
-
-
-
-
-<a name="oracle.v1.QueryTobinTaxesRequest"></a>
-
-### QueryTobinTaxesRequest
-
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| `pagination` | [cosmos.base.query.v1beta1.PageRequest](#cosmos.base.query.v1beta1.PageRequest) |  | pagination request |
-
-
-
-
-
-
-<a name="oracle.v1.QueryTobinTaxesResponse"></a>
-
-### QueryTobinTaxesResponse
-
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| `rates` | [cosmos.base.v1beta1.DecCoin](#cosmos.base.v1beta1.DecCoin) | repeated |  |
-| `pagination` | [cosmos.base.query.v1beta1.PageResponse](#cosmos.base.query.v1beta1.PageResponse) |  | pagination response |
-
-
-
-
-
-
-<a name="oracle.v1.QueryVoteTargetsRequest"></a>
-
-### QueryVoteTargetsRequest
-
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| `pagination` | [cosmos.base.query.v1beta1.PageRequest](#cosmos.base.query.v1beta1.PageRequest) |  | pagination request |
-
-
-
-
-
-
-<a name="oracle.v1.QueryVoteTargetsResponse"></a>
-
-### QueryVoteTargetsResponse
-
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| `targets` | [string](#string) | repeated |  |
-| `pagination` | [cosmos.base.query.v1beta1.PageResponse](#cosmos.base.query.v1beta1.PageResponse) |  | pagination response |
 
 
 
@@ -484,8 +348,13 @@ MissCounter stores the validator address and the number of associated misses
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
+<<<<<<< HEAD
+| `denom` | [string](#string) |  | token denomination |
+
+=======
 | `validator` | [string](#string) |  |  |
 | `misses` | [int64](#int64) |  |  |
+>>>>>>> 80d76df335316d61841ce9bca513aaf530ec40d3
 
 
 
@@ -500,12 +369,274 @@ Params oracle parameters
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
+<<<<<<< HEAD
+| `rate` | [string](#string) |  | token exchange rate |
+
+
+
+
+
+
+<a name="oracle.v1.QueryExchangeRatesRequest"></a>
+
+### QueryExchangeRatesRequest
+
+
+=======
 | `vote_period` | [int64](#int64) |  | VotePeriod defines the number of blocks to wait for votes before attempting to tally |
 | `vote_threshold` | [string](#string) |  | VoteThreshold defines the percentage of bonded stake required to vote each period |
 | `slash_window` | [int64](#int64) |  | SlashWindow defines the number of blocks for the slashing window |
 | `min_valid_per_window` | [string](#string) |  | MinValidPerWindow defines the number of misses a validator is allowed during each SlashWindow |
 | `slash_fraction` | [string](#string) |  | SlashFraction defines the percentage of slash that a validator will suffer if it fails to send a vote |
 | `data_types` | [string](#string) | repeated | DataTypes defines which data types validators must submit each voting period |
+>>>>>>> 80d76df335316d61841ce9bca513aaf530ec40d3
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `pagination` | [cosmos.base.query.v1beta1.PageRequest](#cosmos.base.query.v1beta1.PageRequest) |  | pagination request |
+
+
+
+
+
+
+ <!-- end messages -->
+
+ <!-- end enums -->
+
+ <!-- end HasExtensions -->
+
+ <!-- end services -->
+
+<<<<<<< HEAD
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `rates` | [cosmos.base.v1beta1.DecCoin](#cosmos.base.v1beta1.DecCoin) | repeated |  |
+| `pagination` | [cosmos.base.query.v1beta1.PageResponse](#cosmos.base.query.v1beta1.PageResponse) |  | pagination response |
+
+
+
+
+<a name="oracle.v1.MsgOracleDataVote"></a>
+
+### MsgOracleDataVote
+MsgOracleDataVote - sdk.Msg for submitting arbitrary oracle data that has been prevoted on
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `salt` | [string](#string) | repeated |  |
+| `oracle_data` | [google.protobuf.Any](#google.protobuf.Any) | repeated |  |
+| `signer` | [string](#string) |  |  |
+=======
+>>>>>>> 80d76df335316d61841ce9bca513aaf530ec40d3
+
+
+<a name="oracle/v1/query.proto"></a>
+<p align="right"><a href="#top">Top</a></p>
+
+## oracle/v1/query.proto
+
+
+
+<<<<<<< HEAD
+<a name="oracle.v1.MsgOracleDataVoteResponse"></a>
+
+### MsgOracleDataVoteResponse
+
+
+
+<a name="oracle.v1.QueryTobinTaxResponse"></a>
+
+### QueryTobinTaxResponse
+=======
+<a name="oracle.v1.QueryDelegeateAddressRequest"></a>
+
+### QueryDelegeateAddressRequest
+>>>>>>> 80d76df335316d61841ce9bca513aaf530ec40d3
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `rate` | [string](#string) |  |  |
+
+
+
+
+
+
+<<<<<<< HEAD
+<a name="oracle.v1.QueryTobinTaxesRequest"></a>
+
+### QueryTobinTaxesRequest
+=======
+<a name="oracle.v1.QueryDelegeateAddressResponse"></a>
+
+### QueryDelegeateAddressResponse
+>>>>>>> 80d76df335316d61841ce9bca513aaf530ec40d3
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+<<<<<<< HEAD
+| `pagination` | [cosmos.base.query.v1beta1.PageRequest](#cosmos.base.query.v1beta1.PageRequest) |  | pagination request |
+=======
+| `delegate` | [string](#string) |  |  |
+>>>>>>> 80d76df335316d61841ce9bca513aaf530ec40d3
+
+
+
+
+
+
+<a name="oracle.v1.QueryTobinTaxesResponse"></a>
+
+### QueryTobinTaxesResponse
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `rates` | [cosmos.base.v1beta1.DecCoin](#cosmos.base.v1beta1.DecCoin) | repeated |  |
+| `pagination` | [cosmos.base.query.v1beta1.PageResponse](#cosmos.base.query.v1beta1.PageResponse) |  | pagination response |
+
+
+
+
+
+
+<a name="oracle.v1.QueryVoteTargetsRequest"></a>
+
+### QueryVoteTargetsRequest
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+<<<<<<< HEAD
+| `pagination` | [cosmos.base.query.v1beta1.PageRequest](#cosmos.base.query.v1beta1.PageRequest) |  | pagination request |
+
+
+
+
+
+
+<a name="oracle.v1.QueryVoteTargetsResponse"></a>
+
+### QueryVoteTargetsResponse
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `targets` | [string](#string) | repeated |  |
+| `pagination` | [cosmos.base.query.v1beta1.PageResponse](#cosmos.base.query.v1beta1.PageResponse) |  | pagination response |
+
+=======
+| `miss_counter` | [int64](#int64) |  |  |
+>>>>>>> 80d76df335316d61841ce9bca513aaf530ec40d3
+
+
+
+
+ <!-- end messages -->
+
+ <!-- end enums -->
+
+<<<<<<< HEAD
+ <!-- end HasExtensions -->
+
+
+<a name="oracle.v1.Msg"></a>
+
+### Msg
+MsgService defines the msgs that the oracle module handles.
+
+| Method Name | Request Type | Response Type | Description | HTTP Verb | Endpoint |
+| ----------- | ------------ | ------------- | ------------| ------- | -------- |
+| `DelegateFeedConsent` | [MsgDelegateFeedConsent](#oracle.v1.MsgDelegateFeedConsent) | [MsgDelegateFeedConsentResponse](#oracle.v1.MsgDelegateFeedConsentResponse) |  | |
+| `OracleDataPrevote` | [MsgOracleDataPrevote](#oracle.v1.MsgOracleDataPrevote) | [MsgOracleDataPrevoteResponse](#oracle.v1.MsgOracleDataPrevoteResponse) |  | |
+| `OracleDataVote` | [MsgOracleDataVote](#oracle.v1.MsgOracleDataVote) | [MsgOracleDataVoteResponse](#oracle.v1.MsgOracleDataVoteResponse) |  | |
+
+ <!-- end services -->
+
+=======
+<a name="oracle.v1.QueryOracleDataPrevoteRequest"></a>
+
+### QueryOracleDataPrevoteRequest
+>>>>>>> 80d76df335316d61841ce9bca513aaf530ec40d3
+
+
+<a name="oracle/v1/genesis.proto"></a>
+<p align="right"><a href="#top">Top</a></p>
+
+## oracle/v1/genesis.proto
+
+
+
+<a name="oracle.v1.GenesisState"></a>
+
+### GenesisState
+GenesisState - all oracle state that must be provided at genesis
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+<<<<<<< HEAD
+| `params` | [Params](#oracle.v1.Params) |  |  |
+| `feeder_delegations` | [MsgDelegateFeedConsent](#oracle.v1.MsgDelegateFeedConsent) | repeated |  |
+| `miss_counters` | [MissCounter](#oracle.v1.MissCounter) | repeated |  |
+
+
+
+
+
+
+<a name="oracle.v1.MissCounter"></a>
+
+### MissCounter
+MissCounter stores the validator address and the number of associated misses
+
+=======
+| `validator` | [string](#string) |  |  |
+>>>>>>> 80d76df335316d61841ce9bca513aaf530ec40d3
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `validator` | [string](#string) |  |  |
+| `misses` | [int64](#int64) |  |  |
+
+
+
+
+
+<<<<<<< HEAD
+
+<a name="oracle.v1.Params"></a>
+=======
+<a name="oracle.v1.QueryOracleDataPrevoteResponse"></a>
+
+### QueryOracleDataPrevoteResponse
+>>>>>>> 80d76df335316d61841ce9bca513aaf530ec40d3
+
+### Params
+Params oracle parameters
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+<<<<<<< HEAD
+| `vote_period` | [int64](#int64) |  | VotePeriod defines the number of blocks to wait for votes before attempting to tally |
+| `vote_threshold` | [string](#string) |  | VoteThreshold defines the percentage of bonded stake required to vote each period |
+| `slash_window` | [int64](#int64) |  | SlashWindow defines the number of blocks for the slashing window |
+| `min_valid_per_window` | [string](#string) |  | MinValidPerWindow defines the number of misses a validator is allowed during each SlashWindow |
+| `slash_fraction` | [string](#string) |  | SlashFraction defines the percentage of slash that a validator will suffer if it fails to send a vote |
+| `data_types` | [string](#string) | repeated | DataTypes defines which data types validators must submit each voting period |
+=======
+| `hashes` | [bytes](#bytes) | repeated |  |
+>>>>>>> 80d76df335316d61841ce9bca513aaf530ec40d3
 
 
 
@@ -526,16 +657,23 @@ Params oracle parameters
 
 ## oracle/v1/query.proto
 
+<<<<<<< HEAD
 
 
 <a name="oracle.v1.QueryDelegeateAddressRequest"></a>
 
 ### QueryDelegeateAddressRequest
+=======
+<a name="oracle.v1.QueryOracleDataRequest"></a>
+
+### QueryOracleDataRequest
+>>>>>>> 80d76df335316d61841ce9bca513aaf530ec40d3
 
 
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
+<<<<<<< HEAD
 | `validator` | [string](#string) |  |  |
 
 
@@ -546,6 +684,9 @@ Params oracle parameters
 <a name="oracle.v1.QueryDelegeateAddressResponse"></a>
 
 ### QueryDelegeateAddressResponse
+=======
+| `type` | [string](#string) |  |  |
+>>>>>>> 80d76df335316d61841ce9bca513aaf530ec40d3
 
 
 
@@ -556,16 +697,22 @@ Params oracle parameters
 
 
 
+<a name="oracle.v1.QueryOracleDataResponse"></a>
 
+<<<<<<< HEAD
 
 <a name="oracle.v1.QueryMissCounterRequest"></a>
 
 ### QueryMissCounterRequest
+=======
+### QueryOracleDataResponse
+>>>>>>> 80d76df335316d61841ce9bca513aaf530ec40d3
 
 
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
+<<<<<<< HEAD
 | `validator` | [string](#string) |  |  |
 
 
@@ -576,6 +723,10 @@ Params oracle parameters
 <a name="oracle.v1.QueryMissCounterResponse"></a>
 
 ### QueryMissCounterResponse
+=======
+| `oracle_data` | [google.protobuf.Any](#google.protobuf.Any) |  |  |
+
+>>>>>>> 80d76df335316d61841ce9bca513aaf530ec40d3
 
 
 
@@ -584,13 +735,18 @@ Params oracle parameters
 | `miss_counter` | [int64](#int64) |  |  |
 
 
+<a name="oracle.v1.QueryOracleDataVoteRequest"></a>
 
+<<<<<<< HEAD
 
 
 
 <a name="oracle.v1.QueryOracleDataPrevoteRequest"></a>
 
 ### QueryOracleDataPrevoteRequest
+=======
+### QueryOracleDataVoteRequest
+>>>>>>> 80d76df335316d61841ce9bca513aaf530ec40d3
 
 
 
@@ -603,6 +759,7 @@ Params oracle parameters
 
 
 
+<<<<<<< HEAD
 <a name="oracle.v1.QueryOracleDataPrevoteResponse"></a>
 
 ### QueryOracleDataPrevoteResponse
@@ -612,12 +769,23 @@ Params oracle parameters
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | `hashes` | [bytes](#bytes) | repeated |  |
+=======
+<a name="oracle.v1.QueryParamsRequest"></a>
+
+### QueryParamsRequest
+
+
+
+>>>>>>> 80d76df335316d61841ce9bca513aaf530ec40d3
 
 
 
 
+<a name="oracle.v1.QueryParamsResponse"></a>
 
+### QueryParamsResponse
 
+<<<<<<< HEAD
 <a name="oracle.v1.QueryOracleDataRequest"></a>
 
 ### QueryOracleDataRequest
@@ -645,11 +813,17 @@ Params oracle parameters
 
 
 
+=======
+>>>>>>> 80d76df335316d61841ce9bca513aaf530ec40d3
 
 
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `params` | [Params](#oracle.v1.Params) |  |  |
 
 <a name="oracle.v1.QueryOracleDataVoteRequest"></a>
 
+<<<<<<< HEAD
 ### QueryOracleDataVoteRequest
 
 
@@ -657,40 +831,68 @@ Params oracle parameters
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | `validator` | [string](#string) |  |  |
+=======
 
 
 
+>>>>>>> 80d76df335316d61841ce9bca513aaf530ec40d3
+
+<a name="oracle.v1.QueryValidatorAddressRequest"></a>
+
+### QueryValidatorAddressRequest
 
 
+
+<<<<<<< HEAD
 
 <a name="oracle.v1.QueryParamsRequest"></a>
 
 ### QueryParamsRequest
+=======
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `delegate` | [string](#string) |  |  |
+>>>>>>> 80d76df335316d61841ce9bca513aaf530ec40d3
 
 
 
 
 
 
+<a name="oracle.v1.QueryValidatorAddressResponse"></a>
 
+<<<<<<< HEAD
 <a name="oracle.v1.QueryParamsResponse"></a>
 
 ### QueryParamsResponse
+=======
+### QueryValidatorAddressResponse
+>>>>>>> 80d76df335316d61841ce9bca513aaf530ec40d3
 
 
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
+<<<<<<< HEAD
 | `params` | [Params](#oracle.v1.Params) |  |  |
+=======
+| `validator` | [string](#string) |  |  |
+>>>>>>> 80d76df335316d61841ce9bca513aaf530ec40d3
 
 
 
 
 
 
+<<<<<<< HEAD
 <a name="oracle.v1.QueryValidatorAddressRequest"></a>
 
 ### QueryValidatorAddressRequest
+=======
+<a name="oracle.v1.QueryVotePeriodRequest"></a>
+
+### QueryVotePeriodRequest
+>>>>>>> 80d76df335316d61841ce9bca513aaf530ec40d3
 
 
 
@@ -701,16 +903,24 @@ Params oracle parameters
 
 
 
+<<<<<<< HEAD
 
 
 <a name="oracle.v1.QueryValidatorAddressResponse"></a>
 
 ### QueryValidatorAddressResponse
 
+=======
+<a name="oracle.v1.VotePeriod"></a>
+
+### VotePeriod
+
+>>>>>>> 80d76df335316d61841ce9bca513aaf530ec40d3
 
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
+<<<<<<< HEAD
 | `validator` | [string](#string) |  |  |
 
 
@@ -724,6 +934,11 @@ Params oracle parameters
 
 
 
+=======
+| `current_height` | [int64](#int64) |  |  |
+| `vote_period_start` | [int64](#int64) |  |  |
+| `vote_period_end` | [int64](#int64) |  |  |
+>>>>>>> 80d76df335316d61841ce9bca513aaf530ec40d3
 
 
 
