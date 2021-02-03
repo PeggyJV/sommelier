@@ -79,14 +79,13 @@ func (c *Coordinator) handleTx(txEvent ctypes.ResultEvent) error {
 	}
 	for _, ev := range tx.Result.Events {
 		if ev.Type == oracle.EventTypeOracleDataPrevote {
-			// for _, att := range ev.Attributes {
-			// 	if string(att.Key) == oracle.AttributeKeyValidator && string(att.Value) == c.Val.String() {
-
-			// 	}
-			// }
-			fmt.Println("Submitting Oracle Data Vote")
-			if err := c.SubmitOracleDataVote(); err != nil {
-				return err
+			for _, att := range ev.Attributes {
+				if string(att.Key) == oracle.AttributeKeyValidator &&
+					string(att.Value) == c.Val.String() {
+					if err := c.SubmitOracleDataVote(); err != nil {
+						return err
+					}
+				}
 			}
 		}
 	}

@@ -65,7 +65,11 @@ func (k Keeper) QueryOracleDataVote(c context.Context, req *types.QueryOracleDat
 // OracleData implements QueryServer
 func (k Keeper) OracleData(c context.Context, req *types.QueryOracleDataRequest) (*types.QueryOracleDataResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
-	oda, err := types.PackOracleData(k.GetOracleData(ctx, req.Type))
+	od := k.GetOracleData(ctx, req.Type)
+	if od == nil {
+		return nil, fmt.Errorf("oracle data of type %s not available in state", req.Type)
+	}
+	oda, err := types.PackOracleData(od)
 	if err != nil {
 		return nil, err
 	}

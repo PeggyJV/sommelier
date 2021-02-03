@@ -32,6 +32,7 @@ EOF
               sleep 10 
               echo "delegating feed perms to oracle-feeder..."
               sommelier tx oracle delegate-feeder $(oracle-feeder keys show feeder) --keyring-backend test --from val -y --chain-id somm > /dev/null 2>&1
+              oracle-feeder start
               true
               ;;
           *)
