@@ -7,13 +7,8 @@ import "oracle/v1/genesis.proto";
 import "oracle/v1/tx.proto";
 import "google/api/annotations.proto";
 import "cosmos/base/v1beta1/coin.proto";
-<<<<<<< HEAD
-import "cosmos/base/query/v1beta1/pagination.proto";
-
-=======
 import "cosmos_proto/cosmos.proto";
 import "google/protobuf/any.proto";
->>>>>>> 80d76df335316d61841ce9bca513aaf530ec40d3
 
 option go_package = "github.com/peggyjv/sommelier/x/oracle/types";
 
@@ -28,53 +23,6 @@ service Query {
     rpc OracleData(QueryOracleDataRequest) returns (QueryOracleDataResponse) {}
 }
 
-<<<<<<< HEAD
-message QueryExchangeRateRequest {
-    // token denomination
-    string denom = 1;
-}
-message QueryExchangeRateResponse {
-    // token exchange rate
-    string rate = 1 [
-        (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec", 
-        (gogoproto.nullable) = false
-    ]; 
-}
-
-message QueryExchangeRatesRequest {
-    // pagination request
-    cosmos.base.query.v1beta1.PageRequest pagination = 1;
-}
-
-message QueryExchangeRatesResponse {
-    repeated cosmos.base.v1beta1.DecCoin rates = 1 [
-        (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.DecCoins", 
-        (gogoproto.nullable) = false
-    ];
-    // pagination response
-    cosmos.base.query.v1beta1.PageResponse pagination = 2;
-}
-
-message QueryActivesRequest {
-    // pagination request
-    cosmos.base.query.v1beta1.PageRequest pagination = 1;
-}
-
-message QueryActivesResponse {
-    repeated string denoms = 1;
-    // pagination response
-    cosmos.base.query.v1beta1.PageResponse pagination = 2;
-}
-
-message QueryParametersRequest {}
-message QueryParametersResponse { Params params = 1 [(gogoproto.nullable) = false]; }
-
-message QueryFeederDelegationRequest { string validator = 1; }
-message QueryFeederDelegationResponse { string address = 1; }
-
-message QueryMissCounterRequest { string validator = 1; }
-message QueryMissCounterResponse { int64 counter = 1; }
-=======
 message QueryValidatorAddressRequest {
     string delegate = 1;
 }
@@ -95,7 +43,6 @@ message VotePeriod {
     int64 vote_period_start = 2;
     int64 vote_period_end   = 3; 
 }
->>>>>>> 80d76df335316d61841ce9bca513aaf530ec40d3
 
 message QueryMissCounterRequest {
     string validator = 1;
@@ -111,33 +58,6 @@ message QueryDelegeateAddressResponse {
     string delegate = 2;
 }
 
-<<<<<<< HEAD
-message QueryVoteTargetsRequest {
-    // pagination request
-    cosmos.base.query.v1beta1.PageRequest pagination = 1;
-}
-message QueryVoteTargetsResponse {
-    repeated string targets = 1;
-    // pagination response
-    cosmos.base.query.v1beta1.PageResponse pagination = 2;
-}
-
-message QueryTobinTaxRequest { string denom = 1; }
-message QueryTobinTaxResponse { string rate = 1 [(gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec", (gogoproto.nullable) = false]; }
-
-message QueryTobinTaxesRequest {
-    // pagination request
-    cosmos.base.query.v1beta1.PageRequest pagination = 1;
-}
-
-message QueryTobinTaxesResponse {
-    repeated cosmos.base.v1beta1.DecCoin rates = 1 [
-        (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.DecCoins", 
-        (gogoproto.nullable) = false
-    ];
-     // pagination response
-     cosmos.base.query.v1beta1.PageResponse pagination = 2;
-=======
 message QueryOracleDataPrevoteRequest {
     string validator = 1; 
 }
@@ -156,5 +76,4 @@ message QueryOracleDataResponse {
     google.protobuf.Any oracle_data = 1 [
         (cosmos_proto.accepts_interface) = "OracleData"
     ];
->>>>>>> 80d76df335316d61841ce9bca513aaf530ec40d3
 }

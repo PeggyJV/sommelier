@@ -36,6 +36,7 @@ func request_Query_OracleData_0(ctx context.Context, marshaler runtime.Marshaler
 	var metadata runtime.ServerMetadata
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 	var (
 		val string
 		ok  bool
@@ -699,6 +700,10 @@ func RegisterQueryHandlerServer(ctx context.Context, mux *runtime.ServeMux, serv
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
+=======
+	msg, err := client.OracleData(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
+	return msg, metadata, err
+>>>>>>> 80d76df335316d61841ce9bca513aaf530ec40d3
 =======
 	msg, err := client.OracleData(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
 	return msg, metadata, err

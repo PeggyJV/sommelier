@@ -16,23 +16,16 @@ func BeginBlocker(ctx sdk.Context, k keeper.Keeper) {
 		k.SetVotePeriodStart(ctx, ctx.BlockHeight())
 	}
 
-	//---------------------------
-	// Do miss counting & slashing
-	voteTargetsLen := len(voteTargets)
-	for operatorAddrByteStr, count := range validVotesCounterMap {
-		// Skip abstain & valid voters
-		if count == voteTargetsLen {
-			continue
-		}
-
-		// Increase miss counter
-		operator, err := sdk.ValAddressFromBech32(operatorAddrByteStr)
-		if err != nil {
-			panic(err)
-		}
-
-		counter, _ := k.GetMissCounter(ctx, operator)
-		k.SetMissCounter(ctx, operator, counter+1)
+	// On begin block, if we are tallying, emit the new vote period data
+	params := k.GetParamSet(ctx)
+	if (ctx.BlockHeight() - k.GetVotePeriodStart(ctx)) >= params.VotePeriod {
+		ctx.EventManager().EmitEvent(
+			sdk.NewEvent(
+				types.EventTypeVotePeriod,
+				sdk.NewAttribute(types.AttributeKeyVotePeriodStart, fmt.Sprintf("%d", ctx.BlockHeight())),
+				sdk.NewAttribute(types.AttributeKeyVotePeriodEnd, fmt.Sprintf("%d", ctx.BlockHeight()+params.VotePeriod)),
+			),
+		)
 	}
 
 }

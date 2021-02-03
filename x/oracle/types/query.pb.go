@@ -7,9 +7,14 @@ import (
 	context "context"
 	fmt "fmt"
 <<<<<<< HEAD
+<<<<<<< HEAD
 	github_com_cosmos_cosmos_sdk_types "github.com/cosmos/cosmos-sdk/types"
 	types "github.com/cosmos/cosmos-sdk/types"
 	query "github.com/cosmos/cosmos-sdk/types/query"
+=======
+	types "github.com/cosmos/cosmos-sdk/codec/types"
+	_ "github.com/cosmos/cosmos-sdk/types"
+>>>>>>> 80d76df335316d61841ce9bca513aaf530ec40d3
 =======
 	types "github.com/cosmos/cosmos-sdk/codec/types"
 	_ "github.com/cosmos/cosmos-sdk/types"
@@ -39,9 +44,14 @@ var _ = math.Inf
 const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 type QueryExchangeRateRequest struct {
 	// token denomination
 	Denom string `protobuf:"bytes,1,opt,name=denom,proto3" json:"denom,omitempty"`
+=======
+type QueryValidatorAddressRequest struct {
+	Delegate string `protobuf:"bytes,1,opt,name=delegate,proto3" json:"delegate,omitempty"`
+>>>>>>> 80d76df335316d61841ce9bca513aaf530ec40d3
 =======
 type QueryValidatorAddressRequest struct {
 	Delegate string `protobuf:"bytes,1,opt,name=delegate,proto3" json:"delegate,omitempty"`
@@ -89,9 +99,14 @@ func (m *QueryValidatorAddressRequest) GetDelegate() string {
 }
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 type QueryExchangeRateResponse struct {
 	// token exchange rate
 	Rate github_com_cosmos_cosmos_sdk_types.Dec `protobuf:"bytes,1,opt,name=rate,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Dec" json:"rate"`
+=======
+type QueryValidatorAddressResponse struct {
+	Validator string `protobuf:"bytes,1,opt,name=validator,proto3" json:"validator,omitempty"`
+>>>>>>> 80d76df335316d61841ce9bca513aaf530ec40d3
 =======
 type QueryValidatorAddressResponse struct {
 	Validator string `protobuf:"bytes,1,opt,name=validator,proto3" json:"validator,omitempty"`
@@ -104,6 +119,7 @@ func (*QueryValidatorAddressResponse) ProtoMessage()    {}
 func (*QueryValidatorAddressResponse) Descriptor() ([]byte, []int) {
 	return fileDescriptor_34238c8dfdfcd7ec, []int{1}
 }
+<<<<<<< HEAD
 <<<<<<< HEAD
 func (m *QueryExchangeRateResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -193,6 +209,9 @@ func (m *QueryExchangeRatesResponse) XXX_Unmarshal(b []byte) error {
 =======
 func (m *QueryValidatorAddressResponse) XXX_Unmarshal(b []byte) error {
 >>>>>>> 80d76df335316d61841ce9bca513aaf530ec40d3
+=======
+func (m *QueryValidatorAddressResponse) XXX_Unmarshal(b []byte) error {
+>>>>>>> 80d76df335316d61841ce9bca513aaf530ec40d3
 	return m.Unmarshal(b)
 }
 func (m *QueryValidatorAddressResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
@@ -218,6 +237,7 @@ func (m *QueryValidatorAddressResponse) XXX_DiscardUnknown() {
 }
 
 var xxx_messageInfo_QueryValidatorAddressResponse proto.InternalMessageInfo
+<<<<<<< HEAD
 
 func (m *QueryValidatorAddressResponse) GetValidator() string {
 	if m != nil {
@@ -230,13 +250,23 @@ func (m *QueryValidatorAddressResponse) GetValidator() string {
 func (m *QueryExchangeRatesResponse) GetPagination() *query.PageResponse {
 	if m != nil {
 		return m.Pagination
+=======
+
+func (m *QueryValidatorAddressResponse) GetValidator() string {
+	if m != nil {
+		return m.Validator
+>>>>>>> 80d76df335316d61841ce9bca513aaf530ec40d3
 	}
-	return nil
+	return ""
 }
 
+<<<<<<< HEAD
 type QueryActivesRequest struct {
 	// pagination request
 	Pagination *query.PageRequest `protobuf:"bytes,1,opt,name=pagination,proto3" json:"pagination,omitempty"`
+=======
+type QueryParamsRequest struct {
+>>>>>>> 80d76df335316d61841ce9bca513aaf530ec40d3
 =======
 type QueryParamsRequest struct {
 >>>>>>> 80d76df335316d61841ce9bca513aaf530ec40d3
@@ -274,6 +304,7 @@ func (m *QueryParamsRequest) XXX_DiscardUnknown() {
 }
 
 var xxx_messageInfo_QueryParamsRequest proto.InternalMessageInfo
+<<<<<<< HEAD
 
 <<<<<<< HEAD
 func (m *QueryActivesRequest) GetPagination() *query.PageRequest {
@@ -288,6 +319,11 @@ type QueryActivesResponse struct {
 	// pagination response
 	Pagination *query.PageResponse `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
 =======
+type QueryParamsResponse struct {
+	Params Params `protobuf:"bytes,1,opt,name=params,proto3" json:"params"`
+>>>>>>> 80d76df335316d61841ce9bca513aaf530ec40d3
+=======
+
 type QueryParamsResponse struct {
 	Params Params `protobuf:"bytes,1,opt,name=params,proto3" json:"params"`
 >>>>>>> 80d76df335316d61841ce9bca513aaf530ec40d3
@@ -331,6 +367,7 @@ func (m *QueryParamsResponse) GetParams() Params {
 		return m.Params
 	}
 	return Params{}
+<<<<<<< HEAD
 }
 
 <<<<<<< HEAD
@@ -359,6 +396,24 @@ func (m *QueryVotePeriodRequest) XXX_Unmarshal(b []byte) error {
 func (m *QueryVotePeriodRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
 		return xxx_messageInfo_QueryVotePeriodRequest.Marshal(b, m, deterministic)
+=======
+}
+
+type QueryVotePeriodRequest struct {
+}
+
+func (m *QueryVotePeriodRequest) Reset()         { *m = QueryVotePeriodRequest{} }
+func (m *QueryVotePeriodRequest) String() string { return proto.CompactTextString(m) }
+func (*QueryVotePeriodRequest) ProtoMessage()    {}
+func (*QueryVotePeriodRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_34238c8dfdfcd7ec, []int{4}
+}
+func (m *QueryVotePeriodRequest) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *QueryVotePeriodRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_QueryVotePeriodRequest.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -368,6 +423,47 @@ func (m *QueryVotePeriodRequest) XXX_Marshal(b []byte, deterministic bool) ([]by
 		return b[:n], nil
 	}
 }
+func (m *QueryVotePeriodRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryVotePeriodRequest.Merge(m, src)
+}
+func (m *QueryVotePeriodRequest) XXX_Size() int {
+	return m.Size()
+}
+func (m *QueryVotePeriodRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryVotePeriodRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QueryVotePeriodRequest proto.InternalMessageInfo
+
+type VotePeriod struct {
+	CurrentHeight   int64 `protobuf:"varint,1,opt,name=current_height,json=currentHeight,proto3" json:"current_height,omitempty"`
+	VotePeriodStart int64 `protobuf:"varint,2,opt,name=vote_period_start,json=votePeriodStart,proto3" json:"vote_period_start,omitempty"`
+	VotePeriodEnd   int64 `protobuf:"varint,3,opt,name=vote_period_end,json=votePeriodEnd,proto3" json:"vote_period_end,omitempty"`
+}
+
+func (m *VotePeriod) Reset()         { *m = VotePeriod{} }
+func (m *VotePeriod) String() string { return proto.CompactTextString(m) }
+func (*VotePeriod) ProtoMessage()    {}
+func (*VotePeriod) Descriptor() ([]byte, []int) {
+	return fileDescriptor_34238c8dfdfcd7ec, []int{5}
+}
+func (m *VotePeriod) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *VotePeriod) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_VotePeriod.Marshal(b, m, deterministic)
+>>>>>>> 80d76df335316d61841ce9bca513aaf530ec40d3
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+<<<<<<< HEAD
 func (m *QueryVotePeriodRequest) XXX_Merge(src proto.Message) {
 	xxx_messageInfo_QueryVotePeriodRequest.Merge(m, src)
 }
@@ -428,6 +524,29 @@ func (m *VotePeriod) GetCurrentHeight() int64 {
 
 func (m *VotePeriod) GetVotePeriodStart() int64 {
 	if m != nil {
+=======
+func (m *VotePeriod) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_VotePeriod.Merge(m, src)
+}
+func (m *VotePeriod) XXX_Size() int {
+	return m.Size()
+}
+func (m *VotePeriod) XXX_DiscardUnknown() {
+	xxx_messageInfo_VotePeriod.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_VotePeriod proto.InternalMessageInfo
+
+func (m *VotePeriod) GetCurrentHeight() int64 {
+	if m != nil {
+		return m.CurrentHeight
+	}
+	return 0
+}
+
+func (m *VotePeriod) GetVotePeriodStart() int64 {
+	if m != nil {
+>>>>>>> 80d76df335316d61841ce9bca513aaf530ec40d3
 		return m.VotePeriodStart
 	}
 	return 0
@@ -661,6 +780,7 @@ func (m *QueryOracleDataPrevoteRequest) GetValidator() string {
 }
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 type QueryAggregateVoteResponse struct {
 	Vote AggregateExchangeRateVote `protobuf:"bytes,1,opt,name=vote,proto3" json:"vote"`
 }
@@ -760,6 +880,12 @@ type QueryOracleDataPrevoteResponse struct {
 >>>>>>> 80d76df335316d61841ce9bca513aaf530ec40d3
 }
 
+=======
+type QueryOracleDataPrevoteResponse struct {
+	Hashes [][]byte `protobuf:"bytes,1,rep,name=hashes,proto3" json:"hashes,omitempty"`
+}
+
+>>>>>>> 80d76df335316d61841ce9bca513aaf530ec40d3
 func (m *QueryOracleDataPrevoteResponse) Reset()         { *m = QueryOracleDataPrevoteResponse{} }
 func (m *QueryOracleDataPrevoteResponse) String() string { return proto.CompactTextString(m) }
 func (*QueryOracleDataPrevoteResponse) ProtoMessage()    {}
@@ -792,6 +918,7 @@ func (m *QueryOracleDataPrevoteResponse) XXX_DiscardUnknown() {
 }
 
 var xxx_messageInfo_QueryOracleDataPrevoteResponse proto.InternalMessageInfo
+<<<<<<< HEAD
 
 func (m *QueryOracleDataPrevoteResponse) GetHashes() [][]byte {
 	if m != nil {
@@ -804,12 +931,23 @@ func (m *QueryOracleDataPrevoteResponse) GetHashes() [][]byte {
 func (m *QueryVoteTargetsResponse) GetPagination() *query.PageResponse {
 	if m != nil {
 		return m.Pagination
+=======
+
+func (m *QueryOracleDataPrevoteResponse) GetHashes() [][]byte {
+	if m != nil {
+		return m.Hashes
+>>>>>>> 80d76df335316d61841ce9bca513aaf530ec40d3
 	}
 	return nil
 }
 
+<<<<<<< HEAD
 type QueryTobinTaxRequest struct {
 	Denom string `protobuf:"bytes,1,opt,name=denom,proto3" json:"denom,omitempty"`
+=======
+type QueryOracleDataVoteRequest struct {
+	Validator string `protobuf:"bytes,1,opt,name=validator,proto3" json:"validator,omitempty"`
+>>>>>>> 80d76df335316d61841ce9bca513aaf530ec40d3
 =======
 type QueryOracleDataVoteRequest struct {
 	Validator string `protobuf:"bytes,1,opt,name=validator,proto3" json:"validator,omitempty"`
@@ -857,8 +995,13 @@ func (m *QueryOracleDataVoteRequest) GetValidator() string {
 }
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 type QueryTobinTaxResponse struct {
 	Rate github_com_cosmos_cosmos_sdk_types.Dec `protobuf:"bytes,1,opt,name=rate,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Dec" json:"rate"`
+=======
+type QueryOracleDataRequest struct {
+	Type string `protobuf:"bytes,1,opt,name=type,proto3" json:"type,omitempty"`
+>>>>>>> 80d76df335316d61841ce9bca513aaf530ec40d3
 =======
 type QueryOracleDataRequest struct {
 	Type string `protobuf:"bytes,1,opt,name=type,proto3" json:"type,omitempty"`
@@ -899,6 +1042,7 @@ func (m *QueryOracleDataRequest) XXX_DiscardUnknown() {
 var xxx_messageInfo_QueryOracleDataRequest proto.InternalMessageInfo
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 type QueryTobinTaxesRequest struct {
 	// pagination request
 	Pagination *query.PageRequest `protobuf:"bytes,1,opt,name=pagination,proto3" json:"pagination,omitempty"`
@@ -928,10 +1072,16 @@ func (m *QueryOracleDataRequest) GetType() string {
 	if m != nil {
 		return m.Type
 >>>>>>> 80d76df335316d61841ce9bca513aaf530ec40d3
+=======
+func (m *QueryOracleDataRequest) GetType() string {
+	if m != nil {
+		return m.Type
+>>>>>>> 80d76df335316d61841ce9bca513aaf530ec40d3
 	}
 	return ""
 }
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 func (m *QueryTobinTaxesRequest) GetPagination() *query.PageRequest {
 	if m != nil {
@@ -950,6 +1100,12 @@ type QueryOracleDataResponse struct {
 >>>>>>> 80d76df335316d61841ce9bca513aaf530ec40d3
 }
 
+=======
+type QueryOracleDataResponse struct {
+	OracleData *types.Any `protobuf:"bytes,1,opt,name=oracle_data,json=oracleData,proto3" json:"oracle_data,omitempty"`
+}
+
+>>>>>>> 80d76df335316d61841ce9bca513aaf530ec40d3
 func (m *QueryOracleDataResponse) Reset()         { *m = QueryOracleDataResponse{} }
 func (m *QueryOracleDataResponse) String() string { return proto.CompactTextString(m) }
 func (*QueryOracleDataResponse) ProtoMessage()    {}
@@ -982,6 +1138,7 @@ func (m *QueryOracleDataResponse) XXX_DiscardUnknown() {
 }
 
 var xxx_messageInfo_QueryOracleDataResponse proto.InternalMessageInfo
+<<<<<<< HEAD
 
 func (m *QueryOracleDataResponse) GetOracleData() *types.Any {
 	if m != nil {
@@ -993,6 +1150,12 @@ func (m *QueryOracleDataResponse) GetOracleData() *types.Any {
 func (m *QueryTobinTaxesResponse) GetPagination() *query.PageResponse {
 	if m != nil {
 		return m.Pagination
+=======
+
+func (m *QueryOracleDataResponse) GetOracleData() *types.Any {
+	if m != nil {
+		return m.OracleData
+>>>>>>> 80d76df335316d61841ce9bca513aaf530ec40d3
 	}
 	return nil
 }
@@ -1018,6 +1181,7 @@ func init() {
 func init() { proto.RegisterFile("oracle/v1/query.proto", fileDescriptor_34238c8dfdfcd7ec) }
 
 var fileDescriptor_34238c8dfdfcd7ec = []byte{
+<<<<<<< HEAD
 <<<<<<< HEAD
 	// 1055 bytes of a gzipped FileDescriptorProto
 	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xd4, 0x57, 0x5d, 0x6b, 0xdc, 0x46,
@@ -1087,6 +1251,8 @@ var fileDescriptor_34238c8dfdfcd7ec = []byte{
 	0xf5, 0x7a, 0xb4, 0xeb, 0xd3, 0xc8, 0x3e, 0xce, 0xea, 0x09, 0xdf, 0x68, 0xcf, 0x8b, 0x7f, 0xd9,
 	0xee, 0xfd, 0x17, 0x00, 0x00, 0xff, 0xff, 0xd7, 0x8a, 0x82, 0x76, 0x6e, 0x0e, 0x00, 0x00,
 =======
+=======
+>>>>>>> 80d76df335316d61841ce9bca513aaf530ec40d3
 	// 749 bytes of a gzipped FileDescriptorProto
 	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x8c, 0x55, 0xdd, 0x52, 0xd3, 0x40,
 	0x14, 0x4e, 0x01, 0x3b, 0x72, 0x8a, 0x20, 0x2b, 0x3f, 0x35, 0x53, 0xa2, 0xac, 0x83, 0xe2, 0x5f,
@@ -1135,6 +1301,9 @@ var fileDescriptor_34238c8dfdfcd7ec = []byte{
 	0x5e, 0xd3, 0x6c, 0xb1, 0xae, 0xe5, 0x53, 0xc7, 0x19, 0x7c, 0xeb, 0x5b, 0x9c, 0x75, 0xbb, 0xb4,
 	0xe3, 0xd2, 0xc0, 0x3a, 0x52, 0xbf, 0x69, 0x2b, 0x9c, 0x58, 0xde, 0x2c, 0xcb, 0xd1, 0x7b, 0xf2,
 	0x37, 0x00, 0x00, 0xff, 0xff, 0xda, 0x4f, 0x61, 0x73, 0xff, 0x07, 0x00, 0x00,
+<<<<<<< HEAD
+>>>>>>> 80d76df335316d61841ce9bca513aaf530ec40d3
+=======
 >>>>>>> 80d76df335316d61841ce9bca513aaf530ec40d3
 }
 
@@ -1171,6 +1340,7 @@ func NewQueryClient(cc grpc1.ClientConn) QueryClient {
 func (c *queryClient) QueryParams(ctx context.Context, in *QueryParamsRequest, opts ...grpc.CallOption) (*QueryParamsResponse, error) {
 	out := new(QueryParamsResponse)
 	err := c.cc.Invoke(ctx, "/oracle.v1.Query/QueryParams", in, out, opts...)
+<<<<<<< HEAD
 	if err != nil {
 		return nil, err
 	}
@@ -1180,12 +1350,31 @@ func (c *queryClient) QueryParams(ctx context.Context, in *QueryParamsRequest, o
 func (c *queryClient) QueryDelegeateAddress(ctx context.Context, in *QueryDelegeateAddressRequest, opts ...grpc.CallOption) (*QueryDelegeateAddressResponse, error) {
 	out := new(QueryDelegeateAddressResponse)
 	err := c.cc.Invoke(ctx, "/oracle.v1.Query/QueryDelegeateAddress", in, out, opts...)
+=======
+>>>>>>> 80d76df335316d61841ce9bca513aaf530ec40d3
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
+<<<<<<< HEAD
+func (c *queryClient) QueryValidatorAddress(ctx context.Context, in *QueryValidatorAddressRequest, opts ...grpc.CallOption) (*QueryValidatorAddressResponse, error) {
+	out := new(QueryValidatorAddressResponse)
+	err := c.cc.Invoke(ctx, "/oracle.v1.Query/QueryValidatorAddress", in, out, opts...)
+=======
+func (c *queryClient) QueryDelegeateAddress(ctx context.Context, in *QueryDelegeateAddressRequest, opts ...grpc.CallOption) (*QueryDelegeateAddressResponse, error) {
+	out := new(QueryDelegeateAddressResponse)
+	err := c.cc.Invoke(ctx, "/oracle.v1.Query/QueryDelegeateAddress", in, out, opts...)
+>>>>>>> 80d76df335316d61841ce9bca513aaf530ec40d3
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+<<<<<<< HEAD
+=======
 func (c *queryClient) QueryValidatorAddress(ctx context.Context, in *QueryValidatorAddressRequest, opts ...grpc.CallOption) (*QueryValidatorAddressResponse, error) {
 	out := new(QueryValidatorAddressResponse)
 	err := c.cc.Invoke(ctx, "/oracle.v1.Query/QueryValidatorAddress", in, out, opts...)
@@ -1195,6 +1384,7 @@ func (c *queryClient) QueryValidatorAddress(ctx context.Context, in *QueryValida
 	return out, nil
 }
 
+>>>>>>> 80d76df335316d61841ce9bca513aaf530ec40d3
 func (c *queryClient) QueryOracleDataPrevote(ctx context.Context, in *QueryOracleDataPrevoteRequest, opts ...grpc.CallOption) (*QueryOracleDataPrevoteResponse, error) {
 	out := new(QueryOracleDataPrevoteResponse)
 	err := c.cc.Invoke(ctx, "/oracle.v1.Query/QueryOracleDataPrevote", in, out, opts...)
@@ -1258,6 +1448,7 @@ type UnimplementedQueryServer struct {
 
 func (*UnimplementedQueryServer) QueryParams(ctx context.Context, req *QueryParamsRequest) (*QueryParamsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method QueryParams not implemented")
+<<<<<<< HEAD
 }
 func (*UnimplementedQueryServer) QueryDelegeateAddress(ctx context.Context, req *QueryDelegeateAddressRequest) (*QueryDelegeateAddressResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method QueryDelegeateAddress not implemented")
@@ -1277,6 +1468,27 @@ func (*UnimplementedQueryServer) QueryVotePeriod(ctx context.Context, req *Query
 func (*UnimplementedQueryServer) QueryMissCounter(ctx context.Context, req *QueryMissCounterRequest) (*QueryMissCounterResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method QueryMissCounter not implemented")
 }
+=======
+}
+func (*UnimplementedQueryServer) QueryDelegeateAddress(ctx context.Context, req *QueryDelegeateAddressRequest) (*QueryDelegeateAddressResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method QueryDelegeateAddress not implemented")
+}
+func (*UnimplementedQueryServer) QueryValidatorAddress(ctx context.Context, req *QueryValidatorAddressRequest) (*QueryValidatorAddressResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method QueryValidatorAddress not implemented")
+}
+func (*UnimplementedQueryServer) QueryOracleDataPrevote(ctx context.Context, req *QueryOracleDataPrevoteRequest) (*QueryOracleDataPrevoteResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method QueryOracleDataPrevote not implemented")
+}
+func (*UnimplementedQueryServer) QueryOracleDataVote(ctx context.Context, req *QueryOracleDataVoteRequest) (*MsgOracleDataVote, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method QueryOracleDataVote not implemented")
+}
+func (*UnimplementedQueryServer) QueryVotePeriod(ctx context.Context, req *QueryVotePeriodRequest) (*VotePeriod, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method QueryVotePeriod not implemented")
+}
+func (*UnimplementedQueryServer) QueryMissCounter(ctx context.Context, req *QueryMissCounterRequest) (*QueryMissCounterResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method QueryMissCounter not implemented")
+}
+>>>>>>> 80d76df335316d61841ce9bca513aaf530ec40d3
 func (*UnimplementedQueryServer) OracleData(ctx context.Context, req *QueryOracleDataRequest) (*QueryOracleDataResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method OracleData not implemented")
 }
@@ -1287,6 +1499,8 @@ func RegisterQueryServer(s grpc1.Server, srv QueryServer) {
 
 func _Query_QueryParams_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(QueryParamsRequest)
+<<<<<<< HEAD
+=======
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -1341,10 +1555,21 @@ func _Query_QueryValidatorAddress_Handler(srv interface{}, ctx context.Context, 
 
 func _Query_QueryOracleDataPrevote_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(QueryOracleDataPrevoteRequest)
+>>>>>>> 80d76df335316d61841ce9bca513aaf530ec40d3
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
+<<<<<<< HEAD
+		return srv.(QueryServer).QueryParams(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/oracle.v1.Query/QueryParams",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServer).QueryParams(ctx, req.(*QueryParamsRequest))
+=======
 		return srv.(QueryServer).QueryOracleDataPrevote(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
@@ -1353,16 +1578,32 @@ func _Query_QueryOracleDataPrevote_Handler(srv interface{}, ctx context.Context,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(QueryServer).QueryOracleDataPrevote(ctx, req.(*QueryOracleDataPrevoteRequest))
+>>>>>>> 80d76df335316d61841ce9bca513aaf530ec40d3
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
+<<<<<<< HEAD
+func _Query_QueryDelegeateAddress_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryDelegeateAddressRequest)
+=======
 func _Query_QueryOracleDataVote_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(QueryOracleDataVoteRequest)
+>>>>>>> 80d76df335316d61841ce9bca513aaf530ec40d3
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
+<<<<<<< HEAD
+		return srv.(QueryServer).QueryDelegeateAddress(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/oracle.v1.Query/QueryDelegeateAddress",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServer).QueryDelegeateAddress(ctx, req.(*QueryDelegeateAddressRequest))
+=======
 		return srv.(QueryServer).QueryOracleDataVote(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
@@ -1371,10 +1612,114 @@ func _Query_QueryOracleDataVote_Handler(srv interface{}, ctx context.Context, de
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(QueryServer).QueryOracleDataVote(ctx, req.(*QueryOracleDataVoteRequest))
+>>>>>>> 80d76df335316d61841ce9bca513aaf530ec40d3
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
+<<<<<<< HEAD
+func _Query_QueryValidatorAddress_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryValidatorAddressRequest)
+=======
+func _Query_QueryVotePeriod_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryVotePeriodRequest)
+>>>>>>> 80d76df335316d61841ce9bca513aaf530ec40d3
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+<<<<<<< HEAD
+		return srv.(QueryServer).QueryValidatorAddress(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/oracle.v1.Query/QueryValidatorAddress",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServer).QueryValidatorAddress(ctx, req.(*QueryValidatorAddressRequest))
+=======
+		return srv.(QueryServer).QueryVotePeriod(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/oracle.v1.Query/QueryVotePeriod",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServer).QueryVotePeriod(ctx, req.(*QueryVotePeriodRequest))
+>>>>>>> 80d76df335316d61841ce9bca513aaf530ec40d3
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+<<<<<<< HEAD
+func _Query_QueryOracleDataPrevote_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryOracleDataPrevoteRequest)
+=======
+func _Query_QueryMissCounter_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryMissCounterRequest)
+>>>>>>> 80d76df335316d61841ce9bca513aaf530ec40d3
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+<<<<<<< HEAD
+		return srv.(QueryServer).QueryOracleDataPrevote(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/oracle.v1.Query/QueryOracleDataPrevote",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServer).QueryOracleDataPrevote(ctx, req.(*QueryOracleDataPrevoteRequest))
+=======
+		return srv.(QueryServer).QueryMissCounter(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/oracle.v1.Query/QueryMissCounter",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServer).QueryMissCounter(ctx, req.(*QueryMissCounterRequest))
+>>>>>>> 80d76df335316d61841ce9bca513aaf530ec40d3
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+<<<<<<< HEAD
+func _Query_QueryOracleDataVote_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryOracleDataVoteRequest)
+=======
+func _Query_OracleData_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryOracleDataRequest)
+>>>>>>> 80d76df335316d61841ce9bca513aaf530ec40d3
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+<<<<<<< HEAD
+		return srv.(QueryServer).QueryOracleDataVote(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/oracle.v1.Query/QueryOracleDataVote",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServer).QueryOracleDataVote(ctx, req.(*QueryOracleDataVoteRequest))
+=======
+		return srv.(QueryServer).OracleData(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/oracle.v1.Query/OracleData",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServer).OracleData(ctx, req.(*QueryOracleDataRequest))
+>>>>>>> 80d76df335316d61841ce9bca513aaf530ec40d3
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+<<<<<<< HEAD
 func _Query_QueryVotePeriod_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(QueryVotePeriodRequest)
 	if err := dec(in); err != nil {
@@ -1470,6 +1815,49 @@ var _Query_serviceDesc = grpc.ServiceDesc{
 	Metadata: "oracle/v1/query.proto",
 }
 
+=======
+var _Query_serviceDesc = grpc.ServiceDesc{
+	ServiceName: "oracle.v1.Query",
+	HandlerType: (*QueryServer)(nil),
+	Methods: []grpc.MethodDesc{
+		{
+			MethodName: "QueryParams",
+			Handler:    _Query_QueryParams_Handler,
+		},
+		{
+			MethodName: "QueryDelegeateAddress",
+			Handler:    _Query_QueryDelegeateAddress_Handler,
+		},
+		{
+			MethodName: "QueryValidatorAddress",
+			Handler:    _Query_QueryValidatorAddress_Handler,
+		},
+		{
+			MethodName: "QueryOracleDataPrevote",
+			Handler:    _Query_QueryOracleDataPrevote_Handler,
+		},
+		{
+			MethodName: "QueryOracleDataVote",
+			Handler:    _Query_QueryOracleDataVote_Handler,
+		},
+		{
+			MethodName: "QueryVotePeriod",
+			Handler:    _Query_QueryVotePeriod_Handler,
+		},
+		{
+			MethodName: "QueryMissCounter",
+			Handler:    _Query_QueryMissCounter_Handler,
+		},
+		{
+			MethodName: "OracleData",
+			Handler:    _Query_OracleData_Handler,
+		},
+	},
+	Streams:  []grpc.StreamDesc{},
+	Metadata: "oracle/v1/query.proto",
+}
+
+>>>>>>> 80d76df335316d61841ce9bca513aaf530ec40d3
 func (m *QueryValidatorAddressRequest) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
@@ -1528,8 +1916,11 @@ func (m *QueryValidatorAddressResponse) MarshalToSizedBuffer(dAtA []byte) (int, 
 		dAtA[i] = 0xa
 	}
 <<<<<<< HEAD
+<<<<<<< HEAD
 	i--
 	dAtA[i] = 0xa
+=======
+>>>>>>> 80d76df335316d61841ce9bca513aaf530ec40d3
 =======
 >>>>>>> 80d76df335316d61841ce9bca513aaf530ec40d3
 	return len(dAtA) - i, nil
@@ -1591,6 +1982,7 @@ func (m *QueryParamsResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	var l int
 	_ = l
 <<<<<<< HEAD
+<<<<<<< HEAD
 	if m.Pagination != nil {
 		{
 			size, err := m.Pagination.MarshalToSizedBuffer(dAtA[:i])
@@ -1616,10 +2008,15 @@ func (m *QueryParamsResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 			i--
 			dAtA[i] = 0xa
 =======
+=======
+>>>>>>> 80d76df335316d61841ce9bca513aaf530ec40d3
 	{
 		size, err := m.Params.MarshalToSizedBuffer(dAtA[:i])
 		if err != nil {
 			return 0, err
+<<<<<<< HEAD
+>>>>>>> 80d76df335316d61841ce9bca513aaf530ec40d3
+=======
 >>>>>>> 80d76df335316d61841ce9bca513aaf530ec40d3
 		}
 		i -= size
@@ -1686,6 +2083,7 @@ func (m *VotePeriod) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	var l int
 	_ = l
 <<<<<<< HEAD
+<<<<<<< HEAD
 	if m.Pagination != nil {
 		{
 			size, err := m.Pagination.MarshalToSizedBuffer(dAtA[:i])
@@ -1707,6 +2105,8 @@ func (m *VotePeriod) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 			dAtA[i] = 0xa
 		}
 =======
+=======
+>>>>>>> 80d76df335316d61841ce9bca513aaf530ec40d3
 	if m.VotePeriodEnd != 0 {
 		i = encodeVarintQuery(dAtA, i, uint64(m.VotePeriodEnd))
 		i--
@@ -1721,6 +2121,9 @@ func (m *VotePeriod) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 		i = encodeVarintQuery(dAtA, i, uint64(m.CurrentHeight))
 		i--
 		dAtA[i] = 0x8
+<<<<<<< HEAD
+>>>>>>> 80d76df335316d61841ce9bca513aaf530ec40d3
+=======
 >>>>>>> 80d76df335316d61841ce9bca513aaf530ec40d3
 	}
 	return len(dAtA) - i, nil
@@ -2065,6 +2468,7 @@ func (m *QueryVotePeriodRequest) Size() (n int) {
 	var l int
 	_ = l
 <<<<<<< HEAD
+<<<<<<< HEAD
 	if m.Pagination != nil {
 		{
 			size, err := m.Pagination.MarshalToSizedBuffer(dAtA[:i])
@@ -2078,6 +2482,9 @@ func (m *QueryVotePeriodRequest) Size() (n int) {
 		dAtA[i] = 0xa
 	}
 	return len(dAtA) - i, nil
+=======
+	return n
+>>>>>>> 80d76df335316d61841ce9bca513aaf530ec40d3
 =======
 	return n
 >>>>>>> 80d76df335316d61841ce9bca513aaf530ec40d3
@@ -2121,6 +2528,7 @@ func (m *QueryMissCounterResponse) Size() (n int) {
 	var l int
 	_ = l
 <<<<<<< HEAD
+<<<<<<< HEAD
 	if m.Pagination != nil {
 		{
 			size, err := m.Pagination.MarshalToSizedBuffer(dAtA[:i])
@@ -2145,10 +2553,15 @@ func (m *QueryMissCounterResponse) Size() (n int) {
 	if m.MissCounter != 0 {
 		n += 1 + sovQuery(uint64(m.MissCounter))
 >>>>>>> 80d76df335316d61841ce9bca513aaf530ec40d3
+=======
+	if m.MissCounter != 0 {
+		n += 1 + sovQuery(uint64(m.MissCounter))
+>>>>>>> 80d76df335316d61841ce9bca513aaf530ec40d3
 	}
 	return n
 }
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 func (m *QueryTobinTaxRequest) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
@@ -2420,6 +2833,9 @@ func (m *QueryFeederDelegationRequest) Size() (n int) {
 =======
 func (m *QueryDelegeateAddressRequest) Size() (n int) {
 >>>>>>> 80d76df335316d61841ce9bca513aaf530ec40d3
+=======
+func (m *QueryDelegeateAddressRequest) Size() (n int) {
+>>>>>>> 80d76df335316d61841ce9bca513aaf530ec40d3
 	if m == nil {
 		return 0
 	}
@@ -2500,6 +2916,7 @@ func (m *QueryOracleDataRequest) Size() (n int) {
 }
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 func (m *QueryAggregateVoteResponse) Size() (n int) {
 	if m == nil {
 		return 0
@@ -2547,6 +2964,9 @@ func (m *QueryTobinTaxRequest) Size() (n int) {
 =======
 func (m *QueryOracleDataResponse) Size() (n int) {
 >>>>>>> 80d76df335316d61841ce9bca513aaf530ec40d3
+=======
+func (m *QueryOracleDataResponse) Size() (n int) {
+>>>>>>> 80d76df335316d61841ce9bca513aaf530ec40d3
 	if m == nil {
 		return 0
 	}
@@ -2559,6 +2979,7 @@ func (m *QueryOracleDataResponse) Size() (n int) {
 	return n
 }
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 func (m *QueryTobinTaxResponse) Size() (n int) {
 	if m == nil {
@@ -2605,11 +3026,14 @@ func (m *QueryTobinTaxesResponse) Size() (n int) {
 
 =======
 >>>>>>> 80d76df335316d61841ce9bca513aaf530ec40d3
+=======
+>>>>>>> 80d76df335316d61841ce9bca513aaf530ec40d3
 func sovQuery(x uint64) (n int) {
 	return (math_bits.Len64(x|1) + 6) / 7
 }
 func sozQuery(x uint64) (n int) {
 	return sovQuery(uint64((x << 1) ^ uint64((int64(x) >> 63))))
+<<<<<<< HEAD
 <<<<<<< HEAD
 }
 func (m *QueryExchangeRateRequest) Unmarshal(dAtA []byte) error {
@@ -3260,6 +3684,8 @@ func (m *QueryParametersRequest) Unmarshal(dAtA []byte) error {
 	return nil
 =======
 >>>>>>> 80d76df335316d61841ce9bca513aaf530ec40d3
+=======
+>>>>>>> 80d76df335316d61841ce9bca513aaf530ec40d3
 }
 func (m *QueryValidatorAddressRequest) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
@@ -3597,6 +4023,7 @@ func (m *QueryVotePeriodRequest) Unmarshal(dAtA []byte) error {
 		}
 		if fieldNum <= 0 {
 			return fmt.Errorf("proto: QueryVotePeriodRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+<<<<<<< HEAD
 		}
 		switch fieldNum {
 		default:
@@ -3709,6 +4136,10 @@ func (m *VotePeriod) Unmarshal(dAtA []byte) error {
 					break
 				}
 			}
+=======
+		}
+		switch fieldNum {
+>>>>>>> 80d76df335316d61841ce9bca513aaf530ec40d3
 		default:
 			iNdEx = preIndex
 			skippy, err := skipQuery(dAtA[iNdEx:])
@@ -3733,7 +4164,11 @@ func (m *VotePeriod) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
+<<<<<<< HEAD
 func (m *QueryMissCounterRequest) Unmarshal(dAtA []byte) error {
+=======
+func (m *VotePeriod) Unmarshal(dAtA []byte) error {
+>>>>>>> 80d76df335316d61841ce9bca513aaf530ec40d3
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -3756,6 +4191,140 @@ func (m *QueryMissCounterRequest) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
+<<<<<<< HEAD
+			return fmt.Errorf("proto: QueryMissCounterRequest: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: QueryMissCounterRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+=======
+			return fmt.Errorf("proto: VotePeriod: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: VotePeriod: illegal tag %d (wire type %d)", fieldNum, wire)
+>>>>>>> 80d76df335316d61841ce9bca513aaf530ec40d3
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field CurrentHeight", wireType)
+			}
+			m.CurrentHeight = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.CurrentHeight |= int64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 2:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field VotePeriodStart", wireType)
+			}
+			m.VotePeriodStart = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.VotePeriodStart |= int64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 3:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field VotePeriodEnd", wireType)
+			}
+			m.VotePeriodEnd = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.VotePeriodEnd |= int64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuery(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if skippy < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+<<<<<<< HEAD
+func (m *QueryMissCounterResponse) Unmarshal(dAtA []byte) error {
+=======
+func (m *QueryMissCounterRequest) Unmarshal(dAtA []byte) error {
+>>>>>>> 80d76df335316d61841ce9bca513aaf530ec40d3
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuery
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+<<<<<<< HEAD
+			return fmt.Errorf("proto: QueryMissCounterResponse: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: QueryMissCounterResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field MissCounter", wireType)
+			}
+			m.MissCounter = 0
+=======
 			return fmt.Errorf("proto: QueryMissCounterRequest: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
@@ -3767,6 +4336,7 @@ func (m *QueryMissCounterRequest) Unmarshal(dAtA []byte) error {
 				return fmt.Errorf("proto: wrong wireType = %d for field Validator", wireType)
 			}
 			var stringLen uint64
+>>>>>>> 80d76df335316d61841ce9bca513aaf530ec40d3
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowQuery
@@ -3776,11 +4346,17 @@ func (m *QueryMissCounterRequest) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
+<<<<<<< HEAD
+				m.MissCounter |= int64(b&0x7F) << shift
+=======
 				stringLen |= uint64(b&0x7F) << shift
+>>>>>>> 80d76df335316d61841ce9bca513aaf530ec40d3
 				if b < 0x80 {
 					break
 				}
 			}
+<<<<<<< HEAD
+=======
 			intStringLen := int(stringLen)
 			if intStringLen < 0 {
 				return ErrInvalidLengthQuery
@@ -3794,6 +4370,7 @@ func (m *QueryMissCounterRequest) Unmarshal(dAtA []byte) error {
 			}
 			m.Validator = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
+>>>>>>> 80d76df335316d61841ce9bca513aaf530ec40d3
 		default:
 			iNdEx = preIndex
 			skippy, err := skipQuery(dAtA[iNdEx:])
@@ -3818,7 +4395,11 @@ func (m *QueryMissCounterRequest) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
+<<<<<<< HEAD
+func (m *QueryDelegeateAddressRequest) Unmarshal(dAtA []byte) error {
+=======
 func (m *QueryMissCounterResponse) Unmarshal(dAtA []byte) error {
+>>>>>>> 80d76df335316d61841ce9bca513aaf530ec40d3
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -3841,10 +4422,17 @@ func (m *QueryMissCounterResponse) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
+<<<<<<< HEAD
+			return fmt.Errorf("proto: QueryDelegeateAddressRequest: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: QueryDelegeateAddressRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+=======
 			return fmt.Errorf("proto: QueryMissCounterResponse: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
 			return fmt.Errorf("proto: QueryMissCounterResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+>>>>>>> 80d76df335316d61841ce9bca513aaf530ec40d3
 		}
 		switch fieldNum {
 		case 1:
@@ -3890,7 +4478,11 @@ func (m *QueryMissCounterResponse) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
+<<<<<<< HEAD
+func (m *QueryDelegeateAddressResponse) Unmarshal(dAtA []byte) error {
+=======
 func (m *QueryDelegeateAddressRequest) Unmarshal(dAtA []byte) error {
+>>>>>>> 80d76df335316d61841ce9bca513aaf530ec40d3
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -3913,17 +4505,38 @@ func (m *QueryDelegeateAddressRequest) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
+<<<<<<< HEAD
+			return fmt.Errorf("proto: QueryDelegeateAddressResponse: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: QueryDelegeateAddressResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+=======
 			return fmt.Errorf("proto: QueryDelegeateAddressRequest: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
 			return fmt.Errorf("proto: QueryDelegeateAddressRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+>>>>>>> 80d76df335316d61841ce9bca513aaf530ec40d3
 		}
 		switch fieldNum {
+<<<<<<< HEAD
 		case 1:
 			if wireType != 2 {
+<<<<<<< HEAD
+				return fmt.Errorf("proto: wrong wireType = %d for field Pagination", wireType)
+			}
+			var msglen int
+=======
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Delegate", wireType)
+			}
+			var stringLen uint64
+>>>>>>> 80d76df335316d61841ce9bca513aaf530ec40d3
+=======
 				return fmt.Errorf("proto: wrong wireType = %d for field Validator", wireType)
 			}
 			var stringLen uint64
+>>>>>>> 80d76df335316d61841ce9bca513aaf530ec40d3
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowQuery
@@ -3933,23 +4546,59 @@ func (m *QueryDelegeateAddressRequest) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
+<<<<<<< HEAD
+<<<<<<< HEAD
+				msglen |= int(b&0x7F) << shift
+=======
 				stringLen |= uint64(b&0x7F) << shift
+>>>>>>> 80d76df335316d61841ce9bca513aaf530ec40d3
+=======
+				stringLen |= uint64(b&0x7F) << shift
+>>>>>>> 80d76df335316d61841ce9bca513aaf530ec40d3
 				if b < 0x80 {
 					break
 				}
 			}
+<<<<<<< HEAD
+<<<<<<< HEAD
+			if msglen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + msglen
+=======
 			intStringLen := int(stringLen)
 			if intStringLen < 0 {
 				return ErrInvalidLengthQuery
 			}
 			postIndex := iNdEx + intStringLen
+>>>>>>> 80d76df335316d61841ce9bca513aaf530ec40d3
+=======
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + intStringLen
+>>>>>>> 80d76df335316d61841ce9bca513aaf530ec40d3
 			if postIndex < 0 {
 				return ErrInvalidLengthQuery
 			}
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
+<<<<<<< HEAD
+<<<<<<< HEAD
+			if m.Pagination == nil {
+				m.Pagination = &query.PageRequest{}
+			}
+			if err := m.Pagination.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+=======
+			m.Delegate = string(dAtA[iNdEx:postIndex])
+>>>>>>> 80d76df335316d61841ce9bca513aaf530ec40d3
+=======
 			m.Validator = string(dAtA[iNdEx:postIndex])
+>>>>>>> 80d76df335316d61841ce9bca513aaf530ec40d3
 			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
@@ -3975,7 +4624,11 @@ func (m *QueryDelegeateAddressRequest) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
+<<<<<<< HEAD
+func (m *QueryOracleDataPrevoteRequest) Unmarshal(dAtA []byte) error {
+=======
 func (m *QueryDelegeateAddressResponse) Unmarshal(dAtA []byte) error {
+>>>>>>> 80d76df335316d61841ce9bca513aaf530ec40d3
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -3998,25 +4651,29 @@ func (m *QueryDelegeateAddressResponse) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
+<<<<<<< HEAD
+			return fmt.Errorf("proto: QueryOracleDataPrevoteRequest: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: QueryOracleDataPrevoteRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Validator", wireType)
+=======
 			return fmt.Errorf("proto: QueryDelegeateAddressResponse: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
 			return fmt.Errorf("proto: QueryDelegeateAddressResponse: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
-<<<<<<< HEAD
-		case 1:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Pagination", wireType)
-			}
-			var msglen int
-=======
 		case 2:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Delegate", wireType)
+>>>>>>> 80d76df335316d61841ce9bca513aaf530ec40d3
 			}
 			var stringLen uint64
->>>>>>> 80d76df335316d61841ce9bca513aaf530ec40d3
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowQuery
@@ -4026,27 +4683,16 @@ func (m *QueryDelegeateAddressResponse) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-<<<<<<< HEAD
-				msglen |= int(b&0x7F) << shift
-=======
 				stringLen |= uint64(b&0x7F) << shift
->>>>>>> 80d76df335316d61841ce9bca513aaf530ec40d3
 				if b < 0x80 {
 					break
 				}
 			}
-<<<<<<< HEAD
-			if msglen < 0 {
-				return ErrInvalidLengthQuery
-			}
-			postIndex := iNdEx + msglen
-=======
 			intStringLen := int(stringLen)
 			if intStringLen < 0 {
 				return ErrInvalidLengthQuery
 			}
 			postIndex := iNdEx + intStringLen
->>>>>>> 80d76df335316d61841ce9bca513aaf530ec40d3
 			if postIndex < 0 {
 				return ErrInvalidLengthQuery
 			}
@@ -4054,8 +4700,39 @@ func (m *QueryDelegeateAddressResponse) Unmarshal(dAtA []byte) error {
 				return io.ErrUnexpectedEOF
 			}
 <<<<<<< HEAD
+			m.Validator = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Pagination", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
 			if m.Pagination == nil {
-				m.Pagination = &query.PageRequest{}
+				m.Pagination = &query.PageResponse{}
 			}
 			if err := m.Pagination.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
@@ -4088,128 +4765,11 @@ func (m *QueryDelegeateAddressResponse) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *QueryOracleDataPrevoteRequest) Unmarshal(dAtA []byte) error {
-	l := len(dAtA)
-	iNdEx := 0
-	for iNdEx < l {
-		preIndex := iNdEx
-		var wire uint64
-		for shift := uint(0); ; shift += 7 {
-			if shift >= 64 {
-				return ErrIntOverflowQuery
-			}
-			if iNdEx >= l {
-				return io.ErrUnexpectedEOF
-			}
-			b := dAtA[iNdEx]
-			iNdEx++
-			wire |= uint64(b&0x7F) << shift
-			if b < 0x80 {
-				break
-			}
-		}
-		fieldNum := int32(wire >> 3)
-		wireType := int(wire & 0x7)
-		if wireType == 4 {
-			return fmt.Errorf("proto: QueryOracleDataPrevoteRequest: wiretype end group for non-group")
-		}
-		if fieldNum <= 0 {
-			return fmt.Errorf("proto: QueryOracleDataPrevoteRequest: illegal tag %d (wire type %d)", fieldNum, wire)
-		}
-		switch fieldNum {
-		case 1:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Validator", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowQuery
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthQuery
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthQuery
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.Validator = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
-		case 2:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Pagination", wireType)
-			}
-			var msglen int
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowQuery
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				msglen |= int(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			if msglen < 0 {
-				return ErrInvalidLengthQuery
-			}
-			postIndex := iNdEx + msglen
-			if postIndex < 0 {
-				return ErrInvalidLengthQuery
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			if m.Pagination == nil {
-				m.Pagination = &query.PageResponse{}
-			}
-			if err := m.Pagination.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
-				return err
-			}
-			iNdEx = postIndex
-		default:
-			iNdEx = preIndex
-			skippy, err := skipQuery(dAtA[iNdEx:])
-			if err != nil {
-				return err
-			}
-			if skippy < 0 {
-				return ErrInvalidLengthQuery
-			}
-			if (iNdEx + skippy) < 0 {
-				return ErrInvalidLengthQuery
-			}
-			if (iNdEx + skippy) > l {
-				return io.ErrUnexpectedEOF
-			}
-			iNdEx += skippy
-		}
-	}
-
-	if iNdEx > l {
-		return io.ErrUnexpectedEOF
-	}
-	return nil
-}
+<<<<<<< HEAD
 func (m *QueryOracleDataPrevoteResponse) Unmarshal(dAtA []byte) error {
+=======
+func (m *QueryOracleDataPrevoteRequest) Unmarshal(dAtA []byte) error {
+>>>>>>> 80d76df335316d61841ce9bca513aaf530ec40d3
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -4232,15 +4792,26 @@ func (m *QueryOracleDataPrevoteResponse) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
+<<<<<<< HEAD
 			return fmt.Errorf("proto: QueryOracleDataPrevoteResponse: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
 			return fmt.Errorf("proto: QueryOracleDataPrevoteResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+=======
+			return fmt.Errorf("proto: QueryOracleDataPrevoteRequest: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: QueryOracleDataPrevoteRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+>>>>>>> 80d76df335316d61841ce9bca513aaf530ec40d3
 		}
 		switch fieldNum {
 		case 1:
 			if wireType != 2 {
+<<<<<<< HEAD
 				return fmt.Errorf("proto: wrong wireType = %d for field Hashes", wireType)
+=======
+				return fmt.Errorf("proto: wrong wireType = %d for field Validator", wireType)
+>>>>>>> 80d76df335316d61841ce9bca513aaf530ec40d3
 			}
 			var byteLen int
 			for shift := uint(0); ; shift += 7 {
@@ -4267,8 +4838,12 @@ func (m *QueryOracleDataPrevoteResponse) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
+<<<<<<< HEAD
 			m.Hashes = append(m.Hashes, make([]byte, postIndex-iNdEx))
 			copy(m.Hashes[len(m.Hashes)-1], dAtA[iNdEx:postIndex])
+=======
+			m.Validator = string(dAtA[iNdEx:postIndex])
+>>>>>>> 80d76df335316d61841ce9bca513aaf530ec40d3
 			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
@@ -4294,7 +4869,11 @@ func (m *QueryOracleDataPrevoteResponse) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
+<<<<<<< HEAD
 func (m *QueryOracleDataVoteRequest) Unmarshal(dAtA []byte) error {
+=======
+func (m *QueryOracleDataPrevoteResponse) Unmarshal(dAtA []byte) error {
+>>>>>>> 80d76df335316d61841ce9bca513aaf530ec40d3
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -4317,17 +4896,28 @@ func (m *QueryOracleDataVoteRequest) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
+<<<<<<< HEAD
 			return fmt.Errorf("proto: QueryOracleDataVoteRequest: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
 			return fmt.Errorf("proto: QueryOracleDataVoteRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+=======
+			return fmt.Errorf("proto: QueryOracleDataPrevoteResponse: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: QueryOracleDataPrevoteResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+>>>>>>> 80d76df335316d61841ce9bca513aaf530ec40d3
 		}
 		switch fieldNum {
 		case 1:
 			if wireType != 2 {
+<<<<<<< HEAD
 				return fmt.Errorf("proto: wrong wireType = %d for field Validator", wireType)
+=======
+				return fmt.Errorf("proto: wrong wireType = %d for field Hashes", wireType)
+>>>>>>> 80d76df335316d61841ce9bca513aaf530ec40d3
 			}
-			var stringLen uint64
+			var byteLen int
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowQuery
@@ -4337,23 +4927,27 @@ func (m *QueryOracleDataVoteRequest) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
+				byteLen |= int(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
+			if byteLen < 0 {
 				return ErrInvalidLengthQuery
 			}
-			postIndex := iNdEx + intStringLen
+			postIndex := iNdEx + byteLen
 			if postIndex < 0 {
 				return ErrInvalidLengthQuery
 			}
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
+<<<<<<< HEAD
 			m.Validator = string(dAtA[iNdEx:postIndex])
+=======
+			m.Hashes = append(m.Hashes, make([]byte, postIndex-iNdEx))
+			copy(m.Hashes[len(m.Hashes)-1], dAtA[iNdEx:postIndex])
+>>>>>>> 80d76df335316d61841ce9bca513aaf530ec40d3
 			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
@@ -4379,7 +4973,11 @@ func (m *QueryOracleDataVoteRequest) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
+<<<<<<< HEAD
 func (m *QueryOracleDataRequest) Unmarshal(dAtA []byte) error {
+=======
+func (m *QueryOracleDataVoteRequest) Unmarshal(dAtA []byte) error {
+>>>>>>> 80d76df335316d61841ce9bca513aaf530ec40d3
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -4402,20 +5000,31 @@ func (m *QueryOracleDataRequest) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
+<<<<<<< HEAD
 			return fmt.Errorf("proto: QueryOracleDataRequest: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
 			return fmt.Errorf("proto: QueryOracleDataRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+=======
+			return fmt.Errorf("proto: QueryOracleDataVoteRequest: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: QueryOracleDataVoteRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+>>>>>>> 80d76df335316d61841ce9bca513aaf530ec40d3
 		}
 		switch fieldNum {
 		case 1:
 			if wireType != 2 {
+<<<<<<< HEAD
 <<<<<<< HEAD
 				return fmt.Errorf("proto: wrong wireType = %d for field Pagination", wireType)
 			}
 			var msglen int
 =======
 				return fmt.Errorf("proto: wrong wireType = %d for field Type", wireType)
+=======
+				return fmt.Errorf("proto: wrong wireType = %d for field Validator", wireType)
+>>>>>>> 80d76df335316d61841ce9bca513aaf530ec40d3
 			}
 			var stringLen uint64
 >>>>>>> 80d76df335316d61841ce9bca513aaf530ec40d3
@@ -4456,6 +5065,7 @@ func (m *QueryOracleDataRequest) Unmarshal(dAtA []byte) error {
 				return io.ErrUnexpectedEOF
 			}
 <<<<<<< HEAD
+<<<<<<< HEAD
 			if m.Pagination == nil {
 				m.Pagination = &query.PageRequest{}
 			}
@@ -4464,6 +5074,9 @@ func (m *QueryOracleDataRequest) Unmarshal(dAtA []byte) error {
 			}
 =======
 			m.Type = string(dAtA[iNdEx:postIndex])
+>>>>>>> 80d76df335316d61841ce9bca513aaf530ec40d3
+=======
+			m.Validator = string(dAtA[iNdEx:postIndex])
 >>>>>>> 80d76df335316d61841ce9bca513aaf530ec40d3
 			iNdEx = postIndex
 		default:
@@ -4481,6 +5094,126 @@ func (m *QueryOracleDataRequest) Unmarshal(dAtA []byte) error {
 			if (iNdEx + skippy) > l {
 				return io.ErrUnexpectedEOF
 			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+<<<<<<< HEAD
+func (m *QueryOracleDataResponse) Unmarshal(dAtA []byte) error {
+=======
+func (m *QueryOracleDataRequest) Unmarshal(dAtA []byte) error {
+>>>>>>> 80d76df335316d61841ce9bca513aaf530ec40d3
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuery
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+<<<<<<< HEAD
+			return fmt.Errorf("proto: QueryOracleDataResponse: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: QueryOracleDataResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+=======
+			return fmt.Errorf("proto: QueryOracleDataRequest: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: QueryOracleDataRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+>>>>>>> 80d76df335316d61841ce9bca513aaf530ec40d3
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+<<<<<<< HEAD
+				return fmt.Errorf("proto: wrong wireType = %d for field OracleData", wireType)
+=======
+				return fmt.Errorf("proto: wrong wireType = %d for field Type", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Type = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuery(dAtA[iNdEx:])
+			if err != nil {
+				return err
+>>>>>>> 80d76df335316d61841ce9bca513aaf530ec40d3
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+<<<<<<< HEAD
+			if m.OracleData == nil {
+				m.OracleData = &types.Any{}
+=======
 			iNdEx += skippy
 		}
 	}
@@ -4502,13 +5235,17 @@ func (m *QueryOracleDataResponse) Unmarshal(dAtA []byte) error {
 			}
 			if iNdEx >= l {
 				return io.ErrUnexpectedEOF
+>>>>>>> 80d76df335316d61841ce9bca513aaf530ec40d3
 			}
-			b := dAtA[iNdEx]
-			iNdEx++
-			wire |= uint64(b&0x7F) << shift
-			if b < 0x80 {
-				break
+			if err := m.OracleData.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
 			}
+<<<<<<< HEAD
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Pagination", wireType)
+=======
 		}
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
@@ -4522,6 +5259,7 @@ func (m *QueryOracleDataResponse) Unmarshal(dAtA []byte) error {
 		case 1:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field OracleData", wireType)
+>>>>>>> 80d76df335316d61841ce9bca513aaf530ec40d3
 			}
 			var msglen int
 			for shift := uint(0); ; shift += 7 {
@@ -4548,46 +5286,17 @@ func (m *QueryOracleDataResponse) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			if m.OracleData == nil {
-				m.OracleData = &types.Any{}
-			}
-			if err := m.OracleData.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
-				return err
-			}
-			iNdEx = postIndex
-		case 2:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Pagination", wireType)
-			}
-			var msglen int
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowQuery
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				msglen |= int(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			if msglen < 0 {
-				return ErrInvalidLengthQuery
-			}
-			postIndex := iNdEx + msglen
-			if postIndex < 0 {
-				return ErrInvalidLengthQuery
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
+<<<<<<< HEAD
 			if m.Pagination == nil {
 				m.Pagination = &query.PageResponse{}
 			}
 			if err := m.Pagination.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+=======
+			if m.OracleData == nil {
+				m.OracleData = &types.Any{}
+			}
+			if err := m.OracleData.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+>>>>>>> 80d76df335316d61841ce9bca513aaf530ec40d3
 				return err
 			}
 			iNdEx = postIndex
