@@ -1,10 +1,8 @@
 syntax = "proto3";
 package oracle.v1;
 
-import "oracle/v1/oracle.proto";
 import "oracle/v1/tx.proto";
 import "gogoproto/gogo.proto";
-import "cosmos/base/v1beta1/coin.proto";
 
 option go_package = "github.com/peggyjv/sommelier/x/oracle/types";
 
@@ -51,9 +49,7 @@ message Params {
     ];
 
     // DataTypes defines which data types validators must submit each voting period
-    repeated string data_types  = 6 [
-        (gogoproto.nullable) = false
-    ];
+    repeated string data_types  = 6;
 }
 
 // MissCounter stores the validator address and the number of associated misses
