@@ -25,6 +25,7 @@ func GetTxCmd() *cobra.Command {
 
 	oracleTxCmd.AddCommand([]*cobra.Command{
 		GetCmdCreateStoploss(),
+		GetCmdDeleteStoploss(),
 	}...)
 
 	return oracleTxCmd
