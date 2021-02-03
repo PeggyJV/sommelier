@@ -182,5 +182,5 @@ func (m *MsgOracleDataVote) UnpackInterfaces(unpacker codectypes.AnyUnpacker) (e
 // UnpackInterfaces implements UnpackInterfacesMessage.UnpackInterfaces
 func (m *QueryOracleDataResponse) UnpackInterfaces(unpacker codectypes.AnyUnpacker) error {
 	var od OracleData
-	return unpacker.UnpackAny(m.OracleData, od)
+	return unpacker.UnpackAny(m.OracleData, &od)
 }

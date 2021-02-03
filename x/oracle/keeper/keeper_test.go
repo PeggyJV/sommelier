@@ -130,18 +130,20 @@ func (suite *KeeperTestSuite) TestVotes() {
 
 	require.False(t, k.HasOracleDataVote(ctx, Addrs[0]))
 	require.False(t, k.HasOracleDataVote(ctx, Addrs[1]))
-
-	// SetOracleDataVote
-	// GetOracleDataVote
-	// DeleteOracleDataVote
-	// HasOracleDataVote
-	// IterateOracleDataVotes
 }
 func (suite *KeeperTestSuite) TestOracleData() {
-	// SetOracleData
-	// GetOracleData
-	// DeleteOracleData
-	// HasOracleData
+	ctx := suite.ctx
+	k := suite.app.OracleKeeper
+	t := suite.T()
+
+	k.SetOracleData(ctx, testuniswapdata)
+	require.True(t, k.HasOracleData(ctx, types.UniswapDataType))
+
+	require.Equal(t, testuniswapdata, k.GetOracleData(ctx, types.UniswapDataType))
+
+	k.DeleteOracleData(ctx, types.UniswapDataType)
+
+	require.False(t, k.HasOracleData(ctx, types.UniswapDataType))
 }
 func (suite *KeeperTestSuite) TestVotePeriod() {
 	// SetVotePeriodStart

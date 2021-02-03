@@ -5,7 +5,6 @@ import (
 	"encoding/binary"
 
 	"github.com/cosmos/cosmos-sdk/codec"
-	cdctypes "github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
 	"github.com/peggyjv/sommelier/x/oracle/types"
@@ -172,10 +171,10 @@ func (k Keeper) IterateOracleDataVotes(ctx sdk.Context, handler func(val sdk.Acc
 	iter := sdk.KVStorePrefixIterator(store, types.OracleDataVoteKeyPrefix)
 	defer iter.Close()
 	for ; iter.Valid(); iter.Next() {
-		var vote *types.MsgOracleDataVote
+		var vote types.MsgOracleDataVote
 		val := sdk.AccAddress(bytes.TrimPrefix(iter.Key(), types.OracleDataVoteKeyPrefix))
-		k.cdc.MustUnmarshalBinaryBare(iter.Value(), vote)
-		if handler(val, vote) {
+		k.cdc.MustUnmarshalBinaryBare(iter.Value(), &vote)
+		if handler(val, &vote) {
 			break
 		}
 	}
@@ -187,22 +186,25 @@ func (k Keeper) IterateOracleDataVotes(ctx sdk.Context, handler func(val sdk.Acc
 
 // SetOracleData sets the oracle data in the store
 func (k Keeper) SetOracleData(ctx sdk.Context, od types.OracleData) {
-	oda, err := types.PackOracleData(od)
-	if err != nil {
-		panic(err)
+	switch data := od.(type) {
+	case *types.UniswapData:
+		ctx.KVStore(k.storeKey).Set(types.GetOracleDataKey(od.Type()), k.cdc.MustMarshalBinaryBare(data))
+	default:
+		panic("NOT HERE")
 	}
-	ctx.KVStore(k.storeKey).Set(types.GetOracleDataKey(od.Type()), k.cdc.MustMarshalBinaryBare(oda))
 }
 
 // GetOracleData gets oracle data stored for a given type
 func (k Keeper) GetOracleData(ctx sdk.Context, typ string) types.OracleData {
-	var any *cdctypes.Any
-	k.cdc.MustUnmarshalBinaryBare(ctx.KVStore(k.storeKey).Get(types.GetOracleDataKey(typ)), any)
-	od, err := types.UnpackOracleData(any)
-	if err != nil {
-		panic(err)
+	switch typ {
+	case types.UniswapDataType:
+		var data types.UniswapData
+		k.cdc.MustUnmarshalBinaryBare(ctx.KVStore(k.storeKey).Get(types.GetOracleDataKey(typ)), &data)
+		return &data
+	default:
+		k.Logger(ctx).Info("data type not supported")
+		return nil
 	}
-	return od
 }
 
 // DeleteOracleData deletes the data from the oracle of a given type
