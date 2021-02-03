@@ -102,5 +102,8 @@ func (k Keeper) QueryMissCounter(c context.Context, req *types.QueryMissCounterR
 			return nil, fmt.Errorf("not a validator")
 		}
 	}
-	return &types.QueryMissCounterResponse{MissCounter: k.GetMissCounter(ctx, val)}, nil
+	if k.HasMissCounter(ctx, val) {
+		return &types.QueryMissCounterResponse{MissCounter: k.GetMissCounter(ctx, val)}, nil
+	}
+	return &types.QueryMissCounterResponse{MissCounter: 0}, nil
 }

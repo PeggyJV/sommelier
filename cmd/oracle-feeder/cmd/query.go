@@ -292,6 +292,9 @@ func queryMissCounter() *cobra.Command {
 func GetMissCounter(ctx client.Context, val sdk.AccAddress) (int64, error) {
 	res, err := oracle.NewQueryClient(ctx).QueryMissCounter(
 		context.Background(), &oracle.QueryMissCounterRequest{Validator: val.String()})
+	// if res.MissCounter == nil {
+	// 	return 0, err
+	// }
 	return res.MissCounter, err
 }
 
