@@ -49,12 +49,3 @@ dependency-graph.png
 contract_tests/*
 
 data/
-solidity/node_modules/
-typechain
-target
-node_modules
-solidity/dist
-cache
-artifacts
-*.test
-

@@ -34,11 +34,8 @@ type OracleData interface {
 	GetID() string
 	// Type returns the oracle type category
 	Type() string
-	// Validate performs a stateless validation of the fields
-	Validate() error
-	// Compare checks that the data is within the target range and the fixed
-	// fields match with the aggregated data
-	Compare(aggregatedData OracleData, target sdk.Dec) bool
+	// TODO: Add a parsing function to this and figure out what the signature needs to be
+	// Parse() error
 }
 
 // DataHash returns the hash for a precommit given the proper args
@@ -305,12 +302,6 @@ func (ut UniswapToken) Validate() error {
 	// if ut.Decimals > sdk.Precision {
 	// 	return fmt.Errorf("decimal places (%d) exceeds the maximum supported (%d)", ut.Decimals, sdk.Precision)
 	// }
-
-// // UnpackInterfaces implements UnpackInterfacesMessage.UnpackInterfaces
-// func (p Proposal) UnpackInterfaces(unpacker types.AnyUnpacker) error {
-// 	var content Content
-// 	return unpacker.UnpackAny(p.Content, &content)
-// }
 
 func normalizeDec(str string) string {
 	spl := strings.Split(str, ".")
