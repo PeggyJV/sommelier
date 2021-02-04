@@ -7,6 +7,8 @@ import (
 	"strconv"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
+
+	peggytypes "github.com/althea-net/peggy/module/x/peggy/types"
 )
 
 var (
@@ -144,12 +146,13 @@ type UniswapPairParsed struct {
 	TotalSupply float64
 }
 
-// Valid uses a cannonical UniswapData instance to validate instances passed in
+// Valid uses a canonical UniswapData instance to validate instances passed in
 func (ud *UniswapData) Valid(ud1 OracleData) bool {
 	v, ok := ud1.(*UniswapData)
 	if !ok {
 		return false
 	}
+
 	if len(v.Pairs) != len(ud.Pairs) {
 		return false
 	}
@@ -168,10 +171,13 @@ func (ud *UniswapData) CannonicalJSON() string {
 
 // ValidateBasic implements OracleData
 func (ud *UniswapData) ValidateBasic() error {
-	// if len(ud.Data) != 1000 {
-	// 	return fmt.Errorf("Must input 1000 markets")
-	// }
-	// TODO: other basic validation
+	// TODO: check for duplicate pairs
+	for _, pair := range ud.Pairs {
+		if err := peggytypes.ValidateEthAddress(pair.Id); err != nil {
+			return fmt.Errorf("invalid uniswap pair id %s: %w", pair.Id, err)
+		}
+		// TODO: validate other fields
+	}
 	return nil
 }
 

@@ -1,7 +1,8 @@
 package types
 
 import (
-	fmt "fmt"
+	"fmt"
+	"strings"
 
 	cdctypes "github.com/cosmos/cosmos-sdk/codec/types"
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
@@ -38,16 +39,18 @@ func (m *MsgDelegateFeedConsent) Type() string { return TypeMsgDelegateFeedConse
 // ValidateBasic implements sdk.Msg
 func (m *MsgDelegateFeedConsent) ValidateBasic() error {
 	if _, err := sdk.AccAddressFromBech32(m.Validator); err != nil {
-		return sdkerrors.ErrInvalidAddress
+		return sdkerrors.Wrap(sdkerrors.ErrInvalidAddress, err.Error())
 	}
 	if _, err := sdk.AccAddressFromBech32(m.Delegate); err != nil {
-		return sdkerrors.ErrInvalidAddress
+		return sdkerrors.Wrap(sdkerrors.ErrInvalidAddress, err.Error())
 	}
 	return nil
 }
 
 // GetSignBytes implements sdk.Msg
-func (m *MsgDelegateFeedConsent) GetSignBytes() []byte { panic("amino support disabled") }
+func (m *MsgDelegateFeedConsent) GetSignBytes() []byte {
+	panic("amino support disabled")
+}
 
 // GetSigners implements sdk.Msg
 func (m *MsgDelegateFeedConsent) GetSigners() []sdk.AccAddress {
@@ -93,8 +96,15 @@ func (m *MsgOracleDataPrevote) Type() string { return TypeMsgOracleDataPrevote }
 // ValidateBasic implements sdk.Msg
 func (m *MsgOracleDataPrevote) ValidateBasic() error {
 	if _, err := sdk.AccAddressFromBech32(m.Signer); err != nil {
-		return sdkerrors.ErrInvalidAddress
+		return sdkerrors.Wrap(sdkerrors.ErrInvalidAddress, err.Error())
 	}
+
+	for i, hash := range m.Hashes {
+		if len(hash) == 0 {
+			return fmt.Errorf("hash at index %d cannot be empty", i)
+		}
+	}
+
 	return nil
 }
 
@@ -137,19 +147,26 @@ func (m *MsgOracleDataVote) Type() string { return TypeMsgOracleDataVote }
 // ValidateBasic implements sdk.Msg
 func (m *MsgOracleDataVote) ValidateBasic() error {
 	if _, err := sdk.AccAddressFromBech32(m.Signer); err != nil {
-		return sdkerrors.ErrInvalidAddress
+		return sdkerrors.Wrap(sdkerrors.ErrInvalidAddress, err.Error())
 	}
+
 	for _, a := range m.OracleData {
 		od, err := UnpackOracleData(a)
 		if err != nil {
-			fmt.Println("Failed to unpack")
-			return ErrInvalidOracleData
+			return sdkerrors.Wrap(ErrInvalidOracleData, err.Error())
 		}
+
 		if err = od.ValidateBasic(); err != nil {
-			fmt.Println("failed to validate")
-			return ErrInvalidOracleData
+			return sdkerrors.Wrap(ErrInvalidOracleData, err.Error())
 		}
 	}
+
+	for i, salt := range m.Salt {
+		if strings.TrimSpace(salt) == "" {
+			return fmt.Errorf("salt string at index %d cannot be blank", i)
+		}
+	}
+
 	return nil
 }
 
@@ -172,7 +189,7 @@ func (m *MsgOracleDataVote) MustGetSigner() sdk.AccAddress {
 func (m *MsgOracleDataVote) UnpackInterfaces(unpacker codectypes.AnyUnpacker) (err error) {
 	for _, oda := range m.OracleData {
 		var od OracleData
-		if err = unpacker.UnpackAny(oda, &od); err != nil {
+		if err := unpacker.UnpackAny(oda, &od); err != nil {
 			return err
 		}
 	}

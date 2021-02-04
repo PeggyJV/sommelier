@@ -6,6 +6,7 @@ require (
 	github.com/Masterminds/goutils v1.1.0 // indirect
 	github.com/Masterminds/semver v1.5.0 // indirect
 	github.com/Masterminds/sprig v2.22.0+incompatible // indirect
+	github.com/althea-net/peggy/module v0.0.0-20210203002914-cfbd0532ece0
 	github.com/aokoli/goutils v1.1.0 // indirect
 	github.com/cosmos/cosmos-sdk v0.41.0
 	github.com/cosmos/go-bip39 v1.0.0

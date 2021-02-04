@@ -50,7 +50,7 @@ func (AppModuleBasic) ValidateGenesis(cdc codec.JSONMarshaler, _ client.TxEncodi
 	if err := cdc.UnmarshalJSON(bz, &gs); err != nil {
 		return err
 	}
-	return types.ValidateGenesis(&gs)
+	return gs.Validate()
 }
 
 // RegisterRESTRoutes doesn't support legacy REST routes.
