@@ -2,12 +2,12 @@ package types
 
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	// oracletypes "github.com/peggyjv/sommelier/x/oracle/types"
+	oracletypes "github.com/peggyjv/sommelier/x/oracle/types"
 )
 
 // OracleKeeper is expected keeper for the oracle module
 type OracleKeeper interface {
-	// GetUniswapPair(ctx sdk.Context, id string) oracletypes.Pair
+	GetOracleData(ctx sdk.Context, typ string) oracletypes.OracleData
 }
 
 // EthBridgeKeeper is expected keeper for the peggy bridge module
