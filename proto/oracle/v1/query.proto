@@ -4,6 +4,7 @@ package oracle.v1;
 import "gogoproto/gogo.proto";
 import "google/protobuf/any.proto";
 import "oracle/v1/genesis.proto";
+import "oracle/v1/tx.proto";
 import "cosmos_proto/cosmos.proto";
 
 option go_package = "github.com/peggyjv/sommelier/x/oracle/types";
@@ -13,7 +14,7 @@ service Query {
     rpc QueryDelegeateAddress(QueryDelegeateAddressRequest) returns (QueryDelegeateAddressResponse) {}
     rpc QueryValidatorAddress(QueryValidatorAddressRequest) returns (QueryValidatorAddressResponse) {}
     rpc QueryOracleDataPrevote(QueryOracleDataPrevoteRequest) returns (QueryOracleDataPrevoteResponse) {}
-    rpc QueryOracleDataVote(QueryOracleDataVoteRequest) returns (QueryOracleDataVoteResponse) {}
+    rpc QueryOracleDataVote(QueryOracleDataVoteRequest) returns (MsgOracleDataVote) {}
     rpc QueryVotePeriod(QueryVotePeriodRequest) returns (VotePeriod) {}
     rpc QueryMissCounter(QueryMissCounterRequest) returns (QueryMissCounterResponse) {}
     rpc OracleData(QueryOracleDataRequest) returns (QueryOracleDataResponse) {}
