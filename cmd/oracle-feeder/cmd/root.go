@@ -7,7 +7,6 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
-	kr "github.com/cosmos/cosmos-sdk/crypto/keyring"
 	authclient "github.com/cosmos/cosmos-sdk/x/auth/client"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	"github.com/peggyjv/sommelier/app"
@@ -37,10 +36,6 @@ func init() {
 func NewRootCmd() (*cobra.Command, params.EncodingConfig) {
 
 	encodingConfig := app.MakeEncodingConfig()
-	keyring, err := kr.New(AppName, "test", FeederHome, os.Stdin)
-	if err != nil {
-		panic(err)
-	}
 
 	initClientCtx := client.Context{}.
 		WithJSONMarshaler(encodingConfig.Marshaler).
@@ -50,8 +45,6 @@ func NewRootCmd() (*cobra.Command, params.EncodingConfig) {
 		WithInput(os.Stdin).
 		WithAccountRetriever(authtypes.AccountRetriever{}).
 		WithBroadcastMode(flags.BroadcastBlock).
-		WithHomeDir(FeederHome).
-		WithKeyring(keyring).
 		WithSkipConfirmation(true)
 
 	rootCmd := &cobra.Command{
@@ -65,7 +58,7 @@ func NewRootCmd() (*cobra.Command, params.EncodingConfig) {
 		},
 	}
 
-	rootCmd.SilenceUsage = true
+	// rootCmd.SilenceUsage = true
 
 	authclient.Codec = encodingConfig.Marshaler
 
@@ -90,7 +83,6 @@ func Execute(rootCmd *cobra.Command) error {
 	// https://github.com/spf13/cobra/pull/1118.
 	ctx := context.Background()
 	ctx = context.WithValue(ctx, client.ClientContextKey, &client.Context{})
-
 	executor := tmcli.PrepareBaseCmd(rootCmd, "", FeederHome)
 	return executor.ExecuteContext(ctx)
 }
