@@ -58,7 +58,7 @@ func NewRootCmd() (*cobra.Command, params.EncodingConfig) {
 		},
 	}
 
-	rootCmd.SilenceUsage = true
+	// rootCmd.SilenceUsage = true
 
 	authclient.Codec = encodingConfig.Marshaler
 
@@ -83,7 +83,6 @@ func Execute(rootCmd *cobra.Command) error {
 	// https://github.com/spf13/cobra/pull/1118.
 	ctx := context.Background()
 	ctx = context.WithValue(ctx, client.ClientContextKey, &client.Context{})
-	rootCmd.PersistentFlags().StringP("log-level", "", "info", "log level")
 	executor := tmcli.PrepareBaseCmd(rootCmd, "", FeederHome)
 	return executor.ExecuteContext(ctx)
 }

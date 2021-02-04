@@ -4,7 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"log"
 	"os"
 
 	"github.com/cosmos/cosmos-sdk/client"
@@ -436,22 +436,18 @@ func (c Config) GetClientContext(cmd *cobra.Command) (client.Context, error) {
 	if err != nil {
 		return client.Context{}, err
 	}
-
 	cl, err := rpchttp.New(c.ChainRPC, "/websocket")
 	if err != nil {
 		return client.Context{}, err
 	}
-
 	keyring, err := kr.New(AppName, "test", home, os.Stdin)
 	if err != nil {
-		return client.Context{}, err
+		panic(err)
 	}
-
 	return ctx.WithClient(cl).
 		WithChainID(c.ChainID).
 		WithFromName(c.SigningKey).
 		WithFrom(c.SigningKey).
 		WithKeyring(keyring).
-		WithOutput(ioutil.Discard).
 		WithHomeDir(home), nil
 }
