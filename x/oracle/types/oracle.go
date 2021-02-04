@@ -23,7 +23,7 @@ type OracleData interface {
 	Valid(OracleData) bool
 	Type() string
 	// TODO: Add a parsing function to this and figure out what the signature needs to be
-	// Parse()
+	// Parse() error
 }
 
 // DataHash returns the hash for a precommit given the proper args
@@ -190,12 +190,6 @@ func (ud *UniswapData) Type() string {
 func (vp *VotePeriod) BlocksTillNextPeriod() int64 {
 	return vp.VotePeriodEnd - vp.CurrentHeight
 }
-
-// // UnpackInterfaces implements UnpackInterfacesMessage.UnpackInterfaces
-// func (p Proposal) UnpackInterfaces(unpacker types.AnyUnpacker) error {
-// 	var content Content
-// 	return unpacker.UnpackAny(p.Content, &content)
-// }
 
 func normalizeDec(str string) string {
 	spl := strings.Split(str, ".")

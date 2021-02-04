@@ -58,7 +58,7 @@ func NewRootCmd() (*cobra.Command, params.EncodingConfig) {
 		},
 	}
 
-	// rootCmd.SilenceUsage = true
+	rootCmd.SilenceUsage = true
 
 	authclient.Codec = encodingConfig.Marshaler
 
