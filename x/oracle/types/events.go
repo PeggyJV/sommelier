@@ -1,21 +1,18 @@
-//noalias
 package types
 
-// Oracle module event types
+// distribution module event types
 const (
-	EventTypeExchangeRateUpdate = "exchange_rate_update"
-	EventTypePrevote            = "prevote"
-	EventTypeVote               = "vote"
-	EventTypeFeedDelegate       = "feed_delegate"
-	EventTypeAggregatePrevote   = "aggregate_prevote"
-	EventTypeAggregateVote      = "aggregate_vote"
+	EventTypeDelegateFeed      = "delegate_feed"
+	EventTypeOracleDataPrevote = "oracle_data_prevote"
+	EventTypeOracleDataVote    = "oracle_data_vote"
+	EventTypeVotePeriod        = "vote_period"
 
-	AttributeKeyDenom         = "denom"
-	AttributeKeyVoter         = "voter"
-	AttributeKeyExchangeRate  = "exchange_rate"
-	AttributeKeyExchangeRates = "exchange_rates"
-	AttributeKeyOperator      = "operator"
-	AttributeKeyFeeder        = "feeder"
+	AttributeKeySigner          = "signer"
+	AttributeKeyDeleagte        = "delegate"
+	AttributeKeyValidator       = "validator"
+	AttributeKeyHashes          = "hashes"
+	AttributeKeyVotePeriodStart = "vote_period_start"
+	AttributeKeyVotePeriodEnd   = "vote_period_end"
 
 	AttributeValueCategory = ModuleName
 )

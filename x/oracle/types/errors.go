@@ -1,25 +1,18 @@
 package types
 
 import (
-	"fmt"
-
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-	"github.com/tendermint/tendermint/crypto/tmhash"
 )
 
-// Oracle Errors
+// x/distribution module sentinel errors
 var (
-	ErrInvalidExchangeRate   = sdkerrors.Register(ModuleName, 2, "invalid exchange rate")
-	ErrNoPrevote             = sdkerrors.Register(ModuleName, 3, "no prevote")
-	ErrNoVote                = sdkerrors.Register(ModuleName, 4, "no vote")
-	ErrNoVotingPermission    = sdkerrors.Register(ModuleName, 5, "unauthorized voter")
-	ErrInvalidHash           = sdkerrors.Register(ModuleName, 6, "invalid hash")
-	ErrInvalidHashLength     = sdkerrors.Register(ModuleName, 7, fmt.Sprintf("invalid hash length; should equal %d", tmhash.TruncatedSize))
-	ErrVerificationFailed    = sdkerrors.Register(ModuleName, 8, "hash verification failed")
-	ErrRevealPeriodMissMatch = sdkerrors.Register(ModuleName, 9, "reveal period of submitted vote do not match with registered prevote")
-	ErrInvalidSaltLength     = sdkerrors.Register(ModuleName, 10, "invalid salt length; should be 1~4")
-	ErrNoAggregatePrevote    = sdkerrors.Register(ModuleName, 11, "no aggregate prevote")
-	ErrNoAggregateVote       = sdkerrors.Register(ModuleName, 12, "no aggregate vote")
-	ErrNoTobinTax            = sdkerrors.Register(ModuleName, 13, "no tobin tax")
-	ErrUnknowDenom           = sdkerrors.Register(ModuleName, 14, "unknown denom")
+	ErrInvalidHash       = sdkerrors.Register(ModuleName, 2, "invalid sha256 hash")
+	ErrInvalidOracleData = sdkerrors.Register(ModuleName, 3, "invalid oracle data hash")
+	ErrUnknown           = sdkerrors.Register(ModuleName, 4, "unknown")
+	ErrNoPrevote         = sdkerrors.Register(ModuleName, 5, "no prevote for validator")
+	ErrUnpackOracleData  = sdkerrors.Register(ModuleName, 6, "failed to unpack oracle data")
+	ErrHashMismatch      = sdkerrors.Register(ModuleName, 7, "precommit hash doesn't match commit hash")
+	ErrWrongNumber       = sdkerrors.Register(ModuleName, 8, "wrong number of args")
+	ErrWrongDataType     = sdkerrors.Register(ModuleName, 9, "wrong data type")
+	ErrParseError        = sdkerrors.Register(ModuleName, 10, "parsing oracle data")
 )

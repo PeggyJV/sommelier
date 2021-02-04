@@ -325,13 +325,13 @@ func NewSommelierApp(
 	)
 
 	app.OracleKeeper = oraclekeeper.NewKeeper(
-		appCodec, keys[oracletypes.StoreKey], app.GetSubspace(oracletypes.ModuleName), app.DistrKeeper,
-		app.StakingKeeper, app.AccountKeeper, app.BankKeeper, distrtypes.ModuleName,
+		appCodec, keys[oracletypes.StoreKey], app.GetSubspace(oracletypes.ModuleName), app.StakingKeeper,
 	)
 
 	app.ILKeeper = ilkeeper.NewKeeper(
 		appCodec, keys[iltypes.StoreKey], app.GetSubspace(iltypes.ModuleName), app.OracleKeeper, app.EthBridgeKeeper,
 	)
+
 	// Create static IBC router, add transfer route, then set and seal it
 	ibcRouter := porttypes.NewRouter()
 	ibcRouter.AddRoute(ibctransfertypes.ModuleName, transferModule)
@@ -377,7 +377,7 @@ func NewSommelierApp(
 		ibc.NewAppModule(app.IBCKeeper),
 		params.NewAppModule(app.ParamsKeeper),
 		transferModule,
-		oracle.NewAppModule(app.OracleKeeper, app.AccountKeeper, app.BankKeeper, appCodec),
+		oracle.NewAppModule(app.OracleKeeper, appCodec),
 		il.NewAppModule(app.ILKeeper, appCodec),
 	)
 
@@ -387,7 +387,7 @@ func NewSommelierApp(
 	// NOTE: staking module is required if HistoricalEntries param > 0
 	app.mm.SetOrderBeginBlockers(
 		upgradetypes.ModuleName, minttypes.ModuleName, distrtypes.ModuleName, slashingtypes.ModuleName,
-		evidencetypes.ModuleName, stakingtypes.ModuleName, ibchost.ModuleName,
+		evidencetypes.ModuleName, stakingtypes.ModuleName, ibchost.ModuleName, oracletypes.ModuleName,
 	)
 	app.mm.SetOrderEndBlockers(
 		crisistypes.ModuleName, oracletypes.ModuleName, govtypes.ModuleName, stakingtypes.ModuleName,
@@ -425,7 +425,7 @@ func NewSommelierApp(
 		evidence.NewAppModule(app.EvidenceKeeper),
 		ibc.NewAppModule(app.IBCKeeper),
 		transferModule,
-		oracle.NewAppModule(app.OracleKeeper, app.AccountKeeper, app.BankKeeper, appCodec),
+		oracle.NewAppModule(app.OracleKeeper, appCodec),
 	)
 
 	app.sm.RegisterStoreDecoders()

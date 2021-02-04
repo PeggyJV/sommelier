@@ -1,55 +1,59 @@
 syntax = "proto3";
 package oracle.v1;
 
-import "oracle/v1/oracle.proto";
+import "oracle/v1/tx.proto";
 import "gogoproto/gogo.proto";
-import "cosmos/base/v1beta1/coin.proto";
 
 option go_package = "github.com/peggyjv/sommelier/x/oracle/types";
 
 
 // GenesisState - all oracle state that must be provided at genesis
 message GenesisState {
-    Params                                params                           = 1 [
+    Params                          params             = 1 [
         (gogoproto.nullable) = false
     ];
-    repeated OracleDelegation             feeder_delegations               = 2 [
+    repeated MsgDelegateFeedConsent feeder_delegations = 2 [
         (gogoproto.nullable) = false
     ];
-    repeated cosmos.base.v1beta1.DecCoin  exchange_rates                   = 3 [
-        (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.DecCoins", 
-        (gogoproto.nullable) = false
-    ];
-    repeated ValidatorMissCounter   miss_counters                           = 4 [
-        (gogoproto.nullable) = false
-    ];
-    repeated AggregateExchangeRatePrevote aggregate_exchange_rate_prevotes = 5 [
-        (gogoproto.nullable)     = false,
-        (gogoproto.castrepeated) = "[]AggregateExchangeRatePrevote"
-    ];
-    repeated AggregateExchangeRateVote    aggregate_exchange_rate_votes    = 6 [
-        (gogoproto.nullable)     = false,
-        (gogoproto.castrepeated) = "[]AggregateExchangeRateVote"
-    ];
-    // NOTE: the amounts here indicate the tobin tax for a given USD/{denom} pair
-    repeated cosmos.base.v1beta1.DecCoin tobin_taxes                       = 7 [
-        (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.DecCoins", 
+    repeated MissCounter            miss_counters      = 3 [
         (gogoproto.nullable) = false
     ];
 }
 
-// OracleDelegation represents a delegator-delegate pair for an oracle delegation
-message OracleDelegation {
-    // validator delegator address
-    string delegator_address = 1 [(gogoproto.moretags) = "yaml:\"delegator_address\""];
-    // account delegate address
-    string  delegate_address = 2 [(gogoproto.moretags) = "yaml:\"delegate_address\""];
+// Params oracle parameters
+message Params {
+    // VotePeriod defines the number of blocks to wait for votes before attempting to tally
+    int64  vote_period          = 1;
+
+    // VoteThreshold defines the percentage of bonded stake required to vote each period
+    string vote_threshold       = 2 [
+        (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec", 
+        (gogoproto.nullable)   = false
+    ];
+
+    // SlashWindow defines the number of blocks for the slashing window
+    int64  slash_window         = 3;
+
+    // MinValidPerWindow defines the number of misses a validator is allowed during
+    // each SlashWindow
+    string min_valid_per_window = 4 [
+        (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec", 
+        (gogoproto.nullable)   = false
+    ];
+
+    // SlashFraction defines the percentage of slash that a validator will suffer if it fails
+    // to send a vote
+    string slash_fraction       = 5 [
+        (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec", 
+        (gogoproto.nullable)   = false
+    ];
+
+    // DataTypes defines which data types validators must submit each voting period
+    repeated string data_types  = 6;
 }
 
-// ValidatorMissCounter represents a per validator miss counter
-message ValidatorMissCounter {
-    // validator operator address
-    string val_address = 1 [(gogoproto.moretags) = "yaml:\"val_address\""];
-    // missed oracle counter
-    int64  missed_counter = 2 [(gogoproto.moretags) = "yaml:\"missed_counter\""];
+// MissCounter stores the validator address and the number of associated misses
+message MissCounter {
+    string validator = 1;
+    int64  misses    = 2;
 }

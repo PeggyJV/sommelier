@@ -5,8 +5,6 @@ package types
 
 import (
 	fmt "fmt"
-	github_com_cosmos_cosmos_sdk_types "github.com/cosmos/cosmos-sdk/types"
-	types "github.com/cosmos/cosmos-sdk/types"
 	_ "github.com/gogo/protobuf/gogoproto"
 	proto "github.com/gogo/protobuf/proto"
 	io "io"
@@ -25,24 +23,23 @@ var _ = math.Inf
 // proto package needs to be updated.
 const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
-// Claim is an interface that directs its rewards to an attached bank account.
-type Claim struct {
-	Weight    int64  `protobuf:"varint,1,opt,name=weight,proto3" json:"weight,omitempty"`
-	Recipient string `protobuf:"bytes,2,opt,name=recipient,proto3" json:"recipient,omitempty"`
+// UniswapData is an implementation of OracleData
+type UniswapData struct {
+	Pairs []UniswapPair `protobuf:"bytes,1,rep,name=pairs,proto3" json:"pairs"`
 }
 
-func (m *Claim) Reset()         { *m = Claim{} }
-func (m *Claim) String() string { return proto.CompactTextString(m) }
-func (*Claim) ProtoMessage()    {}
-func (*Claim) Descriptor() ([]byte, []int) {
+func (m *UniswapData) Reset()         { *m = UniswapData{} }
+func (m *UniswapData) String() string { return proto.CompactTextString(m) }
+func (*UniswapData) ProtoMessage()    {}
+func (*UniswapData) Descriptor() ([]byte, []int) {
 	return fileDescriptor_652b57db11528d07, []int{0}
 }
-func (m *Claim) XXX_Unmarshal(b []byte) error {
+func (m *UniswapData) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *Claim) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *UniswapData) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_Claim.Marshal(b, m, deterministic)
+		return xxx_messageInfo_UniswapData.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -52,52 +49,50 @@ func (m *Claim) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 		return b[:n], nil
 	}
 }
-func (m *Claim) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_Claim.Merge(m, src)
+func (m *UniswapData) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_UniswapData.Merge(m, src)
 }
-func (m *Claim) XXX_Size() int {
+func (m *UniswapData) XXX_Size() int {
 	return m.Size()
 }
-func (m *Claim) XXX_DiscardUnknown() {
-	xxx_messageInfo_Claim.DiscardUnknown(m)
+func (m *UniswapData) XXX_DiscardUnknown() {
+	xxx_messageInfo_UniswapData.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_Claim proto.InternalMessageInfo
+var xxx_messageInfo_UniswapData proto.InternalMessageInfo
 
-func (m *Claim) GetWeight() int64 {
+func (m *UniswapData) GetPairs() []UniswapPair {
 	if m != nil {
-		return m.Weight
+		return m.Pairs
 	}
-	return 0
+	return nil
 }
 
-func (m *Claim) GetRecipient() string {
-	if m != nil {
-		return m.Recipient
-	}
-	return ""
+// UniswapPair represents the necessary data for a uniswap pair
+type UniswapPair struct {
+	Id          string       `protobuf:"bytes,1,opt,name=id,proto3" json:"id"`
+	Reserve0    string       `protobuf:"bytes,2,opt,name=reserve0,proto3" json:"reserve0"`
+	Reserve1    string       `protobuf:"bytes,3,opt,name=reserve1,proto3" json:"reserve1"`
+	ReserveUsd  string       `protobuf:"bytes,4,opt,name=reserve_usd,json=reserveUsd,proto3" json:"reserveUSD"`
+	Token0      UniswapToken `protobuf:"bytes,5,opt,name=token0,proto3" json:"token0"`
+	Token1      UniswapToken `protobuf:"bytes,6,opt,name=token1,proto3" json:"token1"`
+	Token0Price string       `protobuf:"bytes,7,opt,name=token0_price,json=token0Price,proto3" json:"token0Price"`
+	Token1Price string       `protobuf:"bytes,8,opt,name=token1_price,json=token1Price,proto3" json:"token1Price"`
+	TotalSupply string       `protobuf:"bytes,9,opt,name=total_supply,json=totalSupply,proto3" json:"totalSupply"`
 }
 
-// ExchangeRatePrevote - struct to store a validator's prevote on the rate of Luna in the denom asset
-type ExchangeRatePrevote struct {
-	Hash        []byte `protobuf:"bytes,1,opt,name=hash,proto3" json:"hash,omitempty"`
-	Denom       string `protobuf:"bytes,2,opt,name=denom,proto3" json:"denom,omitempty"`
-	Voter       string `protobuf:"bytes,3,opt,name=voter,proto3" json:"voter,omitempty"`
-	SubmitBlock int64  `protobuf:"varint,4,opt,name=submit_block,json=submitBlock,proto3" json:"submit_block,omitempty" yaml:"submit_block"`
-}
-
-func (m *ExchangeRatePrevote) Reset()         { *m = ExchangeRatePrevote{} }
-func (m *ExchangeRatePrevote) String() string { return proto.CompactTextString(m) }
-func (*ExchangeRatePrevote) ProtoMessage()    {}
-func (*ExchangeRatePrevote) Descriptor() ([]byte, []int) {
+func (m *UniswapPair) Reset()         { *m = UniswapPair{} }
+func (m *UniswapPair) String() string { return proto.CompactTextString(m) }
+func (*UniswapPair) ProtoMessage()    {}
+func (*UniswapPair) Descriptor() ([]byte, []int) {
 	return fileDescriptor_652b57db11528d07, []int{1}
 }
-func (m *ExchangeRatePrevote) XXX_Unmarshal(b []byte) error {
+func (m *UniswapPair) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *ExchangeRatePrevote) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *UniswapPair) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_ExchangeRatePrevote.Marshal(b, m, deterministic)
+		return xxx_messageInfo_UniswapPair.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -107,65 +102,99 @@ func (m *ExchangeRatePrevote) XXX_Marshal(b []byte, deterministic bool) ([]byte,
 		return b[:n], nil
 	}
 }
-func (m *ExchangeRatePrevote) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_ExchangeRatePrevote.Merge(m, src)
+func (m *UniswapPair) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_UniswapPair.Merge(m, src)
 }
-func (m *ExchangeRatePrevote) XXX_Size() int {
+func (m *UniswapPair) XXX_Size() int {
 	return m.Size()
 }
-func (m *ExchangeRatePrevote) XXX_DiscardUnknown() {
-	xxx_messageInfo_ExchangeRatePrevote.DiscardUnknown(m)
+func (m *UniswapPair) XXX_DiscardUnknown() {
+	xxx_messageInfo_UniswapPair.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_ExchangeRatePrevote proto.InternalMessageInfo
+var xxx_messageInfo_UniswapPair proto.InternalMessageInfo
 
-func (m *ExchangeRatePrevote) GetHash() []byte {
+func (m *UniswapPair) GetId() string {
 	if m != nil {
-		return m.Hash
-	}
-	return nil
-}
-
-func (m *ExchangeRatePrevote) GetDenom() string {
-	if m != nil {
-		return m.Denom
+		return m.Id
 	}
 	return ""
 }
 
-func (m *ExchangeRatePrevote) GetVoter() string {
+func (m *UniswapPair) GetReserve0() string {
 	if m != nil {
-		return m.Voter
+		return m.Reserve0
 	}
 	return ""
 }
 
-func (m *ExchangeRatePrevote) GetSubmitBlock() int64 {
+func (m *UniswapPair) GetReserve1() string {
 	if m != nil {
-		return m.SubmitBlock
+		return m.Reserve1
 	}
-	return 0
+	return ""
 }
 
-// ExchangeRateVote - struct to store a validator's vote on the rate of Luna in the denom asset
-type ExchangeRateVote struct {
-	ExchangeRate github_com_cosmos_cosmos_sdk_types.Dec `protobuf:"bytes,1,opt,name=exchange_rate,json=exchangeRate,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Dec" json:"exchange_rate" yaml:"exchange_rate"`
-	Denom        string                                 `protobuf:"bytes,2,opt,name=denom,proto3" json:"denom,omitempty"`
-	Voter        string                                 `protobuf:"bytes,3,opt,name=voter,proto3" json:"voter,omitempty"`
+func (m *UniswapPair) GetReserveUsd() string {
+	if m != nil {
+		return m.ReserveUsd
+	}
+	return ""
 }
 
-func (m *ExchangeRateVote) Reset()         { *m = ExchangeRateVote{} }
-func (m *ExchangeRateVote) String() string { return proto.CompactTextString(m) }
-func (*ExchangeRateVote) ProtoMessage()    {}
-func (*ExchangeRateVote) Descriptor() ([]byte, []int) {
+func (m *UniswapPair) GetToken0() UniswapToken {
+	if m != nil {
+		return m.Token0
+	}
+	return UniswapToken{}
+}
+
+func (m *UniswapPair) GetToken1() UniswapToken {
+	if m != nil {
+		return m.Token1
+	}
+	return UniswapToken{}
+}
+
+func (m *UniswapPair) GetToken0Price() string {
+	if m != nil {
+		return m.Token0Price
+	}
+	return ""
+}
+
+func (m *UniswapPair) GetToken1Price() string {
+	if m != nil {
+		return m.Token1Price
+	}
+	return ""
+}
+
+func (m *UniswapPair) GetTotalSupply() string {
+	if m != nil {
+		return m.TotalSupply
+	}
+	return ""
+}
+
+// UniswapToken is the returned uniswap token representation
+type UniswapToken struct {
+	Decimals string `protobuf:"bytes,1,opt,name=decimals,proto3" json:"decimals"`
+	Id       string `protobuf:"bytes,2,opt,name=id,proto3" json:"id"`
+}
+
+func (m *UniswapToken) Reset()         { *m = UniswapToken{} }
+func (m *UniswapToken) String() string { return proto.CompactTextString(m) }
+func (*UniswapToken) ProtoMessage()    {}
+func (*UniswapToken) Descriptor() ([]byte, []int) {
 	return fileDescriptor_652b57db11528d07, []int{2}
 }
-func (m *ExchangeRateVote) XXX_Unmarshal(b []byte) error {
+func (m *UniswapToken) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *ExchangeRateVote) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *UniswapToken) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_ExchangeRateVote.Marshal(b, m, deterministic)
+		return xxx_messageInfo_UniswapToken.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -175,281 +204,71 @@ func (m *ExchangeRateVote) XXX_Marshal(b []byte, deterministic bool) ([]byte, er
 		return b[:n], nil
 	}
 }
-func (m *ExchangeRateVote) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_ExchangeRateVote.Merge(m, src)
+func (m *UniswapToken) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_UniswapToken.Merge(m, src)
 }
-func (m *ExchangeRateVote) XXX_Size() int {
+func (m *UniswapToken) XXX_Size() int {
 	return m.Size()
 }
-func (m *ExchangeRateVote) XXX_DiscardUnknown() {
-	xxx_messageInfo_ExchangeRateVote.DiscardUnknown(m)
+func (m *UniswapToken) XXX_DiscardUnknown() {
+	xxx_messageInfo_UniswapToken.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_ExchangeRateVote proto.InternalMessageInfo
+var xxx_messageInfo_UniswapToken proto.InternalMessageInfo
 
-func (m *ExchangeRateVote) GetDenom() string {
+func (m *UniswapToken) GetDecimals() string {
 	if m != nil {
-		return m.Denom
+		return m.Decimals
 	}
 	return ""
 }
 
-func (m *ExchangeRateVote) GetVoter() string {
+func (m *UniswapToken) GetId() string {
 	if m != nil {
-		return m.Voter
+		return m.Id
 	}
 	return ""
-}
-
-// AggregateExchangeRatePrevote - struct to store a validator's aggregate prevote on the rate of Luna in the denom asset
-type AggregateExchangeRatePrevote struct {
-	Hash        []byte `protobuf:"bytes,1,opt,name=hash,proto3" json:"hash,omitempty"`
-	Voter       string `protobuf:"bytes,2,opt,name=voter,proto3" json:"voter,omitempty"`
-	SubmitBlock int64  `protobuf:"varint,3,opt,name=submit_block,json=submitBlock,proto3" json:"submit_block,omitempty" yaml:"submit_block"`
-}
-
-func (m *AggregateExchangeRatePrevote) Reset()         { *m = AggregateExchangeRatePrevote{} }
-func (m *AggregateExchangeRatePrevote) String() string { return proto.CompactTextString(m) }
-func (*AggregateExchangeRatePrevote) ProtoMessage()    {}
-func (*AggregateExchangeRatePrevote) Descriptor() ([]byte, []int) {
-	return fileDescriptor_652b57db11528d07, []int{3}
-}
-func (m *AggregateExchangeRatePrevote) XXX_Unmarshal(b []byte) error {
-	return m.Unmarshal(b)
-}
-func (m *AggregateExchangeRatePrevote) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	if deterministic {
-		return xxx_messageInfo_AggregateExchangeRatePrevote.Marshal(b, m, deterministic)
-	} else {
-		b = b[:cap(b)]
-		n, err := m.MarshalToSizedBuffer(b)
-		if err != nil {
-			return nil, err
-		}
-		return b[:n], nil
-	}
-}
-func (m *AggregateExchangeRatePrevote) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_AggregateExchangeRatePrevote.Merge(m, src)
-}
-func (m *AggregateExchangeRatePrevote) XXX_Size() int {
-	return m.Size()
-}
-func (m *AggregateExchangeRatePrevote) XXX_DiscardUnknown() {
-	xxx_messageInfo_AggregateExchangeRatePrevote.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_AggregateExchangeRatePrevote proto.InternalMessageInfo
-
-func (m *AggregateExchangeRatePrevote) GetHash() []byte {
-	if m != nil {
-		return m.Hash
-	}
-	return nil
-}
-
-func (m *AggregateExchangeRatePrevote) GetVoter() string {
-	if m != nil {
-		return m.Voter
-	}
-	return ""
-}
-
-func (m *AggregateExchangeRatePrevote) GetSubmitBlock() int64 {
-	if m != nil {
-		return m.SubmitBlock
-	}
-	return 0
-}
-
-// AggregateExchangeRateVote - struct to store a validator's aggregate vote on the rate of Luna in the denom asset
-type AggregateExchangeRateVote struct {
-	Voter              string                                      `protobuf:"bytes,1,opt,name=voter,proto3" json:"voter,omitempty"`
-	ExchangeRateTuples github_com_cosmos_cosmos_sdk_types.DecCoins `protobuf:"bytes,2,rep,name=exchange_rate_tuples,json=exchangeRateTuples,proto3,castrepeated=github.com/cosmos/cosmos-sdk/types.DecCoins" json:"exchange_rate_tuples" yaml:"exchange_rate_tuples"`
-}
-
-func (m *AggregateExchangeRateVote) Reset()         { *m = AggregateExchangeRateVote{} }
-func (m *AggregateExchangeRateVote) String() string { return proto.CompactTextString(m) }
-func (*AggregateExchangeRateVote) ProtoMessage()    {}
-func (*AggregateExchangeRateVote) Descriptor() ([]byte, []int) {
-	return fileDescriptor_652b57db11528d07, []int{4}
-}
-func (m *AggregateExchangeRateVote) XXX_Unmarshal(b []byte) error {
-	return m.Unmarshal(b)
-}
-func (m *AggregateExchangeRateVote) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	if deterministic {
-		return xxx_messageInfo_AggregateExchangeRateVote.Marshal(b, m, deterministic)
-	} else {
-		b = b[:cap(b)]
-		n, err := m.MarshalToSizedBuffer(b)
-		if err != nil {
-			return nil, err
-		}
-		return b[:n], nil
-	}
-}
-func (m *AggregateExchangeRateVote) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_AggregateExchangeRateVote.Merge(m, src)
-}
-func (m *AggregateExchangeRateVote) XXX_Size() int {
-	return m.Size()
-}
-func (m *AggregateExchangeRateVote) XXX_DiscardUnknown() {
-	xxx_messageInfo_AggregateExchangeRateVote.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_AggregateExchangeRateVote proto.InternalMessageInfo
-
-func (m *AggregateExchangeRateVote) GetVoter() string {
-	if m != nil {
-		return m.Voter
-	}
-	return ""
-}
-
-func (m *AggregateExchangeRateVote) GetExchangeRateTuples() github_com_cosmos_cosmos_sdk_types.DecCoins {
-	if m != nil {
-		return m.ExchangeRateTuples
-	}
-	return nil
-}
-
-// Params oracle parameters
-type Params struct {
-	VotePeriod               int64                                  `protobuf:"varint,1,opt,name=vote_period,json=votePeriod,proto3" json:"vote_period,omitempty" yaml:"exchange_rate_tuples"`
-	VoteThreshold            github_com_cosmos_cosmos_sdk_types.Dec `protobuf:"bytes,2,opt,name=vote_threshold,json=voteThreshold,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Dec" json:"vote_threshold" yaml:"vote_threshold"`
-	RewardBand               github_com_cosmos_cosmos_sdk_types.Dec `protobuf:"bytes,3,opt,name=reward_band,json=rewardBand,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Dec" json:"reward_band" yaml:"reward_band"`
-	RewardDistributionWindow int64                                  `protobuf:"varint,4,opt,name=reward_distribution_window,json=rewardDistributionWindow,proto3" json:"reward_distribution_window,omitempty" yaml:"reward_distribution_window"`
-	// NOTE: The amounts here indicate the tobin tax for each currency
-	Whitelist         github_com_cosmos_cosmos_sdk_types.DecCoins `protobuf:"bytes,5,rep,name=whitelist,proto3,castrepeated=github.com/cosmos/cosmos-sdk/types.DecCoins" json:"whitelist"`
-	SlashFraction     github_com_cosmos_cosmos_sdk_types.Dec      `protobuf:"bytes,6,opt,name=slash_fraction,json=slashFraction,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Dec" json:"slash_fraction" yaml:"slash_fraction"`
-	SlashWindow       int64                                       `protobuf:"varint,7,opt,name=slash_window,json=slashWindow,proto3" json:"slash_window,omitempty" yaml:"slash_window"`
-	MinValidPerWindow github_com_cosmos_cosmos_sdk_types.Dec      `protobuf:"bytes,8,opt,name=min_valid_per_window,json=minValidPerWindow,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Dec" json:"min_valid_per_window" yaml:"min_valid_per_window"`
-}
-
-func (m *Params) Reset()         { *m = Params{} }
-func (m *Params) String() string { return proto.CompactTextString(m) }
-func (*Params) ProtoMessage()    {}
-func (*Params) Descriptor() ([]byte, []int) {
-	return fileDescriptor_652b57db11528d07, []int{5}
-}
-func (m *Params) XXX_Unmarshal(b []byte) error {
-	return m.Unmarshal(b)
-}
-func (m *Params) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	if deterministic {
-		return xxx_messageInfo_Params.Marshal(b, m, deterministic)
-	} else {
-		b = b[:cap(b)]
-		n, err := m.MarshalToSizedBuffer(b)
-		if err != nil {
-			return nil, err
-		}
-		return b[:n], nil
-	}
-}
-func (m *Params) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_Params.Merge(m, src)
-}
-func (m *Params) XXX_Size() int {
-	return m.Size()
-}
-func (m *Params) XXX_DiscardUnknown() {
-	xxx_messageInfo_Params.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_Params proto.InternalMessageInfo
-
-func (m *Params) GetVotePeriod() int64 {
-	if m != nil {
-		return m.VotePeriod
-	}
-	return 0
-}
-
-func (m *Params) GetRewardDistributionWindow() int64 {
-	if m != nil {
-		return m.RewardDistributionWindow
-	}
-	return 0
-}
-
-func (m *Params) GetWhitelist() github_com_cosmos_cosmos_sdk_types.DecCoins {
-	if m != nil {
-		return m.Whitelist
-	}
-	return nil
-}
-
-func (m *Params) GetSlashWindow() int64 {
-	if m != nil {
-		return m.SlashWindow
-	}
-	return 0
 }
 
 func init() {
-	proto.RegisterType((*Claim)(nil), "oracle.v1.Claim")
-	proto.RegisterType((*ExchangeRatePrevote)(nil), "oracle.v1.ExchangeRatePrevote")
-	proto.RegisterType((*ExchangeRateVote)(nil), "oracle.v1.ExchangeRateVote")
-	proto.RegisterType((*AggregateExchangeRatePrevote)(nil), "oracle.v1.AggregateExchangeRatePrevote")
-	proto.RegisterType((*AggregateExchangeRateVote)(nil), "oracle.v1.AggregateExchangeRateVote")
-	proto.RegisterType((*Params)(nil), "oracle.v1.Params")
+	proto.RegisterType((*UniswapData)(nil), "oracle.v1.UniswapData")
+	proto.RegisterType((*UniswapPair)(nil), "oracle.v1.UniswapPair")
+	proto.RegisterType((*UniswapToken)(nil), "oracle.v1.UniswapToken")
 }
 
 func init() { proto.RegisterFile("oracle/v1/oracle.proto", fileDescriptor_652b57db11528d07) }
 
 var fileDescriptor_652b57db11528d07 = []byte{
-	// 711 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xa4, 0x55, 0xcd, 0x6e, 0xd3, 0x4a,
-	0x18, 0x8d, 0x9b, 0x36, 0xf7, 0x66, 0xd2, 0x5e, 0xdd, 0xeb, 0xe6, 0x16, 0x53, 0xaa, 0xb8, 0x58,
-	0x02, 0x55, 0x42, 0xc4, 0x2a, 0xdd, 0x55, 0x42, 0x02, 0xf7, 0x87, 0x15, 0x52, 0x64, 0x55, 0x45,
-	0x62, 0x63, 0x8d, 0xed, 0xc1, 0x1e, 0x6a, 0x7b, 0xa2, 0x99, 0x49, 0xd2, 0x6e, 0x58, 0xf1, 0x00,
-	0xf0, 0x0a, 0xb0, 0x83, 0x17, 0xe9, 0xb2, 0x2b, 0x84, 0x58, 0x04, 0xd4, 0xbe, 0x41, 0x9e, 0x00,
-	0xcd, 0x4f, 0xa9, 0x23, 0x22, 0xa8, 0xc5, 0x2a, 0x73, 0xbe, 0x6f, 0xe6, 0x9c, 0x93, 0x33, 0xdf,
-	0xc8, 0x60, 0x85, 0x50, 0x18, 0x65, 0xc8, 0x1d, 0x6e, 0xba, 0x6a, 0xd5, 0xed, 0x53, 0xc2, 0x89,
-	0xd9, 0xd4, 0x68, 0xb8, 0xb9, 0xda, 0x4e, 0x48, 0x42, 0x64, 0xd5, 0x15, 0x2b, 0xb5, 0x61, 0xb5,
-	0x13, 0x11, 0x96, 0x13, 0xe6, 0x86, 0x90, 0x89, 0xd3, 0x21, 0xe2, 0x70, 0xd3, 0x8d, 0x08, 0x2e,
-	0x54, 0xdf, 0x79, 0x08, 0x16, 0x76, 0x32, 0x88, 0x73, 0x73, 0x05, 0x34, 0x46, 0x08, 0x27, 0x29,
-	0xb7, 0x8c, 0x75, 0x63, 0xa3, 0xee, 0x6b, 0x64, 0xae, 0x81, 0x26, 0x45, 0x11, 0xee, 0x63, 0x54,
-	0x70, 0x6b, 0x6e, 0xdd, 0xd8, 0x68, 0xfa, 0x57, 0x05, 0xe7, 0xad, 0x01, 0x96, 0xf7, 0x8e, 0xa3,
-	0x14, 0x16, 0x09, 0xf2, 0x21, 0x47, 0x3d, 0x8a, 0x86, 0x84, 0x23, 0xd3, 0x04, 0xf3, 0x29, 0x64,
-	0xa9, 0xe4, 0x5a, 0xf4, 0xe5, 0xda, 0x6c, 0x83, 0x85, 0x18, 0x15, 0x24, 0xd7, 0x2c, 0x0a, 0x88,
-	0xaa, 0x38, 0x41, 0xad, 0xba, 0xaa, 0x4a, 0x60, 0x6e, 0x83, 0x45, 0x36, 0x08, 0x73, 0xcc, 0x83,
-	0x30, 0x23, 0xd1, 0x91, 0x35, 0x2f, 0x3c, 0x79, 0x37, 0x26, 0x63, 0x7b, 0xf9, 0x04, 0xe6, 0xd9,
-	0xb6, 0x53, 0xee, 0x3a, 0x7e, 0x4b, 0x41, 0x4f, 0xa2, 0x8f, 0x06, 0xf8, 0xb7, 0xec, 0xe9, 0x50,
-	0x18, 0x3a, 0x02, 0x4b, 0x48, 0xd7, 0x02, 0x0a, 0x39, 0x92, 0xce, 0x9a, 0xde, 0xfe, 0xe9, 0xd8,
-	0xae, 0x7d, 0x19, 0xdb, 0x77, 0x13, 0xcc, 0xd3, 0x41, 0xd8, 0x8d, 0x48, 0xee, 0xea, 0xc4, 0xd4,
-	0xcf, 0x7d, 0x16, 0x1f, 0xb9, 0xfc, 0xa4, 0x8f, 0x58, 0x77, 0x17, 0x45, 0x93, 0xb1, 0xdd, 0x56,
-	0xfa, 0x53, 0x64, 0x8e, 0xbf, 0x88, 0x4a, 0x82, 0x55, 0xfe, 0xa9, 0xf3, 0xda, 0x00, 0x6b, 0x8f,
-	0x93, 0x84, 0xa2, 0x04, 0x72, 0x54, 0x21, 0x4a, 0x45, 0x35, 0xf7, 0xab, 0xd0, 0xea, 0x15, 0x42,
-	0xfb, 0x64, 0x80, 0x9b, 0x33, 0x6d, 0xc8, 0xf4, 0x7e, 0xe8, 0x19, 0x65, 0xbd, 0x77, 0x06, 0x68,
-	0x4f, 0xe5, 0x10, 0xf0, 0x41, 0x3f, 0x43, 0xcc, 0x9a, 0x5b, 0xaf, 0x6f, 0xb4, 0x1e, 0xac, 0x75,
-	0x55, 0x84, 0x5d, 0x31, 0x7b, 0x5d, 0x3d, 0x7b, 0x22, 0xc5, 0x1d, 0x82, 0x0b, 0xcf, 0x17, 0xc9,
-	0x4f, 0xc6, 0xf6, 0xad, 0x19, 0x79, 0x6a, 0x1e, 0xe7, 0xc3, 0x57, 0xfb, 0xde, 0xf5, 0x2e, 0x46,
-	0x50, 0x32, 0xdf, 0x2c, 0xdf, 0xc2, 0x81, 0xe2, 0x78, 0xdf, 0x00, 0x8d, 0x1e, 0xa4, 0x30, 0x67,
-	0xe6, 0x23, 0xd0, 0x12, 0xc6, 0x83, 0x3e, 0xa2, 0x98, 0xc4, 0x6a, 0xce, 0x3d, 0xfb, 0x37, 0x1e,
-	0x7c, 0x20, 0xce, 0xf4, 0xe4, 0x11, 0xb3, 0x00, 0xff, 0x48, 0x06, 0x9e, 0x52, 0xc4, 0x52, 0x92,
-	0xc5, 0xea, 0x02, 0xbc, 0x27, 0x95, 0xc7, 0xe8, 0x7f, 0x25, 0x39, 0xcd, 0xe6, 0xf8, 0x4b, 0xa2,
-	0x70, 0x70, 0x89, 0x4d, 0x04, 0x5a, 0x14, 0x8d, 0x20, 0x8d, 0x83, 0x10, 0x16, 0xb1, 0x1a, 0x1c,
-	0x6f, 0xb7, 0xb2, 0x98, 0xa9, 0xc4, 0x4a, 0x54, 0x8e, 0x0f, 0x14, 0xf2, 0x60, 0x11, 0x9b, 0x11,
-	0x58, 0xd5, 0xbd, 0x18, 0x33, 0x4e, 0x71, 0x38, 0xe0, 0x98, 0x14, 0xc1, 0x08, 0x17, 0x31, 0x19,
-	0xe9, 0xb7, 0x77, 0x67, 0x32, 0xb6, 0x6f, 0x4f, 0xf1, 0xcc, 0xd8, 0xeb, 0xf8, 0x96, 0x6a, 0xee,
-	0x96, 0x7a, 0xcf, 0x64, 0xcb, 0x24, 0xa0, 0x39, 0x4a, 0x31, 0x47, 0x19, 0x66, 0xdc, 0x5a, 0xb8,
-	0xc6, 0x84, 0x6c, 0x89, 0xff, 0x59, 0x75, 0x04, 0xae, 0x34, 0xc4, 0x65, 0xb1, 0x0c, 0xb2, 0x34,
-	0x78, 0x41, 0x61, 0x24, 0x8c, 0x58, 0x8d, 0x3f, 0xbb, 0xac, 0x69, 0x36, 0xc7, 0x5f, 0x92, 0x85,
-	0x7d, 0x8d, 0xe5, 0xf3, 0x93, 0x3b, 0x74, 0x6e, 0x7f, 0xfd, 0xf4, 0xfc, 0x4a, 0x5d, 0xf1, 0xfc,
-	0x04, 0xd4, 0xe1, 0xbc, 0x02, 0xed, 0x1c, 0x17, 0xc1, 0x10, 0x66, 0x38, 0x16, 0xf3, 0x79, 0xc9,
-	0xf1, 0xb7, 0x74, 0xfc, 0xb4, 0xb2, 0x63, 0x3d, 0xd1, 0xb3, 0x38, 0x1d, 0xff, 0xbf, 0x1c, 0x17,
-	0x87, 0xa2, 0xda, 0x43, 0x54, 0xe9, 0x7b, 0x7b, 0xa7, 0xe7, 0x1d, 0xe3, 0xec, 0xbc, 0x63, 0x7c,
-	0x3b, 0xef, 0x18, 0x6f, 0x2e, 0x3a, 0xb5, 0xb3, 0x8b, 0x4e, 0xed, 0xf3, 0x45, 0xa7, 0xf6, 0xbc,
-	0x9c, 0x7e, 0x1f, 0x25, 0xc9, 0xc9, 0xcb, 0xa1, 0xcb, 0x48, 0x9e, 0xa3, 0x0c, 0x23, 0xea, 0x1e,
-	0xeb, 0xcf, 0x91, 0x12, 0x0f, 0x1b, 0xf2, 0xa3, 0xb2, 0xf5, 0x3d, 0x00, 0x00, 0xff, 0xff, 0x1a,
-	0xb6, 0xcb, 0x80, 0xaf, 0x06, 0x00, 0x00,
+	// 409 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x94, 0x52, 0x41, 0x6b, 0xdb, 0x30,
+	0x18, 0x8d, 0x9d, 0x36, 0x6b, 0xe4, 0xd0, 0x81, 0x19, 0x99, 0xd8, 0xc1, 0x0e, 0x39, 0x05, 0x06,
+	0x51, 0xe5, 0xfd, 0x80, 0x31, 0xd3, 0xdd, 0x83, 0xba, 0x5e, 0x76, 0x09, 0xaa, 0x2d, 0x3c, 0x6d,
+	0x76, 0x25, 0x24, 0xc7, 0x5b, 0xfe, 0xc5, 0x7e, 0x56, 0x8e, 0x3d, 0xee, 0x64, 0x46, 0x72, 0xf3,
+	0xaf, 0x18, 0xb6, 0x35, 0x61, 0x9a, 0x53, 0x4f, 0x7e, 0xdf, 0xfb, 0xde, 0x7b, 0xf8, 0xe3, 0x09,
+	0xcc, 0x85, 0xa2, 0x49, 0xce, 0x50, 0x85, 0x51, 0x8f, 0xd6, 0x52, 0x89, 0x52, 0xf8, 0x53, 0x33,
+	0x55, 0xf8, 0xdd, 0x9b, 0x4c, 0x64, 0xa2, 0x63, 0x51, 0x8b, 0x7a, 0xc1, 0xf2, 0x13, 0xf0, 0xee,
+	0x1f, 0xb9, 0xfe, 0x49, 0xe5, 0x2d, 0x2d, 0xa9, 0x1f, 0x81, 0x4b, 0x49, 0xb9, 0xd2, 0xd0, 0x59,
+	0x8c, 0x57, 0x5e, 0x34, 0x5f, 0x5b, 0xff, 0xda, 0xc8, 0x36, 0x94, 0xab, 0xf8, 0xe2, 0x50, 0x87,
+	0x23, 0xd2, 0x4b, 0x97, 0x87, 0xb1, 0xcd, 0x68, 0x97, 0xfe, 0x1c, 0xb8, 0x3c, 0x85, 0xce, 0xc2,
+	0x59, 0x4d, 0xe3, 0x49, 0x53, 0x87, 0x2e, 0x4f, 0x89, 0xcb, 0x53, 0x7f, 0x05, 0xae, 0x14, 0xd3,
+	0x4c, 0x55, 0xec, 0x06, 0xba, 0xdd, 0x76, 0xd6, 0xd4, 0xa1, 0xe5, 0x88, 0x45, 0x03, 0x25, 0x86,
+	0xe3, 0x33, 0x25, 0xb6, 0x4a, 0xec, 0x23, 0xe0, 0x19, 0xbc, 0xdd, 0xe9, 0x14, 0x5e, 0x74, 0xe2,
+	0xeb, 0xa6, 0x0e, 0x81, 0xa1, 0xef, 0xef, 0x6e, 0x89, 0xc5, 0x3a, 0xf5, 0x3f, 0x82, 0x49, 0x29,
+	0x7e, 0xb0, 0xc7, 0x1b, 0x78, 0xb9, 0x70, 0x56, 0x5e, 0xf4, 0xf6, 0xfc, 0xc2, 0x2f, 0xed, 0x3e,
+	0xbe, 0x6e, 0x4f, 0x6c, 0xea, 0xd0, 0xc8, 0x89, 0xf9, 0xda, 0x00, 0x0c, 0x27, 0x2f, 0x09, 0xc0,
+	0x26, 0x00, 0xfb, 0x11, 0x98, 0xf5, 0x51, 0x5b, 0xa9, 0x78, 0xc2, 0xe0, 0xab, 0xee, 0x9f, 0x5f,
+	0x37, 0x75, 0xe8, 0xf5, 0xfc, 0xa6, 0xa5, 0xc9, 0x70, 0xb0, 0x1e, 0x6c, 0x3c, 0x57, 0xcf, 0x3c,
+	0x78, 0xe8, 0xc1, 0x03, 0x4f, 0x49, 0xf3, 0xad, 0xde, 0x49, 0x99, 0xef, 0xe1, 0x74, 0xe8, 0x29,
+	0x69, 0x7e, 0xd7, 0xd1, 0x64, 0x38, 0x2c, 0x37, 0x60, 0x36, 0xbc, 0xa1, 0x2d, 0x22, 0x65, 0x09,
+	0x2f, 0x68, 0xae, 0x4d, 0xa1, 0x5d, 0x11, 0xff, 0x39, 0x62, 0x91, 0x29, 0xdd, 0x7d, 0x5e, 0x7a,
+	0xfc, 0xf9, 0x70, 0x0c, 0x9c, 0xa7, 0x63, 0xe0, 0xfc, 0x3d, 0x06, 0xce, 0xef, 0x53, 0x30, 0x7a,
+	0x3a, 0x05, 0xa3, 0x3f, 0xa7, 0x60, 0xf4, 0xf5, 0x7d, 0xc6, 0xcb, 0x6f, 0xbb, 0x87, 0x75, 0x22,
+	0x0a, 0x24, 0x59, 0x96, 0xed, 0xbf, 0x57, 0x48, 0x8b, 0xa2, 0x60, 0x39, 0x67, 0x0a, 0xfd, 0x32,
+	0xef, 0x18, 0x95, 0x7b, 0xc9, 0xf4, 0xc3, 0xa4, 0x7b, 0xad, 0x1f, 0xfe, 0x05, 0x00, 0x00, 0xff,
+	0xff, 0xfa, 0xb3, 0xfa, 0x96, 0xe8, 0x02, 0x00, 0x00,
 }
 
-func (m *Claim) Marshal() (dAtA []byte, err error) {
+func (m *UniswapData) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -459,193 +278,20 @@ func (m *Claim) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *Claim) MarshalTo(dAtA []byte) (int, error) {
+func (m *UniswapData) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *Claim) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *UniswapData) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
 	_ = l
-	if len(m.Recipient) > 0 {
-		i -= len(m.Recipient)
-		copy(dAtA[i:], m.Recipient)
-		i = encodeVarintOracle(dAtA, i, uint64(len(m.Recipient)))
-		i--
-		dAtA[i] = 0x12
-	}
-	if m.Weight != 0 {
-		i = encodeVarintOracle(dAtA, i, uint64(m.Weight))
-		i--
-		dAtA[i] = 0x8
-	}
-	return len(dAtA) - i, nil
-}
-
-func (m *ExchangeRatePrevote) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
-	dAtA = make([]byte, size)
-	n, err := m.MarshalToSizedBuffer(dAtA[:size])
-	if err != nil {
-		return nil, err
-	}
-	return dAtA[:n], nil
-}
-
-func (m *ExchangeRatePrevote) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
-	return m.MarshalToSizedBuffer(dAtA[:size])
-}
-
-func (m *ExchangeRatePrevote) MarshalToSizedBuffer(dAtA []byte) (int, error) {
-	i := len(dAtA)
-	_ = i
-	var l int
-	_ = l
-	if m.SubmitBlock != 0 {
-		i = encodeVarintOracle(dAtA, i, uint64(m.SubmitBlock))
-		i--
-		dAtA[i] = 0x20
-	}
-	if len(m.Voter) > 0 {
-		i -= len(m.Voter)
-		copy(dAtA[i:], m.Voter)
-		i = encodeVarintOracle(dAtA, i, uint64(len(m.Voter)))
-		i--
-		dAtA[i] = 0x1a
-	}
-	if len(m.Denom) > 0 {
-		i -= len(m.Denom)
-		copy(dAtA[i:], m.Denom)
-		i = encodeVarintOracle(dAtA, i, uint64(len(m.Denom)))
-		i--
-		dAtA[i] = 0x12
-	}
-	if len(m.Hash) > 0 {
-		i -= len(m.Hash)
-		copy(dAtA[i:], m.Hash)
-		i = encodeVarintOracle(dAtA, i, uint64(len(m.Hash)))
-		i--
-		dAtA[i] = 0xa
-	}
-	return len(dAtA) - i, nil
-}
-
-func (m *ExchangeRateVote) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
-	dAtA = make([]byte, size)
-	n, err := m.MarshalToSizedBuffer(dAtA[:size])
-	if err != nil {
-		return nil, err
-	}
-	return dAtA[:n], nil
-}
-
-func (m *ExchangeRateVote) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
-	return m.MarshalToSizedBuffer(dAtA[:size])
-}
-
-func (m *ExchangeRateVote) MarshalToSizedBuffer(dAtA []byte) (int, error) {
-	i := len(dAtA)
-	_ = i
-	var l int
-	_ = l
-	if len(m.Voter) > 0 {
-		i -= len(m.Voter)
-		copy(dAtA[i:], m.Voter)
-		i = encodeVarintOracle(dAtA, i, uint64(len(m.Voter)))
-		i--
-		dAtA[i] = 0x1a
-	}
-	if len(m.Denom) > 0 {
-		i -= len(m.Denom)
-		copy(dAtA[i:], m.Denom)
-		i = encodeVarintOracle(dAtA, i, uint64(len(m.Denom)))
-		i--
-		dAtA[i] = 0x12
-	}
-	{
-		size := m.ExchangeRate.Size()
-		i -= size
-		if _, err := m.ExchangeRate.MarshalTo(dAtA[i:]); err != nil {
-			return 0, err
-		}
-		i = encodeVarintOracle(dAtA, i, uint64(size))
-	}
-	i--
-	dAtA[i] = 0xa
-	return len(dAtA) - i, nil
-}
-
-func (m *AggregateExchangeRatePrevote) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
-	dAtA = make([]byte, size)
-	n, err := m.MarshalToSizedBuffer(dAtA[:size])
-	if err != nil {
-		return nil, err
-	}
-	return dAtA[:n], nil
-}
-
-func (m *AggregateExchangeRatePrevote) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
-	return m.MarshalToSizedBuffer(dAtA[:size])
-}
-
-func (m *AggregateExchangeRatePrevote) MarshalToSizedBuffer(dAtA []byte) (int, error) {
-	i := len(dAtA)
-	_ = i
-	var l int
-	_ = l
-	if m.SubmitBlock != 0 {
-		i = encodeVarintOracle(dAtA, i, uint64(m.SubmitBlock))
-		i--
-		dAtA[i] = 0x18
-	}
-	if len(m.Voter) > 0 {
-		i -= len(m.Voter)
-		copy(dAtA[i:], m.Voter)
-		i = encodeVarintOracle(dAtA, i, uint64(len(m.Voter)))
-		i--
-		dAtA[i] = 0x12
-	}
-	if len(m.Hash) > 0 {
-		i -= len(m.Hash)
-		copy(dAtA[i:], m.Hash)
-		i = encodeVarintOracle(dAtA, i, uint64(len(m.Hash)))
-		i--
-		dAtA[i] = 0xa
-	}
-	return len(dAtA) - i, nil
-}
-
-func (m *AggregateExchangeRateVote) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
-	dAtA = make([]byte, size)
-	n, err := m.MarshalToSizedBuffer(dAtA[:size])
-	if err != nil {
-		return nil, err
-	}
-	return dAtA[:n], nil
-}
-
-func (m *AggregateExchangeRateVote) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
-	return m.MarshalToSizedBuffer(dAtA[:size])
-}
-
-func (m *AggregateExchangeRateVote) MarshalToSizedBuffer(dAtA []byte) (int, error) {
-	i := len(dAtA)
-	_ = i
-	var l int
-	_ = l
-	if len(m.ExchangeRateTuples) > 0 {
-		for iNdEx := len(m.ExchangeRateTuples) - 1; iNdEx >= 0; iNdEx-- {
+	if len(m.Pairs) > 0 {
+		for iNdEx := len(m.Pairs) - 1; iNdEx >= 0; iNdEx-- {
 			{
-				size, err := m.ExchangeRateTuples[iNdEx].MarshalToSizedBuffer(dAtA[:i])
+				size, err := m.Pairs[iNdEx].MarshalToSizedBuffer(dAtA[:i])
 				if err != nil {
 					return 0, err
 				}
@@ -653,20 +299,13 @@ func (m *AggregateExchangeRateVote) MarshalToSizedBuffer(dAtA []byte) (int, erro
 				i = encodeVarintOracle(dAtA, i, uint64(size))
 			}
 			i--
-			dAtA[i] = 0x12
+			dAtA[i] = 0xa
 		}
-	}
-	if len(m.Voter) > 0 {
-		i -= len(m.Voter)
-		copy(dAtA[i:], m.Voter)
-		i = encodeVarintOracle(dAtA, i, uint64(len(m.Voter)))
-		i--
-		dAtA[i] = 0xa
 	}
 	return len(dAtA) - i, nil
 }
 
-func (m *Params) Marshal() (dAtA []byte, err error) {
+func (m *UniswapPair) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -676,84 +315,121 @@ func (m *Params) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *Params) MarshalTo(dAtA []byte) (int, error) {
+func (m *UniswapPair) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *Params) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *UniswapPair) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
 	_ = l
-	{
-		size := m.MinValidPerWindow.Size()
-		i -= size
-		if _, err := m.MinValidPerWindow.MarshalTo(dAtA[i:]); err != nil {
-			return 0, err
-		}
-		i = encodeVarintOracle(dAtA, i, uint64(size))
-	}
-	i--
-	dAtA[i] = 0x42
-	if m.SlashWindow != 0 {
-		i = encodeVarintOracle(dAtA, i, uint64(m.SlashWindow))
+	if len(m.TotalSupply) > 0 {
+		i -= len(m.TotalSupply)
+		copy(dAtA[i:], m.TotalSupply)
+		i = encodeVarintOracle(dAtA, i, uint64(len(m.TotalSupply)))
 		i--
-		dAtA[i] = 0x38
+		dAtA[i] = 0x4a
+	}
+	if len(m.Token1Price) > 0 {
+		i -= len(m.Token1Price)
+		copy(dAtA[i:], m.Token1Price)
+		i = encodeVarintOracle(dAtA, i, uint64(len(m.Token1Price)))
+		i--
+		dAtA[i] = 0x42
+	}
+	if len(m.Token0Price) > 0 {
+		i -= len(m.Token0Price)
+		copy(dAtA[i:], m.Token0Price)
+		i = encodeVarintOracle(dAtA, i, uint64(len(m.Token0Price)))
+		i--
+		dAtA[i] = 0x3a
 	}
 	{
-		size := m.SlashFraction.Size()
-		i -= size
-		if _, err := m.SlashFraction.MarshalTo(dAtA[i:]); err != nil {
+		size, err := m.Token1.MarshalToSizedBuffer(dAtA[:i])
+		if err != nil {
 			return 0, err
 		}
+		i -= size
 		i = encodeVarintOracle(dAtA, i, uint64(size))
 	}
 	i--
 	dAtA[i] = 0x32
-	if len(m.Whitelist) > 0 {
-		for iNdEx := len(m.Whitelist) - 1; iNdEx >= 0; iNdEx-- {
-			{
-				size, err := m.Whitelist[iNdEx].MarshalToSizedBuffer(dAtA[:i])
-				if err != nil {
-					return 0, err
-				}
-				i -= size
-				i = encodeVarintOracle(dAtA, i, uint64(size))
-			}
-			i--
-			dAtA[i] = 0x2a
-		}
-	}
-	if m.RewardDistributionWindow != 0 {
-		i = encodeVarintOracle(dAtA, i, uint64(m.RewardDistributionWindow))
-		i--
-		dAtA[i] = 0x20
-	}
 	{
-		size := m.RewardBand.Size()
-		i -= size
-		if _, err := m.RewardBand.MarshalTo(dAtA[i:]); err != nil {
+		size, err := m.Token0.MarshalToSizedBuffer(dAtA[:i])
+		if err != nil {
 			return 0, err
 		}
+		i -= size
 		i = encodeVarintOracle(dAtA, i, uint64(size))
 	}
 	i--
-	dAtA[i] = 0x1a
-	{
-		size := m.VoteThreshold.Size()
-		i -= size
-		if _, err := m.VoteThreshold.MarshalTo(dAtA[i:]); err != nil {
-			return 0, err
-		}
-		i = encodeVarintOracle(dAtA, i, uint64(size))
-	}
-	i--
-	dAtA[i] = 0x12
-	if m.VotePeriod != 0 {
-		i = encodeVarintOracle(dAtA, i, uint64(m.VotePeriod))
+	dAtA[i] = 0x2a
+	if len(m.ReserveUsd) > 0 {
+		i -= len(m.ReserveUsd)
+		copy(dAtA[i:], m.ReserveUsd)
+		i = encodeVarintOracle(dAtA, i, uint64(len(m.ReserveUsd)))
 		i--
-		dAtA[i] = 0x8
+		dAtA[i] = 0x22
+	}
+	if len(m.Reserve1) > 0 {
+		i -= len(m.Reserve1)
+		copy(dAtA[i:], m.Reserve1)
+		i = encodeVarintOracle(dAtA, i, uint64(len(m.Reserve1)))
+		i--
+		dAtA[i] = 0x1a
+	}
+	if len(m.Reserve0) > 0 {
+		i -= len(m.Reserve0)
+		copy(dAtA[i:], m.Reserve0)
+		i = encodeVarintOracle(dAtA, i, uint64(len(m.Reserve0)))
+		i--
+		dAtA[i] = 0x12
+	}
+	if len(m.Id) > 0 {
+		i -= len(m.Id)
+		copy(dAtA[i:], m.Id)
+		i = encodeVarintOracle(dAtA, i, uint64(len(m.Id)))
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *UniswapToken) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *UniswapToken) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *UniswapToken) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.Id) > 0 {
+		i -= len(m.Id)
+		copy(dAtA[i:], m.Id)
+		i = encodeVarintOracle(dAtA, i, uint64(len(m.Id)))
+		i--
+		dAtA[i] = 0x12
+	}
+	if len(m.Decimals) > 0 {
+		i -= len(m.Decimals)
+		copy(dAtA[i:], m.Decimals)
+		i = encodeVarintOracle(dAtA, i, uint64(len(m.Decimals)))
+		i--
+		dAtA[i] = 0xa
 	}
 	return len(dAtA) - i, nil
 }
@@ -769,97 +445,14 @@ func encodeVarintOracle(dAtA []byte, offset int, v uint64) int {
 	dAtA[offset] = uint8(v)
 	return base
 }
-func (m *Claim) Size() (n int) {
+func (m *UniswapData) Size() (n int) {
 	if m == nil {
 		return 0
 	}
 	var l int
 	_ = l
-	if m.Weight != 0 {
-		n += 1 + sovOracle(uint64(m.Weight))
-	}
-	l = len(m.Recipient)
-	if l > 0 {
-		n += 1 + l + sovOracle(uint64(l))
-	}
-	return n
-}
-
-func (m *ExchangeRatePrevote) Size() (n int) {
-	if m == nil {
-		return 0
-	}
-	var l int
-	_ = l
-	l = len(m.Hash)
-	if l > 0 {
-		n += 1 + l + sovOracle(uint64(l))
-	}
-	l = len(m.Denom)
-	if l > 0 {
-		n += 1 + l + sovOracle(uint64(l))
-	}
-	l = len(m.Voter)
-	if l > 0 {
-		n += 1 + l + sovOracle(uint64(l))
-	}
-	if m.SubmitBlock != 0 {
-		n += 1 + sovOracle(uint64(m.SubmitBlock))
-	}
-	return n
-}
-
-func (m *ExchangeRateVote) Size() (n int) {
-	if m == nil {
-		return 0
-	}
-	var l int
-	_ = l
-	l = m.ExchangeRate.Size()
-	n += 1 + l + sovOracle(uint64(l))
-	l = len(m.Denom)
-	if l > 0 {
-		n += 1 + l + sovOracle(uint64(l))
-	}
-	l = len(m.Voter)
-	if l > 0 {
-		n += 1 + l + sovOracle(uint64(l))
-	}
-	return n
-}
-
-func (m *AggregateExchangeRatePrevote) Size() (n int) {
-	if m == nil {
-		return 0
-	}
-	var l int
-	_ = l
-	l = len(m.Hash)
-	if l > 0 {
-		n += 1 + l + sovOracle(uint64(l))
-	}
-	l = len(m.Voter)
-	if l > 0 {
-		n += 1 + l + sovOracle(uint64(l))
-	}
-	if m.SubmitBlock != 0 {
-		n += 1 + sovOracle(uint64(m.SubmitBlock))
-	}
-	return n
-}
-
-func (m *AggregateExchangeRateVote) Size() (n int) {
-	if m == nil {
-		return 0
-	}
-	var l int
-	_ = l
-	l = len(m.Voter)
-	if l > 0 {
-		n += 1 + l + sovOracle(uint64(l))
-	}
-	if len(m.ExchangeRateTuples) > 0 {
-		for _, e := range m.ExchangeRateTuples {
+	if len(m.Pairs) > 0 {
+		for _, e := range m.Pairs {
 			l = e.Size()
 			n += 1 + l + sovOracle(uint64(l))
 		}
@@ -867,35 +460,61 @@ func (m *AggregateExchangeRateVote) Size() (n int) {
 	return n
 }
 
-func (m *Params) Size() (n int) {
+func (m *UniswapPair) Size() (n int) {
 	if m == nil {
 		return 0
 	}
 	var l int
 	_ = l
-	if m.VotePeriod != 0 {
-		n += 1 + sovOracle(uint64(m.VotePeriod))
+	l = len(m.Id)
+	if l > 0 {
+		n += 1 + l + sovOracle(uint64(l))
 	}
-	l = m.VoteThreshold.Size()
-	n += 1 + l + sovOracle(uint64(l))
-	l = m.RewardBand.Size()
-	n += 1 + l + sovOracle(uint64(l))
-	if m.RewardDistributionWindow != 0 {
-		n += 1 + sovOracle(uint64(m.RewardDistributionWindow))
+	l = len(m.Reserve0)
+	if l > 0 {
+		n += 1 + l + sovOracle(uint64(l))
 	}
-	if len(m.Whitelist) > 0 {
-		for _, e := range m.Whitelist {
-			l = e.Size()
-			n += 1 + l + sovOracle(uint64(l))
-		}
+	l = len(m.Reserve1)
+	if l > 0 {
+		n += 1 + l + sovOracle(uint64(l))
 	}
-	l = m.SlashFraction.Size()
-	n += 1 + l + sovOracle(uint64(l))
-	if m.SlashWindow != 0 {
-		n += 1 + sovOracle(uint64(m.SlashWindow))
+	l = len(m.ReserveUsd)
+	if l > 0 {
+		n += 1 + l + sovOracle(uint64(l))
 	}
-	l = m.MinValidPerWindow.Size()
+	l = m.Token0.Size()
 	n += 1 + l + sovOracle(uint64(l))
+	l = m.Token1.Size()
+	n += 1 + l + sovOracle(uint64(l))
+	l = len(m.Token0Price)
+	if l > 0 {
+		n += 1 + l + sovOracle(uint64(l))
+	}
+	l = len(m.Token1Price)
+	if l > 0 {
+		n += 1 + l + sovOracle(uint64(l))
+	}
+	l = len(m.TotalSupply)
+	if l > 0 {
+		n += 1 + l + sovOracle(uint64(l))
+	}
+	return n
+}
+
+func (m *UniswapToken) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.Decimals)
+	if l > 0 {
+		n += 1 + l + sovOracle(uint64(l))
+	}
+	l = len(m.Id)
+	if l > 0 {
+		n += 1 + l + sovOracle(uint64(l))
+	}
 	return n
 }
 
@@ -905,7 +524,7 @@ func sovOracle(x uint64) (n int) {
 func sozOracle(x uint64) (n int) {
 	return sovOracle(uint64((x << 1) ^ uint64((int64(x) >> 63))))
 }
-func (m *Claim) Unmarshal(dAtA []byte) error {
+func (m *UniswapData) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -928,610 +547,15 @@ func (m *Claim) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: Claim: wiretype end group for non-group")
+			return fmt.Errorf("proto: UniswapData: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: Claim: illegal tag %d (wire type %d)", fieldNum, wire)
-		}
-		switch fieldNum {
-		case 1:
-			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Weight", wireType)
-			}
-			m.Weight = 0
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowOracle
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				m.Weight |= int64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-		case 2:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Recipient", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowOracle
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthOracle
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthOracle
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.Recipient = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
-		default:
-			iNdEx = preIndex
-			skippy, err := skipOracle(dAtA[iNdEx:])
-			if err != nil {
-				return err
-			}
-			if skippy < 0 {
-				return ErrInvalidLengthOracle
-			}
-			if (iNdEx + skippy) < 0 {
-				return ErrInvalidLengthOracle
-			}
-			if (iNdEx + skippy) > l {
-				return io.ErrUnexpectedEOF
-			}
-			iNdEx += skippy
-		}
-	}
-
-	if iNdEx > l {
-		return io.ErrUnexpectedEOF
-	}
-	return nil
-}
-func (m *ExchangeRatePrevote) Unmarshal(dAtA []byte) error {
-	l := len(dAtA)
-	iNdEx := 0
-	for iNdEx < l {
-		preIndex := iNdEx
-		var wire uint64
-		for shift := uint(0); ; shift += 7 {
-			if shift >= 64 {
-				return ErrIntOverflowOracle
-			}
-			if iNdEx >= l {
-				return io.ErrUnexpectedEOF
-			}
-			b := dAtA[iNdEx]
-			iNdEx++
-			wire |= uint64(b&0x7F) << shift
-			if b < 0x80 {
-				break
-			}
-		}
-		fieldNum := int32(wire >> 3)
-		wireType := int(wire & 0x7)
-		if wireType == 4 {
-			return fmt.Errorf("proto: ExchangeRatePrevote: wiretype end group for non-group")
-		}
-		if fieldNum <= 0 {
-			return fmt.Errorf("proto: ExchangeRatePrevote: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: UniswapData: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Hash", wireType)
-			}
-			var byteLen int
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowOracle
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				byteLen |= int(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			if byteLen < 0 {
-				return ErrInvalidLengthOracle
-			}
-			postIndex := iNdEx + byteLen
-			if postIndex < 0 {
-				return ErrInvalidLengthOracle
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.Hash = append(m.Hash[:0], dAtA[iNdEx:postIndex]...)
-			if m.Hash == nil {
-				m.Hash = []byte{}
-			}
-			iNdEx = postIndex
-		case 2:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Denom", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowOracle
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthOracle
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthOracle
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.Denom = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
-		case 3:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Voter", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowOracle
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthOracle
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthOracle
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.Voter = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
-		case 4:
-			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field SubmitBlock", wireType)
-			}
-			m.SubmitBlock = 0
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowOracle
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				m.SubmitBlock |= int64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-		default:
-			iNdEx = preIndex
-			skippy, err := skipOracle(dAtA[iNdEx:])
-			if err != nil {
-				return err
-			}
-			if skippy < 0 {
-				return ErrInvalidLengthOracle
-			}
-			if (iNdEx + skippy) < 0 {
-				return ErrInvalidLengthOracle
-			}
-			if (iNdEx + skippy) > l {
-				return io.ErrUnexpectedEOF
-			}
-			iNdEx += skippy
-		}
-	}
-
-	if iNdEx > l {
-		return io.ErrUnexpectedEOF
-	}
-	return nil
-}
-func (m *ExchangeRateVote) Unmarshal(dAtA []byte) error {
-	l := len(dAtA)
-	iNdEx := 0
-	for iNdEx < l {
-		preIndex := iNdEx
-		var wire uint64
-		for shift := uint(0); ; shift += 7 {
-			if shift >= 64 {
-				return ErrIntOverflowOracle
-			}
-			if iNdEx >= l {
-				return io.ErrUnexpectedEOF
-			}
-			b := dAtA[iNdEx]
-			iNdEx++
-			wire |= uint64(b&0x7F) << shift
-			if b < 0x80 {
-				break
-			}
-		}
-		fieldNum := int32(wire >> 3)
-		wireType := int(wire & 0x7)
-		if wireType == 4 {
-			return fmt.Errorf("proto: ExchangeRateVote: wiretype end group for non-group")
-		}
-		if fieldNum <= 0 {
-			return fmt.Errorf("proto: ExchangeRateVote: illegal tag %d (wire type %d)", fieldNum, wire)
-		}
-		switch fieldNum {
-		case 1:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field ExchangeRate", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowOracle
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthOracle
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthOracle
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			if err := m.ExchangeRate.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
-				return err
-			}
-			iNdEx = postIndex
-		case 2:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Denom", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowOracle
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthOracle
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthOracle
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.Denom = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
-		case 3:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Voter", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowOracle
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthOracle
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthOracle
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.Voter = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
-		default:
-			iNdEx = preIndex
-			skippy, err := skipOracle(dAtA[iNdEx:])
-			if err != nil {
-				return err
-			}
-			if skippy < 0 {
-				return ErrInvalidLengthOracle
-			}
-			if (iNdEx + skippy) < 0 {
-				return ErrInvalidLengthOracle
-			}
-			if (iNdEx + skippy) > l {
-				return io.ErrUnexpectedEOF
-			}
-			iNdEx += skippy
-		}
-	}
-
-	if iNdEx > l {
-		return io.ErrUnexpectedEOF
-	}
-	return nil
-}
-func (m *AggregateExchangeRatePrevote) Unmarshal(dAtA []byte) error {
-	l := len(dAtA)
-	iNdEx := 0
-	for iNdEx < l {
-		preIndex := iNdEx
-		var wire uint64
-		for shift := uint(0); ; shift += 7 {
-			if shift >= 64 {
-				return ErrIntOverflowOracle
-			}
-			if iNdEx >= l {
-				return io.ErrUnexpectedEOF
-			}
-			b := dAtA[iNdEx]
-			iNdEx++
-			wire |= uint64(b&0x7F) << shift
-			if b < 0x80 {
-				break
-			}
-		}
-		fieldNum := int32(wire >> 3)
-		wireType := int(wire & 0x7)
-		if wireType == 4 {
-			return fmt.Errorf("proto: AggregateExchangeRatePrevote: wiretype end group for non-group")
-		}
-		if fieldNum <= 0 {
-			return fmt.Errorf("proto: AggregateExchangeRatePrevote: illegal tag %d (wire type %d)", fieldNum, wire)
-		}
-		switch fieldNum {
-		case 1:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Hash", wireType)
-			}
-			var byteLen int
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowOracle
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				byteLen |= int(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			if byteLen < 0 {
-				return ErrInvalidLengthOracle
-			}
-			postIndex := iNdEx + byteLen
-			if postIndex < 0 {
-				return ErrInvalidLengthOracle
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.Hash = append(m.Hash[:0], dAtA[iNdEx:postIndex]...)
-			if m.Hash == nil {
-				m.Hash = []byte{}
-			}
-			iNdEx = postIndex
-		case 2:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Voter", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowOracle
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthOracle
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthOracle
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.Voter = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
-		case 3:
-			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field SubmitBlock", wireType)
-			}
-			m.SubmitBlock = 0
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowOracle
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				m.SubmitBlock |= int64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-		default:
-			iNdEx = preIndex
-			skippy, err := skipOracle(dAtA[iNdEx:])
-			if err != nil {
-				return err
-			}
-			if skippy < 0 {
-				return ErrInvalidLengthOracle
-			}
-			if (iNdEx + skippy) < 0 {
-				return ErrInvalidLengthOracle
-			}
-			if (iNdEx + skippy) > l {
-				return io.ErrUnexpectedEOF
-			}
-			iNdEx += skippy
-		}
-	}
-
-	if iNdEx > l {
-		return io.ErrUnexpectedEOF
-	}
-	return nil
-}
-func (m *AggregateExchangeRateVote) Unmarshal(dAtA []byte) error {
-	l := len(dAtA)
-	iNdEx := 0
-	for iNdEx < l {
-		preIndex := iNdEx
-		var wire uint64
-		for shift := uint(0); ; shift += 7 {
-			if shift >= 64 {
-				return ErrIntOverflowOracle
-			}
-			if iNdEx >= l {
-				return io.ErrUnexpectedEOF
-			}
-			b := dAtA[iNdEx]
-			iNdEx++
-			wire |= uint64(b&0x7F) << shift
-			if b < 0x80 {
-				break
-			}
-		}
-		fieldNum := int32(wire >> 3)
-		wireType := int(wire & 0x7)
-		if wireType == 4 {
-			return fmt.Errorf("proto: AggregateExchangeRateVote: wiretype end group for non-group")
-		}
-		if fieldNum <= 0 {
-			return fmt.Errorf("proto: AggregateExchangeRateVote: illegal tag %d (wire type %d)", fieldNum, wire)
-		}
-		switch fieldNum {
-		case 1:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Voter", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowOracle
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthOracle
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthOracle
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.Voter = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
-		case 2:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field ExchangeRateTuples", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field Pairs", wireType)
 			}
 			var msglen int
 			for shift := uint(0); ; shift += 7 {
@@ -1558,8 +582,8 @@ func (m *AggregateExchangeRateVote) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.ExchangeRateTuples = append(m.ExchangeRateTuples, types.DecCoin{})
-			if err := m.ExchangeRateTuples[len(m.ExchangeRateTuples)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+			m.Pairs = append(m.Pairs, UniswapPair{})
+			if err := m.Pairs[len(m.Pairs)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex
@@ -1587,7 +611,7 @@ func (m *AggregateExchangeRateVote) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *Params) Unmarshal(dAtA []byte) error {
+func (m *UniswapPair) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -1610,34 +634,15 @@ func (m *Params) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: Params: wiretype end group for non-group")
+			return fmt.Errorf("proto: UniswapPair: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: Params: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: UniswapPair: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
-			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field VotePeriod", wireType)
-			}
-			m.VotePeriod = 0
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowOracle
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				m.VotePeriod |= int64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-		case 2:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field VoteThreshold", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field Id", wireType)
 			}
 			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
@@ -1665,13 +670,43 @@ func (m *Params) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			if err := m.VoteThreshold.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
-				return err
+			m.Id = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Reserve0", wireType)
 			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowOracle
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthOracle
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthOracle
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Reserve0 = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		case 3:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field RewardBand", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field Reserve1", wireType)
 			}
 			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
@@ -1699,15 +734,13 @@ func (m *Params) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			if err := m.RewardBand.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
-				return err
-			}
+			m.Reserve1 = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		case 4:
-			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field RewardDistributionWindow", wireType)
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field ReserveUsd", wireType)
 			}
-			m.RewardDistributionWindow = 0
+			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowOracle
@@ -1717,14 +750,27 @@ func (m *Params) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				m.RewardDistributionWindow |= int64(b&0x7F) << shift
+				stringLen |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthOracle
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthOracle
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.ReserveUsd = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
 		case 5:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Whitelist", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field Token0", wireType)
 			}
 			var msglen int
 			for shift := uint(0); ; shift += 7 {
@@ -1751,16 +797,15 @@ func (m *Params) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.Whitelist = append(m.Whitelist, types.DecCoin{})
-			if err := m.Whitelist[len(m.Whitelist)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+			if err := m.Token0.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex
 		case 6:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field SlashFraction", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field Token1", wireType)
 			}
-			var stringLen uint64
+			var msglen int
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowOracle
@@ -1770,48 +815,28 @@ func (m *Params) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
+				msglen |= int(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
+			if msglen < 0 {
 				return ErrInvalidLengthOracle
 			}
-			postIndex := iNdEx + intStringLen
+			postIndex := iNdEx + msglen
 			if postIndex < 0 {
 				return ErrInvalidLengthOracle
 			}
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			if err := m.SlashFraction.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+			if err := m.Token1.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex
 		case 7:
-			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field SlashWindow", wireType)
-			}
-			m.SlashWindow = 0
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowOracle
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				m.SlashWindow |= int64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-		case 8:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field MinValidPerWindow", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field Token0Price", wireType)
 			}
 			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
@@ -1839,9 +864,188 @@ func (m *Params) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			if err := m.MinValidPerWindow.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+			m.Token0Price = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 8:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Token1Price", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowOracle
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthOracle
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthOracle
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Token1Price = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 9:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field TotalSupply", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowOracle
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthOracle
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthOracle
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.TotalSupply = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipOracle(dAtA[iNdEx:])
+			if err != nil {
 				return err
 			}
+			if skippy < 0 {
+				return ErrInvalidLengthOracle
+			}
+			if (iNdEx + skippy) < 0 {
+				return ErrInvalidLengthOracle
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *UniswapToken) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowOracle
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: UniswapToken: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: UniswapToken: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Decimals", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowOracle
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthOracle
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthOracle
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Decimals = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Id", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowOracle
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthOracle
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthOracle
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Id = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		default:
 			iNdEx = preIndex

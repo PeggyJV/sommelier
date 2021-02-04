@@ -1,14 +1,8 @@
 package cli
 
 import (
-	"context"
-	"strings"
-
-	"github.com/peggyjv/sommelier/x/oracle/types"
-
 	"github.com/cosmos/cosmos-sdk/client"
-	"github.com/cosmos/cosmos-sdk/client/flags"
-	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/peggyjv/sommelier/x/oracle/types"
 	"github.com/spf13/cobra"
 )
 
@@ -23,403 +17,222 @@ func GetQueryCmd() *cobra.Command {
 	}
 
 	oracleQueryCmd.AddCommand([]*cobra.Command{
-		GetCmdQueryExchangeRates(),
-		GetCmdQueryActives(),
-		GetCmdQueryParams(),
-		GetCmdQueryFeederDelegation(),
-		GetCmdQueryMissCounter(),
-		GetCmdQueryAggregatePrevote(),
-		GetCmdQueryAggregateVote(),
-		GetCmdQueryVoteTargets(),
-		GetCmdQueryTobinTaxes(),
+		queryParams(),
+		queryDelegeateAddress(),
+		queryValidatorAddress(),
+		queryOracleDataPrevote(),
+		queryOracleDataVote(),
+		queryVotePeriod(),
+		queryMissCounter(),
+		queryOracleData(),
 	}...)
 
 	return oracleQueryCmd
 
 }
 
-// GetCmdQueryExchangeRates implements the query rate command.
-func GetCmdQueryExchangeRates() *cobra.Command {
-	cmd := &cobra.Command{
-		Use:   "exchange-rates [denom]",
-		Args:  cobra.RangeArgs(0, 1),
-		Short: "Query the current Luna exchange rate w.r.t an asset", // TODO: update "Luna"
-		Long: strings.TrimSpace(`
-Query the current exchange rate of Luna with an asset. 
-You can find the current list of active denoms by running
-
-$ sommelier query oracle exchange-rates 
-
-Or, can filter with denom
-
-$ sommelier query oracle exchange-rates ukrw
-`),
-		RunE: func(cmd *cobra.Command, args []string) error {
-			clientCtx, err := client.GetClientQueryContext(cmd)
+func queryParams() *cobra.Command {
+	return &cobra.Command{
+		Use:     "parameters",
+		Aliases: []string{"params"},
+		Args:    cobra.NoArgs,
+		Short:   "query oracle params from the chain",
+		RunE: func(cmd *cobra.Command, _ []string) error {
+			ctx, err := client.GetClientQueryContext(cmd)
 			if err != nil {
 				return err
 			}
 
-			queryClient := types.NewQueryClient(clientCtx)
+			queryClient := types.NewQueryClient(ctx)
+			req := &types.QueryParamsRequest{}
 
-			if len(args) == 0 {
-				// pageReq, err := client.ReadPageRequest(cmd.Flags())
-				// if err != nil {
-				// 	return err
-				// }
-
-				req := &types.QueryExchangeRatesRequest{
-					// Pagination: pageReq,
-				}
-
-				res, err := queryClient.ExchangeRates(context.Background(), req)
-				if err != nil {
-					return err
-				}
-
-				return clientCtx.PrintProto(res)
-			}
-
-			req := &types.QueryExchangeRateRequest{
-				Denom: args[0],
-			}
-
-			res, err := queryClient.ExchangeRate(context.Background(), req)
+			res, err := queryClient.QueryParams(cmd.Context(), req)
 			if err != nil {
 				return err
 			}
 
-			return clientCtx.PrintProto(res)
+			return ctx.PrintProto(res)
 		},
 	}
-	flags.AddQueryFlagsToCmd(cmd)
-	flags.AddPaginationFlagsToCmd(cmd, "exchange rates")
-	return cmd
 }
 
-// GetCmdQueryActives implements the query actives command.
-func GetCmdQueryActives() *cobra.Command {
-	cmd := &cobra.Command{
-		Use:   "actives",
-		Args:  cobra.NoArgs,
-		Short: "Query the active list of Sommelier assets recognized by the oracle",
-		Long: strings.TrimSpace(`
-Query the active list of Sommelier assets recognized by the types.
-
-$ sommelier query oracle actives
-`),
+func queryDelegeateAddress() *cobra.Command {
+	return &cobra.Command{
+		Use:     "delegate-address [validator-address]",
+		Aliases: []string{"del"},
+		Args:    cobra.ExactArgs(1),
+		Short:   "query delegate address from the chain given validators address",
 		RunE: func(cmd *cobra.Command, args []string) error {
-			clientCtx, err := client.GetClientQueryContext(cmd)
-			if err != nil {
-				return err
-			}
-			queryClient := types.NewQueryClient(clientCtx)
-
-			// pageReq, err := client.ReadPageRequest(cmd.Flags())
-			// if err != nil {
-			// 	return err
-			// }
-
-			req := &types.QueryActivesRequest{
-				// Pagination: pageReq,
-			}
-
-			res, err := queryClient.Actives(context.Background(), req)
+			ctx, err := client.GetClientQueryContext(cmd)
 			if err != nil {
 				return err
 			}
 
-			return clientCtx.PrintProto(res)
+			queryClient := types.NewQueryClient(ctx)
+			req := &types.QueryDelegeateAddressRequest{Validator: args[0]}
+
+			res, err := queryClient.QueryDelegeateAddress(cmd.Context(), req)
+			if err != nil {
+				return err
+			}
+
+			return ctx.PrintProto(res)
 		},
 	}
-
-	flags.AddQueryFlagsToCmd(cmd)
-	flags.AddPaginationFlagsToCmd(cmd, "actives")
-	return cmd
 }
 
-// GetCmdQueryParams implements the query params command.
-func GetCmdQueryParams() *cobra.Command {
-	cmd := &cobra.Command{
-		Use:   "params",
-		Args:  cobra.NoArgs,
-		Short: "Query the current oracle module parameters",
+func queryValidatorAddress() *cobra.Command {
+	return &cobra.Command{
+		Use:     "validator-address [delegate-address]",
+		Aliases: []string{"val"},
+		Args:    cobra.ExactArgs(1),
+		Short:   "query validator address from the chain given the address that validator delegated to",
 		RunE: func(cmd *cobra.Command, args []string) error {
-			clientCtx, err := client.GetClientQueryContext(cmd)
+			ctx, err := client.GetClientQueryContext(cmd)
 			if err != nil {
 				return err
 			}
 
-			queryClient := types.NewQueryClient(clientCtx)
+			queryClient := types.NewQueryClient(ctx)
+			req := &types.QueryValidatorAddressRequest{Delegate: args[0]}
 
-			req := &types.QueryParametersRequest{}
-			res, err := queryClient.Parameters(context.Background(), req)
+			res, err := queryClient.QueryValidatorAddress(cmd.Context(), req)
 			if err != nil {
 				return err
 			}
 
-			return clientCtx.PrintProto(res)
+			return ctx.PrintProto(res)
 		},
 	}
-
-	return cmd
 }
 
-// GetCmdQueryFeederDelegation implements the query feeder delegation command
-func GetCmdQueryFeederDelegation() *cobra.Command {
-	cmd := &cobra.Command{
-		Use:   "feeder [validator]",
-		Args:  cobra.ExactArgs(1),
-		Short: "Query the oracle feeder delegate account",
-		Long: strings.TrimSpace(`
-Query the account the validator's oracle voting right is delegated to.
-
-$ sommelier query oracle feeder terravaloper...
-`),
+func queryOracleDataPrevote() *cobra.Command {
+	return &cobra.Command{
+		Use:     "oracle-prevote [signer]",
+		Aliases: []string{"prevote", "pv"},
+		Args:    cobra.ExactArgs(1),
+		Short:   "query oracle data prevote from the chain, by either validator or delegate address",
 		RunE: func(cmd *cobra.Command, args []string) error {
-			clientCtx, err := client.GetClientQueryContext(cmd)
+			ctx, err := client.GetClientQueryContext(cmd)
 			if err != nil {
 				return err
 			}
 
-			validator, err := sdk.ValAddressFromBech32(args[0])
+			queryClient := types.NewQueryClient(ctx)
+			req := &types.QueryOracleDataPrevoteRequest{Validator: args[0]}
+
+			res, err := queryClient.QueryOracleDataPrevote(cmd.Context(), req)
 			if err != nil {
 				return err
 			}
-
-			queryClient := types.NewQueryClient(clientCtx)
-
-			req := &types.QueryFeederDelegationRequest{
-				Validator: validator.String(),
-			}
-
-			res, err := queryClient.FeederDelegation(context.Background(), req)
-			if err != nil {
-				return err
-			}
-
-			return clientCtx.PrintProto(res)
+			return ctx.PrintProto(res)
 		},
 	}
-
-	return cmd
 }
 
-// GetCmdQueryMissCounter implements the query miss counter of the validator command
-func GetCmdQueryMissCounter() *cobra.Command {
-	cmd := &cobra.Command{
-		Use:   "miss [validator]",
-		Args:  cobra.ExactArgs(1),
-		Short: "Query the # of the miss count",
-		Long: strings.TrimSpace(`
-Query the # of vote periods missed in this oracle slash window.
-
-$ sommelier query oracle miss terravaloper...
-`),
+func queryOracleDataVote() *cobra.Command {
+	return &cobra.Command{
+		Use:     "oracle-vote [signer]",
+		Aliases: []string{"vote"},
+		Args:    cobra.ExactArgs(1),
+		Short:   "query oracle data vote from the chain, by either validator or delegate address",
 		RunE: func(cmd *cobra.Command, args []string) error {
-			clientCtx, err := client.GetClientQueryContext(cmd)
+			ctx, err := client.GetClientQueryContext(cmd)
 			if err != nil {
 				return err
 			}
 
-			valString := args[0]
-			validator, err := sdk.ValAddressFromBech32(valString)
+			queryClient := types.NewQueryClient(ctx)
+			req := &types.QueryOracleDataVoteRequest{Validator: args[0]}
+
+			res, err := queryClient.QueryOracleDataVote(cmd.Context(), req)
+			if err != nil {
+				return err
+			}
+			return ctx.PrintProto(res)
+		},
+	}
+}
+
+func queryVotePeriod() *cobra.Command {
+	return &cobra.Command{
+		Use:     "vote-period",
+		Aliases: []string{"vp"},
+		Args:    cobra.NoArgs,
+		Short:   "query vote period data from the chain",
+		RunE: func(cmd *cobra.Command, _ []string) error {
+			ctx, err := client.GetClientQueryContext(cmd)
 			if err != nil {
 				return err
 			}
 
-			queryClient := types.NewQueryClient(clientCtx)
+			queryClient := types.NewQueryClient(ctx)
+			req := &types.QueryVotePeriodRequest{}
 
+			res, err := queryClient.QueryVotePeriod(cmd.Context(), req)
+			if err != nil {
+				return err
+			}
+
+			return ctx.PrintProto(res)
+		},
+	}
+}
+
+func queryMissCounter() *cobra.Command {
+	return &cobra.Command{
+		Use:     "miss-counter [signer]",
+		Aliases: []string{"mc"},
+		Args:    cobra.ExactArgs(1),
+		Short:   "query miss counter for a validator from the chain given its address or the delegate address",
+		RunE: func(cmd *cobra.Command, args []string) error {
+			ctx, err := client.GetClientQueryContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			queryClient := types.NewQueryClient(ctx)
 			req := &types.QueryMissCounterRequest{
-				Validator: validator.String(),
+				Validator: args[0],
 			}
 
-			res, err := queryClient.MissCounter(context.Background(), req)
+			res, err := queryClient.QueryMissCounter(cmd.Context(), req)
 			if err != nil {
 				return err
 			}
-
-			return clientCtx.PrintProto(res)
+			return ctx.PrintProto(res)
 		},
 	}
-
-	return cmd
 }
 
-// GetCmdQueryAggregatePrevote implements the query aggregate prevote of the validator command
-func GetCmdQueryAggregatePrevote() *cobra.Command {
+func queryOracleData() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "aggregate-prevote [validator]",
-		Args:  cobra.ExactArgs(1),
-		Short: "Query outstanding oracle aggregate prevote, filtered by voter address.",
-		Long: strings.TrimSpace(`
-Query outstanding oracle aggregate prevote, filtered by voter address.
-
-$ sommelier query oracle aggregate-prevote terravaloper...
-`),
-		RunE: func(cmd *cobra.Command, args []string) error {
-			clientCtx, err := client.GetClientQueryContext(cmd)
+		Use:     "oracle-data",
+		Aliases: []string{"od"},
+		Args:    cobra.NoArgs,
+		Short:   "query consensus oracle data from the chain given its type",
+		RunE: func(cmd *cobra.Command, _ []string) error {
+			ctx, err := client.GetClientQueryContext(cmd)
 			if err != nil {
 				return err
 			}
 
-			valString := args[0]
-			validator, err := sdk.ValAddressFromBech32(valString)
+			typ, err := cmd.Flags().GetString("type")
 			if err != nil {
 				return err
 			}
 
-			queryClient := types.NewQueryClient(clientCtx)
+			queryClient := types.NewQueryClient(ctx)
+			req := &types.QueryOracleDataRequest{Type: typ}
 
-			req := &types.QueryAggregatePrevoteRequest{
-				Validator: validator.String(),
-			}
-
-			res, err := queryClient.AggregatePrevote(context.Background(), req)
+			res, err := queryClient.OracleData(cmd.Context(), req)
 			if err != nil {
 				return err
 			}
 
-			return clientCtx.PrintProto(res)
+			return ctx.PrintProto(res)
 		},
 	}
-
-	return cmd
-}
-
-// GetCmdQueryAggregateVote implements the query aggregate prevote of the validator command
-func GetCmdQueryAggregateVote() *cobra.Command {
-	cmd := &cobra.Command{
-		Use:   "aggregate-vote [validator]",
-		Args:  cobra.ExactArgs(1),
-		Short: "Query outstanding oracle aggregate vote, filtered by voter address.",
-		Long: strings.TrimSpace(`
-Query outstanding oracle aggregate vote, filtered by voter address.
-
-$ sommelier query oracle aggregate-vote terravaloper...
-`),
-		RunE: func(cmd *cobra.Command, args []string) error {
-			clientCtx, err := client.GetClientQueryContext(cmd)
-			if err != nil {
-				return err
-			}
-
-			valString := args[0]
-			validator, err := sdk.ValAddressFromBech32(valString)
-			if err != nil {
-				return err
-			}
-
-			queryClient := types.NewQueryClient(clientCtx)
-
-			req := &types.QueryAggregateVoteRequest{
-				Validator: validator.String(),
-			}
-
-			res, err := queryClient.AggregateVote(context.Background(), req)
-			if err != nil {
-				return err
-			}
-
-			return clientCtx.PrintProto(res)
-		},
-	}
-
-	return cmd
-}
-
-// GetCmdQueryVoteTargets implements the query params command.
-func GetCmdQueryVoteTargets() *cobra.Command {
-	cmd := &cobra.Command{
-		Use:   "vote-targets",
-		Args:  cobra.NoArgs,
-		Short: "Query the current Oracle vote targets",
-		RunE: func(cmd *cobra.Command, args []string) error {
-			clientCtx, err := client.GetClientQueryContext(cmd)
-			if err != nil {
-				return err
-			}
-
-			// pageReq, err := client.ReadPageRequest(cmd.Flags())
-			// if err != nil {
-			// 	return err
-			// }
-
-			queryClient := types.NewQueryClient(clientCtx)
-
-			req := &types.QueryVoteTargetsRequest{
-				// Pagination: pageReq,
-			}
-
-			res, err := queryClient.VoteTargets(context.Background(), req)
-			if err != nil {
-				return err
-			}
-
-			return clientCtx.PrintProto(res)
-		},
-	}
-
-	flags.AddQueryFlagsToCmd(cmd)
-	flags.AddPaginationFlagsToCmd(cmd, "vote targets")
-	return cmd
-}
-
-// GetCmdQueryTobinTaxes implements the query params command.
-func GetCmdQueryTobinTaxes() *cobra.Command {
-	cmd := &cobra.Command{
-		Use:   "tobin-taxes [denom]",
-		Args:  cobra.RangeArgs(0, 1),
-		Short: "Query the current Oracle tobin taxes.",
-		Long: strings.TrimSpace(`
-Query the current Oracle tobin taxes.
-
-$ sommelier query oracle tobin-taxes
-
-Or, can filter with denom
-
-$ sommelier query oracle tobin-taxes ukrw
-
-Or, can 
-`),
-		RunE: func(cmd *cobra.Command, args []string) error {
-			clientCtx, err := client.GetClientQueryContext(cmd)
-			if err != nil {
-				return err
-			}
-
-			queryClient := types.NewQueryClient(clientCtx)
-
-			if len(args) == 0 {
-				// pageReq, err := client.ReadPageRequest(cmd.Flags())
-				// if err != nil {
-				// 	return err
-				// }
-
-				req := &types.QueryTobinTaxesRequest{
-					// Pagination: pageReq,
-				}
-
-				res, err := queryClient.TobinTaxes(context.Background(), req)
-				if err != nil {
-					return err
-				}
-
-				return clientCtx.PrintProto(res)
-			}
-
-			req := &types.QueryTobinTaxRequest{
-				Denom: args[0],
-			}
-
-			res, err := queryClient.TobinTax(context.Background(), req)
-			if err != nil {
-				return err
-			}
-
-			return clientCtx.PrintProto(res)
-		},
-	}
-
+	cmd.Flags().StringP("type", "t", types.UniswapDataType, "type of oracle data to fetch")
 	return cmd
 }

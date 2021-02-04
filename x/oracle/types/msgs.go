@@ -1,180 +1,203 @@
 package types
 
 import (
+	"fmt"
+	"strings"
+
+	cdctypes "github.com/cosmos/cosmos-sdk/codec/types"
+	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
-// ensure Msg interface compliance at compile time
-var (
-	_ sdk.Msg = &MsgDelegateFeedConsent{}
-	_ sdk.Msg = &MsgAggregateExchangeRatePrevote{}
-	_ sdk.Msg = &MsgAggregateExchangeRateVote{}
+var _, _, _ sdk.Msg = &MsgDelegateFeedConsent{}, &MsgOracleDataPrevote{}, &MsgOracleDataVote{}
+
+const (
+	TypeMsgDelegateFeedConsent = "delegate_feed_consent"
+	TypeMsgOracleDataPrevote   = "oracle_data_prevote"
+	TypeMsgOracleDataVote      = "oracle_data_vote"
 )
 
-//-------------------------------------------------
-//-------------------------------------------------
+////////////////////////////
+// MsgDelegateFeedConsent //
+////////////////////////////
 
-// NewMsgDelegateFeedConsent creates a MsgDelegateFeedConsent instance
-func NewMsgDelegateFeedConsent(operatorAddress sdk.ValAddress, feederAddress sdk.AccAddress) *MsgDelegateFeedConsent {
+// NewMsgDelegateFeedConsent returns a new MsgDelegateFeedConsent
+func NewMsgDelegateFeedConsent(val, del sdk.AccAddress) *MsgDelegateFeedConsent {
 	return &MsgDelegateFeedConsent{
-		Operator: operatorAddress.String(),
-		Delegate: feederAddress.String(),
+		Validator: val.String(),
+		Delegate:  del.String(),
 	}
 }
 
 // Route implements sdk.Msg
-func (msg MsgDelegateFeedConsent) Route() string { return RouterKey }
+func (m *MsgDelegateFeedConsent) Route() string { return ModuleName }
 
 // Type implements sdk.Msg
-func (msg MsgDelegateFeedConsent) Type() string { return "delegatefeeder" }
-
-// GetSignBytes implements sdk.Msg
-func (msg MsgDelegateFeedConsent) GetSignBytes() []byte {
-	panic("oracle messages do not support amino")
-}
-
-// GetSigners implements sdk.Msg
-func (msg MsgDelegateFeedConsent) GetSigners() []sdk.AccAddress {
-	addr, err := sdk.AccAddressFromBech32(msg.Operator)
-	if err != nil {
-		return nil
-	}
-	return []sdk.AccAddress{addr}
-}
+func (m *MsgDelegateFeedConsent) Type() string { return TypeMsgDelegateFeedConsent }
 
 // ValidateBasic implements sdk.Msg
-func (msg MsgDelegateFeedConsent) ValidateBasic() error {
-	operator, err := sdk.ValAddressFromBech32(msg.Operator)
-	if err != nil || operator.Empty() {
-		return sdkerrors.Wrap(sdkerrors.ErrInvalidAddress, "must give valid validator address")
+func (m *MsgDelegateFeedConsent) ValidateBasic() error {
+	if _, err := sdk.AccAddressFromBech32(m.Validator); err != nil {
+		return sdkerrors.Wrap(sdkerrors.ErrInvalidAddress, err.Error())
 	}
-
-	delegate, err := sdk.AccAddressFromBech32(msg.Delegate)
-	if err != nil || delegate.Empty() {
-		return sdkerrors.Wrap(sdkerrors.ErrInvalidAddress, "must give valid delegate address")
+	if _, err := sdk.AccAddressFromBech32(m.Delegate); err != nil {
+		return sdkerrors.Wrap(sdkerrors.ErrInvalidAddress, err.Error())
 	}
-
 	return nil
 }
 
-// NewMsgAggregateExchangeRatePrevote returns MsgAggregateExchangeRatePrevote instance
-func NewMsgAggregateExchangeRatePrevote(hash AggregateVoteHash, feeder sdk.AccAddress, validator sdk.ValAddress) *MsgAggregateExchangeRatePrevote {
-	return &MsgAggregateExchangeRatePrevote{
-		Hash:      hash,
-		Feeder:    feeder.String(),
-		Validator: validator.String(),
+// GetSignBytes implements sdk.Msg
+func (m *MsgDelegateFeedConsent) GetSignBytes() []byte {
+	panic("amino support disabled")
+}
+
+// GetSigners implements sdk.Msg
+func (m *MsgDelegateFeedConsent) GetSigners() []sdk.AccAddress {
+	return []sdk.AccAddress{m.MustGetValidator()}
+}
+
+// MustGetValidator returns the sdk.AccAddress for the validator
+func (m *MsgDelegateFeedConsent) MustGetValidator() sdk.AccAddress {
+	val, err := sdk.AccAddressFromBech32(m.Validator)
+	if err != nil {
+		panic(err)
+	}
+	return val
+}
+
+// MustGetDelegate returns the sdk.AccAddress for the delegate
+func (m *MsgDelegateFeedConsent) MustGetDelegate() sdk.AccAddress {
+	val, err := sdk.AccAddressFromBech32(m.Delegate)
+	if err != nil {
+		panic(err)
+	}
+	return val
+}
+
+//////////////////////////
+// MsgOracleDataPrevote //
+//////////////////////////
+
+// NewMsgOracleDataPrevote return a new MsgOracleDataPrevote
+func NewMsgOracleDataPrevote(hashes [][]byte, signer sdk.AccAddress) *MsgOracleDataPrevote {
+	return &MsgOracleDataPrevote{
+		Hashes: hashes,
+		Signer: signer.String(),
 	}
 }
 
 // Route implements sdk.Msg
-func (msg MsgAggregateExchangeRatePrevote) Route() string { return RouterKey }
+func (m *MsgOracleDataPrevote) Route() string { return ModuleName }
 
 // Type implements sdk.Msg
-func (msg MsgAggregateExchangeRatePrevote) Type() string { return "aggregateexchangerateprevote" }
-
-// GetSignBytes implements sdk.Msg
-func (msg MsgAggregateExchangeRatePrevote) GetSignBytes() []byte {
-	panic("oracle messages do not support amino")
-}
-
-// GetSigners implements sdk.Msg
-func (msg MsgAggregateExchangeRatePrevote) GetSigners() []sdk.AccAddress {
-	addr, err := sdk.AccAddressFromBech32(msg.Feeder)
-	if err != nil {
-		return nil
-	}
-	return []sdk.AccAddress{addr}
-}
-
-// ValidateBasic Implements sdk.Msg
-func (msg MsgAggregateExchangeRatePrevote) ValidateBasic() error {
-
-	// TODO: validate hash here
-	// if len(msg.Hash) != tmhash.TruncatedSize {
-	// 	return ErrInvalidHashLength
-	// }
-
-	feeder, err := sdk.AccAddressFromBech32(msg.Feeder)
-	if err != nil || feeder.Empty() {
-		return sdkerrors.Wrap(sdkerrors.ErrInvalidAddress, "must give valid feeder address")
-	}
-
-	validator, err := sdk.ValAddressFromBech32(msg.Validator)
-	if err != nil || validator.Empty() {
-		return sdkerrors.Wrap(sdkerrors.ErrInvalidAddress, "must give valid validator address")
-	}
-
-	return nil
-}
-
-// NewMsgAggregateExchangeRateVote returns MsgAggregateExchangeRateVote instance
-func NewMsgAggregateExchangeRateVote(salt string, exchangeRates string, feeder sdk.AccAddress, validator sdk.ValAddress) *MsgAggregateExchangeRateVote {
-	return &MsgAggregateExchangeRateVote{
-		Salt:          salt,
-		ExchangeRates: exchangeRates,
-		Feeder:        feeder.String(),
-		Validator:     validator.String(),
-	}
-}
-
-// Route implements sdk.Msg
-func (msg MsgAggregateExchangeRateVote) Route() string { return RouterKey }
-
-// Type implements sdk.Msg
-func (msg MsgAggregateExchangeRateVote) Type() string { return "aggregateexchangeratevote" }
-
-// GetSignBytes implements sdk.Msg
-func (msg MsgAggregateExchangeRateVote) GetSignBytes() []byte {
-	panic("oracle messages do not support amino")
-}
-
-// GetSigners implements sdk.Msg
-func (msg MsgAggregateExchangeRateVote) GetSigners() []sdk.AccAddress {
-	addr, err := sdk.AccAddressFromBech32(msg.Feeder)
-	if err != nil {
-		return nil
-	}
-	return []sdk.AccAddress{addr}
-}
+func (m *MsgOracleDataPrevote) Type() string { return TypeMsgOracleDataPrevote }
 
 // ValidateBasic implements sdk.Msg
-func (msg MsgAggregateExchangeRateVote) ValidateBasic() error {
-	feeder, err := sdk.AccAddressFromBech32(msg.Feeder)
-	if err != nil || feeder.Empty() {
-		return sdkerrors.Wrap(sdkerrors.ErrInvalidAddress, "must give valid feeder address")
+func (m *MsgOracleDataPrevote) ValidateBasic() error {
+	if _, err := sdk.AccAddressFromBech32(m.Signer); err != nil {
+		return sdkerrors.Wrap(sdkerrors.ErrInvalidAddress, err.Error())
 	}
 
-	validator, err := sdk.ValAddressFromBech32(msg.Validator)
-	if err != nil || validator.Empty() {
-		return sdkerrors.Wrap(sdkerrors.ErrInvalidAddress, "must give valid validator address")
-	}
-
-	if l := len(msg.ExchangeRates); l == 0 {
-		return sdkerrors.Wrap(sdkerrors.ErrUnknownRequest, "must provide at least one oracle exchange rate")
-	} else if l > 4096 {
-		return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "exchange rates string can not exceed 4096 characters")
-	}
-
-	exchangeRateTuples, err := sdk.ParseDecCoins(msg.ExchangeRates)
-	if err != nil {
-		return sdkerrors.Wrap(err, "failed to parse exchange rates string")
-	}
-
-	if exchangeRateTuples.Empty() {
-		return sdkerrors.Wrap(sdkerrors.ErrInvalidCoins, "exchange rate coins cannot be empty")
-	}
-
-	for _, tuple := range exchangeRateTuples {
-		// Check overflow bit length
-		if tuple.Amount.BigInt().BitLen() > 100+sdk.DecimalPrecisionBits {
-			return sdkerrors.Wrap(ErrInvalidExchangeRate, "overflow")
+	for i, hash := range m.Hashes {
+		if len(hash) == 0 {
+			return fmt.Errorf("hash at index %d cannot be empty", i)
 		}
 	}
 
-	if len(msg.Salt) > 4 || len(msg.Salt) < 1 {
-		return sdkerrors.Wrap(ErrInvalidSaltLength, "salt length must be [1, 4]")
+	return nil
+}
+
+// GetSignBytes implements sdk.Msg
+func (m *MsgOracleDataPrevote) GetSignBytes() []byte { panic("amino support disabled") }
+
+// GetSigners implements sdk.Msg
+func (m *MsgOracleDataPrevote) GetSigners() []sdk.AccAddress {
+	return []sdk.AccAddress{m.MustGetSigner()}
+}
+
+// MustGetSigner returns the signer address
+func (m *MsgOracleDataPrevote) MustGetSigner() sdk.AccAddress {
+	addr, err := sdk.AccAddressFromBech32(m.Signer)
+	if err != nil {
+		panic(err)
+	}
+	return addr
+}
+
+///////////////////////
+// MsgOracleDataVote //
+///////////////////////
+
+// NewMsgOracleDataVote return a new MsgOracleDataPrevote
+func NewMsgOracleDataVote(salt []string, data []*cdctypes.Any, signer sdk.AccAddress) *MsgOracleDataVote {
+	return &MsgOracleDataVote{
+		Salt:       salt,
+		OracleData: data,
+		Signer:     signer.String(),
+	}
+}
+
+// Route implements sdk.Msg
+func (m *MsgOracleDataVote) Route() string { return ModuleName }
+
+// Type implements sdk.Msg
+func (m *MsgOracleDataVote) Type() string { return TypeMsgOracleDataVote }
+
+// ValidateBasic implements sdk.Msg
+func (m *MsgOracleDataVote) ValidateBasic() error {
+	if _, err := sdk.AccAddressFromBech32(m.Signer); err != nil {
+		return sdkerrors.Wrap(sdkerrors.ErrInvalidAddress, err.Error())
+	}
+
+	for _, a := range m.OracleData {
+		od, err := UnpackOracleData(a)
+		if err != nil {
+			return sdkerrors.Wrap(ErrInvalidOracleData, err.Error())
+		}
+
+		if err = od.ValidateBasic(); err != nil {
+			return sdkerrors.Wrap(ErrInvalidOracleData, err.Error())
+		}
+	}
+
+	for i, salt := range m.Salt {
+		if strings.TrimSpace(salt) == "" {
+			return fmt.Errorf("salt string at index %d cannot be blank", i)
+		}
 	}
 
 	return nil
+}
+
+// GetSignBytes implements sdk.Msg
+func (m *MsgOracleDataVote) GetSignBytes() []byte { panic("amino support disabled") }
+
+// GetSigners implements sdk.Msg
+func (m *MsgOracleDataVote) GetSigners() []sdk.AccAddress { return []sdk.AccAddress{m.MustGetSigner()} }
+
+// MustGetSigner returns the signer address
+func (m *MsgOracleDataVote) MustGetSigner() sdk.AccAddress {
+	addr, err := sdk.AccAddressFromBech32(m.Signer)
+	if err != nil {
+		panic(err)
+	}
+	return addr
+}
+
+// UnpackInterfaces implements UnpackInterfacesMessage.UnpackInterfaces
+func (m *MsgOracleDataVote) UnpackInterfaces(unpacker codectypes.AnyUnpacker) (err error) {
+	for _, oda := range m.OracleData {
+		var od OracleData
+		if err := unpacker.UnpackAny(oda, &od); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+// UnpackInterfaces implements UnpackInterfacesMessage.UnpackInterfaces
+func (m *QueryOracleDataResponse) UnpackInterfaces(unpacker codectypes.AnyUnpacker) error {
+	var od OracleData
+	return unpacker.UnpackAny(m.OracleData, &od)
 }

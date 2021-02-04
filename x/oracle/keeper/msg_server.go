@@ -3,6 +3,8 @@ package keeper
 import (
 	"bytes"
 	"context"
+	"fmt"
+	"sort"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
@@ -10,152 +12,186 @@ import (
 	"github.com/peggyjv/sommelier/x/oracle/types"
 )
 
-var _ types.MsgServer = Keeper{}
+type msgServer struct {
+	Keeper
+}
 
-// MsgServer is the server API for Msg service.
+// NewMsgServerImpl returns an implementation of the oracle MsgServer interface
+// for the provided Keeper.
+func NewMsgServerImpl(keeper Keeper) types.MsgServer {
+	return &msgServer{Keeper: keeper}
+}
 
-func (k Keeper) DelegateFeedConsent(c context.Context, msg *types.MsgDelegateFeedConsent) (*types.MsgDelegateFeedConsentResponse, error) {
+var _ types.MsgServer = msgServer{}
+
+// DelegateFeedConsent implements types.MsgServer
+func (k msgServer) DelegateFeedConsent(c context.Context, msg *types.MsgDelegateFeedConsent) (*types.MsgDelegateFeedConsentResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
-	signer, err := sdk.ValAddressFromBech32(msg.Operator)
-	if err != nil {
-		return nil, sdkerrors.Wrap(sdkerrors.ErrInvalidAddress, err.Error())
+
+	val, del := msg.MustGetValidator(), msg.MustGetDelegate()
+
+	if k.Keeper.stakingKeeper.Validator(ctx, sdk.ValAddress(val)) == nil {
+		return nil, sdkerrors.Wrap(stakingtypes.ErrNoValidatorFound, val.String())
 	}
 
-	// Check the delegator is a validator
-	val := k.StakingKeeper.Validator(ctx, signer)
-	if val == nil {
-		return nil, sdkerrors.Wrap(stakingtypes.ErrNoValidatorFound, signer.String())
-	}
+	k.SetValidatorDelegateAddress(ctx, val, del)
 
-	delegate, err := sdk.AccAddressFromBech32(msg.Delegate)
-	if err != nil {
-		return nil, sdkerrors.Wrap(sdkerrors.ErrInvalidAddress, err.Error())
-	}
-
-	// Set the delegation
-	k.SetOracleDelegate(ctx, signer, delegate)
-
-	ctx.EventManager().EmitEvents(sdk.Events{
-		sdk.NewEvent(
-			types.EventTypeFeedDelegate,
-			sdk.NewAttribute(types.AttributeKeyOperator, msg.Operator),
-			sdk.NewAttribute(types.AttributeKeyFeeder, msg.Delegate),
-		),
+	ctx.EventManager().EmitEvent(
 		sdk.NewEvent(
 			sdk.EventTypeMessage,
 			sdk.NewAttribute(sdk.AttributeKeyModule, types.AttributeValueCategory),
+			sdk.NewAttribute(sdk.AttributeKeyAction, types.EventTypeDelegateFeed),
+			sdk.NewAttribute(sdk.AttributeKeySender, msg.Validator),
+			sdk.NewAttribute(types.AttributeKeyValidator, msg.Validator),
+			sdk.NewAttribute(types.AttributeKeyDeleagte, msg.Delegate),
 		),
-	})
+	)
 
 	return &types.MsgDelegateFeedConsentResponse{}, nil
 }
 
-func (k Keeper) AggregateExchangeRatePrevote(c context.Context, msg *types.MsgAggregateExchangeRatePrevote) (*types.MsgAggregateExchangeRatePrevoteResponse, error) {
+// OracleDataPrevote implements types.MsgServer
+func (k msgServer) OracleDataPrevote(c context.Context, msg *types.MsgOracleDataPrevote) (*types.MsgOracleDataPrevoteResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
 
-	// NOTE: error checked on msg validation
-	feeder, _ := sdk.AccAddressFromBech32(msg.Feeder)
-	validator, _ := sdk.ValAddressFromBech32(msg.Validator)
-
-	if !feeder.Equals(validator) {
-		delegate := k.GetOracleDelegate(ctx, validator)
-		if !delegate.Equals(feeder) {
-			return nil, sdkerrors.Wrap(types.ErrNoVotingPermission, msg.Feeder)
+	signer := msg.MustGetSigner()
+	valaddr := k.GetValidatorAddressFromDelegate(ctx, signer)
+	if valaddr == nil {
+		sval := k.Keeper.stakingKeeper.Validator(ctx, sdk.ValAddress(signer))
+		if sval == nil {
+			return nil, sdkerrors.Wrap(types.ErrUnknown, "validator")
 		}
+		valaddr = sdk.AccAddress(sval.GetOperator())
 	}
 
-	// Check that the given validator exists
-	val := k.StakingKeeper.Validator(ctx, validator)
-	if val == nil {
-		return nil, sdkerrors.Wrap(stakingtypes.ErrNoValidatorFound, msg.Validator)
-	}
+	k.SetOracleDataPrevote(ctx, valaddr, msg)
 
-	aggregatePrevote := types.NewAggregateExchangeRatePrevote(msg.Hash, validator, ctx.BlockHeight())
-	k.AddAggregateExchangeRatePrevote(ctx, aggregatePrevote)
-
-	ctx.EventManager().EmitEvents(sdk.Events{
-		sdk.NewEvent(
-			types.EventTypeAggregatePrevote,
-			sdk.NewAttribute(types.AttributeKeyVoter, msg.Validator),
-			sdk.NewAttribute(types.AttributeKeyFeeder, msg.Feeder),
-		),
+	ctx.EventManager().EmitEvent(
 		sdk.NewEvent(
 			sdk.EventTypeMessage,
 			sdk.NewAttribute(sdk.AttributeKeyModule, types.AttributeValueCategory),
 		),
-	})
+	)
 
-	return &types.MsgAggregateExchangeRatePrevoteResponse{}, nil
+	ctx.EventManager().EmitEvent(
+		sdk.NewEvent(
+			types.EventTypeOracleDataPrevote,
+			sdk.NewAttribute(types.AttributeKeySigner, signer.String()),
+			sdk.NewAttribute(types.AttributeKeyValidator, valaddr.String()),
+			sdk.NewAttribute(types.AttributeKeyHashes, fmt.Sprintf("%x", bytes.Join(msg.Hashes, []byte(",")))),
+		),
+	)
+
+	return &types.MsgOracleDataPrevoteResponse{}, nil
 }
 
-func (k Keeper) AggregateExchangeRateVote(c context.Context, msg *types.MsgAggregateExchangeRateVote) (*types.MsgAggregateExchangeRateVoteResponse, error) {
+// OracleDataVote implements types.MsgServer
+func (k msgServer) OracleDataVote(c context.Context, msg *types.MsgOracleDataVote) (*types.MsgOracleDataVoteResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
 
-	feeder, _ := sdk.AccAddressFromBech32(msg.Feeder)
-	validator, _ := sdk.ValAddressFromBech32(msg.Validator)
+	// Make sure that the message was properly signed
+	signer := msg.MustGetSigner()
+	valaddr := k.GetValidatorAddressFromDelegate(ctx, signer)
+	if valaddr == nil {
+		sval := k.Keeper.stakingKeeper.Validator(ctx, sdk.ValAddress(signer))
+		if sval == nil {
+			return nil, sdkerrors.Wrap(types.ErrUnknown, "validator")
+		}
+		valaddr = sdk.AccAddress(sval.GetOperator())
+	}
 
-	if !feeder.Equals(validator) {
-		delegate := k.GetOracleDelegate(ctx, validator)
-		if !delegate.Equals(feeder) {
-			return nil, sdkerrors.Wrap(types.ErrNoVotingPermission, msg.Feeder)
+	// Get the prevote for that validator from the store
+	prevote := k.GetOracleDataPrevote(ctx, valaddr)
+
+	// check that there is a prevote
+	if prevote == nil || len(prevote.Hashes) == 0 {
+		return nil, sdkerrors.Wrap(types.ErrNoPrevote, valaddr.String())
+	}
+
+	// ensure that the right number of data is in the msg
+	if len(prevote.Hashes) != len(msg.OracleData) {
+		return nil, sdkerrors.Wrap(
+			types.ErrWrongNumber,
+			fmt.Sprintf("oracle data exp(%d) got(%d)", len(prevote.Hashes), len(msg.OracleData)),
+		)
+	}
+
+	// ensure that the right number of salts is in the msg
+	if len(prevote.Hashes) != len(msg.Salt) {
+		return nil, sdkerrors.Wrap(
+			types.ErrWrongNumber,
+			fmt.Sprintf("salt exp(%d) got(%d)", len(prevote.Hashes), len(msg.Salt)),
+		)
+	}
+
+	// validate the hashes
+	got := []string{}
+	for i := range msg.OracleData {
+		salt := msg.Salt[i]
+		// unpack the oracle data one by one
+		od, err := types.UnpackOracleData(msg.OracleData[i])
+		if err != nil {
+			return nil, sdkerrors.Wrap(types.ErrUnpackOracleData, fmt.Sprintf("index %d", i))
+		}
+
+		// ensure that the data parses
+		if val, ok := od.(*types.UniswapData); ok {
+			if _, err := val.Parse(); err != nil {
+				return nil, sdkerrors.Wrap(types.ErrParseError, "failed to parse")
+			}
+		} else if !ok {
+			return nil, sdkerrors.Wrap(types.ErrInvalidOracleData, "only uniswap data currently supported")
+		}
+
+		// calculate the vote hash on the server
+		voteHash := types.DataHash(salt, od.CannonicalJSON(), valaddr)
+
+		// compare to prevote hash
+		if !bytes.Equal(voteHash, prevote.Hashes[i]) {
+			return nil, sdkerrors.Wrap(
+				types.ErrHashMismatch,
+				fmt.Sprintf("precommit(%x) commit(%x)", prevote.Hashes[i], voteHash),
+			)
+		}
+
+		// store the type of oracle data
+		got = append(got, od.Type())
+	}
+
+	// ensure that the right number of data types have been submitted
+	exp := k.GetParamSet(ctx).DataTypes
+	if len(exp) != len(got) {
+		return nil, sdkerrors.Wrap(
+			types.ErrWrongNumber,
+			fmt.Sprintf("oracle data types exp(%d) got(%d)", len(exp), len(got)),
+		)
+	}
+
+	// ensure that all of the right data types have been submitted
+	sort.Strings(exp)
+	sort.Strings(got)
+	for i := range exp {
+		if exp[i] != got[i] {
+			return nil, sdkerrors.Wrap(
+				types.ErrWrongDataType,
+				fmt.Sprintf("exp(%s) got(%s)", exp[i], got[i]),
+			)
 		}
 	}
 
-	// Check that the given validator exists
-	val := k.StakingKeeper.Validator(ctx, validator)
-	if val == nil {
-		return nil, sdkerrors.Wrap(stakingtypes.ErrNoValidatorFound, msg.Validator)
-	}
+	// set the vote in the store
+	k.SetOracleDataVote(ctx, valaddr, msg)
 
-	params := k.GetParams(ctx)
-
-	aggregatePrevote, err := k.GetAggregateExchangeRatePrevote(ctx, validator)
-	if err != nil {
-		return nil, sdkerrors.Wrap(types.ErrNoAggregatePrevote, msg.Validator)
-	}
-
-	// Check a msg is submitted proper period
-	if ctx.BlockHeight()-aggregatePrevote.SubmitBlock != params.VotePeriod {
-		return nil, types.ErrRevealPeriodMissMatch
-	}
-
-	// NOTE: error checked on msg validation
-	exchangeRateTuples, _ := sdk.ParseDecCoins(msg.ExchangeRates)
-
-	// check all denoms are in the vote target
-	for _, tuple := range exchangeRateTuples {
-		if !k.IsVoteTarget(ctx, tuple.Denom) {
-			return nil, sdkerrors.Wrap(types.ErrUnknowDenom, tuple.Denom)
-		}
-	}
-
-	voter, err := sdk.ValAddressFromBech32(aggregatePrevote.Voter)
-	if err != nil {
-		return nil, sdkerrors.Wrap(sdkerrors.ErrInvalidAddress, err.Error())
-	}
-
-	// Verify a exchange rate with aggregate prevote hash
-	hash := types.GetAggregateVoteHash(msg.Salt, msg.ExchangeRates, voter)
-	if !bytes.Equal(aggregatePrevote.Hash, hash.Bytes()) {
-		return nil, sdkerrors.Wrapf(types.ErrVerificationFailed, "must be given %s not %s", aggregatePrevote.Hash, hash)
-	}
-
-	// Move aggregate prevote to aggregate vote with given exchange rates
-	k.AddAggregateExchangeRateVote(ctx, types.NewAggregateExchangeRateVote(exchangeRateTuples, voter))
-	k.DeleteAggregateExchangeRatePrevote(ctx, aggregatePrevote)
-
-	ctx.EventManager().EmitEvents(sdk.Events{
-		sdk.NewEvent(
-			types.EventTypeAggregateVote,
-			sdk.NewAttribute(types.AttributeKeyVoter, msg.Validator),
-			sdk.NewAttribute(types.AttributeKeyExchangeRates, msg.ExchangeRates),
-			sdk.NewAttribute(types.AttributeKeyFeeder, msg.Feeder),
-		),
+	ctx.EventManager().EmitEvent(
 		sdk.NewEvent(
 			sdk.EventTypeMessage,
 			sdk.NewAttribute(sdk.AttributeKeyModule, types.AttributeValueCategory),
+			sdk.NewAttribute(sdk.AttributeKeyAction, types.EventTypeOracleDataVote),
+			sdk.NewAttribute(sdk.AttributeKeySender, msg.Signer),
+			sdk.NewAttribute(types.AttributeKeyValidator, valaddr.String()),
+			// TODO: emit other data here?
 		),
-	})
+	)
 
-	return &types.MsgAggregateExchangeRateVoteResponse{}, nil
+	return &types.MsgOracleDataVoteResponse{}, nil
 }

@@ -1,95 +1,63 @@
 package types
 
-import (
-	sdk "github.com/cosmos/cosmos-sdk/types"
-)
+import sdk "github.com/cosmos/cosmos-sdk/types"
 
 const (
-	// ModuleName is the name of the oracle module
+	// ModuleName is the module name constant used in many places
 	ModuleName = "oracle"
 
-	// StoreKey is the string store representation
+	// StoreKey is the store key string for oracle
 	StoreKey = ModuleName
 
-	// RouterKey is the msg router key for the oracle module
+	// RouterKey is the message route for oracle
 	RouterKey = ModuleName
 
-	// QuerierRoute is the query router key for the oracle module
+	// QuerierRoute is the querier route for oracle
 	QuerierRoute = ModuleName
 )
 
-// Keys for oracle store
-// Items are stored with the following key: values
-//
-// - 0x01<denom_Bytes><valAddress_Bytes>: ExchangeRatePrevote
-//
-// - 0x02<denom_Bytes><valAddress_Bytes>: ExchangeRateVote
-//
-// - 0x03<denom_Bytes>: sdk.Dec
-//
-// - 0x04<valAddress_Bytes>: accAddress
-//
-// - 0x05<valAddress_Bytes>: int64
-//
-// - 0x06<valAddress_Bytes>: AggregateExchangeRatePrevote
-//
-// - 0x07<valAddress_Bytes>: AggregateExchangeRateVote
-//
-// - 0x08<denom_Bytes>: sdk.Dec
+// Keys for oracle store, with <prefix><key> -> <value>
 var (
-	// Keys for store prefixes
-	PrevoteKey                      = []byte{0x01} // prefix for each key to a prevote
-	VoteKey                         = []byte{0x02} // prefix for each key to a vote
-	ExchangeRateKey                 = []byte{0x03} // prefix for each key to a rate
-	FeederDelegationKey             = []byte{0x04} // prefix for each key to a feeder delegation
-	MissCounterKey                  = []byte{0x05} // prefix for each key to a miss counter
-	AggregateExchangeRatePrevoteKey = []byte{0x06} // prefix for each key to a aggregate prevote
-	AggregateExchangeRateVoteKey    = []byte{0x07} // prefix for each key to a aggregate vote
-	TobinTaxKey                     = []byte{0x08} // prefix for each key to a tobin tax
+	// - 0x00<oracle_date_type> -> <OracleData>
+	OracleDataKeyPrefix = []byte{0x00} // key for oracle state data
+
+	// - 0x01<val_address> -> <delegate_address>
+	FeedDelegateKeyPrefix = []byte{0x01} // key for validator feed delegation
+
+	// - 0x02<val_address> -> <[]hashes>
+	OracleDataPrevoteKeyPrefix = []byte{0x02} // key for oracle prevotes
+
+	// - 0x03<val_address> -> <oracle_data_vote>
+	OracleDataVoteKeyPrefix = []byte{0x03} // key for oracle votes
+
+	// - 0x04 -> int64(height)
+	VotePeriodStartKey = []byte{0x04} // key for vote period height start
+
+	// - 0x05<val_address> -> int64(misses)
+	MissCounterKeyPrefix = []byte{0x05} // key for validator miss counters
 )
 
-// GetExchangeRatePrevoteKey - stored by *Validator* address and denom
-func GetExchangeRatePrevoteKey(denom string, v sdk.ValAddress) []byte {
-	return append(append(PrevoteKey, []byte(denom)...), v.Bytes()...)
+// GetFeedDelegateKey returns the validator for a given delegate key
+func GetFeedDelegateKey(del sdk.AccAddress) []byte {
+	return append(FeedDelegateKeyPrefix, del.Bytes()...)
 }
 
-// GetVoteKey - stored by *Validator* address and denom
-func GetVoteKey(denom string, v sdk.ValAddress) []byte {
-	return append(append(VoteKey, []byte(denom)...), v.Bytes()...)
+// GetOracleDataPrevoteKey returns the key for a validators prevote
+func GetOracleDataPrevoteKey(val sdk.AccAddress) []byte {
+	return append(OracleDataPrevoteKeyPrefix, val.Bytes()...)
 }
 
-// GetExchangeRateKey - stored by *denom*
-func GetExchangeRateKey(denom string) []byte {
-	return append(ExchangeRateKey, []byte(denom)...)
+// GetOracleDataVoteKey returns the key for a validators vote
+func GetOracleDataVoteKey(val sdk.AccAddress) []byte {
+	return append(OracleDataVoteKeyPrefix, val.Bytes()...)
 }
 
-// GetFeederDelegationKey - stored by *Validator* address
-func GetFeederDelegationKey(v sdk.ValAddress) []byte {
-	return append(FeederDelegationKey, v.Bytes()...)
+// GetOracleDataKey returns the key for the stored oracle data
+func GetOracleDataKey(typ string) []byte {
+	return append(OracleDataKeyPrefix, []byte(typ)...)
 }
 
-// GetMissCounterKey - stored by *Validator* address
-func GetMissCounterKey(v sdk.ValAddress) []byte {
-	return append(MissCounterKey, v.Bytes()...)
-}
-
-// GetAggregateExchangeRatePrevoteKey - stored by *Validator* address
-func GetAggregateExchangeRatePrevoteKey(v sdk.ValAddress) []byte {
-	return append(AggregateExchangeRatePrevoteKey, v.Bytes()...)
-}
-
-// GetAggregateExchangeRateVoteKey - stored by *Validator* address
-func GetAggregateExchangeRateVoteKey(v sdk.ValAddress) []byte {
-	return append(AggregateExchangeRateVoteKey, v.Bytes()...)
-}
-
-// GetTobinTaxKey - stored by *denom* bytes
-func GetTobinTaxKey(d string) []byte {
-	return append(TobinTaxKey, []byte(d)...)
-}
-
-// ExtractDenomFromTobinTaxKey - split denom from the tobin tax key
-func ExtractDenomFromTobinTaxKey(key []byte) (denom string) {
-	denom = string(key[1:])
-	return
+// GetMissCounterKey returns the key for the stored miss counter for a given validator
+func GetMissCounterKey(val sdk.AccAddress) []byte {
+	return append(MissCounterKeyPrefix, val.Bytes()...)
 }
