@@ -177,6 +177,11 @@ SHA256("{salt}:{data_cannonical_json}:{voter}")
 
 
 
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `pagination` | [cosmos.base.query.v1beta1.PageRequest](#cosmos.base.query.v1beta1.PageRequest) |  | pagination request |
+
+
 
 
 <a name="oracle.v1.MsgOracleDataVote"></a>
@@ -281,6 +286,11 @@ Params oracle parameters
 | `min_valid_per_window` | [string](#string) |  | MinValidPerWindow defines the number of misses a validator is allowed during each SlashWindow |
 | `slash_fraction` | [string](#string) |  | SlashFraction defines the percentage of slash that a validator will suffer if it fails to send a vote |
 | `data_types` | [string](#string) | repeated | DataTypes defines which data types validators must submit each voting period |
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `pagination` | [cosmos.base.query.v1beta1.PageRequest](#cosmos.base.query.v1beta1.PageRequest) |  | pagination request |
+
 
 
 
@@ -405,6 +415,11 @@ Params oracle parameters
 
 
 
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `pagination` | [cosmos.base.query.v1beta1.PageRequest](#cosmos.base.query.v1beta1.PageRequest) |  | pagination request |
+
+
 
 
 
@@ -419,6 +434,11 @@ Params oracle parameters
 | `oracle_data` | [google.protobuf.Any](#google.protobuf.Any) |  |  |
 
 
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `pagination` | [cosmos.base.query.v1beta1.PageRequest](#cosmos.base.query.v1beta1.PageRequest) |  | pagination request |
 
 
 
