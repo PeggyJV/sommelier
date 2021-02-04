@@ -1,16 +1,15 @@
-package oracle
+package keeper
 
 import (
 	"fmt"
 
-	"github.com/peggyjv/sommelier/x/oracle/keeper"
 	"github.com/peggyjv/sommelier/x/oracle/types"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
 // BeginBlocker is called at the beginning of every block
-func BeginBlocker(ctx sdk.Context, k keeper.Keeper) {
+func (k Keeper) BeginBlocker(ctx sdk.Context) {
 	// if there is not a vote period set, initialize it with current block height
 	if !k.HasVotePeriodStart(ctx) {
 		k.SetVotePeriodStart(ctx, ctx.BlockHeight())
@@ -31,7 +30,7 @@ func BeginBlocker(ctx sdk.Context, k keeper.Keeper) {
 }
 
 // EndBlocker is called at the end of every block
-func EndBlocker(ctx sdk.Context, k keeper.Keeper) {
+func (k Keeper) EndBlocker(ctx sdk.Context) {
 	params := k.GetParamSet(ctx)
 
 	// if the vote period has ended, tally the votes
@@ -58,7 +57,7 @@ func EndBlocker(ctx sdk.Context, k keeper.Keeper) {
 			k.DeleteMissCounter(ctx, val)
 
 			// find total voting votedPower
-			votedPower += k.StakingKeeper.Validator(ctx, sdk.ValAddress(val)).GetConsensusPower()
+			votedPower += k.stakingKeeper.Validator(ctx, sdk.ValAddress(val)).GetConsensusPower()
 
 			// save the oracle data for later processing
 			for _, oda := range msg.OracleData {
@@ -78,7 +77,7 @@ func EndBlocker(ctx sdk.Context, k keeper.Keeper) {
 
 		// iterate over the full list of validators to increment miss counters
 		totalPower := int64(0)
-		for _, val := range k.StakingKeeper.GetBondedValidatorsByPower(ctx) {
+		for _, val := range k.stakingKeeper.GetBondedValidatorsByPower(ctx) {
 			totalPower += val.GetConsensusPower()
 			valaddr := sdk.AccAddress(val.GetOperator())
 			if !contains(voted, valaddr.String()) {
@@ -128,7 +127,7 @@ func EndBlocker(ctx sdk.Context, k keeper.Keeper) {
 			}
 
 			// slash validator below the minimum vote threshold
-			validator := k.StakingKeeper.Validator(ctx, sdk.ValAddress(val))
+			validator := k.stakingKeeper.Validator(ctx, sdk.ValAddress(val))
 			if validator == nil {
 				// validator not found, continue with the next counter
 				// TODO: ensure correctness
@@ -141,7 +140,7 @@ func EndBlocker(ctx sdk.Context, k keeper.Keeper) {
 				panic(err)
 			}
 
-			k.StakingKeeper.Slash(ctx, consensusAddr, ctx.BlockHeight(), validator.GetConsensusPower(), params.SlashFraction)
+			k.stakingKeeper.Slash(ctx, consensusAddr, ctx.BlockHeight(), validator.GetConsensusPower(), params.SlashFraction)
 			return false
 		})
 

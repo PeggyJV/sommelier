@@ -75,7 +75,7 @@ func (k Keeper) QueryOracleDataPrevote(c context.Context, req *types.QueryOracle
 		return nil, status.Error(codes.InvalidArgument, err.Error())
 	}
 
-	if k.StakingKeeper.Validator(ctx, sdk.ValAddress(val)) == nil {
+	if k.stakingKeeper.Validator(ctx, sdk.ValAddress(val)) == nil {
 		val = k.GetValidatorAddressFromDelegate(ctx, val)
 		if val == nil {
 			return nil, status.Errorf(codes.NotFound, "address %s is not a validator", req.Validator)
@@ -105,7 +105,7 @@ func (k Keeper) QueryOracleDataVote(c context.Context, req *types.QueryOracleDat
 		return nil, status.Error(codes.InvalidArgument, err.Error())
 	}
 
-	if k.StakingKeeper.Validator(ctx, sdk.ValAddress(val)) == nil {
+	if k.stakingKeeper.Validator(ctx, sdk.ValAddress(val)) == nil {
 		val = k.GetValidatorAddressFromDelegate(ctx, val)
 		if val == nil {
 			return nil, status.Errorf(codes.NotFound, "address %s is not a validator", req.Validator)
@@ -174,7 +174,7 @@ func (k Keeper) QueryMissCounter(c context.Context, req *types.QueryMissCounterR
 		return nil, status.Error(codes.InvalidArgument, err.Error())
 	}
 
-	if k.StakingKeeper.Validator(ctx, sdk.ValAddress(val)) == nil {
+	if k.stakingKeeper.Validator(ctx, sdk.ValAddress(val)) == nil {
 		val = k.GetValidatorAddressFromDelegate(ctx, val)
 		if val == nil {
 			return nil, status.Errorf(codes.NotFound, "address %s is not a validator", req.Validator)

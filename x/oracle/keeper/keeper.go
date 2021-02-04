@@ -13,11 +13,10 @@ import (
 
 // Keeper of the oracle store
 type Keeper struct {
-	StakingKeeper types.StakingKeeper
-
-	storeKey   sdk.StoreKey
-	cdc        codec.BinaryMarshaler
-	paramSpace paramtypes.Subspace
+	storeKey      sdk.StoreKey
+	cdc           codec.BinaryMarshaler
+	paramSpace    paramtypes.Subspace
+	stakingKeeper types.StakingKeeper
 }
 
 // NewKeeper creates a new distribution Keeper instance
@@ -32,10 +31,10 @@ func NewKeeper(
 	}
 
 	return Keeper{
-		StakingKeeper: stakingKeeper,
 		storeKey:      key,
 		cdc:           cdc,
 		paramSpace:    paramSpace,
+		stakingKeeper: stakingKeeper,
 	}
 }
 
@@ -58,17 +57,19 @@ func (k Keeper) GetValidatorAddressFromDelegate(ctx sdk.Context, del sdk.AccAddr
 	return sdk.AccAddress(ctx.KVStore(k.storeKey).Get(types.GetFeedDelegateKey(del)))
 }
 
-// GetDelegateAddressFromValidator returns the valdiator address for a given delegate
+// GetDelegateAddressFromValidator returns the validator address for a given delegate
 func (k Keeper) GetDelegateAddressFromValidator(ctx sdk.Context, val sdk.AccAddress) sdk.AccAddress {
-	var out sdk.AccAddress
-	k.IterateDelegateAddresses(ctx, func(del, sval sdk.AccAddress) bool {
-		if val.Equals(sval) {
-			out = del
-			return true
+	var address sdk.AccAddress
+	// TODO: create secondary index
+	k.IterateDelegateAddresses(ctx, func(delegatorAddr, validatorAddr sdk.AccAddress) bool {
+		if !val.Equals(validatorAddr) {
+			return false
 		}
-		return false
+
+		address = delegatorAddr
+		return true
 	})
-	return out
+	return address
 }
 
 // IsDelegateAddress returns true if the validator has delegated their feed to an address

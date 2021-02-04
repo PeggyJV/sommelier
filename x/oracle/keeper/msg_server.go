@@ -30,7 +30,7 @@ func (k msgServer) DelegateFeedConsent(c context.Context, msg *types.MsgDelegate
 
 	val, del := msg.MustGetValidator(), msg.MustGetDelegate()
 
-	if k.Keeper.StakingKeeper.Validator(ctx, sdk.ValAddress(val)) == nil {
+	if k.Keeper.stakingKeeper.Validator(ctx, sdk.ValAddress(val)) == nil {
 		return nil, sdkerrors.Wrap(stakingtypes.ErrNoValidatorFound, val.String())
 	}
 
@@ -57,7 +57,7 @@ func (k msgServer) OracleDataPrevote(c context.Context, msg *types.MsgOracleData
 	signer := msg.MustGetSigner()
 	valaddr := k.GetValidatorAddressFromDelegate(ctx, signer)
 	if valaddr == nil {
-		sval := k.Keeper.StakingKeeper.Validator(ctx, sdk.ValAddress(signer))
+		sval := k.Keeper.stakingKeeper.Validator(ctx, sdk.ValAddress(signer))
 		if sval == nil {
 			return nil, sdkerrors.Wrap(types.ErrUnknown, "validator")
 		}
@@ -93,7 +93,7 @@ func (k msgServer) OracleDataVote(c context.Context, msg *types.MsgOracleDataVot
 	signer := msg.MustGetSigner()
 	valaddr := k.GetValidatorAddressFromDelegate(ctx, signer)
 	if valaddr == nil {
-		sval := k.Keeper.StakingKeeper.Validator(ctx, sdk.ValAddress(signer))
+		sval := k.Keeper.stakingKeeper.Validator(ctx, sdk.ValAddress(signer))
 		if sval == nil {
 			return nil, sdkerrors.Wrap(types.ErrUnknown, "validator")
 		}
