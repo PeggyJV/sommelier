@@ -178,7 +178,6 @@ func (c Config) OracleFeederLoop(goctx context.Context, cancel context.CancelFun
 	var (
 		txEventsChan, blEventsChan <-chan ctypes.ResultEvent
 		txCancel, blCancel         context.CancelFunc
-		err                        error
 		coord                      = &Coordinator{Ctx: ctx}
 	)
 	defer cancel()
@@ -205,17 +204,21 @@ func (c Config) OracleFeederLoop(goctx context.Context, cancel context.CancelFun
 		return err
 	}
 
+	// subscribe to tx events
 	txEventsChan, txCancel, err = c.Subscribe(goctx, cl, txEvents)
 	if err != nil {
 		return err
 	}
+
 	defer txCancel()
 
+	// subscribe to block events
 	blEventsChan, blCancel, err = c.Subscribe(goctx, cl, blEvents)
 	if err != nil {
 		cancel()
 		return err
 	}
+
 	defer blCancel()
 
 	for {

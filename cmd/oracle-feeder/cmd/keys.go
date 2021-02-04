@@ -25,12 +25,14 @@ func keysCmd() *cobra.Command {
 		Short:   "manage keys held by the relayer for each chain",
 	}
 
-	cmd.AddCommand(keysAddCmd())
-	cmd.AddCommand(keysRestoreCmd())
-	cmd.AddCommand(keysDeleteCmd())
-	cmd.AddCommand(keysListCmd())
-	cmd.AddCommand(keysShowCmd())
-	cmd.AddCommand(keysExportCmd())
+	cmd.AddCommand(
+		keysAddCmd(),
+		keysRestoreCmd(),
+		keysDeleteCmd(),
+		keysListCmd(),
+		keysShowCmd(),
+		keysExportCmd(),
+	)
 
 	return cmd
 }
@@ -41,7 +43,7 @@ func keysAddCmd() *cobra.Command {
 		Use:     "add [name]",
 		Aliases: []string{"a"},
 		Short:   "adds a key to the keychain",
-		Args:    cobra.RangeArgs(1, 2),
+		Args:    cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx := client.GetClientContextFromCmd(cmd)
 			mnemonic, err := CreateMnemonic()
@@ -115,6 +117,7 @@ func keysDeleteCmd() *cobra.Command {
 			if err := ctx.Keyring.Delete(args[0]); err != nil {
 				return err
 			}
+
 			fmt.Printf("Key %s deleted for good...\n", args[0])
 			return nil
 		},
@@ -129,21 +132,24 @@ func keysListCmd() *cobra.Command {
 		Use:     "list",
 		Aliases: []string{"l"},
 		Short:   "lists keys from the keychain associated with a particular chain",
-		Args:    cobra.ExactArgs(0),
-		RunE: func(cmd *cobra.Command, args []string) error {
+		Args:    cobra.NoArgs,
+		RunE: func(cmd *cobra.Command, _ []string) error {
 			ctx := client.GetClientContextFromCmd(cmd)
 			infos, err := ctx.Keyring.List()
 			if err != nil {
 				return err
 			}
+
 			kos, err := cryptokeyring.Bech32KeysOutput(infos)
 			if err != nil {
 				return err
 			}
+
 			bz, err := ctx.LegacyAmino.MarshalJSON(kos)
 			if err != nil {
 				return err
 			}
+
 			fmt.Println(string(bz))
 			return nil
 		},
@@ -193,9 +199,11 @@ func CreateMnemonic() (string, error) {
 	if err != nil {
 		return "", err
 	}
+
 	mnemonic, err := bip39.NewMnemonic(entropySeed)
 	if err != nil {
 		return "", err
 	}
+
 	return mnemonic, nil
 }

@@ -22,15 +22,17 @@ func queryCmd() *cobra.Command {
 		Short:   "queries that can be run by the oracle-feeder",
 	}
 
-	cmd.AddCommand(queryUniswapData())
-	cmd.AddCommand(queryParams())
-	cmd.AddCommand(queryDelegeateAddress())
-	cmd.AddCommand(queryValidatorAddress())
-	cmd.AddCommand(queryOracleDataPrevote())
-	cmd.AddCommand(queryOracleDataVote())
-	cmd.AddCommand(queryVotePeriod())
-	cmd.AddCommand(queryMissCounter())
-	cmd.AddCommand(queryOracleData())
+	cmd.AddCommand(
+		queryUniswapData(),
+		queryParams(),
+		queryDelegeateAddress(),
+		queryValidatorAddress(),
+		queryOracleDataPrevote(),
+		queryOracleDataVote(),
+		queryVotePeriod(),
+		queryMissCounter(),
+		queryOracleData(),
+	)
 
 	return cmd
 }
@@ -39,20 +41,24 @@ func queryUniswapData() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:     "uniswap-data",
 		Aliases: []string{"ud"},
+		Args:    cobra.NoArgs,
 		Short:   "queries uniswap data for the transactions",
-		RunE: func(cmd *cobra.Command, args []string) error {
+		RunE: func(cmd *cobra.Command, _ []string) error {
 			n, err := cmd.Flags().GetInt("num-markets")
 			if err != nil {
 				return err
 			}
+
 			out, err := config.GetPairs(context.Background(), n, 0)
 			if err != nil {
 				log.Fatal(err)
 			}
+
 			bz, err := json.Marshal(out)
 			if err != nil {
 				log.Fatal(err)
 			}
+
 			fmt.Println(string(bz))
 			return nil
 		},
@@ -65,21 +71,24 @@ func queryParams() *cobra.Command {
 	return &cobra.Command{
 		Use:     "parameters",
 		Aliases: []string{"params"},
-		Args:    cobra.ExactArgs(0),
+		Args:    cobra.NoArgs,
 		Short:   "query oracle params from the chain",
-		RunE: func(cmd *cobra.Command, args []string) error {
+		RunE: func(cmd *cobra.Command, _ []string) error {
 			ctx, err := config.GetClientContext(cmd)
 			if err != nil {
 				return err
 			}
+
 			params, err := GetParams(ctx)
 			if err != nil {
 				return err
 			}
+
 			bz, err := json.Marshal(params)
 			if err != nil {
 				return err
 			}
+
 			fmt.Println(string(bz))
 			return nil
 		},
@@ -103,14 +112,17 @@ func queryDelegeateAddress() *cobra.Command {
 			if err != nil {
 				return err
 			}
+
 			val, err := sdk.AccAddressFromBech32(args[0])
 			if err != nil {
 				return err
 			}
+
 			del, err := GetDelFromVal(ctx, val)
 			if err != nil {
 				return err
 			}
+
 			fmt.Println(del.String())
 			return nil
 		},
@@ -124,6 +136,7 @@ func GetDelFromVal(ctx client.Context, val sdk.AccAddress) (sdk.AccAddress, erro
 	if err != nil {
 		return nil, err
 	}
+
 	return sdk.AccAddressFromBech32(res.Delegate)
 }
 
@@ -138,14 +151,17 @@ func queryValidatorAddress() *cobra.Command {
 			if err != nil {
 				return err
 			}
+
 			del, err := sdk.AccAddressFromBech32(args[0])
 			if err != nil {
 				return err
 			}
+
 			val, err := GetValFromDel(ctx, del)
 			if err != nil {
 				return err
 			}
+
 			fmt.Println(val.String())
 			return nil
 		},
@@ -159,6 +175,7 @@ func GetValFromDel(ctx client.Context, del sdk.AccAddress) (sdk.AccAddress, erro
 	if err != nil {
 		return nil, err
 	}
+
 	return sdk.AccAddressFromBech32(res.Validator)
 }
 
@@ -173,18 +190,22 @@ func queryOracleDataPrevote() *cobra.Command {
 			if err != nil {
 				return err
 			}
+
 			val, err := sdk.AccAddressFromBech32(args[0])
 			if err != nil {
 				return err
 			}
+
 			hashes, err := GetPrevote(ctx, val)
 			if err != nil {
 				return err
 			}
+
 			bz, err := json.Marshal(hashes)
 			if err != nil {
 				return err
 			}
+
 			fmt.Println(string(bz))
 			return nil
 		},
@@ -237,7 +258,7 @@ func queryVotePeriod() *cobra.Command {
 	return &cobra.Command{
 		Use:     "vote-period",
 		Aliases: []string{"vp"},
-		Args:    cobra.ExactArgs(0),
+		Args:    cobra.NoArgs,
 		Short:   "query vote period data from the chain",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx, err := config.GetClientContext(cmd)
@@ -302,7 +323,7 @@ func queryOracleData() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:     "oracle-data",
 		Aliases: []string{"od"},
-		Args:    cobra.ExactArgs(0),
+		Args:    cobra.NoArgs,
 		Short:   "query consensus oracle data from the chain given its type",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx, err := config.GetClientContext(cmd)
