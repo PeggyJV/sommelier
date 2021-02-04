@@ -12,8 +12,6 @@ import (
 	"github.com/peggyjv/sommelier/x/oracle/types"
 )
 
-var _ types.MsgServer = msgServer{}
-
 type msgServer struct {
 	Keeper
 }
@@ -23,6 +21,8 @@ type msgServer struct {
 func NewMsgServerImpl(keeper Keeper) types.MsgServer {
 	return &msgServer{Keeper: keeper}
 }
+
+var _ types.MsgServer = msgServer{}
 
 // DelegateFeedConsent implements types.MsgServer
 func (k msgServer) DelegateFeedConsent(c context.Context, msg *types.MsgDelegateFeedConsent) (*types.MsgDelegateFeedConsentResponse, error) {

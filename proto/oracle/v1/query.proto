@@ -2,13 +2,10 @@ syntax = "proto3";
 package oracle.v1;
 
 import "gogoproto/gogo.proto";
-import "oracle/v1/oracle.proto";
+import "google/protobuf/any.proto";
 import "oracle/v1/genesis.proto";
 import "oracle/v1/tx.proto";
-import "google/api/annotations.proto";
-import "cosmos/base/v1beta1/coin.proto";
 import "cosmos_proto/cosmos.proto";
-import "google/protobuf/any.proto";
 
 option go_package = "github.com/peggyjv/sommelier/x/oracle/types";
 
@@ -68,6 +65,11 @@ message QueryOracleDataPrevoteResponse {
 message QueryOracleDataVoteRequest {
     string validator = 1;
 }
+
+// TODO:
+message QueryOracleDataVoteResponse {
+}
+
 
 message QueryOracleDataRequest  {
     string type = 1;

@@ -1,7 +1,6 @@
 syntax = "proto3";
 package oracle.v1;
 
-import "oracle/v1/oracle.proto";
 import "cosmos_proto/cosmos.proto";
 import "google/protobuf/any.proto";
 
