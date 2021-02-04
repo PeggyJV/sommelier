@@ -384,6 +384,7 @@ func (c *Config) GetPairs(ctx context.Context, first, skip int) (*oracle.Uniswap
 	}`, first, skip))
 	out := &oracle.UniswapData{}
 	err := c.graphClient.Run(ctx, req, out)
+	_, err = out.Parse()
 	return out, err
 }
 

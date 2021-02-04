@@ -4,7 +4,7 @@ import (
 	"crypto/sha256"
 	"encoding/json"
 	fmt "fmt"
-	"strconv"
+	"strings"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
@@ -75,23 +75,23 @@ func FlattenParsedUniswapData(in [][]UniswapPairParsed) (out []UniswapPairParsed
 	for id, pairs := range byID {
 		ppout := UniswapPairParsed{ID: id}
 		for _, pair := range pairs {
-			ppout.Reserve0 += pair.Reserve0
-			ppout.Reserve1 += pair.Reserve1
-			ppout.ReserveUsd += pair.ReserveUsd
-			ppout.Token0Price += pair.Token0Price
-			ppout.Token1Price += pair.Token1Price
-			ppout.TotalSupply += pair.TotalSupply
+			ppout.Reserve0 = ppout.Reserve0.Add(pair.Reserve0)
+			ppout.Reserve1 = ppout.Reserve1.Add(pair.Reserve1)
+			ppout.ReserveUsd = ppout.ReserveUsd.Add(pair.ReserveUsd)
+			ppout.Token0Price = ppout.Token0Price.Add(pair.Token0Price)
+			ppout.Token1Price = ppout.Token1Price.Add(pair.Token1Price)
+			ppout.TotalSupply = ppout.TotalSupply.Add(pair.TotalSupply)
 			// TODO: validate above
 			ppout.Token0 = pair.Token0
 			ppout.Token1 = pair.Token1
 		}
 		// Average all these values
-		ppout.Reserve0 = ppout.Reserve0 / float64(len(pairs))
-		ppout.Reserve1 = ppout.Reserve1 / float64(len(pairs))
-		ppout.ReserveUsd = ppout.ReserveUsd / float64(len(pairs))
-		ppout.Token0Price = ppout.Token0Price / float64(len(pairs))
-		ppout.Token1Price = ppout.Token1Price / float64(len(pairs))
-		ppout.TotalSupply = ppout.TotalSupply / float64(len(pairs))
+		ppout.Reserve0 = ppout.Reserve0.Quo(sdk.NewDec(int64(len(pairs))))
+		ppout.Reserve1 = ppout.Reserve1.Quo(sdk.NewDec(int64(len(pairs))))
+		ppout.ReserveUsd = ppout.ReserveUsd.Quo(sdk.NewDec(int64(len(pairs))))
+		ppout.Token0Price = ppout.Token0Price.Quo(sdk.NewDec(int64(len(pairs))))
+		ppout.Token1Price = ppout.Token1Price.Quo(sdk.NewDec(int64(len(pairs))))
+		ppout.TotalSupply = ppout.TotalSupply.Quo(sdk.NewDec(int64(len(pairs))))
 		out = append(out, ppout)
 	}
 	return out
@@ -102,29 +102,29 @@ func (ud *UniswapData) Parse() (out []UniswapPairParsed, err error) {
 	for _, pair := range ud.Pairs {
 		pp := UniswapPairParsed{}
 		pp.ID = pair.Id
-		pp.Reserve0, err = strconv.ParseFloat(pair.Reserve0, 64)
+		pp.Reserve0, err = sdk.NewDecFromStr(normalizeDec(pair.Reserve0))
 		if err != nil {
 			return nil, err
 		}
-		pp.Reserve1, err = strconv.ParseFloat(pair.Reserve1, 64)
+		pp.Reserve1, err = sdk.NewDecFromStr(normalizeDec(pair.Reserve1))
 		if err != nil {
 			return nil, err
 		}
-		pp.ReserveUsd, err = strconv.ParseFloat(pair.ReserveUsd, 64)
+		pp.ReserveUsd, err = sdk.NewDecFromStr(normalizeDec(pair.ReserveUsd))
 		if err != nil {
 			return nil, err
 		}
 		pp.Token0 = pair.Token0
 		pp.Token1 = pair.Token1
-		pp.Token0Price, err = strconv.ParseFloat(pair.Token0Price, 64)
+		pp.Token0Price, err = sdk.NewDecFromStr(normalizeDec(pair.Token0Price))
 		if err != nil {
 			return nil, err
 		}
-		pp.Token1Price, err = strconv.ParseFloat(pair.Token1Price, 64)
+		pp.Token1Price, err = sdk.NewDecFromStr(normalizeDec(pair.Token1Price))
 		if err != nil {
 			return nil, err
 		}
-		pp.TotalSupply, err = strconv.ParseFloat(pair.TotalSupply, 64)
+		pp.TotalSupply, err = sdk.NewDecFromStr(normalizeDec(pair.TotalSupply))
 		if err != nil {
 			return nil, err
 		}
@@ -136,14 +136,14 @@ func (ud *UniswapData) Parse() (out []UniswapPairParsed, err error) {
 // UniswapPairParsed turns the appropriate strings into floats
 type UniswapPairParsed struct {
 	ID          string
-	Reserve0    float64
-	Reserve1    float64
-	ReserveUsd  float64
+	Reserve0    sdk.Dec
+	Reserve1    sdk.Dec
+	ReserveUsd  sdk.Dec
 	Token0      UniswapToken
 	Token1      UniswapToken
-	Token0Price float64
-	Token1Price float64
-	TotalSupply float64
+	Token0Price sdk.Dec
+	Token1Price sdk.Dec
+	TotalSupply sdk.Dec
 }
 
 // Valid uses a canonical UniswapData instance to validate instances passed in
@@ -196,3 +196,15 @@ func (vp *VotePeriod) BlocksTillNextPeriod() int64 {
 // 	var content Content
 // 	return unpacker.UnpackAny(p.Content, &content)
 // }
+
+func normalizeDec(str string) string {
+	spl := strings.Split(str, ".")
+	if len(spl) == 1 {
+		return str
+	}
+	// if there are more than 1 period, then just return 0
+	if len(spl) > 2 {
+		return "0.0"
+	}
+	return fmt.Sprintf("%s.%.18s", spl[0], spl[1])
+}
