@@ -144,6 +144,9 @@ func initConfig(cmd *cobra.Command) error {
 				fmt.Println("Error parsing chain config:", err)
 				os.Exit(1)
 			}
+
+			// set logger
+
 		}
 	}
 	return nil
@@ -156,6 +159,7 @@ func validateConfig(c *Config) error {
 		return err
 	}
 	c.gasPrices = coin
+
 	return nil
 }
 

@@ -281,6 +281,7 @@ to another address, must be signed by an active validator
 <a name="oracle.v1.MsgOracleDataVote"></a>
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 
 <a name="oracle.v1.QueryActivesResponse"></a>
 
@@ -324,6 +325,10 @@ MsgOracleDataPrevote - sdk.Msg for prevoting on an array of oracle data types.
 The purpose of the prevote is to hide vote for data with hashes formatted as hex string: 
 SHA256("{salt}:{data_cannonical_json}:{voter}")
 >>>>>>> 80d76df335316d61841ce9bca513aaf530ec40d3
+=======
+### MsgOracleDataVote
+MsgOracleDataVote - sdk.Msg for submitting arbitrary oracle data that has been prevoted on
+>>>>>>> 5b665fcbd01d71b7bbcfcceba5a2d70aa2299577
 
 
 | Field | Type | Label | Description |
@@ -417,12 +422,17 @@ MissCounter stores the validator address and the number of associated misses
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 <<<<<<< HEAD
+<<<<<<< HEAD
 | `denom` | [string](#string) |  | token denomination |
 
 =======
 | `validator` | [string](#string) |  |  |
 | `misses` | [int64](#int64) |  |  |
 >>>>>>> 80d76df335316d61841ce9bca513aaf530ec40d3
+=======
+| `validator` | [string](#string) |  |  |
+| `misses` | [int64](#int64) |  |  |
+>>>>>>> 5b665fcbd01d71b7bbcfcceba5a2d70aa2299577
 
 
 
@@ -441,6 +451,7 @@ MsgOracleDataVote - sdk.Msg for submitting arbitrary oracle data that has been p
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 | `rate` | [string](#string) |  | token exchange rate |
@@ -467,13 +478,18 @@ MsgOracleDataVote - sdk.Msg for submitting arbitrary oracle data that has been p
 
 
 =======
+=======
+>>>>>>> 5b665fcbd01d71b7bbcfcceba5a2d70aa2299577
 | `vote_period` | [int64](#int64) |  | VotePeriod defines the number of blocks to wait for votes before attempting to tally |
 | `vote_threshold` | [string](#string) |  | VoteThreshold defines the percentage of bonded stake required to vote each period |
 | `slash_window` | [int64](#int64) |  | SlashWindow defines the number of blocks for the slashing window |
 | `min_valid_per_window` | [string](#string) |  | MinValidPerWindow defines the number of misses a validator is allowed during each SlashWindow |
 | `slash_fraction` | [string](#string) |  | SlashFraction defines the percentage of slash that a validator will suffer if it fails to send a vote |
 | `data_types` | [string](#string) | repeated | DataTypes defines which data types validators must submit each voting period |
+<<<<<<< HEAD
 >>>>>>> 80d76df335316d61841ce9bca513aaf530ec40d3
+=======
+>>>>>>> 5b665fcbd01d71b7bbcfcceba5a2d70aa2299577
 
 <<<<<<< HEAD
 | Field | Type | Label | Description |
@@ -499,6 +515,7 @@ MsgOracleDataVote - sdk.Msg for submitting arbitrary oracle data that has been p
 
  <!-- end services -->
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
@@ -546,6 +563,8 @@ MsgOracleDataVote - sdk.Msg for submitting arbitrary oracle data that has been p
 =======
 <a name="oracle.v1.GenesisState"></a>
 >>>>>>> 80d76df335316d61841ce9bca513aaf530ec40d3
+=======
+>>>>>>> 5b665fcbd01d71b7bbcfcceba5a2d70aa2299577
 
 ### GenesisState
 GenesisState - all oracle state that must be provided at genesis
@@ -979,6 +998,7 @@ Params oracle parameters
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 <<<<<<< HEAD
+<<<<<<< HEAD
 | `validator` | [string](#string) |  |  |
 
 
@@ -991,6 +1011,8 @@ Params oracle parameters
 
 ### QueryOracleDataPrevoteResponse
 =======
+=======
+>>>>>>> 5b665fcbd01d71b7bbcfcceba5a2d70aa2299577
 | `oracle_data` | [google.protobuf.Any](#google.protobuf.Any) |  |  |
 
 >>>>>>> 80d76df335316d61841ce9bca513aaf530ec40d3
@@ -1092,6 +1114,7 @@ Params oracle parameters
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | `validator` | [string](#string) |  |  |
+<<<<<<< HEAD
 =======
 
 =======
@@ -1100,6 +1123,8 @@ Params oracle parameters
 >>>>>>> 80d76df335316d61841ce9bca513aaf530ec40d3
 
 <a name="oracle.v1.QueryValidatorAddressRequest"></a>
+=======
+>>>>>>> 5b665fcbd01d71b7bbcfcceba5a2d70aa2299577
 
 <<<<<<< HEAD
 >>>>>>> 80d76df335316d61841ce9bca513aaf530ec40d3

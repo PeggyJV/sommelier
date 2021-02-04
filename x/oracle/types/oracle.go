@@ -20,6 +20,8 @@ type OracleData interface {
 	ValidateBasic() error
 	Valid(OracleData) bool
 	Type() string
+	// TODO: Add a parsing function to this and figure out what the signature needs to be
+	// Parse()
 }
 
 // DataHash returns the hash for a precommit given the proper args
@@ -42,7 +44,6 @@ func GetAverageFunction(typ string) func([]OracleData) OracleData {
 // UniswapDataCollection averages a collection of uniswap data
 func UniswapDataCollection(uds []OracleData) OracleData {
 	if len(uds) == 1 {
-		fmt.Println("One length uniswap data")
 		return uds[0]
 	}
 	foo := [][]UniswapPairParsed{}

@@ -36,7 +36,7 @@ func EndBlocker(ctx sdk.Context, k keeper.Keeper) {
 
 	// if the vote period has ended, tally the votes
 	if (ctx.BlockHeight() - k.GetVotePeriodStart(ctx)) >= params.VotePeriod {
-		fmt.Printf("----------TALLY AT HEIGHT %d---------\n", ctx.BlockHeight())
+		k.Logger(ctx).Info("tallying oracle votes")
 		voted := []string{}
 		votedPower := int64(0)
 		detailedMap := make(map[string]map[string]types.OracleData)
@@ -58,8 +58,6 @@ func EndBlocker(ctx sdk.Context, k keeper.Keeper) {
 			k.DeleteMissCounter(ctx, val)
 
 			// find total voting votedPower
-			fmt.Println("Adding to voted power")
-
 			votedPower += k.StakingKeeper.Validator(ctx, sdk.ValAddress(val)).GetConsensusPower()
 
 			// save the oracle data for later processing
@@ -100,7 +98,6 @@ func EndBlocker(ctx sdk.Context, k keeper.Keeper) {
 
 			// once we have an "average" we set it in the store
 			if storeAverages {
-				fmt.Println("Storing oracle data")
 				k.SetOracleData(ctx, avg)
 			}
 
@@ -121,26 +118,22 @@ func EndBlocker(ctx sdk.Context, k keeper.Keeper) {
 
 		// slash validators who have missed to many votes
 		k.IterateMissCounters(ctx, func(val sdk.AccAddress, counter int64) bool {
-			// if the validator has missed more than the params.MinValidPerWindow over the last
+
+			// TODO: Review this logic please! cc @fedekunze @zmanain
 			if params.MinValidPerWindow.LT(sdk.NewDec(counter).Quo(sdk.NewDec(params.SlashWindow))) {
-				// TODO: reenable slashing for now just print if this condition is hit
-				// sval := k.StakingKeeper.Validator(ctx, sdk.ValAddress(val))
-				// cons, _ := sval.GetConsAddr()
-				// k.StakingKeeper.Slash(ctx, cons, ctx.BlockHeight(), sval.GetConsensusPower(), params.SlashFraction)
-				fmt.Println("SLASHING VALIDATOR", val.String())
+				sval := k.StakingKeeper.Validator(ctx, sdk.ValAddress(val))
+				cons, _ := sval.GetConsAddr()
+				k.StakingKeeper.Slash(ctx, cons, ctx.BlockHeight(), sval.GetConsensusPower(), params.SlashFraction)
 			}
 			return false
 		})
 
 		// TODO: reward validators
 		// TODO: Setup module account for oracle module
-		// TODO: Fork off some of the community pool to (i.e. if community tax is 4% take 1/4 of that amount each block for paying to oracle)
 
 		// Reset state prior to next round
-		// After the tallying is done, reset the vote period start height
+		// After the tallying is done, reset the vote period start height and delete all the prevotes
 		k.SetVotePeriodStart(ctx, ctx.BlockHeight())
-
-		// ... and delete all the prevotes
 		k.IterateOracleDataPrevotes(ctx, func(val sdk.AccAddress, _ *types.MsgOracleDataPrevote) bool {
 			k.DeleteOracleDataPrevote(ctx, val)
 			return false
