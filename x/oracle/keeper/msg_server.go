@@ -12,6 +12,8 @@ import (
 	"github.com/peggyjv/sommelier/x/oracle/types"
 )
 
+var _ types.MsgServer = msgServer{}
+
 type msgServer struct {
 	Keeper
 }
@@ -21,8 +23,6 @@ type msgServer struct {
 func NewMsgServerImpl(keeper Keeper) types.MsgServer {
 	return &msgServer{Keeper: keeper}
 }
-
-var _ types.MsgServer = msgServer{}
 
 // DelegateFeedConsent implements types.MsgServer
 func (k msgServer) DelegateFeedConsent(c context.Context, msg *types.MsgDelegateFeedConsent) (*types.MsgDelegateFeedConsentResponse, error) {
@@ -139,17 +139,33 @@ func (k msgServer) OracleDataVote(c context.Context, msg *types.MsgOracleDataVot
 	got := []string{}
 	for i := range msg.OracleData {
 		salt := msg.Salt[i]
+		// unpack the oracle data one by one
 		od, err := types.UnpackOracleData(msg.OracleData[i])
 		if err != nil {
 			return nil, sdkerrors.Wrap(types.ErrUnpackOracleData, fmt.Sprintf("index %d", i))
 		}
+
+		// ensure that the data parses
+		if val, ok := od.(*types.UniswapData); ok {
+			if _, err := val.Parse(); err != nil {
+				return nil, sdkerrors.Wrap(types.ErrParseError, "failed to parse")
+			}
+		} else if !ok {
+			return nil, sdkerrors.Wrap(types.ErrInvalidOracleData, "only uniswap data currently supported")
+		}
+
+		// calculate the vote hash on the server
 		voteHash := types.DataHash(salt, od.CannonicalJSON(), valaddr)
+
+		// compare to prevote hash
 		if !bytes.Equal(voteHash, prevote.Hashes[i]) {
 			return nil, sdkerrors.Wrap(
 				types.ErrHashMismatch,
 				fmt.Sprintf("precommit(%x) commit(%x)", prevote.Hashes[i], voteHash),
 			)
 		}
+
+		// store the type of oracle data
 		got = append(got, od.Type())
 	}
 

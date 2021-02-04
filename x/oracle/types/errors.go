@@ -14,4 +14,5 @@ var (
 	ErrHashMismatch      = sdkerrors.Register(ModuleName, 7, "precommit hash doesn't match commit hash")
 	ErrWrongNumber       = sdkerrors.Register(ModuleName, 8, "wrong number of args")
 	ErrWrongDataType     = sdkerrors.Register(ModuleName, 9, "wrong data type")
+	ErrParseError        = sdkerrors.Register(ModuleName, 10, "parsing oracle data")
 )
