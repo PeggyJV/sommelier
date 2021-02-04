@@ -3,9 +3,8 @@ package types
 import (
 	"crypto/sha256"
 	"encoding/json"
-	"errors"
-	"fmt"
-	"strconv"
+	fmt "fmt"
+	"strings"
 
 	proto "github.com/gogo/protobuf/proto"
 
@@ -68,90 +67,88 @@ type uniswapTokenPretty struct {
 	Decimals string `json:"decimals"`
 }
 
-// NewUniswapPair creates a new UniswapPair instance with the fixed values set by args and
-// the other fields to their zero values.
-func NewUniswapPair(id string, token0, token1 UniswapToken) *UniswapPair {
-	return &UniswapPair{
-		ID:          id,
-		Reserve0:    sdk.ZeroDec(),
-		Reserve1:    sdk.ZeroDec(),
-		ReserveUSD:  sdk.ZeroDec(),
-		Token0:      token0,
-		Token1:      token1,
-		Token0Price: sdk.ZeroDec(),
-		Token1Price: sdk.ZeroDec(),
-		TotalSupply: sdk.ZeroDec(),
+// FlattenParsedUniswapData takes an array of arrays of pairs and flattens them
+func FlattenParsedUniswapData(in [][]UniswapPairParsed) (out []UniswapPairParsed) {
+	byID := make(map[string][]UniswapPairParsed)
+	for _, pairs := range in {
+		for _, pair := range pairs {
+			byID[pair.ID] = append(byID[pair.ID], pair)
+			// TODO: might want to validate that the tokens in each ID are the same
+			// TODO: also validate that total supply is the same
+		}
 	}
+	for id, pairs := range byID {
+		ppout := UniswapPairParsed{ID: id}
+		for _, pair := range pairs {
+			ppout.Reserve0 = ppout.Reserve0.Add(pair.Reserve0)
+			ppout.Reserve1 = ppout.Reserve1.Add(pair.Reserve1)
+			ppout.ReserveUsd = ppout.ReserveUsd.Add(pair.ReserveUsd)
+			ppout.Token0Price = ppout.Token0Price.Add(pair.Token0Price)
+			ppout.Token1Price = ppout.Token1Price.Add(pair.Token1Price)
+			ppout.TotalSupply = ppout.TotalSupply.Add(pair.TotalSupply)
+			// TODO: validate above
+			ppout.Token0 = pair.Token0
+			ppout.Token1 = pair.Token1
+		}
+		// Average all these values
+		ppout.Reserve0 = ppout.Reserve0.Quo(sdk.NewDec(int64(len(pairs))))
+		ppout.Reserve1 = ppout.Reserve1.Quo(sdk.NewDec(int64(len(pairs))))
+		ppout.ReserveUsd = ppout.ReserveUsd.Quo(sdk.NewDec(int64(len(pairs))))
+		ppout.Token0Price = ppout.Token0Price.Quo(sdk.NewDec(int64(len(pairs))))
+		ppout.Token1Price = ppout.Token1Price.Quo(sdk.NewDec(int64(len(pairs))))
+		ppout.TotalSupply = ppout.TotalSupply.Quo(sdk.NewDec(int64(len(pairs))))
+		out = append(out, ppout)
+	}
+	return out
 }
 
-// Type implements OracleData
-func (up *UniswapPair) Type() string {
-	return UniswapDataType
+// Parse parses floats from strings
+func (ud *UniswapData) Parse() (out []UniswapPairParsed, err error) {
+	for _, pair := range ud.Pairs {
+		pp := UniswapPairParsed{}
+		pp.ID = pair.Id
+		pp.Reserve0, err = sdk.NewDecFromStr(normalizeDec(pair.Reserve0))
+		if err != nil {
+			return nil, err
+		}
+		pp.Reserve1, err = sdk.NewDecFromStr(normalizeDec(pair.Reserve1))
+		if err != nil {
+			return nil, err
+		}
+		pp.ReserveUsd, err = sdk.NewDecFromStr(normalizeDec(pair.ReserveUsd))
+		if err != nil {
+			return nil, err
+		}
+		pp.Token0 = pair.Token0
+		pp.Token1 = pair.Token1
+		pp.Token0Price, err = sdk.NewDecFromStr(normalizeDec(pair.Token0Price))
+		if err != nil {
+			return nil, err
+		}
+		pp.Token1Price, err = sdk.NewDecFromStr(normalizeDec(pair.Token1Price))
+		if err != nil {
+			return nil, err
+		}
+		pp.TotalSupply, err = sdk.NewDecFromStr(normalizeDec(pair.TotalSupply))
+		if err != nil {
+			return nil, err
+		}
+		out = append(out, pp)
+	}
+	return out, nil
 }
 
-// Validate implements OracleData
-func (up UniswapPair) Validate() error {
-	if err := peggytypes.ValidateEthAddress(up.ID); err != nil {
-		return fmt.Errorf("invalid uniswap pair id %s: %w", up.ID, err)
-	}
-
-	if up.Reserve0.IsNil() {
-		return errors.New("reserve 0 cannot be nil")
-	}
-
-	if up.Reserve1.IsNil() {
-		return errors.New("reserve 1 cannot be nil")
-	}
-
-	if up.ReserveUSD.IsNil() {
-		return errors.New("reserve USD cannot be nil")
-	}
-
-	if up.Token0Price.IsNil() {
-		return errors.New("token 0 price cannot be nil")
-	}
-
-	if up.Token1Price.IsNil() {
-		return errors.New("token 0 price  cannot be nil")
-	}
-
-	if up.TotalSupply.IsNil() {
-		return errors.New("token supply cannot be nil")
-	}
-
-	if up.Reserve0.IsNegative() {
-		return fmt.Errorf("reserve 0 value (%s) for uniswap pair %s cannot be negative", up.Reserve0, up.ID)
-	}
-
-	if up.Reserve1.IsNegative() {
-		return fmt.Errorf("reserve 1 value (%s) for uniswap pair %s cannot be negative", up.Reserve0, up.ID)
-	}
-
-	if up.ReserveUSD.IsNegative() {
-		return fmt.Errorf("reserve USD value (%s) for uniswap pair %s cannot be negative", up.Reserve0, up.ID)
-	}
-
-	if err := up.Token0.Validate(); err != nil {
-		return fmt.Errorf("invalid token 0 for uniswap pair %s: %w", up.ID, err)
-	}
-
-	if err := up.Token1.Validate(); err != nil {
-		return fmt.Errorf("invalid token 1 for uniswap pair %s: %w", up.ID, err)
-	}
-
-	if up.Token0Price.IsNegative() {
-		return fmt.Errorf("token 0 price (%s) for uniswap pair %s cannot be negative", up.Token0Price, up.ID)
-	}
-
-	if up.Token1Price.IsNegative() {
-		return fmt.Errorf("token 1 price (%s) for uniswap pair %s cannot be negative", up.Token1Price, up.ID)
-	}
-
-	if up.TotalSupply.IsNegative() {
-		return fmt.Errorf("total supply (%s) for uniswap pair %s cannot be negative", up.TotalSupply, up.ID)
-	}
-
-	return nil
+// UniswapPairParsed turns the appropriate strings into floats
+type UniswapPairParsed struct {
+	ID          string
+	Reserve0    sdk.Dec
+	Reserve1    sdk.Dec
+	ReserveUsd  sdk.Dec
+	Token0      UniswapToken
+	Token1      UniswapToken
+	Token0Price sdk.Dec
+	Token1Price sdk.Dec
+	TotalSupply sdk.Dec
 }
 
 // Compare checks that the current pair is within the target range and the fixed
@@ -309,5 +306,20 @@ func (ut UniswapToken) Validate() error {
 	// 	return fmt.Errorf("decimal places (%d) exceeds the maximum supported (%d)", ut.Decimals, sdk.Precision)
 	// }
 
-	return nil
+// // UnpackInterfaces implements UnpackInterfacesMessage.UnpackInterfaces
+// func (p Proposal) UnpackInterfaces(unpacker types.AnyUnpacker) error {
+// 	var content Content
+// 	return unpacker.UnpackAny(p.Content, &content)
+// }
+
+func normalizeDec(str string) string {
+	spl := strings.Split(str, ".")
+	if len(spl) == 1 {
+		return str
+	}
+	// if there are more than 1 period, then just return 0
+	if len(spl) > 2 {
+		return "0.0"
+	}
+	return fmt.Sprintf("%s.%.18s", spl[0], spl[1])
 }
