@@ -1,8 +1,6 @@
 package cli
 
 import (
-	"context"
-
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/peggyjv/sommelier/x/oracle/types"
 	"github.com/spf13/cobra"
@@ -37,18 +35,22 @@ func queryParams() *cobra.Command {
 	return &cobra.Command{
 		Use:     "parameters",
 		Aliases: []string{"params"},
-		Args:    cobra.ExactArgs(0),
+		Args:    cobra.NoArgs,
 		Short:   "query oracle params from the chain",
-		RunE: func(cmd *cobra.Command, args []string) error {
+		RunE: func(cmd *cobra.Command, _ []string) error {
 			ctx, err := client.GetClientQueryContext(cmd)
 			if err != nil {
 				return err
 			}
-			res, err := types.NewQueryClient(ctx).QueryParams(
-				context.Background(), &types.QueryParamsRequest{})
+
+			queryClient := types.NewQueryClient(ctx)
+			req := &types.QueryParamsRequest{}
+
+			res, err := queryClient.QueryParams(cmd.Context(), req)
 			if err != nil {
 				return err
 			}
+
 			return ctx.PrintProto(res)
 		},
 	}
@@ -59,17 +61,21 @@ func queryDelegeateAddress() *cobra.Command {
 		Use:     "delegate-address [validator-address]",
 		Aliases: []string{"del"},
 		Args:    cobra.ExactArgs(1),
-		Short:   "query delegeate address from the chain given validators address",
+		Short:   "query delegate address from the chain given validators address",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx, err := client.GetClientQueryContext(cmd)
 			if err != nil {
 				return err
 			}
-			res, err := types.NewQueryClient(ctx).QueryDelegeateAddress(
-				context.Background(), &types.QueryDelegeateAddressRequest{Validator: args[0]})
+
+			queryClient := types.NewQueryClient(ctx)
+			req := &types.QueryDelegeateAddressRequest{Validator: args[0]}
+
+			res, err := queryClient.QueryDelegeateAddress(cmd.Context(), req)
 			if err != nil {
 				return err
 			}
+
 			return ctx.PrintProto(res)
 		},
 	}
@@ -86,11 +92,15 @@ func queryValidatorAddress() *cobra.Command {
 			if err != nil {
 				return err
 			}
-			res, err := types.NewQueryClient(ctx).QueryValidatorAddress(
-				context.Background(), &types.QueryValidatorAddressRequest{Delegate: args[0]})
+
+			queryClient := types.NewQueryClient(ctx)
+			req := &types.QueryValidatorAddressRequest{Delegate: args[0]}
+
+			res, err := queryClient.QueryValidatorAddress(cmd.Context(), req)
 			if err != nil {
 				return err
 			}
+
 			return ctx.PrintProto(res)
 		},
 	}
@@ -107,8 +117,11 @@ func queryOracleDataPrevote() *cobra.Command {
 			if err != nil {
 				return err
 			}
-			res, err := types.NewQueryClient(ctx).QueryOracleDataPrevote(
-				context.Background(), &types.QueryOracleDataPrevoteRequest{Validator: args[0]})
+
+			queryClient := types.NewQueryClient(ctx)
+			req := &types.QueryOracleDataPrevoteRequest{Validator: args[0]}
+
+			res, err := queryClient.QueryOracleDataPrevote(cmd.Context(), req)
 			if err != nil {
 				return err
 			}
@@ -128,8 +141,11 @@ func queryOracleDataVote() *cobra.Command {
 			if err != nil {
 				return err
 			}
-			res, err := types.NewQueryClient(ctx).QueryOracleDataVote(
-				context.Background(), &types.QueryOracleDataVoteRequest{Validator: args[0]})
+
+			queryClient := types.NewQueryClient(ctx)
+			req := &types.QueryOracleDataVoteRequest{Validator: args[0]}
+
+			res, err := queryClient.QueryOracleDataVote(cmd.Context(), req)
 			if err != nil {
 				return err
 			}
@@ -142,18 +158,22 @@ func queryVotePeriod() *cobra.Command {
 	return &cobra.Command{
 		Use:     "vote-period",
 		Aliases: []string{"vp"},
-		Args:    cobra.ExactArgs(0),
+		Args:    cobra.NoArgs,
 		Short:   "query vote period data from the chain",
-		RunE: func(cmd *cobra.Command, args []string) error {
+		RunE: func(cmd *cobra.Command, _ []string) error {
 			ctx, err := client.GetClientQueryContext(cmd)
 			if err != nil {
 				return err
 			}
-			res, err := types.NewQueryClient(ctx).QueryVotePeriod(
-				context.Background(), &types.QueryVotePeriodRequest{})
+
+			queryClient := types.NewQueryClient(ctx)
+			req := &types.QueryVotePeriodRequest{}
+
+			res, err := queryClient.QueryVotePeriod(cmd.Context(), req)
 			if err != nil {
 				return err
 			}
+
 			return ctx.PrintProto(res)
 		},
 	}
@@ -170,8 +190,13 @@ func queryMissCounter() *cobra.Command {
 			if err != nil {
 				return err
 			}
-			res, err := types.NewQueryClient(ctx).QueryMissCounter(
-				context.Background(), &types.QueryMissCounterRequest{Validator: args[0]})
+
+			queryClient := types.NewQueryClient(ctx)
+			req := &types.QueryMissCounterRequest{
+				Validator: args[0],
+			}
+
+			res, err := queryClient.QueryMissCounter(cmd.Context(), req)
 			if err != nil {
 				return err
 			}
@@ -184,23 +209,27 @@ func queryOracleData() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:     "oracle-data",
 		Aliases: []string{"od"},
-		Args:    cobra.ExactArgs(0),
+		Args:    cobra.NoArgs,
 		Short:   "query consensus oracle data from the chain given its type",
-		RunE: func(cmd *cobra.Command, args []string) error {
-			ctx := client.GetClientContextFromCmd(cmd)
+		RunE: func(cmd *cobra.Command, _ []string) error {
 			ctx, err := client.GetClientQueryContext(cmd)
 			if err != nil {
 				return err
 			}
+
 			typ, err := cmd.Flags().GetString("type")
 			if err != nil {
 				return err
 			}
-			res, err := types.NewQueryClient(ctx).OracleData(
-				context.Background(), &types.QueryOracleDataRequest{Type: typ})
+
+			queryClient := types.NewQueryClient(ctx)
+			req := &types.QueryOracleDataRequest{Type: typ}
+
+			res, err := queryClient.OracleData(cmd.Context(), req)
 			if err != nil {
 				return err
 			}
+
 			return ctx.PrintProto(res)
 		},
 	}
