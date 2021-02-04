@@ -304,9 +304,9 @@ func NewSommelierApp(
 	transferModule := transfer.NewAppModule(app.TransferKeeper)
 
 	app.OracleKeeper = oraclekeeper.NewKeeper(
-		appCodec, keys[oracletypes.StoreKey], app.GetSubspace(oracletypes.ModuleName), app.DistrKeeper,
-		app.StakingKeeper, app.AccountKeeper, app.BankKeeper, distrtypes.ModuleName,
-	)
+		appCodec, keys[oracletypes.StoreKey], app.GetSubspace(oracletypes.ModuleName),
+		app.StakingKeeper)
+
 	// Create static IBC router, add transfer route, then set and seal it
 	ibcRouter := porttypes.NewRouter()
 	ibcRouter.AddRoute(ibctransfertypes.ModuleName, transferModule)
@@ -352,7 +352,7 @@ func NewSommelierApp(
 		ibc.NewAppModule(app.IBCKeeper),
 		params.NewAppModule(app.ParamsKeeper),
 		transferModule,
-		oracle.NewAppModule(app.OracleKeeper, app.AccountKeeper, app.BankKeeper, appCodec),
+		oracle.NewAppModule(app.OracleKeeper, appCodec),
 	)
 
 	// During begin block slashing happens after distr.BeginBlocker so that
@@ -361,7 +361,7 @@ func NewSommelierApp(
 	// NOTE: staking module is required if HistoricalEntries param > 0
 	app.mm.SetOrderBeginBlockers(
 		upgradetypes.ModuleName, minttypes.ModuleName, distrtypes.ModuleName, slashingtypes.ModuleName,
-		evidencetypes.ModuleName, stakingtypes.ModuleName, ibchost.ModuleName,
+		evidencetypes.ModuleName, stakingtypes.ModuleName, ibchost.ModuleName, oracletypes.ModuleName,
 	)
 	app.mm.SetOrderEndBlockers(
 		crisistypes.ModuleName, oracletypes.ModuleName, govtypes.ModuleName, stakingtypes.ModuleName,
@@ -399,7 +399,7 @@ func NewSommelierApp(
 		evidence.NewAppModule(app.EvidenceKeeper),
 		ibc.NewAppModule(app.IBCKeeper),
 		transferModule,
-		oracle.NewAppModule(app.OracleKeeper, app.AccountKeeper, app.BankKeeper, appCodec),
+		oracle.NewAppModule(app.OracleKeeper, appCodec),
 	)
 
 	app.sm.RegisterStoreDecoders()
@@ -614,8 +614,8 @@ func initParamsKeeper(appCodec codec.BinaryMarshaler, legacyAmino *codec.LegacyA
 	paramsKeeper.Subspace(govtypes.ModuleName).WithKeyTable(govtypes.ParamKeyTable())
 	paramsKeeper.Subspace(crisistypes.ModuleName)
 	paramsKeeper.Subspace(ibctransfertypes.ModuleName)
-	paramsKeeper.Subspace(oracletypes.ModuleName)
 	paramsKeeper.Subspace(ibchost.ModuleName)
+	paramsKeeper.Subspace(oracletypes.ModuleName) //.WithKeyTable(oracletypes.ParamKeyTable())
 
 	return paramsKeeper
 }

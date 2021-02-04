@@ -1,0 +1,59 @@
+syntax = "proto3";
+package oracle.v1;
+
+import "oracle/v1/tx.proto";
+import "gogoproto/gogo.proto";
+
+option go_package = "github.com/peggyjv/sommelier/x/oracle/types";
+
+
+// GenesisState - all oracle state that must be provided at genesis
+message GenesisState {
+    Params                          params             = 1 [
+        (gogoproto.nullable) = false
+    ];
+    repeated MsgDelegateFeedConsent feeder_delegations = 2 [
+        (gogoproto.nullable) = false
+    ];
+    repeated MissCounter            miss_counters      = 3 [
+        (gogoproto.nullable) = false
+    ];
+}
+
+// Params oracle parameters
+message Params {
+    // VotePeriod defines the number of blocks to wait for votes before attempting to tally
+    int64  vote_period          = 1;
+
+    // VoteThreshold defines the percentage of bonded stake required to vote each period
+    string vote_threshold       = 2 [
+        (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec", 
+        (gogoproto.nullable)   = false
+    ];
+
+    // SlashWindow defines the number of blocks for the slashing window
+    int64  slash_window         = 3;
+
+    // MinValidPerWindow defines the number of misses a validator is allowed during
+    // each SlashWindow
+    string min_valid_per_window = 4 [
+        (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec", 
+        (gogoproto.nullable)   = false
+    ];
+
+    // SlashFraction defines the percentage of slash that a validator will suffer if it fails
+    // to send a vote
+    string slash_fraction       = 5 [
+        (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec", 
+        (gogoproto.nullable)   = false
+    ];
+
+    // DataTypes defines which data types validators must submit each voting period
+    repeated string data_types  = 6;
+}
+
+// MissCounter stores the validator address and the number of associated misses
+message MissCounter {
+    string validator = 1;
+    int64  misses    = 2;
+}

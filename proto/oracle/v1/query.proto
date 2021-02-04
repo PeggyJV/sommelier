@@ -1,0 +1,81 @@
+syntax = "proto3";
+package oracle.v1;
+
+import "gogoproto/gogo.proto";
+import "google/protobuf/any.proto";
+import "oracle/v1/genesis.proto";
+import "oracle/v1/tx.proto";
+import "cosmos_proto/cosmos.proto";
+
+option go_package = "github.com/peggyjv/sommelier/x/oracle/types";
+
+service Query {
+    rpc QueryParams(QueryParamsRequest) returns (QueryParamsResponse) {}
+    rpc QueryDelegeateAddress(QueryDelegeateAddressRequest) returns (QueryDelegeateAddressResponse) {}
+    rpc QueryValidatorAddress(QueryValidatorAddressRequest) returns (QueryValidatorAddressResponse) {}
+    rpc QueryOracleDataPrevote(QueryOracleDataPrevoteRequest) returns (QueryOracleDataPrevoteResponse) {}
+    rpc QueryOracleDataVote(QueryOracleDataVoteRequest) returns (MsgOracleDataVote) {}
+    rpc QueryVotePeriod(QueryVotePeriodRequest) returns (VotePeriod) {}
+    rpc QueryMissCounter(QueryMissCounterRequest) returns (QueryMissCounterResponse) {}
+    rpc OracleData(QueryOracleDataRequest) returns (QueryOracleDataResponse) {}
+}
+
+message QueryValidatorAddressRequest {
+    string delegate = 1;
+}
+message QueryValidatorAddressResponse {
+    string validator = 1;
+}
+
+message QueryParamsRequest {}
+message QueryParamsResponse {
+    Params params = 1 [
+        (gogoproto.nullable) = false
+    ];
+}
+
+message QueryVotePeriodRequest {}
+message VotePeriod {
+    int64 current_height    = 1;
+    int64 vote_period_start = 2;
+    int64 vote_period_end   = 3; 
+}
+
+message QueryMissCounterRequest {
+    string validator = 1;
+}
+message QueryMissCounterResponse {
+    int64 miss_counter = 1;
+}
+
+message QueryDelegeateAddressRequest {
+    string validator = 1;
+}
+message QueryDelegeateAddressResponse {
+    string delegate = 2;
+}
+
+message QueryOracleDataPrevoteRequest {
+    string validator = 1; 
+}
+message QueryOracleDataPrevoteResponse {
+    repeated bytes hashes = 1;
+}
+
+message QueryOracleDataVoteRequest {
+    string validator = 1;
+}
+
+// TODO:
+message QueryOracleDataVoteResponse {
+}
+
+
+message QueryOracleDataRequest  {
+    string type = 1;
+}
+message QueryOracleDataResponse {
+    google.protobuf.Any oracle_data = 1 [
+        (cosmos_proto.accepts_interface) = "OracleData"
+    ];
+}
