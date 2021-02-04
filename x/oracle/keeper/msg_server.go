@@ -28,10 +28,6 @@ var _ types.MsgServer = msgServer{}
 func (k msgServer) DelegateFeedConsent(c context.Context, msg *types.MsgDelegateFeedConsent) (*types.MsgDelegateFeedConsentResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
 
-	if err := msg.ValidateBasic(); err != nil {
-		return nil, sdkerrors.Wrap(err, "validate basic failed")
-	}
-
 	val, del := msg.MustGetValidator(), msg.MustGetDelegate()
 
 	if k.Keeper.StakingKeeper.Validator(ctx, sdk.ValAddress(val)) == nil {
@@ -57,10 +53,6 @@ func (k msgServer) DelegateFeedConsent(c context.Context, msg *types.MsgDelegate
 // OracleDataPrevote implements types.MsgServer
 func (k msgServer) OracleDataPrevote(c context.Context, msg *types.MsgOracleDataPrevote) (*types.MsgOracleDataPrevoteResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
-
-	if err := msg.ValidateBasic(); err != nil {
-		return nil, sdkerrors.Wrap(err, "validate basic failed")
-	}
 
 	signer := msg.MustGetSigner()
 	valaddr := k.GetValidatorAddressFromDelegate(ctx, signer)
@@ -96,9 +88,6 @@ func (k msgServer) OracleDataPrevote(c context.Context, msg *types.MsgOracleData
 // OracleDataVote implements types.MsgServer
 func (k msgServer) OracleDataVote(c context.Context, msg *types.MsgOracleDataVote) (*types.MsgOracleDataVoteResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
-	if err := msg.ValidateBasic(); err != nil {
-		return nil, sdkerrors.Wrap(err, "validate basic failed")
-	}
 
 	// Make sure that the message was properly signed
 	signer := msg.MustGetSigner()
