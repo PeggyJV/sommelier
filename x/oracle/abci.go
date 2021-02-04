@@ -66,6 +66,7 @@ func EndBlocker(ctx sdk.Context, k keeper.Keeper) {
 				if err != nil {
 					panic(err)
 				}
+
 				detailedMap[od.Type()][val.String()] = od
 				collectionMap[od.Type()] = append(collectionMap[od.Type()], od)
 			}
@@ -120,11 +121,27 @@ func EndBlocker(ctx sdk.Context, k keeper.Keeper) {
 		k.IterateMissCounters(ctx, func(val sdk.AccAddress, counter int64) bool {
 
 			// TODO: Review this logic please! cc @fedekunze @zmanain
-			if params.MinValidPerWindow.LT(sdk.NewDec(counter).Quo(sdk.NewDec(params.SlashWindow))) {
-				sval := k.StakingKeeper.Validator(ctx, sdk.ValAddress(val))
-				cons, _ := sval.GetConsAddr()
-				k.StakingKeeper.Slash(ctx, cons, ctx.BlockHeight(), sval.GetConsensusPower(), params.SlashFraction)
+			missedVotesPerWindow := sdk.NewDec(counter).Quo(sdk.NewDec(params.SlashWindow))
+			if params.MinValidPerWindow.GTE(missedVotesPerWindow) {
+				// continue with next counter
+				return false
 			}
+
+			// slash validator below the minimum vote threshold
+			validator := k.StakingKeeper.Validator(ctx, sdk.ValAddress(val))
+			if validator == nil {
+				// validator not found, continue with the next counter
+				// TODO: ensure correctness
+				return false
+			}
+
+			consensusAddr, err := validator.GetConsAddr()
+			if err != nil {
+				// TODO: check why this could error and ensure correctness
+				panic(err)
+			}
+
+			k.StakingKeeper.Slash(ctx, consensusAddr, ctx.BlockHeight(), validator.GetConsensusPower(), params.SlashFraction)
 			return false
 		})
 
@@ -134,6 +151,8 @@ func EndBlocker(ctx sdk.Context, k keeper.Keeper) {
 		// Reset state prior to next round
 		// After the tallying is done, reset the vote period start height and delete all the prevotes
 		k.SetVotePeriodStart(ctx, ctx.BlockHeight())
+
+		// TODO: move this to a keeper function
 		k.IterateOracleDataPrevotes(ctx, func(val sdk.AccAddress, _ *types.MsgOracleDataPrevote) bool {
 			k.DeleteOracleDataPrevote(ctx, val)
 			return false
