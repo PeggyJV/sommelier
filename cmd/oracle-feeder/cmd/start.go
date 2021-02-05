@@ -87,23 +87,17 @@ func (c *Coordinator) handleTx(txEvent ctypes.ResultEvent) error {
 	}
 	config.log.Debug("transaction detected", "height", tx.Height)
 	for _, ev := range tx.Result.Events {
-		if ev.Type != oracle.EventTypeOracleDataPrevote {
-			continue
-		}
-
-		for _, att := range ev.Attributes {
-			if string(att.Key) != oracle.AttributeKeyValidator {
-				continue
-			}
-
-			config.log.Debug("prevote detected", "validator", string(att.Value))
-			if string(att.Value) != c.validatorAddr.String() {
-				continue
-			}
-
-			config.log.Info("submitting oracle data vote", "signer", c.delegatorAddr.String(), "height", tx.Height)
-			if err := c.SubmitOracleDataVote(); err != nil {
-				return err
+		if ev.Type == oracle.EventTypeOracleDataPrevote {
+			for _, att := range ev.Attributes {
+				if string(att.Key) == oracle.AttributeKeyValidator {
+					config.log.Debug("prevote detected", "validator", string(att.Value))
+					if string(att.Value) == c.Val.String() {
+						config.log.Info("submitting oracle data vote", "signer", c.Addr.String(), "height", tx.Height)
+						if err := c.SubmitOracleDataVote(); err != nil {
+							return err
+						}
+					}
+				}
 			}
 		}
 	}
@@ -119,17 +113,20 @@ func (c *Coordinator) handleBlock(blockEvent ctypes.ResultEvent) error {
 	c.height = bl.Block.Height
 	prevote := false
 	for _, ev := range bl.ResultBeginBlock.Events {
-		if ev.Type != oracle.EventTypeVotePeriod {
-			continue
+		if ev.Type == oracle.EventTypeVotePeriod {
+			config.log.Info("new vote period beginning", "height", bl.Block.Height)
+			prevote = true
 		}
 
 		config.log.Info("new vote period beginning", "height", bl.Block.Height)
 		prevote = true
 		break
 	}
-
-	if !prevote {
-		return nil
+	if prevote {
+		config.log.Info("submitting oracle data prevote", "signer", c.Addr.String(), "height", c.height)
+		if err := c.SubmitOracleDataPrevote(); err != nil {
+			return err
+		}
 	}
 
 	config.log.Info("submitting oracle data prevote", "signer", c.delegatorAddr.String(), "height", c.height)

@@ -160,6 +160,7 @@ func initConfig(cmd *cobra.Command) error {
 			}
 
 			// TODO: set logger
+			config.log = tmlog.NewTMLogger(tmlog.NewSyncWriter(os.Stdout))
 		}
 	}
 	return nil

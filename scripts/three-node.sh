@@ -155,20 +155,13 @@ $SOM $home2 start --pruning=nothing --grpc.address="0.0.0.0:9092" > $hdir.n2.log
 
 # Wait for chains to start
 echo "Waiting for chains to start..."
-sleep 1
-sleep 1
-sleep 1
-sleep 1
-sleep 1
-sleep 1
-sleep 1
-sleep 1
+sleep 8
 
 # Delegate keys to the feeders
 echo "Delegating feeder permissions..."
-$SOM $home0 tx oracle delegate-feeder $($FED $home0 keys show feeder) $kbt --from val $cid -y &>/dev/null &
-$SOM $home1 tx oracle delegate-feeder $($FED $home1 keys show feeder) $kbt --from val $cid -y &>/dev/null &
-$SOM $home2 tx oracle delegate-feeder $($FED $home2 keys show feeder) $kbt --from val $cid -y &>/dev/null &
+$SOM $home0 tx oracle delegate-feeder $($FED $home0 keys show feeder) $kbt --from val $cid -y &>/dev/null
+$SOM $home1 tx oracle delegate-feeder $($FED $home1 keys show feeder) $kbt --from val $cid -y &>/dev/null
+$SOM $home2 tx oracle delegate-feeder $($FED $home2 keys show feeder) $kbt --from val $cid -y &>/dev/null
 
 # Start the oracle feeders
 echo "Starting the oracle feeders..."
@@ -183,6 +176,11 @@ echo "  - n2 'tail -f ./data/somm.n2.log'"
 echo "  - f0 'tail -f ./data/somm.fed0.log'"
 echo "  - f1 'tail -f ./data/somm.fed1.log'"
 echo "  - f2 'tail -f ./data/somm.fed2.log'"
+echo 
+echo "Env for easy access:"
+echo "export H1='--home ./data/somm/n0/'"
+echo "export H2='--home ./data/somm/n1/'"
+echo "export H3='--home ./data/somm/n2/'"
 echo 
 echo "Command Line Access:"
 echo "  - n0 'sommelier --home ./data/somm/n0/ status'"
