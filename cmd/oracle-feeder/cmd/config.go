@@ -12,6 +12,7 @@ import (
 	"github.com/machinebox/graphql"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
+	tmlog "github.com/tendermint/tendermint/libs/log"
 	rpchttp "github.com/tendermint/tendermint/rpc/client/http"
 	ctypes "github.com/tendermint/tendermint/rpc/core/types"
 	libclient "github.com/tendermint/tendermint/rpc/jsonrpc/client"
@@ -125,6 +126,7 @@ type Config struct {
 	graphClient *graphql.Client
 	grpcConn    *grpc.ClientConn
 	gasPrices   sdk.DecCoin
+	log         tmlog.Logger
 }
 
 // initConfig reads in config file and ENV variables if set.
@@ -158,6 +160,7 @@ func initConfig(cmd *cobra.Command) error {
 			}
 
 			// TODO: set logger
+			config.log = tmlog.NewTMLogger(tmlog.NewSyncWriter(os.Stdout))
 		}
 	}
 	return nil

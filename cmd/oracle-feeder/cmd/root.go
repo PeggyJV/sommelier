@@ -83,6 +83,7 @@ func Execute(rootCmd *cobra.Command) error {
 	// https://github.com/spf13/cobra/pull/1118.
 	ctx := context.Background()
 	ctx = context.WithValue(ctx, client.ClientContextKey, &client.Context{})
+	rootCmd.PersistentFlags().StringP("log-level", "", "info", "log level")
 	executor := tmcli.PrepareBaseCmd(rootCmd, "", FeederHome)
 	return executor.ExecuteContext(ctx)
 }

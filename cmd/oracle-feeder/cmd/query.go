@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"log"
 	"os"
 
@@ -408,5 +409,6 @@ func (c Config) GetClientContext(cmd *cobra.Command) (client.Context, error) {
 		WithFromName(c.SigningKey).
 		WithFrom(c.SigningKey).
 		WithKeyring(keyring).
+		WithOutput(ioutil.Discard).
 		WithHomeDir(home), nil
 }
