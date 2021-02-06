@@ -2,6 +2,8 @@ package types
 
 import (
 	"crypto/sha256"
+	"encoding/json"
+	"errors"
 	"fmt"
 	"strings"
 
@@ -24,12 +26,13 @@ type OracleData interface {
 	GetID() string
 	Type() string
 	Validate() error
+	MarshalJSON() ([]byte, error)
 }
 
 // DataHash returns the hash for a precommit given the proper args
-func DataHash(salt string, jsn string, signer sdk.AccAddress) []byte {
+func DataHash(salt, jsonData string, signer sdk.AccAddress) []byte {
 	h := sha256.New()
-	h.Write([]byte(fmt.Sprintf("%s:%s:%s", salt, jsn, signer.String())))
+	h.Write([]byte(fmt.Sprintf("%s:%s:%s", salt, jsonData, signer.String())))
 	return h.Sum(nil)
 }
 
@@ -84,24 +87,26 @@ func (ud UniswapData) Validate() error {
 	return nil
 }
 
-// Validate implements OracleData
+// Validate performs a basic validation of the uniswap token fields.
 func (ut UniswapToken) Validate() error {
+	if strings.TrimSpace(ut.Id) == "" {
+		return errors.New("token id cannot be blank")
+	}
+
 	return nil
+}
+
+// MarshalJSON marshals and sorts the returned value
+func (ud UniswapData) MarshalJSON() ([]byte, error) {
+	bz, err := json.Marshal(ud)
+	if err != nil {
+		return nil, err
+	}
+
+	return sdk.SortJSON(bz)
 }
 
 // BlocksTillNextPeriod helper
 func (vp *VotePeriod) BlocksTillNextPeriod() int64 {
 	return vp.VotePeriodEnd - vp.CurrentHeight
-}
-
-func normalizeDec(str string) string {
-	spl := strings.Split(str, ".")
-	if len(spl) == 1 {
-		return str
-	}
-	// if there are more than 1 period, then just return 0
-	if len(spl) > 2 {
-		return "0.0"
-	}
-	return fmt.Sprintf("%s.%.18s", spl[0], spl[1])
 }
