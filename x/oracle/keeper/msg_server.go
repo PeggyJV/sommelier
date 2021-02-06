@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"sort"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
@@ -61,6 +60,7 @@ func (k msgServer) OracleDataPrevote(c context.Context, msg *types.MsgOracleData
 		if sval == nil {
 			return nil, sdkerrors.Wrap(types.ErrUnknown, "validator")
 		}
+
 		valaddr = sdk.AccAddress(sval.GetOperator())
 	}
 
@@ -124,27 +124,30 @@ func (k msgServer) OracleDataVote(c context.Context, msg *types.MsgOracleDataVot
 		)
 	}
 
-	// validate the hashes
-	got := []string{}
-	for i := range msg.OracleData {
+	allowedTypesMap := make(map[string]bool)
+	allowedDataTypes := k.GetParamSet(ctx).DataTypes
+
+	for _, allowedDataType := range allowedDataTypes {
+		allowedTypesMap[allowedDataType] = true
+	}
+
+	for i, oracleDataAny := range msg.OracleData {
 		salt := msg.Salt[i]
+
 		// unpack the oracle data one by one
-		od, err := types.UnpackOracleData(msg.OracleData[i])
+		oracleData, err := types.UnpackOracleData(oracleDataAny)
 		if err != nil {
 			return nil, sdkerrors.Wrap(types.ErrUnpackOracleData, fmt.Sprintf("index %d", i))
 		}
 
 		// ensure that the data parses
-		if val, ok := od.(*types.UniswapData); ok {
-			if _, err := val.Parse(); err != nil {
-				return nil, sdkerrors.Wrap(types.ErrParseError, "failed to parse")
-			}
-		} else if !ok {
+		uniswapData, ok := oracleData.(*types.UniswapData)
+		if !ok {
 			return nil, sdkerrors.Wrap(types.ErrInvalidOracleData, "only uniswap data currently supported")
 		}
 
 		// calculate the vote hash on the server
-		voteHash := types.DataHash(salt, od.CannonicalJSON(), valaddr)
+		voteHash := types.DataHash(salt, uniswapData.CannonicalJSON(), valaddr)
 
 		// compare to prevote hash
 		if !bytes.Equal(voteHash, prevote.Hashes[i]) {
@@ -154,27 +157,10 @@ func (k msgServer) OracleDataVote(c context.Context, msg *types.MsgOracleDataVot
 			)
 		}
 
-		// store the type of oracle data
-		got = append(got, od.Type())
-	}
-
-	// ensure that the right number of data types have been submitted
-	exp := k.GetParamSet(ctx).DataTypes
-	if len(exp) != len(got) {
-		return nil, sdkerrors.Wrap(
-			types.ErrWrongNumber,
-			fmt.Sprintf("oracle data types exp(%d) got(%d)", len(exp), len(got)),
-		)
-	}
-
-	// ensure that all of the right data types have been submitted
-	sort.Strings(exp)
-	sort.Strings(got)
-	for i := range exp {
-		if exp[i] != got[i] {
+		if !allowedTypesMap[oracleData.Type()] {
 			return nil, sdkerrors.Wrap(
-				types.ErrWrongDataType,
-				fmt.Sprintf("exp(%s) got(%s)", exp[i], got[i]),
+				types.ErrUnsupportedDataType,
+				fmt.Sprintf("%s, allowed %v", oracleData.Type(), allowedDataTypes),
 			)
 		}
 	}

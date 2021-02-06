@@ -156,7 +156,7 @@ func (m *MsgOracleDataVote) ValidateBasic() error {
 			return sdkerrors.Wrap(ErrInvalidOracleData, err.Error())
 		}
 
-		if err = od.ValidateBasic(); err != nil {
+		if err = od.Validate(); err != nil {
 			return sdkerrors.Wrap(ErrInvalidOracleData, err.Error())
 		}
 	}

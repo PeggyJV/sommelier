@@ -6,19 +6,29 @@ import "gogoproto/gogo.proto";
 option go_package = "github.com/peggyjv/sommelier/x/oracle/types";
 
 
-// UniswapData is an implementation of OracleData
-message UniswapData {
-	repeated UniswapPair pairs = 1 [
-		(gogoproto.nullable) = false
-	];
-}
 
-// UniswapPair represents the necessary data for a uniswap pair
-message UniswapPair {
-    string        id           = 1 [(gogoproto.jsontag) = "id"];
-	string        reserve0     = 2 [(gogoproto.jsontag) = "reserve0"];
-	string        reserve1     = 3 [(gogoproto.jsontag) = "reserve1"];
-	string        reserve_usd  = 4 [(gogoproto.jsontag) = "reserveUSD"];
+
+// UniswapData represents the necessary data for a given uniswap pair.
+message UniswapData {
+	string        id   = 1;
+	string reserve0 = 2 [
+		(gogoproto.jsontag) = "reserve0",
+		(gogoproto.moretags)   = "yaml:\"reserve0\"",
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+    (gogoproto.nullable)   = false
+	];
+	string reserve1 = 3 [
+		(gogoproto.jsontag) = "reserve1",
+		(gogoproto.moretags)   = "yaml:\"reserve1\"",
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+    (gogoproto.nullable)   = false
+	];
+	string reserve_usd = 4 [
+		(gogoproto.moretags)   = "yaml:\"reserveUSD\"",
+		(gogoproto.jsontag) = "reserveUSD",
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+    (gogoproto.nullable)   = false
+  ];
 	UniswapToken  token0       = 5 [
 		(gogoproto.nullable) = false,
 		(gogoproto.jsontag) = "token0"
@@ -27,13 +37,30 @@ message UniswapPair {
 		(gogoproto.nullable) = false,
 		(gogoproto.jsontag) = "token1"
 	];
-	string        token0_price = 7 [(gogoproto.jsontag) = "token0Price"];
-	string        token1_price = 8 [(gogoproto.jsontag) = "token1Price"];
-	string        total_supply = 9 [(gogoproto.jsontag) = "totalSupply"];
+	string token0_price = 7 [
+		(gogoproto.jsontag) = "token0Price",
+		(gogoproto.moretags)   = "yaml:\"token0Price\"",
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+    (gogoproto.nullable)   = false
+	];
+	string token1_price = 8 [
+		(gogoproto.jsontag) = "token1Price",
+		(gogoproto.moretags)   = "yaml:\"token1Price\"",
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+    (gogoproto.nullable)   = false
+	];
+	string total_supply = 9 [
+		(gogoproto.jsontag) = "totalSupply",
+		(gogoproto.moretags)   = "yaml:\"totalSupply\"",
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+    (gogoproto.nullable)   = false
+	];
 }
 
 // UniswapToken is the returned uniswap token representation
 message UniswapToken {
-    string decimals = 1 [(gogoproto.jsontag) = "decimals"];
-    string id       = 2 [(gogoproto.jsontag) = "id"];
+		// TODO: what's the ID?
+		string id       = 1;
+		// number of decimal positions of the pair token
+		uint64 decimals = 2;
 }
