@@ -11,25 +11,15 @@ import (
 	"github.com/peggyjv/sommelier/x/oracle/types"
 )
 
-type msgServer struct {
-	Keeper
-}
-
-// NewMsgServerImpl returns an implementation of the oracle MsgServer interface
-// for the provided Keeper.
-func NewMsgServerImpl(keeper Keeper) types.MsgServer {
-	return &msgServer{Keeper: keeper}
-}
-
-var _ types.MsgServer = msgServer{}
+var _ types.MsgServer = Keeper{}
 
 // DelegateFeedConsent implements types.MsgServer
-func (k msgServer) DelegateFeedConsent(c context.Context, msg *types.MsgDelegateFeedConsent) (*types.MsgDelegateFeedConsentResponse, error) {
+func (k Keeper) DelegateFeedConsent(c context.Context, msg *types.MsgDelegateFeedConsent) (*types.MsgDelegateFeedConsentResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
 
 	val, del := msg.MustGetValidator(), msg.MustGetDelegate()
 
-	if k.Keeper.stakingKeeper.Validator(ctx, sdk.validatorAddress(val)) == nil {
+	if k.stakingKeeper.Validator(ctx, sdk.ValAddress(val)) == nil {
 		return nil, sdkerrors.Wrap(stakingtypes.ErrNoValidatorFound, val.String())
 	}
 
@@ -42,7 +32,7 @@ func (k msgServer) DelegateFeedConsent(c context.Context, msg *types.MsgDelegate
 			sdk.NewAttribute(sdk.AttributeKeyAction, types.EventTypeDelegateFeed),
 			sdk.NewAttribute(sdk.AttributeKeySender, msg.Validator),
 			sdk.NewAttribute(types.AttributeKeyValidator, msg.Validator),
-			sdk.NewAttribute(types.AttributeKeyDeleagte, msg.Delegate),
+			sdk.NewAttribute(types.AttributeKeyDeleagate, msg.Delegate),
 		),
 	)
 
@@ -50,50 +40,49 @@ func (k msgServer) DelegateFeedConsent(c context.Context, msg *types.MsgDelegate
 }
 
 // OracleDataPrevote implements types.MsgServer
-func (k msgServer) OracleDataPrevote(c context.Context, msg *types.MsgOracleDataPrevote) (*types.MsgOracleDataPrevoteResponse, error) {
+func (k Keeper) OracleDataPrevote(c context.Context, msg *types.MsgOracleDataPrevote) (*types.MsgOracleDataPrevoteResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
 
 	signer := msg.MustGetSigner()
 	validatorAddr := k.GetValidatorAddressFromDelegate(ctx, signer)
 	if validatorAddr == nil {
-		sval := k.Keeper.stakingKeeper.Validator(ctx, sdk.validatorAddress(signer))
-		if sval == nil {
+		validator := k.stakingKeeper.Validator(ctx, sdk.ValAddress(signer))
+		if validator == nil {
 			return nil, sdkerrors.Wrap(types.ErrUnknown, "validator")
 		}
 
-		validatorAddr = sdk.AccAddress(sval.GetOperator())
+		validatorAddr = sdk.AccAddress(validator.GetOperator())
 	}
 
 	k.SetOracleDataPrevote(ctx, validatorAddr, msg)
 
-	ctx.EventManager().EmitEvent(
-		sdk.NewEvent(
-			sdk.EventTypeMessage,
-			sdk.NewAttribute(sdk.AttributeKeyModule, types.AttributeValueCategory),
-		),
-	)
-
-	ctx.EventManager().EmitEvent(
-		sdk.NewEvent(
-			types.EventTypeOracleDataPrevote,
-			sdk.NewAttribute(types.AttributeKeySigner, signer.String()),
-			sdk.NewAttribute(types.AttributeKeyValidator, validatorAddr.String()),
-			sdk.NewAttribute(types.AttributeKeyHashes, fmt.Sprintf("%x", bytes.Join(msg.Hashes, []byte(",")))),
-		),
+	ctx.EventManager().EmitEvents(
+		sdk.Events{
+			sdk.NewEvent(
+				sdk.EventTypeMessage,
+				sdk.NewAttribute(sdk.AttributeKeyModule, types.AttributeValueCategory),
+			),
+			sdk.NewEvent(
+				types.EventTypeOracleDataPrevote,
+				sdk.NewAttribute(types.AttributeKeySigner, signer.String()),
+				sdk.NewAttribute(types.AttributeKeyValidator, validatorAddr.String()),
+				sdk.NewAttribute(types.AttributeKeyHashes, fmt.Sprintf("%x", bytes.Join(msg.Hashes, []byte(",")))),
+			),
+		},
 	)
 
 	return &types.MsgOracleDataPrevoteResponse{}, nil
 }
 
 // OracleDataVote implements types.MsgServer
-func (k msgServer) OracleDataVote(c context.Context, msg *types.MsgOracleDataVote) (*types.MsgOracleDataVoteResponse, error) {
+func (k Keeper) OracleDataVote(c context.Context, msg *types.MsgOracleDataVote) (*types.MsgOracleDataVoteResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
 
 	// Make sure that the message was properly signed
 	signer := msg.MustGetSigner()
 	validatorAddr := k.GetValidatorAddressFromDelegate(ctx, signer)
 	if validatorAddr == nil {
-		validator := k.Keeper.stakingKeeper.Validator(ctx, sdk.ValAddress(signer))
+		validator := k.stakingKeeper.Validator(ctx, sdk.ValAddress(signer))
 		if validator == nil {
 			return nil, sdkerrors.Wrap(types.ErrUnknown, "validator")
 		}
@@ -132,6 +121,15 @@ func (k msgServer) OracleDataVote(c context.Context, msg *types.MsgOracleDataVot
 		allowedTypesMap[allowedDataType] = true
 	}
 
+	oracleEvents := sdk.Events{
+		sdk.NewEvent(
+			sdk.EventTypeMessage,
+			sdk.NewAttribute(sdk.AttributeKeyModule, types.AttributeValueCategory),
+			sdk.NewAttribute(sdk.AttributeKeyAction, types.EventTypeOracleDataVote),
+			sdk.NewAttribute(sdk.AttributeKeySender, msg.Signer),
+		),
+	}
+
 	for i, oracleDataAny := range msg.OracleData {
 		salt := msg.Salt[i]
 
@@ -148,14 +146,17 @@ func (k msgServer) OracleDataVote(c context.Context, msg *types.MsgOracleDataVot
 			)
 		}
 
-		// ensure that the data parses
-		uniswapData, ok := oracleData.(*types.UniswapData)
-		if !ok {
-			return nil, sdkerrors.Wrap(types.ErrInvalidOracleData, "only uniswap data currently supported")
+		// parse data to json in order to compute the vote hash
+		jsonBz, err := oracleData.MarshalJSON()
+		if err != nil {
+			return nil, sdkerrors.Wrapf(
+				sdkerrors.ErrJSONMarshal,
+				"failed to marshal json for oracle data with id: %s", oracleData.GetID(),
+			)
 		}
 
 		// calculate the vote hash on the server
-		voteHash := types.DataHash(salt, uniswapData.CannonicalJSON(), validatorAddr)
+		voteHash := types.DataHash(salt, string(jsonBz), validatorAddr)
 
 		// compare to prevote hash
 		if !bytes.Equal(voteHash, prevote.Hashes[i]) {
@@ -164,21 +165,21 @@ func (k msgServer) OracleDataVote(c context.Context, msg *types.MsgOracleDataVot
 				fmt.Sprintf("precommit(%x) commit(%x)", prevote.Hashes[i], voteHash),
 			)
 		}
+
+		oracleEvents = append(
+			oracleEvents,
+			sdk.NewEvent(
+				types.EventTypeOracleDataVote,
+				sdk.NewAttribute(types.AttributeKeyOracleDataID, oracleData.GetID()),
+				sdk.NewAttribute(types.AttributeKeyOracleDataType, oracleData.Type()),
+				sdk.NewAttribute(types.AttributeKeyValidator, validatorAddr.String()),
+			),
+		)
 	}
 
 	// set the vote in the store
 	k.SetOracleDataVote(ctx, validatorAddr, msg)
-
-	ctx.EventManager().EmitEvent(
-		sdk.NewEvent(
-			sdk.EventTypeMessage,
-			sdk.NewAttribute(sdk.AttributeKeyModule, types.AttributeValueCategory),
-			sdk.NewAttribute(sdk.AttributeKeyAction, types.EventTypeOracleDataVote),
-			sdk.NewAttribute(sdk.AttributeKeySender, msg.Signer),
-			sdk.NewAttribute(types.AttributeKeyValidator, validatorAddr.String()),
-			// TODO: emit other data here?
-		),
-	)
+	ctx.EventManager().EmitEvents(oracleEvents)
 
 	return &types.MsgOracleDataVoteResponse{}, nil
 }
