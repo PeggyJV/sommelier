@@ -152,6 +152,13 @@ func (k Keeper) DeleteAllPrevotes(ctx sdk.Context) {
 	})
 }
 
+func (k Keeper) DeleteAllPrevotes(ctx sdk.Context) {
+	k.IterateOracleDataPrevotes(ctx, func(val sdk.AccAddress, _ *types.MsgOracleDataPrevote) bool {
+		k.DeleteOracleDataPrevote(ctx, val)
+		return false
+	})
+}
+
 // DeleteOracleDataPrevote deletes the prevote for a given validator
 // CONTRACT: must provide the validator address here not the delegate address
 func (k Keeper) DeleteOracleDataPrevote(ctx sdk.Context, val sdk.ValAddress) {
