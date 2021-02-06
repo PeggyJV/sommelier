@@ -27,6 +27,7 @@ func queryCmd() *cobra.Command {
 
 	cmd.AddCommand(
 		queryUniswapData(),
+		queryUniswapDataAlt(),
 		queryParams(),
 		queryDelegeateAddress(),
 		queryValidatorAddress(),
@@ -53,6 +54,36 @@ func queryUniswapData() *cobra.Command {
 			}
 
 			out, err := config.GetPairs(context.Background(), n, 0)
+			if err != nil {
+				log.Fatal(err)
+			}
+
+			bz, err := json.Marshal(out)
+			if err != nil {
+				log.Fatal(err)
+			}
+
+			fmt.Println(string(bz))
+			return nil
+		},
+	}
+	cmd.Flags().IntP("num-markets", "n", 5, "number of markets to query")
+	return cmd
+}
+
+func queryUniswapDataAlt() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:     "uniswap-data-alt",
+		Aliases: []string{"udd"},
+		Args:    cobra.NoArgs,
+		Short:   "queries uniswap data for the transactions",
+		RunE: func(cmd *cobra.Command, _ []string) error {
+			n, err := cmd.Flags().GetInt("num-markets")
+			if err != nil {
+				return err
+			}
+
+			out, err := config.GetPairsAlt(context.Background(), n, 0)
 			if err != nil {
 				log.Fatal(err)
 			}
@@ -386,6 +417,33 @@ func (c *Config) GetPairs(ctx context.Context, first, skip int) (*oracle.Uniswap
 	out := &oracle.UniswapData{}
 	err := c.graphClient.Run(ctx, req, out)
 	_, err = out.Parse()
+	return out, err
+}
+
+// GetPairsAlt returns the top N pairs from the Uniswap Subgraph
+func (c *Config) GetPairsAlt(ctx context.Context, first, skip int) (*oracle.UniswapDataAlt, error) {
+	req := graphql.NewRequest(fmt.Sprintf(`{ 
+		pairs(first: %d, skip: %d, orderBy: volumeUSD, orderDirection: desc) {
+			id
+			reserveUSD
+			totalSupply
+			reserve0
+			reserve1
+			token0Price
+			token1Price
+			token0 {
+				id
+				decimals
+			}
+			token1 {
+				id
+				decimals
+			}
+		}
+	}`, first, skip))
+	out := &oracle.UniswapDataAlt{}
+	err := c.graphClient.Run(ctx, req, out)
+	// _, err = out.Parse()
 	return out, err
 }
 
