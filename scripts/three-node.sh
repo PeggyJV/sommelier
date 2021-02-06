@@ -165,9 +165,9 @@ $SOM $home2 tx oracle delegate-feeder $($FED $home2 keys show feeder) $kbt --fro
 
 # Start the oracle feeders
 echo "Starting the oracle feeders..."
-$FED $home0 start > $hdir.fed0.log 2>&1 &
-$FED $home1 start > $hdir.fed1.log 2>&1 &
-$FED $home2 start > $hdir.fed2.log 2>&1 &
+$FED $home0 start --log-level debug > $hdir.fed0.log 2>&1 &
+$FED $home1 start --log-level debug > $hdir.fed1.log 2>&1 &
+$FED $home2 start --log-level debug > $hdir.fed2.log 2>&1 &
 echo
 echo "Logs:"
 echo "  - n0 'tail -f ./data/somm.n0.log'"

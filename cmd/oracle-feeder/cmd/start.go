@@ -235,15 +235,14 @@ func genrandstr(s int) string {
 // stopLoop waits for a SIGINT or SIGTERM and returns an error
 func stopLoop(ctx context.Context, cancel context.CancelFunc) error {
 	sigCh := make(chan os.Signal, 1)
+	defer close(sigCh)
 	signal.Notify(sigCh, syscall.SIGINT, syscall.SIGTERM)
 	for {
 		select {
 		case sig := <-sigCh:
-			close(sigCh)
 			cancel()
 			return fmt.Errorf("Exiting feeder loop, recieved stop signal(%s)", sig.String())
 		case <-ctx.Done():
-			close(sigCh)
 			return nil
 		}
 	}
