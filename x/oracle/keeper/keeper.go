@@ -17,6 +17,9 @@ type Keeper struct {
 	cdc           codec.BinaryMarshaler
 	paramSpace    paramtypes.Subspace
 	stakingKeeper types.StakingKeeper
+
+	oracleHandler types.OracleHandler
+	handlerSet    bool
 }
 
 // NewKeeper creates a new distribution Keeper instance
@@ -41,6 +44,17 @@ func NewKeeper(
 // Logger returns a module-specific logger.
 func (k Keeper) Logger(ctx sdk.Context) log.Logger {
 	return ctx.Logger().With("module", "x/"+types.ModuleName)
+}
+
+// SetHandler sets the oracle handler into the keeper's fields. It will panic
+// if the handler is already set.
+func (k Keeper) SetHandler(handlerFn types.OracleHandler) {
+	if k.handlerSet {
+		panic("oracle handler is already set")
+	}
+
+	k.oracleHandler = handlerFn
+	k.handlerSet = true
 }
 
 ////////////////////////
@@ -192,37 +206,54 @@ func (k Keeper) IterateOracleDataVotes(ctx sdk.Context, handler func(val sdk.Acc
 // OracleData //
 ////////////////
 
-// SetOracleData sets the oracle data in the store
-func (k Keeper) SetOracleData(ctx sdk.Context, od types.OracleData) {
-	switch data := od.(type) {
-	case *types.UniswapData:
-		ctx.KVStore(k.storeKey).Set(types.GetOracleDataKey(od.Type()), k.cdc.MustMarshalBinaryBare(data))
-	default:
-		panic("NOT HERE")
+// GetOracleDataType gets oracle data stored for a given type
+func (k Keeper) GetOracleDataType(ctx sdk.Context, id string) (string, bool) {
+	store := ctx.KVStore(k.storeKey)
+	bz := store.Get(types.GetOracleDataTypeKey(id))
+	if len(bz) == 0 {
+		return "", false
 	}
+
+	return string(bz), true
+}
+
+// SetOracleDataType sets oracle data type associated with a given data identifier
+func (k Keeper) SetOracleDataType(ctx sdk.Context, dataType, id string) {
+	store := ctx.KVStore(k.storeKey)
+	store.Set(types.GetOracleDataTypeKey(id), []byte(dataType))
+}
+
+// SetOracleData sets the oracle data in the store
+func (k Keeper) SetOracleData(ctx sdk.Context, oracleData types.OracleData) {
+	bz, err := k.cdc.MarshalInterface(oracleData)
+	if err != nil {
+		panic(err)
+	}
+
+	ctx.KVStore(k.storeKey).Set(types.GetOracleDataKey(oracleData.Type(), oracleData.GetID()), bz)
 }
 
 // GetOracleData gets oracle data stored for a given type
-func (k Keeper) GetOracleData(ctx sdk.Context, typ string) types.OracleData {
-	switch typ {
-	case types.UniswapDataType:
-		var data types.UniswapData
-		k.cdc.MustUnmarshalBinaryBare(ctx.KVStore(k.storeKey).Get(types.GetOracleDataKey(typ)), &data)
-		return &data
-	default:
-		k.Logger(ctx).Info("data type not supported")
-		return nil
+func (k Keeper) GetOracleData(ctx sdk.Context, dataType, id string) (types.OracleData, bool) {
+	store := ctx.KVStore(k.storeKey)
+	bz := store.Get(types.GetOracleDataKey(dataType, id))
+	if len(bz) == 0 {
+		return nil, false
 	}
+
+	var oracleData types.OracleData
+	k.cdc.UnmarshalInterface(bz, &oracleData)
+	return oracleData, true
 }
 
 // DeleteOracleData deletes the data from the oracle of a given type
-func (k Keeper) DeleteOracleData(ctx sdk.Context, typ string) {
-	ctx.KVStore(k.storeKey).Delete(types.GetOracleDataKey(typ))
+func (k Keeper) DeleteOracleData(ctx sdk.Context, dataType, id string) {
+	ctx.KVStore(k.storeKey).Delete(types.GetOracleDataKey(dataType, id))
 }
 
 // HasOracleData returns true if a given type exists in the store
-func (k Keeper) HasOracleData(ctx sdk.Context, typ string) bool {
-	return ctx.KVStore(k.storeKey).Has(types.GetOracleDataKey(typ))
+func (k Keeper) HasOracleData(ctx sdk.Context, dataType, id string) bool {
+	return ctx.KVStore(k.storeKey).Has(types.GetOracleDataKey(dataType, id))
 }
 
 ////////////////
@@ -231,14 +262,19 @@ func (k Keeper) HasOracleData(ctx sdk.Context, typ string) bool {
 
 // SetVotePeriodStart sets the vote period start height
 func (k Keeper) SetVotePeriodStart(ctx sdk.Context, h int64) {
-	bz := make([]byte, 8)
-	binary.BigEndian.PutUint64(bz, uint64(h))
-	ctx.KVStore(k.storeKey).Set(types.VotePeriodStartKey, bz)
+	store := ctx.KVStore(k.storeKey)
+	store.Set(types.VotePeriodStartKey, sdk.Uint64ToBigEndian(uint64(h)))
 }
 
 // GetVotePeriodStart returns the vote period start height
-func (k Keeper) GetVotePeriodStart(ctx sdk.Context) int64 {
-	return int64(binary.BigEndian.Uint64(ctx.KVStore(k.storeKey).Get(types.VotePeriodStartKey)))
+func (k Keeper) GetVotePeriodStart(ctx sdk.Context) (int64, bool) {
+	store := ctx.KVStore(k.storeKey)
+	bz := store.Get(types.VotePeriodStartKey)
+	if len(bz) == 0 {
+		return 0, false
+	}
+
+	return int64(sdk.BigEndianToUint64(bz)), true
 }
 
 // HasVotePeriodStart returns true if the vote period start has been set

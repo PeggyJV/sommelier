@@ -305,7 +305,11 @@ func NewSommelierApp(
 
 	app.OracleKeeper = oraclekeeper.NewKeeper(
 		appCodec, keys[oracletypes.StoreKey], app.GetSubspace(oracletypes.ModuleName),
-		app.StakingKeeper)
+		app.StakingKeeper,
+	)
+
+	// set the oracle handler for sommelier logic
+	app.OracleKeeper.SetHandler(app.OracleKeeper.DefaultOracleHandler())
 
 	// Create static IBC router, add transfer route, then set and seal it
 	ibcRouter := porttypes.NewRouter()

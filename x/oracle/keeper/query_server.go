@@ -128,8 +128,8 @@ func (k Keeper) OracleData(c context.Context, req *types.QueryOracleDataRequest)
 
 	ctx := sdk.UnwrapSDKContext(c)
 
-	oracleData := k.GetOracleData(ctx, req.Type)
-	if oracleData == nil {
+	oracleData, found := k.GetOracleData(ctx, req.Type, "") // TODO: query by id
+	if !found {
 		return nil, status.Errorf(codes.NotFound, "data type %s", req.Type)
 	}
 
@@ -153,11 +153,14 @@ func (k Keeper) QueryParams(c context.Context, _ *types.QueryParamsRequest) (*ty
 // QueryVotePeriod implements QueryServer
 func (k Keeper) QueryVotePeriod(c context.Context, _ *types.QueryVotePeriodRequest) (*types.VotePeriod, error) {
 	ctx := sdk.UnwrapSDKContext(c)
-	vps := k.GetVotePeriodStart(ctx)
+	votePeriodStart, found := k.GetVotePeriodStart(ctx)
+	if !found {
+		return nil, status.Error(codes.NotFound, "vote period start not set")
+	}
 
 	return &types.VotePeriod{
-		VotePeriodStart: vps,
-		VotePeriodEnd:   vps + k.GetParamSet(ctx).VotePeriod,
+		VotePeriodStart: votePeriodStart,
+		VotePeriodEnd:   votePeriodStart + k.GetParamSet(ctx).VotePeriod,
 		CurrentHeight:   ctx.BlockHeight(),
 	}, nil
 }

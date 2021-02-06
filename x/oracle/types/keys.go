@@ -1,6 +1,10 @@
 package types
 
-import sdk "github.com/cosmos/cosmos-sdk/types"
+import (
+	"crypto/sha256"
+
+	sdk "github.com/cosmos/cosmos-sdk/types"
+)
 
 const (
 	// ModuleName is the module name constant used in many places
@@ -18,23 +22,26 @@ const (
 
 // Keys for oracle store, with <prefix><key> -> <value>
 var (
-	// - 0x00<oracle_date_type> -> <OracleData>
-	OracleDataKeyPrefix = []byte{0x00} // key for oracle state data
+	// - 0x01<oracle_data_type_hash><oracle_data_id> -> <OracleData>
+	OracleDataKeyPrefix = []byte{0x01} // key for oracle state data
 
-	// - 0x01<val_address> -> <delegate_address>
-	FeedDelegateKeyPrefix = []byte{0x01} // key for validator feed delegation
+	// - 0x02<oracle_data_id> -> <oracle_data_type>
+	OracleDataTypeKeyPrefix = []byte{0x02} //
 
-	// - 0x02<val_address> -> <[]hashes>
-	OracleDataPrevoteKeyPrefix = []byte{0x02} // key for oracle prevotes
+	// - 0x03<val_address> -> <delegate_address>
+	FeedDelegateKeyPrefix = []byte{0x03} // key for validator feed delegation
 
-	// - 0x03<val_address> -> <oracle_data_vote>
-	OracleDataVoteKeyPrefix = []byte{0x03} // key for oracle votes
+	// - 0x04<val_address> -> <[]hashes>
+	OracleDataPrevoteKeyPrefix = []byte{0x04} // key for oracle prevotes
 
-	// - 0x04 -> int64(height)
-	VotePeriodStartKey = []byte{0x04} // key for vote period height start
+	// - 0x05<val_address> -> <oracle_data_vote>
+	OracleDataVoteKeyPrefix = []byte{0x05} // key for oracle votes
 
-	// - 0x05<val_address> -> int64(misses)
-	MissCounterKeyPrefix = []byte{0x05} // key for validator miss counters
+	// - 0x06 -> int64(height)
+	VotePeriodStartKey = []byte{0x06} // key for vote period height start
+
+	// - 0x07<val_address> -> int64(misses)
+	MissCounterKeyPrefix = []byte{0x07} // key for validator miss counters
 )
 
 // GetFeedDelegateKey returns the validator for a given delegate key
@@ -53,8 +60,15 @@ func GetOracleDataVoteKey(val sdk.AccAddress) []byte {
 }
 
 // GetOracleDataKey returns the key for the stored oracle data
-func GetOracleDataKey(typ string) []byte {
-	return append(OracleDataKeyPrefix, []byte(typ)...)
+func GetOracleDataKey(dataType, id string) []byte {
+	dataTypeHash := sha256.Sum256([]byte(dataType))
+	key := append(OracleDataKeyPrefix, dataTypeHash[:]...)
+	return append(key, []byte(id)...)
+}
+
+// GetOracleDataTypeKey returns the key for the stored oracle data type
+func GetOracleDataTypeKey(id string) []byte {
+	return append(OracleDataTypeKeyPrefix, []byte(id)...)
 }
 
 // GetMissCounterKey returns the key for the stored miss counter for a given validator

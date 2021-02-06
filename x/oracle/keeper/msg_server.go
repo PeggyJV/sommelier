@@ -5,9 +5,11 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/cosmos/cosmos-sdk/telemetry"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
+
 	"github.com/peggyjv/sommelier/x/oracle/types"
 )
 
@@ -70,6 +72,10 @@ func (k Keeper) OracleDataPrevote(c context.Context, msg *types.MsgOracleDataPre
 			),
 		},
 	)
+
+	defer func() {
+		telemetry.IncrCounter(1, types.ModuleName, "prevote")
+	}()
 
 	return &types.MsgOracleDataPrevoteResponse{}, nil
 }
@@ -180,6 +186,10 @@ func (k Keeper) OracleDataVote(c context.Context, msg *types.MsgOracleDataVote) 
 	// set the vote in the store
 	k.SetOracleDataVote(ctx, validatorAddr, msg)
 	ctx.EventManager().EmitEvents(oracleEvents)
+
+	defer func() {
+		telemetry.IncrCounter(1, types.ModuleName, "vote")
+	}()
 
 	return &types.MsgOracleDataVoteResponse{}, nil
 }
