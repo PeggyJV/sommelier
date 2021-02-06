@@ -179,7 +179,25 @@ func (m *MsgOracleDataVote) ValidateBasic() error {
 	if _, err := sdk.AccAddressFromBech32(m.Signer); err != nil {
 		return sdkerrors.Wrap(sdkerrors.ErrInvalidAddress, err.Error())
 	}
-	return m.Vote.Validate()
+
+	for _, a := range m.OracleData {
+		od, err := UnpackOracleData(a)
+		if err != nil {
+			return sdkerrors.Wrap(ErrInvalidOracleData, err.Error())
+		}
+
+		if err = od.Validate(); err != nil {
+			return sdkerrors.Wrap(ErrInvalidOracleData, err.Error())
+		}
+	}
+
+	for i, salt := range m.Salt {
+		if strings.TrimSpace(salt) == "" {
+			return fmt.Errorf("salt string at index %d cannot be blank", i)
+		}
+	}
+
+	return nil
 }
 
 // GetSignBytes implements sdk.Msg

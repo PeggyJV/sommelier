@@ -3,7 +3,7 @@ package keeper
 import (
 	"bytes"
 	"context"
-	"encoding/json"
+	"fmt"
 
 	"github.com/cosmos/cosmos-sdk/telemetry"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -68,6 +68,9 @@ func (k Keeper) OracleDataPrevote(c context.Context, msg *types.MsgOracleDataPre
 		if validator == nil {
 			return nil, sdkerrors.Wrap(stakingtypes.ErrNoValidatorFound, sdk.ValAddress(signer).String())
 		}
+
+		valaddr = sdk.AccAddress(sval.GetOperator())
+	}
 
 		validatorAddr = validator.GetOperator()
 		// NOTE: we set the validator address so we don't have to call look up for the validator
@@ -159,44 +162,45 @@ func (k Keeper) OracleDataVote(c context.Context, msg *types.MsgOracleDataVote) 
 		)
 	}
 
-	jsonBz = sdk.MustSortJSON(jsonBz)
+	allowedTypesMap := make(map[string]bool)
+	allowedDataTypes := k.GetParamSet(ctx).DataTypes
 
-	// calculate the vote hash on the server
-	voteHash := types.DataHash(msg.Vote.Salt, string(jsonBz), validatorAddr)
-
-	// compare to prevote hash
-	if !bytes.Equal(voteHash, prevote.Hash) {
-		return nil, sdkerrors.Wrapf(
-			types.ErrHashMismatch,
-			"precommit %x ≠ commit %x", prevote.Hash, voteHash,
-		)
+	for _, allowedDataType := range allowedDataTypes {
+		allowedTypesMap[allowedDataType] = true
 	}
 
-	for _, oracleData := range msg.Vote.Feed.Data {
+	for i, oracleDataAny := range msg.OracleData {
+		salt := msg.Salt[i]
+
 		// unpack the oracle data one by one
-		// oracleData, err := types.UnpackOracleData(oracleDataAny)
-		// if err != nil {
-		// 	return nil, sdkerrors.Wrapf(types.ErrUnpackOracleData, "index %d", i)
-		// }
+		oracleData, err := types.UnpackOracleData(oracleDataAny)
+		if err != nil {
+			return nil, sdkerrors.Wrap(types.ErrUnpackOracleData, fmt.Sprintf("index %d", i))
+		}
 
-		// if !allowedTypesMap[oracleData.Type()] {
-		// 	return nil, sdkerrors.Wrapf(
-		// 		types.ErrUnsupportedDataType,
-		// 		"%s, allowed %v", oracleData.Type(), allowedDataTypes,
-		// 	)
-		// }
+		// ensure that the data parses
+		uniswapData, ok := oracleData.(*types.UniswapData)
+		if !ok {
+			return nil, sdkerrors.Wrap(types.ErrInvalidOracleData, "only uniswap data currently supported")
+		}
 
-		k.SetOracleData(ctx, oracleData)
+		// calculate the vote hash on the server
+		voteHash := types.DataHash(salt, uniswapData.CannonicalJSON(), valaddr)
 
-		oracleEvents = append(
-			oracleEvents,
-			sdk.NewEvent(
-				types.EventTypeOracleDataVote,
-				sdk.NewAttribute(types.AttributeKeyOracleDataID, oracleData.GetID()),
-				sdk.NewAttribute(types.AttributeKeyOracleDataType, oracleData.Type()),
-				sdk.NewAttribute(types.AttributeKeyValidator, validatorAddr.String()),
-			),
-		)
+		// compare to prevote hash
+		if !bytes.Equal(voteHash, prevote.Hashes[i]) {
+			return nil, sdkerrors.Wrap(
+				types.ErrHashMismatch,
+				fmt.Sprintf("precommit(%x) commit(%x)", prevote.Hashes[i], voteHash),
+			)
+		}
+
+		if !allowedTypesMap[oracleData.Type()] {
+			return nil, sdkerrors.Wrap(
+				types.ErrUnsupportedDataType,
+				fmt.Sprintf("%s, allowed %v", oracleData.Type(), allowedDataTypes),
+			)
+		}
 	}
 
 	// set the vote in the store
