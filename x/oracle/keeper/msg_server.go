@@ -87,6 +87,10 @@ func (k Keeper) OracleDataPrevote(c context.Context, msg *types.MsgOracleDataPre
 		},
 	)
 
+	defer func() {
+		telemetry.IncrCounter(1, types.ModuleName, "prevote")
+	}()
+
 	return &types.MsgOracleDataPrevoteResponse{}, nil
 }
 
@@ -206,6 +210,10 @@ func (k Keeper) OracleDataVote(c context.Context, msg *types.MsgOracleDataVote) 
 	// set the vote in the store
 	k.SetOracleDataVote(ctx, validatorAddr, msg)
 	ctx.EventManager().EmitEvents(oracleEvents)
+
+	defer func() {
+		telemetry.IncrCounter(1, types.ModuleName, "vote")
+	}()
 
 	return &types.MsgOracleDataVoteResponse{}, nil
 }

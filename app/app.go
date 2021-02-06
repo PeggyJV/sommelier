@@ -329,6 +329,9 @@ func NewSommelierApp(
 		app.StakingKeeper,
 	)
 
+	// set the oracle handler for sommelier logic
+	app.OracleKeeper.SetHandler(app.OracleKeeper.DefaultOracleHandler())
+
 	app.ILKeeper = ilkeeper.NewKeeper(
 		appCodec, keys[iltypes.StoreKey], app.GetSubspace(iltypes.ModuleName), app.OracleKeeper, app.EthBridgeKeeper,
 	)

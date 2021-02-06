@@ -48,7 +48,7 @@ func (k Keeper) Logger(ctx sdk.Context) log.Logger {
 
 // SetHandler sets the oracle handler into the keeper's fields. It will panic
 // if the handler is already set.
-func (k *Keeper) SetHandler(handlerFn types.OracleHandler) {
+func (k Keeper) SetHandler(handlerFn types.OracleHandler) {
 	if k.handlerSet {
 		panic("oracle handler is already set")
 	}
@@ -273,18 +273,6 @@ func (k Keeper) SetOracleData(ctx sdk.Context, oracleData types.OracleData) {
 	ctx.KVStore(k.storeKey).Set(types.GetOracleDataKey(oracleData.Type(), oracleData.GetID()), bz)
 }
 
-// SetAggregatedOracleData sets the aggregated oracle data in the store by height, type and id
-func (k Keeper) SetAggregatedOracleData(ctx sdk.Context, oracleData types.OracleData) {
-	bz, err := k.cdc.MarshalInterface(oracleData)
-	if err != nil {
-		panic(err)
-	}
-
-	key := types.GetAggregatedOracleDataKey(oracleData.Type(), oracleData.GetID(), uint64(ctx.BlockHeight()))
-
-	ctx.KVStore(k.storeKey).Set(key, bz)
-}
-
 // GetOracleData gets oracle data stored for a given type
 func (k Keeper) GetOracleData(ctx sdk.Context, dataType, id string) (types.OracleData, bool) {
 	store := ctx.KVStore(k.storeKey)
@@ -312,10 +300,10 @@ func (k Keeper) HasOracleData(ctx sdk.Context, dataType, id string) bool {
 // VotePeriod //
 ////////////////
 
-// SetVotePeriodStart sets the current vote period start height
-func (k Keeper) SetVotePeriodStart(ctx sdk.Context, height int64) {
+// SetVotePeriodStart sets the vote period start height
+func (k Keeper) SetVotePeriodStart(ctx sdk.Context, h int64) {
 	store := ctx.KVStore(k.storeKey)
-	store.Set(types.VotePeriodStartKey, sdk.Uint64ToBigEndian(uint64(height)))
+	store.Set(types.VotePeriodStartKey, sdk.Uint64ToBigEndian(uint64(h)))
 }
 
 // GetVotePeriodStart returns the vote period start height

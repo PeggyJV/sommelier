@@ -19,11 +19,9 @@ var _ OracleData = &UniswapData{}
 // UniswapDataType defines the data type for a uniswap pair oracle data
 const UniswapDataType = "uniswap"
 
-// UniswapDataType defines the data type for a uniswap pair oracle data
-const UniswapDataType = "uniswap"
-
-// DataHashes defines an array of bytes in hex format.
-type DataHashes []tmbytes.HexBytes
+// OracleHandler defines a type that is passed to the oracle keeper to archive custom handling of
+// oracle data processing.
+type OracleHandler func(ctx sdk.Context, oracleDataInput []OracleData) error
 
 // OracleData represents a data type that is supported by the oracle
 type OracleData interface {

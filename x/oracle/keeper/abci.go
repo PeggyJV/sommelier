@@ -12,25 +12,28 @@ import (
 // BeginBlocker is called at the beginning of every block
 func (k Keeper) BeginBlocker(ctx sdk.Context) {
 	// if there is not a vote period set, initialize it with current block height
-	if !k.HasVotePeriodStart(ctx) {
-		k.SetVotePeriodStart(ctx, ctx.BlockHeight())
+	votePeriodStart, found := k.GetVotePeriodStart(ctx)
+	if !found {
+		votePeriodStart = ctx.BlockHeight()
+		k.SetVotePeriodStart(ctx, votePeriodStart)
+		k.Logger(ctx).Info("vote period set", "height", fmt.Sprintf("%d", votePeriodStart))
 	}
 
 	// On begin block, if we are tallying, emit the new vote period data
 	params := k.GetParamSet(ctx)
-	vp, found := k.GetVotePeriodStart(ctx)
-	if !found {
-		panic("VOTE PERIOD NOT SET SHOULDN'T HAPPEN")
+	periodEnded := (ctx.BlockHeight() - votePeriodStart) >= params.VotePeriod
+	if !periodEnded {
+		// voting period still running
+		return
 	}
-	if (ctx.BlockHeight() - vp) >= params.VotePeriod {
-		ctx.EventManager().EmitEvent(
-			sdk.NewEvent(
-				types.EventTypeVotePeriod,
-				sdk.NewAttribute(types.AttributeKeyVotePeriodStart, fmt.Sprintf("%d", ctx.BlockHeight())),
-				sdk.NewAttribute(types.AttributeKeyVotePeriodEnd, fmt.Sprintf("%d", ctx.BlockHeight()+params.VotePeriod)),
-			),
-		)
-	}
+
+	ctx.EventManager().EmitEvent(
+		sdk.NewEvent(
+			types.EventTypeVotePeriod,
+			sdk.NewAttribute(types.AttributeKeyVotePeriodStart, fmt.Sprintf("%d", votePeriodStart)),
+			sdk.NewAttribute(types.AttributeKeyVotePeriodEnd, fmt.Sprintf("%d", votePeriodStart+params.VotePeriod)),
+		),
+	)
 }
 
 // EndBlocker defines the oracle logic that executes at the end of every block:
@@ -54,8 +57,13 @@ func (k Keeper) BeginBlocker(ctx sdk.Context) {
 // 7) Sets the new voting period to the next block
 func (k Keeper) EndBlocker(ctx sdk.Context) {
 	params := k.GetParamSet(ctx)
+	votePeriodStart, found := k.GetVotePeriodStart(ctx)
+	if !found {
+		panic("vote period start not set")
+	}
+
 	// if the vote period has ended, tally the votes
-	periodEnded := (ctx.BlockHeight() - k.GetVotePeriodStart(ctx)) >= params.VotePeriod
+	periodEnded := (ctx.BlockHeight() - votePeriodStart) >= params.VotePeriod
 	if !periodEnded {
 		return
 	}
@@ -134,9 +142,10 @@ func (k Keeper) EndBlocker(ctx sdk.Context) {
 	// compute the averages for each type of data tracked by the oracle
 	for dataType, oracleDatas := range oracleDataByTypeMap {
 		// first, lets delete the old data
-		k.DeleteOracleData(ctx, dataType)
+		k.DeleteOracleData(ctx, dataType, oracleDatas)
 
 		// then we compute the average/target for the given data type
+
 		averageFn, err := types.GetAverageFunction(dataType)
 		if err != nil {
 			continue
