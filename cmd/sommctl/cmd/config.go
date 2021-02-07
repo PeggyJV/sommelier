@@ -189,7 +189,7 @@ func defaultConfig() []byte {
 		ETHRPCAddr:  "https://eth-goerli.alchemyapi.io/v2/vvvb-ZvZY_CX6D8ZwvMV8VH7E6vCGAbY",
 		ETHWSAddr:   "wss://eth-goerli.ws.alchemyapi.io/v2/vvvb-ZvZY_CX6D8ZwvMV8VH7E6vCGAbY",
 		GraphAddr:   "https://api.thegraph.com/",
-		GravityAddr: "0xf74a5ca65e4552cff0f13b116113ccb493c580c5", // Mysterium token on goerli
+		GravityAddr: "0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D", // uniswap router
 		SommGRPC:    "http://localhost:9090",
 		SommRPC:     "http://localhost:26657",
 		ChainID:     "somm",

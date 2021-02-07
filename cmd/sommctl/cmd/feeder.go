@@ -30,7 +30,7 @@ var (
 
 func startOracleFeederCmd() *cobra.Command {
 	return &cobra.Command{
-		Use:     "start",
+		Use:     "start-oracle-feeder",
 		Aliases: []string{"feed"},
 		Short:   "feeds the oracle with new uniswap data",
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -58,8 +58,8 @@ func startOracleFeederCmd() *cobra.Command {
 	}
 }
 
-// Coordinator helps coordinate feeding of the oracle
-type Coordinator struct {
+// OracleCoordinator helps coordinate feeding of the oracle
+type OracleCoordinator struct {
 	Ctx  client.Context
 	UD   *oracle.UniswapData
 	Addr sdk.AccAddress
@@ -72,7 +72,7 @@ type Coordinator struct {
 	sync.Mutex
 }
 
-func (c *Coordinator) handleTx(txEvent ctypes.ResultEvent) error {
+func (c *OracleCoordinator) handleTx(txEvent ctypes.ResultEvent) error {
 	tx, ok := txEvent.Data.(tmtypes.EventDataTx)
 	if !ok {
 		return fmt.Errorf("tx event not tx data")
@@ -95,7 +95,7 @@ func (c *Coordinator) handleTx(txEvent ctypes.ResultEvent) error {
 	return nil
 }
 
-func (c *Coordinator) handleBlock(blockEvent ctypes.ResultEvent) error {
+func (c *OracleCoordinator) handleBlock(blockEvent ctypes.ResultEvent) error {
 	bl, ok := blockEvent.Data.(tmtypes.EventDataNewBlock)
 	if !ok {
 		return fmt.Errorf("block event not block data")
@@ -118,7 +118,7 @@ func (c *Coordinator) handleBlock(blockEvent ctypes.ResultEvent) error {
 }
 
 // SubmitOracleDataVote is called to send the vote
-func (c *Coordinator) SubmitOracleDataVote() (err error) {
+func (c *OracleCoordinator) SubmitOracleDataVote() (err error) {
 	od, err := oracle.PackOracleData(c.UD)
 	if err != nil {
 		return
@@ -131,7 +131,7 @@ func (c *Coordinator) SubmitOracleDataVote() (err error) {
 }
 
 // SubmitOracleDataPrevote is called to send the prevote
-func (c *Coordinator) SubmitOracleDataPrevote() error {
+func (c *OracleCoordinator) SubmitOracleDataPrevote() error {
 	ud, err := config.GetPairs(context.Background(), 100, 0)
 	if err != nil {
 		return err
@@ -144,7 +144,7 @@ func (c *Coordinator) SubmitOracleDataPrevote() error {
 }
 
 // BroadcastTxSomm broadcasts a transaction from the oracle
-func (c Config) BroadcastTxSomm(ctx client.Context, coord *Coordinator, msgs ...sdk.Msg) error {
+func (c Config) BroadcastTxSomm(ctx client.Context, coord *OracleCoordinator, msgs ...sdk.Msg) error {
 	ctx = ctx.WithFromAddress(coord.Addr)
 	return tx.BroadcastTx(ctx, c.TxFactory(ctx), msgs...)
 }
@@ -167,7 +167,7 @@ func (c Config) OracleFeederLoop(goctx context.Context, cancel context.CancelFun
 	var (
 		txEventsChan, blEventsChan <-chan ctypes.ResultEvent
 		txCancel, blCancel         context.CancelFunc
-		coord                      = &Coordinator{Ctx: ctx}
+		coord                      = &OracleCoordinator{Ctx: ctx}
 	)
 	defer cancel()
 	key, err := ctx.Keyring.Key(config.SommKey)
