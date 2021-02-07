@@ -6,6 +6,7 @@ require (
 	github.com/althea-net/peggy/module v0.0.0-20210203002914-cfbd0532ece0
 	github.com/cosmos/cosmos-sdk v0.41.0
 	github.com/cosmos/go-bip39 v1.0.0
+	github.com/ethereum/go-ethereum v1.9.25
 	github.com/gogo/protobuf v1.3.3
 	github.com/golang/protobuf v1.4.3
 	github.com/google/gofuzz v1.1.1-0.20200604201612-c04b05f3adfa // indirect
