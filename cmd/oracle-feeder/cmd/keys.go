@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/crypto/hd"
 	cryptokeyring "github.com/cosmos/cosmos-sdk/crypto/keyring"
 	"github.com/cosmos/go-bip39"
@@ -45,7 +44,10 @@ func keysAddCmd() *cobra.Command {
 		Short:   "adds a key to the keychain",
 		Args:    cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			ctx := client.GetClientContextFromCmd(cmd)
+			ctx, err := config.GetClientContext(cmd)
+			if err != nil {
+				return err
+			}
 			mnemonic, err := CreateMnemonic()
 			if err != nil {
 				return err
@@ -86,7 +88,10 @@ func keysRestoreCmd() *cobra.Command {
 		Short:   "restores a mnemonic to the keychain",
 		Args:    cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			ctx := client.GetClientContextFromCmd(cmd)
+			ctx, err := config.GetClientContext(cmd)
+			if err != nil {
+				return err
+			}
 			coinType, _ := cmd.Flags().GetUint32(flagCoinType)
 			info, err := ctx.Keyring.NewAccount(
 				args[0], args[1], "",
@@ -113,7 +118,10 @@ func keysDeleteCmd() *cobra.Command {
 		Short:   "deletes a key from the keychain",
 		Args:    cobra.RangeArgs(1, 2),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			ctx := client.GetClientContextFromCmd(cmd)
+			ctx, err := config.GetClientContext(cmd)
+			if err != nil {
+				return err
+			}
 			if err := ctx.Keyring.Delete(args[0]); err != nil {
 				return err
 			}
@@ -134,7 +142,10 @@ func keysListCmd() *cobra.Command {
 		Short:   "lists keys from the keychain associated with a particular chain",
 		Args:    cobra.NoArgs,
 		RunE: func(cmd *cobra.Command, _ []string) error {
-			ctx := client.GetClientContextFromCmd(cmd)
+			ctx, err := config.GetClientContext(cmd)
+			if err != nil {
+				return err
+			}
 			infos, err := ctx.Keyring.List()
 			if err != nil {
 				return err
@@ -165,7 +176,10 @@ func keysShowCmd() *cobra.Command {
 		Short:   "shows a key from the keychain",
 		Args:    cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			ctx := client.GetClientContextFromCmd(cmd)
+			ctx, err := config.GetClientContext(cmd)
+			if err != nil {
+				return err
+			}
 			info, err := ctx.Keyring.Key(args[0])
 			if err != nil {
 				return err

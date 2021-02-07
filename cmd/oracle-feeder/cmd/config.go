@@ -12,6 +12,7 @@ import (
 	"github.com/machinebox/graphql"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
+	tmlog "github.com/tendermint/tendermint/libs/log"
 	rpchttp "github.com/tendermint/tendermint/rpc/client/http"
 	ctypes "github.com/tendermint/tendermint/rpc/core/types"
 	libclient "github.com/tendermint/tendermint/rpc/jsonrpc/client"
@@ -41,10 +42,14 @@ func configShowCmd() *cobra.Command {
 		Aliases: []string{"s", "list", "l"},
 		Short:   "Prints current configuration",
 		RunE: func(cmd *cobra.Command, args []string) error {
-			cfgPath := path.Join(FeederHome, "config.yaml")
+			home, err := cmd.Flags().GetString("home")
+			if err != nil {
+				return err
+			}
+			cfgPath := path.Join(home, "config.yaml")
 			if _, err := os.Stat(cfgPath); os.IsNotExist(err) {
-				if _, err := os.Stat(FeederHome); os.IsNotExist(err) {
-					return fmt.Errorf("home path does not exist: %s", FeederHome)
+				if _, err := os.Stat(home); os.IsNotExist(err) {
+					return fmt.Errorf("home path does not exist: %s", home)
 				}
 				return fmt.Errorf("config does not exist: %s", cfgPath)
 			}
@@ -69,15 +74,19 @@ func configInitCmd() *cobra.Command {
 		Aliases: []string{"i"},
 		Short:   "Creates a default home directory at path defined by --home",
 		RunE: func(cmd *cobra.Command, args []string) error {
-			cfgPath := path.Join(FeederHome, "config.yaml")
+			home, err := cmd.Flags().GetString("home")
+			if err != nil {
+				return err
+			}
+			cfgPath := path.Join(home, "config.yaml")
 
 			// If the config doesn't exist...
 			if _, err := os.Stat(cfgPath); os.IsNotExist(err) {
 				// And the config folder doesn't exist...
 				// And the home folder doesn't exist
-				if _, err := os.Stat(FeederHome); os.IsNotExist(err) {
+				if _, err := os.Stat(home); os.IsNotExist(err) {
 					// Create the home folder
-					if err = os.Mkdir(FeederHome, os.ModePerm); err != nil {
+					if err = os.Mkdir(home, os.ModePerm); err != nil {
 						return err
 					}
 				}
@@ -117,12 +126,17 @@ type Config struct {
 	graphClient *graphql.Client
 	grpcConn    *grpc.ClientConn
 	gasPrices   sdk.DecCoin
+	log         tmlog.Logger
 }
 
 // initConfig reads in config file and ENV variables if set.
 func initConfig(cmd *cobra.Command) error {
 	config = &Config{}
-	cfgPath := path.Join(FeederHome, "config.yaml")
+	home, err := cmd.Flags().GetString("home")
+	if err != nil {
+		return err
+	}
+	cfgPath := path.Join(home, "config.yaml")
 	if _, err := os.Stat(cfgPath); err == nil {
 		viper.SetConfigFile(cfgPath)
 		if err := viper.ReadInConfig(); err == nil {
@@ -145,8 +159,11 @@ func initConfig(cmd *cobra.Command) error {
 				os.Exit(1)
 			}
 
-			// set logger
-
+			// TODO: set logger
+			if ll, err := cmd.Flags().GetString("log-level"); err == nil {
+				tmlog.AllowLevel(ll)
+			}
+			config.log = tmlog.NewTMLogger(tmlog.NewSyncWriter(os.Stdout))
 		}
 	}
 	return nil
