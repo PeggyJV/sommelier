@@ -8,7 +8,6 @@ import (
 	"strings"
 
 	proto "github.com/gogo/protobuf/proto"
-
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	peggytypes "github.com/althea-net/peggy/module/x/peggy/types"
@@ -63,7 +62,7 @@ func (ud UniswapData) Validate() error {
 	if ud.Reserve1.IsNegative() {
 		return fmt.Errorf("reserve 1 value (%s) for uniswap pair %s cannot be negative", ud.Reserve0, ud.Id)
 	}
-
+  
 	if ud.ReserveUsd.IsNegative() {
 		return fmt.Errorf("reserve USD value (%s) for uniswap pair %s cannot be negative", ud.Reserve0, ud.Id)
 	}
