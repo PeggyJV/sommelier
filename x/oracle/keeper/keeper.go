@@ -106,13 +106,13 @@ func (k Keeper) IterateDelegateAddresses(ctx sdk.Context, handler func(del, val 
 }
 
 //////////////////////////
-// MsgOracleDataPrevote //
+// Oracle Data Prevote //
 //////////////////////////
 
 // SetOracleDataPrevote sets the prevote for a given validator
 // CONTRACT: must provide the validator address here not the delegate address
-func (k Keeper) SetOracleDataPrevote(ctx sdk.Context, val sdk.AccAddress, prevote *types.MsgOracleDataPrevote) {
-	ctx.KVStore(k.storeKey).Set(types.GetOracleDataPrevoteKey(val), k.cdc.MustMarshalBinaryBare(prevote))
+func (k Keeper) SetOracleDataPrevote(ctx sdk.Context, validatorAddr sdk.AccAddress, prevoteHashes [][]byte) {
+	ctx.KVStore(k.storeKey).Set(types.GetOracleDataPrevoteKey(validatorAddr), prevoteHashes)
 }
 
 // GetOracleDataPrevote gets the prevote for a given validator
@@ -123,6 +123,7 @@ func (k Keeper) GetOracleDataPrevote(ctx sdk.Context, val sdk.AccAddress) *types
 	return &out
 }
 
+// DeleteAllPrevotes removes all the prevotes for the current block iteration
 func (k Keeper) DeleteAllPrevotes(ctx sdk.Context) {
 	k.IterateOracleDataPrevotes(ctx, func(val sdk.AccAddress, _ *types.MsgOracleDataPrevote) bool {
 		k.DeleteOracleDataPrevote(ctx, val)
@@ -147,6 +148,7 @@ func (k Keeper) IterateOracleDataPrevotes(ctx sdk.Context, handler func(val sdk.
 	store := ctx.KVStore(k.storeKey)
 	iter := sdk.KVStorePrefixIterator(store, types.OracleDataPrevoteKeyPrefix)
 	defer iter.Close()
+
 	for ; iter.Valid(); iter.Next() {
 		var out types.MsgOracleDataPrevote
 		val := sdk.AccAddress(bytes.TrimPrefix(iter.Key(), types.OracleDataPrevoteKeyPrefix))
