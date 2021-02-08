@@ -1,6 +1,7 @@
 package keeper
 
 import (
+	"fmt"
 	"strconv"
 	"time"
 
@@ -48,6 +49,10 @@ func (k Keeper) EndBlocker(ctx sdk.Context) {
 		pair, ok := pairMap[stoploss.UniswapPairId]
 		if !ok {
 			// pair not found, continue with the next position
+			k.Logger(ctx).Error(
+				"pair not found on provided oracle data",
+				"pair ID", stoploss.UniswapPairId,
+			)
 			return false
 		}
 
@@ -63,11 +68,21 @@ func (k Keeper) EndBlocker(ctx sdk.Context) {
 
 		totalSupplyStr := strconv.FormatFloat(pair.TotalSupply, 'f', 2, 64)
 		if totalSupplyStr == "" {
+			k.Logger(ctx).Error(
+				"failed to parse float from total supply",
+				"value", fmt.Sprintf("%v", pair.TotalSupply),
+			)
+
 			return false
 		}
 
 		reserveUSDStr := strconv.FormatFloat(pair.ReserveUsd, 'f', 2, 64)
 		if reserveUSDStr == "" {
+			k.Logger(ctx).Error(
+				"failed to parse float from reserve usd",
+				"value", fmt.Sprintf("%v", pair.ReserveUsd),
+			)
+
 			return false
 		}
 
@@ -83,11 +98,19 @@ func (k Keeper) EndBlocker(ctx sdk.Context) {
 
 		totalSupply, err := sdk.NewDecFromStr(totalSupplyStr)
 		if err != nil {
+			k.Logger(ctx).Error(
+				"failed create new dec from total supply",
+				"error", err.Error(),
+			)
 			return false
 		}
 
 		reserveUSD, err := sdk.NewDecFromStr(reserveUSDStr)
 		if err != nil {
+			k.Logger(ctx).Error(
+				"failed create new dec from reserve usd",
+				"error", err.Error(),
+			)
 			return false
 		}
 
