@@ -17,21 +17,6 @@ import (
 	"golang.org/x/sync/errgroup"
 )
 
-func queryContractABI() *cobra.Command {
-	return &cobra.Command{
-		Use:     "query-abi",
-		Aliases: []string{"abi"},
-		Short:   "queries the configed contract address for it's abi",
-		RunE: func(cmd *cobra.Command, args []string) error {
-			// cl, err := config.NewETHRPCClient()
-			// if err != nil {
-			// 	return err
-			// }
-			return nil
-		},
-	}
-}
-
 func startGravityOrchestrator() *cobra.Command {
 	return &cobra.Command{
 		Use:     "start-gravity-orchestrator",

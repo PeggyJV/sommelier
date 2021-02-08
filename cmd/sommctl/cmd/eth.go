@@ -2,9 +2,12 @@ package cmd
 
 import (
 	"context"
+	"encoding/hex"
+	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"log"
-	"math/big"
+	"net/http"
 	"strings"
 
 	ethereum "github.com/ethereum/go-ethereum"
@@ -17,11 +20,130 @@ import (
 )
 
 var (
-	logTransferSig     = []byte("Transfer(address,address,uint256)")
-	logApprovalSig     = []byte("Approval(address,address,uint256)")
-	logTransferSigHash = crypto.Keccak256Hash(logTransferSig)
-	logApprovalSigHash = crypto.Keccak256Hash(logApprovalSig)
+	logTransferSigHash = crypto.Keccak256Hash([]byte("Transfer(address,address,uint256)"))
+	logApprovalSigHash = crypto.Keccak256Hash([]byte("Approval(address,address,uint256)"))
 )
+
+func queryContractByteCode() *cobra.Command {
+	return &cobra.Command{
+		Use:   "query-contract-bytecode [addr]",
+		Args:  cobra.ExactArgs(1),
+		Short: "query a given contract for its bytecode",
+		RunE: func(cmd *cobra.Command, args []string) error {
+			addr := common.HexToAddress(args[0])
+			cl, err := config.NewETHRPCClient()
+			if err != nil {
+				return err
+			}
+			bz, err := cl.CodeAt(context.Background(), addr, nil)
+			if err != nil {
+
+			}
+			fmt.Println(hex.EncodeToString(bz))
+			return nil
+		},
+	}
+}
+
+var etherscanAddrs = map[string]string{
+	"mainnet": "https://api.etherscan.io/api?module=contract&action=getabi&address=%s&apikey=YourApiKeyToken",
+	"goerli":  "https://api-goerli.etherscan.io/api?module=contract&action=getabi&address=%s&apikey=YourApiKeyToken",
+	"rinkeby": "https://api-rinkeby.etherscan.io/api?module=contract&action=getabi&address=%s&apikey=YourApiKeyToken",
+	"ropsten": "https://api-ropsten.etherscan.io/api?module=contract&action=getabi&address=%s&apikey=YourApiKeyToken",
+	"kovan":   "https://api-kovan.etherscan.io/api?module=contract&action=getabi&address=%s&apikey=YourApiKeyToken",
+}
+
+func queryERC20Contract() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "query-contract-abi [addr]",
+		Args:  cobra.ExactArgs(1),
+		Short: "query a given contract for its abi from etherscan",
+		RunE: func(cmd *cobra.Command, args []string) error {
+			return nil
+		},
+	}
+	return cmd
+}
+
+func queryContractABI() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "query-contract-abi [addr]",
+		Args:  cobra.ExactArgs(1),
+		Short: "query a given contract for its abi from etherscan",
+		RunE: func(cmd *cobra.Command, args []string) error {
+			net, err := cmd.Flags().GetString("network")
+			if err != nil {
+				return err
+			}
+			if val, ok := etherscanAddrs[net]; ok {
+				net = val
+			} else {
+				return fmt.Errorf("%s network not supported, try (mainnet|goerli|rinkeby|ropsten|kovan)", net)
+			}
+
+			out, err := cmd.Flags().GetString("output")
+			if err != nil {
+				return err
+			}
+
+			// TODO: parse contract address
+			res, err := http.Get(fmt.Sprintf(net, args[0]))
+			if err != nil {
+				log.Fatal(err)
+			}
+			defer res.Body.Close()
+
+			bz, err := ioutil.ReadAll(res.Body)
+			if err != nil {
+				log.Fatal(err)
+			}
+
+			var parse parseAbiResp
+			if err = json.Unmarshal(bz, &parse); err != nil {
+				return err
+			}
+
+			ctabi, err := abi.JSON(strings.NewReader(parse.Result))
+			if err != nil {
+				return err
+			}
+
+			switch out {
+			case "abijson":
+				fmt.Println(parse.Result)
+			case "eventsig":
+				for k, v := range ctabi.Events {
+					fmt.Printf("%s: %s\n", k, v.Sig)
+				}
+			case "events":
+				for k, v := range ctabi.Events {
+					fmt.Printf("%s: %s\n", k, v)
+				}
+			case "methodsig":
+				for k, v := range ctabi.Methods {
+					fmt.Printf("%s: %s\n", k, v.Sig)
+				}
+			case "methods":
+				for k, v := range ctabi.Methods {
+					fmt.Printf("%s: %s\n", k, v)
+				}
+			default:
+				fmt.Println("invalid output type, printing json...")
+				fmt.Println(parse.Result)
+			}
+			return nil
+		},
+	}
+	cmd.Flags().StringP("network", "n", "mainnet", "network to query (mainnet|goerli|rinkeby|ropsten|kovan)")
+	cmd.Flags().StringP("output", "o", "abijson", "output format (abijson|events|methods|eventsig|methodsig)")
+	return cmd
+}
+
+type parseAbiResp struct {
+	Status  string `json:"status"`
+	Message string `json:"message"`
+	Result  string `json:"result"`
+}
 
 func listenERC20Contract() *cobra.Command {
 	return &cobra.Command{
@@ -60,7 +182,7 @@ func (c Config) ERC20ListenLoop(goctx context.Context, cancel context.CancelFunc
 	}
 	defer ethsub.Unsubscribe()
 
-	erc20, err := abi.JSON(strings.NewReader(string(CmdABI)))
+	erc20, err := abi.JSON(strings.NewReader(string(Erc20ABI)))
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -78,20 +200,6 @@ func (c Config) ERC20ListenLoop(goctx context.Context, cancel context.CancelFunc
 			return nil
 		}
 	}
-}
-
-// LogTransfer parses the Transfer event from ERC20 contracts
-type LogTransfer struct {
-	From   common.Address
-	To     common.Address
-	Tokens *big.Int
-}
-
-// LogApproval parses the Approval event from ERC20 contracts
-type LogApproval struct {
-	TokenOwner common.Address
-	Spender    common.Address
-	Tokens     *big.Int
 }
 
 func handleEthLog(lg ethtypes.Log, erc20abi abi.ABI) error {
