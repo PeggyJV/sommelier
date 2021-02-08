@@ -18,17 +18,18 @@ import (
 )
 
 func queryContractABI() *cobra.Command {
-		return &cobra.Command{
+	return &cobra.Command{
 		Use:     "query-abi",
 		Aliases: []string{"abi"},
 		Short:   "queries the configed contract address for it's abi",
 		RunE: func(cmd *cobra.Command, args []string) error {
-			cl, err := config.NewETHRPCClient()
-			if err != nil {
-				return err
-			}
-			
-		}
+			// cl, err := config.NewETHRPCClient()
+			// if err != nil {
+			// 	return err
+			// }
+			return nil
+		},
+	}
 }
 
 func startGravityOrchestrator() *cobra.Command {
@@ -124,8 +125,13 @@ func (c Config) GravityOrchestratorLoop(goctx context.Context, cancel context.Ca
 	}
 	defer blCancel()
 
+	contractAddress := common.HexToAddress(c.GravityAddr)
+	query := ethereum.FilterQuery{
+		Addresses: []common.Address{contractAddress},
+	}
+
 	// subscribe to eth events
-	ethlog, ethsub, err := c.SubscribeETH(goctx)
+	ethlog, ethsub, err := c.SubscribeETH(goctx, query)
 	if err != nil {
 		return err
 	}
@@ -155,15 +161,10 @@ func (c Config) GravityOrchestratorLoop(goctx context.Context, cancel context.Ca
 }
 
 // SubscribeETH subscribes to events from the configured contract addresss
-func (c Config) SubscribeETH(goctx context.Context) (chan ethtypes.Log, ethereum.Subscription, error) {
+func (c Config) SubscribeETH(goctx context.Context, query ethereum.FilterQuery) (chan ethtypes.Log, ethereum.Subscription, error) {
 	cl, err := c.NewETHWSClient()
 	if err != nil {
 		return nil, nil, err
-	}
-
-	contractAddress := common.HexToAddress(c.GravityAddr)
-	query := ethereum.FilterQuery{
-		Addresses: []common.Address{contractAddress},
 	}
 
 	logs := make(chan ethtypes.Log)

@@ -69,6 +69,7 @@ func NewRootCmd() (*cobra.Command, params.EncodingConfig) {
 		queryCmd(),
 		startOracleFeederCmd(),
 		startGravityOrchestrator(),
+		listenERC20Contract(),
 	)
 
 	return rootCmd, encodingConfig
