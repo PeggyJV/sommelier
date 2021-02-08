@@ -22,7 +22,7 @@ func (k Keeper) DelegateFeedConsent(c context.Context, msg *types.MsgDelegateFee
 	val, del := msg.MustGetValidator(), msg.MustGetDelegate()
 
 	if k.stakingKeeper.Validator(ctx, sdk.ValAddress(val)) == nil {
-		return nil, sdkerrors.Wrap(stakingtypes.ErrNoValidatorFound, val.String())
+		return nil, sdkerrors.Wrap(stakingtypes.ErrNoValidatorFound, sdk.ValAddress(val).String())
 	}
 
 	if validator.IsUnbonded() {
@@ -68,9 +68,13 @@ func (k Keeper) OracleDataPrevote(c context.Context, msg *types.MsgOracleDataPre
 		}
 
 		validatorAddr = sdk.AccAddress(validator.GetOperator())
+		// NOTE: we set the validator address so we don't have to call look up for the validator
+		// everytime the a validator feeder submits oracle data
+		k.SetValidatorDelegateAddress(ctx, signer, validatorAddr)
 	}
 
-	k.SetOracleDataPrevote(ctx, validatorAddr, msg)
+	// TODO: update as we don't need to store the full msg but only the hashes
+	k.SetOracleDataPrevote(ctx, validatorAddr, msg.Hashes)
 
 	ctx.EventManager().EmitEvents(
 		sdk.Events{
@@ -108,6 +112,9 @@ func (k Keeper) OracleDataVote(c context.Context, msg *types.MsgOracleDataVote) 
 		}
 
 		validatorAddr = sdk.AccAddress(validator.GetOperator())
+		// NOTE: we set the validator address so we don't have to call look up for the validator
+		// everytime the a validator feeder submits oracle data
+		k.SetValidatorDelegateAddress(ctx, signer, validatorAddr)
 	}
 
 	// Get the prevote for that validator from the store
