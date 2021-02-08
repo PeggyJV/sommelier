@@ -94,30 +94,30 @@ type LogApproval struct {
 	Tokens     *big.Int
 }
 
-func handleEthLog(ethlog ethtypes.Log, erc20abi abi.ABI) error {
-	topics0 := ethlog.Topics[0].Hex()
+func handleEthLog(lg ethtypes.Log, erc20abi abi.ABI) error {
+	fmt.Printf("TX(%s)\n", lg.TxHash.Hex())
+	topics0 := lg.Topics[0].Hex()
 	switch topics0 {
 	case logTransferSigHash.Hex():
-		var te LogTransfer
-		err := erc20abi.UnpackIntoInterface(&te, "Transfer", ethlog.Data)
+		amt, err := erc20abi.Unpack("Transfer", lg.Data)
 		if err != nil {
 			return err
 		}
-		te.From = common.HexToAddress(ethlog.Topics[1].Hex())
-		te.To = common.HexToAddress(ethlog.Topics[2].Hex())
 
-		fmt.Printf("Transfer: from(%s) to(%s) amount(%s)\n", te.From.Hex(), te.To.Hex(), te.Tokens.String())
+		from := common.BigToAddress(lg.Topics[1].Big()).Hex()
+		to := common.BigToAddress(lg.Topics[2].Big()).Hex()
+
+		fmt.Printf("Transfer: from(%s) to(%s) amount(%v)\n", from, to, amt[0])
 
 	case logApprovalSigHash.Hex():
-		var ae LogApproval
-		err := erc20abi.UnpackIntoInterface(&ae, "Approval", ethlog.Data)
+		amt, err := erc20abi.Unpack("Approval", lg.Data)
 		if err != nil {
 			return err
 		}
-		ae.TokenOwner = common.HexToAddress(ethlog.Topics[1].Hex())
-		ae.Spender = common.HexToAddress(ethlog.Topics[2].Hex())
+		from := common.BigToAddress(lg.Topics[1].Big()).Hex()
+		to := common.BigToAddress(lg.Topics[2].Big()).Hex()
 
-		fmt.Printf("Approval: from(%s) to(%s) amount(%s)\n", ae.TokenOwner.Hex(), ae.Spender.Hex(), ae.Tokens.String())
+		fmt.Printf("Approval: from(%v) to(%v) amount(%v)\n", from, to, amt[0])
 	default:
 		fmt.Printf("unexpected topic(%s)\n", topics0)
 	}
