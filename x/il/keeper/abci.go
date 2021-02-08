@@ -51,30 +51,52 @@ func (k Keeper) EndBlocker(ctx sdk.Context) {
 			return false
 		}
 
-		reserveStr0 := strconv.FormatFloat(pair.Reserve0, 'f', 2, 64)
-		if reserveStr0 == "" {
+		// reserveStr0 := strconv.FormatFloat(pair.Reserve0, 'f', 2, 64)
+		// if reserveStr0 == "" {
+		// 	return false
+		// }
+
+		// reserveStr1 := strconv.FormatFloat(pair.Reserve1, 'f', 2, 64)
+		// if reserveStr1 == "" {
+		// 	return false
+		// }
+
+		totalSupplyStr := strconv.FormatFloat(pair.TotalSupply, 'f', 2, 64)
+		if totalSupplyStr == "" {
 			return false
 		}
 
-		reserveStr1 := strconv.FormatFloat(pair.Reserve1, 'f', 2, 64)
-		if reserveStr1 == "" {
+		reserveUSDStr := strconv.FormatFloat(pair.ReserveUsd, 'f', 2, 64)
+		if reserveUSDStr == "" {
 			return false
 		}
 
-		reserve0, err := sdk.NewDecFromStr(reserveStr0)
+		// reserve0, err := sdk.NewDecFromStr(reserveStr0)
+		// if err != nil {
+		// 	return false
+		// }
+
+		// reserve1, err := sdk.NewDecFromStr(reserveStr1)
+		// if err != nil {
+		// 	return false
+		// }
+
+		totalSupply, err := sdk.NewDecFromStr(totalSupplyStr)
 		if err != nil {
 			return false
 		}
 
-		reserve1, err := sdk.NewDecFromStr(reserveStr1)
+		reserveUSD, err := sdk.NewDecFromStr(reserveUSDStr)
 		if err != nil {
 			return false
 		}
 
-		currentRatio := reserve0.Quo(reserve1)
+		positionShares := sdk.NewDec(stoploss.LiquidityPoolShares)
 
-		//   calculate current_ratio/reference_pair_ratio
-		currentSlippage := currentRatio.Quo(stoploss.ReferencePairRatio)
+		// Calculate the current USD value of the position so that we can calculate the impermanent loss
+		usdValueOfPosition := positionShares.Mul(reserveUSD).Quo(totalSupply)
+
+		currentSlippage := usdValueOfPosition.Quo(stoploss.ReferencePairRatio)
 
 		if currentSlippage.LTE(stoploss.MaxSlippage) {
 			// threshold not met, continue with the next position
