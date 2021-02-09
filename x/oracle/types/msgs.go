@@ -8,6 +8,8 @@ import (
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+
+	tmbytes "github.com/tendermint/tendermint/libs/bytes"
 )
 
 var _, _, _ sdk.Msg = &MsgDelegateFeedConsent{}, &MsgOracleDataPrevote{}, &MsgOracleDataVote{}
@@ -80,9 +82,15 @@ func (m *MsgDelegateFeedConsent) MustGetDelegate() sdk.AccAddress {
 //////////////////////////
 
 // NewMsgOracleDataPrevote return a new MsgOracleDataPrevote
-func NewMsgOracleDataPrevote(hashes [][]byte, signer sdk.AccAddress) *MsgOracleDataPrevote {
+func NewMsgOracleDataPrevote(hashes []tmbytes.HexBytes, signer sdk.AccAddress) *MsgOracleDataPrevote {
+	if signer == nil {
+		return nil
+	}
+
 	return &MsgOracleDataPrevote{
-		Hashes: hashes,
+		Prevote: &OraclePrevote{
+			Hashes: hashes,
+		},
 		Signer: signer.String(),
 	}
 }
@@ -99,7 +107,7 @@ func (m *MsgOracleDataPrevote) ValidateBasic() error {
 		return sdkerrors.Wrap(sdkerrors.ErrInvalidAddress, err.Error())
 	}
 
-	for i, hash := range m.Hashes {
+	for i, hash := range m.Prevote.Hashes {
 		if len(hash) == 0 {
 			return fmt.Errorf("hash at index %d cannot be empty", i)
 		}

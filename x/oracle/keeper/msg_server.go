@@ -60,7 +60,7 @@ func (k Keeper) OracleDataPrevote(c context.Context, msg *types.MsgOracleDataPre
 	}
 
 	// TODO: update as we don't need to store the full msg but only the hashes
-	k.SetOracleDataPrevote(ctx, validatorAddr, msg.Hashes)
+	k.SetOracleDataPrevote(ctx, validatorAddr, *msg.Prevote)
 
 	ctx.EventManager().EmitEvents(
 		sdk.Events{
@@ -72,7 +72,7 @@ func (k Keeper) OracleDataPrevote(c context.Context, msg *types.MsgOracleDataPre
 				types.EventTypeOracleDataPrevote,
 				sdk.NewAttribute(types.AttributeKeySigner, signer.String()),
 				sdk.NewAttribute(types.AttributeKeyValidator, validatorAddr.String()),
-				sdk.NewAttribute(types.AttributeKeyHashes, fmt.Sprintf("%x", bytes.Join(msg.Hashes, []byte(",")))),
+				sdk.NewAttribute(types.AttributeKeyHashes, fmt.Sprintf("%v", msg.Prevote.Hashes)),
 			),
 		},
 	)
@@ -104,10 +104,9 @@ func (k Keeper) OracleDataVote(c context.Context, msg *types.MsgOracleDataVote) 
 	}
 
 	// Get the prevote for that validator from the store
-	prevote := k.GetOracleDataPrevote(ctx, validatorAddr)
-
+	prevote, found := k.GetOracleDataPrevote(ctx, validatorAddr)
 	// check that there is a prevote
-	if prevote == nil || len(prevote.Hashes) == 0 {
+	if !found || len(prevote.Hashes) == 0 {
 		return nil, sdkerrors.Wrap(types.ErrNoPrevote, validatorAddr.String())
 	}
 

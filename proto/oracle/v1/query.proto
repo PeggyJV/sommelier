@@ -4,17 +4,17 @@ package oracle.v1;
 import "gogoproto/gogo.proto";
 import "google/protobuf/any.proto";
 import "oracle/v1/genesis.proto";
-import "oracle/v1/tx.proto";
+import "oracle/v1/oracle.proto";
 import "cosmos_proto/cosmos.proto";
 
 option go_package = "github.com/peggyjv/sommelier/x/oracle/types";
 
 service Query {
     rpc QueryParams(QueryParamsRequest) returns (QueryParamsResponse) {}
-    rpc QueryDelegeateAddress(QueryDelegeateAddressRequest) returns (QueryDelegeateAddressResponse) {}
+    rpc QueryDelegateAddress(QueryDelegateAddressRequest) returns (QueryDelegateAddressResponse) {}
     rpc QueryValidatorAddress(QueryValidatorAddressRequest) returns (QueryValidatorAddressResponse) {}
     rpc QueryOracleDataPrevote(QueryOracleDataPrevoteRequest) returns (QueryOracleDataPrevoteResponse) {}
-    rpc QueryOracleDataVote(QueryOracleDataVoteRequest) returns (MsgOracleDataVote) {}
+    rpc QueryOracleDataVote(QueryOracleDataVoteRequest) returns (QueryOracleDataVoteResponse) {}
     rpc QueryVotePeriod(QueryVotePeriodRequest) returns (VotePeriod) {}
     rpc QueryMissCounter(QueryMissCounterRequest) returns (QueryMissCounterResponse) {}
     rpc OracleData(QueryOracleDataRequest) returns (QueryOracleDataResponse) {}
@@ -29,9 +29,7 @@ message QueryValidatorAddressResponse {
 
 message QueryParamsRequest {}
 message QueryParamsResponse {
-    Params params = 1 [
-        (gogoproto.nullable) = false
-    ];
+    Params params = 1 [(gogoproto.nullable) = false];
 }
 
 message QueryVotePeriodRequest {}
@@ -48,10 +46,10 @@ message QueryMissCounterResponse {
     int64 miss_counter = 1;
 }
 
-message QueryDelegeateAddressRequest {
+message QueryDelegateAddressRequest {
     string validator = 1;
 }
-message QueryDelegeateAddressResponse {
+message QueryDelegateAddressResponse {
     string delegate = 2;
 }
 
@@ -59,15 +57,15 @@ message QueryOracleDataPrevoteRequest {
     string validator = 1; 
 }
 message QueryOracleDataPrevoteResponse {
-    repeated bytes hashes = 1;
+    OraclePrevote prevote = 1;
 }
 
 message QueryOracleDataVoteRequest {
     string validator = 1;
 }
 
-// TODO:
 message QueryOracleDataVoteResponse {
+    OracleVote vote = 1;
 }
 
 

@@ -12,8 +12,8 @@ import (
 
 var _ types.QueryServer = Keeper{}
 
-// QueryDelegeateAddress implements QueryServer
-func (k Keeper) QueryDelegeateAddress(c context.Context, req *types.QueryDelegeateAddressRequest) (*types.QueryDelegeateAddressResponse, error) {
+// QueryDelegateAddress implements QueryServer
+func (k Keeper) QueryDelegateAddress(c context.Context, req *types.QueryDelegateAddressRequest) (*types.QueryDelegateAddressResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "empty request")
 	}
@@ -32,7 +32,7 @@ func (k Keeper) QueryDelegeateAddress(c context.Context, req *types.QueryDelegea
 		)
 	}
 
-	return &types.QueryDelegeateAddressResponse{
+	return &types.QueryDelegateAddressResponse{
 		Delegate: delegateAddr.String(),
 	}, nil
 }
@@ -82,18 +82,18 @@ func (k Keeper) QueryOracleDataPrevote(c context.Context, req *types.QueryOracle
 		}
 	}
 
-	dataPrevote := k.GetOracleDataPrevote(ctx, val)
-	if dataPrevote == nil {
+	prevote, found := k.GetOracleDataPrevote(ctx, val)
+	if !found {
 		return nil, status.Error(codes.NotFound, "data prevote")
 	}
 
 	return &types.QueryOracleDataPrevoteResponse{
-		Hashes: dataPrevote.Hashes,
+		Prevote: &prevote,
 	}, nil
 }
 
 // QueryOracleDataVote implements QueryServer
-func (k Keeper) QueryOracleDataVote(c context.Context, req *types.QueryOracleDataVoteRequest) (*types.MsgOracleDataVote, error) {
+func (k Keeper) QueryOracleDataVote(c context.Context, req *types.QueryOracleDataVoteRequest) (*types.QueryOracleDataVoteResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "empty request")
 	}
@@ -112,12 +112,14 @@ func (k Keeper) QueryOracleDataVote(c context.Context, req *types.QueryOracleDat
 		}
 	}
 
-	dataVote := k.GetOracleDataVote(ctx, val)
-	if dataVote == nil {
+	dataVote, found := k.GetOracleDataVote(ctx, val)
+	if !found {
 		return nil, status.Error(codes.NotFound, "data vote")
 	}
 
-	return dataVote, nil
+	return &types.QueryOracleDataVoteResponse{
+		Vote: &dataVote,
+	}, nil
 }
 
 // OracleData implements QueryServer

@@ -111,16 +111,22 @@ func (k Keeper) IterateDelegateAddresses(ctx sdk.Context, handler func(del, val 
 
 // SetOracleDataPrevote sets the prevote for a given validator
 // CONTRACT: must provide the validator address here not the delegate address
-func (k Keeper) SetOracleDataPrevote(ctx sdk.Context, validatorAddr sdk.AccAddress, prevoteHashes [][]byte) {
-	ctx.KVStore(k.storeKey).Set(types.GetOracleDataPrevoteKey(validatorAddr), prevoteHashes)
+func (k Keeper) SetOracleDataPrevote(ctx sdk.Context, validatorAddr sdk.AccAddress, prevote types.OraclePrevote) {
+	bz := k.cdc.MustMarshalBinaryBare(&prevote)
+	ctx.KVStore(k.storeKey).Set(types.GetOracleDataPrevoteKey(validatorAddr), bz)
 }
 
 // GetOracleDataPrevote gets the prevote for a given validator
 // CONTRACT: must provide the validator address here not the delegate address
-func (k Keeper) GetOracleDataPrevote(ctx sdk.Context, val sdk.AccAddress) *types.MsgOracleDataPrevote {
-	var out types.MsgOracleDataPrevote
-	k.cdc.MustUnmarshalBinaryBare(ctx.KVStore(k.storeKey).Get(types.GetOracleDataPrevoteKey(val)), &out)
-	return &out
+func (k Keeper) GetOracleDataPrevote(ctx sdk.Context, val sdk.AccAddress) (types.OraclePrevote, bool) {
+	bz := ctx.KVStore(k.storeKey).Get(types.GetOracleDataPrevoteKey(val))
+	if len(bz) == 0 {
+		return types.OraclePrevote{}, false
+	}
+
+	var prevote types.OraclePrevote
+	k.cdc.MustUnmarshalBinaryBare(bz, &prevote)
+	return prevote, true
 }
 
 // DeleteAllPrevotes removes all the prevotes for the current block iteration
@@ -165,16 +171,23 @@ func (k Keeper) IterateOracleDataPrevotes(ctx sdk.Context, handler func(val sdk.
 
 // SetOracleDataVote sets the prevote for a given validator
 // CONTRACT: must provide the validator address here not the delegate address
-func (k Keeper) SetOracleDataVote(ctx sdk.Context, val sdk.AccAddress, msg *types.MsgOracleDataVote) {
-	ctx.KVStore(k.storeKey).Set(types.GetOracleDataVoteKey(val), k.cdc.MustMarshalBinaryBare(msg))
+func (k Keeper) SetOracleDataVote(ctx sdk.Context, val sdk.AccAddress, oracleVote types.OracleVote) {
+	bz := k.cdc.MustMarshalBinaryBare(&oracleVote)
+	ctx.KVStore(k.storeKey).Set(types.GetOracleDataVoteKey(val), bz)
 }
 
 // GetOracleDataVote gets the prevote for a given validator
 // CONTRACT: must provide the validator address here not the delegate address
-func (k Keeper) GetOracleDataVote(ctx sdk.Context, val sdk.AccAddress) *types.MsgOracleDataVote {
-	var out types.MsgOracleDataVote
-	k.cdc.MustUnmarshalBinaryBare(ctx.KVStore(k.storeKey).Get(types.GetOracleDataVoteKey(val)), &out)
-	return &out
+func (k Keeper) GetOracleDataVote(ctx sdk.Context, val sdk.AccAddress) (types.OracleVote, bool) {
+	store := ctx.KVStore(k.storeKey)
+	bz := store.Get(types.GetOracleDataVoteKey(val))
+	if len(bz) == 0 {
+		return types.OracleVote{}, false
+	}
+
+	var oracleVote types.OracleVote
+	k.cdc.MustUnmarshalBinaryBare(bz, &oracleVote)
+	return oracleVote, true
 }
 
 // DeleteOracleDataVote deletes the prevote for a given validator

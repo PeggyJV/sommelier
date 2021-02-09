@@ -19,7 +19,7 @@ func RegisterInterfaces(registry codectypes.InterfaceRegistry) {
 	registry.RegisterInterface(
 		"oracle.v1.OracleData",
 		(*OracleData)(nil),
-		&UniswapData{},
+		&UniswapPair{},
 	)
 
 	msgservice.RegisterMsgServiceDesc(registry, &_Msg_serviceDesc)
