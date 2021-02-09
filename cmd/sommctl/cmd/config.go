@@ -175,7 +175,10 @@ func initConfig(cmd *cobra.Command) error {
 }
 
 func validateConfig(c *Config) error {
-	c.graphClient = graphql.NewClient(fmt.Sprintf(c.GraphAddr, "%s/subgraphs/name/uniswap/uniswap-v2"))
+	// gaddr := fmt.Sprintf("%s/subgraphs/name/davekaj/uniswap", c.GraphAddr)
+	// fmt.Println(gaddr)
+	c.graphClient = graphql.NewClient(c.GraphAddr)
+	// c.graphClient.Log = func(s string) { fmt.Println(s) }
 	coin, err := sdk.ParseDecCoin(c.GasPrices)
 	if err != nil {
 		return err
