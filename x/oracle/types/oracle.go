@@ -7,17 +7,21 @@ import (
 	"fmt"
 	"strings"
 
-	proto "github.com/gogo/protobuf/proto"
+	tmbytes "github.com/tendermint/tendermint/libs/bytes"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	proto "github.com/gogo/protobuf/proto"
 
 	peggytypes "github.com/althea-net/peggy/module/x/peggy/types"
 )
 
-var _ OracleData = &UniswapData{}
+var _ OracleData = &UniswapPair{}
 
 // UniswapDataType defines the data type for a uniswap pair oracle data
 const UniswapDataType = "uniswap"
+
+// DataHashes defines an array of bytes in hex format.
+type DataHashes []tmbytes.HexBytes
 
 // OracleHandler defines a type that is passed to the oracle keeper to archive custom handling of
 // oracle data processing.
@@ -41,51 +45,51 @@ func DataHash(salt, jsonData string, signer sdk.AccAddress) []byte {
 }
 
 // GetID implements OracleData
-func (ud UniswapData) GetID() string {
-	return ud.Id
+func (up UniswapPair) GetID() string {
+	return up.Id
 }
 
 // Type implements OracleData
-func (ud *UniswapData) Type() string {
+func (up *UniswapPair) Type() string {
 	return UniswapDataType
 }
 
 // Validate implements OracleData
-func (ud UniswapData) Validate() error {
-	if err := peggytypes.ValidateEthAddress(ud.Id); err != nil {
-		return fmt.Errorf("invalid uniswap pair id %s: %w", ud.Id, err)
+func (up UniswapPair) Validate() error {
+	if err := peggytypes.ValidateEthAddress(up.Id); err != nil {
+		return fmt.Errorf("invalid uniswap pair id %s: %w", up.Id, err)
 	}
 
-	if ud.Reserve0.IsNegative() {
-		return fmt.Errorf("reserve 0 value (%s) for uniswap pair %s cannot be negative", ud.Reserve0, ud.Id)
+	if up.Reserve0.IsNegative() {
+		return fmt.Errorf("reserve 0 value (%s) for uniswap pair %s cannot be negative", up.Reserve0, up.Id)
 	}
 
-	if ud.Reserve1.IsNegative() {
-		return fmt.Errorf("reserve 1 value (%s) for uniswap pair %s cannot be negative", ud.Reserve0, ud.Id)
+	if up.Reserve1.IsNegative() {
+		return fmt.Errorf("reserve 1 value (%s) for uniswap pair %s cannot be negative", up.Reserve0, up.Id)
 	}
 
-	if ud.ReserveUsd.IsNegative() {
-		return fmt.Errorf("reserve USD value (%s) for uniswap pair %s cannot be negative", ud.Reserve0, ud.Id)
+	if up.ReserveUsd.IsNegative() {
+		return fmt.Errorf("reserve USD value (%s) for uniswap pair %s cannot be negative", up.Reserve0, up.Id)
 	}
 
-	if err := ud.Token0.Validate(); err != nil {
-		return fmt.Errorf("invalid token 0 for uniswap pair %s: %w", ud.Id, err)
+	if err := up.Token0.Validate(); err != nil {
+		return fmt.Errorf("invalid token 0 for uniswap pair %s: %w", up.Id, err)
 	}
 
-	if err := ud.Token1.Validate(); err != nil {
-		return fmt.Errorf("invalid token 1 for uniswap pair %s: %w", ud.Id, err)
+	if err := up.Token1.Validate(); err != nil {
+		return fmt.Errorf("invalid token 1 for uniswap pair %s: %w", up.Id, err)
 	}
 
-	if ud.Token0Price.IsNegative() {
-		return fmt.Errorf("token 0 price (%s) for uniswap pair %s cannot be negative", ud.Token0Price, ud.Id)
+	if up.Token0Price.IsNegative() {
+		return fmt.Errorf("token 0 price (%s) for uniswap pair %s cannot be negative", up.Token0Price, up.Id)
 	}
 
-	if ud.Token1Price.IsNegative() {
-		return fmt.Errorf("token 1 price (%s) for uniswap pair %s cannot be negative", ud.Token1Price, ud.Id)
+	if up.Token1Price.IsNegative() {
+		return fmt.Errorf("token 1 price (%s) for uniswap pair %s cannot be negative", up.Token1Price, up.Id)
 	}
 
-	if ud.TotalSupply.IsNegative() {
-		return fmt.Errorf("total supply (%s) for uniswap pair %s cannot be negative", ud.TotalSupply, ud.Id)
+	if up.TotalSupply.IsNegative() {
+		return fmt.Errorf("total supply (%s) for uniswap pair %s cannot be negative", up.TotalSupply, up.Id)
 	}
 
 	return nil
@@ -101,8 +105,8 @@ func (ut UniswapToken) Validate() error {
 }
 
 // MarshalJSON marshals and sorts the returned value
-func (ud UniswapData) MarshalJSON() ([]byte, error) {
-	bz, err := json.Marshal(ud)
+func (up UniswapPair) MarshalJSON() ([]byte, error) {
+	bz, err := json.Marshal(up)
 	if err != nil {
 		return nil, err
 	}

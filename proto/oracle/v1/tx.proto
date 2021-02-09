@@ -27,8 +27,8 @@ message MsgDelegateFeedConsentResponse {}
 // The purpose of the prevote is to hide vote for data with hashes formatted as hex string: 
 // SHA256("{salt}:{data_cannonical_json}:{voter}")
 message MsgOracleDataPrevote {
-    OraclePrevote   prevote = 1;
-    string          signer  = 2;
+    OraclePrevote  prevote = 1;
+    string          signer = 2;
 }
 
 message MsgOracleDataPrevoteResponse {}

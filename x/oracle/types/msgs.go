@@ -6,15 +6,8 @@ import (
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 
 	tmbytes "github.com/tendermint/tendermint/libs/bytes"
-)
-
-var (
-	_ sdk.Msg = &MsgDelegateFeedConsent{}
-	_ sdk.Msg = &MsgOracleDataPrevote{}
-	_ sdk.Msg = &MsgOracleDataVote{}
 )
 
 // var _ codectypes.UnpackInterfacesMessage = &MsgOracleDataVote{}
@@ -101,14 +94,14 @@ func (m *MsgDelegateFeedConsent) MustGetDelegate() sdk.AccAddress {
 //////////////////////////
 
 // NewMsgOracleDataPrevote return a new MsgOracleDataPrevote
-func NewMsgOracleDataPrevote(hash tmbytes.HexBytes, signer sdk.AccAddress) *MsgOracleDataPrevote {
+func NewMsgOracleDataPrevote(hashes []tmbytes.HexBytes, signer sdk.AccAddress) *MsgOracleDataPrevote {
 	if signer == nil {
 		return nil
 	}
 
 	return &MsgOracleDataPrevote{
 		Prevote: &OraclePrevote{
-			Hash: hash,
+			Hashes: hashes,
 		},
 		Signer: signer.String(),
 	}
@@ -126,8 +119,10 @@ func (m *MsgOracleDataPrevote) ValidateBasic() error {
 		return sdkerrors.Wrap(sdkerrors.ErrInvalidAddress, err.Error())
 	}
 
-	if m.Prevote == nil || len(m.Prevote.Hash) == 0 {
-		return fmt.Errorf("empty prevote hash")
+	for i, hash := range m.Prevote.Hashes {
+		if len(hash) == 0 {
+			return fmt.Errorf("hash at index %d cannot be empty", i)
+		}
 	}
 
 	return nil

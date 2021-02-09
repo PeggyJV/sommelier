@@ -75,7 +75,14 @@ func (k Keeper) QueryOracleDataPrevote(c context.Context, req *types.QueryOracle
 		return nil, status.Error(codes.InvalidArgument, err.Error())
 	}
 
-	prevote, found := k.GetOracleDataPrevote(ctx, validatorAddr)
+	if k.stakingKeeper.Validator(ctx, sdk.ValAddress(val)) == nil {
+		val = k.GetValidatorAddressFromDelegate(ctx, val)
+		if val == nil {
+			return nil, status.Errorf(codes.NotFound, "address %s is not a validator", req.Validator)
+		}
+	}
+
+	prevote, found := k.GetOracleDataPrevote(ctx, val)
 	if !found {
 		return nil, status.Error(codes.NotFound, "data prevote")
 	}
@@ -98,7 +105,14 @@ func (k Keeper) QueryOracleDataVote(c context.Context, req *types.QueryOracleDat
 		return nil, status.Error(codes.InvalidArgument, err.Error())
 	}
 
-	dataVote, found := k.GetOracleDataVote(ctx, validatorAddr)
+	if k.stakingKeeper.Validator(ctx, sdk.ValAddress(val)) == nil {
+		val = k.GetValidatorAddressFromDelegate(ctx, val)
+		if val == nil {
+			return nil, status.Errorf(codes.NotFound, "address %s is not a validator", req.Validator)
+		}
+	}
+
+	dataVote, found := k.GetOracleDataVote(ctx, val)
 	if !found {
 		return nil, status.Error(codes.NotFound, "data vote")
 	}
