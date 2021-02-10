@@ -80,10 +80,13 @@ func (c *Coordinator) handleTx(txEvent ctypes.ResultEvent) error {
 	for _, ev := range tx.Result.Events {
 		if ev.Type == oracle.EventTypeOracleDataPrevote {
 			for _, att := range ev.Attributes {
-				if string(att.Key) == oracle.AttributeKeyValidator &&
-					string(att.Value) == c.Val.String() {
-					if err := c.SubmitOracleDataVote(); err != nil {
-						return err
+				if string(att.Key) == oracle.AttributeKeyValidator {
+					config.log.Debug("prevote detected", "validator", string(att.Value))
+					if string(att.Value) == c.Val.String() {
+						config.log.Info("submitting oracle data vote", "signer", c.Addr.String(), "height", tx.Height)
+						if err := c.SubmitOracleDataVote(); err != nil {
+							return err
+						}
 					}
 				}
 			}
@@ -101,11 +104,12 @@ func (c *Coordinator) handleBlock(blockEvent ctypes.ResultEvent) error {
 	prevote := false
 	for _, ev := range bl.ResultBeginBlock.Events {
 		if ev.Type == oracle.EventTypeVotePeriod {
+			config.log.Info("new vote period beginning", "height", bl.Block.Height)
 			prevote = true
 		}
 	}
 	if prevote {
-		fmt.Println("Submitting Oracle Data Prevote", c.height)
+		config.log.Info("submitting oracle data prevote", "signer", c.Addr.String(), "height", c.height)
 		if err := c.SubmitOracleDataPrevote(); err != nil {
 			return err
 		}
@@ -157,21 +161,6 @@ func (c Config) TxFactory(ctx client.Context) tx.Factory {
 		WithGasPrices(config.GasPrices).
 		WithSignMode(signing.SignMode_SIGN_MODE_DIRECT)
 }
-
-// Current Round State
-// Last Uniswap Query
-// Last Uniswap Query Hash
-// Last Uniswap Query Hash Salt
-// Channel for listening to chain
-
-// Core loop
-//   listen over channel for new blocks and other events
-//   update round state every block
-//     on round start
-//       query uniswap data and store
-//       compute hash and send prevote
-//     on prevote event recieved
-//       send vote
 
 // OracleFeederLoop is the listen for events and take action loop for the oracle feeder
 func (c Config) OracleFeederLoop(goctx context.Context, cancel context.CancelFunc, ctx client.Context) error {
@@ -246,15 +235,14 @@ func genrandstr(s int) string {
 // stopLoop waits for a SIGINT or SIGTERM and returns an error
 func stopLoop(ctx context.Context, cancel context.CancelFunc) error {
 	sigCh := make(chan os.Signal, 1)
+	defer close(sigCh)
 	signal.Notify(sigCh, syscall.SIGINT, syscall.SIGTERM)
 	for {
 		select {
 		case sig := <-sigCh:
-			close(sigCh)
 			cancel()
 			return fmt.Errorf("Exiting feeder loop, recieved stop signal(%s)", sig.String())
 		case <-ctx.Done():
-			close(sigCh)
 			return nil
 		}
 	}

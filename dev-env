@@ -11,28 +11,13 @@ EOF
 
   case $1 in
     start)
-      read -r -p "You are about to delete .sommelier and .oracle-feeder from you home folder. ARE YOU SURE? [y/N] " response
+      read -r -p "You are about to delete ./data directory. ARE YOU SURE? [y/N] " response
       case "$response" in
           [yY][eE][sS]|[yY])
-              echo "building binaries..."
+              echo "installing binaries..."
               make install > /dev/null 2>&1
-              echo "configuring chain and keys for sommelier and oracle-feeder..."
-              rm -rf ~/.sommelier ~/.oracle-feeder > /dev/null 2>&1
-              sommelier init somm --chain-id somm > /dev/null 2>&1
-              sommelier keys add val --keyring-backend test > /dev/null 2>&1
-              oracle-feeder config init > /dev/null 2>&1
-              oracle-feeder keys add feeder > /dev/null 2>&1
-              sommelier add-genesis-account $(sommelier keys show val --keyring-backend test -a) 1000000000000stake > /dev/null 2>&1
-              sommelier add-genesis-account $(oracle-feeder keys show feeder) 1000000000000stake > /dev/null 2>&1
-              sommelier gentx val 100000000000stake --keyring-backend test --chain-id somm > /dev/null 2>&1
-              sommelier collect-gentxs > /dev/null 2>&1
-              echo "starting sommelier..."
-              sommelier start --pruning nothing --log_level warn > ~/.sommelier/somm.log 2>&1 &
-              echo "waiting for chain start..."
-              sleep 10 
-              echo "delegating feed perms to oracle-feeder..."
-              sommelier tx oracle delegate-feeder $(oracle-feeder keys show feeder) --keyring-backend test --from val -y --chain-id somm > /dev/null 2>&1
-              oracle-feeder start
+              rm -rf ./data
+              ./scripts/three-node.sh skip
               true
               ;;
           *)
@@ -41,8 +26,9 @@ EOF
       esac
       ;;
     stop)
-      echo "stopping sommelier instance"
+      echo "stopping sommelier and feeder instances"
       pkill -9 sommelier
+      pkill -9 oracle-feeder
       ;;
     *)
       commands

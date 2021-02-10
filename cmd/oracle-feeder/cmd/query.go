@@ -4,9 +4,12 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"log"
+	"os"
 
 	"github.com/cosmos/cosmos-sdk/client"
+	kr "github.com/cosmos/cosmos-sdk/crypto/keyring"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/machinebox/graphql"
 	oracle "github.com/peggyjv/sommelier/x/oracle/types"
@@ -382,18 +385,30 @@ func (c *Config) GetPairs(ctx context.Context, first, skip int) (*oracle.Uniswap
 	}`, first, skip))
 	out := &oracle.UniswapData{}
 	err := c.graphClient.Run(ctx, req, out)
+	_, err = out.Parse()
 	return out, err
 }
 
 // GetClientContext reads in values from the config
 func (c Config) GetClientContext(cmd *cobra.Command) (client.Context, error) {
 	ctx := client.GetClientContextFromCmd(cmd)
+	home, err := cmd.Flags().GetString("home")
+	if err != nil {
+		return client.Context{}, err
+	}
 	cl, err := rpchttp.New(c.ChainRPC, "/websocket")
 	if err != nil {
 		return client.Context{}, err
 	}
+	keyring, err := kr.New(AppName, "test", home, os.Stdin)
+	if err != nil {
+		panic(err)
+	}
 	return ctx.WithClient(cl).
 		WithChainID(c.ChainID).
 		WithFromName(c.SigningKey).
-		WithFrom(c.SigningKey), nil
+		WithFrom(c.SigningKey).
+		WithKeyring(keyring).
+		WithOutput(ioutil.Discard).
+		WithHomeDir(home), nil
 }
