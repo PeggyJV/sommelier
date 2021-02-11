@@ -14,6 +14,7 @@ func (k Keeper) BeginBlocker(ctx sdk.Context) {
 	// if there is not a vote period set, initialize it with current block height
 	votePeriodStart, found := k.GetVotePeriodStart(ctx)
 	if !found {
+		//TODO: isn't this always going to be return false?
 		votePeriodStart = ctx.BlockHeight()
 		k.SetVotePeriodStart(ctx, votePeriodStart)
 		k.Logger(ctx).Info("vote period set", "height", fmt.Sprintf("%d", votePeriodStart))
@@ -22,6 +23,8 @@ func (k Keeper) BeginBlocker(ctx sdk.Context) {
 	// On begin block, if we are tallying, emit the new vote period data
 	params := k.GetParamSet(ctx)
 	periodEnded := (ctx.BlockHeight() - votePeriodStart) >= params.VotePeriod
+	// TODO: 0 - 0 ≥ vote period ?
+
 	if !periodEnded {
 		// voting period still running
 		return
@@ -144,22 +147,20 @@ func (k Keeper) EndBlocker(ctx sdk.Context) {
 		// first, lets delete the old data
 		k.DeleteOracleData(ctx, dataType, oracleDatas)
 
-		// then we compute the average/target for the given data type
+		// handle
 
-		averageFn, err := types.GetAverageFunction(dataType)
+		aggregatedData, err := k.oracleHandler(ctx, oracleDatas)
 		if err != nil {
-			continue
+			panic(err)
 		}
-
-		avg := averageFn(oracleDatas)
 
 		// once we have an "average" we set it in the store
 		if storeAverages {
-			k.SetOracleData(ctx, avg)
+			k.SetAggregatedOracleData(ctx, aggregatedData)
 		}
 
 		// store the "average" for scoring validators later
-		averageMap[dataType] = avg
+		averageMap[dataType] = aggregatedData
 	}
 
 	// Compare each validators vote for each data type against the
