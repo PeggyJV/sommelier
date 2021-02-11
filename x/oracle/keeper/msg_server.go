@@ -50,7 +50,7 @@ func (k Keeper) OracleDataPrevote(c context.Context, msg *types.MsgOracleDataPre
 	if validatorAddr == nil {
 		validator := k.stakingKeeper.Validator(ctx, sdk.ValAddress(signer))
 		if validator == nil {
-			return nil, sdkerrors.Wrap(types.ErrUnknown, "validator")
+			return nil, sdkerrors.Wrap(stakingtypes.ErrNoValidatorFound, sdk.ValAddress(signer).String())
 		}
 
 		validatorAddr = sdk.AccAddress(validator.GetOperator())
@@ -94,7 +94,7 @@ func (k Keeper) OracleDataVote(c context.Context, msg *types.MsgOracleDataVote) 
 	if validatorAddr == nil {
 		validator := k.stakingKeeper.Validator(ctx, sdk.ValAddress(signer))
 		if validator == nil {
-			return nil, sdkerrors.Wrap(types.ErrUnknown, "validator")
+			return nil, sdkerrors.Wrap(stakingtypes.ErrNoValidatorFound, sdk.ValAddress(signer).String())
 		}
 
 		validatorAddr = sdk.AccAddress(validator.GetOperator())
@@ -112,17 +112,17 @@ func (k Keeper) OracleDataVote(c context.Context, msg *types.MsgOracleDataVote) 
 
 	// ensure that the right number of data is in the msg
 	if len(prevote.Hashes) != len(msg.OracleData) {
-		return nil, sdkerrors.Wrap(
-			types.ErrWrongNumber,
-			fmt.Sprintf("oracle data exp(%d) got(%d)", len(prevote.Hashes), len(msg.OracleData)),
+		return nil, sdkerrors.Wrapf(
+			types.ErrInvalidOracleData,
+			"oracle hashes doesn't match the oracle data length, expected %d, got %d", len(prevote.Hashes), len(msg.OracleData),
 		)
 	}
 
 	// ensure that the right number of salts is in the msg
 	if len(prevote.Hashes) != len(msg.Salt) {
-		return nil, sdkerrors.Wrap(
-			types.ErrWrongNumber,
-			fmt.Sprintf("salt exp(%d) got(%d)", len(prevote.Hashes), len(msg.Salt)),
+		return nil, sdkerrors.Wrapf(
+			types.ErrInvalidPrevote,
+			"oracle hashes doesn't match the salt length, expected %d, got %d", len(prevote.Hashes), len(msg.Salt),
 		)
 	}
 
@@ -148,13 +148,13 @@ func (k Keeper) OracleDataVote(c context.Context, msg *types.MsgOracleDataVote) 
 		// unpack the oracle data one by one
 		oracleData, err := types.UnpackOracleData(oracleDataAny)
 		if err != nil {
-			return nil, sdkerrors.Wrap(types.ErrUnpackOracleData, fmt.Sprintf("index %d", i))
+			return nil, sdkerrors.Wrapf(types.ErrUnpackOracleData, "index %d", i)
 		}
 
 		if !allowedTypesMap[oracleData.Type()] {
-			return nil, sdkerrors.Wrap(
+			return nil, sdkerrors.Wrapf(
 				types.ErrUnsupportedDataType,
-				fmt.Sprintf("%s, allowed %v", oracleData.Type(), allowedDataTypes),
+				"%s, allowed %v", oracleData.Type(), allowedDataTypes,
 			)
 		}
 
@@ -172,9 +172,9 @@ func (k Keeper) OracleDataVote(c context.Context, msg *types.MsgOracleDataVote) 
 
 		// compare to prevote hash
 		if !bytes.Equal(voteHash, prevote.Hashes[i]) {
-			return nil, sdkerrors.Wrap(
+			return nil, sdkerrors.Wrapf(
 				types.ErrHashMismatch,
-				fmt.Sprintf("precommit(%x) commit(%x)", prevote.Hashes[i], voteHash),
+				"precommit(%x) commit(%x)", prevote.Hashes[i], voteHash,
 			)
 		}
 
@@ -190,7 +190,14 @@ func (k Keeper) OracleDataVote(c context.Context, msg *types.MsgOracleDataVote) 
 	}
 
 	// set the vote in the store
-	k.SetOracleDataVote(ctx, validatorAddr, msg)
+	vote := types.OracleVote{
+		Salt: msg.Salt,
+		Feed: &types.OracleFeed{
+			OracleData: msg.OracleData,
+		},
+	}
+
+	k.SetOracleDataVote(ctx, validatorAddr, vote)
 	ctx.EventManager().EmitEvents(oracleEvents)
 
 	defer func() {

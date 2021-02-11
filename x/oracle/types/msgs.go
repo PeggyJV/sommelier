@@ -2,6 +2,7 @@ package types
 
 import (
 	"fmt"
+	"reflect"
 	"strings"
 
 	cdctypes "github.com/cosmos/cosmos-sdk/codec/types"
@@ -107,6 +108,10 @@ func (m *MsgOracleDataPrevote) ValidateBasic() error {
 		return sdkerrors.Wrap(sdkerrors.ErrInvalidAddress, err.Error())
 	}
 
+	if m.Prevote == nil || len(m.Prevote.Hashes) == 0 {
+		return fmt.Errorf("empty prevote hashes")
+	}
+
 	for i, hash := range m.Prevote.Hashes {
 		if len(hash) == 0 {
 			return fmt.Errorf("hash at index %d cannot be empty", i)
@@ -158,20 +163,40 @@ func (m *MsgOracleDataVote) ValidateBasic() error {
 		return sdkerrors.Wrap(sdkerrors.ErrInvalidAddress, err.Error())
 	}
 
-	for _, a := range m.OracleData {
-		od, err := UnpackOracleData(a)
-		if err != nil {
-			return sdkerrors.Wrap(ErrInvalidOracleData, err.Error())
-		}
+	if len(m.OracleData) == 0 {
+		return sdkerrors.Wrap(ErrInvalidOracleData, "cannot submit empty oracle data")
+	}
 
-		if err = od.Validate(); err != nil {
-			return sdkerrors.Wrap(ErrInvalidOracleData, err.Error())
-		}
+	if len(m.Salt) != len(m.OracleData) {
+		return sdkerrors.Wrapf(ErrInvalidOracleData, "must match salt array length, expected %d, got %d", len(m.Salt), len(m.OracleData))
 	}
 
 	for i, salt := range m.Salt {
 		if strings.TrimSpace(salt) == "" {
 			return fmt.Errorf("salt string at index %d cannot be blank", i)
+		}
+	}
+
+	// NOTE: oracle data from the array MUST have the same type
+	var oracleDataType reflect.Type
+
+	for i, oracleData := range m.OracleData {
+		od, err := UnpackOracleData(oracleData)
+		if err != nil {
+			return sdkerrors.Wrap(ErrInvalidOracleData, err.Error())
+		}
+
+		// check type consistency
+		dataType := reflect.TypeOf(od)
+
+		if i == 0 {
+			oracleDataType = dataType
+		} else if oracleDataType != dataType {
+			return sdkerrors.Wrapf(ErrInvalidOracleData, "oracle data type mismatch, expected %v, got %v", oracleDataType, dataType)
+		}
+
+		if err = od.Validate(); err != nil {
+			return sdkerrors.Wrap(ErrInvalidOracleData, err.Error())
 		}
 	}
 

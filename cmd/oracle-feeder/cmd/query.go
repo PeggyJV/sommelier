@@ -12,7 +12,7 @@ import (
 	kr "github.com/cosmos/cosmos-sdk/crypto/keyring"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/machinebox/graphql"
-	oracle "github.com/peggyjv/sommelier/x/oracle/types"
+	oracletypes "github.com/peggyjv/sommelier/x/oracle/types"
 	"github.com/spf13/cobra"
 	rpchttp "github.com/tendermint/tendermint/rpc/client/http"
 )
@@ -28,7 +28,7 @@ func queryCmd() *cobra.Command {
 	cmd.AddCommand(
 		queryUniswapData(),
 		queryParams(),
-		queryDelegeateAddress(),
+		queryDelegateAddress(),
 		queryValidatorAddress(),
 		queryOracleDataPrevote(),
 		queryOracleDataVote(),
@@ -99,17 +99,17 @@ func queryParams() *cobra.Command {
 }
 
 // GetParams helper
-func GetParams(ctx client.Context) (oracle.Params, error) {
-	res, err := oracle.NewQueryClient(ctx).QueryParams(context.Background(), &oracle.QueryParamsRequest{})
+func GetParams(ctx client.Context) (oracletypes.Params, error) {
+	res, err := oracletypes.NewQueryClient(ctx).QueryParams(context.Background(), &oracletypes.QueryParamsRequest{})
 	return res.Params, err
 }
 
-func queryDelegeateAddress() *cobra.Command {
+func queryDelegateAddress() *cobra.Command {
 	return &cobra.Command{
 		Use:     "delegate-address [validator-address]",
 		Aliases: []string{"del"},
 		Args:    cobra.ExactArgs(1),
-		Short:   "query delegeate address from the chain given validators address",
+		Short:   "query delegate address from the chain given validators address",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx, err := config.GetClientContext(cmd)
 			if err != nil {
@@ -134,8 +134,8 @@ func queryDelegeateAddress() *cobra.Command {
 
 // GetDelFromVal helper
 func GetDelFromVal(ctx client.Context, val sdk.AccAddress) (sdk.AccAddress, error) {
-	res, err := oracle.NewQueryClient(ctx).QueryDelegeateAddress(
-		context.Background(), &oracle.QueryDelegeateAddressRequest{Validator: val.String()})
+	res, err := oracletypes.NewQueryClient(ctx).QueryDelegateAddress(
+		context.Background(), &oracletypes.QueryDelegateAddressRequest{Validator: val.String()})
 	if err != nil {
 		return nil, err
 	}
@@ -173,8 +173,8 @@ func queryValidatorAddress() *cobra.Command {
 
 // GetValFromDel helper
 func GetValFromDel(ctx client.Context, del sdk.AccAddress) (sdk.AccAddress, error) {
-	res, err := oracle.NewQueryClient(ctx).QueryValidatorAddress(
-		context.Background(), &oracle.QueryValidatorAddressRequest{Delegate: del.String()})
+	res, err := oracletypes.NewQueryClient(ctx).QueryValidatorAddress(
+		context.Background(), &oracletypes.QueryValidatorAddressRequest{Delegate: del.String()})
 	if err != nil {
 		return nil, err
 	}
@@ -216,10 +216,10 @@ func queryOracleDataPrevote() *cobra.Command {
 }
 
 // GetPrevote helper
-func GetPrevote(ctx client.Context, val sdk.AccAddress) ([][]byte, error) {
-	res, err := oracle.NewQueryClient(ctx).QueryOracleDataPrevote(
-		context.Background(), &oracle.QueryOracleDataPrevoteRequest{Validator: val.String()})
-	return res.Hashes, err
+func GetPrevote(ctx client.Context, val sdk.AccAddress) (*oracletypes.OraclePrevote, error) {
+	res, err := oracletypes.NewQueryClient(ctx).QueryOracleDataPrevote(
+		context.Background(), &oracletypes.QueryOracleDataPrevoteRequest{Validator: val.String()})
+	return res.Prevote, err
 }
 
 func queryOracleDataVote() *cobra.Command {
@@ -252,9 +252,9 @@ func queryOracleDataVote() *cobra.Command {
 }
 
 // GetVote helper
-func GetVote(ctx client.Context, val sdk.AccAddress) (*oracle.MsgOracleDataVote, error) {
-	return oracle.NewQueryClient(ctx).QueryOracleDataVote(
-		context.Background(), &oracle.QueryOracleDataVoteRequest{Validator: val.String()})
+func GetVote(ctx client.Context, val sdk.AccAddress) (*oracletypes.OracleVote, error) {
+	return oracletypes.NewQueryClient(ctx).QueryOracleDataVote(
+		context.Background(), &oracletypes.QueryOracleDataVoteRequest{Validator: val.String()})
 }
 
 func queryVotePeriod() *cobra.Command {
@@ -283,8 +283,8 @@ func queryVotePeriod() *cobra.Command {
 }
 
 // GetVotePeriod helper
-func GetVotePeriod(ctx client.Context) (*oracle.VotePeriod, error) {
-	return oracle.NewQueryClient(ctx).QueryVotePeriod(context.Background(), &oracle.QueryVotePeriodRequest{})
+func GetVotePeriod(ctx client.Context) (*oracletypes.VotePeriod, error) {
+	return oracletypes.NewQueryClient(ctx).QueryVotePeriod(context.Background(), &oracletypes.QueryVotePeriodRequest{})
 }
 
 func queryMissCounter() *cobra.Command {
@@ -314,8 +314,8 @@ func queryMissCounter() *cobra.Command {
 
 // GetMissCounter helper
 func GetMissCounter(ctx client.Context, val sdk.AccAddress) (int64, error) {
-	res, err := oracle.NewQueryClient(ctx).QueryMissCounter(
-		context.Background(), &oracle.QueryMissCounterRequest{Validator: val.String()})
+	res, err := oracletypes.NewQueryClient(ctx).QueryMissCounter(
+		context.Background(), &oracletypes.QueryMissCounterRequest{Validator: val.String()})
 	// if res.MissCounter == nil {
 	// 	return 0, err
 	// }
@@ -337,11 +337,11 @@ func queryOracleData() *cobra.Command {
 			if err != nil {
 				return err
 			}
-			res, err := oracle.NewQueryClient(ctx).OracleData(context.Background(), &oracle.QueryOracleDataRequest{Type: typ})
+			res, err := oracletypes.NewQueryClient(ctx).OracleData(context.Background(), &oracletypes.QueryOracleDataRequest{Type: typ})
 			if err != nil {
 				return err
 			}
-			od, err := oracle.UnpackOracleData(res.OracleData)
+			od, err := oracletypes.UnpackOracleData(res.OracleData)
 			if err != nil {
 				return err
 			}
@@ -349,21 +349,21 @@ func queryOracleData() *cobra.Command {
 			return nil
 		},
 	}
-	cmd.Flags().StringP("type", "t", oracle.UniswapDataType, "type of oracle data to fetch")
+	cmd.Flags().StringP("type", "t", oracletypes.UniswapDataType, "type of oracle data to fetch")
 	return cmd
 }
 
 // GetData helper
-func GetData(ctx client.Context, typ string) (oracle.OracleData, error) {
-	res, err := oracle.NewQueryClient(ctx).OracleData(context.Background(), &oracle.QueryOracleDataRequest{Type: typ})
+func GetData(ctx client.Context, typ string) (oracletypes.OracleData, error) {
+	res, err := oracletypes.NewQueryClient(ctx).OracleData(context.Background(), &oracletypes.QueryOracleDataRequest{Type: typ})
 	if err != nil {
 		return nil, err
 	}
-	return oracle.UnpackOracleData(res.OracleData)
+	return oracletypes.UnpackOracleData(res.OracleData)
 }
 
 // GetPairs returns the top N pairs from the Uniswap Subgraph
-func (c *Config) GetPairs(ctx context.Context, first, skip int) (*oracle.UniswapData, error) {
+func (c *Config) GetPairs(ctx context.Context, first, skip int) (*oracletypes.OracleFeed, error) {
 	req := graphql.NewRequest(fmt.Sprintf(`{ 
 		pairs(first: %d, skip: %d, orderBy: volumeUSD, orderDirection: desc) {
 			id
@@ -383,9 +383,8 @@ func (c *Config) GetPairs(ctx context.Context, first, skip int) (*oracle.Uniswap
 			}
 		}
 	}`, first, skip))
-	out := &oracle.UniswapData{}
+	out := &oracletypes.OracleFeed{}
 	err := c.graphClient.Run(ctx, req, out)
-	_, err = out.Parse()
 	return out, err
 }
 

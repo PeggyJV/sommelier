@@ -59,6 +59,13 @@ func GetOracleDataVoteKey(val sdk.AccAddress) []byte {
 	return append(OracleDataVoteKeyPrefix, val.Bytes()...)
 }
 
+func GetAggregatedOracleDataKey(dataType, id string, height uint64) []byte {
+	dataTypeHash := sha256.Sum256([]byte(dataType))
+	key := append(OracleDataKeyPrefix, dataTypeHash[:]...)
+	key = append(key, []byte(id)...)
+	return append(key, sdk.Uint64ToBigEndian(height)...)
+}
+
 // GetOracleDataKey returns the key for the stored oracle data
 func GetOracleDataKey(dataType, id string) []byte {
 	dataTypeHash := sha256.Sum256([]byte(dataType))
