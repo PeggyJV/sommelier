@@ -69,9 +69,9 @@ func startOracleFeederCmd() *cobra.Command {
 // Coordinator helps coordinate feeding of the oracle
 type Coordinator struct {
 	clientCtx     client.Context
-	feed          []*oracle.UniswapPair
+	uniswapPair   *oracle.UniswapPair
 	delegatorAddr sdk.AccAddress
-	validatorAddr sdk.ValAddress
+	validatorAddr sdk.AccAddress
 	salt          string
 	hash          tmbytes.HexBytes
 
@@ -87,17 +87,23 @@ func (c *Coordinator) handleTx(txEvent ctypes.ResultEvent) error {
 	}
 	config.log.Debug("transaction detected", "height", tx.Height)
 	for _, ev := range tx.Result.Events {
-		if ev.Type == oracle.EventTypeOracleDataPrevote {
-			for _, att := range ev.Attributes {
-				if string(att.Key) == oracle.AttributeKeyValidator {
-					config.log.Debug("prevote detected", "validator", string(att.Value))
-					if string(att.Value) == c.Val.String() {
-						config.log.Info("submitting oracle data vote", "signer", c.Addr.String(), "height", tx.Height)
-						if err := c.SubmitOracleDataVote(); err != nil {
-							return err
-						}
-					}
-				}
+		if ev.Type != oracle.EventTypeOracleDataPrevote {
+			continue
+		}
+
+		for _, att := range ev.Attributes {
+			if string(att.Key) != oracle.AttributeKeyValidator {
+				continue
+			}
+
+			config.log.Debug("prevote detected", "validator", string(att.Value))
+			if string(att.Value) != c.validatorAddr.String() {
+				continue
+			}
+
+			config.log.Info("submitting oracle data vote", "signer", c.delegatorAddr.String(), "height", tx.Height)
+			if err := c.SubmitOracleDataVote(); err != nil {
+				return err
 			}
 		}
 	}
@@ -113,20 +119,17 @@ func (c *Coordinator) handleBlock(blockEvent ctypes.ResultEvent) error {
 	c.height = bl.Block.Height
 	prevote := false
 	for _, ev := range bl.ResultBeginBlock.Events {
-		if ev.Type == oracle.EventTypeVotePeriod {
-			config.log.Info("new vote period beginning", "height", bl.Block.Height)
-			prevote = true
+		if ev.Type != oracle.EventTypeVotePeriod {
+			continue
 		}
 
 		config.log.Info("new vote period beginning", "height", bl.Block.Height)
 		prevote = true
 		break
 	}
-	if prevote {
-		config.log.Info("submitting oracle data prevote", "signer", c.Addr.String(), "height", c.height)
-		if err := c.SubmitOracleDataPrevote(); err != nil {
-			return err
-		}
+
+	if !prevote {
+		return nil
 	}
 
 	config.log.Info("submitting oracle data prevote", "signer", c.delegatorAddr.String(), "height", c.height)
@@ -136,14 +139,12 @@ func (c *Coordinator) handleBlock(blockEvent ctypes.ResultEvent) error {
 
 // SubmitOracleDataVote is called to send the vote
 func (c *Coordinator) SubmitOracleDataVote() error {
-	oracleVote := &oracle.OracleVote{
-		Salt: c.salt,
-		Feed: &oracle.OracleFeed{
-			Data: c.feed,
-		},
+	od, err := oracle.PackOracleData(c.uniswapPair)
+	if err != nil {
+		return err
 	}
+	msg := oracle.NewMsgOracleDataVote([]string{c.salt}, []*cdctypes.Any{od}, c.delegatorAddr)
 
-	msg := oracle.NewMsgOracleDataVote(oracleVote, c.delegatorAddr)
 	if err := msg.ValidateBasic(); err != nil {
 		return err
 	}
@@ -170,11 +171,24 @@ func (c *Coordinator) SubmitOracleDataPrevote() error {
 		return err
 	}
 
-	c.salt = genrandstr(6)
-	c.hash = oracle.DataHash(c.salt, string(jsonBz), c.validatorAddr)
-	c.feed = pairs
+	for _, pair := range ud.OracleData {
+		bz, err := pair.MarshalJSON()
+		if err != nil {
+			return err
+		}
 
-	msg := oracle.NewMsgOracleDataPrevote(c.hash, c.delegatorAddr)
+		fmt.Println(bz)
+	}
+
+	// TODO: fix, consider changing the oracle DataHash to use an array of oracle data instead of the json
+	// OR marshal the oracle data slice to json here and sort
+
+	// c.uniswapPair = ud
+	// c.salt = genrandstr(6)
+
+	// c.hash = oracle.DataHash(c.salt, ud.CannonicalJSON(), c.validatorAddr)
+
+	msg := oracle.NewMsgOracleDataPrevote([]tmbytes.HexBytes{c.hash}, c.delegatorAddr)
 	if err := msg.ValidateBasic(); err != nil {
 		return err
 	}
@@ -282,7 +296,7 @@ func stopLoop(ctx context.Context, cancel context.CancelFunc) error {
 		select {
 		case sig := <-sigCh:
 			cancel()
-			return fmt.Errorf("exiting feeder loop, received stop signal %s", sig.String())
+			return fmt.Errorf("erxiting feeder loop, received stop signal %s", sig.String())
 		case <-ctx.Done():
 			return nil
 		}
