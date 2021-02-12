@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
-	"log"
 	"os"
 
 	"github.com/cosmos/cosmos-sdk/client"
@@ -54,12 +53,12 @@ func queryUniswapData() *cobra.Command {
 
 			out, err := config.GetPairs(context.Background(), n, 0)
 			if err != nil {
-				log.Fatal(err)
+				return err
 			}
 
 			bz, err := json.Marshal(out)
 			if err != nil {
-				log.Fatal(err)
+				return err
 			}
 
 			fmt.Println(string(bz))
@@ -134,8 +133,13 @@ func queryDelegateAddress() *cobra.Command {
 
 // GetDelFromVal helper
 func GetDelFromVal(ctx client.Context, val sdk.AccAddress) (sdk.AccAddress, error) {
-	res, err := oracletypes.NewQueryClient(ctx).QueryDelegateAddress(
-		context.Background(), &oracletypes.QueryDelegateAddressRequest{Validator: val.String()})
+	queryClient := oracletypes.NewQueryClient(ctx)
+
+	req := &oracletypes.QueryDelegateAddressRequest{
+		Validator: val.String(),
+	}
+
+	res, err := queryClient.QueryDelegateAddress(context.Background(), req)
 	if err != nil {
 		return nil, err
 	}
@@ -173,8 +177,13 @@ func queryValidatorAddress() *cobra.Command {
 
 // GetValFromDel helper
 func GetValFromDel(ctx client.Context, del sdk.AccAddress) (sdk.AccAddress, error) {
-	res, err := oracletypes.NewQueryClient(ctx).QueryValidatorAddress(
-		context.Background(), &oracletypes.QueryValidatorAddressRequest{Delegate: del.String()})
+	queryClient := oracletypes.NewQueryClient(ctx)
+
+	req := &oracletypes.QueryValidatorAddressRequest{
+		Delegate: del.String(),
+	}
+
+	res, err := queryClient.QueryValidatorAddress(context.Background(), req)
 	if err != nil {
 		return nil, err
 	}
@@ -233,18 +242,22 @@ func queryOracleDataVote() *cobra.Command {
 			if err != nil {
 				return err
 			}
+
 			val, err := sdk.AccAddressFromBech32(args[0])
 			if err != nil {
 				return err
 			}
+
 			vote, err := GetVote(ctx, val)
 			if err != nil {
 				return err
 			}
+
 			bz, err := ctx.JSONMarshaler.MarshalJSON(vote)
 			if err != nil {
 				return err
 			}
+
 			fmt.Println(string(bz))
 			return nil
 		},
@@ -252,9 +265,11 @@ func queryOracleDataVote() *cobra.Command {
 }
 
 // GetVote helper
-func GetVote(ctx client.Context, val sdk.AccAddress) (*oracletypes.OracleVote, error) {
-	return oracletypes.NewQueryClient(ctx).QueryOracleDataVote(
-		context.Background(), &oracletypes.QueryOracleDataVoteRequest{Validator: val.String()})
+func GetVote(ctx client.Context, val sdk.AccAddress) (*oracletypes.QueryOracleDataVoteResponse, error) {
+	queryClient := oracletypes.NewQueryClient(ctx)
+	req := &oracletypes.QueryOracleDataVoteRequest{Validator: val.String()}
+
+	return queryClient.QueryOracleDataVote(context.Background(), req)
 }
 
 func queryVotePeriod() *cobra.Command {
@@ -272,10 +287,12 @@ func queryVotePeriod() *cobra.Command {
 			if err != nil {
 				return err
 			}
+
 			bz, err := json.Marshal(res)
 			if err != nil {
 				return err
 			}
+
 			fmt.Println(string(bz))
 			return nil
 		},
@@ -284,7 +301,9 @@ func queryVotePeriod() *cobra.Command {
 
 // GetVotePeriod helper
 func GetVotePeriod(ctx client.Context) (*oracletypes.VotePeriod, error) {
-	return oracletypes.NewQueryClient(ctx).QueryVotePeriod(context.Background(), &oracletypes.QueryVotePeriodRequest{})
+	queryClient := oracletypes.NewQueryClient(ctx)
+
+	return queryClient.QueryVotePeriod(context.Background(), &oracletypes.QueryVotePeriodRequest{})
 }
 
 func queryMissCounter() *cobra.Command {
@@ -298,14 +317,17 @@ func queryMissCounter() *cobra.Command {
 			if err != nil {
 				return err
 			}
+
 			val, err := sdk.AccAddressFromBech32(args[0])
 			if err != nil {
 				return err
 			}
+
 			misses, err := GetMissCounter(ctx, val)
 			if err != nil {
 				return err
 			}
+
 			fmt.Println(misses)
 			return nil
 		},
@@ -314,12 +336,16 @@ func queryMissCounter() *cobra.Command {
 
 // GetMissCounter helper
 func GetMissCounter(ctx client.Context, val sdk.AccAddress) (int64, error) {
-	res, err := oracletypes.NewQueryClient(ctx).QueryMissCounter(
-		context.Background(), &oracletypes.QueryMissCounterRequest{Validator: val.String()})
-	// if res.MissCounter == nil {
-	// 	return 0, err
-	// }
-	return res.MissCounter, err
+	queryClient := oracletypes.NewQueryClient(ctx)
+
+	req := &oracletypes.QueryMissCounterRequest{Validator: val.String()}
+
+	res, err := queryClient.QueryMissCounter(context.Background(), req)
+	if err != nil {
+		return 0, err
+	}
+
+	return res.MissCounter, nil
 }
 
 func queryOracleData() *cobra.Command {
@@ -333,19 +359,28 @@ func queryOracleData() *cobra.Command {
 			if err != nil {
 				return err
 			}
+
 			typ, err := cmd.Flags().GetString("type")
 			if err != nil {
 				return err
 			}
+
 			res, err := oracletypes.NewQueryClient(ctx).OracleData(context.Background(), &oracletypes.QueryOracleDataRequest{Type: typ})
 			if err != nil {
 				return err
 			}
+
 			od, err := oracletypes.UnpackOracleData(res.OracleData)
 			if err != nil {
 				return err
 			}
-			fmt.Println(od.CannonicalJSON())
+
+			jsonBz, err := od.MarshalJSON()
+			if err != nil {
+				return err
+			}
+
+			fmt.Println(jsonBz)
 			return nil
 		},
 	}
@@ -383,9 +418,15 @@ func (c *Config) GetPairs(ctx context.Context, first, skip int) (*oracletypes.Or
 			}
 		}
 	}`, first, skip))
-	out := &oracletypes.OracleFeed{}
+
+	var out *oracletypes.OracleFeed
+
 	err := c.graphClient.Run(ctx, req, out)
-	return out, err
+	if err != nil {
+		return nil, err
+	}
+
+	return out, nil
 }
 
 // GetClientContext reads in values from the config
@@ -395,14 +436,17 @@ func (c Config) GetClientContext(cmd *cobra.Command) (client.Context, error) {
 	if err != nil {
 		return client.Context{}, err
 	}
+
 	cl, err := rpchttp.New(c.ChainRPC, "/websocket")
 	if err != nil {
 		return client.Context{}, err
 	}
+
 	keyring, err := kr.New(AppName, "test", home, os.Stdin)
 	if err != nil {
-		panic(err)
+		return client.Context{}, err
 	}
+
 	return ctx.WithClient(cl).
 		WithChainID(c.ChainID).
 		WithFromName(c.SigningKey).
