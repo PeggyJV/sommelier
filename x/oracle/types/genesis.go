@@ -18,6 +18,7 @@ func DefaultGenesisState() *GenesisState {
 	}
 }
 
+// Validate performs a basic stateless validation of the genesis fields.
 func (gs GenesisState) Validate() error {
 	for i, feederDelegation := range gs.FeederDelegations {
 		if _, err := sdk.AccAddressFromBech32(feederDelegation.Delegate); err != nil {

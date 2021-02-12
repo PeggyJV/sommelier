@@ -2,6 +2,7 @@ package types
 
 import (
 	fmt "fmt"
+	"strings"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
@@ -9,20 +10,22 @@ import (
 
 // Parameter keys
 var (
-	PSKVotePeriod        = []byte("voteperiod")
-	PSKVoteThreshold     = []byte("votethreshold")
-	PSKSlashWindow       = []byte("slashwindow")
-	PSKMinValidPerWindow = []byte("minvalidperwindow")
-	PSKSlashFraction     = []byte("slashfraction")
-	PSKDataTypes         = []byte("datatypes")
+	KeyVotePeriod        = []byte("voteperiod")
+	KeyVoteThreshold     = []byte("votethreshold")
+	KeySlashWindow       = []byte("slashwindow")
+	KeyMinValidPerWindow = []byte("minvalidperwindow")
+	KeySlashFraction     = []byte("slashfraction")
+	KeyDataTypes         = []byte("datatypes")
 )
+
+var _ paramtypes.ParamSet = &Params{}
 
 // ParamKeyTable returns the parameter key table.
 func ParamKeyTable() paramtypes.KeyTable {
 	return paramtypes.NewKeyTable().RegisterParamSet(&Params{})
 }
 
-// DefaultParams returns default distribution parameters
+// DefaultParams returns default oracle parameters
 func DefaultParams() Params {
 	return Params{
 		VotePeriod:        5,
@@ -37,64 +40,113 @@ func DefaultParams() Params {
 // ParamSetPairs returns the parameter set pairs.
 func (p *Params) ParamSetPairs() paramtypes.ParamSetPairs {
 	return paramtypes.ParamSetPairs{
-		paramtypes.NewParamSetPair(PSKVotePeriod, &p.VotePeriod, validateVotePeriod),
-		paramtypes.NewParamSetPair(PSKVoteThreshold, &p.VoteThreshold, validateVoteThreshold),
-		paramtypes.NewParamSetPair(PSKSlashWindow, &p.SlashWindow, validateSlashWindow),
-		paramtypes.NewParamSetPair(PSKMinValidPerWindow, &p.MinValidPerWindow, validateMinValidPerWindow),
-		paramtypes.NewParamSetPair(PSKSlashFraction, &p.SlashFraction, validateSlashFraction),
-		paramtypes.NewParamSetPair(PSKDataTypes, &p.DataTypes, validateDataTypes),
+		paramtypes.NewParamSetPair(KeyVotePeriod, &p.VotePeriod, validateVotePeriod),
+		paramtypes.NewParamSetPair(KeyVoteThreshold, &p.VoteThreshold, validateVoteThreshold),
+		paramtypes.NewParamSetPair(KeySlashWindow, &p.SlashWindow, validateSlashWindow),
+		paramtypes.NewParamSetPair(KeyMinValidPerWindow, &p.MinValidPerWindow, validateMinValidPerWindow),
+		paramtypes.NewParamSetPair(KeySlashFraction, &p.SlashFraction, validateSlashFraction),
+		paramtypes.NewParamSetPair(KeyDataTypes, &p.DataTypes, validateDataTypes),
 	}
 }
 
-// ValidateBasic performs basic validation on distribution parameters.
+// ValidateBasic performs basic validation on oracle parameters.
 func (p *Params) ValidateBasic() error {
-	if p.VotePeriod < 4 || p.VotePeriod > 10 {
+	if err := validateVotePeriod(p.VotePeriod); err != nil {
+		return err
+	}
+	if err := validateVoteThreshold(p.VoteThreshold); err != nil {
+		return err
+	}
+	if err := validateSlashWindow(p.SlashWindow); err != nil {
+		return err
+	}
+	if err := validateMinValidPerWindow(p.MinValidPerWindow); err != nil {
+		return err
+	}
+	if err := validateSlashFraction(p.SlashFraction); err != nil {
+		return err
+	}
+	return validateDataTypes(p.DataTypes)
+}
+
+func validateVotePeriod(i interface{}) error {
+	votePeriod, ok := i.(int64)
+	if !ok {
+		return fmt.Errorf("invalid parameter type: %T", i)
+	}
+
+	if votePeriod < 4 || votePeriod > 10 {
 		return fmt.Errorf(
-			"vote period should be between 4 and 10 blocks: %d", p.VotePeriod,
+			"vote period should be between 4 and 10 blocks: %d", votePeriod,
 		)
 	}
 
 	return nil
 }
 
-func validateVotePeriod(i interface{}) error {
-	if _, ok := i.(int64); !ok {
-		return fmt.Errorf("invalid parameter type: %T", i)
-	}
-	return nil
-}
-
 func validateVoteThreshold(i interface{}) error {
-	if _, ok := i.(sdk.Dec); !ok {
+	voteThreshold, ok := i.(sdk.Dec)
+	if !ok {
 		return fmt.Errorf("invalid parameter type: %T", i)
 	}
+
+	if voteThreshold.LTE(sdk.ZeroDec()) || voteThreshold.GT(sdk.OneDec()) {
+		return fmt.Errorf("vote threshold value must be within the 0% - 100% range, got: %s", voteThreshold)
+	}
+
 	return nil
 }
 
 func validateSlashWindow(i interface{}) error {
-	if _, ok := i.(int64); !ok {
+	slashWindow, ok := i.(int64)
+	if !ok {
 		return fmt.Errorf("invalid parameter type: %T", i)
 	}
+
+	if slashWindow < 1 {
+		return fmt.Errorf("slashing window can't be zero or negative: %d", slashWindow)
+	}
+
 	return nil
 }
 
 func validateMinValidPerWindow(i interface{}) error {
-	if _, ok := i.(sdk.Dec); !ok {
+	minValidPerWindow, ok := i.(sdk.Dec)
+	if !ok {
 		return fmt.Errorf("invalid parameter type: %T", i)
 	}
+
+	if minValidPerWindow.LTE(sdk.ZeroDec()) || minValidPerWindow.GT(sdk.OneDec()) {
+		return fmt.Errorf("min valid per window value must be within the 0% - 100% range, got: %s", minValidPerWindow)
+	}
+
 	return nil
 }
 
 func validateSlashFraction(i interface{}) error {
-	if _, ok := i.(sdk.Dec); !ok {
+	slashFraction, ok := i.(sdk.Dec)
+	if !ok {
 		return fmt.Errorf("invalid parameter type: %T", i)
 	}
+
+	if slashFraction.LTE(sdk.ZeroDec()) || slashFraction.GT(sdk.OneDec()) {
+		return fmt.Errorf("slash fraction value must be within the 0% - 100% range, got: %s", slashFraction)
+	}
+
 	return nil
 }
 
 func validateDataTypes(i interface{}) error {
-	if _, ok := i.([]string); !ok {
+	dataTypes, ok := i.([]string)
+	if !ok {
 		return fmt.Errorf("invalid parameter type: %T", i)
 	}
+
+	for i, dataType := range dataTypes {
+		if strings.TrimSpace(dataType) == "" {
+			return fmt.Errorf("oracle data type at index %d cannot be blank", i)
+		}
+	}
+
 	return nil
 }
