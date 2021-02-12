@@ -16,7 +16,6 @@ var (
 	KeySlashWindow       = []byte("slashwindow")
 	KeyMinValidPerWindow = []byte("minvalidperwindow")
 	KeySlashFraction     = []byte("slashfraction")
-	KeyTargetThreshold   = []byte("targetthreshold")
 	KeyDataTypes         = []byte("datatypes")
 )
 
@@ -48,7 +47,6 @@ func (p *Params) ParamSetPairs() paramtypes.ParamSetPairs {
 		paramtypes.NewParamSetPair(KeySlashWindow, &p.SlashWindow, validateSlashWindow),
 		paramtypes.NewParamSetPair(KeyMinValidPerWindow, &p.MinValidPerWindow, validateMinValidPerWindow),
 		paramtypes.NewParamSetPair(KeySlashFraction, &p.SlashFraction, validateSlashFraction),
-		paramtypes.NewParamSetPair(KeyTargetThreshold, &p.TargetThreshold, validateTargetThreshold),
 		paramtypes.NewParamSetPair(KeyDataTypes, &p.DataTypes, validateDataTypes),
 	}
 }
@@ -70,10 +68,6 @@ func (p *Params) ValidateBasic() error {
 	if err := validateSlashFraction(p.SlashFraction); err != nil {
 		return err
 	}
-	if err := validateTargetThreshold(p.TargetThreshold); err != nil {
-		return err
-	}
-
 	return validateDataTypes(p.DataTypes)
 }
 
@@ -96,10 +90,6 @@ func validateVoteThreshold(i interface{}) error {
 	voteThreshold, ok := i.(sdk.Dec)
 	if !ok {
 		return fmt.Errorf("invalid parameter type: %T", i)
-	}
-
-	if voteThreshold.IsNil() {
-		return errors.New("vote threshold cannot be nil")
 	}
 
 	if voteThreshold.LTE(sdk.ZeroDec()) || voteThreshold.GT(sdk.OneDec()) {
@@ -128,10 +118,6 @@ func validateMinValidPerWindow(i interface{}) error {
 		return fmt.Errorf("invalid parameter type: %T", i)
 	}
 
-	if minValidPerWindow.IsNil() {
-		return errors.New("min valid per window cannot be nil")
-	}
-
 	if minValidPerWindow.LTE(sdk.ZeroDec()) || minValidPerWindow.GT(sdk.OneDec()) {
 		return fmt.Errorf("min valid per window value must be within the 0% - 100% range, got: %s", minValidPerWindow)
 	}
@@ -145,29 +131,8 @@ func validateSlashFraction(i interface{}) error {
 		return fmt.Errorf("invalid parameter type: %T", i)
 	}
 
-	if slashFraction.IsNil() {
-		return errors.New("slash fraction cannot be nil")
-	}
-
 	if slashFraction.LTE(sdk.ZeroDec()) || slashFraction.GT(sdk.OneDec()) {
 		return fmt.Errorf("slash fraction value must be within the 0% - 100% range, got: %s", slashFraction)
-	}
-
-	return nil
-}
-
-func validateTargetThreshold(i interface{}) error {
-	targetThreshold, ok := i.(sdk.Dec)
-	if !ok {
-		return fmt.Errorf("invalid parameter type: %T", i)
-	}
-
-	if targetThreshold.IsNil() {
-		return errors.New("target threshold cannot be nil")
-	}
-
-	if targetThreshold.LTE(sdk.ZeroDec()) || targetThreshold.GT(sdk.OneDec()) {
-		return fmt.Errorf("target threshold value must be within the 0% - 100% range, got: %s", targetThreshold)
 	}
 
 	return nil
