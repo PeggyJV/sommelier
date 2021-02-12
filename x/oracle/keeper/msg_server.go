@@ -21,7 +21,9 @@ func (k Keeper) DelegateFeedConsent(c context.Context, msg *types.MsgDelegateFee
 
 	val, del := msg.MustGetValidator(), msg.MustGetDelegate()
 
-	if k.stakingKeeper.Validator(ctx, sdk.ValAddress(val)) == nil {
+	// check that the signer is a bonded validator and is not jailed
+	validator := k.stakingKeeper.Validator(ctx, sdk.ValAddress(val))
+	if validator == nil {
 		return nil, sdkerrors.Wrap(stakingtypes.ErrNoValidatorFound, sdk.ValAddress(val).String())
 	}
 
@@ -39,7 +41,7 @@ func (k Keeper) DelegateFeedConsent(c context.Context, msg *types.MsgDelegateFee
 		return nil, sdkerrors.Wrapf(sdkerrors.ErrUnauthorized, "feeder delegate %s cannot be a validator", del)
 	}
 
-	k.SetValidatorDelegateAddress(ctx, del, sdk.ValAddress(val))
+	k.SetValidatorDelegateAddress(ctx, val, del)
 
 	ctx.EventManager().EmitEvent(
 		sdk.NewEvent(
@@ -73,7 +75,9 @@ func (k Keeper) OracleDataPrevote(c context.Context, msg *types.MsgOracleDataPre
 		k.SetValidatorDelegateAddress(ctx, signer, validatorAddr)
 	}
 
-	// TODO: update as we don't need to store the full msg but only the hashes
+	// NOTE: a validator can prevote multiple times but can only submit a single vote
+
+	// TODO: set prevote for current voting period
 	k.SetOracleDataPrevote(ctx, validatorAddr, *msg.Prevote)
 
 	ctx.EventManager().EmitEvents(
@@ -116,6 +120,10 @@ func (k Keeper) OracleDataVote(c context.Context, msg *types.MsgOracleDataVote) 
 		// everytime the a validator feeder submits oracle data
 		k.SetValidatorDelegateAddress(ctx, signer, validatorAddr)
 	}
+
+	// check that the validator is still bonded and is not jailed
+
+	// TODO: check if there's an existing vote for the current voting period start
 
 	// Get the prevote for that validator from the store
 	prevote, found := k.GetOracleDataPrevote(ctx, validatorAddr)
@@ -211,6 +219,7 @@ func (k Keeper) OracleDataVote(c context.Context, msg *types.MsgOracleDataVote) 
 		},
 	}
 
+	// TODO: set data for the current voting period
 	k.SetOracleDataVote(ctx, validatorAddr, vote)
 	ctx.EventManager().EmitEvents(oracleEvents)
 

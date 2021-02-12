@@ -71,7 +71,7 @@ func (k Keeper) EndBlocker(ctx sdk.Context) {
 		return
 	}
 
-	k.Logger(ctx).Info("tallying oracle votes")
+	k.Logger(ctx).Info("tallying oracle votes", "height", fmt.Sprintf("%d", ctx.BlockHeight()))
 
 	votedPower := int64(0)
 
@@ -96,7 +96,8 @@ func (k Keeper) EndBlocker(ctx sdk.Context) {
 		// save a voted array
 		validatorVotesMap[validatorAddr.String()] = true
 
-		// remove the miss counter for validators who have voted
+		// remove the miss counter in the current voting window for validators who have already voted
+		// TODO: Set this to 0 instead?
 		k.DeleteMissCounter(ctx, validatorAddr)
 
 		// find total voting votedPower
@@ -122,6 +123,8 @@ func (k Keeper) EndBlocker(ctx sdk.Context) {
 		}
 
 		// delete the vote as we no longer require it
+		// TODO: consider keeping the votes for a few voting windows in order to
+		// be able to submit evidence of inaccurate data feed
 		k.DeleteOracleDataVote(ctx, validatorAddr)
 		return false
 	})
@@ -143,14 +146,16 @@ func (k Keeper) EndBlocker(ctx sdk.Context) {
 	storeAverages := sdk.NewDec(votedPower).Quo(sdk.NewDec(totalPower)).GT(params.VoteThreshold)
 
 	// compute the averages for each type of data tracked by the oracle
-	for dataType, oracleDatas := range oracleDataByTypeMap {
-		// first, lets delete the old data
-		k.DeleteOracleData(ctx, dataType, oracleDatas)
 
-		// handle
+	// TODO: don't use maps for iterations
+	for dataType, oracleData := range oracleDataByTypeMap {
+		// TODO: delete the oracle old data
+		// k.DeleteOracleData(ctx, dataType, dataType, oracleData)
 
-		aggregatedData, err := k.oracleHandler(ctx, oracleDatas)
+		// aggregate the date using the handler set up during app initialization
+		aggregatedData, err := k.oracleHandler(ctx, oracleData)
 		if err != nil {
+			// TODO: ensure correctness or consider logging instead?
 			panic(err)
 		}
 
@@ -192,16 +197,19 @@ func (k Keeper) EndBlocker(ctx sdk.Context) {
 
 		consensusAddr, err := validator.GetConsAddr()
 		if err != nil {
-			// TODO: check why this could error and ensure correctness
 			panic(err)
 		}
+
+		// TODO: make sure the validator is not unbonded before slashing
 
 		k.stakingKeeper.Slash(ctx, consensusAddr, ctx.BlockHeight(), validator.GetConsensusPower(), params.SlashFraction)
 		return false
 	})
 
-	// TODO: reward validators
-	// TODO: Setup module account for oracle module
+	// TODO: reward validators.
+	// NOTE: the reward amount should be less than the slashed amount
+
+	// TODO: Setup module account for oracle module.
 
 	// Reset state prior to next round
 	k.DeleteAllPrevotes(ctx)
