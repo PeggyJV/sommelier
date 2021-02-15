@@ -11,7 +11,7 @@ import (
 // used on sommelier chain.
 // CONTRACT: this function assumes all the data from the slice share the same type.
 func (k Keeper) DefaultOracleHandler() types.OracleHandler {
-	return func(ctx sdk.Context, oracleDataInputs []types.OracleData) (types.OracleData, error) {
+	return func(_ sdk.Context, oracleDataInputs []types.OracleData) (types.OracleData, error) {
 		var (
 			aggregatedData types.OracleData
 			err            error
@@ -21,9 +21,10 @@ func (k Keeper) DefaultOracleHandler() types.OracleHandler {
 			return nil, nil
 		}
 
+		// NOTE: we only check the first element as the rest should be of the same type
 		switch oracleData := oracleDataInputs[0].(type) {
 		case *types.UniswapPair:
-			aggregatedData, err = UniswapDataHandler(oracleDataInputs)
+			aggregatedData, err = types.UniswapDataHandler(oracleDataInputs)
 		default:
 			return nil, sdkerrors.Wrapf(types.ErrInvalidOracleData, "unsupported data type %s", oracleData)
 		}
@@ -34,31 +35,4 @@ func (k Keeper) DefaultOracleHandler() types.OracleHandler {
 
 		return aggregatedData, nil
 	}
-}
-
-// UniswapDataHandler averages a collection of uniswap pairs oracle data
-func UniswapDataHandler(oracleDataInputs []types.OracleData) (types.OracleData, error) {
-	var uniswapDataAggregated *types.UniswapPair
-
-	for i, od := range oracleDataInputs {
-		up, ok := od.(*types.UniswapPair)
-		if !ok {
-			return nil, sdkerrors.Wrapf(types.ErrInvalidOracleData, "invalid oracle data %T at index %d", od, i)
-		}
-
-		// set up the fixed fields
-		if i == 0 {
-			uniswapDataAggregated = &types.UniswapPair{
-				Id:     up.Id,
-				Token0: up.Token0,
-				Token1: up.Token1,
-			}
-		}
-
-		// TODO: add pair data
-	}
-
-	// TODO: division
-
-	return uniswapDataAggregated, nil
 }
