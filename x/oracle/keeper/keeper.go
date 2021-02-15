@@ -219,13 +219,13 @@ func (k Keeper) HasOracleDataVote(ctx sdk.Context, val sdk.ValAddress) bool {
 }
 
 // IterateOracleDataVotes iterates over all votes in the store
-func (k Keeper) IterateOracleDataVotes(ctx sdk.Context, handler func(val sdk.ValAddress, vote types.OracleVote) (stop bool)) {
+func (k Keeper) IterateOracleDataVotes(ctx sdk.Context, handler func(val sdk.AccAddress, vote types.OracleVote) (stop bool)) {
 	store := ctx.KVStore(k.storeKey)
 	iter := sdk.KVStorePrefixIterator(store, types.OracleDataVoteKeyPrefix)
 	defer iter.Close()
 	for ; iter.Valid(); iter.Next() {
 
-		val := sdk.ValAddress(bytes.TrimPrefix(iter.Key(), types.OracleDataVoteKeyPrefix))
+		val := sdk.AccAddress(bytes.TrimPrefix(iter.Key(), types.OracleDataVoteKeyPrefix))
 
 		var vote types.OracleVote
 		k.cdc.MustUnmarshalBinaryBare(iter.Value(), &vote)

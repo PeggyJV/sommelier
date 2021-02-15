@@ -3,9 +3,7 @@ package types
 import (
 	"crypto/sha256"
 	"encoding/json"
-	"errors"
 	"fmt"
-	"strings"
 
 	tmbytes "github.com/tendermint/tendermint/libs/bytes"
 
@@ -109,8 +107,8 @@ func (up UniswapPair) Validate() error {
 
 // Validate performs a basic validation of the uniswap token fields.
 func (ut UniswapToken) Validate() error {
-	if strings.TrimSpace(ut.Id) == "" {
-		return errors.New("token id cannot be blank")
+	if err := peggytypes.ValidateEthAddress(ut.Id); err != nil {
+		return fmt.Errorf("invalid token address %s: %w", ut.Id, err)
 	}
 
 	return nil
