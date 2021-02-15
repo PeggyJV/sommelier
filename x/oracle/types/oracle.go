@@ -29,6 +29,7 @@ type OracleData interface {
 	Type() string
 	Validate() error
 	MarshalJSON() ([]byte, error)
+	Compare(aggregatedData OracleData, target sdk.Dec) bool
 }
 
 // DataHash returns the hash for a precommit given the proper args
@@ -105,15 +106,6 @@ func (up UniswapPair) Validate() error {
 	return nil
 }
 
-// Validate performs a basic validation of the uniswap token fields.
-func (ut UniswapToken) Validate() error {
-	if err := peggytypes.ValidateEthAddress(ut.Id); err != nil {
-		return fmt.Errorf("invalid token address %s: %w", ut.Id, err)
-	}
-
-	return nil
-}
-
 // MarshalJSON marshals and sorts the returned value
 func (up UniswapPair) MarshalJSON() ([]byte, error) {
 	bz, err := json.Marshal(up)
@@ -122,6 +114,62 @@ func (up UniswapPair) MarshalJSON() ([]byte, error) {
 	}
 
 	return sdk.SortJSON(bz)
+}
+
+// Compare checks that the current pair is within the target range
+func (up UniswapPair) Compare(aggregatedData OracleData, target sdk.Dec) bool {
+	aggregatedPair, ok := aggregatedData.(*UniswapPair)
+	if !ok || up.Type() != aggregatedData.Type() {
+		// aggregated data is from a different type
+		return false
+	}
+
+	if up.Id != aggregatedPair.Id {
+		return false
+	}
+
+	if up.Token0 != aggregatedPair.Token0 {
+		return false
+	}
+
+	if up.Token1 != aggregatedPair.Token1 {
+		return false
+	}
+
+	if up.Reserve0.Sub(aggregatedPair.Reserve0).Abs().GT(target) {
+		return false
+	}
+
+	if up.Reserve1.Sub(aggregatedPair.Reserve1).Abs().GT(target) {
+		return false
+	}
+
+	if up.ReserveUsd.Sub(aggregatedPair.ReserveUsd).Abs().GT(target) {
+		return false
+	}
+
+	if up.Token0Price.Sub(aggregatedPair.Token0Price).Abs().GT(target) {
+		return false
+	}
+
+	if up.Token1Price.Sub(aggregatedPair.Token1Price).Abs().GT(target) {
+		return false
+	}
+
+	if up.TotalSupply.Sub(aggregatedPair.TotalSupply).Abs().GT(target) {
+		return false
+	}
+
+	return true
+}
+
+// Validate performs a basic validation of the uniswap token fields.
+func (ut UniswapToken) Validate() error {
+	if err := peggytypes.ValidateEthAddress(ut.Id); err != nil {
+		return fmt.Errorf("invalid token address %s: %w", ut.Id, err)
+	}
+
+	return nil
 }
 
 // BlocksTillNextPeriod helper

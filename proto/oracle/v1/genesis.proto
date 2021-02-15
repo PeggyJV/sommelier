@@ -48,8 +48,15 @@ message Params {
         (gogoproto.nullable)   = false
     ];
 
+    // TargetThreshold defines the max percentage difference that a given oracle data needs to have with
+    // the aggregated data in order for the feeder to be elegible for rewards.
+    string target_threshold       = 6 [
+        (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec", 
+        (gogoproto.nullable)   = false
+    ];
+
     // DataTypes defines which data types validators must submit each voting period
-    repeated string data_types  = 6;
+    repeated string data_types  = 7;
 }
 
 // MissCounter stores the validator address and the number of associated misses

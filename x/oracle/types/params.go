@@ -15,6 +15,7 @@ var (
 	KeySlashWindow       = []byte("slashwindow")
 	KeyMinValidPerWindow = []byte("minvalidperwindow")
 	KeySlashFraction     = []byte("slashfraction")
+	KeyTargetThreshold   = []byte("targetthreshold")
 	KeyDataTypes         = []byte("datatypes")
 )
 
@@ -33,6 +34,7 @@ func DefaultParams() Params {
 		SlashWindow:       10000,
 		MinValidPerWindow: sdk.NewDecWithPrec(10, 2), // 10%
 		SlashFraction:     sdk.NewDecWithPrec(1, 3),  // 0.1%
+		TargetThreshold:   sdk.NewDecWithPrec(5, 3),  // 0.5%,
 		DataTypes:         []string{UniswapDataType},
 	}
 }
@@ -45,6 +47,7 @@ func (p *Params) ParamSetPairs() paramtypes.ParamSetPairs {
 		paramtypes.NewParamSetPair(KeySlashWindow, &p.SlashWindow, validateSlashWindow),
 		paramtypes.NewParamSetPair(KeyMinValidPerWindow, &p.MinValidPerWindow, validateMinValidPerWindow),
 		paramtypes.NewParamSetPair(KeySlashFraction, &p.SlashFraction, validateSlashFraction),
+		paramtypes.NewParamSetPair(KeyTargetThreshold, &p.TargetThreshold, validateTargetThreshold),
 		paramtypes.NewParamSetPair(KeyDataTypes, &p.DataTypes, validateDataTypes),
 	}
 }
@@ -64,6 +67,9 @@ func (p *Params) ValidateBasic() error {
 		return err
 	}
 	if err := validateSlashFraction(p.SlashFraction); err != nil {
+		return err
+	}
+	if err := validateSlashFraction(p.TargetThreshold); err != nil {
 		return err
 	}
 	return validateDataTypes(p.DataTypes)
@@ -131,6 +137,19 @@ func validateSlashFraction(i interface{}) error {
 
 	if slashFraction.LTE(sdk.ZeroDec()) || slashFraction.GT(sdk.OneDec()) {
 		return fmt.Errorf("slash fraction value must be within the 0% - 100% range, got: %s", slashFraction)
+	}
+
+	return nil
+}
+
+func validateTargetThreshold(i interface{}) error {
+	slashFraction, ok := i.(sdk.Dec)
+	if !ok {
+		return fmt.Errorf("invalid parameter type: %T", i)
+	}
+
+	if slashFraction.LTE(sdk.ZeroDec()) || slashFraction.GT(sdk.OneDec()) {
+		return fmt.Errorf("target threshold value must be within the 0% - 100% range, got: %s", slashFraction)
 	}
 
 	return nil
