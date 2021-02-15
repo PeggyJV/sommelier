@@ -23,10 +23,6 @@ const UniswapDataType = "uniswap"
 // DataHashes defines an array of bytes in hex format.
 type DataHashes []tmbytes.HexBytes
 
-// OracleHandler defines a type that is passed to the oracle keeper to archive custom handling of
-// oracle data processing. It returns the aggregated data and an error.
-type OracleHandler func(ctx sdk.Context, oracleDataInput []OracleData) (OracleData, error)
-
 // OracleData represents a data type that is supported by the oracle
 type OracleData interface {
 	proto.Message
@@ -44,10 +40,19 @@ func DataHash(salt, jsonData string, signer sdk.AccAddress) []byte {
 	return h.Sum(nil)
 }
 
-// TODO:
-func NewUniswapPair(id string) *UniswapPair {
+// NewUniswapPair creates a new UniswapPair instance with the fixed values set by args and
+// the other fields to their zero values.
+func NewUniswapPair(id string, token0, token1 UniswapToken) *UniswapPair {
 	return &UniswapPair{
-		Id: id,
+		Id:          id,
+		Reserve0:    sdk.ZeroDec(),
+		Reserve1:    sdk.ZeroDec(),
+		ReserveUsd:  sdk.ZeroDec(),
+		Token0:      token0,
+		Token1:      token1,
+		Token0Price: sdk.ZeroDec(),
+		Token1Price: sdk.ZeroDec(),
+		TotalSupply: sdk.ZeroDec(),
 	}
 }
 
