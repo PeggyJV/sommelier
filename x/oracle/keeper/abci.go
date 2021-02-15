@@ -66,7 +66,7 @@ func (k Keeper) EndBlocker(ctx sdk.Context) {
 			}
 
 			// add oracle data to maps
-			detailedMap[oracleData.Type()][validatorAddr.String()] = oracleData
+			// detailedMap[oracleData.Type()][validatorAddr.String()] = oracleData
 			oracleDataByTypeMap[oracleData.Type()] = append(oracleDataByTypeMap[oracleData.Type()], oracleData)
 		}
 
@@ -126,7 +126,6 @@ func (k Keeper) EndBlocker(ctx sdk.Context) {
 
 		// store the "average" for scoring validators later
 		aggregates = append(aggregates, aggregatedData)
-
 	}
 
 	// Compare each validators vote for each data type against the
@@ -164,7 +163,11 @@ func (k Keeper) EndBlocker(ctx sdk.Context) {
 			panic(err)
 		}
 
-		// TODO: make sure the validator is not unbonded before slashing
+		// the validator cannot be unbonded, otherwise slashing will panic
+		if validator.IsUnbonded() {
+			k.Logger(ctx).Debug("validator not slashed due to being unbonded", "address", consensusAddr.String())
+			return false
+		}
 
 		k.stakingKeeper.Slash(ctx, consensusAddr, ctx.BlockHeight(), validator.GetConsensusPower(), params.SlashFraction)
 		return false

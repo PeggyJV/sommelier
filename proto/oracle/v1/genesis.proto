@@ -50,7 +50,7 @@ message Params {
 
     // TargetThreshold defines the max percentage difference that a given oracle data needs to have with
     // the aggregated data in order for the feeder to be elegible for rewards.
-    string target_threshold     = 6 [
+    string target_threshold       = 6 [
         (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec", 
         (gogoproto.nullable)   = false
     ];
