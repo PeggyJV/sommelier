@@ -63,7 +63,7 @@ message UniswapPair {
 
 // UniswapToken is the returned uniswap token representation
 message UniswapToken {
-		// TODO: what's the ID?
+		// token address
 		string id       = 1;
 		// number of decimal positions of the pair token
 		uint64 decimals = 2;

@@ -11,7 +11,7 @@ import (
 func InitGenesis(ctx sdk.Context, k keeper.Keeper, gs types.GenesisState) {
 	k.SetParams(ctx, gs.Params)
 	// Set the vote period at initialization
-	k.SetVotePeriodStart(ctx, ctx.BlockHeight())
+	k.SetVotePeriodStart(ctx)
 
 	for _, missCounter := range gs.MissCounters {
 		// NOTE: error checked during genesis validation

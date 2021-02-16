@@ -5,7 +5,6 @@ import (
 	"reflect"
 	"strings"
 
-	cdctypes "github.com/cosmos/cosmos-sdk/codec/types"
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
@@ -13,7 +12,13 @@ import (
 	tmbytes "github.com/tendermint/tendermint/libs/bytes"
 )
 
-var _, _, _ sdk.Msg = &MsgDelegateFeedConsent{}, &MsgOracleDataPrevote{}, &MsgOracleDataVote{}
+var (
+	_ sdk.Msg = &MsgDelegateFeedConsent{}
+	_ sdk.Msg = &MsgOracleDataPrevote{}
+	_ sdk.Msg = &MsgOracleDataVote{}
+)
+
+var _ codectypes.UnpackInterfacesMessage = &MsgOracleDataVote{}
 
 const (
 	TypeMsgDelegateFeedConsent = "delegate_feed_consent"
@@ -143,7 +148,7 @@ func (m *MsgOracleDataPrevote) MustGetSigner() sdk.AccAddress {
 ///////////////////////
 
 // NewMsgOracleDataVote return a new MsgOracleDataPrevote
-func NewMsgOracleDataVote(salt []string, data []*cdctypes.Any, signer sdk.AccAddress) *MsgOracleDataVote {
+func NewMsgOracleDataVote(salt []string, data []*codectypes.Any, signer sdk.AccAddress) *MsgOracleDataVote {
 	return &MsgOracleDataVote{
 		Salt:       salt,
 		OracleData: data,
@@ -220,13 +225,7 @@ func (m *MsgOracleDataVote) MustGetSigner() sdk.AccAddress {
 
 // UnpackInterfaces implements UnpackInterfacesMessage.UnpackInterfaces
 func (m *MsgOracleDataVote) UnpackInterfaces(unpacker codectypes.AnyUnpacker) (err error) {
-	for _, oda := range m.OracleData {
-		var od OracleData
-		if err := unpacker.UnpackAny(oda, &od); err != nil {
-			return err
-		}
-	}
-	return nil
+	return m.Vote.UnpackInterfaces(unpacker)
 }
 
 // UnpackInterfaces implements UnpackInterfacesMessage.UnpackInterfaces
