@@ -2,8 +2,6 @@ package types
 
 import (
 	"fmt"
-	"reflect"
-	"strings"
 
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -164,7 +162,11 @@ func (m *MsgOracleDataPrevote) MustGetSigner() sdk.AccAddress {
 ///////////////////////
 
 // NewMsgOracleDataVote return a new MsgOracleDataPrevote
-func NewMsgOracleDataVote(salt []string, data []*codectypes.Any, signer sdk.AccAddress) *MsgOracleDataVote {
+func NewMsgOracleDataVote(vote *OracleVote, signer sdk.AccAddress) *MsgOracleDataVote {
+	if signer == nil {
+		return nil
+	}
+
 	return &MsgOracleDataVote{
 		Vote:   vote,
 		Signer: signer.String(),
@@ -182,45 +184,7 @@ func (m *MsgOracleDataVote) ValidateBasic() error {
 	if _, err := sdk.AccAddressFromBech32(m.Signer); err != nil {
 		return sdkerrors.Wrap(sdkerrors.ErrInvalidAddress, err.Error())
 	}
-
-	if len(m.OracleData) == 0 {
-		return sdkerrors.Wrap(ErrInvalidOracleData, "cannot submit empty oracle data")
-	}
-
-	if len(m.Salt) != len(m.OracleData) {
-		return sdkerrors.Wrapf(ErrInvalidOracleData, "must match salt array length, expected %d, got %d", len(m.Salt), len(m.OracleData))
-	}
-
-	for i, salt := range m.Salt {
-		if strings.TrimSpace(salt) == "" {
-			return fmt.Errorf("salt string at index %d cannot be blank", i)
-		}
-	}
-
-	// NOTE: oracle data from the array MUST have the same type
-	var oracleDataType reflect.Type
-
-	for i, oracleData := range m.OracleData {
-		od, err := UnpackOracleData(oracleData)
-		if err != nil {
-			return sdkerrors.Wrap(ErrInvalidOracleData, err.Error())
-		}
-
-		// check type consistency
-		dataType := reflect.TypeOf(od)
-
-		if i == 0 {
-			oracleDataType = dataType
-		} else if oracleDataType != dataType {
-			return sdkerrors.Wrapf(ErrInvalidOracleData, "oracle data type mismatch, expected %v, got %v", oracleDataType, dataType)
-		}
-
-		if err = od.Validate(); err != nil {
-			return sdkerrors.Wrap(ErrInvalidOracleData, err.Error())
-		}
-	}
-
-	return nil
+	return m.Vote.Validate()
 }
 
 // GetSignBytes implements sdk.Msg

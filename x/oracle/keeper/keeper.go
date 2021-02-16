@@ -305,10 +305,10 @@ func (k Keeper) HasOracleData(ctx sdk.Context, dataType, id string) bool {
 // VotePeriod //
 ////////////////
 
-// SetVotePeriodStart sets the vote period start height
-func (k Keeper) SetVotePeriodStart(ctx sdk.Context) {
+// SetVotePeriodStart sets the current vote period start height
+func (k Keeper) SetVotePeriodStart(ctx sdk.Context, height int64) {
 	store := ctx.KVStore(k.storeKey)
-	store.Set(types.VotePeriodStartKey, sdk.Uint64ToBigEndian(uint64(ctx.BlockHeight())))
+	store.Set(types.VotePeriodStartKey, sdk.Uint64ToBigEndian(uint64(height)))
 }
 
 // GetVotePeriodStart returns the vote period start height

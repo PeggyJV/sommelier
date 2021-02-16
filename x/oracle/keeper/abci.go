@@ -41,17 +41,24 @@ func (k Keeper) EndBlocker(ctx sdk.Context) {
 
 	// iterate over the data votes
 	// TODO: only iterate on the last voting period
-	k.IterateOracleDataVotes(ctx, func(validatorAddr sdk.AccAddress, vote types.OracleVote) bool {
+	k.IterateOracleDataVotes(ctx, func(feederAddr sdk.AccAddress, vote types.OracleVote) bool {
+		// NOTE: the vote might have been submitted by a feeder delegate, so we have to check the
+		// original validator address
+		validatorAddr := k.GetValidatorAddressFromDelegate(ctx, feederAddr)
+
 		// mark the validator voting as true
 		validatorVotesMap[validatorAddr.String()] = true
 
 		// remove the miss counter in the current voting window for validators who have already voted
 		k.DeleteMissCounter(ctx, validatorAddr)
 
-		// find total voting votedPower
 		validator := k.stakingKeeper.Validator(ctx, sdk.ValAddress(validatorAddr))
 		if validator == nil {
 			// validator nor found, continue with next vote
+			k.Logger(ctx).Debug(
+				"validator not found for oracle vote tally",
+				"validator-address", validatorAddr.String(), "feeder-address", feederAddr.String(),
+			)
 			return false
 		}
 
@@ -73,8 +80,7 @@ func (k Keeper) EndBlocker(ctx sdk.Context) {
 			}
 
 			// add oracle data to maps
-			submittedFeedMap[oracleData.Type()][validatorAddr.String()] = oracleData
-
+			submittedFeedMap[oracleData.GetID()] = oracleData
 		}
 
 		// delete the vote as it has already been processed
@@ -88,6 +94,8 @@ func (k Keeper) EndBlocker(ctx sdk.Context) {
 	totalPower := int64(0)
 	k.stakingKeeper.IterateBondedValidatorsByPower(ctx, func(_ int64, validator stakingtypes.ValidatorI) bool {
 		totalPower += validator.GetConsensusPower()
+
+		// TODO: I still don't get why we use an account address for the validator ¯\_(ツ)_/¯
 		validatorAddr := sdk.AccAddress(validator.GetOperator())
 
 		if !validatorVotesMap[validatorAddr.String()] {
@@ -109,10 +117,15 @@ func (k Keeper) EndBlocker(ctx sdk.Context) {
 
 	// NOTE: we iterate over the params data types to avoid using map iteration
 	// which is non-deterministic.
+	// TODO: iterate over the data identifiers
 	for _, dt := range params.DataTypes {
 		oracleData, ok := oracleDataByTypeMap[dt]
 		if !ok {
-			// no oracle data type was submitted
+			// no oracle data for the current type was submitted
+			k.Logger(ctx).Debug(
+				"no oracle data submitted for existing type",
+				"data-type", dt, "voting-period-start", fmt.Sprintf("%d", votePeriodStart),
+			)
 			continue
 		}
 
@@ -120,13 +133,19 @@ func (k Keeper) EndBlocker(ctx sdk.Context) {
 		// k.DeleteOracleData(ctx, dataType, dataType, oracleData)
 
 		// aggregate the date using the handler set up during app initialization
+		// FIXME: this should either
+		// (1) return an array of aggregated for all the uniswap pairs, or
+		// (2) rely only on the data that has the same id and return a single element
 		aggregatedData, err := k.oracleHandler(ctx, oracleData)
 		if err != nil {
 			// TODO: ensure correctness or consider logging instead?
 			panic(err)
 		}
 
-		// once we have an "average" we set it in the store
+		// once we have the aggregated data for the data type, we set it in the store
+
+		// only store averages if there's enough voting power
+		// TODO: why? should we also not give out rewards?
 		if storeAverages {
 			k.SetAggregatedOracleData(ctx, aggregatedData)
 		}
@@ -140,28 +159,34 @@ func (k Keeper) EndBlocker(ctx sdk.Context) {
 	for dataType, vals := range detailedMap {
 		for val, data := range vals {
 			rewardEligable[val] = false
-			// TODO: check if the data provided is within x% of the average? I would assume x would have to be low:
-			// eg: 0.1?
-			// TODO: define X on the parameters
 			if averageMap[dataType].Valid(data) {
-				rewardEligable[val] = true
+				// TODO: reward validators / delegates
+				// TODO: maybe consider splitting the delegate / validator reward in equal parts because the validator has the stake and the feeder
+				// submits the data.
 			}
 		}
 	}
 
 	// slash validators who have missed to many votes
-	k.IterateMissCounters(ctx, func(validatorAddr sdk.AccAddress, counter int64) bool {
+	k.IterateMissCounters(ctx, func(feederAddr sdk.AccAddress, counter int64) bool {
 		missedVotesPerWindow := sdk.NewDec(counter).Quo(sdk.NewDec(params.SlashWindow))
 		if params.MinValidPerWindow.GTE(missedVotesPerWindow) {
 			// continue with next counter
 			return false
 		}
 
+		// NOTE: the vote might have been submitted by a feeder delegate, so we have to check the
+		// original validator address
+		validatorAddr := k.GetValidatorAddressFromDelegate(ctx, feederAddr)
+
 		// slash validator below the minimum vote threshold
 		validator := k.stakingKeeper.Validator(ctx, sdk.ValAddress(validatorAddr))
 		if validator == nil {
 			// validator not found, continue with the next counter
-			// TODO: ensure correctness
+			k.Logger(ctx).Debug(
+				"validator not found for miss counter",
+				"validator-address", validatorAddr.String(), "feeder-address", feederAddr.String(),
+			)
 			return false
 		}
 
@@ -180,7 +205,6 @@ func (k Keeper) EndBlocker(ctx sdk.Context) {
 		return false
 	})
 
-	// TODO: reward validators.
 	// NOTE: the reward amount should be less than the slashed amount
 
 	// TODO: Setup module account for oracle module.
@@ -188,8 +212,9 @@ func (k Keeper) EndBlocker(ctx sdk.Context) {
 	// Reset state prior to next round
 	k.DeleteAllPrevotes(ctx)
 
-	// After the tallying is done, reset the vote period start
-	k.SetVotePeriodStart(ctx, ctx.BlockHeight())
+	// After the tallying is done, reset the vote period start to the next block
+	votePeriodStart = ctx.BlockHeight() + 1
+	k.SetVotePeriodStart(ctx, votePeriodStart)
 
 	k.Logger(ctx).Info("vote period set", "height", fmt.Sprintf("%d", votePeriodStart))
 	ctx.EventManager().EmitEvent(
