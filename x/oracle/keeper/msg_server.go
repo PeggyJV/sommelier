@@ -124,6 +124,9 @@ func (k Keeper) OracleDataVote(c context.Context, msg *types.MsgOracleDataVote) 
 	// check that the validator is still bonded and is not jailed
 
 	// TODO: check if there's an existing vote for the current voting period start
+	if k.HasOracleDataVote(ctx, validatorAddr) {
+		return nil, sdkerrors.Wrap(types.ErrAlreadyVoted, validatorAddr.String())
+	}
 
 	// Get the prevote for that validator from the store
 	prevote, found := k.GetOracleDataPrevote(ctx, validatorAddr)
@@ -196,9 +199,11 @@ func (k Keeper) OracleDataVote(c context.Context, msg *types.MsgOracleDataVote) 
 		if !bytes.Equal(voteHash, prevote.Hashes[i]) {
 			return nil, sdkerrors.Wrapf(
 				types.ErrHashMismatch,
-				"precommit(%x) commit(%x)", prevote.Hashes[i], voteHash,
+				"precommit %x ≠ commit %x", prevote.Hashes[i], voteHash,
 			)
 		}
+
+		k.SetOracleData(ctx, oracleData)
 
 		oracleEvents = append(
 			oracleEvents,
