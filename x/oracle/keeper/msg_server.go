@@ -133,18 +133,18 @@ func (k Keeper) OracleDataVote(c context.Context, msg *types.MsgOracleDataVote) 
 	}
 
 	// ensure that the right number of data is in the msg
-	if len(prevote.Hashes) != len(msg.OracleData) {
+	if len(prevote.Hashes) != len(msg.Vote.Feed.OracleData) {
 		return nil, sdkerrors.Wrapf(
 			types.ErrInvalidOracleData,
-			"oracle hashes doesn't match the oracle data length, expected %d, got %d", len(prevote.Hashes), len(msg.OracleData),
+			"oracle hashes doesn't match the oracle data length, expected %d, got %d", len(prevote.Hashes), len(msg.Vote.Feed.OracleData),
 		)
 	}
 
 	// ensure that the right number of salts is in the msg
-	if len(prevote.Hashes) != len(msg.Salt) {
+	if len(prevote.Hashes) != len(msg.Vote.Salt) {
 		return nil, sdkerrors.Wrapf(
 			types.ErrInvalidPrevote,
-			"oracle hashes doesn't match the salt length, expected %d, got %d", len(prevote.Hashes), len(msg.Salt),
+			"oracle hashes doesn't match the salt length, expected %d, got %d", len(prevote.Hashes), len(msg.Vote.Salt),
 		)
 	}
 
@@ -164,8 +164,8 @@ func (k Keeper) OracleDataVote(c context.Context, msg *types.MsgOracleDataVote) 
 		),
 	}
 
-	for i, oracleDataAny := range msg.OracleData {
-		salt := msg.Salt[i]
+	for i, oracleDataAny := range msg.Vote.Feed.OracleData {
+		salt := msg.Vote.Salt[i]
 
 		// unpack the oracle data one by one
 		oracleData, err := types.UnpackOracleData(oracleDataAny)
@@ -212,15 +212,8 @@ func (k Keeper) OracleDataVote(c context.Context, msg *types.MsgOracleDataVote) 
 	}
 
 	// set the vote in the store
-	vote := types.OracleVote{
-		Salt: msg.Salt,
-		Feed: &types.OracleFeed{
-			OracleData: msg.OracleData,
-		},
-	}
-
 	// TODO: set data for the current voting period
-	k.SetOracleDataVote(ctx, validatorAddr, vote)
+	k.SetOracleDataVote(ctx, validatorAddr, *msg.Vote)
 	ctx.EventManager().EmitEvents(oracleEvents)
 
 	defer func() {

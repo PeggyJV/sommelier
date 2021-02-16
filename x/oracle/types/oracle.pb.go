@@ -140,7 +140,7 @@ func (m *UniswapPair) GetToken1() UniswapToken {
 
 // UniswapToken is the returned uniswap token representation
 type UniswapToken struct {
-	// TODO: what's the ID?
+	// token address
 	Id string `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
 	// number of decimal positions of the pair token
 	Decimals uint64 `protobuf:"varint,2,opt,name=decimals,proto3" json:"decimals,omitempty"`

@@ -116,13 +116,16 @@ func (up UniswapPair) MarshalJSON() ([]byte, error) {
 	return sdk.SortJSON(bz)
 }
 
-// Compare checks that the current pair is within the target range
+// Compare checks that the current pair is within the target range and the fixed
+// fields match with the aggregated data.
 func (up UniswapPair) Compare(aggregatedData OracleData, target sdk.Dec) bool {
 	aggregatedPair, ok := aggregatedData.(*UniswapPair)
 	if !ok || up.Type() != aggregatedData.Type() {
 		// aggregated data is from a different type
 		return false
 	}
+
+	// fixed data must match: id, token 0, token 1
 
 	if up.Id != aggregatedPair.Id {
 		return false
@@ -136,26 +139,32 @@ func (up UniswapPair) Compare(aggregatedData OracleData, target sdk.Dec) bool {
 		return false
 	}
 
-	if up.Reserve0.Sub(aggregatedPair.Reserve0).Abs().GT(target) {
+	// |reserve0 - reserve0 (agg)| / (reserve0 (agg)) ≤ target
+	if up.Reserve0.Sub(aggregatedPair.Reserve0).Abs().Quo(aggregatedPair.Reserve0).GT(target) {
 		return false
 	}
 
+	// |reserve1 - reserve1 (agg)| / (reserve1 (agg)) ≤ target
 	if up.Reserve1.Sub(aggregatedPair.Reserve1).Abs().GT(target) {
 		return false
 	}
 
+	// |reserveUsd - reserveUsd (agg)| / (reserveUsd (agg)) ≤ target
 	if up.ReserveUsd.Sub(aggregatedPair.ReserveUsd).Abs().GT(target) {
 		return false
 	}
 
+	// |token0price - token0price (agg)| / (token0price (agg)) ≤ target
 	if up.Token0Price.Sub(aggregatedPair.Token0Price).Abs().GT(target) {
 		return false
 	}
 
+	// |token1price - token1price (agg)| / (token1price (agg)) ≤ target
 	if up.Token1Price.Sub(aggregatedPair.Token1Price).Abs().GT(target) {
 		return false
 	}
 
+	// |totalSupply - totalSupply (agg)| / (totalSupply (agg)) ≤ target
 	if up.TotalSupply.Sub(aggregatedPair.TotalSupply).Abs().GT(target) {
 		return false
 	}
@@ -170,9 +179,4 @@ func (ut UniswapToken) Validate() error {
 	}
 
 	return nil
-}
-
-// BlocksTillNextPeriod helper
-func (vp *VotePeriod) BlocksTillNextPeriod() int64 {
-	return vp.VotePeriodEnd - vp.CurrentHeight
 }

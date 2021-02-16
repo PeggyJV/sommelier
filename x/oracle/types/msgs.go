@@ -12,7 +12,13 @@ import (
 	tmbytes "github.com/tendermint/tendermint/libs/bytes"
 )
 
-// var _ codectypes.UnpackInterfacesMessage = &MsgOracleDataVote{}
+var (
+	_ sdk.Msg = &MsgDelegateFeedConsent{}
+	_ sdk.Msg = &MsgOracleDataPrevote{}
+	_ sdk.Msg = &MsgOracleDataVote{}
+)
+
+var _ codectypes.UnpackInterfacesMessage = &MsgOracleDataVote{}
 
 const (
 	TypeMsgDelegateFeedConsent = "delegate_feed_consent"
@@ -158,11 +164,7 @@ func (m *MsgOracleDataPrevote) MustGetSigner() sdk.AccAddress {
 ///////////////////////
 
 // NewMsgOracleDataVote return a new MsgOracleDataPrevote
-func NewMsgOracleDataVote(vote *OracleVote, signer sdk.AccAddress) *MsgOracleDataVote {
-	if signer == nil {
-		return nil
-	}
-
+func NewMsgOracleDataVote(salt []string, data []*codectypes.Any, signer sdk.AccAddress) *MsgOracleDataVote {
 	return &MsgOracleDataVote{
 		Vote:   vote,
 		Signer: signer.String(),
@@ -238,10 +240,10 @@ func (m *MsgOracleDataVote) MustGetSigner() sdk.AccAddress {
 	return addr
 }
 
-// // UnpackInterfaces implements UnpackInterfacesMessage.UnpackInterfaces
-// func (m *MsgOracleDataVote) UnpackInterfaces(unpacker codectypes.AnyUnpacker) (err error) {
-// 	return m.Vote.UnpackInterfaces(unpacker)
-// }
+// UnpackInterfaces implements UnpackInterfacesMessage.UnpackInterfaces
+func (m *MsgOracleDataVote) UnpackInterfaces(unpacker codectypes.AnyUnpacker) (err error) {
+	return m.Vote.UnpackInterfaces(unpacker)
+}
 
 // UnpackInterfaces implements UnpackInterfacesMessage.UnpackInterfaces
 func (m *QueryOracleDataResponse) UnpackInterfaces(unpacker codectypes.AnyUnpacker) error {

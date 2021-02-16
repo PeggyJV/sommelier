@@ -36,16 +36,16 @@ func (k Keeper) EndBlocker(ctx sdk.Context) {
 		oracleDataByTypeMap = make(map[string][]types.OracleData)
 
 		// all aggregated oracle data for the current voting period
-		aggregates = make([]types.OracleData, 0)
+		aggregateMap = make(map[string]types.OracleData)
 	)
 
 	// iterate over the data votes
+	// TODO: only iterate on the last voting period
 	k.IterateOracleDataVotes(ctx, func(validatorAddr sdk.AccAddress, vote types.OracleVote) bool {
-		// save a voted array
+		// mark the validator voting as true
 		validatorVotesMap[validatorAddr.String()] = true
 
 		// remove the miss counter in the current voting window for validators who have already voted
-		// TODO: Set this to 0 instead?
 		k.DeleteMissCounter(ctx, validatorAddr)
 
 		// find total voting votedPower
@@ -57,20 +57,27 @@ func (k Keeper) EndBlocker(ctx sdk.Context) {
 
 		votedPower += validator.GetConsensusPower()
 
+		// Safety check. Already validated on msg validation
+		if vote.Feed == nil || len(vote.Feed.OracleData) == 0 {
+			k.Logger(ctx).Debug("attempted to process empty oracle data from feed", "validator", validatorAddr.String())
+			return false
+		}
+
 		// save the oracle data for later processing
 		for _, oracleDataAny := range vote.Feed.OracleData {
 			oracleData, err := types.UnpackOracleData(oracleDataAny)
 			if err != nil {
-				// NOTE: this should never panic as the oracle data had already been processed
+				// NOTE: this should never panic as the oracle data had already been checked before
+				// setting it to store.
 				panic(err)
 			}
 
 			// add oracle data to maps
-			// detailedMap[oracleData.Type()][validatorAddr.String()] = oracleData
-			oracleDataByTypeMap[oracleData.Type()] = append(oracleDataByTypeMap[oracleData.Type()], oracleData)
+			submittedFeedMap[oracleData.Type()][validatorAddr.String()] = oracleData
+
 		}
 
-		// delete the vote as we no longer require it
+		// delete the vote as it has already been processed
 		// TODO: consider keeping the votes for a few voting windows in order to
 		// be able to submit evidence of inaccurate data feed
 		k.DeleteOracleDataVote(ctx, validatorAddr)
@@ -125,7 +132,7 @@ func (k Keeper) EndBlocker(ctx sdk.Context) {
 		}
 
 		// store the "average" for scoring validators later
-		aggregates = append(aggregates, aggregatedData)
+		aggregateMap[aggregatedData.Type()+aggregatedData.GetID()] = aggregatedData
 	}
 
 	// Compare each validators vote for each data type against the
