@@ -1,6 +1,7 @@
 package types
 
 import (
+	"errors"
 	fmt "fmt"
 	"strings"
 
@@ -97,6 +98,10 @@ func validateVoteThreshold(i interface{}) error {
 		return fmt.Errorf("invalid parameter type: %T", i)
 	}
 
+	if voteThreshold.IsNil() {
+		return errors.New("vote threshold cannot be nil")
+	}
+
 	if voteThreshold.LTE(sdk.ZeroDec()) || voteThreshold.GT(sdk.OneDec()) {
 		return fmt.Errorf("vote threshold value must be within the 0% - 100% range, got: %s", voteThreshold)
 	}
@@ -123,6 +128,10 @@ func validateMinValidPerWindow(i interface{}) error {
 		return fmt.Errorf("invalid parameter type: %T", i)
 	}
 
+	if minValidPerWindow.IsNil() {
+		return errors.New("min valid per window cannot be nil")
+	}
+
 	if minValidPerWindow.LTE(sdk.ZeroDec()) || minValidPerWindow.GT(sdk.OneDec()) {
 		return fmt.Errorf("min valid per window value must be within the 0% - 100% range, got: %s", minValidPerWindow)
 	}
@@ -136,6 +145,10 @@ func validateSlashFraction(i interface{}) error {
 		return fmt.Errorf("invalid parameter type: %T", i)
 	}
 
+	if slashFraction.IsNil() {
+		return errors.New("slash fraction cannot be nil")
+	}
+
 	if slashFraction.LTE(sdk.ZeroDec()) || slashFraction.GT(sdk.OneDec()) {
 		return fmt.Errorf("slash fraction value must be within the 0% - 100% range, got: %s", slashFraction)
 	}
@@ -144,13 +157,17 @@ func validateSlashFraction(i interface{}) error {
 }
 
 func validateTargetThreshold(i interface{}) error {
-	slashFraction, ok := i.(sdk.Dec)
+	targetThreshold, ok := i.(sdk.Dec)
 	if !ok {
 		return fmt.Errorf("invalid parameter type: %T", i)
 	}
 
-	if slashFraction.LTE(sdk.ZeroDec()) || slashFraction.GT(sdk.OneDec()) {
-		return fmt.Errorf("target threshold value must be within the 0% - 100% range, got: %s", slashFraction)
+	if targetThreshold.IsNil() {
+		return errors.New("target threshold cannot be nil")
+	}
+
+	if targetThreshold.LTE(sdk.ZeroDec()) || targetThreshold.GT(sdk.OneDec()) {
+		return fmt.Errorf("target threshold value must be within the 0% - 100% range, got: %s", targetThreshold)
 	}
 
 	return nil
