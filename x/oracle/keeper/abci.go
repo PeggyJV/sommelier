@@ -9,7 +9,17 @@ import (
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 )
 
-// EndBlocker is called at the end of every block
+// EndBlocker defines the oracle logic that executes at the end of every block:
+// 0) Checks if the voting period is over and performs a no-op if it's not.
+// 1) Checks all the votes submitted in the last period and groups them by ID.
+// 	This step also deletes the oracle votes.
+// 2) Increments the miss counter for validators that didn't vote
+// 3) Aggregates the data by ID and type
+// 4) Compares each submitted data with the aggregated result in order to check
+// 	for reward eligibility
+// 5) Slashes validators that haven't voted in a while
+// 6) Deletes all prevotes
+// 7) Sets the new voting period to the next block
 func (k Keeper) EndBlocker(ctx sdk.Context) {
 	params := k.GetParamSet(ctx)
 	votePeriodStart, found := k.GetVotePeriodStart(ctx)
@@ -30,21 +40,21 @@ func (k Keeper) EndBlocker(ctx sdk.Context) {
 	var (
 		// validators who submitted their vote
 		validatorVotesMap = make(map[string]bool)
-		// oracle data fed by a validator by type: <validator_address><data_type><data_id> --> oracle data
-		submittedFeedMap = make(map[string]types.OracleData)
-		// all oracle data submitted on the current voting period, by type
-		oracleDataByTypeMap = make(map[string][]types.OracleData)
-
-		// all aggregated oracle data for the current voting period
+		// oracle data fed by validators: <data_id> --> FeederVote
+		submittedFeedMap = make(map[string][]types.FeederVote)
+		// same as the submittedFeedMap but without the validator info
+		submittedDataMap = make(map[string][]types.OracleData)
+		// array of all the fed oracle data identifiers. Used for deterministic iteration
+		submittedDataIDs = make([]string, 0)
+		// all aggregated oracle data for the current voting period:  <data_id> --> OracleData
 		aggregateMap = make(map[string]types.OracleData)
 	)
 
 	// iterate over the data votes
 	// TODO: only iterate on the last voting period
-	k.IterateOracleDataVotes(ctx, func(feederAddr sdk.AccAddress, vote types.OracleVote) bool {
+	k.IterateOracleDataVotes(ctx, func(validatorAddr sdk.ValAddress, vote types.OracleVote) bool {
 		// NOTE: the vote might have been submitted by a feeder delegate, so we have to check the
 		// original validator address
-		validatorAddr := k.GetValidatorAddressFromDelegate(ctx, feederAddr)
 
 		// mark the validator voting as true
 		validatorVotesMap[validatorAddr.String()] = true
@@ -57,7 +67,7 @@ func (k Keeper) EndBlocker(ctx sdk.Context) {
 			// validator nor found, continue with next vote
 			k.Logger(ctx).Debug(
 				"validator not found for oracle vote tally",
-				"validator-address", validatorAddr.String(), "feeder-address", feederAddr.String(),
+				"validator-address", validatorAddr.String(),
 			)
 			return false
 		}
@@ -80,7 +90,24 @@ func (k Keeper) EndBlocker(ctx sdk.Context) {
 			}
 
 			// add oracle data to maps
-			submittedFeedMap[oracleData.GetID()] = oracleData
+			feederVote := types.FeederVote{
+				Data:    oracleData,
+				Address: validatorAddr,
+			}
+
+			dataID := oracleData.GetID()
+
+			oracleFeeds, ok := submittedFeedMap[dataID]
+			if ok {
+				submittedFeedMap[dataID] = append(oracleFeeds, feederVote)
+
+				datas := submittedDataMap[dataID]
+				submittedDataMap[dataID] = append(datas, oracleData)
+			} else {
+				submittedFeedMap[dataID] = []types.FeederVote{feederVote}
+				submittedDataMap[dataID] = []types.OracleData{oracleData}
+				submittedDataIDs = append(submittedDataIDs, dataID)
+			}
 		}
 
 		// delete the vote as it has already been processed
@@ -95,8 +122,7 @@ func (k Keeper) EndBlocker(ctx sdk.Context) {
 	k.stakingKeeper.IterateBondedValidatorsByPower(ctx, func(_ int64, validator stakingtypes.ValidatorI) bool {
 		totalPower += validator.GetConsensusPower()
 
-		// TODO: I still don't get why we use an account address for the validator ¯\_(ツ)_/¯
-		validatorAddr := sdk.AccAddress(validator.GetOperator())
+		validatorAddr := validator.GetOperator()
 
 		if !validatorVotesMap[validatorAddr.String()] {
 			// TODO: this is wrong because the feeder could submit a single oracle data uniswap pair instead of all the required
@@ -114,29 +140,19 @@ func (k Keeper) EndBlocker(ctx sdk.Context) {
 	storeAverages := sdk.NewDec(votedPower).Quo(sdk.NewDec(totalPower)).GT(params.VoteThreshold)
 
 	// Now, compute the aggregated data (eg: avg, median, etc.) for each type of data tracked by the oracle
-
-	// NOTE: we iterate over the params data types to avoid using map iteration
-	// which is non-deterministic.
-	// TODO: iterate over the data identifiers
-	for _, dt := range params.DataTypes {
-		oracleData, ok := oracleDataByTypeMap[dt]
+	for _, id := range submittedDataIDs {
+		oracleDatas, ok := submittedDataMap[id]
 		if !ok {
-			// no oracle data for the current type was submitted
+			// no oracle data for the current id was submitted
 			k.Logger(ctx).Debug(
-				"no oracle data submitted for existing type",
-				"data-type", dt, "voting-period-start", fmt.Sprintf("%d", votePeriodStart),
+				"no oracle data submitted for existing identifier",
+				"id", id, "voting-period-start", fmt.Sprintf("%d", votePeriodStart),
 			)
 			continue
 		}
 
-		// TODO: delete the oracle old data
-		// k.DeleteOracleData(ctx, dataType, dataType, oracleData)
-
-		// aggregate the date using the handler set up during app initialization
-		// FIXME: this should either
-		// (1) return an array of aggregated for all the uniswap pairs, or
-		// (2) rely only on the data that has the same id and return a single element
-		aggregatedData, err := k.oracleHandler(ctx, oracleData)
+		// aggregate the data  using the handler set up during app initialization
+		aggregatedData, err := k.oracleHandler(ctx, oracleDatas)
 		if err != nil {
 			// TODO: ensure correctness or consider logging instead?
 			panic(err)
@@ -145,25 +161,47 @@ func (k Keeper) EndBlocker(ctx sdk.Context) {
 		// once we have the aggregated data for the data type, we set it in the store
 
 		// only store averages if there's enough voting power
-		// TODO: why? should we also not give out rewards?
 		if storeAverages {
-			k.SetAggregatedOracleData(ctx, aggregatedData)
+			k.SetAggregatedOracleData(ctx, aggregatedData) // TODO: why? should we also not give out rewards?
 		}
 
+		// TODO: delete the oracle old data
+		// k.DeleteOracleData(ctx, dataType, dataType, oracleData)
+
 		// store the "average" for scoring validators later
-		aggregateMap[aggregatedData.Type()+aggregatedData.GetID()] = aggregatedData
+		aggregateMap[aggregatedData.GetID()] = aggregatedData
 	}
 
-	// Compare each validators vote for each data type against the
-	// averages to define which are eligable for rewards
-	for dataType, vals := range detailedMap {
-		for val, data := range vals {
-			rewardEligable[val] = false
-			if averageMap[dataType].Valid(data) {
-				// TODO: reward validators / delegates
-				// TODO: maybe consider splitting the delegate / validator reward in equal parts because the validator has the stake and the feeder
-				// submits the data.
+	for _, id := range submittedDataIDs {
+		aggregateData, ok := aggregateMap[id]
+		if !ok {
+			k.Logger(ctx).Debug(
+				"aggregated data for existing identifier",
+				"id", id, "voting-period-start", fmt.Sprintf("%d", votePeriodStart),
+			)
+			continue
+		}
+
+		feederVotes, ok := submittedFeedMap[id]
+		if !ok {
+			// no oracle feed vote for the current id was submitted
+			k.Logger(ctx).Debug(
+				"no feed vote submitted for existing identifier",
+				"id", id, "voting-period-start", fmt.Sprintf("%d", votePeriodStart),
+			)
+			continue
+		}
+
+		// Compare each validators vote for each data type against the
+		// averages to define which are eligable for rewards
+		for _, feederVote := range feederVotes {
+			if !feederVote.Data.Compare(aggregateData, params.TargetThreshold) {
+				continue
 			}
+
+			// TODO: reward validators / delegates
+			// TODO: maybe consider splitting the delegate / validator reward in equal parts because the validator has the stake and the feeder
+			// submits the data.
 		}
 	}
 

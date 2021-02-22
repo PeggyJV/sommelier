@@ -6,8 +6,15 @@ import (
 	"strings"
 
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
+
+// FeederVote defines a single oracle data submitted by the feeder address
+type FeederVote struct {
+	Data    OracleData
+	Address sdk.ValAddress
+}
 
 // BlocksTillNextPeriod helper
 func (vp *VotePeriod) BlocksTillNextPeriod() int64 {
