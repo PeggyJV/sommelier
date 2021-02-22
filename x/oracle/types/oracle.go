@@ -2,7 +2,6 @@ package types
 
 import (
 	"crypto/sha256"
-	"encoding/json"
 	"fmt"
 
 	tmbytes "github.com/tendermint/tendermint/libs/bytes"
@@ -25,10 +24,12 @@ type DataHashes []tmbytes.HexBytes
 type OracleData interface {
 	proto.Message
 
+	// GetID returns the identifier of the data
 	GetID() string
+	// Type returns the oracle type category
 	Type() string
+	// Validate performs a stateless validation of the fields
 	Validate() error
-	MarshalJSON() ([]byte, error)
 	// Compare checks that the data is within the target range and the fixed
 	// fields match with the aggregated data
 	Compare(aggregatedData OracleData, target sdk.Dec) bool
@@ -106,16 +107,6 @@ func (up UniswapPair) Validate() error {
 	}
 
 	return nil
-}
-
-// MarshalJSON marshals and sorts the returned value
-func (up UniswapPair) MarshalJSON() ([]byte, error) {
-	bz, err := json.Marshal(up)
-	if err != nil {
-		return nil, err
-	}
-
-	return sdk.SortJSON(bz)
 }
 
 // Compare checks that the current pair is within the target range and the fixed

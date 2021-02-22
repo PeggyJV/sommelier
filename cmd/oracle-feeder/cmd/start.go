@@ -69,9 +69,9 @@ func startOracleFeederCmd() *cobra.Command {
 // Coordinator helps coordinate feeding of the oracle
 type Coordinator struct {
 	clientCtx     client.Context
-	uniswapPair   *oracle.UniswapPair
+	feed          oracle.OracleFeed
 	delegatorAddr sdk.AccAddress
-	validatorAddr sdk.AccAddress
+	validatorAddr sdk.ValAddress
 	salt          string
 	hash          tmbytes.HexBytes
 
@@ -139,20 +139,12 @@ func (c *Coordinator) handleBlock(blockEvent ctypes.ResultEvent) error {
 
 // SubmitOracleDataVote is called to send the vote
 func (c *Coordinator) SubmitOracleDataVote() error {
-	od, err := oracle.PackOracleData(c.uniswapPair)
-	if err != nil {
-		return err
-	}
-
 	oracleVote := &oracle.OracleVote{
 		Salt: []string{c.salt},
-		Feed: &oracle.OracleFeed{
-			OracleData: []*cdctypes.Any{od},
-		},
+		Feed: &c.feed,
 	}
 
 	msg := oracle.NewMsgOracleDataVote(oracleVote, c.delegatorAddr)
-
 	if err := msg.ValidateBasic(); err != nil {
 		return err
 	}
@@ -162,39 +154,18 @@ func (c *Coordinator) SubmitOracleDataVote() error {
 
 // SubmitOracleDataPrevote is called to send the prevote
 func (c *Coordinator) SubmitOracleDataPrevote() error {
-	pairs, err := config.GetPairs(context.Background(), 100, 0)
-	if err != nil {
-		// Failing here on parsing data with decimals
-		return err
-	}
-
-	// marshal and sort
-	jsonBz, err := json.Marshal(pairs)
+	feed, err := config.GetPairs(context.Background(), 100, 0)
 	if err != nil {
 		return err
 	}
 
-	jsonBz, err = sdk.SortJSON(jsonBz)
+	jsonBz, err := feed.MarshalJSON()
 	if err != nil {
 		return err
 	}
 
-	for _, pair := range ud.OracleData {
-		bz, err := pair.MarshalJSON()
-		if err != nil {
-			return err
-		}
-
-		fmt.Println(bz)
-	}
-
-	// TODO: fix, consider changing the oracle DataHash to use an array of oracle data instead of the json
-	// OR marshal the oracle data slice to json here and sort
-
-	// c.uniswapPair = ud
-	// c.salt = genrandstr(6)
-
-	// c.hash = oracle.DataHash(c.salt, ud.CannonicalJSON(), c.validatorAddr)
+	c.salt = genrandstr(6)
+	c.hash = oracle.DataHash(c.salt, string(jsonBz), c.validatorAddr)
 
 	msg := oracle.NewMsgOracleDataPrevote([]tmbytes.HexBytes{c.hash}, c.delegatorAddr)
 	if err := msg.ValidateBasic(); err != nil {

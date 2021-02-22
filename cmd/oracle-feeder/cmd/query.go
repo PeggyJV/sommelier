@@ -176,7 +176,7 @@ func queryValidatorAddress() *cobra.Command {
 }
 
 // GetValFromDel helper
-func GetValFromDel(ctx client.Context, del sdk.AccAddress) (sdk.AccAddress, error) {
+func GetValFromDel(ctx client.Context, del sdk.AccAddress) (sdk.ValAddress, error) {
 	queryClient := oracletypes.NewQueryClient(ctx)
 
 	req := &oracletypes.QueryValidatorAddressRequest{
@@ -375,7 +375,7 @@ func queryOracleData() *cobra.Command {
 				return err
 			}
 
-			jsonBz, err := od.MarshalJSON()
+			jsonBz, err := json.Marshal(od)
 			if err != nil {
 				return err
 			}

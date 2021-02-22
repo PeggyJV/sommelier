@@ -167,9 +167,27 @@ func (k Keeper) OracleDataVote(c context.Context, msg *types.MsgOracleDataVote) 
 		),
 	}
 
-	for i, oracleDataAny := range msg.Vote.Feed.OracleData {
-		salt := msg.Vote.Salt[i]
+	// parse data to json in order to compute the vote hash
+	jsonBz, err := msg.Vote.Feed.MarshalJSON()
+	if err != nil {
+		return nil, sdkerrors.Wrap(
+			sdkerrors.ErrJSONMarshal, "failed to marshal json oracle data feed",
+		)
+	}
 
+	// calculate the vote hash on the server
+	voteHash := types.DataHash(msg.Vote.Salt[0], string(jsonBz), validatorAddr)
+
+	// compare to prevote hash
+	// TODO: why are there multiple hashes???
+	if !bytes.Equal(voteHash, prevote.Hashes[0]) {
+		return nil, sdkerrors.Wrapf(
+			types.ErrHashMismatch,
+			"precommit %x ≠ commit %x", prevote.Hashes[0], voteHash,
+		)
+	}
+
+	for i, oracleDataAny := range msg.Vote.Feed.OracleData {
 		// unpack the oracle data one by one
 		oracleData, err := types.UnpackOracleData(oracleDataAny)
 		if err != nil {
@@ -180,26 +198,6 @@ func (k Keeper) OracleDataVote(c context.Context, msg *types.MsgOracleDataVote) 
 			return nil, sdkerrors.Wrapf(
 				types.ErrUnsupportedDataType,
 				"%s, allowed %v", oracleData.Type(), allowedDataTypes,
-			)
-		}
-
-		// parse data to json in order to compute the vote hash
-		jsonBz, err := oracleData.MarshalJSON()
-		if err != nil {
-			return nil, sdkerrors.Wrapf(
-				sdkerrors.ErrJSONMarshal,
-				"failed to marshal json for oracle data with id: %s", oracleData.GetID(),
-			)
-		}
-
-		// calculate the vote hash on the server
-		voteHash := types.DataHash(salt, string(jsonBz), validatorAddr)
-
-		// compare to prevote hash
-		if !bytes.Equal(voteHash, prevote.Hashes[i]) {
-			return nil, sdkerrors.Wrapf(
-				types.ErrHashMismatch,
-				"precommit %x ≠ commit %x", prevote.Hashes[i], voteHash,
 			)
 		}
 
