@@ -70,9 +70,10 @@ func (p *Params) ValidateBasic() error {
 	if err := validateSlashFraction(p.SlashFraction); err != nil {
 		return err
 	}
-	if err := validateSlashFraction(p.TargetThreshold); err != nil {
+	if err := validateTargetThreshold(p.TargetThreshold); err != nil {
 		return err
 	}
+
 	return validateDataTypes(p.DataTypes)
 }
 
