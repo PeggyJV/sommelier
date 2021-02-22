@@ -6,6 +6,7 @@ import (
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 
 	tmbytes "github.com/tendermint/tendermint/libs/bytes"
 )
@@ -29,7 +30,11 @@ const (
 ////////////////////////////
 
 // NewMsgDelegateFeedConsent returns a new MsgDelegateFeedConsent
-func NewMsgDelegateFeedConsent(val, del sdk.AccAddress) *MsgDelegateFeedConsent {
+func NewMsgDelegateFeedConsent(del sdk.AccAddress, val sdk.ValAddress) *MsgDelegateFeedConsent {
+	if del == nil || val == nil {
+		return nil
+	}
+
 	return &MsgDelegateFeedConsent{
 		Validator: val.String(),
 		Delegate:  del.String(),
@@ -44,12 +49,20 @@ func (m *MsgDelegateFeedConsent) Type() string { return TypeMsgDelegateFeedConse
 
 // ValidateBasic implements sdk.Msg
 func (m *MsgDelegateFeedConsent) ValidateBasic() error {
-	if _, err := sdk.AccAddressFromBech32(m.Validator); err != nil {
+	validatorAddr, err := sdk.ValAddressFromBech32(m.Validator)
+	if err != nil {
 		return sdkerrors.Wrap(sdkerrors.ErrInvalidAddress, err.Error())
 	}
-	if _, err := sdk.AccAddressFromBech32(m.Delegate); err != nil {
+
+	delegatorAddr, err := sdk.AccAddressFromBech32(m.Delegate)
+	if err != nil {
 		return sdkerrors.Wrap(sdkerrors.ErrInvalidAddress, err.Error())
 	}
+
+	if sdk.AccAddress(validatorAddr).Equals(delegatorAddr) {
+		return sdkerrors.Wrap(stakingtypes.ErrBadValidatorAddr, "delegate address cannot match the delegator address")
+	}
+
 	return nil
 }
 
@@ -60,25 +73,27 @@ func (m *MsgDelegateFeedConsent) GetSignBytes() []byte {
 
 // GetSigners implements sdk.Msg
 func (m *MsgDelegateFeedConsent) GetSigners() []sdk.AccAddress {
-	return []sdk.AccAddress{m.MustGetValidator()}
+	return []sdk.AccAddress{sdk.AccAddress(m.MustGetValidator())}
 }
 
-// MustGetValidator returns the sdk.AccAddress for the validator
-func (m *MsgDelegateFeedConsent) MustGetValidator() sdk.AccAddress {
-	val, err := sdk.AccAddressFromBech32(m.Validator)
+// MustGetValidator returns the sdk.ValAddress for the validator
+func (m *MsgDelegateFeedConsent) MustGetValidator() sdk.ValAddress {
+	validatorAddr, err := sdk.ValAddressFromBech32(m.Validator)
 	if err != nil {
 		panic(err)
 	}
-	return val
+
+	return validatorAddr
 }
 
 // MustGetDelegate returns the sdk.AccAddress for the delegate
 func (m *MsgDelegateFeedConsent) MustGetDelegate() sdk.AccAddress {
-	val, err := sdk.AccAddressFromBech32(m.Delegate)
+	delegatorAddr, err := sdk.AccAddressFromBech32(m.Delegate)
 	if err != nil {
 		panic(err)
 	}
-	return val
+
+	return delegatorAddr
 }
 
 //////////////////////////
@@ -125,7 +140,9 @@ func (m *MsgOracleDataPrevote) ValidateBasic() error {
 }
 
 // GetSignBytes implements sdk.Msg
-func (m *MsgOracleDataPrevote) GetSignBytes() []byte { panic("amino support disabled") }
+func (m *MsgOracleDataPrevote) GetSignBytes() []byte {
+	panic("amino support disabled")
+}
 
 // GetSigners implements sdk.Msg
 func (m *MsgOracleDataPrevote) GetSigners() []sdk.AccAddress {
@@ -172,7 +189,9 @@ func (m *MsgOracleDataVote) ValidateBasic() error {
 }
 
 // GetSignBytes implements sdk.Msg
-func (m *MsgOracleDataVote) GetSignBytes() []byte { panic("amino support disabled") }
+func (m *MsgOracleDataVote) GetSignBytes() []byte {
+	panic("amino support disabled")
+}
 
 // GetSigners implements sdk.Msg
 func (m *MsgOracleDataVote) GetSigners() []sdk.AccAddress { return []sdk.AccAddress{m.MustGetSigner()} }

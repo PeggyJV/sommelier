@@ -9,7 +9,7 @@ import (
 
 // DefaultOracleHandler is the default oracle handler for the uniswap oracle data type
 // used on sommelier chain.
-// CONTRACT: this function assumes all the data from the slice share the same type.
+// CONTRACT: this function assumes all the data from the slice share the same type and identifier.
 func (k Keeper) DefaultOracleHandler() types.OracleHandler {
 	return func(_ sdk.Context, oracleDataInputs []types.OracleData) (types.OracleData, error) {
 		var (

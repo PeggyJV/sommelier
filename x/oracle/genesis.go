@@ -15,7 +15,7 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, gs types.GenesisState) {
 
 	for _, missCounter := range gs.MissCounters {
 		// NOTE: error checked during genesis validation
-		valAddress, _ := sdk.AccAddressFromBech32(missCounter.Validator)
+		valAddress, _ := sdk.ValAddressFromBech32(missCounter.Validator)
 		k.SetMissCounter(ctx, valAddress, missCounter.Misses)
 	}
 

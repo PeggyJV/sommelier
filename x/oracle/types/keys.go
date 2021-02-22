@@ -50,12 +50,12 @@ func GetFeedDelegateKey(del sdk.AccAddress) []byte {
 }
 
 // GetOracleDataPrevoteKey returns the key for a validators prevote
-func GetOracleDataPrevoteKey(val sdk.AccAddress) []byte {
+func GetOracleDataPrevoteKey(val sdk.ValAddress) []byte {
 	return append(OracleDataPrevoteKeyPrefix, val.Bytes()...)
 }
 
 // GetOracleDataVoteKey returns the key for a validators vote
-func GetOracleDataVoteKey(val sdk.AccAddress) []byte {
+func GetOracleDataVoteKey(val sdk.ValAddress) []byte {
 	return append(OracleDataVoteKeyPrefix, val.Bytes()...)
 }
 
@@ -79,6 +79,6 @@ func GetOracleDataTypeKey(id string) []byte {
 }
 
 // GetMissCounterKey returns the key for the stored miss counter for a given validator
-func GetMissCounterKey(val sdk.AccAddress) []byte {
+func GetMissCounterKey(val sdk.ValAddress) []byte {
 	return append(MissCounterKeyPrefix, val.Bytes()...)
 }

@@ -62,13 +62,13 @@ func (k Keeper) SetHandler(handlerFn types.OracleHandler) {
 ////////////////////////
 
 // SetValidatorDelegateAddress sets a new address that will have the power to send data on behalf of the validator
-func (k Keeper) SetValidatorDelegateAddress(ctx sdk.Context, val, del sdk.AccAddress) {
+func (k Keeper) SetValidatorDelegateAddress(ctx sdk.Context, del sdk.AccAddress, val sdk.ValAddress) {
 	ctx.KVStore(k.storeKey).Set(types.GetFeedDelegateKey(del), val.Bytes())
 }
 
 // GetValidatorAddressFromDelegate returns the delegate address for a given validator
-func (k Keeper) GetValidatorAddressFromDelegate(ctx sdk.Context, del sdk.AccAddress) sdk.AccAddress {
-	return sdk.AccAddress(ctx.KVStore(k.storeKey).Get(types.GetFeedDelegateKey(del)))
+func (k Keeper) GetValidatorAddressFromDelegate(ctx sdk.Context, del sdk.AccAddress) sdk.ValAddress {
+	return ctx.KVStore(k.storeKey).Get(types.GetFeedDelegateKey(del))
 }
 
 // GetDelegateAddressFromValidator returns the validator address for a given delegate
@@ -111,14 +111,14 @@ func (k Keeper) IterateDelegateAddresses(ctx sdk.Context, handler func(del, val 
 
 // SetOracleDataPrevote sets the prevote for a given validator
 // CONTRACT: must provide the validator address here not the delegate address
-func (k Keeper) SetOracleDataPrevote(ctx sdk.Context, validatorAddr sdk.AccAddress, prevote types.OraclePrevote) {
+func (k Keeper) SetOracleDataPrevote(ctx sdk.Context, validatorAddr sdk.ValAddress, prevote types.OraclePrevote) {
 	bz := k.cdc.MustMarshalBinaryBare(&prevote)
 	ctx.KVStore(k.storeKey).Set(types.GetOracleDataPrevoteKey(validatorAddr), bz)
 }
 
 // GetOracleDataPrevote gets the prevote for a given validator
 // CONTRACT: must provide the validator address here not the delegate address
-func (k Keeper) GetOracleDataPrevote(ctx sdk.Context, val sdk.AccAddress) (types.OraclePrevote, bool) {
+func (k Keeper) GetOracleDataPrevote(ctx sdk.Context, val sdk.ValAddress) (types.OraclePrevote, bool) {
 	bz := ctx.KVStore(k.storeKey).Get(types.GetOracleDataPrevoteKey(val))
 	if len(bz) == 0 {
 		return types.OraclePrevote{}, false
@@ -131,7 +131,7 @@ func (k Keeper) GetOracleDataPrevote(ctx sdk.Context, val sdk.AccAddress) (types
 
 // DeleteAllPrevotes removes all the prevotes for the current block iteration
 func (k Keeper) DeleteAllPrevotes(ctx sdk.Context) {
-	k.IterateOracleDataPrevotes(ctx, func(val sdk.AccAddress, _ *types.MsgOracleDataPrevote) bool {
+	k.IterateOracleDataPrevotes(ctx, func(val sdk.ValAddress, _ *types.MsgOracleDataPrevote) bool {
 		k.DeleteOracleDataPrevote(ctx, val)
 		return false
 	})
@@ -139,25 +139,25 @@ func (k Keeper) DeleteAllPrevotes(ctx sdk.Context) {
 
 // DeleteOracleDataPrevote deletes the prevote for a given validator
 // CONTRACT: must provide the validator address here not the delegate address
-func (k Keeper) DeleteOracleDataPrevote(ctx sdk.Context, val sdk.AccAddress) {
+func (k Keeper) DeleteOracleDataPrevote(ctx sdk.Context, val sdk.ValAddress) {
 	ctx.KVStore(k.storeKey).Delete(types.GetOracleDataPrevoteKey(val))
 }
 
 // HasOracleDataPrevote gets the prevote for a given validator
 // CONTRACT: must provide the validator address here not the delegate address
-func (k Keeper) HasOracleDataPrevote(ctx sdk.Context, val sdk.AccAddress) bool {
+func (k Keeper) HasOracleDataPrevote(ctx sdk.Context, val sdk.ValAddress) bool {
 	return ctx.KVStore(k.storeKey).Has(types.GetOracleDataPrevoteKey(val))
 }
 
 // IterateOracleDataPrevotes iterates over all prevotes in the store
-func (k Keeper) IterateOracleDataPrevotes(ctx sdk.Context, handler func(val sdk.AccAddress, msg *types.MsgOracleDataPrevote) (stop bool)) {
+func (k Keeper) IterateOracleDataPrevotes(ctx sdk.Context, handler func(val sdk.ValAddress, msg *types.MsgOracleDataPrevote) (stop bool)) {
 	store := ctx.KVStore(k.storeKey)
 	iter := sdk.KVStorePrefixIterator(store, types.OracleDataPrevoteKeyPrefix)
 	defer iter.Close()
 
 	for ; iter.Valid(); iter.Next() {
 		var out types.MsgOracleDataPrevote
-		val := sdk.AccAddress(bytes.TrimPrefix(iter.Key(), types.OracleDataPrevoteKeyPrefix))
+		val := sdk.ValAddress(bytes.TrimPrefix(iter.Key(), types.OracleDataPrevoteKeyPrefix))
 		k.cdc.MustUnmarshalBinaryBare(iter.Value(), &out)
 		if handler(val, &out) {
 			break
@@ -171,14 +171,14 @@ func (k Keeper) IterateOracleDataPrevotes(ctx sdk.Context, handler func(val sdk.
 
 // SetOracleDataVote sets the prevote for a given validator
 // CONTRACT: must provide the validator address here not the delegate address
-func (k Keeper) SetOracleDataVote(ctx sdk.Context, val sdk.AccAddress, oracleVote types.OracleVote) {
+func (k Keeper) SetOracleDataVote(ctx sdk.Context, val sdk.ValAddress, oracleVote types.OracleVote) {
 	bz := k.cdc.MustMarshalBinaryBare(&oracleVote)
 	ctx.KVStore(k.storeKey).Set(types.GetOracleDataVoteKey(val), bz)
 }
 
 // GetOracleDataVote gets the prevote for a given validator
 // CONTRACT: must provide the validator address here not the delegate address
-func (k Keeper) GetOracleDataVote(ctx sdk.Context, val sdk.AccAddress) (types.OracleVote, bool) {
+func (k Keeper) GetOracleDataVote(ctx sdk.Context, val sdk.ValAddress) (types.OracleVote, bool) {
 	store := ctx.KVStore(k.storeKey)
 	bz := store.Get(types.GetOracleDataVoteKey(val))
 	if len(bz) == 0 {
@@ -192,24 +192,24 @@ func (k Keeper) GetOracleDataVote(ctx sdk.Context, val sdk.AccAddress) (types.Or
 
 // DeleteOracleDataVote deletes the prevote for a given validator
 // CONTRACT: must provide the validator address here not the delegate address
-func (k Keeper) DeleteOracleDataVote(ctx sdk.Context, val sdk.AccAddress) {
+func (k Keeper) DeleteOracleDataVote(ctx sdk.Context, val sdk.ValAddress) {
 	ctx.KVStore(k.storeKey).Delete(types.GetOracleDataVoteKey(val))
 }
 
 // HasOracleDataVote gets the prevote for a given validator
 // CONTRACT: must provide the validator address here not the delegate address
-func (k Keeper) HasOracleDataVote(ctx sdk.Context, val sdk.AccAddress) bool {
+func (k Keeper) HasOracleDataVote(ctx sdk.Context, val sdk.ValAddress) bool {
 	return ctx.KVStore(k.storeKey).Has(types.GetOracleDataVoteKey(val))
 }
 
 // IterateOracleDataVotes iterates over all votes in the store
-func (k Keeper) IterateOracleDataVotes(ctx sdk.Context, handler func(val sdk.AccAddress, vote types.OracleVote) (stop bool)) {
+func (k Keeper) IterateOracleDataVotes(ctx sdk.Context, handler func(val sdk.ValAddress, vote types.OracleVote) (stop bool)) {
 	store := ctx.KVStore(k.storeKey)
 	iter := sdk.KVStorePrefixIterator(store, types.OracleDataVoteKeyPrefix)
 	defer iter.Close()
 	for ; iter.Valid(); iter.Next() {
 
-		val := sdk.AccAddress(bytes.TrimPrefix(iter.Key(), types.OracleDataVoteKeyPrefix))
+		val := sdk.ValAddress(bytes.TrimPrefix(iter.Key(), types.OracleDataVoteKeyPrefix))
 
 		var vote types.OracleVote
 		k.cdc.MustUnmarshalBinaryBare(iter.Value(), &vote)
@@ -316,33 +316,34 @@ func (k Keeper) HasVotePeriodStart(ctx sdk.Context) bool {
 /////////////////
 
 // IncrementMissCounter increments the miss counter for a validator
-func (k Keeper) IncrementMissCounter(ctx sdk.Context, val sdk.AccAddress) {
-	if !k.HasMissCounter(ctx, val) {
-		k.SetMissCounter(ctx, val, 1)
-		return
-	}
+func (k Keeper) IncrementMissCounter(ctx sdk.Context, val sdk.ValAddress) {
 	k.SetMissCounter(ctx, val, k.GetMissCounter(ctx, val)+1)
 }
 
 // GetMissCounter return the miss counter for a validator
-func (k Keeper) GetMissCounter(ctx sdk.Context, val sdk.AccAddress) int64 {
-	return int64(binary.BigEndian.Uint64(ctx.KVStore(k.storeKey).Get(types.GetMissCounterKey(val))))
+func (k Keeper) GetMissCounter(ctx sdk.Context, val sdk.ValAddress) int64 {
+	store := ctx.KVStore(k.storeKey)
+	bz := store.Get(types.GetMissCounterKey(val))
+	if len(bz) == 0 {
+		return 0
+	}
+	return int64(binary.BigEndian.Uint64(bz))
 }
 
 // SetMissCounter sets the miss counter for a given validator
-func (k Keeper) SetMissCounter(ctx sdk.Context, val sdk.AccAddress, misses int64) {
+func (k Keeper) SetMissCounter(ctx sdk.Context, val sdk.ValAddress, misses int64) {
 	bz := make([]byte, 8)
 	binary.BigEndian.PutUint64(bz, uint64(misses))
 	ctx.KVStore(k.storeKey).Set(types.GetMissCounterKey(val), bz)
 }
 
 // HasMissCounter checks if a validator has an existing miss counter
-func (k Keeper) HasMissCounter(ctx sdk.Context, val sdk.AccAddress) bool {
+func (k Keeper) HasMissCounter(ctx sdk.Context, val sdk.ValAddress) bool {
 	return ctx.KVStore(k.storeKey).Has(types.GetMissCounterKey(val))
 }
 
 // DeleteMissCounter removes a validators miss counter
-func (k Keeper) DeleteMissCounter(ctx sdk.Context, val sdk.AccAddress) {
+func (k Keeper) DeleteMissCounter(ctx sdk.Context, val sdk.ValAddress) {
 	ctx.KVStore(k.storeKey).Delete(types.GetMissCounterKey(val))
 }
 

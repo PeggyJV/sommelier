@@ -29,11 +29,13 @@ type OracleData interface {
 	Type() string
 	Validate() error
 	MarshalJSON() ([]byte, error)
+	// Compare checks that the data is within the target range and the fixed
+	// fields match with the aggregated data
 	Compare(aggregatedData OracleData, target sdk.Dec) bool
 }
 
 // DataHash returns the hash for a precommit given the proper args
-func DataHash(salt, jsonData string, signer sdk.AccAddress) []byte {
+func DataHash(salt, jsonData string, signer sdk.ValAddress) []byte {
 	h := sha256.New()
 	h.Write([]byte(fmt.Sprintf("%s:%s:%s", salt, jsonData, signer.String())))
 	return h.Sum(nil)

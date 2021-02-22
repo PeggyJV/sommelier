@@ -41,7 +41,7 @@ func (k Keeper) DelegateFeedConsent(c context.Context, msg *types.MsgDelegateFee
 		return nil, sdkerrors.Wrapf(sdkerrors.ErrUnauthorized, "feeder delegate %s cannot be a validator", del)
 	}
 
-	k.SetValidatorDelegateAddress(ctx, val, del)
+	k.SetValidatorDelegateAddress(ctx, del, sdk.ValAddress(val))
 
 	ctx.EventManager().EmitEvent(
 		sdk.NewEvent(
@@ -69,7 +69,7 @@ func (k Keeper) OracleDataPrevote(c context.Context, msg *types.MsgOracleDataPre
 			return nil, sdkerrors.Wrap(stakingtypes.ErrNoValidatorFound, sdk.ValAddress(signer).String())
 		}
 
-		validatorAddr = sdk.AccAddress(validator.GetOperator())
+		validatorAddr = validator.GetOperator()
 		// NOTE: we set the validator address so we don't have to call look up for the validator
 		// everytime the a validator feeder submits oracle data
 		k.SetValidatorDelegateAddress(ctx, signer, validatorAddr)
@@ -115,7 +115,7 @@ func (k Keeper) OracleDataVote(c context.Context, msg *types.MsgOracleDataVote) 
 			return nil, sdkerrors.Wrap(stakingtypes.ErrNoValidatorFound, sdk.ValAddress(signer).String())
 		}
 
-		validatorAddr = sdk.AccAddress(validator.GetOperator())
+		validatorAddr = validator.GetOperator()
 		// NOTE: we set the validator address so we don't have to call look up for the validator
 		// everytime the a validator feeder submits oracle data
 		k.SetValidatorDelegateAddress(ctx, signer, validatorAddr)

@@ -70,19 +70,12 @@ func (k Keeper) QueryOracleDataPrevote(c context.Context, req *types.QueryOracle
 
 	ctx := sdk.UnwrapSDKContext(c)
 
-	val, err := sdk.AccAddressFromBech32(req.Validator)
+	validatorAddr, err := sdk.ValAddressFromBech32(req.Validator)
 	if err != nil {
 		return nil, status.Error(codes.InvalidArgument, err.Error())
 	}
 
-	if k.stakingKeeper.Validator(ctx, sdk.ValAddress(val)) == nil {
-		val = k.GetValidatorAddressFromDelegate(ctx, val)
-		if val == nil {
-			return nil, status.Errorf(codes.NotFound, "address %s is not a validator", req.Validator)
-		}
-	}
-
-	prevote, found := k.GetOracleDataPrevote(ctx, val)
+	prevote, found := k.GetOracleDataPrevote(ctx, validatorAddr)
 	if !found {
 		return nil, status.Error(codes.NotFound, "data prevote")
 	}
@@ -100,19 +93,12 @@ func (k Keeper) QueryOracleDataVote(c context.Context, req *types.QueryOracleDat
 
 	ctx := sdk.UnwrapSDKContext(c)
 
-	val, err := sdk.AccAddressFromBech32(req.Validator)
+	validatorAddr, err := sdk.ValAddressFromBech32(req.Validator)
 	if err != nil {
 		return nil, status.Error(codes.InvalidArgument, err.Error())
 	}
 
-	if k.stakingKeeper.Validator(ctx, sdk.ValAddress(val)) == nil {
-		val = k.GetValidatorAddressFromDelegate(ctx, val)
-		if val == nil {
-			return nil, status.Errorf(codes.NotFound, "address %s is not a validator", req.Validator)
-		}
-	}
-
-	dataVote, found := k.GetOracleDataVote(ctx, val)
+	dataVote, found := k.GetOracleDataVote(ctx, validatorAddr)
 	if !found {
 		return nil, status.Error(codes.NotFound, "data vote")
 	}
@@ -174,19 +160,12 @@ func (k Keeper) QueryMissCounter(c context.Context, req *types.QueryMissCounterR
 	}
 
 	ctx := sdk.UnwrapSDKContext(c)
-	val, err := sdk.AccAddressFromBech32(req.Validator)
+	validatorAddr, err := sdk.ValAddressFromBech32(req.Validator)
 	if err != nil {
 		return nil, status.Error(codes.InvalidArgument, err.Error())
 	}
 
-	if k.stakingKeeper.Validator(ctx, sdk.ValAddress(val)) == nil {
-		val = k.GetValidatorAddressFromDelegate(ctx, val)
-		if val == nil {
-			return nil, status.Errorf(codes.NotFound, "address %s is not a validator", req.Validator)
-		}
-	}
-
 	return &types.QueryMissCounterResponse{
-		MissCounter: k.GetMissCounter(ctx, val),
+		MissCounter: k.GetMissCounter(ctx, validatorAddr),
 	}, nil
 }

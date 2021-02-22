@@ -137,7 +137,15 @@ func (c *Coordinator) SubmitOracleDataVote() error {
 	if err != nil {
 		return err
 	}
-	msg := oracle.NewMsgOracleDataVote([]string{c.salt}, []*cdctypes.Any{od}, c.delegatorAddr)
+
+	oracleVote := &oracle.OracleVote{
+		Salt: []string{c.salt},
+		Feed: &oracle.OracleFeed{
+			OracleData: []*cdctypes.Any{od},
+		},
+	}
+
+	msg := oracle.NewMsgOracleDataVote(oracleVote, c.delegatorAddr)
 
 	if err := msg.ValidateBasic(); err != nil {
 		return err
