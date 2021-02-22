@@ -72,10 +72,10 @@ func (k Keeper) GetValidatorAddressFromDelegate(ctx sdk.Context, del sdk.AccAddr
 }
 
 // GetDelegateAddressFromValidator returns the validator address for a given delegate
-func (k Keeper) GetDelegateAddressFromValidator(ctx sdk.Context, val sdk.AccAddress) sdk.AccAddress {
+func (k Keeper) GetDelegateAddressFromValidator(ctx sdk.Context, val sdk.ValAddress) sdk.AccAddress {
 	var address sdk.AccAddress
 	// TODO: create secondary index
-	k.IterateDelegateAddresses(ctx, func(delegatorAddr, validatorAddr sdk.AccAddress) bool {
+	k.IterateDelegateAddresses(ctx, func(delegatorAddr sdk.AccAddress, validatorAddr sdk.ValAddress) bool {
 		if !val.Equals(validatorAddr) {
 			return false
 		}
@@ -92,17 +92,32 @@ func (k Keeper) IsDelegateAddress(ctx sdk.Context, del sdk.AccAddress) bool {
 }
 
 // IterateDelegateAddresses iterates over all delegate address pairs in the store
-func (k Keeper) IterateDelegateAddresses(ctx sdk.Context, handler func(del, val sdk.AccAddress) (stop bool)) {
+func (k Keeper) IterateDelegateAddresses(ctx sdk.Context, handler func(del sdk.AccAddress, val sdk.ValAddress) (stop bool)) {
 	store := ctx.KVStore(k.storeKey)
 	iter := sdk.KVStorePrefixIterator(store, types.FeedDelegateKeyPrefix)
 	defer iter.Close()
 	for ; iter.Valid(); iter.Next() {
 		del := sdk.AccAddress(bytes.TrimPrefix(iter.Key(), types.FeedDelegateKeyPrefix))
-		val := sdk.AccAddress(iter.Value())
+		val := sdk.ValAddress(iter.Value())
 		if handler(del, val) {
 			break
 		}
 	}
+}
+
+// GetAllFeederDelegations returns all the delegations for oracle feeders
+func (k Keeper) GetAllFeederDelegations(ctx sdk.Context) []types.MsgDelegateFeedConsent {
+	feederDelegations := make([]types.MsgDelegateFeedConsent, 0)
+
+	k.IterateDelegateAddresses(ctx, func(del sdk.AccAddress, val sdk.ValAddress) bool {
+		feederDelegations = append(feederDelegations, types.MsgDelegateFeedConsent{
+			Delegate:  del.String(),
+			Validator: val.String(),
+		})
+		return false
+	})
+
+	return feederDelegations
 }
 
 //////////////////////////
@@ -348,17 +363,32 @@ func (k Keeper) DeleteMissCounter(ctx sdk.Context, val sdk.ValAddress) {
 }
 
 // IterateMissCounters iterates over the miss counters
-func (k Keeper) IterateMissCounters(ctx sdk.Context, handler func(val sdk.AccAddress, counter int64) (stop bool)) {
+func (k Keeper) IterateMissCounters(ctx sdk.Context, handler func(val sdk.ValAddress, counter int64) (stop bool)) {
 	store := ctx.KVStore(k.storeKey)
 	iter := sdk.KVStorePrefixIterator(store, types.MissCounterKeyPrefix)
 	defer iter.Close()
 	for ; iter.Valid(); iter.Next() {
 		count := binary.BigEndian.Uint64(iter.Value())
-		val := sdk.AccAddress(bytes.TrimPrefix(iter.Key(), types.MissCounterKeyPrefix))
+		val := sdk.ValAddress(bytes.TrimPrefix(iter.Key(), types.MissCounterKeyPrefix))
 		if handler(val, int64(count)) {
 			break
 		}
 	}
+}
+
+// GetAllMissCounters returns all the miss counter values for all validators.
+func (k Keeper) GetAllMissCounters(ctx sdk.Context) []types.MissCounter {
+	missCounters := make([]types.MissCounter, 0)
+
+	k.IterateMissCounters(ctx, func(validatorAddr sdk.ValAddress, counter int64) bool {
+		missCounters = append(missCounters, types.MissCounter{
+			Validator: validatorAddr.String(),
+			Misses:    counter,
+		})
+		return false
+	})
+
+	return missCounters
 }
 
 ////////////

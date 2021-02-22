@@ -19,15 +19,22 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, gs types.GenesisState) {
 		k.SetMissCounter(ctx, valAddress, missCounter.Misses)
 	}
 
-	// TODO: initialize the genesis file properly
+	for _, delegation := range gs.FeederDelegations {
+		// NOTE: error checked during genesis validation
+		valAddress, _ := sdk.ValAddressFromBech32(delegation.Validator)
+		delAddress, _ := sdk.AccAddressFromBech32(delegation.Delegate)
+
+		k.SetValidatorDelegateAddress(ctx, delAddress, valAddress)
+	}
 }
 
 // ExportGenesis writes the current store values
 // to a genesis file, which can be imported again
 // with InitGenesis
 func ExportGenesis(ctx sdk.Context, k keeper.Keeper) types.GenesisState {
-	// TODO: export genesis properly
 	return types.GenesisState{
-		Params: k.GetParamSet(ctx),
+		Params:            k.GetParamSet(ctx),
+		FeederDelegations: k.GetAllFeederDelegations(ctx),
+		MissCounters:      k.GetAllMissCounters(ctx),
 	}
 }

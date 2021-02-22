@@ -206,24 +206,20 @@ func (k Keeper) EndBlocker(ctx sdk.Context) {
 	}
 
 	// slash validators who have missed to many votes
-	k.IterateMissCounters(ctx, func(feederAddr sdk.AccAddress, counter int64) bool {
+	k.IterateMissCounters(ctx, func(validatorAddr sdk.ValAddress, counter int64) bool {
 		missedVotesPerWindow := sdk.NewDec(counter).Quo(sdk.NewDec(params.SlashWindow))
 		if params.MinValidPerWindow.GTE(missedVotesPerWindow) {
 			// continue with next counter
 			return false
 		}
 
-		// NOTE: the vote might have been submitted by a feeder delegate, so we have to check the
-		// original validator address
-		validatorAddr := k.GetValidatorAddressFromDelegate(ctx, feederAddr)
-
 		// slash validator below the minimum vote threshold
-		validator := k.stakingKeeper.Validator(ctx, sdk.ValAddress(validatorAddr))
+		validator := k.stakingKeeper.Validator(ctx, validatorAddr)
 		if validator == nil {
 			// validator not found, continue with the next counter
 			k.Logger(ctx).Debug(
 				"validator not found for miss counter",
-				"validator-address", validatorAddr.String(), "feeder-address", feederAddr.String(),
+				"validator-address", validatorAddr.String(),
 			)
 			return false
 		}

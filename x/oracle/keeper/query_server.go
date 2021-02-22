@@ -20,7 +20,7 @@ func (k Keeper) QueryDelegateAddress(c context.Context, req *types.QueryDelegate
 
 	ctx := sdk.UnwrapSDKContext(c)
 
-	val, err := sdk.AccAddressFromBech32(req.Validator)
+	val, err := sdk.ValAddressFromBech32(req.Validator)
 	if err != nil {
 		return nil, status.Error(codes.InvalidArgument, err.Error())
 	}
