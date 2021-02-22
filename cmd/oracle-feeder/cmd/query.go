@@ -176,7 +176,7 @@ func queryValidatorAddress() *cobra.Command {
 }
 
 // GetValFromDel helper
-func GetValFromDel(ctx client.Context, del sdk.AccAddress) (sdk.AccAddress, error) {
+func GetValFromDel(ctx client.Context, del sdk.AccAddress) (sdk.ValAddress, error) {
 	queryClient := oracletypes.NewQueryClient(ctx)
 
 	req := &oracletypes.QueryValidatorAddressRequest{
@@ -188,7 +188,7 @@ func GetValFromDel(ctx client.Context, del sdk.AccAddress) (sdk.AccAddress, erro
 		return nil, err
 	}
 
-	return sdk.AccAddressFromBech32(res.Validator)
+	return sdk.ValAddressFromBech32(res.Validator)
 }
 
 func queryOracleDataPrevote() *cobra.Command {
@@ -278,7 +278,7 @@ func queryVotePeriod() *cobra.Command {
 		Aliases: []string{"vp"},
 		Args:    cobra.NoArgs,
 		Short:   "query vote period data from the chain",
-		RunE: func(cmd *cobra.Command, args []string) error {
+		RunE: func(cmd *cobra.Command, _ []string) error {
 			ctx, err := config.GetClientContext(cmd)
 			if err != nil {
 				return err
@@ -354,7 +354,7 @@ func queryOracleData() *cobra.Command {
 		Aliases: []string{"od"},
 		Args:    cobra.NoArgs,
 		Short:   "query consensus oracle data from the chain given its type",
-		RunE: func(cmd *cobra.Command, args []string) error {
+		RunE: func(cmd *cobra.Command, _ []string) error {
 			ctx, err := config.GetClientContext(cmd)
 			if err != nil {
 				return err
@@ -375,7 +375,7 @@ func queryOracleData() *cobra.Command {
 				return err
 			}
 
-			jsonBz, err := od.MarshalJSON()
+			jsonBz, err := json.Marshal(od)
 			if err != nil {
 				return err
 			}
