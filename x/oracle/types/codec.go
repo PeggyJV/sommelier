@@ -29,10 +29,7 @@ func RegisterInterfaces(registry codectypes.InterfaceRegistry) {
 // an error if the oracle data can't be casted to a protobuf message or if the concrete
 // implemention is not registered to the protobuf codec.
 func PackOracleData(oracleData OracleData) (*codectypes.Any, error) {
-	msg, ok := oracleData.(proto.Message)
-	if !ok {
-		return nil, sdkerrors.Wrapf(sdkerrors.ErrPackAny, "cannot proto marshal %T", oracleData)
-	}
+	msg := oracleData.(proto.Message)
 
 	anyOracleData, err := codectypes.NewAnyWithValue(msg)
 	if err != nil {
