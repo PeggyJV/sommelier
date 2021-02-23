@@ -30,17 +30,17 @@ func TestUniswapPairValidate(t *testing.T) {
 		{
 			"valid pair",
 			UniswapPair{
-				Id:         "0xb4e16d0168e52d35cacd2c6185b44281ec28c9dc",
+				ID:         "0xb4e16d0168e52d35cacd2c6185b44281ec28c9dc",
 				Reserve0:   sdk.MustNewDecFromStr("148681992.765143"),
 				Reserve1:   sdk.MustNewDecFromStr("97709.503398661101176213"),
-				ReserveUsd: sdk.MustNewDecFromStr("297632095.439861032964130850"),
+				ReserveUSD: sdk.MustNewDecFromStr("297632095.439861032964130850"),
 				Token0: UniswapToken{
 					Decimals: 6,
-					Id:       "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+					ID:       "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
 				},
 				Token1: UniswapToken{
 					Decimals: 18,
-					Id:       "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+					ID:       "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
 				},
 				Token0Price: sdk.MustNewDecFromStr("1521.673814659673802831"),
 				Token1Price: sdk.MustNewDecFromStr("0.000657171064104597"),
@@ -59,14 +59,14 @@ func TestUniswapPairValidate(t *testing.T) {
 		{
 			"invalid pair id",
 			UniswapPair{
-				Id: "0xb4e16d0168e52d35cacd2c6185b44281ec28",
+				ID: "0xb4e16d0168e52d35cacd2c6185b44281ec28",
 			},
 			false,
 		},
 		{
 			"nil reserve 0",
 			UniswapPair{
-				Id:       "0xb4e16d0168e52d35cacd2c6185b44281ec28c9dc",
+				ID:       "0xb4e16d0168e52d35cacd2c6185b44281ec28c9dc",
 				Reserve0: sdk.Dec{},
 			},
 			false,
@@ -74,7 +74,7 @@ func TestUniswapPairValidate(t *testing.T) {
 		{
 			"nil reserve 1",
 			UniswapPair{
-				Id:       "0xb4e16d0168e52d35cacd2c6185b44281ec28c9dc",
+				ID:       "0xb4e16d0168e52d35cacd2c6185b44281ec28c9dc",
 				Reserve0: sdk.OneDec(),
 				Reserve1: sdk.Dec{},
 			},
@@ -83,20 +83,20 @@ func TestUniswapPairValidate(t *testing.T) {
 		{
 			"nil reserve usd",
 			UniswapPair{
-				Id:         "0xb4e16d0168e52d35cacd2c6185b44281ec28c9dc",
+				ID:         "0xb4e16d0168e52d35cacd2c6185b44281ec28c9dc",
 				Reserve0:   sdk.OneDec(),
 				Reserve1:   sdk.OneDec(),
-				ReserveUsd: sdk.Dec{},
+				ReserveUSD: sdk.Dec{},
 			},
 			false,
 		},
 		{
 			"nil token 0 price",
 			UniswapPair{
-				Id:          "0xb4e16d0168e52d35cacd2c6185b44281ec28c9dc",
+				ID:          "0xb4e16d0168e52d35cacd2c6185b44281ec28c9dc",
 				Reserve0:    sdk.OneDec(),
 				Reserve1:    sdk.OneDec(),
-				ReserveUsd:  sdk.OneDec(),
+				ReserveUSD:  sdk.OneDec(),
 				Token0Price: sdk.Dec{},
 			},
 			false,
@@ -104,10 +104,10 @@ func TestUniswapPairValidate(t *testing.T) {
 		{
 			"nil token 1 price",
 			UniswapPair{
-				Id:          "0xb4e16d0168e52d35cacd2c6185b44281ec28c9dc",
+				ID:          "0xb4e16d0168e52d35cacd2c6185b44281ec28c9dc",
 				Reserve0:    sdk.OneDec(),
 				Reserve1:    sdk.OneDec(),
-				ReserveUsd:  sdk.OneDec(),
+				ReserveUSD:  sdk.OneDec(),
 				Token0Price: sdk.OneDec(),
 				Token1Price: sdk.Dec{},
 			},
@@ -116,10 +116,10 @@ func TestUniswapPairValidate(t *testing.T) {
 		{
 			"nil total supply",
 			UniswapPair{
-				Id:          "0xb4e16d0168e52d35cacd2c6185b44281ec28c9dc",
+				ID:          "0xb4e16d0168e52d35cacd2c6185b44281ec28c9dc",
 				Reserve0:    sdk.OneDec(),
 				Reserve1:    sdk.OneDec(),
-				ReserveUsd:  sdk.OneDec(),
+				ReserveUSD:  sdk.OneDec(),
 				Token0Price: sdk.OneDec(),
 				Token1Price: sdk.OneDec(),
 				TotalSupply: sdk.Dec{},
@@ -129,10 +129,10 @@ func TestUniswapPairValidate(t *testing.T) {
 		{
 			"neg reserve 0",
 			UniswapPair{
-				Id:          "0xb4e16d0168e52d35cacd2c6185b44281ec28c9dc",
+				ID:          "0xb4e16d0168e52d35cacd2c6185b44281ec28c9dc",
 				Reserve0:    sdk.NewDec(-1),
 				Reserve1:    sdk.OneDec(),
-				ReserveUsd:  sdk.OneDec(),
+				ReserveUSD:  sdk.OneDec(),
 				Token0Price: sdk.OneDec(),
 				Token1Price: sdk.OneDec(),
 				TotalSupply: sdk.OneDec(),
@@ -142,10 +142,10 @@ func TestUniswapPairValidate(t *testing.T) {
 		{
 			"neg reserve 1",
 			UniswapPair{
-				Id:          "0xb4e16d0168e52d35cacd2c6185b44281ec28c9dc",
+				ID:          "0xb4e16d0168e52d35cacd2c6185b44281ec28c9dc",
 				Reserve0:    sdk.OneDec(),
 				Reserve1:    sdk.NewDec(-1),
-				ReserveUsd:  sdk.OneDec(),
+				ReserveUSD:  sdk.OneDec(),
 				Token0Price: sdk.OneDec(),
 				Token1Price: sdk.OneDec(),
 				TotalSupply: sdk.OneDec(),
@@ -155,10 +155,10 @@ func TestUniswapPairValidate(t *testing.T) {
 		{
 			"neg reserve USD",
 			UniswapPair{
-				Id:          "0xb4e16d0168e52d35cacd2c6185b44281ec28c9dc",
+				ID:          "0xb4e16d0168e52d35cacd2c6185b44281ec28c9dc",
 				Reserve0:    sdk.OneDec(),
 				Reserve1:    sdk.OneDec(),
-				ReserveUsd:  sdk.NewDec(-1),
+				ReserveUSD:  sdk.NewDec(-1),
 				Token0Price: sdk.OneDec(),
 				Token1Price: sdk.OneDec(),
 				TotalSupply: sdk.OneDec(),
@@ -168,13 +168,13 @@ func TestUniswapPairValidate(t *testing.T) {
 		{
 			"invalid token 0",
 			UniswapPair{
-				Id:         "0xb4e16d0168e52d35cacd2c6185b44281ec28c9dc",
+				ID:         "0xb4e16d0168e52d35cacd2c6185b44281ec28c9dc",
 				Reserve0:   sdk.OneDec(),
 				Reserve1:   sdk.OneDec(),
-				ReserveUsd: sdk.OneDec(),
+				ReserveUSD: sdk.OneDec(),
 				Token0: UniswapToken{
 					Decimals: 6,
-					Id:       "0x0",
+					ID:       "0x0",
 				},
 				Token0Price: sdk.OneDec(),
 				Token1Price: sdk.OneDec(),
@@ -185,17 +185,17 @@ func TestUniswapPairValidate(t *testing.T) {
 		{
 			"invalid token 0",
 			UniswapPair{
-				Id:         "0xb4e16d0168e52d35cacd2c6185b44281ec28c9dc",
+				ID:         "0xb4e16d0168e52d35cacd2c6185b44281ec28c9dc",
 				Reserve0:   sdk.OneDec(),
 				Reserve1:   sdk.OneDec(),
-				ReserveUsd: sdk.OneDec(),
+				ReserveUSD: sdk.OneDec(),
 				Token0: UniswapToken{
 					Decimals: 6,
-					Id:       "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+					ID:       "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
 				},
 				Token1: UniswapToken{
 					Decimals: 18,
-					Id:       "0x0",
+					ID:       "0x0",
 				},
 				Token0Price: sdk.OneDec(),
 				Token1Price: sdk.OneDec(),
@@ -206,17 +206,17 @@ func TestUniswapPairValidate(t *testing.T) {
 		{
 			"neg token 0 price",
 			UniswapPair{
-				Id:         "0xb4e16d0168e52d35cacd2c6185b44281ec28c9dc",
+				ID:         "0xb4e16d0168e52d35cacd2c6185b44281ec28c9dc",
 				Reserve0:   sdk.OneDec(),
 				Reserve1:   sdk.OneDec(),
-				ReserveUsd: sdk.OneDec(),
+				ReserveUSD: sdk.OneDec(),
 				Token0: UniswapToken{
 					Decimals: 6,
-					Id:       "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+					ID:       "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
 				},
 				Token1: UniswapToken{
 					Decimals: 18,
-					Id:       "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+					ID:       "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
 				},
 				Token0Price: sdk.NewDec(-1),
 				Token1Price: sdk.OneDec(),
@@ -227,17 +227,17 @@ func TestUniswapPairValidate(t *testing.T) {
 		{
 			"neg token 1 price",
 			UniswapPair{
-				Id:         "0xb4e16d0168e52d35cacd2c6185b44281ec28c9dc",
+				ID:         "0xb4e16d0168e52d35cacd2c6185b44281ec28c9dc",
 				Reserve0:   sdk.OneDec(),
 				Reserve1:   sdk.OneDec(),
-				ReserveUsd: sdk.OneDec(),
+				ReserveUSD: sdk.OneDec(),
 				Token0: UniswapToken{
 					Decimals: 6,
-					Id:       "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+					ID:       "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
 				},
 				Token1: UniswapToken{
 					Decimals: 18,
-					Id:       "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+					ID:       "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
 				},
 				Token0Price: sdk.OneDec(),
 				Token1Price: sdk.NewDec(-1),
@@ -248,17 +248,17 @@ func TestUniswapPairValidate(t *testing.T) {
 		{
 			"neg total supply",
 			UniswapPair{
-				Id:         "0xb4e16d0168e52d35cacd2c6185b44281ec28c9dc",
+				ID:         "0xb4e16d0168e52d35cacd2c6185b44281ec28c9dc",
 				Reserve0:   sdk.OneDec(),
 				Reserve1:   sdk.OneDec(),
-				ReserveUsd: sdk.OneDec(),
+				ReserveUSD: sdk.OneDec(),
 				Token0: UniswapToken{
 					Decimals: 6,
-					Id:       "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+					ID:       "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
 				},
 				Token1: UniswapToken{
 					Decimals: 18,
-					Id:       "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+					ID:       "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
 				},
 				Token0Price: sdk.OneDec(),
 				Token1Price: sdk.OneDec(),
@@ -282,17 +282,17 @@ func TestUniswapPairValidate(t *testing.T) {
 
 func TestUniswapPairCompare(t *testing.T) {
 	pair := &UniswapPair{
-		Id:         "0xb4e16d0168e52d35cacd2c6185b44281ec28c9dc",
+		ID:         "0xb4e16d0168e52d35cacd2c6185b44281ec28c9dc",
 		Reserve0:   sdk.NewDec(100),
 		Reserve1:   sdk.NewDec(100),
-		ReserveUsd: sdk.NewDec(100),
+		ReserveUSD: sdk.NewDec(100),
 		Token0: UniswapToken{
 			Decimals: 6,
-			Id:       "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+			ID:       "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
 		},
 		Token1: UniswapToken{
 			Decimals: 18,
-			Id:       "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+			ID:       "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
 		},
 		Token0Price: sdk.NewDec(100),
 		Token1Price: sdk.NewDec(100),
@@ -300,7 +300,7 @@ func TestUniswapPairCompare(t *testing.T) {
 	}
 
 	target := sdk.NewDecWithPrec(5, 2) // 0.05
-	aggregatePair := NewUniswapPair(pair.Id, pair.Token0, pair.Token1)
+	aggregatePair := NewUniswapPair(pair.ID, pair.Token0, pair.Token1)
 
 	testCases := []struct {
 		name           string
@@ -311,7 +311,7 @@ func TestUniswapPairCompare(t *testing.T) {
 		{
 			"different ID",
 			&UniswapPair{
-				Id: "0x0",
+				ID: "0x0",
 			},
 			func() {},
 			false,
@@ -319,14 +319,14 @@ func TestUniswapPairCompare(t *testing.T) {
 		{
 			"different token 0",
 			&UniswapPair{
-				Id: "0xb4e16d0168e52d35cacd2c6185b44281ec28c9dc",
+				ID: "0xb4e16d0168e52d35cacd2c6185b44281ec28c9dc",
 				Token0: UniswapToken{
 					Decimals: 0,
-					Id:       "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+					ID:       "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
 				},
 				Token1: UniswapToken{
 					Decimals: 18,
-					Id:       "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+					ID:       "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
 				},
 			},
 			func() {},
@@ -335,14 +335,14 @@ func TestUniswapPairCompare(t *testing.T) {
 		{
 			"different token 1",
 			&UniswapPair{
-				Id: "0xb4e16d0168e52d35cacd2c6185b44281ec28c9dc",
+				ID: "0xb4e16d0168e52d35cacd2c6185b44281ec28c9dc",
 				Token0: UniswapToken{
 					Decimals: 6,
-					Id:       "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+					ID:       "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
 				},
 				Token1: UniswapToken{
 					Decimals: 18,
-					Id:       "",
+					ID:       "",
 				},
 			},
 			func() {},
@@ -377,7 +377,7 @@ func TestUniswapPairCompare(t *testing.T) {
 			func() {
 				aggregatePair.Reserve0 = pair.Reserve0.Add(sdk.NewDec(4))
 				aggregatePair.Reserve1 = pair.Reserve1.Add(sdk.NewDec(4))
-				aggregatePair.ReserveUsd = pair.ReserveUsd.Add(sdk.NewDec(4))
+				aggregatePair.ReserveUSD = pair.ReserveUSD.Add(sdk.NewDec(4))
 			},
 			false,
 		},
@@ -387,7 +387,7 @@ func TestUniswapPairCompare(t *testing.T) {
 			func() {
 				aggregatePair.Reserve0 = pair.Reserve0.Add(sdk.NewDec(4))
 				aggregatePair.Reserve1 = pair.Reserve1.Add(sdk.NewDec(4))
-				aggregatePair.ReserveUsd = pair.ReserveUsd.Add(sdk.NewDec(4))
+				aggregatePair.ReserveUSD = pair.ReserveUSD.Add(sdk.NewDec(4))
 				aggregatePair.Token0Price = pair.Token0Price.Add(sdk.NewDec(4))
 			},
 			false,
@@ -398,7 +398,7 @@ func TestUniswapPairCompare(t *testing.T) {
 			func() {
 				aggregatePair.Reserve0 = pair.Reserve0.Add(sdk.NewDec(4))
 				aggregatePair.Reserve1 = pair.Reserve1.Add(sdk.NewDec(4))
-				aggregatePair.ReserveUsd = pair.ReserveUsd.Add(sdk.NewDec(4))
+				aggregatePair.ReserveUSD = pair.ReserveUSD.Add(sdk.NewDec(4))
 				aggregatePair.Token0Price = pair.Token0Price.Add(sdk.NewDec(4))
 				aggregatePair.Token1Price = pair.Token1Price.Add(sdk.NewDec(4))
 			},
@@ -410,7 +410,7 @@ func TestUniswapPairCompare(t *testing.T) {
 			func() {
 				aggregatePair.Reserve0 = pair.Reserve0.Add(sdk.NewDec(4))
 				aggregatePair.Reserve1 = pair.Reserve1.Add(sdk.NewDec(4))
-				aggregatePair.ReserveUsd = pair.ReserveUsd.Add(sdk.NewDec(4))
+				aggregatePair.ReserveUSD = pair.ReserveUSD.Add(sdk.NewDec(4))
 				aggregatePair.Token0Price = pair.Token0Price.Add(sdk.NewDec(4))
 				aggregatePair.Token1Price = pair.Token1Price.Add(sdk.NewDec(4))
 				aggregatePair.TotalSupply = pair.TotalSupply.Add(sdk.NewDec(4))
@@ -436,11 +436,11 @@ func TestPairUnmarshalJSON(t *testing.T) {
  "reserveUSD": "297632095.439861032964130850561223123",
  "token0": {
    "id": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
-	 "decimals": 6
+	 "decimals": "6"
  },
  "token1": {
 	 "id": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
-	 "decimals": 18
+	 "decimals": "18"
  },
  "token0Price": "1521.67381465967380283112313",
  "token1Price": "0.000657171064104597123123",
@@ -454,11 +454,11 @@ func TestPairUnmarshalJSON(t *testing.T) {
  "reserveUSD": "297632095.439861032964130850",
  "token0": {
   "id": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
-  "decimals": 6
+  "decimals": "6"
  },
  "token1": {
   "id": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
-  "decimals": 18
+  "decimals": "18"
  },
  "token0Price": "1521.673814659673802831",
  "token1Price": "0.000657171064104597",
@@ -466,17 +466,17 @@ func TestPairUnmarshalJSON(t *testing.T) {
 }`
 
 	pairTrunc := UniswapPair{
-		Id:         "0xb4e16d0168e52d35cacd2c6185b44281ec28c9dc",
+		ID:         "0xb4e16d0168e52d35cacd2c6185b44281ec28c9dc",
 		Reserve0:   sdk.MustNewDecFromStr("148681992.765143"),
 		Reserve1:   sdk.MustNewDecFromStr("97709.503398661101176213"),
-		ReserveUsd: sdk.MustNewDecFromStr("297632095.439861032964130850"),
+		ReserveUSD: sdk.MustNewDecFromStr("297632095.439861032964130850"),
 		Token0: UniswapToken{
 			Decimals: 6,
-			Id:       "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+			ID:       "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
 		},
 		Token1: UniswapToken{
 			Decimals: 18,
-			Id:       "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+			ID:       "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
 		},
 		Token0Price: sdk.MustNewDecFromStr("1521.673814659673802831"),
 		Token1Price: sdk.MustNewDecFromStr("0.000657171064104597"),

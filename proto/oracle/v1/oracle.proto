@@ -9,12 +9,12 @@ option go_package = "github.com/peggyjv/sommelier/x/oracle/types";
 
 // OracleFeed represents an array of oracle data that is  
 message OracleFeed {
-	repeated google.protobuf.Any oracle_data = 1 [(cosmos_proto.accepts_interface) = "OracleData"];
+	repeated google.protobuf.Any data = 1 [(cosmos_proto.accepts_interface) = "OracleData"];
 }
 
 // UniswapPair represents an SDK compatible uniswap pair info fetched from The Graph.
 message UniswapPair {
-	string        id   = 1;
+	string   id   = 1 [(gogoproto.customname) = "ID"];
 	string reserve0 = 2 [
 		(gogoproto.jsontag)    = "reserve0",
 		(gogoproto.moretags)   = "yaml:\"reserve0\"",
@@ -28,6 +28,7 @@ message UniswapPair {
 		(gogoproto.nullable)   = false
 	];
 	string reserve_usd = 4 [
+		(gogoproto.customname) = "ReserveUSD",
 		(gogoproto.moretags)   = "yaml:\"reserveUSD\"",
 		(gogoproto.jsontag)    = "reserveUSD",
 		(gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
@@ -64,7 +65,7 @@ message UniswapPair {
 // UniswapToken is the returned uniswap token representation
 message UniswapToken {
 		// token address
-		string id       = 1;
+		string id       = 1 [(gogoproto.customname) = "ID"];
 		// number of decimal positions of the pair token
 		uint64 decimals = 2;
 }

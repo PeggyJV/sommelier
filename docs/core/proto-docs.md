@@ -81,46 +81,48 @@
 
 
 
-<a name="il.v1.Params"></a>
+<a name="oracle.v1.OracleFeed"></a>
 
-### Params
-Params define the impermanent loss module parameters
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| `contract_address` | [string](#string) |  | contract address for impermanent loss handling on ethereum |
-
-
-
-
-
-
-<a name="il.v1.Stoploss"></a>
-
-### Stoploss
-Stoploss defines a set of parameters that together trigger a stoploss withdrawal.
+### OracleFeed
+OracleFeed represents an array of oracle data that is
 
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| `uniswap_pair_id` | [string](#string) |  | uniswap pair identifier |
-| `liquidity_pool_shares` | [int64](#int64) |  | amount of shares from the liquidity pool to redeem if current slippage > max slipage |
-| `max_slippage` | [string](#string) |  | max slippage allowed before the stoploss is triggered |
-| `reference_pair_ratio` | [string](#string) |  | starting token pair ration of the uniswap pool |
+| `data` | [google.protobuf.Any](#google.protobuf.Any) | repeated |  |
 
 
 
 
 
- <!-- end messages -->
 
- <!-- end enums -->
+<a name="oracle.v1.OraclePrevote"></a>
 
- <!-- end HasExtensions -->
+### OraclePrevote
+OraclePrevote defines an array of hashed from oracle data that are used
+for the prevote phase of the oracle data feeding.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `hashes` | [bytes](#bytes) | repeated | hex formated hashes of each oracle feed |
+
+
+
+
+
+
+<a name="oracle.v1.OracleVote"></a>
+
+### OracleVote
+UniswapToken is the returned uniswap token representation
 
  <!-- end services -->
 
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `salt` | [string](#string) | repeated |  |
+| `feed` | [OracleFeed](#oracle.v1.OracleFeed) |  |  |
 
 
 <a name="il/v1/genesis.proto"></a>
@@ -132,8 +134,8 @@ Stoploss defines a set of parameters that together trigger a stoploss withdrawal
 
 <a name="il.v1.GenesisState"></a>
 
-### GenesisState
-GenesisState all impermanent loss state that must be provided at genesis.
+### UniswapPair
+UniswapPair represents an SDK compatible uniswap pair info fetched from The Graph.
 
 
 | Field | Type | Label | Description |
@@ -154,8 +156,8 @@ StoplossPosition represents all the impermanent loss stop positions for a given 
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| `address` | [string](#string) |  | LP account address |
-| `stoploss_positions` | [Stoploss](#il.v1.Stoploss) | repeated | set of possitions owned by the address |
+| `id` | [string](#string) |  | token address |
+| `decimals` | [uint64](#uint64) |  | number of decimal positions of the pair token |
 
 
 
@@ -184,6 +186,10 @@ StoplossPosition represents all the impermanent loss stop positions for a given 
 QueryParametersRequest is an empty request to query for the impermanent loss params
 
 
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `delegate` | [string](#string) |  |  |
+| `validator` | [string](#string) |  |  |
 
 
 
@@ -211,8 +217,8 @@ QueryParametersResponse
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| `address` | [string](#string) |  | account address that owns the stoploss positions |
-| `pagination` | [cosmos.base.query.v1beta1.PageRequest](#cosmos.base.query.v1beta1.PageRequest) |  | pagination request |
+| `prevote` | [OraclePrevote](#oracle.v1.OraclePrevote) |  |  |
+| `signer` | [string](#string) |  |  |
 
 
 
@@ -234,76 +240,14 @@ QueryParametersResponse
 
 
 
-
-<a name="il.v1.QueryStoplossRequest"></a>
-
-### QueryStoplossRequest
-
+### MsgOracleDataVote
+MsgOracleDataVote - sdk.Msg for submitting arbitrary oracle data that has been prevoted on
 
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| `address` | [string](#string) |  | account address that owns the stoploss position |
-| `uniswap_pair` | [string](#string) |  | uniswap pair of the position |
-
-
-
-
-
-
-<a name="il.v1.QueryStoplossResponse"></a>
-
-### QueryStoplossResponse
-
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| `stoploss` | [Stoploss](#il.v1.Stoploss) |  | stoploss position for the given address and pair. |
-
-
-
-
-
- <!-- end messages -->
-
- <!-- end enums -->
-
- <!-- end HasExtensions -->
-
-
-<a name="il.v1.Query"></a>
-
-### Query
-Query defines a gRPC query service for the impermanent loss module.
-
-| Method Name | Request Type | Response Type | Description | HTTP Verb | Endpoint |
-| ----------- | ------------ | ------------- | ------------| ------- | -------- |
-| `Stoploss` | [QueryStoplossRequest](#il.v1.QueryStoplossRequest) | [QueryStoplossResponse](#il.v1.QueryStoplossResponse) |  | GET|/il/v1/stoploss_positions/{address}/{uniswap_pair}|
-| `StoplossPositions` | [QueryStoplossPositionsRequest](#il.v1.QueryStoplossPositionsRequest) | [QueryStoplossPositionsResponse](#il.v1.QueryStoplossPositionsResponse) |  | GET|/il/v1/stoploss_positions/{address}|
-| `Parameters` | [QueryParametersRequest](#il.v1.QueryParametersRequest) | [QueryParametersResponse](#il.v1.QueryParametersResponse) |  | GET|/il/v1/parameters|
-
- <!-- end services -->
-
-
-
-<a name="il/v1/tx.proto"></a>
-<p align="right"><a href="#top">Top</a></p>
-
-## il/v1/tx.proto
-
-
-
-<a name="il.v1.MsgStoploss"></a>
-
-### MsgStoploss
-MsgStoploss defines a stoploss position
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| `address` | [string](#string) |  |  |
-| `stoploss` | [Stoploss](#il.v1.Stoploss) |  |  |
+| `vote` | [OracleVote](#oracle.v1.OracleVote) |  |  |
+| `signer` | [string](#string) |  |  |
 
 
 
@@ -342,14 +286,14 @@ MsgService defines the msgs that the oracle module handles.
 <a name="oracle/v1/oracle.proto"></a>
 <p align="right"><a href="#top">Top</a></p>
 
-## oracle/v1/oracle.proto
+## oracle/v1/genesis.proto
 
 
 
-<a name="oracle.v1.OracleFeed"></a>
+<a name="oracle.v1.GenesisState"></a>
 
-### OracleFeed
-OracleFeed represents an array of oracle data that is
+### GenesisState
+GenesisState - all oracle state that must be provided at genesis
 
 
 | Field | Type | Label | Description |
@@ -370,218 +314,6 @@ for the prevote phase of the oracle data feeding.
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| `hash` | [bytes](#bytes) |  | hex formated hash of an oracle feed |
-
-
-
-
-
-
-<a name="oracle.v1.OracleVote"></a>
-
-### OracleVote
-UniswapToken is the returned uniswap token representation
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| `salt` | [string](#string) |  |  |
-| `feed` | [OracleFeed](#oracle.v1.OracleFeed) |  |  |
-
-
-
-
-
-
-<a name="oracle.v1.UniswapPair"></a>
-
-### UniswapPair
-UniswapPair represents an SDK compatible uniswap pair info fetched from The Graph.
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| `id` | [string](#string) |  |  |
-| `reserve0` | [string](#string) |  |  |
-| `reserve1` | [string](#string) |  |  |
-| `reserve_usd` | [string](#string) |  |  |
-| `token0` | [UniswapToken](#oracle.v1.UniswapToken) |  |  |
-| `token1` | [UniswapToken](#oracle.v1.UniswapToken) |  |  |
-| `token0_price` | [string](#string) |  |  |
-| `token1_price` | [string](#string) |  |  |
-| `total_supply` | [string](#string) |  |  |
-
-
-
-
-
-
-<a name="oracle.v1.UniswapToken"></a>
-
-### UniswapToken
-UniswapToken is the returned uniswap token representation
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| `id` | [string](#string) |  | token address |
-| `decimals` | [uint64](#uint64) |  | number of decimal positions of the pair token |
-
-
-
-
-
- <!-- end messages -->
-
- <!-- end enums -->
-
- <!-- end HasExtensions -->
-
- <!-- end services -->
-
-
-
-<a name="oracle/v1/tx.proto"></a>
-<p align="right"><a href="#top">Top</a></p>
-
-## oracle/v1/tx.proto
-
-
-
-<a name="oracle.v1.MsgDelegateFeedConsent"></a>
-
-### MsgDelegateFeedConsent
-MsgDelegateFeedConsent - sdk.Msg for delegating oracle voting rights from a validator
-to another address, must be signed by an active validator
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| `delegate` | [string](#string) |  |  |
-| `validator` | [string](#string) |  |  |
-
-
-
-
-
-
-<a name="oracle.v1.MsgDelegateFeedConsentResponse"></a>
-
-### MsgDelegateFeedConsentResponse
-
-
-
-
-
-
-
-<a name="oracle.v1.MsgOracleDataPrevote"></a>
-
-### MsgOracleDataPrevote
-MsgOracleDataPrevote - sdk.Msg for prevoting on an array of oracle data types.
-The purpose of the prevote is to hide vote for data with hashes formatted as hex string: 
-SHA256("{salt}:{data_cannonical_json}:{voter}")
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| `prevote` | [OraclePrevote](#oracle.v1.OraclePrevote) |  |  |
-| `signer` | [string](#string) |  |  |
-
-
-
-
-
-
-<a name="oracle.v1.MsgOracleDataPrevoteResponse"></a>
-
-### MsgOracleDataPrevoteResponse
-
-
-
-
-
-
-
-<a name="oracle.v1.MsgOracleDataVote"></a>
-
-### MsgOracleDataVote
-MsgOracleDataVote - sdk.Msg for submitting arbitrary oracle data that has been prevoted on
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| `vote` | [OracleVote](#oracle.v1.OracleVote) |  |  |
-| `signer` | [string](#string) |  |  |
-
-
-
-
-
-
-<a name="oracle.v1.MsgOracleDataVoteResponse"></a>
-
-### MsgOracleDataVoteResponse
-
-
-
-
-
-
- <!-- end messages -->
-
- <!-- end enums -->
-
- <!-- end HasExtensions -->
-
-
-<a name="oracle.v1.Msg"></a>
-
-### Msg
-MsgService defines the msgs that the oracle module handles.
-
-| Method Name | Request Type | Response Type | Description | HTTP Verb | Endpoint |
-| ----------- | ------------ | ------------- | ------------| ------- | -------- |
-| `DelegateFeedConsent` | [MsgDelegateFeedConsent](#oracle.v1.MsgDelegateFeedConsent) | [MsgDelegateFeedConsentResponse](#oracle.v1.MsgDelegateFeedConsentResponse) |  | |
-| `OracleDataPrevote` | [MsgOracleDataPrevote](#oracle.v1.MsgOracleDataPrevote) | [MsgOracleDataPrevoteResponse](#oracle.v1.MsgOracleDataPrevoteResponse) |  | |
-| `OracleDataVote` | [MsgOracleDataVote](#oracle.v1.MsgOracleDataVote) | [MsgOracleDataVoteResponse](#oracle.v1.MsgOracleDataVoteResponse) |  | |
-
- <!-- end services -->
-
-
-
-<a name="oracle/v1/genesis.proto"></a>
-<p align="right"><a href="#top">Top</a></p>
-
-## oracle/v1/genesis.proto
-
-
-
-<a name="oracle.v1.GenesisState"></a>
-
-### GenesisState
-GenesisState - all oracle state that must be provided at genesis
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| `params` | [Params](#oracle.v1.Params) |  |  |
-| `feeder_delegations` | [MsgDelegateFeedConsent](#oracle.v1.MsgDelegateFeedConsent) | repeated |  |
-| `miss_counters` | [MissCounter](#oracle.v1.MissCounter) | repeated |  |
-
-
-
-
-
-
-<a name="oracle.v1.MissCounter"></a>
-
-### MissCounter
-MissCounter stores the validator address and the number of associated misses
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
 | `validator` | [string](#string) |  |  |
 | `misses` | [int64](#int64) |  |  |
 
@@ -589,6 +321,7 @@ MissCounter stores the validator address and the number of associated misses
 
 
 
+<a name="oracle.v1.OracleVote"></a>
 
 <a name="oracle.v1.Params"></a>
 
@@ -612,11 +345,11 @@ Params oracle parameters
 
  <!-- end messages -->
 
- <!-- end enums -->
+<a name="oracle.v1.UniswapToken"></a>
 
- <!-- end HasExtensions -->
+### UniswapToken
+UniswapToken is the returned uniswap token representation
 
- <!-- end services -->
 
 
 
@@ -637,6 +370,7 @@ Params oracle parameters
 | ----- | ---- | ----- | ----------- |
 | `validator` | [string](#string) |  |  |
 
+### MsgDelegateFeedConsentResponse
 
 
 
@@ -687,7 +421,6 @@ Params oracle parameters
 
 
 
-<a name="oracle.v1.QueryOracleDataPrevoteRequest"></a>
 
 ### QueryOracleDataPrevoteRequest
 
