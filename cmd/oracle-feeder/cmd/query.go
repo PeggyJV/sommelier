@@ -421,6 +421,7 @@ func (c *Config) GetPairs(ctx context.Context, first, skip int) (*oracletypes.Or
 
 	var out *oracletypes.OracleFeed
 
+	c.graphClient.Log = func(s string) { fmt.Println(s) }
 	err := c.graphClient.Run(ctx, req, out)
 	if err != nil {
 		return nil, err
