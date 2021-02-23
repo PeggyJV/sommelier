@@ -271,9 +271,9 @@ func TestUniswapPairValidate(t *testing.T) {
 func TestUniswapPairCompare(t *testing.T) {
 	pair := &UniswapPair{
 		Id:         "0xb4e16d0168e52d35cacd2c6185b44281ec28c9dc",
-		Reserve0:   sdk.MustNewDecFromStr("148681992.765143"),
-		Reserve1:   sdk.MustNewDecFromStr("97709.503398661101176213"),
-		ReserveUsd: sdk.MustNewDecFromStr("297632095.439861032964130850"),
+		Reserve0:   sdk.NewDec(100),
+		Reserve1:   sdk.NewDec(100),
+		ReserveUsd: sdk.NewDec(100),
 		Token0: UniswapToken{
 			Decimals: 6,
 			Id:       "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
@@ -282,29 +282,26 @@ func TestUniswapPairCompare(t *testing.T) {
 			Decimals: 18,
 			Id:       "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
 		},
-		Token0Price: sdk.MustNewDecFromStr("1521.673814659673802831"),
-		Token1Price: sdk.MustNewDecFromStr("0.000657171064104597"),
-		TotalSupply: sdk.MustNewDecFromStr("2.754869216896965436"),
+		Token0Price: sdk.NewDec(100),
+		Token1Price: sdk.NewDec(100),
+		TotalSupply: sdk.NewDec(100),
 	}
 
-	target := sdk.NewDecWithPrec(5, 3) // 0.05
+	target := sdk.NewDecWithPrec(5, 2) // 0.05
 	aggregatePair := NewUniswapPair(pair.Id, pair.Token0, pair.Token1)
 
 	testCases := []struct {
 		name           string
 		pair           *UniswapPair
+		malleate       func()
 		isWithinTarget bool
 	}{
-		{
-			"default pair",
-			pair,
-			false,
-		},
 		{
 			"different ID",
 			&UniswapPair{
 				Id: "0x0",
 			},
+			func() {},
 			false,
 		},
 		{
@@ -320,6 +317,7 @@ func TestUniswapPairCompare(t *testing.T) {
 					Id:       "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
 				},
 			},
+			func() {},
 			false,
 		},
 		{
@@ -335,11 +333,96 @@ func TestUniswapPairCompare(t *testing.T) {
 					Id:       "",
 				},
 			},
+			func() {},
 			false,
+		},
+		{
+			"zero fields aggregated data",
+			pair,
+			func() {},
+			false,
+		},
+		{
+			"reserve 1 not within target",
+			pair,
+			func() {
+				aggregatePair.Reserve0 = pair.Reserve0.Add(sdk.NewDec(4))
+			},
+			false,
+		},
+		{
+			"reserve USD not within target",
+			pair,
+			func() {
+				aggregatePair.Reserve0 = pair.Reserve0.Add(sdk.NewDec(4))
+				aggregatePair.Reserve1 = pair.Reserve1.Add(sdk.NewDec(4))
+			},
+			false,
+		},
+		{
+			"token 0 price not within target",
+			pair,
+			func() {
+				aggregatePair.Reserve0 = pair.Reserve0.Add(sdk.NewDec(4))
+				aggregatePair.Reserve1 = pair.Reserve1.Add(sdk.NewDec(4))
+				aggregatePair.ReserveUsd = pair.ReserveUsd.Add(sdk.NewDec(4))
+			},
+			false,
+		},
+		{
+			"token 1 price not within target",
+			pair,
+			func() {
+				aggregatePair.Reserve0 = pair.Reserve0.Add(sdk.NewDec(4))
+				aggregatePair.Reserve1 = pair.Reserve1.Add(sdk.NewDec(4))
+				aggregatePair.ReserveUsd = pair.ReserveUsd.Add(sdk.NewDec(4))
+				aggregatePair.Token0Price = pair.Token0Price.Add(sdk.NewDec(4))
+			},
+			false,
+		},
+		{
+			"total supply not within target",
+			pair,
+			func() {
+				aggregatePair.Reserve0 = pair.Reserve0.Add(sdk.NewDec(4))
+				aggregatePair.Reserve1 = pair.Reserve1.Add(sdk.NewDec(4))
+				aggregatePair.ReserveUsd = pair.ReserveUsd.Add(sdk.NewDec(4))
+				aggregatePair.Token0Price = pair.Token0Price.Add(sdk.NewDec(4))
+				aggregatePair.Token1Price = pair.Token1Price.Add(sdk.NewDec(4))
+			},
+			false,
+		},
+		{
+			"valid pair within target",
+			pair,
+			func() {
+				aggregatePair.Reserve0 = pair.Reserve0.Add(sdk.NewDec(4))
+				aggregatePair.Reserve1 = pair.Reserve1.Add(sdk.NewDec(4))
+				aggregatePair.ReserveUsd = pair.ReserveUsd.Add(sdk.NewDec(4))
+				aggregatePair.Token0Price = pair.Token0Price.Add(sdk.NewDec(4))
+				aggregatePair.Token1Price = pair.Token1Price.Add(sdk.NewDec(4))
+				aggregatePair.TotalSupply = pair.TotalSupply.Add(sdk.NewDec(4))
+			},
+			true,
 		},
 	}
 
 	for _, tc := range testCases {
+		tc.malleate()
+
 		require.Equal(t, tc.isWithinTarget, tc.pair.Compare(aggregatePair, target), tc.name)
 	}
+}
+
+func TestTruncateDec(t *testing.T) {
+	_, err := truncateDec("1")
+	require.Error(t, err)
+
+	dec, err := truncateDec("1.0")
+	require.NoError(t, err)
+	require.Equal(t, sdk.OneDec().String(), dec.String())
+
+	dec, err = truncateDec("195116448.3284569661435357469623931")
+	require.NoError(t, err)
+	require.Equal(t, "195116448.328456966143535746", dec.String())
 }

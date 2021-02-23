@@ -177,7 +177,7 @@ func (up UniswapPair) Compare(aggregatedData OracleData, target sdk.Dec) bool {
 	}
 
 	// |reserve1 - reserve1 (agg)| / (reserve1 (agg)) ≤ target
-	if up.Reserve1.Sub(aggregatedPair.Reserve1).Abs().Quo(aggregatedPair.Reserve1).GT(target.Mul(aggregatedPair.Reserve1)) {
+	if up.Reserve1.Sub(aggregatedPair.Reserve1).Abs().GT(target.Mul(aggregatedPair.Reserve1)) {
 		return false
 	}
 
@@ -214,32 +214,32 @@ func (up *UniswapPair) UnmarshalJSON(bz []byte) error {
 		return err
 	}
 
-	up.Reserve0, err = trimDec(upp.Reserve0)
+	up.Reserve0, err = truncateDec(upp.Reserve0)
 	if err != nil {
 		return fmt.Errorf("reserve 0: %w", err)
 	}
 
-	up.Reserve1, err = trimDec(upp.Reserve1)
+	up.Reserve1, err = truncateDec(upp.Reserve1)
 	if err != nil {
 		return fmt.Errorf("reserve 1: %w", err)
 	}
 
-	up.ReserveUsd, err = trimDec(upp.ReserveUsd)
+	up.ReserveUsd, err = truncateDec(upp.ReserveUsd)
 	if err != nil {
 		return fmt.Errorf("reserve USD: %w", err)
 	}
 
-	up.Token0Price, err = trimDec(upp.Token0Price)
+	up.Token0Price, err = truncateDec(upp.Token0Price)
 	if err != nil {
 		return fmt.Errorf("token 0 price: %w", err)
 	}
 
-	up.Token1Price, err = trimDec(upp.Token1Price)
+	up.Token1Price, err = truncateDec(upp.Token1Price)
 	if err != nil {
 		return fmt.Errorf("token 1 price: %w", err)
 	}
 
-	up.TotalSupply, err = trimDec(upp.TotalSupply)
+	up.TotalSupply, err = truncateDec(upp.TotalSupply)
 	if err != nil {
 		return fmt.Errorf("total supply: %w", err)
 	}
@@ -260,7 +260,10 @@ func (ut UniswapToken) Validate() error {
 	return nil
 }
 
-func trimDec(decStr string) (sdk.Dec, error) {
+// truncateDec splits a decimal into the integer and decimal components and then
+// truncates the decimals in case it has a precision larger than the max allowed
+// one (18).
+func truncateDec(decStr string) (sdk.Dec, error) {
 	dec := strings.Split(decStr, ".")
 	if len(dec) != 2 {
 		return sdk.Dec{}, sdk.ErrInvalidDecimalStr
