@@ -2,6 +2,7 @@ package types
 
 import (
 	"crypto/sha256"
+	"errors"
 	"fmt"
 
 	tmbytes "github.com/tendermint/tendermint/libs/bytes"
@@ -74,6 +75,30 @@ func (up UniswapPair) Validate() error {
 		return fmt.Errorf("invalid uniswap pair id %s: %w", up.Id, err)
 	}
 
+	if up.Reserve0.IsNil() {
+		return errors.New("reserve 0 cannot be nil")
+	}
+
+	if up.Reserve1.IsNil() {
+		return errors.New("reserve 1 cannot be nil")
+	}
+
+	if up.ReserveUsd.IsNil() {
+		return errors.New("reserve USD cannot be nil")
+	}
+
+	if up.Token0Price.IsNil() {
+		return errors.New("token 0 price cannot be nil")
+	}
+
+	if up.Token1Price.IsNil() {
+		return errors.New("token 0 price  cannot be nil")
+	}
+
+	if up.TotalSupply.IsNil() {
+		return errors.New("token supply cannot be nil")
+	}
+
 	if up.Reserve0.IsNegative() {
 		return fmt.Errorf("reserve 0 value (%s) for uniswap pair %s cannot be negative", up.Reserve0, up.Id)
 	}
@@ -133,32 +158,32 @@ func (up UniswapPair) Compare(aggregatedData OracleData, target sdk.Dec) bool {
 	}
 
 	// |reserve0 - reserve0 (agg)| / (reserve0 (agg)) ≤ target
-	if up.Reserve0.Sub(aggregatedPair.Reserve0).Abs().Quo(aggregatedPair.Reserve0).GT(target) {
+	if up.Reserve0.Sub(aggregatedPair.Reserve0).Abs().GT(target.Mul(aggregatedPair.Reserve0)) {
 		return false
 	}
 
 	// |reserve1 - reserve1 (agg)| / (reserve1 (agg)) ≤ target
-	if up.Reserve1.Sub(aggregatedPair.Reserve1).Abs().GT(target) {
+	if up.Reserve1.Sub(aggregatedPair.Reserve1).Abs().Quo(aggregatedPair.Reserve1).GT(target.Mul(aggregatedPair.Reserve1)) {
 		return false
 	}
 
 	// |reserveUsd - reserveUsd (agg)| / (reserveUsd (agg)) ≤ target
-	if up.ReserveUsd.Sub(aggregatedPair.ReserveUsd).Abs().GT(target) {
+	if up.ReserveUsd.Sub(aggregatedPair.ReserveUsd).Abs().GT(target.Mul(aggregatedPair.ReserveUsd)) {
 		return false
 	}
 
 	// |token0price - token0price (agg)| / (token0price (agg)) ≤ target
-	if up.Token0Price.Sub(aggregatedPair.Token0Price).Abs().GT(target) {
+	if up.Token0Price.Sub(aggregatedPair.Token0Price).Abs().GT(target.Mul(aggregatedPair.Token0Price)) {
 		return false
 	}
 
 	// |token1price - token1price (agg)| / (token1price (agg)) ≤ target
-	if up.Token1Price.Sub(aggregatedPair.Token1Price).Abs().GT(target) {
+	if up.Token1Price.Sub(aggregatedPair.Token1Price).Abs().GT(target.Mul(aggregatedPair.Token1Price)) {
 		return false
 	}
 
 	// |totalSupply - totalSupply (agg)| / (totalSupply (agg)) ≤ target
-	if up.TotalSupply.Sub(aggregatedPair.TotalSupply).Abs().GT(target) {
+	if up.TotalSupply.Sub(aggregatedPair.TotalSupply).Abs().GT(target.Mul(aggregatedPair.TotalSupply)) {
 		return false
 	}
 
