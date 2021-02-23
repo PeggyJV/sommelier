@@ -9,13 +9,24 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
+var _ OracleData = &mockOracleData{}
+
+type mockOracleData struct{}
+
+func (mockOracleData) GetID() string                        { return "mockOracleData" }
+func (mockOracleData) Type() string                         { return "mock" }
+func (mockOracleData) Validate() error                      { return nil }
+func (mockOracleData) Compare(_ OracleData, _ sdk.Dec) bool { return false }
+func (mockOracleData) Reset()                               {}
+func (mockOracleData) String() string                       { return "mockOracleData" }
+func (mockOracleData) ProtoMessage()                        {}
+
 func TestUniswapPairValidate(t *testing.T) {
 	testCases := []struct {
 		name    string
 		pair    UniswapPair
 		expPass bool
 	}{
-		// TODO: chop precision from string
 		{
 			"valid pair",
 			UniswapPair{
@@ -413,6 +424,8 @@ func TestUniswapPairCompare(t *testing.T) {
 
 		require.Equal(t, tc.isWithinTarget, tc.pair.Compare(aggregatePair, target), tc.name)
 	}
+
+	require.False(t, pair.Compare(&mockOracleData{}, target))
 }
 
 func TestPairUnmarshalJSON(t *testing.T) {
@@ -483,14 +496,14 @@ func TestPairUnmarshalJSON(t *testing.T) {
 }
 
 func TestTruncateDec(t *testing.T) {
-	_, err := truncateDec("1")
+	_, err := TruncateDec("1")
 	require.Error(t, err)
 
-	dec, err := truncateDec("1.0")
+	dec, err := TruncateDec("1.0")
 	require.NoError(t, err)
 	require.Equal(t, sdk.OneDec().String(), dec.String())
 
-	dec, err = truncateDec("195116448.3284569661435357469623931")
+	dec, err = TruncateDec("195116448.3284569661435357469623931")
 	require.NoError(t, err)
 	require.Equal(t, "195116448.328456966143535746", dec.String())
 }

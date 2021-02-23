@@ -29,15 +29,14 @@ func RegisterInterfaces(registry codectypes.InterfaceRegistry) {
 // an error if the oracle data can't be casted to a protobuf message or if the concrete
 // implemention is not registered to the protobuf codec.
 func PackOracleData(oracleData OracleData) (*codectypes.Any, error) {
-	msg, ok := oracleData.(proto.Message)
-	if !ok {
-		return nil, sdkerrors.Wrapf(sdkerrors.ErrPackAny, "cannot proto marshal %T", oracleData)
-	}
-	anyoracleData, err := codectypes.NewAnyWithValue(msg)
+	msg := oracleData.(proto.Message)
+
+	anyOracleData, err := codectypes.NewAnyWithValue(msg)
 	if err != nil {
 		return nil, sdkerrors.Wrap(sdkerrors.ErrPackAny, err.Error())
 	}
-	return anyoracleData, nil
+
+	return anyOracleData, nil
 }
 
 // UnpackOracleData Unpacks an Any into a OracleData. It returns an error if the
@@ -46,9 +45,11 @@ func UnpackOracleData(any *codectypes.Any) (OracleData, error) {
 	if any == nil {
 		return nil, sdkerrors.Wrap(sdkerrors.ErrUnpackAny, "protobuf Any message cannot be nil")
 	}
+
 	oracleData, ok := any.GetCachedValue().(OracleData)
 	if !ok {
 		return nil, sdkerrors.Wrapf(sdkerrors.ErrUnpackAny, "cannot Unpack Any into OracleData %T", any)
 	}
+
 	return oracleData, nil
 }

@@ -218,32 +218,32 @@ func (up *UniswapPair) UnmarshalJSON(bz []byte) error {
 	up.Token0 = upp.Token0
 	up.Token1 = upp.Token1
 
-	up.Reserve0, err = truncateDec(upp.Reserve0)
+	up.Reserve0, err = TruncateDec(upp.Reserve0)
 	if err != nil {
 		return fmt.Errorf("reserve 0: %w", err)
 	}
 
-	up.Reserve1, err = truncateDec(upp.Reserve1)
+	up.Reserve1, err = TruncateDec(upp.Reserve1)
 	if err != nil {
 		return fmt.Errorf("reserve 1: %w", err)
 	}
 
-	up.ReserveUsd, err = truncateDec(upp.ReserveUsd)
+	up.ReserveUsd, err = TruncateDec(upp.ReserveUsd)
 	if err != nil {
 		return fmt.Errorf("reserve USD: %w", err)
 	}
 
-	up.Token0Price, err = truncateDec(upp.Token0Price)
+	up.Token0Price, err = TruncateDec(upp.Token0Price)
 	if err != nil {
 		return fmt.Errorf("token 0 price: %w", err)
 	}
 
-	up.Token1Price, err = truncateDec(upp.Token1Price)
+	up.Token1Price, err = TruncateDec(upp.Token1Price)
 	if err != nil {
 		return fmt.Errorf("token 1 price: %w", err)
 	}
 
-	up.TotalSupply, err = truncateDec(upp.TotalSupply)
+	up.TotalSupply, err = TruncateDec(upp.TotalSupply)
 	if err != nil {
 		return fmt.Errorf("total supply: %w", err)
 	}
@@ -264,10 +264,10 @@ func (ut UniswapToken) Validate() error {
 	return nil
 }
 
-// truncateDec splits a decimal into the integer and decimal components and then
+// TruncateDec splits a decimal into the integer and decimal components and then
 // truncates the decimals in case it has a precision larger than the max allowed
 // one (18).
-func truncateDec(decStr string) (sdk.Dec, error) {
+func TruncateDec(decStr string) (sdk.Dec, error) {
 	dec := strings.Split(decStr, ".")
 	if len(dec) != 2 {
 		return sdk.Dec{}, sdk.ErrInvalidDecimalStr
@@ -278,4 +278,13 @@ func truncateDec(decStr string) (sdk.Dec, error) {
 	}
 
 	return sdk.NewDecFromStr(strings.Join(dec, "."))
+}
+
+// MustTruncateDec is a util function that panics on TruncateDec error.
+func MustTruncateDec(decStr string) sdk.Dec {
+	dec, err := TruncateDec(decStr)
+	if err != nil {
+		panic(err)
+	}
+	return dec
 }
