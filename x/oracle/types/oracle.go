@@ -214,6 +214,10 @@ func (up *UniswapPair) UnmarshalJSON(bz []byte) error {
 		return err
 	}
 
+	up.Id = upp.ID
+	up.Token0 = upp.Token0
+	up.Token1 = upp.Token1
+
 	up.Reserve0, err = truncateDec(upp.Reserve0)
 	if err != nil {
 		return fmt.Errorf("reserve 0: %w", err)

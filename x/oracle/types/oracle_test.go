@@ -1,6 +1,7 @@
 package types
 
 import (
+	"encoding/json"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -412,6 +413,73 @@ func TestUniswapPairCompare(t *testing.T) {
 
 		require.Equal(t, tc.isWithinTarget, tc.pair.Compare(aggregatePair, target), tc.name)
 	}
+}
+
+func TestPairUnmarshalJSON(t *testing.T) {
+	pairJSON := `{
+ "id": "0xb4e16d0168e52d35cacd2c6185b44281ec28c9dc",
+ "reserve0": "148681992.765143000000000000",
+ "reserve1": "97709.503398661101176213",
+ "reserveUSD": "297632095.439861032964130850561223123",
+ "token0": {
+   "id": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+	 "decimals": 6
+ },
+ "token1": {
+	 "id": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+	 "decimals": 18
+ },
+ "token0Price": "1521.67381465967380283112313",
+ "token1Price": "0.000657171064104597123123",
+ "totalSupply": "2.754869216896965436123123123"
+}`
+
+	pairJSONTrunc := `{
+ "id": "0xb4e16d0168e52d35cacd2c6185b44281ec28c9dc",
+ "reserve0": "148681992.765143000000000000",
+ "reserve1": "97709.503398661101176213",
+ "reserveUSD": "297632095.439861032964130850",
+ "token0": {
+  "id": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+  "decimals": 6
+ },
+ "token1": {
+  "id": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+  "decimals": 18
+ },
+ "token0Price": "1521.673814659673802831",
+ "token1Price": "0.000657171064104597",
+ "totalSupply": "2.754869216896965436"
+}`
+
+	pairTrunc := UniswapPair{
+		Id:         "0xb4e16d0168e52d35cacd2c6185b44281ec28c9dc",
+		Reserve0:   sdk.MustNewDecFromStr("148681992.765143"),
+		Reserve1:   sdk.MustNewDecFromStr("97709.503398661101176213"),
+		ReserveUsd: sdk.MustNewDecFromStr("297632095.439861032964130850"),
+		Token0: UniswapToken{
+			Decimals: 6,
+			Id:       "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+		},
+		Token1: UniswapToken{
+			Decimals: 18,
+			Id:       "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+		},
+		Token0Price: sdk.MustNewDecFromStr("1521.673814659673802831"),
+		Token1Price: sdk.MustNewDecFromStr("0.000657171064104597"),
+		TotalSupply: sdk.MustNewDecFromStr("2.754869216896965436"),
+	}
+
+	var pair UniswapPair
+	err := json.Unmarshal([]byte(pairJSON), &pair)
+	require.NoError(t, err)
+
+	require.Equal(t, pairTrunc, pair)
+
+	bz, err := json.MarshalIndent(pairTrunc, "", " ")
+	require.NoError(t, err)
+
+	require.Equal(t, pairJSONTrunc, string(bz))
 }
 
 func TestTruncateDec(t *testing.T) {
