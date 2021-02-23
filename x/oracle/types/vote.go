@@ -69,6 +69,10 @@ func (of OracleFeed) Validate() error {
 		seenIds        = make(map[string]bool)
 	)
 
+	if len(of.OracleData) == 0 {
+		return sdkerrors.Wrap(ErrInvalidOracleData, "fed data cannot be empty")
+	}
+
 	for i, oracleData := range of.OracleData {
 		od, err := UnpackOracleData(oracleData)
 		if err != nil {
