@@ -1,7 +1,6 @@
 package types
 
 import (
-	"encoding/json"
 	"fmt"
 	"reflect"
 	"strings"
@@ -51,15 +50,15 @@ func (ov *OracleVote) UnpackInterfaces(unpacker codectypes.AnyUnpacker) error {
 	return ov.Feed.UnpackInterfaces(unpacker)
 }
 
-// MarshalJSON marshals and sorts the returned value
-func (of OracleFeed) MarshalJSON() ([]byte, error) {
-	bz, err := json.Marshal(of)
-	if err != nil {
-		return nil, err
-	}
+// // MarshalJSON marshals and sorts the returned value
+// func (of OracleFeed) MarshalJSON() ([]byte, error) {
+// 	bz, err := json.Marshal(of)
+// 	if err != nil {
+// 		return nil, err
+// 	}
 
-	return sdk.SortJSON(bz)
-}
+// 	return sdk.SortJSON(bz)
+// }
 
 // Validate performs a basic validation on the Oracle feed data fields
 func (of OracleFeed) Validate() error {

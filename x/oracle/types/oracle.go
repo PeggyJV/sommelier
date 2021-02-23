@@ -16,7 +16,10 @@ import (
 	peggytypes "github.com/althea-net/peggy/module/x/peggy/types"
 )
 
-var _ OracleData = &UniswapPair{}
+var (
+	_ OracleData     = &UniswapPair{}
+	_ json.Marshaler = &UniswapPair{}
+)
 
 // UniswapDataType defines the data type for a uniswap pair oracle data
 const UniswapDataType = "uniswap"
