@@ -22,12 +22,12 @@ func UniswapDataHandler(oracleDataInputs []OracleData) (OracleData, error) {
 
 		// set up the fixed fields and zero out the
 		if i == 0 {
-			uniswapDataAggregated = NewUniswapPair(up.Id, up.Token0, up.Token1)
+			uniswapDataAggregated = NewUniswapPair(up.ID, up.Token0, up.Token1)
 		}
 
 		uniswapDataAggregated.Reserve0 = uniswapDataAggregated.Reserve0.Add(up.Reserve0)
 		uniswapDataAggregated.Reserve1 = uniswapDataAggregated.Reserve1.Add(up.Reserve1)
-		uniswapDataAggregated.ReserveUsd = uniswapDataAggregated.ReserveUsd.Add(up.ReserveUsd)
+		uniswapDataAggregated.ReserveUSD = uniswapDataAggregated.ReserveUSD.Add(up.ReserveUSD)
 		uniswapDataAggregated.Token0Price = uniswapDataAggregated.Token0Price.Add(up.Token0Price)
 		uniswapDataAggregated.Token1Price = uniswapDataAggregated.Token1Price.Add(up.Token1Price)
 		uniswapDataAggregated.TotalSupply = uniswapDataAggregated.TotalSupply.Add(up.TotalSupply)
@@ -38,7 +38,7 @@ func UniswapDataHandler(oracleDataInputs []OracleData) (OracleData, error) {
 	// division by the number of inputs
 	uniswapDataAggregated.Reserve0 = uniswapDataAggregated.Reserve0.Quo(inputs)
 	uniswapDataAggregated.Reserve1 = uniswapDataAggregated.Reserve1.Quo(inputs)
-	uniswapDataAggregated.ReserveUsd = uniswapDataAggregated.ReserveUsd.Quo(inputs)
+	uniswapDataAggregated.ReserveUSD = uniswapDataAggregated.ReserveUSD.Quo(inputs)
 	uniswapDataAggregated.Token0Price = uniswapDataAggregated.Token0Price.Quo(inputs)
 	uniswapDataAggregated.Token1Price = uniswapDataAggregated.Token1Price.Quo(inputs)
 	uniswapDataAggregated.TotalSupply = uniswapDataAggregated.TotalSupply.Quo(inputs)

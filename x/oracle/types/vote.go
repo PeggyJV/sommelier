@@ -29,12 +29,12 @@ var (
 
 // Validate performs a basic validation on the Oracle vote fields
 func (ov OracleVote) Validate() error {
-	if ov.Feed == nil || len(ov.Feed.OracleData) == 0 {
+	if ov.Feed == nil || len(ov.Feed.Data) == 0 {
 		return sdkerrors.Wrap(ErrInvalidOracleData, "cannot submit empty oracle data")
 	}
 
-	if len(ov.Salt) != len(ov.Feed.OracleData) {
-		return sdkerrors.Wrapf(ErrInvalidOracleData, "must match salt array length, expected %d, got %d", len(ov.Salt), len(ov.Feed.OracleData))
+	if len(ov.Salt) != len(ov.Feed.Data) {
+		return sdkerrors.Wrapf(ErrInvalidOracleData, "must match salt array length, expected %d, got %d", len(ov.Salt), len(ov.Feed.Data))
 	}
 
 	for i, salt := range ov.Salt {
@@ -69,11 +69,11 @@ func (of OracleFeed) Validate() error {
 		seenIds        = make(map[string]bool)
 	)
 
-	if len(of.OracleData) == 0 {
+	if len(of.Data) == 0 {
 		return sdkerrors.Wrap(ErrInvalidOracleData, "fed data cannot be empty")
 	}
 
-	for i, oracleData := range of.OracleData {
+	for i, oracleData := range of.Data {
 		od, err := UnpackOracleData(oracleData)
 		if err != nil {
 			return sdkerrors.Wrap(ErrInvalidOracleData, err.Error())
@@ -105,7 +105,7 @@ func (of OracleFeed) Validate() error {
 
 // UnpackInterfaces implements UnpackInterfacesMessage
 func (of *OracleFeed) UnpackInterfaces(unpacker codectypes.AnyUnpacker) error {
-	for _, oracleDataAny := range of.OracleData {
+	for _, oracleDataAny := range of.Data {
 		var od OracleData
 		if err := unpacker.UnpackAny(oracleDataAny, &od); err != nil {
 			return err

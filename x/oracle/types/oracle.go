@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"strconv"
 	"strings"
 
 	tmbytes "github.com/tendermint/tendermint/libs/bytes"
@@ -46,36 +47,38 @@ func DataHash(salt, jsonData string, signer sdk.ValAddress) []byte {
 }
 
 type uniswapPairPretty struct {
-	ID          string       `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
-	Reserve0    string       `protobuf:"bytes,2,opt,name=reserve0,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Dec" json:"reserve0" yaml:"reserve0"`
-	Reserve1    string       `protobuf:"bytes,3,opt,name=reserve1,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Dec" json:"reserve1" yaml:"reserve1"`
-	ReserveUsd  string       `protobuf:"bytes,4,opt,name=reserve_usd,json=reserveUsd,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Dec" json:"reserveUSD" yaml:"reserveUSD"`
-	Token0      UniswapToken `protobuf:"bytes,5,opt,name=token0,proto3" json:"token0"`
-	Token1      UniswapToken `protobuf:"bytes,6,opt,name=token1,proto3" json:"token1"`
-	Token0Price string       `protobuf:"bytes,7,opt,name=token0_price,json=token0Price,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Dec" json:"token0Price" yaml:"token0Price"`
-	Token1Price string       `protobuf:"bytes,8,opt,name=token1_price,json=token1Price,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Dec" json:"token1Price" yaml:"token1Price"`
-	TotalSupply string       `protobuf:"bytes,9,opt,name=total_supply,json=totalSupply,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Dec" json:"totalSupply" yaml:"totalSupply"`
+	ID          string             `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	Reserve0    string             `protobuf:"bytes,2,opt,name=reserve0,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Dec" json:"reserve0" yaml:"reserve0"`
+	Reserve1    string             `protobuf:"bytes,3,opt,name=reserve1,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Dec" json:"reserve1" yaml:"reserve1"`
+	ReserveUSD  string             `protobuf:"bytes,4,opt,name=reserve_usd,json=reserveUsd,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Dec" json:"reserveUSD" yaml:"reserveUSD"`
+	Token0      uniswapTokenPretty `protobuf:"bytes,5,opt,name=token0,proto3" json:"token0"`
+	Token1      uniswapTokenPretty `protobuf:"bytes,6,opt,name=token1,proto3" json:"token1"`
+	Token0Price string             `protobuf:"bytes,7,opt,name=token0_price,json=token0Price,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Dec" json:"token0Price" yaml:"token0Price"`
+	Token1Price string             `protobuf:"bytes,8,opt,name=token1_price,json=token1Price,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Dec" json:"token1Price" yaml:"token1Price"`
+	TotalSupply string             `protobuf:"bytes,9,opt,name=total_supply,json=totalSupply,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Dec" json:"totalSupply" yaml:"totalSupply"`
+}
+
+type uniswapTokenPretty struct {
+	// token address
+	ID string `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	// number of decimal positions of the pair token
+	Decimals string `protobuf:"bytes,2,opt,name=decimals,proto3" json:"decimals,omitempty"`
 }
 
 // NewUniswapPair creates a new UniswapPair instance with the fixed values set by args and
 // the other fields to their zero values.
 func NewUniswapPair(id string, token0, token1 UniswapToken) *UniswapPair {
 	return &UniswapPair{
-		Id:          id,
+		ID:          id,
 		Reserve0:    sdk.ZeroDec(),
 		Reserve1:    sdk.ZeroDec(),
-		ReserveUsd:  sdk.ZeroDec(),
+		ReserveUSD:  sdk.ZeroDec(),
 		Token0:      token0,
 		Token1:      token1,
 		Token0Price: sdk.ZeroDec(),
 		Token1Price: sdk.ZeroDec(),
 		TotalSupply: sdk.ZeroDec(),
 	}
-}
-
-// GetID implements OracleData
-func (up UniswapPair) GetID() string {
-	return up.Id
 }
 
 // Type implements OracleData
@@ -85,8 +88,8 @@ func (up *UniswapPair) Type() string {
 
 // Validate implements OracleData
 func (up UniswapPair) Validate() error {
-	if err := peggytypes.ValidateEthAddress(up.Id); err != nil {
-		return fmt.Errorf("invalid uniswap pair id %s: %w", up.Id, err)
+	if err := peggytypes.ValidateEthAddress(up.ID); err != nil {
+		return fmt.Errorf("invalid uniswap pair id %s: %w", up.ID, err)
 	}
 
 	if up.Reserve0.IsNil() {
@@ -97,7 +100,7 @@ func (up UniswapPair) Validate() error {
 		return errors.New("reserve 1 cannot be nil")
 	}
 
-	if up.ReserveUsd.IsNil() {
+	if up.ReserveUSD.IsNil() {
 		return errors.New("reserve USD cannot be nil")
 	}
 
@@ -114,35 +117,35 @@ func (up UniswapPair) Validate() error {
 	}
 
 	if up.Reserve0.IsNegative() {
-		return fmt.Errorf("reserve 0 value (%s) for uniswap pair %s cannot be negative", up.Reserve0, up.Id)
+		return fmt.Errorf("reserve 0 value (%s) for uniswap pair %s cannot be negative", up.Reserve0, up.ID)
 	}
 
 	if up.Reserve1.IsNegative() {
-		return fmt.Errorf("reserve 1 value (%s) for uniswap pair %s cannot be negative", up.Reserve0, up.Id)
+		return fmt.Errorf("reserve 1 value (%s) for uniswap pair %s cannot be negative", up.Reserve0, up.ID)
 	}
 
-	if up.ReserveUsd.IsNegative() {
-		return fmt.Errorf("reserve USD value (%s) for uniswap pair %s cannot be negative", up.Reserve0, up.Id)
+	if up.ReserveUSD.IsNegative() {
+		return fmt.Errorf("reserve USD value (%s) for uniswap pair %s cannot be negative", up.Reserve0, up.ID)
 	}
 
 	if err := up.Token0.Validate(); err != nil {
-		return fmt.Errorf("invalid token 0 for uniswap pair %s: %w", up.Id, err)
+		return fmt.Errorf("invalid token 0 for uniswap pair %s: %w", up.ID, err)
 	}
 
 	if err := up.Token1.Validate(); err != nil {
-		return fmt.Errorf("invalid token 1 for uniswap pair %s: %w", up.Id, err)
+		return fmt.Errorf("invalid token 1 for uniswap pair %s: %w", up.ID, err)
 	}
 
 	if up.Token0Price.IsNegative() {
-		return fmt.Errorf("token 0 price (%s) for uniswap pair %s cannot be negative", up.Token0Price, up.Id)
+		return fmt.Errorf("token 0 price (%s) for uniswap pair %s cannot be negative", up.Token0Price, up.ID)
 	}
 
 	if up.Token1Price.IsNegative() {
-		return fmt.Errorf("token 1 price (%s) for uniswap pair %s cannot be negative", up.Token1Price, up.Id)
+		return fmt.Errorf("token 1 price (%s) for uniswap pair %s cannot be negative", up.Token1Price, up.ID)
 	}
 
 	if up.TotalSupply.IsNegative() {
-		return fmt.Errorf("total supply (%s) for uniswap pair %s cannot be negative", up.TotalSupply, up.Id)
+		return fmt.Errorf("total supply (%s) for uniswap pair %s cannot be negative", up.TotalSupply, up.ID)
 	}
 
 	return nil
@@ -159,7 +162,7 @@ func (up UniswapPair) Compare(aggregatedData OracleData, target sdk.Dec) bool {
 
 	// fixed data must match: id, token 0, token 1
 
-	if up.Id != aggregatedPair.Id {
+	if up.ID != aggregatedPair.ID {
 		return false
 	}
 
@@ -182,7 +185,7 @@ func (up UniswapPair) Compare(aggregatedData OracleData, target sdk.Dec) bool {
 	}
 
 	// |reserveUsd - reserveUsd (agg)| / (reserveUsd (agg)) ≤ target
-	if up.ReserveUsd.Sub(aggregatedPair.ReserveUsd).Abs().GT(target.Mul(aggregatedPair.ReserveUsd)) {
+	if up.ReserveUSD.Sub(aggregatedPair.ReserveUSD).Abs().GT(target.Mul(aggregatedPair.ReserveUSD)) {
 		return false
 	}
 
@@ -204,6 +207,30 @@ func (up UniswapPair) Compare(aggregatedData OracleData, target sdk.Dec) bool {
 	return true
 }
 
+// MarshalJSON is a custom JSON marshaler that parses the uniswap pair into the format that corresponds
+// to the Graph query.
+func (up UniswapPair) MarshalJSON() ([]byte, error) {
+	upp := uniswapPairPretty{
+		ID:         up.ID,
+		Reserve0:   up.Reserve0.String(),
+		Reserve1:   up.Reserve1.String(),
+		ReserveUSD: up.ReserveUSD.String(),
+		Token0: uniswapTokenPretty{
+			ID:       up.Token0.ID,
+			Decimals: strconv.FormatUint(up.Token0.Decimals, 10),
+		},
+		Token1: uniswapTokenPretty{
+			ID:       up.Token1.ID,
+			Decimals: strconv.FormatUint(up.Token1.Decimals, 10),
+		},
+		Token0Price: up.Token0Price.String(),
+		Token1Price: up.Token1Price.String(),
+		TotalSupply: up.TotalSupply.String(),
+	}
+
+	return json.Marshal(upp)
+}
+
 // UnmarshalJSON is a custom JSON marshaler that chops the decimals to the
 // max precision allowed by the SDK (18).
 func (up *UniswapPair) UnmarshalJSON(bz []byte) error {
@@ -214,9 +241,26 @@ func (up *UniswapPair) UnmarshalJSON(bz []byte) error {
 		return err
 	}
 
-	up.Id = upp.ID
-	up.Token0 = upp.Token0
-	up.Token1 = upp.Token1
+	up.ID = upp.ID
+
+	token0dec, err := strconv.ParseUint(upp.Token0.Decimals, 10, 64)
+	if err != nil {
+		return err
+	}
+
+	token1dec, err := strconv.ParseUint(upp.Token1.Decimals, 10, 64)
+	if err != nil {
+		return err
+	}
+
+	up.Token0 = UniswapToken{
+		ID:       upp.Token0.ID,
+		Decimals: token0dec,
+	}
+	up.Token1 = UniswapToken{
+		ID:       upp.Token1.ID,
+		Decimals: token1dec,
+	}
 
 	up.Reserve0, err = TruncateDec(upp.Reserve0)
 	if err != nil {
@@ -228,7 +272,7 @@ func (up *UniswapPair) UnmarshalJSON(bz []byte) error {
 		return fmt.Errorf("reserve 1: %w", err)
 	}
 
-	up.ReserveUsd, err = TruncateDec(upp.ReserveUsd)
+	up.ReserveUSD, err = TruncateDec(upp.ReserveUSD)
 	if err != nil {
 		return fmt.Errorf("reserve USD: %w", err)
 	}
@@ -253,8 +297,8 @@ func (up *UniswapPair) UnmarshalJSON(bz []byte) error {
 
 // Validate performs a basic validation of the uniswap token fields.
 func (ut UniswapToken) Validate() error {
-	if err := peggytypes.ValidateEthAddress(ut.Id); err != nil {
-		return fmt.Errorf("invalid token address %s: %w", ut.Id, err)
+	if err := peggytypes.ValidateEthAddress(ut.ID); err != nil {
+		return fmt.Errorf("invalid token address %s: %w", ut.ID, err)
 	}
 
 	if ut.Decimals > sdk.Precision {

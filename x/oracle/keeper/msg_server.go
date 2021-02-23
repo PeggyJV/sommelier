@@ -136,10 +136,10 @@ func (k Keeper) OracleDataVote(c context.Context, msg *types.MsgOracleDataVote) 
 	}
 
 	// ensure that the right number of data is in the msg
-	if len(prevote.Hashes) != len(msg.Vote.Feed.OracleData) {
+	if len(prevote.Hashes) != len(msg.Vote.Feed.Data) {
 		return nil, sdkerrors.Wrapf(
 			types.ErrInvalidOracleData,
-			"oracle hashes doesn't match the oracle data length, expected %d, got %d", len(prevote.Hashes), len(msg.Vote.Feed.OracleData),
+			"oracle hashes doesn't match the oracle data length, expected %d, got %d", len(prevote.Hashes), len(msg.Vote.Feed.Data),
 		)
 	}
 
@@ -187,7 +187,7 @@ func (k Keeper) OracleDataVote(c context.Context, msg *types.MsgOracleDataVote) 
 		)
 	}
 
-	for i, oracleDataAny := range msg.Vote.Feed.OracleData {
+	for i, oracleDataAny := range msg.Vote.Feed.Data {
 		// unpack the oracle data one by one
 		oracleData, err := types.UnpackOracleData(oracleDataAny)
 		if err != nil {
