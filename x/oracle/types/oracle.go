@@ -2,8 +2,10 @@ package types
 
 import (
 	"crypto/sha256"
+	"encoding/json"
 	"errors"
 	"fmt"
+	"strings"
 
 	tmbytes "github.com/tendermint/tendermint/libs/bytes"
 
@@ -41,6 +43,18 @@ func DataHash(salt, jsonData string, signer sdk.ValAddress) []byte {
 	h := sha256.New()
 	h.Write([]byte(fmt.Sprintf("%s:%s:%s", salt, jsonData, signer.String())))
 	return h.Sum(nil)
+}
+
+type uniswapPairPretty struct {
+	ID          string       `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	Reserve0    string       `protobuf:"bytes,2,opt,name=reserve0,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Dec" json:"reserve0" yaml:"reserve0"`
+	Reserve1    string       `protobuf:"bytes,3,opt,name=reserve1,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Dec" json:"reserve1" yaml:"reserve1"`
+	ReserveUsd  string       `protobuf:"bytes,4,opt,name=reserve_usd,json=reserveUsd,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Dec" json:"reserveUSD" yaml:"reserveUSD"`
+	Token0      UniswapToken `protobuf:"bytes,5,opt,name=token0,proto3" json:"token0"`
+	Token1      UniswapToken `protobuf:"bytes,6,opt,name=token1,proto3" json:"token1"`
+	Token0Price string       `protobuf:"bytes,7,opt,name=token0_price,json=token0Price,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Dec" json:"token0Price" yaml:"token0Price"`
+	Token1Price string       `protobuf:"bytes,8,opt,name=token1_price,json=token1Price,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Dec" json:"token1Price" yaml:"token1Price"`
+	TotalSupply string       `protobuf:"bytes,9,opt,name=total_supply,json=totalSupply,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Dec" json:"totalSupply" yaml:"totalSupply"`
 }
 
 // NewUniswapPair creates a new UniswapPair instance with the fixed values set by args and
@@ -190,11 +204,71 @@ func (up UniswapPair) Compare(aggregatedData OracleData, target sdk.Dec) bool {
 	return true
 }
 
+// UnmarshalJSON is a custom JSON marshaler that chops the decimals to the
+// max precision allowed by the SDK (18).
+func (up *UniswapPair) UnmarshalJSON(bz []byte) error {
+	var upp uniswapPairPretty
+
+	err := json.Unmarshal(bz, &upp)
+	if err != nil {
+		return err
+	}
+
+	up.Reserve0, err = trimDec(upp.Reserve0)
+	if err != nil {
+		return fmt.Errorf("reserve 0: %w", err)
+	}
+
+	up.Reserve1, err = trimDec(upp.Reserve1)
+	if err != nil {
+		return fmt.Errorf("reserve 1: %w", err)
+	}
+
+	up.ReserveUsd, err = trimDec(upp.ReserveUsd)
+	if err != nil {
+		return fmt.Errorf("reserve USD: %w", err)
+	}
+
+	up.Token0Price, err = trimDec(upp.Token0Price)
+	if err != nil {
+		return fmt.Errorf("token 0 price: %w", err)
+	}
+
+	up.Token1Price, err = trimDec(upp.Token1Price)
+	if err != nil {
+		return fmt.Errorf("token 1 price: %w", err)
+	}
+
+	up.TotalSupply, err = trimDec(upp.TotalSupply)
+	if err != nil {
+		return fmt.Errorf("total supply: %w", err)
+	}
+
+	return nil
+}
+
 // Validate performs a basic validation of the uniswap token fields.
 func (ut UniswapToken) Validate() error {
 	if err := peggytypes.ValidateEthAddress(ut.Id); err != nil {
 		return fmt.Errorf("invalid token address %s: %w", ut.Id, err)
 	}
 
+	if ut.Decimals > sdk.Precision {
+		return fmt.Errorf("decimal places (%d) exceeds the maximum supported (%d)", ut.Decimals, sdk.Precision)
+	}
+
 	return nil
+}
+
+func trimDec(decStr string) (sdk.Dec, error) {
+	dec := strings.Split(decStr, ".")
+	if len(dec) != 2 {
+		return sdk.Dec{}, sdk.ErrInvalidDecimalStr
+	}
+
+	if len(dec[1]) > sdk.Precision {
+		dec[1] = dec[1][0:sdk.Precision]
+	}
+
+	return sdk.NewDecFromStr(strings.Join(dec, "."))
 }
