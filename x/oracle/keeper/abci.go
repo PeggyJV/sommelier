@@ -10,15 +10,23 @@ import (
 )
 
 // EndBlocker defines the oracle logic that executes at the end of every block:
+//
 // 0) Checks if the voting period is over and performs a no-op if it's not.
+//
 // 1) Checks all the votes submitted in the last period and groups them by ID.
-// 	This step also deletes the oracle votes.
+// This step also deletes the oracle votes.
+//
 // 2) Increments the miss counter for validators that didn't vote
+//
 // 3) Aggregates the data by ID and type
+//
 // 4) Compares each submitted data with the aggregated result in order to check
-// 	for reward eligibility
+// for reward eligibility
+//
 // 5) Slashes validators that haven't voted in a while
+//
 // 6) Deletes all prevotes
+//
 // 7) Sets the new voting period to the next block
 func (k Keeper) EndBlocker(ctx sdk.Context) {
 	params := k.GetParamSet(ctx)

@@ -9,7 +9,8 @@ import (
 // oracle data processing. It returns the aggregated data and an error.
 type OracleHandler func(ctx sdk.Context, oracleDataInput []OracleData) (OracleData, error)
 
-// UniswapDataHandler averages a collection of uniswap pairs oracle data
+// UniswapDataHandler averages a collection of uniswap pairs oracle data.
+// CONTRACT: input length must be > 0.
 func UniswapDataHandler(oracleDataInputs []OracleData) (OracleData, error) {
 	var uniswapDataAggregated *UniswapPair
 
@@ -32,7 +33,7 @@ func UniswapDataHandler(oracleDataInputs []OracleData) (OracleData, error) {
 		uniswapDataAggregated.TotalSupply = uniswapDataAggregated.TotalSupply.Add(up.TotalSupply)
 	}
 
-	inputs := sdk.NewDecWithPrec(int64(len(oracleDataInputs)), 0)
+	inputs := sdk.NewDec(int64(len(oracleDataInputs)))
 
 	// division by the number of inputs
 	uniswapDataAggregated.Reserve0 = uniswapDataAggregated.Reserve0.Quo(inputs)
