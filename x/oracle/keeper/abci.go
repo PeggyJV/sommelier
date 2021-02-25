@@ -9,6 +9,31 @@ import (
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 )
 
+// BeginBlocker is called at the beginning of every block
+func (k Keeper) BeginBlocker(ctx sdk.Context) {
+	// if there is not a vote period set, initialize it with current block height
+	if !k.HasVotePeriodStart(ctx) {
+		k.SetVotePeriodStart(ctx, ctx.BlockHeight())
+	}
+
+	// On begin block, if we are tallying, emit the new vote period data
+	params := k.GetParamSet(ctx)
+	vp, found := k.GetVotePeriodStart(ctx)
+	if !found {
+		panic("VOTE PERIOD NOT SET SHOULDN'T HAPPEN")
+	}
+	if (ctx.BlockHeight() - vp) >= params.VotePeriod {
+		ctx.EventManager().EmitEvent(
+			sdk.NewEvent(
+				types.EventTypeVotePeriod,
+				sdk.NewAttribute(types.AttributeKeyVotePeriodStart, fmt.Sprintf("%d", ctx.BlockHeight())),
+				sdk.NewAttribute(types.AttributeKeyVotePeriodEnd, fmt.Sprintf("%d", ctx.BlockHeight()+params.VotePeriod)),
+			),
+		)
+	}
+
+}
+
 // EndBlocker defines the oracle logic that executes at the end of every block:
 //
 // 0) Checks if the voting period is over and performs a no-op if it's not.

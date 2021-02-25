@@ -38,6 +38,7 @@ func startOracleFeederCmd() *cobra.Command {
 		Aliases: []string{"feed"},
 		Short:   "feeds the oracle with new uniswap data",
 		RunE: func(cmd *cobra.Command, args []string) error {
+			config.log.Info("starting oracle feeder")
 			ctx, err := config.GetClientContext(cmd)
 			if err != nil {
 				return err
@@ -81,6 +82,7 @@ func (c *Coordinator) handleTx(txEvent ctypes.ResultEvent) error {
 	if !ok {
 		return fmt.Errorf("tx event not tx data")
 	}
+	config.log.Debug("transaction detected", "height", tx.Height)
 	for _, ev := range tx.Result.Events {
 		if ev.Type != oracle.EventTypeOracleDataPrevote {
 			continue
@@ -110,6 +112,7 @@ func (c *Coordinator) handleBlock(blockEvent ctypes.ResultEvent) error {
 	if !ok {
 		return fmt.Errorf("block event not block data")
 	}
+	config.log.Debug("new block detected", "height", bl.Block.Height)
 	c.height = bl.Block.Height
 	prevote := false
 	for _, ev := range bl.ResultBeginBlock.Events {
@@ -150,6 +153,7 @@ func (c *Coordinator) SubmitOracleDataVote() error {
 func (c *Coordinator) SubmitOracleDataPrevote() error {
 	pairs, err := config.GetPairs(context.Background(), 100, 0)
 	if err != nil {
+		// Failing here on parsing data with decimals
 		return err
 	}
 
@@ -275,7 +279,7 @@ func stopLoop(ctx context.Context, cancel context.CancelFunc) error {
 		select {
 		case sig := <-sigCh:
 			cancel()
-			return fmt.Errorf("erxiting feeder loop, received stop signal %s", sig.String())
+			return fmt.Errorf("exiting feeder loop, received stop signal %s", sig.String())
 		case <-ctx.Done():
 			return nil
 		}
