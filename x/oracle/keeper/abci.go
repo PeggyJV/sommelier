@@ -83,19 +83,19 @@ func (k Keeper) EndBlocker(ctx sdk.Context) {
 		votedPower += validator.GetConsensusPower()
 
 		// Safety check. Already validated on msg validation
-		if vote.Feed == nil || len(vote.Feed.Data) == 0 {
+		if len(vote.Pairs) == 0 {
 			k.Logger(ctx).Debug("attempted to process empty oracle data from feed", "validator", validatorAddr.String())
 			return false
 		}
 
 		// save the oracle data for later processing
-		for _, oracleDataAny := range vote.Feed.Data {
-			oracleData, err := types.UnpackOracleData(oracleDataAny)
-			if err != nil {
-				// NOTE: this should never panic as the oracle data had already been checked before
-				// setting it to store.
-				panic(err)
-			}
+		for _, oracleData := range vote.Pairs {
+			// oracleData, err := types.UnpackOracleData(oracleDataAny)
+			// if err != nil {
+			// 	// NOTE: this should never panic as the oracle data had already been checked before
+			// 	// setting it to store.
+			// 	panic(err)
+			// }
 
 			// add oracle data to maps
 			feederVote := types.FeederVote{

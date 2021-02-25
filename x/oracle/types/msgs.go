@@ -17,7 +17,7 @@ var (
 	_ sdk.Msg = &MsgOracleDataVote{}
 )
 
-var _ codectypes.UnpackInterfacesMessage = &MsgOracleDataVote{}
+// var _ codectypes.UnpackInterfacesMessage = &MsgOracleDataVote{}
 
 const (
 	TypeMsgDelegateFeedConsent = "delegate_feed_consent"
@@ -205,10 +205,10 @@ func (m *MsgOracleDataVote) MustGetSigner() sdk.AccAddress {
 	return addr
 }
 
-// UnpackInterfaces implements UnpackInterfacesMessage.UnpackInterfaces
-func (m *MsgOracleDataVote) UnpackInterfaces(unpacker codectypes.AnyUnpacker) (err error) {
-	return m.Vote.UnpackInterfaces(unpacker)
-}
+// // UnpackInterfaces implements UnpackInterfacesMessage.UnpackInterfaces
+// func (m *MsgOracleDataVote) UnpackInterfaces(unpacker codectypes.AnyUnpacker) (err error) {
+// 	return m.Vote.UnpackInterfaces(unpacker)
+// }
 
 // UnpackInterfaces implements UnpackInterfacesMessage.UnpackInterfaces
 func (m *QueryOracleDataResponse) UnpackInterfaces(unpacker codectypes.AnyUnpacker) error {

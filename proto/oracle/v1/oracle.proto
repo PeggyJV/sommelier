@@ -3,13 +3,12 @@ package oracle.v1;
 
 import "gogoproto/gogo.proto";
 import "google/protobuf/any.proto";
-import "cosmos_proto/cosmos.proto";
 
 option go_package = "github.com/peggyjv/sommelier/x/oracle/types";
 
 // OracleFeed represents an array of oracle data that is  
 message OracleFeed {
-	repeated google.protobuf.Any data = 1 [(cosmos_proto.accepts_interface) = "OracleData"];
+	repeated google.protobuf.Any data = 1;
 }
 
 // UniswapPair represents an SDK compatible uniswap pair info fetched from The Graph.
@@ -73,7 +72,7 @@ message UniswapToken {
 // UniswapToken is the returned uniswap token representation
 message OracleVote {
 	repeated string  salt = 1;
-	OracleFeed       feed = 2;
+	repeated UniswapPair pairs = 2;
 }
 
 // OraclePrevote defines an array of hashed from oracle data that are used

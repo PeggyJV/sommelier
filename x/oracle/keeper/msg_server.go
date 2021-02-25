@@ -3,6 +3,7 @@ package keeper
 import (
 	"bytes"
 	"context"
+	"encoding/json"
 	"fmt"
 
 	"github.com/cosmos/cosmos-sdk/telemetry"
@@ -136,10 +137,10 @@ func (k Keeper) OracleDataVote(c context.Context, msg *types.MsgOracleDataVote) 
 	}
 
 	// ensure that the right number of data is in the msg
-	if len(prevote.Hashes) != len(msg.Vote.Feed.Data) {
+	if len(prevote.Hashes) != len(msg.Vote.Pairs) {
 		return nil, sdkerrors.Wrapf(
 			types.ErrInvalidOracleData,
-			"oracle hashes doesn't match the oracle data length, expected %d, got %d", len(prevote.Hashes), len(msg.Vote.Feed.Data),
+			"oracle hashes doesn't match the oracle data length, expected %d, got %d", len(prevote.Hashes), len(msg.Vote.Pairs),
 		)
 	}
 
@@ -167,13 +168,15 @@ func (k Keeper) OracleDataVote(c context.Context, msg *types.MsgOracleDataVote) 
 		),
 	}
 
-	// parse data to json in order to compute the vote hash
-	jsonBz, err := msg.Vote.Feed.MarshalJSON()
+	// parse data to json in order to compute the vote hash and sort
+	jsonBz, err := json.Marshal(msg.Vote.Pairs)
 	if err != nil {
 		return nil, sdkerrors.Wrap(
 			sdkerrors.ErrJSONMarshal, "failed to marshal json oracle data feed",
 		)
 	}
+
+	jsonBz = sdk.MustSortJSON(jsonBz)
 
 	// calculate the vote hash on the server
 	voteHash := types.DataHash(msg.Vote.Salt[0], string(jsonBz), validatorAddr)
@@ -187,19 +190,19 @@ func (k Keeper) OracleDataVote(c context.Context, msg *types.MsgOracleDataVote) 
 		)
 	}
 
-	for i, oracleDataAny := range msg.Vote.Feed.Data {
+	for _, oracleData := range msg.Vote.Pairs {
 		// unpack the oracle data one by one
-		oracleData, err := types.UnpackOracleData(oracleDataAny)
-		if err != nil {
-			return nil, sdkerrors.Wrapf(types.ErrUnpackOracleData, "index %d", i)
-		}
+		// oracleData, err := types.UnpackOracleData(oracleDataAny)
+		// if err != nil {
+		// 	return nil, sdkerrors.Wrapf(types.ErrUnpackOracleData, "index %d", i)
+		// }
 
-		if !allowedTypesMap[oracleData.Type()] {
-			return nil, sdkerrors.Wrapf(
-				types.ErrUnsupportedDataType,
-				"%s, allowed %v", oracleData.Type(), allowedDataTypes,
-			)
-		}
+		// if !allowedTypesMap[oracleData.Type()] {
+		// 	return nil, sdkerrors.Wrapf(
+		// 		types.ErrUnsupportedDataType,
+		// 		"%s, allowed %v", oracleData.Type(), allowedDataTypes,
+		// 	)
+		// }
 
 		k.SetOracleData(ctx, oracleData)
 
