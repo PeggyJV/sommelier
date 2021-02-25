@@ -8,10 +8,11 @@ import (
 	"strconv"
 	"strings"
 
+	proto "github.com/gogo/protobuf/proto"
+
 	tmbytes "github.com/tendermint/tendermint/libs/bytes"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	proto "github.com/gogo/protobuf/proto"
 
 	peggytypes "github.com/althea-net/peggy/module/x/peggy/types"
 )
@@ -50,22 +51,22 @@ func DataHash(salt, jsonData string, signer sdk.ValAddress) []byte {
 }
 
 type uniswapPairPretty struct {
-	ID          string             `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
-	Reserve0    string             `protobuf:"bytes,2,opt,name=reserve0,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Dec" json:"reserve0" yaml:"reserve0"`
-	Reserve1    string             `protobuf:"bytes,3,opt,name=reserve1,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Dec" json:"reserve1" yaml:"reserve1"`
-	ReserveUSD  string             `protobuf:"bytes,4,opt,name=reserve_usd,json=reserveUsd,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Dec" json:"reserveUSD" yaml:"reserveUSD"`
-	Token0      uniswapTokenPretty `protobuf:"bytes,5,opt,name=token0,proto3" json:"token0"`
-	Token1      uniswapTokenPretty `protobuf:"bytes,6,opt,name=token1,proto3" json:"token1"`
-	Token0Price string             `protobuf:"bytes,7,opt,name=token0_price,json=token0Price,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Dec" json:"token0Price" yaml:"token0Price"`
-	Token1Price string             `protobuf:"bytes,8,opt,name=token1_price,json=token1Price,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Dec" json:"token1Price" yaml:"token1Price"`
-	TotalSupply string             `protobuf:"bytes,9,opt,name=total_supply,json=totalSupply,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Dec" json:"totalSupply" yaml:"totalSupply"`
+	ID          string             `json:"id,omitempty"`
+	Reserve0    string             `json:"reserve0" yaml:"reserve0"`
+	Reserve1    string             `json:"reserve1" yaml:"reserve1"`
+	ReserveUSD  string             `json:"reserveUSD" yaml:"reserveUSD"`
+	Token0      uniswapTokenPretty `json:"token0"`
+	Token1      uniswapTokenPretty `json:"token1"`
+	Token0Price string             `json:"token0Price" yaml:"token0Price"`
+	Token1Price string             `json:"token1Price" yaml:"token1Price"`
+	TotalSupply string             `json:"totalSupply" yaml:"totalSupply"`
 }
 
 type uniswapTokenPretty struct {
 	// token address
-	ID string `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	ID string `json:"id,omitempty"`
 	// number of decimal positions of the pair token
-	Decimals string `protobuf:"bytes,2,opt,name=decimals,proto3" json:"decimals,omitempty"`
+	Decimals string `json:"decimals"`
 }
 
 // NewUniswapPair creates a new UniswapPair instance with the fixed values set by args and
