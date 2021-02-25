@@ -48,6 +48,7 @@
     - [Msg](#oracle.v1.Msg)
   
 - [oracle/v1/genesis.proto](#oracle/v1/genesis.proto)
+    - [AggregatedOracleData](#oracle.v1.AggregatedOracleData)
     - [GenesisState](#oracle.v1.GenesisState)
     - [MissCounter](#oracle.v1.MissCounter)
     - [Params](#oracle.v1.Params)
@@ -586,6 +587,22 @@ MsgService defines the msgs that the oracle module handles.
 
 
 
+<a name="oracle.v1.AggregatedOracleData"></a>
+
+### AggregatedOracleData
+AggregatedOracleData defines the aggregated oracle data at a given block height
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `height` | [int64](#int64) |  | block height in which the data was committed |
+| `data` | [google.protobuf.Any](#google.protobuf.Any) |  | oracle data |
+
+
+
+
+
+
 <a name="oracle.v1.GenesisState"></a>
 
 ### GenesisState
@@ -597,6 +614,7 @@ GenesisState - all oracle state that must be provided at genesis
 | `params` | [Params](#oracle.v1.Params) |  |  |
 | `feeder_delegations` | [MsgDelegateFeedConsent](#oracle.v1.MsgDelegateFeedConsent) | repeated |  |
 | `miss_counters` | [MissCounter](#oracle.v1.MissCounter) | repeated |  |
+| `aggregates` | [AggregatedOracleData](#oracle.v1.AggregatedOracleData) | repeated |  |
 
 
 

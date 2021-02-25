@@ -3,7 +3,6 @@ module github.com/peggyjv/sommelier
 go 1.15
 
 require (
-	github.com/Workiva/go-datastructures v1.0.52
 	github.com/althea-net/peggy/module v0.0.0-20210203002914-cfbd0532ece0
 	github.com/armon/go-metrics v0.3.6
 	github.com/cosmos/cosmos-sdk v0.41.0
