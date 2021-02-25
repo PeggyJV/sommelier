@@ -69,7 +69,7 @@ func startOracleFeederCmd() *cobra.Command {
 // Coordinator helps coordinate feeding of the oracle
 type Coordinator struct {
 	clientCtx     client.Context
-	feed          oracle.OracleFeed
+	feed          []*oracle.UniswapPair
 	delegatorAddr sdk.AccAddress
 	validatorAddr sdk.ValAddress
 	salt          string
@@ -140,8 +140,8 @@ func (c *Coordinator) handleBlock(blockEvent ctypes.ResultEvent) error {
 // SubmitOracleDataVote is called to send the vote
 func (c *Coordinator) SubmitOracleDataVote() error {
 	oracleVote := &oracle.OracleVote{
-		Salt: []string{c.salt},
-		Feed: &c.feed,
+		Salt:  []string{c.salt},
+		Pairs: c.feed,
 	}
 
 	msg := oracle.NewMsgOracleDataVote(oracleVote, c.delegatorAddr)
@@ -154,12 +154,18 @@ func (c *Coordinator) SubmitOracleDataVote() error {
 
 // SubmitOracleDataPrevote is called to send the prevote
 func (c *Coordinator) SubmitOracleDataPrevote() error {
-	feed, err := config.GetPairs(context.Background(), 100, 0)
+	pairs, err := config.GetPairs(context.Background(), 100, 0)
 	if err != nil {
 		return err
 	}
 
-	jsonBz, err := feed.MarshalJSON()
+	// marshal and sort
+	jsonBz, err := json.Marshal(pairs)
+	if err != nil {
+		return err
+	}
+
+	jsonBz, err = sdk.SortJSON(jsonBz)
 	if err != nil {
 		return err
 	}
