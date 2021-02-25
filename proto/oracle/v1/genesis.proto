@@ -2,6 +2,7 @@ syntax = "proto3";
 package oracle.v1;
 
 import "oracle/v1/tx.proto";
+import "google/protobuf/any.proto";
 import "gogoproto/gogo.proto";
 
 option go_package = "github.com/peggyjv/sommelier/x/oracle/types";
@@ -16,6 +17,9 @@ message GenesisState {
         (gogoproto.nullable) = false
     ];
     repeated MissCounter            miss_counters      = 3 [
+        (gogoproto.nullable) = false
+    ];
+    repeated AggregatedOracleData aggregates = 4 [
         (gogoproto.nullable) = false
     ];
 }
@@ -63,4 +67,12 @@ message Params {
 message MissCounter {
     string validator = 1;
     int64  misses    = 2;
+}
+
+// AggregatedOracleData defines the aggregated oracle data at a given block height
+message AggregatedOracleData {
+    // block height in which the data was committed
+    int64  height    = 1;
+    // oracle data
+    google.protobuf.Any data = 2;
 }
