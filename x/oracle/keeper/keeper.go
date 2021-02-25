@@ -286,14 +286,21 @@ func (k Keeper) IterateAggregatedOracleDataByHeight(ctx sdk.Context, cb func(ora
 	}
 }
 
+// GetAllAggregatedData returns all the aggregated data
+func (k Keeper) GetAllAggregatedData(ctx sdk.Context) []types.AggregatedOracleData {
+	var aggregates []types.AggregatedOracleData
+	// TODO:
+	return aggregates
+}
+
 // SetAggregatedOracleData sets the aggregated oracle data in the store by height, type and id
-func (k Keeper) SetAggregatedOracleData(ctx sdk.Context, oracleData types.OracleData) {
+func (k Keeper) SetAggregatedOracleData(ctx sdk.Context, height int64, oracleData types.OracleData) {
 	bz, err := k.cdc.MarshalInterface(oracleData)
 	if err != nil {
 		panic(err)
 	}
 
-	key := types.GetAggregatedOracleDataKey(uint64(ctx.BlockHeight()), oracleData.Type(), oracleData.GetID())
+	key := types.GetAggregatedOracleDataKey(uint64(height), oracleData.Type(), oracleData.GetID())
 
 	ctx.KVStore(k.storeKey).Set(key, bz)
 }

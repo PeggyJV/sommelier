@@ -26,6 +26,12 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, gs types.GenesisState) {
 
 		k.SetValidatorDelegateAddress(ctx, delAddress, valAddress)
 	}
+
+	for _, aggregate := range gs.Aggregates {
+		// NOTE: error checked during genesis validation
+		oracleData, _ := types.UnpackOracleData(aggregate.Data)
+		k.SetAggregatedOracleData(ctx, aggregate.Height, oracleData)
+	}
 }
 
 // ExportGenesis writes the current store values
@@ -36,5 +42,6 @@ func ExportGenesis(ctx sdk.Context, k keeper.Keeper) types.GenesisState {
 		Params:            k.GetParamSet(ctx),
 		FeederDelegations: k.GetAllFeederDelegations(ctx),
 		MissCounters:      k.GetAllMissCounters(ctx),
+		Aggregates:        k.GetAllAggregatedData(ctx),
 	}
 }
