@@ -18,7 +18,7 @@ func GetQueryCmd() *cobra.Command {
 
 	oracleQueryCmd.AddCommand([]*cobra.Command{
 		queryParams(),
-		queryDelegeateAddress(),
+		queryDelegateAddress(),
 		queryValidatorAddress(),
 		queryOracleDataPrevote(),
 		queryOracleDataVote(),
@@ -56,7 +56,7 @@ func queryParams() *cobra.Command {
 	}
 }
 
-func queryDelegeateAddress() *cobra.Command {
+func queryDelegateAddress() *cobra.Command {
 	return &cobra.Command{
 		Use:     "delegate-address [validator-address]",
 		Aliases: []string{"del"},
@@ -69,9 +69,9 @@ func queryDelegeateAddress() *cobra.Command {
 			}
 
 			queryClient := types.NewQueryClient(ctx)
-			req := &types.QueryDelegeateAddressRequest{Validator: args[0]}
+			req := &types.QueryDelegateAddressRequest{Validator: args[0]}
 
-			res, err := queryClient.QueryDelegeateAddress(cmd.Context(), req)
+			res, err := queryClient.QueryDelegateAddress(cmd.Context(), req)
 			if err != nil {
 				return err
 			}

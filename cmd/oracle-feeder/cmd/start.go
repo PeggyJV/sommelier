@@ -4,6 +4,7 @@ import (
 	"context"
 	"crypto/rand"
 	"encoding/base64"
+	"encoding/json"
 	"fmt"
 	"os"
 	"os/signal"
@@ -11,16 +12,19 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/cosmos/cosmos-sdk/client"
-	"github.com/cosmos/cosmos-sdk/client/tx"
-	cdctypes "github.com/cosmos/cosmos-sdk/codec/types"
-	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/cosmos/cosmos-sdk/types/tx/signing"
-	oracle "github.com/peggyjv/sommelier/x/oracle/types"
 	"github.com/spf13/cobra"
+	"golang.org/x/sync/errgroup"
+
+	tmbytes "github.com/tendermint/tendermint/libs/bytes"
 	ctypes "github.com/tendermint/tendermint/rpc/core/types"
 	tmtypes "github.com/tendermint/tendermint/types"
-	"golang.org/x/sync/errgroup"
+
+	"github.com/cosmos/cosmos-sdk/client"
+	"github.com/cosmos/cosmos-sdk/client/tx"
+	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/cosmos/cosmos-sdk/types/tx/signing"
+
+	oracle "github.com/peggyjv/sommelier/x/oracle/types"
 )
 
 var (
@@ -60,12 +64,12 @@ func startOracleFeederCmd() *cobra.Command {
 
 // Coordinator helps coordinate feeding of the oracle
 type Coordinator struct {
-	Ctx  client.Context
-	UD   *oracle.UniswapData
-	Addr sdk.AccAddress
-	Val  sdk.AccAddress
-	Salt string
-	Hash []byte
+	clientCtx     client.Context
+	feed          []*oracle.UniswapPair
+	delegatorAddr sdk.AccAddress
+	validatorAddr sdk.ValAddress
+	salt          string
+	hash          tmbytes.HexBytes
 
 	height int64
 
@@ -78,17 +82,23 @@ func (c *Coordinator) handleTx(txEvent ctypes.ResultEvent) error {
 		return fmt.Errorf("tx event not tx data")
 	}
 	for _, ev := range tx.Result.Events {
-		if ev.Type == oracle.EventTypeOracleDataPrevote {
-			for _, att := range ev.Attributes {
-				if string(att.Key) == oracle.AttributeKeyValidator {
-					config.log.Debug("prevote detected", "validator", string(att.Value))
-					if string(att.Value) == c.Val.String() {
-						config.log.Info("submitting oracle data vote", "signer", c.Addr.String(), "height", tx.Height)
-						if err := c.SubmitOracleDataVote(); err != nil {
-							return err
-						}
-					}
-				}
+		if ev.Type != oracle.EventTypeOracleDataPrevote {
+			continue
+		}
+
+		for _, att := range ev.Attributes {
+			if string(att.Key) != oracle.AttributeKeyValidator {
+				continue
+			}
+
+			config.log.Debug("prevote detected", "validator", string(att.Value))
+			if string(att.Value) != c.validatorAddr.String() {
+				continue
+			}
+
+			config.log.Info("submitting oracle data vote", "signer", c.delegatorAddr.String(), "height", tx.Height)
+			if err := c.SubmitOracleDataVote(); err != nil {
+				return err
 			}
 		}
 	}
@@ -103,49 +113,71 @@ func (c *Coordinator) handleBlock(blockEvent ctypes.ResultEvent) error {
 	c.height = bl.Block.Height
 	prevote := false
 	for _, ev := range bl.ResultBeginBlock.Events {
-		if ev.Type == oracle.EventTypeVotePeriod {
-			config.log.Info("new vote period beginning", "height", bl.Block.Height)
-			prevote = true
+		if ev.Type != oracle.EventTypeVotePeriod {
+			continue
 		}
+
+		config.log.Info("new vote period beginning", "height", bl.Block.Height)
+		prevote = true
+		break
 	}
-	if prevote {
-		config.log.Info("submitting oracle data prevote", "signer", c.Addr.String(), "height", c.height)
-		if err := c.SubmitOracleDataPrevote(); err != nil {
-			return err
-		}
+
+	if !prevote {
+		return nil
 	}
-	return nil
+
+	config.log.Info("submitting oracle data prevote", "signer", c.delegatorAddr.String(), "height", c.height)
+
+	return c.SubmitOracleDataPrevote()
 }
 
 // SubmitOracleDataVote is called to send the vote
-func (c *Coordinator) SubmitOracleDataVote() (err error) {
-	od, err := oracle.PackOracleData(c.UD)
-	if err != nil {
-		return
+func (c *Coordinator) SubmitOracleDataVote() error {
+	oracleVote := &oracle.OracleVote{
+		Salt:  []string{c.salt},
+		Pairs: c.feed,
 	}
-	msg := oracle.NewMsgOracleDataVote([]string{c.Salt}, []*cdctypes.Any{od}, c.Addr)
-	if err = msg.ValidateBasic(); err != nil {
-		return
+
+	msg := oracle.NewMsgOracleDataVote(oracleVote, c.delegatorAddr)
+	if err := msg.ValidateBasic(); err != nil {
+		return err
 	}
-	return config.BroadcastTx(c.Ctx, c, msg)
+
+	return config.BroadcastTx(c.clientCtx, c, msg)
 }
 
 // SubmitOracleDataPrevote is called to send the prevote
 func (c *Coordinator) SubmitOracleDataPrevote() error {
-	ud, err := config.GetPairs(context.Background(), 100, 0)
+	pairs, err := config.GetPairs(context.Background(), 100, 0)
 	if err != nil {
 		return err
 	}
-	c.UD = ud
-	c.Salt = genrandstr(6)
-	c.Hash = oracle.DataHash(c.Salt, ud.CannonicalJSON(), c.Val)
-	return config.BroadcastTx(c.Ctx, c,
-		oracle.NewMsgOracleDataPrevote([][]byte{c.Hash}, c.Addr))
+
+	// marshal and sort
+	jsonBz, err := json.Marshal(pairs)
+	if err != nil {
+		return err
+	}
+
+	jsonBz, err = sdk.SortJSON(jsonBz)
+	if err != nil {
+		return err
+	}
+
+	c.salt = genrandstr(6)
+	c.hash = oracle.DataHash(c.salt, string(jsonBz), c.validatorAddr)
+
+	msg := oracle.NewMsgOracleDataPrevote([]tmbytes.HexBytes{c.hash}, c.delegatorAddr)
+	if err := msg.ValidateBasic(); err != nil {
+		return err
+	}
+
+	return config.BroadcastTx(c.clientCtx, c, msg)
 }
 
 // BroadcastTx broadcasts a transaction from the oracle
 func (c Config) BroadcastTx(ctx client.Context, coord *Coordinator, msgs ...sdk.Msg) error {
-	ctx = ctx.WithFromAddress(coord.Addr)
+	ctx = ctx.WithFromAddress(coord.delegatorAddr)
 	return tx.BroadcastTx(ctx, c.TxFactory(ctx), msgs...)
 }
 
@@ -163,38 +195,40 @@ func (c Config) TxFactory(ctx client.Context) tx.Factory {
 }
 
 // OracleFeederLoop is the listen for events and take action loop for the oracle feeder
-func (c Config) OracleFeederLoop(goctx context.Context, cancel context.CancelFunc, ctx client.Context) error {
+func (c *Config) OracleFeederLoop(goctx context.Context, cancel context.CancelFunc, clientCtx client.Context) error {
 	var (
 		txEventsChan, blEventsChan <-chan ctypes.ResultEvent
 		txCancel, blCancel         context.CancelFunc
-		coord                      = &Coordinator{Ctx: ctx}
 	)
+
+	coord := &Coordinator{clientCtx: clientCtx}
+
 	defer cancel()
-	key, err := ctx.Keyring.Key(config.SigningKey)
+	key, err := clientCtx.Keyring.Key(config.SigningKey)
 	if err != nil || key == nil {
-		return fmt.Errorf("configured key(%s) not found in keyring", config.SigningKey)
+		return fmt.Errorf("configured key %s not found in keyring", config.SigningKey)
 	}
 
-	coord.Addr = key.GetAddress()
+	coord.delegatorAddr = key.GetAddress()
 
-	val, err := GetValFromDel(ctx, coord.Addr)
-	if err != nil || val == nil {
-		return fmt.Errorf("configured address(%s) not delegated to a validator", coord.Addr.String())
+	coord.validatorAddr, err = GetValFromDel(clientCtx, coord.delegatorAddr)
+	if err != nil || coord.validatorAddr == nil {
+		return fmt.Errorf("configured address %s not delegated to a validator: %w", coord.delegatorAddr, err)
 	}
 
-	coord.Val = val
+	timeout := 5 * time.Second
 
-	cl, err := c.NewRPCClient(5 * time.Second)
+	rpcClient, err := c.NewRPCClient(timeout)
 	if err != nil {
 		return err
 	}
 
-	if err := cl.Start(); err != nil {
+	if err := rpcClient.Start(); err != nil {
 		return err
 	}
 
 	// subscribe to tx events
-	txEventsChan, txCancel, err = c.Subscribe(goctx, cl, txEvents)
+	txEventsChan, txCancel, err = c.Subscribe(goctx, rpcClient, txEvents)
 	if err != nil {
 		return err
 	}
@@ -202,9 +236,8 @@ func (c Config) OracleFeederLoop(goctx context.Context, cancel context.CancelFun
 	defer txCancel()
 
 	// subscribe to block events
-	blEventsChan, blCancel, err = c.Subscribe(goctx, cl, blEvents)
+	blEventsChan, blCancel, err = c.Subscribe(goctx, rpcClient, blEvents)
 	if err != nil {
-		cancel()
 		return err
 	}
 
@@ -237,11 +270,12 @@ func stopLoop(ctx context.Context, cancel context.CancelFunc) error {
 	sigCh := make(chan os.Signal, 1)
 	defer close(sigCh)
 	signal.Notify(sigCh, syscall.SIGINT, syscall.SIGTERM)
+
 	for {
 		select {
 		case sig := <-sigCh:
 			cancel()
-			return fmt.Errorf("Exiting feeder loop, recieved stop signal(%s)", sig.String())
+			return fmt.Errorf("erxiting feeder loop, received stop signal %s", sig.String())
 		case <-ctx.Done():
 			return nil
 		}

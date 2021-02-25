@@ -31,7 +31,7 @@ func GetTxCmd() *cobra.Command {
 
 func txDelegateFeedPermission() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:  "delegate-feeder [address]",
+		Use:  "delegate-feeder [delegate-address]",
 		Args: cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx, err := client.GetClientTxContext(cmd)
@@ -39,12 +39,14 @@ func txDelegateFeedPermission() *cobra.Command {
 				return err
 			}
 
-			del, err := sdk.AccAddressFromBech32(args[0])
+			delegateAddress, err := sdk.AccAddressFromBech32(args[0])
 			if err != nil {
 				return err
 			}
 
-			msg := types.NewMsgDelegateFeedConsent(ctx.GetFromAddress(), del)
+			validatorAddr := sdk.ValAddress(ctx.GetFromAddress())
+
+			msg := types.NewMsgDelegateFeedConsent(delegateAddress, validatorAddr)
 			if err = msg.ValidateBasic(); err != nil {
 				return fmt.Errorf("message validation failed: %w", err)
 			}

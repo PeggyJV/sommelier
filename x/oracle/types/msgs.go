@@ -2,15 +2,22 @@ package types
 
 import (
 	"fmt"
-	"strings"
 
-	cdctypes "github.com/cosmos/cosmos-sdk/codec/types"
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
+
+	tmbytes "github.com/tendermint/tendermint/libs/bytes"
 )
 
-var _, _, _ sdk.Msg = &MsgDelegateFeedConsent{}, &MsgOracleDataPrevote{}, &MsgOracleDataVote{}
+var (
+	_ sdk.Msg = &MsgDelegateFeedConsent{}
+	_ sdk.Msg = &MsgOracleDataPrevote{}
+	_ sdk.Msg = &MsgOracleDataVote{}
+)
+
+// var _ codectypes.UnpackInterfacesMessage = &MsgOracleDataVote{}
 
 const (
 	TypeMsgDelegateFeedConsent = "delegate_feed_consent"
@@ -23,7 +30,11 @@ const (
 ////////////////////////////
 
 // NewMsgDelegateFeedConsent returns a new MsgDelegateFeedConsent
-func NewMsgDelegateFeedConsent(val, del sdk.AccAddress) *MsgDelegateFeedConsent {
+func NewMsgDelegateFeedConsent(del sdk.AccAddress, val sdk.ValAddress) *MsgDelegateFeedConsent {
+	if del == nil || val == nil {
+		return nil
+	}
+
 	return &MsgDelegateFeedConsent{
 		Validator: val.String(),
 		Delegate:  del.String(),
@@ -38,12 +49,20 @@ func (m *MsgDelegateFeedConsent) Type() string { return TypeMsgDelegateFeedConse
 
 // ValidateBasic implements sdk.Msg
 func (m *MsgDelegateFeedConsent) ValidateBasic() error {
-	if _, err := sdk.AccAddressFromBech32(m.Validator); err != nil {
+	validatorAddr, err := sdk.ValAddressFromBech32(m.Validator)
+	if err != nil {
 		return sdkerrors.Wrap(sdkerrors.ErrInvalidAddress, err.Error())
 	}
-	if _, err := sdk.AccAddressFromBech32(m.Delegate); err != nil {
+
+	delegatorAddr, err := sdk.AccAddressFromBech32(m.Delegate)
+	if err != nil {
 		return sdkerrors.Wrap(sdkerrors.ErrInvalidAddress, err.Error())
 	}
+
+	if sdk.AccAddress(validatorAddr).Equals(delegatorAddr) {
+		return sdkerrors.Wrap(stakingtypes.ErrBadValidatorAddr, "delegate address cannot match the delegator address")
+	}
+
 	return nil
 }
 
@@ -54,25 +73,27 @@ func (m *MsgDelegateFeedConsent) GetSignBytes() []byte {
 
 // GetSigners implements sdk.Msg
 func (m *MsgDelegateFeedConsent) GetSigners() []sdk.AccAddress {
-	return []sdk.AccAddress{m.MustGetValidator()}
+	return []sdk.AccAddress{sdk.AccAddress(m.MustGetValidator())}
 }
 
-// MustGetValidator returns the sdk.AccAddress for the validator
-func (m *MsgDelegateFeedConsent) MustGetValidator() sdk.AccAddress {
-	val, err := sdk.AccAddressFromBech32(m.Validator)
+// MustGetValidator returns the sdk.ValAddress for the validator
+func (m *MsgDelegateFeedConsent) MustGetValidator() sdk.ValAddress {
+	validatorAddr, err := sdk.ValAddressFromBech32(m.Validator)
 	if err != nil {
 		panic(err)
 	}
-	return val
+
+	return validatorAddr
 }
 
 // MustGetDelegate returns the sdk.AccAddress for the delegate
 func (m *MsgDelegateFeedConsent) MustGetDelegate() sdk.AccAddress {
-	val, err := sdk.AccAddressFromBech32(m.Delegate)
+	delegatorAddr, err := sdk.AccAddressFromBech32(m.Delegate)
 	if err != nil {
 		panic(err)
 	}
-	return val
+
+	return delegatorAddr
 }
 
 //////////////////////////
@@ -80,9 +101,15 @@ func (m *MsgDelegateFeedConsent) MustGetDelegate() sdk.AccAddress {
 //////////////////////////
 
 // NewMsgOracleDataPrevote return a new MsgOracleDataPrevote
-func NewMsgOracleDataPrevote(hashes [][]byte, signer sdk.AccAddress) *MsgOracleDataPrevote {
+func NewMsgOracleDataPrevote(hashes []tmbytes.HexBytes, signer sdk.AccAddress) *MsgOracleDataPrevote {
+	if signer == nil {
+		return nil
+	}
+
 	return &MsgOracleDataPrevote{
-		Hashes: hashes,
+		Prevote: &OraclePrevote{
+			Hashes: hashes,
+		},
 		Signer: signer.String(),
 	}
 }
@@ -99,7 +126,11 @@ func (m *MsgOracleDataPrevote) ValidateBasic() error {
 		return sdkerrors.Wrap(sdkerrors.ErrInvalidAddress, err.Error())
 	}
 
-	for i, hash := range m.Hashes {
+	if m.Prevote == nil || len(m.Prevote.Hashes) == 0 {
+		return fmt.Errorf("empty prevote hashes")
+	}
+
+	for i, hash := range m.Prevote.Hashes {
 		if len(hash) == 0 {
 			return fmt.Errorf("hash at index %d cannot be empty", i)
 		}
@@ -109,7 +140,9 @@ func (m *MsgOracleDataPrevote) ValidateBasic() error {
 }
 
 // GetSignBytes implements sdk.Msg
-func (m *MsgOracleDataPrevote) GetSignBytes() []byte { panic("amino support disabled") }
+func (m *MsgOracleDataPrevote) GetSignBytes() []byte {
+	panic("amino support disabled")
+}
 
 // GetSigners implements sdk.Msg
 func (m *MsgOracleDataPrevote) GetSigners() []sdk.AccAddress {
@@ -130,11 +163,14 @@ func (m *MsgOracleDataPrevote) MustGetSigner() sdk.AccAddress {
 ///////////////////////
 
 // NewMsgOracleDataVote return a new MsgOracleDataPrevote
-func NewMsgOracleDataVote(salt []string, data []*cdctypes.Any, signer sdk.AccAddress) *MsgOracleDataVote {
+func NewMsgOracleDataVote(vote *OracleVote, signer sdk.AccAddress) *MsgOracleDataVote {
+	if signer == nil {
+		return nil
+	}
+
 	return &MsgOracleDataVote{
-		Salt:       salt,
-		OracleData: data,
-		Signer:     signer.String(),
+		Vote:   vote,
+		Signer: signer.String(),
 	}
 }
 
@@ -149,29 +185,13 @@ func (m *MsgOracleDataVote) ValidateBasic() error {
 	if _, err := sdk.AccAddressFromBech32(m.Signer); err != nil {
 		return sdkerrors.Wrap(sdkerrors.ErrInvalidAddress, err.Error())
 	}
-
-	for _, a := range m.OracleData {
-		od, err := UnpackOracleData(a)
-		if err != nil {
-			return sdkerrors.Wrap(ErrInvalidOracleData, err.Error())
-		}
-
-		if err = od.ValidateBasic(); err != nil {
-			return sdkerrors.Wrap(ErrInvalidOracleData, err.Error())
-		}
-	}
-
-	for i, salt := range m.Salt {
-		if strings.TrimSpace(salt) == "" {
-			return fmt.Errorf("salt string at index %d cannot be blank", i)
-		}
-	}
-
-	return nil
+	return m.Vote.Validate()
 }
 
 // GetSignBytes implements sdk.Msg
-func (m *MsgOracleDataVote) GetSignBytes() []byte { panic("amino support disabled") }
+func (m *MsgOracleDataVote) GetSignBytes() []byte {
+	panic("amino support disabled")
+}
 
 // GetSigners implements sdk.Msg
 func (m *MsgOracleDataVote) GetSigners() []sdk.AccAddress { return []sdk.AccAddress{m.MustGetSigner()} }
@@ -185,19 +205,12 @@ func (m *MsgOracleDataVote) MustGetSigner() sdk.AccAddress {
 	return addr
 }
 
-// UnpackInterfaces implements UnpackInterfacesMessage.UnpackInterfaces
-func (m *MsgOracleDataVote) UnpackInterfaces(unpacker codectypes.AnyUnpacker) (err error) {
-	for _, oda := range m.OracleData {
-		var od OracleData
-		if err := unpacker.UnpackAny(oda, &od); err != nil {
-			return err
-		}
-	}
-	return nil
-}
+// // UnpackInterfaces implements UnpackInterfacesMessage.UnpackInterfaces
+// func (m *MsgOracleDataVote) UnpackInterfaces(unpacker codectypes.AnyUnpacker) (err error) {
+// 	return m.Vote.UnpackInterfaces(unpacker)
+// }
 
 // UnpackInterfaces implements UnpackInterfacesMessage.UnpackInterfaces
 func (m *QueryOracleDataResponse) UnpackInterfaces(unpacker codectypes.AnyUnpacker) error {
-	var od OracleData
-	return unpacker.UnpackAny(m.OracleData, &od)
+	return unpacker.UnpackAny(m.OracleData, new(OracleData))
 }

@@ -12,15 +12,15 @@ import (
 
 var _ types.QueryServer = Keeper{}
 
-// QueryDelegeateAddress implements QueryServer
-func (k Keeper) QueryDelegeateAddress(c context.Context, req *types.QueryDelegeateAddressRequest) (*types.QueryDelegeateAddressResponse, error) {
+// QueryDelegateAddress implements QueryServer
+func (k Keeper) QueryDelegateAddress(c context.Context, req *types.QueryDelegateAddressRequest) (*types.QueryDelegateAddressResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "empty request")
 	}
 
 	ctx := sdk.UnwrapSDKContext(c)
 
-	val, err := sdk.AccAddressFromBech32(req.Validator)
+	val, err := sdk.ValAddressFromBech32(req.Validator)
 	if err != nil {
 		return nil, status.Error(codes.InvalidArgument, err.Error())
 	}
@@ -32,7 +32,7 @@ func (k Keeper) QueryDelegeateAddress(c context.Context, req *types.QueryDelegea
 		)
 	}
 
-	return &types.QueryDelegeateAddressResponse{
+	return &types.QueryDelegateAddressResponse{
 		Delegate: delegateAddr.String(),
 	}, nil
 }
@@ -70,54 +70,42 @@ func (k Keeper) QueryOracleDataPrevote(c context.Context, req *types.QueryOracle
 
 	ctx := sdk.UnwrapSDKContext(c)
 
-	val, err := sdk.AccAddressFromBech32(req.Validator)
+	validatorAddr, err := sdk.ValAddressFromBech32(req.Validator)
 	if err != nil {
 		return nil, status.Error(codes.InvalidArgument, err.Error())
 	}
 
-	if k.stakingKeeper.Validator(ctx, sdk.ValAddress(val)) == nil {
-		val = k.GetValidatorAddressFromDelegate(ctx, val)
-		if val == nil {
-			return nil, status.Errorf(codes.NotFound, "address %s is not a validator", req.Validator)
-		}
-	}
-
-	dataPrevote := k.GetOracleDataPrevote(ctx, val)
-	if dataPrevote == nil {
+	prevote, found := k.GetOracleDataPrevote(ctx, validatorAddr)
+	if !found {
 		return nil, status.Error(codes.NotFound, "data prevote")
 	}
 
 	return &types.QueryOracleDataPrevoteResponse{
-		Hashes: dataPrevote.Hashes,
+		Prevote: &prevote,
 	}, nil
 }
 
 // QueryOracleDataVote implements QueryServer
-func (k Keeper) QueryOracleDataVote(c context.Context, req *types.QueryOracleDataVoteRequest) (*types.MsgOracleDataVote, error) {
+func (k Keeper) QueryOracleDataVote(c context.Context, req *types.QueryOracleDataVoteRequest) (*types.QueryOracleDataVoteResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "empty request")
 	}
 
 	ctx := sdk.UnwrapSDKContext(c)
 
-	val, err := sdk.AccAddressFromBech32(req.Validator)
+	validatorAddr, err := sdk.ValAddressFromBech32(req.Validator)
 	if err != nil {
 		return nil, status.Error(codes.InvalidArgument, err.Error())
 	}
 
-	if k.stakingKeeper.Validator(ctx, sdk.ValAddress(val)) == nil {
-		val = k.GetValidatorAddressFromDelegate(ctx, val)
-		if val == nil {
-			return nil, status.Errorf(codes.NotFound, "address %s is not a validator", req.Validator)
-		}
-	}
-
-	dataVote := k.GetOracleDataVote(ctx, val)
-	if dataVote == nil {
+	dataVote, found := k.GetOracleDataVote(ctx, validatorAddr)
+	if !found {
 		return nil, status.Error(codes.NotFound, "data vote")
 	}
 
-	return dataVote, nil
+	return &types.QueryOracleDataVoteResponse{
+		Vote: &dataVote,
+	}, nil
 }
 
 // OracleData implements QueryServer
@@ -128,8 +116,8 @@ func (k Keeper) OracleData(c context.Context, req *types.QueryOracleDataRequest)
 
 	ctx := sdk.UnwrapSDKContext(c)
 
-	oracleData := k.GetOracleData(ctx, req.Type)
-	if oracleData == nil {
+	oracleData, found := k.GetOracleData(ctx, req.Type, "") // TODO: query by id
+	if !found {
 		return nil, status.Errorf(codes.NotFound, "data type %s", req.Type)
 	}
 
@@ -153,11 +141,14 @@ func (k Keeper) QueryParams(c context.Context, _ *types.QueryParamsRequest) (*ty
 // QueryVotePeriod implements QueryServer
 func (k Keeper) QueryVotePeriod(c context.Context, _ *types.QueryVotePeriodRequest) (*types.VotePeriod, error) {
 	ctx := sdk.UnwrapSDKContext(c)
-	vps := k.GetVotePeriodStart(ctx)
+	votePeriodStart, found := k.GetVotePeriodStart(ctx)
+	if !found {
+		return nil, status.Error(codes.NotFound, "vote period start not set")
+	}
 
 	return &types.VotePeriod{
-		VotePeriodStart: vps,
-		VotePeriodEnd:   vps + k.GetParamSet(ctx).VotePeriod,
+		VotePeriodStart: votePeriodStart,
+		VotePeriodEnd:   votePeriodStart + k.GetParamSet(ctx).VotePeriod,
 		CurrentHeight:   ctx.BlockHeight(),
 	}, nil
 }
@@ -169,19 +160,12 @@ func (k Keeper) QueryMissCounter(c context.Context, req *types.QueryMissCounterR
 	}
 
 	ctx := sdk.UnwrapSDKContext(c)
-	val, err := sdk.AccAddressFromBech32(req.Validator)
+	validatorAddr, err := sdk.ValAddressFromBech32(req.Validator)
 	if err != nil {
 		return nil, status.Error(codes.InvalidArgument, err.Error())
 	}
 
-	if k.stakingKeeper.Validator(ctx, sdk.ValAddress(val)) == nil {
-		val = k.GetValidatorAddressFromDelegate(ctx, val)
-		if val == nil {
-			return nil, status.Errorf(codes.NotFound, "address %s is not a validator", req.Validator)
-		}
-	}
-
 	return &types.QueryMissCounterResponse{
-		MissCounter: k.GetMissCounter(ctx, val),
+		MissCounter: k.GetMissCounter(ctx, validatorAddr),
 	}, nil
 }
