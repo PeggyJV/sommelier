@@ -398,7 +398,7 @@ func GetData(ctx client.Context, typ string) (oracletypes.OracleData, error) {
 }
 
 // GetPairs returns the top N pairs from the Uniswap Subgraph
-func (c *Config) GetPairs(ctx context.Context, first, skip int) (*oracletypes.OracleFeed, error) {
+func (c *Config) GetPairs(ctx context.Context, first, skip int) ([]*oracletypes.UniswapPair, error) {
 	req := graphql.NewRequest(fmt.Sprintf(`{ 
 		pairs(first: %d, skip: %d, orderBy: volumeUSD, orderDirection: desc) {
 			id
@@ -419,15 +419,15 @@ func (c *Config) GetPairs(ctx context.Context, first, skip int) (*oracletypes.Or
 		}
 	}`, first, skip))
 
-	var out *oracletypes.OracleFeed
+	var pairs []*oracletypes.UniswapPair
 
 	c.graphClient.Log = func(s string) { fmt.Println(s) }
-	err := c.graphClient.Run(ctx, req, out)
+	err := c.graphClient.Run(ctx, req, pairs)
 	if err != nil {
 		return nil, err
 	}
 
-	return out, nil
+	return pairs, nil
 }
 
 // GetClientContext reads in values from the config
