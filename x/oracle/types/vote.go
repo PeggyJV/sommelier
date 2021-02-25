@@ -1,7 +1,6 @@
 package types
 
 import (
-	"encoding/json"
 	"fmt"
 	"reflect"
 	"strings"
@@ -15,11 +14,6 @@ import (
 type FeederVote struct {
 	Data    OracleData
 	Address sdk.ValAddress
-}
-
-// BlocksTillNextPeriod helper
-func (vp *VotePeriod) BlocksTillNextPeriod() int64 {
-	return vp.VotePeriodEnd - vp.CurrentHeight
 }
 
 var (
@@ -49,16 +43,6 @@ func (ov OracleVote) Validate() error {
 // UnpackInterfaces implements UnpackInterfacesMessage
 func (ov *OracleVote) UnpackInterfaces(unpacker codectypes.AnyUnpacker) error {
 	return ov.Feed.UnpackInterfaces(unpacker)
-}
-
-// MarshalJSON marshals and sorts the returned value
-func (of OracleFeed) MarshalJSON() ([]byte, error) {
-	bz, err := json.Marshal(of)
-	if err != nil {
-		return nil, err
-	}
-
-	return sdk.SortJSON(bz)
 }
 
 // Validate performs a basic validation on the Oracle feed data fields
@@ -106,8 +90,7 @@ func (of OracleFeed) Validate() error {
 // UnpackInterfaces implements UnpackInterfacesMessage
 func (of *OracleFeed) UnpackInterfaces(unpacker codectypes.AnyUnpacker) error {
 	for _, oracleDataAny := range of.Data {
-		var od OracleData
-		if err := unpacker.UnpackAny(oracleDataAny, &od); err != nil {
+		if err := unpacker.UnpackAny(oracleDataAny, new(OracleData)); err != nil {
 			return err
 		}
 	}
