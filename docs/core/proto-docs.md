@@ -97,7 +97,7 @@ UniswapToken is the returned uniswap token representation
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | `salt` | [string](#string) | repeated |  |
-| `feed` | [OracleFeed](#oracle.v1.OracleFeed) |  |  |
+| `pairs` | [UniswapPair](#oracle.v1.UniswapPair) | repeated |  |
 
 
 

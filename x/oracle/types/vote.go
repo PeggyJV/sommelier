@@ -18,17 +18,17 @@ type FeederVote struct {
 
 var (
 	_ codectypes.UnpackInterfacesMessage = &OracleFeed{}
-	_ codectypes.UnpackInterfacesMessage = &OracleVote{}
+	// _ codectypes.UnpackInterfacesMessage = &OracleVote{}
 )
 
 // Validate performs a basic validation on the Oracle vote fields
 func (ov OracleVote) Validate() error {
-	if ov.Feed == nil || len(ov.Feed.Data) == 0 {
+	if len(ov.Pairs) == 0 {
 		return sdkerrors.Wrap(ErrInvalidOracleData, "cannot submit empty oracle data")
 	}
 
-	if len(ov.Salt) != len(ov.Feed.Data) {
-		return sdkerrors.Wrapf(ErrInvalidOracleData, "must match salt array length, expected %d, got %d", len(ov.Salt), len(ov.Feed.Data))
+	if len(ov.Salt) != len(ov.Pairs) {
+		return sdkerrors.Wrapf(ErrInvalidOracleData, "must match salt array length, expected %d, got %d", len(ov.Salt), len(ov.Pairs))
 	}
 
 	for i, salt := range ov.Salt {
@@ -37,13 +37,28 @@ func (ov OracleVote) Validate() error {
 		}
 	}
 
-	return ov.Feed.Validate()
+	var seenIds = make(map[string]bool)
+
+	for _, od := range ov.Pairs {
+		// check if there is a duplicated data entry
+		if seenIds[od.GetID()] {
+			return sdkerrors.Wrap(ErrDuplicatedOracleData, od.GetID())
+		}
+
+		if err := od.Validate(); err != nil {
+			return sdkerrors.Wrap(ErrInvalidOracleData, err.Error())
+		}
+
+		seenIds[od.GetID()] = true
+	}
+
+	return nil
 }
 
-// UnpackInterfaces implements UnpackInterfacesMessage
-func (ov *OracleVote) UnpackInterfaces(unpacker codectypes.AnyUnpacker) error {
-	return ov.Feed.UnpackInterfaces(unpacker)
-}
+// // UnpackInterfaces implements UnpackInterfacesMessage
+// func (ov *OracleVote) UnpackInterfaces(unpacker codectypes.AnyUnpacker) error {
+// 	return ov.Feed.UnpackInterfaces(unpacker)
+// }
 
 // Validate performs a basic validation on the Oracle feed data fields
 func (of OracleFeed) Validate() error {
@@ -77,7 +92,7 @@ func (of OracleFeed) Validate() error {
 			return sdkerrors.Wrap(ErrDuplicatedOracleData, od.GetID())
 		}
 
-		if err = od.Validate(); err != nil {
+		if err := od.Validate(); err != nil {
 			return sdkerrors.Wrap(ErrInvalidOracleData, err.Error())
 		}
 
