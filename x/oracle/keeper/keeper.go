@@ -265,6 +265,27 @@ func (k Keeper) SetOracleData(ctx sdk.Context, oracleData types.OracleData) {
 	ctx.KVStore(k.storeKey).Set(types.GetOracleDataKey(oracleData.Type(), oracleData.GetID()), bz)
 }
 
+// IterateOracleDataVotes iterates over all votes in the store
+func (k Keeper) IterateAggregatedOracleDataByHeight(ctx sdk.Context, cb func(oracleData types.OracleData) (stop bool)) {
+	store := ctx.KVStore(k.storeKey)
+	prefix := append(types.AggregatedOracleDataKeyPrefix, sdk.Uint64ToBigEndian(uint64(ctx.BlockHeight()))...)
+	iter := sdk.KVStorePrefixIterator(store, prefix)
+
+	defer iter.Close()
+	for ; iter.Valid(); iter.Next() {
+		var oracleData types.OracleData
+
+		err := k.cdc.UnmarshalInterface(iter.Value(), &oracleData)
+		if err != nil {
+			panic(err)
+		}
+
+		if cb(oracleData) {
+			break
+		}
+	}
+}
+
 // SetAggregatedOracleData sets the aggregated oracle data in the store by height, type and id
 func (k Keeper) SetAggregatedOracleData(ctx sdk.Context, oracleData types.OracleData) {
 	bz, err := k.cdc.MarshalInterface(oracleData)
@@ -272,7 +293,7 @@ func (k Keeper) SetAggregatedOracleData(ctx sdk.Context, oracleData types.Oracle
 		panic(err)
 	}
 
-	key := types.GetAggregatedOracleDataKey(oracleData.Type(), oracleData.GetID(), uint64(ctx.BlockHeight()))
+	key := types.GetAggregatedOracleDataKey(uint64(ctx.BlockHeight()), oracleData.Type(), oracleData.GetID())
 
 	ctx.KVStore(k.storeKey).Set(key, bz)
 }
