@@ -390,10 +390,14 @@ func NewSommelierApp(
 	// NOTE: staking module is required if HistoricalEntries param > 0
 	app.mm.SetOrderBeginBlockers(
 		upgradetypes.ModuleName, minttypes.ModuleName, distrtypes.ModuleName, slashingtypes.ModuleName,
-		evidencetypes.ModuleName, stakingtypes.ModuleName, ibchost.ModuleName, oracletypes.ModuleName,
+		evidencetypes.ModuleName, stakingtypes.ModuleName, ibchost.ModuleName,
 	)
+
+	// NOTE: Impermanent loss module must always go after the oracle module to have the
+	// aggregated data available for stoploss execution.
 	app.mm.SetOrderEndBlockers(
 		crisistypes.ModuleName, oracletypes.ModuleName, govtypes.ModuleName, stakingtypes.ModuleName,
+		iltypes.ModuleName,
 	)
 
 	// NOTE: The genutils module must occur after staking so that pools are

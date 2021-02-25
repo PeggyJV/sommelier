@@ -42,6 +42,9 @@ var (
 
 	// - 0x07<val_address> -> int64(misses)
 	MissCounterKeyPrefix = []byte{0x07} // key for validator miss counters
+
+	// - 0x01<oracle_data_type_hash><oracle_data_id> -> <OracleData>
+	AggregatedOracleDataKeyPrefix = []byte{0x08} // key for oracle state data
 )
 
 // GetFeedDelegateKey returns the validator for a given delegate key
@@ -59,11 +62,12 @@ func GetOracleDataVoteKey(val sdk.ValAddress) []byte {
 	return append(OracleDataVoteKeyPrefix, val.Bytes()...)
 }
 
-func GetAggregatedOracleDataKey(dataType, id string, height uint64) []byte {
+func GetAggregatedOracleDataKey(height uint64, dataType, id string) []byte {
 	dataTypeHash := sha256.Sum256([]byte(dataType))
-	key := append(OracleDataKeyPrefix, dataTypeHash[:]...)
+	key := append(AggregatedOracleDataKeyPrefix, sdk.Uint64ToBigEndian(height)...)
+	key = append(key, dataTypeHash[:]...)
 	key = append(key, []byte(id)...)
-	return append(key, sdk.Uint64ToBigEndian(height)...)
+	return key
 }
 
 // GetOracleDataKey returns the key for the stored oracle data

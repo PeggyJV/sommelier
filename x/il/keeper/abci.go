@@ -20,63 +20,47 @@ func (k Keeper) EndBlocker(ctx sdk.Context) {
 	defer telemetry.ModuleMeasureSince(types.ModuleName, time.Now(), telemetry.MetricKeyEndBlocker)
 
 	params := k.GetParams(ctx)
+	pairMap := make(map[string]*oracletypes.UniswapPair)
 
 	// TODO: this should fetch an oracle data per identifier
-	oracleData := k.oracleKeeper.GetOracleData(ctx, oracletypes.UniswapDataType)
-	if oracleData == nil {
-		return
-	}
+	k.oracleKeeper.IterateAggregatedOracleDataByHeight(ctx, func(oracleData oracletypes.OracleData) bool {
+		uniswapPair, ok := oracleData.(*oracletypes.UniswapPair)
+		if !ok {
+			// continue
+			return false
+		}
 
-	uniswapData, ok := oracleData.(*oracletypes.UniswapData)
-	if !ok {
-		return
-	}
+		pairMap[uniswapPair.GetID()] = uniswapPair
 
-	pairs, err := uniswapData.Parse()
-	if err != nil {
-		// this shouldn't happen
-		panic(err)
-	}
-
-	pairMap := make(map[string]oracletypes.UniswapPairParsed)
-	for _, pair := range pairs {
-		pairMap[pair.ID] = pair
-	}
+		return false
+	})
 
 	k.IterateStoplossPositions(ctx, func(address sdk.AccAddress, stoploss types.Stoploss) (stop bool) {
-		//   TODO: fetch pair info from oracle given the pair address
 		pair, ok := pairMap[stoploss.UniswapPairId]
 		if !ok {
 			// pair not found, continue with the next position
-			k.Logger(ctx).Error(
+			k.Logger(ctx).Debug(
 				"pair not found on provided oracle data",
-				"pair ID", stoploss.UniswapPairId,
+				"pair-id", stoploss.UniswapPairId,
+				"height", fmt.Sprintf("%d", ctx.BlockHeight()),
 			)
 			return false
 		}
 
-		if pair.TotalSupply.String() == "" {
-			k.Logger(ctx).Error(
-				"failed to parse float from total supply",
-				"value", fmt.Sprintf("%v", pair.TotalSupply),
+		// check if total supply is 0 to avoid panics
+		if pair.TotalSupply.IsZero() {
+			k.Logger(ctx).Debug(
+				"0 total supply for pair",
+				"pair-id", stoploss.UniswapPairId,
+				"height", fmt.Sprintf("%d", ctx.BlockHeight()),
 			)
-
-			return false
-		}
-
-		if pair.ReserveUsd.String() == "" {
-			k.Logger(ctx).Error(
-				"failed to parse float from reserve usd",
-				"value", fmt.Sprintf("%v", pair.ReserveUsd),
-			)
-
 			return false
 		}
 
 		positionShares := sdk.NewDec(stoploss.LiquidityPoolShares)
 
 		// Calculate the current USD value of the position so that we can calculate the impermanent loss
-		usdValueOfPosition := positionShares.Mul(pair.ReserveUsd).Quo(pair.TotalSupply)
+		usdValueOfPosition := positionShares.Mul(pair.ReserveUSD).Quo(pair.TotalSupply)
 
 		currentSlippage := usdValueOfPosition.Quo(stoploss.ReferencePairRatio)
 
@@ -95,7 +79,7 @@ func (k Keeper) EndBlocker(ctx sdk.Context) {
 		fee := sdk.NewInt64Coin(uniswapCoin.Denom, 0)
 
 		// send eth transaction to withdraw lp_shares liquidity for pair_id
-		_, err = k.ethBridgeKeeper.AddToOutgoingPool(ctx, address, params.ContractAddress, uniswapCoin, fee)
+		_, err := k.ethBridgeKeeper.AddToOutgoingPool(ctx, address, params.ContractAddress, uniswapCoin, fee)
 		if err != nil {
 			// FIXME: figure out why this might error and ensure correctness
 			k.Logger(ctx).Error(

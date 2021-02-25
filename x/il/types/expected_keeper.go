@@ -7,7 +7,7 @@ import (
 
 // OracleKeeper is expected keeper for the oracle module
 type OracleKeeper interface {
-	GetOracleData(ctx sdk.Context, typ string) oracletypes.OracleData
+	IterateAggregatedOracleDataByHeight(ctx sdk.Context, cb func(oracleData oracletypes.OracleData) (stop bool))
 }
 
 // EthBridgeKeeper is expected keeper for the peggy bridge module
