@@ -9,6 +9,34 @@ import (
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 )
 
+// BeginBlocker is called at the beginning of every block
+func (k Keeper) BeginBlocker(ctx sdk.Context) {
+	// if there is not a vote period set, initialize it with current block height
+	// TODO: consider removing
+	if !k.HasVotePeriodStart(ctx) {
+		k.SetVotePeriodStart(ctx, ctx.BlockHeight())
+	}
+
+	// On begin block, if we are tallying, emit the new vote period data
+	params := k.GetParamSet(ctx)
+	votePeriodStart, found := k.GetVotePeriodStart(ctx)
+	if !found {
+		panic("vote period not set")
+	}
+
+	if (ctx.BlockHeight() - votePeriodStart) < params.VotePeriod {
+		return
+	}
+
+	ctx.EventManager().EmitEvent(
+		sdk.NewEvent(
+			types.EventTypeVotePeriod,
+			sdk.NewAttribute(types.AttributeKeyVotePeriodStart, fmt.Sprintf("%d", votePeriodStart)),
+			sdk.NewAttribute(types.AttributeKeyVotePeriodEnd, fmt.Sprintf("%d", votePeriodStart+params.VotePeriod)),
+		),
+	)
+}
+
 // EndBlocker defines the oracle logic that executes at the end of every block:
 //
 // 0) Checks if the voting period is over and performs a no-op if it's not.
@@ -83,13 +111,13 @@ func (k Keeper) EndBlocker(ctx sdk.Context) {
 		votedPower += validator.GetConsensusPower()
 
 		// Safety check. Already validated on msg validation
-		if len(vote.Pairs) == 0 {
+		if len(vote.Feed.Data) == 0 {
 			k.Logger(ctx).Debug("attempted to process empty oracle data from feed", "validator", validatorAddr.String())
 			return false
 		}
 
 		// save the oracle data for later processing
-		for _, oracleData := range vote.Pairs {
+		for _, oracleData := range vote.Feed.Data {
 			// oracleData, err := types.UnpackOracleData(oracleDataAny)
 			// if err != nil {
 			// 	// NOTE: this should never panic as the oracle data had already been checked before
@@ -164,6 +192,14 @@ func (k Keeper) EndBlocker(ctx sdk.Context) {
 		if err != nil {
 			// TODO: ensure correctness or consider logging instead?
 			panic(err)
+		}
+
+		if aggregatedData == nil {
+			k.Logger(ctx).Debug(
+				"aggregated data is nil",
+				"id", id, "voting-period-start", fmt.Sprintf("%d", votePeriodStart),
+			)
+			continue
 		}
 
 		// once we have the aggregated data for the data type, we set it in the store
@@ -259,11 +295,4 @@ func (k Keeper) EndBlocker(ctx sdk.Context) {
 	k.SetVotePeriodStart(ctx, votePeriodStart)
 
 	k.Logger(ctx).Info("vote period set", "height", fmt.Sprintf("%d", votePeriodStart))
-	ctx.EventManager().EmitEvent(
-		sdk.NewEvent(
-			types.EventTypeVotePeriod,
-			sdk.NewAttribute(types.AttributeKeyVotePeriodStart, fmt.Sprintf("%d", votePeriodStart)),
-			sdk.NewAttribute(types.AttributeKeyVotePeriodEnd, fmt.Sprintf("%d", votePeriodStart+params.VotePeriod)),
-		),
-	)
 }
