@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
-	"fmt"
 
 	"github.com/cosmos/cosmos-sdk/telemetry"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -91,7 +90,7 @@ func (k Keeper) OracleDataPrevote(c context.Context, msg *types.MsgOracleDataPre
 				types.EventTypeOracleDataPrevote,
 				sdk.NewAttribute(types.AttributeKeySigner, signer.String()),
 				sdk.NewAttribute(types.AttributeKeyValidator, validatorAddr.String()),
-				sdk.NewAttribute(types.AttributeKeyHashes, fmt.Sprintf("%v", msg.Prevote.Hashes)),
+				sdk.NewAttribute(types.AttributeKeyPrevoteHash, msg.Prevote.Hash.String()),
 			),
 		},
 	)
@@ -132,24 +131,8 @@ func (k Keeper) OracleDataVote(c context.Context, msg *types.MsgOracleDataVote) 
 	// Get the prevote for that validator from the store
 	prevote, found := k.GetOracleDataPrevote(ctx, validatorAddr)
 	// check that there is a prevote
-	if !found || len(prevote.Hashes) == 0 {
+	if !found || len(prevote.Hash) == 0 {
 		return nil, sdkerrors.Wrap(types.ErrNoPrevote, validatorAddr.String())
-	}
-
-	// ensure that the right number of data is in the msg
-	if len(prevote.Hashes) != len(msg.Vote.Feed.Data) {
-		return nil, sdkerrors.Wrapf(
-			types.ErrInvalidOracleData,
-			"oracle hashes doesn't match the oracle data length, expected %d, got %d", len(prevote.Hashes), len(msg.Vote.Feed.Data),
-		)
-	}
-
-	// ensure that the right number of salts is in the msg
-	if len(prevote.Hashes) != len(msg.Vote.Salt) {
-		return nil, sdkerrors.Wrapf(
-			types.ErrInvalidPrevote,
-			"oracle hashes doesn't match the salt length, expected %d, got %d", len(prevote.Hashes), len(msg.Vote.Salt),
-		)
 	}
 
 	allowedTypesMap := make(map[string]bool)
@@ -179,14 +162,13 @@ func (k Keeper) OracleDataVote(c context.Context, msg *types.MsgOracleDataVote) 
 	jsonBz = sdk.MustSortJSON(jsonBz)
 
 	// calculate the vote hash on the server
-	voteHash := types.DataHash(msg.Vote.Salt[0], string(jsonBz), validatorAddr)
+	voteHash := types.DataHash(msg.Vote.Salt, string(jsonBz), validatorAddr)
 
 	// compare to prevote hash
-	// TODO: why are there multiple hashes???
-	if !bytes.Equal(voteHash, prevote.Hashes[0]) {
+	if !bytes.Equal(voteHash, prevote.Hash) {
 		return nil, sdkerrors.Wrapf(
 			types.ErrHashMismatch,
-			"precommit %x ≠ commit %x", prevote.Hashes[0], voteHash,
+			"precommit %x ≠ commit %x", prevote.Hash, voteHash,
 		)
 	}
 

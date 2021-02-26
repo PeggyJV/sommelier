@@ -81,7 +81,7 @@ for the prevote phase of the oracle data feeding.
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| `hashes` | [bytes](#bytes) | repeated | hex formated hashes of each oracle feed |
+| `hash` | [bytes](#bytes) |  | hex formated hash of an oracle feed |
 
 
 
@@ -96,7 +96,7 @@ UniswapToken is the returned uniswap token representation
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| `salt` | [string](#string) | repeated |  |
+| `salt` | [string](#string) |  |  |
 | `feed` | [OracleFeed](#oracle.v1.OracleFeed) |  |  |
 
 

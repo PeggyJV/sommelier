@@ -42,13 +42,13 @@ func TestOracleVoteUnpacker(t *testing.T) {
 	}
 
 	vote := &OracleVote{
-		Salt: []string{"salt"},
+		Salt: "salt",
 		Feed: &OracleFeed{
 			Data: []*UniswapPair{pair},
 		},
 	}
 
-	expJSON := `{"salt":["salt"],"feed":{"data":[{"id":"0xb4e16d0168e52d35cacd2c6185b44281ec28c9dc","reserve0":"148681992.765143000000000000","reserve1":"97709.503398661101176213","reserveUSD":"297632095.439861032964130850","token0":{"id":"0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48","decimals":"6"},"token1":{"id":"0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2","decimals":"18"},"token0Price":"1521.673814659673802831","token1Price":"0.000657171064104597","totalSupply":"2.754869216896965436"}]}}`
+	expJSON := `{"salt":"salt","feed":{"data":[{"id":"0xb4e16d0168e52d35cacd2c6185b44281ec28c9dc","reserve0":"148681992.765143000000000000","reserve1":"97709.503398661101176213","reserveUSD":"297632095.439861032964130850","token0":{"id":"0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48","decimals":"6"},"token1":{"id":"0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2","decimals":"18"},"token0Price":"1521.673814659673802831","token1Price":"0.000657171064104597","totalSupply":"2.754869216896965436"}]}}`
 
 	bz, err := cdc.MarshalJSON(vote)
 	require.NoError(t, err)
@@ -93,13 +93,13 @@ func TestOracleVoteMarshalJSON(t *testing.T) {
 	}
 
 	vote := &OracleVote{
-		Salt: []string{"salt", "salt2"},
+		Salt: "salt",
 		Feed: &OracleFeed{
 			Data: []*UniswapPair{pair, pair2},
 		},
 	}
 
-	expJSON := `{"salt":["salt","salt2"],"feed":{"pairs":[{"id":"0xb4e16d0168e52d35cacd2c6185b44281ec28c9dc","reserve0":"148681992.765143000000000000","reserve1":"97709.503398661101176213","reserveUSD":"297632095.439861032964130850","token0":{"id":"0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48","decimals":"6"},"token1":{"id":"0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2","decimals":"18"},"token0Price":"1521.673814659673802831","token1Price":"0.000657171064104597","totalSupply":"2.754869216896965436"},{"id":"0xa478c2975ab1ea89e8196811f51a7b7ade33eb11","reserve0":"69453224.061579510781012891","reserve1":"45584.711379804929448746","reserveUSD":"138883455.938232858197819880","token0":{"id":"0x6b175474e89094c44da98b954eedeac495271d0f","decimals":"18"},"token1":{"id":"0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2","decimals":"18"},"token0Price":"1523.607849195440530703","token1Price":"0.000656336865505163","totalSupply":"1387139.630260982742563912"}]}}`
+	expJSON := `{"salt":"salt","feed":{"pairs":[{"id":"0xb4e16d0168e52d35cacd2c6185b44281ec28c9dc","reserve0":"148681992.765143000000000000","reserve1":"97709.503398661101176213","reserveUSD":"297632095.439861032964130850","token0":{"id":"0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48","decimals":"6"},"token1":{"id":"0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2","decimals":"18"},"token0Price":"1521.673814659673802831","token1Price":"0.000657171064104597","totalSupply":"2.754869216896965436"},{"id":"0xa478c2975ab1ea89e8196811f51a7b7ade33eb11","reserve0":"69453224.061579510781012891","reserve1":"45584.711379804929448746","reserveUSD":"138883455.938232858197819880","token0":{"id":"0x6b175474e89094c44da98b954eedeac495271d0f","decimals":"18"},"token1":{"id":"0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2","decimals":"18"},"token0Price":"1523.607849195440530703","token1Price":"0.000656336865505163","totalSupply":"1387139.630260982742563912"}]}}`
 
 	bz, err := json.Marshal(vote)
 	require.NoError(t, err)
@@ -133,7 +133,7 @@ func TestOracleVoteValidate(t *testing.T) {
 		{
 			"length missmatch",
 			OracleVote{
-				Salt: []string{"salt", "salt"},
+				Salt: "salt",
 				Feed: &OracleFeed{
 					Data: []*UniswapPair{nil},
 				},
@@ -143,7 +143,7 @@ func TestOracleVoteValidate(t *testing.T) {
 		{
 			"empty salt",
 			OracleVote{
-				Salt: []string{" "},
+				Salt: " ",
 				Feed: &OracleFeed{
 					Data: []*UniswapPair{nil},
 				},
@@ -158,7 +158,7 @@ func TestOracleVoteValidate(t *testing.T) {
 		{
 			"valid vote",
 			OracleVote{
-				Salt: []string{"salt"},
+				Salt: "salt",
 				Feed: &OracleFeed{
 					Data: []*UniswapPair{pair},
 				},

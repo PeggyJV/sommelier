@@ -1,7 +1,6 @@
 package types
 
 import (
-	"fmt"
 	"strings"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -21,18 +20,12 @@ var (
 
 // Validate performs a basic validation on the Oracle vote fields
 func (ov OracleVote) Validate() error {
-	if ov.Feed == nil || len(ov.Salt) == 0 {
-		return sdkerrors.Wrap(ErrInvalidOracleData, "cannot submit empty oracle data")
+	if ov.Feed == nil || len(ov.Feed.Data) == 0 {
+		return sdkerrors.Wrap(ErrInvalidOracleVote, "cannot submit empty oracle data")
 	}
 
-	if len(ov.Salt) != len(ov.Feed.Data) {
-		return sdkerrors.Wrapf(ErrInvalidOracleData, "must match salt array length, expected %d, got %d", len(ov.Salt), len(ov.Feed.Data))
-	}
-
-	for i, salt := range ov.Salt {
-		if strings.TrimSpace(salt) == "" {
-			return fmt.Errorf("salt string at index %d cannot be blank", i)
-		}
+	if strings.TrimSpace(ov.Salt) == "" {
+		return sdkerrors.Wrap(ErrInvalidOracleVote, "salt string cannot be blank")
 	}
 
 	return ov.Feed.Validate()
@@ -51,7 +44,11 @@ func (of OracleFeed) Validate() error {
 		return sdkerrors.Wrap(ErrInvalidOracleData, "cannot submit empty oracle data")
 	}
 
-	for _, od := range of.Data {
+	for i, od := range of.Data {
+		if od == nil {
+			return sdkerrors.Wrapf(ErrInvalidOracleData, "oracle data at index %d cannot be nil", i)
+		}
+
 		// check if there is a duplicated data entry
 		if seenIds[od.GetID()] {
 			return sdkerrors.Wrap(ErrDuplicatedOracleData, od.GetID())

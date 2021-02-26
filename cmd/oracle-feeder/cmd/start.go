@@ -36,29 +36,32 @@ func startOracleFeederCmd() *cobra.Command {
 	return &cobra.Command{
 		Use:     "start",
 		Aliases: []string{"feed"},
+		Args:    cobra.NoArgs,
 		Short:   "feeds the oracle with new uniswap data",
-		RunE: func(cmd *cobra.Command, args []string) error {
+		RunE: func(cmd *cobra.Command, _ []string) error {
 			config.log.Info("starting oracle feeder")
 			ctx, err := config.GetClientContext(cmd)
 			if err != nil {
 				return err
 			}
+
 			goctx, cancel := context.WithCancel(context.Background())
 			defer cancel()
+
 			eg, goctx := errgroup.WithContext(goctx)
 			if err != nil {
 				return err
 			}
+
 			eg.Go(func() error {
 				return config.OracleFeederLoop(goctx, cancel, ctx)
 			})
+
 			eg.Go(func() error {
 				return stopLoop(goctx, cancel)
 			})
-			if err := eg.Wait(); err != nil {
-				return err
-			}
-			return nil
+
+			return eg.Wait()
 		},
 	}
 }
@@ -137,7 +140,7 @@ func (c *Coordinator) handleBlock(blockEvent ctypes.ResultEvent) error {
 // SubmitOracleDataVote is called to send the vote
 func (c *Coordinator) SubmitOracleDataVote() error {
 	oracleVote := &oracle.OracleVote{
-		Salt: []string{c.salt},
+		Salt: c.salt,
 		Feed: &oracle.OracleFeed{
 			Data: c.feed,
 		},
@@ -173,7 +176,7 @@ func (c *Coordinator) SubmitOracleDataPrevote() error {
 	c.salt = genrandstr(6)
 	c.hash = oracle.DataHash(c.salt, string(jsonBz), c.validatorAddr)
 
-	msg := oracle.NewMsgOracleDataPrevote([]tmbytes.HexBytes{c.hash}, c.delegatorAddr)
+	msg := oracle.NewMsgOracleDataPrevote(c.hash, c.delegatorAddr)
 	if err := msg.ValidateBasic(); err != nil {
 		return err
 	}

@@ -2,7 +2,6 @@ syntax = "proto3";
 package oracle.v1;
 
 import "gogoproto/gogo.proto";
-import "google/protobuf/any.proto";
 
 option go_package = "github.com/peggyjv/sommelier/x/oracle/types";
 
@@ -71,13 +70,13 @@ message UniswapToken {
 
 // UniswapToken is the returned uniswap token representation
 message OracleVote {
-	repeated string  salt = 1;
+	string  salt = 1;
 	OracleFeed       feed = 2;
 }
 
 // OraclePrevote defines an array of hashed from oracle data that are used
 // for the prevote phase of the oracle data feeding.
 message OraclePrevote {
-	// hex formated hashes of each oracle feed
-	repeated bytes hashes = 1 [(gogoproto.castrepeated) = "DataHashes"];
+	// hex formated hash of an oracle feed
+	bytes hash = 1 [(gogoproto.casttype) = "github.com/tendermint/tendermint/libs/bytes.HexBytes"];
 }
