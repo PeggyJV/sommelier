@@ -419,15 +419,14 @@ func (c *Config) GetPairs(ctx context.Context, first, skip int) ([]*oracletypes.
 		}
 	}`, first, skip))
 
-	var pairs []*oracletypes.UniswapPair
+	var pairs oracletypes.OracleFeed
 
-	c.graphClient.Log = func(s string) { fmt.Println(s) }
-	err := c.graphClient.Run(ctx, req, pairs)
+	err := c.graphClient.Run(ctx, req, &pairs)
 	if err != nil {
 		return nil, err
 	}
 
-	return pairs, nil
+	return pairs.Data, nil
 }
 
 // GetClientContext reads in values from the config

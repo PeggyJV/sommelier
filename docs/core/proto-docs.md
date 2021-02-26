@@ -384,7 +384,7 @@ OracleFeed represents an array of oracle data that is
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| `data` | [google.protobuf.Any](#google.protobuf.Any) | repeated |  |
+| `data` | [UniswapPair](#oracle.v1.UniswapPair) | repeated |  |
 
 
 
@@ -400,7 +400,7 @@ for the prevote phase of the oracle data feeding.
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| `hashes` | [bytes](#bytes) | repeated | hex formated hashes of each oracle feed |
+| `hash` | [bytes](#bytes) |  | hex formated hash of an oracle feed |
 
 
 
@@ -415,8 +415,8 @@ UniswapToken is the returned uniswap token representation
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| `salt` | [string](#string) | repeated |  |
-| `pairs` | [UniswapPair](#oracle.v1.UniswapPair) | repeated |  |
+| `salt` | [string](#string) |  |  |
+| `feed` | [OracleFeed](#oracle.v1.OracleFeed) |  |  |
 
 
 

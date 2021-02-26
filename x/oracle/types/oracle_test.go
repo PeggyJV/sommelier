@@ -496,10 +496,14 @@ func TestPairUnmarshalJSON(t *testing.T) {
 }
 
 func TestTruncateDec(t *testing.T) {
-	_, err := TruncateDec("1")
+	_, err := TruncateDec("e")
 	require.Error(t, err)
 
-	dec, err := TruncateDec("1.0")
+	dec, err := TruncateDec("1")
+	require.NoError(t, err)
+	require.Equal(t, sdk.OneDec().String(), dec.String())
+
+	dec, err = TruncateDec("1.0")
 	require.NoError(t, err)
 	require.Equal(t, sdk.OneDec().String(), dec.String())
 

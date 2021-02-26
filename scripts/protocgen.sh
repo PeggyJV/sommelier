@@ -37,7 +37,7 @@ buf protoc \
 $(find "$(pwd)/proto" -maxdepth 5 -name '*.proto')
 go mod tidy
 
-echo "moving proto files.."
+echo "(re)moving proto files.."
 # move proto files to the right places
 cp -r github.com/peggyjv/sommelier/* ./
 rm -rf github.com
