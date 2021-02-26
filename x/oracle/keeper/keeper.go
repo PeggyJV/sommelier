@@ -48,7 +48,7 @@ func (k Keeper) Logger(ctx sdk.Context) log.Logger {
 
 // SetHandler sets the oracle handler into the keeper's fields. It will panic
 // if the handler is already set.
-func (k Keeper) SetHandler(handlerFn types.OracleHandler) {
+func (k *Keeper) SetHandler(handlerFn types.OracleHandler) {
 	if k.handlerSet {
 		panic("oracle handler is already set")
 	}
@@ -146,7 +146,7 @@ func (k Keeper) GetOracleDataPrevote(ctx sdk.Context, val sdk.ValAddress) (types
 
 // DeleteAllPrevotes removes all the prevotes for the current block iteration
 func (k Keeper) DeleteAllPrevotes(ctx sdk.Context) {
-	k.IterateOracleDataPrevotes(ctx, func(val sdk.ValAddress, _ *types.MsgOracleDataPrevote) bool {
+	k.IterateOracleDataPrevotes(ctx, func(val sdk.ValAddress, _ types.OraclePrevote) bool {
 		k.DeleteOracleDataPrevote(ctx, val)
 		return false
 	})
@@ -165,16 +165,17 @@ func (k Keeper) HasOracleDataPrevote(ctx sdk.Context, val sdk.ValAddress) bool {
 }
 
 // IterateOracleDataPrevotes iterates over all prevotes in the store
-func (k Keeper) IterateOracleDataPrevotes(ctx sdk.Context, handler func(val sdk.ValAddress, msg *types.MsgOracleDataPrevote) (stop bool)) {
+func (k Keeper) IterateOracleDataPrevotes(ctx sdk.Context, cb func(val sdk.ValAddress, prevote types.OraclePrevote) (stop bool)) {
 	store := ctx.KVStore(k.storeKey)
 	iter := sdk.KVStorePrefixIterator(store, types.OracleDataPrevoteKeyPrefix)
 	defer iter.Close()
 
 	for ; iter.Valid(); iter.Next() {
-		var out types.MsgOracleDataPrevote
+		var prevote types.OraclePrevote
 		val := sdk.ValAddress(bytes.TrimPrefix(iter.Key(), types.OracleDataPrevoteKeyPrefix))
-		k.cdc.MustUnmarshalBinaryBare(iter.Value(), &out)
-		if handler(val, &out) {
+
+		k.cdc.MustUnmarshalBinaryBare(iter.Value(), &prevote)
+		if cb(val, prevote) {
 			break
 		}
 	}
