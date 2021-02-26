@@ -6,7 +6,6 @@ import (
 	"errors"
 	"fmt"
 	"strconv"
-	"strings"
 
 	proto "github.com/gogo/protobuf/proto"
 
@@ -268,32 +267,32 @@ func (up *UniswapPair) UnmarshalJSON(bz []byte) error {
 
 	up.Reserve0, err = TruncateDec(upp.Reserve0)
 	if err != nil {
-		return fmt.Errorf("reserve 0: %w", err)
+		return fmt.Errorf("reserve 0 (%s), pair (%s): %w", upp.Reserve0, upp.ID, err)
 	}
 
 	up.Reserve1, err = TruncateDec(upp.Reserve1)
 	if err != nil {
-		return fmt.Errorf("reserve 1: %w", err)
+		return fmt.Errorf("reserve 1 (%s), pair (%s): %w", upp.Reserve1, upp.ID, err)
 	}
 
 	up.ReserveUSD, err = TruncateDec(upp.ReserveUSD)
 	if err != nil {
-		return fmt.Errorf("reserve USD: %w", err)
+		return fmt.Errorf("reserve USD (%s), pair (%s): %w", upp.ReserveUSD, upp.ID, err)
 	}
 
 	up.Token0Price, err = TruncateDec(upp.Token0Price)
 	if err != nil {
-		return fmt.Errorf("token 0 price: %w", err)
+		return fmt.Errorf("token 0 price (%s), pair (%s): %w", upp.Token0Price, upp.ID, err)
 	}
 
 	up.Token1Price, err = TruncateDec(upp.Token1Price)
 	if err != nil {
-		return fmt.Errorf("token 1 price: %w", err)
+		return fmt.Errorf("token 1 price (%s), pair (%s): %w", upp.Token1Price, upp.ID, err)
 	}
 
 	up.TotalSupply, err = TruncateDec(upp.TotalSupply)
 	if err != nil {
-		return fmt.Errorf("total supply: %w", err)
+		return fmt.Errorf("total supply (%s), pair (%s): %w", upp.TotalSupply, upp.ID, err)
 	}
 
 	return nil
@@ -310,29 +309,4 @@ func (ut UniswapToken) Validate() error {
 	}
 
 	return nil
-}
-
-// TruncateDec splits a decimal into the integer and decimal components and then
-// truncates the decimals in case it has a precision larger than the max allowed
-// one (18).
-func TruncateDec(decStr string) (sdk.Dec, error) {
-	dec := strings.Split(decStr, ".")
-	if len(dec) != 2 {
-		return sdk.Dec{}, sdk.ErrInvalidDecimalStr
-	}
-
-	if len(dec[1]) > sdk.Precision {
-		dec[1] = dec[1][0:sdk.Precision]
-	}
-
-	return sdk.NewDecFromStr(strings.Join(dec, "."))
-}
-
-// MustTruncateDec is a util function that panics on TruncateDec error.
-func MustTruncateDec(decStr string) sdk.Dec {
-	dec, err := TruncateDec(decStr)
-	if err != nil {
-		panic(err)
-	}
-	return dec
 }

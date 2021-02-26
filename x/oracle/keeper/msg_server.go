@@ -137,10 +137,10 @@ func (k Keeper) OracleDataVote(c context.Context, msg *types.MsgOracleDataVote) 
 	}
 
 	// ensure that the right number of data is in the msg
-	if len(prevote.Hashes) != len(msg.Vote.Pairs) {
+	if len(prevote.Hashes) != len(msg.Vote.Feed.Data) {
 		return nil, sdkerrors.Wrapf(
 			types.ErrInvalidOracleData,
-			"oracle hashes doesn't match the oracle data length, expected %d, got %d", len(prevote.Hashes), len(msg.Vote.Pairs),
+			"oracle hashes doesn't match the oracle data length, expected %d, got %d", len(prevote.Hashes), len(msg.Vote.Feed.Data),
 		)
 	}
 
@@ -169,7 +169,7 @@ func (k Keeper) OracleDataVote(c context.Context, msg *types.MsgOracleDataVote) 
 	}
 
 	// parse data to json in order to compute the vote hash and sort
-	jsonBz, err := json.Marshal(msg.Vote.Pairs)
+	jsonBz, err := json.Marshal(msg.Vote.Feed.Data)
 	if err != nil {
 		return nil, sdkerrors.Wrap(
 			sdkerrors.ErrJSONMarshal, "failed to marshal json oracle data feed",
@@ -190,7 +190,7 @@ func (k Keeper) OracleDataVote(c context.Context, msg *types.MsgOracleDataVote) 
 		)
 	}
 
-	for _, oracleData := range msg.Vote.Pairs {
+	for _, oracleData := range msg.Vote.Feed.Data {
 		// unpack the oracle data one by one
 		// oracleData, err := types.UnpackOracleData(oracleDataAny)
 		// if err != nil {

@@ -8,7 +8,7 @@ option go_package = "github.com/peggyjv/sommelier/x/oracle/types";
 
 // OracleFeed represents an array of oracle data that is  
 message OracleFeed {
-	repeated google.protobuf.Any data = 1;
+	repeated UniswapPair data = 1 [(gogoproto.jsontag)    = "pairs"];
 }
 
 // UniswapPair represents an SDK compatible uniswap pair info fetched from The Graph.
@@ -72,7 +72,7 @@ message UniswapToken {
 // UniswapToken is the returned uniswap token representation
 message OracleVote {
 	repeated string  salt = 1;
-	repeated UniswapPair pairs = 2;
+	OracleFeed       feed = 2;
 }
 
 // OraclePrevote defines an array of hashed from oracle data that are used

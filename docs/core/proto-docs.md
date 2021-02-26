@@ -65,7 +65,7 @@ OracleFeed represents an array of oracle data that is
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| `data` | [google.protobuf.Any](#google.protobuf.Any) | repeated |  |
+| `data` | [UniswapPair](#oracle.v1.UniswapPair) | repeated |  |
 
 
 
@@ -97,7 +97,7 @@ UniswapToken is the returned uniswap token representation
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | `salt` | [string](#string) | repeated |  |
-| `pairs` | [UniswapPair](#oracle.v1.UniswapPair) | repeated |  |
+| `feed` | [OracleFeed](#oracle.v1.OracleFeed) |  |  |
 
 
 

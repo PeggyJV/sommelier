@@ -137,8 +137,10 @@ func (c *Coordinator) handleBlock(blockEvent ctypes.ResultEvent) error {
 // SubmitOracleDataVote is called to send the vote
 func (c *Coordinator) SubmitOracleDataVote() error {
 	oracleVote := &oracle.OracleVote{
-		Salt:  []string{c.salt},
-		Pairs: c.feed,
+		Salt: []string{c.salt},
+		Feed: &oracle.OracleFeed{
+			Data: c.feed,
+		},
 	}
 
 	msg := oracle.NewMsgOracleDataVote(oracleVote, c.delegatorAddr)
