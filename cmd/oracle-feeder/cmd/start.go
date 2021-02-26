@@ -175,6 +175,7 @@ func (c *Coordinator) SubmitOracleDataPrevote() error {
 
 	c.salt = genrandstr(6)
 	c.hash = oracle.DataHash(c.salt, string(jsonBz), c.validatorAddr)
+	c.feed = pairs
 
 	msg := oracle.NewMsgOracleDataPrevote(c.hash, c.delegatorAddr)
 	if err := msg.ValidateBasic(); err != nil {

@@ -14,6 +14,10 @@ type OracleHandler func(ctx sdk.Context, oracleDataInput []OracleData) (OracleDa
 func UniswapDataHandler(oracleDataInputs []OracleData) (OracleData, error) {
 	var uniswapDataAggregated *UniswapPair
 
+	if len(oracleDataInputs) == 0 {
+		return nil, nil
+	}
+
 	for i, od := range oracleDataInputs {
 		up, ok := od.(*UniswapPair)
 		if !ok {

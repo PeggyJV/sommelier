@@ -31,7 +31,6 @@ func (k Keeper) BeginBlocker(ctx sdk.Context) {
 			),
 		)
 	}
-
 }
 
 // EndBlocker defines the oracle logic that executes at the end of every block:
@@ -189,6 +188,14 @@ func (k Keeper) EndBlocker(ctx sdk.Context) {
 		if err != nil {
 			// TODO: ensure correctness or consider logging instead?
 			panic(err)
+		}
+
+		if aggregatedData == nil {
+			k.Logger(ctx).Debug(
+				"aggregated data is nil",
+				"id", id, "voting-period-start", fmt.Sprintf("%d", votePeriodStart),
+			)
+			continue
 		}
 
 		// once we have the aggregated data for the data type, we set it in the store

@@ -304,9 +304,10 @@ func (ut UniswapToken) Validate() error {
 		return fmt.Errorf("invalid token address %s: %w", ut.ID, err)
 	}
 
-	if ut.Decimals > sdk.Precision {
-		return fmt.Errorf("decimal places (%d) exceeds the maximum supported (%d)", ut.Decimals, sdk.Precision)
-	}
+	// TODO: figure out how to handle higher precision tokens on ETH
+	// if ut.Decimals > sdk.Precision {
+	// 	return fmt.Errorf("decimal places (%d) exceeds the maximum supported (%d)", ut.Decimals, sdk.Precision)
+	// }
 
 	return nil
 }
