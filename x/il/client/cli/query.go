@@ -33,9 +33,9 @@ func GetQueryCmd() *cobra.Command {
 // GetCmdQueryStoploss implements the query rate command.
 func GetCmdQueryStoploss() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "stoploss [address] [uniswap_pair]",
+		Use:   "stoploss [address] [[uniswap_pair]]",
 		Args:  cobra.RangeArgs(1, 2),
-		Short: "Query the stoploss positions for a given address", // TODO: update "Luna"
+		Short: "Query the stoploss positions for a given address",
 		Long: strings.TrimSpace(`
 Query the stoploss positions for a given address and uniswap pair
 

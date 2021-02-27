@@ -21,6 +21,7 @@ func (k Keeper) CreateStoploss(c context.Context, msg *types.MsgStoploss) (*type
 	address, _ := sdk.AccAddressFromBech32(msg.Address)
 
 	// TODO: check if uniswap pair exists on the oracle
+	// TODO: ensure that pair ratio is w/in band of pair ratio from oracle
 
 	// check if there's already a position for that pair
 	if k.HasStoplossPosition(ctx, address, msg.Stoploss.UniswapPairId) {
