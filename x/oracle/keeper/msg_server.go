@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"fmt"
 
+	"github.com/armon/go-metrics"
 	"github.com/cosmos/cosmos-sdk/telemetry"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
@@ -212,9 +213,21 @@ func (k Keeper) OracleDataVote(c context.Context, msg *types.MsgOracleDataVote) 
 				types.EventTypeOracleDataVote,
 				sdk.NewAttribute(types.AttributeKeyOracleDataID, oracleData.GetID()),
 				sdk.NewAttribute(types.AttributeKeyOracleDataType, oracleData.Type()),
-				sdk.NewAttribute(types.AttributeKeyValidator, validatorAddr.String()),
 			),
 		)
+
+		labels := []metrics.Label{
+			telemetry.NewLabel("data-type", oracleData.Type()),
+			telemetry.NewLabel("data-id", oracleData.GetID()),
+		}
+
+		defer func() {
+			telemetry.IncrCounterWithLabels(
+				[]string{types.ModuleName, "feed"},
+				1,
+				labels,
+			)
+		}()
 	}
 
 	// set the vote in the store
@@ -223,7 +236,13 @@ func (k Keeper) OracleDataVote(c context.Context, msg *types.MsgOracleDataVote) 
 	ctx.EventManager().EmitEvents(oracleEvents)
 
 	defer func() {
-		telemetry.IncrCounter(1, types.ModuleName, "vote")
+		telemetry.IncrCounterWithLabels(
+			[]string{types.ModuleName, "vote"},
+			1,
+			[]metrics.Label{
+				telemetry.NewLabel(types.AttributeKeyValidator, validatorAddr.String()),
+			},
+		)
 	}()
 
 	return &types.MsgOracleDataVoteResponse{}, nil
