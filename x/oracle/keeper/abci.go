@@ -12,25 +12,29 @@ import (
 // BeginBlocker is called at the beginning of every block
 func (k Keeper) BeginBlocker(ctx sdk.Context) {
 	// if there is not a vote period set, initialize it with current block height
+	// TODO: consider removing
 	if !k.HasVotePeriodStart(ctx) {
 		k.SetVotePeriodStart(ctx, ctx.BlockHeight())
 	}
 
 	// On begin block, if we are tallying, emit the new vote period data
 	params := k.GetParamSet(ctx)
-	vp, found := k.GetVotePeriodStart(ctx)
+	votePeriodStart, found := k.GetVotePeriodStart(ctx)
 	if !found {
-		panic("VOTE PERIOD NOT SET SHOULDN'T HAPPEN")
+		panic("vote period not set")
 	}
-	if (ctx.BlockHeight() - vp) >= params.VotePeriod {
-		ctx.EventManager().EmitEvent(
-			sdk.NewEvent(
-				types.EventTypeVotePeriod,
-				sdk.NewAttribute(types.AttributeKeyVotePeriodStart, fmt.Sprintf("%d", ctx.BlockHeight())),
-				sdk.NewAttribute(types.AttributeKeyVotePeriodEnd, fmt.Sprintf("%d", ctx.BlockHeight()+params.VotePeriod)),
-			),
-		)
+
+	if (ctx.BlockHeight() - votePeriodStart) < params.VotePeriod {
+		return
 	}
+
+	ctx.EventManager().EmitEvent(
+		sdk.NewEvent(
+			types.EventTypeVotePeriod,
+			sdk.NewAttribute(types.AttributeKeyVotePeriodStart, fmt.Sprintf("%d", votePeriodStart)),
+			sdk.NewAttribute(types.AttributeKeyVotePeriodEnd, fmt.Sprintf("%d", votePeriodStart+params.VotePeriod)),
+		),
+	)
 }
 
 // EndBlocker defines the oracle logic that executes at the end of every block:
@@ -202,7 +206,7 @@ func (k Keeper) EndBlocker(ctx sdk.Context) {
 
 		// only store averages if there's enough voting power
 		if storeAverages {
-			k.SetAggregatedOracleData(ctx, aggregatedData) // TODO: why? should we also not give out rewards?
+			k.SetAggregatedOracleData(ctx, ctx.BlockHeight(), aggregatedData) // TODO: why? should we also not give out rewards?
 		}
 
 		// TODO: delete the oracle old data
@@ -291,11 +295,4 @@ func (k Keeper) EndBlocker(ctx sdk.Context) {
 	k.SetVotePeriodStart(ctx, votePeriodStart)
 
 	k.Logger(ctx).Info("vote period set", "height", fmt.Sprintf("%d", votePeriodStart))
-	ctx.EventManager().EmitEvent(
-		sdk.NewEvent(
-			types.EventTypeVotePeriod,
-			sdk.NewAttribute(types.AttributeKeyVotePeriodStart, fmt.Sprintf("%d", votePeriodStart)),
-			sdk.NewAttribute(types.AttributeKeyVotePeriodEnd, fmt.Sprintf("%d", votePeriodStart+params.VotePeriod)),
-		),
-	)
 }
