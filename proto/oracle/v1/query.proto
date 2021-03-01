@@ -17,7 +17,7 @@ service Query {
     rpc QueryOracleDataVote(QueryOracleDataVoteRequest) returns (QueryOracleDataVoteResponse) {}
     rpc QueryVotePeriod(QueryVotePeriodRequest) returns (VotePeriod) {}
     rpc QueryMissCounter(QueryMissCounterRequest) returns (QueryMissCounterResponse) {}
-    rpc OracleData(QueryOracleDataRequest) returns (QueryOracleDataResponse) {}
+    rpc QueryAggregateData(QueryAggregateDataRequest) returns (QueryAggregateDataResponse) {}
 }
 
 message QueryValidatorAddressRequest {
@@ -68,12 +68,11 @@ message QueryOracleDataVoteResponse {
     OracleVote vote = 1;
 }
 
-
-message QueryOracleDataRequest  {
+message QueryAggregateDataRequest {
     string type = 1;
+    string id = 2;
 }
-message QueryOracleDataResponse {
-    google.protobuf.Any oracle_data = 1 [
-        (cosmos_proto.accepts_interface) = "OracleData"
-    ];
+
+message QueryAggregateDataResponse {
+    UniswapPair oracle_data = 1;
 }

@@ -28,14 +28,14 @@
     - [Params](#oracle.v1.Params)
   
 - [oracle/v1/query.proto](#oracle/v1/query.proto)
+    - [QueryAggregateDataRequest](#oracle.v1.QueryAggregateDataRequest)
+    - [QueryAggregateDataResponse](#oracle.v1.QueryAggregateDataResponse)
     - [QueryDelegateAddressRequest](#oracle.v1.QueryDelegateAddressRequest)
     - [QueryDelegateAddressResponse](#oracle.v1.QueryDelegateAddressResponse)
     - [QueryMissCounterRequest](#oracle.v1.QueryMissCounterRequest)
     - [QueryMissCounterResponse](#oracle.v1.QueryMissCounterResponse)
     - [QueryOracleDataPrevoteRequest](#oracle.v1.QueryOracleDataPrevoteRequest)
     - [QueryOracleDataPrevoteResponse](#oracle.v1.QueryOracleDataPrevoteResponse)
-    - [QueryOracleDataRequest](#oracle.v1.QueryOracleDataRequest)
-    - [QueryOracleDataResponse](#oracle.v1.QueryOracleDataResponse)
     - [QueryOracleDataVoteRequest](#oracle.v1.QueryOracleDataVoteRequest)
     - [QueryOracleDataVoteResponse](#oracle.v1.QueryOracleDataVoteResponse)
     - [QueryParamsRequest](#oracle.v1.QueryParamsRequest)
@@ -356,6 +356,37 @@ Params oracle parameters
 
 
 
+<a name="oracle.v1.QueryAggregateDataRequest"></a>
+
+### QueryAggregateDataRequest
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `type` | [string](#string) |  |  |
+| `id` | [string](#string) |  |  |
+
+
+
+
+
+
+<a name="oracle.v1.QueryAggregateDataResponse"></a>
+
+### QueryAggregateDataResponse
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `oracle_data` | [UniswapPair](#oracle.v1.UniswapPair) |  |  |
+
+
+
+
+
+
 <a name="oracle.v1.QueryDelegateAddressRequest"></a>
 
 ### QueryDelegateAddressRequest
@@ -440,36 +471,6 @@ Params oracle parameters
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | `prevote` | [OraclePrevote](#oracle.v1.OraclePrevote) |  |  |
-
-
-
-
-
-
-<a name="oracle.v1.QueryOracleDataRequest"></a>
-
-### QueryOracleDataRequest
-
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| `type` | [string](#string) |  |  |
-
-
-
-
-
-
-<a name="oracle.v1.QueryOracleDataResponse"></a>
-
-### QueryOracleDataResponse
-
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| `oracle_data` | [google.protobuf.Any](#google.protobuf.Any) |  |  |
 
 
 
@@ -608,7 +609,7 @@ Params oracle parameters
 | `QueryOracleDataVote` | [QueryOracleDataVoteRequest](#oracle.v1.QueryOracleDataVoteRequest) | [QueryOracleDataVoteResponse](#oracle.v1.QueryOracleDataVoteResponse) |  | |
 | `QueryVotePeriod` | [QueryVotePeriodRequest](#oracle.v1.QueryVotePeriodRequest) | [VotePeriod](#oracle.v1.VotePeriod) |  | |
 | `QueryMissCounter` | [QueryMissCounterRequest](#oracle.v1.QueryMissCounterRequest) | [QueryMissCounterResponse](#oracle.v1.QueryMissCounterResponse) |  | |
-| `OracleData` | [QueryOracleDataRequest](#oracle.v1.QueryOracleDataRequest) | [QueryOracleDataResponse](#oracle.v1.QueryOracleDataResponse) |  | |
+| `QueryAggregateData` | [QueryAggregateDataRequest](#oracle.v1.QueryAggregateDataRequest) | [QueryAggregateDataResponse](#oracle.v1.QueryAggregateDataResponse) |  | |
 
  <!-- end services -->
 

@@ -2,6 +2,7 @@ package keeper
 
 import (
 	"context"
+	"strings"
 
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -108,26 +109,39 @@ func (k Keeper) QueryOracleDataVote(c context.Context, req *types.QueryOracleDat
 	}, nil
 }
 
-// OracleData implements QueryServer
-func (k Keeper) OracleData(c context.Context, req *types.QueryOracleDataRequest) (*types.QueryOracleDataResponse, error) {
+// QueryAggregateData implements QueryServer
+func (k Keeper) QueryAggregateData(c context.Context, req *types.QueryAggregateDataRequest) (*types.QueryAggregateDataResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "empty request")
 	}
 
+	if strings.TrimSpace(req.Id) == "" {
+		return nil, status.Error(codes.InvalidArgument, "empty oracle data id")
+	}
+
 	ctx := sdk.UnwrapSDKContext(c)
 
-	oracleData, found := k.GetOracleData(ctx, req.Type, "") // TODO: query by id
-	if !found {
+	var ok bool
+
+	if req.Type == "" {
+		req.Type, ok = k.GetOracleDataType(ctx, req.Id)
+		if !ok {
+			return nil, status.Error(codes.InvalidArgument, "empty oracle data type")
+		}
+	}
+
+	oracleData := k.GetAggregatedOracleData(ctx, int64(ctx.BlockHeight()), req.Type, req.Id)
+	if oracleData == nil {
 		return nil, status.Errorf(codes.NotFound, "data type %s", req.Type)
 	}
 
-	oracleDataAny, err := types.PackOracleData(oracleData)
-	if err != nil {
-		return nil, status.Error(codes.Internal, err.Error())
+	pair, ok := oracleData.(*types.UniswapPair)
+	if !ok {
+		return nil, status.Errorf(codes.Internal, "data type is not %s", types.UniswapDataType)
 	}
 
-	return &types.QueryOracleDataResponse{
-		OracleData: oracleDataAny,
+	return &types.QueryAggregateDataResponse{
+		OracleData: pair,
 	}, nil
 }
 

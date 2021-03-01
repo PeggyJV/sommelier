@@ -266,14 +266,35 @@ func (k Keeper) SetOracleData(ctx sdk.Context, oracleData types.OracleData) {
 	ctx.KVStore(k.storeKey).Set(types.GetOracleDataKey(oracleData.Type(), oracleData.GetID()), bz)
 }
 
-// IterateOracleDataVotes iterates over all votes in the store
-func (k Keeper) IterateAggregatedOracleDataByHeight(ctx sdk.Context, cb func(oracleData types.OracleData) (stop bool)) {
+// GetAggregatedOracleData gets the aggregated oracle data from the store by height, type and id
+func (k Keeper) GetAggregatedOracleData(ctx sdk.Context, height int64, dataType, id string) types.OracleData {
 	store := ctx.KVStore(k.storeKey)
-	prefix := append(types.AggregatedOracleDataKeyPrefix, sdk.Uint64ToBigEndian(uint64(ctx.BlockHeight()))...)
-	iter := sdk.KVStorePrefixIterator(store, prefix)
+	key := types.GetAggregatedOracleDataKey(uint64(height), dataType, id)
+
+	bz := store.Get(key)
+	if len(bz) == 0 {
+		return nil
+	}
+
+	var oracleData types.OracleData
+	err := k.cdc.UnmarshalInterface(bz, &oracleData)
+	if err != nil {
+		panic(err)
+	}
+
+	return oracleData
+}
+
+// IterateAggregatedOracleData iterates over all aggregated data in the store
+func (k Keeper) IterateAggregatedOracleData(ctx sdk.Context, cb func(height int64, oracleData types.OracleData) (stop bool)) {
+	store := ctx.KVStore(k.storeKey)
+	iter := sdk.KVStorePrefixIterator(store, types.AggregatedOracleDataKeyPrefix)
 
 	defer iter.Close()
 	for ; iter.Valid(); iter.Next() {
+
+		height := sdk.BigEndianToUint64(iter.Key()[1:9])
+
 		var oracleData types.OracleData
 
 		err := k.cdc.UnmarshalInterface(iter.Value(), &oracleData)
@@ -281,7 +302,7 @@ func (k Keeper) IterateAggregatedOracleDataByHeight(ctx sdk.Context, cb func(ora
 			panic(err)
 		}
 
-		if cb(oracleData) {
+		if cb(int64(height), oracleData) {
 			break
 		}
 	}
@@ -290,7 +311,21 @@ func (k Keeper) IterateAggregatedOracleDataByHeight(ctx sdk.Context, cb func(ora
 // GetAllAggregatedData returns all the aggregated data
 func (k Keeper) GetAllAggregatedData(ctx sdk.Context) []types.AggregatedOracleData {
 	var aggregates []types.AggregatedOracleData
-	// TODO:
+
+	k.IterateAggregatedOracleData(ctx, func(height int64, oracleData types.OracleData) bool {
+		pair, ok := oracleData.(*types.UniswapPair)
+		if !ok {
+			return false
+		}
+
+		aggregates = append(aggregates, types.AggregatedOracleData{
+			Height: height,
+			Data:   pair,
+		})
+
+		return false
+	})
+
 	return aggregates
 }
 
