@@ -163,14 +163,14 @@ UniswapToken is the returned uniswap token representation
 <a name="oracle.v1.MsgDelegateFeedConsent"></a>
 
 ### MsgDelegateFeedConsent
-MsgDelegateFeedConsent - sdk.Msg for delegating oracle voting rights from a validator
+MsgDelegateFeedConsent defines sdk.Msg for delegating oracle voting rights from a validator
 to another address, must be signed by an active validator
 
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| `delegate` | [string](#string) |  |  |
-| `validator` | [string](#string) |  |  |
+| `delegate` | [string](#string) |  | delegate account address |
+| `validator` | [string](#string) |  | validator operator address |
 
 
 
@@ -180,7 +180,7 @@ to another address, must be signed by an active validator
 <a name="oracle.v1.MsgDelegateFeedConsentResponse"></a>
 
 ### MsgDelegateFeedConsentResponse
-
+MsgDelegateFeedConsentResponse is the response type for the Msg/DelegateFeedConsent gRPC method.
 
 
 
@@ -197,8 +197,8 @@ SHA256("{salt}:{data_cannonical_json}:{voter}")
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| `prevote` | [OraclePrevote](#oracle.v1.OraclePrevote) |  |  |
-| `signer` | [string](#string) |  |  |
+| `prevote` | [OraclePrevote](#oracle.v1.OraclePrevote) |  | prevote containing the hash of the oracle feed vote contents |
+| `signer` | [string](#string) |  | signer (i.e feeder) account address |
 
 
 
@@ -208,7 +208,7 @@ SHA256("{salt}:{data_cannonical_json}:{voter}")
 <a name="oracle.v1.MsgOracleDataPrevoteResponse"></a>
 
 ### MsgOracleDataPrevoteResponse
-
+MsgOracleDataPrevoteResponse is the response type for the Msg/OracleDataPrevote gRPC method.
 
 
 
@@ -223,8 +223,8 @@ MsgOracleDataVote - sdk.Msg for submitting arbitrary oracle data that has been p
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| `vote` | [OracleVote](#oracle.v1.OracleVote) |  |  |
-| `signer` | [string](#string) |  |  |
+| `vote` | [OracleVote](#oracle.v1.OracleVote) |  | vote containing the oracle data feed |
+| `signer` | [string](#string) |  | signer (i.e feeder) account address |
 
 
 
@@ -234,7 +234,7 @@ MsgOracleDataVote - sdk.Msg for submitting arbitrary oracle data that has been p
 <a name="oracle.v1.MsgOracleDataVoteResponse"></a>
 
 ### MsgOracleDataVoteResponse
-
+MsgOracleDataVoteResponse is the response type for the Msg/OracleDataVote gRPC method.
 
 
 
@@ -254,9 +254,9 @@ MsgService defines the msgs that the oracle module handles.
 
 | Method Name | Request Type | Response Type | Description | HTTP Verb | Endpoint |
 | ----------- | ------------ | ------------- | ------------| ------- | -------- |
-| `DelegateFeedConsent` | [MsgDelegateFeedConsent](#oracle.v1.MsgDelegateFeedConsent) | [MsgDelegateFeedConsentResponse](#oracle.v1.MsgDelegateFeedConsentResponse) |  | |
-| `OracleDataPrevote` | [MsgOracleDataPrevote](#oracle.v1.MsgOracleDataPrevote) | [MsgOracleDataPrevoteResponse](#oracle.v1.MsgOracleDataPrevoteResponse) |  | |
-| `OracleDataVote` | [MsgOracleDataVote](#oracle.v1.MsgOracleDataVote) | [MsgOracleDataVoteResponse](#oracle.v1.MsgOracleDataVoteResponse) |  | |
+| `DelegateFeedConsent` | [MsgDelegateFeedConsent](#oracle.v1.MsgDelegateFeedConsent) | [MsgDelegateFeedConsentResponse](#oracle.v1.MsgDelegateFeedConsentResponse) | DelegateFeedConsent defines a message that delegates the oracle feeding to an account address. | |
+| `OracleDataPrevote` | [MsgOracleDataPrevote](#oracle.v1.MsgOracleDataPrevote) | [MsgOracleDataPrevoteResponse](#oracle.v1.MsgOracleDataPrevoteResponse) | OracleDataPrevote defines a message that commits a hash of a oracle data feed before the data is actually submitted. | |
+| `OracleDataVote` | [MsgOracleDataVote](#oracle.v1.MsgOracleDataVote) | [MsgOracleDataVoteResponse](#oracle.v1.MsgOracleDataVoteResponse) | OracleDataVote defines a message to submit the actual oracle data that was committed by the feeder through the prevote. | |
 
  <!-- end services -->
 
@@ -359,13 +359,13 @@ Params oracle parameters
 <a name="oracle.v1.QueryAggregateDataRequest"></a>
 
 ### QueryAggregateDataRequest
-QueryAggregateDataRequest is the request type for the Query/AggregateData RPC method.
+QueryAggregateDataRequest is the request type for the Query/AggregateData gRPC method.
 
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| `type` | [string](#string) |  |  |
-| `id` | [string](#string) |  |  |
+| `type` | [string](#string) |  | oracle data type |
+| `id` | [string](#string) |  | oracle data identifier |
 
 
 
@@ -375,12 +375,12 @@ QueryAggregateDataRequest is the request type for the Query/AggregateData RPC me
 <a name="oracle.v1.QueryAggregateDataResponse"></a>
 
 ### QueryAggregateDataResponse
-
+QueryAggregateDataRequest is the response type for the Query/AggregateData gRPC method.
 
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| `oracle_data` | [UniswapPair](#oracle.v1.UniswapPair) |  |  |
+| `oracle_data` | [UniswapPair](#oracle.v1.UniswapPair) |  | oracle data associated with the id and type from the request |
 
 
 
@@ -390,12 +390,12 @@ QueryAggregateDataRequest is the request type for the Query/AggregateData RPC me
 <a name="oracle.v1.QueryDelegateAddressRequest"></a>
 
 ### QueryDelegateAddressRequest
-QueryParamsRequest is the request type for the Query/Params RPC method.
+QueryDelegateAddressRequest is the request type for the Query/QueryDelegateAddress gRPC method.
 
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| `validator` | [string](#string) |  |  |
+| `validator` | [string](#string) |  | validator operator address |
 
 
 
@@ -405,12 +405,12 @@ QueryParamsRequest is the request type for the Query/Params RPC method.
 <a name="oracle.v1.QueryDelegateAddressResponse"></a>
 
 ### QueryDelegateAddressResponse
-
+QueryDelegateAddressResponse is the response type for the Query/QueryDelegateAddress gRPC method.
 
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| `delegate` | [string](#string) |  |  |
+| `delegate` | [string](#string) |  | delegate account address |
 
 
 
@@ -420,12 +420,12 @@ QueryParamsRequest is the request type for the Query/Params RPC method.
 <a name="oracle.v1.QueryMissCounterRequest"></a>
 
 ### QueryMissCounterRequest
-QueryMissCounterRequest is the request type for the Query/MissCounter RPC method.
+QueryMissCounterRequest is the request type for the Query/MissCounter gRPC method.
 
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| `validator` | [string](#string) |  |  |
+| `validator` | [string](#string) |  | validator operator address |
 
 
 
@@ -435,12 +435,12 @@ QueryMissCounterRequest is the request type for the Query/MissCounter RPC method
 <a name="oracle.v1.QueryMissCounterResponse"></a>
 
 ### QueryMissCounterResponse
-
+QueryMissCounterResponse is the response type for the Query/MissCounter gRPC method.
 
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| `miss_counter` | [int64](#int64) |  |  |
+| `miss_counter` | [int64](#int64) |  | number of oracle feed votes missed since the last counter reset |
 
 
 
@@ -450,12 +450,12 @@ QueryMissCounterRequest is the request type for the Query/MissCounter RPC method
 <a name="oracle.v1.QueryOracleDataPrevoteRequest"></a>
 
 ### QueryOracleDataPrevoteRequest
-QueryParamsRequest is the request type for the Query/Params RPC method.
+QueryOracleDataPrevoteRequest is the request type for the Query/QueryOracleDataPrevote gRPC method.
 
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| `validator` | [string](#string) |  |  |
+| `validator` | [string](#string) |  | validator operator address |
 
 
 
@@ -465,12 +465,12 @@ QueryParamsRequest is the request type for the Query/Params RPC method.
 <a name="oracle.v1.QueryOracleDataPrevoteResponse"></a>
 
 ### QueryOracleDataPrevoteResponse
-
+QueryOracleDataPrevoteResponse is the response type for the Query/QueryOracleDataPrevote gRPC method.
 
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| `prevote` | [OraclePrevote](#oracle.v1.OraclePrevote) |  |  |
+| `prevote` | [OraclePrevote](#oracle.v1.OraclePrevote) |  | prevote submitted within the latest voting period |
 
 
 
@@ -480,12 +480,12 @@ QueryParamsRequest is the request type for the Query/Params RPC method.
 <a name="oracle.v1.QueryOracleDataVoteRequest"></a>
 
 ### QueryOracleDataVoteRequest
-QueryOracleDataVoteRequest is the request type for the Query/Odra RPC method.
+QueryOracleDataVoteRequest is the request type for the Query/QueryOracleDataVote gRPC method.
 
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| `validator` | [string](#string) |  |  |
+| `validator` | [string](#string) |  | validator operator address |
 
 
 
@@ -495,12 +495,12 @@ QueryOracleDataVoteRequest is the request type for the Query/Odra RPC method.
 <a name="oracle.v1.QueryOracleDataVoteResponse"></a>
 
 ### QueryOracleDataVoteResponse
-
+QueryOracleDataVoteResponse is the response type for the Query/QueryOracleDataVote gRPC method.
 
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| `vote` | [OracleVote](#oracle.v1.OracleVote) |  |  |
+| `vote` | [OracleVote](#oracle.v1.OracleVote) |  | vote containing the oracle feed submitted within the latest voting period |
 
 
 
@@ -510,7 +510,7 @@ QueryOracleDataVoteRequest is the request type for the Query/Odra RPC method.
 <a name="oracle.v1.QueryParamsRequest"></a>
 
 ### QueryParamsRequest
-QueryParamsRequest is the request type for the Query/Params RPC method.
+QueryParamsRequest is the request type for the Query/Params gRPC method.
 
 
 
@@ -520,12 +520,12 @@ QueryParamsRequest is the request type for the Query/Params RPC method.
 <a name="oracle.v1.QueryParamsResponse"></a>
 
 ### QueryParamsResponse
-
+QueryParamsRequest is the response type for the Query/Params gRPC method.
 
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| `params` | [Params](#oracle.v1.Params) |  |  |
+| `params` | [Params](#oracle.v1.Params) |  | oracle parameters |
 
 
 
@@ -535,12 +535,12 @@ QueryParamsRequest is the request type for the Query/Params RPC method.
 <a name="oracle.v1.QueryValidatorAddressRequest"></a>
 
 ### QueryValidatorAddressRequest
-QueryParamsRequest is the request type for the Query/Params RPC method.
+QueryValidatorAddressRequest is the request type for the Query/Params gRPC method.
 
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| `delegate` | [string](#string) |  |  |
+| `delegate` | [string](#string) |  | delegate account address |
 
 
 
@@ -550,12 +550,12 @@ QueryParamsRequest is the request type for the Query/Params RPC method.
 <a name="oracle.v1.QueryValidatorAddressResponse"></a>
 
 ### QueryValidatorAddressResponse
-
+QueryValidatorAddressResponse is the response type for the Query/Params gRPC method.
 
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| `validator` | [string](#string) |  |  |
+| `validator` | [string](#string) |  | validator operator address |
 
 
 
@@ -565,7 +565,7 @@ QueryParamsRequest is the request type for the Query/Params RPC method.
 <a name="oracle.v1.QueryVotePeriodRequest"></a>
 
 ### QueryVotePeriodRequest
-QueryVotePeriodRequest is the request type for the Query/VotePeriod RPC method.
+QueryVotePeriodRequest is the request type for the Query/VotePeriod gRPC method.
 
 
 
@@ -575,14 +575,14 @@ QueryVotePeriodRequest is the request type for the Query/VotePeriod RPC method.
 <a name="oracle.v1.QueryVotePeriodResponse"></a>
 
 ### QueryVotePeriodResponse
-
+QueryVotePeriodResponse is the response type for the Query/VotePeriod gRPC method.
 
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| `current_height` | [int64](#int64) |  |  |
-| `vote_period_start` | [int64](#int64) |  |  |
-| `vote_period_end` | [int64](#int64) |  |  |
+| `current_height` | [int64](#int64) |  | block height at which the query was processed |
+| `vote_period_start` | [int64](#int64) |  | latest vote period start block height |
+| `vote_period_end` | [int64](#int64) |  | block height at which the current voting period ends |
 
 
 

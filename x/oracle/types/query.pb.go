@@ -30,7 +30,7 @@ var _ = math.Inf
 // proto package needs to be updated.
 const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
-// QueryParamsRequest is the request type for the Query/Params RPC method.
+// QueryParamsRequest is the request type for the Query/Params gRPC method.
 type QueryParamsRequest struct {
 }
 
@@ -67,7 +67,9 @@ func (m *QueryParamsRequest) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_QueryParamsRequest proto.InternalMessageInfo
 
+// QueryParamsRequest is the response type for the Query/Params gRPC method.
 type QueryParamsResponse struct {
+	// oracle parameters
 	Params Params `protobuf:"bytes,1,opt,name=params,proto3" json:"params"`
 }
 
@@ -111,8 +113,9 @@ func (m *QueryParamsResponse) GetParams() Params {
 	return Params{}
 }
 
-// QueryParamsRequest is the request type for the Query/Params RPC method.
+// QueryDelegateAddressRequest is the request type for the Query/QueryDelegateAddress gRPC method.
 type QueryDelegateAddressRequest struct {
+	// validator operator address
 	Validator string `protobuf:"bytes,1,opt,name=validator,proto3" json:"validator,omitempty"`
 }
 
@@ -156,7 +159,9 @@ func (m *QueryDelegateAddressRequest) GetValidator() string {
 	return ""
 }
 
+// QueryDelegateAddressResponse is the response type for the Query/QueryDelegateAddress gRPC method.
 type QueryDelegateAddressResponse struct {
+	// delegate account address
 	Delegate string `protobuf:"bytes,2,opt,name=delegate,proto3" json:"delegate,omitempty"`
 }
 
@@ -200,8 +205,9 @@ func (m *QueryDelegateAddressResponse) GetDelegate() string {
 	return ""
 }
 
-// QueryParamsRequest is the request type for the Query/Params RPC method.
+// QueryValidatorAddressRequest is the request type for the Query/Params gRPC method.
 type QueryValidatorAddressRequest struct {
+	// delegate account address
 	Delegate string `protobuf:"bytes,1,opt,name=delegate,proto3" json:"delegate,omitempty"`
 }
 
@@ -245,7 +251,9 @@ func (m *QueryValidatorAddressRequest) GetDelegate() string {
 	return ""
 }
 
+// QueryValidatorAddressResponse is the response type for the Query/Params gRPC method.
 type QueryValidatorAddressResponse struct {
+	// validator operator address
 	Validator string `protobuf:"bytes,1,opt,name=validator,proto3" json:"validator,omitempty"`
 }
 
@@ -289,8 +297,9 @@ func (m *QueryValidatorAddressResponse) GetValidator() string {
 	return ""
 }
 
-// QueryParamsRequest is the request type for the Query/Params RPC method.
+// QueryOracleDataPrevoteRequest is the request type for the Query/QueryOracleDataPrevote gRPC method.
 type QueryOracleDataPrevoteRequest struct {
+	// validator operator address
 	Validator string `protobuf:"bytes,1,opt,name=validator,proto3" json:"validator,omitempty"`
 }
 
@@ -334,7 +343,9 @@ func (m *QueryOracleDataPrevoteRequest) GetValidator() string {
 	return ""
 }
 
+// QueryOracleDataPrevoteResponse is the response type for the Query/QueryOracleDataPrevote gRPC method.
 type QueryOracleDataPrevoteResponse struct {
+	// prevote submitted within the latest voting period
 	Prevote *OraclePrevote `protobuf:"bytes,1,opt,name=prevote,proto3" json:"prevote,omitempty"`
 }
 
@@ -378,8 +389,9 @@ func (m *QueryOracleDataPrevoteResponse) GetPrevote() *OraclePrevote {
 	return nil
 }
 
-// QueryOracleDataVoteRequest is the request type for the Query/Odra RPC method.
+// QueryOracleDataVoteRequest is the request type for the Query/QueryOracleDataVote gRPC method.
 type QueryOracleDataVoteRequest struct {
+	// validator operator address
 	Validator string `protobuf:"bytes,1,opt,name=validator,proto3" json:"validator,omitempty"`
 }
 
@@ -423,7 +435,9 @@ func (m *QueryOracleDataVoteRequest) GetValidator() string {
 	return ""
 }
 
+// QueryOracleDataVoteResponse is the response type for the Query/QueryOracleDataVote gRPC method.
 type QueryOracleDataVoteResponse struct {
+	// vote containing the oracle feed submitted within the latest voting period
 	Vote *OracleVote `protobuf:"bytes,1,opt,name=vote,proto3" json:"vote,omitempty"`
 }
 
@@ -467,7 +481,7 @@ func (m *QueryOracleDataVoteResponse) GetVote() *OracleVote {
 	return nil
 }
 
-// QueryVotePeriodRequest is the request type for the Query/VotePeriod RPC method.
+// QueryVotePeriodRequest is the request type for the Query/VotePeriod gRPC method.
 type QueryVotePeriodRequest struct {
 }
 
@@ -504,10 +518,14 @@ func (m *QueryVotePeriodRequest) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_QueryVotePeriodRequest proto.InternalMessageInfo
 
+// QueryVotePeriodResponse is the response type for the Query/VotePeriod gRPC method.
 type QueryVotePeriodResponse struct {
-	CurrentHeight   int64 `protobuf:"varint,1,opt,name=current_height,json=currentHeight,proto3" json:"current_height,omitempty"`
+	// block height at which the query was processed
+	CurrentHeight int64 `protobuf:"varint,1,opt,name=current_height,json=currentHeight,proto3" json:"current_height,omitempty"`
+	// latest vote period start block height
 	VotePeriodStart int64 `protobuf:"varint,2,opt,name=vote_period_start,json=votePeriodStart,proto3" json:"vote_period_start,omitempty"`
-	VotePeriodEnd   int64 `protobuf:"varint,3,opt,name=vote_period_end,json=votePeriodEnd,proto3" json:"vote_period_end,omitempty"`
+	// block height at which the current voting period ends
+	VotePeriodEnd int64 `protobuf:"varint,3,opt,name=vote_period_end,json=votePeriodEnd,proto3" json:"vote_period_end,omitempty"`
 }
 
 func (m *QueryVotePeriodResponse) Reset()         { *m = QueryVotePeriodResponse{} }
@@ -564,8 +582,9 @@ func (m *QueryVotePeriodResponse) GetVotePeriodEnd() int64 {
 	return 0
 }
 
-// QueryMissCounterRequest is the request type for the Query/MissCounter RPC method.
+// QueryMissCounterRequest is the request type for the Query/MissCounter gRPC method.
 type QueryMissCounterRequest struct {
+	// validator operator address
 	Validator string `protobuf:"bytes,1,opt,name=validator,proto3" json:"validator,omitempty"`
 }
 
@@ -609,7 +628,9 @@ func (m *QueryMissCounterRequest) GetValidator() string {
 	return ""
 }
 
+// QueryMissCounterResponse is the response type for the Query/MissCounter gRPC method.
 type QueryMissCounterResponse struct {
+	// number of oracle feed votes missed since the last counter reset
 	MissCounter int64 `protobuf:"varint,1,opt,name=miss_counter,json=missCounter,proto3" json:"miss_counter,omitempty"`
 }
 
@@ -653,10 +674,12 @@ func (m *QueryMissCounterResponse) GetMissCounter() int64 {
 	return 0
 }
 
-// QueryAggregateDataRequest is the request type for the Query/AggregateData RPC method.
+// QueryAggregateDataRequest is the request type for the Query/AggregateData gRPC method.
 type QueryAggregateDataRequest struct {
+	// oracle data type
 	Type string `protobuf:"bytes,1,opt,name=type,proto3" json:"type,omitempty"`
-	Id   string `protobuf:"bytes,2,opt,name=id,proto3" json:"id,omitempty"`
+	// oracle data identifier
+	Id string `protobuf:"bytes,2,opt,name=id,proto3" json:"id,omitempty"`
 }
 
 func (m *QueryAggregateDataRequest) Reset()         { *m = QueryAggregateDataRequest{} }
@@ -706,7 +729,9 @@ func (m *QueryAggregateDataRequest) GetId() string {
 	return ""
 }
 
+// QueryAggregateDataRequest is the response type for the Query/AggregateData gRPC method.
 type QueryAggregateDataResponse struct {
+	// oracle data associated with the id and type from the request
 	OracleData *UniswapPair `protobuf:"bytes,1,opt,name=oracle_data,json=oracleData,proto3" json:"oracle_data,omitempty"`
 }
 
