@@ -378,7 +378,7 @@ func queryOracleData() *cobra.Command {
 				return err
 			}
 
-			fmt.Println(jsonBz)
+			fmt.Println(string(jsonBz))
 			return nil
 		},
 	}
