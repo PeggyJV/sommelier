@@ -5,6 +5,7 @@ import (
 	"context"
 	"encoding/json"
 
+	"github.com/armon/go-metrics"
 	"github.com/cosmos/cosmos-sdk/telemetry"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
@@ -79,6 +80,10 @@ func (k Keeper) OracleDataPrevote(c context.Context, msg *types.MsgOracleDataPre
 
 	// TODO: set prevote for current voting period
 	k.SetOracleDataPrevote(ctx, validatorAddr, *msg.Prevote)
+	// set miss counter now that the validator committed the provote
+	if !k.HasMissCounter(ctx, validatorAddr) {
+		k.SetMissCounter(ctx, validatorAddr, 0)
+	}
 
 	ctx.EventManager().EmitEvents(
 		sdk.Events{
@@ -186,7 +191,9 @@ func (k Keeper) OracleDataVote(c context.Context, msg *types.MsgOracleDataVote) 
 		// 	)
 		// }
 
-		k.SetOracleData(ctx, oracleData)
+		if !k.HasOracleDataType(ctx, oracleData.GetID()) {
+			k.SetOracleDataType(ctx, oracleData.Type(), oracleData.GetID())
+		}
 
 		oracleEvents = append(
 			oracleEvents,
@@ -194,9 +201,21 @@ func (k Keeper) OracleDataVote(c context.Context, msg *types.MsgOracleDataVote) 
 				types.EventTypeOracleDataVote,
 				sdk.NewAttribute(types.AttributeKeyOracleDataID, oracleData.GetID()),
 				sdk.NewAttribute(types.AttributeKeyOracleDataType, oracleData.Type()),
-				sdk.NewAttribute(types.AttributeKeyValidator, validatorAddr.String()),
 			),
 		)
+
+		labels := []metrics.Label{
+			telemetry.NewLabel("data-type", oracleData.Type()),
+			telemetry.NewLabel("data-id", oracleData.GetID()),
+		}
+
+		defer func() {
+			telemetry.IncrCounterWithLabels(
+				[]string{types.ModuleName, "feed"},
+				1,
+				labels,
+			)
+		}()
 	}
 
 	// set the vote in the store
@@ -205,7 +224,13 @@ func (k Keeper) OracleDataVote(c context.Context, msg *types.MsgOracleDataVote) 
 	ctx.EventManager().EmitEvents(oracleEvents)
 
 	defer func() {
-		telemetry.IncrCounter(1, types.ModuleName, "vote")
+		telemetry.IncrCounterWithLabels(
+			[]string{types.ModuleName, "vote"},
+			1,
+			[]metrics.Label{
+				telemetry.NewLabel(types.AttributeKeyValidator, validatorAddr.String()),
+			},
+		)
 	}()
 
 	return &types.MsgOracleDataVoteResponse{}, nil

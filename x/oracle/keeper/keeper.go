@@ -250,6 +250,12 @@ func (k Keeper) GetOracleDataType(ctx sdk.Context, id string) (string, bool) {
 	return string(bz), true
 }
 
+// HasOracleDataType checks the oracle data type associated with a given data identifier
+func (k Keeper) HasOracleDataType(ctx sdk.Context, id string) bool {
+	store := ctx.KVStore(k.storeKey)
+	return store.Has(types.GetOracleDataTypeKey(id))
+}
+
 // SetOracleDataType sets oracle data type associated with a given data identifier
 func (k Keeper) SetOracleDataType(ctx sdk.Context, dataType, id string) {
 	store := ctx.KVStore(k.storeKey)
@@ -266,39 +272,110 @@ func (k Keeper) SetOracleData(ctx sdk.Context, oracleData types.OracleData) {
 	ctx.KVStore(k.storeKey).Set(types.GetOracleDataKey(oracleData.Type(), oracleData.GetID()), bz)
 }
 
+// GetAggregatedOracleData gets the aggregated oracle data from the store by height, type and id
+func (k Keeper) GetAggregatedOracleData(ctx sdk.Context, height int64, dataType, id string) types.OracleData {
+	store := ctx.KVStore(k.storeKey)
+	key := types.GetAggregatedOracleDataKey(uint64(height), dataType, id)
+
+	bz := store.Get(key)
+	if len(bz) == 0 {
+		return nil
+	}
+
+	var oracleData types.OracleData
+	err := k.cdc.UnmarshalInterface(bz, &oracleData)
+	if err != nil {
+		panic(err)
+	}
+
+	return oracleData
+}
+
+// GetLatestAggregatedOracleData returns the latest stored aggregated data
+func (k Keeper) GetLatestAggregatedOracleData(ctx sdk.Context, dataType, id string) (types.OracleData, int64) {
+	// get the latest stored height for the given id
+	height := k.GetOracleDataHeight(ctx, id)
+	if height == 0 {
+		return nil, 0
+	}
+
+	return k.GetAggregatedOracleData(ctx, height, dataType, id), height
+}
+
+// IterateAggregatedOracleData iterates over all aggregated data in the store
+func (k Keeper) IterateAggregatedOracleData(ctx sdk.Context, cb func(height int64, oracleData types.OracleData) (stop bool)) {
+	store := ctx.KVStore(k.storeKey)
+	// NOTE: we use reverse prefix iterator to iterate from latest to earliest height
+	iter := sdk.KVStoreReversePrefixIterator(store, types.AggregatedOracleDataKeyPrefix)
+
+	defer iter.Close()
+	for ; iter.Valid(); iter.Next() {
+		var oracleData types.OracleData
+
+		height := sdk.BigEndianToUint64(iter.Key()[1:9])
+		if err := k.cdc.UnmarshalInterface(iter.Value(), &oracleData); err != nil {
+			panic(err)
+		}
+
+		if cb(int64(height), oracleData) {
+			break
+		}
+	}
+}
+
+// GetAllAggregatedData returns all the aggregated data
+func (k Keeper) GetAllAggregatedData(ctx sdk.Context) []types.AggregatedOracleData {
+	var aggregates []types.AggregatedOracleData
+
+	k.IterateAggregatedOracleData(ctx, func(height int64, oracleData types.OracleData) bool {
+		pair, ok := oracleData.(*types.UniswapPair)
+		if !ok {
+			return false
+		}
+
+		aggregates = append(aggregates, types.AggregatedOracleData{
+			Height: height,
+			Data:   pair,
+		})
+
+		return false
+	})
+
+	return aggregates
+}
+
+// HasAggregatedOracleData sets the aggregated oracle data in the store by height, type and id
+func (k Keeper) HasAggregatedOracleData(ctx sdk.Context, height int64, dataType, id string) bool {
+	key := types.GetAggregatedOracleDataKey(uint64(height), dataType, id)
+	return ctx.KVStore(k.storeKey).Has(key)
+}
+
 // SetAggregatedOracleData sets the aggregated oracle data in the store by height, type and id
-func (k Keeper) SetAggregatedOracleData(ctx sdk.Context, oracleData types.OracleData) {
+func (k Keeper) SetAggregatedOracleData(ctx sdk.Context, height int64, oracleData types.OracleData) {
 	bz, err := k.cdc.MarshalInterface(oracleData)
 	if err != nil {
 		panic(err)
 	}
 
-	key := types.GetAggregatedOracleDataKey(oracleData.Type(), oracleData.GetID(), uint64(ctx.BlockHeight()))
+	key := types.GetAggregatedOracleDataKey(uint64(height), oracleData.Type(), oracleData.GetID())
 
 	ctx.KVStore(k.storeKey).Set(key, bz)
 }
 
-// GetOracleData gets oracle data stored for a given type
-func (k Keeper) GetOracleData(ctx sdk.Context, dataType, id string) (types.OracleData, bool) {
+func (k Keeper) GetOracleDataHeight(ctx sdk.Context, id string) int64 {
 	store := ctx.KVStore(k.storeKey)
-	bz := store.Get(types.GetOracleDataKey(dataType, id))
+	bz := store.Get(types.GetOracleDataHeightKey(id))
 	if len(bz) == 0 {
-		return nil, false
+		return 0
 	}
 
-	var oracleData types.OracleData
-	k.cdc.UnmarshalInterface(bz, &oracleData)
-	return oracleData, true
+	return int64(sdk.BigEndianToUint64(bz))
 }
 
-// DeleteOracleData deletes the data from the oracle of a given type
-func (k Keeper) DeleteOracleData(ctx sdk.Context, dataType, id string) {
-	ctx.KVStore(k.storeKey).Delete(types.GetOracleDataKey(dataType, id))
-}
-
-// HasOracleData returns true if a given type exists in the store
-func (k Keeper) HasOracleData(ctx sdk.Context, dataType, id string) bool {
-	return ctx.KVStore(k.storeKey).Has(types.GetOracleDataKey(dataType, id))
+// SetOracleDataHeight sets latest aggregated oracle data height associated with a given data identifier
+func (k Keeper) SetOracleDataHeight(ctx sdk.Context, id string, height int64) {
+	store := ctx.KVStore(k.storeKey)
+	store.Set(types.GetOracleDataHeightKey(id), sdk.Uint64ToBigEndian(uint64(height)))
 }
 
 ////////////////
@@ -333,7 +410,8 @@ func (k Keeper) HasVotePeriodStart(ctx sdk.Context) bool {
 
 // IncrementMissCounter increments the miss counter for a validator
 func (k Keeper) IncrementMissCounter(ctx sdk.Context, val sdk.ValAddress) {
-	k.SetMissCounter(ctx, val, k.GetMissCounter(ctx, val)+1)
+	missCounter := k.GetMissCounter(ctx, val)
+	k.SetMissCounter(ctx, val, missCounter+1)
 }
 
 // GetMissCounter return the miss counter for a validator

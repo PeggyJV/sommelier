@@ -29,10 +29,12 @@ var _ = math.Inf
 // proto package needs to be updated.
 const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
-// MsgDelegateFeedConsent - sdk.Msg for delegating oracle voting rights from a validator
+// MsgDelegateFeedConsent defines sdk.Msg for delegating oracle voting rights from a validator
 // to another address, must be signed by an active validator
 type MsgDelegateFeedConsent struct {
-	Delegate  string `protobuf:"bytes,1,opt,name=delegate,proto3" json:"delegate,omitempty"`
+	// delegate account address
+	Delegate string `protobuf:"bytes,1,opt,name=delegate,proto3" json:"delegate,omitempty"`
+	// validator operator address
 	Validator string `protobuf:"bytes,2,opt,name=validator,proto3" json:"validator,omitempty"`
 }
 
@@ -83,6 +85,7 @@ func (m *MsgDelegateFeedConsent) GetValidator() string {
 	return ""
 }
 
+// MsgDelegateFeedConsentResponse is the response type for the Msg/DelegateFeedConsent gRPC method.
 type MsgDelegateFeedConsentResponse struct {
 }
 
@@ -123,8 +126,10 @@ var xxx_messageInfo_MsgDelegateFeedConsentResponse proto.InternalMessageInfo
 // The purpose of the prevote is to hide vote for data with hashes formatted as hex string:
 // SHA256("{salt}:{data_cannonical_json}:{voter}")
 type MsgOracleDataPrevote struct {
+	// prevote containing the hash of the oracle feed vote contents
 	Prevote *OraclePrevote `protobuf:"bytes,1,opt,name=prevote,proto3" json:"prevote,omitempty"`
-	Signer  string         `protobuf:"bytes,2,opt,name=signer,proto3" json:"signer,omitempty"`
+	// signer (i.e feeder) account address
+	Signer string `protobuf:"bytes,2,opt,name=signer,proto3" json:"signer,omitempty"`
 }
 
 func (m *MsgOracleDataPrevote) Reset()         { *m = MsgOracleDataPrevote{} }
@@ -174,6 +179,7 @@ func (m *MsgOracleDataPrevote) GetSigner() string {
 	return ""
 }
 
+// MsgOracleDataPrevoteResponse is the response type for the Msg/OracleDataPrevote gRPC method.
 type MsgOracleDataPrevoteResponse struct {
 }
 
@@ -212,8 +218,10 @@ var xxx_messageInfo_MsgOracleDataPrevoteResponse proto.InternalMessageInfo
 
 // MsgOracleDataVote - sdk.Msg for submitting arbitrary oracle data that has been prevoted on
 type MsgOracleDataVote struct {
-	Vote   *OracleVote `protobuf:"bytes,1,opt,name=vote,proto3" json:"vote,omitempty"`
-	Signer string      `protobuf:"bytes,2,opt,name=signer,proto3" json:"signer,omitempty"`
+	// vote containing the oracle data feed
+	Vote *OracleVote `protobuf:"bytes,1,opt,name=vote,proto3" json:"vote,omitempty"`
+	// signer (i.e feeder) account address
+	Signer string `protobuf:"bytes,2,opt,name=signer,proto3" json:"signer,omitempty"`
 }
 
 func (m *MsgOracleDataVote) Reset()         { *m = MsgOracleDataVote{} }
@@ -263,6 +271,7 @@ func (m *MsgOracleDataVote) GetSigner() string {
 	return ""
 }
 
+// MsgOracleDataVoteResponse is the response type for the Msg/OracleDataVote gRPC method.
 type MsgOracleDataVoteResponse struct {
 }
 
@@ -351,8 +360,11 @@ const _ = grpc.SupportPackageIsVersion4
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
 type MsgClient interface {
+	// DelegateFeedConsent defines a message that delegates the oracle feeding to an account address.
 	DelegateFeedConsent(ctx context.Context, in *MsgDelegateFeedConsent, opts ...grpc.CallOption) (*MsgDelegateFeedConsentResponse, error)
+	// OracleDataPrevote defines a message that commits a hash of a oracle data feed before the data is actually submitted.
 	OracleDataPrevote(ctx context.Context, in *MsgOracleDataPrevote, opts ...grpc.CallOption) (*MsgOracleDataPrevoteResponse, error)
+	// OracleDataVote defines a message to submit the actual oracle data that was committed by the feeder through the prevote.
 	OracleDataVote(ctx context.Context, in *MsgOracleDataVote, opts ...grpc.CallOption) (*MsgOracleDataVoteResponse, error)
 }
 
@@ -393,8 +405,11 @@ func (c *msgClient) OracleDataVote(ctx context.Context, in *MsgOracleDataVote, o
 
 // MsgServer is the server API for Msg service.
 type MsgServer interface {
+	// DelegateFeedConsent defines a message that delegates the oracle feeding to an account address.
 	DelegateFeedConsent(context.Context, *MsgDelegateFeedConsent) (*MsgDelegateFeedConsentResponse, error)
+	// OracleDataPrevote defines a message that commits a hash of a oracle data feed before the data is actually submitted.
 	OracleDataPrevote(context.Context, *MsgOracleDataPrevote) (*MsgOracleDataPrevoteResponse, error)
+	// OracleDataVote defines a message to submit the actual oracle data that was committed by the feeder through the prevote.
 	OracleDataVote(context.Context, *MsgOracleDataVote) (*MsgOracleDataVoteResponse, error)
 }
 
