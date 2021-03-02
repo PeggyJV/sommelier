@@ -105,8 +105,8 @@ func GetCmdQueryParams() *cobra.Command {
 
 			queryClient := types.NewQueryClient(clientCtx)
 
-			req := &types.QueryParametersRequest{}
-			res, err := queryClient.Parameters(cmd.Context(), req)
+			req := &types.QueryParamsRequest{}
+			res, err := queryClient.Params(cmd.Context(), req)
 			if err != nil {
 				return err
 			}

@@ -321,7 +321,8 @@ func NewSommelierApp(
 	transferModule := transfer.NewAppModule(app.TransferKeeper)
 
 	app.EthBridgeKeeper = ethbridgekeeper.NewKeeper(
-		appCodec, keys[ethbridgetypes.StoreKey], app.GetSubspace(ethbridgetypes.ModuleName), app.StakingKeeper, app.BankKeeper,
+		appCodec, keys[ethbridgetypes.StoreKey], app.GetSubspace(ethbridgetypes.ModuleName),
+		app.StakingKeeper, app.BankKeeper, app.SlashingKeeper,
 	)
 
 	app.OracleKeeper = oraclekeeper.NewKeeper(

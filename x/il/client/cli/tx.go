@@ -67,7 +67,7 @@ func GetCmdCreateStoploss() *cobra.Command {
 				ReferencePairRatio:  ratio,
 			}
 
-			msg := types.NewMsgStoploss(clientCtx.FromAddress, stoploss)
+			msg := types.NewMsgCreateStoploss(clientCtx.FromAddress, stoploss)
 			err = msg.ValidateBasic()
 			if err != nil {
 				return err

@@ -1,21 +1,17 @@
 package types
 
 import (
+	bridgetypes "github.com/althea-net/peggy/module/x/peggy/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	oracletypes "github.com/peggyjv/sommelier/x/oracle/types"
 )
 
 // OracleKeeper is expected keeper for the oracle module
 type OracleKeeper interface {
-	IterateAggregatedOracleDataByHeight(ctx sdk.Context, cb func(oracleData oracletypes.OracleData) (stop bool))
+	GetLatestAggregatedOracleData(ctx sdk.Context, dataType, id string) (oracletypes.OracleData, int64)
 }
 
 // EthBridgeKeeper is expected keeper for the peggy bridge module
 type EthBridgeKeeper interface {
-	AddToOutgoingPool(ctx sdk.Context, sender sdk.AccAddress, counterpartReceiver string, amount, fee sdk.Coin) (uint64, error)
+	SetOutgoingLogicCall(ctx sdk.Context, call *bridgetypes.OutgoingLogicCall)
 }
-
-// // AccountKeeper is the expected account keeper
-// type AccountKeeper interface {
-// 	GetAccount(ctx sdk.Context, address sdk.AccAddress) authtypes.AccountI
-// }
