@@ -341,29 +341,6 @@ func (k Keeper) SetAggregatedOracleData(ctx sdk.Context, height int64, oracleDat
 	ctx.KVStore(k.storeKey).Set(key, bz)
 }
 
-// GetOracleData gets oracle data stored for a given type
-func (k Keeper) GetOracleData(ctx sdk.Context, dataType, id string) (types.OracleData, bool) {
-	store := ctx.KVStore(k.storeKey)
-	bz := store.Get(types.GetOracleDataKey(dataType, id))
-	if len(bz) == 0 {
-		return nil, false
-	}
-
-	var oracleData types.OracleData
-	k.cdc.UnmarshalInterface(bz, &oracleData)
-	return oracleData, true
-}
-
-// DeleteOracleData deletes the data from the oracle of a given type
-func (k Keeper) DeleteOracleData(ctx sdk.Context, dataType, id string) {
-	ctx.KVStore(k.storeKey).Delete(types.GetOracleDataKey(dataType, id))
-}
-
-// HasOracleData returns true if a given type exists in the store
-func (k Keeper) HasOracleData(ctx sdk.Context, dataType, id string) bool {
-	return ctx.KVStore(k.storeKey).Has(types.GetOracleDataKey(dataType, id))
-}
-
 ////////////////
 // VotePeriod //
 ////////////////
@@ -396,7 +373,8 @@ func (k Keeper) HasVotePeriodStart(ctx sdk.Context) bool {
 
 // IncrementMissCounter increments the miss counter for a validator
 func (k Keeper) IncrementMissCounter(ctx sdk.Context, val sdk.ValAddress) {
-	k.SetMissCounter(ctx, val, k.GetMissCounter(ctx, val)+1)
+	missCounter := k.GetMissCounter(ctx, val)
+	k.SetMissCounter(ctx, val, missCounter+1)
 }
 
 // GetMissCounter return the miss counter for a validator

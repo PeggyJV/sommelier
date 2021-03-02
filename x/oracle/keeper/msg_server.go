@@ -80,6 +80,10 @@ func (k Keeper) OracleDataPrevote(c context.Context, msg *types.MsgOracleDataPre
 
 	// TODO: set prevote for current voting period
 	k.SetOracleDataPrevote(ctx, validatorAddr, *msg.Prevote)
+	// set miss counter now that the validator committed the provote
+	if !k.HasMissCounter(ctx, validatorAddr) {
+		k.SetMissCounter(ctx, validatorAddr, 0)
+	}
 
 	ctx.EventManager().EmitEvents(
 		sdk.Events{
@@ -186,8 +190,6 @@ func (k Keeper) OracleDataVote(c context.Context, msg *types.MsgOracleDataVote) 
 		// 		"%s, allowed %v", oracleData.Type(), allowedDataTypes,
 		// 	)
 		// }
-
-		k.SetOracleData(ctx, oracleData)
 
 		oracleEvents = append(
 			oracleEvents,

@@ -160,7 +160,8 @@ func (k Keeper) EndBlocker(ctx sdk.Context) {
 
 		validatorAddr := validator.GetOperator()
 
-		if !validatorVotesMap[validatorAddr.String()] {
+		// only increment miss counter for validators who have previously submitted data
+		if !validatorVotesMap[validatorAddr.String()] && k.HasMissCounter(ctx, validatorAddr) {
 			// TODO: this is wrong because the feeder could submit a single oracle data uniswap pair instead of all the required
 			// ones and still be counted as if they voted correctly. Maybe consider adding each uniswap pair id to the params?
 			// TODO: we need to define what is the exact data that we want the validators to submit.
@@ -208,9 +209,6 @@ func (k Keeper) EndBlocker(ctx sdk.Context) {
 		if storeAverages {
 			k.SetAggregatedOracleData(ctx, ctx.BlockHeight(), aggregatedData) // TODO: why? should we also not give out rewards?
 		}
-
-		// TODO: delete the oracle old data
-		// k.DeleteOracleData(ctx, dataType, dataType, oracleData)
 
 		// store the "average" for scoring validators later
 		aggregateMap[aggregatedData.GetID()] = aggregatedData
@@ -265,6 +263,10 @@ func (k Keeper) EndBlocker(ctx sdk.Context) {
 				"validator not found for miss counter",
 				"validator-address", validatorAddr.String(),
 			)
+
+			// delete miss counter as the validator is not registered to the staking store
+			// TODO: maybe use defer? not sure if deleting while iterating is bad or not?
+			k.DeleteMissCounter(ctx, validatorAddr)
 			return false
 		}
 
