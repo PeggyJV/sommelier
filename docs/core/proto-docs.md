@@ -381,6 +381,7 @@ QueryAggregateDataRequest is the response type for the Query/AggregateData gRPC 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | `oracle_data` | [UniswapPair](#oracle.v1.UniswapPair) |  | oracle data associated with the id and type from the request |
+| `height` | [int64](#int64) |  | height at which the aggregated oracle data was stored |
 
 
 

@@ -291,14 +291,14 @@ func (k Keeper) GetAggregatedOracleData(ctx sdk.Context, height int64, dataType,
 	return oracleData
 }
 
-func (k Keeper) GetLatestAggregatedOracleDataById(ctx sdk.Context, maxCount int64, dataType, id string) types.OracleData {
-	for height := ctx.BlockHeight(); height > (ctx.BlockHeight() - maxCount); height-- {
-		if k.HasAggregatedOracleData(ctx, height, dataType, id) {
-			return k.GetAggregatedOracleData(ctx, height, dataType, id)
-		}
+func (k Keeper) GetLatestAggregatedOracleData(ctx sdk.Context, dataType, id string) (types.OracleData, int64) {
+	// get the latest stored height for the given id
+	height := k.GetOracleDataHeight(ctx, id)
+	if height == 0 {
+		return nil, 0
 	}
 
-	return nil
+	return k.GetAggregatedOracleData(ctx, height, dataType, id), height
 }
 
 // IterateAggregatedOracleData iterates over all aggregated data in the store
@@ -359,6 +359,22 @@ func (k Keeper) SetAggregatedOracleData(ctx sdk.Context, height int64, oracleDat
 	key := types.GetAggregatedOracleDataKey(uint64(height), oracleData.Type(), oracleData.GetID())
 
 	ctx.KVStore(k.storeKey).Set(key, bz)
+}
+
+func (k Keeper) GetOracleDataHeight(ctx sdk.Context, id string) int64 {
+	store := ctx.KVStore(k.storeKey)
+	bz := store.Get(types.GetOracleDataHeightKey(id))
+	if len(bz) == 0 {
+		return 0
+	}
+
+	return int64(sdk.BigEndianToUint64(bz))
+}
+
+// SetOracleDataHeight sets latest aggregated oracle data height associated with a given data identifier
+func (k Keeper) SetOracleDataHeight(ctx sdk.Context, id string, height int64) {
+	store := ctx.KVStore(k.storeKey)
+	store.Set(types.GetOracleDataHeightKey(id), sdk.Uint64ToBigEndian(uint64(height)))
 }
 
 ////////////////

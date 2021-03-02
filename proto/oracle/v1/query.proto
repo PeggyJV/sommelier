@@ -139,4 +139,6 @@ message QueryAggregateDataRequest {
 message QueryAggregateDataResponse {
     // oracle data associated with the id and type from the request
     UniswapPair oracle_data = 1;
+    // height at which the aggregated oracle data was stored
+    int64 height = 2;
 }

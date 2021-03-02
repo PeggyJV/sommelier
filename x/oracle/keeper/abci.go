@@ -207,7 +207,8 @@ func (k Keeper) EndBlocker(ctx sdk.Context) {
 
 		// only store averages if there's enough voting power
 		if storeAverages {
-			k.SetAggregatedOracleData(ctx, ctx.BlockHeight(), aggregatedData) // TODO: why? should we also not give out rewards?
+			k.SetAggregatedOracleData(ctx, ctx.BlockHeight(), aggregatedData)
+			k.SetOracleDataHeight(ctx, aggregatedData.GetID(), ctx.BlockHeight())
 		}
 
 		// store the "average" for scoring validators later
