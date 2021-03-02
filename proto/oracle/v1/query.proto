@@ -6,6 +6,7 @@ import "google/api/annotations.proto";
 import "oracle/v1/genesis.proto";
 import "oracle/v1/oracle.proto";
 import "cosmos_proto/cosmos.proto";
+import "cosmos/base/query/v1beta1/pagination.proto";
 
 option go_package = "github.com/peggyjv/sommelier/x/oracle/types";
 
@@ -39,9 +40,13 @@ service Query {
     rpc QueryMissCounter(QueryMissCounterRequest) returns (QueryMissCounterResponse) {
         option (google.api.http).get = "/sommelier/oracle/v1/miss_counters/{validator}";
     }
-    // QueryAggregateData returns the aggregated data for a given pair an identifioer
+    // QueryAggregateData returns the latest aggregated data value for a given type and identifioer
     rpc QueryAggregateData(QueryAggregateDataRequest) returns (QueryAggregateDataResponse) {
-        option (google.api.http).get = "/sommelier/oracle/v1/aggregate_data/{type}/{id}";
+        option (google.api.http).get = "/sommelier/oracle/v1/aggregate_data/{id}/{type}";
+    }
+    // QueryLatestPeriodAggregateData returns the aggregated data for a given pair an identifioer
+    rpc QueryLatestPeriodAggregateData(QueryLatestPeriodAggregateDataRequest) returns (QueryLatestPeriodAggregateDataResponse) {
+        option (google.api.http).get = "/sommelier/oracle/v1/aggregate_data";
     }
 }
 
@@ -141,4 +146,20 @@ message QueryAggregateDataResponse {
     UniswapPair oracle_data = 1;
     // height at which the aggregated oracle data was stored
     int64 height = 2;
+}
+
+// QueryLatestPeriodAggregateDataRequest is the request type for the Query/QueryLatestPeriodAggregateData gRPC method.
+message QueryLatestPeriodAggregateDataRequest {
+    // pagination defines an optional pagination for the request.
+    cosmos.base.query.v1beta1.PageRequest pagination = 1;
+}
+
+// QueryLatestPeriodAggregateDataResponse is the response type for the Query/QueryLatestPeriodAggregateData gRPC method.
+message QueryLatestPeriodAggregateDataResponse {
+    // oracle data associated with the
+    repeated UniswapPair oracle_data = 1;
+    // height at which the aggregated oracle data was stored
+    int64 height = 2;
+    // pagination defines the pagination in the response.
+    cosmos.base.query.v1beta1.PageResponse pagination = 3;
 }

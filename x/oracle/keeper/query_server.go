@@ -2,12 +2,15 @@ package keeper
 
 import (
 	"context"
+	"fmt"
 	"strings"
 
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
+	"github.com/cosmos/cosmos-sdk/store/prefix"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/cosmos/cosmos-sdk/types/query"
 	"github.com/peggyjv/sommelier/x/oracle/types"
 )
 
@@ -143,6 +146,60 @@ func (k Keeper) QueryAggregateData(c context.Context, req *types.QueryAggregateD
 	return &types.QueryAggregateDataResponse{
 		OracleData: pair,
 		Height:     height,
+	}, nil
+}
+
+// QueryLatestPeriodAggregateData implements QueryServer
+func (k Keeper) QueryLatestPeriodAggregateData(c context.Context, req *types.QueryLatestPeriodAggregateDataRequest) (*types.QueryLatestPeriodAggregateDataResponse, error) {
+	if req == nil {
+		return nil, status.Error(codes.InvalidArgument, "empty request")
+	}
+
+	ctx := sdk.UnwrapSDKContext(c)
+	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.AggregatedOracleDataKeyPrefix)
+
+	var (
+		pairs  = []*types.UniswapPair{}
+		height int64
+	)
+
+	// TODO: this should use reverse iterator
+	// Ref: https://github.com/cosmos/cosmos-sdk/issues/8754
+	pageRes, err := query.FilteredPaginate(store, req.Pagination, func(key, value []byte, accumulate bool) (bool, error) {
+		// check if
+		dataHeight := int64(sdk.BigEndianToUint64(key[1:9]))
+		if height == 0 {
+			height = dataHeight
+		} else if dataHeight != height {
+			// do not count the current value in the pagination response
+			return false, nil
+		}
+
+		var oracleData types.OracleData
+		if err := k.cdc.UnmarshalInterface(value, &oracleData); err != nil {
+			return false, err
+		}
+
+		pair, ok := oracleData.(*types.UniswapPair)
+		if !ok {
+			return false, fmt.Errorf("data type is not %s", types.UniswapDataType)
+		}
+
+		if accumulate {
+			pairs = append(pairs, pair)
+		}
+		// count the current value in the pagination response
+		return true, nil
+	})
+
+	if err != nil {
+		return nil, status.Error(codes.Internal, err.Error())
+	}
+
+	return &types.QueryLatestPeriodAggregateDataResponse{
+		OracleData: pairs,
+		Height:     height,
+		Pagination: pageRes,
 	}, nil
 }
 

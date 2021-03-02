@@ -291,6 +291,7 @@ func (k Keeper) GetAggregatedOracleData(ctx sdk.Context, height int64, dataType,
 	return oracleData
 }
 
+// GetLatestAggregatedOracleData returns the latest stored aggregated data
 func (k Keeper) GetLatestAggregatedOracleData(ctx sdk.Context, dataType, id string) (types.OracleData, int64) {
 	// get the latest stored height for the given id
 	height := k.GetOracleDataHeight(ctx, id)

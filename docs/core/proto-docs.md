@@ -32,6 +32,8 @@
     - [QueryAggregateDataResponse](#oracle.v1.QueryAggregateDataResponse)
     - [QueryDelegateAddressRequest](#oracle.v1.QueryDelegateAddressRequest)
     - [QueryDelegateAddressResponse](#oracle.v1.QueryDelegateAddressResponse)
+    - [QueryLatestPeriodAggregateDataRequest](#oracle.v1.QueryLatestPeriodAggregateDataRequest)
+    - [QueryLatestPeriodAggregateDataResponse](#oracle.v1.QueryLatestPeriodAggregateDataResponse)
     - [QueryMissCounterRequest](#oracle.v1.QueryMissCounterRequest)
     - [QueryMissCounterResponse](#oracle.v1.QueryMissCounterResponse)
     - [QueryOracleDataPrevoteRequest](#oracle.v1.QueryOracleDataPrevoteRequest)
@@ -418,6 +420,38 @@ QueryDelegateAddressResponse is the response type for the Query/QueryDelegateAdd
 
 
 
+<a name="oracle.v1.QueryLatestPeriodAggregateDataRequest"></a>
+
+### QueryLatestPeriodAggregateDataRequest
+QueryLatestPeriodAggregateDataRequest is the request type for the Query/QueryLatestPeriodAggregateData gRPC method.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `pagination` | [cosmos.base.query.v1beta1.PageRequest](#cosmos.base.query.v1beta1.PageRequest) |  | pagination defines an optional pagination for the request. |
+
+
+
+
+
+
+<a name="oracle.v1.QueryLatestPeriodAggregateDataResponse"></a>
+
+### QueryLatestPeriodAggregateDataResponse
+QueryLatestPeriodAggregateDataResponse is the response type for the Query/QueryLatestPeriodAggregateData gRPC method.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `oracle_data` | [UniswapPair](#oracle.v1.UniswapPair) | repeated | oracle data associated with the |
+| `height` | [int64](#int64) |  | height at which the aggregated oracle data was stored |
+| `pagination` | [cosmos.base.query.v1beta1.PageResponse](#cosmos.base.query.v1beta1.PageResponse) |  | pagination defines the pagination in the response. |
+
+
+
+
+
+
 <a name="oracle.v1.QueryMissCounterRequest"></a>
 
 ### QueryMissCounterRequest
@@ -610,7 +644,8 @@ Query defines the gRPC querier service for the oracle module.
 | `QueryOracleDataVote` | [QueryOracleDataVoteRequest](#oracle.v1.QueryOracleDataVoteRequest) | [QueryOracleDataVoteResponse](#oracle.v1.QueryOracleDataVoteResponse) | QueryOracleDataVote queries the validator vote in the current voting period | GET|/sommelier/oracle/v1/votes/{validator}|
 | `QueryVotePeriod` | [QueryVotePeriodRequest](#oracle.v1.QueryVotePeriodRequest) | [QueryVotePeriodResponse](#oracle.v1.QueryVotePeriodResponse) | QueryVotePeriod queries the heights for the current voting period (current, start and end) | GET|/sommelier/oracle/v1/vote_period|
 | `QueryMissCounter` | [QueryMissCounterRequest](#oracle.v1.QueryMissCounterRequest) | [QueryMissCounterResponse](#oracle.v1.QueryMissCounterResponse) | QueryMissCounter queries the missed number of oracle data feed periods | GET|/sommelier/oracle/v1/miss_counters/{validator}|
-| `QueryAggregateData` | [QueryAggregateDataRequest](#oracle.v1.QueryAggregateDataRequest) | [QueryAggregateDataResponse](#oracle.v1.QueryAggregateDataResponse) | QueryAggregateData returns the aggregated data for a given pair an identifioer | GET|/sommelier/oracle/v1/aggregate_data/{type}/{id}|
+| `QueryAggregateData` | [QueryAggregateDataRequest](#oracle.v1.QueryAggregateDataRequest) | [QueryAggregateDataResponse](#oracle.v1.QueryAggregateDataResponse) | QueryAggregateData returns the latest aggregated data value for a given type and identifioer | GET|/sommelier/oracle/v1/aggregate_data/{id}/{type}|
+| `QueryLatestPeriodAggregateData` | [QueryLatestPeriodAggregateDataRequest](#oracle.v1.QueryLatestPeriodAggregateDataRequest) | [QueryLatestPeriodAggregateDataResponse](#oracle.v1.QueryLatestPeriodAggregateDataResponse) | QueryLatestPeriodAggregateData returns the aggregated data for a given pair an identifioer | GET|/sommelier/oracle/v1/aggregate_data|
 
  <!-- end services -->
 
