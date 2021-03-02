@@ -53,5 +53,8 @@
     "typechain": "^4.0.1",
     "typescript": "^3.9.7",
     "axios": "0.21.1"
+  },
+  "dependencies": {
+    "@uniswap/v2-periphery": "^1.1.0-beta.0"
   }
 }
