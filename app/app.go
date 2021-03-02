@@ -392,6 +392,7 @@ func NewSommelierApp(
 	app.mm.SetOrderBeginBlockers(
 		upgradetypes.ModuleName, minttypes.ModuleName, distrtypes.ModuleName, slashingtypes.ModuleName,
 		evidencetypes.ModuleName, stakingtypes.ModuleName, ibchost.ModuleName,
+		oracletypes.ModuleName,
 	)
 
 	// NOTE: Impermanent loss module must always go after the oracle module to have the

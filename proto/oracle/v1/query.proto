@@ -68,7 +68,7 @@ message QueryDelegateAddressRequest {
 // QueryDelegateAddressResponse is the response type for the Query/QueryDelegateAddress gRPC method.
 message QueryDelegateAddressResponse {
     // delegate account address
-    string delegate = 1;
+    string delegate = 2;
 }
 
 // QueryValidatorAddressRequest is the request type for the Query/Params gRPC method.

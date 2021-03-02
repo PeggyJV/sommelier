@@ -2,6 +2,7 @@ syntax = "proto3";
 package oracle.v1;
 
 import "cosmos_proto/cosmos.proto";
+import "google/protobuf/any.proto";
 import "oracle/v1/oracle.proto";
 
 option go_package = "github.com/peggyjv/sommelier/x/oracle/types";
