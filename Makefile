@@ -96,8 +96,6 @@ build-contract-tests-hooks:
 install: go.sum
 	go install -mod=readonly ./cmd/sommelier
 	go install -mod=readonly ./cmd/oracle-feeder
-	# go install -mod=readonly $(BUILD_FLAGS) ./cmd/sommelier
-	# go install -mod=readonly $(BUILD_FLAGS) ./cmd/oracle-feeder
 
 go-mod-cache: go.sum
 	@echo "--> Download go modules to local cache"
