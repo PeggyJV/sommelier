@@ -191,6 +191,10 @@ func (k Keeper) OracleDataVote(c context.Context, msg *types.MsgOracleDataVote) 
 		// 	)
 		// }
 
+		if !k.HasOracleDataType(ctx, oracleData.GetID()) {
+			k.SetOracleDataType(ctx, oracleData.Type(), oracleData.GetID())
+		}
+
 		oracleEvents = append(
 			oracleEvents,
 			sdk.NewEvent(

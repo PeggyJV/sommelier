@@ -250,6 +250,12 @@ func (k Keeper) GetOracleDataType(ctx sdk.Context, id string) (string, bool) {
 	return string(bz), true
 }
 
+// HasOracleDataType checks the oracle data type associated with a given data identifier
+func (k Keeper) HasOracleDataType(ctx sdk.Context, id string) bool {
+	store := ctx.KVStore(k.storeKey)
+	return store.Has(types.GetOracleDataTypeKey(id))
+}
+
 // SetOracleDataType sets oracle data type associated with a given data identifier
 func (k Keeper) SetOracleDataType(ctx sdk.Context, dataType, id string) {
 	store := ctx.KVStore(k.storeKey)
@@ -285,6 +291,16 @@ func (k Keeper) GetAggregatedOracleData(ctx sdk.Context, height int64, dataType,
 	return oracleData
 }
 
+func (k Keeper) GetLatestAggregatedOracleDataById(ctx sdk.Context, maxCount int64, dataType, id string) types.OracleData {
+	for height := ctx.BlockHeight(); height > (ctx.BlockHeight() - maxCount); height-- {
+		if k.HasAggregatedOracleData(ctx, height, dataType, id) {
+			return k.GetAggregatedOracleData(ctx, height, dataType, id)
+		}
+	}
+
+	return nil
+}
+
 // IterateAggregatedOracleData iterates over all aggregated data in the store
 func (k Keeper) IterateAggregatedOracleData(ctx sdk.Context, cb func(height int64, oracleData types.OracleData) (stop bool)) {
 	store := ctx.KVStore(k.storeKey)
@@ -293,13 +309,10 @@ func (k Keeper) IterateAggregatedOracleData(ctx sdk.Context, cb func(height int6
 
 	defer iter.Close()
 	for ; iter.Valid(); iter.Next() {
-
-		height := sdk.BigEndianToUint64(iter.Key()[1:9])
-
 		var oracleData types.OracleData
 
-		err := k.cdc.UnmarshalInterface(iter.Value(), &oracleData)
-		if err != nil {
+		height := sdk.BigEndianToUint64(iter.Key()[1:9])
+		if err := k.cdc.UnmarshalInterface(iter.Value(), &oracleData); err != nil {
 			panic(err)
 		}
 
@@ -328,6 +341,12 @@ func (k Keeper) GetAllAggregatedData(ctx sdk.Context) []types.AggregatedOracleDa
 	})
 
 	return aggregates
+}
+
+// HasAggregatedOracleData sets the aggregated oracle data in the store by height, type and id
+func (k Keeper) HasAggregatedOracleData(ctx sdk.Context, height int64, dataType, id string) bool {
+	key := types.GetAggregatedOracleDataKey(uint64(height), dataType, id)
+	return ctx.KVStore(k.storeKey).Has(key)
 }
 
 // SetAggregatedOracleData sets the aggregated oracle data in the store by height, type and id

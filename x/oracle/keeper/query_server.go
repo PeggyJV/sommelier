@@ -132,7 +132,10 @@ func (k Keeper) QueryAggregateData(c context.Context, req *types.QueryAggregateD
 
 	oracleData := k.GetAggregatedOracleData(ctx, int64(ctx.BlockHeight()), req.Type, req.Id)
 	if oracleData == nil {
-		return nil, status.Errorf(codes.NotFound, "data type %s", req.Type)
+		oracleData = k.GetLatestAggregatedOracleDataById(ctx, 100, req.Type, req.Id)
+		if oracleData == nil {
+			return nil, status.Errorf(codes.NotFound, "aggregated oracle data with id %s", req.Id)
+		}
 	}
 
 	pair, ok := oracleData.(*types.UniswapPair)
