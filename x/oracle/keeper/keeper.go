@@ -288,7 +288,8 @@ func (k Keeper) GetAggregatedOracleData(ctx sdk.Context, height int64, dataType,
 // IterateAggregatedOracleData iterates over all aggregated data in the store
 func (k Keeper) IterateAggregatedOracleData(ctx sdk.Context, cb func(height int64, oracleData types.OracleData) (stop bool)) {
 	store := ctx.KVStore(k.storeKey)
-	iter := sdk.KVStorePrefixIterator(store, types.AggregatedOracleDataKeyPrefix)
+	// NOTE: we use reverse prefix iterator to iterate from latest to earliest height
+	iter := sdk.KVStoreReversePrefixIterator(store, types.AggregatedOracleDataKeyPrefix)
 
 	defer iter.Close()
 	for ; iter.Valid(); iter.Next() {

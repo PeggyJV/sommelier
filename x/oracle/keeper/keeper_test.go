@@ -83,12 +83,21 @@ func TestKeeperTestSuite(t *testing.T) {
 }
 
 func (suite *KeeperTestSuite) TestAggregateData() {
-
-	for _, pair := range suite.pairs {
-		suite.app.OracleKeeper.SetAggregatedOracleData(suite.ctx, 10, pair)
+	for i, pair := range suite.pairs {
+		suite.app.OracleKeeper.SetAggregatedOracleData(suite.ctx, 10-int64(i), pair)
 	}
 
 	oracleData := suite.app.OracleKeeper.GetAggregatedOracleData(suite.ctx, 10, types.UniswapDataType, suite.pairs[0].GetID())
 	suite.Require().NotNil(oracleData)
 	suite.Require().Equal(suite.pairs[0], oracleData)
+
+	oracleData = suite.app.OracleKeeper.GetAggregatedOracleData(suite.ctx, 9, types.UniswapDataType, suite.pairs[1].GetID())
+	suite.Require().NotNil(oracleData)
+	suite.Require().Equal(suite.pairs[1], oracleData)
+
+	data := suite.app.OracleKeeper.GetAllAggregatedData(suite.ctx)
+	for i := range data {
+		suite.Require().Equal(10-int64(i), data[i].Height)
+		suite.Require().Equal(suite.pairs[i], data[i].Data)
+	}
 }
