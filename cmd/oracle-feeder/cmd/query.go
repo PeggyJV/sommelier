@@ -300,9 +300,8 @@ func queryVotePeriod() *cobra.Command {
 }
 
 // GetVotePeriod helper
-func GetVotePeriod(ctx client.Context) (*oracletypes.VotePeriod, error) {
+func GetVotePeriod(ctx client.Context) (*oracletypes.QueryVotePeriodResponse, error) {
 	queryClient := oracletypes.NewQueryClient(ctx)
-
 	return queryClient.QueryVotePeriod(context.Background(), &oracletypes.QueryVotePeriodRequest{})
 }
 

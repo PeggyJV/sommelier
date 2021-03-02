@@ -43,7 +43,7 @@
     - [QueryValidatorAddressRequest](#oracle.v1.QueryValidatorAddressRequest)
     - [QueryValidatorAddressResponse](#oracle.v1.QueryValidatorAddressResponse)
     - [QueryVotePeriodRequest](#oracle.v1.QueryVotePeriodRequest)
-    - [VotePeriod](#oracle.v1.VotePeriod)
+    - [QueryVotePeriodResponse](#oracle.v1.QueryVotePeriodResponse)
   
     - [Query](#oracle.v1.Query)
   
@@ -359,7 +359,7 @@ Params oracle parameters
 <a name="oracle.v1.QueryAggregateDataRequest"></a>
 
 ### QueryAggregateDataRequest
-
+QueryAggregateDataRequest is the request type for the Query/AggregateData RPC method.
 
 
 | Field | Type | Label | Description |
@@ -390,7 +390,7 @@ Params oracle parameters
 <a name="oracle.v1.QueryDelegateAddressRequest"></a>
 
 ### QueryDelegateAddressRequest
-
+QueryParamsRequest is the request type for the Query/Params RPC method.
 
 
 | Field | Type | Label | Description |
@@ -420,7 +420,7 @@ Params oracle parameters
 <a name="oracle.v1.QueryMissCounterRequest"></a>
 
 ### QueryMissCounterRequest
-
+QueryMissCounterRequest is the request type for the Query/MissCounter RPC method.
 
 
 | Field | Type | Label | Description |
@@ -450,7 +450,7 @@ Params oracle parameters
 <a name="oracle.v1.QueryOracleDataPrevoteRequest"></a>
 
 ### QueryOracleDataPrevoteRequest
-
+QueryParamsRequest is the request type for the Query/Params RPC method.
 
 
 | Field | Type | Label | Description |
@@ -480,7 +480,7 @@ Params oracle parameters
 <a name="oracle.v1.QueryOracleDataVoteRequest"></a>
 
 ### QueryOracleDataVoteRequest
-
+QueryOracleDataVoteRequest is the request type for the Query/Odra RPC method.
 
 
 | Field | Type | Label | Description |
@@ -510,7 +510,7 @@ Params oracle parameters
 <a name="oracle.v1.QueryParamsRequest"></a>
 
 ### QueryParamsRequest
-
+QueryParamsRequest is the request type for the Query/Params RPC method.
 
 
 
@@ -535,7 +535,7 @@ Params oracle parameters
 <a name="oracle.v1.QueryValidatorAddressRequest"></a>
 
 ### QueryValidatorAddressRequest
-
+QueryParamsRequest is the request type for the Query/Params RPC method.
 
 
 | Field | Type | Label | Description |
@@ -565,16 +565,16 @@ Params oracle parameters
 <a name="oracle.v1.QueryVotePeriodRequest"></a>
 
 ### QueryVotePeriodRequest
+QueryVotePeriodRequest is the request type for the Query/VotePeriod RPC method.
 
 
 
 
 
 
+<a name="oracle.v1.QueryVotePeriodResponse"></a>
 
-<a name="oracle.v1.VotePeriod"></a>
-
-### VotePeriod
+### QueryVotePeriodResponse
 
 
 
@@ -598,18 +598,18 @@ Params oracle parameters
 <a name="oracle.v1.Query"></a>
 
 ### Query
-
+Query defines the gRPC querier service for the oracle module.
 
 | Method Name | Request Type | Response Type | Description | HTTP Verb | Endpoint |
 | ----------- | ------------ | ------------- | ------------| ------- | -------- |
-| `QueryParams` | [QueryParamsRequest](#oracle.v1.QueryParamsRequest) | [QueryParamsResponse](#oracle.v1.QueryParamsResponse) |  | |
-| `QueryDelegateAddress` | [QueryDelegateAddressRequest](#oracle.v1.QueryDelegateAddressRequest) | [QueryDelegateAddressResponse](#oracle.v1.QueryDelegateAddressResponse) |  | |
-| `QueryValidatorAddress` | [QueryValidatorAddressRequest](#oracle.v1.QueryValidatorAddressRequest) | [QueryValidatorAddressResponse](#oracle.v1.QueryValidatorAddressResponse) |  | |
-| `QueryOracleDataPrevote` | [QueryOracleDataPrevoteRequest](#oracle.v1.QueryOracleDataPrevoteRequest) | [QueryOracleDataPrevoteResponse](#oracle.v1.QueryOracleDataPrevoteResponse) |  | |
-| `QueryOracleDataVote` | [QueryOracleDataVoteRequest](#oracle.v1.QueryOracleDataVoteRequest) | [QueryOracleDataVoteResponse](#oracle.v1.QueryOracleDataVoteResponse) |  | |
-| `QueryVotePeriod` | [QueryVotePeriodRequest](#oracle.v1.QueryVotePeriodRequest) | [VotePeriod](#oracle.v1.VotePeriod) |  | |
-| `QueryMissCounter` | [QueryMissCounterRequest](#oracle.v1.QueryMissCounterRequest) | [QueryMissCounterResponse](#oracle.v1.QueryMissCounterResponse) |  | |
-| `QueryAggregateData` | [QueryAggregateDataRequest](#oracle.v1.QueryAggregateDataRequest) | [QueryAggregateDataResponse](#oracle.v1.QueryAggregateDataResponse) |  | |
+| `QueryParams` | [QueryParamsRequest](#oracle.v1.QueryParamsRequest) | [QueryParamsResponse](#oracle.v1.QueryParamsResponse) | Params queries the oracle module parameters. | GET|/sommelier/oracle/v1/params|
+| `QueryDelegateAddress` | [QueryDelegateAddressRequest](#oracle.v1.QueryDelegateAddressRequest) | [QueryDelegateAddressResponse](#oracle.v1.QueryDelegateAddressResponse) | QueryDelegateAddress queries the delegate account address of a validator | GET|/sommelier/oracle/v1/delegates/{validator}|
+| `QueryValidatorAddress` | [QueryValidatorAddressRequest](#oracle.v1.QueryValidatorAddressRequest) | [QueryValidatorAddressResponse](#oracle.v1.QueryValidatorAddressResponse) | QueryValidatorAddress returns the validator address of a given delegate | GET|/sommelier/oracle/v1/validators/{delegate}|
+| `QueryOracleDataPrevote` | [QueryOracleDataPrevoteRequest](#oracle.v1.QueryOracleDataPrevoteRequest) | [QueryOracleDataPrevoteResponse](#oracle.v1.QueryOracleDataPrevoteResponse) | QueryOracleDataPrevote queries the validator prevote in the current voting period | GET|/sommelier/oracle/v1/prevotes/{validator}|
+| `QueryOracleDataVote` | [QueryOracleDataVoteRequest](#oracle.v1.QueryOracleDataVoteRequest) | [QueryOracleDataVoteResponse](#oracle.v1.QueryOracleDataVoteResponse) | QueryOracleDataVote queries the validator vote in the current voting period | GET|/sommelier/oracle/v1/votes/{validator}|
+| `QueryVotePeriod` | [QueryVotePeriodRequest](#oracle.v1.QueryVotePeriodRequest) | [QueryVotePeriodResponse](#oracle.v1.QueryVotePeriodResponse) | QueryVotePeriod queries the heights for the current voting period (current, start and end) | GET|/sommelier/oracle/v1/vote_period|
+| `QueryMissCounter` | [QueryMissCounterRequest](#oracle.v1.QueryMissCounterRequest) | [QueryMissCounterResponse](#oracle.v1.QueryMissCounterResponse) | QueryMissCounter queries the missed number of oracle data feed periods | GET|/sommelier/oracle/v1/miss_counters/{validator}|
+| `QueryAggregateData` | [QueryAggregateDataRequest](#oracle.v1.QueryAggregateDataRequest) | [QueryAggregateDataResponse](#oracle.v1.QueryAggregateDataResponse) | QueryAggregateData returns the aggregated data for a given pair an identifioer | GET|/sommelier/oracle/v1/aggregate_data/{type}/{id}|
 
  <!-- end services -->
 

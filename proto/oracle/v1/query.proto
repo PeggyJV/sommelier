@@ -2,50 +2,58 @@ syntax = "proto3";
 package oracle.v1;
 
 import "gogoproto/gogo.proto";
-import "google/protobuf/any.proto";
+import "google/api/annotations.proto";
 import "oracle/v1/genesis.proto";
 import "oracle/v1/oracle.proto";
 import "cosmos_proto/cosmos.proto";
 
 option go_package = "github.com/peggyjv/sommelier/x/oracle/types";
 
+// Query defines the gRPC querier service for the oracle module.
 service Query {
-    rpc QueryParams(QueryParamsRequest) returns (QueryParamsResponse) {}
-    rpc QueryDelegateAddress(QueryDelegateAddressRequest) returns (QueryDelegateAddressResponse) {}
-    rpc QueryValidatorAddress(QueryValidatorAddressRequest) returns (QueryValidatorAddressResponse) {}
-    rpc QueryOracleDataPrevote(QueryOracleDataPrevoteRequest) returns (QueryOracleDataPrevoteResponse) {}
-    rpc QueryOracleDataVote(QueryOracleDataVoteRequest) returns (QueryOracleDataVoteResponse) {}
-    rpc QueryVotePeriod(QueryVotePeriodRequest) returns (VotePeriod) {}
-    rpc QueryMissCounter(QueryMissCounterRequest) returns (QueryMissCounterResponse) {}
-    rpc QueryAggregateData(QueryAggregateDataRequest) returns (QueryAggregateDataResponse) {}
+      // Params queries the oracle module parameters.
+    rpc QueryParams(QueryParamsRequest) returns (QueryParamsResponse) {
+        option (google.api.http).get = "/sommelier/oracle/v1/params";
+    }
+    // QueryDelegateAddress queries the delegate account address of a validator
+    rpc QueryDelegateAddress(QueryDelegateAddressRequest) returns (QueryDelegateAddressResponse) {
+        option (google.api.http).get = "/sommelier/oracle/v1/delegates/{validator}";
+    }
+    // QueryValidatorAddress returns the validator address of a given delegate
+    rpc QueryValidatorAddress(QueryValidatorAddressRequest) returns (QueryValidatorAddressResponse) {
+        option (google.api.http).get = "/sommelier/oracle/v1/validators/{delegate}";
+    }
+    // QueryOracleDataPrevote queries the validator prevote in the current voting period
+    rpc QueryOracleDataPrevote(QueryOracleDataPrevoteRequest) returns (QueryOracleDataPrevoteResponse) {
+        option (google.api.http).get = "/sommelier/oracle/v1/prevotes/{validator}";
+    }
+    // QueryOracleDataVote queries the validator vote in the current voting period 
+    rpc QueryOracleDataVote(QueryOracleDataVoteRequest) returns (QueryOracleDataVoteResponse) {
+        option (google.api.http).get = "/sommelier/oracle/v1/votes/{validator}";
+    }
+    // QueryVotePeriod queries the heights for the current voting period (current, start and end)
+    rpc QueryVotePeriod(QueryVotePeriodRequest) returns (QueryVotePeriodResponse) {
+        option (google.api.http).get = "/sommelier/oracle/v1/vote_period";
+    }
+     // QueryMissCounter queries the missed number of oracle data feed periods
+    rpc QueryMissCounter(QueryMissCounterRequest) returns (QueryMissCounterResponse) {
+        option (google.api.http).get = "/sommelier/oracle/v1/miss_counters/{validator}";
+    }
+    // QueryAggregateData returns the aggregated data for a given pair an identifioer
+    rpc QueryAggregateData(QueryAggregateDataRequest) returns (QueryAggregateDataResponse) {
+        option (google.api.http).get = "/sommelier/oracle/v1/aggregate_data/{type}/{id}";
+    }
 }
 
-message QueryValidatorAddressRequest {
-    string delegate = 1;
-}
-message QueryValidatorAddressResponse {
-    string validator = 1;
-}
-
+// QueryParamsRequest is the request type for the Query/Params RPC method.
 message QueryParamsRequest {}
+
+
 message QueryParamsResponse {
     Params params = 1 [(gogoproto.nullable) = false];
 }
 
-message QueryVotePeriodRequest {}
-message VotePeriod {
-    int64 current_height    = 1;
-    int64 vote_period_start = 2;
-    int64 vote_period_end   = 3; 
-}
-
-message QueryMissCounterRequest {
-    string validator = 1;
-}
-message QueryMissCounterResponse {
-    int64 miss_counter = 1;
-}
-
+// QueryParamsRequest is the request type for the Query/Params RPC method.
 message QueryDelegateAddressRequest {
     string validator = 1;
 }
@@ -53,6 +61,15 @@ message QueryDelegateAddressResponse {
     string delegate = 2;
 }
 
+// QueryParamsRequest is the request type for the Query/Params RPC method.
+message QueryValidatorAddressRequest {
+    string delegate = 1;
+}
+message QueryValidatorAddressResponse {
+    string validator = 1;
+}
+
+// QueryParamsRequest is the request type for the Query/Params RPC method.
 message QueryOracleDataPrevoteRequest {
     string validator = 1; 
 }
@@ -60,6 +77,7 @@ message QueryOracleDataPrevoteResponse {
     OraclePrevote prevote = 1;
 }
 
+// QueryOracleDataVoteRequest is the request type for the Query/Odra RPC method.
 message QueryOracleDataVoteRequest {
     string validator = 1;
 }
@@ -68,6 +86,24 @@ message QueryOracleDataVoteResponse {
     OracleVote vote = 1;
 }
 
+// QueryVotePeriodRequest is the request type for the Query/VotePeriod RPC method.
+message QueryVotePeriodRequest {}
+
+message QueryVotePeriodResponse {
+    int64 current_height    = 1;
+    int64 vote_period_start = 2;
+    int64 vote_period_end   = 3; 
+}
+
+// QueryMissCounterRequest is the request type for the Query/MissCounter RPC method.
+message QueryMissCounterRequest {
+    string validator = 1;
+}
+message QueryMissCounterResponse {
+    int64 miss_counter = 1;
+}
+
+// QueryAggregateDataRequest is the request type for the Query/AggregateData RPC method.
 message QueryAggregateDataRequest {
     string type = 1;
     string id = 2;

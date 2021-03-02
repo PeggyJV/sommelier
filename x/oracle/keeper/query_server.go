@@ -153,14 +153,14 @@ func (k Keeper) QueryParams(c context.Context, _ *types.QueryParamsRequest) (*ty
 }
 
 // QueryVotePeriod implements QueryServer
-func (k Keeper) QueryVotePeriod(c context.Context, _ *types.QueryVotePeriodRequest) (*types.VotePeriod, error) {
+func (k Keeper) QueryVotePeriod(c context.Context, _ *types.QueryVotePeriodRequest) (*types.QueryVotePeriodResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
 	votePeriodStart, found := k.GetVotePeriodStart(ctx)
 	if !found {
 		return nil, status.Error(codes.NotFound, "vote period start not set")
 	}
 
-	return &types.VotePeriod{
+	return &types.QueryVotePeriodResponse{
 		VotePeriodStart: votePeriodStart,
 		VotePeriodEnd:   votePeriodStart + k.GetParamSet(ctx).VotePeriod,
 		CurrentHeight:   ctx.BlockHeight(),
