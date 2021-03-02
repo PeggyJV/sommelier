@@ -23,6 +23,11 @@
     - [Query](#il.v1.Query)
   
 - [il/v1/tx.proto](#il/v1/tx.proto)
+<<<<<<< HEAD
+=======
+    - [MsgDeleteStoploss](#il.v1.MsgDeleteStoploss)
+    - [MsgDeleteStoplossResponse](#il.v1.MsgDeleteStoplossResponse)
+>>>>>>> a9d7bde0a78f9d142aef6b41f78e4a2099d7e8a9
     - [MsgStoploss](#il.v1.MsgStoploss)
     - [MsgStoplossResponse](#il.v1.MsgStoplossResponse)
   
@@ -78,6 +83,301 @@
 
 
 <a name="il/v1/il.proto"></a>
+<<<<<<< HEAD
+=======
+<p align="right"><a href="#top">Top</a></p>
+
+## il/v1/il.proto
+
+
+
+<a name="il.v1.Params"></a>
+
+### Params
+Params define the impermanent loss module parameters
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `contract_address` | [string](#string) |  | contract address for impermanent loss handling on ethereum |
+
+
+
+
+
+
+<a name="il.v1.Stoploss"></a>
+
+### Stoploss
+Stoploss defines a set of parameters that together trigger a stoploss withdrawal.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `uniswap_pair_id` | [string](#string) |  | uniswap pair hex address |
+| `liquidity_pool_shares` | [int64](#int64) |  | amount of shares from the liquidity pool to redeem if current slippage > max slipage |
+| `max_slippage` | [string](#string) |  | max slippage allowed before the stoploss is triggered |
+| `reference_pair_ratio` | [string](#string) |  | starting token pair ratio of the uniswap pool |
+
+
+
+
+
+ <!-- end messages -->
+
+ <!-- end enums -->
+
+ <!-- end HasExtensions -->
+
+ <!-- end services -->
+
+
+
+<a name="il/v1/genesis.proto"></a>
+<p align="right"><a href="#top">Top</a></p>
+
+## il/v1/genesis.proto
+
+
+
+<a name="il.v1.GenesisState"></a>
+
+### GenesisState
+GenesisState all impermanent loss state that must be provided at genesis.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `params` | [Params](#il.v1.Params) |  |  |
+| `lps_stoploss_positions` | [StoplossPositions](#il.v1.StoplossPositions) | repeated |  |
+
+
+
+
+
+
+<a name="il.v1.StoplossPositions"></a>
+
+### StoplossPositions
+StoplossPosition represents all the impermanent loss stop positions for a given LP address and uniswap pair.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `address` | [string](#string) |  | LP account address |
+| `stoploss_positions` | [Stoploss](#il.v1.Stoploss) | repeated | set of possitions owned by the address |
+
+
+
+
+
+ <!-- end messages -->
+
+ <!-- end enums -->
+
+ <!-- end HasExtensions -->
+
+ <!-- end services -->
+
+
+
+<a name="il/v1/query.proto"></a>
+<p align="right"><a href="#top">Top</a></p>
+
+## il/v1/query.proto
+
+
+
+<a name="il.v1.QueryParametersRequest"></a>
+
+### QueryParametersRequest
+QueryParametersRequest is an empty request to query for the impermanent loss params
+
+
+
+
+
+
+<a name="il.v1.QueryParametersResponse"></a>
+
+### QueryParametersResponse
+QueryParametersResponse
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `params` | [Params](#il.v1.Params) |  | impermanent loss parameters |
+
+
+
+
+
+
+<a name="il.v1.QueryStoplossPositionsRequest"></a>
+
+### QueryStoplossPositionsRequest
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `address` | [string](#string) |  | account address that owns the stoploss positions |
+| `pagination` | [cosmos.base.query.v1beta1.PageRequest](#cosmos.base.query.v1beta1.PageRequest) |  | pagination request |
+
+
+
+
+
+
+<a name="il.v1.QueryStoplossPositionsResponse"></a>
+
+### QueryStoplossPositionsResponse
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `stoploss_positions` | [Stoploss](#il.v1.Stoploss) | repeated | set of possitions owned by the given address |
+| `pagination` | [cosmos.base.query.v1beta1.PageResponse](#cosmos.base.query.v1beta1.PageResponse) |  | pagination response |
+
+
+
+
+
+
+<a name="il.v1.QueryStoplossRequest"></a>
+
+### QueryStoplossRequest
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `address` | [string](#string) |  | account address that owns the stoploss position |
+| `uniswap_pair` | [string](#string) |  | uniswap pair of the position |
+
+
+
+
+
+
+<a name="il.v1.QueryStoplossResponse"></a>
+
+### QueryStoplossResponse
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `stoploss` | [Stoploss](#il.v1.Stoploss) |  | stoploss position for the given address and pair. |
+
+
+
+
+
+ <!-- end messages -->
+
+ <!-- end enums -->
+
+ <!-- end HasExtensions -->
+
+
+<a name="il.v1.Query"></a>
+
+### Query
+Query defines a gRPC query service for the impermanent loss module.
+
+| Method Name | Request Type | Response Type | Description | HTTP Verb | Endpoint |
+| ----------- | ------------ | ------------- | ------------| ------- | -------- |
+| `Stoploss` | [QueryStoplossRequest](#il.v1.QueryStoplossRequest) | [QueryStoplossResponse](#il.v1.QueryStoplossResponse) |  | GET|/il/v1/stoploss_positions/{address}/{uniswap_pair}|
+| `StoplossPositions` | [QueryStoplossPositionsRequest](#il.v1.QueryStoplossPositionsRequest) | [QueryStoplossPositionsResponse](#il.v1.QueryStoplossPositionsResponse) |  | GET|/il/v1/stoploss_positions/{address}|
+| `Parameters` | [QueryParametersRequest](#il.v1.QueryParametersRequest) | [QueryParametersResponse](#il.v1.QueryParametersResponse) |  | GET|/il/v1/parameters|
+
+ <!-- end services -->
+
+
+
+<a name="il/v1/tx.proto"></a>
+<p align="right"><a href="#top">Top</a></p>
+
+## il/v1/tx.proto
+
+
+
+<a name="il.v1.MsgDeleteStoploss"></a>
+
+### MsgDeleteStoploss
+MsgDeleteStoploss removes a stoploss position
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `address` | [string](#string) |  |  |
+| `uniswap_pair_id` | [string](#string) |  |  |
+
+
+
+
+
+
+<a name="il.v1.MsgDeleteStoplossResponse"></a>
+
+### MsgDeleteStoplossResponse
+
+
+
+
+
+
+
+<a name="il.v1.MsgStoploss"></a>
+
+### MsgStoploss
+MsgStoploss defines a stoploss position
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `address` | [string](#string) |  |  |
+| `stoploss` | [Stoploss](#il.v1.Stoploss) |  |  |
+
+
+
+
+
+
+<a name="il.v1.MsgStoplossResponse"></a>
+
+### MsgStoplossResponse
+
+
+
+
+
+
+ <!-- end messages -->
+
+ <!-- end enums -->
+
+ <!-- end HasExtensions -->
+
+
+<a name="il.v1.Msg"></a>
+
+### Msg
+MsgService defines the msgs that the oracle module handles.
+
+| Method Name | Request Type | Response Type | Description | HTTP Verb | Endpoint |
+| ----------- | ------------ | ------------- | ------------| ------- | -------- |
+| `CreateStoploss` | [MsgStoploss](#il.v1.MsgStoploss) | [MsgStoplossResponse](#il.v1.MsgStoplossResponse) |  | |
+| `DeleteStoploss` | [MsgDeleteStoploss](#il.v1.MsgDeleteStoploss) | [MsgDeleteStoplossResponse](#il.v1.MsgDeleteStoplossResponse) |  | |
+
+ <!-- end services -->
+
+
+
+<a name="oracle/v1/oracle.proto"></a>
+>>>>>>> a9d7bde0a78f9d142aef6b41f78e4a2099d7e8a9
 <p align="right"><a href="#top">Top</a></p>
 
 ## il/v1/il.proto
@@ -330,10 +630,14 @@ AggregatedOracleData defines the aggregated oracle data at a given block height
 | ----- | ---- | ----- | ----------- |
 | `height` | [int64](#int64) |  | block height in which the data was committed |
 <<<<<<< HEAD
+<<<<<<< HEAD
 | `data` | [google.protobuf.Any](#google.protobuf.Any) |  | oracle data |
 =======
 | `data` | [UniswapPair](#oracle.v1.UniswapPair) |  | oracle data |
 >>>>>>> 342bdfa315a1edc62de4dd19258e5892d1f015de
+=======
+| `data` | [google.protobuf.Any](#google.protobuf.Any) |  | oracle data |
+>>>>>>> a9d7bde0a78f9d142aef6b41f78e4a2099d7e8a9
 
 
 

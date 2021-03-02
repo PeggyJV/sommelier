@@ -335,6 +335,7 @@ func NewSommelierApp(
 	app.ILKeeper = ilkeeper.NewKeeper(
 		appCodec, keys[iltypes.StoreKey], app.GetSubspace(iltypes.ModuleName), app.OracleKeeper, app.EthBridgeKeeper,
 	)
+
 	// Create static IBC router, add transfer route, then set and seal it
 	ibcRouter := porttypes.NewRouter()
 	ibcRouter.AddRoute(ibctransfertypes.ModuleName, transferModule)
@@ -380,7 +381,7 @@ func NewSommelierApp(
 		ibc.NewAppModule(app.IBCKeeper),
 		params.NewAppModule(app.ParamsKeeper),
 		transferModule,
-		oracle.NewAppModule(app.OracleKeeper, app.AccountKeeper, app.BankKeeper, appCodec),
+		oracle.NewAppModule(app.OracleKeeper, appCodec),
 		il.NewAppModule(app.ILKeeper, appCodec),
 	)
 

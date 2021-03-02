@@ -228,10 +228,14 @@ type AggregatedOracleData struct {
 	Height int64 `protobuf:"varint,1,opt,name=height,proto3" json:"height,omitempty"`
 	// oracle data
 <<<<<<< HEAD
+<<<<<<< HEAD
 	Data *types.Any `protobuf:"bytes,2,opt,name=data,proto3" json:"data,omitempty"`
 =======
 	Data *UniswapPair `protobuf:"bytes,2,opt,name=data,proto3" json:"data,omitempty"`
 >>>>>>> 342bdfa315a1edc62de4dd19258e5892d1f015de
+=======
+	Data *types.Any `protobuf:"bytes,2,opt,name=data,proto3" json:"data,omitempty"`
+>>>>>>> a9d7bde0a78f9d142aef6b41f78e4a2099d7e8a9
 }
 
 func (m *AggregatedOracleData) Reset()         { *m = AggregatedOracleData{} }
@@ -275,10 +279,14 @@ func (m *AggregatedOracleData) GetHeight() int64 {
 }
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 func (m *AggregatedOracleData) GetData() *types.Any {
 =======
 func (m *AggregatedOracleData) GetData() *UniswapPair {
 >>>>>>> 342bdfa315a1edc62de4dd19258e5892d1f015de
+=======
+func (m *AggregatedOracleData) GetData() *types.Any {
+>>>>>>> a9d7bde0a78f9d142aef6b41f78e4a2099d7e8a9
 	if m != nil {
 		return m.Data
 	}
@@ -296,6 +304,9 @@ func init() { proto.RegisterFile("oracle/v1/genesis.proto", fileDescriptor_14b98
 
 var fileDescriptor_14b982a0a6345d1d = []byte{
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> a9d7bde0a78f9d142aef6b41f78e4a2099d7e8a9
 	// 589 bytes of a gzipped FileDescriptorProto
 	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x9c, 0x94, 0xdf, 0x4e, 0xdb, 0x3e,
 	0x14, 0xc7, 0x5b, 0xd2, 0x5f, 0x7f, 0x8a, 0x03, 0x6c, 0x58, 0x15, 0xcb, 0xd0, 0x96, 0x96, 0x5e,
@@ -334,6 +345,7 @@ var fileDescriptor_14b982a0a6345d1d = []byte{
 	0x0f, 0x41, 0xeb, 0xf3, 0xcb, 0x46, 0x43, 0x26, 0x40, 0xe9, 0xec, 0xcb, 0x34, 0x92, 0xbc, 0x2c,
 	0xa1, 0x60, 0x20, 0xa2, 0xeb, 0xc8, 0xfe, 0x31, 0x98, 0x63, 0x9f, 0x77, 0x0d, 0xfa, 0xf5, 0x9f,
 	0x00, 0x00, 0x00, 0xff, 0xff, 0xad, 0x3e, 0x87, 0x54, 0x53, 0x04, 0x00, 0x00,
+<<<<<<< HEAD
 =======
 	// 575 bytes of a gzipped FileDescriptorProto
 	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x9c, 0x93, 0xdf, 0x4e, 0xd4, 0x40,
@@ -373,6 +385,8 @@ var fileDescriptor_14b982a0a6345d1d = []byte{
 	0x28, 0x79, 0x51, 0x40, 0xce, 0x40, 0x84, 0x17, 0xee, 0xe5, 0xdb, 0xde, 0x9c, 0x74, 0xcd, 0x53,
 	0x7f, 0xfb, 0x27, 0x00, 0x00, 0xff, 0xff, 0x49, 0xf6, 0x61, 0x86, 0x52, 0x04, 0x00, 0x00,
 >>>>>>> 342bdfa315a1edc62de4dd19258e5892d1f015de
+=======
+>>>>>>> a9d7bde0a78f9d142aef6b41f78e4a2099d7e8a9
 }
 
 func (m *GenesisState) Marshal() (dAtA []byte, err error) {
@@ -1344,10 +1358,14 @@ func (m *AggregatedOracleData) Unmarshal(dAtA []byte) error {
 			}
 			if m.Data == nil {
 <<<<<<< HEAD
+<<<<<<< HEAD
 				m.Data = &types.Any{}
 =======
 				m.Data = &UniswapPair{}
 >>>>>>> 342bdfa315a1edc62de4dd19258e5892d1f015de
+=======
+				m.Data = &types.Any{}
+>>>>>>> a9d7bde0a78f9d142aef6b41f78e4a2099d7e8a9
 			}
 			if err := m.Data.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
