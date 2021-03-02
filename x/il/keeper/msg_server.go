@@ -16,7 +16,7 @@ var _ types.MsgServer = Keeper{}
 // MsgServer is the server API for Msg service.
 
 // CreateStoploss for a given uniswap pair
-func (k Keeper) CreateStoploss(c context.Context, msg *types.MsgStoploss) (*types.MsgStoplossResponse, error) {
+func (k Keeper) CreateStoploss(c context.Context, msg *types.MsgCreateStoploss) (*types.MsgCreateStoplossResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
 
 	// NOTE: error checked during msg validation
@@ -56,7 +56,7 @@ func (k Keeper) CreateStoploss(c context.Context, msg *types.MsgStoploss) (*type
 		)
 	}()
 
-	return &types.MsgStoplossResponse{}, nil
+	return &types.MsgCreateStoplossResponse{}, nil
 }
 
 // DeleteStoploss for a given uniswap pair

@@ -9,38 +9,38 @@ import (
 
 // Ensure Msg interface compliance at compile time
 var (
-	_ sdk.Msg = &MsgStoploss{}
+	_ sdk.Msg = &MsgCreateStoploss{}
 	_ sdk.Msg = &MsgDeleteStoploss{}
 )
 
 //-------------------------------------------------
 //-------------------------------------------------
 
-// NewMsgStoploss creates a MsgStoploss instance
-func NewMsgStoploss(address sdk.Address, stoploss *Stoploss) *MsgStoploss {
+// NewMsgCreateStoploss creates a MsgCreateStoploss instance
+func NewMsgCreateStoploss(address sdk.Address, stoploss *Stoploss) *MsgCreateStoploss {
 	if address == nil {
 		return nil
 	}
 
-	return &MsgStoploss{
+	return &MsgCreateStoploss{
 		Address:  address.String(),
 		Stoploss: stoploss,
 	}
 }
 
 // Route implements sdk.Msg
-func (msg MsgStoploss) Route() string { return RouterKey }
+func (msg MsgCreateStoploss) Route() string { return RouterKey }
 
 // Type implements sdk.Msg
-func (msg MsgStoploss) Type() string { return "stoploss" }
+func (msg MsgCreateStoploss) Type() string { return "stoploss" }
 
 // GetSignBytes implements sdk.Msg
-func (msg MsgStoploss) GetSignBytes() []byte {
+func (msg MsgCreateStoploss) GetSignBytes() []byte {
 	panic("impermanent loss module messages do not support amino")
 }
 
 // GetSigners implements sdk.Msg
-func (msg MsgStoploss) GetSigners() []sdk.AccAddress {
+func (msg MsgCreateStoploss) GetSigners() []sdk.AccAddress {
 	addr, err := sdk.AccAddressFromBech32(msg.Address)
 	if err != nil {
 		return nil
@@ -49,7 +49,7 @@ func (msg MsgStoploss) GetSigners() []sdk.AccAddress {
 }
 
 // ValidateBasic implements sdk.Msg
-func (msg MsgStoploss) ValidateBasic() error {
+func (msg MsgCreateStoploss) ValidateBasic() error {
 	_, err := sdk.AccAddressFromBech32(msg.Address)
 	if err != nil {
 		return sdkerrors.Wrap(sdkerrors.ErrInvalidAddress, err.Error())

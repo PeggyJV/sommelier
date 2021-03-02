@@ -70,9 +70,9 @@ func (k Keeper) StoplossPositions(c context.Context, req *types.QueryStoplossPos
 	}, nil
 }
 
-// Parameters implements QueryServer.Parameters
-func (k Keeper) Parameters(c context.Context, _ *types.QueryParametersRequest) (*types.QueryParametersResponse, error) {
-	return &types.QueryParametersResponse{
+// Params implements QueryServer.Params
+func (k Keeper) Params(c context.Context, _ *types.QueryParamsRequest) (*types.QueryParamsResponse, error) {
+	return &types.QueryParamsResponse{
 		Params: k.GetParams(sdk.UnwrapSDKContext(c)),
 	}, nil
 }

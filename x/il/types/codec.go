@@ -9,7 +9,7 @@ import (
 // RegisterInterfaces registers the x/il interfaces types with the interface registry
 func RegisterInterfaces(registry types.InterfaceRegistry) {
 	registry.RegisterImplementations((*sdk.Msg)(nil),
-		&MsgStoploss{},
+		&MsgCreateStoploss{},
 		&MsgDeleteStoploss{},
 	)
 

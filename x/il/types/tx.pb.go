@@ -28,23 +28,25 @@ var _ = math.Inf
 const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
 // MsgStoploss defines a stoploss position
-type MsgStoploss struct {
-	Address  string    `protobuf:"bytes,1,opt,name=address,proto3" json:"address,omitempty"`
+type MsgCreateStoploss struct {
+	// account address that owns the stoploss position
+	Address string `protobuf:"bytes,1,opt,name=address,proto3" json:"address,omitempty"`
+	// stoploss position details
 	Stoploss *Stoploss `protobuf:"bytes,2,opt,name=stoploss,proto3" json:"stoploss,omitempty"`
 }
 
-func (m *MsgStoploss) Reset()         { *m = MsgStoploss{} }
-func (m *MsgStoploss) String() string { return proto.CompactTextString(m) }
-func (*MsgStoploss) ProtoMessage()    {}
-func (*MsgStoploss) Descriptor() ([]byte, []int) {
+func (m *MsgCreateStoploss) Reset()         { *m = MsgCreateStoploss{} }
+func (m *MsgCreateStoploss) String() string { return proto.CompactTextString(m) }
+func (*MsgCreateStoploss) ProtoMessage()    {}
+func (*MsgCreateStoploss) Descriptor() ([]byte, []int) {
 	return fileDescriptor_654cec8fc6a6f7e3, []int{0}
 }
-func (m *MsgStoploss) XXX_Unmarshal(b []byte) error {
+func (m *MsgCreateStoploss) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *MsgStoploss) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *MsgCreateStoploss) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_MsgStoploss.Marshal(b, m, deterministic)
+		return xxx_messageInfo_MsgCreateStoploss.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -54,47 +56,48 @@ func (m *MsgStoploss) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) 
 		return b[:n], nil
 	}
 }
-func (m *MsgStoploss) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MsgStoploss.Merge(m, src)
+func (m *MsgCreateStoploss) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgCreateStoploss.Merge(m, src)
 }
-func (m *MsgStoploss) XXX_Size() int {
+func (m *MsgCreateStoploss) XXX_Size() int {
 	return m.Size()
 }
-func (m *MsgStoploss) XXX_DiscardUnknown() {
-	xxx_messageInfo_MsgStoploss.DiscardUnknown(m)
+func (m *MsgCreateStoploss) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgCreateStoploss.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_MsgStoploss proto.InternalMessageInfo
+var xxx_messageInfo_MsgCreateStoploss proto.InternalMessageInfo
 
-func (m *MsgStoploss) GetAddress() string {
+func (m *MsgCreateStoploss) GetAddress() string {
 	if m != nil {
 		return m.Address
 	}
 	return ""
 }
 
-func (m *MsgStoploss) GetStoploss() *Stoploss {
+func (m *MsgCreateStoploss) GetStoploss() *Stoploss {
 	if m != nil {
 		return m.Stoploss
 	}
 	return nil
 }
 
-type MsgStoplossResponse struct {
+// MsgCreateStoplossResponse is the response type for the Msg/CreateStoploss gRPC method.
+type MsgCreateStoplossResponse struct {
 }
 
-func (m *MsgStoplossResponse) Reset()         { *m = MsgStoplossResponse{} }
-func (m *MsgStoplossResponse) String() string { return proto.CompactTextString(m) }
-func (*MsgStoplossResponse) ProtoMessage()    {}
-func (*MsgStoplossResponse) Descriptor() ([]byte, []int) {
+func (m *MsgCreateStoplossResponse) Reset()         { *m = MsgCreateStoplossResponse{} }
+func (m *MsgCreateStoplossResponse) String() string { return proto.CompactTextString(m) }
+func (*MsgCreateStoplossResponse) ProtoMessage()    {}
+func (*MsgCreateStoplossResponse) Descriptor() ([]byte, []int) {
 	return fileDescriptor_654cec8fc6a6f7e3, []int{1}
 }
-func (m *MsgStoplossResponse) XXX_Unmarshal(b []byte) error {
+func (m *MsgCreateStoplossResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *MsgStoplossResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *MsgCreateStoplossResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_MsgStoplossResponse.Marshal(b, m, deterministic)
+		return xxx_messageInfo_MsgCreateStoplossResponse.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -104,21 +107,23 @@ func (m *MsgStoplossResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte,
 		return b[:n], nil
 	}
 }
-func (m *MsgStoplossResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MsgStoplossResponse.Merge(m, src)
+func (m *MsgCreateStoplossResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgCreateStoplossResponse.Merge(m, src)
 }
-func (m *MsgStoplossResponse) XXX_Size() int {
+func (m *MsgCreateStoplossResponse) XXX_Size() int {
 	return m.Size()
 }
-func (m *MsgStoplossResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_MsgStoplossResponse.DiscardUnknown(m)
+func (m *MsgCreateStoplossResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgCreateStoplossResponse.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_MsgStoplossResponse proto.InternalMessageInfo
+var xxx_messageInfo_MsgCreateStoplossResponse proto.InternalMessageInfo
 
 // MsgDeleteStoploss removes a stoploss position
 type MsgDeleteStoploss struct {
-	Address       string `protobuf:"bytes,1,opt,name=address,proto3" json:"address,omitempty"`
+	// account address that owns the stoploss position
+	Address string `protobuf:"bytes,1,opt,name=address,proto3" json:"address,omitempty"`
+	// uniswap pair hex address
 	UniswapPairId string `protobuf:"bytes,2,opt,name=uniswap_pair_id,json=uniswapPairId,proto3" json:"uniswap_pair_id,omitempty"`
 }
 
@@ -169,6 +174,7 @@ func (m *MsgDeleteStoploss) GetUniswapPairId() string {
 	return ""
 }
 
+// MsgDeleteStoplossResponse is the response type for the Msg/DeleteStoploss gRPC method.
 type MsgDeleteStoplossResponse struct {
 }
 
@@ -206,8 +212,8 @@ func (m *MsgDeleteStoplossResponse) XXX_DiscardUnknown() {
 var xxx_messageInfo_MsgDeleteStoplossResponse proto.InternalMessageInfo
 
 func init() {
-	proto.RegisterType((*MsgStoploss)(nil), "il.v1.MsgStoploss")
-	proto.RegisterType((*MsgStoplossResponse)(nil), "il.v1.MsgStoplossResponse")
+	proto.RegisterType((*MsgCreateStoploss)(nil), "il.v1.MsgCreateStoploss")
+	proto.RegisterType((*MsgCreateStoplossResponse)(nil), "il.v1.MsgCreateStoplossResponse")
 	proto.RegisterType((*MsgDeleteStoploss)(nil), "il.v1.MsgDeleteStoploss")
 	proto.RegisterType((*MsgDeleteStoplossResponse)(nil), "il.v1.MsgDeleteStoplossResponse")
 }
@@ -215,26 +221,26 @@ func init() {
 func init() { proto.RegisterFile("il/v1/tx.proto", fileDescriptor_654cec8fc6a6f7e3) }
 
 var fileDescriptor_654cec8fc6a6f7e3 = []byte{
-	// 302 bytes of a gzipped FileDescriptorProto
+	// 294 bytes of a gzipped FileDescriptorProto
 	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xe2, 0xe2, 0xcb, 0xcc, 0xd1, 0x2f,
 	0x33, 0xd4, 0x2f, 0xa9, 0xd0, 0x2b, 0x28, 0xca, 0x2f, 0xc9, 0x17, 0x62, 0xcd, 0xcc, 0xd1, 0x2b,
-	0x33, 0x94, 0x82, 0x0a, 0x67, 0xe6, 0x40, 0x84, 0x95, 0x42, 0xb8, 0xb8, 0x7d, 0x8b, 0xd3, 0x83,
-	0x4b, 0xf2, 0x0b, 0x72, 0xf2, 0x8b, 0x8b, 0x85, 0x24, 0xb8, 0xd8, 0x13, 0x53, 0x52, 0x8a, 0x52,
-	0x8b, 0x8b, 0x25, 0x18, 0x15, 0x18, 0x35, 0x38, 0x83, 0x60, 0x5c, 0x21, 0x6d, 0x2e, 0x8e, 0x62,
-	0xa8, 0x2a, 0x09, 0x26, 0x05, 0x46, 0x0d, 0x6e, 0x23, 0x7e, 0x3d, 0xb0, 0x91, 0x7a, 0x30, 0xcd,
-	0x41, 0x70, 0x05, 0x4a, 0xa2, 0x5c, 0xc2, 0x48, 0xa6, 0x06, 0xa5, 0x16, 0x17, 0xe4, 0xe7, 0x15,
-	0xa7, 0x2a, 0x85, 0x72, 0x09, 0xfa, 0x16, 0xa7, 0xbb, 0xa4, 0xe6, 0xa4, 0x96, 0xa4, 0x12, 0x61,
-	0xa5, 0x1a, 0x17, 0x7f, 0x69, 0x5e, 0x66, 0x71, 0x79, 0x62, 0x41, 0x7c, 0x41, 0x62, 0x66, 0x51,
-	0x7c, 0x66, 0x0a, 0xd8, 0x66, 0xce, 0x20, 0x5e, 0xa8, 0x70, 0x40, 0x62, 0x66, 0x91, 0x67, 0x8a,
-	0x92, 0x34, 0x97, 0x24, 0x86, 0xb1, 0x30, 0x3b, 0x8d, 0xa6, 0x32, 0x72, 0x31, 0xfb, 0x16, 0xa7,
-	0x0b, 0x39, 0x70, 0xf1, 0x39, 0x17, 0xa5, 0x26, 0x22, 0x59, 0x2c, 0x04, 0x75, 0x3f, 0x92, 0x4b,
-	0xa5, 0xa4, 0x30, 0xc5, 0x60, 0x26, 0x09, 0xf9, 0x70, 0xf1, 0xa1, 0x3b, 0x1d, 0xa1, 0x1a, 0x55,
-	0x46, 0x4a, 0x01, 0x97, 0x0c, 0xcc, 0x34, 0x27, 0xc7, 0x13, 0x8f, 0xe4, 0x18, 0x2f, 0x3c, 0x92,
-	0x63, 0x7c, 0xf0, 0x48, 0x8e, 0x71, 0xc2, 0x63, 0x39, 0x86, 0x0b, 0x8f, 0xe5, 0x18, 0x6e, 0x3c,
-	0x96, 0x63, 0x88, 0x52, 0x4f, 0xcf, 0x2c, 0xc9, 0x28, 0x4d, 0xd2, 0x4b, 0xce, 0xcf, 0xd5, 0x2f,
-	0x48, 0x4d, 0x4f, 0xaf, 0xcc, 0x2a, 0xd3, 0x2f, 0xce, 0xcf, 0xcd, 0x4d, 0xcd, 0xc9, 0x4c, 0x2d,
-	0xd2, 0xaf, 0xd0, 0xcf, 0xcc, 0xd1, 0x2f, 0xa9, 0x2c, 0x48, 0x2d, 0x4e, 0x62, 0x03, 0x47, 0xa1,
-	0x31, 0x20, 0x00, 0x00, 0xff, 0xff, 0x42, 0x71, 0xec, 0x9a, 0xeb, 0x01, 0x00, 0x00,
+	0x33, 0x94, 0x82, 0x0a, 0x67, 0xe6, 0x40, 0x84, 0x95, 0xa2, 0xb8, 0x04, 0x7d, 0x8b, 0xd3, 0x9d,
+	0x8b, 0x52, 0x13, 0x4b, 0x52, 0x83, 0x4b, 0xf2, 0x0b, 0x72, 0xf2, 0x8b, 0x8b, 0x85, 0x24, 0xb8,
+	0xd8, 0x13, 0x53, 0x52, 0x8a, 0x52, 0x8b, 0x8b, 0x25, 0x18, 0x15, 0x18, 0x35, 0x38, 0x83, 0x60,
+	0x5c, 0x21, 0x6d, 0x2e, 0x8e, 0x62, 0xa8, 0x2a, 0x09, 0x26, 0x05, 0x46, 0x0d, 0x6e, 0x23, 0x7e,
+	0x3d, 0xb0, 0xc1, 0x7a, 0x30, 0xcd, 0x41, 0x70, 0x05, 0x4a, 0xd2, 0x5c, 0x92, 0x18, 0x66, 0x07,
+	0xa5, 0x16, 0x17, 0xe4, 0xe7, 0x15, 0xa7, 0x2a, 0x85, 0x82, 0x2d, 0x76, 0x49, 0xcd, 0x49, 0x25,
+	0xca, 0x62, 0x35, 0x2e, 0xfe, 0xd2, 0xbc, 0xcc, 0xe2, 0xf2, 0xc4, 0x82, 0xf8, 0x82, 0xc4, 0xcc,
+	0xa2, 0xf8, 0xcc, 0x14, 0xb0, 0xfd, 0x9c, 0x41, 0xbc, 0x50, 0xe1, 0x80, 0xc4, 0xcc, 0x22, 0xcf,
+	0x14, 0xa8, 0x9d, 0xa8, 0xc6, 0xc2, 0xec, 0x34, 0x5a, 0xc8, 0xc8, 0xc5, 0xec, 0x5b, 0x9c, 0x2e,
+	0xe4, 0xc3, 0xc5, 0x87, 0xee, 0x63, 0xa8, 0x2f, 0x30, 0xdc, 0x2b, 0xa5, 0x80, 0x4b, 0x06, 0x66,
+	0x2a, 0xc8, 0x34, 0x74, 0x6f, 0x20, 0xf4, 0xa0, 0xca, 0x20, 0x9b, 0x86, 0xdd, 0x8d, 0x4e, 0x8e,
+	0x27, 0x1e, 0xc9, 0x31, 0x5e, 0x78, 0x24, 0xc7, 0xf8, 0xe0, 0x91, 0x1c, 0xe3, 0x84, 0xc7, 0x72,
+	0x0c, 0x17, 0x1e, 0xcb, 0x31, 0xdc, 0x78, 0x2c, 0xc7, 0x10, 0xa5, 0x9e, 0x9e, 0x59, 0x92, 0x51,
+	0x9a, 0xa4, 0x97, 0x9c, 0x9f, 0xab, 0x5f, 0x90, 0x9a, 0x9e, 0x5e, 0x99, 0x55, 0xa6, 0x5f, 0x9c,
+	0x9f, 0x9b, 0x9b, 0x9a, 0x93, 0x99, 0x5a, 0xa4, 0x5f, 0xa1, 0x9f, 0x99, 0xa3, 0x5f, 0x52, 0x59,
+	0x90, 0x5a, 0x9c, 0xc4, 0x06, 0x8e, 0x5a, 0x63, 0x40, 0x00, 0x00, 0x00, 0xff, 0xff, 0xca, 0x5b,
+	0x88, 0x25, 0x03, 0x02, 0x00, 0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -249,7 +255,9 @@ const _ = grpc.SupportPackageIsVersion4
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
 type MsgClient interface {
-	CreateStoploss(ctx context.Context, in *MsgStoploss, opts ...grpc.CallOption) (*MsgStoplossResponse, error)
+	//CreateStoploss sets a new tracking stoploss position for a uniswap pair
+	CreateStoploss(ctx context.Context, in *MsgCreateStoploss, opts ...grpc.CallOption) (*MsgCreateStoplossResponse, error)
+	// DeleteStoploss deletes an existing stoploss position
 	DeleteStoploss(ctx context.Context, in *MsgDeleteStoploss, opts ...grpc.CallOption) (*MsgDeleteStoplossResponse, error)
 }
 
@@ -261,8 +269,8 @@ func NewMsgClient(cc grpc1.ClientConn) MsgClient {
 	return &msgClient{cc}
 }
 
-func (c *msgClient) CreateStoploss(ctx context.Context, in *MsgStoploss, opts ...grpc.CallOption) (*MsgStoplossResponse, error) {
-	out := new(MsgStoplossResponse)
+func (c *msgClient) CreateStoploss(ctx context.Context, in *MsgCreateStoploss, opts ...grpc.CallOption) (*MsgCreateStoplossResponse, error) {
+	out := new(MsgCreateStoplossResponse)
 	err := c.cc.Invoke(ctx, "/il.v1.Msg/CreateStoploss", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -281,7 +289,9 @@ func (c *msgClient) DeleteStoploss(ctx context.Context, in *MsgDeleteStoploss, o
 
 // MsgServer is the server API for Msg service.
 type MsgServer interface {
-	CreateStoploss(context.Context, *MsgStoploss) (*MsgStoplossResponse, error)
+	//CreateStoploss sets a new tracking stoploss position for a uniswap pair
+	CreateStoploss(context.Context, *MsgCreateStoploss) (*MsgCreateStoplossResponse, error)
+	// DeleteStoploss deletes an existing stoploss position
 	DeleteStoploss(context.Context, *MsgDeleteStoploss) (*MsgDeleteStoplossResponse, error)
 }
 
@@ -289,7 +299,7 @@ type MsgServer interface {
 type UnimplementedMsgServer struct {
 }
 
-func (*UnimplementedMsgServer) CreateStoploss(ctx context.Context, req *MsgStoploss) (*MsgStoplossResponse, error) {
+func (*UnimplementedMsgServer) CreateStoploss(ctx context.Context, req *MsgCreateStoploss) (*MsgCreateStoplossResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateStoploss not implemented")
 }
 func (*UnimplementedMsgServer) DeleteStoploss(ctx context.Context, req *MsgDeleteStoploss) (*MsgDeleteStoplossResponse, error) {
@@ -301,7 +311,7 @@ func RegisterMsgServer(s grpc1.Server, srv MsgServer) {
 }
 
 func _Msg_CreateStoploss_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(MsgStoploss)
+	in := new(MsgCreateStoploss)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -313,7 +323,7 @@ func _Msg_CreateStoploss_Handler(srv interface{}, ctx context.Context, dec func(
 		FullMethod: "/il.v1.Msg/CreateStoploss",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MsgServer).CreateStoploss(ctx, req.(*MsgStoploss))
+		return srv.(MsgServer).CreateStoploss(ctx, req.(*MsgCreateStoploss))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -353,7 +363,7 @@ var _Msg_serviceDesc = grpc.ServiceDesc{
 	Metadata: "il/v1/tx.proto",
 }
 
-func (m *MsgStoploss) Marshal() (dAtA []byte, err error) {
+func (m *MsgCreateStoploss) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -363,12 +373,12 @@ func (m *MsgStoploss) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *MsgStoploss) MarshalTo(dAtA []byte) (int, error) {
+func (m *MsgCreateStoploss) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *MsgStoploss) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *MsgCreateStoploss) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -395,7 +405,7 @@ func (m *MsgStoploss) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 
-func (m *MsgStoplossResponse) Marshal() (dAtA []byte, err error) {
+func (m *MsgCreateStoplossResponse) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -405,12 +415,12 @@ func (m *MsgStoplossResponse) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *MsgStoplossResponse) MarshalTo(dAtA []byte) (int, error) {
+func (m *MsgCreateStoplossResponse) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *MsgStoplossResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *MsgCreateStoplossResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -489,7 +499,7 @@ func encodeVarintTx(dAtA []byte, offset int, v uint64) int {
 	dAtA[offset] = uint8(v)
 	return base
 }
-func (m *MsgStoploss) Size() (n int) {
+func (m *MsgCreateStoploss) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -506,7 +516,7 @@ func (m *MsgStoploss) Size() (n int) {
 	return n
 }
 
-func (m *MsgStoplossResponse) Size() (n int) {
+func (m *MsgCreateStoplossResponse) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -547,7 +557,7 @@ func sovTx(x uint64) (n int) {
 func sozTx(x uint64) (n int) {
 	return sovTx(uint64((x << 1) ^ uint64((int64(x) >> 63))))
 }
-func (m *MsgStoploss) Unmarshal(dAtA []byte) error {
+func (m *MsgCreateStoploss) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -570,10 +580,10 @@ func (m *MsgStoploss) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: MsgStoploss: wiretype end group for non-group")
+			return fmt.Errorf("proto: MsgCreateStoploss: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: MsgStoploss: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: MsgCreateStoploss: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
@@ -668,7 +678,7 @@ func (m *MsgStoploss) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *MsgStoplossResponse) Unmarshal(dAtA []byte) error {
+func (m *MsgCreateStoplossResponse) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -691,10 +701,10 @@ func (m *MsgStoplossResponse) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: MsgStoplossResponse: wiretype end group for non-group")
+			return fmt.Errorf("proto: MsgCreateStoplossResponse: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: MsgStoplossResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: MsgCreateStoplossResponse: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		default:

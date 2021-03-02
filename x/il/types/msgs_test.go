@@ -8,7 +8,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestMsgStoplossValidate(t *testing.T) {
+func TestMsgCreateStoplossValidate(t *testing.T) {
 	_, _, addr1 := testdata.KeyTestPubAddr()
 
 	stoploss := &Stoploss{
@@ -24,23 +24,23 @@ func TestMsgStoplossValidate(t *testing.T) {
 		expPass bool
 	}{
 		{
-			"valid MsgStoploss",
-			NewMsgStoploss(addr1, stoploss),
+			"valid MsgCreateStoploss",
+			NewMsgCreateStoploss(addr1, stoploss),
 			true,
 		},
 		{
 			"invalid address",
-			NewMsgStoploss(sdk.AccAddress{}, stoploss),
+			NewMsgCreateStoploss(sdk.AccAddress{}, stoploss),
 			false,
 		},
 		{
 			"nil stoploss",
-			NewMsgStoploss(addr1, nil),
+			NewMsgCreateStoploss(addr1, nil),
 			false,
 		},
 		{
 			"invalid stoploss",
-			NewMsgStoploss(addr1, &Stoploss{}),
+			NewMsgCreateStoploss(addr1, &Stoploss{}),
 			false,
 		},
 	}

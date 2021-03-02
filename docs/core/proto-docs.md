@@ -13,8 +13,8 @@
     - [StoplossPositions](#il.v1.StoplossPositions)
   
 - [il/v1/query.proto](#il/v1/query.proto)
-    - [QueryParametersRequest](#il.v1.QueryParametersRequest)
-    - [QueryParametersResponse](#il.v1.QueryParametersResponse)
+    - [QueryParamsRequest](#il.v1.QueryParamsRequest)
+    - [QueryParamsResponse](#il.v1.QueryParamsResponse)
     - [QueryStoplossPositionsRequest](#il.v1.QueryStoplossPositionsRequest)
     - [QueryStoplossPositionsResponse](#il.v1.QueryStoplossPositionsResponse)
     - [QueryStoplossRequest](#il.v1.QueryStoplossRequest)
@@ -23,10 +23,10 @@
     - [Query](#il.v1.Query)
   
 - [il/v1/tx.proto](#il/v1/tx.proto)
+    - [MsgCreateStoploss](#il.v1.MsgCreateStoploss)
+    - [MsgCreateStoplossResponse](#il.v1.MsgCreateStoplossResponse)
     - [MsgDeleteStoploss](#il.v1.MsgDeleteStoploss)
     - [MsgDeleteStoplossResponse](#il.v1.MsgDeleteStoplossResponse)
-    - [MsgStoploss](#il.v1.MsgStoploss)
-    - [MsgStoplossResponse](#il.v1.MsgStoplossResponse)
   
     - [Msg](#il.v1.Msg)
   
@@ -183,20 +183,20 @@ StoplossPosition represents all the impermanent loss stop positions for a given 
 
 
 
-<a name="il.v1.QueryParametersRequest"></a>
+<a name="il.v1.QueryParamsRequest"></a>
 
-### QueryParametersRequest
-QueryParametersRequest is an empty request to query for the impermanent loss params
-
-
+### QueryParamsRequest
+QueryParamsRequest is the request type for the Query/Params gRPC method.
 
 
 
 
-<a name="il.v1.QueryParametersResponse"></a>
 
-### QueryParametersResponse
-QueryParametersResponse
+
+<a name="il.v1.QueryParamsResponse"></a>
+
+### QueryParamsResponse
+QueryParamsResponse is the response type for the Query/Params gRPC method.
 
 
 | Field | Type | Label | Description |
@@ -211,7 +211,7 @@ QueryParametersResponse
 <a name="il.v1.QueryStoplossPositionsRequest"></a>
 
 ### QueryStoplossPositionsRequest
-
+QueryStoplossPisitionsRequest is the request type for the Query/StoplossPositions gRPC method.
 
 
 | Field | Type | Label | Description |
@@ -227,7 +227,7 @@ QueryParametersResponse
 <a name="il.v1.QueryStoplossPositionsResponse"></a>
 
 ### QueryStoplossPositionsResponse
-
+QueryStoplossPositionsResponse is the response type for the Query/StoplossPositions gRPC method.
 
 
 | Field | Type | Label | Description |
@@ -243,7 +243,7 @@ QueryParametersResponse
 <a name="il.v1.QueryStoplossRequest"></a>
 
 ### QueryStoplossRequest
-
+QueryStoplossRequest is the request type for the Query/Stoploss gRPC method.
 
 
 | Field | Type | Label | Description |
@@ -259,7 +259,7 @@ QueryParametersResponse
 <a name="il.v1.QueryStoplossResponse"></a>
 
 ### QueryStoplossResponse
-
+QueryStoplossResponse is the response type for the Query/Stoploss gRPC method.
 
 
 | Field | Type | Label | Description |
@@ -284,9 +284,9 @@ Query defines a gRPC query service for the impermanent loss module.
 
 | Method Name | Request Type | Response Type | Description | HTTP Verb | Endpoint |
 | ----------- | ------------ | ------------- | ------------| ------- | -------- |
-| `Stoploss` | [QueryStoplossRequest](#il.v1.QueryStoplossRequest) | [QueryStoplossResponse](#il.v1.QueryStoplossResponse) |  | GET|/il/v1/stoploss_positions/{address}/{uniswap_pair}|
-| `StoplossPositions` | [QueryStoplossPositionsRequest](#il.v1.QueryStoplossPositionsRequest) | [QueryStoplossPositionsResponse](#il.v1.QueryStoplossPositionsResponse) |  | GET|/il/v1/stoploss_positions/{address}|
-| `Parameters` | [QueryParametersRequest](#il.v1.QueryParametersRequest) | [QueryParametersResponse](#il.v1.QueryParametersResponse) |  | GET|/il/v1/parameters|
+| `Stoploss` | [QueryStoplossRequest](#il.v1.QueryStoplossRequest) | [QueryStoplossResponse](#il.v1.QueryStoplossResponse) | Stoploss queries a stoploss position for a given pair and account address. | GET|/il/v1/stoploss_positions/{address}/{uniswap_pair}|
+| `StoplossPositions` | [QueryStoplossPositionsRequest](#il.v1.QueryStoplossPositionsRequest) | [QueryStoplossPositionsResponse](#il.v1.QueryStoplossPositionsResponse) | Stoploss returns all stoploss positions from an address. | GET|/il/v1/stoploss_positions/{address}|
+| `Params` | [QueryParamsRequest](#il.v1.QueryParamsRequest) | [QueryParamsResponse](#il.v1.QueryParamsResponse) | Params queries the IL module parameters. | GET|/il/v1/params|
 
  <!-- end services -->
 
@@ -299,6 +299,32 @@ Query defines a gRPC query service for the impermanent loss module.
 
 
 
+<a name="il.v1.MsgCreateStoploss"></a>
+
+### MsgCreateStoploss
+MsgStoploss defines a stoploss position
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `address` | [string](#string) |  | account address that owns the stoploss position |
+| `stoploss` | [Stoploss](#il.v1.Stoploss) |  | stoploss position details |
+
+
+
+
+
+
+<a name="il.v1.MsgCreateStoplossResponse"></a>
+
+### MsgCreateStoplossResponse
+MsgCreateStoplossResponse is the response type for the Msg/CreateStoploss gRPC method.
+
+
+
+
+
+
 <a name="il.v1.MsgDeleteStoploss"></a>
 
 ### MsgDeleteStoploss
@@ -307,8 +333,8 @@ MsgDeleteStoploss removes a stoploss position
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| `address` | [string](#string) |  |  |
-| `uniswap_pair_id` | [string](#string) |  |  |
+| `address` | [string](#string) |  | account address that owns the stoploss position |
+| `uniswap_pair_id` | [string](#string) |  | uniswap pair hex address |
 
 
 
@@ -318,33 +344,7 @@ MsgDeleteStoploss removes a stoploss position
 <a name="il.v1.MsgDeleteStoplossResponse"></a>
 
 ### MsgDeleteStoplossResponse
-
-
-
-
-
-
-
-<a name="il.v1.MsgStoploss"></a>
-
-### MsgStoploss
-MsgStoploss defines a stoploss position
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| `address` | [string](#string) |  |  |
-| `stoploss` | [Stoploss](#il.v1.Stoploss) |  |  |
-
-
-
-
-
-
-<a name="il.v1.MsgStoplossResponse"></a>
-
-### MsgStoplossResponse
-
+MsgDeleteStoplossResponse is the response type for the Msg/DeleteStoploss gRPC method.
 
 
 
@@ -360,12 +360,12 @@ MsgStoploss defines a stoploss position
 <a name="il.v1.Msg"></a>
 
 ### Msg
-MsgService defines the msgs that the oracle module handles.
+MsgService defines the msgs that the il module handles.
 
 | Method Name | Request Type | Response Type | Description | HTTP Verb | Endpoint |
 | ----------- | ------------ | ------------- | ------------| ------- | -------- |
-| `CreateStoploss` | [MsgStoploss](#il.v1.MsgStoploss) | [MsgStoplossResponse](#il.v1.MsgStoplossResponse) |  | |
-| `DeleteStoploss` | [MsgDeleteStoploss](#il.v1.MsgDeleteStoploss) | [MsgDeleteStoplossResponse](#il.v1.MsgDeleteStoplossResponse) |  | |
+| `CreateStoploss` | [MsgCreateStoploss](#il.v1.MsgCreateStoploss) | [MsgCreateStoplossResponse](#il.v1.MsgCreateStoplossResponse) | CreateStoploss sets a new tracking stoploss position for a uniswap pair | |
+| `DeleteStoploss` | [MsgDeleteStoploss](#il.v1.MsgDeleteStoploss) | [MsgDeleteStoplossResponse](#il.v1.MsgDeleteStoplossResponse) | DeleteStoploss deletes an existing stoploss position | |
 
  <!-- end services -->
 
@@ -955,7 +955,7 @@ Query defines the gRPC querier service for the oracle module.
 
 | Method Name | Request Type | Response Type | Description | HTTP Verb | Endpoint |
 | ----------- | ------------ | ------------- | ------------| ------- | -------- |
-| `QueryParams` | [QueryParamsRequest](#oracle.v1.QueryParamsRequest) | [QueryParamsResponse](#oracle.v1.QueryParamsResponse) | Params queries the oracle module parameters. | GET|/sommelier/oracle/v1/params|
+| `QueryParams` | [QueryParamsRequest](#oracle.v1.QueryParamsRequest) | [QueryParamsResponse](#oracle.v1.QueryParamsResponse) | QueryParams queries the oracle module parameters. | GET|/sommelier/oracle/v1/params|
 | `QueryDelegateAddress` | [QueryDelegateAddressRequest](#oracle.v1.QueryDelegateAddressRequest) | [QueryDelegateAddressResponse](#oracle.v1.QueryDelegateAddressResponse) | QueryDelegateAddress queries the delegate account address of a validator | GET|/sommelier/oracle/v1/delegates/{validator}|
 | `QueryValidatorAddress` | [QueryValidatorAddressRequest](#oracle.v1.QueryValidatorAddressRequest) | [QueryValidatorAddressResponse](#oracle.v1.QueryValidatorAddressResponse) | QueryValidatorAddress returns the validator address of a given delegate | GET|/sommelier/oracle/v1/validators/{delegate}|
 | `QueryOracleDataPrevote` | [QueryOracleDataPrevoteRequest](#oracle.v1.QueryOracleDataPrevoteRequest) | [QueryOracleDataPrevoteResponse](#oracle.v1.QueryOracleDataPrevoteResponse) | QueryOracleDataPrevote queries the validator prevote in the current voting period | GET|/sommelier/oracle/v1/prevotes/{validator}|

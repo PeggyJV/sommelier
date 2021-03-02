@@ -30,6 +30,7 @@ var _ = math.Inf
 // proto package needs to be updated.
 const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
+// QueryStoplossRequest is the request type for the Query/Stoploss gRPC method.
 type QueryStoplossRequest struct {
 	// account address that owns the stoploss position
 	Address string `protobuf:"bytes,1,opt,name=address,proto3" json:"address,omitempty"`
@@ -84,6 +85,7 @@ func (m *QueryStoplossRequest) GetUniswapPair() string {
 	return ""
 }
 
+// QueryStoplossResponse is the response type for the Query/Stoploss gRPC method.
 type QueryStoplossResponse struct {
 	// stoploss position for the given address and pair.
 	Stoploss Stoploss `protobuf:"bytes,1,opt,name=stoploss,proto3" json:"stoploss"`
@@ -129,6 +131,7 @@ func (m *QueryStoplossResponse) GetStoploss() Stoploss {
 	return Stoploss{}
 }
 
+// QueryStoplossPisitionsRequest is the request type for the Query/StoplossPositions gRPC method.
 type QueryStoplossPositionsRequest struct {
 	// account address that owns the stoploss positions
 	Address string `protobuf:"bytes,1,opt,name=address,proto3" json:"address,omitempty"`
@@ -183,6 +186,7 @@ func (m *QueryStoplossPositionsRequest) GetPagination() *query.PageRequest {
 	return nil
 }
 
+// QueryStoplossPositionsResponse is the response type for the Query/StoplossPositions gRPC method.
 type QueryStoplossPositionsResponse struct {
 	// set of possitions owned by the given address
 	StoplossPositions []Stoploss `protobuf:"bytes,1,rep,name=stoploss_positions,json=stoplossPositions,proto3" json:"stoploss_positions"`
@@ -237,22 +241,22 @@ func (m *QueryStoplossPositionsResponse) GetPagination() *query.PageResponse {
 	return nil
 }
 
-// QueryParametersRequest is an empty request to query for the impermanent loss params
-type QueryParametersRequest struct {
+// QueryParamsRequest is the request type for the Query/Params gRPC method.
+type QueryParamsRequest struct {
 }
 
-func (m *QueryParametersRequest) Reset()         { *m = QueryParametersRequest{} }
-func (m *QueryParametersRequest) String() string { return proto.CompactTextString(m) }
-func (*QueryParametersRequest) ProtoMessage()    {}
-func (*QueryParametersRequest) Descriptor() ([]byte, []int) {
+func (m *QueryParamsRequest) Reset()         { *m = QueryParamsRequest{} }
+func (m *QueryParamsRequest) String() string { return proto.CompactTextString(m) }
+func (*QueryParamsRequest) ProtoMessage()    {}
+func (*QueryParamsRequest) Descriptor() ([]byte, []int) {
 	return fileDescriptor_b5230b1e697a3491, []int{4}
 }
-func (m *QueryParametersRequest) XXX_Unmarshal(b []byte) error {
+func (m *QueryParamsRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *QueryParametersRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *QueryParamsRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_QueryParametersRequest.Marshal(b, m, deterministic)
+		return xxx_messageInfo_QueryParamsRequest.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -262,36 +266,36 @@ func (m *QueryParametersRequest) XXX_Marshal(b []byte, deterministic bool) ([]by
 		return b[:n], nil
 	}
 }
-func (m *QueryParametersRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_QueryParametersRequest.Merge(m, src)
+func (m *QueryParamsRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryParamsRequest.Merge(m, src)
 }
-func (m *QueryParametersRequest) XXX_Size() int {
+func (m *QueryParamsRequest) XXX_Size() int {
 	return m.Size()
 }
-func (m *QueryParametersRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_QueryParametersRequest.DiscardUnknown(m)
+func (m *QueryParamsRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryParamsRequest.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_QueryParametersRequest proto.InternalMessageInfo
+var xxx_messageInfo_QueryParamsRequest proto.InternalMessageInfo
 
-// QueryParametersResponse
-type QueryParametersResponse struct {
+// QueryParamsResponse is the response type for the Query/Params gRPC method.
+type QueryParamsResponse struct {
 	// impermanent loss parameters
 	Params Params `protobuf:"bytes,1,opt,name=params,proto3" json:"params"`
 }
 
-func (m *QueryParametersResponse) Reset()         { *m = QueryParametersResponse{} }
-func (m *QueryParametersResponse) String() string { return proto.CompactTextString(m) }
-func (*QueryParametersResponse) ProtoMessage()    {}
-func (*QueryParametersResponse) Descriptor() ([]byte, []int) {
+func (m *QueryParamsResponse) Reset()         { *m = QueryParamsResponse{} }
+func (m *QueryParamsResponse) String() string { return proto.CompactTextString(m) }
+func (*QueryParamsResponse) ProtoMessage()    {}
+func (*QueryParamsResponse) Descriptor() ([]byte, []int) {
 	return fileDescriptor_b5230b1e697a3491, []int{5}
 }
-func (m *QueryParametersResponse) XXX_Unmarshal(b []byte) error {
+func (m *QueryParamsResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *QueryParametersResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *QueryParamsResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_QueryParametersResponse.Marshal(b, m, deterministic)
+		return xxx_messageInfo_QueryParamsResponse.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -301,19 +305,19 @@ func (m *QueryParametersResponse) XXX_Marshal(b []byte, deterministic bool) ([]b
 		return b[:n], nil
 	}
 }
-func (m *QueryParametersResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_QueryParametersResponse.Merge(m, src)
+func (m *QueryParamsResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryParamsResponse.Merge(m, src)
 }
-func (m *QueryParametersResponse) XXX_Size() int {
+func (m *QueryParamsResponse) XXX_Size() int {
 	return m.Size()
 }
-func (m *QueryParametersResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_QueryParametersResponse.DiscardUnknown(m)
+func (m *QueryParamsResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryParamsResponse.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_QueryParametersResponse proto.InternalMessageInfo
+var xxx_messageInfo_QueryParamsResponse proto.InternalMessageInfo
 
-func (m *QueryParametersResponse) GetParams() Params {
+func (m *QueryParamsResponse) GetParams() Params {
 	if m != nil {
 		return m.Params
 	}
@@ -325,48 +329,48 @@ func init() {
 	proto.RegisterType((*QueryStoplossResponse)(nil), "il.v1.QueryStoplossResponse")
 	proto.RegisterType((*QueryStoplossPositionsRequest)(nil), "il.v1.QueryStoplossPositionsRequest")
 	proto.RegisterType((*QueryStoplossPositionsResponse)(nil), "il.v1.QueryStoplossPositionsResponse")
-	proto.RegisterType((*QueryParametersRequest)(nil), "il.v1.QueryParametersRequest")
-	proto.RegisterType((*QueryParametersResponse)(nil), "il.v1.QueryParametersResponse")
+	proto.RegisterType((*QueryParamsRequest)(nil), "il.v1.QueryParamsRequest")
+	proto.RegisterType((*QueryParamsResponse)(nil), "il.v1.QueryParamsResponse")
 }
 
 func init() { proto.RegisterFile("il/v1/query.proto", fileDescriptor_b5230b1e697a3491) }
 
 var fileDescriptor_b5230b1e697a3491 = []byte{
-	// 534 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x8c, 0x94, 0xcd, 0x6e, 0xd3, 0x40,
-	0x10, 0xc7, 0xb3, 0x2d, 0x2d, 0x65, 0xc2, 0x87, 0xb2, 0x14, 0x30, 0xa6, 0x35, 0xc5, 0x50, 0x8a,
-	0xa8, 0xe4, 0x95, 0x03, 0x27, 0x6e, 0x54, 0xa8, 0x48, 0x9c, 0x42, 0x7a, 0xe3, 0x52, 0x6d, 0xda,
-	0xc5, 0x2c, 0xb2, 0xbd, 0x5b, 0xaf, 0x13, 0x88, 0xaa, 0x1e, 0x0a, 0x67, 0x24, 0x24, 0x1e, 0x84,
-	0xd7, 0xe8, 0xb1, 0x12, 0x17, 0x4e, 0x08, 0x25, 0x3c, 0x08, 0xf2, 0xee, 0xba, 0xcd, 0xa7, 0xd2,
-	0x5b, 0x3c, 0xf3, 0xdf, 0x99, 0xdf, 0x7f, 0x66, 0x14, 0xa8, 0xf1, 0x98, 0x74, 0x42, 0x72, 0xd0,
-	0x66, 0x59, 0x37, 0x90, 0x99, 0xc8, 0x05, 0x5e, 0xe0, 0x71, 0xd0, 0x09, 0xdd, 0xe5, 0x48, 0x44,
-	0x42, 0x47, 0x48, 0xf1, 0xcb, 0x24, 0xdd, 0xeb, 0x46, 0xcf, 0x63, 0xfb, 0xbd, 0x12, 0x09, 0x11,
-	0xc5, 0x8c, 0x50, 0xc9, 0x09, 0x4d, 0x53, 0x91, 0xd3, 0x9c, 0x8b, 0x54, 0xd9, 0xec, 0xd3, 0x3d,
-	0xa1, 0x12, 0xa1, 0x48, 0x8b, 0x2a, 0x66, 0x7a, 0x90, 0x4e, 0xd8, 0x62, 0x39, 0x0d, 0x89, 0xa4,
-	0x11, 0x4f, 0xb5, 0xd8, 0x68, 0xfd, 0x1d, 0x58, 0x7e, 0x5b, 0x28, 0x76, 0x72, 0x21, 0x63, 0xa1,
-	0x54, 0x93, 0x1d, 0xb4, 0x99, 0xca, 0xb1, 0x03, 0x97, 0xe9, 0xfe, 0x7e, 0xc6, 0x94, 0x72, 0xd0,
-	0x1a, 0x7a, 0x72, 0xa5, 0x59, 0x7e, 0xe2, 0x07, 0x70, 0xb5, 0x9d, 0x72, 0xf5, 0x89, 0xca, 0x5d,
-	0x49, 0x79, 0xe6, 0xcc, 0xe9, 0x74, 0xd5, 0xc6, 0x1a, 0x94, 0x67, 0xfe, 0x1b, 0xb8, 0x35, 0x52,
-	0x54, 0x49, 0x91, 0x2a, 0x86, 0x43, 0x58, 0x52, 0x36, 0xa6, 0xcb, 0x56, 0xeb, 0x37, 0x02, 0xed,
-	0x3b, 0x28, 0xa5, 0x5b, 0x97, 0x4e, 0xfe, 0xdc, 0xaf, 0x34, 0xcf, 0x64, 0xfe, 0x31, 0x82, 0xd5,
-	0xa1, 0x62, 0x0d, 0xa1, 0xb8, 0x76, 0x3b, 0x1b, 0x75, 0x1b, 0xe0, 0xdc, 0xb0, 0x06, 0xad, 0xd6,
-	0x1f, 0x07, 0x66, 0x3a, 0x41, 0x31, 0x9d, 0xc0, 0x6c, 0xc0, 0x4e, 0x27, 0x68, 0xd0, 0x88, 0xd9,
-	0xaa, 0xcd, 0x81, 0x97, 0xfe, 0x4f, 0x04, 0xde, 0x34, 0x06, 0xeb, 0xec, 0x15, 0xe0, 0x12, 0x79,
-	0x57, 0x96, 0x59, 0x07, 0xad, 0xcd, 0x4f, 0xf7, 0x58, 0x53, 0xa3, 0xd5, 0xf0, 0xeb, 0x09, 0xc0,
-	0x1b, 0x33, 0x81, 0x0d, 0xc2, 0x10, 0xb1, 0x03, 0xb7, 0x35, 0x70, 0x83, 0x66, 0x34, 0x61, 0x39,
-	0xcb, 0xca, 0x69, 0xf9, 0xdb, 0x70, 0x67, 0x2c, 0x63, 0x3d, 0x6c, 0xc2, 0xa2, 0x2c, 0xa2, 0xe5,
-	0x6e, 0xae, 0x59, 0x6e, 0x2d, 0x2d, 0xa9, 0xad, 0xa4, 0xfe, 0x75, 0x1e, 0x16, 0x74, 0x21, 0x7c,
-	0x8c, 0x60, 0xa9, 0xb4, 0x86, 0xef, 0xd9, 0x37, 0x93, 0x8e, 0xca, 0x5d, 0x99, 0x9c, 0x34, 0xed,
-	0xfd, 0x17, 0x5f, 0x7e, 0xfd, 0xfb, 0x31, 0xf7, 0x1c, 0xd7, 0x89, 0xb9, 0xf6, 0xf1, 0x79, 0x92,
-	0x43, 0xbb, 0xd9, 0x23, 0x72, 0x38, 0x78, 0x83, 0x47, 0xf8, 0x1b, 0x82, 0xda, 0xd8, 0x72, 0xf0,
-	0xa3, 0x49, 0xfd, 0x46, 0xef, 0xc7, 0x5d, 0x9f, 0xa1, 0xb2, 0x78, 0x9b, 0x1a, 0x6f, 0x1d, 0x3f,
-	0xbc, 0x00, 0x1e, 0x7e, 0x0f, 0x70, 0x3e, 0x60, 0xbc, 0x3a, 0xd8, 0x61, 0x6c, 0x25, 0xae, 0x37,
-	0x2d, 0x6d, 0x3b, 0xdf, 0xd5, 0x9d, 0x6f, 0xe2, 0x9a, 0xed, 0x2c, 0xcf, 0x24, 0x5b, 0x2f, 0x4f,
-	0x7a, 0x1e, 0x3a, 0xed, 0x79, 0xe8, 0x6f, 0xcf, 0x43, 0xdf, 0xfb, 0x5e, 0xe5, 0xb4, 0xef, 0x55,
-	0x7e, 0xf7, 0xbd, 0xca, 0xbb, 0x8d, 0x88, 0xe7, 0x1f, 0xda, 0xad, 0x60, 0x4f, 0x24, 0x44, 0xb2,
-	0x28, 0xea, 0x7e, 0xec, 0x10, 0x25, 0x92, 0x84, 0xc5, 0x9c, 0x65, 0xe4, 0x73, 0x51, 0x2a, 0xef,
-	0x4a, 0xa6, 0x5a, 0x8b, 0xfa, 0x8f, 0xe0, 0xd9, 0xff, 0x00, 0x00, 0x00, 0xff, 0xff, 0x40, 0xd0,
-	0xf6, 0xab, 0x94, 0x04, 0x00, 0x00,
+	// 531 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x8c, 0x93, 0x4f, 0x6b, 0x13, 0x41,
+	0x18, 0xc6, 0x33, 0xd1, 0xc6, 0xfa, 0xc6, 0x5a, 0x32, 0xa6, 0x10, 0xd7, 0xba, 0xd6, 0xd5, 0x5a,
+	0xb1, 0xb0, 0x43, 0xa2, 0x27, 0x6f, 0x06, 0x51, 0xf0, 0x14, 0x53, 0xf0, 0xe0, 0xa5, 0x4c, 0xda,
+	0x61, 0x1c, 0xd9, 0xdd, 0x99, 0xee, 0x6c, 0xa2, 0xa1, 0xf4, 0x50, 0xef, 0x82, 0xe0, 0x07, 0xf1,
+	0x6b, 0xf4, 0x58, 0xf0, 0xe2, 0x49, 0x24, 0xf1, 0x1b, 0xf8, 0x05, 0x24, 0x33, 0xb3, 0x9a, 0xa4,
+	0x5b, 0xd2, 0x5b, 0xf6, 0x7d, 0x9f, 0x79, 0xde, 0xdf, 0xfb, 0x27, 0x50, 0x13, 0x11, 0x19, 0x34,
+	0xc9, 0x41, 0x9f, 0xa5, 0xc3, 0x50, 0xa5, 0x32, 0x93, 0x78, 0x49, 0x44, 0xe1, 0xa0, 0xe9, 0xd5,
+	0xb9, 0xe4, 0xd2, 0x44, 0xc8, 0xe4, 0x97, 0x4d, 0x7a, 0xd7, 0xad, 0x5e, 0x44, 0xee, 0x7b, 0x9d,
+	0x4b, 0xc9, 0x23, 0x46, 0xa8, 0x12, 0x84, 0x26, 0x89, 0xcc, 0x68, 0x26, 0x64, 0xa2, 0x5d, 0xf6,
+	0xd1, 0x9e, 0xd4, 0xb1, 0xd4, 0xa4, 0x47, 0x35, 0xb3, 0x35, 0xc8, 0xa0, 0xd9, 0x63, 0x19, 0x6d,
+	0x12, 0x45, 0xb9, 0x48, 0x8c, 0xd8, 0x6a, 0x83, 0x1d, 0xa8, 0xbf, 0x9e, 0x28, 0x76, 0x32, 0xa9,
+	0x22, 0xa9, 0x75, 0x97, 0x1d, 0xf4, 0x99, 0xce, 0x70, 0x03, 0xae, 0xd0, 0xfd, 0xfd, 0x94, 0x69,
+	0xdd, 0x40, 0x1b, 0xe8, 0xe1, 0xd5, 0x6e, 0xfe, 0x89, 0xef, 0xc2, 0xb5, 0x7e, 0x22, 0xf4, 0x07,
+	0xaa, 0x76, 0x15, 0x15, 0x69, 0xa3, 0x6c, 0xd2, 0x55, 0x17, 0xeb, 0x50, 0x91, 0x06, 0xaf, 0x60,
+	0x6d, 0xce, 0x54, 0x2b, 0x99, 0x68, 0x86, 0x9b, 0xb0, 0xac, 0x5d, 0xcc, 0xd8, 0x56, 0x5b, 0xab,
+	0xa1, 0xe9, 0x3b, 0xcc, 0xa5, 0xed, 0xcb, 0x27, 0x3f, 0xef, 0x94, 0xba, 0xff, 0x64, 0xc1, 0x31,
+	0x82, 0xdb, 0x33, 0x66, 0x1d, 0xa9, 0x85, 0xe9, 0x76, 0x31, 0xea, 0x0b, 0x80, 0xff, 0x0d, 0x1b,
+	0xd0, 0x6a, 0xeb, 0x41, 0x68, 0xa7, 0x13, 0x4e, 0xa6, 0x13, 0xda, 0x0d, 0xb8, 0xe9, 0x84, 0x1d,
+	0xca, 0x99, 0x73, 0xed, 0x4e, 0xbd, 0x0c, 0xbe, 0x21, 0xf0, 0xcf, 0x63, 0x70, 0x9d, 0x3d, 0x07,
+	0x9c, 0x23, 0xef, 0xaa, 0x3c, 0xdb, 0x40, 0x1b, 0x97, 0xce, 0xef, 0xb1, 0xa6, 0xe7, 0xdd, 0xf0,
+	0xcb, 0x02, 0xe0, 0xad, 0x85, 0xc0, 0x16, 0x61, 0x86, 0xb8, 0x0e, 0xd8, 0x00, 0x77, 0x68, 0x4a,
+	0xe3, 0x7c, 0x52, 0x41, 0x1b, 0x6e, 0xcc, 0x44, 0x1d, 0xfb, 0x36, 0x54, 0x94, 0x89, 0xb8, 0x9d,
+	0xac, 0x38, 0x5e, 0x2b, 0x73, 0xb4, 0x4e, 0xd2, 0xfa, 0x53, 0x86, 0x25, 0x63, 0x82, 0x8f, 0x11,
+	0x2c, 0xe7, 0x2d, 0xe1, 0x5b, 0xee, 0x4d, 0xd1, 0x31, 0x79, 0xeb, 0xc5, 0x49, 0x5b, 0x3e, 0x78,
+	0xfa, 0xe9, 0xfb, 0xef, 0xaf, 0xe5, 0x27, 0xb8, 0x45, 0xec, 0x95, 0x9f, 0x9d, 0x23, 0x39, 0x74,
+	0x1b, 0x3d, 0x22, 0x87, 0xd3, 0xb7, 0x77, 0x84, 0x3f, 0x23, 0xa8, 0x9d, 0x59, 0x0a, 0xbe, 0x5f,
+	0x54, 0x6f, 0xfe, 0x6e, 0xbc, 0xcd, 0x05, 0x2a, 0x87, 0xb7, 0x6d, 0xf0, 0x36, 0xf1, 0xbd, 0x0b,
+	0xe0, 0xe1, 0x37, 0x50, 0xb1, 0x53, 0xc3, 0x37, 0xa7, 0xdd, 0x67, 0xd6, 0xe0, 0x79, 0x45, 0x29,
+	0x57, 0x6d, 0xcd, 0x54, 0x5b, 0xc5, 0x2b, 0xae, 0x9a, 0x9d, 0x7a, 0xfb, 0xd9, 0xc9, 0xc8, 0x47,
+	0xa7, 0x23, 0x1f, 0xfd, 0x1a, 0xf9, 0xe8, 0xcb, 0xd8, 0x2f, 0x9d, 0x8e, 0xfd, 0xd2, 0x8f, 0xb1,
+	0x5f, 0x7a, 0xbb, 0xc5, 0x45, 0xf6, 0xae, 0xdf, 0x0b, 0xf7, 0x64, 0x4c, 0x14, 0xe3, 0x7c, 0xf8,
+	0x7e, 0x40, 0xb4, 0x8c, 0x63, 0x16, 0x09, 0x96, 0x92, 0x8f, 0x13, 0x9b, 0x6c, 0xa8, 0x98, 0xee,
+	0x55, 0xcc, 0x1f, 0xfe, 0xf1, 0xdf, 0x00, 0x00, 0x00, 0xff, 0xff, 0x04, 0x09, 0x07, 0x37, 0x7c,
+	0x04, 0x00, 0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -381,9 +385,12 @@ const _ = grpc.SupportPackageIsVersion4
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
 type QueryClient interface {
+	// Stoploss queries a stoploss position for a given pair and account address.
 	Stoploss(ctx context.Context, in *QueryStoplossRequest, opts ...grpc.CallOption) (*QueryStoplossResponse, error)
+	// Stoploss returns all stoploss positions from an address.
 	StoplossPositions(ctx context.Context, in *QueryStoplossPositionsRequest, opts ...grpc.CallOption) (*QueryStoplossPositionsResponse, error)
-	Parameters(ctx context.Context, in *QueryParametersRequest, opts ...grpc.CallOption) (*QueryParametersResponse, error)
+	// Params queries the IL module parameters.
+	Params(ctx context.Context, in *QueryParamsRequest, opts ...grpc.CallOption) (*QueryParamsResponse, error)
 }
 
 type queryClient struct {
@@ -412,9 +419,9 @@ func (c *queryClient) StoplossPositions(ctx context.Context, in *QueryStoplossPo
 	return out, nil
 }
 
-func (c *queryClient) Parameters(ctx context.Context, in *QueryParametersRequest, opts ...grpc.CallOption) (*QueryParametersResponse, error) {
-	out := new(QueryParametersResponse)
-	err := c.cc.Invoke(ctx, "/il.v1.Query/Parameters", in, out, opts...)
+func (c *queryClient) Params(ctx context.Context, in *QueryParamsRequest, opts ...grpc.CallOption) (*QueryParamsResponse, error) {
+	out := new(QueryParamsResponse)
+	err := c.cc.Invoke(ctx, "/il.v1.Query/Params", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -423,9 +430,12 @@ func (c *queryClient) Parameters(ctx context.Context, in *QueryParametersRequest
 
 // QueryServer is the server API for Query service.
 type QueryServer interface {
+	// Stoploss queries a stoploss position for a given pair and account address.
 	Stoploss(context.Context, *QueryStoplossRequest) (*QueryStoplossResponse, error)
+	// Stoploss returns all stoploss positions from an address.
 	StoplossPositions(context.Context, *QueryStoplossPositionsRequest) (*QueryStoplossPositionsResponse, error)
-	Parameters(context.Context, *QueryParametersRequest) (*QueryParametersResponse, error)
+	// Params queries the IL module parameters.
+	Params(context.Context, *QueryParamsRequest) (*QueryParamsResponse, error)
 }
 
 // UnimplementedQueryServer can be embedded to have forward compatible implementations.
@@ -438,8 +448,8 @@ func (*UnimplementedQueryServer) Stoploss(ctx context.Context, req *QueryStoplos
 func (*UnimplementedQueryServer) StoplossPositions(ctx context.Context, req *QueryStoplossPositionsRequest) (*QueryStoplossPositionsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method StoplossPositions not implemented")
 }
-func (*UnimplementedQueryServer) Parameters(ctx context.Context, req *QueryParametersRequest) (*QueryParametersResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Parameters not implemented")
+func (*UnimplementedQueryServer) Params(ctx context.Context, req *QueryParamsRequest) (*QueryParamsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Params not implemented")
 }
 
 func RegisterQueryServer(s grpc1.Server, srv QueryServer) {
@@ -482,20 +492,20 @@ func _Query_StoplossPositions_Handler(srv interface{}, ctx context.Context, dec 
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Query_Parameters_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(QueryParametersRequest)
+func _Query_Params_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryParamsRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(QueryServer).Parameters(ctx, in)
+		return srv.(QueryServer).Params(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/il.v1.Query/Parameters",
+		FullMethod: "/il.v1.Query/Params",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(QueryServer).Parameters(ctx, req.(*QueryParametersRequest))
+		return srv.(QueryServer).Params(ctx, req.(*QueryParamsRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -513,8 +523,8 @@ var _Query_serviceDesc = grpc.ServiceDesc{
 			Handler:    _Query_StoplossPositions_Handler,
 		},
 		{
-			MethodName: "Parameters",
-			Handler:    _Query_Parameters_Handler,
+			MethodName: "Params",
+			Handler:    _Query_Params_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
@@ -682,7 +692,7 @@ func (m *QueryStoplossPositionsResponse) MarshalToSizedBuffer(dAtA []byte) (int,
 	return len(dAtA) - i, nil
 }
 
-func (m *QueryParametersRequest) Marshal() (dAtA []byte, err error) {
+func (m *QueryParamsRequest) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -692,12 +702,12 @@ func (m *QueryParametersRequest) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *QueryParametersRequest) MarshalTo(dAtA []byte) (int, error) {
+func (m *QueryParamsRequest) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *QueryParametersRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *QueryParamsRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -705,7 +715,7 @@ func (m *QueryParametersRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) 
 	return len(dAtA) - i, nil
 }
 
-func (m *QueryParametersResponse) Marshal() (dAtA []byte, err error) {
+func (m *QueryParamsResponse) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -715,12 +725,12 @@ func (m *QueryParametersResponse) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *QueryParametersResponse) MarshalTo(dAtA []byte) (int, error) {
+func (m *QueryParamsResponse) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *QueryParametersResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *QueryParamsResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -813,7 +823,7 @@ func (m *QueryStoplossPositionsResponse) Size() (n int) {
 	return n
 }
 
-func (m *QueryParametersRequest) Size() (n int) {
+func (m *QueryParamsRequest) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -822,7 +832,7 @@ func (m *QueryParametersRequest) Size() (n int) {
 	return n
 }
 
-func (m *QueryParametersResponse) Size() (n int) {
+func (m *QueryParamsResponse) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -1286,7 +1296,7 @@ func (m *QueryStoplossPositionsResponse) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *QueryParametersRequest) Unmarshal(dAtA []byte) error {
+func (m *QueryParamsRequest) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -1309,10 +1319,10 @@ func (m *QueryParametersRequest) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: QueryParametersRequest: wiretype end group for non-group")
+			return fmt.Errorf("proto: QueryParamsRequest: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: QueryParametersRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: QueryParamsRequest: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		default:
@@ -1339,7 +1349,7 @@ func (m *QueryParametersRequest) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *QueryParametersResponse) Unmarshal(dAtA []byte) error {
+func (m *QueryParamsResponse) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -1362,10 +1372,10 @@ func (m *QueryParametersResponse) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: QueryParametersResponse: wiretype end group for non-group")
+			return fmt.Errorf("proto: QueryParamsResponse: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: QueryParametersResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: QueryParamsResponse: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:

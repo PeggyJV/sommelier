@@ -5,24 +5,32 @@ import "il/v1/il.proto";
 
 option go_package = "github.com/peggyjv/sommelier/x/il/types";
 
-// MsgService defines the msgs that the oracle module handles.
+// MsgService defines the msgs that the il module handles.
 service Msg {
-  rpc CreateStoploss  (MsgStoploss)   returns (MsgStoplossResponse);
+  //CreateStoploss sets a new tracking stoploss position for a uniswap pair
+  rpc CreateStoploss  (MsgCreateStoploss)   returns (MsgCreateStoplossResponse);
+  // DeleteStoploss deletes an existing stoploss position
   rpc DeleteStoploss  (MsgDeleteStoploss)   returns (MsgDeleteStoplossResponse);
 }
 
 // MsgStoploss defines a stoploss position
-message MsgStoploss {
+message MsgCreateStoploss {
+     // account address that owns the stoploss position
     string address = 1;
+    // stoploss position details
     Stoploss stoploss = 2;
 }
 
-message MsgStoplossResponse {}
+// MsgCreateStoplossResponse is the response type for the Msg/CreateStoploss gRPC method.
+message MsgCreateStoplossResponse {}
 
 // MsgDeleteStoploss removes a stoploss position
 message MsgDeleteStoploss {
+  // account address that owns the stoploss position
   string address = 1;
+  // uniswap pair hex address 
   string uniswap_pair_id = 2;
 }
 
+// MsgDeleteStoplossResponse is the response type for the Msg/DeleteStoploss gRPC method.
 message MsgDeleteStoplossResponse {}
