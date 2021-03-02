@@ -24,7 +24,7 @@ func GetQueryCmd() *cobra.Command {
 		queryOracleDataVote(),
 		queryVotePeriod(),
 		queryMissCounter(),
-		queryOracleData(),
+		queryAggregatedOracleData(),
 	}...)
 
 	return oracleQueryCmd
@@ -205,27 +205,27 @@ func queryMissCounter() *cobra.Command {
 	}
 }
 
-func queryOracleData() *cobra.Command {
+func queryAggregatedOracleData() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:     "oracle-data",
+		Use:     "oracle-data [id]",
 		Aliases: []string{"od"},
-		Args:    cobra.NoArgs,
-		Short:   "query consensus oracle data from the chain given its type",
-		RunE: func(cmd *cobra.Command, _ []string) error {
+		Args:    cobra.ExactArgs(1),
+		Short:   "query aggregated oracle data from the chain given its type",
+		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx, err := client.GetClientQueryContext(cmd)
 			if err != nil {
 				return err
 			}
 
-			typ, err := cmd.Flags().GetString("type")
-			if err != nil {
-				return err
-			}
+			dataType, _ := cmd.Flags().GetString("type")
 
 			queryClient := types.NewQueryClient(ctx)
-			req := &types.QueryOracleDataRequest{Type: typ}
+			req := &types.QueryAggregateDataRequest{
+				Type: dataType,
+				Id:   args[0],
+			}
 
-			res, err := queryClient.OracleData(cmd.Context(), req)
+			res, err := queryClient.QueryAggregateData(cmd.Context(), req)
 			if err != nil {
 				return err
 			}

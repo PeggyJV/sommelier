@@ -7,7 +7,7 @@ option go_package = "github.com/peggyjv/sommelier/x/oracle/types";
 
 // OracleFeed represents an array of oracle data that is  
 message OracleFeed {
-	repeated google.protobuf.Any data = 1;
+	repeated UniswapPair data = 1;
 }
 
 // UniswapPair represents an SDK compatible uniswap pair info fetched from The Graph.

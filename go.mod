@@ -4,6 +4,7 @@ go 1.15
 
 require (
 	github.com/althea-net/peggy/module v0.0.0-20210203002914-cfbd0532ece0
+	github.com/armon/go-metrics v0.3.6
 	github.com/cosmos/cosmos-sdk v0.41.0
 	github.com/ethereum/go-ethereum v1.9.21
 	github.com/gogo/protobuf v1.3.3
@@ -19,6 +20,7 @@ require (
 	github.com/stretchr/testify v1.7.0
 	github.com/tendermint/tendermint v0.34.3
 	github.com/tendermint/tm-db v0.6.3
+	golang.org/x/sync v0.0.0-20190911185100-cd5d95a43a6e
 	google.golang.org/genproto v0.0.0-20210203152818-3206188e46ba
 	google.golang.org/grpc v1.35.0
 	gopkg.in/yaml.v2 v2.4.0

@@ -2,7 +2,7 @@ syntax = "proto3";
 package oracle.v1;
 
 import "oracle/v1/tx.proto";
-import "google/protobuf/any.proto";
+import "oracle/v1/oracle.proto";
 import "gogoproto/gogo.proto";
 
 option go_package = "github.com/peggyjv/sommelier/x/oracle/types";
@@ -74,5 +74,5 @@ message AggregatedOracleData {
     // block height in which the data was committed
     int64  height    = 1;
     // oracle data
-    google.protobuf.Any data = 2;
+    UniswapPair data = 2;
 }

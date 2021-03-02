@@ -72,11 +72,7 @@ func (gs GenesisState) Validate() error {
 			return sdkerrors.Wrapf(sdkerrors.ErrInvalidHeight, "height (%d) cannot be zero or negative", aggregate.Height)
 		}
 
-		oracleData, err := UnpackOracleData(aggregate.Data)
-		if err != nil {
-			return sdkerrors.Wrap(ErrInvalidOracleData, err.Error())
-		}
-
+		oracleData := aggregate.Data
 		dataID := oracleData.GetID()
 
 		if seenAggregates[dataID] {

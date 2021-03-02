@@ -3,7 +3,6 @@ package types
 import (
 	"fmt"
 
-	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
@@ -210,7 +209,7 @@ func (m *MsgOracleDataVote) MustGetSigner() sdk.AccAddress {
 // 	return m.Vote.UnpackInterfaces(unpacker)
 // }
 
-// UnpackInterfaces implements UnpackInterfacesMessage.UnpackInterfaces
-func (m *QueryOracleDataResponse) UnpackInterfaces(unpacker codectypes.AnyUnpacker) error {
-	return unpacker.UnpackAny(m.OracleData, new(OracleData))
-}
+// // UnpackInterfaces implements UnpackInterfacesMessage.UnpackInterfaces
+// func (m *QueryOracleDataResponse) UnpackInterfaces(unpacker codectypes.AnyUnpacker) error {
+// 	return unpacker.UnpackAny(m.OracleData, new(OracleData))
+// }

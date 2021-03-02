@@ -300,9 +300,8 @@ func queryVotePeriod() *cobra.Command {
 }
 
 // GetVotePeriod helper
-func GetVotePeriod(ctx client.Context) (*oracletypes.VotePeriod, error) {
+func GetVotePeriod(ctx client.Context) (*oracletypes.QueryVotePeriodResponse, error) {
 	queryClient := oracletypes.NewQueryClient(ctx)
-
 	return queryClient.QueryVotePeriod(context.Background(), &oracletypes.QueryVotePeriodRequest{})
 }
 
@@ -350,37 +349,36 @@ func GetMissCounter(ctx client.Context, val sdk.AccAddress) (int64, error) {
 
 func queryOracleData() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:     "oracle-data",
+		Use:     "oracle-data [id]",
 		Aliases: []string{"od"},
-		Args:    cobra.NoArgs,
-		Short:   "query consensus oracle data from the chain given its type",
-		RunE: func(cmd *cobra.Command, _ []string) error {
+		Args:    cobra.ExactArgs(1),
+		Short:   "query aggregate oracle data from the chain given its type and id",
+		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx, err := config.GetClientContext(cmd)
 			if err != nil {
 				return err
 			}
 
-			typ, err := cmd.Flags().GetString("type")
+			typ, _ := cmd.Flags().GetString("type")
+
+			req := &oracletypes.QueryAggregateDataRequest{
+				Type: typ,
+				Id:   args[0],
+			}
+
+			queryClient := oracletypes.NewQueryClient(ctx)
+
+			res, err := queryClient.QueryAggregateData(context.Background(), req)
 			if err != nil {
 				return err
 			}
 
-			res, err := oracletypes.NewQueryClient(ctx).OracleData(context.Background(), &oracletypes.QueryOracleDataRequest{Type: typ})
+			jsonBz, err := json.Marshal(res)
 			if err != nil {
 				return err
 			}
 
-			od, err := oracletypes.UnpackOracleData(res.OracleData)
-			if err != nil {
-				return err
-			}
-
-			jsonBz, err := json.Marshal(od)
-			if err != nil {
-				return err
-			}
-
-			fmt.Println(jsonBz)
+			fmt.Println(string(jsonBz))
 			return nil
 		},
 	}
@@ -389,12 +387,20 @@ func queryOracleData() *cobra.Command {
 }
 
 // GetData helper
-func GetData(ctx client.Context, typ string) (oracletypes.OracleData, error) {
-	res, err := oracletypes.NewQueryClient(ctx).OracleData(context.Background(), &oracletypes.QueryOracleDataRequest{Type: typ})
+func GetData(ctx client.Context, typ, id string) (oracletypes.OracleData, error) {
+	queryClient := oracletypes.NewQueryClient(ctx)
+
+	req := &oracletypes.QueryAggregateDataRequest{
+		Type: typ,
+		Id:   id,
+	}
+
+	res, err := queryClient.QueryAggregateData(context.Background(), req)
 	if err != nil {
 		return nil, err
 	}
-	return oracletypes.UnpackOracleData(res.OracleData)
+
+	return res.OracleData, nil
 }
 
 // GetPairs returns the top N pairs from the Uniswap Subgraph

@@ -52,14 +52,16 @@
     - [Params](#oracle.v1.Params)
   
 - [oracle/v1/query.proto](#oracle/v1/query.proto)
+    - [QueryAggregateDataRequest](#oracle.v1.QueryAggregateDataRequest)
+    - [QueryAggregateDataResponse](#oracle.v1.QueryAggregateDataResponse)
     - [QueryDelegateAddressRequest](#oracle.v1.QueryDelegateAddressRequest)
     - [QueryDelegateAddressResponse](#oracle.v1.QueryDelegateAddressResponse)
+    - [QueryLatestPeriodAggregateDataRequest](#oracle.v1.QueryLatestPeriodAggregateDataRequest)
+    - [QueryLatestPeriodAggregateDataResponse](#oracle.v1.QueryLatestPeriodAggregateDataResponse)
     - [QueryMissCounterRequest](#oracle.v1.QueryMissCounterRequest)
     - [QueryMissCounterResponse](#oracle.v1.QueryMissCounterResponse)
     - [QueryOracleDataPrevoteRequest](#oracle.v1.QueryOracleDataPrevoteRequest)
     - [QueryOracleDataPrevoteResponse](#oracle.v1.QueryOracleDataPrevoteResponse)
-    - [QueryOracleDataRequest](#oracle.v1.QueryOracleDataRequest)
-    - [QueryOracleDataResponse](#oracle.v1.QueryOracleDataResponse)
     - [QueryOracleDataVoteRequest](#oracle.v1.QueryOracleDataVoteRequest)
     - [QueryOracleDataVoteResponse](#oracle.v1.QueryOracleDataVoteResponse)
     - [QueryParamsRequest](#oracle.v1.QueryParamsRequest)
@@ -67,7 +69,7 @@
     - [QueryValidatorAddressRequest](#oracle.v1.QueryValidatorAddressRequest)
     - [QueryValidatorAddressResponse](#oracle.v1.QueryValidatorAddressResponse)
     - [QueryVotePeriodRequest](#oracle.v1.QueryVotePeriodRequest)
-    - [VotePeriod](#oracle.v1.VotePeriod)
+    - [QueryVotePeriodResponse](#oracle.v1.QueryVotePeriodResponse)
   
     - [Query](#oracle.v1.Query)
   
@@ -183,14 +185,20 @@ StoplossPosition represents all the impermanent loss stop positions for a given 
 
 <a name="il.v1.QueryParametersRequest"></a>
 
+<<<<<<< HEAD
 ### QueryParametersRequest
 QueryParametersRequest is an empty request to query for the impermanent loss params
+=======
+### MsgDelegateFeedConsent
+MsgDelegateFeedConsent defines sdk.Msg for delegating oracle voting rights from a validator
+to another address, must be signed by an active validator
+>>>>>>> 342bdfa315a1edc62de4dd19258e5892d1f015de
 
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| `delegate` | [string](#string) |  |  |
-| `validator` | [string](#string) |  |  |
+| `delegate` | [string](#string) |  | delegate account address |
+| `validator` | [string](#string) |  | validator operator address |
 
 
 
@@ -201,10 +209,15 @@ QueryParametersRequest is an empty request to query for the impermanent loss par
 QueryParametersResponse
 
 
+<<<<<<< HEAD
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | `params` | [Params](#il.v1.Params) |  | impermanent loss parameters |
 
+=======
+### MsgDelegateFeedConsentResponse
+MsgDelegateFeedConsentResponse is the response type for the Msg/DelegateFeedConsent gRPC method.
+>>>>>>> 342bdfa315a1edc62de4dd19258e5892d1f015de
 
 
 
@@ -218,8 +231,8 @@ QueryParametersResponse
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| `prevote` | [OraclePrevote](#oracle.v1.OraclePrevote) |  |  |
-| `signer` | [string](#string) |  |  |
+| `prevote` | [OraclePrevote](#oracle.v1.OraclePrevote) |  | prevote containing the hash of the oracle feed vote contents |
+| `signer` | [string](#string) |  | signer (i.e feeder) account address |
 
 
 
@@ -228,8 +241,13 @@ QueryParametersResponse
 
 <a name="il.v1.QueryStoplossPositionsResponse"></a>
 
+<<<<<<< HEAD
 ### QueryStoplossPositionsResponse
 
+=======
+### MsgOracleDataPrevoteResponse
+MsgOracleDataPrevoteResponse is the response type for the Msg/OracleDataPrevote gRPC method.
+>>>>>>> 342bdfa315a1edc62de4dd19258e5892d1f015de
 
 
 | Field | Type | Label | Description |
@@ -247,8 +265,8 @@ MsgOracleDataVote - sdk.Msg for submitting arbitrary oracle data that has been p
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| `vote` | [OracleVote](#oracle.v1.OracleVote) |  |  |
-| `signer` | [string](#string) |  |  |
+| `vote` | [OracleVote](#oracle.v1.OracleVote) |  | vote containing the oracle data feed |
+| `signer` | [string](#string) |  | signer (i.e feeder) account address |
 
 
 
@@ -257,8 +275,13 @@ MsgOracleDataVote - sdk.Msg for submitting arbitrary oracle data that has been p
 
 <a name="il.v1.MsgStoplossResponse"></a>
 
+<<<<<<< HEAD
 ### MsgStoplossResponse
 
+=======
+### MsgOracleDataVoteResponse
+MsgOracleDataVoteResponse is the response type for the Msg/OracleDataVote gRPC method.
+>>>>>>> 342bdfa315a1edc62de4dd19258e5892d1f015de
 
 
 
@@ -278,7 +301,13 @@ MsgService defines the msgs that the oracle module handles.
 
 | Method Name | Request Type | Response Type | Description | HTTP Verb | Endpoint |
 | ----------- | ------------ | ------------- | ------------| ------- | -------- |
+<<<<<<< HEAD
 | `CreateStoploss` | [MsgStoploss](#il.v1.MsgStoploss) | [MsgStoplossResponse](#il.v1.MsgStoplossResponse) |  | |
+=======
+| `DelegateFeedConsent` | [MsgDelegateFeedConsent](#oracle.v1.MsgDelegateFeedConsent) | [MsgDelegateFeedConsentResponse](#oracle.v1.MsgDelegateFeedConsentResponse) | DelegateFeedConsent defines a message that delegates the oracle feeding to an account address. | |
+| `OracleDataPrevote` | [MsgOracleDataPrevote](#oracle.v1.MsgOracleDataPrevote) | [MsgOracleDataPrevoteResponse](#oracle.v1.MsgOracleDataPrevoteResponse) | OracleDataPrevote defines a message that commits a hash of a oracle data feed before the data is actually submitted. | |
+| `OracleDataVote` | [MsgOracleDataVote](#oracle.v1.MsgOracleDataVote) | [MsgOracleDataVoteResponse](#oracle.v1.MsgOracleDataVoteResponse) | OracleDataVote defines a message to submit the actual oracle data that was committed by the feeder through the prevote. | |
+>>>>>>> 342bdfa315a1edc62de4dd19258e5892d1f015de
 
  <!-- end services -->
 
@@ -300,7 +329,11 @@ AggregatedOracleData defines the aggregated oracle data at a given block height
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | `height` | [int64](#int64) |  | block height in which the data was committed |
+<<<<<<< HEAD
 | `data` | [google.protobuf.Any](#google.protobuf.Any) |  | oracle data |
+=======
+| `data` | [UniswapPair](#oracle.v1.UniswapPair) |  | oracle data |
+>>>>>>> 342bdfa315a1edc62de4dd19258e5892d1f015de
 
 
 
@@ -380,15 +413,47 @@ UniswapToken is the returned uniswap token representation
 
 
 
-<a name="oracle.v1.QueryDelegateAddressRequest"></a>
+<a name="oracle.v1.QueryAggregateDataRequest"></a>
 
-### QueryDelegateAddressRequest
-
+### QueryAggregateDataRequest
+QueryAggregateDataRequest is the request type for the Query/AggregateData gRPC method.
 
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| `validator` | [string](#string) |  |  |
+| `type` | [string](#string) |  | oracle data type |
+| `id` | [string](#string) |  | oracle data identifier |
+
+
+
+
+
+
+<a name="oracle.v1.QueryAggregateDataResponse"></a>
+
+### QueryAggregateDataResponse
+QueryAggregateDataRequest is the response type for the Query/AggregateData gRPC method.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `oracle_data` | [UniswapPair](#oracle.v1.UniswapPair) |  | oracle data associated with the id and type from the request |
+| `height` | [int64](#int64) |  | height at which the aggregated oracle data was stored |
+
+
+
+
+
+
+<a name="oracle.v1.QueryDelegateAddressRequest"></a>
+
+### QueryDelegateAddressRequest
+QueryDelegateAddressRequest is the request type for the Query/QueryDelegateAddress gRPC method.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `validator` | [string](#string) |  | validator operator address |
 
 ### MsgDelegateFeedConsentResponse
 
@@ -399,27 +464,64 @@ UniswapToken is the returned uniswap token representation
 <a name="oracle.v1.QueryDelegateAddressResponse"></a>
 
 ### QueryDelegateAddressResponse
-
+QueryDelegateAddressResponse is the response type for the Query/QueryDelegateAddress gRPC method.
 
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| `delegate` | [string](#string) |  |  |
+| `delegate` | [string](#string) |  | delegate account address |
 
 
 
 
 
 
+<a name="oracle.v1.QueryLatestPeriodAggregateDataRequest"></a>
+
+### QueryLatestPeriodAggregateDataRequest
+QueryLatestPeriodAggregateDataRequest is the request type for the Query/QueryLatestPeriodAggregateData gRPC method.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `pagination` | [cosmos.base.query.v1beta1.PageRequest](#cosmos.base.query.v1beta1.PageRequest) |  | pagination defines an optional pagination for the request. |
+
+
+
+
+
+
+<a name="oracle.v1.QueryLatestPeriodAggregateDataResponse"></a>
+
+### QueryLatestPeriodAggregateDataResponse
+QueryLatestPeriodAggregateDataResponse is the response type for the Query/QueryLatestPeriodAggregateData gRPC method.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `oracle_data` | [UniswapPair](#oracle.v1.UniswapPair) | repeated | oracle data associated with the |
+| `height` | [int64](#int64) |  | height at which the aggregated oracle data was stored |
+| `pagination` | [cosmos.base.query.v1beta1.PageResponse](#cosmos.base.query.v1beta1.PageResponse) |  | pagination defines the pagination in the response. |
+
+
+
+
+
+
+<<<<<<< HEAD
+
+### QueryOracleDataPrevoteRequest
+=======
 <a name="oracle.v1.QueryMissCounterRequest"></a>
+>>>>>>> 342bdfa315a1edc62de4dd19258e5892d1f015de
 
 ### QueryMissCounterRequest
-
+QueryMissCounterRequest is the request type for the Query/MissCounter gRPC method.
 
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| `validator` | [string](#string) |  |  |
+| `validator` | [string](#string) |  | validator operator address |
 
 
 
@@ -429,26 +531,27 @@ UniswapToken is the returned uniswap token representation
 <a name="oracle.v1.QueryMissCounterResponse"></a>
 
 ### QueryMissCounterResponse
-
+QueryMissCounterResponse is the response type for the Query/MissCounter gRPC method.
 
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| `miss_counter` | [int64](#int64) |  |  |
+| `miss_counter` | [int64](#int64) |  | number of oracle feed votes missed since the last counter reset |
 
 
 
 
 
 
+<a name="oracle.v1.QueryOracleDataPrevoteRequest"></a>
 
 ### QueryOracleDataPrevoteRequest
-
+QueryOracleDataPrevoteRequest is the request type for the Query/QueryOracleDataPrevote gRPC method.
 
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| `validator` | [string](#string) |  |  |
+| `validator` | [string](#string) |  | validator operator address |
 
 
 
@@ -458,42 +561,12 @@ UniswapToken is the returned uniswap token representation
 <a name="oracle.v1.QueryOracleDataPrevoteResponse"></a>
 
 ### QueryOracleDataPrevoteResponse
-
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| `prevote` | [OraclePrevote](#oracle.v1.OraclePrevote) |  |  |
-
-
-
-
-
-
-<a name="oracle.v1.QueryOracleDataRequest"></a>
-
-### QueryOracleDataRequest
-
+QueryOracleDataPrevoteResponse is the response type for the Query/QueryOracleDataPrevote gRPC method.
 
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| `type` | [string](#string) |  |  |
-
-
-
-
-
-
-<a name="oracle.v1.QueryOracleDataResponse"></a>
-
-### QueryOracleDataResponse
-
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| `oracle_data` | [google.protobuf.Any](#google.protobuf.Any) |  |  |
+| `prevote` | [OraclePrevote](#oracle.v1.OraclePrevote) |  | prevote submitted within the latest voting period |
 
 
 
@@ -503,12 +576,12 @@ UniswapToken is the returned uniswap token representation
 <a name="oracle.v1.QueryOracleDataVoteRequest"></a>
 
 ### QueryOracleDataVoteRequest
-
+QueryOracleDataVoteRequest is the request type for the Query/QueryOracleDataVote gRPC method.
 
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| `validator` | [string](#string) |  |  |
+| `validator` | [string](#string) |  | validator operator address |
 
 
 
@@ -518,12 +591,12 @@ UniswapToken is the returned uniswap token representation
 <a name="oracle.v1.QueryOracleDataVoteResponse"></a>
 
 ### QueryOracleDataVoteResponse
-
+QueryOracleDataVoteResponse is the response type for the Query/QueryOracleDataVote gRPC method.
 
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| `vote` | [OracleVote](#oracle.v1.OracleVote) |  |  |
+| `vote` | [OracleVote](#oracle.v1.OracleVote) |  | vote containing the oracle feed submitted within the latest voting period |
 
 
 
@@ -533,7 +606,7 @@ UniswapToken is the returned uniswap token representation
 <a name="oracle.v1.QueryParamsRequest"></a>
 
 ### QueryParamsRequest
-
+QueryParamsRequest is the request type for the Query/Params gRPC method.
 
 
 
@@ -543,12 +616,12 @@ UniswapToken is the returned uniswap token representation
 <a name="oracle.v1.QueryParamsResponse"></a>
 
 ### QueryParamsResponse
-
+QueryParamsRequest is the response type for the Query/Params gRPC method.
 
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| `params` | [Params](#oracle.v1.Params) |  |  |
+| `params` | [Params](#oracle.v1.Params) |  | oracle parameters |
 
 
 
@@ -558,12 +631,12 @@ UniswapToken is the returned uniswap token representation
 <a name="oracle.v1.QueryValidatorAddressRequest"></a>
 
 ### QueryValidatorAddressRequest
-
+QueryValidatorAddressRequest is the request type for the Query/Params gRPC method.
 
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| `delegate` | [string](#string) |  |  |
+| `delegate` | [string](#string) |  | delegate account address |
 
 
 
@@ -573,12 +646,12 @@ UniswapToken is the returned uniswap token representation
 <a name="oracle.v1.QueryValidatorAddressResponse"></a>
 
 ### QueryValidatorAddressResponse
-
+QueryValidatorAddressResponse is the response type for the Query/Params gRPC method.
 
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| `validator` | [string](#string) |  |  |
+| `validator` | [string](#string) |  | validator operator address |
 
 
 
@@ -588,24 +661,24 @@ UniswapToken is the returned uniswap token representation
 <a name="oracle.v1.QueryVotePeriodRequest"></a>
 
 ### QueryVotePeriodRequest
+QueryVotePeriodRequest is the request type for the Query/VotePeriod gRPC method.
 
 
 
 
 
 
+<a name="oracle.v1.QueryVotePeriodResponse"></a>
 
-<a name="oracle.v1.VotePeriod"></a>
-
-### VotePeriod
-
+### QueryVotePeriodResponse
+QueryVotePeriodResponse is the response type for the Query/VotePeriod gRPC method.
 
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| `current_height` | [int64](#int64) |  |  |
-| `vote_period_start` | [int64](#int64) |  |  |
-| `vote_period_end` | [int64](#int64) |  |  |
+| `current_height` | [int64](#int64) |  | block height at which the query was processed |
+| `vote_period_start` | [int64](#int64) |  | latest vote period start block height |
+| `vote_period_end` | [int64](#int64) |  | block height at which the current voting period ends |
 
 
 
@@ -621,18 +694,19 @@ UniswapToken is the returned uniswap token representation
 <a name="oracle.v1.Query"></a>
 
 ### Query
-
+Query defines the gRPC querier service for the oracle module.
 
 | Method Name | Request Type | Response Type | Description | HTTP Verb | Endpoint |
 | ----------- | ------------ | ------------- | ------------| ------- | -------- |
-| `QueryParams` | [QueryParamsRequest](#oracle.v1.QueryParamsRequest) | [QueryParamsResponse](#oracle.v1.QueryParamsResponse) |  | |
-| `QueryDelegateAddress` | [QueryDelegateAddressRequest](#oracle.v1.QueryDelegateAddressRequest) | [QueryDelegateAddressResponse](#oracle.v1.QueryDelegateAddressResponse) |  | |
-| `QueryValidatorAddress` | [QueryValidatorAddressRequest](#oracle.v1.QueryValidatorAddressRequest) | [QueryValidatorAddressResponse](#oracle.v1.QueryValidatorAddressResponse) |  | |
-| `QueryOracleDataPrevote` | [QueryOracleDataPrevoteRequest](#oracle.v1.QueryOracleDataPrevoteRequest) | [QueryOracleDataPrevoteResponse](#oracle.v1.QueryOracleDataPrevoteResponse) |  | |
-| `QueryOracleDataVote` | [QueryOracleDataVoteRequest](#oracle.v1.QueryOracleDataVoteRequest) | [QueryOracleDataVoteResponse](#oracle.v1.QueryOracleDataVoteResponse) |  | |
-| `QueryVotePeriod` | [QueryVotePeriodRequest](#oracle.v1.QueryVotePeriodRequest) | [VotePeriod](#oracle.v1.VotePeriod) |  | |
-| `QueryMissCounter` | [QueryMissCounterRequest](#oracle.v1.QueryMissCounterRequest) | [QueryMissCounterResponse](#oracle.v1.QueryMissCounterResponse) |  | |
-| `OracleData` | [QueryOracleDataRequest](#oracle.v1.QueryOracleDataRequest) | [QueryOracleDataResponse](#oracle.v1.QueryOracleDataResponse) |  | |
+| `QueryParams` | [QueryParamsRequest](#oracle.v1.QueryParamsRequest) | [QueryParamsResponse](#oracle.v1.QueryParamsResponse) | Params queries the oracle module parameters. | GET|/sommelier/oracle/v1/params|
+| `QueryDelegateAddress` | [QueryDelegateAddressRequest](#oracle.v1.QueryDelegateAddressRequest) | [QueryDelegateAddressResponse](#oracle.v1.QueryDelegateAddressResponse) | QueryDelegateAddress queries the delegate account address of a validator | GET|/sommelier/oracle/v1/delegates/{validator}|
+| `QueryValidatorAddress` | [QueryValidatorAddressRequest](#oracle.v1.QueryValidatorAddressRequest) | [QueryValidatorAddressResponse](#oracle.v1.QueryValidatorAddressResponse) | QueryValidatorAddress returns the validator address of a given delegate | GET|/sommelier/oracle/v1/validators/{delegate}|
+| `QueryOracleDataPrevote` | [QueryOracleDataPrevoteRequest](#oracle.v1.QueryOracleDataPrevoteRequest) | [QueryOracleDataPrevoteResponse](#oracle.v1.QueryOracleDataPrevoteResponse) | QueryOracleDataPrevote queries the validator prevote in the current voting period | GET|/sommelier/oracle/v1/prevotes/{validator}|
+| `QueryOracleDataVote` | [QueryOracleDataVoteRequest](#oracle.v1.QueryOracleDataVoteRequest) | [QueryOracleDataVoteResponse](#oracle.v1.QueryOracleDataVoteResponse) | QueryOracleDataVote queries the validator vote in the current voting period | GET|/sommelier/oracle/v1/votes/{validator}|
+| `QueryVotePeriod` | [QueryVotePeriodRequest](#oracle.v1.QueryVotePeriodRequest) | [QueryVotePeriodResponse](#oracle.v1.QueryVotePeriodResponse) | QueryVotePeriod queries the heights for the current voting period (current, start and end) | GET|/sommelier/oracle/v1/vote_period|
+| `QueryMissCounter` | [QueryMissCounterRequest](#oracle.v1.QueryMissCounterRequest) | [QueryMissCounterResponse](#oracle.v1.QueryMissCounterResponse) | QueryMissCounter queries the missed number of oracle data feed periods | GET|/sommelier/oracle/v1/miss_counters/{validator}|
+| `QueryAggregateData` | [QueryAggregateDataRequest](#oracle.v1.QueryAggregateDataRequest) | [QueryAggregateDataResponse](#oracle.v1.QueryAggregateDataResponse) | QueryAggregateData returns the latest aggregated data value for a given type and identifioer | GET|/sommelier/oracle/v1/aggregate_data/{id}/{type}|
+| `QueryLatestPeriodAggregateData` | [QueryLatestPeriodAggregateDataRequest](#oracle.v1.QueryLatestPeriodAggregateDataRequest) | [QueryLatestPeriodAggregateDataResponse](#oracle.v1.QueryLatestPeriodAggregateDataResponse) | QueryLatestPeriodAggregateData returns the aggregated data for a given pair an identifioer | GET|/sommelier/oracle/v1/aggregate_data|
 
  <!-- end services -->
 

@@ -2,41 +2,52 @@ syntax = "proto3";
 package oracle.v1;
 
 import "cosmos_proto/cosmos.proto";
-import "google/protobuf/any.proto";
 import "oracle/v1/oracle.proto";
 
 option go_package = "github.com/peggyjv/sommelier/x/oracle/types";
 
 // MsgService defines the msgs that the oracle module handles.
 service Msg {
+     // DelegateFeedConsent defines a message that delegates the oracle feeding to an account address.
     rpc DelegateFeedConsent (MsgDelegateFeedConsent) returns (MsgDelegateFeedConsentResponse);
+    // OracleDataPrevote defines a message that commits a hash of a oracle data feed before the data is actually submitted.
     rpc OracleDataPrevote   (MsgOracleDataPrevote)   returns (MsgOracleDataPrevoteResponse);
+    // OracleDataVote defines a message to submit the actual oracle data that was committed by the feeder through the prevote.
     rpc OracleDataVote      (MsgOracleDataVote)      returns (MsgOracleDataVoteResponse);
 }
 
-// MsgDelegateFeedConsent - sdk.Msg for delegating oracle voting rights from a validator
+// MsgDelegateFeedConsent defines sdk.Msg for delegating oracle voting rights from a validator
 // to another address, must be signed by an active validator
 message MsgDelegateFeedConsent {
+    // delegate account address
     string delegate  = 1;
+    // validator operator address
     string validator = 2;
 }
 
+// MsgDelegateFeedConsentResponse is the response type for the Msg/DelegateFeedConsent gRPC method.
 message MsgDelegateFeedConsentResponse {}
 
 // MsgOracleDataPrevote - sdk.Msg for prevoting on an array of oracle data types.
 // The purpose of the prevote is to hide vote for data with hashes formatted as hex string: 
 // SHA256("{salt}:{data_cannonical_json}:{voter}")
 message MsgOracleDataPrevote {
+    // prevote containing the hash of the oracle feed vote contents
     OraclePrevote   prevote = 1;
+    // signer (i.e feeder) account address
     string          signer  = 2;
 }
 
+// MsgOracleDataPrevoteResponse is the response type for the Msg/OracleDataPrevote gRPC method.
 message MsgOracleDataPrevoteResponse {}
 
 // MsgOracleDataVote - sdk.Msg for submitting arbitrary oracle data that has been prevoted on
 message MsgOracleDataVote {
+    // vote containing the oracle data feed
     OracleVote vote   = 1;
+    // signer (i.e feeder) account address
     string     signer = 2;
 }
 
+// MsgOracleDataVoteResponse is the response type for the Msg/OracleDataVote gRPC method.
 message MsgOracleDataVoteResponse {}

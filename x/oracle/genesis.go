@@ -28,9 +28,7 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, gs types.GenesisState) {
 	}
 
 	for _, aggregate := range gs.Aggregates {
-		// NOTE: error checked during genesis validation
-		oracleData, _ := types.UnpackOracleData(aggregate.Data)
-		k.SetAggregatedOracleData(ctx, aggregate.Height, oracleData)
+		k.SetAggregatedOracleData(ctx, aggregate.Height, aggregate.Data)
 	}
 }
 
