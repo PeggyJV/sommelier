@@ -23,11 +23,8 @@
     - [Query](#il.v1.Query)
   
 - [il/v1/tx.proto](#il/v1/tx.proto)
-<<<<<<< HEAD
-=======
     - [MsgDeleteStoploss](#il.v1.MsgDeleteStoploss)
     - [MsgDeleteStoplossResponse](#il.v1.MsgDeleteStoplossResponse)
->>>>>>> a9d7bde0a78f9d142aef6b41f78e4a2099d7e8a9
     - [MsgStoploss](#il.v1.MsgStoploss)
     - [MsgStoplossResponse](#il.v1.MsgStoplossResponse)
   
@@ -83,8 +80,6 @@
 
 
 <a name="il/v1/il.proto"></a>
-<<<<<<< HEAD
-=======
 <p align="right"><a href="#top">Top</a></p>
 
 ## il/v1/il.proto
@@ -377,10 +372,9 @@ MsgService defines the msgs that the oracle module handles.
 
 
 <a name="oracle/v1/oracle.proto"></a>
->>>>>>> a9d7bde0a78f9d142aef6b41f78e4a2099d7e8a9
 <p align="right"><a href="#top">Top</a></p>
 
-## il/v1/il.proto
+## oracle/v1/oracle.proto
 
 
 
@@ -392,7 +386,7 @@ OracleFeed represents an array of oracle data that is
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| `data` | [google.protobuf.Any](#google.protobuf.Any) | repeated |  |
+| `data` | [UniswapPair](#oracle.v1.UniswapPair) | repeated |  |
 
 
 
@@ -408,7 +402,7 @@ for the prevote phase of the oracle data feeding.
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| `hashes` | [bytes](#bytes) | repeated | hex formated hashes of each oracle feed |
+| `hash` | [bytes](#bytes) |  | hex formated hash of an oracle feed |
 
 
 
@@ -420,22 +414,18 @@ for the prevote phase of the oracle data feeding.
 ### OracleVote
 UniswapToken is the returned uniswap token representation
 
- <!-- end services -->
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| `salt` | [string](#string) | repeated |  |
-| `pairs` | [UniswapPair](#oracle.v1.UniswapPair) | repeated |  |
-
-
-<a name="il/v1/genesis.proto"></a>
-<p align="right"><a href="#top">Top</a></p>
-
-## il/v1/genesis.proto
+| `salt` | [string](#string) |  |  |
+| `feed` | [OracleFeed](#oracle.v1.OracleFeed) |  |  |
 
 
 
-<a name="il.v1.GenesisState"></a>
+
+
+
+<a name="oracle.v1.UniswapPair"></a>
 
 ### UniswapPair
 UniswapPair represents an SDK compatible uniswap pair info fetched from The Graph.
@@ -443,18 +433,25 @@ UniswapPair represents an SDK compatible uniswap pair info fetched from The Grap
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| `params` | [Params](#il.v1.Params) |  |  |
-| `lps_stoploss_positions` | [StoplossPositions](#il.v1.StoplossPositions) | repeated |  |
+| `id` | [string](#string) |  |  |
+| `reserve0` | [string](#string) |  |  |
+| `reserve1` | [string](#string) |  |  |
+| `reserve_usd` | [string](#string) |  |  |
+| `token0` | [UniswapToken](#oracle.v1.UniswapToken) |  |  |
+| `token1` | [UniswapToken](#oracle.v1.UniswapToken) |  |  |
+| `token0_price` | [string](#string) |  |  |
+| `token1_price` | [string](#string) |  |  |
+| `total_supply` | [string](#string) |  |  |
 
 
 
 
 
 
-<a name="il.v1.StoplossPositions"></a>
+<a name="oracle.v1.UniswapToken"></a>
 
-### StoplossPositions
-StoplossPosition represents all the impermanent loss stop positions for a given LP address and uniswap pair.
+### UniswapToken
+UniswapToken is the returned uniswap token representation
 
 
 | Field | Type | Label | Description |
@@ -476,23 +473,18 @@ StoplossPosition represents all the impermanent loss stop positions for a given 
 
 
 
-<a name="il/v1/query.proto"></a>
+<a name="oracle/v1/tx.proto"></a>
 <p align="right"><a href="#top">Top</a></p>
 
-## il/v1/query.proto
+## oracle/v1/tx.proto
 
 
 
-<a name="il.v1.QueryParametersRequest"></a>
+<a name="oracle.v1.MsgDelegateFeedConsent"></a>
 
-<<<<<<< HEAD
-### QueryParametersRequest
-QueryParametersRequest is an empty request to query for the impermanent loss params
-=======
 ### MsgDelegateFeedConsent
 MsgDelegateFeedConsent defines sdk.Msg for delegating oracle voting rights from a validator
 to another address, must be signed by an active validator
->>>>>>> 342bdfa315a1edc62de4dd19258e5892d1f015de
 
 
 | Field | Type | Label | Description |
@@ -503,30 +495,24 @@ to another address, must be signed by an active validator
 
 
 
-<a name="il.v1.QueryParametersResponse"></a>
-
-### QueryParametersResponse
-QueryParametersResponse
 
 
-<<<<<<< HEAD
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| `params` | [Params](#il.v1.Params) |  | impermanent loss parameters |
+<a name="oracle.v1.MsgDelegateFeedConsentResponse"></a>
 
-=======
 ### MsgDelegateFeedConsentResponse
 MsgDelegateFeedConsentResponse is the response type for the Msg/DelegateFeedConsent gRPC method.
->>>>>>> 342bdfa315a1edc62de4dd19258e5892d1f015de
 
 
 
 
 
-<a name="il.v1.QueryStoplossPositionsRequest"></a>
 
-### QueryStoplossPositionsRequest
+<a name="oracle.v1.MsgOracleDataPrevote"></a>
 
+### MsgOracleDataPrevote
+MsgOracleDataPrevote - sdk.Msg for prevoting on an array of oracle data types.
+The purpose of the prevote is to hide vote for data with hashes formatted as hex string: 
+SHA256("{salt}:{data_cannonical_json}:{voter}")
 
 
 | Field | Type | Label | Description |
@@ -539,25 +525,17 @@ MsgDelegateFeedConsentResponse is the response type for the Msg/DelegateFeedCons
 
 
 
-<a name="il.v1.QueryStoplossPositionsResponse"></a>
+<a name="oracle.v1.MsgOracleDataPrevoteResponse"></a>
 
-<<<<<<< HEAD
-### QueryStoplossPositionsResponse
-
-=======
 ### MsgOracleDataPrevoteResponse
 MsgOracleDataPrevoteResponse is the response type for the Msg/OracleDataPrevote gRPC method.
->>>>>>> 342bdfa315a1edc62de4dd19258e5892d1f015de
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| `stoploss_positions` | [Stoploss](#il.v1.Stoploss) | repeated | set of possitions owned by the given address |
-| `pagination` | [cosmos.base.query.v1beta1.PageResponse](#cosmos.base.query.v1beta1.PageResponse) |  | pagination response |
 
 
 
 
+
+
+<a name="oracle.v1.MsgOracleDataVote"></a>
 
 ### MsgOracleDataVote
 MsgOracleDataVote - sdk.Msg for submitting arbitrary oracle data that has been prevoted on
@@ -573,15 +551,10 @@ MsgOracleDataVote - sdk.Msg for submitting arbitrary oracle data that has been p
 
 
 
-<a name="il.v1.MsgStoplossResponse"></a>
+<a name="oracle.v1.MsgOracleDataVoteResponse"></a>
 
-<<<<<<< HEAD
-### MsgStoplossResponse
-
-=======
 ### MsgOracleDataVoteResponse
 MsgOracleDataVoteResponse is the response type for the Msg/OracleDataVote gRPC method.
->>>>>>> 342bdfa315a1edc62de4dd19258e5892d1f015de
 
 
 
@@ -594,26 +567,22 @@ MsgOracleDataVoteResponse is the response type for the Msg/OracleDataVote gRPC m
  <!-- end HasExtensions -->
 
 
-<a name="il.v1.Msg"></a>
+<a name="oracle.v1.Msg"></a>
 
 ### Msg
 MsgService defines the msgs that the oracle module handles.
 
 | Method Name | Request Type | Response Type | Description | HTTP Verb | Endpoint |
 | ----------- | ------------ | ------------- | ------------| ------- | -------- |
-<<<<<<< HEAD
-| `CreateStoploss` | [MsgStoploss](#il.v1.MsgStoploss) | [MsgStoplossResponse](#il.v1.MsgStoplossResponse) |  | |
-=======
 | `DelegateFeedConsent` | [MsgDelegateFeedConsent](#oracle.v1.MsgDelegateFeedConsent) | [MsgDelegateFeedConsentResponse](#oracle.v1.MsgDelegateFeedConsentResponse) | DelegateFeedConsent defines a message that delegates the oracle feeding to an account address. | |
 | `OracleDataPrevote` | [MsgOracleDataPrevote](#oracle.v1.MsgOracleDataPrevote) | [MsgOracleDataPrevoteResponse](#oracle.v1.MsgOracleDataPrevoteResponse) | OracleDataPrevote defines a message that commits a hash of a oracle data feed before the data is actually submitted. | |
 | `OracleDataVote` | [MsgOracleDataVote](#oracle.v1.MsgOracleDataVote) | [MsgOracleDataVoteResponse](#oracle.v1.MsgOracleDataVoteResponse) | OracleDataVote defines a message to submit the actual oracle data that was committed by the feeder through the prevote. | |
->>>>>>> 342bdfa315a1edc62de4dd19258e5892d1f015de
 
  <!-- end services -->
 
 
 
-<a name="oracle/v1/oracle.proto"></a>
+<a name="oracle/v1/genesis.proto"></a>
 <p align="right"><a href="#top">Top</a></p>
 
 ## oracle/v1/genesis.proto
@@ -629,15 +598,7 @@ AggregatedOracleData defines the aggregated oracle data at a given block height
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | `height` | [int64](#int64) |  | block height in which the data was committed |
-<<<<<<< HEAD
-<<<<<<< HEAD
-| `data` | [google.protobuf.Any](#google.protobuf.Any) |  | oracle data |
-=======
 | `data` | [UniswapPair](#oracle.v1.UniswapPair) |  | oracle data |
->>>>>>> 342bdfa315a1edc62de4dd19258e5892d1f015de
-=======
-| `data` | [google.protobuf.Any](#google.protobuf.Any) |  | oracle data |
->>>>>>> a9d7bde0a78f9d142aef6b41f78e4a2099d7e8a9
 
 
 
@@ -662,11 +623,10 @@ GenesisState - all oracle state that must be provided at genesis
 
 
 
-<a name="oracle.v1.OraclePrevote"></a>
+<a name="oracle.v1.MissCounter"></a>
 
-### OraclePrevote
-OraclePrevote defines an array of hashed from oracle data that are used
-for the prevote phase of the oracle data feeding.
+### MissCounter
+MissCounter stores the validator address and the number of associated misses
 
 
 | Field | Type | Label | Description |
@@ -678,7 +638,6 @@ for the prevote phase of the oracle data feeding.
 
 
 
-<a name="oracle.v1.OracleVote"></a>
 
 <a name="oracle.v1.Params"></a>
 
@@ -702,11 +661,11 @@ Params oracle parameters
 
  <!-- end messages -->
 
-<a name="oracle.v1.UniswapToken"></a>
+ <!-- end enums -->
 
-### UniswapToken
-UniswapToken is the returned uniswap token representation
+ <!-- end HasExtensions -->
 
+ <!-- end services -->
 
 
 
@@ -759,7 +718,6 @@ QueryDelegateAddressRequest is the request type for the Query/QueryDelegateAddre
 | ----- | ---- | ----- | ----------- |
 | `validator` | [string](#string) |  | validator operator address |
 
-### MsgDelegateFeedConsentResponse
 
 
 
@@ -812,12 +770,7 @@ QueryLatestPeriodAggregateDataResponse is the response type for the Query/QueryL
 
 
 
-<<<<<<< HEAD
-
-### QueryOracleDataPrevoteRequest
-=======
 <a name="oracle.v1.QueryMissCounterRequest"></a>
->>>>>>> 342bdfa315a1edc62de4dd19258e5892d1f015de
 
 ### QueryMissCounterRequest
 QueryMissCounterRequest is the request type for the Query/MissCounter gRPC method.

@@ -20,10 +20,6 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/grpclog"
-<<<<<<< HEAD
-	"google.golang.org/grpc/metadata"
-=======
->>>>>>> a9d7bde0a78f9d142aef6b41f78e4a2099d7e8a9
 	"google.golang.org/grpc/status"
 )
 
@@ -34,10 +30,6 @@ var _ status.Status
 var _ = runtime.String
 var _ = utilities.NewDoubleArray
 var _ = descriptor.ForMessage
-<<<<<<< HEAD
-var _ = metadata.Join
-=======
->>>>>>> a9d7bde0a78f9d142aef6b41f78e4a2099d7e8a9
 
 func request_Query_Stoploss_0(ctx context.Context, marshaler runtime.Marshaler, client QueryClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var protoReq QueryStoplossRequest
@@ -208,21 +200,12 @@ func local_request_Query_Parameters_0(ctx context.Context, marshaler runtime.Mar
 // RegisterQueryHandlerServer registers the http handlers for service Query to "mux".
 // UnaryRPC     :call QueryServer directly.
 // StreamingRPC :currently unsupported pending https://github.com/grpc/grpc-go/issues/906.
-<<<<<<< HEAD
-// Note that using this registration option will cause many gRPC library features to stop working. Consider using RegisterQueryHandlerFromEndpoint instead.
-=======
 // Note that using this registration option will cause many gRPC library features (such as grpc.SendHeader, etc) to stop working. Consider using RegisterQueryHandlerFromEndpoint instead.
->>>>>>> a9d7bde0a78f9d142aef6b41f78e4a2099d7e8a9
 func RegisterQueryHandlerServer(ctx context.Context, mux *runtime.ServeMux, server QueryServer) error {
 
 	mux.Handle("GET", pattern_Query_Stoploss_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
-<<<<<<< HEAD
-		var stream runtime.ServerTransportStream
-		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
-=======
->>>>>>> a9d7bde0a78f9d142aef6b41f78e4a2099d7e8a9
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		rctx, err := runtime.AnnotateIncomingContext(ctx, mux, req)
 		if err != nil {
@@ -230,10 +213,6 @@ func RegisterQueryHandlerServer(ctx context.Context, mux *runtime.ServeMux, serv
 			return
 		}
 		resp, md, err := local_request_Query_Stoploss_0(rctx, inboundMarshaler, server, req, pathParams)
-<<<<<<< HEAD
-		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
-=======
->>>>>>> a9d7bde0a78f9d142aef6b41f78e4a2099d7e8a9
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
@@ -247,11 +226,6 @@ func RegisterQueryHandlerServer(ctx context.Context, mux *runtime.ServeMux, serv
 	mux.Handle("GET", pattern_Query_StoplossPositions_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
-<<<<<<< HEAD
-		var stream runtime.ServerTransportStream
-		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
-=======
->>>>>>> a9d7bde0a78f9d142aef6b41f78e4a2099d7e8a9
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		rctx, err := runtime.AnnotateIncomingContext(ctx, mux, req)
 		if err != nil {
@@ -259,10 +233,6 @@ func RegisterQueryHandlerServer(ctx context.Context, mux *runtime.ServeMux, serv
 			return
 		}
 		resp, md, err := local_request_Query_StoplossPositions_0(rctx, inboundMarshaler, server, req, pathParams)
-<<<<<<< HEAD
-		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
-=======
->>>>>>> a9d7bde0a78f9d142aef6b41f78e4a2099d7e8a9
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
@@ -276,11 +246,6 @@ func RegisterQueryHandlerServer(ctx context.Context, mux *runtime.ServeMux, serv
 	mux.Handle("GET", pattern_Query_Parameters_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
-<<<<<<< HEAD
-		var stream runtime.ServerTransportStream
-		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
-=======
->>>>>>> a9d7bde0a78f9d142aef6b41f78e4a2099d7e8a9
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		rctx, err := runtime.AnnotateIncomingContext(ctx, mux, req)
 		if err != nil {
@@ -288,10 +253,6 @@ func RegisterQueryHandlerServer(ctx context.Context, mux *runtime.ServeMux, serv
 			return
 		}
 		resp, md, err := local_request_Query_Parameters_0(rctx, inboundMarshaler, server, req, pathParams)
-<<<<<<< HEAD
-		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
-=======
->>>>>>> a9d7bde0a78f9d142aef6b41f78e4a2099d7e8a9
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
@@ -407,11 +368,11 @@ func RegisterQueryHandlerClient(ctx context.Context, mux *runtime.ServeMux, clie
 }
 
 var (
-	pattern_Query_Stoploss_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 1, 5, 3, 1, 0, 4, 1, 5, 4}, []string{"il", "v1", "stoploss_positions", "address", "uniswap_pair"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_Stoploss_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 1, 5, 3, 1, 0, 4, 1, 5, 4}, []string{"il", "v1", "stoploss_positions", "address", "uniswap_pair"}, "", runtime.AssumeColonVerbOpt(false)))
 
-	pattern_Query_StoplossPositions_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 1, 5, 3}, []string{"il", "v1", "stoploss_positions", "address"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_StoplossPositions_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 1, 5, 3}, []string{"il", "v1", "stoploss_positions", "address"}, "", runtime.AssumeColonVerbOpt(false)))
 
-	pattern_Query_Parameters_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"il", "v1", "parameters"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_Parameters_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"il", "v1", "parameters"}, "", runtime.AssumeColonVerbOpt(false)))
 )
 
 var (

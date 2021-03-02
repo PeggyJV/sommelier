@@ -100,14 +100,14 @@ func (m *MsgDelegateFeedConsent) MustGetDelegate() sdk.AccAddress {
 //////////////////////////
 
 // NewMsgOracleDataPrevote return a new MsgOracleDataPrevote
-func NewMsgOracleDataPrevote(hashes []tmbytes.HexBytes, signer sdk.AccAddress) *MsgOracleDataPrevote {
+func NewMsgOracleDataPrevote(hash tmbytes.HexBytes, signer sdk.AccAddress) *MsgOracleDataPrevote {
 	if signer == nil {
 		return nil
 	}
 
 	return &MsgOracleDataPrevote{
 		Prevote: &OraclePrevote{
-			Hashes: hashes,
+			Hash: hash,
 		},
 		Signer: signer.String(),
 	}
@@ -125,14 +125,8 @@ func (m *MsgOracleDataPrevote) ValidateBasic() error {
 		return sdkerrors.Wrap(sdkerrors.ErrInvalidAddress, err.Error())
 	}
 
-	if m.Prevote == nil || len(m.Prevote.Hashes) == 0 {
-		return fmt.Errorf("empty prevote hashes")
-	}
-
-	for i, hash := range m.Prevote.Hashes {
-		if len(hash) == 0 {
-			return fmt.Errorf("hash at index %d cannot be empty", i)
-		}
+	if m.Prevote == nil || len(m.Prevote.Hash) == 0 {
+		return fmt.Errorf("empty prevote hash")
 	}
 
 	return nil
