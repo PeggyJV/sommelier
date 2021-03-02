@@ -140,8 +140,10 @@ func (c *Coordinator) handleBlock(blockEvent ctypes.ResultEvent) error {
 // SubmitOracleDataVote is called to send the vote
 func (c *Coordinator) SubmitOracleDataVote() error {
 	oracleVote := &oracle.OracleVote{
-		Salt:  []string{c.salt},
-		Pairs: c.feed,
+		Salt: c.salt,
+		Feed: &oracle.OracleFeed{
+			Data: c.feed,
+		},
 	}
 
 	msg := oracle.NewMsgOracleDataVote(oracleVote, c.delegatorAddr)
@@ -156,6 +158,7 @@ func (c *Coordinator) SubmitOracleDataVote() error {
 func (c *Coordinator) SubmitOracleDataPrevote() error {
 	pairs, err := config.GetPairs(context.Background(), 100, 0)
 	if err != nil {
+		// Failing here on parsing data with decimals
 		return err
 	}
 
@@ -172,8 +175,9 @@ func (c *Coordinator) SubmitOracleDataPrevote() error {
 
 	c.salt = genrandstr(6)
 	c.hash = oracle.DataHash(c.salt, string(jsonBz), c.validatorAddr)
+	c.feed = pairs
 
-	msg := oracle.NewMsgOracleDataPrevote([]tmbytes.HexBytes{c.hash}, c.delegatorAddr)
+	msg := oracle.NewMsgOracleDataPrevote(c.hash, c.delegatorAddr)
 	if err := msg.ValidateBasic(); err != nil {
 		return err
 	}
@@ -281,7 +285,7 @@ func stopLoop(ctx context.Context, cancel context.CancelFunc) error {
 		select {
 		case sig := <-sigCh:
 			cancel()
-			return fmt.Errorf("erxiting feeder loop, received stop signal %s", sig.String())
+			return fmt.Errorf("exiting feeder loop, received stop signal %s", sig.String())
 		case <-ctx.Done():
 			return nil
 		}

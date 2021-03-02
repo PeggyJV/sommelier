@@ -160,6 +160,9 @@ func initConfig(cmd *cobra.Command) error {
 			}
 
 			// TODO: set logger
+			if ll, err := cmd.Flags().GetString("log-level"); err == nil {
+				tmlog.AllowLevel(ll)
+			}
 			config.log = tmlog.NewTMLogger(tmlog.NewSyncWriter(os.Stdout))
 		}
 	}
