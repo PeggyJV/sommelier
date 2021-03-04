@@ -9,6 +9,7 @@ import (
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
 	"github.com/peggyjv/sommelier/x/il/types"
+	oracletypes "github.com/peggyjv/sommelier/x/oracle/types"
 )
 
 var _ types.MsgServer = Keeper{}
@@ -22,14 +23,16 @@ func (k Keeper) CreateStoploss(c context.Context, msg *types.MsgCreateStoploss) 
 	// NOTE: error checked during msg validation
 	address, _ := sdk.AccAddressFromBech32(msg.Address)
 
-	// TODO: check if uniswap pair exists on the oracle
-	// oracleData, found := k.oracleKeeper.GetLatestAggregatedOracleData(ctx, oracletypes.UniswapDataType ,msg.Stoploss.UniswapPairId)
+	oracleData, _ := k.oracleKeeper.GetLatestAggregatedOracleData(ctx, oracletypes.UniswapDataType, msg.Stoploss.UniswapPairID)
+	if oracleData == nil {
+		return nil, sdkerrors.Wrapf(oracletypes.ErrAggregatedDataNotFound, "uniswap pair data with id %s", msg.Stoploss.UniswapPairID)
+	}
 
 	// TODO: ensure that pair ratio is w/in band of pair ratio from oracle
 
 	// check if there's already a position for that pair
-	if k.HasStoplossPosition(ctx, address, msg.Stoploss.UniswapPairId) {
-		return nil, sdkerrors.Wrapf(types.ErrStoplossExists, "address: %s, uniswap pair id %s", address, msg.Stoploss.UniswapPairId)
+	if k.HasStoplossPosition(ctx, address, msg.Stoploss.UniswapPairID) {
+		return nil, sdkerrors.Wrapf(types.ErrStoplossExists, "address: %s, uniswap pair id %s", address, msg.Stoploss.UniswapPairID)
 	}
 
 	k.SetStoplossPosition(ctx, address, *msg.Stoploss)
@@ -38,7 +41,7 @@ func (k Keeper) CreateStoploss(c context.Context, msg *types.MsgCreateStoploss) 
 		sdk.NewEvent(
 			types.EventTypeCreateStoploss,
 			sdk.NewAttribute(sdk.AttributeKeySender, msg.Address),
-			sdk.NewAttribute(types.AttributeKeyUniswapPair, msg.Stoploss.UniswapPairId),
+			sdk.NewAttribute(types.AttributeKeyUniswapPair, msg.Stoploss.UniswapPairID),
 		),
 		sdk.NewEvent(
 			sdk.EventTypeMessage,
@@ -51,7 +54,7 @@ func (k Keeper) CreateStoploss(c context.Context, msg *types.MsgCreateStoploss) 
 			[]string{types.ModuleName, "create-stoploss"},
 			1,
 			[]metrics.Label{
-				{Name: "pair-id", Value: msg.Stoploss.UniswapPairId},
+				{Name: "pair-id", Value: msg.Stoploss.UniswapPairID},
 			},
 		)
 	}()
@@ -67,18 +70,18 @@ func (k Keeper) DeleteStoploss(c context.Context, msg *types.MsgDeleteStoploss) 
 	address, _ := sdk.AccAddressFromBech32(msg.Address)
 
 	// error if the stoploss doesn't exist
-	if !k.HasStoplossPosition(ctx, address, msg.UniswapPairId) {
-		return nil, sdkerrors.Wrapf(types.ErrStoplossNotFound, "address: %s, uniswap pair id %s", address, msg.UniswapPairId)
+	if !k.HasStoplossPosition(ctx, address, msg.UniswapPairID) {
+		return nil, sdkerrors.Wrapf(types.ErrStoplossNotFound, "address: %s, uniswap pair id %s", address, msg.UniswapPairID)
 	}
 
 	// delete the stoploss position
-	k.DeleteStoplossPosition(ctx, address, msg.UniswapPairId)
+	k.DeleteStoplossPosition(ctx, address, msg.UniswapPairID)
 
 	ctx.EventManager().EmitEvents(sdk.Events{
 		sdk.NewEvent(
 			types.EventTypeDeleteStoploss,
 			sdk.NewAttribute(sdk.AttributeKeySender, msg.Address),
-			sdk.NewAttribute(types.AttributeKeyUniswapPair, msg.UniswapPairId),
+			sdk.NewAttribute(types.AttributeKeyUniswapPair, msg.UniswapPairID),
 		),
 		sdk.NewEvent(
 			sdk.EventTypeMessage,
@@ -91,7 +94,7 @@ func (k Keeper) DeleteStoploss(c context.Context, msg *types.MsgDeleteStoploss) 
 			[]string{types.ModuleName, "delete-stoploss"},
 			1,
 			[]metrics.Label{
-				telemetry.NewLabel("pair-id", msg.UniswapPairId),
+				telemetry.NewLabel("pair-id", msg.UniswapPairID),
 			},
 		)
 	}()

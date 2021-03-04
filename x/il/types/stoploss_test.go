@@ -25,7 +25,7 @@ func TestLPsStoplossPositionsValidate(t *testing.T) {
 					Address: addr1.String(),
 					StoplossPositions: []Stoploss{
 						{
-							UniswapPairId:       "0x3041cbd36888becc7bbcbc0045e3b1f144466f5f",
+							UniswapPairID:       "0x3041cbd36888becc7bbcbc0045e3b1f144466f5f",
 							LiquidityPoolShares: 10,
 							MaxSlippage:         sdk.MustNewDecFromStr("0.05"),
 							ReferencePairRatio:  sdk.MustNewDecFromStr("0.1"),
@@ -42,12 +42,12 @@ func TestLPsStoplossPositionsValidate(t *testing.T) {
 					Address: addr1.String(),
 					StoplossPositions: []Stoploss{
 						{
-							UniswapPairId:       "0x3041cbd36888becc7bbcbc0045e3b1f144466f5f",
+							UniswapPairID:       "0x3041cbd36888becc7bbcbc0045e3b1f144466f5f",
 							LiquidityPoolShares: 10,
 							MaxSlippage:         sdk.MustNewDecFromStr("0.05"),
 							ReferencePairRatio:  sdk.MustNewDecFromStr("0.1"),
 						}, {
-							UniswapPairId:       "0x66e33d2605c5fb25ebb7cd7528e7997b0afa55e8",
+							UniswapPairID:       "0x66e33d2605c5fb25ebb7cd7528e7997b0afa55e8",
 							LiquidityPoolShares: 1,
 							MaxSlippage:         sdk.MustNewDecFromStr("0.03333"),
 							ReferencePairRatio:  sdk.MustNewDecFromStr("0.3"),
@@ -58,7 +58,7 @@ func TestLPsStoplossPositionsValidate(t *testing.T) {
 					Address: addr2.String(),
 					StoplossPositions: []Stoploss{
 						{
-							UniswapPairId:       "0x3041cbd36888becc7bbcbc0045e3b1f144466f5f",
+							UniswapPairID:       "0x3041cbd36888becc7bbcbc0045e3b1f144466f5f",
 							LiquidityPoolShares: 1000,
 							MaxSlippage:         sdk.MustNewDecFromStr("0.01"),
 							ReferencePairRatio:  sdk.MustNewDecFromStr("0.5"),
@@ -80,7 +80,7 @@ func TestLPsStoplossPositionsValidate(t *testing.T) {
 					Address: addr1.String(),
 					StoplossPositions: []Stoploss{
 						{
-							UniswapPairId:       "0x3041cbd36888becc7bbcbc0045e3b1f144466f5f",
+							UniswapPairID:       "0x3041cbd36888becc7bbcbc0045e3b1f144466f5f",
 							LiquidityPoolShares: 10,
 							MaxSlippage:         sdk.MustNewDecFromStr("0.05"),
 							ReferencePairRatio:  sdk.MustNewDecFromStr("0.1"),
@@ -91,7 +91,7 @@ func TestLPsStoplossPositionsValidate(t *testing.T) {
 					Address: addr1.String(),
 					StoplossPositions: []Stoploss{
 						{
-							UniswapPairId:       "0x3041cbd36888becc7bbcbc0045e3b1f144466f5f",
+							UniswapPairID:       "0x3041cbd36888becc7bbcbc0045e3b1f144466f5f",
 							LiquidityPoolShares: 10,
 							MaxSlippage:         sdk.MustNewDecFromStr("0.05"),
 							ReferencePairRatio:  sdk.MustNewDecFromStr("0.1"),
@@ -108,13 +108,13 @@ func TestLPsStoplossPositionsValidate(t *testing.T) {
 					Address: addr1.String(),
 					StoplossPositions: []Stoploss{
 						{
-							UniswapPairId:       "0x3041cbd36888becc7bbcbc0045e3b1f144466f5f",
+							UniswapPairID:       "0x3041cbd36888becc7bbcbc0045e3b1f144466f5f",
 							LiquidityPoolShares: 10,
 							MaxSlippage:         sdk.MustNewDecFromStr("0.05"),
 							ReferencePairRatio:  sdk.MustNewDecFromStr("0.1"),
 						},
 						{
-							UniswapPairId:       "0x3041cbd36888becc7bbcbc0045e3b1f144466f5f",
+							UniswapPairID:       "0x3041cbd36888becc7bbcbc0045e3b1f144466f5f",
 							LiquidityPoolShares: 10,
 							MaxSlippage:         sdk.MustNewDecFromStr("0.05"),
 							ReferencePairRatio:  sdk.MustNewDecFromStr("0.1"),
@@ -157,24 +157,25 @@ func TestStoplossValidate(t *testing.T) {
 		{
 			"valid stoploss position",
 			Stoploss{
-				UniswapPairId:       "0x3041cbd36888becc7bbcbc0045e3b1f144466f5f",
+				UniswapPairID:       "0x3041cbd36888becc7bbcbc0045e3b1f144466f5f",
 				LiquidityPoolShares: 10,
 				MaxSlippage:         sdk.MustNewDecFromStr("0.05"),
 				ReferencePairRatio:  sdk.MustNewDecFromStr("0.1"),
+				ReceiverAddress:     "0x98950be0984d7cf7f5a098a6d8e53fc9c956d4bc",
 			},
 			true,
 		},
 		{
 			"invalid pair address",
 			Stoploss{
-				UniswapPairId: "",
+				UniswapPairID: "",
 			},
 			false,
 		},
 		{
 			"invalid max slippage",
 			Stoploss{
-				UniswapPairId: "0x3041cbd36888becc7bbcbc0045e3b1f144466f5f",
+				UniswapPairID: "0x3041cbd36888becc7bbcbc0045e3b1f144466f5f",
 				MaxSlippage:   sdk.ZeroDec(),
 			},
 			false,
@@ -182,7 +183,7 @@ func TestStoplossValidate(t *testing.T) {
 		{
 			"invalid shares",
 			Stoploss{
-				UniswapPairId:       "0x3041cbd36888becc7bbcbc0045e3b1f144466f5f",
+				UniswapPairID:       "0x3041cbd36888becc7bbcbc0045e3b1f144466f5f",
 				MaxSlippage:         sdk.OneDec(),
 				LiquidityPoolShares: 0,
 			},
@@ -191,10 +192,21 @@ func TestStoplossValidate(t *testing.T) {
 		{
 			"invalid reference pair ratio",
 			Stoploss{
-				UniswapPairId:       "0x3041cbd36888becc7bbcbc0045e3b1f144466f5f",
+				UniswapPairID:       "0x3041cbd36888becc7bbcbc0045e3b1f144466f5f",
 				MaxSlippage:         sdk.OneDec(),
 				LiquidityPoolShares: 1,
 				ReferencePairRatio:  sdk.MustNewDecFromStr("1.1"),
+			},
+			false,
+		},
+		{
+			"invalid reference pair ratio",
+			Stoploss{
+				UniswapPairID:       "0x3041cbd36888becc7bbcbc0045e3b1f144466f5f",
+				MaxSlippage:         sdk.OneDec(),
+				LiquidityPoolShares: 1,
+				ReferencePairRatio:  sdk.MustNewDecFromStr("1.1"),
+				ReceiverAddress:     "",
 			},
 			false,
 		},

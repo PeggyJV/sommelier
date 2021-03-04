@@ -8,9 +8,12 @@ option go_package = "github.com/peggyjv/sommelier/x/il/types";
 // Stoploss defines a set of parameters that together trigger a stoploss withdrawal.
 message Stoploss {
     // uniswap pair hex address 
-    string uniswap_pair_id = 1 [(gogoproto.moretags) = "yaml:\"uniswap_pair\""];
+    string uniswap_pair_id = 1 [
+        (gogoproto.moretags) = "yaml:\"uniswap_pair_id\"",
+        (gogoproto.customname) = "UniswapPairID"
+    ];
     // amount of shares from the liquidity pool to redeem if current slippage > max slipage
-    int64 liquidity_pool_shares = 2 [(gogoproto.moretags) = "yaml:\"liquidity_pool_shares\""];
+    uint64 liquidity_pool_shares = 2 [(gogoproto.moretags) = "yaml:\"liquidity_pool_shares\""];
     // max slippage allowed before the stoploss is triggered
     string max_slippage = 3 [
         (gogoproto.moretags) = "yaml:\"max_slippage\"",
@@ -23,6 +26,8 @@ message Stoploss {
         (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
         (gogoproto.nullable) = false
     ];
+    // ethereum receiving address in hex format
+    string receiver_address = 5 [(gogoproto.moretags) = "yaml:\"receiver_address\""];
 }
 
 // Params define the impermanent loss module parameters

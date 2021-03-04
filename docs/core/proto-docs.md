@@ -111,9 +111,10 @@ Stoploss defines a set of parameters that together trigger a stoploss withdrawal
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | `uniswap_pair_id` | [string](#string) |  | uniswap pair hex address |
-| `liquidity_pool_shares` | [int64](#int64) |  | amount of shares from the liquidity pool to redeem if current slippage > max slipage |
+| `liquidity_pool_shares` | [uint64](#uint64) |  | amount of shares from the liquidity pool to redeem if current slippage > max slipage |
 | `max_slippage` | [string](#string) |  | max slippage allowed before the stoploss is triggered |
 | `reference_pair_ratio` | [string](#string) |  | starting token pair ratio of the uniswap pool |
+| `receiver_address` | [string](#string) |  | ethereum receiving address in hex format |
 
 
 
@@ -146,6 +147,7 @@ GenesisState all impermanent loss state that must be provided at genesis.
 | ----- | ---- | ----- | ----------- |
 | `params` | [Params](#il.v1.Params) |  |  |
 | `lps_stoploss_positions` | [StoplossPositions](#il.v1.StoplossPositions) | repeated |  |
+| `invalidation_id` | [uint64](#uint64) |  |  |
 
 
 
@@ -632,8 +634,8 @@ MissCounter stores the validator address and the number of associated misses
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| `validator` | [string](#string) |  |  |
-| `misses` | [int64](#int64) |  |  |
+| `validator` | [string](#string) |  | validator operator address |
+| `misses` | [int64](#int64) |  | number of misses |
 
 
 

@@ -12,8 +12,13 @@ message GenesisState {
     Params params = 1 [(gogoproto.nullable) = false];
     repeated StoplossPositions lps_stoploss_positions = 2 [
         (gogoproto.nullable) = false,
-        (gogoproto.castrepeated) = "LPsStoplossPositions"
+        (gogoproto.castrepeated) = "LPsStoplossPositions",
+        (gogoproto.moretags)   = "yaml:\"lps_stoploss_positions\""
     ];
+    uint64 invalidation_id = 3 [
+        (gogoproto.customname) = "InvalidationID",
+        (gogoproto.moretags)   = "yaml:\"invalidation_id\""
+    ]; 
 }
 
 // StoplossPosition represents all the impermanent loss stop positions for a given LP address and uniswap pair.
@@ -21,5 +26,8 @@ message StoplossPositions {
     // LP account address 
     string address = 1;
     // set of possitions owned by the address
-    repeated Stoploss stoploss_positions = 2 [(gogoproto.nullable) = false];
+    repeated Stoploss stoploss_positions = 2 [
+        (gogoproto.nullable) = false,
+        (gogoproto.moretags)   = "yaml:\"stoploss_positions\""
+    ];
 }

@@ -12,10 +12,11 @@ func TestMsgCreateStoplossValidate(t *testing.T) {
 	_, _, addr1 := testdata.KeyTestPubAddr()
 
 	stoploss := &Stoploss{
-		UniswapPairId:       "0x3041cbd36888becc7bbcbc0045e3b1f144466f5f",
+		UniswapPairID:       "0x3041cbd36888becc7bbcbc0045e3b1f144466f5f",
 		LiquidityPoolShares: 10,
 		MaxSlippage:         sdk.MustNewDecFromStr("0.05"),
 		ReferencePairRatio:  sdk.MustNewDecFromStr("0.1"),
+		ReceiverAddress:     "0x98950be0984d7cf7f5a098a6d8e53fc9c956d4bc",
 	}
 
 	testCases := []struct {

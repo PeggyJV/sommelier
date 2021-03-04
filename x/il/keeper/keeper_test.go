@@ -47,33 +47,34 @@ func TestKeeperTestSuite(t *testing.T) {
 
 func (suite *KeeperTestSuite) TestStoplossCRUD() {
 	stoploss := types.Stoploss{
-		UniswapPairId:       "pair",
+		UniswapPairID:       "0x3041cbd36888becc7bbcbc0045e3b1f144466f5f",
 		LiquidityPoolShares: 10,
 		MaxSlippage:         sdk.OneDec(),
 		ReferencePairRatio:  sdk.OneDec(),
+		ReceiverAddress:     "0x98950be0984d7cf7f5a098a6d8e53fc9c956d4bc",
 	}
 
 	suite.app.ILKeeper.SetStoplossPosition(suite.ctx, suite.account.GetAddress(), stoploss)
-	suite.Require().True(suite.app.ILKeeper.HasStoplossPosition(suite.ctx, suite.account.GetAddress(), stoploss.UniswapPairId))
+	suite.Require().True(suite.app.ILKeeper.HasStoplossPosition(suite.ctx, suite.account.GetAddress(), stoploss.UniswapPairID))
 
-	res, found := suite.app.ILKeeper.GetStoplossPosition(suite.ctx, suite.account.GetAddress(), stoploss.UniswapPairId)
+	res, found := suite.app.ILKeeper.GetStoplossPosition(suite.ctx, suite.account.GetAddress(), stoploss.UniswapPairID)
 	suite.Require().True(found)
 	suite.Require().Equal(stoploss, res)
 
-	suite.app.ILKeeper.DeleteStoplossPosition(suite.ctx, suite.account.GetAddress(), stoploss.UniswapPairId)
-	suite.Require().False(suite.app.ILKeeper.HasStoplossPosition(suite.ctx, suite.account.GetAddress(), stoploss.UniswapPairId))
+	suite.app.ILKeeper.DeleteStoplossPosition(suite.ctx, suite.account.GetAddress(), stoploss.UniswapPairID)
+	suite.Require().False(suite.app.ILKeeper.HasStoplossPosition(suite.ctx, suite.account.GetAddress(), stoploss.UniswapPairID))
 }
 
 func (suite *KeeperTestSuite) TestGetStoplossPositions() {
 	stoplossPositions := []types.Stoploss{
 		{
-			UniswapPairId:       "pair",
+			UniswapPairID:       "pair",
 			LiquidityPoolShares: 10,
 			MaxSlippage:         sdk.OneDec(),
 			ReferencePairRatio:  sdk.OneDec(),
 		},
 		{
-			UniswapPairId:       "pair1",
+			UniswapPairID:       "pair1",
 			LiquidityPoolShares: 11,
 			MaxSlippage:         sdk.OneDec(),
 			ReferencePairRatio:  sdk.OneDec(),
@@ -97,12 +98,12 @@ func (suite *KeeperTestSuite) TestGetLPsStoplossPositions() {
 			Address: suite.account.GetAddress().String(),
 			StoplossPositions: []types.Stoploss{
 				{
-					UniswapPairId:      "pair0",
+					UniswapPairID:      "pair0",
 					MaxSlippage:        sdk.OneDec(),
 					ReferencePairRatio: sdk.OneDec(),
 				},
 				{
-					UniswapPairId:      "pair1",
+					UniswapPairID:      "pair1",
 					MaxSlippage:        sdk.OneDec(),
 					ReferencePairRatio: sdk.OneDec(),
 				},
@@ -112,17 +113,17 @@ func (suite *KeeperTestSuite) TestGetLPsStoplossPositions() {
 			Address: addr1.String(),
 			StoplossPositions: []types.Stoploss{
 				{
-					UniswapPairId:      "pair1",
+					UniswapPairID:      "pair1",
 					MaxSlippage:        sdk.OneDec(),
 					ReferencePairRatio: sdk.OneDec(),
 				},
 				{
-					UniswapPairId:      "pair2",
+					UniswapPairID:      "pair2",
 					MaxSlippage:        sdk.OneDec(),
 					ReferencePairRatio: sdk.OneDec(),
 				},
 				{
-					UniswapPairId:      "pair3",
+					UniswapPairID:      "pair3",
 					MaxSlippage:        sdk.OneDec(),
 					ReferencePairRatio: sdk.OneDec(),
 				},
@@ -132,7 +133,7 @@ func (suite *KeeperTestSuite) TestGetLPsStoplossPositions() {
 			Address: addr2.String(),
 			StoplossPositions: []types.Stoploss{
 				{
-					UniswapPairId:      "pair8",
+					UniswapPairID:      "pair8",
 					MaxSlippage:        sdk.OneDec(),
 					ReferencePairRatio: sdk.OneDec(),
 				},

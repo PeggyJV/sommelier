@@ -43,14 +43,14 @@ func (k Keeper) EndBlocker(ctx sdk.Context) {
 	pairMap := make(map[string]*oracletypes.UniswapPair)
 
 	k.IterateStoplossPositions(ctx, func(address sdk.AccAddress, stoploss types.Stoploss) (stop bool) {
-		pair, ok := pairMap[stoploss.UniswapPairId]
+		pair, ok := pairMap[stoploss.UniswapPairID]
 		if !ok {
-			oracleData, _ := k.oracleKeeper.GetLatestAggregatedOracleData(ctx, oracletypes.UniswapDataType, stoploss.UniswapPairId)
+			oracleData, _ := k.oracleKeeper.GetLatestAggregatedOracleData(ctx, oracletypes.UniswapDataType, stoploss.UniswapPairID)
 			if oracleData == nil {
 				// pair not found, continue with the next position
 				k.Logger(ctx).Debug(
 					"pair not found on provided oracle data",
-					"pair-id", stoploss.UniswapPairId,
+					"pair-id", stoploss.UniswapPairID,
 					"height", fmt.Sprintf("%d", ctx.BlockHeight()),
 				)
 				return false
@@ -60,20 +60,20 @@ func (k Keeper) EndBlocker(ctx sdk.Context) {
 			pair = oracleData.(*oracletypes.UniswapPair)
 
 			// set the pair to the map in care there another stoploss position with the same pair
-			pairMap[stoploss.UniswapPairId] = pair
+			pairMap[stoploss.UniswapPairID] = pair
 		}
 
 		// check if total supply is 0 to avoid panics
 		if pair.TotalSupply.IsZero() {
 			k.Logger(ctx).Debug(
 				"0 total supply for pair",
-				"pair-id", stoploss.UniswapPairId,
+				"pair-id", stoploss.UniswapPairID,
 				"height", fmt.Sprintf("%d", ctx.BlockHeight()),
 			)
 			return false
 		}
 
-		positionShares := sdk.NewDec(stoploss.LiquidityPoolShares)
+		positionShares := sdk.NewDec(int64(stoploss.LiquidityPoolShares))
 
 		// Calculate the current USD value of the position so that we can calculate the impermanent loss
 		usdValueOfPosition := positionShares.Mul(pair.ReserveUSD).Quo(pair.TotalSupply)
@@ -88,19 +88,15 @@ func (k Keeper) EndBlocker(ctx sdk.Context) {
 		// Since the current slipage is grater than max slippage we now withdraw the liquidity of the LP for the uniswap pair
 		// that is suffering impermanent loss
 
-		uniswapERC20Pair := bridgetypes.NewERC20Token(uint64(stoploss.LiquidityPoolShares), stoploss.UniswapPairId)
+		uniswapERC20Pair := bridgetypes.NewERC20Token(stoploss.LiquidityPoolShares, stoploss.UniswapPairID)
 
 		// TODO: who pays the fee?
-		ethFee := bridgetypes.NewERC20Token(0, stoploss.UniswapPairId)
+		ethFee := bridgetypes.NewERC20Token(0, stoploss.UniswapPairID)
 
 		abi, err := abi.JSON(strings.NewReader(contract.ContractABI))
 		if err != nil {
 			panic(fmt.Errorf("sommelier contract ABI encoding failed: %w", err))
 		}
-
-		// FIXME: this is not the receiving address this should be included
-		// in the stoploss msg
-		ethAddress := common.BytesToAddress(address.Bytes())
 
 		// TODO: we should give the option to redeemLiquidityETH
 		// TODO: fill the missing fields
@@ -111,8 +107,8 @@ func (k Keeper) EndBlocker(ctx sdk.Context) {
 			0,                                   // TODO: uint256 liquidity
 			0,                                   // TODO: uint256 amountAMin
 			0,                                   // TODO: uint256 amountBMin
-			ethAddress,                          // address to
-			0,                                   // uint256 deadline
+			common.HexToAddress(stoploss.ReceiverAddress), // address to
+			0, // uint256 deadline
 		)
 
 		if err != nil {
@@ -140,27 +136,27 @@ func (k Keeper) EndBlocker(ctx sdk.Context) {
 		k.ethBridgeKeeper.SetOutgoingLogicCall(ctx, call)
 
 		// log and emit metrics
-		k.Logger(ctx).Info("stoploss executed", "pair", stoploss.UniswapPairId, "address", address.String())
+		k.Logger(ctx).Info("stoploss executed", "pair", stoploss.UniswapPairID, "receiver-address", stoploss.ReceiverAddress)
 
 		defer func() {
 			// amount metric
 			telemetry.SetGaugeWithLabels(
 				[]string{"stoploss", "execution"},
 				float32(stoploss.LiquidityPoolShares),
-				[]metrics.Label{telemetry.NewLabel("pair", stoploss.UniswapPairId)},
+				[]metrics.Label{telemetry.NewLabel("pair", stoploss.UniswapPairID)},
 			)
 
 			// counter metric
 			telemetry.IncrCounterWithLabels(
 				[]string{"stoploss", "execution"},
 				1,
-				[]metrics.Label{telemetry.NewLabel("pair", stoploss.UniswapPairId)},
+				[]metrics.Label{telemetry.NewLabel("pair", stoploss.UniswapPairID)},
 			)
 		}()
 
 		// TODO: technically we should remove the stoploss position now that is has been executed, but we still need to account
 		// for the cases when the outgoing txs to ethereum fail for some reason.
-		k.DeleteStoplossPosition(ctx, address, stoploss.UniswapPairId)
+		k.DeleteStoplossPosition(ctx, address, stoploss.UniswapPairID)
 
 		return false
 	})

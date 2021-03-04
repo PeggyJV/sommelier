@@ -1,12 +1,12 @@
 package types
 
 import (
-	"errors"
 	"fmt"
 	"sort"
-	"strings"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
+
+	bridgetypes "github.com/althea-net/peggy/module/x/peggy/types"
 )
 
 // LPsStoplossPositions is a slice of liquidity provider (LP) stoploss positions
@@ -51,15 +51,15 @@ func (lps LPsStoplossPositions) Validate() error {
 		seenPositions := make(map[string]bool)
 		for _, position := range lpStoplossPosition.StoplossPositions {
 			// check duplicate stoploss pair for the account
-			if seenPositions[position.UniswapPairId] {
-				return fmt.Errorf("duplicated stoploss position for liquidity provider %s and pair %s", lpStoplossPosition.Address, position.UniswapPairId)
+			if seenPositions[position.UniswapPairID] {
+				return fmt.Errorf("duplicated stoploss position for liquidity provider %s and pair %s", lpStoplossPosition.Address, position.UniswapPairID)
 			}
 
 			if err := position.Validate(); err != nil {
-				return fmt.Errorf("invalid position for address %s and pair %s, %w", lpStoplossPosition.Address, position.UniswapPairId, err)
+				return fmt.Errorf("invalid position for address %s and pair %s, %w", lpStoplossPosition.Address, position.UniswapPairID, err)
 			}
 
-			seenPositions[position.UniswapPairId] = true
+			seenPositions[position.UniswapPairID] = true
 		}
 		seenLps[lpStoplossPosition.Address] = true
 	}
@@ -68,17 +68,23 @@ func (lps LPsStoplossPositions) Validate() error {
 
 // Validate performs a basic validation of the stoploss fields
 func (s Stoploss) Validate() error {
-	if strings.TrimSpace(s.UniswapPairId) == "" {
-		return errors.New("uniswap pair id cannot be blank")
+	if err := bridgetypes.ValidateEthAddress(s.UniswapPairID); err != nil {
+		return fmt.Errorf("invalid uniswap pair id: %w", err)
 	}
+
 	if s.MaxSlippage.LTE(sdk.ZeroDec()) || s.MaxSlippage.GT(sdk.NewDec(1)) {
 		return fmt.Errorf("max slippage must be (0,1], got %s", s.MaxSlippage)
 	}
-	if s.LiquidityPoolShares <= 0 {
+	if s.LiquidityPoolShares == 0 {
 		return fmt.Errorf("liquidity pool shares must be positive, got %d", s.LiquidityPoolShares)
 	}
 	if s.ReferencePairRatio.LTE(sdk.ZeroDec()) || s.ReferencePairRatio.GT(sdk.NewDec(1)) {
 		return fmt.Errorf("reference pair ratio must be (0,1], got %s", s.ReferencePairRatio)
 	}
+
+	if err := bridgetypes.ValidateEthAddress(s.ReceiverAddress); err != nil {
+		return fmt.Errorf("invalid ethereum receiver address: %w", err)
+	}
+
 	return nil
 }

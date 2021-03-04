@@ -70,7 +70,7 @@ func (k Keeper) GetStoplossPosition(ctx sdk.Context, address sdk.AccAddress, uni
 func (k Keeper) SetStoplossPosition(ctx sdk.Context, address sdk.AccAddress, stoploss types.Stoploss) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.StoplossKeyPrefix)
 	bz := k.cdc.MustMarshalBinaryBare(&stoploss)
-	store.Set(types.StoplossKey(address, stoploss.UniswapPairId), bz)
+	store.Set(types.StoplossKey(address, stoploss.UniswapPairID), bz)
 }
 
 // DeleteStoplossPosition removes a stoploss position from the store.

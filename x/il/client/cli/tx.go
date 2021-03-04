@@ -34,8 +34,8 @@ func GetTxCmd() *cobra.Command {
 // GetCmdCreateStoploss
 func GetCmdCreateStoploss() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "create-stoploss [uniswap-pair] [liquidity-pool-shares] [max-slippage] [ref-pair-ratio]",
-		Args:  cobra.ExactArgs(4),
+		Use:   "create-stoploss [uniswap-pair] [liquidity-pool-shares] [max-slippage] [ref-pair-ratio] [receiver-address]",
+		Args:  cobra.ExactArgs(5),
 		Short: "Create a stoploss position for a given LP provider",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			clientCtx, err := client.GetClientTxContext(cmd)
@@ -44,8 +44,9 @@ func GetCmdCreateStoploss() *cobra.Command {
 			}
 
 			uniswapPairID := args[0]
+			receiverAddress := args[4]
 
-			shares, err := strconv.ParseInt(args[1], 10, 64)
+			shares, err := strconv.ParseUint(args[1], 10, 64)
 			if err != nil {
 				return fmt.Errorf("invalid liquidity pool shares: %w", err)
 			}
@@ -61,10 +62,11 @@ func GetCmdCreateStoploss() *cobra.Command {
 			}
 
 			stoploss := &types.Stoploss{
-				UniswapPairId:       uniswapPairID,
+				UniswapPairID:       uniswapPairID,
 				LiquidityPoolShares: shares,
 				MaxSlippage:         maxSlippage,
 				ReferencePairRatio:  ratio,
+				ReceiverAddress:     receiverAddress,
 			}
 
 			msg := types.NewMsgCreateStoploss(clientCtx.FromAddress, stoploss)

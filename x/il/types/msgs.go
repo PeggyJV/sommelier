@@ -70,7 +70,7 @@ func NewMsgDeleteStoploss(address sdk.Address, uniswapPairID string) *MsgDeleteS
 
 	return &MsgDeleteStoploss{
 		Address:       address.String(),
-		UniswapPairId: uniswapPairID,
+		UniswapPairID: uniswapPairID,
 	}
 }
 
@@ -101,7 +101,7 @@ func (msg MsgDeleteStoploss) ValidateBasic() error {
 		return sdkerrors.Wrap(sdkerrors.ErrInvalidAddress, err.Error())
 	}
 
-	if strings.TrimSpace(msg.UniswapPairId) == "" {
+	if strings.TrimSpace(msg.UniswapPairID) == "" {
 		return sdkerrors.Wrap(ErrUniswapPairInvalid, "cannot be blank")
 	}
 

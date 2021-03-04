@@ -2,6 +2,7 @@ syntax = "proto3";
 package il.v1;
 
 import "il/v1/il.proto";
+import "gogoproto/gogo.proto";
 
 option go_package = "github.com/peggyjv/sommelier/x/il/types";
 
@@ -29,7 +30,7 @@ message MsgDeleteStoploss {
   // account address that owns the stoploss position
   string address = 1;
   // uniswap pair hex address 
-  string uniswap_pair_id = 2;
+  string uniswap_pair_id = 2 [(gogoproto.customname) = "UniswapPairID"];
 }
 
 // MsgDeleteStoplossResponse is the response type for the Msg/DeleteStoploss gRPC method.
