@@ -40,7 +40,7 @@ func (suite *KeeperTestSuite) TestStoploss() {
 			"success",
 			func() {
 				expStoploss = types.Stoploss{
-					UniswapPairId:       "pair",
+					UniswapPairID:       "pair",
 					LiquidityPoolShares: 10,
 					MaxSlippage:         sdk.OneDec(),
 					ReferencePairRatio:  sdk.OneDec(),
@@ -116,13 +116,13 @@ func (suite *KeeperTestSuite) TestStoplossPositions() {
 					},
 					StoplossPositions: []types.Stoploss{
 						{
-							UniswapPairId:       "pair",
+							UniswapPairID:       "pair",
 							LiquidityPoolShares: 10,
 							MaxSlippage:         sdk.OneDec(),
 							ReferencePairRatio:  sdk.OneDec(),
 						},
 						{
-							UniswapPairId:       "pair1",
+							UniswapPairID:       "pair1",
 							LiquidityPoolShares: 11,
 							MaxSlippage:         sdk.OneDec(),
 							ReferencePairRatio:  sdk.OneDec(),
