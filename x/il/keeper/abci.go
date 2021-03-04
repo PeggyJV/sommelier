@@ -2,9 +2,13 @@ package keeper
 
 import (
 	"fmt"
+	"strings"
 	"time"
 
 	"github.com/armon/go-metrics"
+
+	"github.com/ethereum/go-ethereum/accounts/abi"
+	"github.com/ethereum/go-ethereum/common"
 
 	"github.com/cosmos/cosmos-sdk/telemetry"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -12,14 +16,30 @@ import (
 	bridgetypes "github.com/althea-net/peggy/module/x/peggy/types"
 
 	"github.com/peggyjv/sommelier/x/il/types"
+	"github.com/peggyjv/sommelier/x/il/types/contract"
 	oracletypes "github.com/peggyjv/sommelier/x/oracle/types"
 )
+
+// TODO: the stoploss position should be recreated if the tx on ethereum timeouts or fails.
 
 // EndBlocker is called at the end of every block
 func (k Keeper) EndBlocker(ctx sdk.Context) {
 	defer telemetry.ModuleMeasureSince(types.ModuleName, time.Now(), telemetry.MetricKeyEndBlocker)
 
+	// check if the latest eth block height
+	ethHeight := k.ethBridgeKeeper.GetLastObservedEthereumBlockHeight(ctx)
+	if ethHeight.EthereumBlockHeight == 0 {
+		k.Logger(ctx).Debug("tracked ethereum height is 0")
+		return
+	}
+
 	params := k.GetParams(ctx)
+
+	invalidationID := k.GetInvalidationID(ctx)
+
+	// variable for the original value to check if we need to store the new invalidationID value
+	originalInvalidationID := invalidationID
+
 	pairMap := make(map[string]*oracletypes.UniswapPair)
 
 	k.IterateStoplossPositions(ctx, func(address sdk.AccAddress, stoploss types.Stoploss) (stop bool) {
@@ -38,6 +58,8 @@ func (k Keeper) EndBlocker(ctx sdk.Context) {
 
 			// panic if it is not a uniswap pair type
 			pair = oracleData.(*oracletypes.UniswapPair)
+
+			// set the pair to the map in care there another stoploss position with the same pair
 			pairMap[stoploss.UniswapPairId] = pair
 		}
 
@@ -68,15 +90,50 @@ func (k Keeper) EndBlocker(ctx sdk.Context) {
 
 		uniswapERC20Pair := bridgetypes.NewERC20Token(uint64(stoploss.LiquidityPoolShares), stoploss.UniswapPairId)
 
+		// TODO: who pays the fee?
+		ethFee := bridgetypes.NewERC20Token(0, stoploss.UniswapPairId)
+
+		abi, err := abi.JSON(strings.NewReader(contract.ContractABI))
+		if err != nil {
+			panic(fmt.Errorf("sommelier contract ABI encoding failed: %w", err))
+		}
+
+		// FIXME: this is not the receiving address this should be included
+		// in the stoploss msg
+		ethAddress := common.BytesToAddress(address.Bytes())
+
+		// TODO: we should give the option to redeemLiquidityETH
 		// TODO: fill the missing fields
+		payload, err := abi.Pack(
+			"redeemLiquidity",
+			common.HexToAddress(pair.Token0.ID), // 	address tokenA
+			common.HexToAddress(pair.Token1.ID), // 	address tokenB
+			0,                                   // TODO: uint256 liquidity
+			0,                                   // TODO: uint256 amountAMin
+			0,                                   // TODO: uint256 amountBMin
+			ethAddress,                          // address to
+			0,                                   // uint256 deadline
+		)
+
+		if err != nil {
+			panic(fmt.Errorf("sommelier contract ABI payload pack failed: %w", err))
+		}
+
+		// increment the invalidation ID counter
+		invalidationID++
+
+		// NOTE: by setting the invalidation nonce always to 0 and the invalidation ID to an increasing
+		// counter, will prevent a logic call to get invalidated unless the outgoing Ethereum transaction
+		// times out
+
 		call := &bridgetypes.OutgoingLogicCall{
 			Transfers:            []*bridgetypes.ERC20Token{uniswapERC20Pair},
-			Fees:                 nil, // TODO: who pays the fee
+			Fees:                 []*bridgetypes.ERC20Token{ethFee},
 			LogicContractAddress: params.ContractAddress,
-			Payload:              nil,
-			Timeout:              0,
-			InvalidationId:       nil,
-			InvalidationNonce:    0,
+			Payload:              payload,
+			Timeout:              ethHeight.EthereumBlockHeight + params.EthTimeout,
+			InvalidationId:       sdk.Uint64ToBigEndian(invalidationID), // TODO: should this be hex?
+			InvalidationNonce:    1,
 		}
 
 		// send eth transaction to withdraw lp_shares liquidity for pair_id
@@ -101,6 +158,15 @@ func (k Keeper) EndBlocker(ctx sdk.Context) {
 			)
 		}()
 
+		// TODO: technically we should remove the stoploss position now that is has been executed, but we still need to account
+		// for the cases when the outgoing txs to ethereum fail for some reason.
+		k.DeleteStoplossPosition(ctx, address, stoploss.UniswapPairId)
+
 		return false
 	})
+
+	// Set the new invalidation
+	if originalInvalidationID != invalidationID {
+		k.SetInvalidationID(ctx, invalidationID)
+	}
 }

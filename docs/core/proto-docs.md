@@ -95,6 +95,7 @@ Params define the impermanent loss module parameters
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | `contract_address` | [string](#string) |  | contract address for impermanent loss handling on ethereum |
+| `eth_timeout` | [uint64](#uint64) |  | timeout height value for the custom ethereum outgoing logic. This is value added to the last seen ethereum height when executing the stoploss logic on EndBlock. |
 
 
 

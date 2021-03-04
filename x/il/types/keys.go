@@ -23,6 +23,8 @@ const (
 var (
 	// Keys for store prefixes
 	StoplossKeyPrefix = []byte{0x01} // prefix for each key to a stoploss
+	// Invalidation ID prefix
+	InvalidationIDPrefix = []byte{0x02} // prefix for each key to a stoploss
 )
 
 // StoplossKey defines the full unprefixed store key for Stoploss

@@ -3,7 +3,6 @@ module github.com/peggyjv/sommelier
 go 1.15
 
 require (
-	github.com/althea-net/peggy v0.0.14-0.20210302140212-303cf52dce02 // indirect
 	github.com/althea-net/peggy/module v0.0.0-20210302140212-303cf52dce02
 	github.com/armon/go-metrics v0.3.6
 	github.com/cosmos/cosmos-sdk v0.41.0

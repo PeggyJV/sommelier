@@ -155,3 +155,18 @@ func (k Keeper) GetLPsStoplossPositions(ctx sdk.Context) types.LPsStoplossPositi
 
 	return lps.Sort()
 }
+
+func (k Keeper) GetInvalidationID(ctx sdk.Context) uint64 {
+	store := ctx.KVStore(k.storeKey)
+	bz := store.Get(types.InvalidationIDPrefix)
+	if len(bz) == 0 {
+		return 0
+	}
+
+	return sdk.BigEndianToUint64(bz)
+}
+
+func (k Keeper) SetInvalidationID(ctx sdk.Context, invalidationID uint64) {
+	store := ctx.KVStore(k.storeKey)
+	store.Set(types.InvalidationIDPrefix, sdk.Uint64ToBigEndian(invalidationID))
+}

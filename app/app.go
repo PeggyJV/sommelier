@@ -382,6 +382,7 @@ func NewSommelierApp(
 		ibc.NewAppModule(app.IBCKeeper),
 		params.NewAppModule(app.ParamsKeeper),
 		transferModule,
+		ethbridge.NewAppModule(app.EthBridgeKeeper, app.BankKeeper),
 		oracle.NewAppModule(app.OracleKeeper, appCodec),
 		il.NewAppModule(app.ILKeeper, appCodec),
 	)
@@ -397,10 +398,11 @@ func NewSommelierApp(
 	)
 
 	// NOTE: Impermanent loss module must always go after the oracle module to have the
-	// aggregated data available for stoploss execution.
+	// aggregated data available for stoploss execution. The bridge module doesn't require a
+	// specific endblock order.
 	app.mm.SetOrderEndBlockers(
 		crisistypes.ModuleName, oracletypes.ModuleName, govtypes.ModuleName, stakingtypes.ModuleName,
-		iltypes.ModuleName,
+		iltypes.ModuleName, ethbridgetypes.ModuleName,
 	)
 
 	// NOTE: The genutils module must occur after staking so that pools are
@@ -410,8 +412,10 @@ func NewSommelierApp(
 	// can do so safely.
 	app.mm.SetOrderInitGenesis(
 		capabilitytypes.ModuleName, authtypes.ModuleName, banktypes.ModuleName, distrtypes.ModuleName, stakingtypes.ModuleName,
-		slashingtypes.ModuleName, govtypes.ModuleName, minttypes.ModuleName, crisistypes.ModuleName, oracletypes.ModuleName, iltypes.ModuleName,
+		slashingtypes.ModuleName, govtypes.ModuleName, minttypes.ModuleName, crisistypes.ModuleName,
 		ibchost.ModuleName, genutiltypes.ModuleName, evidencetypes.ModuleName, ibctransfertypes.ModuleName,
+		// bridge and sommelier modules
+		ethbridgetypes.ModuleName, oracletypes.ModuleName, iltypes.ModuleName,
 	)
 
 	app.mm.RegisterInvariants(&app.CrisisKeeper)

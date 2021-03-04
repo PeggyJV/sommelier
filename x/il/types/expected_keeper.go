@@ -14,4 +14,5 @@ type OracleKeeper interface {
 // EthBridgeKeeper is expected keeper for the peggy bridge module
 type EthBridgeKeeper interface {
 	SetOutgoingLogicCall(ctx sdk.Context, call *bridgetypes.OutgoingLogicCall)
+	GetLastObservedEthereumBlockHeight(ctx sdk.Context) bridgetypes.LastObservedEthereumBlockHeight
 }

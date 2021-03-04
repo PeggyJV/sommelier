@@ -14,6 +14,7 @@ const DefaultParamspace = ModuleName
 // Parameter keys
 var (
 	ParamStoreKeyContractAddress = []byte("ContractAddress")
+	ParamStoreKeyEthTimeout      = []byte("EthTimeout")
 )
 
 // Default parameter values
@@ -24,6 +25,7 @@ var _ paramtypes.ParamSet = &Params{}
 func DefaultParams() Params {
 	return Params{
 		ContractAddress: common.Address{}.String(), // TODO: define
+		EthTimeout:      100,
 	}
 }
 
@@ -31,6 +33,7 @@ func DefaultParams() Params {
 func (p *Params) ParamSetPairs() paramtypes.ParamSetPairs {
 	return paramtypes.ParamSetPairs{
 		paramtypes.NewParamSetPair(ParamStoreKeyContractAddress, &p.ContractAddress, validateContractAddress),
+		paramtypes.NewParamSetPair(ParamStoreKeyEthTimeout, &p.EthTimeout, validateEthTimeout),
 	}
 }
 
@@ -52,6 +55,19 @@ func validateContractAddress(i interface{}) error {
 
 	if v == "" {
 		return errors.New("contract address cannot be blank or zero address")
+	}
+
+	return nil
+}
+
+func validateEthTimeout(i interface{}) error {
+	v, ok := i.(uint64)
+	if !ok {
+		return fmt.Errorf("invalid ETH timeout parameter type: %T", i)
+	}
+
+	if v < 10 {
+		return errors.New("eth timeout value cannot less than 10")
 	}
 
 	return nil
