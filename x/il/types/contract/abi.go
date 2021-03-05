@@ -27,7 +27,7 @@ var (
 )
 
 // ContractABI is the input ABI used to generate the binding from.
-const ContractABI = "[{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_uni_router\",\"type\":\"address\"}],\"stateMutability\":\"nonpayable\",\"type\":\"constructor\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"previousOwner\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"newOwner\",\"type\":\"address\"}],\"name\":\"OwnershipTransferred\",\"type\":\"event\"},{\"inputs\":[],\"name\":\"owner\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"tokenA\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"tokenB\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"liquidity\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"amountAMin\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"amountBMin\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"to\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"deadline\",\"type\":\"uint256\"}],\"name\":\"redeemLiquidity\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"token\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"liquidity\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"amountTokenMin\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"amountETHMin\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"to\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"deadline\",\"type\":\"uint256\"}],\"name\":\"redeemLiquidityETH\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"renounceOwnership\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"newOwner\",\"type\":\"address\"}],\"name\":\"transferOwnership\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_to\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"_a\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"_b\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"state_tokenContract\",\"type\":\"address\"}],\"name\":\"transferTokens\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}]"
+const ContractABI = "[{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_tokenContract\",\"type\":\"address\"}],\"stateMutability\":\"nonpayable\",\"type\":\"constructor\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"previousOwner\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"newOwner\",\"type\":\"address\"}],\"name\":\"OwnershipTransferred\",\"type\":\"event\"},{\"inputs\":[],\"name\":\"owner\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"renounceOwnership\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"newOwner\",\"type\":\"address\"}],\"name\":\"transferOwnership\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_to\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"_a\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"_b\",\"type\":\"uint256\"}],\"name\":\"transferTokens\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}]"
 
 // Contract is an auto generated Go binding around an Ethereum contract.
 type Contract struct {
@@ -137,7 +137,7 @@ func bindContract(address common.Address, caller bind.ContractCaller, transactor
 // sets the output to result. The result type might be a single field for simple
 // returns, a slice of interfaces for anonymous returns and a struct for named
 // returns.
-func (_Contract *ContractRaw) Call(opts *bind.CallOpts, result interface{}, method string, params ...interface{}) error {
+func (_Contract *ContractRaw) Call(opts *bind.CallOpts, result *[]interface{}, method string, params ...interface{}) error {
 	return _Contract.Contract.ContractCaller.contract.Call(opts, result, method, params...)
 }
 
@@ -156,7 +156,7 @@ func (_Contract *ContractRaw) Transact(opts *bind.TransactOpts, method string, p
 // sets the output to result. The result type might be a single field for simple
 // returns, a slice of interfaces for anonymous returns and a struct for named
 // returns.
-func (_Contract *ContractCallerRaw) Call(opts *bind.CallOpts, result interface{}, method string, params ...interface{}) error {
+func (_Contract *ContractCallerRaw) Call(opts *bind.CallOpts, result *[]interface{}, method string, params ...interface{}) error {
 	return _Contract.Contract.contract.Call(opts, result, method, params...)
 }
 
@@ -175,12 +175,17 @@ func (_Contract *ContractTransactorRaw) Transact(opts *bind.TransactOpts, method
 //
 // Solidity: function owner() view returns(address)
 func (_Contract *ContractCaller) Owner(opts *bind.CallOpts) (common.Address, error) {
-	var (
-		ret0 = new(common.Address)
-	)
-	out := ret0
-	err := _Contract.contract.Call(opts, out, "owner")
-	return *ret0, err
+	var out []interface{}
+	err := _Contract.contract.Call(opts, &out, "owner")
+
+	if err != nil {
+		return *new(common.Address), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(common.Address)).(*common.Address)
+
+	return out0, err
+
 }
 
 // Owner is a free data retrieval call binding the contract method 0x8da5cb5b.
@@ -195,48 +200,6 @@ func (_Contract *ContractSession) Owner() (common.Address, error) {
 // Solidity: function owner() view returns(address)
 func (_Contract *ContractCallerSession) Owner() (common.Address, error) {
 	return _Contract.Contract.Owner(&_Contract.CallOpts)
-}
-
-// RedeemLiquidity is a paid mutator transaction binding the contract method 0x6f221a7a.
-//
-// Solidity: function redeemLiquidity(address tokenA, address tokenB, uint256 liquidity, uint256 amountAMin, uint256 amountBMin, address to, uint256 deadline) returns()
-func (_Contract *ContractTransactor) RedeemLiquidity(opts *bind.TransactOpts, tokenA common.Address, tokenB common.Address, liquidity *big.Int, amountAMin *big.Int, amountBMin *big.Int, to common.Address, deadline *big.Int) (*types.Transaction, error) {
-	return _Contract.contract.Transact(opts, "redeemLiquidity", tokenA, tokenB, liquidity, amountAMin, amountBMin, to, deadline)
-}
-
-// RedeemLiquidity is a paid mutator transaction binding the contract method 0x6f221a7a.
-//
-// Solidity: function redeemLiquidity(address tokenA, address tokenB, uint256 liquidity, uint256 amountAMin, uint256 amountBMin, address to, uint256 deadline) returns()
-func (_Contract *ContractSession) RedeemLiquidity(tokenA common.Address, tokenB common.Address, liquidity *big.Int, amountAMin *big.Int, amountBMin *big.Int, to common.Address, deadline *big.Int) (*types.Transaction, error) {
-	return _Contract.Contract.RedeemLiquidity(&_Contract.TransactOpts, tokenA, tokenB, liquidity, amountAMin, amountBMin, to, deadline)
-}
-
-// RedeemLiquidity is a paid mutator transaction binding the contract method 0x6f221a7a.
-//
-// Solidity: function redeemLiquidity(address tokenA, address tokenB, uint256 liquidity, uint256 amountAMin, uint256 amountBMin, address to, uint256 deadline) returns()
-func (_Contract *ContractTransactorSession) RedeemLiquidity(tokenA common.Address, tokenB common.Address, liquidity *big.Int, amountAMin *big.Int, amountBMin *big.Int, to common.Address, deadline *big.Int) (*types.Transaction, error) {
-	return _Contract.Contract.RedeemLiquidity(&_Contract.TransactOpts, tokenA, tokenB, liquidity, amountAMin, amountBMin, to, deadline)
-}
-
-// RedeemLiquidityETH is a paid mutator transaction binding the contract method 0x0f77f6b2.
-//
-// Solidity: function redeemLiquidityETH(address token, uint256 liquidity, uint256 amountTokenMin, uint256 amountETHMin, address to, uint256 deadline) returns()
-func (_Contract *ContractTransactor) RedeemLiquidityETH(opts *bind.TransactOpts, token common.Address, liquidity *big.Int, amountTokenMin *big.Int, amountETHMin *big.Int, to common.Address, deadline *big.Int) (*types.Transaction, error) {
-	return _Contract.contract.Transact(opts, "redeemLiquidityETH", token, liquidity, amountTokenMin, amountETHMin, to, deadline)
-}
-
-// RedeemLiquidityETH is a paid mutator transaction binding the contract method 0x0f77f6b2.
-//
-// Solidity: function redeemLiquidityETH(address token, uint256 liquidity, uint256 amountTokenMin, uint256 amountETHMin, address to, uint256 deadline) returns()
-func (_Contract *ContractSession) RedeemLiquidityETH(token common.Address, liquidity *big.Int, amountTokenMin *big.Int, amountETHMin *big.Int, to common.Address, deadline *big.Int) (*types.Transaction, error) {
-	return _Contract.Contract.RedeemLiquidityETH(&_Contract.TransactOpts, token, liquidity, amountTokenMin, amountETHMin, to, deadline)
-}
-
-// RedeemLiquidityETH is a paid mutator transaction binding the contract method 0x0f77f6b2.
-//
-// Solidity: function redeemLiquidityETH(address token, uint256 liquidity, uint256 amountTokenMin, uint256 amountETHMin, address to, uint256 deadline) returns()
-func (_Contract *ContractTransactorSession) RedeemLiquidityETH(token common.Address, liquidity *big.Int, amountTokenMin *big.Int, amountETHMin *big.Int, to common.Address, deadline *big.Int) (*types.Transaction, error) {
-	return _Contract.Contract.RedeemLiquidityETH(&_Contract.TransactOpts, token, liquidity, amountTokenMin, amountETHMin, to, deadline)
 }
 
 // RenounceOwnership is a paid mutator transaction binding the contract method 0x715018a6.
@@ -281,25 +244,25 @@ func (_Contract *ContractTransactorSession) TransferOwnership(newOwner common.Ad
 	return _Contract.Contract.TransferOwnership(&_Contract.TransactOpts, newOwner)
 }
 
-// TransferTokens is a paid mutator transaction binding the contract method 0xd63dd196.
+// TransferTokens is a paid mutator transaction binding the contract method 0xa9f7e664.
 //
-// Solidity: function transferTokens(address _to, uint256 _a, uint256 _b, address state_tokenContract) returns()
-func (_Contract *ContractTransactor) TransferTokens(opts *bind.TransactOpts, _to common.Address, _a *big.Int, _b *big.Int, state_tokenContract common.Address) (*types.Transaction, error) {
-	return _Contract.contract.Transact(opts, "transferTokens", _to, _a, _b, state_tokenContract)
+// Solidity: function transferTokens(address _to, uint256 _a, uint256 _b) returns()
+func (_Contract *ContractTransactor) TransferTokens(opts *bind.TransactOpts, _to common.Address, _a *big.Int, _b *big.Int) (*types.Transaction, error) {
+	return _Contract.contract.Transact(opts, "transferTokens", _to, _a, _b)
 }
 
-// TransferTokens is a paid mutator transaction binding the contract method 0xd63dd196.
+// TransferTokens is a paid mutator transaction binding the contract method 0xa9f7e664.
 //
-// Solidity: function transferTokens(address _to, uint256 _a, uint256 _b, address state_tokenContract) returns()
-func (_Contract *ContractSession) TransferTokens(_to common.Address, _a *big.Int, _b *big.Int, state_tokenContract common.Address) (*types.Transaction, error) {
-	return _Contract.Contract.TransferTokens(&_Contract.TransactOpts, _to, _a, _b, state_tokenContract)
+// Solidity: function transferTokens(address _to, uint256 _a, uint256 _b) returns()
+func (_Contract *ContractSession) TransferTokens(_to common.Address, _a *big.Int, _b *big.Int) (*types.Transaction, error) {
+	return _Contract.Contract.TransferTokens(&_Contract.TransactOpts, _to, _a, _b)
 }
 
-// TransferTokens is a paid mutator transaction binding the contract method 0xd63dd196.
+// TransferTokens is a paid mutator transaction binding the contract method 0xa9f7e664.
 //
-// Solidity: function transferTokens(address _to, uint256 _a, uint256 _b, address state_tokenContract) returns()
-func (_Contract *ContractTransactorSession) TransferTokens(_to common.Address, _a *big.Int, _b *big.Int, state_tokenContract common.Address) (*types.Transaction, error) {
-	return _Contract.Contract.TransferTokens(&_Contract.TransactOpts, _to, _a, _b, state_tokenContract)
+// Solidity: function transferTokens(address _to, uint256 _a, uint256 _b) returns()
+func (_Contract *ContractTransactorSession) TransferTokens(_to common.Address, _a *big.Int, _b *big.Int) (*types.Transaction, error) {
+	return _Contract.Contract.TransferTokens(&_Contract.TransactOpts, _to, _a, _b)
 }
 
 // ContractOwnershipTransferredIterator is returned from FilterOwnershipTransferred and is used to iterate over the raw logs and unpacked data for OwnershipTransferred events raised by the Contract contract.
@@ -451,6 +414,6 @@ func (_Contract *ContractFilterer) ParseOwnershipTransferred(log types.Log) (*Co
 	if err := _Contract.contract.UnpackLog(event, "OwnershipTransferred", log); err != nil {
 		return nil, err
 	}
+	event.Raw = log
 	return event, nil
 }
-
