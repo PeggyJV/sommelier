@@ -2,6 +2,7 @@ package keeper
 
 import (
 	"fmt"
+	"math/big"
 	"strings"
 	"time"
 
@@ -98,17 +99,19 @@ func (k Keeper) EndBlocker(ctx sdk.Context) {
 			panic(fmt.Errorf("sommelier contract ABI encoding failed: %w", err))
 		}
 
+		deadline := big.NewInt(ctx.BlockTime().Unix() + 1000*int64(time.Second))
+
 		// TODO: we should give the option to redeemLiquidityETH
 		// TODO: fill the missing fields
 		payload, err := abi.Pack(
 			"redeemLiquidity",
-			common.HexToAddress(pair.Token0.ID), // 	address tokenA
-			common.HexToAddress(pair.Token1.ID), // 	address tokenB
-			0,                                   // TODO: uint256 liquidity
-			0,                                   // TODO: uint256 amountAMin
-			0,                                   // TODO: uint256 amountBMin
-			common.HexToAddress(stoploss.ReceiverAddress), // address to
-			0, // uint256 deadline
+			common.HexToAddress(pair.Token0.ID),             //	address tokenA
+			common.HexToAddress(pair.Token1.ID),             //	address tokenB
+			big.NewInt(int64(stoploss.LiquidityPoolShares)), //	uint256 liquidity
+			big.NewInt(0),                                   //	uint256 amountAMin
+			big.NewInt(0),                                   //	uint256 amountBMin
+			common.HexToAddress(stoploss.ReceiverAddress),   // address to
+			deadline, // uint256 deadline
 		)
 
 		if err != nil {
