@@ -15,7 +15,7 @@ limitations under the License.
 */
 package main
 
-import "github.com/peggyjv/sommelier/cmd/graph-mock//cmd"
+import "github.com/peggyjv/sommelier/cmd/graph-mock/cmd"
 
 func main() {
 	cmd.Execute()
