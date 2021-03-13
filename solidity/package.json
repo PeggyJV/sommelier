@@ -1,18 +1,21 @@
 {
-  "name": "hardhat-test",
+  "name": "gravity-contracts",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
   "scripts": {
     "evm": "npx hardhat node",
     "test": "npx hardhat test --network localhost",
-    "typechain": "npx hardhat typechain"
+    "typechain": "npx hardhat typechain",
+    "compile-deployer": "npx tsc -p . ; pkg dist/contract-deployer.js --targets node10-linux-x64",
+    "evm_fork": "npx hardhat node --fork https://eth-mainnet.alchemyapi.io/v2/${ALCHEMY_ID} --fork-block-number 11780000",
+    "test_fork": "npx hardhat test --network localhost ./tests_mainnet_fork/*.ts"
   },
-  "author": "",
+  "author": "Jehan Tremback",
   "license": "None",
   "devDependencies": {
     "@commitlint/cli": "^9.1.2",
-    "@commitlint/config-conventional": "^12.0.1",
+    "@commitlint/config-conventional": "^9.1.2",
     "@ethersproject/abstract-signer": "^5.0.6",
     "@ethersproject/bignumber": "^5.0.8",
     "@nomiclabs/hardhat-ethers": "^2.0.0",
@@ -26,7 +29,7 @@
     "@types/node": "^14.11.8",
     "@typescript-eslint/eslint-plugin": "^3.10.1",
     "@typescript-eslint/parser": "^3.10.1",
-    "axios": "0.21.1",
+    "@uniswap/v2-periphery": "^1.1.0-beta.0",
     "chai": "^4.2.0",
     "command-line-args": "^5.1.1",
     "commitizen": "^4.2.1",
@@ -34,7 +37,7 @@
     "dotenv": "^8.2.0",
     "eslint": "^7.11.0",
     "eslint-config-prettier": "^6.12.0",
-    "ethereum-waffle": "^2.2.0",
+    "ethereum-waffle": "^3.2.0",
     "ethers": "^5.0.24",
     "fs-extra": "^9.0.1",
     "hardhat": "^2.0.6",
@@ -48,13 +51,14 @@
     "solc": "0.7.4",
     "solhint": "^3.2.1",
     "solhint-plugin-prettier": "^0.0.5",
-    "solidity-coverage": "^0.7.16",
+    "solidity-coverage": "^0.7.12",
     "ts-generator": "^0.1.1",
     "ts-node": "^8.10.2",
     "typechain": "^4.0.1",
-    "typescript": "^3.9.7"
+    "typescript": "^3.9.7",
+    "axios": "0.21.1"
   },
   "dependencies": {
-    "@uniswap/v2-periphery": "^1.1.0-beta.0"
+    "pkg": "^4.4.9"
   }
 }

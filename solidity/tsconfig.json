@@ -19,8 +19,12 @@
     "scripts/**/*",
     "tasks/**/*",
     "test/**/*",
+    "tests_mainnet_fork/**/*",
     "typechain/**/*",
     "types/**/*",
-    "hardhat.config.ts"
+    "hardhat.config.ts",
+    "contract-deployer.ts",
+    "tests_mainnet_fork/uniswap-logic.ts",
+    "scripts/get-valset.ts"
   ]
 }

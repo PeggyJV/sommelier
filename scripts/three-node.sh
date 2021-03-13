@@ -163,6 +163,16 @@ $SOM $home0 tx oracle delegate-feeder $($FED $home0 keys show feeder) $kbt --fro
 $SOM $home1 tx oracle delegate-feeder $($FED $home1 keys show feeder) $kbt --from val $cid -y &>/dev/null
 $SOM $home2 tx oracle delegate-feeder $($FED $home2 keys show feeder) $kbt --from val $cid -y &>/dev/null
 
+echo "Start ethereum chain..."
+
+echo "Deploy peggy contracts on eth chain..."
+
+echo "Generate and delegate keys for gravity..."
+
+echo "Start orchestrators and relayers..."
+
+echo "Start mock graph API..."
+
 # Start the oracle feeders
 echo "Starting the oracle feeders..."
 $FED $home0 start --log-level debug > $hdir.fed0.log 2>&1 &
