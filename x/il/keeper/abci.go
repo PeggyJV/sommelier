@@ -2,14 +2,9 @@ package keeper
 
 import (
 	"fmt"
-	"math/big"
-	"strings"
 	"time"
 
 	"github.com/armon/go-metrics"
-
-	"github.com/ethereum/go-ethereum/accounts/abi"
-	"github.com/ethereum/go-ethereum/common"
 
 	"github.com/cosmos/cosmos-sdk/telemetry"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -17,7 +12,6 @@ import (
 	bridgetypes "github.com/althea-net/peggy/module/x/peggy/types"
 
 	"github.com/peggyjv/sommelier/x/il/types"
-	"github.com/peggyjv/sommelier/x/il/types/contract"
 	oracletypes "github.com/peggyjv/sommelier/x/oracle/types"
 )
 
@@ -94,25 +88,14 @@ func (k Keeper) EndBlocker(ctx sdk.Context) {
 		// TODO: who pays the fee?
 		ethFee := bridgetypes.NewERC20Token(0, stoploss.UniswapPairID)
 
-		abi, err := abi.JSON(strings.NewReader(contract.ContractABI))
-		if err != nil {
-			panic(fmt.Errorf("sommelier contract ABI encoding failed: %w", err))
-		}
+		deadline := ctx.BlockTime().Unix() + 1000*int64(time.Second)
 
-		deadline := big.NewInt(ctx.BlockTime().Unix() + 1000*int64(time.Second))
-
-		// TODO: we should give the option to redeemLiquidityETH
-		// TODO: fill the missing fields
-		payload, err := abi.Pack(
-			"redeemLiquidity",
-			common.HexToAddress(pair.Token0.ID),             //	address tokenA
-			common.HexToAddress(pair.Token1.ID),             //	address tokenB
-			big.NewInt(int64(stoploss.LiquidityPoolShares)), //	uint256 liquidity
-			big.NewInt(0),                                   //	uint256 amountAMin
-			big.NewInt(0),                                   //	uint256 amountBMin
-			common.HexToAddress(stoploss.ReceiverAddress),   // address to
-			deadline, // uint256 deadline
-		)
+		payload, err := types.NewRedeemLiquidityETHCall(
+			pair.ID,
+			stoploss.LiquidityPoolShares,
+			0, 0,
+			stoploss.ReceiverAddress,
+			deadline).GetEncodedCall()
 
 		if err != nil {
 			panic(fmt.Errorf("sommelier contract ABI payload pack failed: %w", err))
