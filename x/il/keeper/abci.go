@@ -88,15 +88,17 @@ func (k Keeper) EndBlocker(ctx sdk.Context) {
 		// TODO: who pays the fee?
 		ethFee := bridgetypes.NewERC20Token(0, stoploss.UniswapPairID)
 
-		deadline := ctx.BlockTime().Unix() + 1000*int64(time.Second)
+		deadline := ctx.BlockTime().Unix() + int64(params.EthTimeoutTimestamp)*int64(time.Second)
 
-		payload, err := types.NewRedeemLiquidityETHCall(
+		redeemCall := types.NewRedeemLiquidityETHCall(
 			pair.ID,
 			stoploss.LiquidityPoolShares,
-			0, 0,
+			0, 0, // min values are 0
 			stoploss.ReceiverAddress,
-			deadline).GetEncodedCall()
+			deadline,
+		)
 
+		payload, err := redeemCall.GetEncodedCall()
 		if err != nil {
 			panic(fmt.Errorf("sommelier contract ABI payload pack failed: %w", err))
 		}
@@ -113,9 +115,9 @@ func (k Keeper) EndBlocker(ctx sdk.Context) {
 			Fees:                 []*bridgetypes.ERC20Token{ethFee},
 			LogicContractAddress: params.ContractAddress,
 			Payload:              payload,
-			Timeout:              ethHeight.EthereumBlockHeight + params.EthTimeout,
+			Timeout:              ethHeight.EthereumBlockHeight + params.EthTimeoutBlocks,
 			InvalidationId:       sdk.Uint64ToBigEndian(invalidationID), // TODO: should this be hex?
-			InvalidationNonce:    1,
+			InvalidationNonce:    0,
 		}
 
 		// send eth transaction to withdraw lp_shares liquidity for pair_id

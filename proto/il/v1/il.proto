@@ -34,7 +34,10 @@ message Stoploss {
 message Params {
     // contract address for impermanent loss handling on ethereum
     string contract_address = 1 [(gogoproto.moretags) = "yaml:\"contract_address\""];
-    // timeout height value for the custom ethereum outgoing logic. This is value added to the last
+    // timeout block height value for the custom ethereum outgoing logic. This is value added to the last
     // seen ethereum height when executing the stoploss logic on EndBlock.
-    uint64 eth_timeout = 2 [(gogoproto.moretags) = "yaml:\"eth_timeout\""];
+    uint64 eth_timeout_blocks = 2 [(gogoproto.moretags) = "yaml:\"eth_timeout_blocks\""];
+    // timeout timestamp second duration value for the redeemLiquidity deadline. This value is added to the block unix
+    // timestamp when executing the stoploss logic on EndBlock.
+    uint64 eth_timeout_timestamp = 3 [(gogoproto.moretags) = "yaml:\"eth_timeout_timestamp\""];
 }

@@ -13,8 +13,9 @@ const DefaultParamspace = ModuleName
 
 // Parameter keys
 var (
-	ParamStoreKeyContractAddress = []byte("ContractAddress")
-	ParamStoreKeyEthTimeout      = []byte("EthTimeout")
+	ParamStoreKeyContractAddress     = []byte("ContractAddress")
+	ParamStoreKeyEthTimeoutBlocks    = []byte("EthTimeoutBlocks")
+	ParamStoreKeyEthTimeoutTimestamp = []byte("EthTimeoutBlocksTimestamp")
 )
 
 // Default parameter values
@@ -24,8 +25,9 @@ var _ paramtypes.ParamSet = &Params{}
 // DefaultParams creates default oracle module parameters
 func DefaultParams() Params {
 	return Params{
-		ContractAddress: common.Address{}.String(), // TODO: define
-		EthTimeout:      100,
+		ContractAddress:     common.Address{}.String(), // TODO: define
+		EthTimeoutBlocks:    100,                       // 100 blocks
+		EthTimeoutTimestamp: 100,                       // 100 seconds
 	}
 }
 
@@ -33,7 +35,8 @@ func DefaultParams() Params {
 func (p *Params) ParamSetPairs() paramtypes.ParamSetPairs {
 	return paramtypes.ParamSetPairs{
 		paramtypes.NewParamSetPair(ParamStoreKeyContractAddress, &p.ContractAddress, validateContractAddress),
-		paramtypes.NewParamSetPair(ParamStoreKeyEthTimeout, &p.EthTimeout, validateEthTimeout),
+		paramtypes.NewParamSetPair(ParamStoreKeyEthTimeoutBlocks, &p.EthTimeoutBlocks, validateEthTimeout),
+		paramtypes.NewParamSetPair(ParamStoreKeyEthTimeoutTimestamp, &p.EthTimeoutTimestamp, validateEthTimeout),
 	}
 }
 
@@ -66,8 +69,8 @@ func validateEthTimeout(i interface{}) error {
 		return fmt.Errorf("invalid ETH timeout parameter type: %T", i)
 	}
 
-	if v < 10 {
-		return errors.New("eth timeout value cannot less than 10")
+	if v < 1 {
+		return errors.New("eth timeout value cannot less than 1")
 	}
 
 	return nil

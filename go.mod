@@ -14,7 +14,6 @@ require (
 	github.com/grpc-ecosystem/grpc-gateway v1.16.0
 	github.com/machinebox/graphql v0.2.2
 	github.com/matryer/is v1.4.0 // indirect
-	github.com/mitchellh/go-homedir v1.1.0
 	github.com/rakyll/statik v0.1.7
 	github.com/regen-network/cosmos-proto v0.3.1
 	github.com/spf13/cast v1.3.1
@@ -29,7 +28,6 @@ require (
 	google.golang.org/genproto v0.0.0-20210203152818-3206188e46ba
 	google.golang.org/grpc v1.35.0
 	gopkg.in/yaml.v2 v2.4.0
-	gotest.tools v2.2.0+incompatible
 )
 
 replace github.com/gogo/protobuf => github.com/regen-network/protobuf v1.3.2-alpha.regen.4

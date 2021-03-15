@@ -32,7 +32,7 @@ func NewMsgCreateStoploss(address sdk.Address, stoploss *Stoploss) *MsgCreateSto
 func (msg MsgCreateStoploss) Route() string { return RouterKey }
 
 // Type implements sdk.Msg
-func (msg MsgCreateStoploss) Type() string { return "stoploss" }
+func (msg MsgCreateStoploss) Type() string { return "create-stoploss" }
 
 // GetSignBytes implements sdk.Msg
 func (msg MsgCreateStoploss) GetSignBytes() []byte {
