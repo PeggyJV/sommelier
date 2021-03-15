@@ -15,7 +15,17 @@ import (
 	oracletypes "github.com/peggyjv/sommelier/x/oracle/types"
 )
 
-// TODO: the stoploss position should be recreated if the tx on ethereum timeouts or fails.
+// BeginBlock recreates stoploss positions that may have timeout.
+// CONTRACT: this logic assumes that upon execution of the transaction on Ethereum
+// the bridge relayers submit a receipt msg to cosmos so that we can delete
+// the executed stoploss from the queue.
+func (k Keeper) BeginBlock(_ sdk.Context) {
+	// iterate over the queue of executed stoploss positions in asc order of eth block heights
+	//  if current ethereum blockHeight < executed ethereum block + block timeout:
+	//  	return true // break
+	// 	recreate stoploss position with same fields
+	// 	delete position from queue
+}
 
 // EndBlocker is called at the end of every block
 func (k Keeper) EndBlocker(ctx sdk.Context) {
