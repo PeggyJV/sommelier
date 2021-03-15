@@ -3,7 +3,6 @@ import "hardhat-gas-reporter";
 import "hardhat-typechain";
 import { task } from "hardhat/config";
 
-
 task("accounts", "Prints the list of accounts", async (args, hre) => {
   const accounts = await hre.ethers.getSigners();
 
@@ -37,6 +36,10 @@ module.exports = {
     }  },
   networks: {
     hardhat: {
+      // forking:{
+      //   url: `https://eth-mainnet.alchemyapi.io/v2/${ALCHEMY_ID}`,
+      //   blockNumber: 11780000, //Pin random block
+      // },
       accounts: [
         {
           privateKey:
@@ -817,6 +820,11 @@ module.exports = {
           privateKey:
             "0x47aa5fbb74b21f263888dfc24a7a7b184634142935d4e2152b1c901516eeb129",
           balance: "0xfffffffffffffffffffffff"
+        },
+        {
+          privateKey:
+            "0xb1bab011e03a9862664706fc3bbaa1b16651528e5f0e7fbfcbfdd8be302a13e7",
+          balance: "0xfffffffffffffffffffffff"
         }
       ]
     }
@@ -828,5 +836,8 @@ module.exports = {
   },
   gasReporter: {
     enabled: true
+  },
+  mocha: {
+    timeout: 200000
   }
 };

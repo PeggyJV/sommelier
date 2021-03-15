@@ -4,6 +4,32 @@
 
 ## Table of Contents
 
+- [il/v1/il.proto](#il/v1/il.proto)
+    - [Params](#il.v1.Params)
+    - [Stoploss](#il.v1.Stoploss)
+  
+- [il/v1/genesis.proto](#il/v1/genesis.proto)
+    - [GenesisState](#il.v1.GenesisState)
+    - [StoplossPositions](#il.v1.StoplossPositions)
+  
+- [il/v1/query.proto](#il/v1/query.proto)
+    - [QueryParamsRequest](#il.v1.QueryParamsRequest)
+    - [QueryParamsResponse](#il.v1.QueryParamsResponse)
+    - [QueryStoplossPositionsRequest](#il.v1.QueryStoplossPositionsRequest)
+    - [QueryStoplossPositionsResponse](#il.v1.QueryStoplossPositionsResponse)
+    - [QueryStoplossRequest](#il.v1.QueryStoplossRequest)
+    - [QueryStoplossResponse](#il.v1.QueryStoplossResponse)
+  
+    - [Query](#il.v1.Query)
+  
+- [il/v1/tx.proto](#il/v1/tx.proto)
+    - [MsgCreateStoploss](#il.v1.MsgCreateStoploss)
+    - [MsgCreateStoplossResponse](#il.v1.MsgCreateStoplossResponse)
+    - [MsgDeleteStoploss](#il.v1.MsgDeleteStoploss)
+    - [MsgDeleteStoplossResponse](#il.v1.MsgDeleteStoplossResponse)
+  
+    - [Msg](#il.v1.Msg)
+  
 - [oracle/v1/oracle.proto](#oracle/v1/oracle.proto)
     - [OracleFeed](#oracle.v1.OracleFeed)
     - [OraclePrevote](#oracle.v1.OraclePrevote)
@@ -50,6 +76,302 @@
     - [Query](#oracle.v1.Query)
   
 - [Scalar Value Types](#scalar-value-types)
+
+
+
+<a name="il/v1/il.proto"></a>
+<p align="right"><a href="#top">Top</a></p>
+
+## il/v1/il.proto
+
+
+
+<a name="il.v1.Params"></a>
+
+### Params
+Params define the impermanent loss module parameters
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `contract_address` | [string](#string) |  | contract address for impermanent loss handling on ethereum |
+| `eth_timeout_blocks` | [uint64](#uint64) |  | timeout block height value for the custom ethereum outgoing logic. This is value added to the last seen ethereum height when executing the stoploss logic on EndBlock. |
+| `eth_timeout_timestamp` | [uint64](#uint64) |  | timeout timestamp value for the redeemLiquidity deadline. This is value added to the block timestamp unix value when executing the stoploss logic on EndBlock. |
+
+
+
+
+
+
+<a name="il.v1.Stoploss"></a>
+
+### Stoploss
+Stoploss defines a set of parameters that together trigger a stoploss withdrawal.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `uniswap_pair_id` | [string](#string) |  | uniswap pair hex address |
+| `liquidity_pool_shares` | [uint64](#uint64) |  | amount of shares from the liquidity pool to redeem if current slippage > max slipage |
+| `max_slippage` | [string](#string) |  | max slippage allowed before the stoploss is triggered |
+| `reference_pair_ratio` | [string](#string) |  | starting token pair ratio of the uniswap pool |
+| `receiver_address` | [string](#string) |  | ethereum receiving address in hex format |
+
+
+
+
+
+ <!-- end messages -->
+
+ <!-- end enums -->
+
+ <!-- end HasExtensions -->
+
+ <!-- end services -->
+
+
+
+<a name="il/v1/genesis.proto"></a>
+<p align="right"><a href="#top">Top</a></p>
+
+## il/v1/genesis.proto
+
+
+
+<a name="il.v1.GenesisState"></a>
+
+### GenesisState
+GenesisState all impermanent loss state that must be provided at genesis.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `params` | [Params](#il.v1.Params) |  |  |
+| `lps_stoploss_positions` | [StoplossPositions](#il.v1.StoplossPositions) | repeated |  |
+| `invalidation_id` | [uint64](#uint64) |  |  |
+
+
+
+
+
+
+<a name="il.v1.StoplossPositions"></a>
+
+### StoplossPositions
+StoplossPosition represents all the impermanent loss stop positions for a given LP address and uniswap pair.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `address` | [string](#string) |  | LP account address |
+| `stoploss_positions` | [Stoploss](#il.v1.Stoploss) | repeated | set of possitions owned by the address |
+
+
+
+
+
+ <!-- end messages -->
+
+ <!-- end enums -->
+
+ <!-- end HasExtensions -->
+
+ <!-- end services -->
+
+
+
+<a name="il/v1/query.proto"></a>
+<p align="right"><a href="#top">Top</a></p>
+
+## il/v1/query.proto
+
+
+
+<a name="il.v1.QueryParamsRequest"></a>
+
+### QueryParamsRequest
+QueryParamsRequest is the request type for the Query/Params gRPC method.
+
+
+
+
+
+
+<a name="il.v1.QueryParamsResponse"></a>
+
+### QueryParamsResponse
+QueryParamsResponse is the response type for the Query/Params gRPC method.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `params` | [Params](#il.v1.Params) |  | impermanent loss parameters |
+
+
+
+
+
+
+<a name="il.v1.QueryStoplossPositionsRequest"></a>
+
+### QueryStoplossPositionsRequest
+QueryStoplossPisitionsRequest is the request type for the Query/StoplossPositions gRPC method.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `address` | [string](#string) |  | account address that owns the stoploss positions |
+| `pagination` | [cosmos.base.query.v1beta1.PageRequest](#cosmos.base.query.v1beta1.PageRequest) |  | pagination request |
+
+
+
+
+
+
+<a name="il.v1.QueryStoplossPositionsResponse"></a>
+
+### QueryStoplossPositionsResponse
+QueryStoplossPositionsResponse is the response type for the Query/StoplossPositions gRPC method.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `stoploss_positions` | [Stoploss](#il.v1.Stoploss) | repeated | set of possitions owned by the given address |
+| `pagination` | [cosmos.base.query.v1beta1.PageResponse](#cosmos.base.query.v1beta1.PageResponse) |  | pagination response |
+
+
+
+
+
+
+<a name="il.v1.QueryStoplossRequest"></a>
+
+### QueryStoplossRequest
+QueryStoplossRequest is the request type for the Query/Stoploss gRPC method.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `address` | [string](#string) |  | account address that owns the stoploss position |
+| `uniswap_pair` | [string](#string) |  | uniswap pair of the position |
+
+
+
+
+
+
+<a name="il.v1.QueryStoplossResponse"></a>
+
+### QueryStoplossResponse
+QueryStoplossResponse is the response type for the Query/Stoploss gRPC method.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `stoploss` | [Stoploss](#il.v1.Stoploss) |  | stoploss position for the given address and pair. |
+
+
+
+
+
+ <!-- end messages -->
+
+ <!-- end enums -->
+
+ <!-- end HasExtensions -->
+
+
+<a name="il.v1.Query"></a>
+
+### Query
+Query defines a gRPC query service for the impermanent loss module.
+
+| Method Name | Request Type | Response Type | Description | HTTP Verb | Endpoint |
+| ----------- | ------------ | ------------- | ------------| ------- | -------- |
+| `Stoploss` | [QueryStoplossRequest](#il.v1.QueryStoplossRequest) | [QueryStoplossResponse](#il.v1.QueryStoplossResponse) | Stoploss queries a stoploss position for a given pair and account address. | GET|/il/v1/stoploss_positions/{address}/{uniswap_pair}|
+| `StoplossPositions` | [QueryStoplossPositionsRequest](#il.v1.QueryStoplossPositionsRequest) | [QueryStoplossPositionsResponse](#il.v1.QueryStoplossPositionsResponse) | Stoploss returns all stoploss positions from an address. | GET|/il/v1/stoploss_positions/{address}|
+| `Params` | [QueryParamsRequest](#il.v1.QueryParamsRequest) | [QueryParamsResponse](#il.v1.QueryParamsResponse) | Params queries the IL module parameters. | GET|/il/v1/params|
+
+ <!-- end services -->
+
+
+
+<a name="il/v1/tx.proto"></a>
+<p align="right"><a href="#top">Top</a></p>
+
+## il/v1/tx.proto
+
+
+
+<a name="il.v1.MsgCreateStoploss"></a>
+
+### MsgCreateStoploss
+MsgStoploss defines a stoploss position
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `address` | [string](#string) |  | account address that owns the stoploss position |
+| `stoploss` | [Stoploss](#il.v1.Stoploss) |  | stoploss position details |
+
+
+
+
+
+
+<a name="il.v1.MsgCreateStoplossResponse"></a>
+
+### MsgCreateStoplossResponse
+MsgCreateStoplossResponse is the response type for the Msg/CreateStoploss gRPC method.
+
+
+
+
+
+
+<a name="il.v1.MsgDeleteStoploss"></a>
+
+### MsgDeleteStoploss
+MsgDeleteStoploss removes a stoploss position
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `address` | [string](#string) |  | account address that owns the stoploss position |
+| `uniswap_pair_id` | [string](#string) |  | uniswap pair hex address |
+
+
+
+
+
+
+<a name="il.v1.MsgDeleteStoplossResponse"></a>
+
+### MsgDeleteStoplossResponse
+MsgDeleteStoplossResponse is the response type for the Msg/DeleteStoploss gRPC method.
+
+
+
+
+
+ <!-- end messages -->
+
+ <!-- end enums -->
+
+ <!-- end HasExtensions -->
+
+
+<a name="il.v1.Msg"></a>
+
+### Msg
+MsgService defines the msgs that the il module handles.
+
+| Method Name | Request Type | Response Type | Description | HTTP Verb | Endpoint |
+| ----------- | ------------ | ------------- | ------------| ------- | -------- |
+| `CreateStoploss` | [MsgCreateStoploss](#il.v1.MsgCreateStoploss) | [MsgCreateStoplossResponse](#il.v1.MsgCreateStoplossResponse) | CreateStoploss sets a new tracking stoploss position for a uniswap pair | |
+| `DeleteStoploss` | [MsgDeleteStoploss](#il.v1.MsgDeleteStoploss) | [MsgDeleteStoplossResponse](#il.v1.MsgDeleteStoplossResponse) | DeleteStoploss deletes an existing stoploss position | |
+
+ <!-- end services -->
 
 
 
@@ -313,8 +635,8 @@ MissCounter stores the validator address and the number of associated misses
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| `validator` | [string](#string) |  |  |
-| `misses` | [int64](#int64) |  |  |
+| `validator` | [string](#string) |  | validator operator address |
+| `misses` | [int64](#int64) |  | number of misses |
 
 
 
@@ -637,7 +959,7 @@ Query defines the gRPC querier service for the oracle module.
 
 | Method Name | Request Type | Response Type | Description | HTTP Verb | Endpoint |
 | ----------- | ------------ | ------------- | ------------| ------- | -------- |
-| `QueryParams` | [QueryParamsRequest](#oracle.v1.QueryParamsRequest) | [QueryParamsResponse](#oracle.v1.QueryParamsResponse) | Params queries the oracle module parameters. | GET|/sommelier/oracle/v1/params|
+| `QueryParams` | [QueryParamsRequest](#oracle.v1.QueryParamsRequest) | [QueryParamsResponse](#oracle.v1.QueryParamsResponse) | QueryParams queries the oracle module parameters. | GET|/sommelier/oracle/v1/params|
 | `QueryDelegateAddress` | [QueryDelegateAddressRequest](#oracle.v1.QueryDelegateAddressRequest) | [QueryDelegateAddressResponse](#oracle.v1.QueryDelegateAddressResponse) | QueryDelegateAddress queries the delegate account address of a validator | GET|/sommelier/oracle/v1/delegates/{validator}|
 | `QueryValidatorAddress` | [QueryValidatorAddressRequest](#oracle.v1.QueryValidatorAddressRequest) | [QueryValidatorAddressResponse](#oracle.v1.QueryValidatorAddressResponse) | QueryValidatorAddress returns the validator address of a given delegate | GET|/sommelier/oracle/v1/validators/{delegate}|
 | `QueryOracleDataPrevote` | [QueryOracleDataPrevoteRequest](#oracle.v1.QueryOracleDataPrevoteRequest) | [QueryOracleDataPrevoteResponse](#oracle.v1.QueryOracleDataPrevoteResponse) | QueryOracleDataPrevote queries the validator prevote in the current voting period | GET|/sommelier/oracle/v1/prevotes/{validator}|

@@ -1,0 +1,43 @@
+syntax = "proto3";
+package il.v1;
+
+import "gogoproto/gogo.proto";
+
+option go_package = "github.com/peggyjv/sommelier/x/il/types";
+
+// Stoploss defines a set of parameters that together trigger a stoploss withdrawal.
+message Stoploss {
+    // uniswap pair hex address 
+    string uniswap_pair_id = 1 [
+        (gogoproto.moretags) = "yaml:\"uniswap_pair_id\"",
+        (gogoproto.customname) = "UniswapPairID"
+    ];
+    // amount of shares from the liquidity pool to redeem if current slippage > max slipage
+    uint64 liquidity_pool_shares = 2 [(gogoproto.moretags) = "yaml:\"liquidity_pool_shares\""];
+    // max slippage allowed before the stoploss is triggered
+    string max_slippage = 3 [
+        (gogoproto.moretags) = "yaml:\"max_slippage\"",
+        (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+        (gogoproto.nullable) = false
+    ];
+    // starting token pair ratio of the uniswap pool
+    string reference_pair_ratio = 4 [
+        (gogoproto.moretags) = "yaml:\"reference_pair_ratio\"",
+        (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+        (gogoproto.nullable) = false
+    ];
+    // ethereum receiving address in hex format
+    string receiver_address = 5 [(gogoproto.moretags) = "yaml:\"receiver_address\""];
+}
+
+// Params define the impermanent loss module parameters
+message Params {
+    // contract address for impermanent loss handling on ethereum
+    string contract_address = 1 [(gogoproto.moretags) = "yaml:\"contract_address\""];
+    // timeout block height value for the custom ethereum outgoing logic. This is value added to the last
+    // seen ethereum height when executing the stoploss logic on EndBlock.
+    uint64 eth_timeout_blocks = 2 [(gogoproto.moretags) = "yaml:\"eth_timeout_blocks\""];
+    // timeout timestamp second duration value for the redeemLiquidity deadline. This value is added to the block unix
+    // timestamp when executing the stoploss logic on EndBlock.
+    uint64 eth_timeout_timestamp = 3 [(gogoproto.moretags) = "yaml:\"eth_timeout_timestamp\""];
+}

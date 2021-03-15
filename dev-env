@@ -14,7 +14,7 @@ EOF
       read -r -p "You are about to delete ./data directory. ARE YOU SURE? [y/N] " response
       case "$response" in
           [yY][eE][sS]|[yY])
-              echo "installing binaries..."
+              echo "installing binaries..."	
               make install > /dev/null 2>&1
               rm -rf ./data
               ./scripts/three-node.sh skip

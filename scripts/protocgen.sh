@@ -13,6 +13,8 @@ protoc_gen_gocosmos() {
 
 protoc_gen_gocosmos
 
+echo "generating proto and gRPC gateway files..."
+
 proto_dirs=$(find ./proto -path -prune -o -name '*.proto' -print0 | xargs -0 -n1 dirname | sort | uniq)
 for dir in $proto_dirs; do
   buf protoc \
@@ -25,6 +27,7 @@ Mgoogle/protobuf/any.proto=github.com/cosmos/cosmos-sdk/codec/types:. \
 
 done
 
+echo "generating proto docs..."
 # command to generate docs using protoc-gen-doc
 buf protoc \
 -I "proto" \
@@ -34,6 +37,9 @@ buf protoc \
 $(find "$(pwd)/proto" -maxdepth 5 -name '*.proto')
 go mod tidy
 
+echo "(re)moving proto files.."
 # move proto files to the right places
 cp -r github.com/peggyjv/sommelier/* ./
 rm -rf github.com
+
+echo "done"

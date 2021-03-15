@@ -1,0 +1,65 @@
+syntax = "proto3";
+package il.v1;
+
+import "gogoproto/gogo.proto";
+import "il/v1/il.proto";
+import "google/api/annotations.proto";
+import "cosmos/base/query/v1beta1/pagination.proto";
+
+
+option go_package = "github.com/peggyjv/sommelier/x/il/types";
+
+// Query defines a gRPC query service for the impermanent loss module.
+service Query {
+    // Stoploss queries a stoploss position for a given pair and account address.
+    rpc Stoploss(QueryStoplossRequest) returns (QueryStoplossResponse) {
+        option (google.api.http).get = "/il/v1/stoploss_positions/{address}/{uniswap_pair}";
+    }
+    // Stoploss returns all stoploss positions from an address.
+    rpc StoplossPositions(QueryStoplossPositionsRequest) returns (QueryStoplossPositionsResponse) {
+        option (google.api.http).get = "/il/v1/stoploss_positions/{address}";
+    }
+     // Params queries the IL module parameters.
+    rpc Params(QueryParamsRequest) returns (QueryParamsResponse) {
+        option (google.api.http).get = "/il/v1/params";
+    }
+}
+
+// QueryStoplossRequest is the request type for the Query/Stoploss gRPC method.
+message QueryStoplossRequest {
+    // account address that owns the stoploss position
+    string address = 1;
+    // uniswap pair of the position
+    string uniswap_pair = 2;
+}
+
+// QueryStoplossResponse is the response type for the Query/Stoploss gRPC method.
+message QueryStoplossResponse {
+    // stoploss position for the given address and pair.
+    Stoploss stoploss = 1 [(gogoproto.nullable) = false];
+}
+
+// QueryStoplossPisitionsRequest is the request type for the Query/StoplossPositions gRPC method.
+message QueryStoplossPositionsRequest {
+    // account address that owns the stoploss positions
+    string address = 1;
+    // pagination request
+    cosmos.base.query.v1beta1.PageRequest pagination = 2;
+}
+
+// QueryStoplossPositionsResponse is the response type for the Query/StoplossPositions gRPC method.
+message QueryStoplossPositionsResponse {
+    // set of possitions owned by the given address
+    repeated Stoploss stoploss_positions = 1 [(gogoproto.nullable) = false];
+    // pagination response
+    cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
+// QueryParamsRequest is the request type for the Query/Params gRPC method.
+message QueryParamsRequest {}
+
+// QueryParamsResponse is the response type for the Query/Params gRPC method.
+message QueryParamsResponse {
+    // impermanent loss parameters
+    Params params = 1 [(gogoproto.nullable) = false];
+}

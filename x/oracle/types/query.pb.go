@@ -999,7 +999,7 @@ const _ = grpc.SupportPackageIsVersion4
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
 type QueryClient interface {
-	// Params queries the oracle module parameters.
+	// QueryParams queries the oracle module parameters.
 	QueryParams(ctx context.Context, in *QueryParamsRequest, opts ...grpc.CallOption) (*QueryParamsResponse, error)
 	// QueryDelegateAddress queries the delegate account address of a validator
 	QueryDelegateAddress(ctx context.Context, in *QueryDelegateAddressRequest, opts ...grpc.CallOption) (*QueryDelegateAddressResponse, error)
@@ -1110,7 +1110,7 @@ func (c *queryClient) QueryLatestPeriodAggregateData(ctx context.Context, in *Qu
 
 // QueryServer is the server API for Query service.
 type QueryServer interface {
-	// Params queries the oracle module parameters.
+	// QueryParams queries the oracle module parameters.
 	QueryParams(context.Context, *QueryParamsRequest) (*QueryParamsResponse, error)
 	// QueryDelegateAddress queries the delegate account address of a validator
 	QueryDelegateAddress(context.Context, *QueryDelegateAddressRequest) (*QueryDelegateAddressResponse, error)
