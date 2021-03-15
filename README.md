@@ -20,17 +20,16 @@ We have active, helpful communities on Twitter, Discord, and Telegram.
 `sommelier` chain will consist of the `gaia` modules as well as the following custom modules:
 - [`x/oracle`](https://github.com/peggyjv/sommelier/x/oracle) - A price oracle forked from the [Terra](https://terra.money) price oracle. The base denom for all prices is change from `luna` to `usd` and much of the internal code has been refactored to use more standard SDK types. This oracle will bring in price data to support our usecases (@jackzampolin)
     - [x] Import and stargate migration
-    - [ ] Refactors to simplify internal code for more extensibility/stability
-    - [ ] [`delphi`](https://github.com/iqlusioninc/delphi) support for updated oracle module
+    - [x] Refactors to simplify internal code for more extensibility/stability
 - [`x/peggy`](https://github.com/althea-net/peggy/module/x/peggy) - An ethereum bridge that will allow assets to move to/from peggy/eth. (@jkilpatr @jackzampolin @jtremback)
-    - [ ] [Stargate migration](https://github.com/althea-net/peggy/pull/120)
-    - [ ] Import module
+    - [x] [Stargate migration](https://github.com/althea-net/peggy/pull/120)
+    - [x] Import module
 - [`x/il`](https://github.com/peggyjv/sommelier/x/il) - A module that consumes `oracle.GetPrice()` and `peggy.SendEthMsg()` to offer stop loss protection for LP shares (@jackzampolin @zmanian)
-    - [ ] Write up userflows (WIP)
-    - [ ] Formalize module design
-    - [ ] Code up module
+    - [x] Write up userflows (WIP)
+    - [x] Formalize module design
+    - [x] Code up module
     - [ ] Test against Rinkby
 - [`frontend`](https://github.com/PeggyJV/frontend) @kkennis @jackzampolin @zmanian     
-    - [ ] Wireframes
-    - [ ] Product Requirements Doc
-    - [ ] Prototype
+    - [x] Wireframes
+    - [x] Product Requirements Doc
+    - [x] Prototype
