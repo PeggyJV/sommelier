@@ -13,6 +13,8 @@ func TestLPsStoplossPositionsValidate(t *testing.T) {
 	_, _, addr1 := testdata.KeyTestPubAddr()
 	_, _, addr2 := testdata.KeyTestPubAddr()
 
+	ethReceiver := "0x0c731Fb0D03211DD32A456370AD2ec3fFad46520"
+
 	testCases := []struct {
 		msg               string
 		stoplossPositions LPsStoplossPositions
@@ -29,6 +31,7 @@ func TestLPsStoplossPositionsValidate(t *testing.T) {
 							LiquidityPoolShares: 10,
 							MaxSlippage:         sdk.MustNewDecFromStr("0.05"),
 							ReferencePairRatio:  sdk.MustNewDecFromStr("0.1"),
+							ReceiverAddress:     ethReceiver,
 						},
 					},
 				},
@@ -46,11 +49,13 @@ func TestLPsStoplossPositionsValidate(t *testing.T) {
 							LiquidityPoolShares: 10,
 							MaxSlippage:         sdk.MustNewDecFromStr("0.05"),
 							ReferencePairRatio:  sdk.MustNewDecFromStr("0.1"),
+							ReceiverAddress:     ethReceiver,
 						}, {
 							UniswapPairID:       "0x66e33d2605c5fb25ebb7cd7528e7997b0afa55e8",
 							LiquidityPoolShares: 1,
 							MaxSlippage:         sdk.MustNewDecFromStr("0.03333"),
 							ReferencePairRatio:  sdk.MustNewDecFromStr("0.3"),
+							ReceiverAddress:     ethReceiver,
 						},
 					},
 				},
@@ -62,6 +67,7 @@ func TestLPsStoplossPositionsValidate(t *testing.T) {
 							LiquidityPoolShares: 1000,
 							MaxSlippage:         sdk.MustNewDecFromStr("0.01"),
 							ReferencePairRatio:  sdk.MustNewDecFromStr("0.5"),
+							ReceiverAddress:     ethReceiver,
 						},
 					},
 				},
@@ -95,6 +101,7 @@ func TestLPsStoplossPositionsValidate(t *testing.T) {
 							LiquidityPoolShares: 10,
 							MaxSlippage:         sdk.MustNewDecFromStr("0.05"),
 							ReferencePairRatio:  sdk.MustNewDecFromStr("0.1"),
+							ReceiverAddress:     ethReceiver,
 						},
 					},
 				},
@@ -112,12 +119,14 @@ func TestLPsStoplossPositionsValidate(t *testing.T) {
 							LiquidityPoolShares: 10,
 							MaxSlippage:         sdk.MustNewDecFromStr("0.05"),
 							ReferencePairRatio:  sdk.MustNewDecFromStr("0.1"),
+							ReceiverAddress:     ethReceiver,
 						},
 						{
 							UniswapPairID:       "0x3041cbd36888becc7bbcbc0045e3b1f144466f5f",
 							LiquidityPoolShares: 10,
 							MaxSlippage:         sdk.MustNewDecFromStr("0.05"),
 							ReferencePairRatio:  sdk.MustNewDecFromStr("0.1"),
+							ReceiverAddress:     ethReceiver,
 						},
 					},
 				},
