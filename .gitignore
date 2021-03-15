@@ -5,29 +5,31 @@
 *.swl
 *.swm
 *.swn
-.vscode
-.idea
+*.pyc
+
+# private files
+private[.-]*
+private
 
 # Build
 vendor
 build
-tools/bin/*
-examples/build/*
 docs/_build
-docs/node_modules
 docs/tutorial
+*/node_modules
+docs/modules
 dist
 tools-stamp
-docs/node_modules
+buf-stamp
+artifacts
 
 # Data - ideally these don't exist
-baseapp/data/*
-client/lcd/keys/*
 mytestnet
 
 # Testing
 coverage.txt
 profile.out
+sim_log_file
 
 # Vagrant
 .vagrant/
@@ -36,8 +38,10 @@ profile.out
 vagrant
 
 # IDE
-.idea/
+.idea
 *.iml
+.dir-locals.el
+.vscode
 
 # Graphviz
 dependency-graph.png
@@ -46,10 +50,12 @@ dependency-graph.png
 *.aux
 *.out
 *.synctex.gz
+
+# Contracts
 contract_tests/*
+solidity/node_modules/
 
 data/
-solidity/node_modules/
 typechain
 target
 node_modules

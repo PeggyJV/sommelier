@@ -4,7 +4,6 @@ run:
 #   timeout: 5m
 
 linters:
-  # TODO: re-enable commented linters
   disable-all: true
   enable:
     - bodyclose
@@ -34,6 +33,7 @@ linters:
     - unconvert
     - unused
     - unparam
+    - misspell
     # - wsl
     - nolintlint
 
