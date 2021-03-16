@@ -96,7 +96,7 @@ Params define the impermanent loss module parameters
 | ----- | ---- | ----- | ----------- |
 | `contract_address` | [string](#string) |  | contract address for impermanent loss handling on ethereum |
 | `eth_timeout_blocks` | [uint64](#uint64) |  | timeout block height value for the custom ethereum outgoing logic. This is value added to the last seen ethereum height when executing the stoploss logic on EndBlock. |
-| `eth_timeout_timestamp` | [uint64](#uint64) |  | timeout timestamp value for the redeemLiquidity deadline. This is value added to the block timestamp unix value when executing the stoploss logic on EndBlock. |
+| `eth_timeout_timestamp` | [uint64](#uint64) |  | timeout timestamp second duration value for the redeemLiquidity deadline. This value is added to the block unix timestamp when executing the stoploss logic on EndBlock. |
 
 
 
@@ -115,6 +115,7 @@ Stoploss defines a set of parameters that together trigger a stoploss withdrawal
 | `liquidity_pool_shares` | [uint64](#uint64) |  | amount of shares from the liquidity pool to redeem if current slippage > max slipage |
 | `max_slippage` | [string](#string) |  | max slippage allowed before the stoploss is triggered |
 | `reference_pair_ratio` | [string](#string) |  | starting token pair ratio of the uniswap pool |
+| `redeem_eth` | [bool](#bool) |  | redeem liquidity for eth or for the corresponding pair tokens once the stoploss position is executed |
 | `receiver_address` | [string](#string) |  | ethereum receiving address in hex format |
 
 
