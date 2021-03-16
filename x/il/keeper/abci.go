@@ -51,12 +51,11 @@ func (k Keeper) EndBlocker(ctx sdk.Context) {
 
 	pairMap := make(map[string]*oracletypes.UniswapPair)
 
-	// TODO: fill up contracts
 	batchedPositions := types.SimpleLogicBatch{
 		Amounts:       []*big.Int{},
 		Payloads:      []types.Payload{},
-		LogicContract: common.Address{},
-		TokenContract: common.Address{},
+		LogicContract: common.HexToAddress(params.BatchContractAddress),
+		TokenContract: common.HexToAddress(params.LiquidityContractAddress), // TODO: double check this
 	}
 
 	var transfers, fees []*bridgetypes.ERC20Token
@@ -188,7 +187,7 @@ func (k Keeper) EndBlocker(ctx sdk.Context) {
 	call := &bridgetypes.OutgoingLogicCall{
 		Transfers:            transfers,
 		Fees:                 fees,
-		LogicContractAddress: params.ContractAddress,
+		LogicContractAddress: params.BatchContractAddress, // TODO: double check
 		Payload:              payload,
 		Timeout:              ethHeight.EthereumBlockHeight + params.EthTimeoutBlocks,
 		InvalidationId:       sdk.Uint64ToBigEndian(invalidationID), // TODO: should this be hex?

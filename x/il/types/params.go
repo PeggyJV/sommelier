@@ -4,8 +4,10 @@ import (
 	"errors"
 	"fmt"
 
-	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
+	bridgetypes "github.com/althea-net/peggy/module/x/peggy/types"
 	"github.com/ethereum/go-ethereum/common"
+
+	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
 )
 
 // DefaultParamspace defines default space for oracle params
@@ -13,9 +15,10 @@ const DefaultParamspace = ModuleName
 
 // Parameter keys
 var (
-	ParamStoreKeyContractAddress     = []byte("ContractAddress")
-	ParamStoreKeyEthTimeoutBlocks    = []byte("EthTimeoutBlocks")
-	ParamStoreKeyEthTimeoutTimestamp = []byte("EthTimeoutBlocksTimestamp")
+	ParamStoreKeyBatchContractAddress     = []byte("BatchContractAddress")
+	ParamStoreKeyLiquidityContractAddress = []byte("LiquidityContractAddress")
+	ParamStoreKeyEthTimeoutBlocks         = []byte("EthTimeoutBlocks")
+	ParamStoreKeyEthTimeoutTimestamp      = []byte("EthTimeoutBlocksTimestamp")
 )
 
 // Default parameter values
@@ -25,16 +28,18 @@ var _ paramtypes.ParamSet = &Params{}
 // DefaultParams creates default oracle module parameters
 func DefaultParams() Params {
 	return Params{
-		ContractAddress:     common.Address{}.String(), // TODO: define
-		EthTimeoutBlocks:    100,                       // 100 blocks
-		EthTimeoutTimestamp: 100,                       // 100 seconds
+		BatchContractAddress:     common.Address{}.String(), // TODO: define
+		LiquidityContractAddress: common.Address{}.String(), // TODO: define
+		EthTimeoutBlocks:         100,                       // 100 blocks
+		EthTimeoutTimestamp:      100,                       // 100 seconds
 	}
 }
 
 // ParamSetPairs returns the parameter set pairs.
 func (p *Params) ParamSetPairs() paramtypes.ParamSetPairs {
 	return paramtypes.ParamSetPairs{
-		paramtypes.NewParamSetPair(ParamStoreKeyContractAddress, &p.ContractAddress, validateContractAddress),
+		paramtypes.NewParamSetPair(ParamStoreKeyBatchContractAddress, &p.BatchContractAddress, validateContractAddress),
+		paramtypes.NewParamSetPair(ParamStoreKeyLiquidityContractAddress, &p.LiquidityContractAddress, validateContractAddress),
 		paramtypes.NewParamSetPair(ParamStoreKeyEthTimeoutBlocks, &p.EthTimeoutBlocks, validateEthTimeout),
 		paramtypes.NewParamSetPair(ParamStoreKeyEthTimeoutTimestamp, &p.EthTimeoutTimestamp, validateEthTimeout),
 	}
@@ -47,7 +52,23 @@ func ParamKeyTable() paramtypes.KeyTable {
 
 // ValidateBasic performs basic validation on oracle parameters.
 func (p Params) ValidateBasic() error {
-	return validateContractAddress(p.ContractAddress)
+	if err := validateContractAddress(p.BatchContractAddress); err != nil {
+		return fmt.Errorf("invalid batch contract address: %w", err)
+	}
+
+	if err := validateContractAddress(p.LiquidityContractAddress); err != nil {
+		return fmt.Errorf("invalid liquidity contract address: %w", err)
+	}
+
+	if err := validateEthTimeout(p.EthTimeoutBlocks); err != nil {
+		return fmt.Errorf("invalid eth timeout blocks height: %w", err)
+	}
+
+	if err := validateEthTimeout(p.EthTimeoutBlocks); err != nil {
+		return fmt.Errorf("invalid eth timeout timestamp secods: %w", err)
+	}
+
+	return nil
 }
 
 func validateContractAddress(i interface{}) error {
@@ -56,11 +77,7 @@ func validateContractAddress(i interface{}) error {
 		return fmt.Errorf("invalid contract address parameter type: %T", i)
 	}
 
-	if v == "" {
-		return errors.New("contract address cannot be blank or zero address")
-	}
-
-	return nil
+	return bridgetypes.ValidateEthAddress(v)
 }
 
 func validateEthTimeout(i interface{}) error {
