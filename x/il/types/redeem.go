@@ -14,11 +14,17 @@ type Payload interface {
 	GetEncodedCall() ([]byte, error)
 }
 
+var (
+	_ Payload = &RedeemLiquidityETH{}
+	_ Payload = &RedeemLiquidity{}
+	_ Payload = &SimpleLogicBatch{}
+)
+
 const testUniswapLiquidityABI = `[{"inputs":[{"internalType":"address","name":"_uni_router","type":"address"}],"stateMutability":"nonpayable","type":"constructor"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"previousOwner","type":"address"},{"indexed":true,"internalType":"address","name":"newOwner","type":"address"}],"name":"OwnershipTransferred","type":"event"},{"inputs":[],"name":"owner","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"tokenA","type":"address"},{"internalType":"address","name":"tokenB","type":"address"},{"internalType":"uint256","name":"liquidity","type":"uint256"},{"internalType":"uint256","name":"amountAMin","type":"uint256"},{"internalType":"uint256","name":"amountBMin","type":"uint256"},{"internalType":"address","name":"to","type":"address"},{"internalType":"uint256","name":"deadline","type":"uint256"}],"name":"redeemLiquidity","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"token","type":"address"},{"internalType":"uint256","name":"liquidity","type":"uint256"},{"internalType":"uint256","name":"amountTokenMin","type":"uint256"},{"internalType":"uint256","name":"amountETHMin","type":"uint256"},{"internalType":"address","name":"to","type":"address"},{"internalType":"uint256","name":"deadline","type":"uint256"}],"name":"redeemLiquidityETH","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"renounceOwnership","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"newOwner","type":"address"}],"name":"transferOwnership","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"_to","type":"address"},{"internalType":"uint256","name":"_a","type":"uint256"},{"internalType":"uint256","name":"_b","type":"uint256"},{"internalType":"address","name":"state_tokenContract","type":"address"}],"name":"transferTokens","outputs":[],"stateMutability":"nonpayable","type":"function"}]`
 
 // NewRedeemLiquidityETHCall
-func NewRedeemLiquidityETHCall(token string, liquidity, amountTokenMin, amountEthMin uint64, to string, deadline int64) RedeemLiquidityETH {
-	return RedeemLiquidityETH{
+func NewRedeemLiquidityETHCall(token string, liquidity, amountTokenMin, amountEthMin uint64, to string, deadline int64) *RedeemLiquidityETH {
+	return &RedeemLiquidityETH{
 		Token:          common.HexToAddress(token),
 		Liquidity:      new(big.Int).SetUint64(liquidity),
 		AmountTokenMin: new(big.Int).SetUint64(amountTokenMin),
@@ -70,8 +76,8 @@ type RedeemLiquidity struct {
 	Deadline   *big.Int
 }
 
-func NewRedeemLiquidityCall(tokenA, tokenB string, liquidity, amountAMin, amountBMin uint64, to string, deadline int64) RedeemLiquidity {
-	return RedeemLiquidity{
+func NewRedeemLiquidityCall(tokenA, tokenB string, liquidity, amountAMin, amountBMin uint64, to string, deadline int64) *RedeemLiquidity {
+	return &RedeemLiquidity{
 		TokenA:     common.HexToAddress(tokenA),
 		TokenB:     common.HexToAddress(tokenB),
 		Liquidity:  new(big.Int).SetUint64(liquidity),

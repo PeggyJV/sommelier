@@ -27,7 +27,7 @@ func (suite *ABITestSuite) SetupTest() {
 	suite.tokenContract = common.HexToAddress("0xb4e16d0168e52d35cacd2c6185b44281ec28c9dc") // USDC-ETH LP
 }
 
-func (suite *ABITestSuite) makeTestRedeemLiquidityETH() RedeemLiquidityETH {
+func (suite *ABITestSuite) makeTestRedeemLiquidityETH() *RedeemLiquidityETH {
 	return NewRedeemLiquidityETHCall(suite.tokenA.String(), 2000000000000, 0, 0, suite.to.String(), 4766922941000)
 }
 
@@ -38,7 +38,7 @@ func (suite *ABITestSuite) TestRedeemLiquidityETH() {
 
 	testCases := []struct {
 		msg     string
-		redeem  RedeemLiquidityETH
+		redeem  *RedeemLiquidityETH
 		expPass bool
 	}{
 		{
@@ -66,7 +66,7 @@ func (suite *ABITestSuite) TestRedeemLiquidity() {
 
 	testCases := []struct {
 		msg     string
-		redeem  RedeemLiquidity
+		redeem  *RedeemLiquidity
 		expPass bool
 	}{
 		{
