@@ -10,6 +10,8 @@ import (
 // InitGenesis initialize default parameters and sets the stoploss positions to store
 func InitGenesis(ctx sdk.Context, k keeper.Keeper, data types.GenesisState) {
 	k.SetParams(ctx, data.Params)
+	k.SetInvalidationID(ctx, data.InvalidationID)
+
 	// set positions for each LP address
 	for _, lpStoplossPositions := range data.LpsStoplossPositions {
 		for _, position := range lpStoplossPositions.StoplossPositions {
@@ -25,5 +27,6 @@ func ExportGenesis(ctx sdk.Context, k keeper.Keeper) types.GenesisState {
 	return types.GenesisState{
 		Params:               k.GetParams(ctx),
 		LpsStoplossPositions: k.GetLPsStoplossPositions(ctx),
+		InvalidationID:       k.GetInvalidationID(ctx),
 	}
 }

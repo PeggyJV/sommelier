@@ -171,18 +171,18 @@ func (k Keeper) SetInvalidationID(ctx sdk.Context, invalidationID uint64) {
 	store.Set(types.InvalidationIDPrefix, sdk.Uint64ToBigEndian(invalidationID))
 }
 
-// DeleteSubmittedPosition removes an executed stoploss position from the store.
-func (k Keeper) DeleteSubmittedPosition(ctx sdk.Context, ethHeight uint64, address sdk.AccAddress) {
+// DeleteSubmittedPosition removes an submitted stoploss position from the store.
+func (k Keeper) DeleteSubmittedPosition(ctx sdk.Context, timeoutHeight uint64, address sdk.AccAddress) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.SubmittedPositionsQueuePrefix)
-	store.Delete(types.SubmittedPositionKey(ethHeight, address))
+	store.Delete(types.SubmittedPositionKey(timeoutHeight, address))
 }
 
 // TODO: update, this assumes LP position per address
 
-// SetSubmittedPosition sets a position pair id owned by an LP executed at a given ethereum height to the store.
-func (k Keeper) SetSubmittedPosition(ctx sdk.Context, ethHeight uint64, address sdk.AccAddress, pairID string) {
+// SetSubmittedPosition sets a submitted stoplos position to the store.
+func (k Keeper) SetSubmittedPosition(ctx sdk.Context, timeoutHeight uint64, address sdk.AccAddress, pairID string) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.SubmittedPositionsQueuePrefix)
-	store.Set(types.SubmittedPositionKey(ethHeight, address), []byte(pairID))
+	store.Set(types.SubmittedPositionKey(timeoutHeight, address), []byte(pairID))
 }
 
 // IterateSubmittedQueue iterates over the all the submitted positions in ascending height performs a callback.

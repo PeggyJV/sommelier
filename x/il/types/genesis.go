@@ -4,11 +4,13 @@ package types
 func NewGenesisState(
 	params Params,
 	stoplossPositions LPsStoplossPositions,
+	invalidationID uint64,
 ) GenesisState {
 
 	return GenesisState{
 		Params:               params,
 		LpsStoplossPositions: stoplossPositions,
+		InvalidationID:       invalidationID,
 	}
 }
 
@@ -17,6 +19,7 @@ func DefaultGenesisState() GenesisState {
 	return GenesisState{
 		Params:               DefaultParams(),
 		LpsStoplossPositions: make(LPsStoplossPositions, 0),
+		InvalidationID:       0,
 	}
 }
 
