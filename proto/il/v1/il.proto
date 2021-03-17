@@ -28,6 +28,8 @@ message Stoploss {
     ];
     // ethereum receiving address in hex format
     string receiver_address = 5 [(gogoproto.moretags) = "yaml:\"receiver_address\""];
+    // track execution in order to reenable the position in case of timeout
+    bool executed = 6;
 }
 
 // Params define the impermanent loss module parameters

@@ -25,9 +25,30 @@ message GenesisState {
 message StoplossPositions {
     // LP account address 
     string address = 1;
-    // set of possitions owned by the address
+    // set of positions owned by the address
     repeated Stoploss stoploss_positions = 2 [
         (gogoproto.nullable) = false,
         (gogoproto.moretags)   = "yaml:\"stoploss_positions\""
+    ];
+}
+
+// ExecutedPosition contains a executed position at a given ethereum height
+message ExecutedPosition {
+     // ethereum block height at which the position was executed
+     uint64 eth_height = 1 [(gogoproto.moretags) = "yaml:\"eth_height\""];
+
+     // stoploss position's uniswap pair id
+     string pair_id = 2 [(gogoproto.moretags) = "yaml:\"pair_id\""];
+}
+
+// ExecutedPositionQueue represents all the impermanent loss stop positions for a given LP address and uniswap pair.
+message ExecutedPositionQueue {
+    // LP account address
+    string address = 1;
+  
+    // set of executed positions owned by the address
+    repeated ExecutedPosition executed_positions = 2 [
+        (gogoproto.nullable) = false,
+        (gogoproto.moretags) = "yaml:\"executed_positions\""
     ];
 }

@@ -21,15 +21,22 @@ const (
 //
 // - 0x01<address_Bytes><uniswap_pair_id>: Stoploss
 var (
-	// Keys for store prefixes
-	StoplossKeyPrefix = []byte{0x01} // prefix for each key to a stoploss
-	// Invalidation ID prefix
-	InvalidationIDPrefix = []byte{0x02} // prefix for each key to a stoploss
+	// Stoploss positions key prefix
+	StoplossKeyPrefix = []byte{0x01}
+	// Invalidation ID prefix for outgoing logic
+	InvalidationIDPrefix = []byte{0x02}
+	// Executed positions queue prefix for
+	ExecutedPositionsQueuePrefix = []byte{0x03}
 )
 
 // StoplossKey defines the full unprefixed store key for Stoploss
 func StoplossKey(address sdk.AccAddress, uniswapPair string) []byte {
 	return append(address.Bytes(), []byte(uniswapPair)...)
+}
+
+// ExecutedPositionKey defines the full unprefixed store key for executed positions
+func ExecutedPositionKey(ethHeight uint64, address sdk.AccAddress) []byte {
+	return append(sdk.Uint64ToBigEndian(ethHeight), address.Bytes()...)
 }
 
 // LPAddressFromStoplossKey d

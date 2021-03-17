@@ -9,6 +9,8 @@
     - [Stoploss](#il.v1.Stoploss)
   
 - [il/v1/genesis.proto](#il/v1/genesis.proto)
+    - [ExecutedPosition](#il.v1.ExecutedPosition)
+    - [ExecutedPositionQueue](#il.v1.ExecutedPositionQueue)
     - [GenesisState](#il.v1.GenesisState)
     - [StoplossPositions](#il.v1.StoplossPositions)
   
@@ -96,7 +98,7 @@ Params define the impermanent loss module parameters
 | ----- | ---- | ----- | ----------- |
 | `contract_address` | [string](#string) |  | contract address for impermanent loss handling on ethereum |
 | `eth_timeout_blocks` | [uint64](#uint64) |  | timeout block height value for the custom ethereum outgoing logic. This is value added to the last seen ethereum height when executing the stoploss logic on EndBlock. |
-| `eth_timeout_timestamp` | [uint64](#uint64) |  | timeout timestamp value for the redeemLiquidity deadline. This is value added to the block timestamp unix value when executing the stoploss logic on EndBlock. |
+| `eth_timeout_timestamp` | [uint64](#uint64) |  | timeout timestamp second duration value for the redeemLiquidity deadline. This value is added to the block unix timestamp when executing the stoploss logic on EndBlock. |
 
 
 
@@ -116,6 +118,7 @@ Stoploss defines a set of parameters that together trigger a stoploss withdrawal
 | `max_slippage` | [string](#string) |  | max slippage allowed before the stoploss is triggered |
 | `reference_pair_ratio` | [string](#string) |  | starting token pair ratio of the uniswap pool |
 | `receiver_address` | [string](#string) |  | ethereum receiving address in hex format |
+| `executed` | [bool](#bool) |  | track execution in order to reenable the position in case of timeout |
 
 
 
@@ -135,6 +138,38 @@ Stoploss defines a set of parameters that together trigger a stoploss withdrawal
 <p align="right"><a href="#top">Top</a></p>
 
 ## il/v1/genesis.proto
+
+
+
+<a name="il.v1.ExecutedPosition"></a>
+
+### ExecutedPosition
+ExecutedPosition contains a executed position at a given ethereum height
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `eth_height` | [uint64](#uint64) |  | ethereum block height at which the position was executed |
+| `pair_id` | [string](#string) |  | stoploss position's uniswap pair id |
+
+
+
+
+
+
+<a name="il.v1.ExecutedPositionQueue"></a>
+
+### ExecutedPositionQueue
+ExecutedPositionQueue represents all the impermanent loss stop positions for a given LP address and uniswap pair.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `address` | [string](#string) |  | LP account address |
+| `executed_positions` | [ExecutedPosition](#il.v1.ExecutedPosition) | repeated | set of executed positions owned by the address |
+
+
+
 
 
 
@@ -164,7 +199,7 @@ StoplossPosition represents all the impermanent loss stop positions for a given 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | `address` | [string](#string) |  | LP account address |
-| `stoploss_positions` | [Stoploss](#il.v1.Stoploss) | repeated | set of possitions owned by the address |
+| `stoploss_positions` | [Stoploss](#il.v1.Stoploss) | repeated | set of positions owned by the address |
 
 
 
