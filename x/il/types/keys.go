@@ -25,8 +25,8 @@ var (
 	StoplossKeyPrefix = []byte{0x01}
 	// Invalidation ID prefix for outgoing logic
 	InvalidationIDPrefix = []byte{0x02}
-	// Executed positions queue prefix for
-	ExecutedPositionsQueuePrefix = []byte{0x03}
+	// Submitted positions queue prefix for
+	SubmittedPositionsQueuePrefix = []byte{0x03}
 )
 
 // StoplossKey defines the full unprefixed store key for Stoploss
@@ -34,8 +34,8 @@ func StoplossKey(address sdk.AccAddress, uniswapPair string) []byte {
 	return append(address.Bytes(), []byte(uniswapPair)...)
 }
 
-// ExecutedPositionKey defines the full unprefixed store key for executed positions
-func ExecutedPositionKey(ethHeight uint64, address sdk.AccAddress) []byte {
+// SubmittedPositionKey defines the full unprefixed store key for submitted positions to the bridge
+func SubmittedPositionKey(ethHeight uint64, address sdk.AccAddress) []byte {
 	return append(sdk.Uint64ToBigEndian(ethHeight), address.Bytes()...)
 }
 

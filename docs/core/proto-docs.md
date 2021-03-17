@@ -118,7 +118,7 @@ Stoploss defines a set of parameters that together trigger a stoploss withdrawal
 | `max_slippage` | [string](#string) |  | max slippage allowed before the stoploss is triggered |
 | `reference_pair_ratio` | [string](#string) |  | starting token pair ratio of the uniswap pool |
 | `receiver_address` | [string](#string) |  | ethereum receiving address in hex format |
-| `executed` | [bool](#bool) |  | track execution in order to reenable the position in case of timeout |
+| `submitted` | [bool](#bool) |  | track submission to the bridge in order to reenable the position if the tx timeouts |
 
 
 

@@ -171,34 +171,34 @@ func (k Keeper) SetInvalidationID(ctx sdk.Context, invalidationID uint64) {
 	store.Set(types.InvalidationIDPrefix, sdk.Uint64ToBigEndian(invalidationID))
 }
 
-// DeleteExecutedPosition removes an executed stoploss position from the store.
-func (k Keeper) DeleteExecutedPosition(ctx sdk.Context, ethHeight uint64, address sdk.AccAddress) {
-	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.ExecutedPositionsQueuePrefix)
-	store.Delete(types.ExecutedPositionKey(ethHeight, address))
+// DeleteSubmittedPosition removes an executed stoploss position from the store.
+func (k Keeper) DeleteSubmittedPosition(ctx sdk.Context, ethHeight uint64, address sdk.AccAddress) {
+	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.SubmittedPositionsQueuePrefix)
+	store.Delete(types.SubmittedPositionKey(ethHeight, address))
 }
 
 // TODO: update, this assumes LP position per address
 
-// SetExecutedPosition sets a position pair id owned by an LP executed at a given ethereum height to the store.
-func (k Keeper) SetExecutedPosition(ctx sdk.Context, ethHeight uint64, address sdk.AccAddress, pairID string) {
-	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.ExecutedPositionsQueuePrefix)
-	store.Set(types.ExecutedPositionKey(ethHeight, address), []byte(pairID))
+// SetSubmittedPosition sets a position pair id owned by an LP executed at a given ethereum height to the store.
+func (k Keeper) SetSubmittedPosition(ctx sdk.Context, ethHeight uint64, address sdk.AccAddress, pairID string) {
+	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.SubmittedPositionsQueuePrefix)
+	store.Set(types.SubmittedPositionKey(ethHeight, address), []byte(pairID))
 }
 
-// IterateExecutionQueue iterates over the all the executied positions in ascending height performs a callback.
-func (k Keeper) IterateExecutionQueue(ctx sdk.Context, cb func(ethHeight uint64, address sdk.AccAddress, pairID string) (stop bool)) {
-	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.ExecutedPositionsQueuePrefix)
+// IterateSubmittedQueue iterates over the all the submitted positions in ascending height performs a callback.
+func (k Keeper) IterateSubmittedQueue(ctx sdk.Context, cb func(timeoutHeight uint64, address sdk.AccAddress, pairID string) (stop bool)) {
+	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.SubmittedPositionsQueuePrefix)
 
 	iterator := store.Iterator(nil, nil)
 	defer iterator.Close()
 
 	for ; iterator.Valid(); iterator.Next() {
-		ethHeight := sdk.BigEndianToUint64(iterator.Key()[1:9])
+		timeoutHeight := sdk.BigEndianToUint64(iterator.Key()[1:9])
 		address := sdk.AccAddress(iterator.Key()[9:])
 
 		pairID := string(iterator.Value())
 
-		if cb(ethHeight, address, pairID) {
+		if cb(timeoutHeight, address, pairID) {
 			break
 		}
 	}

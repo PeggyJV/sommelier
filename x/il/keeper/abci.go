@@ -28,9 +28,7 @@ func (k Keeper) BeginBlock(ctx sdk.Context) {
 		return
 	}
 
-	params := k.GetParams(ctx)
-
-	k.TrackPositionTimeout(ctx, ethHeight, params.EthTimeoutBlocks)
+	k.TrackPositionTimeout(ctx, ethHeight)
 }
 
 // EndBlocker is called at the end of every block
@@ -54,8 +52,8 @@ func (k Keeper) EndBlocker(ctx sdk.Context) {
 	pairMap := make(map[string]*oracletypes.UniswapPair)
 
 	k.IterateStoplossPositions(ctx, func(address sdk.AccAddress, stoploss types.Stoploss) (stop bool) {
-		// continue if the position has already been executed
-		if stoploss.Executed {
+		// continue to the next item if the position has already been submitted to the bridge
+		if stoploss.Submitted {
 			return false
 		}
 
@@ -131,13 +129,15 @@ func (k Keeper) EndBlocker(ctx sdk.Context) {
 		// counter, will prevent a logic call to get invalidated unless the outgoing Ethereum transaction
 		// times out
 
+		timeoutHeight := ethHeight + params.EthTimeoutBlocks
+
 		call := &bridgetypes.OutgoingLogicCall{
 			Transfers:            []*bridgetypes.ERC20Token{uniswapERC20Pair},
 			Fees:                 []*bridgetypes.ERC20Token{ethFee},
 			LogicContractAddress: params.ContractAddress,
 			Payload:              payload,
-			Timeout:              ethHeight + params.EthTimeoutBlocks,
-			InvalidationId:       sdk.Uint64ToBigEndian(invalidationID), // TODO: should this be hex?
+			Timeout:              timeoutHeight,
+			InvalidationId:       sdk.Uint64ToBigEndian(invalidationID),
 			InvalidationNonce:    0,
 		}
 
@@ -163,9 +163,12 @@ func (k Keeper) EndBlocker(ctx sdk.Context) {
 			)
 		}()
 
-		// set the execution bool to true and update it
-		stoploss.Executed = true
+		// set the submitted value to true and store it
+		stoploss.Submitted = true
 		k.SetStoplossPosition(ctx, address, stoploss)
+
+		// we now track the pair to recreate it in case of timeout
+		k.SetSubmittedPosition(ctx, timeoutHeight, address, stoploss.UniswapPairID)
 
 		return false
 	})
