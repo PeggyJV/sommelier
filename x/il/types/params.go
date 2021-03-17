@@ -31,7 +31,7 @@ func DefaultParams() Params {
 		BatchContractAddress:     common.Address{}.String(), // TODO: define
 		LiquidityContractAddress: common.Address{}.String(), // TODO: define
 		EthTimeoutBlocks:         100,                       // 100 blocks
-		EthTimeoutTimestamp:      100,                       // 100 seconds
+		EthTimeoutTimestamp:      180,                       // 100 seconds
 	}
 }
 
@@ -64,7 +64,7 @@ func (p Params) ValidateBasic() error {
 		return fmt.Errorf("invalid eth timeout blocks height: %w", err)
 	}
 
-	if err := validateEthTimeout(p.EthTimeoutBlocks); err != nil {
+	if err := validateEthTimeout(p.EthTimeoutTimestamp); err != nil {
 		return fmt.Errorf("invalid eth timeout timestamp secods: %w", err)
 	}
 
