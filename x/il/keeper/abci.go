@@ -144,6 +144,13 @@ func (k Keeper) EndBlocker(ctx sdk.Context) {
 		// send eth transaction to withdraw lp_shares liquidity for pair_id
 		k.ethBridgeKeeper.SetOutgoingLogicCall(ctx, call)
 
+		// set the submitted value to true and store it
+		stoploss.Submitted = true
+		k.SetStoplossPosition(ctx, address, stoploss)
+
+		// we now track the pair to recreate it in case of timeout
+		k.SetSubmittedPosition(ctx, timeoutHeight, address, stoploss.UniswapPairID)
+
 		// log and emit metrics
 		k.Logger(ctx).Info("stoploss executed", "pair", stoploss.UniswapPairID, "receiver-address", stoploss.ReceiverAddress)
 
@@ -162,13 +169,6 @@ func (k Keeper) EndBlocker(ctx sdk.Context) {
 				[]metrics.Label{telemetry.NewLabel("pair", stoploss.UniswapPairID)},
 			)
 		}()
-
-		// set the submitted value to true and store it
-		stoploss.Submitted = true
-		k.SetStoplossPosition(ctx, address, stoploss)
-
-		// we now track the pair to recreate it in case of timeout
-		k.SetSubmittedPosition(ctx, timeoutHeight, address, stoploss.UniswapPairID)
 
 		return false
 	})
