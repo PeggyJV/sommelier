@@ -35,10 +35,12 @@ func (k Keeper) TrackPositionTimeout(ctx sdk.Context, currentEthHeight uint64) {
 		// delete submitted position from this queue
 		k.DeleteSubmittedPosition(ctx, timeoutHeight, address, pairID)
 
+		timeoutStr := strconv.FormatUint(timeoutHeight, 64)
+
 		k.Logger(ctx).Info(
 			"prev submitted position reenabled due to timeout",
 			"pair-id", pairID,
-			"ethereum timeout height", strconv.FormatUint(timeoutHeight, 64),
+			"eth-timeout-height", timeoutStr,
 			"receiver-address", stoploss.ReceiverAddress,
 		)
 
@@ -47,14 +49,20 @@ func (k Keeper) TrackPositionTimeout(ctx sdk.Context, currentEthHeight uint64) {
 			telemetry.SetGaugeWithLabels(
 				[]string{"stoploss", "timeout"},
 				float32(stoploss.LiquidityPoolShares),
-				[]metrics.Label{telemetry.NewLabel("pair", stoploss.UniswapPairID)},
+				[]metrics.Label{
+					telemetry.NewLabel("pair", stoploss.UniswapPairID),
+					telemetry.NewLabel("eth-timeout-height", timeoutStr),
+				},
 			)
 
 			// counter metric
 			telemetry.IncrCounterWithLabels(
 				[]string{"stoploss", "timeout"},
 				1,
-				[]metrics.Label{telemetry.NewLabel("pair", stoploss.UniswapPairID)},
+				[]metrics.Label{
+					telemetry.NewLabel("pair", stoploss.UniswapPairID),
+					telemetry.NewLabel("eth-timeout-height", timeoutStr),
+				},
 			)
 		}()
 
