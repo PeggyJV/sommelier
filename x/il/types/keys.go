@@ -1,6 +1,9 @@
 package types
 
-import sdk "github.com/cosmos/cosmos-sdk/types"
+import (
+	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/ethereum/go-ethereum/common"
+)
 
 const (
 	// ModuleName is the name of the impermanent loss module
@@ -35,8 +38,9 @@ func StoplossKey(address sdk.AccAddress, uniswapPair string) []byte {
 }
 
 // SubmittedPositionKey defines the full unprefixed store key for submitted positions to the bridge
-func SubmittedPositionKey(timeoutHeight uint64, address sdk.AccAddress) []byte {
-	return append(sdk.Uint64ToBigEndian(timeoutHeight), address.Bytes()...)
+func SubmittedPositionKey(timeoutHeight uint64, address sdk.AccAddress, pairID common.Address) []byte {
+	key := append(sdk.Uint64ToBigEndian(timeoutHeight), address.Bytes()...)
+	return append(key, pairID.Bytes()...)
 }
 
 // LPAddressFromStoplossKey
@@ -49,10 +53,14 @@ func LPAddressFromStoplossKey(key []byte) sdk.AccAddress {
 }
 
 // SplitSubmittedStoplossKey
-func SplitSubmittedStoplossKey(key []byte) (uint64, sdk.AccAddress) {
-	if len(key[1:]) < 8+sdk.AddrLen {
-		return 0, nil
+func SplitSubmittedStoplossKey(key []byte) (uint64, sdk.AccAddress, common.Address) {
+	if len(key[1:]) < 8+sdk.AddrLen+common.AddressLength {
+		return 0, nil, common.Address{}
 	}
 
-	return sdk.BigEndianToUint64(key[1:9]), sdk.AccAddress(key[9 : 9+sdk.AddrLen])
+	timeoutHeight := sdk.BigEndianToUint64(key[1 : 1+8])
+	address := sdk.AccAddress(key[9 : 9+sdk.AddrLen])
+	pairID := common.BytesToAddress(key[29:])
+
+	return timeoutHeight, address, pairID
 }

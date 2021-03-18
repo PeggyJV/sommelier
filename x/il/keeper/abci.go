@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/armon/go-metrics"
+	"github.com/ethereum/go-ethereum/common"
 
 	"github.com/cosmos/cosmos-sdk/telemetry"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -148,8 +149,10 @@ func (k Keeper) EndBlocker(ctx sdk.Context) {
 		stoploss.Submitted = true
 		k.SetStoplossPosition(ctx, address, stoploss)
 
+		pairID := common.HexToAddress(stoploss.UniswapPairID)
+
 		// we now track the pair to recreate it in case of timeout
-		k.SetSubmittedPosition(ctx, timeoutHeight, address, stoploss.UniswapPairID)
+		k.SetSubmittedPosition(ctx, timeoutHeight, address, pairID)
 
 		// log and emit metrics
 		k.Logger(ctx).Info("stoploss executed", "pair", stoploss.UniswapPairID, "receiver-address", stoploss.ReceiverAddress)

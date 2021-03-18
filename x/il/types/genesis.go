@@ -39,7 +39,12 @@ func (gs GenesisState) Validate() error {
 		return err
 	}
 
+	seenSubmittedPositions := make(map[string]bool)
 	for _, position := range gs.SubmittedPositionsQueue {
+		if seenSubmittedPositions[position.Address+position.PairId] {
+			return fmt.Errorf("duplicated submitted position for address %s and pair ID %s", position.Address, position.PairId)
+		}
+
 		if _, err := sdk.AccAddressFromBech32(position.Address); err != nil {
 			return err
 		}
@@ -51,6 +56,8 @@ func (gs GenesisState) Validate() error {
 		if position.TimeoutHeight == 0 {
 			return fmt.Errorf("eth timeout height cannot be 0 for submitted position pair (%s)", position.PairId)
 		}
+
+		seenSubmittedPositions[position.Address+position.PairId] = true
 	}
 
 	return gs.Params.ValidateBasic()
