@@ -35,15 +35,24 @@ func StoplossKey(address sdk.AccAddress, uniswapPair string) []byte {
 }
 
 // SubmittedPositionKey defines the full unprefixed store key for submitted positions to the bridge
-func SubmittedPositionKey(ethHeight uint64, address sdk.AccAddress) []byte {
-	return append(sdk.Uint64ToBigEndian(ethHeight), address.Bytes()...)
+func SubmittedPositionKey(timeoutHeight uint64, address sdk.AccAddress) []byte {
+	return append(sdk.Uint64ToBigEndian(timeoutHeight), address.Bytes()...)
 }
 
-// LPAddressFromStoplossKey d
+// LPAddressFromStoplossKey
 func LPAddressFromStoplossKey(key []byte) sdk.AccAddress {
 	if len(key[1:]) < sdk.AddrLen {
 		return nil
 	}
 
 	return sdk.AccAddress(key[1 : 1+sdk.AddrLen])
+}
+
+// SplitSubmittedStoplossKey
+func SplitSubmittedStoplossKey(key []byte) (uint64, sdk.AccAddress) {
+	if len(key[1:]) < 8+sdk.AddrLen {
+		return 0, nil
+	}
+
+	return sdk.BigEndianToUint64(key[1:9]), sdk.AccAddress(key[9 : 9+sdk.AddrLen])
 }

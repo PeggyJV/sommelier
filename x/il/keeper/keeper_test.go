@@ -151,3 +151,25 @@ func (suite *KeeperTestSuite) TestGetLPsStoplossPositions() {
 	res := suite.app.ILKeeper.GetLPsStoplossPositions(suite.ctx)
 	suite.Require().Equal(lpsStoplossPositions.Sort(), res)
 }
+
+func (suite *KeeperTestSuite) TestSubmittedQueue() {
+
+	pairID := "0x3041cbd36888becc7bbcbc0045e3b1f144466f5f"
+	addressStr := suite.account.GetAddress().String()
+
+	var expQueue []types.SubmittedPosition
+
+	for i := uint64(10); i < 20; i++ {
+		expQueue = append(expQueue, types.SubmittedPosition{
+			Address:       addressStr,
+			TimeoutHeight: i,
+			PairId:        pairID,
+		})
+
+		suite.app.ILKeeper.SetSubmittedPosition(suite.ctx, i, suite.account.GetAddress(), pairID)
+	}
+
+	queue := suite.app.ILKeeper.GetSubmittedQueue(suite.ctx)
+
+	suite.Require().Equal(expQueue, queue)
+}

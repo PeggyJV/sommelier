@@ -9,10 +9,9 @@
     - [Stoploss](#il.v1.Stoploss)
   
 - [il/v1/genesis.proto](#il/v1/genesis.proto)
-    - [ExecutedPosition](#il.v1.ExecutedPosition)
-    - [ExecutedPositionQueue](#il.v1.ExecutedPositionQueue)
     - [GenesisState](#il.v1.GenesisState)
     - [StoplossPositions](#il.v1.StoplossPositions)
+    - [SubmittedPosition](#il.v1.SubmittedPosition)
   
 - [il/v1/query.proto](#il/v1/query.proto)
     - [QueryParamsRequest](#il.v1.QueryParamsRequest)
@@ -141,38 +140,6 @@ Stoploss defines a set of parameters that together trigger a stoploss withdrawal
 
 
 
-<a name="il.v1.ExecutedPosition"></a>
-
-### ExecutedPosition
-ExecutedPosition contains a executed position at a given ethereum height
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| `eth_height` | [uint64](#uint64) |  | ethereum block height at which the position was executed |
-| `pair_id` | [string](#string) |  | stoploss position's uniswap pair id |
-
-
-
-
-
-
-<a name="il.v1.ExecutedPositionQueue"></a>
-
-### ExecutedPositionQueue
-ExecutedPositionQueue represents all the impermanent loss stop positions for a given LP address and uniswap pair.
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| `address` | [string](#string) |  | LP account address |
-| `executed_positions` | [ExecutedPosition](#il.v1.ExecutedPosition) | repeated | set of executed positions owned by the address |
-
-
-
-
-
-
 <a name="il.v1.GenesisState"></a>
 
 ### GenesisState
@@ -184,6 +151,7 @@ GenesisState all impermanent loss state that must be provided at genesis.
 | `params` | [Params](#il.v1.Params) |  |  |
 | `lps_stoploss_positions` | [StoplossPositions](#il.v1.StoplossPositions) | repeated |  |
 | `invalidation_id` | [uint64](#uint64) |  |  |
+| `submitted_positions_queue` | [SubmittedPosition](#il.v1.SubmittedPosition) | repeated |  |
 
 
 
@@ -200,6 +168,24 @@ StoplossPosition represents all the impermanent loss stop positions for a given 
 | ----- | ---- | ----- | ----------- |
 | `address` | [string](#string) |  | LP account address |
 | `stoploss_positions` | [Stoploss](#il.v1.Stoploss) | repeated | set of positions owned by the address |
+
+
+
+
+
+
+<a name="il.v1.SubmittedPosition"></a>
+
+### SubmittedPosition
+SubmittedPosition contains an impermanent loss position owned by an account
+that has already been submitted as outgoing bridge tx request to ethereum.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `address` | [string](#string) |  | account address |
+| `timeout_height` | [uint64](#uint64) |  | ethereum block height at which the position tx timeouts |
+| `pair_id` | [string](#string) |  | stoploss position's uniswap pair id |
 
 
 

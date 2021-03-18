@@ -16,3 +16,14 @@ func TestStoplossKey(t *testing.T) {
 
 	require.Equal(t, addr.String(), lpAddr.String())
 }
+
+func TestSubmittedPositionKey(t *testing.T) {
+	_, _, addr := testdata.KeyTestPubAddr()
+
+	key := append(SubmittedPositionsQueuePrefix, SubmittedPositionKey(10, addr)...)
+	timeoutHeight, address := SplitSubmittedStoplossKey(key)
+
+	require.Len(t, key, 29)
+	require.Equal(t, 10, int(timeoutHeight))
+	require.Equal(t, addr.String(), address.String())
+}

@@ -193,13 +193,29 @@ func (k Keeper) IterateSubmittedQueue(ctx sdk.Context, cb func(timeoutHeight uin
 	defer iterator.Close()
 
 	for ; iterator.Valid(); iterator.Next() {
-		timeoutHeight := sdk.BigEndianToUint64(iterator.Key()[1:9])
-		address := sdk.AccAddress(iterator.Key()[9:])
-
+		timeoutHeight, address := types.SplitSubmittedStoplossKey(append(types.StoplossKeyPrefix, iterator.Key()...))
 		pairID := string(iterator.Value())
 
 		if cb(timeoutHeight, address, pairID) {
 			break
 		}
 	}
+}
+
+// GetSubmittedQueue queries all the submitted positions.
+func (k Keeper) GetSubmittedQueue(ctx sdk.Context) []types.SubmittedPosition {
+	var submittedQueue []types.SubmittedPosition
+
+	k.IterateSubmittedQueue(ctx, func(timeoutHeight uint64, address sdk.AccAddress, pairID string) bool {
+		position := types.SubmittedPosition{
+			Address:       address.String(),
+			TimeoutHeight: timeoutHeight,
+			PairId:        pairID,
+		}
+
+		submittedQueue = append(submittedQueue, position)
+		return false
+	})
+
+	return submittedQueue
 }
