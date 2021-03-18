@@ -178,8 +178,6 @@ func (k Keeper) DeleteSubmittedPosition(ctx sdk.Context, timeoutHeight uint64, a
 	store.Delete(types.SubmittedPositionKey(timeoutHeight, address, pairID))
 }
 
-// TODO: update, this assumes LP position per address
-
 // SetSubmittedPosition sets a submitted stoplos position to the store.
 func (k Keeper) SetSubmittedPosition(ctx sdk.Context, timeoutHeight uint64, address sdk.AccAddress, pairID common.Address) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.SubmittedPositionsQueuePrefix)
