@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/armon/go-metrics"
+	"github.com/ethereum/go-ethereum/common"
 
 	"github.com/cosmos/cosmos-sdk/telemetry"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -18,13 +19,17 @@ import (
 // BeginBlock recreates stoploss positions that may have timeout.
 // CONTRACT: this logic assumes that upon execution of the transaction on Ethereum
 // the bridge relayers submit a receipt msg to cosmos so that we can delete
-// the executed stoploss from the queue.
-func (k Keeper) BeginBlock(_ sdk.Context) {
-	// iterate over the queue of executed stoploss positions in asc order of eth block heights
-	//  if current ethereum blockHeight < executed ethereum block + block timeout:
-	//  	return true // break
-	// 	recreate stoploss position with same fields
-	// 	delete position from queue
+// the executed stoploss from both the executed queue and the stoploss prefix store.
+func (k Keeper) BeginBlock(ctx sdk.Context) {
+	defer telemetry.ModuleMeasureSince(types.ModuleName, time.Now(), telemetry.MetricKeyBeginBlocker)
+
+	ethHeight := k.ethBridgeKeeper.GetLastObservedEthereumBlockHeight(ctx).EthereumBlockHeight
+	if ethHeight == 0 {
+		k.Logger(ctx).Debug("tracked ethereum height is 0")
+		return
+	}
+
+	k.TrackPositionTimeout(ctx, ethHeight)
 }
 
 // EndBlocker is called at the end of every block
@@ -32,8 +37,8 @@ func (k Keeper) EndBlocker(ctx sdk.Context) {
 	defer telemetry.ModuleMeasureSince(types.ModuleName, time.Now(), telemetry.MetricKeyEndBlocker)
 
 	// check if the latest eth block height
-	ethHeight := k.ethBridgeKeeper.GetLastObservedEthereumBlockHeight(ctx)
-	if ethHeight.EthereumBlockHeight == 0 {
+	ethHeight := k.ethBridgeKeeper.GetLastObservedEthereumBlockHeight(ctx).EthereumBlockHeight
+	if ethHeight == 0 {
 		k.Logger(ctx).Debug("tracked ethereum height is 0")
 		return
 	}
@@ -48,6 +53,11 @@ func (k Keeper) EndBlocker(ctx sdk.Context) {
 	pairMap := make(map[string]*oracletypes.UniswapPair)
 
 	k.IterateStoplossPositions(ctx, func(address sdk.AccAddress, stoploss types.Stoploss) (stop bool) {
+		// continue to the next item if the position has already been submitted to the bridge
+		if stoploss.Submitted {
+			return false
+		}
+
 		pair, ok := pairMap[stoploss.UniswapPairID]
 		if !ok {
 			oracleData, _ := k.oracleKeeper.GetLatestAggregatedOracleData(ctx, oracletypes.UniswapDataType, stoploss.UniswapPairID)
@@ -120,18 +130,29 @@ func (k Keeper) EndBlocker(ctx sdk.Context) {
 		// counter, will prevent a logic call to get invalidated unless the outgoing Ethereum transaction
 		// times out
 
+		timeoutHeight := ethHeight + params.EthTimeoutBlocks
+
 		call := &bridgetypes.OutgoingLogicCall{
 			Transfers:            []*bridgetypes.ERC20Token{uniswapERC20Pair},
 			Fees:                 []*bridgetypes.ERC20Token{ethFee},
 			LogicContractAddress: params.ContractAddress,
 			Payload:              payload,
-			Timeout:              ethHeight.EthereumBlockHeight + params.EthTimeoutBlocks,
-			InvalidationId:       sdk.Uint64ToBigEndian(invalidationID), // TODO: should this be hex?
+			Timeout:              timeoutHeight,
+			InvalidationId:       sdk.Uint64ToBigEndian(invalidationID),
 			InvalidationNonce:    0,
 		}
 
 		// send eth transaction to withdraw lp_shares liquidity for pair_id
 		k.ethBridgeKeeper.SetOutgoingLogicCall(ctx, call)
+
+		// set the submitted value to true and store it
+		stoploss.Submitted = true
+		k.SetStoplossPosition(ctx, address, stoploss)
+
+		pairID := common.HexToAddress(stoploss.UniswapPairID)
+
+		// we now track the pair to recreate it in case of timeout
+		k.SetSubmittedPosition(ctx, timeoutHeight, address, pairID)
 
 		// log and emit metrics
 		k.Logger(ctx).Info("stoploss executed", "pair", stoploss.UniswapPairID, "receiver-address", stoploss.ReceiverAddress)
@@ -151,10 +172,6 @@ func (k Keeper) EndBlocker(ctx sdk.Context) {
 				[]metrics.Label{telemetry.NewLabel("pair", stoploss.UniswapPairID)},
 			)
 		}()
-
-		// TODO: technically we should remove the stoploss position now that is has been executed, but we still need to account
-		// for the cases when the outgoing txs to ethereum fail for some reason.
-		k.DeleteStoplossPosition(ctx, address, stoploss.UniswapPairID)
 
 		return false
 	})

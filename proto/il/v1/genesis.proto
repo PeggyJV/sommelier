@@ -19,15 +19,30 @@ message GenesisState {
         (gogoproto.customname) = "InvalidationID",
         (gogoproto.moretags)   = "yaml:\"invalidation_id\""
     ]; 
+    repeated SubmittedPosition submitted_positions_queue = 4 [
+        (gogoproto.nullable) = false,
+        (gogoproto.moretags)   = "yaml:\"submitted_positions_queue\""
+    ];
 }
 
 // StoplossPosition represents all the impermanent loss stop positions for a given LP address and uniswap pair.
 message StoplossPositions {
     // LP account address 
     string address = 1;
-    // set of possitions owned by the address
+    // set of positions owned by the address
     repeated Stoploss stoploss_positions = 2 [
         (gogoproto.nullable) = false,
         (gogoproto.moretags)   = "yaml:\"stoploss_positions\""
     ];
+}
+
+// SubmittedPosition contains an impermanent loss position owned by an account
+// that has already been submitted as outgoing bridge tx request to ethereum.
+message SubmittedPosition {
+    // account address
+    string address = 1;
+    // ethereum block height at which the position tx timeouts
+    uint64 timeout_height = 2 [(gogoproto.moretags) = "yaml:\"timeout_height\""];
+    // stoploss position's uniswap pair id
+    string pair_id = 3 [(gogoproto.moretags) = "yaml:\"pair_id\""];
 }

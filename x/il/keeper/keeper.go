@@ -3,6 +3,7 @@ package keeper
 import (
 	"fmt"
 
+	"github.com/ethereum/go-ethereum/common"
 	"github.com/tendermint/tendermint/libs/log"
 
 	"github.com/cosmos/cosmos-sdk/codec"
@@ -169,4 +170,50 @@ func (k Keeper) GetInvalidationID(ctx sdk.Context) uint64 {
 func (k Keeper) SetInvalidationID(ctx sdk.Context, invalidationID uint64) {
 	store := ctx.KVStore(k.storeKey)
 	store.Set(types.InvalidationIDPrefix, sdk.Uint64ToBigEndian(invalidationID))
+}
+
+// DeleteSubmittedPosition removes an submitted stoploss position from the store.
+func (k Keeper) DeleteSubmittedPosition(ctx sdk.Context, timeoutHeight uint64, address sdk.AccAddress, pairID common.Address) {
+	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.SubmittedPositionsQueuePrefix)
+	store.Delete(types.SubmittedPositionKey(timeoutHeight, address, pairID))
+}
+
+// SetSubmittedPosition sets a submitted stoplos position to the store.
+func (k Keeper) SetSubmittedPosition(ctx sdk.Context, timeoutHeight uint64, address sdk.AccAddress, pairID common.Address) {
+	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.SubmittedPositionsQueuePrefix)
+	store.Set(types.SubmittedPositionKey(timeoutHeight, address, pairID), []byte{})
+}
+
+// IterateSubmittedQueue iterates over the all the submitted positions in ascending height performs a callback.
+func (k Keeper) IterateSubmittedQueue(ctx sdk.Context, cb func(timeoutHeight uint64, address sdk.AccAddress, pairID common.Address) (stop bool)) {
+	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.SubmittedPositionsQueuePrefix)
+
+	iterator := store.Iterator(nil, nil)
+	defer iterator.Close()
+
+	for ; iterator.Valid(); iterator.Next() {
+		timeoutHeight, address, pairID := types.SplitSubmittedStoplossKey(append(types.StoplossKeyPrefix, iterator.Key()...))
+
+		if cb(timeoutHeight, address, pairID) {
+			break
+		}
+	}
+}
+
+// GetSubmittedQueue queries all the submitted positions.
+func (k Keeper) GetSubmittedQueue(ctx sdk.Context) []types.SubmittedPosition {
+	var submittedQueue []types.SubmittedPosition
+
+	k.IterateSubmittedQueue(ctx, func(timeoutHeight uint64, address sdk.AccAddress, pairID common.Address) bool {
+		position := types.SubmittedPosition{
+			Address:       address.String(),
+			TimeoutHeight: timeoutHeight,
+			PairId:        pairID.String(),
+		}
+
+		submittedQueue = append(submittedQueue, position)
+		return false
+	})
+
+	return submittedQueue
 }

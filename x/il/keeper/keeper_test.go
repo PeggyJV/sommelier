@@ -3,6 +3,7 @@ package keeper_test
 import (
 	"testing"
 
+	"github.com/ethereum/go-ethereum/common"
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
@@ -150,4 +151,26 @@ func (suite *KeeperTestSuite) TestGetLPsStoplossPositions() {
 
 	res := suite.app.ILKeeper.GetLPsStoplossPositions(suite.ctx)
 	suite.Require().Equal(lpsStoplossPositions.Sort(), res)
+}
+
+func (suite *KeeperTestSuite) TestSubmittedQueue() {
+
+	pairID := common.HexToAddress("0x3041cbd36888becc7bbcbc0045e3b1f144466f5f")
+
+	var expQueue []types.SubmittedPosition
+
+	for i := uint64(10); i < 20; i++ {
+		_, _, addr := testdata.KeyTestPubAddr()
+		expQueue = append(expQueue, types.SubmittedPosition{
+			Address:       addr.String(),
+			TimeoutHeight: i,
+			PairId:        pairID.String(),
+		})
+
+		suite.app.ILKeeper.SetSubmittedPosition(suite.ctx, i, addr, pairID)
+	}
+
+	queue := suite.app.ILKeeper.GetSubmittedQueue(suite.ctx)
+
+	suite.Require().Equal(expQueue, queue)
 }
