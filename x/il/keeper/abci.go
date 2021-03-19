@@ -46,11 +46,8 @@ func (k Keeper) EndBlocker(ctx sdk.Context) {
 	}
 
 	params := k.GetParams(ctx)
-
 	invalidationID := k.GetInvalidationID(ctx)
 
-	// variable for the original value to check if we need to store the new invalidationID value
-	originalInvalidationID := invalidationID
 	timeoutHeight := ethHeight + params.EthTimeoutBlocks
 	redeemDeadline := ctx.BlockTime().Unix() + int64(params.EthTimeoutTimestamp)*int64(time.Second)
 
@@ -186,14 +183,14 @@ func (k Keeper) EndBlocker(ctx sdk.Context) {
 		return
 	}
 
-	// increment the invalidation ID counter
-	invalidationID++
-
 	// encode the simple logic batch ABI
 	payload, err := batchedPositions.GetEncodedCall()
 	if err != nil {
 		panic(fmt.Errorf("sommelier contract ABI payload pack failed: %w", err))
 	}
+
+	// increment the invalidation ID counter
+	invalidationID++
 
 	// NOTE: by setting the invalidation nonce always to 0 and the invalidation ID to an increasing
 	// counter, will prevent a logic call to get invalidated unless the outgoing Ethereum transaction
@@ -212,10 +209,8 @@ func (k Keeper) EndBlocker(ctx sdk.Context) {
 	// send eth transaction to withdraw lp_shares liquidity for pair_id
 	k.ethBridgeKeeper.SetOutgoingLogicCall(ctx, call)
 
-	// Set the new invalidation
-	if originalInvalidationID != invalidationID {
-		k.SetInvalidationID(ctx, invalidationID)
-	}
+	// Set the new invalidation ID
+	k.SetInvalidationID(ctx, invalidationID)
 
 	// log and emit metrics
 	k.Logger(ctx).Debug("stoploss batch txs executed", "invalidation-id", strconv.FormatUint(invalidationID, 64))
