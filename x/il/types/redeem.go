@@ -37,10 +37,10 @@ func NewRedeemLiquidityETHCall(token string, liquidity, amountTokenMin, amountEt
 // RedeemLiquidityETH represents an ETH liquidity removal call
 type RedeemLiquidityETH struct {
 	Token          common.Address
+	To             common.Address
 	Liquidity      *big.Int
 	AmountTokenMin *big.Int
 	AmountETHMin   *big.Int
-	To             common.Address
 	Deadline       *big.Int
 }
 
@@ -65,14 +65,14 @@ func (b RedeemLiquidityETH) GetEncodedCall() ([]byte, error) {
 	)
 }
 
-// RedeemLiquidityETH represents an ETH liquidity removal call
+// RedeemLiquidity represents a liquidity removal call from uniswap
 type RedeemLiquidity struct {
 	TokenA     common.Address
 	TokenB     common.Address
+	To         common.Address
 	Liquidity  *big.Int
 	AmountAMin *big.Int
 	AmountBMin *big.Int
-	To         common.Address
 	Deadline   *big.Int
 }
 

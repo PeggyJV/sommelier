@@ -57,7 +57,7 @@ func (k Keeper) EndBlocker(ctx sdk.Context) {
 		Amounts:       []*big.Int{},
 		Payloads:      []types.Payload{},
 		LogicContract: common.HexToAddress(params.BatchContractAddress),
-		TokenContract: common.HexToAddress(params.LiquidityContractAddress), // TODO: double check this
+		TokenContract: common.HexToAddress(params.LiquidityContractAddress),
 	}
 
 	var transfers, fees []*bridgetypes.ERC20Token
@@ -199,10 +199,10 @@ func (k Keeper) EndBlocker(ctx sdk.Context) {
 	call := &bridgetypes.OutgoingLogicCall{
 		Transfers:            transfers,
 		Fees:                 fees,
-		LogicContractAddress: params.BatchContractAddress, // TODO: double check
+		LogicContractAddress: params.BatchContractAddress,
 		Payload:              payload,
 		Timeout:              timeoutHeight,
-		InvalidationId:       sdk.Uint64ToBigEndian(invalidationID), // TODO: should this be hex?
+		InvalidationId:       sdk.Uint64ToBigEndian(invalidationID),
 		InvalidationNonce:    0,
 	}
 
