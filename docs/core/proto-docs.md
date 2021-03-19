@@ -95,7 +95,8 @@ Params define the impermanent loss module parameters
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| `contract_address` | [string](#string) |  | contract address for impermanent loss handling on ethereum |
+| `batch_contract_address` | [string](#string) |  | batch contract address for batching impermanent loss handling (i.e remove liquidity) on Ethereum. This contract calls the liquidity contract address for each position that has been batched. |
+| `liquidity_contract_address` | [string](#string) |  | liquidity contract address for removing liquidity from each LP position |
 | `eth_timeout_blocks` | [uint64](#uint64) |  | timeout block height value for the custom ethereum outgoing logic. This is value added to the last seen ethereum height when executing the stoploss logic on EndBlock. |
 | `eth_timeout_timestamp` | [uint64](#uint64) |  | timeout timestamp second duration value for the redeemLiquidity deadline. This value is added to the block unix timestamp when executing the stoploss logic on EndBlock. |
 
@@ -117,6 +118,7 @@ Stoploss defines a set of parameters that together trigger a stoploss withdrawal
 | `max_slippage` | [string](#string) |  | max slippage allowed before the stoploss is triggered |
 | `reference_pair_ratio` | [string](#string) |  | starting token pair ratio of the uniswap pool |
 | `receiver_address` | [string](#string) |  | ethereum receiving address in hex format |
+| `redeem_eth` | [bool](#bool) |  | redeem liquidity for eth or for the corresponding pair tokens once the stoploss position is executed |
 | `submitted` | [bool](#bool) |  | track submission to the bridge in order to reenable the position if the tx timeouts |
 
 

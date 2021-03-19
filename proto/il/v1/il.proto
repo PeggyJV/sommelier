@@ -28,18 +28,24 @@ message Stoploss {
     ];
     // ethereum receiving address in hex format
     string receiver_address = 5 [(gogoproto.moretags) = "yaml:\"receiver_address\""];
+    // redeem liquidity for eth or for the corresponding pair tokens once the stoploss position is
+    // executed
+    bool redeem_eth = 6 [(gogoproto.moretags) = "yaml:\"redeem_eth\""];
     // track submission to the bridge in order to reenable the position if the tx timeouts
-    bool submitted = 6;
+    bool submitted = 7;
 }
 
 // Params define the impermanent loss module parameters
 message Params {
-    // contract address for impermanent loss handling on ethereum
-    string contract_address = 1 [(gogoproto.moretags) = "yaml:\"contract_address\""];
+    // batch contract address for batching impermanent loss handling (i.e remove liquidity) on Ethereum.
+    // This contract calls the liquidity contract address for each position that has been batched.
+    string batch_contract_address = 1 [(gogoproto.moretags) = "yaml:\"batch_contract_address\""];
+    // liquidity contract address for removing liquidity from each LP position
+    string liquidity_contract_address = 2 [(gogoproto.moretags) = "yaml:\"liquidity_contract_address\""];
     // timeout block height value for the custom ethereum outgoing logic. This is value added to the last
     // seen ethereum height when executing the stoploss logic on EndBlock.
-    uint64 eth_timeout_blocks = 2 [(gogoproto.moretags) = "yaml:\"eth_timeout_blocks\""];
+    uint64 eth_timeout_blocks = 3 [(gogoproto.moretags) = "yaml:\"eth_timeout_blocks\""];
     // timeout timestamp second duration value for the redeemLiquidity deadline. This value is added to the block unix
     // timestamp when executing the stoploss logic on EndBlock.
-    uint64 eth_timeout_timestamp = 3 [(gogoproto.moretags) = "yaml:\"eth_timeout_timestamp\""];
+    uint64 eth_timeout_timestamp = 4 [(gogoproto.moretags) = "yaml:\"eth_timeout_timestamp\""];
 }

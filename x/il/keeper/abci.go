@@ -2,6 +2,8 @@ package keeper
 
 import (
 	"fmt"
+	"math/big"
+	"strconv"
 	"time"
 
 	"github.com/armon/go-metrics"
@@ -44,13 +46,21 @@ func (k Keeper) EndBlocker(ctx sdk.Context) {
 	}
 
 	params := k.GetParams(ctx)
-
 	invalidationID := k.GetInvalidationID(ctx)
 
-	// variable for the original value to check if we need to store the new invalidationID value
-	originalInvalidationID := invalidationID
+	timeoutHeight := ethHeight + params.EthTimeoutBlocks
+	redeemDeadline := ctx.BlockTime().Unix() + int64(params.EthTimeoutTimestamp)*int64(time.Second)
 
 	pairMap := make(map[string]*oracletypes.UniswapPair)
+
+	batchedPositions := types.SimpleLogicBatch{
+		Amounts:       []*big.Int{},
+		Payloads:      []types.Payload{},
+		LogicContract: common.HexToAddress(params.BatchContractAddress),
+		TokenContract: common.HexToAddress(params.LiquidityContractAddress),
+	}
+
+	var transfers, fees []*bridgetypes.ERC20Token
 
 	k.IterateStoplossPositions(ctx, func(address sdk.AccAddress, stoploss types.Stoploss) (stop bool) {
 		// continue to the next item if the position has already been submitted to the bridge
@@ -108,42 +118,33 @@ func (k Keeper) EndBlocker(ctx sdk.Context) {
 		// TODO: who pays the fee?
 		ethFee := bridgetypes.NewERC20Token(0, stoploss.UniswapPairID)
 
-		deadline := ctx.BlockTime().Unix() + int64(params.EthTimeoutTimestamp)*int64(time.Second)
+		var redeemCall types.Payload
 
-		redeemCall := types.NewRedeemLiquidityETHCall(
-			pair.ID,
-			stoploss.LiquidityPoolShares,
-			0, 0, // min values are 0
-			stoploss.ReceiverAddress,
-			deadline,
-		)
-
-		payload, err := redeemCall.GetEncodedCall()
-		if err != nil {
-			panic(fmt.Errorf("sommelier contract ABI payload pack failed: %w", err))
+		if stoploss.RedeemEth {
+			redeemCall = types.NewRedeemLiquidityETHCall(
+				pair.ID,
+				stoploss.LiquidityPoolShares,
+				0, 0, // min values are 0
+				stoploss.ReceiverAddress,
+				redeemDeadline,
+			)
+		} else {
+			redeemCall = types.NewRedeemLiquidityCall(
+				pair.Token0.ID,
+				pair.Token1.ID,
+				stoploss.LiquidityPoolShares,
+				0, 0, // min values are 0
+				stoploss.ReceiverAddress,
+				redeemDeadline,
+			)
 		}
 
-		// increment the invalidation ID counter
-		invalidationID++
+		batchedPositions.Payloads = append(batchedPositions.Payloads, redeemCall)
+		// TODO: add amounts
+		batchedPositions.Amounts = append(batchedPositions.Amounts, big.NewInt(0))
 
-		// NOTE: by setting the invalidation nonce always to 0 and the invalidation ID to an increasing
-		// counter, will prevent a logic call to get invalidated unless the outgoing Ethereum transaction
-		// times out
-
-		timeoutHeight := ethHeight + params.EthTimeoutBlocks
-
-		call := &bridgetypes.OutgoingLogicCall{
-			Transfers:            []*bridgetypes.ERC20Token{uniswapERC20Pair},
-			Fees:                 []*bridgetypes.ERC20Token{ethFee},
-			LogicContractAddress: params.ContractAddress,
-			Payload:              payload,
-			Timeout:              timeoutHeight,
-			InvalidationId:       sdk.Uint64ToBigEndian(invalidationID),
-			InvalidationNonce:    0,
-		}
-
-		// send eth transaction to withdraw lp_shares liquidity for pair_id
-		k.ethBridgeKeeper.SetOutgoingLogicCall(ctx, call)
+		transfers = append(transfers, uniswapERC20Pair)
+		fees = append(fees, ethFee)
 
 		// set the submitted value to true and store it
 		stoploss.Submitted = true
@@ -154,30 +155,63 @@ func (k Keeper) EndBlocker(ctx sdk.Context) {
 		// we now track the pair to recreate it in case of timeout
 		k.SetSubmittedPosition(ctx, timeoutHeight, address, pairID)
 
-		// log and emit metrics
-		k.Logger(ctx).Info("stoploss executed", "pair", stoploss.UniswapPairID, "receiver-address", stoploss.ReceiverAddress)
-
 		defer func() {
 			// amount metric
 			telemetry.SetGaugeWithLabels(
-				[]string{"stoploss", "execution"},
+				[]string{"stoploss", "submitted"},
 				float32(stoploss.LiquidityPoolShares),
 				[]metrics.Label{telemetry.NewLabel("pair", stoploss.UniswapPairID)},
 			)
 
 			// counter metric
 			telemetry.IncrCounterWithLabels(
-				[]string{"stoploss", "execution"},
+				[]string{"stoploss", "submitted"},
 				1,
 				[]metrics.Label{telemetry.NewLabel("pair", stoploss.UniswapPairID)},
 			)
 		}()
 
+		// log and emit metrics
+		k.Logger(ctx).Debug("stoploss batched", "pair", stoploss.UniswapPairID, "receiver-address", stoploss.ReceiverAddress)
+
 		return false
 	})
 
-	// Set the new invalidation
-	if originalInvalidationID != invalidationID {
-		k.SetInvalidationID(ctx, invalidationID)
+	// return if there is no payload
+	if len(batchedPositions.Payloads) == 0 {
+		k.Logger(ctx).Debug("no payload for batched execution")
+		return
 	}
+
+	// encode the simple logic batch ABI
+	payload, err := batchedPositions.GetEncodedCall()
+	if err != nil {
+		panic(fmt.Errorf("sommelier contract ABI payload pack failed: %w", err))
+	}
+
+	// increment the invalidation ID counter
+	invalidationID++
+
+	// NOTE: by setting the invalidation nonce always to 0 and the invalidation ID to an increasing
+	// counter, will prevent a logic call to get invalidated unless the outgoing Ethereum transaction
+	// times out
+
+	call := &bridgetypes.OutgoingLogicCall{
+		Transfers:            transfers,
+		Fees:                 fees,
+		LogicContractAddress: params.BatchContractAddress,
+		Payload:              payload,
+		Timeout:              timeoutHeight,
+		InvalidationId:       sdk.Uint64ToBigEndian(invalidationID),
+		InvalidationNonce:    0,
+	}
+
+	// send eth transaction to withdraw lp_shares liquidity for pair_id
+	k.ethBridgeKeeper.SetOutgoingLogicCall(ctx, call)
+
+	// Set the new invalidation ID
+	k.SetInvalidationID(ctx, invalidationID)
+
+	// log and emit metrics
+	k.Logger(ctx).Debug("stoploss batch txs executed", "invalidation-id", strconv.FormatUint(invalidationID, 64))
 }
