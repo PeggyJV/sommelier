@@ -21,13 +21,17 @@ import (
 // BeginBlock recreates stoploss positions that may have timeout.
 // CONTRACT: this logic assumes that upon execution of the transaction on Ethereum
 // the bridge relayers submit a receipt msg to cosmos so that we can delete
-// the executed stoploss from the queue.
-func (k Keeper) BeginBlock(_ sdk.Context) {
-	// iterate over the queue of executed stoploss positions in asc order of eth block heights
-	//  if current ethereum blockHeight < executed ethereum block + block timeout:
-	//  	return true // break
-	// 	recreate stoploss position with same fields
-	// 	delete position from queue
+// the executed stoploss from both the executed queue and the stoploss prefix store.
+func (k Keeper) BeginBlock(ctx sdk.Context) {
+	defer telemetry.ModuleMeasureSince(types.ModuleName, time.Now(), telemetry.MetricKeyBeginBlocker)
+
+	ethHeight := k.ethBridgeKeeper.GetLastObservedEthereumBlockHeight(ctx).EthereumBlockHeight
+	if ethHeight == 0 {
+		k.Logger(ctx).Debug("tracked ethereum height is 0")
+		return
+	}
+
+	k.TrackPositionTimeout(ctx, ethHeight)
 }
 
 // EndBlocker is called at the end of every block
@@ -35,8 +39,8 @@ func (k Keeper) EndBlocker(ctx sdk.Context) {
 	defer telemetry.ModuleMeasureSince(types.ModuleName, time.Now(), telemetry.MetricKeyEndBlocker)
 
 	// check if the latest eth block height
-	ethHeight := k.ethBridgeKeeper.GetLastObservedEthereumBlockHeight(ctx)
-	if ethHeight.EthereumBlockHeight == 0 {
+	ethHeight := k.ethBridgeKeeper.GetLastObservedEthereumBlockHeight(ctx).EthereumBlockHeight
+	if ethHeight == 0 {
 		k.Logger(ctx).Debug("tracked ethereum height is 0")
 		return
 	}
@@ -47,7 +51,8 @@ func (k Keeper) EndBlocker(ctx sdk.Context) {
 
 	// variable for the original value to check if we need to store the new invalidationID value
 	originalInvalidationID := invalidationID
-	deadline := ctx.BlockTime().Unix() + int64(params.EthTimeoutTimestamp)*int64(time.Second)
+	timeoutHeight := ethHeight + params.EthTimeoutBlocks
+	redeemDeadline := ctx.BlockTime().Unix() + int64(params.EthTimeoutTimestamp)*int64(time.Second)
 
 	pairMap := make(map[string]*oracletypes.UniswapPair)
 
@@ -61,6 +66,11 @@ func (k Keeper) EndBlocker(ctx sdk.Context) {
 	var transfers, fees []*bridgetypes.ERC20Token
 
 	k.IterateStoplossPositions(ctx, func(address sdk.AccAddress, stoploss types.Stoploss) (stop bool) {
+		// continue to the next item if the position has already been submitted to the bridge
+		if stoploss.Submitted {
+			return false
+		}
+
 		pair, ok := pairMap[stoploss.UniswapPairID]
 		if !ok {
 			oracleData, _ := k.oracleKeeper.GetLatestAggregatedOracleData(ctx, oracletypes.UniswapDataType, stoploss.UniswapPairID)
@@ -119,7 +129,7 @@ func (k Keeper) EndBlocker(ctx sdk.Context) {
 				stoploss.LiquidityPoolShares,
 				0, 0, // min values are 0
 				stoploss.ReceiverAddress,
-				deadline,
+				redeemDeadline,
 			)
 		} else {
 			redeemCall = types.NewRedeemLiquidityCall(
@@ -128,7 +138,7 @@ func (k Keeper) EndBlocker(ctx sdk.Context) {
 				stoploss.LiquidityPoolShares,
 				0, 0, // min values are 0
 				stoploss.ReceiverAddress,
-				deadline,
+				redeemDeadline,
 			)
 		}
 
@@ -139,25 +149,30 @@ func (k Keeper) EndBlocker(ctx sdk.Context) {
 		transfers = append(transfers, uniswapERC20Pair)
 		fees = append(fees, ethFee)
 
+		// set the submitted value to true and store it
+		stoploss.Submitted = true
+		k.SetStoplossPosition(ctx, address, stoploss)
+
+		pairID := common.HexToAddress(stoploss.UniswapPairID)
+
+		// we now track the pair to recreate it in case of timeout
+		k.SetSubmittedPosition(ctx, timeoutHeight, address, pairID)
+
 		defer func() {
 			// amount metric
 			telemetry.SetGaugeWithLabels(
-				[]string{"stoploss", "execution"},
+				[]string{"stoploss", "submitted"},
 				float32(stoploss.LiquidityPoolShares),
 				[]metrics.Label{telemetry.NewLabel("pair", stoploss.UniswapPairID)},
 			)
 
 			// counter metric
 			telemetry.IncrCounterWithLabels(
-				[]string{"stoploss", "execution"},
+				[]string{"stoploss", "submitted"},
 				1,
 				[]metrics.Label{telemetry.NewLabel("pair", stoploss.UniswapPairID)},
 			)
 		}()
-
-		// TODO: technically we should remove the stoploss position now that is has been executed, but we still need to account
-		// for the cases when the outgoing txs to ethereum fail for some reason.
-		k.DeleteStoplossPosition(ctx, address, stoploss.UniswapPairID)
 
 		// log and emit metrics
 		k.Logger(ctx).Debug("stoploss batched", "pair", stoploss.UniswapPairID, "receiver-address", stoploss.ReceiverAddress)
@@ -189,7 +204,7 @@ func (k Keeper) EndBlocker(ctx sdk.Context) {
 		Fees:                 fees,
 		LogicContractAddress: params.BatchContractAddress, // TODO: double check
 		Payload:              payload,
-		Timeout:              ethHeight.EthereumBlockHeight + params.EthTimeoutBlocks,
+		Timeout:              timeoutHeight,
 		InvalidationId:       sdk.Uint64ToBigEndian(invalidationID), // TODO: should this be hex?
 		InvalidationNonce:    0,
 	}

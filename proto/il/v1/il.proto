@@ -26,11 +26,13 @@ message Stoploss {
         (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
         (gogoproto.nullable) = false
     ];
+    // ethereum receiving address in hex format
+    string receiver_address = 5 [(gogoproto.moretags) = "yaml:\"receiver_address\""];
     // redeem liquidity for eth or for the corresponding pair tokens once the stoploss position is
     // executed
-    bool redeem_eth = 5 [(gogoproto.moretags) = "yaml:\"redeem_eth\""];
-    // ethereum receiving address in hex format
-    string receiver_address = 6 [(gogoproto.moretags) = "yaml:\"receiver_address\""];
+    bool redeem_eth = 6 [(gogoproto.moretags) = "yaml:\"redeem_eth\""];
+    // track submission to the bridge in order to reenable the position if the tx timeouts
+    bool submitted = 7;
 }
 
 // Params define the impermanent loss module parameters
