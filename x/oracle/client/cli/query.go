@@ -2,6 +2,7 @@ package cli
 
 import (
 	"github.com/cosmos/cosmos-sdk/client"
+	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/peggyjv/sommelier/x/oracle/types"
 	"github.com/spf13/cobra"
 )
@@ -32,7 +33,7 @@ func GetQueryCmd() *cobra.Command {
 }
 
 func queryParams() *cobra.Command {
-	return &cobra.Command{
+	cmd := &cobra.Command{
 		Use:     "parameters",
 		Aliases: []string{"params"},
 		Args:    cobra.NoArgs,
@@ -54,10 +55,12 @@ func queryParams() *cobra.Command {
 			return ctx.PrintProto(res)
 		},
 	}
+	flags.AddQueryFlagsToCmd(cmd)
+	return cmd
 }
 
 func queryDelegateAddress() *cobra.Command {
-	return &cobra.Command{
+	cmd := &cobra.Command{
 		Use:     "delegate-address [validator-address]",
 		Aliases: []string{"del"},
 		Args:    cobra.ExactArgs(1),
@@ -79,10 +82,12 @@ func queryDelegateAddress() *cobra.Command {
 			return ctx.PrintProto(res)
 		},
 	}
+	flags.AddQueryFlagsToCmd(cmd)
+	return cmd
 }
 
 func queryValidatorAddress() *cobra.Command {
-	return &cobra.Command{
+	cmd := &cobra.Command{
 		Use:     "validator-address [delegate-address]",
 		Aliases: []string{"val"},
 		Args:    cobra.ExactArgs(1),
@@ -104,10 +109,12 @@ func queryValidatorAddress() *cobra.Command {
 			return ctx.PrintProto(res)
 		},
 	}
+	flags.AddQueryFlagsToCmd(cmd)
+	return cmd
 }
 
 func queryOracleDataPrevote() *cobra.Command {
-	return &cobra.Command{
+	cmd := &cobra.Command{
 		Use:     "oracle-prevote [signer]",
 		Aliases: []string{"prevote", "pv"},
 		Args:    cobra.ExactArgs(1),
@@ -128,10 +135,12 @@ func queryOracleDataPrevote() *cobra.Command {
 			return ctx.PrintProto(res)
 		},
 	}
+	flags.AddQueryFlagsToCmd(cmd)
+	return cmd
 }
 
 func queryOracleDataVote() *cobra.Command {
-	return &cobra.Command{
+	cmd := &cobra.Command{
 		Use:     "oracle-vote [signer]",
 		Aliases: []string{"vote"},
 		Args:    cobra.ExactArgs(1),
@@ -152,10 +161,12 @@ func queryOracleDataVote() *cobra.Command {
 			return ctx.PrintProto(res)
 		},
 	}
+	flags.AddQueryFlagsToCmd(cmd)
+	return cmd
 }
 
 func queryVotePeriod() *cobra.Command {
-	return &cobra.Command{
+	cmd := &cobra.Command{
 		Use:     "vote-period",
 		Aliases: []string{"vp"},
 		Args:    cobra.NoArgs,
@@ -177,10 +188,12 @@ func queryVotePeriod() *cobra.Command {
 			return ctx.PrintProto(res)
 		},
 	}
+	flags.AddQueryFlagsToCmd(cmd)
+	return cmd
 }
 
 func queryMissCounter() *cobra.Command {
-	return &cobra.Command{
+	cmd := &cobra.Command{
 		Use:     "miss-counter [signer]",
 		Aliases: []string{"mc"},
 		Args:    cobra.ExactArgs(1),
@@ -203,6 +216,8 @@ func queryMissCounter() *cobra.Command {
 			return ctx.PrintProto(res)
 		},
 	}
+	flags.AddQueryFlagsToCmd(cmd)
+	return cmd
 }
 
 func queryAggregatedOracleData() *cobra.Command {
@@ -234,5 +249,6 @@ func queryAggregatedOracleData() *cobra.Command {
 		},
 	}
 	cmd.Flags().StringP("type", "t", types.UniswapDataType, "type of oracle data to fetch")
+	flags.AddQueryFlagsToCmd(cmd)
 	return cmd
 }

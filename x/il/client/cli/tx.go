@@ -7,6 +7,7 @@ import (
 	"github.com/spf13/cobra"
 
 	"github.com/cosmos/cosmos-sdk/client"
+	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/client/tx"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
@@ -78,7 +79,7 @@ func GetCmdCreateStoploss() *cobra.Command {
 			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), msg)
 		},
 	}
-
+	flags.AddTxFlagsToCmd(cmd)
 	return cmd
 }
 
@@ -105,6 +106,6 @@ func GetCmdDeleteStoploss() *cobra.Command {
 			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), msg)
 		},
 	}
-
+	flags.AddTxFlagsToCmd(cmd)
 	return cmd
 }

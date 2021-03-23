@@ -28,7 +28,7 @@ func (k Keeper) DelegateFeedConsent(c context.Context, msg *types.MsgDelegateFee
 		return nil, sdkerrors.Wrap(stakingtypes.ErrNoValidatorFound, sdk.ValAddress(val).String())
 	}
 
-	if validator.IsUnbonded() {
+	if ctx.BlockHeight() > 0 && validator.IsUnbonded() {
 		return nil, sdkerrors.Wrapf(sdkerrors.ErrUnauthorized, "validator %s cannot be unbonded", validator.GetOperator())
 	}
 
