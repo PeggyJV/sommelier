@@ -1,7 +1,7 @@
 #!/usr/bin/make -f
 
 PACKAGES_SIMTEST=$(shell go list ./... | grep '/simulation')
-VERSION := $(shell echo $(shell git describe --tags) | sed 's/^v//')
+VERSION := $(shell git describe --abbrev=6 --dirty --always --tags)
 COMMIT := $(shell git log -1 --format='%H')
 LEDGER_ENABLED ?= true
 SDK_PACK := $(shell go list -m github.com/cosmos/cosmos-sdk | sed  's/ /\@/g')
@@ -94,8 +94,8 @@ build-contract-tests-hooks:
 	go build -mod=readonly $(BUILD_FLAGS) -o $(BUILDDIR)/ ./cmd/contract_tests
 
 install: go.sum
-	go install -mod=readonly ./cmd/sommelier
-	go install -mod=readonly ./cmd/oracle-feeder
+	go install -mod=readonly $(BUILD_FLAGS) ./cmd/sommelier
+	go install -mod=readonly $(BUILD_FLAGS) ./cmd/oracle-feeder
 
 go-mod-cache: go.sum
 	@echo "--> Download go modules to local cache"

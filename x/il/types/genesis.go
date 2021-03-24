@@ -4,7 +4,7 @@ import (
 	fmt "fmt"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	bridgetypes "github.com/cosmos/gravity-bridge/module/x/peggy/types"
+	bridgetypes "github.com/cosmos/gravity-bridge/module/x/gravity/types"
 )
 
 // NewGenesisState creates a new GenesisState object

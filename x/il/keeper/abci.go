@@ -12,7 +12,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/telemetry"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	bridgetypes "github.com/cosmos/gravity-bridge/module/x/peggy/types"
+	bridgetypes "github.com/cosmos/gravity-bridge/module/x/gravity/types"
 
 	"github.com/peggyjv/sommelier/x/il/types"
 	oracletypes "github.com/peggyjv/sommelier/x/oracle/types"

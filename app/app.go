@@ -85,9 +85,9 @@ import (
 	upgradekeeper "github.com/cosmos/cosmos-sdk/x/upgrade/keeper"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
 
-	ethbridge "github.com/cosmos/gravity-bridge/module/x/peggy"
-	ethbridgekeeper "github.com/cosmos/gravity-bridge/module/x/peggy/keeper"
-	ethbridgetypes "github.com/cosmos/gravity-bridge/module/x/peggy/types"
+	ethbridge "github.com/cosmos/gravity-bridge/module/x/gravity"
+	ethbridgekeeper "github.com/cosmos/gravity-bridge/module/x/gravity/keeper"
+	ethbridgetypes "github.com/cosmos/gravity-bridge/module/x/gravity/types"
 
 	appParams "github.com/peggyjv/sommelier/app/params"
 	"github.com/peggyjv/sommelier/x/il"
