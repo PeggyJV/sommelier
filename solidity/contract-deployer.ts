@@ -154,7 +154,7 @@ async function deploy() {
       console.log("Uniswap Liquidity test deployed at Address - ", testAddress);
     }
   }
-  const gravityIdString = await getPeggyId();
+  const gravityIdString = await getGravityId();
   const gravityId = ethers.utils.formatBytes32String(gravityIdString);
 
   console.log("Starting Gravity contract deploy");
@@ -201,7 +201,7 @@ async function deploy() {
 
   await gravity.deployed();
   console.log("Gravity deployed at Address - ", gravity.address);
-  await submitPeggyAddress(gravity.address);
+  await submitGravityAddress(gravity.address);
 }
 
 function getContractArtifacts(path: string): { bytecode: string; abi: string } {
@@ -230,7 +230,7 @@ async function getLatestValset(): Promise<Valset> {
   let valset: ValsetTypeWrapper = JSON.parse(decode(valsets.result.response.value))
   return valset.value;
 }
-async function getPeggyId(): Promise<string> {
+async function getGravityId(): Promise<string> {
   let block_height_request_string = args["cosmos-node"] + '/status';
   let block_height_response = await axios.get(block_height_request_string);
   let info: StatusWrapper = await block_height_response.data;
@@ -251,7 +251,7 @@ async function getPeggyId(): Promise<string> {
 
 }
 
-async function submitPeggyAddress(address: string) {}
+async function submitGravityAddress(address: string) {}
 
 async function main() {
   await deploy();
