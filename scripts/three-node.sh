@@ -165,7 +165,7 @@ $SOM $home2 tx oracle delegate-feeder $($FED $home2 keys show feeder) $kbt --fro
 
 echo "Start ethereum chain..."
 
-echo "Deploy peggy contracts on eth chain..."
+echo "Deploy gravity contracts on eth chain..."
 
 echo "Generate and delegate keys for gravity..."
 

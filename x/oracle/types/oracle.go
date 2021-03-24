@@ -13,7 +13,7 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	peggytypes "github.com/cosmos/gravity-bridge/module/x/gravity/types"
+	bridgetypes "github.com/cosmos/gravity-bridge/module/x/gravity/types"
 )
 
 var (
@@ -91,7 +91,7 @@ func (up *UniswapPair) Type() string {
 
 // Validate implements OracleData
 func (up UniswapPair) Validate() error {
-	if err := peggytypes.ValidateEthAddress(up.ID); err != nil {
+	if err := bridgetypes.ValidateEthAddress(up.ID); err != nil {
 		return fmt.Errorf("invalid uniswap pair id %s: %w", up.ID, err)
 	}
 
@@ -300,7 +300,7 @@ func (up *UniswapPair) UnmarshalJSON(bz []byte) error {
 
 // Validate performs a basic validation of the uniswap token fields.
 func (ut UniswapToken) Validate() error {
-	if err := peggytypes.ValidateEthAddress(ut.ID); err != nil {
+	if err := bridgetypes.ValidateEthAddress(ut.ID); err != nil {
 		return fmt.Errorf("invalid token address %s: %w", ut.ID, err)
 	}
 

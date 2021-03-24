@@ -26,7 +26,7 @@ We have active, helpful communities on Twitter, Discord, and Telegram.
 * [`x/gravity`](https://github.com/cosmos/gravity-bridge/module/x/gravity): An ethereum bridge that will allow assets to move to/from peggy/eth. (@jkilpatr @jackzampolin @jtremback @fedekunze)
   * [x] [Stargate migration](https://github.com/althea-net/peggy/pull/120)
   * [x] Import module
-* [`x/il`](https://github.com/peggyjv/sommelier/x/il): A module that consumes `oracle.GetPrice()` and `peggy.SendEthMsg()` to offer stop loss protection for LP shares (@fedekunze @jackzampolin @zmanian)
+* [`x/il`](https://github.com/peggyjv/sommelier/x/il): A module that consumes `oracle.GetPrice()` and `gravity.SendEthMsg()` to offer stop loss protection for LP shares (@fedekunze @jackzampolin @zmanian)
   * [x] Write up userflows (WIP)
   * [x] Formalize module design
   * [x] Code up module

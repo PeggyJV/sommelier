@@ -191,5 +191,5 @@ func (app *SommelierApp) prepForZeroHeightGenesis(ctx sdk.Context, jailAllowedAd
 		},
 	)
 
-	/* TODO: Handle oracle and peggy state here */
+	/* TODO: Handle oracle and gravity state here */
 }
