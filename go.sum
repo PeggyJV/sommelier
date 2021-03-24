@@ -150,6 +150,8 @@ github.com/cosmos/cosmos-sdk v0.42.1/go.mod h1:xiLp1G8mumj82S5KLJGCAyeAlD+7VNomg
 github.com/cosmos/go-bip39 v0.0.0-20180819234021-555e2067c45d/go.mod h1:tSxLoYXyBmiFeKpvmq4dzayMdCjCnu8uqmCysIGBT2Y=
 github.com/cosmos/go-bip39 v1.0.0 h1:pcomnQdrdH22njcAatO0yWojsUnCO3y2tNoV1cb6hHY=
 github.com/cosmos/go-bip39 v1.0.0/go.mod h1:RNJv0H/pOIVgxw6KS7QeX2a0Uo0aKUlfhZ4xuwvCdJw=
+github.com/cosmos/gravity-bridge v0.1.0 h1:9EMro9eQGZU75AKXjIOhYtIa56u7QApsaIgrCCmDo4Q=
+github.com/cosmos/gravity-bridge v0.1.0/go.mod h1:QfUqKi8RlnUaUj3OevOWPuyCKN3QW5c7bZ3g8QLDKHM=
 github.com/cosmos/iavl v0.15.0-rc3.0.20201009144442-230e9bdf52cd/go.mod h1:3xOIaNNX19p0QrX0VqWa6voPRoJRGGYtny+DH8NEPvE=
 github.com/cosmos/iavl v0.15.0-rc5/go.mod h1:WqoPL9yPTQ85QBMT45OOUzPxG/U/JcJoN7uMjgxke/I=
 github.com/cosmos/iavl v0.15.3 h1:xE9r6HW8GeKeoYJN4zefpljZ1oukVScP/7M8oj6SUts=

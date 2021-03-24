@@ -13,7 +13,7 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	peggytypes "github.com/althea-net/peggy/module/x/peggy/types"
+	peggytypes "github.com/cosmos/gravity-bridge/module/x/peggy/types"
 )
 
 var (
