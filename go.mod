@@ -6,7 +6,7 @@ require (
 	github.com/armon/go-metrics v0.3.6
 	github.com/cosmos/cosmos-sdk v0.42.1
 	github.com/cosmos/go-bip39 v1.0.0
-	github.com/cosmos/gravity-bridge v0.1.0 // indirect
+	github.com/cosmos/gravity-bridge/module v0.0.0-20210324130938-fd98d205b8db
 	github.com/ethereum/go-ethereum v1.10.0
 	github.com/gogo/protobuf v1.3.3
 	github.com/golang/protobuf v1.4.3
