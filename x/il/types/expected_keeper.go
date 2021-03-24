@@ -1,8 +1,8 @@
 package types
 
 import (
-	bridgetypes "github.com/althea-net/peggy/module/x/peggy/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	bridgetypes "github.com/cosmos/gravity-bridge/module/x/gravity/types"
 	oracletypes "github.com/peggyjv/sommelier/x/oracle/types"
 )
 

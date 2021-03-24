@@ -4,7 +4,7 @@ import (
 	"errors"
 	"fmt"
 
-	bridgetypes "github.com/althea-net/peggy/module/x/peggy/types"
+	bridgetypes "github.com/cosmos/gravity-bridge/module/x/gravity/types"
 	"github.com/ethereum/go-ethereum/common"
 
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"

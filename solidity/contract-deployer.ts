@@ -168,7 +168,7 @@ async function deploy() {
   let powers = [];
   let powers_sum = 0;
   // this MUST be sorted uniformly across all components of Peggy in this
-  // case we perform the sorting in module/x/peggy/keeper/types.go to the
+  // case we perform the sorting in module/x/gravity/keeper/types.go to the
   // output of the endpoint should always be sorted correctly. If you're
   // having strange problems with updating the validator set you should go
   // look there.

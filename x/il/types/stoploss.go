@@ -6,7 +6,7 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	bridgetypes "github.com/althea-net/peggy/module/x/peggy/types"
+	bridgetypes "github.com/cosmos/gravity-bridge/module/x/gravity/types"
 )
 
 // LPsStoplossPositions is a slice of liquidity provider (LP) stoploss positions
