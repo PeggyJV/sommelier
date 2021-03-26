@@ -17,7 +17,7 @@ const (
 
 // RandomizedGenState generates a random GenesisState for nft
 func RandomizedGenState(simState *module.SimulationState) {
-	collections := types.NewCollections(
+	collections := []types.Collection{
 		types.NewCollection(
 			types.Denom{
 				Id:      doggos,
@@ -25,7 +25,6 @@ func RandomizedGenState(simState *module.SimulationState) {
 				Schema:  "",
 				Creator: "",
 			},
-			types.NFTs{},
 		),
 		types.NewCollection(
 			types.Denom{
@@ -34,8 +33,8 @@ func RandomizedGenState(simState *module.SimulationState) {
 				Schema:  "",
 				Creator: "",
 			},
-			types.NFTs{}),
-	)
+		),
+	}
 	for _, acc := range simState.Accounts {
 		// 10% of accounts own an NFT
 		if simState.Rand.Intn(100) < 10 {

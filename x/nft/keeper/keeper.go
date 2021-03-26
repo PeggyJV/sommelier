@@ -28,7 +28,7 @@ func NewKeeper(cdc codec.Marshaler, storeKey sdk.StoreKey) Keeper {
 
 // Logger returns a module-specific logger.
 func (k Keeper) Logger(ctx sdk.Context) log.Logger {
-	return ctx.Logger().With("module", fmt.Sprintf("irismod/%s", types.ModuleName))
+	return ctx.Logger().With("module", fmt.Sprintf("x/%s", types.ModuleName))
 }
 
 // IssueDenom issues a denom according to the given params
@@ -81,17 +81,9 @@ func (k Keeper) EditNFT(
 		return err
 	}
 
-	if types.Modified(tokenNm) {
-		nft.Name = tokenNm
-	}
-
-	if types.Modified(tokenURI) {
-		nft.URI = tokenURI
-	}
-
-	if types.Modified(tokenData) {
-		nft.Data = tokenData
-	}
+	nft.Name = tokenNm
+	nft.URI = tokenURI
+	nft.Data = tokenData
 
 	k.setNFT(ctx, denomID, nft)
 
@@ -113,18 +105,9 @@ func (k Keeper) TransferOwner(
 	}
 
 	nft.Owner = dstOwner.String()
-
-	if types.Modified(tokenNm) {
-		nft.Name = tokenNm
-	}
-
-	if types.Modified(tokenURI) {
-		nft.URI = tokenURI
-	}
-
-	if types.Modified(tokenData) {
-		nft.Data = tokenData
-	}
+	nft.Name = tokenNm
+	nft.URI = tokenURI
+	nft.Data = tokenData
 
 	k.setNFT(ctx, denomID, nft)
 	k.swapOwner(ctx, denomID, tokenID, srcOwner, dstOwner)

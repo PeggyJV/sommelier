@@ -14,6 +14,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/testutil/network"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
+	"github.com/peggyjv/sommelier/app"
 	nftcli "github.com/peggyjv/sommelier/x/nft/client/cli"
 	nfttestutil "github.com/peggyjv/sommelier/x/nft/client/testutil"
 	nfttypes "github.com/peggyjv/sommelier/x/nft/types"

@@ -13,6 +13,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/rest"
 
+	"github.com/peggyjv/sommelier/app"
 	nftcli "github.com/peggyjv/sommelier/x/nft/client/cli"
 	nfttestutil "github.com/peggyjv/sommelier/x/nft/client/testutil"
 	nfttypes "github.com/peggyjv/sommelier/x/nft/types"

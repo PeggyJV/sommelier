@@ -4,12 +4,11 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
-	"github.com/peggyjv/sommelier/x/nft/exported"
 	"github.com/peggyjv/sommelier/x/nft/types"
 )
 
 // GetNFT gets the the specified NFT
-func (k Keeper) GetNFT(ctx sdk.Context, denomID, tokenID string) (nft exported.NFT, err error) {
+func (k Keeper) GetNFT(ctx sdk.Context, denomID, tokenID string) (nft types.NFT, err error) {
 	store := ctx.KVStore(k.storeKey)
 
 	bz := store.Get(types.KeyNFT(denomID, tokenID))
@@ -24,7 +23,7 @@ func (k Keeper) GetNFT(ctx sdk.Context, denomID, tokenID string) (nft exported.N
 }
 
 // GetNFTs returns all NFTs by the specified denom ID
-func (k Keeper) GetNFTs(ctx sdk.Context, denom string) (nfts []exported.NFT) {
+func (k Keeper) GetNFTs(ctx sdk.Context, denom string) (nfts []types.NFT) {
 	store := ctx.KVStore(k.storeKey)
 
 	iterator := sdk.KVStorePrefixIterator(store, types.KeyNFT(denom, ""))
@@ -67,7 +66,7 @@ func (k Keeper) setNFT(ctx sdk.Context, denomID string, nft types.BaseNFT) {
 }
 
 // deleteNFT deletes an existing NFT from store
-func (k Keeper) deleteNFT(ctx sdk.Context, denomID string, nft exported.NFT) {
+func (k Keeper) deleteNFT(ctx sdk.Context, denomID string, nft types.NFT) {
 	store := ctx.KVStore(k.storeKey)
 	store.Delete(types.KeyNFT(denomID, nft.GetID()))
 }

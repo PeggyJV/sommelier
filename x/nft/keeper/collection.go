@@ -9,7 +9,6 @@ import (
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/cosmos/cosmos-sdk/types/query"
 
-	"github.com/peggyjv/sommelier/x/nft/exported"
 	"github.com/peggyjv/sommelier/x/nft/types"
 )
 
@@ -39,7 +38,7 @@ func (k Keeper) GetCollection(ctx sdk.Context, denomID string) (types.Collection
 	}
 
 	nfts := k.GetNFTs(ctx, denomID)
-	return types.NewCollection(denom, nfts), nil
+	return types.NewCollection(denom, nfts...), nil
 }
 
 // GetPaginateCollection returns the collection by the specified denom ID
@@ -48,26 +47,31 @@ func (k Keeper) GetPaginateCollection(ctx sdk.Context, request *types.QueryColle
 	if err != nil {
 		return types.Collection{}, nil, sdkerrors.Wrapf(types.ErrInvalidDenom, "denomID %s not existed ", denomID)
 	}
-	var nfts []exported.NFT
+
+	var nfts []types.NFT
+
 	store := ctx.KVStore(k.storeKey)
 	nftStore := prefix.NewStore(store, types.KeyNFT(denomID, ""))
+
 	pageRes, err := query.Paginate(nftStore, request.Pagination, func(key []byte, value []byte) error {
 		var baseNFT types.BaseNFT
 		k.cdc.MustUnmarshalBinaryBare(value, &baseNFT)
 		nfts = append(nfts, baseNFT)
 		return nil
 	})
+
 	if err != nil {
 		return types.Collection{}, nil, status.Errorf(codes.InvalidArgument, "paginate: %v", err)
 	}
-	return types.NewCollection(denom, nfts), pageRes, nil
+
+	return types.NewCollection(denom, nfts...), pageRes, nil
 }
 
 // GetCollections returns all the collections
 func (k Keeper) GetCollections(ctx sdk.Context) (cs []types.Collection) {
 	for _, denom := range k.GetDenoms(ctx) {
 		nfts := k.GetNFTs(ctx, denom.Id)
-		cs = append(cs, types.NewCollection(denom, nfts))
+		cs = append(cs, types.NewCollection(denom, nfts...))
 	}
 	return cs
 }

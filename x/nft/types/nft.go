@@ -2,11 +2,16 @@ package types
 
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
-
-	"github.com/peggyjv/sommelier/x/nft/exported"
 )
 
-var _ exported.NFT = BaseNFT{}
+// NFT non fungible token interface
+type NFT interface {
+	GetID() string
+	GetName() string
+	GetOwner() sdk.AccAddress
+	GetURI() string
+	GetData() string
+}
 
 // NewBaseNFT creates a new NFT instance
 func NewBaseNFT(id, name string, owner sdk.AccAddress, uri, data string) BaseNFT {
@@ -43,18 +48,4 @@ func (bnft BaseNFT) GetURI() string {
 // GetData return the Data of BaseNFT
 func (bnft BaseNFT) GetData() string {
 	return bnft.Data
-}
-
-// ----------------------------------------------------------------------------
-// NFT
-
-// NFTs define a list of NFT
-type NFTs []exported.NFT
-
-// NewNFTs creates a new set of NFTs
-func NewNFTs(nfts ...exported.NFT) NFTs {
-	if len(nfts) == 0 {
-		return NFTs{}
-	}
-	return NFTs(nfts)
 }

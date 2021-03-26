@@ -52,8 +52,7 @@ func (msg MsgIssueDenom) ValidateBasic() error {
 
 // GetSignBytes Implements Msg.
 func (msg MsgIssueDenom) GetSignBytes() []byte {
-	bz := ModuleCdc.MustMarshalJSON(&msg)
-	return sdk.MustSortJSON(bz)
+	panic("amino support disabled")
 }
 
 // GetSigners Implements Msg.
@@ -104,8 +103,7 @@ func (msg MsgTransferNFT) ValidateBasic() error {
 
 // GetSignBytes Implements Msg.
 func (msg MsgTransferNFT) GetSignBytes() []byte {
-	bz := ModuleCdc.MustMarshalJSON(&msg)
-	return sdk.MustSortJSON(bz)
+	panic("amino support disabled")
 }
 
 // GetSigners Implements Msg.
@@ -155,8 +153,7 @@ func (msg MsgEditNFT) ValidateBasic() error {
 
 // GetSignBytes Implements Msg.
 func (msg MsgEditNFT) GetSignBytes() []byte {
-	bz := ModuleCdc.MustMarshalJSON(&msg)
-	return sdk.MustSortJSON(bz)
+	panic("amino support disabled")
 }
 
 // GetSigners Implements Msg.
@@ -208,8 +205,7 @@ func (msg MsgMintNFT) ValidateBasic() error {
 
 // GetSignBytes Implements Msg.
 func (msg MsgMintNFT) GetSignBytes() []byte {
-	bz := ModuleCdc.MustMarshalJSON(&msg)
-	return sdk.MustSortJSON(bz)
+	panic("amino support disabled")
 }
 
 // GetSigners Implements Msg.
@@ -249,8 +245,7 @@ func (msg MsgBurnNFT) ValidateBasic() error {
 
 // GetSignBytes Implements Msg.
 func (msg MsgBurnNFT) GetSignBytes() []byte {
-	bz := ModuleCdc.MustMarshalJSON(&msg)
-	return sdk.MustSortJSON(bz)
+	panic("amino support disabled")
 }
 
 // GetSigners Implements Msg.
