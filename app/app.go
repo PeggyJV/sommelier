@@ -93,6 +93,9 @@ import (
 	"github.com/peggyjv/sommelier/x/il"
 	ilkeeper "github.com/peggyjv/sommelier/x/il/keeper"
 	iltypes "github.com/peggyjv/sommelier/x/il/types"
+	"github.com/peggyjv/sommelier/x/nft"
+	nftkeeper "github.com/peggyjv/sommelier/x/nft/keeper"
+	nfttypes "github.com/peggyjv/sommelier/x/nft/types"
 	"github.com/peggyjv/sommelier/x/oracle"
 	oraclekeeper "github.com/peggyjv/sommelier/x/oracle/keeper"
 	oracletypes "github.com/peggyjv/sommelier/x/oracle/types"
@@ -132,6 +135,7 @@ var (
 		ethbridge.AppModuleBasic{},
 		oracle.AppModuleBasic{},
 		il.AppModuleBasic{},
+		nft.AppModuleBasic{},
 	)
 
 	// module account permissions
@@ -196,6 +200,7 @@ type SommelierApp struct {
 	// Sommelier keepers
 	OracleKeeper oraclekeeper.Keeper
 	ILKeeper     ilkeeper.Keeper
+	NFTKeeper    nftkeeper.Keeper
 
 	// make capability scoped keepers public for test purposes (IBC only)
 	ScopedIBCKeeper      capabilitykeeper.ScopedKeeper
@@ -238,7 +243,7 @@ func NewSommelierApp(
 		govtypes.StoreKey, paramstypes.StoreKey, ibchost.StoreKey, upgradetypes.StoreKey,
 		evidencetypes.StoreKey, ibctransfertypes.StoreKey, capabilitytypes.StoreKey,
 		ethbridgetypes.ModuleName,
-		oracletypes.StoreKey, iltypes.ModuleName,
+		oracletypes.StoreKey, iltypes.ModuleName, nfttypes.ModuleName,
 	)
 	tkeys := sdk.NewTransientStoreKeys(paramstypes.TStoreKey)
 	memKeys := sdk.NewMemoryStoreKeys(capabilitytypes.MemStoreKey)
@@ -337,6 +342,8 @@ func NewSommelierApp(
 		appCodec, keys[iltypes.StoreKey], app.GetSubspace(iltypes.ModuleName), app.OracleKeeper, app.EthBridgeKeeper,
 	)
 
+	app.NFTKeeper = nftkeeper.NewKeeper(appCodec, keys[nfttypes.StoreKey])
+
 	// Create static IBC router, add transfer route, then set and seal it
 	ibcRouter := porttypes.NewRouter()
 	ibcRouter.AddRoute(ibctransfertypes.ModuleName, transferModule)
@@ -385,6 +392,7 @@ func NewSommelierApp(
 		ethbridge.NewAppModule(app.EthBridgeKeeper, app.BankKeeper),
 		oracle.NewAppModule(app.OracleKeeper, appCodec),
 		il.NewAppModule(app.ILKeeper, appCodec),
+		nft.NewAppModule(appCodec, app.NFTKeeper, app.AccountKeeper, app.BankKeeper),
 	)
 
 	// During begin block slashing happens after distr.BeginBlocker so that
@@ -415,7 +423,7 @@ func NewSommelierApp(
 		slashingtypes.ModuleName, govtypes.ModuleName, minttypes.ModuleName, crisistypes.ModuleName,
 		ibchost.ModuleName, genutiltypes.ModuleName, evidencetypes.ModuleName, ibctransfertypes.ModuleName,
 		// bridge and sommelier modules
-		ethbridgetypes.ModuleName, oracletypes.ModuleName, iltypes.ModuleName,
+		ethbridgetypes.ModuleName, oracletypes.ModuleName, iltypes.ModuleName, nfttypes.ModuleName,
 	)
 
 	app.mm.RegisterInvariants(&app.CrisisKeeper)
@@ -440,6 +448,7 @@ func NewSommelierApp(
 		ibc.NewAppModule(app.IBCKeeper),
 		transferModule,
 		oracle.NewAppModule(app.OracleKeeper, appCodec),
+		nft.NewAppModule(appCodec, app.NFTKeeper, app.AccountKeeper, app.BankKeeper),
 	)
 
 	app.sm.RegisterStoreDecoders()

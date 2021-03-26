@@ -31,6 +31,46 @@
   
     - [Msg](#il.v1.Msg)
   
+- [nft/v1/nft.proto](#nft/v1/nft.proto)
+    - [BaseNFT](#nft.v1.BaseNFT)
+    - [Collection](#nft.v1.Collection)
+    - [Denom](#nft.v1.Denom)
+    - [IDCollection](#nft.v1.IDCollection)
+    - [Owner](#nft.v1.Owner)
+  
+- [nft/v1/genesis.proto](#nft/v1/genesis.proto)
+    - [GenesisState](#nft.v1.GenesisState)
+  
+- [nft/v1/query.proto](#nft/v1/query.proto)
+    - [QueryCollectionRequest](#nft.v1.QueryCollectionRequest)
+    - [QueryCollectionResponse](#nft.v1.QueryCollectionResponse)
+    - [QueryDenomRequest](#nft.v1.QueryDenomRequest)
+    - [QueryDenomResponse](#nft.v1.QueryDenomResponse)
+    - [QueryDenomsRequest](#nft.v1.QueryDenomsRequest)
+    - [QueryDenomsResponse](#nft.v1.QueryDenomsResponse)
+    - [QueryNFTRequest](#nft.v1.QueryNFTRequest)
+    - [QueryNFTResponse](#nft.v1.QueryNFTResponse)
+    - [QueryOwnerRequest](#nft.v1.QueryOwnerRequest)
+    - [QueryOwnerResponse](#nft.v1.QueryOwnerResponse)
+    - [QuerySupplyRequest](#nft.v1.QuerySupplyRequest)
+    - [QuerySupplyResponse](#nft.v1.QuerySupplyResponse)
+  
+    - [Query](#nft.v1.Query)
+  
+- [nft/v1/tx.proto](#nft/v1/tx.proto)
+    - [MsgBurnNFT](#nft.v1.MsgBurnNFT)
+    - [MsgBurnNFTResponse](#nft.v1.MsgBurnNFTResponse)
+    - [MsgEditNFT](#nft.v1.MsgEditNFT)
+    - [MsgEditNFTResponse](#nft.v1.MsgEditNFTResponse)
+    - [MsgIssueDenom](#nft.v1.MsgIssueDenom)
+    - [MsgIssueDenomResponse](#nft.v1.MsgIssueDenomResponse)
+    - [MsgMintNFT](#nft.v1.MsgMintNFT)
+    - [MsgMintNFTResponse](#nft.v1.MsgMintNFTResponse)
+    - [MsgTransferNFT](#nft.v1.MsgTransferNFT)
+    - [MsgTransferNFTResponse](#nft.v1.MsgTransferNFTResponse)
+  
+    - [Msg](#nft.v1.Msg)
+  
 - [oracle/v1/oracle.proto](#oracle/v1/oracle.proto)
     - [OracleFeed](#oracle.v1.OracleFeed)
     - [OraclePrevote](#oracle.v1.OraclePrevote)
@@ -393,6 +433,534 @@ MsgService defines the msgs that the il module handles.
 | ----------- | ------------ | ------------- | ------------| ------- | -------- |
 | `CreateStoploss` | [MsgCreateStoploss](#il.v1.MsgCreateStoploss) | [MsgCreateStoplossResponse](#il.v1.MsgCreateStoplossResponse) | CreateStoploss sets a new tracking stoploss position for a uniswap pair | |
 | `DeleteStoploss` | [MsgDeleteStoploss](#il.v1.MsgDeleteStoploss) | [MsgDeleteStoplossResponse](#il.v1.MsgDeleteStoplossResponse) | DeleteStoploss deletes an existing stoploss position | |
+
+ <!-- end services -->
+
+
+
+<a name="nft/v1/nft.proto"></a>
+<p align="right"><a href="#top">Top</a></p>
+
+## nft/v1/nft.proto
+
+
+
+<a name="nft.v1.BaseNFT"></a>
+
+### BaseNFT
+BaseNFT defines a non-fungible token
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `id` | [string](#string) |  |  |
+| `name` | [string](#string) |  |  |
+| `uri` | [string](#string) |  |  |
+| `data` | [string](#string) |  |  |
+| `owner` | [string](#string) |  |  |
+
+
+
+
+
+
+<a name="nft.v1.Collection"></a>
+
+### Collection
+Collection defines a type of collection
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `denom` | [Denom](#nft.v1.Denom) |  |  |
+| `nfts` | [BaseNFT](#nft.v1.BaseNFT) | repeated |  |
+
+
+
+
+
+
+<a name="nft.v1.Denom"></a>
+
+### Denom
+Denom defines a type of NFT
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `id` | [string](#string) |  |  |
+| `name` | [string](#string) |  |  |
+| `schema` | [string](#string) |  |  |
+| `creator` | [string](#string) |  |  |
+
+
+
+
+
+
+<a name="nft.v1.IDCollection"></a>
+
+### IDCollection
+IDCollection defines a type of collection with specified ID
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `denom_id` | [string](#string) |  |  |
+| `token_ids` | [string](#string) | repeated |  |
+
+
+
+
+
+
+<a name="nft.v1.Owner"></a>
+
+### Owner
+Owner defines a type of owner
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `address` | [string](#string) |  |  |
+| `id_collections` | [IDCollection](#nft.v1.IDCollection) | repeated |  |
+
+
+
+
+
+ <!-- end messages -->
+
+ <!-- end enums -->
+
+ <!-- end HasExtensions -->
+
+ <!-- end services -->
+
+
+
+<a name="nft/v1/genesis.proto"></a>
+<p align="right"><a href="#top">Top</a></p>
+
+## nft/v1/genesis.proto
+
+
+
+<a name="nft.v1.GenesisState"></a>
+
+### GenesisState
+GenesisState defines the NFT module's genesis state
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `collections` | [Collection](#nft.v1.Collection) | repeated |  |
+
+
+
+
+
+ <!-- end messages -->
+
+ <!-- end enums -->
+
+ <!-- end HasExtensions -->
+
+ <!-- end services -->
+
+
+
+<a name="nft/v1/query.proto"></a>
+<p align="right"><a href="#top">Top</a></p>
+
+## nft/v1/query.proto
+
+
+
+<a name="nft.v1.QueryCollectionRequest"></a>
+
+### QueryCollectionRequest
+QueryCollectionRequest is the request type for the Query/Collection RPC method
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `denom_id` | [string](#string) |  |  |
+| `pagination` | [cosmos.base.query.v1beta1.PageRequest](#cosmos.base.query.v1beta1.PageRequest) |  | pagination defines an optional pagination for the request. |
+
+
+
+
+
+
+<a name="nft.v1.QueryCollectionResponse"></a>
+
+### QueryCollectionResponse
+QueryCollectionResponse is the response type for the Query/Collection RPC method
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `collection` | [Collection](#nft.v1.Collection) |  |  |
+| `pagination` | [cosmos.base.query.v1beta1.PageResponse](#cosmos.base.query.v1beta1.PageResponse) |  |  |
+
+
+
+
+
+
+<a name="nft.v1.QueryDenomRequest"></a>
+
+### QueryDenomRequest
+QueryDenomRequest is the request type for the Query/Denom RPC method
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `denom_id` | [string](#string) |  |  |
+
+
+
+
+
+
+<a name="nft.v1.QueryDenomResponse"></a>
+
+### QueryDenomResponse
+QueryDenomResponse is the response type for the Query/Denom RPC method
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `denom` | [Denom](#nft.v1.Denom) |  |  |
+
+
+
+
+
+
+<a name="nft.v1.QueryDenomsRequest"></a>
+
+### QueryDenomsRequest
+QueryDenomsRequest is the request type for the Query/Denoms RPC method
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `pagination` | [cosmos.base.query.v1beta1.PageRequest](#cosmos.base.query.v1beta1.PageRequest) |  | pagination defines an optional pagination for the request. |
+
+
+
+
+
+
+<a name="nft.v1.QueryDenomsResponse"></a>
+
+### QueryDenomsResponse
+QueryDenomsResponse is the response type for the Query/Denoms RPC method
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `denoms` | [Denom](#nft.v1.Denom) | repeated |  |
+| `pagination` | [cosmos.base.query.v1beta1.PageResponse](#cosmos.base.query.v1beta1.PageResponse) |  |  |
+
+
+
+
+
+
+<a name="nft.v1.QueryNFTRequest"></a>
+
+### QueryNFTRequest
+QueryNFTRequest is the request type for the Query/NFT RPC method
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `denom_id` | [string](#string) |  |  |
+| `token_id` | [string](#string) |  |  |
+
+
+
+
+
+
+<a name="nft.v1.QueryNFTResponse"></a>
+
+### QueryNFTResponse
+QueryNFTResponse is the response type for the Query/NFT RPC method
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `nft` | [BaseNFT](#nft.v1.BaseNFT) |  |  |
+
+
+
+
+
+
+<a name="nft.v1.QueryOwnerRequest"></a>
+
+### QueryOwnerRequest
+QueryOwnerRequest is the request type for the Query/Owner RPC method
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `denom_id` | [string](#string) |  |  |
+| `owner` | [string](#string) |  |  |
+| `pagination` | [cosmos.base.query.v1beta1.PageRequest](#cosmos.base.query.v1beta1.PageRequest) |  | pagination defines an optional pagination for the request. |
+
+
+
+
+
+
+<a name="nft.v1.QueryOwnerResponse"></a>
+
+### QueryOwnerResponse
+QueryOwnerResponse is the response type for the Query/Owner RPC method
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `owner` | [Owner](#nft.v1.Owner) |  |  |
+| `pagination` | [cosmos.base.query.v1beta1.PageResponse](#cosmos.base.query.v1beta1.PageResponse) |  |  |
+
+
+
+
+
+
+<a name="nft.v1.QuerySupplyRequest"></a>
+
+### QuerySupplyRequest
+QuerySupplyRequest is the request type for the Query/HTLC RPC method
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `denom_id` | [string](#string) |  |  |
+| `owner` | [string](#string) |  |  |
+
+
+
+
+
+
+<a name="nft.v1.QuerySupplyResponse"></a>
+
+### QuerySupplyResponse
+QuerySupplyResponse is the response type for the Query/Supply RPC method
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `amount` | [uint64](#uint64) |  |  |
+
+
+
+
+
+ <!-- end messages -->
+
+ <!-- end enums -->
+
+ <!-- end HasExtensions -->
+
+
+<a name="nft.v1.Query"></a>
+
+### Query
+Query defines the gRPC querier service for NFT module
+
+| Method Name | Request Type | Response Type | Description | HTTP Verb | Endpoint |
+| ----------- | ------------ | ------------- | ------------| ------- | -------- |
+| `Supply` | [QuerySupplyRequest](#nft.v1.QuerySupplyRequest) | [QuerySupplyResponse](#nft.v1.QuerySupplyResponse) | Supply queries the total supply of a given denom or owner | GET|/sommelier/v1/nft/collections/{denom_id}/supply|
+| `Owner` | [QueryOwnerRequest](#nft.v1.QueryOwnerRequest) | [QueryOwnerResponse](#nft.v1.QueryOwnerResponse) | Owner queries the NFTs of the specified owner | GET|/sommelier/v1/nft/nfts|
+| `Collection` | [QueryCollectionRequest](#nft.v1.QueryCollectionRequest) | [QueryCollectionResponse](#nft.v1.QueryCollectionResponse) | Collection queries the NFTs of the specified denom | GET|/sommelier/v1/nft/collections/{denom_id}|
+| `Denom` | [QueryDenomRequest](#nft.v1.QueryDenomRequest) | [QueryDenomResponse](#nft.v1.QueryDenomResponse) | Denom queries the definition of a given denom | GET|/sommelier/v1/nft/denoms/{denom_id}|
+| `Denoms` | [QueryDenomsRequest](#nft.v1.QueryDenomsRequest) | [QueryDenomsResponse](#nft.v1.QueryDenomsResponse) | Denoms queries all the denoms | GET|/sommelier/v1/nft/denoms|
+| `NFT` | [QueryNFTRequest](#nft.v1.QueryNFTRequest) | [QueryNFTResponse](#nft.v1.QueryNFTResponse) | NFT queries the NFT for the given denom and token ID | GET|/sommelier/v1/nft/nfts/{denom_id}/{token_id}|
+
+ <!-- end services -->
+
+
+
+<a name="nft/v1/tx.proto"></a>
+<p align="right"><a href="#top">Top</a></p>
+
+## nft/v1/tx.proto
+
+
+
+<a name="nft.v1.MsgBurnNFT"></a>
+
+### MsgBurnNFT
+MsgBurnNFT defines an SDK message for burning a NFT.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `id` | [string](#string) |  |  |
+| `denom_id` | [string](#string) |  |  |
+| `sender` | [string](#string) |  |  |
+
+
+
+
+
+
+<a name="nft.v1.MsgBurnNFTResponse"></a>
+
+### MsgBurnNFTResponse
+MsgBurnNFTResponse defines the Msg/BurnNFT response type.
+
+
+
+
+
+
+<a name="nft.v1.MsgEditNFT"></a>
+
+### MsgEditNFT
+MsgEditNFT defines an SDK message for editing a nft.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `id` | [string](#string) |  |  |
+| `denom_id` | [string](#string) |  |  |
+| `name` | [string](#string) |  |  |
+| `uri` | [string](#string) |  |  |
+| `data` | [string](#string) |  |  |
+| `sender` | [string](#string) |  |  |
+
+
+
+
+
+
+<a name="nft.v1.MsgEditNFTResponse"></a>
+
+### MsgEditNFTResponse
+MsgEditNFTResponse defines the Msg/EditNFT response type.
+
+
+
+
+
+
+<a name="nft.v1.MsgIssueDenom"></a>
+
+### MsgIssueDenom
+MsgIssueDenom defines an SDK message for creating a new denom.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `id` | [string](#string) |  |  |
+| `name` | [string](#string) |  |  |
+| `schema` | [string](#string) |  |  |
+| `sender` | [string](#string) |  |  |
+
+
+
+
+
+
+<a name="nft.v1.MsgIssueDenomResponse"></a>
+
+### MsgIssueDenomResponse
+MsgIssueDenomResponse defines the Msg/IssueDenom response type.
+
+
+
+
+
+
+<a name="nft.v1.MsgMintNFT"></a>
+
+### MsgMintNFT
+MsgMintNFT defines an SDK message for creating a new NFT.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `id` | [string](#string) |  |  |
+| `denom_id` | [string](#string) |  |  |
+| `name` | [string](#string) |  |  |
+| `uri` | [string](#string) |  |  |
+| `data` | [string](#string) |  |  |
+| `sender` | [string](#string) |  |  |
+| `recipient` | [string](#string) |  |  |
+
+
+
+
+
+
+<a name="nft.v1.MsgMintNFTResponse"></a>
+
+### MsgMintNFTResponse
+MsgMintNFTResponse defines the Msg/MintNFT response type.
+
+
+
+
+
+
+<a name="nft.v1.MsgTransferNFT"></a>
+
+### MsgTransferNFT
+MsgTransferNFT defines an SDK message for transferring an NFT to recipient.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `id` | [string](#string) |  |  |
+| `denom_id` | [string](#string) |  |  |
+| `name` | [string](#string) |  |  |
+| `uri` | [string](#string) |  |  |
+| `data` | [string](#string) |  |  |
+| `sender` | [string](#string) |  |  |
+| `recipient` | [string](#string) |  |  |
+
+
+
+
+
+
+<a name="nft.v1.MsgTransferNFTResponse"></a>
+
+### MsgTransferNFTResponse
+MsgTransferNFTResponse defines the Msg/TransferNFT response type.
+
+
+
+
+
+ <!-- end messages -->
+
+ <!-- end enums -->
+
+ <!-- end HasExtensions -->
+
+
+<a name="nft.v1.Msg"></a>
+
+### Msg
+Msg defines the htlc Msg service.
+
+| Method Name | Request Type | Response Type | Description | HTTP Verb | Endpoint |
+| ----------- | ------------ | ------------- | ------------| ------- | -------- |
+| `IssueDenom` | [MsgIssueDenom](#nft.v1.MsgIssueDenom) | [MsgIssueDenomResponse](#nft.v1.MsgIssueDenomResponse) | IssueDenom defines a method for issue a denom. | |
+| `MintNFT` | [MsgMintNFT](#nft.v1.MsgMintNFT) | [MsgMintNFTResponse](#nft.v1.MsgMintNFTResponse) | MintNFT defines a method for mint a new nft | |
+| `EditNFT` | [MsgEditNFT](#nft.v1.MsgEditNFT) | [MsgEditNFTResponse](#nft.v1.MsgEditNFTResponse) | RefundHTLC defines a method for editing a nft. | |
+| `TransferNFT` | [MsgTransferNFT](#nft.v1.MsgTransferNFT) | [MsgTransferNFTResponse](#nft.v1.MsgTransferNFTResponse) | TransferNFT defines a method for transferring a nft. | |
+| `BurnNFT` | [MsgBurnNFT](#nft.v1.MsgBurnNFT) | [MsgBurnNFTResponse](#nft.v1.MsgBurnNFTResponse) | BurnNFT defines a method for burning a nft. | |
 
  <!-- end services -->
 

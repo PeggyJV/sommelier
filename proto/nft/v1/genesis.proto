@@ -1,0 +1,12 @@
+syntax = "proto3";
+package nft.v1;
+
+import "gogoproto/gogo.proto";
+import "nft/v1/nft.proto";
+
+option go_package = "github.com/peggyjv/sommelier/x/nft/types";
+
+// GenesisState defines the NFT module's genesis state
+message GenesisState {
+    repeated Collection collections = 1 [(gogoproto.nullable) = false ];
+}
