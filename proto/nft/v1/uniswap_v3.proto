@@ -1,0 +1,41 @@
+syntax = "proto3";
+package nft.v1;
+
+import "gogoproto/gogo.proto";
+
+option go_package = "github.com/peggyjv/sommelier/x/nft/types";
+option (gogoproto.goproto_getters_all) = false;
+
+// struct MintParams {
+//     address token0;
+//     address token1;
+//     uint24 fee;
+//     int24 tickLower;
+//     int24 tickUpper;
+//     uint128 amount;
+//     uint256 amount0Max;
+//     uint256 amount1Max;
+//     address recipient;
+//     uint256 deadline;
+// }
+
+ // Position details about the uniswap LP position
+ message Position {
+  // the nonce for permits
+  uint64 nonce = 1;
+  // the address that is approved for spending this token
+  string operator = 2;
+  // the ID of the pool with which this token is connected
+  uint64 pool_id = 3;
+  // the tick range of the position
+  int32 tick_lower = 4;
+  int32 tick_upper = 5;
+  // the liquidity of the position
+  uint64 liquidity = 6;
+  // the fee growth of the aggregate position as of the last action on the individual position
+  uint64 fee_growth_inside0_last_x_128 = 7;
+  uint64 fee_growth_inside1_last_x_128 = 8;
+  // how many uncollected tokens are owed to the position, as of the last computation
+  uint64 tokens_owed0 = 9;
+  uint64 tokens_owed1 = 10;
+}

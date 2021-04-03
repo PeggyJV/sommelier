@@ -4,15 +4,6 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
-// NFT non fungible token interface
-type NFT interface {
-	GetID() string
-	GetName() string
-	GetOwner() sdk.AccAddress
-	GetURI() string
-	GetData() string
-}
-
 // NewBaseNFT creates a new NFT instance
 func NewBaseNFT(id, name string, owner sdk.AccAddress, uri, data string) BaseNFT {
 	return BaseNFT{
