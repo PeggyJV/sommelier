@@ -1,0 +1,34 @@
+syntax = "proto3";
+package allocation.v1;
+
+import "allocation/v1/tx.proto";
+
+option go_package = "github.com/peggyjv/sommelier/x/allocation/types";
+
+// CreateCellarsProposal is a governance proposal content type
+message CreateCellarsProposal {
+  string          title = 1;
+  string          description = 2;
+  repeated Cellar cellars = 3;
+}
+
+// Cellar is the XXX
+message Cellar {
+  string        cellar_id = 1;
+  string        token0 = 2;
+  string        token1 = 3;
+  repeated Pool pool = 4;
+}
+
+// Pool is the XXX
+message Pool {
+  string        fee_level = 1; // sdk.Dec
+  repeated Tick tick_ranges = 2;
+}
+
+// RemoveCellarsProposal is the XXX
+message RemoveCellarsProposal {
+  string          title = 1;
+  string          description = 2;
+  repeated string cellar_ids = 3;
+}

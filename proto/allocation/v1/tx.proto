@@ -1,0 +1,63 @@
+syntax = "proto3";
+package allocation.v1;
+
+option go_package = "github.com/peggyjv/sommelier/x/allocation/types";
+
+// MsgService defines the messages the allocation module handles
+service Msg {
+  // DelegateDecisions creates an index in the store linking the validator and the delegate key
+  // need to be able to query both the delegate and the validator given the other one
+  rpc DelegateDecisions (MsgDelegateDecisionsRequest) returns (MsgDelegateDecisionsResponse);
+  // DecisionPrecommit stores the precommit hash indexed by validator address
+  rpc DecisionPrecommit (MsgDecisionPrecommitRequest) returns (MsgDecisionPrecommitResponse);
+  // DecisionCommit checks the precommit hash against the data, rejects the message if it doesn't match
+  // then records the commitment in the store indexed by validator address
+  rpc DecisionCommit    (MsgDecisionCommitRequest)    returns (MsgDecisionCommitResponse);
+}
+
+// MsgDelegateDecisionsRequest is the request type for DelegateDecisions
+message MsgDelegateDecisionsRequest {
+  string delegate = 1;
+  string validator = 2;
+}
+
+// MsgDelegateDecisionsResponse is the response type for DelegateDecisions
+message MsgDelegateDecisionsResponse {}
+
+// MsgDecisionPrecommitRequest is the request type for DecisionPrecommit
+message MsgDecisionPrecommitRequest {
+  bytes  hash = 1;
+  string signer = 2;
+}
+
+// MsgDecisionPrecommitResponse is the response type for MsgDecisionPrecommit
+message MsgDecisionPrecommitResponse {}
+
+// MsgDecisionCommitRequest is the request type for DecisionCommit
+message MsgDecisionCommitRequest {
+  repeated Decision decisions = 1;
+  string            salt = 2;
+  string            signer = 3;
+}
+
+// Decision is the XXX
+message Decision {
+  string              cellar_id = 1;
+  string              fee_level = 2; // sdk.Dec
+  repeated TickWeight tick_weights = 3;
+}
+
+// TickWeight is the XXX
+message TickWeight {
+  Tick  tick = 1;
+  string weight = 2; // sdk.Dec
+}
+
+// Tick is the XXX
+message Tick {
+  uint64 min = 1;
+  uint64 max = 2;
+}
+
+// MsgDecisionCommitResponse is the response type for the Msg/DecisionCommit gRPC method.
+message MsgDecisionCommitResponse {}

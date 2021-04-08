@@ -4,6 +4,28 @@
 
 ## Table of Contents
 
+- [allocation/v1/tx.proto](#allocation/v1/tx.proto)
+    - [Decision](#allocation.v1.Decision)
+    - [MsgDecisionCommitRequest](#allocation.v1.MsgDecisionCommitRequest)
+    - [MsgDecisionCommitResponse](#allocation.v1.MsgDecisionCommitResponse)
+    - [MsgDecisionPrecommitRequest](#allocation.v1.MsgDecisionPrecommitRequest)
+    - [MsgDecisionPrecommitResponse](#allocation.v1.MsgDecisionPrecommitResponse)
+    - [MsgDelegateDecisionsRequest](#allocation.v1.MsgDelegateDecisionsRequest)
+    - [MsgDelegateDecisionsResponse](#allocation.v1.MsgDelegateDecisionsResponse)
+    - [Tick](#allocation.v1.Tick)
+    - [TickWeight](#allocation.v1.TickWeight)
+  
+    - [Msg](#allocation.v1.Msg)
+  
+- [allocation/v1/allocation.proto](#allocation/v1/allocation.proto)
+    - [Cellar](#allocation.v1.Cellar)
+    - [CreateCellarsProposal](#allocation.v1.CreateCellarsProposal)
+    - [Pool](#allocation.v1.Pool)
+    - [RemoveCellarsProposal](#allocation.v1.RemoveCellarsProposal)
+  
+- [allocation/v1/genesis.proto](#allocation/v1/genesis.proto)
+    - [Params](#allocation.v1.Params)
+  
 - [il/v1/il.proto](#il/v1/il.proto)
     - [Params](#il.v1.Params)
     - [Stoploss](#il.v1.Stoploss)
@@ -77,6 +99,283 @@
     - [Query](#oracle.v1.Query)
   
 - [Scalar Value Types](#scalar-value-types)
+
+
+
+<a name="allocation/v1/tx.proto"></a>
+<p align="right"><a href="#top">Top</a></p>
+
+## allocation/v1/tx.proto
+
+
+
+<a name="allocation.v1.Decision"></a>
+
+### Decision
+Decision is the XXX
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `cellar_id` | [string](#string) |  |  |
+| `fee_level` | [string](#string) |  | sdk.Dec |
+| `tick_weights` | [TickWeight](#allocation.v1.TickWeight) | repeated |  |
+
+
+
+
+
+
+<a name="allocation.v1.MsgDecisionCommitRequest"></a>
+
+### MsgDecisionCommitRequest
+MsgDecisionCommitRequest is the request type for DecisionCommit
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `decisions` | [Decision](#allocation.v1.Decision) | repeated |  |
+| `salt` | [string](#string) |  |  |
+| `signer` | [string](#string) |  |  |
+
+
+
+
+
+
+<a name="allocation.v1.MsgDecisionCommitResponse"></a>
+
+### MsgDecisionCommitResponse
+MsgDecisionCommitResponse is the response type for the Msg/DecisionCommit gRPC method.
+
+
+
+
+
+
+<a name="allocation.v1.MsgDecisionPrecommitRequest"></a>
+
+### MsgDecisionPrecommitRequest
+MsgDecisionPrecommitRequest is the request type for DecisionPrecommit
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `hash` | [bytes](#bytes) |  |  |
+| `signer` | [string](#string) |  |  |
+
+
+
+
+
+
+<a name="allocation.v1.MsgDecisionPrecommitResponse"></a>
+
+### MsgDecisionPrecommitResponse
+MsgDecisionPrecommitResponse is the response type for MsgDecisionPrecommit
+
+
+
+
+
+
+<a name="allocation.v1.MsgDelegateDecisionsRequest"></a>
+
+### MsgDelegateDecisionsRequest
+MsgDelegateDecisionsRequest is the request type for DelegateDecisions
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `delegate` | [string](#string) |  |  |
+| `validator` | [string](#string) |  |  |
+
+
+
+
+
+
+<a name="allocation.v1.MsgDelegateDecisionsResponse"></a>
+
+### MsgDelegateDecisionsResponse
+MsgDelegateDecisionsResponse is the response type for DelegateDecisions
+
+
+
+
+
+
+<a name="allocation.v1.Tick"></a>
+
+### Tick
+Tick is the XXX
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `min` | [uint64](#uint64) |  |  |
+| `max` | [uint64](#uint64) |  |  |
+
+
+
+
+
+
+<a name="allocation.v1.TickWeight"></a>
+
+### TickWeight
+TickWeight is the XXX
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `tick` | [Tick](#allocation.v1.Tick) |  |  |
+| `weight` | [string](#string) |  | sdk.Dec |
+
+
+
+
+
+ <!-- end messages -->
+
+ <!-- end enums -->
+
+ <!-- end HasExtensions -->
+
+
+<a name="allocation.v1.Msg"></a>
+
+### Msg
+MsgService defines the messages the allocation module handles
+
+| Method Name | Request Type | Response Type | Description | HTTP Verb | Endpoint |
+| ----------- | ------------ | ------------- | ------------| ------- | -------- |
+| `DelegateDecisions` | [MsgDelegateDecisionsRequest](#allocation.v1.MsgDelegateDecisionsRequest) | [MsgDelegateDecisionsResponse](#allocation.v1.MsgDelegateDecisionsResponse) | DelegateDecisions creates an index in the store linking the validator and the delegate key need to be able to query both the delegate and the validator given the other one | |
+| `DecisionPrecommit` | [MsgDecisionPrecommitRequest](#allocation.v1.MsgDecisionPrecommitRequest) | [MsgDecisionPrecommitResponse](#allocation.v1.MsgDecisionPrecommitResponse) | DecisionPrecommit stores the precommit hash indexed by validator address | |
+| `DecisionCommit` | [MsgDecisionCommitRequest](#allocation.v1.MsgDecisionCommitRequest) | [MsgDecisionCommitResponse](#allocation.v1.MsgDecisionCommitResponse) | DecisionCommit checks the precommit hash against the data, rejects the message if it doesn't match then records the commitment in the store indexed by validator address | |
+
+ <!-- end services -->
+
+
+
+<a name="allocation/v1/allocation.proto"></a>
+<p align="right"><a href="#top">Top</a></p>
+
+## allocation/v1/allocation.proto
+
+
+
+<a name="allocation.v1.Cellar"></a>
+
+### Cellar
+Cellar is the XXX
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `cellar_id` | [string](#string) |  |  |
+| `token0` | [string](#string) |  |  |
+| `token1` | [string](#string) |  |  |
+| `pool` | [Pool](#allocation.v1.Pool) | repeated |  |
+
+
+
+
+
+
+<a name="allocation.v1.CreateCellarsProposal"></a>
+
+### CreateCellarsProposal
+CreateCellarsProposal is a governance proposal content type
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `title` | [string](#string) |  |  |
+| `description` | [string](#string) |  |  |
+| `cellars` | [Cellar](#allocation.v1.Cellar) | repeated |  |
+
+
+
+
+
+
+<a name="allocation.v1.Pool"></a>
+
+### Pool
+Pool is the XXX
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `fee_level` | [string](#string) |  | sdk.Dec |
+| `tick_ranges` | [Tick](#allocation.v1.Tick) | repeated |  |
+
+
+
+
+
+
+<a name="allocation.v1.RemoveCellarsProposal"></a>
+
+### RemoveCellarsProposal
+RemoveCellarsProposal is the XXX
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `title` | [string](#string) |  |  |
+| `description` | [string](#string) |  |  |
+| `cellar_ids` | [string](#string) | repeated |  |
+
+
+
+
+
+ <!-- end messages -->
+
+ <!-- end enums -->
+
+ <!-- end HasExtensions -->
+
+ <!-- end services -->
+
+
+
+<a name="allocation/v1/genesis.proto"></a>
+<p align="right"><a href="#top">Top</a></p>
+
+## allocation/v1/genesis.proto
+
+
+
+<a name="allocation.v1.Params"></a>
+
+### Params
+Params allocation parameters
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `vote_period` | [int64](#int64) |  | VotePeriod for precommit and commit phrases |
+| `vote_threshold` | [string](#string) |  | VoteThreshold defines the percentage of bonded stake required to vote each period |
+| `slash_window` | [int64](#int64) |  | SlashWindow defines the number of blocks for the slashing window |
+| `min_valid_per_window` | [string](#string) |  | MinValidPerWindow defines the number of misses a validator is allowed each SlashWindow |
+| `slash_fraction` | [string](#string) |  | SlashFraction defines the percentage of slash that a validator will suffer if it fails to vote |
+| `target_threshold` | [string](#string) |  | TargetThreshold defines the max percentage difference from mean of decisions for reward |
+| `cellars` | [Cellar](#allocation.v1.Cellar) | repeated | Cellars defines which cellars must be voted on by validators each round NOTE: This could be changed with ParamChange proposals so we may not need any custom governance functionality |
+
+
+
+
+
+ <!-- end messages -->
+
+ <!-- end enums -->
+
+ <!-- end HasExtensions -->
+
+ <!-- end services -->
 
 
 

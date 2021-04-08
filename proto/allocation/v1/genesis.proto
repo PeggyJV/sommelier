@@ -1,0 +1,45 @@
+syntax = "proto3";
+package allocation.v1;
+
+import "allocation/v1/allocation.proto";
+import "gogoproto/gogo.proto";
+
+option go_package = "github.com/peggyjv/sommelier/x/allocation/types";
+
+// Params allocation parameters
+message Params {
+  // VotePeriod for precommit and commit phrases
+  int64  vote_period          = 1;
+
+  // VoteThreshold defines the percentage of bonded stake required to vote each period
+  string vote_threshold       = 2 [
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+    (gogoproto.nullable)   = false
+  ];
+
+  // SlashWindow defines the number of blocks for the slashing window
+  int64  slash_window         = 3;
+
+  // MinValidPerWindow defines the number of misses a validator is allowed each SlashWindow
+  string min_valid_per_window = 4 [
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+    (gogoproto.nullable)   = false
+  ];
+
+  // SlashFraction defines the percentage of slash that a validator will suffer if it fails to vote
+  string slash_fraction       = 5 [
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+    (gogoproto.nullable)   = false
+  ];
+
+  // TargetThreshold defines the max percentage difference from mean of decisions for reward
+  string target_threshold     = 6 [
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+    (gogoproto.nullable)   = false
+  ];
+
+  // Cellars defines which cellars must be voted on by validators each round
+  // NOTE: This could be changed with ParamChange proposals so we may not need
+  // any custom governance functionality
+  repeated Cellar cellars  = 7;
+}
