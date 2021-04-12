@@ -28,23 +28,23 @@ var _ = math.Inf
 const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
 // MsgDelegateDecisionsRequest is the request type for DelegateDecisions
-type MsgDelegateDecisionsRequest struct {
+type MsgDelegateDecisions struct {
 	Delegate  string `protobuf:"bytes,1,opt,name=delegate,proto3" json:"delegate,omitempty"`
 	Validator string `protobuf:"bytes,2,opt,name=validator,proto3" json:"validator,omitempty"`
 }
 
-func (m *MsgDelegateDecisionsRequest) Reset()         { *m = MsgDelegateDecisionsRequest{} }
-func (m *MsgDelegateDecisionsRequest) String() string { return proto.CompactTextString(m) }
-func (*MsgDelegateDecisionsRequest) ProtoMessage()    {}
-func (*MsgDelegateDecisionsRequest) Descriptor() ([]byte, []int) {
+func (m *MsgDelegateDecisions) Reset()         { *m = MsgDelegateDecisions{} }
+func (m *MsgDelegateDecisions) String() string { return proto.CompactTextString(m) }
+func (*MsgDelegateDecisions) ProtoMessage()    {}
+func (*MsgDelegateDecisions) Descriptor() ([]byte, []int) {
 	return fileDescriptor_194e979be0693c53, []int{0}
 }
-func (m *MsgDelegateDecisionsRequest) XXX_Unmarshal(b []byte) error {
+func (m *MsgDelegateDecisions) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *MsgDelegateDecisionsRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *MsgDelegateDecisions) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_MsgDelegateDecisionsRequest.Marshal(b, m, deterministic)
+		return xxx_messageInfo_MsgDelegateDecisions.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -54,26 +54,26 @@ func (m *MsgDelegateDecisionsRequest) XXX_Marshal(b []byte, deterministic bool) 
 		return b[:n], nil
 	}
 }
-func (m *MsgDelegateDecisionsRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MsgDelegateDecisionsRequest.Merge(m, src)
+func (m *MsgDelegateDecisions) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgDelegateDecisions.Merge(m, src)
 }
-func (m *MsgDelegateDecisionsRequest) XXX_Size() int {
+func (m *MsgDelegateDecisions) XXX_Size() int {
 	return m.Size()
 }
-func (m *MsgDelegateDecisionsRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_MsgDelegateDecisionsRequest.DiscardUnknown(m)
+func (m *MsgDelegateDecisions) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgDelegateDecisions.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_MsgDelegateDecisionsRequest proto.InternalMessageInfo
+var xxx_messageInfo_MsgDelegateDecisions proto.InternalMessageInfo
 
-func (m *MsgDelegateDecisionsRequest) GetDelegate() string {
+func (m *MsgDelegateDecisions) GetDelegate() string {
 	if m != nil {
 		return m.Delegate
 	}
 	return ""
 }
 
-func (m *MsgDelegateDecisionsRequest) GetValidator() string {
+func (m *MsgDelegateDecisions) GetValidator() string {
 	if m != nil {
 		return m.Validator
 	}
@@ -118,23 +118,23 @@ func (m *MsgDelegateDecisionsResponse) XXX_DiscardUnknown() {
 var xxx_messageInfo_MsgDelegateDecisionsResponse proto.InternalMessageInfo
 
 // MsgDecisionPrecommitRequest is the request type for DecisionPrecommit
-type MsgDecisionPrecommitRequest struct {
+type MsgDecisionPrecommit struct {
 	Hash   []byte `protobuf:"bytes,1,opt,name=hash,proto3" json:"hash,omitempty"`
 	Signer string `protobuf:"bytes,2,opt,name=signer,proto3" json:"signer,omitempty"`
 }
 
-func (m *MsgDecisionPrecommitRequest) Reset()         { *m = MsgDecisionPrecommitRequest{} }
-func (m *MsgDecisionPrecommitRequest) String() string { return proto.CompactTextString(m) }
-func (*MsgDecisionPrecommitRequest) ProtoMessage()    {}
-func (*MsgDecisionPrecommitRequest) Descriptor() ([]byte, []int) {
+func (m *MsgDecisionPrecommit) Reset()         { *m = MsgDecisionPrecommit{} }
+func (m *MsgDecisionPrecommit) String() string { return proto.CompactTextString(m) }
+func (*MsgDecisionPrecommit) ProtoMessage()    {}
+func (*MsgDecisionPrecommit) Descriptor() ([]byte, []int) {
 	return fileDescriptor_194e979be0693c53, []int{2}
 }
-func (m *MsgDecisionPrecommitRequest) XXX_Unmarshal(b []byte) error {
+func (m *MsgDecisionPrecommit) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *MsgDecisionPrecommitRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *MsgDecisionPrecommit) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_MsgDecisionPrecommitRequest.Marshal(b, m, deterministic)
+		return xxx_messageInfo_MsgDecisionPrecommit.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -144,26 +144,26 @@ func (m *MsgDecisionPrecommitRequest) XXX_Marshal(b []byte, deterministic bool) 
 		return b[:n], nil
 	}
 }
-func (m *MsgDecisionPrecommitRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MsgDecisionPrecommitRequest.Merge(m, src)
+func (m *MsgDecisionPrecommit) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgDecisionPrecommit.Merge(m, src)
 }
-func (m *MsgDecisionPrecommitRequest) XXX_Size() int {
+func (m *MsgDecisionPrecommit) XXX_Size() int {
 	return m.Size()
 }
-func (m *MsgDecisionPrecommitRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_MsgDecisionPrecommitRequest.DiscardUnknown(m)
+func (m *MsgDecisionPrecommit) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgDecisionPrecommit.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_MsgDecisionPrecommitRequest proto.InternalMessageInfo
+var xxx_messageInfo_MsgDecisionPrecommit proto.InternalMessageInfo
 
-func (m *MsgDecisionPrecommitRequest) GetHash() []byte {
+func (m *MsgDecisionPrecommit) GetHash() []byte {
 	if m != nil {
 		return m.Hash
 	}
 	return nil
 }
 
-func (m *MsgDecisionPrecommitRequest) GetSigner() string {
+func (m *MsgDecisionPrecommit) GetSigner() string {
 	if m != nil {
 		return m.Signer
 	}
@@ -208,24 +208,24 @@ func (m *MsgDecisionPrecommitResponse) XXX_DiscardUnknown() {
 var xxx_messageInfo_MsgDecisionPrecommitResponse proto.InternalMessageInfo
 
 // MsgDecisionCommitRequest is the request type for DecisionCommit
-type MsgDecisionCommitRequest struct {
+type MsgDecisionCommit struct {
 	Decisions []*Decision `protobuf:"bytes,1,rep,name=decisions,proto3" json:"decisions,omitempty"`
 	Salt      string      `protobuf:"bytes,2,opt,name=salt,proto3" json:"salt,omitempty"`
 	Signer    string      `protobuf:"bytes,3,opt,name=signer,proto3" json:"signer,omitempty"`
 }
 
-func (m *MsgDecisionCommitRequest) Reset()         { *m = MsgDecisionCommitRequest{} }
-func (m *MsgDecisionCommitRequest) String() string { return proto.CompactTextString(m) }
-func (*MsgDecisionCommitRequest) ProtoMessage()    {}
-func (*MsgDecisionCommitRequest) Descriptor() ([]byte, []int) {
+func (m *MsgDecisionCommit) Reset()         { *m = MsgDecisionCommit{} }
+func (m *MsgDecisionCommit) String() string { return proto.CompactTextString(m) }
+func (*MsgDecisionCommit) ProtoMessage()    {}
+func (*MsgDecisionCommit) Descriptor() ([]byte, []int) {
 	return fileDescriptor_194e979be0693c53, []int{4}
 }
-func (m *MsgDecisionCommitRequest) XXX_Unmarshal(b []byte) error {
+func (m *MsgDecisionCommit) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *MsgDecisionCommitRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *MsgDecisionCommit) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_MsgDecisionCommitRequest.Marshal(b, m, deterministic)
+		return xxx_messageInfo_MsgDecisionCommit.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -235,33 +235,33 @@ func (m *MsgDecisionCommitRequest) XXX_Marshal(b []byte, deterministic bool) ([]
 		return b[:n], nil
 	}
 }
-func (m *MsgDecisionCommitRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MsgDecisionCommitRequest.Merge(m, src)
+func (m *MsgDecisionCommit) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgDecisionCommit.Merge(m, src)
 }
-func (m *MsgDecisionCommitRequest) XXX_Size() int {
+func (m *MsgDecisionCommit) XXX_Size() int {
 	return m.Size()
 }
-func (m *MsgDecisionCommitRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_MsgDecisionCommitRequest.DiscardUnknown(m)
+func (m *MsgDecisionCommit) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgDecisionCommit.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_MsgDecisionCommitRequest proto.InternalMessageInfo
+var xxx_messageInfo_MsgDecisionCommit proto.InternalMessageInfo
 
-func (m *MsgDecisionCommitRequest) GetDecisions() []*Decision {
+func (m *MsgDecisionCommit) GetDecisions() []*Decision {
 	if m != nil {
 		return m.Decisions
 	}
 	return nil
 }
 
-func (m *MsgDecisionCommitRequest) GetSalt() string {
+func (m *MsgDecisionCommit) GetSalt() string {
 	if m != nil {
 		return m.Salt
 	}
 	return ""
 }
 
-func (m *MsgDecisionCommitRequest) GetSigner() string {
+func (m *MsgDecisionCommit) GetSigner() string {
 	if m != nil {
 		return m.Signer
 	}
@@ -473,11 +473,11 @@ func (m *MsgDecisionCommitResponse) XXX_DiscardUnknown() {
 var xxx_messageInfo_MsgDecisionCommitResponse proto.InternalMessageInfo
 
 func init() {
-	proto.RegisterType((*MsgDelegateDecisionsRequest)(nil), "allocation.v1.MsgDelegateDecisionsRequest")
+	proto.RegisterType((*MsgDelegateDecisions)(nil), "allocation.v1.MsgDelegateDecisions")
 	proto.RegisterType((*MsgDelegateDecisionsResponse)(nil), "allocation.v1.MsgDelegateDecisionsResponse")
-	proto.RegisterType((*MsgDecisionPrecommitRequest)(nil), "allocation.v1.MsgDecisionPrecommitRequest")
+	proto.RegisterType((*MsgDecisionPrecommit)(nil), "allocation.v1.MsgDecisionPrecommit")
 	proto.RegisterType((*MsgDecisionPrecommitResponse)(nil), "allocation.v1.MsgDecisionPrecommitResponse")
-	proto.RegisterType((*MsgDecisionCommitRequest)(nil), "allocation.v1.MsgDecisionCommitRequest")
+	proto.RegisterType((*MsgDecisionCommit)(nil), "allocation.v1.MsgDecisionCommit")
 	proto.RegisterType((*Decision)(nil), "allocation.v1.Decision")
 	proto.RegisterType((*TickWeight)(nil), "allocation.v1.TickWeight")
 	proto.RegisterType((*Tick)(nil), "allocation.v1.Tick")
@@ -487,38 +487,38 @@ func init() {
 func init() { proto.RegisterFile("allocation/v1/tx.proto", fileDescriptor_194e979be0693c53) }
 
 var fileDescriptor_194e979be0693c53 = []byte{
-	// 493 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x8c, 0x94, 0xcf, 0x6e, 0xd3, 0x40,
-	0x10, 0xc6, 0xeb, 0x3a, 0xaa, 0x92, 0x49, 0x41, 0xb0, 0x48, 0xc5, 0x4d, 0x2a, 0xab, 0xf2, 0xa5,
-	0x51, 0x91, 0x6c, 0x35, 0x88, 0x1b, 0x27, 0xe8, 0x25, 0x12, 0x91, 0x90, 0x85, 0x54, 0x89, 0x4b,
-	0xb4, 0xb5, 0xa7, 0xce, 0xd2, 0xb5, 0x37, 0x78, 0xb7, 0x26, 0x3d, 0x70, 0xe1, 0x09, 0x78, 0x2a,
-	0xc4, 0xb1, 0x47, 0x8e, 0x28, 0x79, 0x11, 0xe4, 0xb5, 0x9d, 0xc4, 0xa9, 0x0b, 0xdc, 0xe6, 0xcf,
-	0xe7, 0xf9, 0x7d, 0x1e, 0x8f, 0x0c, 0x07, 0x94, 0x73, 0x11, 0x50, 0xc5, 0x44, 0xe2, 0x65, 0x67,
-	0x9e, 0x9a, 0xbb, 0xb3, 0x54, 0x28, 0x41, 0x1e, 0xad, 0xeb, 0x6e, 0x76, 0xe6, 0x5c, 0x40, 0x7f,
-	0x2c, 0xa3, 0x73, 0xe4, 0x18, 0x51, 0x85, 0xe7, 0x18, 0x30, 0xc9, 0x44, 0x22, 0x7d, 0xfc, 0x7c,
-	0x83, 0x52, 0x91, 0x1e, 0xb4, 0xc3, 0xb2, 0x67, 0x19, 0xc7, 0xc6, 0xa0, 0xe3, 0xaf, 0x72, 0x72,
-	0x04, 0x9d, 0x8c, 0x72, 0x16, 0x52, 0x25, 0x52, 0x6b, 0x57, 0x37, 0xd7, 0x05, 0xc7, 0x86, 0xa3,
-	0xe6, 0xc1, 0x72, 0x26, 0x12, 0x89, 0xce, 0xa8, 0x04, 0x17, 0xf5, 0xf7, 0x29, 0x06, 0x22, 0x8e,
-	0x99, 0xaa, 0xc0, 0x04, 0x5a, 0x53, 0x2a, 0xa7, 0x1a, 0xba, 0xef, 0xeb, 0x98, 0x1c, 0xc0, 0x9e,
-	0x64, 0x51, 0x82, 0x15, 0xad, 0xcc, 0x56, 0xa8, 0x7b, 0xa3, 0x4a, 0xd4, 0x57, 0xb0, 0x36, 0xfa,
-	0x6f, 0x6b, 0x9c, 0x57, 0xd0, 0x09, 0x2b, 0x6f, 0x96, 0x71, 0x6c, 0x0e, 0xba, 0xc3, 0xe7, 0x6e,
-	0x6d, 0x45, 0x6e, 0xf5, 0xa0, 0xbf, 0x56, 0xe6, 0xf6, 0x24, 0xe5, 0xaa, 0x34, 0xa2, 0xe3, 0x0d,
-	0x7b, 0x66, 0xcd, 0xde, 0x37, 0x03, 0xda, 0xd5, 0x0c, 0xd2, 0x87, 0x4e, 0x80, 0x9c, 0xd3, 0x74,
-	0xc2, 0xc2, 0x6a, 0xa3, 0x45, 0x61, 0x14, 0xe6, 0xcd, 0x2b, 0xc4, 0x09, 0xc7, 0x0c, 0x79, 0x39,
-	0xba, 0x7d, 0x85, 0xf8, 0x2e, 0xcf, 0xc9, 0x6b, 0xd8, 0x57, 0x2c, 0xb8, 0x9e, 0x7c, 0x41, 0x16,
-	0x4d, 0x95, 0xb4, 0x4c, 0x6d, 0xf6, 0x70, 0xcb, 0xec, 0x07, 0x16, 0x5c, 0x5f, 0x68, 0x85, 0xdf,
-	0x55, 0xab, 0x58, 0x3a, 0x63, 0x80, 0x75, 0x8b, 0x9c, 0x40, 0x2b, 0x6f, 0x6a, 0x03, 0xdd, 0xe1,
-	0xb3, 0x86, 0x19, 0xbe, 0x16, 0xe4, 0xef, 0x54, 0xf0, 0xaa, 0x95, 0x17, 0x99, 0x73, 0x0a, 0xad,
-	0x5c, 0x45, 0x9e, 0x80, 0x19, 0xb3, 0x44, 0xcf, 0x69, 0xf9, 0x79, 0xa8, 0x2b, 0x74, 0xae, 0xe5,
-	0x79, 0x85, 0xce, 0x9d, 0x3e, 0x1c, 0x36, 0xac, 0xbf, 0xf8, 0x36, 0xc3, 0x1f, 0xbb, 0x60, 0x8e,
-	0x65, 0x44, 0x38, 0x3c, 0xbd, 0x77, 0x2b, 0xe4, 0x74, 0xcb, 0xd8, 0x5f, 0x2e, 0xb5, 0xf7, 0xe2,
-	0xbf, 0xb4, 0x05, 0xb5, 0xa0, 0x6d, 0x9d, 0x4b, 0x33, 0xad, 0xf9, 0x3c, 0x9b, 0x69, 0x0f, 0xdc,
-	0x1f, 0x09, 0xe0, 0x71, 0xfd, 0xed, 0xc9, 0xc9, 0xc3, 0x8f, 0xd7, 0xce, 0xb3, 0x37, 0xf8, 0xb7,
-	0xb0, 0x80, 0xbc, 0x19, 0xfd, 0x5c, 0xd8, 0xc6, 0xdd, 0xc2, 0x36, 0x7e, 0x2f, 0x6c, 0xe3, 0xfb,
-	0xd2, 0xde, 0xb9, 0x5b, 0xda, 0x3b, 0xbf, 0x96, 0xf6, 0xce, 0x47, 0x2f, 0x62, 0x6a, 0x7a, 0x73,
-	0xe9, 0x06, 0x22, 0xf6, 0x66, 0x18, 0x45, 0xb7, 0x9f, 0x32, 0x4f, 0x8a, 0x38, 0x46, 0xce, 0x30,
-	0xf5, 0xe6, 0xde, 0xc6, 0x8f, 0x42, 0xdd, 0xce, 0x50, 0x5e, 0xee, 0xe9, 0x3f, 0xc5, 0xcb, 0x3f,
-	0x01, 0x00, 0x00, 0xff, 0xff, 0xe5, 0x8a, 0xd4, 0xcb, 0x43, 0x04, 0x00, 0x00,
+	// 486 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x8c, 0x53, 0x41, 0x6b, 0xdb, 0x4c,
+	0x10, 0xb5, 0x22, 0x13, 0xec, 0x71, 0xbe, 0x8f, 0x66, 0x5b, 0x52, 0xc7, 0x09, 0xc2, 0xa8, 0x87,
+	0x9a, 0x16, 0x24, 0xe2, 0xd2, 0x5b, 0x4f, 0x69, 0x2e, 0x81, 0x1a, 0x82, 0x28, 0x14, 0x4a, 0xc1,
+	0x6c, 0xa4, 0x89, 0xbc, 0xcd, 0x4a, 0x6b, 0xb4, 0x5b, 0xd5, 0xb9, 0xf6, 0x17, 0xf4, 0xaf, 0xf4,
+	0x5f, 0xf4, 0x98, 0x63, 0x8f, 0xc5, 0xfe, 0x23, 0x45, 0x2b, 0xad, 0xed, 0x28, 0x0a, 0xed, 0x6d,
+	0xe6, 0xcd, 0xd3, 0x7b, 0xcf, 0xe3, 0x59, 0x38, 0xa0, 0x9c, 0x8b, 0x90, 0x2a, 0x26, 0x52, 0x3f,
+	0x3f, 0xf1, 0xd5, 0xc2, 0x9b, 0x67, 0x42, 0x09, 0xf2, 0xdf, 0x06, 0xf7, 0xf2, 0x13, 0xf7, 0x02,
+	0x9e, 0x4c, 0x64, 0x7c, 0x86, 0x1c, 0x63, 0xaa, 0xf0, 0x0c, 0x43, 0x26, 0x99, 0x48, 0x25, 0x19,
+	0x40, 0x27, 0xaa, 0xc0, 0xbe, 0x35, 0xb4, 0x46, 0xdd, 0x60, 0xdd, 0x93, 0x63, 0xe8, 0xe6, 0x94,
+	0xb3, 0x88, 0x2a, 0x91, 0xf5, 0x77, 0xf4, 0x70, 0x03, 0xb8, 0x0e, 0x1c, 0x37, 0x29, 0x06, 0x28,
+	0xe7, 0x22, 0x95, 0xe8, 0x9e, 0x56, 0x8e, 0x25, 0x7e, 0x91, 0x61, 0x28, 0x92, 0x84, 0x29, 0x42,
+	0xa0, 0x3d, 0xa3, 0x72, 0xa6, 0xdd, 0xf6, 0x02, 0x5d, 0x93, 0x03, 0xd8, 0x95, 0x2c, 0x4e, 0xd1,
+	0xd8, 0x54, 0xdd, 0xda, 0xa3, 0xa6, 0xb1, 0xf6, 0xc8, 0x61, 0x7f, 0x6b, 0xfe, 0xb6, 0x34, 0x78,
+	0x0d, 0xdd, 0xc8, 0xa4, 0xe9, 0x5b, 0x43, 0x7b, 0xd4, 0x1b, 0x3f, 0xf5, 0xee, 0x6c, 0xc3, 0x33,
+	0x5f, 0x04, 0x1b, 0x66, 0x91, 0x4b, 0x52, 0xae, 0xaa, 0x04, 0xba, 0xde, 0xca, 0x65, 0xdf, 0xc9,
+	0xf5, 0xcd, 0x82, 0x8e, 0xd1, 0x20, 0x47, 0xd0, 0x0d, 0x91, 0x73, 0x9a, 0x4d, 0x59, 0x64, 0x76,
+	0x58, 0x02, 0xe7, 0x51, 0x31, 0xbc, 0x42, 0x9c, 0x72, 0xcc, 0x91, 0x57, 0xd2, 0x9d, 0x2b, 0xc4,
+	0x77, 0x45, 0x4f, 0xde, 0xc0, 0x9e, 0x62, 0xe1, 0xf5, 0xf4, 0x2b, 0xb2, 0x78, 0xa6, 0x64, 0xdf,
+	0xd6, 0x61, 0x0f, 0x6b, 0x61, 0xdf, 0xb3, 0xf0, 0xfa, 0x83, 0x66, 0x04, 0x3d, 0xb5, 0xae, 0xa5,
+	0x3b, 0x01, 0xd8, 0x8c, 0xc8, 0x73, 0x68, 0x17, 0x43, 0x1d, 0xa0, 0x37, 0x7e, 0xdc, 0xa0, 0x11,
+	0x68, 0x42, 0xf1, 0x9b, 0x4a, 0x3f, 0xb3, 0xeb, 0xb2, 0x73, 0x5f, 0x40, 0xbb, 0x60, 0x91, 0x47,
+	0x60, 0x27, 0x2c, 0xd5, 0x3a, 0xed, 0xa0, 0x28, 0x35, 0x42, 0x17, 0x9a, 0x5e, 0x20, 0x74, 0xe1,
+	0x1e, 0xc1, 0xe1, 0xbd, 0xbd, 0x9b, 0x3f, 0x65, 0xfc, 0x63, 0x07, 0xec, 0x89, 0x8c, 0x09, 0xc2,
+	0xfe, 0xfd, 0x7b, 0x7b, 0x56, 0x0b, 0xd6, 0x74, 0x42, 0x83, 0x97, 0xff, 0x40, 0x32, 0x76, 0xa5,
+	0x4d, 0xfd, 0xc8, 0x1a, 0x6d, 0x6a, 0xa4, 0x66, 0x9b, 0x07, 0x4e, 0x8d, 0x7c, 0x82, 0xff, 0x6b,
+	0x77, 0x36, 0x7c, 0xf8, 0xf3, 0x92, 0x31, 0x18, 0xfd, 0x8d, 0x61, 0xd4, 0x4f, 0xcf, 0x7f, 0x2e,
+	0x1d, 0xeb, 0x76, 0xe9, 0x58, 0xbf, 0x97, 0x8e, 0xf5, 0x7d, 0xe5, 0xb4, 0x6e, 0x57, 0x4e, 0xeb,
+	0xd7, 0xca, 0x69, 0x7d, 0xf4, 0x63, 0xa6, 0x66, 0x5f, 0x2e, 0xbd, 0x50, 0x24, 0xfe, 0x1c, 0xe3,
+	0xf8, 0xe6, 0x73, 0xee, 0x4b, 0x91, 0x24, 0xc8, 0x19, 0x66, 0xfe, 0xc2, 0xdf, 0x7a, 0xfe, 0xea,
+	0x66, 0x8e, 0xf2, 0x72, 0x57, 0xbf, 0xff, 0x57, 0x7f, 0x02, 0x00, 0x00, 0xff, 0xff, 0x70, 0xbb,
+	0xd1, 0x0c, 0x19, 0x04, 0x00, 0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -535,12 +535,12 @@ const _ = grpc.SupportPackageIsVersion4
 type MsgClient interface {
 	// DelegateDecisions creates an index in the store linking the validator and the delegate key
 	// need to be able to query both the delegate and the validator given the other one
-	DelegateDecisions(ctx context.Context, in *MsgDelegateDecisionsRequest, opts ...grpc.CallOption) (*MsgDelegateDecisionsResponse, error)
+	DelegateDecisions(ctx context.Context, in *MsgDelegateDecisions, opts ...grpc.CallOption) (*MsgDelegateDecisionsResponse, error)
 	// DecisionPrecommit stores the precommit hash indexed by validator address
-	DecisionPrecommit(ctx context.Context, in *MsgDecisionPrecommitRequest, opts ...grpc.CallOption) (*MsgDecisionPrecommitResponse, error)
+	DecisionPrecommit(ctx context.Context, in *MsgDecisionPrecommit, opts ...grpc.CallOption) (*MsgDecisionPrecommitResponse, error)
 	// DecisionCommit checks the precommit hash against the data, rejects the message if it doesn't match
 	// then records the commitment in the store indexed by validator address
-	DecisionCommit(ctx context.Context, in *MsgDecisionCommitRequest, opts ...grpc.CallOption) (*MsgDecisionCommitResponse, error)
+	DecisionCommit(ctx context.Context, in *MsgDecisionCommit, opts ...grpc.CallOption) (*MsgDecisionCommitResponse, error)
 }
 
 type msgClient struct {
@@ -551,7 +551,7 @@ func NewMsgClient(cc grpc1.ClientConn) MsgClient {
 	return &msgClient{cc}
 }
 
-func (c *msgClient) DelegateDecisions(ctx context.Context, in *MsgDelegateDecisionsRequest, opts ...grpc.CallOption) (*MsgDelegateDecisionsResponse, error) {
+func (c *msgClient) DelegateDecisions(ctx context.Context, in *MsgDelegateDecisions, opts ...grpc.CallOption) (*MsgDelegateDecisionsResponse, error) {
 	out := new(MsgDelegateDecisionsResponse)
 	err := c.cc.Invoke(ctx, "/allocation.v1.Msg/DelegateDecisions", in, out, opts...)
 	if err != nil {
@@ -560,7 +560,7 @@ func (c *msgClient) DelegateDecisions(ctx context.Context, in *MsgDelegateDecisi
 	return out, nil
 }
 
-func (c *msgClient) DecisionPrecommit(ctx context.Context, in *MsgDecisionPrecommitRequest, opts ...grpc.CallOption) (*MsgDecisionPrecommitResponse, error) {
+func (c *msgClient) DecisionPrecommit(ctx context.Context, in *MsgDecisionPrecommit, opts ...grpc.CallOption) (*MsgDecisionPrecommitResponse, error) {
 	out := new(MsgDecisionPrecommitResponse)
 	err := c.cc.Invoke(ctx, "/allocation.v1.Msg/DecisionPrecommit", in, out, opts...)
 	if err != nil {
@@ -569,7 +569,7 @@ func (c *msgClient) DecisionPrecommit(ctx context.Context, in *MsgDecisionPrecom
 	return out, nil
 }
 
-func (c *msgClient) DecisionCommit(ctx context.Context, in *MsgDecisionCommitRequest, opts ...grpc.CallOption) (*MsgDecisionCommitResponse, error) {
+func (c *msgClient) DecisionCommit(ctx context.Context, in *MsgDecisionCommit, opts ...grpc.CallOption) (*MsgDecisionCommitResponse, error) {
 	out := new(MsgDecisionCommitResponse)
 	err := c.cc.Invoke(ctx, "/allocation.v1.Msg/DecisionCommit", in, out, opts...)
 	if err != nil {
@@ -582,25 +582,25 @@ func (c *msgClient) DecisionCommit(ctx context.Context, in *MsgDecisionCommitReq
 type MsgServer interface {
 	// DelegateDecisions creates an index in the store linking the validator and the delegate key
 	// need to be able to query both the delegate and the validator given the other one
-	DelegateDecisions(context.Context, *MsgDelegateDecisionsRequest) (*MsgDelegateDecisionsResponse, error)
+	DelegateDecisions(context.Context, *MsgDelegateDecisions) (*MsgDelegateDecisionsResponse, error)
 	// DecisionPrecommit stores the precommit hash indexed by validator address
-	DecisionPrecommit(context.Context, *MsgDecisionPrecommitRequest) (*MsgDecisionPrecommitResponse, error)
+	DecisionPrecommit(context.Context, *MsgDecisionPrecommit) (*MsgDecisionPrecommitResponse, error)
 	// DecisionCommit checks the precommit hash against the data, rejects the message if it doesn't match
 	// then records the commitment in the store indexed by validator address
-	DecisionCommit(context.Context, *MsgDecisionCommitRequest) (*MsgDecisionCommitResponse, error)
+	DecisionCommit(context.Context, *MsgDecisionCommit) (*MsgDecisionCommitResponse, error)
 }
 
 // UnimplementedMsgServer can be embedded to have forward compatible implementations.
 type UnimplementedMsgServer struct {
 }
 
-func (*UnimplementedMsgServer) DelegateDecisions(ctx context.Context, req *MsgDelegateDecisionsRequest) (*MsgDelegateDecisionsResponse, error) {
+func (*UnimplementedMsgServer) DelegateDecisions(ctx context.Context, req *MsgDelegateDecisions) (*MsgDelegateDecisionsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DelegateDecisions not implemented")
 }
-func (*UnimplementedMsgServer) DecisionPrecommit(ctx context.Context, req *MsgDecisionPrecommitRequest) (*MsgDecisionPrecommitResponse, error) {
+func (*UnimplementedMsgServer) DecisionPrecommit(ctx context.Context, req *MsgDecisionPrecommit) (*MsgDecisionPrecommitResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DecisionPrecommit not implemented")
 }
-func (*UnimplementedMsgServer) DecisionCommit(ctx context.Context, req *MsgDecisionCommitRequest) (*MsgDecisionCommitResponse, error) {
+func (*UnimplementedMsgServer) DecisionCommit(ctx context.Context, req *MsgDecisionCommit) (*MsgDecisionCommitResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DecisionCommit not implemented")
 }
 
@@ -609,7 +609,7 @@ func RegisterMsgServer(s grpc1.Server, srv MsgServer) {
 }
 
 func _Msg_DelegateDecisions_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(MsgDelegateDecisionsRequest)
+	in := new(MsgDelegateDecisions)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -621,13 +621,13 @@ func _Msg_DelegateDecisions_Handler(srv interface{}, ctx context.Context, dec fu
 		FullMethod: "/allocation.v1.Msg/DelegateDecisions",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MsgServer).DelegateDecisions(ctx, req.(*MsgDelegateDecisionsRequest))
+		return srv.(MsgServer).DelegateDecisions(ctx, req.(*MsgDelegateDecisions))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _Msg_DecisionPrecommit_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(MsgDecisionPrecommitRequest)
+	in := new(MsgDecisionPrecommit)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -639,13 +639,13 @@ func _Msg_DecisionPrecommit_Handler(srv interface{}, ctx context.Context, dec fu
 		FullMethod: "/allocation.v1.Msg/DecisionPrecommit",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MsgServer).DecisionPrecommit(ctx, req.(*MsgDecisionPrecommitRequest))
+		return srv.(MsgServer).DecisionPrecommit(ctx, req.(*MsgDecisionPrecommit))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _Msg_DecisionCommit_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(MsgDecisionCommitRequest)
+	in := new(MsgDecisionCommit)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -657,7 +657,7 @@ func _Msg_DecisionCommit_Handler(srv interface{}, ctx context.Context, dec func(
 		FullMethod: "/allocation.v1.Msg/DecisionCommit",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MsgServer).DecisionCommit(ctx, req.(*MsgDecisionCommitRequest))
+		return srv.(MsgServer).DecisionCommit(ctx, req.(*MsgDecisionCommit))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -683,7 +683,7 @@ var _Msg_serviceDesc = grpc.ServiceDesc{
 	Metadata: "allocation/v1/tx.proto",
 }
 
-func (m *MsgDelegateDecisionsRequest) Marshal() (dAtA []byte, err error) {
+func (m *MsgDelegateDecisions) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -693,12 +693,12 @@ func (m *MsgDelegateDecisionsRequest) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *MsgDelegateDecisionsRequest) MarshalTo(dAtA []byte) (int, error) {
+func (m *MsgDelegateDecisions) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *MsgDelegateDecisionsRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *MsgDelegateDecisions) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -743,7 +743,7 @@ func (m *MsgDelegateDecisionsResponse) MarshalToSizedBuffer(dAtA []byte) (int, e
 	return len(dAtA) - i, nil
 }
 
-func (m *MsgDecisionPrecommitRequest) Marshal() (dAtA []byte, err error) {
+func (m *MsgDecisionPrecommit) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -753,12 +753,12 @@ func (m *MsgDecisionPrecommitRequest) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *MsgDecisionPrecommitRequest) MarshalTo(dAtA []byte) (int, error) {
+func (m *MsgDecisionPrecommit) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *MsgDecisionPrecommitRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *MsgDecisionPrecommit) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -803,7 +803,7 @@ func (m *MsgDecisionPrecommitResponse) MarshalToSizedBuffer(dAtA []byte) (int, e
 	return len(dAtA) - i, nil
 }
 
-func (m *MsgDecisionCommitRequest) Marshal() (dAtA []byte, err error) {
+func (m *MsgDecisionCommit) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -813,12 +813,12 @@ func (m *MsgDecisionCommitRequest) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *MsgDecisionCommitRequest) MarshalTo(dAtA []byte) (int, error) {
+func (m *MsgDecisionCommit) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *MsgDecisionCommitRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *MsgDecisionCommit) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -1014,7 +1014,7 @@ func encodeVarintTx(dAtA []byte, offset int, v uint64) int {
 	dAtA[offset] = uint8(v)
 	return base
 }
-func (m *MsgDelegateDecisionsRequest) Size() (n int) {
+func (m *MsgDelegateDecisions) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -1040,7 +1040,7 @@ func (m *MsgDelegateDecisionsResponse) Size() (n int) {
 	return n
 }
 
-func (m *MsgDecisionPrecommitRequest) Size() (n int) {
+func (m *MsgDecisionPrecommit) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -1066,7 +1066,7 @@ func (m *MsgDecisionPrecommitResponse) Size() (n int) {
 	return n
 }
 
-func (m *MsgDecisionCommitRequest) Size() (n int) {
+func (m *MsgDecisionCommit) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -1159,7 +1159,7 @@ func sovTx(x uint64) (n int) {
 func sozTx(x uint64) (n int) {
 	return sovTx(uint64((x << 1) ^ uint64((int64(x) >> 63))))
 }
-func (m *MsgDelegateDecisionsRequest) Unmarshal(dAtA []byte) error {
+func (m *MsgDelegateDecisions) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -1182,10 +1182,10 @@ func (m *MsgDelegateDecisionsRequest) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: MsgDelegateDecisionsRequest: wiretype end group for non-group")
+			return fmt.Errorf("proto: MsgDelegateDecisions: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: MsgDelegateDecisionsRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: MsgDelegateDecisions: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
@@ -1323,7 +1323,7 @@ func (m *MsgDelegateDecisionsResponse) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *MsgDecisionPrecommitRequest) Unmarshal(dAtA []byte) error {
+func (m *MsgDecisionPrecommit) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -1346,10 +1346,10 @@ func (m *MsgDecisionPrecommitRequest) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: MsgDecisionPrecommitRequest: wiretype end group for non-group")
+			return fmt.Errorf("proto: MsgDecisionPrecommit: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: MsgDecisionPrecommitRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: MsgDecisionPrecommit: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
@@ -1489,7 +1489,7 @@ func (m *MsgDecisionPrecommitResponse) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *MsgDecisionCommitRequest) Unmarshal(dAtA []byte) error {
+func (m *MsgDecisionCommit) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -1512,10 +1512,10 @@ func (m *MsgDecisionCommitRequest) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: MsgDecisionCommitRequest: wiretype end group for non-group")
+			return fmt.Errorf("proto: MsgDecisionCommit: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: MsgDecisionCommitRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: MsgDecisionCommit: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:

@@ -25,10 +25,3 @@ message Pool {
   string        fee_level = 1; // sdk.Dec
   repeated Tick tick_ranges = 2;
 }
-
-// RemoveCellarsProposal is the XXX
-message RemoveCellarsProposal {
-  string          title = 1;
-  string          description = 2;
-  repeated string cellar_ids = 3;
-}

@@ -7,16 +7,16 @@ option go_package = "github.com/peggyjv/sommelier/x/allocation/types";
 service Msg {
   // DelegateDecisions creates an index in the store linking the validator and the delegate key
   // need to be able to query both the delegate and the validator given the other one
-  rpc DelegateDecisions (MsgDelegateDecisionsRequest) returns (MsgDelegateDecisionsResponse);
+  rpc DelegateDecisions (MsgDelegateDecisions) returns (MsgDelegateDecisionsResponse);
   // DecisionPrecommit stores the precommit hash indexed by validator address
-  rpc DecisionPrecommit (MsgDecisionPrecommitRequest) returns (MsgDecisionPrecommitResponse);
+  rpc DecisionPrecommit (MsgDecisionPrecommit) returns (MsgDecisionPrecommitResponse);
   // DecisionCommit checks the precommit hash against the data, rejects the message if it doesn't match
   // then records the commitment in the store indexed by validator address
-  rpc DecisionCommit    (MsgDecisionCommitRequest)    returns (MsgDecisionCommitResponse);
+  rpc DecisionCommit    (MsgDecisionCommit)    returns (MsgDecisionCommitResponse);
 }
 
 // MsgDelegateDecisionsRequest is the request type for DelegateDecisions
-message MsgDelegateDecisionsRequest {
+message MsgDelegateDecisions {
   string delegate = 1;
   string validator = 2;
 }
@@ -25,7 +25,7 @@ message MsgDelegateDecisionsRequest {
 message MsgDelegateDecisionsResponse {}
 
 // MsgDecisionPrecommitRequest is the request type for DecisionPrecommit
-message MsgDecisionPrecommitRequest {
+message MsgDecisionPrecommit {
   bytes  hash = 1;
   string signer = 2;
 }
@@ -34,7 +34,7 @@ message MsgDecisionPrecommitRequest {
 message MsgDecisionPrecommitResponse {}
 
 // MsgDecisionCommitRequest is the request type for DecisionCommit
-message MsgDecisionCommitRequest {
+message MsgDecisionCommit {
   repeated Decision decisions = 1;
   string            salt = 2;
   string            signer = 3;

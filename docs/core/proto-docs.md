@@ -6,11 +6,11 @@
 
 - [allocation/v1/tx.proto](#allocation/v1/tx.proto)
     - [Decision](#allocation.v1.Decision)
-    - [MsgDecisionCommitRequest](#allocation.v1.MsgDecisionCommitRequest)
+    - [MsgDecisionCommit](#allocation.v1.MsgDecisionCommit)
     - [MsgDecisionCommitResponse](#allocation.v1.MsgDecisionCommitResponse)
-    - [MsgDecisionPrecommitRequest](#allocation.v1.MsgDecisionPrecommitRequest)
+    - [MsgDecisionPrecommit](#allocation.v1.MsgDecisionPrecommit)
     - [MsgDecisionPrecommitResponse](#allocation.v1.MsgDecisionPrecommitResponse)
-    - [MsgDelegateDecisionsRequest](#allocation.v1.MsgDelegateDecisionsRequest)
+    - [MsgDelegateDecisions](#allocation.v1.MsgDelegateDecisions)
     - [MsgDelegateDecisionsResponse](#allocation.v1.MsgDelegateDecisionsResponse)
     - [Tick](#allocation.v1.Tick)
     - [TickWeight](#allocation.v1.TickWeight)
@@ -21,7 +21,6 @@
     - [Cellar](#allocation.v1.Cellar)
     - [CreateCellarsProposal](#allocation.v1.CreateCellarsProposal)
     - [Pool](#allocation.v1.Pool)
-    - [RemoveCellarsProposal](#allocation.v1.RemoveCellarsProposal)
   
 - [allocation/v1/genesis.proto](#allocation/v1/genesis.proto)
     - [Params](#allocation.v1.Params)
@@ -126,9 +125,9 @@ Decision is the XXX
 
 
 
-<a name="allocation.v1.MsgDecisionCommitRequest"></a>
+<a name="allocation.v1.MsgDecisionCommit"></a>
 
-### MsgDecisionCommitRequest
+### MsgDecisionCommit
 MsgDecisionCommitRequest is the request type for DecisionCommit
 
 
@@ -153,9 +152,9 @@ MsgDecisionCommitResponse is the response type for the Msg/DecisionCommit gRPC m
 
 
 
-<a name="allocation.v1.MsgDecisionPrecommitRequest"></a>
+<a name="allocation.v1.MsgDecisionPrecommit"></a>
 
-### MsgDecisionPrecommitRequest
+### MsgDecisionPrecommit
 MsgDecisionPrecommitRequest is the request type for DecisionPrecommit
 
 
@@ -179,9 +178,9 @@ MsgDecisionPrecommitResponse is the response type for MsgDecisionPrecommit
 
 
 
-<a name="allocation.v1.MsgDelegateDecisionsRequest"></a>
+<a name="allocation.v1.MsgDelegateDecisions"></a>
 
-### MsgDelegateDecisionsRequest
+### MsgDelegateDecisions
 MsgDelegateDecisionsRequest is the request type for DelegateDecisions
 
 
@@ -250,9 +249,9 @@ MsgService defines the messages the allocation module handles
 
 | Method Name | Request Type | Response Type | Description | HTTP Verb | Endpoint |
 | ----------- | ------------ | ------------- | ------------| ------- | -------- |
-| `DelegateDecisions` | [MsgDelegateDecisionsRequest](#allocation.v1.MsgDelegateDecisionsRequest) | [MsgDelegateDecisionsResponse](#allocation.v1.MsgDelegateDecisionsResponse) | DelegateDecisions creates an index in the store linking the validator and the delegate key need to be able to query both the delegate and the validator given the other one | |
-| `DecisionPrecommit` | [MsgDecisionPrecommitRequest](#allocation.v1.MsgDecisionPrecommitRequest) | [MsgDecisionPrecommitResponse](#allocation.v1.MsgDecisionPrecommitResponse) | DecisionPrecommit stores the precommit hash indexed by validator address | |
-| `DecisionCommit` | [MsgDecisionCommitRequest](#allocation.v1.MsgDecisionCommitRequest) | [MsgDecisionCommitResponse](#allocation.v1.MsgDecisionCommitResponse) | DecisionCommit checks the precommit hash against the data, rejects the message if it doesn't match then records the commitment in the store indexed by validator address | |
+| `DelegateDecisions` | [MsgDelegateDecisions](#allocation.v1.MsgDelegateDecisions) | [MsgDelegateDecisionsResponse](#allocation.v1.MsgDelegateDecisionsResponse) | DelegateDecisions creates an index in the store linking the validator and the delegate key need to be able to query both the delegate and the validator given the other one | |
+| `DecisionPrecommit` | [MsgDecisionPrecommit](#allocation.v1.MsgDecisionPrecommit) | [MsgDecisionPrecommitResponse](#allocation.v1.MsgDecisionPrecommitResponse) | DecisionPrecommit stores the precommit hash indexed by validator address | |
+| `DecisionCommit` | [MsgDecisionCommit](#allocation.v1.MsgDecisionCommit) | [MsgDecisionCommitResponse](#allocation.v1.MsgDecisionCommitResponse) | DecisionCommit checks the precommit hash against the data, rejects the message if it doesn't match then records the commitment in the store indexed by validator address | |
 
  <!-- end services -->
 
@@ -310,23 +309,6 @@ Pool is the XXX
 | ----- | ---- | ----- | ----------- |
 | `fee_level` | [string](#string) |  | sdk.Dec |
 | `tick_ranges` | [Tick](#allocation.v1.Tick) | repeated |  |
-
-
-
-
-
-
-<a name="allocation.v1.RemoveCellarsProposal"></a>
-
-### RemoveCellarsProposal
-RemoveCellarsProposal is the XXX
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| `title` | [string](#string) |  |  |
-| `description` | [string](#string) |  |  |
-| `cellar_ids` | [string](#string) | repeated |  |
 
 
 
