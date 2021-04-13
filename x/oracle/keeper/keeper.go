@@ -3,6 +3,7 @@ package keeper
 import (
 	"bytes"
 	"encoding/binary"
+	"github.com/peggyjv/sommelier/x"
 
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -16,7 +17,7 @@ type Keeper struct {
 	storeKey      sdk.StoreKey
 	cdc           codec.BinaryMarshaler
 	paramSpace    paramtypes.Subspace
-	stakingKeeper types.StakingKeeper
+	stakingKeeper x.StakingKeeper
 
 	oracleHandler types.OracleHandler
 	handlerSet    bool
@@ -25,7 +26,7 @@ type Keeper struct {
 // NewKeeper creates a new distribution Keeper instance
 func NewKeeper(
 	cdc codec.BinaryMarshaler, key sdk.StoreKey, paramSpace paramtypes.Subspace,
-	stakingKeeper types.StakingKeeper,
+	stakingKeeper x.StakingKeeper,
 ) Keeper {
 
 	// set KeyTable if it has not already been set

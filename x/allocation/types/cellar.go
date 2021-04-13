@@ -1,5 +1,5 @@
 package types
 
-func (d Decision) Validate() error {
+func (c Cellar) Validate() error {
 	panic("UNIMPLEMENTED")
 }

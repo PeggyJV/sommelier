@@ -31,22 +31,22 @@ var (
 	// - 0x03<oracle_data_id> -> uint64
 	OracleDataHeightKeyPrefix = []byte{0x03}
 
-	// - 0x03<val_address> -> <delegate_address>
+	// - 0x04<val_address> -> <delegate_address>
 	FeedDelegateKeyPrefix = []byte{0x04} // key for validator feed delegation
 
-	// - 0x04<val_address> -> <[]hashes>
+	// - 0x05<val_address> -> <[]hashes>
 	OracleDataPrevoteKeyPrefix = []byte{0x05} // key for oracle prevotes
 
-	// - 0x05<val_address> -> <oracle_data_vote>
+	// - 0x06<val_address> -> <oracle_data_vote>
 	OracleDataVoteKeyPrefix = []byte{0x06} // key for oracle votes
 
-	// - 0x06 -> int64(height)
+	// - 0x07 -> int64(height)
 	VotePeriodStartKey = []byte{0x07} // key for vote period height start
 
-	// - 0x07<val_address> -> int64(misses)
+	// - 0x08<val_address> -> int64(misses)
 	MissCounterKeyPrefix = []byte{0x08} // key for validator miss counters
 
-	// - 0x01<oracle_data_type_hash><oracle_data_id> -> <OracleData>
+	// - 0x09<oracle_data_type_hash><oracle_data_id> -> <OracleData>
 	AggregatedOracleDataKeyPrefix = []byte{0x09} // key for oracle state data
 )
 

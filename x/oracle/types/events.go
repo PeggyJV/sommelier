@@ -1,6 +1,6 @@
 package types
 
-// distribution module event types
+// oracle module event types
 const (
 	EventTypeDelegateFeed      = "delegate_feed"
 	EventTypeOracleDataPrevote = "oracle_data_prevote"

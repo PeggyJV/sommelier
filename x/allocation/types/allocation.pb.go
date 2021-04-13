@@ -5,7 +5,9 @@ package types
 
 import (
 	fmt "fmt"
+	_ "github.com/gogo/protobuf/gogoproto"
 	proto "github.com/gogo/protobuf/proto"
+	github_com_tendermint_tendermint_libs_bytes "github.com/tendermint/tendermint/libs/bytes"
 	io "io"
 	math "math"
 	math_bits "math/bits"
@@ -205,37 +207,264 @@ func (m *Pool) GetTickRanges() []*Tick {
 	return nil
 }
 
+// AllocationPrecommit defines an array of hashed decision data
+// that is used for the precommit phase of allocation
+type DecisionPrecommit struct {
+	Hash github_com_tendermint_tendermint_libs_bytes.HexBytes `protobuf:"bytes,1,opt,name=hash,proto3,casttype=github.com/tendermint/tendermint/libs/bytes.HexBytes" json:"hash,omitempty"`
+}
+
+func (m *DecisionPrecommit) Reset()         { *m = DecisionPrecommit{} }
+func (m *DecisionPrecommit) String() string { return proto.CompactTextString(m) }
+func (*DecisionPrecommit) ProtoMessage()    {}
+func (*DecisionPrecommit) Descriptor() ([]byte, []int) {
+	return fileDescriptor_23d2c35dae4a6cad, []int{3}
+}
+func (m *DecisionPrecommit) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *DecisionPrecommit) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_DecisionPrecommit.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *DecisionPrecommit) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_DecisionPrecommit.Merge(m, src)
+}
+func (m *DecisionPrecommit) XXX_Size() int {
+	return m.Size()
+}
+func (m *DecisionPrecommit) XXX_DiscardUnknown() {
+	xxx_messageInfo_DecisionPrecommit.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_DecisionPrecommit proto.InternalMessageInfo
+
+func (m *DecisionPrecommit) GetHash() github_com_tendermint_tendermint_libs_bytes.HexBytes {
+	if m != nil {
+		return m.Hash
+	}
+	return nil
+}
+
+// Decision is the XXX
+type Decision struct {
+	CellarId    string        `protobuf:"bytes,1,opt,name=cellar_id,json=cellarId,proto3" json:"cellar_id,omitempty"`
+	FeeLevel    string        `protobuf:"bytes,2,opt,name=fee_level,json=feeLevel,proto3" json:"fee_level,omitempty"`
+	TickWeights []*TickWeight `protobuf:"bytes,3,rep,name=tick_weights,json=tickWeights,proto3" json:"tick_weights,omitempty"`
+}
+
+func (m *Decision) Reset()         { *m = Decision{} }
+func (m *Decision) String() string { return proto.CompactTextString(m) }
+func (*Decision) ProtoMessage()    {}
+func (*Decision) Descriptor() ([]byte, []int) {
+	return fileDescriptor_23d2c35dae4a6cad, []int{4}
+}
+func (m *Decision) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *Decision) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_Decision.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *Decision) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_Decision.Merge(m, src)
+}
+func (m *Decision) XXX_Size() int {
+	return m.Size()
+}
+func (m *Decision) XXX_DiscardUnknown() {
+	xxx_messageInfo_Decision.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_Decision proto.InternalMessageInfo
+
+func (m *Decision) GetCellarId() string {
+	if m != nil {
+		return m.CellarId
+	}
+	return ""
+}
+
+func (m *Decision) GetFeeLevel() string {
+	if m != nil {
+		return m.FeeLevel
+	}
+	return ""
+}
+
+func (m *Decision) GetTickWeights() []*TickWeight {
+	if m != nil {
+		return m.TickWeights
+	}
+	return nil
+}
+
+// TickWeight is the XXX
+type TickWeight struct {
+	Tick   *Tick  `protobuf:"bytes,1,opt,name=tick,proto3" json:"tick,omitempty"`
+	Weight string `protobuf:"bytes,2,opt,name=weight,proto3" json:"weight,omitempty"`
+}
+
+func (m *TickWeight) Reset()         { *m = TickWeight{} }
+func (m *TickWeight) String() string { return proto.CompactTextString(m) }
+func (*TickWeight) ProtoMessage()    {}
+func (*TickWeight) Descriptor() ([]byte, []int) {
+	return fileDescriptor_23d2c35dae4a6cad, []int{5}
+}
+func (m *TickWeight) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *TickWeight) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_TickWeight.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *TickWeight) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_TickWeight.Merge(m, src)
+}
+func (m *TickWeight) XXX_Size() int {
+	return m.Size()
+}
+func (m *TickWeight) XXX_DiscardUnknown() {
+	xxx_messageInfo_TickWeight.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_TickWeight proto.InternalMessageInfo
+
+func (m *TickWeight) GetTick() *Tick {
+	if m != nil {
+		return m.Tick
+	}
+	return nil
+}
+
+func (m *TickWeight) GetWeight() string {
+	if m != nil {
+		return m.Weight
+	}
+	return ""
+}
+
+// Tick is the XXX
+type Tick struct {
+	Min uint64 `protobuf:"varint,1,opt,name=min,proto3" json:"min,omitempty"`
+	Max uint64 `protobuf:"varint,2,opt,name=max,proto3" json:"max,omitempty"`
+}
+
+func (m *Tick) Reset()         { *m = Tick{} }
+func (m *Tick) String() string { return proto.CompactTextString(m) }
+func (*Tick) ProtoMessage()    {}
+func (*Tick) Descriptor() ([]byte, []int) {
+	return fileDescriptor_23d2c35dae4a6cad, []int{6}
+}
+func (m *Tick) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *Tick) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_Tick.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *Tick) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_Tick.Merge(m, src)
+}
+func (m *Tick) XXX_Size() int {
+	return m.Size()
+}
+func (m *Tick) XXX_DiscardUnknown() {
+	xxx_messageInfo_Tick.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_Tick proto.InternalMessageInfo
+
+func (m *Tick) GetMin() uint64 {
+	if m != nil {
+		return m.Min
+	}
+	return 0
+}
+
+func (m *Tick) GetMax() uint64 {
+	if m != nil {
+		return m.Max
+	}
+	return 0
+}
+
 func init() {
 	proto.RegisterType((*CreateCellarsProposal)(nil), "allocation.v1.CreateCellarsProposal")
 	proto.RegisterType((*Cellar)(nil), "allocation.v1.Cellar")
 	proto.RegisterType((*Pool)(nil), "allocation.v1.Pool")
+	proto.RegisterType((*DecisionPrecommit)(nil), "allocation.v1.DecisionPrecommit")
+	proto.RegisterType((*Decision)(nil), "allocation.v1.Decision")
+	proto.RegisterType((*TickWeight)(nil), "allocation.v1.TickWeight")
+	proto.RegisterType((*Tick)(nil), "allocation.v1.Tick")
 }
 
 func init() { proto.RegisterFile("allocation/v1/allocation.proto", fileDescriptor_23d2c35dae4a6cad) }
 
 var fileDescriptor_23d2c35dae4a6cad = []byte{
-	// 329 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x6c, 0x91, 0x31, 0x4f, 0xc2, 0x40,
-	0x18, 0x86, 0x29, 0x20, 0xca, 0x11, 0x97, 0x53, 0x48, 0xa3, 0xc9, 0x85, 0xb0, 0xc8, 0xd4, 0xb3,
-	0xea, 0x2f, 0x90, 0x89, 0xc4, 0x81, 0x34, 0x2e, 0xba, 0x90, 0x52, 0x3e, 0xea, 0xc9, 0xc1, 0xd7,
-	0xdc, 0x9d, 0x0d, 0x2c, 0xc6, 0x9f, 0xe0, 0xcf, 0x72, 0x64, 0x74, 0x34, 0xf0, 0x47, 0x4c, 0x7b,
-	0xa0, 0xc5, 0x38, 0xbe, 0xcf, 0x3d, 0xf9, 0xde, 0x37, 0x39, 0xc2, 0x42, 0x29, 0x31, 0x0a, 0x8d,
-	0xc0, 0x39, 0x4f, 0x7d, 0xfe, 0x9b, 0xbc, 0x44, 0xa1, 0x41, 0x7a, 0x5c, 0x20, 0xa9, 0x7f, 0xd6,
-	0xda, 0xd7, 0xcd, 0xc2, 0x6a, 0x9d, 0x37, 0x87, 0x34, 0x7b, 0x0a, 0x42, 0x03, 0x3d, 0x90, 0x32,
-	0x54, 0x7a, 0xa0, 0x30, 0x41, 0x1d, 0x4a, 0x7a, 0x4a, 0x0e, 0x8c, 0x30, 0x12, 0x5c, 0xa7, 0xed,
-	0x74, 0xeb, 0x81, 0x0d, 0xb4, 0x4d, 0x1a, 0x63, 0xd0, 0x91, 0x12, 0x49, 0x76, 0xca, 0x2d, 0xe7,
-	0x6f, 0x45, 0x44, 0x39, 0x39, 0x8c, 0xec, 0x29, 0xb7, 0xd2, 0xae, 0x74, 0x1b, 0x57, 0x4d, 0x6f,
-	0x6f, 0x8a, 0x67, 0x8b, 0x82, 0x9d, 0xd5, 0x79, 0x25, 0x35, 0x8b, 0xe8, 0x39, 0xa9, 0x5b, 0x38,
-	0x14, 0xe3, 0x6d, 0xed, 0x91, 0x05, 0xfd, 0x31, 0x6d, 0x91, 0x9a, 0xc1, 0x29, 0xcc, 0x2f, 0xb7,
-	0xa5, 0xdb, 0xf4, 0xc3, 0x7d, 0xb7, 0x52, 0xe0, 0x3e, 0xbd, 0x20, 0xd5, 0x04, 0x51, 0xba, 0xd5,
-	0x7c, 0xc4, 0xc9, 0x9f, 0x11, 0x03, 0x44, 0x19, 0xe4, 0x42, 0xe7, 0x81, 0x54, 0xb3, 0x94, 0xb5,
-	0x4f, 0x00, 0x86, 0x12, 0x52, 0x90, 0xbb, 0xf6, 0x09, 0xc0, 0x5d, 0x96, 0xe9, 0x0d, 0x69, 0x18,
-	0x11, 0x4d, 0x87, 0x2a, 0x9c, 0xc7, 0xa0, 0xdd, 0xf2, 0xbf, 0x47, 0xef, 0x45, 0x34, 0x0d, 0x48,
-	0xe6, 0x05, 0xb9, 0x76, 0xdb, 0xff, 0x58, 0x33, 0x67, 0xb5, 0x66, 0xce, 0xd7, 0x9a, 0x39, 0xef,
-	0x1b, 0x56, 0x5a, 0x6d, 0x58, 0xe9, 0x73, 0xc3, 0x4a, 0x8f, 0x3c, 0x16, 0xe6, 0xe9, 0x65, 0xe4,
-	0x45, 0x38, 0xe3, 0x09, 0xc4, 0xf1, 0xf2, 0x39, 0xe5, 0x1a, 0x67, 0x33, 0x90, 0x02, 0x14, 0x5f,
-	0x14, 0xfe, 0x93, 0x9b, 0x65, 0x02, 0x7a, 0x54, 0xcb, 0xff, 0xeb, 0xfa, 0x3b, 0x00, 0x00, 0xff,
-	0xff, 0xb5, 0xfb, 0x41, 0xbc, 0xf8, 0x01, 0x00, 0x00,
+	// 486 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x7c, 0x53, 0x41, 0x6f, 0xd3, 0x4c,
+	0x10, 0x8d, 0x13, 0x7f, 0xf9, 0xda, 0x49, 0x91, 0x60, 0x69, 0x91, 0x01, 0xc9, 0x44, 0xbe, 0x50,
+	0x71, 0xf0, 0x12, 0xe8, 0x81, 0x03, 0xa7, 0x94, 0x03, 0x95, 0x8a, 0x14, 0x59, 0x48, 0x08, 0x2e,
+	0xd1, 0xc6, 0x99, 0x3a, 0x4b, 0xd6, 0x5e, 0xcb, 0xbb, 0x84, 0xe4, 0x82, 0x10, 0xbf, 0x80, 0x9f,
+	0xc5, 0xb1, 0x47, 0x4e, 0x08, 0x25, 0xff, 0x82, 0x13, 0xda, 0xdd, 0x98, 0xba, 0x55, 0xe1, 0x36,
+	0xef, 0xcd, 0xd3, 0xbc, 0x99, 0xb7, 0x5a, 0x08, 0x99, 0x10, 0x32, 0x65, 0x9a, 0xcb, 0x82, 0x2e,
+	0x06, 0xf4, 0x02, 0xc5, 0x65, 0x25, 0xb5, 0x24, 0x37, 0x1a, 0xcc, 0x62, 0x70, 0x6f, 0x3f, 0x93,
+	0x99, 0xb4, 0x1d, 0x6a, 0x2a, 0x27, 0x8a, 0x3e, 0x7b, 0x70, 0x70, 0x5c, 0x21, 0xd3, 0x78, 0x8c,
+	0x42, 0xb0, 0x4a, 0x8d, 0x2a, 0x59, 0x4a, 0xc5, 0x04, 0xd9, 0x87, 0xff, 0x34, 0xd7, 0x02, 0x03,
+	0xaf, 0xef, 0x1d, 0xee, 0x26, 0x0e, 0x90, 0x3e, 0xf4, 0xa6, 0xa8, 0xd2, 0x8a, 0x97, 0x66, 0x6e,
+	0xd0, 0xb6, 0xbd, 0x26, 0x45, 0x28, 0xfc, 0x9f, 0xba, 0x51, 0x41, 0xa7, 0xdf, 0x39, 0xec, 0x3d,
+	0x39, 0x88, 0x2f, 0x2d, 0x12, 0x3b, 0xa3, 0xa4, 0x56, 0x45, 0x9f, 0xa0, 0xeb, 0x28, 0x72, 0x1f,
+	0x76, 0x1d, 0x39, 0xe6, 0xd3, 0xad, 0xed, 0x8e, 0x23, 0x4e, 0xa6, 0xe4, 0x0e, 0x74, 0xb5, 0x9c,
+	0x63, 0xf1, 0x78, 0x6b, 0xba, 0x45, 0x7f, 0xf8, 0x41, 0xd0, 0x69, 0xf0, 0x03, 0xf2, 0x10, 0xfc,
+	0x52, 0x4a, 0x11, 0xf8, 0x76, 0x89, 0xdb, 0x57, 0x96, 0x18, 0x49, 0x29, 0x12, 0x2b, 0x88, 0xde,
+	0x82, 0x6f, 0x90, 0x71, 0x3f, 0x43, 0x1c, 0x0b, 0x5c, 0xa0, 0xa8, 0xdd, 0xcf, 0x10, 0x4f, 0x0d,
+	0x26, 0x47, 0xd0, 0xd3, 0x3c, 0x9d, 0x8f, 0x2b, 0x56, 0x64, 0xa8, 0x82, 0xf6, 0xb5, 0x43, 0x5f,
+	0xf3, 0x74, 0x9e, 0x80, 0xd1, 0x25, 0x56, 0x16, 0x31, 0xb8, 0xf5, 0x02, 0x53, 0xae, 0xb8, 0x2c,
+	0x46, 0x15, 0xa6, 0x32, 0xcf, 0xb9, 0x26, 0xa7, 0xe0, 0xcf, 0x98, 0x9a, 0x59, 0x8b, 0xbd, 0xe1,
+	0xb3, 0x5f, 0x3f, 0x1e, 0x1c, 0x65, 0x5c, 0xcf, 0x3e, 0x4c, 0xe2, 0x54, 0xe6, 0x54, 0x63, 0x31,
+	0xc5, 0x2a, 0xe7, 0x85, 0x6e, 0x96, 0x82, 0x4f, 0x14, 0x9d, 0xac, 0x34, 0xaa, 0xf8, 0x25, 0x2e,
+	0x87, 0xa6, 0x48, 0xec, 0x94, 0xe8, 0x8b, 0x07, 0x3b, 0xb5, 0xc7, 0xbf, 0x03, 0xbc, 0x74, 0x5f,
+	0xfb, 0xca, 0x7d, 0xcf, 0x61, 0xcf, 0xde, 0xf7, 0x11, 0x79, 0x36, 0xd3, 0xf5, 0xd3, 0xdd, 0xbd,
+	0xe6, 0xc0, 0x37, 0x56, 0x91, 0xd8, 0x38, 0x5c, 0xad, 0xa2, 0x57, 0x00, 0x17, 0x2d, 0x93, 0xbc,
+	0x69, 0xda, 0x05, 0xfe, 0x12, 0x92, 0x15, 0x98, 0xa7, 0x73, 0x7e, 0xf5, 0x93, 0x3a, 0x14, 0x3d,
+	0x02, 0xdf, 0xa8, 0xc8, 0x4d, 0xe8, 0xe4, 0xbc, 0xb0, 0x73, 0xfc, 0xc4, 0x94, 0x96, 0x61, 0x4b,
+	0x2b, 0x37, 0x0c, 0x5b, 0x0e, 0x4f, 0xbe, 0xad, 0x43, 0xef, 0x7c, 0x1d, 0x7a, 0x3f, 0xd7, 0xa1,
+	0xf7, 0x75, 0x13, 0xb6, 0xce, 0x37, 0x61, 0xeb, 0xfb, 0x26, 0x6c, 0xbd, 0xa3, 0x8d, 0x54, 0x4b,
+	0xcc, 0xb2, 0xd5, 0xfb, 0x05, 0x55, 0x32, 0xcf, 0x51, 0x70, 0xac, 0xe8, 0xb2, 0xf1, 0x61, 0xa8,
+	0x5e, 0x95, 0xa8, 0x26, 0x5d, 0xfb, 0x25, 0x9e, 0xfe, 0x0e, 0x00, 0x00, 0xff, 0xff, 0x40, 0x79,
+	0x66, 0x13, 0x59, 0x03, 0x00, 0x00,
 }
 
 func (m *CreateCellarsProposal) Marshal() (dAtA []byte, err error) {
@@ -391,6 +620,162 @@ func (m *Pool) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 
+func (m *DecisionPrecommit) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *DecisionPrecommit) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *DecisionPrecommit) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.Hash) > 0 {
+		i -= len(m.Hash)
+		copy(dAtA[i:], m.Hash)
+		i = encodeVarintAllocation(dAtA, i, uint64(len(m.Hash)))
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *Decision) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *Decision) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *Decision) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.TickWeights) > 0 {
+		for iNdEx := len(m.TickWeights) - 1; iNdEx >= 0; iNdEx-- {
+			{
+				size, err := m.TickWeights[iNdEx].MarshalToSizedBuffer(dAtA[:i])
+				if err != nil {
+					return 0, err
+				}
+				i -= size
+				i = encodeVarintAllocation(dAtA, i, uint64(size))
+			}
+			i--
+			dAtA[i] = 0x1a
+		}
+	}
+	if len(m.FeeLevel) > 0 {
+		i -= len(m.FeeLevel)
+		copy(dAtA[i:], m.FeeLevel)
+		i = encodeVarintAllocation(dAtA, i, uint64(len(m.FeeLevel)))
+		i--
+		dAtA[i] = 0x12
+	}
+	if len(m.CellarId) > 0 {
+		i -= len(m.CellarId)
+		copy(dAtA[i:], m.CellarId)
+		i = encodeVarintAllocation(dAtA, i, uint64(len(m.CellarId)))
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *TickWeight) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *TickWeight) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *TickWeight) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.Weight) > 0 {
+		i -= len(m.Weight)
+		copy(dAtA[i:], m.Weight)
+		i = encodeVarintAllocation(dAtA, i, uint64(len(m.Weight)))
+		i--
+		dAtA[i] = 0x12
+	}
+	if m.Tick != nil {
+		{
+			size, err := m.Tick.MarshalToSizedBuffer(dAtA[:i])
+			if err != nil {
+				return 0, err
+			}
+			i -= size
+			i = encodeVarintAllocation(dAtA, i, uint64(size))
+		}
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *Tick) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *Tick) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *Tick) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if m.Max != 0 {
+		i = encodeVarintAllocation(dAtA, i, uint64(m.Max))
+		i--
+		dAtA[i] = 0x10
+	}
+	if m.Min != 0 {
+		i = encodeVarintAllocation(dAtA, i, uint64(m.Min))
+		i--
+		dAtA[i] = 0x8
+	}
+	return len(dAtA) - i, nil
+}
+
 func encodeVarintAllocation(dAtA []byte, offset int, v uint64) int {
 	offset -= sovAllocation(v)
 	base := offset
@@ -467,6 +852,74 @@ func (m *Pool) Size() (n int) {
 			l = e.Size()
 			n += 1 + l + sovAllocation(uint64(l))
 		}
+	}
+	return n
+}
+
+func (m *DecisionPrecommit) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.Hash)
+	if l > 0 {
+		n += 1 + l + sovAllocation(uint64(l))
+	}
+	return n
+}
+
+func (m *Decision) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.CellarId)
+	if l > 0 {
+		n += 1 + l + sovAllocation(uint64(l))
+	}
+	l = len(m.FeeLevel)
+	if l > 0 {
+		n += 1 + l + sovAllocation(uint64(l))
+	}
+	if len(m.TickWeights) > 0 {
+		for _, e := range m.TickWeights {
+			l = e.Size()
+			n += 1 + l + sovAllocation(uint64(l))
+		}
+	}
+	return n
+}
+
+func (m *TickWeight) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if m.Tick != nil {
+		l = m.Tick.Size()
+		n += 1 + l + sovAllocation(uint64(l))
+	}
+	l = len(m.Weight)
+	if l > 0 {
+		n += 1 + l + sovAllocation(uint64(l))
+	}
+	return n
+}
+
+func (m *Tick) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if m.Min != 0 {
+		n += 1 + sovAllocation(uint64(m.Min))
+	}
+	if m.Max != 0 {
+		n += 1 + sovAllocation(uint64(m.Max))
 	}
 	return n
 }
@@ -900,6 +1353,444 @@ func (m *Pool) Unmarshal(dAtA []byte) error {
 				return err
 			}
 			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipAllocation(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthAllocation
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *DecisionPrecommit) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowAllocation
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: DecisionPrecommit: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: DecisionPrecommit: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Hash", wireType)
+			}
+			var byteLen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowAllocation
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				byteLen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if byteLen < 0 {
+				return ErrInvalidLengthAllocation
+			}
+			postIndex := iNdEx + byteLen
+			if postIndex < 0 {
+				return ErrInvalidLengthAllocation
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Hash = append(m.Hash[:0], dAtA[iNdEx:postIndex]...)
+			if m.Hash == nil {
+				m.Hash = []byte{}
+			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipAllocation(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthAllocation
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *Decision) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowAllocation
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: Decision: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: Decision: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field CellarId", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowAllocation
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthAllocation
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthAllocation
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.CellarId = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field FeeLevel", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowAllocation
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthAllocation
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthAllocation
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.FeeLevel = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 3:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field TickWeights", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowAllocation
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthAllocation
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthAllocation
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.TickWeights = append(m.TickWeights, &TickWeight{})
+			if err := m.TickWeights[len(m.TickWeights)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipAllocation(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthAllocation
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *TickWeight) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowAllocation
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: TickWeight: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: TickWeight: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Tick", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowAllocation
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthAllocation
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthAllocation
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Tick == nil {
+				m.Tick = &Tick{}
+			}
+			if err := m.Tick.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Weight", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowAllocation
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthAllocation
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthAllocation
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Weight = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipAllocation(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthAllocation
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *Tick) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowAllocation
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: Tick: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: Tick: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Min", wireType)
+			}
+			m.Min = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowAllocation
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.Min |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 2:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Max", wireType)
+			}
+			m.Max = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowAllocation
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.Max |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
 		default:
 			iNdEx = preIndex
 			skippy, err := skipAllocation(dAtA[iNdEx:])

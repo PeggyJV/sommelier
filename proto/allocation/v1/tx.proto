@@ -1,6 +1,8 @@
 syntax = "proto3";
 package allocation.v1;
 
+import "allocation/v1/allocation.proto";
+
 option go_package = "github.com/peggyjv/sommelier/x/allocation/types";
 
 // MsgService defines the messages the allocation module handles
@@ -26,7 +28,7 @@ message MsgDelegateDecisionsResponse {}
 
 // MsgDecisionPrecommitRequest is the request type for DecisionPrecommit
 message MsgDecisionPrecommit {
-  bytes  hash = 1;
+  DecisionPrecommit precommit = 1;
   string signer = 2;
 }
 
@@ -38,25 +40,6 @@ message MsgDecisionCommit {
   repeated Decision decisions = 1;
   string            salt = 2;
   string            signer = 3;
-}
-
-// Decision is the XXX
-message Decision {
-  string              cellar_id = 1;
-  string              fee_level = 2; // sdk.Dec
-  repeated TickWeight tick_weights = 3;
-}
-
-// TickWeight is the XXX
-message TickWeight {
-  Tick  tick = 1;
-  string weight = 2; // sdk.Dec
-}
-
-// Tick is the XXX
-message Tick {
-  uint64 min = 1;
-  uint64 max = 2;
 }
 
 // MsgDecisionCommitResponse is the response type for the Msg/DecisionCommit gRPC method.
