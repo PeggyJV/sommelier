@@ -27,24 +27,24 @@ var _ = math.Inf
 // proto package needs to be updated.
 const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
-// MsgDelegateDecisionsRequest is the request type for DelegateDecisions
-type MsgDelegateDecisions struct {
+// MsgDelegateAllocations is the request type for DelegateDecisions
+type MsgDelegateAllocations struct {
 	Delegate  string `protobuf:"bytes,1,opt,name=delegate,proto3" json:"delegate,omitempty"`
 	Validator string `protobuf:"bytes,2,opt,name=validator,proto3" json:"validator,omitempty"`
 }
 
-func (m *MsgDelegateDecisions) Reset()         { *m = MsgDelegateDecisions{} }
-func (m *MsgDelegateDecisions) String() string { return proto.CompactTextString(m) }
-func (*MsgDelegateDecisions) ProtoMessage()    {}
-func (*MsgDelegateDecisions) Descriptor() ([]byte, []int) {
+func (m *MsgDelegateAllocations) Reset()         { *m = MsgDelegateAllocations{} }
+func (m *MsgDelegateAllocations) String() string { return proto.CompactTextString(m) }
+func (*MsgDelegateAllocations) ProtoMessage()    {}
+func (*MsgDelegateAllocations) Descriptor() ([]byte, []int) {
 	return fileDescriptor_194e979be0693c53, []int{0}
 }
-func (m *MsgDelegateDecisions) XXX_Unmarshal(b []byte) error {
+func (m *MsgDelegateAllocations) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *MsgDelegateDecisions) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *MsgDelegateAllocations) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_MsgDelegateDecisions.Marshal(b, m, deterministic)
+		return xxx_messageInfo_MsgDelegateAllocations.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -54,48 +54,48 @@ func (m *MsgDelegateDecisions) XXX_Marshal(b []byte, deterministic bool) ([]byte
 		return b[:n], nil
 	}
 }
-func (m *MsgDelegateDecisions) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MsgDelegateDecisions.Merge(m, src)
+func (m *MsgDelegateAllocations) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgDelegateAllocations.Merge(m, src)
 }
-func (m *MsgDelegateDecisions) XXX_Size() int {
+func (m *MsgDelegateAllocations) XXX_Size() int {
 	return m.Size()
 }
-func (m *MsgDelegateDecisions) XXX_DiscardUnknown() {
-	xxx_messageInfo_MsgDelegateDecisions.DiscardUnknown(m)
+func (m *MsgDelegateAllocations) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgDelegateAllocations.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_MsgDelegateDecisions proto.InternalMessageInfo
+var xxx_messageInfo_MsgDelegateAllocations proto.InternalMessageInfo
 
-func (m *MsgDelegateDecisions) GetDelegate() string {
+func (m *MsgDelegateAllocations) GetDelegate() string {
 	if m != nil {
 		return m.Delegate
 	}
 	return ""
 }
 
-func (m *MsgDelegateDecisions) GetValidator() string {
+func (m *MsgDelegateAllocations) GetValidator() string {
 	if m != nil {
 		return m.Validator
 	}
 	return ""
 }
 
-// MsgDelegateDecisionsResponse is the response type for DelegateDecisions
-type MsgDelegateDecisionsResponse struct {
+// MsgDelegateAllocationsResponse is the response type for DelegateDecisions
+type MsgDelegateAllocationsResponse struct {
 }
 
-func (m *MsgDelegateDecisionsResponse) Reset()         { *m = MsgDelegateDecisionsResponse{} }
-func (m *MsgDelegateDecisionsResponse) String() string { return proto.CompactTextString(m) }
-func (*MsgDelegateDecisionsResponse) ProtoMessage()    {}
-func (*MsgDelegateDecisionsResponse) Descriptor() ([]byte, []int) {
+func (m *MsgDelegateAllocationsResponse) Reset()         { *m = MsgDelegateAllocationsResponse{} }
+func (m *MsgDelegateAllocationsResponse) String() string { return proto.CompactTextString(m) }
+func (*MsgDelegateAllocationsResponse) ProtoMessage()    {}
+func (*MsgDelegateAllocationsResponse) Descriptor() ([]byte, []int) {
 	return fileDescriptor_194e979be0693c53, []int{1}
 }
-func (m *MsgDelegateDecisionsResponse) XXX_Unmarshal(b []byte) error {
+func (m *MsgDelegateAllocationsResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *MsgDelegateDecisionsResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *MsgDelegateAllocationsResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_MsgDelegateDecisionsResponse.Marshal(b, m, deterministic)
+		return xxx_messageInfo_MsgDelegateAllocationsResponse.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -105,36 +105,36 @@ func (m *MsgDelegateDecisionsResponse) XXX_Marshal(b []byte, deterministic bool)
 		return b[:n], nil
 	}
 }
-func (m *MsgDelegateDecisionsResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MsgDelegateDecisionsResponse.Merge(m, src)
+func (m *MsgDelegateAllocationsResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgDelegateAllocationsResponse.Merge(m, src)
 }
-func (m *MsgDelegateDecisionsResponse) XXX_Size() int {
+func (m *MsgDelegateAllocationsResponse) XXX_Size() int {
 	return m.Size()
 }
-func (m *MsgDelegateDecisionsResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_MsgDelegateDecisionsResponse.DiscardUnknown(m)
+func (m *MsgDelegateAllocationsResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgDelegateAllocationsResponse.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_MsgDelegateDecisionsResponse proto.InternalMessageInfo
+var xxx_messageInfo_MsgDelegateAllocationsResponse proto.InternalMessageInfo
 
-// MsgDecisionPrecommitRequest is the request type for DecisionPrecommit
-type MsgDecisionPrecommit struct {
-	Precommit *DecisionPrecommit `protobuf:"bytes,1,opt,name=precommit,proto3" json:"precommit,omitempty"`
-	Signer    string             `protobuf:"bytes,2,opt,name=signer,proto3" json:"signer,omitempty"`
+// MsgAllocationPrecommit is the request type for DecisionPrecommit
+type MsgAllocationPrecommit struct {
+	Precommit *AllocationPrecommit `protobuf:"bytes,1,opt,name=precommit,proto3" json:"precommit,omitempty"`
+	Signer    string               `protobuf:"bytes,2,opt,name=signer,proto3" json:"signer,omitempty"`
 }
 
-func (m *MsgDecisionPrecommit) Reset()         { *m = MsgDecisionPrecommit{} }
-func (m *MsgDecisionPrecommit) String() string { return proto.CompactTextString(m) }
-func (*MsgDecisionPrecommit) ProtoMessage()    {}
-func (*MsgDecisionPrecommit) Descriptor() ([]byte, []int) {
+func (m *MsgAllocationPrecommit) Reset()         { *m = MsgAllocationPrecommit{} }
+func (m *MsgAllocationPrecommit) String() string { return proto.CompactTextString(m) }
+func (*MsgAllocationPrecommit) ProtoMessage()    {}
+func (*MsgAllocationPrecommit) Descriptor() ([]byte, []int) {
 	return fileDescriptor_194e979be0693c53, []int{2}
 }
-func (m *MsgDecisionPrecommit) XXX_Unmarshal(b []byte) error {
+func (m *MsgAllocationPrecommit) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *MsgDecisionPrecommit) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *MsgAllocationPrecommit) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_MsgDecisionPrecommit.Marshal(b, m, deterministic)
+		return xxx_messageInfo_MsgAllocationPrecommit.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -144,48 +144,48 @@ func (m *MsgDecisionPrecommit) XXX_Marshal(b []byte, deterministic bool) ([]byte
 		return b[:n], nil
 	}
 }
-func (m *MsgDecisionPrecommit) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MsgDecisionPrecommit.Merge(m, src)
+func (m *MsgAllocationPrecommit) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgAllocationPrecommit.Merge(m, src)
 }
-func (m *MsgDecisionPrecommit) XXX_Size() int {
+func (m *MsgAllocationPrecommit) XXX_Size() int {
 	return m.Size()
 }
-func (m *MsgDecisionPrecommit) XXX_DiscardUnknown() {
-	xxx_messageInfo_MsgDecisionPrecommit.DiscardUnknown(m)
+func (m *MsgAllocationPrecommit) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgAllocationPrecommit.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_MsgDecisionPrecommit proto.InternalMessageInfo
+var xxx_messageInfo_MsgAllocationPrecommit proto.InternalMessageInfo
 
-func (m *MsgDecisionPrecommit) GetPrecommit() *DecisionPrecommit {
+func (m *MsgAllocationPrecommit) GetPrecommit() *AllocationPrecommit {
 	if m != nil {
 		return m.Precommit
 	}
 	return nil
 }
 
-func (m *MsgDecisionPrecommit) GetSigner() string {
+func (m *MsgAllocationPrecommit) GetSigner() string {
 	if m != nil {
 		return m.Signer
 	}
 	return ""
 }
 
-// MsgDecisionPrecommitResponse is the response type for MsgDecisionPrecommit
-type MsgDecisionPrecommitResponse struct {
+// MsgAllocationPrecommitResponse is the response type for MsgDecisionPrecommit
+type MsgAllocationPrecommitResponse struct {
 }
 
-func (m *MsgDecisionPrecommitResponse) Reset()         { *m = MsgDecisionPrecommitResponse{} }
-func (m *MsgDecisionPrecommitResponse) String() string { return proto.CompactTextString(m) }
-func (*MsgDecisionPrecommitResponse) ProtoMessage()    {}
-func (*MsgDecisionPrecommitResponse) Descriptor() ([]byte, []int) {
+func (m *MsgAllocationPrecommitResponse) Reset()         { *m = MsgAllocationPrecommitResponse{} }
+func (m *MsgAllocationPrecommitResponse) String() string { return proto.CompactTextString(m) }
+func (*MsgAllocationPrecommitResponse) ProtoMessage()    {}
+func (*MsgAllocationPrecommitResponse) Descriptor() ([]byte, []int) {
 	return fileDescriptor_194e979be0693c53, []int{3}
 }
-func (m *MsgDecisionPrecommitResponse) XXX_Unmarshal(b []byte) error {
+func (m *MsgAllocationPrecommitResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *MsgDecisionPrecommitResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *MsgAllocationPrecommitResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_MsgDecisionPrecommitResponse.Marshal(b, m, deterministic)
+		return xxx_messageInfo_MsgAllocationPrecommitResponse.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -195,37 +195,37 @@ func (m *MsgDecisionPrecommitResponse) XXX_Marshal(b []byte, deterministic bool)
 		return b[:n], nil
 	}
 }
-func (m *MsgDecisionPrecommitResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MsgDecisionPrecommitResponse.Merge(m, src)
+func (m *MsgAllocationPrecommitResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgAllocationPrecommitResponse.Merge(m, src)
 }
-func (m *MsgDecisionPrecommitResponse) XXX_Size() int {
+func (m *MsgAllocationPrecommitResponse) XXX_Size() int {
 	return m.Size()
 }
-func (m *MsgDecisionPrecommitResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_MsgDecisionPrecommitResponse.DiscardUnknown(m)
+func (m *MsgAllocationPrecommitResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgAllocationPrecommitResponse.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_MsgDecisionPrecommitResponse proto.InternalMessageInfo
+var xxx_messageInfo_MsgAllocationPrecommitResponse proto.InternalMessageInfo
 
-// MsgDecisionCommitRequest is the request type for DecisionCommit
-type MsgDecisionCommit struct {
-	Decisions []*Decision `protobuf:"bytes,1,rep,name=decisions,proto3" json:"decisions,omitempty"`
-	Salt      string      `protobuf:"bytes,2,opt,name=salt,proto3" json:"salt,omitempty"`
-	Signer    string      `protobuf:"bytes,3,opt,name=signer,proto3" json:"signer,omitempty"`
+// MsgAllocationCommit is the request type for DecisionCommit
+type MsgAllocationCommit struct {
+	Allocations []*Allocation `protobuf:"bytes,1,rep,name=allocations,proto3" json:"allocations,omitempty"`
+	Salt        string        `protobuf:"bytes,2,opt,name=salt,proto3" json:"salt,omitempty"`
+	Signer      string        `protobuf:"bytes,3,opt,name=signer,proto3" json:"signer,omitempty"`
 }
 
-func (m *MsgDecisionCommit) Reset()         { *m = MsgDecisionCommit{} }
-func (m *MsgDecisionCommit) String() string { return proto.CompactTextString(m) }
-func (*MsgDecisionCommit) ProtoMessage()    {}
-func (*MsgDecisionCommit) Descriptor() ([]byte, []int) {
+func (m *MsgAllocationCommit) Reset()         { *m = MsgAllocationCommit{} }
+func (m *MsgAllocationCommit) String() string { return proto.CompactTextString(m) }
+func (*MsgAllocationCommit) ProtoMessage()    {}
+func (*MsgAllocationCommit) Descriptor() ([]byte, []int) {
 	return fileDescriptor_194e979be0693c53, []int{4}
 }
-func (m *MsgDecisionCommit) XXX_Unmarshal(b []byte) error {
+func (m *MsgAllocationCommit) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *MsgDecisionCommit) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *MsgAllocationCommit) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_MsgDecisionCommit.Marshal(b, m, deterministic)
+		return xxx_messageInfo_MsgAllocationCommit.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -235,55 +235,55 @@ func (m *MsgDecisionCommit) XXX_Marshal(b []byte, deterministic bool) ([]byte, e
 		return b[:n], nil
 	}
 }
-func (m *MsgDecisionCommit) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MsgDecisionCommit.Merge(m, src)
+func (m *MsgAllocationCommit) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgAllocationCommit.Merge(m, src)
 }
-func (m *MsgDecisionCommit) XXX_Size() int {
+func (m *MsgAllocationCommit) XXX_Size() int {
 	return m.Size()
 }
-func (m *MsgDecisionCommit) XXX_DiscardUnknown() {
-	xxx_messageInfo_MsgDecisionCommit.DiscardUnknown(m)
+func (m *MsgAllocationCommit) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgAllocationCommit.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_MsgDecisionCommit proto.InternalMessageInfo
+var xxx_messageInfo_MsgAllocationCommit proto.InternalMessageInfo
 
-func (m *MsgDecisionCommit) GetDecisions() []*Decision {
+func (m *MsgAllocationCommit) GetAllocations() []*Allocation {
 	if m != nil {
-		return m.Decisions
+		return m.Allocations
 	}
 	return nil
 }
 
-func (m *MsgDecisionCommit) GetSalt() string {
+func (m *MsgAllocationCommit) GetSalt() string {
 	if m != nil {
 		return m.Salt
 	}
 	return ""
 }
 
-func (m *MsgDecisionCommit) GetSigner() string {
+func (m *MsgAllocationCommit) GetSigner() string {
 	if m != nil {
 		return m.Signer
 	}
 	return ""
 }
 
-// MsgDecisionCommitResponse is the response type for the Msg/DecisionCommit gRPC method.
-type MsgDecisionCommitResponse struct {
+// MsgAllocationCommitResponse is the response type for the Msg/DecisionCommit gRPC method.
+type MsgAllocationCommitResponse struct {
 }
 
-func (m *MsgDecisionCommitResponse) Reset()         { *m = MsgDecisionCommitResponse{} }
-func (m *MsgDecisionCommitResponse) String() string { return proto.CompactTextString(m) }
-func (*MsgDecisionCommitResponse) ProtoMessage()    {}
-func (*MsgDecisionCommitResponse) Descriptor() ([]byte, []int) {
+func (m *MsgAllocationCommitResponse) Reset()         { *m = MsgAllocationCommitResponse{} }
+func (m *MsgAllocationCommitResponse) String() string { return proto.CompactTextString(m) }
+func (*MsgAllocationCommitResponse) ProtoMessage()    {}
+func (*MsgAllocationCommitResponse) Descriptor() ([]byte, []int) {
 	return fileDescriptor_194e979be0693c53, []int{5}
 }
-func (m *MsgDecisionCommitResponse) XXX_Unmarshal(b []byte) error {
+func (m *MsgAllocationCommitResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *MsgDecisionCommitResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *MsgAllocationCommitResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_MsgDecisionCommitResponse.Marshal(b, m, deterministic)
+		return xxx_messageInfo_MsgAllocationCommitResponse.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -293,55 +293,54 @@ func (m *MsgDecisionCommitResponse) XXX_Marshal(b []byte, deterministic bool) ([
 		return b[:n], nil
 	}
 }
-func (m *MsgDecisionCommitResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MsgDecisionCommitResponse.Merge(m, src)
+func (m *MsgAllocationCommitResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgAllocationCommitResponse.Merge(m, src)
 }
-func (m *MsgDecisionCommitResponse) XXX_Size() int {
+func (m *MsgAllocationCommitResponse) XXX_Size() int {
 	return m.Size()
 }
-func (m *MsgDecisionCommitResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_MsgDecisionCommitResponse.DiscardUnknown(m)
+func (m *MsgAllocationCommitResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgAllocationCommitResponse.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_MsgDecisionCommitResponse proto.InternalMessageInfo
+var xxx_messageInfo_MsgAllocationCommitResponse proto.InternalMessageInfo
 
 func init() {
-	proto.RegisterType((*MsgDelegateDecisions)(nil), "allocation.v1.MsgDelegateDecisions")
-	proto.RegisterType((*MsgDelegateDecisionsResponse)(nil), "allocation.v1.MsgDelegateDecisionsResponse")
-	proto.RegisterType((*MsgDecisionPrecommit)(nil), "allocation.v1.MsgDecisionPrecommit")
-	proto.RegisterType((*MsgDecisionPrecommitResponse)(nil), "allocation.v1.MsgDecisionPrecommitResponse")
-	proto.RegisterType((*MsgDecisionCommit)(nil), "allocation.v1.MsgDecisionCommit")
-	proto.RegisterType((*MsgDecisionCommitResponse)(nil), "allocation.v1.MsgDecisionCommitResponse")
+	proto.RegisterType((*MsgDelegateAllocations)(nil), "allocation.v1.MsgDelegateAllocations")
+	proto.RegisterType((*MsgDelegateAllocationsResponse)(nil), "allocation.v1.MsgDelegateAllocationsResponse")
+	proto.RegisterType((*MsgAllocationPrecommit)(nil), "allocation.v1.MsgAllocationPrecommit")
+	proto.RegisterType((*MsgAllocationPrecommitResponse)(nil), "allocation.v1.MsgAllocationPrecommitResponse")
+	proto.RegisterType((*MsgAllocationCommit)(nil), "allocation.v1.MsgAllocationCommit")
+	proto.RegisterType((*MsgAllocationCommitResponse)(nil), "allocation.v1.MsgAllocationCommitResponse")
 }
 
 func init() { proto.RegisterFile("allocation/v1/tx.proto", fileDescriptor_194e979be0693c53) }
 
 var fileDescriptor_194e979be0693c53 = []byte{
-	// 373 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x8c, 0x93, 0x41, 0x6b, 0xea, 0x40,
-	0x10, 0xc7, 0x8d, 0x3e, 0xe4, 0x65, 0xe4, 0x3d, 0x70, 0x79, 0xf8, 0x6c, 0x2a, 0x4b, 0xb0, 0x17,
-	0xa1, 0x90, 0xa0, 0xa5, 0xd7, 0x1e, 0x5a, 0x2f, 0x3d, 0x08, 0x92, 0x63, 0xe9, 0x25, 0xc6, 0x65,
-	0xbb, 0x25, 0xc9, 0x86, 0xec, 0x36, 0xe8, 0xb7, 0xe8, 0x57, 0xe9, 0xb7, 0xe8, 0xd1, 0x63, 0x8f,
-	0x45, 0xbf, 0x48, 0x21, 0xc9, 0x9a, 0x18, 0x23, 0xed, 0x2d, 0x33, 0xf3, 0x9f, 0xf9, 0xff, 0x32,
-	0xcb, 0x40, 0xcf, 0xf5, 0x7d, 0xee, 0xb9, 0x92, 0xf1, 0xd0, 0x4e, 0xc6, 0xb6, 0x5c, 0x59, 0x51,
-	0xcc, 0x25, 0x47, 0x7f, 0x8a, 0xbc, 0x95, 0x8c, 0x0d, 0x7c, 0x28, 0x2b, 0x15, 0x53, 0xf9, 0x70,
-	0x0e, 0xff, 0x66, 0x82, 0x4e, 0x89, 0x4f, 0xa8, 0x2b, 0xc9, 0x94, 0x78, 0x4c, 0x30, 0x1e, 0x0a,
-	0x64, 0xc0, 0xef, 0x65, 0x9e, 0xec, 0x6b, 0xa6, 0x36, 0xd2, 0x9d, 0x7d, 0x8c, 0x06, 0xa0, 0x27,
-	0xae, 0xcf, 0x96, 0xae, 0xe4, 0x71, 0xbf, 0x99, 0x16, 0x8b, 0xc4, 0x10, 0xc3, 0xa0, 0x6e, 0xa2,
-	0x43, 0x44, 0xc4, 0x43, 0x41, 0x86, 0x61, 0xee, 0x98, 0xe5, 0xe7, 0x31, 0xf1, 0x78, 0x10, 0x30,
-	0x89, 0x6e, 0x40, 0x8f, 0x54, 0x90, 0x5a, 0x76, 0x26, 0xa6, 0x75, 0xf0, 0x33, 0xd6, 0x51, 0x93,
-	0x53, 0xb4, 0xa0, 0x1e, 0xb4, 0x05, 0xa3, 0x21, 0x51, 0x48, 0x79, 0xb4, 0xe7, 0xa9, 0xb6, 0x2a,
-	0x9e, 0x04, 0xba, 0xa5, 0xfa, 0x5d, 0x36, 0xec, 0x1a, 0xf4, 0xa5, 0x22, 0xef, 0x6b, 0x66, 0x6b,
-	0xd4, 0x99, 0xfc, 0x3f, 0x01, 0xe3, 0x14, 0x4a, 0x84, 0xe0, 0x97, 0x70, 0x7d, 0x99, 0x13, 0xa4,
-	0xdf, 0x25, 0xae, 0xd6, 0x01, 0xd7, 0x39, 0x9c, 0x1d, 0xf9, 0x2a, 0xa8, 0xc9, 0x5b, 0x13, 0x5a,
-	0x33, 0x41, 0x11, 0x81, 0xee, 0xf1, 0xdb, 0x5c, 0x54, 0x48, 0xea, 0xd6, 0x6d, 0x5c, 0xfe, 0x40,
-	0xa4, 0xec, 0x32, 0x9b, 0xea, 0x83, 0xd4, 0xda, 0x54, 0x44, 0xf5, 0x36, 0x27, 0x56, 0x8d, 0x1e,
-	0xe1, 0x6f, 0x65, 0xcf, 0xe6, 0xe9, 0xf6, 0x4c, 0x61, 0x8c, 0xbe, 0x53, 0xa8, 0xe9, 0xb7, 0xf7,
-	0xef, 0x5b, 0xac, 0x6d, 0xb6, 0x58, 0xfb, 0xdc, 0x62, 0xed, 0x75, 0x87, 0x1b, 0x9b, 0x1d, 0x6e,
-	0x7c, 0xec, 0x70, 0xe3, 0xc1, 0xa6, 0x4c, 0x3e, 0xbd, 0x2c, 0x2c, 0x8f, 0x07, 0x76, 0x44, 0x28,
-	0x5d, 0x3f, 0x27, 0xb6, 0xe0, 0x41, 0x40, 0x7c, 0x46, 0x62, 0x7b, 0x55, 0xba, 0x0a, 0x5b, 0xae,
-	0x23, 0x22, 0x16, 0xed, 0xf4, 0x38, 0xae, 0xbe, 0x02, 0x00, 0x00, 0xff, 0xff, 0x28, 0x6b, 0x80,
-	0xce, 0x65, 0x03, 0x00, 0x00,
+	// 368 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x8c, 0x93, 0xcf, 0x4a, 0xc3, 0x40,
+	0x10, 0xc6, 0x9b, 0x56, 0x8a, 0x9d, 0x22, 0xc8, 0x16, 0x4a, 0x8d, 0xba, 0x94, 0x80, 0x50, 0x04,
+	0xb3, 0xb4, 0x1e, 0xbd, 0xf8, 0xef, 0xe2, 0xa1, 0x20, 0x39, 0x7a, 0x4b, 0xdb, 0x65, 0x8d, 0x26,
+	0xdd, 0x90, 0x5d, 0x43, 0x7b, 0xf1, 0x19, 0x7c, 0x27, 0x2f, 0x1e, 0x7b, 0xf4, 0x28, 0xcd, 0x8b,
+	0x88, 0x69, 0xb6, 0x49, 0x74, 0xad, 0xde, 0x32, 0x33, 0xdf, 0xcc, 0xf7, 0xcb, 0x0e, 0x03, 0x6d,
+	0xd7, 0xf7, 0xf9, 0xd8, 0x95, 0x1e, 0x9f, 0x92, 0xb8, 0x4f, 0xe4, 0xcc, 0x0e, 0x23, 0x2e, 0x39,
+	0xda, 0xc9, 0xf3, 0x76, 0xdc, 0x37, 0x71, 0x59, 0x56, 0x28, 0xa6, 0x72, 0xcb, 0x81, 0xf6, 0x50,
+	0xb0, 0x6b, 0xea, 0x53, 0xe6, 0x4a, 0x7a, 0xb1, 0x2e, 0x0b, 0x64, 0xc2, 0xf6, 0x24, 0x4b, 0x77,
+	0x8c, 0xae, 0xd1, 0x6b, 0x38, 0xeb, 0x18, 0x1d, 0x40, 0x23, 0x76, 0x7d, 0x6f, 0xe2, 0x4a, 0x1e,
+	0x75, 0xaa, 0x69, 0x31, 0x4f, 0x58, 0x5d, 0xc0, 0xfa, 0x99, 0x0e, 0x15, 0x21, 0x9f, 0x0a, 0x6a,
+	0x45, 0xa9, 0x6b, 0x5e, 0xb9, 0x8d, 0xe8, 0x98, 0x07, 0x81, 0x27, 0xd1, 0x39, 0x34, 0x42, 0x15,
+	0xa4, 0xb6, 0xcd, 0x81, 0x65, 0x97, 0x7e, 0xc9, 0xd6, 0xb4, 0x39, 0x79, 0x13, 0x6a, 0x43, 0x5d,
+	0x78, 0x6c, 0x4a, 0x15, 0x58, 0x16, 0x65, 0x54, 0xba, 0x66, 0x45, 0xf5, 0x0c, 0xad, 0x92, 0xe2,
+	0x6a, 0x35, 0xf0, 0x0c, 0x9a, 0x39, 0x80, 0xe8, 0x18, 0xdd, 0x5a, 0xaf, 0x39, 0xd8, 0xfb, 0x15,
+	0xca, 0x29, 0xaa, 0x11, 0x82, 0x2d, 0xe1, 0xfa, 0x32, 0x63, 0x49, 0xbf, 0x0b, 0x84, 0xb5, 0x12,
+	0xe1, 0x21, 0xec, 0x6b, 0xfc, 0x15, 0xde, 0xe0, 0xb5, 0x0a, 0xb5, 0xa1, 0x60, 0xe8, 0x11, 0x5a,
+	0xba, 0x7d, 0x1d, 0x7d, 0x23, 0xd2, 0xaf, 0xc0, 0x3c, 0xf9, 0x97, 0x4c, 0x99, 0x7e, 0x99, 0xe9,
+	0xd6, 0xa4, 0x31, 0xd3, 0xc8, 0x74, 0x66, 0x1b, 0x16, 0x80, 0x46, 0xb0, 0xfb, 0xe3, 0xf5, 0xad,
+	0x4d, 0x23, 0x56, 0x1a, 0xf3, 0xf8, 0x6f, 0x8d, 0xf2, 0xb8, 0xbc, 0x79, 0x5b, 0x62, 0x63, 0xb1,
+	0xc4, 0xc6, 0xc7, 0x12, 0x1b, 0x2f, 0x09, 0xae, 0x2c, 0x12, 0x5c, 0x79, 0x4f, 0x70, 0xe5, 0x8e,
+	0x30, 0x4f, 0xde, 0x3f, 0x8d, 0xec, 0x31, 0x0f, 0x48, 0x48, 0x19, 0x9b, 0x3f, 0xc4, 0x44, 0xf0,
+	0x20, 0xa0, 0xbe, 0x47, 0x23, 0x32, 0x2b, 0xdc, 0x0e, 0x91, 0xf3, 0x90, 0x8a, 0x51, 0x3d, 0x3d,
+	0xa1, 0xd3, 0xcf, 0x00, 0x00, 0x00, 0xff, 0xff, 0x4f, 0xfb, 0xd3, 0x5b, 0x8b, 0x03, 0x00, 0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -358,12 +357,12 @@ const _ = grpc.SupportPackageIsVersion4
 type MsgClient interface {
 	// DelegateDecisions creates an index in the store linking the validator and the delegate key
 	// need to be able to query both the delegate and the validator given the other one
-	DelegateDecisions(ctx context.Context, in *MsgDelegateDecisions, opts ...grpc.CallOption) (*MsgDelegateDecisionsResponse, error)
+	DelegateAllocations(ctx context.Context, in *MsgDelegateAllocations, opts ...grpc.CallOption) (*MsgDelegateAllocationsResponse, error)
 	// DecisionPrecommit stores the precommit hash indexed by validator address
-	DecisionPrecommit(ctx context.Context, in *MsgDecisionPrecommit, opts ...grpc.CallOption) (*MsgDecisionPrecommitResponse, error)
+	AllocationPrecommit(ctx context.Context, in *MsgAllocationPrecommit, opts ...grpc.CallOption) (*MsgAllocationPrecommitResponse, error)
 	// DecisionCommit checks the precommit hash against the data, rejects the message if it doesn't match
 	// then records the commitment in the store indexed by validator address
-	DecisionCommit(ctx context.Context, in *MsgDecisionCommit, opts ...grpc.CallOption) (*MsgDecisionCommitResponse, error)
+	AllocationCommit(ctx context.Context, in *MsgAllocationCommit, opts ...grpc.CallOption) (*MsgAllocationCommitResponse, error)
 }
 
 type msgClient struct {
@@ -374,27 +373,27 @@ func NewMsgClient(cc grpc1.ClientConn) MsgClient {
 	return &msgClient{cc}
 }
 
-func (c *msgClient) DelegateDecisions(ctx context.Context, in *MsgDelegateDecisions, opts ...grpc.CallOption) (*MsgDelegateDecisionsResponse, error) {
-	out := new(MsgDelegateDecisionsResponse)
-	err := c.cc.Invoke(ctx, "/allocation.v1.Msg/DelegateDecisions", in, out, opts...)
+func (c *msgClient) DelegateAllocations(ctx context.Context, in *MsgDelegateAllocations, opts ...grpc.CallOption) (*MsgDelegateAllocationsResponse, error) {
+	out := new(MsgDelegateAllocationsResponse)
+	err := c.cc.Invoke(ctx, "/allocation.v1.Msg/DelegateAllocations", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *msgClient) DecisionPrecommit(ctx context.Context, in *MsgDecisionPrecommit, opts ...grpc.CallOption) (*MsgDecisionPrecommitResponse, error) {
-	out := new(MsgDecisionPrecommitResponse)
-	err := c.cc.Invoke(ctx, "/allocation.v1.Msg/DecisionPrecommit", in, out, opts...)
+func (c *msgClient) AllocationPrecommit(ctx context.Context, in *MsgAllocationPrecommit, opts ...grpc.CallOption) (*MsgAllocationPrecommitResponse, error) {
+	out := new(MsgAllocationPrecommitResponse)
+	err := c.cc.Invoke(ctx, "/allocation.v1.Msg/AllocationPrecommit", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *msgClient) DecisionCommit(ctx context.Context, in *MsgDecisionCommit, opts ...grpc.CallOption) (*MsgDecisionCommitResponse, error) {
-	out := new(MsgDecisionCommitResponse)
-	err := c.cc.Invoke(ctx, "/allocation.v1.Msg/DecisionCommit", in, out, opts...)
+func (c *msgClient) AllocationCommit(ctx context.Context, in *MsgAllocationCommit, opts ...grpc.CallOption) (*MsgAllocationCommitResponse, error) {
+	out := new(MsgAllocationCommitResponse)
+	err := c.cc.Invoke(ctx, "/allocation.v1.Msg/AllocationCommit", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -405,82 +404,82 @@ func (c *msgClient) DecisionCommit(ctx context.Context, in *MsgDecisionCommit, o
 type MsgServer interface {
 	// DelegateDecisions creates an index in the store linking the validator and the delegate key
 	// need to be able to query both the delegate and the validator given the other one
-	DelegateDecisions(context.Context, *MsgDelegateDecisions) (*MsgDelegateDecisionsResponse, error)
+	DelegateAllocations(context.Context, *MsgDelegateAllocations) (*MsgDelegateAllocationsResponse, error)
 	// DecisionPrecommit stores the precommit hash indexed by validator address
-	DecisionPrecommit(context.Context, *MsgDecisionPrecommit) (*MsgDecisionPrecommitResponse, error)
+	AllocationPrecommit(context.Context, *MsgAllocationPrecommit) (*MsgAllocationPrecommitResponse, error)
 	// DecisionCommit checks the precommit hash against the data, rejects the message if it doesn't match
 	// then records the commitment in the store indexed by validator address
-	DecisionCommit(context.Context, *MsgDecisionCommit) (*MsgDecisionCommitResponse, error)
+	AllocationCommit(context.Context, *MsgAllocationCommit) (*MsgAllocationCommitResponse, error)
 }
 
 // UnimplementedMsgServer can be embedded to have forward compatible implementations.
 type UnimplementedMsgServer struct {
 }
 
-func (*UnimplementedMsgServer) DelegateDecisions(ctx context.Context, req *MsgDelegateDecisions) (*MsgDelegateDecisionsResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method DelegateDecisions not implemented")
+func (*UnimplementedMsgServer) DelegateAllocations(ctx context.Context, req *MsgDelegateAllocations) (*MsgDelegateAllocationsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DelegateAllocations not implemented")
 }
-func (*UnimplementedMsgServer) DecisionPrecommit(ctx context.Context, req *MsgDecisionPrecommit) (*MsgDecisionPrecommitResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method DecisionPrecommit not implemented")
+func (*UnimplementedMsgServer) AllocationPrecommit(ctx context.Context, req *MsgAllocationPrecommit) (*MsgAllocationPrecommitResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method AllocationPrecommit not implemented")
 }
-func (*UnimplementedMsgServer) DecisionCommit(ctx context.Context, req *MsgDecisionCommit) (*MsgDecisionCommitResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method DecisionCommit not implemented")
+func (*UnimplementedMsgServer) AllocationCommit(ctx context.Context, req *MsgAllocationCommit) (*MsgAllocationCommitResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method AllocationCommit not implemented")
 }
 
 func RegisterMsgServer(s grpc1.Server, srv MsgServer) {
 	s.RegisterService(&_Msg_serviceDesc, srv)
 }
 
-func _Msg_DelegateDecisions_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(MsgDelegateDecisions)
+func _Msg_DelegateAllocations_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgDelegateAllocations)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(MsgServer).DelegateDecisions(ctx, in)
+		return srv.(MsgServer).DelegateAllocations(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/allocation.v1.Msg/DelegateDecisions",
+		FullMethod: "/allocation.v1.Msg/DelegateAllocations",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MsgServer).DelegateDecisions(ctx, req.(*MsgDelegateDecisions))
+		return srv.(MsgServer).DelegateAllocations(ctx, req.(*MsgDelegateAllocations))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Msg_DecisionPrecommit_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(MsgDecisionPrecommit)
+func _Msg_AllocationPrecommit_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgAllocationPrecommit)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(MsgServer).DecisionPrecommit(ctx, in)
+		return srv.(MsgServer).AllocationPrecommit(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/allocation.v1.Msg/DecisionPrecommit",
+		FullMethod: "/allocation.v1.Msg/AllocationPrecommit",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MsgServer).DecisionPrecommit(ctx, req.(*MsgDecisionPrecommit))
+		return srv.(MsgServer).AllocationPrecommit(ctx, req.(*MsgAllocationPrecommit))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Msg_DecisionCommit_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(MsgDecisionCommit)
+func _Msg_AllocationCommit_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgAllocationCommit)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(MsgServer).DecisionCommit(ctx, in)
+		return srv.(MsgServer).AllocationCommit(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/allocation.v1.Msg/DecisionCommit",
+		FullMethod: "/allocation.v1.Msg/AllocationCommit",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MsgServer).DecisionCommit(ctx, req.(*MsgDecisionCommit))
+		return srv.(MsgServer).AllocationCommit(ctx, req.(*MsgAllocationCommit))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -490,23 +489,23 @@ var _Msg_serviceDesc = grpc.ServiceDesc{
 	HandlerType: (*MsgServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "DelegateDecisions",
-			Handler:    _Msg_DelegateDecisions_Handler,
+			MethodName: "DelegateAllocations",
+			Handler:    _Msg_DelegateAllocations_Handler,
 		},
 		{
-			MethodName: "DecisionPrecommit",
-			Handler:    _Msg_DecisionPrecommit_Handler,
+			MethodName: "AllocationPrecommit",
+			Handler:    _Msg_AllocationPrecommit_Handler,
 		},
 		{
-			MethodName: "DecisionCommit",
-			Handler:    _Msg_DecisionCommit_Handler,
+			MethodName: "AllocationCommit",
+			Handler:    _Msg_AllocationCommit_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
 	Metadata: "allocation/v1/tx.proto",
 }
 
-func (m *MsgDelegateDecisions) Marshal() (dAtA []byte, err error) {
+func (m *MsgDelegateAllocations) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -516,12 +515,12 @@ func (m *MsgDelegateDecisions) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *MsgDelegateDecisions) MarshalTo(dAtA []byte) (int, error) {
+func (m *MsgDelegateAllocations) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *MsgDelegateDecisions) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *MsgDelegateAllocations) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -543,7 +542,7 @@ func (m *MsgDelegateDecisions) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 
-func (m *MsgDelegateDecisionsResponse) Marshal() (dAtA []byte, err error) {
+func (m *MsgDelegateAllocationsResponse) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -553,12 +552,12 @@ func (m *MsgDelegateDecisionsResponse) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *MsgDelegateDecisionsResponse) MarshalTo(dAtA []byte) (int, error) {
+func (m *MsgDelegateAllocationsResponse) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *MsgDelegateDecisionsResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *MsgDelegateAllocationsResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -566,7 +565,7 @@ func (m *MsgDelegateDecisionsResponse) MarshalToSizedBuffer(dAtA []byte) (int, e
 	return len(dAtA) - i, nil
 }
 
-func (m *MsgDecisionPrecommit) Marshal() (dAtA []byte, err error) {
+func (m *MsgAllocationPrecommit) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -576,12 +575,12 @@ func (m *MsgDecisionPrecommit) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *MsgDecisionPrecommit) MarshalTo(dAtA []byte) (int, error) {
+func (m *MsgAllocationPrecommit) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *MsgDecisionPrecommit) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *MsgAllocationPrecommit) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -608,7 +607,7 @@ func (m *MsgDecisionPrecommit) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 
-func (m *MsgDecisionPrecommitResponse) Marshal() (dAtA []byte, err error) {
+func (m *MsgAllocationPrecommitResponse) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -618,12 +617,12 @@ func (m *MsgDecisionPrecommitResponse) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *MsgDecisionPrecommitResponse) MarshalTo(dAtA []byte) (int, error) {
+func (m *MsgAllocationPrecommitResponse) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *MsgDecisionPrecommitResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *MsgAllocationPrecommitResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -631,7 +630,7 @@ func (m *MsgDecisionPrecommitResponse) MarshalToSizedBuffer(dAtA []byte) (int, e
 	return len(dAtA) - i, nil
 }
 
-func (m *MsgDecisionCommit) Marshal() (dAtA []byte, err error) {
+func (m *MsgAllocationCommit) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -641,12 +640,12 @@ func (m *MsgDecisionCommit) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *MsgDecisionCommit) MarshalTo(dAtA []byte) (int, error) {
+func (m *MsgAllocationCommit) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *MsgDecisionCommit) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *MsgAllocationCommit) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -665,10 +664,10 @@ func (m *MsgDecisionCommit) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 		i--
 		dAtA[i] = 0x12
 	}
-	if len(m.Decisions) > 0 {
-		for iNdEx := len(m.Decisions) - 1; iNdEx >= 0; iNdEx-- {
+	if len(m.Allocations) > 0 {
+		for iNdEx := len(m.Allocations) - 1; iNdEx >= 0; iNdEx-- {
 			{
-				size, err := m.Decisions[iNdEx].MarshalToSizedBuffer(dAtA[:i])
+				size, err := m.Allocations[iNdEx].MarshalToSizedBuffer(dAtA[:i])
 				if err != nil {
 					return 0, err
 				}
@@ -682,7 +681,7 @@ func (m *MsgDecisionCommit) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 
-func (m *MsgDecisionCommitResponse) Marshal() (dAtA []byte, err error) {
+func (m *MsgAllocationCommitResponse) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -692,12 +691,12 @@ func (m *MsgDecisionCommitResponse) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *MsgDecisionCommitResponse) MarshalTo(dAtA []byte) (int, error) {
+func (m *MsgAllocationCommitResponse) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *MsgDecisionCommitResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *MsgAllocationCommitResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -716,7 +715,7 @@ func encodeVarintTx(dAtA []byte, offset int, v uint64) int {
 	dAtA[offset] = uint8(v)
 	return base
 }
-func (m *MsgDelegateDecisions) Size() (n int) {
+func (m *MsgDelegateAllocations) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -733,7 +732,7 @@ func (m *MsgDelegateDecisions) Size() (n int) {
 	return n
 }
 
-func (m *MsgDelegateDecisionsResponse) Size() (n int) {
+func (m *MsgDelegateAllocationsResponse) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -742,7 +741,7 @@ func (m *MsgDelegateDecisionsResponse) Size() (n int) {
 	return n
 }
 
-func (m *MsgDecisionPrecommit) Size() (n int) {
+func (m *MsgAllocationPrecommit) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -759,7 +758,7 @@ func (m *MsgDecisionPrecommit) Size() (n int) {
 	return n
 }
 
-func (m *MsgDecisionPrecommitResponse) Size() (n int) {
+func (m *MsgAllocationPrecommitResponse) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -768,14 +767,14 @@ func (m *MsgDecisionPrecommitResponse) Size() (n int) {
 	return n
 }
 
-func (m *MsgDecisionCommit) Size() (n int) {
+func (m *MsgAllocationCommit) Size() (n int) {
 	if m == nil {
 		return 0
 	}
 	var l int
 	_ = l
-	if len(m.Decisions) > 0 {
-		for _, e := range m.Decisions {
+	if len(m.Allocations) > 0 {
+		for _, e := range m.Allocations {
 			l = e.Size()
 			n += 1 + l + sovTx(uint64(l))
 		}
@@ -791,7 +790,7 @@ func (m *MsgDecisionCommit) Size() (n int) {
 	return n
 }
 
-func (m *MsgDecisionCommitResponse) Size() (n int) {
+func (m *MsgAllocationCommitResponse) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -806,7 +805,7 @@ func sovTx(x uint64) (n int) {
 func sozTx(x uint64) (n int) {
 	return sovTx(uint64((x << 1) ^ uint64((int64(x) >> 63))))
 }
-func (m *MsgDelegateDecisions) Unmarshal(dAtA []byte) error {
+func (m *MsgDelegateAllocations) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -829,10 +828,10 @@ func (m *MsgDelegateDecisions) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: MsgDelegateDecisions: wiretype end group for non-group")
+			return fmt.Errorf("proto: MsgDelegateAllocations: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: MsgDelegateDecisions: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: MsgDelegateAllocations: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
@@ -920,7 +919,7 @@ func (m *MsgDelegateDecisions) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *MsgDelegateDecisionsResponse) Unmarshal(dAtA []byte) error {
+func (m *MsgDelegateAllocationsResponse) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -943,10 +942,10 @@ func (m *MsgDelegateDecisionsResponse) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: MsgDelegateDecisionsResponse: wiretype end group for non-group")
+			return fmt.Errorf("proto: MsgDelegateAllocationsResponse: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: MsgDelegateDecisionsResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: MsgDelegateAllocationsResponse: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		default:
@@ -970,7 +969,7 @@ func (m *MsgDelegateDecisionsResponse) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *MsgDecisionPrecommit) Unmarshal(dAtA []byte) error {
+func (m *MsgAllocationPrecommit) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -993,10 +992,10 @@ func (m *MsgDecisionPrecommit) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: MsgDecisionPrecommit: wiretype end group for non-group")
+			return fmt.Errorf("proto: MsgAllocationPrecommit: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: MsgDecisionPrecommit: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: MsgAllocationPrecommit: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
@@ -1029,7 +1028,7 @@ func (m *MsgDecisionPrecommit) Unmarshal(dAtA []byte) error {
 				return io.ErrUnexpectedEOF
 			}
 			if m.Precommit == nil {
-				m.Precommit = &DecisionPrecommit{}
+				m.Precommit = &AllocationPrecommit{}
 			}
 			if err := m.Precommit.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
@@ -1088,7 +1087,7 @@ func (m *MsgDecisionPrecommit) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *MsgDecisionPrecommitResponse) Unmarshal(dAtA []byte) error {
+func (m *MsgAllocationPrecommitResponse) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -1111,10 +1110,10 @@ func (m *MsgDecisionPrecommitResponse) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: MsgDecisionPrecommitResponse: wiretype end group for non-group")
+			return fmt.Errorf("proto: MsgAllocationPrecommitResponse: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: MsgDecisionPrecommitResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: MsgAllocationPrecommitResponse: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		default:
@@ -1138,7 +1137,7 @@ func (m *MsgDecisionPrecommitResponse) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *MsgDecisionCommit) Unmarshal(dAtA []byte) error {
+func (m *MsgAllocationCommit) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -1161,15 +1160,15 @@ func (m *MsgDecisionCommit) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: MsgDecisionCommit: wiretype end group for non-group")
+			return fmt.Errorf("proto: MsgAllocationCommit: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: MsgDecisionCommit: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: MsgAllocationCommit: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Decisions", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field Allocations", wireType)
 			}
 			var msglen int
 			for shift := uint(0); ; shift += 7 {
@@ -1196,8 +1195,8 @@ func (m *MsgDecisionCommit) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.Decisions = append(m.Decisions, &Decision{})
-			if err := m.Decisions[len(m.Decisions)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+			m.Allocations = append(m.Allocations, &Allocation{})
+			if err := m.Allocations[len(m.Allocations)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex
@@ -1286,7 +1285,7 @@ func (m *MsgDecisionCommit) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *MsgDecisionCommitResponse) Unmarshal(dAtA []byte) error {
+func (m *MsgAllocationCommitResponse) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -1309,10 +1308,10 @@ func (m *MsgDecisionCommitResponse) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: MsgDecisionCommitResponse: wiretype end group for non-group")
+			return fmt.Errorf("proto: MsgAllocationCommitResponse: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: MsgDecisionCommitResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: MsgAllocationCommitResponse: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		default:

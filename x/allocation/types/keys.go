@@ -22,10 +22,16 @@ var (
 	AllocationDelegateKeyPrefix = []byte{0x01} // key for validator feed delegation
 
 	// - 0x02<val_address> -> <hash>
-	AllocationDecisionPrecommitKeyPrefix = []byte{0x02} // key for decision precommits
+	AllocationPrecommitKeyPrefix = []byte{0x02} // key for decision precommits
 
 	// - 0x03<val_address> -> <hash>
-	AllocationDecisionCommitKeyPrefix = []byte{0x03} // key for decision precommits
+	AllocationCommitKeyPrefix = []byte{0x03} // key for decision commits
+
+	// - 0x04 -> int64(height)
+	CommitPeriodStartKey = []byte{0x04} // key for vote period height start
+
+	// - 0x05<val_address> -> int64(misses)
+	MissCounterKeyPrefix = []byte{0x05} // key for validator miss counters
 )
 
 // GetFeedDelegateKey returns the validator for a given delegate key
@@ -33,13 +39,17 @@ func GetFeedDelegateKey(del sdk.AccAddress) []byte {
 	return append(AllocationDelegateKeyPrefix, del.Bytes()...)
 }
 
-// GetDecisionPrecommitKey returns the key for a validators precommit
-func GetDecisionPrecommitKey(val sdk.ValAddress) []byte {
-	return append(AllocationDecisionPrecommitKeyPrefix, val.Bytes()...)
+// GetAllocationPrecommitKey returns the key for a validators precommit
+func GetAllocationPrecommitKey(val sdk.ValAddress) []byte {
+	return append(AllocationPrecommitKeyPrefix, val.Bytes()...)
 }
 
+// GetAllocationCommitKey returns the key for a validators precommit
+func GetAllocationCommitKey(val sdk.ValAddress) []byte {
+	return append(AllocationCommitKeyPrefix, val.Bytes()...)
+}
 
-// GetDecisionCommitKey returns the key for a validators precommit
-func GetDecisionCommitKey(val sdk.ValAddress) []byte {
-	return append(AllocationDecisionCommitKeyPrefix, val.Bytes()...)
+// GetMissCounterKey returns the key for the stored miss counter for a given validator
+func GetMissCounterKey(val sdk.ValAddress) []byte {
+	return append(MissCounterKeyPrefix, val.Bytes()...)
 }

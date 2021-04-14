@@ -28,12 +28,12 @@ message Pool {
 
 // AllocationPrecommit defines an array of hashed decision data
 // that is used for the precommit phase of allocation
-message DecisionPrecommit {
+message AllocationPrecommit {
   bytes hash = 1 [(gogoproto.casttype) = "github.com/tendermint/tendermint/libs/bytes.HexBytes"];
 }
 
-// Decision is the XXX
-message Decision {
+// Allocation is the XXX
+message Allocation {
   string              cellar_id = 1;
   string              fee_level = 2; // sdk.Dec
   repeated TickWeight tick_weights = 3;

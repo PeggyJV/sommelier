@@ -1,6 +1,7 @@
 package app
 
 import (
+	"github.com/peggyjv/sommelier/x/allocation"
 	"io"
 	"net/http"
 	"os"
@@ -130,8 +131,8 @@ var (
 		transfer.AppModuleBasic{},
 		vesting.AppModuleBasic{},
 		ethbridge.AppModuleBasic{},
-		oracle.AppModuleBasic{},
 		il.AppModuleBasic{},
+		allocation.AppModuleBasic{},
 	)
 
 	// module account permissions

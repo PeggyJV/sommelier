@@ -1,0 +1,165 @@
+syntax = "proto3";
+package allocation.v1;
+
+import "gogoproto/gogo.proto";
+import "google/api/annotations.proto";
+import "allocation/v1/genesis.proto";
+import "allocation/v1/allocation.proto";
+import "cosmos_proto/cosmos.proto";
+import "cosmos/base/query/v1beta1/pagination.proto";
+
+option go_package = "github.com/peggyjv/sommelier/x/allocation/types";
+
+// Query defines the gRPC querier service for the allocation module.
+service Query {
+  // QueryParams queries the allocation module parameters.
+  rpc QueryParams(QueryParamsRequest) returns (QueryParamsResponse) {
+    option (google.api.http).get = "/sommelier/allocation/v1/params";
+  }
+  // QueryDelegateAddress queries the delegate account address of a validator
+  rpc QueryDelegateAddress(QueryDelegateAddressRequest) returns (QueryDelegateAddressResponse) {
+    option (google.api.http).get = "/sommelier/allocation/v1/delegates/{validator}";
+  }
+  // QueryValidatorAddress returns the validator address of a given delegate
+  rpc QueryValidatorAddress(QueryValidatorAddressRequest) returns (QueryValidatorAddressResponse) {
+    option (google.api.http).get = "/sommelier/allocation/v1/validators/{delegate}";
+  }
+  // QueryAllocationPrecommit queries the validator precommit in the current voting period
+  rpc QueryAllocationPrecommit(QueryAllocationPrecommitRequest) returns (QueryAllocationPrecommitResponse) {
+    option (google.api.http).get = "/sommelier/allocation/v1/prevotes/{validator}";
+  }
+  // QueryAllocationCommit queries the validator allocation in the current voting period
+  rpc QueryAllocationCommit(QueryAllocationCommitRequest) returns (QueryAllocationCommitResponse) {
+    option (google.api.http).get = "/sommelier/allocation/v1/votes/{validator}";
+  }
+  // QueryCommitPeriod queries the heights for the current commit period (current, start and end)
+  rpc QueryCommitPeriod(QueryCommitPeriodRequest) returns (QueryCommitPeriodResponse) {
+    option (google.api.http).get = "/sommelier/allocation/v1/vote_period";
+  }
+  // QueryMissCounter queries the missed number of allocation data feed periods
+  rpc QueryMissCounter(QueryMissCounterRequest) returns (QueryMissCounterResponse) {
+    option (google.api.http).get = "/sommelier/allocation/v1/miss_counters/{validator}";
+  }
+  // QueryAggregateData returns the latest aggregated data value for a given type and identifioer
+  rpc QueryAggregateData(QueryAggregateDataRequest) returns (QueryAggregateDataResponse) {
+    option (google.api.http).get = "/sommelier/allocation/v1/aggregate_data/{id}/{type}";
+  }
+  // QueryLatestPeriodAggregateData returns the aggregated data for a given pair an identifioer
+  rpc QueryLatestPeriodAggregateData(QueryLatestPeriodAggregateDataRequest) returns (QueryLatestPeriodAggregateDataResponse) {
+    option (google.api.http).get = "/sommelier/allocation/v1/aggregate_data";
+  }
+}
+
+// QueryParamsRequest is the request type for the Query/Params gRPC method.
+message QueryParamsRequest {}
+
+// QueryParamsRequest is the response type for the Query/Params gRPC method.
+message QueryParamsResponse {
+  // allocation parameters
+  Params params = 1 [(gogoproto.nullable) = false];
+}
+
+// QueryDelegateAddressRequest is the request type for the Query/QueryDelegateAddress gRPC method.
+message QueryDelegateAddressRequest {
+  // validator operator address
+  string validator = 1;
+}
+
+// QueryDelegateAddressResponse is the response type for the Query/QueryDelegateAddress gRPC method.
+message QueryDelegateAddressResponse {
+  // delegate account address
+  string delegate = 2;
+}
+
+// QueryValidatorAddressRequest is the request type for the Query/Params gRPC method.
+message QueryValidatorAddressRequest {
+  // delegate account address
+  string delegate = 1;
+}
+
+// QueryValidatorAddressResponse is the response type for the Query/Params gRPC method.
+message QueryValidatorAddressResponse {
+  // validator operator address
+  string validator = 1;
+}
+
+// QueryAllocationPrecommitRequest is the request type for the Query/QueryAllocationPrecommitRequest gRPC method.
+message QueryAllocationPrecommitRequest {
+  // validator operator address
+  string validator = 1;
+}
+
+// QueryAllocationPrecommitResponse is the response type for the Query/QueryAllocationPrecommitResponse gRPC method.
+message QueryAllocationPrecommitResponse {
+  // prevote submitted within the latest voting period
+  AllocationPrecommit precommit = 1;
+}
+
+// QueryAllocationCommitRequest is the request type for the Query/QueryAllocationCommitRequest gRPC method.
+message QueryAllocationCommitRequest {
+  // validator operator address
+  string validator = 1;
+}
+
+// QueryAllocationCommitResponse is the response type for the Query/QueryAllocationCommitResponse gRPC method.
+message QueryAllocationCommitResponse {
+  // allocation containing the allocation feed submitted within the latest voting period
+  Allocation allocation = 1;
+}
+
+// QueryCommitPeriodRequest is the request type for the Query/VotePeriod gRPC method.
+message QueryCommitPeriodRequest {}
+
+// QueryCommitPeriodResponse is the response type for the Query/VotePeriod gRPC method.
+message QueryCommitPeriodResponse {
+  // block height at which the query was processed
+  int64 current_height    = 1;
+  // latest commit period start block height
+  int64 commit_period_start = 2;
+  // block height at which the current commit period ends
+  int64 commit_period_end   = 3;
+}
+
+// QueryMissCounterRequest is the request type for the Query/MissCounter gRPC method.
+message QueryMissCounterRequest {
+  // validator operator address
+  string validator = 1;
+}
+
+// QueryMissCounterResponse is the response type for the Query/MissCounter gRPC method.
+message QueryMissCounterResponse {
+  // number of allocation feed votes missed since the last counter reset
+  int64 miss_counter = 1;
+}
+
+// QueryAggregateDataRequest is the request type for the Query/AggregateData gRPC method.
+message QueryAggregateDataRequest {
+  // allocation data type
+  string type = 1;
+  // allocation data identifier
+  string id = 2;
+}
+
+// QueryAggregateDataRequest is the response type for the Query/AggregateData gRPC method.
+message QueryAggregateDataResponse {
+  // allocation data associated with the id and type from the request
+  Allocation allocation_data = 1;
+  // height at which the aggregated allocation data was stored
+  int64 height = 2;
+}
+
+// QueryLatestPeriodAggregateDataRequest is the request type for the Query/QueryLatestPeriodAggregateData gRPC method.
+message QueryLatestPeriodAggregateDataRequest {
+  // pagination defines an optional pagination for the request.
+  cosmos.base.query.v1beta1.PageRequest pagination = 1;
+}
+
+// QueryLatestPeriodAggregateDataResponse is the response type for the Query/QueryLatestPeriodAggregateData gRPC method.
+message QueryLatestPeriodAggregateDataResponse {
+  // allocation data associated with the
+  repeated Allocation allocation_data = 1;
+  // height at which the aggregated allocation data was stored
+  int64 height = 2;
+  // pagination defines the pagination in the response.
+  cosmos.base.query.v1beta1.PageResponse pagination = 3;
+}
