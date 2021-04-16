@@ -93,9 +93,9 @@ import (
 	"github.com/peggyjv/sommelier/x/il"
 	ilkeeper "github.com/peggyjv/sommelier/x/il/keeper"
 	iltypes "github.com/peggyjv/sommelier/x/il/types"
-	"github.com/peggyjv/sommelier/x/oracle"
-	oraclekeeper "github.com/peggyjv/sommelier/x/oracle/keeper"
-	oracletypes "github.com/peggyjv/sommelier/x/oracle/types"
+	"github.com/peggyjv/sommelier/x/allocation"
+	oraclekeeper "github.com/peggyjv/sommelier/x/allocation/keeper"
+	oracletypes "github.com/peggyjv/sommelier/x/allocation/types"
 
 	// unnamed import of statik for swagger UI support
 	_ "github.com/cosmos/cosmos-sdk/client/docs/statik"
@@ -130,7 +130,7 @@ var (
 		transfer.AppModuleBasic{},
 		vesting.AppModuleBasic{},
 		ethbridge.AppModuleBasic{},
-		oracle.AppModuleBasic{},
+		allocation.AppModuleBasic{},
 		il.AppModuleBasic{},
 	)
 
@@ -383,7 +383,7 @@ func NewSommelierApp(
 		params.NewAppModule(app.ParamsKeeper),
 		transferModule,
 		ethbridge.NewAppModule(app.EthBridgeKeeper, app.BankKeeper),
-		oracle.NewAppModule(app.OracleKeeper, appCodec),
+		allocation.NewAppModule(app.OracleKeeper, appCodec),
 		il.NewAppModule(app.ILKeeper, appCodec),
 	)
 
@@ -439,7 +439,7 @@ func NewSommelierApp(
 		evidence.NewAppModule(app.EvidenceKeeper),
 		ibc.NewAppModule(app.IBCKeeper),
 		transferModule,
-		oracle.NewAppModule(app.OracleKeeper, appCodec),
+		allocation.NewAppModule(app.OracleKeeper, appCodec),
 	)
 
 	app.sm.RegisterStoreDecoders()

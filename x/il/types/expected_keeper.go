@@ -3,7 +3,7 @@ package types
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	bridgetypes "github.com/cosmos/gravity-bridge/module/x/gravity/types"
-	oracletypes "github.com/peggyjv/sommelier/x/oracle/types"
+	oracletypes "github.com/peggyjv/sommelier/x/allocation/types"
 )
 
 // OracleKeeper is expected keeper for the oracle module

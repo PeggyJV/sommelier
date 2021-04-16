@@ -11,7 +11,7 @@ import (
 	kr "github.com/cosmos/cosmos-sdk/crypto/keyring"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/machinebox/graphql"
-	oracletypes "github.com/peggyjv/sommelier/x/oracle/types"
+	oracletypes "github.com/peggyjv/sommelier/x/allocation/types"
 	"github.com/spf13/cobra"
 	rpchttp "github.com/tendermint/tendermint/rpc/client/http"
 )

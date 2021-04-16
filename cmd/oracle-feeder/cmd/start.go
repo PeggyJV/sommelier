@@ -24,7 +24,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/tx/signing"
 
-	oracle "github.com/peggyjv/sommelier/x/oracle/types"
+	oracle "github.com/peggyjv/sommelier/x/allocation/types"
 )
 
 var (
@@ -87,7 +87,7 @@ func (c *Coordinator) handleTx(txEvent ctypes.ResultEvent) error {
 	}
 	config.log.Debug("transaction detected", "height", tx.Height)
 	for _, ev := range tx.Result.Events {
-		if ev.Type != oracle.EventTypeOracleDataPrevote {
+		if ev.Type != oracle.EventTypeAllocationPrecommit {
 			continue
 		}
 
@@ -119,7 +119,7 @@ func (c *Coordinator) handleBlock(blockEvent ctypes.ResultEvent) error {
 	c.height = bl.Block.Height
 	prevote := false
 	for _, ev := range bl.ResultBeginBlock.Events {
-		if ev.Type != oracle.EventTypeVotePeriod {
+		if ev.Type != oracle.EventTypeCommitPeriod {
 			continue
 		}
 
@@ -146,7 +146,7 @@ func (c *Coordinator) SubmitOracleDataVote() error {
 		},
 	}
 
-	msg := oracle.NewMsgOracleDataVote(oracleVote, c.delegatorAddr)
+	msg := oracle.NewMsgAllocationCommit(oracleVote, c.delegatorAddr)
 	if err := msg.ValidateBasic(); err != nil {
 		return err
 	}
@@ -177,7 +177,7 @@ func (c *Coordinator) SubmitOracleDataPrevote() error {
 	c.hash = oracle.DataHash(c.salt, string(jsonBz), c.validatorAddr)
 	c.feed = pairs
 
-	msg := oracle.NewMsgOracleDataPrevote(c.hash, c.delegatorAddr)
+	msg := oracle.NewMsgAllocationPrecommit(c.hash, c.delegatorAddr)
 	if err := msg.ValidateBasic(); err != nil {
 		return err
 	}

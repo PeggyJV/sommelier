@@ -15,7 +15,7 @@ import (
 	bridgetypes "github.com/cosmos/gravity-bridge/module/x/gravity/types"
 
 	"github.com/peggyjv/sommelier/x/il/types"
-	oracletypes "github.com/peggyjv/sommelier/x/oracle/types"
+	oracletypes "github.com/peggyjv/sommelier/x/allocation/types"
 )
 
 // BeginBlock recreates stoploss positions that may have timeout.

@@ -1,0 +1,55 @@
+syntax = "proto3";
+package allocation.v1;
+
+import "cosmos_proto/cosmos.proto";
+import "google/protobuf/any.proto";
+import "allocation/v1/allocation.proto";
+
+option go_package = "github.com/peggyjv/sommelier/x/allocation/types";
+
+// MsgService defines the msgs that the oracle module handles.
+service Msg {
+     // DelegateAllocations defines a message that delegates the allocating to an account address.
+    rpc DelegateAllocations (MsgDelegateAllocations) returns (MsgDelegateAllocationsResponse);
+    // OracleDataPrevote defines a message that commits a hash of a oracle data feed before the data is actually submitted.
+    rpc AllocationPrecommit   (MsgAllocationPrecommit)   returns (MsgAllocationPrecommitResponse);
+    // OracleDataVote defines a message to submit the actual oracle data that was committed by the feeder through the prevote.
+    rpc AllocationCommit      (MsgAllocationCommit)      returns (MsgAllocationCommitResponse);
+}
+
+// MsgDelegateAllocations defines sdk.Msg for delegating allocation rights from a validator
+// to another address, must be signed by an active validator
+message MsgDelegateAllocations {
+    // delegate account address
+    string delegate  = 1;
+    // validator operator address
+    string validator = 2;
+}
+
+// MsgDelegateAllocationsResponse is the response type for the Msg/DelegateAllocations gRPC method.
+message MsgDelegateAllocationsResponse {}
+
+
+// MsgAllocationPrecommit - sdk.Msg for prevoting on an array of oracle data types.
+// The purpose of the prevote is to hide vote for data with hashes formatted as hex string:
+// SHA256("{salt}:{data_cannonical_json}:{voter}")
+message MsgAllocationPrecommit {
+    // precommit containing the hash of the allocation precommit contents
+    AllocationPrecommit   precommit = 1;
+    // signer (i.e feeder) account address
+    string          signer  = 2;
+}
+
+// MsgAllocationPrecommitResponse is the response type for the Msg/AllocationPrecommitResponse gRPC method.
+message MsgAllocationPrecommitResponse {}
+
+// MsgAllocationCommit - sdk.Msg for submitting arbitrary oracle data that has been prevoted on
+message MsgAllocationCommit {
+    // vote containing the oracle data feed
+    Allocation commit   = 1;
+    // signer (i.e feeder) account address
+    string     signer = 2;
+}
+
+// MsgAllocationCommitResponse is the response type for the Msg/AllocationCommit gRPC method.
+message MsgAllocationCommitResponse {}

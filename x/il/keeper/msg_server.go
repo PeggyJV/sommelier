@@ -9,7 +9,7 @@ import (
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
 	"github.com/peggyjv/sommelier/x/il/types"
-	oracletypes "github.com/peggyjv/sommelier/x/oracle/types"
+	oracletypes "github.com/peggyjv/sommelier/x/allocation/types"
 )
 
 var _ types.MsgServer = Keeper{}
