@@ -68,18 +68,6 @@ message UniswapToken {
   uint64 decimals = 2;
 }
 
-// UniswapToken is the returned uniswap token representation
-message OracleVote {
-  string  salt = 1;
-  OracleFeed       feed = 2;
-}
-
-// OraclePrevote defines an array of hashed from oracle data that are used
-// for the prevote phase of the oracle data feeding.
-message OraclePrevote {
-  // hex formated hash of an oracle feed
-  bytes hash = 1 [(gogoproto.casttype) = "github.com/tendermint/tendermint/libs/bytes.HexBytes"];
-}
 
 // AllocationPrecommit defines an array of hashed data to be used for the precommit phase
 // of allocation

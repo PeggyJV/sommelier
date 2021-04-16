@@ -88,7 +88,7 @@ func (k Keeper) EndBlocker(ctx sdk.Context) {
 
 	// iterate over the data votes
 	// TODO: only iterate on the last voting period
-	k.IterateAllocationCommits(ctx, func(validatorAddr sdk.ValAddress, vote types.OracleVote) bool {
+	k.IterateAllocationCommits(ctx, func(validatorAddr sdk.ValAddress, vote types.Allocation) bool {
 		// NOTE: the vote might have been submitted by a feeder delegate, so we have to check the
 		// original validator address
 

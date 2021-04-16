@@ -95,7 +95,7 @@ func (k Keeper) AllocationPrecommit(c context.Context, msg *types.MsgAllocationP
 				types.EventTypeAllocationPrecommit,
 				sdk.NewAttribute(types.AttributeKeySigner, signer.String()),
 				sdk.NewAttribute(types.AttributeKeyValidator, validatorAddr.String()),
-				sdk.NewAttribute(types.AttributeKeyPrevoteHash, msg.Prevote.Hash.String()),
+				sdk.NewAttribute(types.AttributeKeyPrevoteHash, msg.Precommit.Hash.String()),
 			),
 		},
 	)
@@ -104,11 +104,11 @@ func (k Keeper) AllocationPrecommit(c context.Context, msg *types.MsgAllocationP
 		telemetry.IncrCounter(1, types.ModuleName, "prevote")
 	}()
 
-	return &types.MsgOracleDataPrevoteResponse{}, nil
+	return &types.MsgAllocationPrecommitResponse{}, nil
 }
 
-// OracleDataVote implements types.MsgServer
-func (k Keeper) OracleDataVote(c context.Context, msg *types.MsgAllocationCommit) (*types.MsgOracleDataVoteResponse, error) {
+// AllocationCommit implements types.MsgServer
+func (k Keeper) AllocationCommit(c context.Context, msg *types.MsgAllocationCommit) (*types.MsgAllocationCommitResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
 
 	// Make sure that the message was properly signed
@@ -157,7 +157,7 @@ func (k Keeper) OracleDataVote(c context.Context, msg *types.MsgAllocationCommit
 	}
 
 	// parse data to json in order to compute the vote hash and sort
-	jsonBz, err := json.Marshal(msg.Vote.Feed.Data)
+	jsonBz, err := json.Marshal(msg.Commit.Feed.Data)
 	if err != nil {
 		return nil, sdkerrors.Wrap(
 			sdkerrors.ErrJSONMarshal, "failed to marshal json oracle data feed",
@@ -233,5 +233,5 @@ func (k Keeper) OracleDataVote(c context.Context, msg *types.MsgAllocationCommit
 		)
 	}()
 
-	return &types.MsgOracleDataVoteResponse{}, nil
+	return &types.MsgAllocationCommitResponse{}, nil
 }

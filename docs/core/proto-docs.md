@@ -9,8 +9,6 @@
     - [AllocationPrecommit](#allocation.v1.AllocationPrecommit)
     - [Cellar](#allocation.v1.Cellar)
     - [OracleFeed](#allocation.v1.OracleFeed)
-    - [OraclePrevote](#allocation.v1.OraclePrevote)
-    - [OracleVote](#allocation.v1.OracleVote)
     - [Pool](#allocation.v1.Pool)
     - [Tick](#allocation.v1.Tick)
     - [TickWeight](#allocation.v1.TickWeight)
@@ -36,22 +34,22 @@
 - [allocation/v1/query.proto](#allocation/v1/query.proto)
     - [QueryAggregateDataRequest](#allocation.v1.QueryAggregateDataRequest)
     - [QueryAggregateDataResponse](#allocation.v1.QueryAggregateDataResponse)
+    - [QueryAllocationCommitRequest](#allocation.v1.QueryAllocationCommitRequest)
+    - [QueryAllocationCommitResponse](#allocation.v1.QueryAllocationCommitResponse)
+    - [QueryAllocationPrecommitRequest](#allocation.v1.QueryAllocationPrecommitRequest)
+    - [QueryAllocationPrecommitResponse](#allocation.v1.QueryAllocationPrecommitResponse)
+    - [QueryCommitPeriodRequest](#allocation.v1.QueryCommitPeriodRequest)
+    - [QueryCommitPeriodResponse](#allocation.v1.QueryCommitPeriodResponse)
     - [QueryDelegateAddressRequest](#allocation.v1.QueryDelegateAddressRequest)
     - [QueryDelegateAddressResponse](#allocation.v1.QueryDelegateAddressResponse)
     - [QueryLatestPeriodAggregateDataRequest](#allocation.v1.QueryLatestPeriodAggregateDataRequest)
     - [QueryLatestPeriodAggregateDataResponse](#allocation.v1.QueryLatestPeriodAggregateDataResponse)
     - [QueryMissCounterRequest](#allocation.v1.QueryMissCounterRequest)
     - [QueryMissCounterResponse](#allocation.v1.QueryMissCounterResponse)
-    - [QueryOracleDataPrevoteRequest](#allocation.v1.QueryOracleDataPrevoteRequest)
-    - [QueryOracleDataPrevoteResponse](#allocation.v1.QueryOracleDataPrevoteResponse)
-    - [QueryOracleDataVoteRequest](#allocation.v1.QueryOracleDataVoteRequest)
-    - [QueryOracleDataVoteResponse](#allocation.v1.QueryOracleDataVoteResponse)
     - [QueryParamsRequest](#allocation.v1.QueryParamsRequest)
     - [QueryParamsResponse](#allocation.v1.QueryParamsResponse)
     - [QueryValidatorAddressRequest](#allocation.v1.QueryValidatorAddressRequest)
     - [QueryValidatorAddressResponse](#allocation.v1.QueryValidatorAddressResponse)
-    - [QueryVotePeriodRequest](#allocation.v1.QueryVotePeriodRequest)
-    - [QueryVotePeriodResponse](#allocation.v1.QueryVotePeriodResponse)
   
     - [Query](#allocation.v1.Query)
   
@@ -153,38 +151,6 @@ OracleFeed represents an array of oracle data that is
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | `data` | [UniswapPair](#allocation.v1.UniswapPair) | repeated |  |
-
-
-
-
-
-
-<a name="allocation.v1.OraclePrevote"></a>
-
-### OraclePrevote
-OraclePrevote defines an array of hashed from oracle data that are used
-for the prevote phase of the oracle data feeding.
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| `hash` | [bytes](#bytes) |  | hex formated hash of an oracle feed |
-
-
-
-
-
-
-<a name="allocation.v1.OracleVote"></a>
-
-### OracleVote
-UniswapToken is the returned uniswap token representation
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| `salt` | [string](#string) |  |  |
-| `feed` | [OracleFeed](#allocation.v1.OracleFeed) |  |  |
 
 
 
@@ -523,6 +489,93 @@ QueryAggregateDataRequest is the response type for the Query/AggregateData gRPC 
 
 
 
+<a name="allocation.v1.QueryAllocationCommitRequest"></a>
+
+### QueryAllocationCommitRequest
+QueryOracleDataVoteRequest is the request type for the Query/QueryOracleDataVote gRPC method.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `validator` | [string](#string) |  | validator operator address |
+
+
+
+
+
+
+<a name="allocation.v1.QueryAllocationCommitResponse"></a>
+
+### QueryAllocationCommitResponse
+QueryOracleDataVoteResponse is the response type for the Query/QueryOracleDataVote gRPC method.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `commit` | [Allocation](#allocation.v1.Allocation) |  | vote containing the oracle feed submitted within the latest voting period |
+
+
+
+
+
+
+<a name="allocation.v1.QueryAllocationPrecommitRequest"></a>
+
+### QueryAllocationPrecommitRequest
+QueryAllocationPrecommitRequest is the request type for the Query/AllocationPrecommit gRPC method.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `validator` | [string](#string) |  | validator operator address |
+
+
+
+
+
+
+<a name="allocation.v1.QueryAllocationPrecommitResponse"></a>
+
+### QueryAllocationPrecommitResponse
+QueryOracleDataPrevoteResponse is the response type for the Query/QueryOracleDataPrevote gRPC method.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `precommit` | [AllocationPrecommit](#allocation.v1.AllocationPrecommit) |  | prevote submitted within the latest voting period |
+
+
+
+
+
+
+<a name="allocation.v1.QueryCommitPeriodRequest"></a>
+
+### QueryCommitPeriodRequest
+QueryVotePeriodRequest is the request type for the Query/VotePeriod gRPC method.
+
+
+
+
+
+
+<a name="allocation.v1.QueryCommitPeriodResponse"></a>
+
+### QueryCommitPeriodResponse
+QueryVotePeriodResponse is the response type for the Query/VotePeriod gRPC method.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `current_height` | [int64](#int64) |  | block height at which the query was processed |
+| `vote_period_start` | [int64](#int64) |  | latest vote period start block height |
+| `vote_period_end` | [int64](#int64) |  | block height at which the current voting period ends |
+
+
+
+
+
+
 <a name="allocation.v1.QueryDelegateAddressRequest"></a>
 
 ### QueryDelegateAddressRequest
@@ -615,66 +668,6 @@ QueryMissCounterResponse is the response type for the Query/MissCounter gRPC met
 
 
 
-<a name="allocation.v1.QueryOracleDataPrevoteRequest"></a>
-
-### QueryOracleDataPrevoteRequest
-QueryOracleDataPrevoteRequest is the request type for the Query/QueryOracleDataPrevote gRPC method.
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| `validator` | [string](#string) |  | validator operator address |
-
-
-
-
-
-
-<a name="allocation.v1.QueryOracleDataPrevoteResponse"></a>
-
-### QueryOracleDataPrevoteResponse
-QueryOracleDataPrevoteResponse is the response type for the Query/QueryOracleDataPrevote gRPC method.
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| `prevote` | [OraclePrevote](#allocation.v1.OraclePrevote) |  | prevote submitted within the latest voting period |
-
-
-
-
-
-
-<a name="allocation.v1.QueryOracleDataVoteRequest"></a>
-
-### QueryOracleDataVoteRequest
-QueryOracleDataVoteRequest is the request type for the Query/QueryOracleDataVote gRPC method.
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| `validator` | [string](#string) |  | validator operator address |
-
-
-
-
-
-
-<a name="allocation.v1.QueryOracleDataVoteResponse"></a>
-
-### QueryOracleDataVoteResponse
-QueryOracleDataVoteResponse is the response type for the Query/QueryOracleDataVote gRPC method.
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| `vote` | [OracleVote](#allocation.v1.OracleVote) |  | vote containing the oracle feed submitted within the latest voting period |
-
-
-
-
-
-
 <a name="allocation.v1.QueryParamsRequest"></a>
 
 ### QueryParamsRequest
@@ -729,33 +722,6 @@ QueryValidatorAddressResponse is the response type for the Query/Params gRPC met
 
 
 
-
-<a name="allocation.v1.QueryVotePeriodRequest"></a>
-
-### QueryVotePeriodRequest
-QueryVotePeriodRequest is the request type for the Query/VotePeriod gRPC method.
-
-
-
-
-
-
-<a name="allocation.v1.QueryVotePeriodResponse"></a>
-
-### QueryVotePeriodResponse
-QueryVotePeriodResponse is the response type for the Query/VotePeriod gRPC method.
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| `current_height` | [int64](#int64) |  | block height at which the query was processed |
-| `vote_period_start` | [int64](#int64) |  | latest vote period start block height |
-| `vote_period_end` | [int64](#int64) |  | block height at which the current voting period ends |
-
-
-
-
-
  <!-- end messages -->
 
  <!-- end enums -->
@@ -770,15 +736,15 @@ Query defines the gRPC querier service for the oracle module.
 
 | Method Name | Request Type | Response Type | Description | HTTP Verb | Endpoint |
 | ----------- | ------------ | ------------- | ------------| ------- | -------- |
-| `QueryParams` | [QueryParamsRequest](#allocation.v1.QueryParamsRequest) | [QueryParamsResponse](#allocation.v1.QueryParamsResponse) | QueryParams queries the oracle module parameters. | GET|/sommelier/oracle/v1/params|
-| `QueryDelegateAddress` | [QueryDelegateAddressRequest](#allocation.v1.QueryDelegateAddressRequest) | [QueryDelegateAddressResponse](#allocation.v1.QueryDelegateAddressResponse) | QueryDelegateAddress queries the delegate account address of a validator | GET|/sommelier/oracle/v1/delegates/{validator}|
-| `QueryValidatorAddress` | [QueryValidatorAddressRequest](#allocation.v1.QueryValidatorAddressRequest) | [QueryValidatorAddressResponse](#allocation.v1.QueryValidatorAddressResponse) | QueryValidatorAddress returns the validator address of a given delegate | GET|/sommelier/oracle/v1/validators/{delegate}|
-| `QueryOracleDataPrevote` | [QueryOracleDataPrevoteRequest](#allocation.v1.QueryOracleDataPrevoteRequest) | [QueryOracleDataPrevoteResponse](#allocation.v1.QueryOracleDataPrevoteResponse) | QueryOracleDataPrevote queries the validator prevote in the current voting period | GET|/sommelier/oracle/v1/prevotes/{validator}|
-| `QueryOracleDataVote` | [QueryOracleDataVoteRequest](#allocation.v1.QueryOracleDataVoteRequest) | [QueryOracleDataVoteResponse](#allocation.v1.QueryOracleDataVoteResponse) | QueryOracleDataVote queries the validator vote in the current voting period | GET|/sommelier/oracle/v1/votes/{validator}|
-| `QueryVotePeriod` | [QueryVotePeriodRequest](#allocation.v1.QueryVotePeriodRequest) | [QueryVotePeriodResponse](#allocation.v1.QueryVotePeriodResponse) | QueryVotePeriod queries the heights for the current voting period (current, start and end) | GET|/sommelier/oracle/v1/vote_period|
-| `QueryMissCounter` | [QueryMissCounterRequest](#allocation.v1.QueryMissCounterRequest) | [QueryMissCounterResponse](#allocation.v1.QueryMissCounterResponse) | QueryMissCounter queries the missed number of oracle data feed periods | GET|/sommelier/oracle/v1/miss_counters/{validator}|
-| `QueryAggregateData` | [QueryAggregateDataRequest](#allocation.v1.QueryAggregateDataRequest) | [QueryAggregateDataResponse](#allocation.v1.QueryAggregateDataResponse) | QueryAggregateData returns the latest aggregated data value for a given type and identifioer | GET|/sommelier/oracle/v1/aggregate_data/{id}/{type}|
-| `QueryLatestPeriodAggregateData` | [QueryLatestPeriodAggregateDataRequest](#allocation.v1.QueryLatestPeriodAggregateDataRequest) | [QueryLatestPeriodAggregateDataResponse](#allocation.v1.QueryLatestPeriodAggregateDataResponse) | QueryLatestPeriodAggregateData returns the aggregated data for a given pair an identifioer | GET|/sommelier/oracle/v1/aggregate_data|
+| `QueryParams` | [QueryParamsRequest](#allocation.v1.QueryParamsRequest) | [QueryParamsResponse](#allocation.v1.QueryParamsResponse) | QueryParams queries the oracle module parameters. | GET|/sommelier/allocation/v1/params|
+| `QueryDelegateAddress` | [QueryDelegateAddressRequest](#allocation.v1.QueryDelegateAddressRequest) | [QueryDelegateAddressResponse](#allocation.v1.QueryDelegateAddressResponse) | QueryDelegateAddress queries the delegate account address of a validator | GET|/sommelier/allocation/v1/delegates/{validator}|
+| `QueryValidatorAddress` | [QueryValidatorAddressRequest](#allocation.v1.QueryValidatorAddressRequest) | [QueryValidatorAddressResponse](#allocation.v1.QueryValidatorAddressResponse) | QueryValidatorAddress returns the validator address of a given delegate | GET|/sommelier/allocation/v1/validators/{delegate}|
+| `QueryAllocationPrecommit` | [QueryAllocationPrecommitRequest](#allocation.v1.QueryAllocationPrecommitRequest) | [QueryAllocationPrecommitResponse](#allocation.v1.QueryAllocationPrecommitResponse) | QueryOracleDataPrevote queries the validator prevote in the current voting period | GET|/sommelier/allocation/v1/precommits/{validator}|
+| `QueryAllocationCommit` | [QueryAllocationCommitRequest](#allocation.v1.QueryAllocationCommitRequest) | [QueryAllocationCommitResponse](#allocation.v1.QueryAllocationCommitResponse) | QueryOracleDataVote queries the validator vote in the current voting period | GET|/sommelier/allocation/v1/commits/{validator}|
+| `QueryCommitPeriod` | [QueryCommitPeriodRequest](#allocation.v1.QueryCommitPeriodRequest) | [QueryCommitPeriodResponse](#allocation.v1.QueryCommitPeriodResponse) | QueryVotePeriod queries the heights for the current voting period (current, start and end) | GET|/sommelier/allocation/v1/commit_period|
+| `QueryMissCounter` | [QueryMissCounterRequest](#allocation.v1.QueryMissCounterRequest) | [QueryMissCounterResponse](#allocation.v1.QueryMissCounterResponse) | QueryMissCounter queries the missed number of oracle data feed periods | GET|/sommelier/allocation/v1/miss_counters/{validator}|
+| `QueryAggregateData` | [QueryAggregateDataRequest](#allocation.v1.QueryAggregateDataRequest) | [QueryAggregateDataResponse](#allocation.v1.QueryAggregateDataResponse) | QueryAggregateData returns the latest aggregated data value for a given type and identifioer | GET|/sommelier/allocation/v1/aggregate_data/{id}/{type}|
+| `QueryLatestPeriodAggregateData` | [QueryLatestPeriodAggregateDataRequest](#allocation.v1.QueryLatestPeriodAggregateDataRequest) | [QueryLatestPeriodAggregateDataResponse](#allocation.v1.QueryLatestPeriodAggregateDataResponse) | QueryLatestPeriodAggregateData returns the aggregated data for a given pair an identifioer | GET|/sommelier/allocation/v1/aggregate_data|
 
  <!-- end services -->
 

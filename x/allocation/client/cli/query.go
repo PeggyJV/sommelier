@@ -119,9 +119,9 @@ func queryAllocationPrecommit() *cobra.Command {
 			}
 
 			queryClient := types.NewQueryClient(ctx)
-			req := &types.QueryOracleDataPrevoteRequest{Validator: args[0]}
+			req := &types.QueryAllocationPrecommitRequest{Validator: args[0]}
 
-			res, err := queryClient.QueryOracleDataPrevote(cmd.Context(), req)
+			res, err := queryClient.QueryAllocationPrecommit(cmd.Context(), req)
 			if err != nil {
 				return err
 			}
@@ -143,9 +143,9 @@ func queryAllocationCommit() *cobra.Command {
 			}
 
 			queryClient := types.NewQueryClient(ctx)
-			req := &types.QueryOracleDataVoteRequest{Validator: args[0]}
+			req := &types.QueryAllocationCommitRequest{Validator: args[0]}
 
-			res, err := queryClient.QueryOracleDataVote(cmd.Context(), req)
+			res, err := queryClient.QueryAllocationCommit(cmd.Context(), req)
 			if err != nil {
 				return err
 			}
@@ -167,9 +167,9 @@ func queryVotePeriod() *cobra.Command {
 			}
 
 			queryClient := types.NewQueryClient(ctx)
-			req := &types.QueryVotePeriodRequest{}
+			req := &types.QueryCommitPeriodRequest{}
 
-			res, err := queryClient.QueryVotePeriod(cmd.Context(), req)
+			res, err := queryClient.QueryCommitPeriod(cmd.Context(), req)
 			if err != nil {
 				return err
 			}

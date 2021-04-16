@@ -66,8 +66,8 @@ func (k Keeper) QueryValidatorAddress(c context.Context, req *types.QueryValidat
 	}, nil
 }
 
-// QueryOracleDataPrevote implements QueryServer
-func (k Keeper) QueryOracleDataPrevote(c context.Context, req *types.QueryOracleDataPrevoteRequest) (*types.QueryOracleDataPrevoteResponse, error) {
+// QueryAllocationPrecommit implements QueryServer
+func (k Keeper) QueryAllocationPrecommit(c context.Context, req *types.QueryAllocationPrecommitRequest) (*types.QueryAllocationPrecommitResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "empty request")
 	}
@@ -79,18 +79,18 @@ func (k Keeper) QueryOracleDataPrevote(c context.Context, req *types.QueryOracle
 		return nil, status.Error(codes.InvalidArgument, err.Error())
 	}
 
-	prevote, found := k.GetAllocationPrecommit(ctx, validatorAddr)
+	precommit, found := k.GetAllocationPrecommit(ctx, validatorAddr)
 	if !found {
-		return nil, status.Error(codes.NotFound, "data prevote")
+		return nil, status.Error(codes.NotFound, "data precommit")
 	}
 
-	return &types.QueryOracleDataPrevoteResponse{
-		Prevote: &prevote,
+	return &types.QueryAllocationPrecommitResponse{
+		Precommit: &precommit,
 	}, nil
 }
 
-// QueryOracleDataVote implements QueryServer
-func (k Keeper) QueryOracleDataVote(c context.Context, req *types.QueryOracleDataVoteRequest) (*types.QueryOracleDataVoteResponse, error) {
+// QueryAllocationCommit implements QueryServer
+func (k Keeper) QueryAllocationCommit(c context.Context, req *types.QueryAllocationCommitRequest) (*types.QueryAllocationCommitResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "empty request")
 	}
@@ -102,13 +102,13 @@ func (k Keeper) QueryOracleDataVote(c context.Context, req *types.QueryOracleDat
 		return nil, status.Error(codes.InvalidArgument, err.Error())
 	}
 
-	dataVote, found := k.GetAllocationCommit(ctx, validatorAddr)
+	allocationCommit, found := k.GetAllocationCommit(ctx, validatorAddr)
 	if !found {
 		return nil, status.Error(codes.NotFound, "data vote")
 	}
 
-	return &types.QueryOracleDataVoteResponse{
-		Vote: &dataVote,
+	return &types.QueryAllocationCommitResponse{
+		Commit: &allocationCommit,
 	}, nil
 }
 
@@ -210,15 +210,15 @@ func (k Keeper) QueryParams(c context.Context, _ *types.QueryParamsRequest) (*ty
 	}, nil
 }
 
-// QueryVotePeriod implements QueryServer
-func (k Keeper) QueryVotePeriod(c context.Context, _ *types.QueryVotePeriodRequest) (*types.QueryVotePeriodResponse, error) {
+// QueryCommitPeriod implements QueryServer
+func (k Keeper) QueryCommitPeriod(c context.Context, _ *types.QueryCommitPeriodRequest) (*types.QueryCommitPeriodResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
 	votePeriodStart, found := k.GetCommitPeriodStart(ctx)
 	if !found {
 		return nil, status.Error(codes.NotFound, "vote period start not set")
 	}
 
-	return &types.QueryVotePeriodResponse{
+	return &types.QueryCommitPeriodResponse{
 		VotePeriodStart: votePeriodStart,
 		VotePeriodEnd:   votePeriodStart + k.GetParamSet(ctx).VotePeriod,
 		CurrentHeight:   ctx.BlockHeight(),

@@ -14,39 +14,39 @@ option go_package = "github.com/peggyjv/sommelier/x/allocation/types";
 service Query {
     // QueryParams queries the oracle module parameters.
     rpc QueryParams(QueryParamsRequest) returns (QueryParamsResponse) {
-        option (google.api.http).get = "/sommelier/oracle/v1/params";
+        option (google.api.http).get = "/sommelier/allocation/v1/params";
     }
     // QueryDelegateAddress queries the delegate account address of a validator
     rpc QueryDelegateAddress(QueryDelegateAddressRequest) returns (QueryDelegateAddressResponse) {
-        option (google.api.http).get = "/sommelier/oracle/v1/delegates/{validator}";
+        option (google.api.http).get = "/sommelier/allocation/v1/delegates/{validator}";
     }
     // QueryValidatorAddress returns the validator address of a given delegate
     rpc QueryValidatorAddress(QueryValidatorAddressRequest) returns (QueryValidatorAddressResponse) {
-        option (google.api.http).get = "/sommelier/oracle/v1/validators/{delegate}";
+        option (google.api.http).get = "/sommelier/allocation/v1/validators/{delegate}";
     }
     // QueryOracleDataPrevote queries the validator prevote in the current voting period
-    rpc QueryOracleDataPrevote(QueryOracleDataPrevoteRequest) returns (QueryOracleDataPrevoteResponse) {
-        option (google.api.http).get = "/sommelier/oracle/v1/prevotes/{validator}";
+    rpc QueryAllocationPrecommit(QueryAllocationPrecommitRequest) returns (QueryAllocationPrecommitResponse) {
+        option (google.api.http).get = "/sommelier/allocation/v1/precommits/{validator}";
     }
     // QueryOracleDataVote queries the validator vote in the current voting period 
-    rpc QueryOracleDataVote(QueryOracleDataVoteRequest) returns (QueryOracleDataVoteResponse) {
-        option (google.api.http).get = "/sommelier/oracle/v1/votes/{validator}";
+    rpc QueryAllocationCommit(QueryAllocationCommitRequest) returns (QueryAllocationCommitResponse) {
+        option (google.api.http).get = "/sommelier/allocation/v1/commits/{validator}";
     }
     // QueryVotePeriod queries the heights for the current voting period (current, start and end)
-    rpc QueryVotePeriod(QueryVotePeriodRequest) returns (QueryVotePeriodResponse) {
-        option (google.api.http).get = "/sommelier/oracle/v1/vote_period";
+    rpc QueryCommitPeriod(QueryCommitPeriodRequest) returns (QueryCommitPeriodResponse) {
+        option (google.api.http).get = "/sommelier/allocation/v1/commit_period";
     }
      // QueryMissCounter queries the missed number of oracle data feed periods
     rpc QueryMissCounter(QueryMissCounterRequest) returns (QueryMissCounterResponse) {
-        option (google.api.http).get = "/sommelier/oracle/v1/miss_counters/{validator}";
+        option (google.api.http).get = "/sommelier/allocation/v1/miss_counters/{validator}";
     }
     // QueryAggregateData returns the latest aggregated data value for a given type and identifioer
     rpc QueryAggregateData(QueryAggregateDataRequest) returns (QueryAggregateDataResponse) {
-        option (google.api.http).get = "/sommelier/oracle/v1/aggregate_data/{id}/{type}";
+        option (google.api.http).get = "/sommelier/allocation/v1/aggregate_data/{id}/{type}";
     }
     // QueryLatestPeriodAggregateData returns the aggregated data for a given pair an identifioer
     rpc QueryLatestPeriodAggregateData(QueryLatestPeriodAggregateDataRequest) returns (QueryLatestPeriodAggregateDataResponse) {
-        option (google.api.http).get = "/sommelier/oracle/v1/aggregate_data";
+        option (google.api.http).get = "/sommelier/allocation/v1/aggregate_data";
     }
 }
 
@@ -83,35 +83,35 @@ message QueryValidatorAddressResponse {
     string validator = 1;
 }
 
-// QueryOracleDataPrevoteRequest is the request type for the Query/QueryOracleDataPrevote gRPC method.
-message QueryOracleDataPrevoteRequest {
+// QueryAllocationPrecommitRequest is the request type for the Query/AllocationPrecommit gRPC method.
+message QueryAllocationPrecommitRequest {
     // validator operator address
     string validator = 1; 
 }
 
 // QueryOracleDataPrevoteResponse is the response type for the Query/QueryOracleDataPrevote gRPC method.
-message QueryOracleDataPrevoteResponse {
+message QueryAllocationPrecommitResponse {
     // prevote submitted within the latest voting period
-    OraclePrevote prevote = 1;
+    AllocationPrecommit precommit = 1;
 }
 
 // QueryOracleDataVoteRequest is the request type for the Query/QueryOracleDataVote gRPC method.
-message QueryOracleDataVoteRequest {
+message QueryAllocationCommitRequest {
     // validator operator address
     string validator = 1;
 }
 
 // QueryOracleDataVoteResponse is the response type for the Query/QueryOracleDataVote gRPC method.
-message QueryOracleDataVoteResponse {
+message QueryAllocationCommitResponse {
     // vote containing the oracle feed submitted within the latest voting period
-    OracleVote vote = 1;
+    Allocation commit = 1;
 }
 
 // QueryVotePeriodRequest is the request type for the Query/VotePeriod gRPC method.
-message QueryVotePeriodRequest {}
+message QueryCommitPeriodRequest {}
 
 // QueryVotePeriodResponse is the response type for the Query/VotePeriod gRPC method.
-message QueryVotePeriodResponse {
+message QueryCommitPeriodResponse {
     // block height at which the query was processed
     int64 current_height    = 1;
     // latest vote period start block height

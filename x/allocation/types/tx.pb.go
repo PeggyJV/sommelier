@@ -363,7 +363,7 @@ type MsgClient interface {
 	DelegateAllocations(ctx context.Context, in *MsgDelegateAllocations, opts ...grpc.CallOption) (*MsgDelegateAllocationsResponse, error)
 	// OracleDataPrevote defines a message that commits a hash of a oracle data feed before the data is actually submitted.
 	AllocationPrecommit(ctx context.Context, in *MsgAllocationPrecommit, opts ...grpc.CallOption) (*MsgAllocationPrecommitResponse, error)
-	// OracleDataVote defines a message to submit the actual oracle data that was committed by the feeder through the prevote.
+	// AllocationCommit defines a message to submit the actual oracle data that was committed by the feeder through the prevote.
 	AllocationCommit(ctx context.Context, in *MsgAllocationCommit, opts ...grpc.CallOption) (*MsgAllocationCommitResponse, error)
 }
 
@@ -408,7 +408,7 @@ type MsgServer interface {
 	DelegateAllocations(context.Context, *MsgDelegateAllocations) (*MsgDelegateAllocationsResponse, error)
 	// OracleDataPrevote defines a message that commits a hash of a oracle data feed before the data is actually submitted.
 	AllocationPrecommit(context.Context, *MsgAllocationPrecommit) (*MsgAllocationPrecommitResponse, error)
-	// OracleDataVote defines a message to submit the actual oracle data that was committed by the feeder through the prevote.
+	// AllocationCommit defines a message to submit the actual oracle data that was committed by the feeder through the prevote.
 	AllocationCommit(context.Context, *MsgAllocationCommit) (*MsgAllocationCommitResponse, error)
 }
 

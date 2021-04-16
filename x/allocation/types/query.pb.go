@@ -298,24 +298,24 @@ func (m *QueryValidatorAddressResponse) GetValidator() string {
 	return ""
 }
 
-// QueryOracleDataPrevoteRequest is the request type for the Query/QueryOracleDataPrevote gRPC method.
-type QueryOracleDataPrevoteRequest struct {
+// QueryAllocationPrecommitRequest is the request type for the Query/AllocationPrecommit gRPC method.
+type QueryAllocationPrecommitRequest struct {
 	// validator operator address
 	Validator string `protobuf:"bytes,1,opt,name=validator,proto3" json:"validator,omitempty"`
 }
 
-func (m *QueryOracleDataPrevoteRequest) Reset()         { *m = QueryOracleDataPrevoteRequest{} }
-func (m *QueryOracleDataPrevoteRequest) String() string { return proto.CompactTextString(m) }
-func (*QueryOracleDataPrevoteRequest) ProtoMessage()    {}
-func (*QueryOracleDataPrevoteRequest) Descriptor() ([]byte, []int) {
+func (m *QueryAllocationPrecommitRequest) Reset()         { *m = QueryAllocationPrecommitRequest{} }
+func (m *QueryAllocationPrecommitRequest) String() string { return proto.CompactTextString(m) }
+func (*QueryAllocationPrecommitRequest) ProtoMessage()    {}
+func (*QueryAllocationPrecommitRequest) Descriptor() ([]byte, []int) {
 	return fileDescriptor_b27a95d8c59345b2, []int{6}
 }
-func (m *QueryOracleDataPrevoteRequest) XXX_Unmarshal(b []byte) error {
+func (m *QueryAllocationPrecommitRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *QueryOracleDataPrevoteRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *QueryAllocationPrecommitRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_QueryOracleDataPrevoteRequest.Marshal(b, m, deterministic)
+		return xxx_messageInfo_QueryAllocationPrecommitRequest.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -325,43 +325,43 @@ func (m *QueryOracleDataPrevoteRequest) XXX_Marshal(b []byte, deterministic bool
 		return b[:n], nil
 	}
 }
-func (m *QueryOracleDataPrevoteRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_QueryOracleDataPrevoteRequest.Merge(m, src)
+func (m *QueryAllocationPrecommitRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryAllocationPrecommitRequest.Merge(m, src)
 }
-func (m *QueryOracleDataPrevoteRequest) XXX_Size() int {
+func (m *QueryAllocationPrecommitRequest) XXX_Size() int {
 	return m.Size()
 }
-func (m *QueryOracleDataPrevoteRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_QueryOracleDataPrevoteRequest.DiscardUnknown(m)
+func (m *QueryAllocationPrecommitRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryAllocationPrecommitRequest.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_QueryOracleDataPrevoteRequest proto.InternalMessageInfo
+var xxx_messageInfo_QueryAllocationPrecommitRequest proto.InternalMessageInfo
 
-func (m *QueryOracleDataPrevoteRequest) GetValidator() string {
+func (m *QueryAllocationPrecommitRequest) GetValidator() string {
 	if m != nil {
 		return m.Validator
 	}
 	return ""
 }
 
-// QueryOracleDataPrevoteResponse is the response type for the Query/QueryOracleDataPrevote gRPC method.
-type QueryOracleDataPrevoteResponse struct {
+// QueryOracleDataPrevoteResponse is the response type for the Query/QueryAllocationPrecommit gRPC method.
+type QueryAllocationPrecommitResponse struct {
 	// prevote submitted within the latest voting period
-	Prevote *OraclePrevote `protobuf:"bytes,1,opt,name=prevote,proto3" json:"prevote,omitempty"`
+	Precommit *AllocationPrecommit `protobuf:"bytes,1,opt,name=precommit,proto3" json:"precommit,omitempty"`
 }
 
-func (m *QueryOracleDataPrevoteResponse) Reset()         { *m = QueryOracleDataPrevoteResponse{} }
-func (m *QueryOracleDataPrevoteResponse) String() string { return proto.CompactTextString(m) }
-func (*QueryOracleDataPrevoteResponse) ProtoMessage()    {}
-func (*QueryOracleDataPrevoteResponse) Descriptor() ([]byte, []int) {
+func (m *QueryAllocationPrecommitResponse) Reset()         { *m = QueryAllocationPrecommitResponse{} }
+func (m *QueryAllocationPrecommitResponse) String() string { return proto.CompactTextString(m) }
+func (*QueryAllocationPrecommitResponse) ProtoMessage()    {}
+func (*QueryAllocationPrecommitResponse) Descriptor() ([]byte, []int) {
 	return fileDescriptor_b27a95d8c59345b2, []int{7}
 }
-func (m *QueryOracleDataPrevoteResponse) XXX_Unmarshal(b []byte) error {
+func (m *QueryAllocationPrecommitResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *QueryOracleDataPrevoteResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *QueryAllocationPrecommitResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_QueryOracleDataPrevoteResponse.Marshal(b, m, deterministic)
+		return xxx_messageInfo_QueryAllocationPrecommitResponse.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -371,43 +371,43 @@ func (m *QueryOracleDataPrevoteResponse) XXX_Marshal(b []byte, deterministic boo
 		return b[:n], nil
 	}
 }
-func (m *QueryOracleDataPrevoteResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_QueryOracleDataPrevoteResponse.Merge(m, src)
+func (m *QueryAllocationPrecommitResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryAllocationPrecommitResponse.Merge(m, src)
 }
-func (m *QueryOracleDataPrevoteResponse) XXX_Size() int {
+func (m *QueryAllocationPrecommitResponse) XXX_Size() int {
 	return m.Size()
 }
-func (m *QueryOracleDataPrevoteResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_QueryOracleDataPrevoteResponse.DiscardUnknown(m)
+func (m *QueryAllocationPrecommitResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryAllocationPrecommitResponse.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_QueryOracleDataPrevoteResponse proto.InternalMessageInfo
+var xxx_messageInfo_QueryAllocationPrecommitResponse proto.InternalMessageInfo
 
-func (m *QueryOracleDataPrevoteResponse) GetPrevote() *OraclePrevote {
+func (m *QueryAllocationPrecommitResponse) GetPrecommit() *AllocationPrecommit {
 	if m != nil {
-		return m.Prevote
+		return m.Precommit
 	}
 	return nil
 }
 
-// QueryOracleDataVoteRequest is the request type for the Query/QueryOracleDataVote gRPC method.
-type QueryOracleDataVoteRequest struct {
+// QueryOracleDataVoteRequest is the request type for the Query/QueryAllocationCommit gRPC method.
+type QueryAllocationCommitRequest struct {
 	// validator operator address
 	Validator string `protobuf:"bytes,1,opt,name=validator,proto3" json:"validator,omitempty"`
 }
 
-func (m *QueryOracleDataVoteRequest) Reset()         { *m = QueryOracleDataVoteRequest{} }
-func (m *QueryOracleDataVoteRequest) String() string { return proto.CompactTextString(m) }
-func (*QueryOracleDataVoteRequest) ProtoMessage()    {}
-func (*QueryOracleDataVoteRequest) Descriptor() ([]byte, []int) {
+func (m *QueryAllocationCommitRequest) Reset()         { *m = QueryAllocationCommitRequest{} }
+func (m *QueryAllocationCommitRequest) String() string { return proto.CompactTextString(m) }
+func (*QueryAllocationCommitRequest) ProtoMessage()    {}
+func (*QueryAllocationCommitRequest) Descriptor() ([]byte, []int) {
 	return fileDescriptor_b27a95d8c59345b2, []int{8}
 }
-func (m *QueryOracleDataVoteRequest) XXX_Unmarshal(b []byte) error {
+func (m *QueryAllocationCommitRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *QueryOracleDataVoteRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *QueryAllocationCommitRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_QueryOracleDataVoteRequest.Marshal(b, m, deterministic)
+		return xxx_messageInfo_QueryAllocationCommitRequest.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -417,43 +417,43 @@ func (m *QueryOracleDataVoteRequest) XXX_Marshal(b []byte, deterministic bool) (
 		return b[:n], nil
 	}
 }
-func (m *QueryOracleDataVoteRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_QueryOracleDataVoteRequest.Merge(m, src)
+func (m *QueryAllocationCommitRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryAllocationCommitRequest.Merge(m, src)
 }
-func (m *QueryOracleDataVoteRequest) XXX_Size() int {
+func (m *QueryAllocationCommitRequest) XXX_Size() int {
 	return m.Size()
 }
-func (m *QueryOracleDataVoteRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_QueryOracleDataVoteRequest.DiscardUnknown(m)
+func (m *QueryAllocationCommitRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryAllocationCommitRequest.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_QueryOracleDataVoteRequest proto.InternalMessageInfo
+var xxx_messageInfo_QueryAllocationCommitRequest proto.InternalMessageInfo
 
-func (m *QueryOracleDataVoteRequest) GetValidator() string {
+func (m *QueryAllocationCommitRequest) GetValidator() string {
 	if m != nil {
 		return m.Validator
 	}
 	return ""
 }
 
-// QueryOracleDataVoteResponse is the response type for the Query/QueryOracleDataVote gRPC method.
-type QueryOracleDataVoteResponse struct {
+// QueryOracleDataVoteResponse is the response type for the Query/QueryAllocationCommit gRPC method.
+type QueryAllocationCommitResponse struct {
 	// vote containing the oracle feed submitted within the latest voting period
-	Vote *OracleVote `protobuf:"bytes,1,opt,name=vote,proto3" json:"vote,omitempty"`
+	Commit *Allocation `protobuf:"bytes,1,opt,name=commit,proto3" json:"commit,omitempty"`
 }
 
-func (m *QueryOracleDataVoteResponse) Reset()         { *m = QueryOracleDataVoteResponse{} }
-func (m *QueryOracleDataVoteResponse) String() string { return proto.CompactTextString(m) }
-func (*QueryOracleDataVoteResponse) ProtoMessage()    {}
-func (*QueryOracleDataVoteResponse) Descriptor() ([]byte, []int) {
+func (m *QueryAllocationCommitResponse) Reset()         { *m = QueryAllocationCommitResponse{} }
+func (m *QueryAllocationCommitResponse) String() string { return proto.CompactTextString(m) }
+func (*QueryAllocationCommitResponse) ProtoMessage()    {}
+func (*QueryAllocationCommitResponse) Descriptor() ([]byte, []int) {
 	return fileDescriptor_b27a95d8c59345b2, []int{9}
 }
-func (m *QueryOracleDataVoteResponse) XXX_Unmarshal(b []byte) error {
+func (m *QueryAllocationCommitResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *QueryOracleDataVoteResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *QueryAllocationCommitResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_QueryOracleDataVoteResponse.Marshal(b, m, deterministic)
+		return xxx_messageInfo_QueryAllocationCommitResponse.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -463,41 +463,41 @@ func (m *QueryOracleDataVoteResponse) XXX_Marshal(b []byte, deterministic bool) 
 		return b[:n], nil
 	}
 }
-func (m *QueryOracleDataVoteResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_QueryOracleDataVoteResponse.Merge(m, src)
+func (m *QueryAllocationCommitResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryAllocationCommitResponse.Merge(m, src)
 }
-func (m *QueryOracleDataVoteResponse) XXX_Size() int {
+func (m *QueryAllocationCommitResponse) XXX_Size() int {
 	return m.Size()
 }
-func (m *QueryOracleDataVoteResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_QueryOracleDataVoteResponse.DiscardUnknown(m)
+func (m *QueryAllocationCommitResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryAllocationCommitResponse.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_QueryOracleDataVoteResponse proto.InternalMessageInfo
+var xxx_messageInfo_QueryAllocationCommitResponse proto.InternalMessageInfo
 
-func (m *QueryOracleDataVoteResponse) GetVote() *OracleVote {
+func (m *QueryAllocationCommitResponse) GetCommit() *Allocation {
 	if m != nil {
-		return m.Vote
+		return m.Commit
 	}
 	return nil
 }
 
 // QueryVotePeriodRequest is the request type for the Query/VotePeriod gRPC method.
-type QueryVotePeriodRequest struct {
+type QueryCommitPeriodRequest struct {
 }
 
-func (m *QueryVotePeriodRequest) Reset()         { *m = QueryVotePeriodRequest{} }
-func (m *QueryVotePeriodRequest) String() string { return proto.CompactTextString(m) }
-func (*QueryVotePeriodRequest) ProtoMessage()    {}
-func (*QueryVotePeriodRequest) Descriptor() ([]byte, []int) {
+func (m *QueryCommitPeriodRequest) Reset()         { *m = QueryCommitPeriodRequest{} }
+func (m *QueryCommitPeriodRequest) String() string { return proto.CompactTextString(m) }
+func (*QueryCommitPeriodRequest) ProtoMessage()    {}
+func (*QueryCommitPeriodRequest) Descriptor() ([]byte, []int) {
 	return fileDescriptor_b27a95d8c59345b2, []int{10}
 }
-func (m *QueryVotePeriodRequest) XXX_Unmarshal(b []byte) error {
+func (m *QueryCommitPeriodRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *QueryVotePeriodRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *QueryCommitPeriodRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_QueryVotePeriodRequest.Marshal(b, m, deterministic)
+		return xxx_messageInfo_QueryCommitPeriodRequest.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -507,20 +507,20 @@ func (m *QueryVotePeriodRequest) XXX_Marshal(b []byte, deterministic bool) ([]by
 		return b[:n], nil
 	}
 }
-func (m *QueryVotePeriodRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_QueryVotePeriodRequest.Merge(m, src)
+func (m *QueryCommitPeriodRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryCommitPeriodRequest.Merge(m, src)
 }
-func (m *QueryVotePeriodRequest) XXX_Size() int {
+func (m *QueryCommitPeriodRequest) XXX_Size() int {
 	return m.Size()
 }
-func (m *QueryVotePeriodRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_QueryVotePeriodRequest.DiscardUnknown(m)
+func (m *QueryCommitPeriodRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryCommitPeriodRequest.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_QueryVotePeriodRequest proto.InternalMessageInfo
+var xxx_messageInfo_QueryCommitPeriodRequest proto.InternalMessageInfo
 
 // QueryVotePeriodResponse is the response type for the Query/VotePeriod gRPC method.
-type QueryVotePeriodResponse struct {
+type QueryCommitPeriodResponse struct {
 	// block height at which the query was processed
 	CurrentHeight int64 `protobuf:"varint,1,opt,name=current_height,json=currentHeight,proto3" json:"current_height,omitempty"`
 	// latest vote period start block height
@@ -529,18 +529,18 @@ type QueryVotePeriodResponse struct {
 	VotePeriodEnd int64 `protobuf:"varint,3,opt,name=vote_period_end,json=votePeriodEnd,proto3" json:"vote_period_end,omitempty"`
 }
 
-func (m *QueryVotePeriodResponse) Reset()         { *m = QueryVotePeriodResponse{} }
-func (m *QueryVotePeriodResponse) String() string { return proto.CompactTextString(m) }
-func (*QueryVotePeriodResponse) ProtoMessage()    {}
-func (*QueryVotePeriodResponse) Descriptor() ([]byte, []int) {
+func (m *QueryCommitPeriodResponse) Reset()         { *m = QueryCommitPeriodResponse{} }
+func (m *QueryCommitPeriodResponse) String() string { return proto.CompactTextString(m) }
+func (*QueryCommitPeriodResponse) ProtoMessage()    {}
+func (*QueryCommitPeriodResponse) Descriptor() ([]byte, []int) {
 	return fileDescriptor_b27a95d8c59345b2, []int{11}
 }
-func (m *QueryVotePeriodResponse) XXX_Unmarshal(b []byte) error {
+func (m *QueryCommitPeriodResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *QueryVotePeriodResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *QueryCommitPeriodResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_QueryVotePeriodResponse.Marshal(b, m, deterministic)
+		return xxx_messageInfo_QueryCommitPeriodResponse.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -550,33 +550,33 @@ func (m *QueryVotePeriodResponse) XXX_Marshal(b []byte, deterministic bool) ([]b
 		return b[:n], nil
 	}
 }
-func (m *QueryVotePeriodResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_QueryVotePeriodResponse.Merge(m, src)
+func (m *QueryCommitPeriodResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryCommitPeriodResponse.Merge(m, src)
 }
-func (m *QueryVotePeriodResponse) XXX_Size() int {
+func (m *QueryCommitPeriodResponse) XXX_Size() int {
 	return m.Size()
 }
-func (m *QueryVotePeriodResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_QueryVotePeriodResponse.DiscardUnknown(m)
+func (m *QueryCommitPeriodResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryCommitPeriodResponse.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_QueryVotePeriodResponse proto.InternalMessageInfo
+var xxx_messageInfo_QueryCommitPeriodResponse proto.InternalMessageInfo
 
-func (m *QueryVotePeriodResponse) GetCurrentHeight() int64 {
+func (m *QueryCommitPeriodResponse) GetCurrentHeight() int64 {
 	if m != nil {
 		return m.CurrentHeight
 	}
 	return 0
 }
 
-func (m *QueryVotePeriodResponse) GetVotePeriodStart() int64 {
+func (m *QueryCommitPeriodResponse) GetVotePeriodStart() int64 {
 	if m != nil {
 		return m.VotePeriodStart
 	}
 	return 0
 }
 
-func (m *QueryVotePeriodResponse) GetVotePeriodEnd() int64 {
+func (m *QueryCommitPeriodResponse) GetVotePeriodEnd() int64 {
 	if m != nil {
 		return m.VotePeriodEnd
 	}
@@ -904,12 +904,12 @@ func init() {
 	proto.RegisterType((*QueryDelegateAddressResponse)(nil), "allocation.v1.QueryDelegateAddressResponse")
 	proto.RegisterType((*QueryValidatorAddressRequest)(nil), "allocation.v1.QueryValidatorAddressRequest")
 	proto.RegisterType((*QueryValidatorAddressResponse)(nil), "allocation.v1.QueryValidatorAddressResponse")
-	proto.RegisterType((*QueryOracleDataPrevoteRequest)(nil), "allocation.v1.QueryOracleDataPrevoteRequest")
-	proto.RegisterType((*QueryOracleDataPrevoteResponse)(nil), "allocation.v1.QueryOracleDataPrevoteResponse")
-	proto.RegisterType((*QueryOracleDataVoteRequest)(nil), "allocation.v1.QueryOracleDataVoteRequest")
-	proto.RegisterType((*QueryOracleDataVoteResponse)(nil), "allocation.v1.QueryOracleDataVoteResponse")
-	proto.RegisterType((*QueryVotePeriodRequest)(nil), "allocation.v1.QueryVotePeriodRequest")
-	proto.RegisterType((*QueryVotePeriodResponse)(nil), "allocation.v1.QueryVotePeriodResponse")
+	proto.RegisterType((*QueryAllocationPrecommitRequest)(nil), "allocation.v1.QueryAllocationPrecommitRequest")
+	proto.RegisterType((*QueryAllocationPrecommitResponse)(nil), "allocation.v1.QueryAllocationPrecommitResponse")
+	proto.RegisterType((*QueryAllocationCommitRequest)(nil), "allocation.v1.QueryAllocationCommitRequest")
+	proto.RegisterType((*QueryAllocationCommitResponse)(nil), "allocation.v1.QueryAllocationCommitResponse")
+	proto.RegisterType((*QueryCommitPeriodRequest)(nil), "allocation.v1.QueryCommitPeriodRequest")
+	proto.RegisterType((*QueryCommitPeriodResponse)(nil), "allocation.v1.QueryCommitPeriodResponse")
 	proto.RegisterType((*QueryMissCounterRequest)(nil), "allocation.v1.QueryMissCounterRequest")
 	proto.RegisterType((*QueryMissCounterResponse)(nil), "allocation.v1.QueryMissCounterResponse")
 	proto.RegisterType((*QueryAggregateDataRequest)(nil), "allocation.v1.QueryAggregateDataRequest")
@@ -921,71 +921,70 @@ func init() {
 func init() { proto.RegisterFile("allocation/v1/query.proto", fileDescriptor_b27a95d8c59345b2) }
 
 var fileDescriptor_b27a95d8c59345b2 = []byte{
-	// 1011 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xa4, 0x56, 0xcf, 0x6f, 0x1b, 0x45,
-	0x14, 0xce, 0xc6, 0x25, 0xd0, 0x67, 0xda, 0xc0, 0x90, 0x16, 0x67, 0x93, 0x9a, 0x76, 0xab, 0xb8,
-	0x89, 0xd3, 0xee, 0xe2, 0x14, 0x5a, 0xa9, 0x55, 0x85, 0x5a, 0xca, 0x4f, 0x15, 0x61, 0x8c, 0xa8,
-	0x10, 0x17, 0x6b, 0xe2, 0x1d, 0x6d, 0x16, 0xd9, 0x3b, 0x9b, 0x9d, 0xb1, 0x21, 0x8a, 0x72, 0xe1,
-	0xc8, 0x09, 0x09, 0x6e, 0x70, 0x02, 0x09, 0xf5, 0x6f, 0xe0, 0x0f, 0x40, 0x3d, 0x56, 0xe2, 0xc2,
-	0x09, 0xa1, 0x84, 0x3f, 0x04, 0x79, 0xe6, 0xad, 0xbd, 0x5e, 0x8f, 0xe3, 0x45, 0xdc, 0xbc, 0x33,
-	0xdf, 0x7b, 0xdf, 0xf7, 0xde, 0x5b, 0x7f, 0x6f, 0x61, 0x95, 0x76, 0xbb, 0xbc, 0x43, 0x65, 0xc8,
-	0x23, 0x6f, 0xd0, 0xf0, 0xf6, 0xfb, 0x2c, 0x39, 0x70, 0xe3, 0x84, 0x4b, 0x4e, 0xce, 0x8d, 0xaf,
-	0xdc, 0x41, 0xc3, 0x5e, 0x09, 0x78, 0xc0, 0xd5, 0x8d, 0x37, 0xfc, 0xa5, 0x41, 0xf6, 0x7a, 0xc0,
-	0x79, 0xd0, 0x65, 0x1e, 0x8d, 0x43, 0x8f, 0x46, 0x11, 0x97, 0x0a, 0x2f, 0xf0, 0x76, 0x6d, 0x32,
-	0x7b, 0xc0, 0x22, 0x26, 0xc2, 0xf4, 0xb2, 0x3a, 0x79, 0x99, 0x61, 0xd3, 0xf7, 0xab, 0x1d, 0x2e,
-	0x7a, 0x5c, 0xb4, 0x35, 0xa7, 0x7e, 0xc0, 0xab, 0xba, 0x7e, 0xf2, 0x76, 0xa9, 0x60, 0x5a, 0xb3,
-	0x37, 0x68, 0xec, 0x32, 0x49, 0x1b, 0x5e, 0x4c, 0x83, 0x30, 0xca, 0xa4, 0x71, 0x56, 0x80, 0x7c,
-	0x32, 0x44, 0x34, 0x69, 0x42, 0x7b, 0xa2, 0xc5, 0xf6, 0xfb, 0x4c, 0x48, 0xe7, 0x43, 0x78, 0x65,
-	0xe2, 0x54, 0xc4, 0x3c, 0x12, 0x8c, 0xdc, 0x84, 0xa5, 0x58, 0x9d, 0x54, 0xac, 0xcb, 0xd6, 0x66,
-	0x79, 0xe7, 0x82, 0x3b, 0xd1, 0x04, 0x57, 0xc3, 0x1f, 0x9c, 0x79, 0xfa, 0xd7, 0x6b, 0x0b, 0x2d,
-	0x84, 0x3a, 0x77, 0x61, 0x4d, 0xe5, 0x7a, 0xc8, 0xba, 0x2c, 0xa0, 0x92, 0xdd, 0xf7, 0xfd, 0x84,
-	0x89, 0x94, 0x8a, 0xac, 0xc3, 0xd9, 0x01, 0xed, 0x86, 0x3e, 0x95, 0x3c, 0x51, 0x69, 0xcf, 0xb6,
-	0xc6, 0x07, 0xce, 0x1d, 0x58, 0x37, 0x07, 0xa3, 0x22, 0x1b, 0x5e, 0xf0, 0xf1, 0xaa, 0xb2, 0xa8,
-	0x82, 0x47, 0xcf, 0xa3, 0xd8, 0xc7, 0x69, 0xb6, 0x1c, 0x73, 0x36, 0xd6, 0xca, 0xc5, 0xde, 0x83,
-	0x4b, 0x33, 0x62, 0x91, 0xf8, 0x74, 0xd9, 0x69, 0xf8, 0xc7, 0x09, 0xed, 0x74, 0xd9, 0x43, 0x2a,
-	0x69, 0x33, 0x61, 0x03, 0x2e, 0x59, 0xb1, 0xaa, 0x3f, 0x87, 0xea, 0xac, 0x70, 0xa4, 0xbf, 0x05,
-	0xcf, 0xc7, 0xfa, 0x08, 0x47, 0xb1, 0x9e, 0x1b, 0x85, 0x0e, 0x4d, 0xc3, 0x52, 0xb0, 0x73, 0x07,
-	0xec, 0x5c, 0xe6, 0xc7, 0x85, 0x55, 0x3d, 0xc2, 0x41, 0xe6, 0x63, 0x51, 0xd2, 0x0d, 0x38, 0x93,
-	0xd1, 0xb3, 0x6a, 0xd4, 0xa3, 0x02, 0x14, 0xcc, 0xa9, 0xc0, 0x45, 0xdd, 0x61, 0x2e, 0x59, 0x93,
-	0x25, 0x21, 0xf7, 0xd3, 0x97, 0xef, 0x07, 0x0b, 0x5e, 0x9d, 0xba, 0x42, 0x92, 0x0d, 0x38, 0xdf,
-	0xe9, 0x27, 0x09, 0x8b, 0x64, 0x7b, 0x8f, 0x85, 0xc1, 0x9e, 0x54, 0x74, 0xa5, 0xd6, 0x39, 0x3c,
-	0x7d, 0x5f, 0x1d, 0x92, 0x3a, 0xbc, 0x3c, 0x24, 0x69, 0xc7, 0x2a, 0xba, 0x2d, 0x24, 0x4d, 0xa4,
-	0x7a, 0x3f, 0x4a, 0xad, 0xe5, 0xc1, 0x28, 0xeb, 0xa7, 0xc3, 0x63, 0x52, 0x83, 0xe5, 0x2c, 0x96,
-	0x45, 0x7e, 0xa5, 0xa4, 0x73, 0x8e, 0x91, 0xef, 0x44, 0xbe, 0x73, 0x1b, 0x55, 0x7d, 0x14, 0x0a,
-	0xf1, 0x36, 0xef, 0x47, 0x92, 0x25, 0xc5, 0xfa, 0x76, 0x0f, 0x2a, 0xd3, 0x81, 0x58, 0xcf, 0x15,
-	0x78, 0xb1, 0x17, 0x0a, 0xd1, 0xee, 0xe8, 0x73, 0xac, 0xa6, 0xdc, 0x1b, 0x43, 0x9d, 0xb7, 0x60,
-	0x55, 0x85, 0xdf, 0x0f, 0x82, 0x44, 0xbd, 0x9c, 0xc3, 0xce, 0xa7, 0xcc, 0x04, 0xce, 0xc8, 0x83,
-	0x38, 0x7d, 0x7f, 0xd5, 0x6f, 0x72, 0x1e, 0x16, 0x43, 0x1f, 0xff, 0x0d, 0x8b, 0xa1, 0xef, 0xec,
-	0xe3, 0xcc, 0x73, 0x09, 0x50, 0xc1, 0x5d, 0x28, 0x73, 0x35, 0x9b, 0xb6, 0x4f, 0x25, 0xc5, 0xe9,
-	0xd9, 0xb9, 0xe9, 0x7d, 0x16, 0x85, 0xe2, 0x2b, 0x1a, 0x37, 0x69, 0x98, 0xb4, 0x80, 0x8f, 0xe6,
-	0x4f, 0x2e, 0xc2, 0x12, 0x8e, 0x41, 0x37, 0x17, 0x9f, 0x1c, 0x0e, 0x1b, 0x8a, 0xf2, 0x11, 0x95,
-	0x4c, 0x48, 0xdd, 0x43, 0xa3, 0xfe, 0x77, 0x01, 0xc6, 0x96, 0x84, 0xe4, 0x35, 0x17, 0xdd, 0x6c,
-	0xe8, 0x5f, 0xae, 0xf6, 0x5c, 0xf4, 0x2f, 0xb7, 0x49, 0x83, 0xf4, 0x6d, 0x6d, 0x65, 0x22, 0x9d,
-	0xdf, 0x2d, 0xa8, 0xcd, 0x63, 0x9c, 0x55, 0x70, 0xe9, 0xff, 0x17, 0x4c, 0xde, 0x9b, 0xa8, 0xa3,
-	0xa4, 0xea, 0xb8, 0x36, 0xb7, 0x0e, 0xad, 0x28, 0x5b, 0xc8, 0xce, 0x93, 0x32, 0x3c, 0xa7, 0x0a,
-	0x21, 0x07, 0x50, 0xce, 0x78, 0x30, 0xb9, 0x92, 0x53, 0x38, 0xed, 0xda, 0xb6, 0x73, 0x1a, 0x44,
-	0x73, 0x39, 0x57, 0xbf, 0xf9, 0xe3, 0x9f, 0xef, 0x17, 0x2f, 0x91, 0x35, 0x4f, 0xf0, 0x5e, 0x8f,
-	0x75, 0x43, 0x96, 0x78, 0xba, 0xbe, 0xe1, 0x96, 0xd1, 0x96, 0x4d, 0x7e, 0xb1, 0x60, 0xc5, 0x64,
-	0xbb, 0xa4, 0x6e, 0x62, 0x30, 0x1b, 0xbb, 0xbd, 0x5d, 0x08, 0x8b, 0xb2, 0x76, 0x94, 0xac, 0xeb,
-	0xa4, 0x6e, 0x94, 0x95, 0xda, 0xb2, 0xf0, 0x0e, 0x47, 0x7f, 0xab, 0x23, 0xf2, 0xab, 0x05, 0x17,
-	0x8c, 0x26, 0x4d, 0x8c, 0xd4, 0x33, 0xd6, 0x80, 0x7d, 0xbd, 0x18, 0xb8, 0x90, 0xd0, 0x91, 0x3a,
-	0xe1, 0x1d, 0xa6, 0xa2, 0x8f, 0xc8, 0x13, 0x0b, 0xbd, 0x6e, 0xca, 0xcf, 0x89, 0x91, 0x7c, 0xd6,
-	0xd6, 0xb0, 0x6f, 0x14, 0x44, 0xa3, 0xd6, 0x86, 0xd2, 0xba, 0x4d, 0xb6, 0xcc, 0xb3, 0xd6, 0xe8,
-	0xc9, 0x9e, 0xfe, 0x64, 0xe1, 0xe6, 0x9f, 0x34, 0x79, 0xb2, 0x75, 0x3a, 0x73, 0x66, 0x89, 0xd8,
-	0xf5, 0x22, 0x50, 0x54, 0xe8, 0x2a, 0x85, 0x9b, 0xa4, 0x66, 0xee, 0xe6, 0x94, 0xbc, 0x6f, 0x2d,
-	0x58, 0xce, 0xad, 0x06, 0xb2, 0x61, 0x9c, 0x5f, 0x7e, 0xab, 0xd8, 0xb5, 0x79, 0x30, 0x94, 0xb4,
-	0xa9, 0x24, 0x39, 0xe4, 0xf2, 0x4c, 0x49, 0xb8, 0x29, 0xc8, 0x8f, 0x16, 0xbc, 0x94, 0x37, 0x76,
-	0x62, 0xa4, 0x99, 0x5e, 0x19, 0xf6, 0xb5, 0xb9, 0x38, 0xd4, 0x73, 0x4b, 0xe9, 0x79, 0x9d, 0xb8,
-	0x46, 0x3d, 0xd9, 0xe5, 0x31, 0xd9, 0xaa, 0x9f, 0x2d, 0xfc, 0xb2, 0x9b, 0x70, 0x41, 0xb2, 0x69,
-	0xe2, 0x35, 0x59, 0xb3, 0xbd, 0x55, 0x00, 0x89, 0x1a, 0x6f, 0x2b, 0x8d, 0x0d, 0xe2, 0x19, 0x35,
-	0xd2, 0x34, 0x46, 0x19, 0xae, 0x77, 0x18, 0xfa, 0x47, 0xde, 0xe1, 0x70, 0x53, 0x1d, 0x91, 0xdf,
-	0x2c, 0xfc, 0xd2, 0x99, 0x69, 0xdb, 0xe4, 0x0d, 0x93, 0x8c, 0x79, 0x7b, 0xc5, 0x7e, 0xf3, 0x3f,
-	0x46, 0x61, 0x21, 0xdb, 0xaa, 0x90, 0x0d, 0x72, 0xb5, 0x40, 0x21, 0x0f, 0x3e, 0x78, 0x7a, 0x5c,
-	0xb5, 0x9e, 0x1d, 0x57, 0xad, 0xbf, 0x8f, 0xab, 0xd6, 0x77, 0x27, 0xd5, 0x85, 0x67, 0x27, 0xd5,
-	0x85, 0x3f, 0x4f, 0xaa, 0x0b, 0x5f, 0x78, 0x41, 0x28, 0xf7, 0xfa, 0xbb, 0x6e, 0x87, 0xf7, 0xbc,
-	0x98, 0x05, 0xc1, 0xc1, 0x97, 0x83, 0x4c, 0xc2, 0xaf, 0x33, 0x1f, 0xf3, 0xde, 0xb0, 0x0f, 0x62,
-	0x77, 0x49, 0x7d, 0x8c, 0xdf, 0xfc, 0x37, 0x00, 0x00, 0xff, 0xff, 0x6e, 0xba, 0xbc, 0xdd, 0x70,
-	0x0c, 0x00, 0x00,
+	// 1003 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xa4, 0x96, 0xcf, 0x6f, 0x1b, 0x45,
+	0x14, 0xc7, 0xb3, 0x71, 0x89, 0xc8, 0x33, 0x6d, 0xe9, 0x90, 0x42, 0xb2, 0x0d, 0x4e, 0xb3, 0x52,
+	0xed, 0x34, 0x54, 0x3b, 0x38, 0x49, 0xa9, 0xd4, 0x50, 0x95, 0xb4, 0xe5, 0xa7, 0x40, 0x32, 0x46,
+	0x70, 0xe0, 0x62, 0x4d, 0xbc, 0xa3, 0xcd, 0x22, 0x7b, 0x67, 0xb3, 0xb3, 0x36, 0x44, 0x91, 0x2f,
+	0xfc, 0x05, 0x48, 0x48, 0xbd, 0x72, 0x03, 0xc4, 0x99, 0x33, 0x47, 0xd4, 0x63, 0x25, 0x2e, 0x9c,
+	0x10, 0x4a, 0xfa, 0x87, 0x20, 0xcf, 0xbc, 0xb5, 0x77, 0x9d, 0xd9, 0xd8, 0x11, 0x37, 0xef, 0xbc,
+	0x5f, 0x9f, 0xf7, 0x66, 0xfd, 0x7d, 0x0b, 0x2b, 0xac, 0xd3, 0x11, 0x6d, 0x96, 0x04, 0x22, 0xa4,
+	0xfd, 0x3a, 0x3d, 0xec, 0xf1, 0xf8, 0xc8, 0x8d, 0x62, 0x91, 0x08, 0x72, 0x79, 0x6c, 0x72, 0xfb,
+	0x75, 0x7b, 0xc9, 0x17, 0xbe, 0x50, 0x16, 0x3a, 0xfc, 0xa5, 0x9d, 0xec, 0x55, 0x5f, 0x08, 0xbf,
+	0xc3, 0x29, 0x8b, 0x02, 0xca, 0xc2, 0x50, 0x24, 0xca, 0x5f, 0xa2, 0xf5, 0x46, 0x3e, 0xbb, 0xcf,
+	0x43, 0x2e, 0x83, 0xd4, 0x58, 0xc9, 0x1b, 0x33, 0xd5, 0xb4, 0x7d, 0xa5, 0x2d, 0x64, 0x57, 0xc8,
+	0x96, 0xae, 0xa9, 0x1f, 0xd0, 0xb4, 0xa9, 0x9f, 0xe8, 0x3e, 0x93, 0x5c, 0x33, 0xd3, 0x7e, 0x7d,
+	0x9f, 0x27, 0xac, 0x4e, 0x23, 0xe6, 0x07, 0x61, 0x26, 0x8d, 0xb3, 0x04, 0xe4, 0xf3, 0xa1, 0x47,
+	0x83, 0xc5, 0xac, 0x2b, 0x9b, 0xfc, 0xb0, 0xc7, 0x65, 0xe2, 0x7c, 0x02, 0xaf, 0xe5, 0x4e, 0x65,
+	0x24, 0x42, 0xc9, 0xc9, 0x36, 0x2c, 0x44, 0xea, 0x64, 0xd9, 0xba, 0x69, 0x6d, 0x94, 0xb7, 0xae,
+	0xbb, 0xb9, 0x21, 0xb8, 0xda, 0xfd, 0xd1, 0xa5, 0x67, 0xff, 0xac, 0xcd, 0x35, 0xd1, 0xd5, 0xd9,
+	0x85, 0x1b, 0x2a, 0xd7, 0x13, 0xde, 0xe1, 0x3e, 0x4b, 0xf8, 0x9e, 0xe7, 0xc5, 0x5c, 0xa6, 0xa5,
+	0xc8, 0x2a, 0x2c, 0xf6, 0x59, 0x27, 0xf0, 0x58, 0x22, 0x62, 0x95, 0x76, 0xb1, 0x39, 0x3e, 0x70,
+	0xee, 0xc3, 0xaa, 0x39, 0x18, 0x89, 0x6c, 0x78, 0xd9, 0x43, 0xd3, 0xf2, 0xbc, 0x0a, 0x1e, 0x3d,
+	0x8f, 0x62, 0xbf, 0x4a, 0xb3, 0x4d, 0x54, 0xce, 0xc6, 0x5a, 0x13, 0xb1, 0x0f, 0xe0, 0xcd, 0x82,
+	0x58, 0x2c, 0x7c, 0x3e, 0xf6, 0x43, 0x58, 0x53, 0xe1, 0x7b, 0xa3, 0xf1, 0x34, 0x62, 0xde, 0x16,
+	0xdd, 0x6e, 0x90, 0xcc, 0xd6, 0xb7, 0x07, 0x37, 0x8b, 0x13, 0x20, 0xc2, 0x7b, 0xb0, 0x18, 0xa5,
+	0x87, 0x78, 0x21, 0xce, 0xc4, 0x85, 0x98, 0xc2, 0xc7, 0x41, 0xce, 0xbb, 0x38, 0xa1, 0xb1, 0xdb,
+	0xe3, 0x0b, 0x30, 0x36, 0x71, 0x46, 0x67, 0xa3, 0x11, 0xb0, 0x0e, 0x0b, 0x39, 0xba, 0x95, 0x42,
+	0xba, 0x26, 0x3a, 0x3a, 0x36, 0x2c, 0xab, 0x9c, 0x3a, 0x53, 0x83, 0xc7, 0x81, 0xf0, 0xd2, 0x97,
+	0xf2, 0xa9, 0x05, 0x2b, 0x06, 0x23, 0x16, 0xbb, 0x05, 0x57, 0xda, 0xbd, 0x38, 0xe6, 0x61, 0xd2,
+	0x3a, 0xe0, 0x81, 0x7f, 0xa0, 0x8b, 0x96, 0x9a, 0x97, 0xf1, 0xf4, 0x23, 0x75, 0x48, 0x36, 0xe1,
+	0x5a, 0x5f, 0x24, 0xbc, 0x15, 0xa9, 0xe8, 0x96, 0x4c, 0x58, 0x9c, 0xa8, 0x37, 0xa7, 0xd4, 0xbc,
+	0x3a, 0x34, 0xe8, 0xac, 0x5f, 0x0c, 0x8f, 0x49, 0x15, 0xae, 0x66, 0x7d, 0x79, 0xe8, 0x2d, 0x97,
+	0x74, 0xce, 0xb1, 0xe7, 0xfb, 0xa1, 0xe7, 0xdc, 0x83, 0x37, 0x14, 0xd7, 0x67, 0x81, 0x94, 0x8f,
+	0x45, 0x2f, 0x4c, 0x78, 0x3c, 0xdb, 0x04, 0x1f, 0x60, 0xb7, 0xb9, 0x40, 0xec, 0x67, 0x1d, 0x5e,
+	0xe9, 0x06, 0x52, 0xb6, 0xda, 0xfa, 0x1c, 0xbb, 0x29, 0x77, 0xc7, 0xae, 0xce, 0x43, 0x9c, 0xc7,
+	0x9e, 0xef, 0xc7, 0xea, 0xb5, 0x7d, 0xc2, 0x12, 0x96, 0x56, 0x26, 0x70, 0x29, 0x39, 0x8a, 0xd2,
+	0x37, 0x5b, 0xfd, 0x26, 0x57, 0x60, 0x3e, 0xf0, 0xf0, 0x7f, 0x32, 0x1f, 0x78, 0xce, 0x21, 0xd8,
+	0xa6, 0x04, 0x48, 0xb0, 0x0b, 0x65, 0x11, 0xb3, 0x76, 0x87, 0xb7, 0x3c, 0x96, 0x30, 0xbc, 0x43,
+	0x7b, 0xe2, 0x0e, 0xbf, 0x0c, 0x03, 0xf9, 0x2d, 0x8b, 0x1a, 0x2c, 0x88, 0x9b, 0xa0, 0xdd, 0x87,
+	0x49, 0xc8, 0xeb, 0xb0, 0x80, 0xd7, 0xa0, 0x87, 0x8b, 0x4f, 0x8e, 0x80, 0x5b, 0xaa, 0xe4, 0xa7,
+	0x2c, 0xe1, 0x12, 0xef, 0xd0, 0xc8, 0xff, 0x01, 0xc0, 0x58, 0xac, 0xb0, 0x78, 0xd5, 0x45, 0x9d,
+	0x1b, 0x2a, 0x9b, 0xab, 0xd5, 0x18, 0x95, 0xcd, 0x6d, 0x30, 0x9f, 0x63, 0x6c, 0x33, 0x13, 0xe9,
+	0xfc, 0x69, 0x41, 0x75, 0x5a, 0xc5, 0xa2, 0x86, 0x4b, 0xff, 0xbf, 0x61, 0xf2, 0x61, 0xae, 0x8f,
+	0x92, 0xea, 0xa3, 0x36, 0xb5, 0x0f, 0x4d, 0x94, 0x6d, 0x64, 0xeb, 0x45, 0x19, 0x5e, 0x52, 0x8d,
+	0x90, 0x01, 0x94, 0x33, 0xea, 0x4c, 0xd6, 0x27, 0x08, 0xcf, 0xea, 0xb9, 0xed, 0x9c, 0xe7, 0xa2,
+	0x6b, 0x39, 0xb5, 0xef, 0xff, 0x7a, 0xf1, 0xe3, 0xfc, 0x3a, 0x59, 0xa3, 0x52, 0x74, 0xbb, 0xbc,
+	0x13, 0xf0, 0x98, 0xe6, 0x77, 0x90, 0x16, 0x74, 0xf2, 0x8b, 0x05, 0x4b, 0x26, 0x51, 0x26, 0x9b,
+	0xa6, 0x2a, 0x66, 0xd9, 0xb7, 0xdf, 0x9a, 0xc9, 0x17, 0xd1, 0xde, 0x51, 0x68, 0x6f, 0x13, 0xb7,
+	0x10, 0x2d, 0x15, 0x6e, 0x49, 0x8f, 0x47, 0x7f, 0xaf, 0x01, 0xf9, 0xcd, 0x82, 0xeb, 0x46, 0x19,
+	0x27, 0xc6, 0xf2, 0x05, 0x8b, 0xc2, 0xbe, 0x33, 0x9b, 0xf3, 0xcc, 0xb0, 0x23, 0x42, 0x49, 0x8f,
+	0x53, 0xf0, 0x01, 0xf9, 0xdd, 0x42, 0x35, 0x30, 0x88, 0x36, 0x71, 0x4d, 0x08, 0xc5, 0xdb, 0xc5,
+	0xa6, 0x33, 0xfb, 0x23, 0xf5, 0x3d, 0x45, 0x5d, 0x27, 0xb4, 0xf8, 0xf6, 0xd3, 0x98, 0xfc, 0x8c,
+	0x7f, 0x4d, 0x67, 0x3c, 0xb9, 0x06, 0xcc, 0x33, 0x2e, 0x58, 0x35, 0xe6, 0x19, 0x17, 0x6d, 0x16,
+	0x67, 0x47, 0xd1, 0xba, 0xe4, 0x4e, 0x21, 0xad, 0x09, 0xf5, 0xa9, 0x05, 0xd7, 0xce, 0x2c, 0x10,
+	0x52, 0x33, 0x55, 0x36, 0xec, 0x1f, 0x7b, 0x63, 0xba, 0x23, 0xe2, 0xb9, 0x0a, 0x6f, 0x83, 0x54,
+	0xa7, 0xe0, 0xe1, 0x66, 0x21, 0x3f, 0x59, 0xf0, 0xea, 0xe4, 0x22, 0x20, 0x55, 0x53, 0xb9, 0xb3,
+	0x2b, 0xc6, 0xae, 0x4d, 0xf5, 0x43, 0xaa, 0xfb, 0x8a, 0x6a, 0x87, 0x6c, 0x15, 0x52, 0x65, 0x17,
+	0x4e, 0x7e, 0x74, 0x3f, 0x5b, 0xf8, 0x9d, 0x98, 0x53, 0x4e, 0x62, 0x1c, 0x89, 0x49, 0xce, 0xed,
+	0xdb, 0x33, 0x78, 0x22, 0xe7, 0xae, 0xe2, 0xbc, 0x4b, 0xb6, 0x0b, 0x39, 0x59, 0x1a, 0xa7, 0x84,
+	0x9a, 0x1e, 0x07, 0xde, 0x80, 0x1e, 0x0f, 0x37, 0xdc, 0x80, 0xfc, 0x61, 0x41, 0xe5, 0x7c, 0xb9,
+	0x27, 0x3b, 0x26, 0x94, 0x69, 0xfb, 0xc8, 0xbe, 0x7b, 0xc1, 0x28, 0x6c, 0x86, 0xaa, 0x66, 0x6e,
+	0x93, 0xda, 0x8c, 0xcd, 0x3c, 0xfa, 0xf8, 0xd9, 0x49, 0xc5, 0x7a, 0x7e, 0x52, 0xb1, 0xfe, 0x3d,
+	0xa9, 0x58, 0x3f, 0x9c, 0x56, 0xe6, 0x9e, 0x9f, 0x56, 0xe6, 0xfe, 0x3e, 0xad, 0xcc, 0x7d, 0x4d,
+	0xfd, 0x20, 0x39, 0xe8, 0xed, 0xbb, 0x6d, 0xd1, 0xa5, 0x11, 0xf7, 0xfd, 0xa3, 0x6f, 0xfa, 0x99,
+	0xa4, 0xdf, 0x65, 0xd3, 0x0e, 0x67, 0x21, 0xf7, 0x17, 0xd4, 0x27, 0xfe, 0xf6, 0x7f, 0x01, 0x00,
+	0x00, 0xff, 0xff, 0xc0, 0xe6, 0x54, 0xe5, 0xc6, 0x0c, 0x00, 0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -1006,12 +1005,12 @@ type QueryClient interface {
 	QueryDelegateAddress(ctx context.Context, in *QueryDelegateAddressRequest, opts ...grpc.CallOption) (*QueryDelegateAddressResponse, error)
 	// QueryValidatorAddress returns the validator address of a given delegate
 	QueryValidatorAddress(ctx context.Context, in *QueryValidatorAddressRequest, opts ...grpc.CallOption) (*QueryValidatorAddressResponse, error)
-	// QueryOracleDataPrevote queries the validator prevote in the current voting period
-	QueryOracleDataPrevote(ctx context.Context, in *QueryOracleDataPrevoteRequest, opts ...grpc.CallOption) (*QueryOracleDataPrevoteResponse, error)
-	// QueryOracleDataVote queries the validator vote in the current voting period
-	QueryOracleDataVote(ctx context.Context, in *QueryOracleDataVoteRequest, opts ...grpc.CallOption) (*QueryOracleDataVoteResponse, error)
-	// QueryVotePeriod queries the heights for the current voting period (current, start and end)
-	QueryVotePeriod(ctx context.Context, in *QueryVotePeriodRequest, opts ...grpc.CallOption) (*QueryVotePeriodResponse, error)
+	// QueryAllocationPrecommit queries the validator prevote in the current voting period
+	QueryAllocationPrecommit(ctx context.Context, in *QueryAllocationPrecommitRequest, opts ...grpc.CallOption) (*QueryAllocationPrecommitResponse, error)
+	// QueryAllocationCommit queries the validator vote in the current voting period
+	QueryAllocationCommit(ctx context.Context, in *QueryAllocationCommitRequest, opts ...grpc.CallOption) (*QueryAllocationCommitResponse, error)
+	// QueryCommitPeriod queries the heights for the current voting period (current, start and end)
+	QueryCommitPeriod(ctx context.Context, in *QueryCommitPeriodRequest, opts ...grpc.CallOption) (*QueryCommitPeriodResponse, error)
 	// QueryMissCounter queries the missed number of oracle data feed periods
 	QueryMissCounter(ctx context.Context, in *QueryMissCounterRequest, opts ...grpc.CallOption) (*QueryMissCounterResponse, error)
 	// QueryAggregateData returns the latest aggregated data value for a given type and identifioer
@@ -1055,27 +1054,27 @@ func (c *queryClient) QueryValidatorAddress(ctx context.Context, in *QueryValida
 	return out, nil
 }
 
-func (c *queryClient) QueryOracleDataPrevote(ctx context.Context, in *QueryOracleDataPrevoteRequest, opts ...grpc.CallOption) (*QueryOracleDataPrevoteResponse, error) {
-	out := new(QueryOracleDataPrevoteResponse)
-	err := c.cc.Invoke(ctx, "/allocation.v1.Query/QueryOracleDataPrevote", in, out, opts...)
+func (c *queryClient) QueryAllocationPrecommit(ctx context.Context, in *QueryAllocationPrecommitRequest, opts ...grpc.CallOption) (*QueryAllocationPrecommitResponse, error) {
+	out := new(QueryAllocationPrecommitResponse)
+	err := c.cc.Invoke(ctx, "/allocation.v1.Query/QueryAllocationPrecommit", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *queryClient) QueryOracleDataVote(ctx context.Context, in *QueryOracleDataVoteRequest, opts ...grpc.CallOption) (*QueryOracleDataVoteResponse, error) {
-	out := new(QueryOracleDataVoteResponse)
-	err := c.cc.Invoke(ctx, "/allocation.v1.Query/QueryOracleDataVote", in, out, opts...)
+func (c *queryClient) QueryAllocationCommit(ctx context.Context, in *QueryAllocationCommitRequest, opts ...grpc.CallOption) (*QueryAllocationCommitResponse, error) {
+	out := new(QueryAllocationCommitResponse)
+	err := c.cc.Invoke(ctx, "/allocation.v1.Query/QueryAllocationCommit", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *queryClient) QueryVotePeriod(ctx context.Context, in *QueryVotePeriodRequest, opts ...grpc.CallOption) (*QueryVotePeriodResponse, error) {
-	out := new(QueryVotePeriodResponse)
-	err := c.cc.Invoke(ctx, "/allocation.v1.Query/QueryVotePeriod", in, out, opts...)
+func (c *queryClient) QueryCommitPeriod(ctx context.Context, in *QueryCommitPeriodRequest, opts ...grpc.CallOption) (*QueryCommitPeriodResponse, error) {
+	out := new(QueryCommitPeriodResponse)
+	err := c.cc.Invoke(ctx, "/allocation.v1.Query/QueryCommitPeriod", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -1117,12 +1116,12 @@ type QueryServer interface {
 	QueryDelegateAddress(context.Context, *QueryDelegateAddressRequest) (*QueryDelegateAddressResponse, error)
 	// QueryValidatorAddress returns the validator address of a given delegate
 	QueryValidatorAddress(context.Context, *QueryValidatorAddressRequest) (*QueryValidatorAddressResponse, error)
-	// QueryOracleDataPrevote queries the validator prevote in the current voting period
-	QueryOracleDataPrevote(context.Context, *QueryOracleDataPrevoteRequest) (*QueryOracleDataPrevoteResponse, error)
-	// QueryOracleDataVote queries the validator vote in the current voting period
-	QueryOracleDataVote(context.Context, *QueryOracleDataVoteRequest) (*QueryOracleDataVoteResponse, error)
-	// QueryVotePeriod queries the heights for the current voting period (current, start and end)
-	QueryVotePeriod(context.Context, *QueryVotePeriodRequest) (*QueryVotePeriodResponse, error)
+	// QueryAllocationPrecommit queries the validator prevote in the current voting period
+	QueryAllocationPrecommit(context.Context, *QueryAllocationPrecommitRequest) (*QueryAllocationPrecommitResponse, error)
+	// QueryAllocationCommit queries the validator vote in the current voting period
+	QueryAllocationCommit(context.Context, *QueryAllocationCommitRequest) (*QueryAllocationCommitResponse, error)
+	// QueryCommitPeriod queries the heights for the current voting period (current, start and end)
+	QueryCommitPeriod(context.Context, *QueryCommitPeriodRequest) (*QueryCommitPeriodResponse, error)
 	// QueryMissCounter queries the missed number of oracle data feed periods
 	QueryMissCounter(context.Context, *QueryMissCounterRequest) (*QueryMissCounterResponse, error)
 	// QueryAggregateData returns the latest aggregated data value for a given type and identifioer
@@ -1144,14 +1143,14 @@ func (*UnimplementedQueryServer) QueryDelegateAddress(ctx context.Context, req *
 func (*UnimplementedQueryServer) QueryValidatorAddress(ctx context.Context, req *QueryValidatorAddressRequest) (*QueryValidatorAddressResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method QueryValidatorAddress not implemented")
 }
-func (*UnimplementedQueryServer) QueryOracleDataPrevote(ctx context.Context, req *QueryOracleDataPrevoteRequest) (*QueryOracleDataPrevoteResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method QueryOracleDataPrevote not implemented")
+func (*UnimplementedQueryServer) QueryAllocationPrecommit(ctx context.Context, req *QueryAllocationPrecommitRequest) (*QueryAllocationPrecommitResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method QueryAllocationPrecommit not implemented")
 }
-func (*UnimplementedQueryServer) QueryOracleDataVote(ctx context.Context, req *QueryOracleDataVoteRequest) (*QueryOracleDataVoteResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method QueryOracleDataVote not implemented")
+func (*UnimplementedQueryServer) QueryAllocationCommit(ctx context.Context, req *QueryAllocationCommitRequest) (*QueryAllocationCommitResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method QueryAllocationCommit not implemented")
 }
-func (*UnimplementedQueryServer) QueryVotePeriod(ctx context.Context, req *QueryVotePeriodRequest) (*QueryVotePeriodResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method QueryVotePeriod not implemented")
+func (*UnimplementedQueryServer) QueryCommitPeriod(ctx context.Context, req *QueryCommitPeriodRequest) (*QueryCommitPeriodResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method QueryCommitPeriod not implemented")
 }
 func (*UnimplementedQueryServer) QueryMissCounter(ctx context.Context, req *QueryMissCounterRequest) (*QueryMissCounterResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method QueryMissCounter not implemented")
@@ -1221,56 +1220,56 @@ func _Query_QueryValidatorAddress_Handler(srv interface{}, ctx context.Context, 
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Query_QueryOracleDataPrevote_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(QueryOracleDataPrevoteRequest)
+func _Query_QueryAllocationPrecommit_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryAllocationPrecommitRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(QueryServer).QueryOracleDataPrevote(ctx, in)
+		return srv.(QueryServer).QueryAllocationPrecommit(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/allocation.v1.Query/QueryOracleDataPrevote",
+		FullMethod: "/allocation.v1.Query/QueryAllocationPrecommit",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(QueryServer).QueryOracleDataPrevote(ctx, req.(*QueryOracleDataPrevoteRequest))
+		return srv.(QueryServer).QueryAllocationPrecommit(ctx, req.(*QueryAllocationPrecommitRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Query_QueryOracleDataVote_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(QueryOracleDataVoteRequest)
+func _Query_QueryAllocationCommit_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryAllocationCommitRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(QueryServer).QueryOracleDataVote(ctx, in)
+		return srv.(QueryServer).QueryAllocationCommit(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/allocation.v1.Query/QueryOracleDataVote",
+		FullMethod: "/allocation.v1.Query/QueryAllocationCommit",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(QueryServer).QueryOracleDataVote(ctx, req.(*QueryOracleDataVoteRequest))
+		return srv.(QueryServer).QueryAllocationCommit(ctx, req.(*QueryAllocationCommitRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Query_QueryVotePeriod_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(QueryVotePeriodRequest)
+func _Query_QueryCommitPeriod_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryCommitPeriodRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(QueryServer).QueryVotePeriod(ctx, in)
+		return srv.(QueryServer).QueryCommitPeriod(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/allocation.v1.Query/QueryVotePeriod",
+		FullMethod: "/allocation.v1.Query/QueryCommitPeriod",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(QueryServer).QueryVotePeriod(ctx, req.(*QueryVotePeriodRequest))
+		return srv.(QueryServer).QueryCommitPeriod(ctx, req.(*QueryCommitPeriodRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -1346,16 +1345,16 @@ var _Query_serviceDesc = grpc.ServiceDesc{
 			Handler:    _Query_QueryValidatorAddress_Handler,
 		},
 		{
-			MethodName: "QueryOracleDataPrevote",
-			Handler:    _Query_QueryOracleDataPrevote_Handler,
+			MethodName: "QueryAllocationPrecommit",
+			Handler:    _Query_QueryAllocationPrecommit_Handler,
 		},
 		{
-			MethodName: "QueryOracleDataVote",
-			Handler:    _Query_QueryOracleDataVote_Handler,
+			MethodName: "QueryAllocationCommit",
+			Handler:    _Query_QueryAllocationCommit_Handler,
 		},
 		{
-			MethodName: "QueryVotePeriod",
-			Handler:    _Query_QueryVotePeriod_Handler,
+			MethodName: "QueryCommitPeriod",
+			Handler:    _Query_QueryCommitPeriod_Handler,
 		},
 		{
 			MethodName: "QueryMissCounter",
@@ -1550,7 +1549,7 @@ func (m *QueryValidatorAddressResponse) MarshalToSizedBuffer(dAtA []byte) (int, 
 	return len(dAtA) - i, nil
 }
 
-func (m *QueryOracleDataPrevoteRequest) Marshal() (dAtA []byte, err error) {
+func (m *QueryAllocationPrecommitRequest) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -1560,12 +1559,12 @@ func (m *QueryOracleDataPrevoteRequest) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *QueryOracleDataPrevoteRequest) MarshalTo(dAtA []byte) (int, error) {
+func (m *QueryAllocationPrecommitRequest) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *QueryOracleDataPrevoteRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *QueryAllocationPrecommitRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -1580,7 +1579,7 @@ func (m *QueryOracleDataPrevoteRequest) MarshalToSizedBuffer(dAtA []byte) (int, 
 	return len(dAtA) - i, nil
 }
 
-func (m *QueryOracleDataPrevoteResponse) Marshal() (dAtA []byte, err error) {
+func (m *QueryAllocationPrecommitResponse) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -1590,19 +1589,19 @@ func (m *QueryOracleDataPrevoteResponse) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *QueryOracleDataPrevoteResponse) MarshalTo(dAtA []byte) (int, error) {
+func (m *QueryAllocationPrecommitResponse) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *QueryOracleDataPrevoteResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *QueryAllocationPrecommitResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
 	_ = l
-	if m.Prevote != nil {
+	if m.Precommit != nil {
 		{
-			size, err := m.Prevote.MarshalToSizedBuffer(dAtA[:i])
+			size, err := m.Precommit.MarshalToSizedBuffer(dAtA[:i])
 			if err != nil {
 				return 0, err
 			}
@@ -1615,7 +1614,7 @@ func (m *QueryOracleDataPrevoteResponse) MarshalToSizedBuffer(dAtA []byte) (int,
 	return len(dAtA) - i, nil
 }
 
-func (m *QueryOracleDataVoteRequest) Marshal() (dAtA []byte, err error) {
+func (m *QueryAllocationCommitRequest) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -1625,12 +1624,12 @@ func (m *QueryOracleDataVoteRequest) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *QueryOracleDataVoteRequest) MarshalTo(dAtA []byte) (int, error) {
+func (m *QueryAllocationCommitRequest) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *QueryOracleDataVoteRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *QueryAllocationCommitRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -1645,7 +1644,7 @@ func (m *QueryOracleDataVoteRequest) MarshalToSizedBuffer(dAtA []byte) (int, err
 	return len(dAtA) - i, nil
 }
 
-func (m *QueryOracleDataVoteResponse) Marshal() (dAtA []byte, err error) {
+func (m *QueryAllocationCommitResponse) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -1655,19 +1654,19 @@ func (m *QueryOracleDataVoteResponse) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *QueryOracleDataVoteResponse) MarshalTo(dAtA []byte) (int, error) {
+func (m *QueryAllocationCommitResponse) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *QueryOracleDataVoteResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *QueryAllocationCommitResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
 	_ = l
-	if m.Vote != nil {
+	if m.Commit != nil {
 		{
-			size, err := m.Vote.MarshalToSizedBuffer(dAtA[:i])
+			size, err := m.Commit.MarshalToSizedBuffer(dAtA[:i])
 			if err != nil {
 				return 0, err
 			}
@@ -1680,7 +1679,7 @@ func (m *QueryOracleDataVoteResponse) MarshalToSizedBuffer(dAtA []byte) (int, er
 	return len(dAtA) - i, nil
 }
 
-func (m *QueryVotePeriodRequest) Marshal() (dAtA []byte, err error) {
+func (m *QueryCommitPeriodRequest) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -1690,12 +1689,12 @@ func (m *QueryVotePeriodRequest) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *QueryVotePeriodRequest) MarshalTo(dAtA []byte) (int, error) {
+func (m *QueryCommitPeriodRequest) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *QueryVotePeriodRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *QueryCommitPeriodRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -1703,7 +1702,7 @@ func (m *QueryVotePeriodRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) 
 	return len(dAtA) - i, nil
 }
 
-func (m *QueryVotePeriodResponse) Marshal() (dAtA []byte, err error) {
+func (m *QueryCommitPeriodResponse) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -1713,12 +1712,12 @@ func (m *QueryVotePeriodResponse) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *QueryVotePeriodResponse) MarshalTo(dAtA []byte) (int, error) {
+func (m *QueryCommitPeriodResponse) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *QueryVotePeriodResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *QueryCommitPeriodResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -2048,7 +2047,7 @@ func (m *QueryValidatorAddressResponse) Size() (n int) {
 	return n
 }
 
-func (m *QueryOracleDataPrevoteRequest) Size() (n int) {
+func (m *QueryAllocationPrecommitRequest) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -2061,20 +2060,20 @@ func (m *QueryOracleDataPrevoteRequest) Size() (n int) {
 	return n
 }
 
-func (m *QueryOracleDataPrevoteResponse) Size() (n int) {
+func (m *QueryAllocationPrecommitResponse) Size() (n int) {
 	if m == nil {
 		return 0
 	}
 	var l int
 	_ = l
-	if m.Prevote != nil {
-		l = m.Prevote.Size()
+	if m.Precommit != nil {
+		l = m.Precommit.Size()
 		n += 1 + l + sovQuery(uint64(l))
 	}
 	return n
 }
 
-func (m *QueryOracleDataVoteRequest) Size() (n int) {
+func (m *QueryAllocationCommitRequest) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -2087,20 +2086,20 @@ func (m *QueryOracleDataVoteRequest) Size() (n int) {
 	return n
 }
 
-func (m *QueryOracleDataVoteResponse) Size() (n int) {
+func (m *QueryAllocationCommitResponse) Size() (n int) {
 	if m == nil {
 		return 0
 	}
 	var l int
 	_ = l
-	if m.Vote != nil {
-		l = m.Vote.Size()
+	if m.Commit != nil {
+		l = m.Commit.Size()
 		n += 1 + l + sovQuery(uint64(l))
 	}
 	return n
 }
 
-func (m *QueryVotePeriodRequest) Size() (n int) {
+func (m *QueryCommitPeriodRequest) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -2109,7 +2108,7 @@ func (m *QueryVotePeriodRequest) Size() (n int) {
 	return n
 }
 
-func (m *QueryVotePeriodResponse) Size() (n int) {
+func (m *QueryCommitPeriodResponse) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -2687,7 +2686,7 @@ func (m *QueryValidatorAddressResponse) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *QueryOracleDataPrevoteRequest) Unmarshal(dAtA []byte) error {
+func (m *QueryAllocationPrecommitRequest) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -2710,10 +2709,10 @@ func (m *QueryOracleDataPrevoteRequest) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: QueryOracleDataPrevoteRequest: wiretype end group for non-group")
+			return fmt.Errorf("proto: QueryAllocationPrecommitRequest: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: QueryOracleDataPrevoteRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: QueryAllocationPrecommitRequest: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
@@ -2769,7 +2768,7 @@ func (m *QueryOracleDataPrevoteRequest) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *QueryOracleDataPrevoteResponse) Unmarshal(dAtA []byte) error {
+func (m *QueryAllocationPrecommitResponse) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -2792,15 +2791,15 @@ func (m *QueryOracleDataPrevoteResponse) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: QueryOracleDataPrevoteResponse: wiretype end group for non-group")
+			return fmt.Errorf("proto: QueryAllocationPrecommitResponse: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: QueryOracleDataPrevoteResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: QueryAllocationPrecommitResponse: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Prevote", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field Precommit", wireType)
 			}
 			var msglen int
 			for shift := uint(0); ; shift += 7 {
@@ -2827,10 +2826,10 @@ func (m *QueryOracleDataPrevoteResponse) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			if m.Prevote == nil {
-				m.Prevote = &OraclePrevote{}
+			if m.Precommit == nil {
+				m.Precommit = &AllocationPrecommit{}
 			}
-			if err := m.Prevote.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+			if err := m.Precommit.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex
@@ -2855,7 +2854,7 @@ func (m *QueryOracleDataPrevoteResponse) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *QueryOracleDataVoteRequest) Unmarshal(dAtA []byte) error {
+func (m *QueryAllocationCommitRequest) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -2878,10 +2877,10 @@ func (m *QueryOracleDataVoteRequest) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: QueryOracleDataVoteRequest: wiretype end group for non-group")
+			return fmt.Errorf("proto: QueryAllocationCommitRequest: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: QueryOracleDataVoteRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: QueryAllocationCommitRequest: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
@@ -2937,7 +2936,7 @@ func (m *QueryOracleDataVoteRequest) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *QueryOracleDataVoteResponse) Unmarshal(dAtA []byte) error {
+func (m *QueryAllocationCommitResponse) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -2960,15 +2959,15 @@ func (m *QueryOracleDataVoteResponse) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: QueryOracleDataVoteResponse: wiretype end group for non-group")
+			return fmt.Errorf("proto: QueryAllocationCommitResponse: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: QueryOracleDataVoteResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: QueryAllocationCommitResponse: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Vote", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field Commit", wireType)
 			}
 			var msglen int
 			for shift := uint(0); ; shift += 7 {
@@ -2995,10 +2994,10 @@ func (m *QueryOracleDataVoteResponse) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			if m.Vote == nil {
-				m.Vote = &OracleVote{}
+			if m.Commit == nil {
+				m.Commit = &Allocation{}
 			}
-			if err := m.Vote.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+			if err := m.Commit.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex
@@ -3023,7 +3022,7 @@ func (m *QueryOracleDataVoteResponse) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *QueryVotePeriodRequest) Unmarshal(dAtA []byte) error {
+func (m *QueryCommitPeriodRequest) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -3046,10 +3045,10 @@ func (m *QueryVotePeriodRequest) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: QueryVotePeriodRequest: wiretype end group for non-group")
+			return fmt.Errorf("proto: QueryCommitPeriodRequest: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: QueryVotePeriodRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: QueryCommitPeriodRequest: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		default:
@@ -3073,7 +3072,7 @@ func (m *QueryVotePeriodRequest) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *QueryVotePeriodResponse) Unmarshal(dAtA []byte) error {
+func (m *QueryCommitPeriodResponse) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -3096,10 +3095,10 @@ func (m *QueryVotePeriodResponse) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: QueryVotePeriodResponse: wiretype end group for non-group")
+			return fmt.Errorf("proto: QueryCommitPeriodResponse: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: QueryVotePeriodResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: QueryCommitPeriodResponse: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
