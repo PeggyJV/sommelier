@@ -94,7 +94,7 @@ import (
 	ilkeeper "github.com/peggyjv/sommelier/x/il/keeper"
 	iltypes "github.com/peggyjv/sommelier/x/il/types"
 	"github.com/peggyjv/sommelier/x/allocation"
-	oraclekeeper "github.com/peggyjv/sommelier/x/allocation/keeper"
+	allocationkeeper "github.com/peggyjv/sommelier/x/allocation/keeper"
 	oracletypes "github.com/peggyjv/sommelier/x/allocation/types"
 
 	// unnamed import of statik for swagger UI support
@@ -194,8 +194,8 @@ type SommelierApp struct {
 	EthBridgeKeeper ethbridgekeeper.Keeper
 
 	// Sommelier keepers
-	OracleKeeper oraclekeeper.Keeper
-	ILKeeper     ilkeeper.Keeper
+	AllocationKeeper allocationkeeper.Keeper
+	ILKeeper         ilkeeper.Keeper
 
 	// make capability scoped keepers public for test purposes (IBC only)
 	ScopedIBCKeeper      capabilitykeeper.ScopedKeeper
@@ -325,16 +325,16 @@ func NewSommelierApp(
 		app.StakingKeeper, app.BankKeeper, app.SlashingKeeper,
 	)
 
-	app.OracleKeeper = oraclekeeper.NewKeeper(
+	app.AllocationKeeper = allocationkeeper.NewKeeper(
 		appCodec, keys[oracletypes.StoreKey], app.GetSubspace(oracletypes.ModuleName),
 		app.StakingKeeper,
 	)
 
 	// set the oracle handler for sommelier logic
-	app.OracleKeeper.SetHandler(app.OracleKeeper.DefaultOracleHandler())
+	app.AllocationKeeper.SetHandler(app.AllocationKeeper.DefaultOracleHandler())
 
 	app.ILKeeper = ilkeeper.NewKeeper(
-		appCodec, keys[iltypes.StoreKey], app.GetSubspace(iltypes.ModuleName), app.OracleKeeper, app.EthBridgeKeeper,
+		appCodec, keys[iltypes.StoreKey], app.GetSubspace(iltypes.ModuleName), app.AllocationKeeper, app.EthBridgeKeeper,
 	)
 
 	// Create static IBC router, add transfer route, then set and seal it
@@ -383,7 +383,7 @@ func NewSommelierApp(
 		params.NewAppModule(app.ParamsKeeper),
 		transferModule,
 		ethbridge.NewAppModule(app.EthBridgeKeeper, app.BankKeeper),
-		allocation.NewAppModule(app.OracleKeeper, appCodec),
+		allocation.NewAppModule(app.AllocationKeeper, appCodec),
 		il.NewAppModule(app.ILKeeper, appCodec),
 	)
 
@@ -439,7 +439,7 @@ func NewSommelierApp(
 		evidence.NewAppModule(app.EvidenceKeeper),
 		ibc.NewAppModule(app.IBCKeeper),
 		transferModule,
-		allocation.NewAppModule(app.OracleKeeper, appCodec),
+		allocation.NewAppModule(app.AllocationKeeper, appCodec),
 	)
 
 	app.sm.RegisterStoreDecoders()

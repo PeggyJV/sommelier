@@ -7,16 +7,6 @@ import (
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
-// FeederVote defines a single oracle data submitted by the feeder address
-type FeederVote struct {
-	Data    OracleData
-	Address sdk.ValAddress
-}
-
-var (
-// _ codectypes.UnpackInterfacesMessage = &OracleFeed{}
-// _ codectypes.UnpackInterfacesMessage = &OracleVote{}
-)
 
 // Validate performs a basic validation on the Oracle vote fields
 func (ov OracleVote) Validate() error {

@@ -4,7 +4,6 @@ import (
 	"fmt"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
 // DefaultGenesisState get raw genesis raw message for testing
@@ -18,7 +17,6 @@ func DefaultGenesisState() GenesisState {
 func (gs GenesisState) Validate() error {
 	seenDelegations := make(map[string]bool)
 	seenMissCounters := make(map[string]bool)
-	seenAggregates := make(map[string]bool)
 
 	for i, feederDelegation := range gs.FeederDelegations {
 		if seenDelegations[feederDelegation.Validator] {
@@ -65,29 +63,6 @@ func (gs GenesisState) Validate() error {
 
 	for _, dataType := range gs.Params.DataTypes {
 		supportedTypes[dataType] = true
-	}
-
-	for _, aggregate := range gs.Aggregates {
-		if aggregate.Height < 1 {
-			return sdkerrors.Wrapf(sdkerrors.ErrInvalidHeight, "height (%d) cannot be zero or negative", aggregate.Height)
-		}
-
-		oracleData := aggregate.Data
-		dataID := oracleData.GetID()
-
-		if seenAggregates[dataID] {
-			return sdkerrors.Wrap(ErrDuplicatedOracleData, dataID)
-		}
-
-		if !supportedTypes[oracleData.Type()] {
-			return sdkerrors.Wrap(ErrUnsupportedDataType, oracleData.Type())
-		}
-
-		if err := oracleData.Validate(); err != nil {
-			return err
-		}
-
-		seenAggregates[dataID] = true
 	}
 
 	return nil

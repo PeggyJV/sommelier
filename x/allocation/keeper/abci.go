@@ -75,34 +75,26 @@ func (k Keeper) EndBlocker(ctx sdk.Context) {
 
 	var (
 		// validators who submitted their vote
-		validatorVotesMap = make(map[string]bool)
-		// oracle data fed by validators: <data_id> --> FeederVote
-		submittedFeedMap = make(map[string][]types.FeederVote)
-		// same as the submittedFeedMap but without the validator info
-		submittedDataMap = make(map[string][]types.OracleData)
-		// array of all the fed oracle data identifiers. Used for deterministic iteration
-		submittedDataIDs = make([]string, 0)
-		// all aggregated oracle data for the current voting period:  <data_id> --> OracleData
-		aggregateMap = make(map[string]types.OracleData)
+		validatorCommitsMap = make(map[string]bool)
 	)
 
 	// iterate over the data votes
 	// TODO: only iterate on the last voting period
-	k.IterateAllocationCommits(ctx, func(validatorAddr sdk.ValAddress, vote types.Allocation) bool {
-		// NOTE: the vote might have been submitted by a feeder delegate, so we have to check the
+	k.IterateAllocationCommits(ctx, func(validatorAddr sdk.ValAddress, commit types.Allocation) bool {
+		// NOTE: the commit might have been submitted by a delegate, so we have to check the
 		// original validator address
 
 		// mark the validator voting as true
-		validatorVotesMap[validatorAddr.String()] = true
+		validatorCommitsMap[validatorAddr.String()] = true
 
 		// remove the miss counter in the current voting window for validators who have already voted
 		k.DeleteMissCounter(ctx, validatorAddr)
 
 		validator := k.stakingKeeper.Validator(ctx, sdk.ValAddress(validatorAddr))
 		if validator == nil {
-			// validator nor found, continue with next vote
+			// validator nor found, continue with next commit
 			k.Logger(ctx).Debug(
-				"validator not found for oracle vote tally",
+				"validator not found for oracle commit tally",
 				"validator-address", validatorAddr.String(),
 			)
 			return false
@@ -111,13 +103,13 @@ func (k Keeper) EndBlocker(ctx sdk.Context) {
 		votedPower += validator.GetConsensusPower()
 
 		// Safety check. Already validated on msg validation
-		if len(vote.Feed.Data) == 0 {
-			k.Logger(ctx).Debug("attempted to process empty oracle data from feed", "validator", validatorAddr.String())
+		if len(commit.TickWeights.Weights) == 0 {
+			k.Logger(ctx).Debug("attempted to process empty tick weights in commit", "validator", validatorAddr.String())
 			return false
 		}
 
 		// save the oracle data for later processing
-		for _, oracleData := range vote.Feed.Data {
+		for _, oracleData := range commit.Feed.Data {
 			// oracleData, err := types.UnpackOracleData(oracleDataAny)
 			// if err != nil {
 			// 	// NOTE: this should never panic as the oracle data had already been checked before
@@ -146,7 +138,7 @@ func (k Keeper) EndBlocker(ctx sdk.Context) {
 			}
 		}
 
-		// delete the vote as it has already been processed
+		// delete the commit as it has already been processed
 		// TODO: consider keeping the votes for a few voting windows in order to
 		// be able to submit evidence of inaccurate data feed
 		k.DeleteAllocationCommit(ctx, validatorAddr)
@@ -161,7 +153,7 @@ func (k Keeper) EndBlocker(ctx sdk.Context) {
 		validatorAddr := validator.GetOperator()
 
 		// only increment miss counter for validators who have previously submitted data
-		if !validatorVotesMap[validatorAddr.String()] && k.HasMissCounter(ctx, validatorAddr) {
+		if !validatorCommitsMap[validatorAddr.String()] && k.HasMissCounter(ctx, validatorAddr) {
 			// TODO: this is wrong because the feeder could submit a single oracle data uniswap pair instead of all the required
 			// ones and still be counted as if they voted correctly. Maybe consider adding each uniswap pair id to the params?
 			// TODO: we need to define what is the exact data that we want the validators to submit.

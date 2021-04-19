@@ -244,8 +244,8 @@ func (k Keeper) IterateAllocationCommits(ctx sdk.Context, handler func(val sdk.V
 // TickWeight //
 ////////////////
 
-// GetOracleDataType gets oracle data stored for a given type
-func (k Keeper) GetAllocationTickWeight(ctx sdk.Context, val sdk.ValAddress, cel common.Address) (types.TickWeights, bool) {
+// GetAllocationTickWeights gets allocation tick weights for a validator for a given cellar
+func (k Keeper) GetAllocationTickWeights(ctx sdk.Context, val sdk.ValAddress, cel common.Address) (types.TickWeights, bool) {
 	store := ctx.KVStore(k.storeKey)
 	bz := store.Get(types.GetAllocationTickWeightKey(val, cel))
 	if len(bz) == 0 {
@@ -257,149 +257,50 @@ func (k Keeper) GetAllocationTickWeight(ctx sdk.Context, val sdk.ValAddress, cel
 	return tickWeights, true
 }
 
-
-////////////////
-// OracleData //
-////////////////
-
-// GetOracleDataType gets oracle data stored for a given type
-func (k Keeper) GetOracleDataType(ctx sdk.Context, id string) (string, bool) {
-	store := ctx.KVStore(k.storeKey)
-	bz := store.Get(types.GetOracleDataTypeKey(id))
-	if len(bz) == 0 {
-		return "", false
-	}
-
-	return string(bz), true
-}
-
-// HasOracleDataType checks the oracle data type associated with a given data identifier
-func (k Keeper) HasOracleDataType(ctx sdk.Context, id string) bool {
-	store := ctx.KVStore(k.storeKey)
-	return store.Has(types.GetOracleDataTypeKey(id))
-}
-
-// SetOracleDataType sets oracle data type associated with a given data identifier
-func (k Keeper) SetOracleDataType(ctx sdk.Context, dataType, id string) {
-	store := ctx.KVStore(k.storeKey)
-	store.Set(types.GetOracleDataTypeKey(id), []byte(dataType))
-}
-
-// SetOracleData sets the oracle data in the store
-func (k Keeper) SetOracleData(ctx sdk.Context, oracleData types.OracleData) {
-	bz, err := k.cdc.MarshalInterface(oracleData)
+// SetAllocationTickWeights sets allocation tick weights for a validator for a given cellar
+func (k Keeper) SetAllocationTickWeights(ctx sdk.Context, val sdk.ValAddress, cel common.Address, tickWeights types.TickWeights) {
+	bz, err := k.cdc.MarshalInterface(&tickWeights)
 	if err != nil {
 		panic(err)
 	}
 
-	ctx.KVStore(k.storeKey).Set(types.GetOracleDataKey(oracleData.Type(), oracleData.GetID()), bz)
+	ctx.KVStore(k.storeKey).Set(types.GetAllocationTickWeightKey(val, cel), bz)
 }
 
-// GetAggregatedOracleData gets the aggregated oracle data from the store by height, type and id
-func (k Keeper) GetAggregatedOracleData(ctx sdk.Context, height int64, dataType, id string) types.OracleData {
+
+// DeleteAllocationTickWeights deletes the tick weights for a given validator and cellar
+// CONTRACT: must provide the validator address here not the delegate address
+func (k Keeper) DeleteAllocationTickWeights(ctx sdk.Context, val sdk.ValAddress, cel common.Address) {
+	ctx.KVStore(k.storeKey).Delete(types.GetAllocationTickWeightKey(val, cel))
+}
+
+// HasAllocationTickWeights returns if tick weights for a given validator and cellar exist
+// CONTRACT: must provide the validator address here not the delegate address
+func (k Keeper) HasAllocationTickWeights(ctx sdk.Context, val sdk.ValAddress, cel common.Address) bool {
+	return ctx.KVStore(k.storeKey).Has(types.GetAllocationTickWeightKey(val, cel))
+}
+
+
+// IterateAllocationTickWeights iterates over all tick weights in the store
+func (k Keeper) IterateAllocationTickWeights(ctx sdk.Context, handler func(val sdk.ValAddress, cel common.Address, tickWeights types.TickWeights) (stop bool)) {
 	store := ctx.KVStore(k.storeKey)
-	key := types.GetAggregatedOracleDataKey(uint64(height), dataType, id)
-
-	bz := store.Get(key)
-	if len(bz) == 0 {
-		return nil
-	}
-
-	var oracleData types.OracleData
-	err := k.cdc.UnmarshalInterface(bz, &oracleData)
-	if err != nil {
-		panic(err)
-	}
-
-	return oracleData
-}
-
-// GetLatestAggregatedOracleData returns the latest stored aggregated data
-func (k Keeper) GetLatestAggregatedOracleData(ctx sdk.Context, dataType, id string) (types.OracleData, int64) {
-	// get the latest stored height for the given id
-	height := k.GetOracleDataHeight(ctx, id)
-	if height == 0 {
-		return nil, 0
-	}
-
-	return k.GetAggregatedOracleData(ctx, height, dataType, id), height
-}
-
-// IterateAggregatedOracleData iterates over all aggregated data in the store
-func (k Keeper) IterateAggregatedOracleData(ctx sdk.Context, cb func(height int64, oracleData types.OracleData) (stop bool)) {
-	store := ctx.KVStore(k.storeKey)
-	// NOTE: we use reverse prefix iterator to iterate from latest to earliest height
-	iter := sdk.KVStoreReversePrefixIterator(store, types.AggregatedOracleDataKeyPrefix)
-
+	iter := sdk.KVStorePrefixIterator(store, types.AllocationTickWeightKeyPrefix)
 	defer iter.Close()
 	for ; iter.Valid(); iter.Next() {
-		var oracleData types.OracleData
+		keyPair := bytes.NewBuffer(bytes.TrimPrefix(iter.Key(), types.AllocationTickWeightKeyPrefix))
+		val := sdk.ValAddress(keyPair.Next(20))
+		cel := common.BytesToAddress(keyPair.Bytes())
 
-		height := sdk.BigEndianToUint64(iter.Key()[1:9])
-		if err := k.cdc.UnmarshalInterface(iter.Value(), &oracleData); err != nil {
-			panic(err)
-		}
-
-		if cb(int64(height), oracleData) {
+		var tickWeights types.TickWeights
+		k.cdc.MustUnmarshalBinaryBare(iter.Value(), &tickWeights)
+		if handler(val, cel, tickWeights) {
 			break
 		}
 	}
 }
 
-// GetAllAggregatedData returns all the aggregated data
-func (k Keeper) GetAllAggregatedData(ctx sdk.Context) []types.AggregatedOracleData {
-	var aggregates []types.AggregatedOracleData
+// todo: aggregation functions for tick weight data
 
-	k.IterateAggregatedOracleData(ctx, func(height int64, oracleData types.OracleData) bool {
-		pair, ok := oracleData.(*types.UniswapPair)
-		if !ok {
-			return false
-		}
-
-		aggregates = append(aggregates, types.AggregatedOracleData{
-			Height: height,
-			Data:   pair,
-		})
-
-		return false
-	})
-
-	return aggregates
-}
-
-// HasAggregatedOracleData sets the aggregated oracle data in the store by height, type and id
-func (k Keeper) HasAggregatedOracleData(ctx sdk.Context, height int64, dataType, id string) bool {
-	key := types.GetAggregatedOracleDataKey(uint64(height), dataType, id)
-	return ctx.KVStore(k.storeKey).Has(key)
-}
-
-// SetAggregatedOracleData sets the aggregated oracle data in the store by height, type and id
-func (k Keeper) SetAggregatedOracleData(ctx sdk.Context, height int64, oracleData types.OracleData) {
-	bz, err := k.cdc.MarshalInterface(oracleData)
-	if err != nil {
-		panic(err)
-	}
-
-	key := types.GetAggregatedOracleDataKey(uint64(height), oracleData.Type(), oracleData.GetID())
-
-	ctx.KVStore(k.storeKey).Set(key, bz)
-}
-
-func (k Keeper) GetOracleDataHeight(ctx sdk.Context, id string) int64 {
-	store := ctx.KVStore(k.storeKey)
-	bz := store.Get(types.GetOracleDataHeightKey(id))
-	if len(bz) == 0 {
-		return 0
-	}
-
-	return int64(sdk.BigEndianToUint64(bz))
-}
-
-// SetOracleDataHeight sets latest aggregated oracle data height associated with a given data identifier
-func (k Keeper) SetOracleDataHeight(ctx sdk.Context, id string, height int64) {
-	store := ctx.KVStore(k.storeKey)
-	store.Set(types.GetOracleDataHeightKey(id), sdk.Uint64ToBigEndian(uint64(height)))
-}
 
 //////////////////
 // CommitPeriod //

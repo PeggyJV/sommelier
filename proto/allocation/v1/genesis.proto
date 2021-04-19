@@ -19,9 +19,6 @@ message GenesisState {
     repeated MissCounter            miss_counters      = 3 [
         (gogoproto.nullable) = false
     ];
-    repeated AggregatedOracleData aggregates = 4 [
-        (gogoproto.nullable) = false
-    ];
 }
 
 // Params oracle parameters
@@ -76,13 +73,5 @@ message MissCounter {
     string validator = 1;
     // number of misses
     int64  misses    = 2;
-}
-
-// AggregatedOracleData defines the aggregated oracle data at a given block height
-message AggregatedOracleData {
-    // block height in which the data was committed
-    int64  height    = 1;
-    // oracle data
-    UniswapPair data = 2;
 }
 

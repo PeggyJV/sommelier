@@ -8,7 +8,6 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"strings"
 
-	"github.com/armon/go-metrics"
 	"github.com/cosmos/cosmos-sdk/telemetry"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
@@ -189,68 +188,26 @@ func (k Keeper) AllocationCommit(c context.Context, msg *types.MsgAllocationComm
 			)
 		}
 
-
-		for _, tickWeight := range commit.TickWeights.Weights {
-			// unpack the oracle data one by one
-			// tickWeight, err := types.UnpackOracleData(oracleDataAny)
-			// if err != nil {
-			// 	return nil, sdkerrors.Wrapf(types.ErrUnpackOracleData, "index %d", i)
-			// }
-
-			// if !allowedTypesMap[tickWeight.Type()] {
-			// 	return nil, sdkerrors.Wrapf(
-			// 		types.ErrUnsupportedDataType,
-			// 		"%s, allowed %v", tickWeight.Type(), allowedDataTypes,
-			// 	)
-			// }
-
-			if
-
-			if !k.HasOracleDataType(ctx, tickWeight.GetID()) {
-				k.SetOracleDataType(ctx, tickWeight.Type(), tickWeight.GetID())
-			}
-
-			allocationEvents = append(
-				allocationEvents,
-				sdk.NewEvent(
-					types.EventTypeAllocationCommit,
-					sdk.NewAttribute(types.AttributeKeyOracleDataID, tickWeight.GetID()),
-					sdk.NewAttribute(types.AttributeKeyOracleDataType, tickWeight.Type()),
-				),
-			)
-
-			labels := []metrics.Label{
-				telemetry.NewLabel("data-type", tickWeight.Type()),
-				telemetry.NewLabel("data-id", tickWeight.GetID()),
-			}
-
-			defer func() {
-				telemetry.IncrCounterWithLabels(
-					[]string{types.ModuleName, "feed"},
-					1,
-					labels,
-				)
-			}()
+		if !k.HasAllocationTickWeights(ctx, val, cel) {
+			k.SetAllocationTickWeights(ctx, val, cel, *commit.TickWeights)
 		}
+
+		allocationEvents = append(
+			allocationEvents,
+			sdk.NewEvent(
+				types.EventTypeAllocationCommit,
+				sdk.NewAttribute(types.AttributeKeyCellar, cel.String()),
+				sdk.NewAttribute(types.AttributeTickWeights, commit.TickWeights.String()),
+				sdk.NewAttribute(types.AttributeKeyValidator, val.String()),
+			),
+		)
+
+		// set the vote in the store
+		k.SetAllocationCommit(ctx, val, cel, *commit)
 	}
 
-
-
-
-	// set the vote in the store
 	// TODO: set data for the current voting period
-	k.SetAllocationCommit(ctx, val, *msg.Vote)
 	ctx.EventManager().EmitEvents(allocationEvents)
-
-	defer func() {
-		telemetry.IncrCounterWithLabels(
-			[]string{types.ModuleName, "vote"},
-			1,
-			[]metrics.Label{
-				telemetry.NewLabel(types.AttributeKeyValidator, val.String()),
-			},
-		)
-	}()
 
 	return &types.MsgAllocationCommitResponse{}, nil
 }

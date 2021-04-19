@@ -8,13 +8,10 @@
     - [Allocation](#allocation.v1.Allocation)
     - [AllocationPrecommit](#allocation.v1.AllocationPrecommit)
     - [Cellar](#allocation.v1.Cellar)
-    - [OracleFeed](#allocation.v1.OracleFeed)
     - [Pool](#allocation.v1.Pool)
     - [Tick](#allocation.v1.Tick)
     - [TickWeight](#allocation.v1.TickWeight)
     - [TickWeights](#allocation.v1.TickWeights)
-    - [UniswapPair](#allocation.v1.UniswapPair)
-    - [UniswapToken](#allocation.v1.UniswapToken)
   
 - [allocation/v1/tx.proto](#allocation/v1/tx.proto)
     - [MsgAllocationCommit](#allocation.v1.MsgAllocationCommit)
@@ -27,14 +24,11 @@
     - [Msg](#allocation.v1.Msg)
   
 - [allocation/v1/genesis.proto](#allocation/v1/genesis.proto)
-    - [AggregatedOracleData](#allocation.v1.AggregatedOracleData)
     - [GenesisState](#allocation.v1.GenesisState)
     - [MissCounter](#allocation.v1.MissCounter)
     - [Params](#allocation.v1.Params)
   
 - [allocation/v1/query.proto](#allocation/v1/query.proto)
-    - [QueryAggregateDataRequest](#allocation.v1.QueryAggregateDataRequest)
-    - [QueryAggregateDataResponse](#allocation.v1.QueryAggregateDataResponse)
     - [QueryAllocationCommitRequest](#allocation.v1.QueryAllocationCommitRequest)
     - [QueryAllocationCommitResponse](#allocation.v1.QueryAllocationCommitResponse)
     - [QueryAllocationPrecommitRequest](#allocation.v1.QueryAllocationPrecommitRequest)
@@ -43,8 +37,6 @@
     - [QueryCommitPeriodResponse](#allocation.v1.QueryCommitPeriodResponse)
     - [QueryDelegateAddressRequest](#allocation.v1.QueryDelegateAddressRequest)
     - [QueryDelegateAddressResponse](#allocation.v1.QueryDelegateAddressResponse)
-    - [QueryLatestPeriodAggregateDataRequest](#allocation.v1.QueryLatestPeriodAggregateDataRequest)
-    - [QueryLatestPeriodAggregateDataResponse](#allocation.v1.QueryLatestPeriodAggregateDataResponse)
     - [QueryMissCounterRequest](#allocation.v1.QueryMissCounterRequest)
     - [QueryMissCounterResponse](#allocation.v1.QueryMissCounterResponse)
     - [QueryParamsRequest](#allocation.v1.QueryParamsRequest)
@@ -145,21 +137,6 @@ Cellar is a collection of pools for a token pair
 
 
 
-<a name="allocation.v1.OracleFeed"></a>
-
-### OracleFeed
-OracleFeed represents an array of oracle data that is
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| `data` | [UniswapPair](#allocation.v1.UniswapPair) | repeated |  |
-
-
-
-
-
-
 <a name="allocation.v1.Pool"></a>
 
 ### Pool
@@ -217,45 +194,6 @@ TickWeights is a struct for holding a collection of TickWeight
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | `weights` | [TickWeight](#allocation.v1.TickWeight) | repeated |  |
-
-
-
-
-
-
-<a name="allocation.v1.UniswapPair"></a>
-
-### UniswapPair
-UniswapPair represents an SDK compatible uniswap pair info fetched from The Graph.
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| `id` | [string](#string) |  |  |
-| `reserve0` | [string](#string) |  |  |
-| `reserve1` | [string](#string) |  |  |
-| `reserve_usd` | [string](#string) |  |  |
-| `token0` | [UniswapToken](#allocation.v1.UniswapToken) |  |  |
-| `token1` | [UniswapToken](#allocation.v1.UniswapToken) |  |  |
-| `token0_price` | [string](#string) |  |  |
-| `token1_price` | [string](#string) |  |  |
-| `total_supply` | [string](#string) |  |  |
-
-
-
-
-
-
-<a name="allocation.v1.UniswapToken"></a>
-
-### UniswapToken
-UniswapToken is the returned uniswap token representation
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| `id` | [string](#string) |  | token address |
-| `decimals` | [uint64](#uint64) |  | number of decimal positions of the pair token |
 
 
 
@@ -387,22 +325,6 @@ MsgService defines the msgs that the oracle module handles.
 
 
 
-<a name="allocation.v1.AggregatedOracleData"></a>
-
-### AggregatedOracleData
-AggregatedOracleData defines the aggregated oracle data at a given block height
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| `height` | [int64](#int64) |  | block height in which the data was committed |
-| `data` | [UniswapPair](#allocation.v1.UniswapPair) |  | oracle data |
-
-
-
-
-
-
 <a name="allocation.v1.GenesisState"></a>
 
 ### GenesisState
@@ -414,7 +336,6 @@ GenesisState - all oracle state that must be provided at genesis
 | `params` | [Params](#allocation.v1.Params) |  |  |
 | `feeder_delegations` | [MsgDelegateAllocations](#allocation.v1.MsgDelegateAllocations) | repeated |  |
 | `miss_counters` | [MissCounter](#allocation.v1.MissCounter) | repeated |  |
-| `aggregates` | [AggregatedOracleData](#allocation.v1.AggregatedOracleData) | repeated |  |
 
 
 
@@ -475,38 +396,6 @@ Params oracle parameters
 
 
 
-<a name="allocation.v1.QueryAggregateDataRequest"></a>
-
-### QueryAggregateDataRequest
-QueryAggregateDataRequest is the request type for the Query/AggregateData gRPC method.
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| `type` | [string](#string) |  | oracle data type |
-| `id` | [string](#string) |  | oracle data identifier |
-
-
-
-
-
-
-<a name="allocation.v1.QueryAggregateDataResponse"></a>
-
-### QueryAggregateDataResponse
-QueryAggregateDataRequest is the response type for the Query/AggregateData gRPC method.
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| `oracle_data` | [UniswapPair](#allocation.v1.UniswapPair) |  | oracle data associated with the id and type from the request |
-| `height` | [int64](#int64) |  | height at which the aggregated oracle data was stored |
-
-
-
-
-
-
 <a name="allocation.v1.QueryAllocationCommitRequest"></a>
 
 ### QueryAllocationCommitRequest
@@ -516,6 +405,7 @@ QueryOracleDataVoteRequest is the request type for the Query/QueryOracleDataVote
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | `validator` | [string](#string) |  | validator operator address |
+| `cellar` | [string](#string) |  | cellar contract address |
 
 
 
@@ -546,6 +436,7 @@ QueryAllocationPrecommitRequest is the request type for the Query/AllocationPrec
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | `validator` | [string](#string) |  | validator operator address |
+| `cellar` | [string](#string) |  | cellar contract address |
 
 
 
@@ -618,38 +509,6 @@ QueryDelegateAddressResponse is the response type for the Query/QueryDelegateAdd
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | `delegate` | [string](#string) |  | delegate account address |
-
-
-
-
-
-
-<a name="allocation.v1.QueryLatestPeriodAggregateDataRequest"></a>
-
-### QueryLatestPeriodAggregateDataRequest
-QueryLatestPeriodAggregateDataRequest is the request type for the Query/QueryLatestPeriodAggregateData gRPC method.
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| `pagination` | [cosmos.base.query.v1beta1.PageRequest](#cosmos.base.query.v1beta1.PageRequest) |  | pagination defines an optional pagination for the request. |
-
-
-
-
-
-
-<a name="allocation.v1.QueryLatestPeriodAggregateDataResponse"></a>
-
-### QueryLatestPeriodAggregateDataResponse
-QueryLatestPeriodAggregateDataResponse is the response type for the Query/QueryLatestPeriodAggregateData gRPC method.
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| `oracle_data` | [UniswapPair](#allocation.v1.UniswapPair) | repeated | oracle data associated with the |
-| `height` | [int64](#int64) |  | height at which the aggregated oracle data was stored |
-| `pagination` | [cosmos.base.query.v1beta1.PageResponse](#cosmos.base.query.v1beta1.PageResponse) |  | pagination defines the pagination in the response. |
 
 
 
@@ -760,9 +619,9 @@ Query defines the gRPC querier service for the oracle module.
 | `QueryAllocationPrecommit` | [QueryAllocationPrecommitRequest](#allocation.v1.QueryAllocationPrecommitRequest) | [QueryAllocationPrecommitResponse](#allocation.v1.QueryAllocationPrecommitResponse) | QueryOracleDataPrevote queries the validator prevote in the current voting period | GET|/sommelier/allocation/v1/precommits/{validator}|
 | `QueryAllocationCommit` | [QueryAllocationCommitRequest](#allocation.v1.QueryAllocationCommitRequest) | [QueryAllocationCommitResponse](#allocation.v1.QueryAllocationCommitResponse) | QueryOracleDataVote queries the validator vote in the current voting period | GET|/sommelier/allocation/v1/commits/{validator}|
 | `QueryCommitPeriod` | [QueryCommitPeriodRequest](#allocation.v1.QueryCommitPeriodRequest) | [QueryCommitPeriodResponse](#allocation.v1.QueryCommitPeriodResponse) | QueryVotePeriod queries the heights for the current voting period (current, start and end) | GET|/sommelier/allocation/v1/commit_period|
-| `QueryMissCounter` | [QueryMissCounterRequest](#allocation.v1.QueryMissCounterRequest) | [QueryMissCounterResponse](#allocation.v1.QueryMissCounterResponse) | QueryMissCounter queries the missed number of oracle data feed periods | GET|/sommelier/allocation/v1/miss_counters/{validator}|
-| `QueryAggregateData` | [QueryAggregateDataRequest](#allocation.v1.QueryAggregateDataRequest) | [QueryAggregateDataResponse](#allocation.v1.QueryAggregateDataResponse) | QueryAggregateData returns the latest aggregated data value for a given type and identifioer | GET|/sommelier/allocation/v1/aggregate_data/{id}/{type}|
-| `QueryLatestPeriodAggregateData` | [QueryLatestPeriodAggregateDataRequest](#allocation.v1.QueryLatestPeriodAggregateDataRequest) | [QueryLatestPeriodAggregateDataResponse](#allocation.v1.QueryLatestPeriodAggregateDataResponse) | QueryLatestPeriodAggregateData returns the aggregated data for a given pair an identifioer | GET|/sommelier/allocation/v1/aggregate_data|
+| `QueryMissCounter` | [QueryMissCounterRequest](#allocation.v1.QueryMissCounterRequest) | [QueryMissCounterResponse](#allocation.v1.QueryMissCounterResponse) | QueryMissCounter queries the missed number of oracle data feed periods
+
+todo: aggregate data handlers and types | GET|/sommelier/allocation/v1/miss_counters/{validator}|
 
  <!-- end services -->
 
