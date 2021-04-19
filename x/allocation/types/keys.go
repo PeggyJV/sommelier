@@ -1,9 +1,8 @@
 package types
 
 import (
-	"crypto/sha256"
-
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/ethereum/go-ethereum/common"
 )
 
 const (
@@ -25,8 +24,8 @@ var (
 	// - 0x01<oracle_data_type_hash><oracle_data_id> -> <OracleData>
 	OracleDataKeyPrefix = []byte{0x01} // key for oracle state data
 
-	// - 0x02<oracle_data_id> -> <oracle_data_type>
-	OracleDataTypeKeyPrefix = []byte{0x02} //
+	// - 0x02<val_address><cel_address> -> <[]tick_weight>
+	AllocationTickWeightKeyPrefix = []byte{0x02} //
 
 	// - 0x03<oracle_data_id> -> uint64
 	OracleDataHeightKeyPrefix = []byte{0x03}
@@ -34,10 +33,10 @@ var (
 	// - 0x04<val_address> -> <delegate_address>
 	AllocationDelegateKeyPrefix = []byte{0x04} // key for validator allocation delegation
 
-	// - 0x05<val_address> -> <[]hashes>
+	// - 0x05<val_address><cel_address> -> <hash>
 	AllocationPrecommitKeyPrefix = []byte{0x05} // key for allocation precommits
 
-	// - 0x06<val_address> -> <allocation_commit>
+	// - 0x06<val_address><cel_address> -> <allocation_commit>
 	AllocationCommitKeyPrefix = []byte{0x06} // key for allocation commits
 
 	// - 0x07 -> int64(height)
@@ -55,39 +54,22 @@ func GetAllocationDelegateKey(del sdk.AccAddress) []byte {
 	return append(AllocationDelegateKeyPrefix, del.Bytes()...)
 }
 
-// GetAllocationPrecommitKey returns the key for a validators prevote
-func GetAllocationPrecommitKey(val sdk.ValAddress) []byte {
-	return append(AllocationPrecommitKeyPrefix, val.Bytes()...)
+// GetAllocationPrecommitKey returns the key for a validators prevote for a cellar
+func GetAllocationPrecommitKey(val sdk.ValAddress, cel common.Address) []byte {
+	key := append(AllocationPrecommitKeyPrefix, val.Bytes()...)
+	return append(key, cel.Bytes()...)
 }
 
-// GetAllocationCommitKey returns the key for a validators vote
-func GetAllocationCommitKey(val sdk.ValAddress) []byte {
-	return append(AllocationCommitKeyPrefix, val.Bytes()...)
+// GetAllocationCommitKey returns the key for a validators vote for a given cellar
+func GetAllocationCommitKey(val sdk.ValAddress, cel common.Address) []byte {
+	key := append(AllocationCommitKeyPrefix, val.Bytes()...)
+	return append(key, cel.Bytes()...)
 }
 
-func GetAggregatedOracleDataKey(height uint64, dataType, id string) []byte {
-	dataTypeHash := sha256.Sum256([]byte(dataType))
-	key := append(AggregatedOracleDataKeyPrefix, sdk.Uint64ToBigEndian(height)...)
-	key = append(key, dataTypeHash[:]...)
-	key = append(key, []byte(id)...)
-	return key
-}
-
-// GetOracleDataKey returns the key for the stored oracle data
-func GetOracleDataKey(dataType, id string) []byte {
-	dataTypeHash := sha256.Sum256([]byte(dataType))
-	key := append(OracleDataKeyPrefix, dataTypeHash[:]...)
-	return append(key, []byte(id)...)
-}
-
-// GetOracleDataTypeKey returns the key for the stored oracle data type
-func GetOracleDataTypeKey(id string) []byte {
-	return append(OracleDataTypeKeyPrefix, []byte(id)...)
-}
-
-// GetOracleDataHeightKey returns the key for the latest oracle data height
-func GetOracleDataHeightKey(id string) []byte {
-	return append(OracleDataHeightKeyPrefix, []byte(id)...)
+// GetAllocationTickWeightKey returns the key for tick_weights for a given cellar
+func GetAllocationTickWeightKey(val sdk.ValAddress, cel common.Address) []byte {
+	key := append(AllocationTickWeightKeyPrefix, val.Bytes()...)
+	return append(key, cel.Bytes()...)
 }
 
 // GetMissCounterKey returns the key for the stored miss counter for a given validator

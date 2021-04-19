@@ -11,6 +11,7 @@ const (
 	AttributeKeyDeleagate         = "delegate"
 	AttributeKeyValidator         = "validator"
 	AttributeKeyPrevoteHash       = "hash"
+	AttributeKeyCellar            = "cellar"
 	AttributeKeyOracleDataType    = "oracle_data_type"
 	AttributeKeyOracleDataID      = "oracle_data_id"
 	AttributeKeyCommitPeriodStart = "commit_period_start"

@@ -72,7 +72,8 @@ message UniswapToken {
 // AllocationPrecommit defines an array of hashed data to be used for the precommit phase
 // of allocation
 message AllocationPrecommit {
-  bytes hash = 1 [(gogoproto.casttype) = "github.com/tendermint/tendermint/libs/bytes.HexBytes"];
+  bytes  hash = 1 [(gogoproto.casttype) = "github.com/tendermint/tendermint/libs/bytes.HexBytes"];
+  string cellar_id = 2;
 }
 
 // Allocation is the XXX
@@ -84,7 +85,8 @@ message Allocation {
     (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
     (gogoproto.nullable) = false
   ];
-  repeated TickWeight tick_weights = 3;
+  TickWeights tick_weights = 3;
+  string salt = 4;
 }
 
 // TickWeight is the weighted Tick value
@@ -96,6 +98,11 @@ message TickWeight {
     (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
     (gogoproto.nullable) = false
   ];
+}
+
+// TickWeights is a struct for holding a collection of TickWeight
+message TickWeights {
+  repeated TickWeight weights = 1;
 }
 
 // Tick is the metadata for an instance of token data

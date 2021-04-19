@@ -35,7 +35,7 @@ message MsgDelegateAllocationsResponse {}
 // SHA256("{salt}:{data_cannonical_json}:{voter}")
 message MsgAllocationPrecommit {
     // precommit containing the hash of the allocation precommit contents
-    AllocationPrecommit   precommit = 1;
+    repeated AllocationPrecommit   precommit = 1;
     // signer (i.e feeder) account address
     string          signer  = 2;
 }
@@ -46,7 +46,7 @@ message MsgAllocationPrecommitResponse {}
 // MsgAllocationCommit - sdk.Msg for submitting arbitrary oracle data that has been prevoted on
 message MsgAllocationCommit {
     // vote containing the oracle data feed
-    Allocation commit   = 1;
+    repeated Allocation commit   = 1;
     // signer (i.e feeder) account address
     string     signer = 2;
 }

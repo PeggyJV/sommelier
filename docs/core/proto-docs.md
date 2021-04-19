@@ -12,6 +12,7 @@
     - [Pool](#allocation.v1.Pool)
     - [Tick](#allocation.v1.Tick)
     - [TickWeight](#allocation.v1.TickWeight)
+    - [TickWeights](#allocation.v1.TickWeights)
     - [UniswapPair](#allocation.v1.UniswapPair)
     - [UniswapToken](#allocation.v1.UniswapToken)
   
@@ -101,7 +102,8 @@ Allocation is the XXX
 | ----- | ---- | ----- | ----------- |
 | `cellar_id` | [string](#string) |  |  |
 | `fee_level` | [string](#string) |  |  |
-| `tick_weights` | [TickWeight](#allocation.v1.TickWeight) | repeated |  |
+| `tick_weights` | [TickWeights](#allocation.v1.TickWeights) |  |  |
+| `salt` | [string](#string) |  |  |
 
 
 
@@ -118,6 +120,7 @@ of allocation
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | `hash` | [bytes](#bytes) |  |  |
+| `cellar_id` | [string](#string) |  |  |
 
 
 
@@ -205,6 +208,21 @@ TickWeight is the weighted Tick value
 
 
 
+<a name="allocation.v1.TickWeights"></a>
+
+### TickWeights
+TickWeights is a struct for holding a collection of TickWeight
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `weights` | [TickWeight](#allocation.v1.TickWeight) | repeated |  |
+
+
+
+
+
+
 <a name="allocation.v1.UniswapPair"></a>
 
 ### UniswapPair
@@ -268,7 +286,7 @@ MsgAllocationCommit - sdk.Msg for submitting arbitrary oracle data that has been
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| `commit` | [Allocation](#allocation.v1.Allocation) |  | vote containing the oracle data feed |
+| `commit` | [Allocation](#allocation.v1.Allocation) | repeated | vote containing the oracle data feed |
 | `signer` | [string](#string) |  | signer (i.e feeder) account address |
 
 
@@ -296,7 +314,7 @@ SHA256("{salt}:{data_cannonical_json}:{voter}")
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| `precommit` | [AllocationPrecommit](#allocation.v1.AllocationPrecommit) |  | precommit containing the hash of the allocation precommit contents |
+| `precommit` | [AllocationPrecommit](#allocation.v1.AllocationPrecommit) | repeated | precommit containing the hash of the allocation precommit contents |
 | `signer` | [string](#string) |  | signer (i.e feeder) account address |
 
 
