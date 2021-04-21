@@ -37,7 +37,7 @@ var (
 	AllocationPrecommitKeyPrefix = []byte{0x05} // key for allocation precommits
 
 	// - 0x06<val_address><cel_address> -> <allocation_commit>
-	AllocationCommitKeyPrefix = []byte{0x06} // key for allocation commits
+	AllocationCommitForCellarKeyPrefix = []byte{0x06} // key for allocation commits
 
 	// - 0x07 -> int64(height)
 	CommitPeriodStartKey = []byte{0x07} // key for commit period height start
@@ -60,10 +60,15 @@ func GetAllocationPrecommitKey(val sdk.ValAddress, cel common.Address) []byte {
 	return append(key, cel.Bytes()...)
 }
 
-// GetAllocationCommitKey returns the key for a validators vote for a given cellar
-func GetAllocationCommitKey(val sdk.ValAddress, cel common.Address) []byte {
-	key := append(AllocationCommitKeyPrefix, val.Bytes()...)
+// GetAllocationCommitForCellarKey returns the key for a validators vote for a given cellar
+func GetAllocationCommitForCellarKey(val sdk.ValAddress, cel common.Address) []byte {
+	key := GetAllocationCommitKeyPrefix(val)
 	return append(key, cel.Bytes()...)
+}
+
+// GetAllocationCommitKeyPrefix returns the key prefix for allocation commits for a validator
+func GetAllocationCommitKeyPrefix(val sdk.ValAddress) []byte {
+	return append(AllocationCommitForCellarKeyPrefix, val.Bytes()...)
 }
 
 // GetAllocationTickWeightKey returns the key for tick_weights for a given cellar

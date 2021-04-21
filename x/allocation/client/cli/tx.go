@@ -46,7 +46,7 @@ func txDelegateFeedPermission() *cobra.Command {
 
 			validatorAddr := sdk.ValAddress(ctx.GetFromAddress())
 
-			msg := types.NewMsgDelegateFeedConsent(delegateAddress, validatorAddr)
+			msg := types.NewMsgDelegateAllocations(delegateAddress, validatorAddr)
 			if err = msg.ValidateBasic(); err != nil {
 				return fmt.Errorf("message validation failed: %w", err)
 			}

@@ -5,6 +5,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	mapset "github.com/deckarep/golang-set"
 	"github.com/ethereum/go-ethereum/common"
 	"strings"
 
@@ -144,12 +145,24 @@ func (k Keeper) AllocationCommit(c context.Context, msg *types.MsgAllocationComm
 		),
 	}
 
+	cellarSet := mapset.NewThreadUnsafeSet()
+	params := k.GetParamSet(ctx)
+	for _, cellar := range params.Cellars {
+		cellarSet.Add(cellar.CellarId)
+	}
+
+	// check if there's an existing vote for the current voting period start
+	if k.HasAllocationCommit(ctx, val) {
+		return nil, sdkerrors.Wrap(types.ErrAlreadyCommitted, fmt.Sprintf("validator: %s", val.String()))
+	}
+
 	for _, commit := range msg.Commit {
 		cel := common.HexToAddress(commit.CellarId)
 
-		// check if there's an existing vote for the current voting period start
-		if k.HasAllocationCommit(ctx, val, cel) {
-			return nil, sdkerrors.Wrap(types.ErrAlreadyCommitted, fmt.Sprint("validator: %s cellar: %s", val.String(), cel.String()))
+		if cellarSet.Contains(commit.CellarId) {
+			cellarSet.Remove(commit.CellarId)
+		} else {
+			return nil, fmt.Errorf("commit for unknown cellar: %s", commit.CellarId)
 		}
 
 		// Get the precommit for that validator from the store
@@ -158,14 +171,6 @@ func (k Keeper) AllocationCommit(c context.Context, msg *types.MsgAllocationComm
 		if !found || len(precommit.Hash) == 0 {
 			return nil, sdkerrors.Wrap(types.ErrNoPrecommit, val.String())
 		}
-
-		//allowedTypesMap := make(map[string]bool)
-		//allowedDataTypes := k.GetParamSet(ctx).DataTypes
-		//
-		//for _, allowedDataType := range allowedDataTypes {
-		//	allowedTypesMap[allowedDataType] = true
-		//}
-
 
 		// parse data to json in order to compute the vote hash and sort
 		jsonBz, err := json.Marshal(commit.TickWeights)
@@ -204,6 +209,10 @@ func (k Keeper) AllocationCommit(c context.Context, msg *types.MsgAllocationComm
 
 		// set the vote in the store
 		k.SetAllocationCommit(ctx, val, cel, *commit)
+	}
+
+	if cellarSet.Cardinality() > 0 {
+		return nil, fmt.Errorf("commits not included for cellars: %s", cellarSet.String())
 	}
 
 	// TODO: set data for the current voting period

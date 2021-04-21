@@ -2,6 +2,9 @@ package keeper
 
 import (
 	"fmt"
+	"github.com/ethereum/go-ethereum/common"
+	"reflect"
+	"sort"
 
 	"github.com/peggyjv/sommelier/x/allocation/types"
 
@@ -76,19 +79,17 @@ func (k Keeper) EndBlocker(ctx sdk.Context) {
 	var (
 		// validators who submitted their vote
 		validatorCommitsMap = make(map[string]bool)
+		// cellars voted on by validator
+		validatorCellarsMap = make(map[string][]string)
+		//
 	)
+
 
 	// iterate over the data votes
 	// TODO: only iterate on the last voting period
-	k.IterateAllocationCommits(ctx, func(validatorAddr sdk.ValAddress, commit types.Allocation) bool {
+	err := k.IterateAllocationCommitValidators(ctx, func(validatorAddr sdk.ValAddress) (bool, error) {
 		// NOTE: the commit might have been submitted by a delegate, so we have to check the
 		// original validator address
-
-		// mark the validator voting as true
-		validatorCommitsMap[validatorAddr.String()] = true
-
-		// remove the miss counter in the current voting window for validators who have already voted
-		k.DeleteMissCounter(ctx, validatorAddr)
 
 		validator := k.stakingKeeper.Validator(ctx, sdk.ValAddress(validatorAddr))
 		if validator == nil {
@@ -100,13 +101,35 @@ func (k Keeper) EndBlocker(ctx sdk.Context) {
 			return false
 		}
 
+		k.IterateValidatorAllocationCommits(ctx, validatorAddr, func(cellar common.Address, commit types.Allocation) bool {
+
+			return false
+		})
+
+
+		valCelList := validatorCellarsMap[validatorAddr.String()]
+		sort.Strings(valCelList)
+		if !reflect.DeepEqual(valCelList, cellarList) {
+			return fmt.Errorf()
+		}
+
+		// mark the validator voting as true
+		validatorCommitsMap[validatorAddr.String()] = true
+
+		// remove the miss counter in the current voting window for validators who have already voted
+		k.DeleteMissCounter(ctx, validatorAddr)
+
 		votedPower += validator.GetConsensusPower()
+
 
 		// Safety check. Already validated on msg validation
 		if len(commit.TickWeights.Weights) == 0 {
 			k.Logger(ctx).Debug("attempted to process empty tick weights in commit", "validator", validatorAddr.String())
 			return false
 		}
+
+		cellarAddr := common.HexToAddress(commit.CellarId)
+		validatorCellarsMap[validatorAddr.String()] = append(validatorCellarsMap[validatorAddr.String()], cellarAddr.String())
 
 		// save the oracle data for later processing
 		for _, oracleData := range commit.Feed.Data {
@@ -141,9 +164,12 @@ func (k Keeper) EndBlocker(ctx sdk.Context) {
 		// delete the commit as it has already been processed
 		// TODO: consider keeping the votes for a few voting windows in order to
 		// be able to submit evidence of inaccurate data feed
-		k.DeleteAllocationCommit(ctx, validatorAddr)
+		k.DeleteAllocationCommit(ctx, validatorAddr, cellarAddr)
 		return false
 	})
+	if err != nil {
+		return err
+	}
 
 	// iterate over the full list of validators to increment miss counters if they didn't vote
 	totalPower := int64(0)

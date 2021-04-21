@@ -4,8 +4,10 @@ import (
 	"bytes"
 	"encoding/binary"
 	"github.com/cosmos/cosmos-sdk/codec"
+	"github.com/cosmos/cosmos-sdk/store/prefix"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
+	mapset "github.com/deckarep/golang-set"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/peggyjv/sommelier/x/allocation/types"
 	"github.com/tendermint/tendermint/libs/log"
@@ -176,7 +178,6 @@ func (k Keeper) IterateAllocationPrecommits(ctx sdk.Context, cb func(val sdk.Val
 		val := sdk.ValAddress(keyPair.Next(20))
 		cel := common.BytesToAddress(keyPair.Bytes())
 
-
 		k.cdc.MustUnmarshalBinaryBare(iter.Value(), &precommit)
 		if cb(val, cel, precommit) {
 			break
@@ -192,7 +193,7 @@ func (k Keeper) IterateAllocationPrecommits(ctx sdk.Context, cb func(val sdk.Val
 // CONTRACT: must provide the validator address here not the delegate address
 func (k Keeper) SetAllocationCommit(ctx sdk.Context, val sdk.ValAddress, cel common.Address, allocationCommit types.Allocation) {
 	bz := k.cdc.MustMarshalBinaryBare(&allocationCommit)
-	ctx.KVStore(k.storeKey).Set(types.GetAllocationCommitKey(val, cel), bz)
+	ctx.KVStore(k.storeKey).Set(types.GetAllocationCommitForCellarKey(val, cel), bz)
 }
 
 // GetAllocationCommit gets the prevote for a given validator
@@ -200,7 +201,7 @@ func (k Keeper) SetAllocationCommit(ctx sdk.Context, val sdk.ValAddress, cel com
 func (k Keeper) GetAllocationCommit(ctx sdk.Context, val sdk.ValAddress, cel common.Address) (types.Allocation, bool) {
 	store := ctx.KVStore(k.storeKey)
 
-	bz := store.Get(types.GetAllocationCommitKey(val, cel))
+	bz := store.Get(types.GetAllocationCommitForCellarKey(val, cel))
 	if len(bz) == 0 {
 		return types.Allocation{}, false
 	}
@@ -213,28 +214,83 @@ func (k Keeper) GetAllocationCommit(ctx sdk.Context, val sdk.ValAddress, cel com
 // DeleteAllocationCommit deletes the prevote for a given validator
 // CONTRACT: must provide the validator address here not the delegate address
 func (k Keeper) DeleteAllocationCommit(ctx sdk.Context, val sdk.ValAddress, cel common.Address) {
-	ctx.KVStore(k.storeKey).Delete(types.GetAllocationCommitKey(val, cel))
+	ctx.KVStore(k.storeKey).Delete(types.GetAllocationCommitForCellarKey(val, cel))
 }
 
-// HasAllocationCommit gets the prevote for a given validator
+// HasAllocationCommitForCellar gets the prevote for a given validator
 // CONTRACT: must provide the validator address here not the delegate address
-func (k Keeper) HasAllocationCommit(ctx sdk.Context, val sdk.ValAddress, cel common.Address) bool {
-	return ctx.KVStore(k.storeKey).Has(types.GetAllocationCommitKey(val, cel))
+func (k Keeper) HasAllocationCommitForCellar(ctx sdk.Context, val sdk.ValAddress, cel common.Address) bool {
+	return ctx.KVStore(k.storeKey).Has(types.GetAllocationCommitForCellarKey(val, cel))
+}
+
+
+// HasAllocationCommit gets the existence of any commit for a given validator
+// CONTRACT: must provide the validator address here not the delegate address
+func (k Keeper) HasAllocationCommit(ctx sdk.Context, val sdk.ValAddress) bool {
+	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.GetAllocationCommitKeyPrefix(val))
+	iter := store.Iterator(nil, nil)
+	defer iter.Close()
+
+	return iter.Valid()
 }
 
 // IterateAllocationCommits iterates over all votes in the store
 func (k Keeper) IterateAllocationCommits(ctx sdk.Context, handler func(val sdk.ValAddress, cel common.Address, commit types.Allocation) (stop bool)) {
 	store := ctx.KVStore(k.storeKey)
-	iter := sdk.KVStorePrefixIterator(store, types.AllocationCommitKeyPrefix)
+	iter := sdk.KVStorePrefixIterator(store, types.AllocationCommitForCellarKeyPrefix)
 	defer iter.Close()
 	for ; iter.Valid(); iter.Next() {
-		keyPair := bytes.NewBuffer(bytes.TrimPrefix(iter.Key(), types.AllocationCommitKeyPrefix))
+		keyPair := bytes.NewBuffer(bytes.TrimPrefix(iter.Key(), types.AllocationCommitForCellarKeyPrefix))
 		val := sdk.ValAddress(keyPair.Next(20))
 		cel := common.BytesToAddress(keyPair.Bytes())
 
 		var commit types.Allocation
 		k.cdc.MustUnmarshalBinaryBare(iter.Value(), &commit)
 		if handler(val, cel, commit) {
+			break
+		}
+	}
+}
+
+// IterateAllocationCommitValidators iterates over all validators who have committed allocations
+func (k Keeper) IterateAllocationCommitValidators(ctx sdk.Context, handler func(val sdk.ValAddress) (stop bool)) {
+	store := ctx.KVStore(k.storeKey)
+	iter := sdk.KVStorePrefixIterator(store, types.AllocationCommitForCellarKeyPrefix)
+	defer iter.Close()
+
+	seenValidators := mapset.NewThreadUnsafeSet()
+
+	for ; iter.Valid(); iter.Next() {
+		keyPair := bytes.NewBuffer(bytes.TrimPrefix(iter.Key(), types.AllocationCommitForCellarKeyPrefix))
+		val := sdk.ValAddress(keyPair.Next(20))
+
+		// add seen validator to set. if already in set, don't return to consumer
+		if !seenValidators.Add(val) {
+			continue
+		}
+
+		if handler(val) {
+			break
+		}
+	}
+
+}
+
+// Iterates all of the commits for a provided validator
+func (k Keeper) IterateValidatorAllocationCommits(ctx sdk.Context, val sdk.ValAddress, handler func(cellar common.Address, commit types.Allocation) (stop bool)) {
+	store := ctx.KVStore(k.storeKey)
+	prefix := append(types.AllocationCommitForCellarKeyPrefix, val.Bytes()...)
+	iter := sdk.KVStorePrefixIterator(store, prefix)
+	defer iter.Close()
+
+	for ; iter.Valid(); iter.Next() {
+		keyPair := bytes.NewBuffer(bytes.TrimPrefix(iter.Key(), types.AllocationCommitForCellarKeyPrefix))
+		keyPair.Next(20)
+		cel := common.BytesToAddress(keyPair.Bytes())
+
+		var commit types.Allocation
+		k.cdc.MustUnmarshalBinaryBare(iter.Value(), &commit)
+		if handler(cel, commit) {
 			break
 		}
 	}
@@ -267,7 +323,6 @@ func (k Keeper) SetAllocationTickWeights(ctx sdk.Context, val sdk.ValAddress, ce
 	ctx.KVStore(k.storeKey).Set(types.GetAllocationTickWeightKey(val, cel), bz)
 }
 
-
 // DeleteAllocationTickWeights deletes the tick weights for a given validator and cellar
 // CONTRACT: must provide the validator address here not the delegate address
 func (k Keeper) DeleteAllocationTickWeights(ctx sdk.Context, val sdk.ValAddress, cel common.Address) {
@@ -279,7 +334,6 @@ func (k Keeper) DeleteAllocationTickWeights(ctx sdk.Context, val sdk.ValAddress,
 func (k Keeper) HasAllocationTickWeights(ctx sdk.Context, val sdk.ValAddress, cel common.Address) bool {
 	return ctx.KVStore(k.storeKey).Has(types.GetAllocationTickWeightKey(val, cel))
 }
-
 
 // IterateAllocationTickWeights iterates over all tick weights in the store
 func (k Keeper) IterateAllocationTickWeights(ctx sdk.Context, handler func(val sdk.ValAddress, cel common.Address, tickWeights types.TickWeights) (stop bool)) {
@@ -300,7 +354,6 @@ func (k Keeper) IterateAllocationTickWeights(ctx sdk.Context, handler func(val s
 }
 
 // todo: aggregation functions for tick weight data
-
 
 //////////////////
 // CommitPeriod //

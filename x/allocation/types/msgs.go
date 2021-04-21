@@ -125,8 +125,15 @@ func (m *MsgAllocationPrecommit) ValidateBasic() error {
 		return sdkerrors.Wrap(sdkerrors.ErrInvalidAddress, err.Error())
 	}
 
-	if m.Precommit == nil || len(m.Precommit.Hash) == 0 {
-		return fmt.Errorf("empty prevote hash")
+	if m.Precommit == nil {
+		return fmt.Errorf("empty precommit")
+	}
+	for _, pc := range m.Precommit {
+		if len(pc.Hash) == 0 {
+			return fmt.Errorf("empty precommit hash")
+		} else if pc.CellarId == "" {
+			return fmt.Errorf("empty precommit cellar id")
+		}
 	}
 
 	return nil
@@ -173,12 +180,45 @@ func (m *MsgAllocationCommit) Route() string { return ModuleName }
 // Type implements sdk.Msg
 func (m *MsgAllocationCommit) Type() string { return TypeMsgAllocationCommit }
 
+func (ac *Allocation) ValidateBasic() error {
+	if ac.CellarId == "" {
+		return fmt.Errorf("no cellar id provided for commit")
+	}
+	if ac.FeeLevel.LTE(sdk.ZeroDec()) {
+		return fmt.Errorf("invalid fee level provided")
+	}
+
+	var totalWeight sdk.Dec
+	for _, tw := range ac.TickWeights.Weights {
+		if tw.Tick == nil {
+			return fmt.Errorf("no tick provided for tick weight")
+		}
+		if tw.Weight.LTE(sdk.ZeroDec()) {
+			return fmt.Errorf("invalid tick weight provided")
+		}
+		totalWeight = totalWeight.Add(tw.Weight)
+	}
+
+	if !totalWeight.Equal(sdk.OneDec()) {
+		return fmt.Errorf("tick weights do not total to 1.0")
+	}
+
+	return nil
+}
+
 // ValidateBasic implements sdk.Msg
 func (m *MsgAllocationCommit) ValidateBasic() error {
 	if _, err := sdk.AccAddressFromBech32(m.Signer); err != nil {
 		return sdkerrors.Wrap(sdkerrors.ErrInvalidAddress, err.Error())
 	}
-	return m.Commit.Validate()
+
+	for _, commit := range m.Commit {
+		if err := commit.ValidateBasic(); err != nil {
+			return err
+		}
+	}
+
+	return nil
 }
 
 // GetSignBytes implements sdk.Msg
