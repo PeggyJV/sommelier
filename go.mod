@@ -7,6 +7,7 @@ require (
 	github.com/cosmos/cosmos-sdk v0.42.2
 	github.com/cosmos/go-bip39 v1.0.0
 	github.com/cosmos/gravity-bridge/module v0.0.0-20210324205831-32074c2eab98
+	github.com/deckarep/golang-set v0.0.0-20180603214616-504e848d77ea
 	github.com/ethereum/go-ethereum v1.10.1
 	github.com/gogo/protobuf v1.3.3
 	github.com/golang/protobuf v1.5.1

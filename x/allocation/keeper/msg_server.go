@@ -173,10 +173,10 @@ func (k Keeper) AllocationCommit(c context.Context, msg *types.MsgAllocationComm
 		}
 
 		// parse data to json in order to compute the vote hash and sort
-		jsonBz, err := json.Marshal(commit.TickWeights)
+		jsonBz, err := json.Marshal(commit.PoolAllocations)
 		if err != nil {
 			return nil, sdkerrors.Wrap(
-				sdkerrors.ErrJSONMarshal, "failed to marshal json allocation tick weights",
+				sdkerrors.ErrJSONMarshal, "failed to marshal json pool allocations",
 			)
 		}
 
@@ -194,7 +194,7 @@ func (k Keeper) AllocationCommit(c context.Context, msg *types.MsgAllocationComm
 		}
 
 		if !k.HasAllocationTickWeights(ctx, val, cel) {
-			k.SetAllocationTickWeights(ctx, val, cel, *commit.TickWeights)
+			k.SetPoolAllocations(ctx, val, cel, *commit.PoolAllocations)
 		}
 
 		allocationEvents = append(
@@ -202,7 +202,7 @@ func (k Keeper) AllocationCommit(c context.Context, msg *types.MsgAllocationComm
 			sdk.NewEvent(
 				types.EventTypeAllocationCommit,
 				sdk.NewAttribute(types.AttributeKeyCellar, cel.String()),
-				sdk.NewAttribute(types.AttributeTickWeights, commit.TickWeights.String()),
+				sdk.NewAttribute(types.AttributePoolAllocations, commit.PoolAllocations.String()),
 				sdk.NewAttribute(types.AttributeKeyValidator, val.String()),
 			),
 		)

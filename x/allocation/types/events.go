@@ -12,7 +12,7 @@ const (
 	AttributeKeyValidator         = "validator"
 	AttributeKeyPrevoteHash       = "hash"
 	AttributeKeyCellar            = "cellar"
-	AttributeTickWeights = "tick_weights"
+	AttributePoolAllocations = "pool_allocations"
 	AttributeKeyCommitPeriodStart = "commit_period_start"
 	AttributeKeyCommitPeriodEnd   = "commit_period_end"
 

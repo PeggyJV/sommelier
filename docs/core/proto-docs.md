@@ -9,7 +9,8 @@
     - [AllocationPrecommit](#allocation.v1.AllocationPrecommit)
     - [Cellar](#allocation.v1.Cellar)
     - [Pool](#allocation.v1.Pool)
-    - [Tick](#allocation.v1.Tick)
+    - [PoolAllocation](#allocation.v1.PoolAllocation)
+    - [PoolAllocations](#allocation.v1.PoolAllocations)
     - [TickWeight](#allocation.v1.TickWeight)
     - [TickWeights](#allocation.v1.TickWeights)
   
@@ -87,14 +88,13 @@
 <a name="allocation.v1.Allocation"></a>
 
 ### Allocation
-Allocation is the XXX
+Allocation is the commit for all allocations for a cellar by a validator
 
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | `cellar_id` | [string](#string) |  |  |
-| `fee_level` | [string](#string) |  |  |
-| `tick_weights` | [TickWeights](#allocation.v1.TickWeights) |  |  |
+| `pool_allocations` | [PoolAllocations](#allocation.v1.PoolAllocations) |  |  |
 | `salt` | [string](#string) |  |  |
 
 
@@ -128,8 +128,6 @@ Cellar is a collection of pools for a token pair
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | `cellar_id` | [string](#string) |  |  |
-| `token0` | [string](#string) |  |  |
-| `token1` | [string](#string) |  |  |
 | `pool` | [Pool](#allocation.v1.Pool) | repeated |  |
 
 
@@ -146,23 +144,38 @@ Pool collects tick information
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | `fee_level` | [string](#string) |  |  |
-| `tick_ranges` | [Tick](#allocation.v1.Tick) | repeated |  |
+| `tick_ranges` | [uint32](#uint32) | repeated |  |
 
 
 
 
 
 
-<a name="allocation.v1.Tick"></a>
+<a name="allocation.v1.PoolAllocation"></a>
 
-### Tick
-Tick is the metadata for an instance of token data
+### PoolAllocation
+PoolAllocation is the allocation of weights within a fee level on a cellar
 
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| `min` | [uint64](#uint64) |  |  |
-| `max` | [uint64](#uint64) |  |  |
+| `fee_level` | [string](#string) |  |  |
+| `tick_weights` | [TickWeights](#allocation.v1.TickWeights) |  |  |
+
+
+
+
+
+
+<a name="allocation.v1.PoolAllocations"></a>
+
+### PoolAllocations
+PoolAllocations is a struct containing a collection of PoolAllocation
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `allocations` | [PoolAllocation](#allocation.v1.PoolAllocation) | repeated |  |
 
 
 
@@ -177,7 +190,7 @@ TickWeight is the weighted Tick value
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| `tick` | [Tick](#allocation.v1.Tick) |  |  |
+| `tick` | [uint32](#uint32) |  |  |
 | `weight` | [string](#string) |  |  |
 
 

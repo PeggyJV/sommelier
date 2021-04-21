@@ -3,8 +3,6 @@ package keeper
 import (
 	"fmt"
 	"github.com/ethereum/go-ethereum/common"
-	"reflect"
-	"sort"
 
 	"github.com/peggyjv/sommelier/x/allocation/types"
 
@@ -59,6 +57,15 @@ func (k Keeper) BeginBlocker(ctx sdk.Context) {
 // 6) Deletes all prevotes
 //
 // 7) Sets the new voting period to the next block
+
+type PowerWeight struct {
+	validator sdk.ValAddress
+	cellar    common.Address
+	fee_level sdk.Dec
+	power     int64
+	tick      uint32
+}
+
 func (k Keeper) EndBlocker(ctx sdk.Context) {
 	params := k.GetParamSet(ctx)
 	votePeriodStart, found := k.GetCommitPeriodStart(ctx)
@@ -78,16 +85,22 @@ func (k Keeper) EndBlocker(ctx sdk.Context) {
 
 	var (
 		// validators who submitted their vote
-		validatorCommitsMap = make(map[string]bool)
-		// cellars voted on by validator
-		validatorCellarsMap = make(map[string][]string)
-		//
+		validatorsCommittedMap = make(map[string]bool)
+		// cellarMap is a map of cellars by address
+		cellarsMap = make(map[common.Address]*types.Cellar)
+		// cellarCommitsMap is a list of commits by cellar
+		cellarCommitsMap = make(map[common.Address][]types.Allocation)
+		// cellarTickWeightPowerMap is a map of cellars to pools to ticks with power adjusted allocations
+		cellarPoolTickPowerMap = make(map[common.Address]map[sdk.Dec]map[uint32]sdk.Dec)
 	)
 
+	for _, cellar := range params.Cellars {
+		cellarsMap[common.HexToAddress(cellar.CellarId)] = cellar
+	}
 
 	// iterate over the data votes
 	// TODO: only iterate on the last voting period
-	err := k.IterateAllocationCommitValidators(ctx, func(validatorAddr sdk.ValAddress) (bool, error) {
+	k.IterateAllocationCommitValidators(ctx, func(validatorAddr sdk.ValAddress) bool {
 		// NOTE: the commit might have been submitted by a delegate, so we have to check the
 		// original validator address
 
@@ -101,75 +114,35 @@ func (k Keeper) EndBlocker(ctx sdk.Context) {
 			return false
 		}
 
+		validatorPower := validator.GetConsensusPower()
+
 		k.IterateValidatorAllocationCommits(ctx, validatorAddr, func(cellar common.Address, commit types.Allocation) bool {
+			cellarCommitsMap[cellar] = append(cellarCommitsMap[cellar], commit)
+			for _, pa := range commit.PoolAllocations.Allocations {
+				for _, tw := range pa.TickWeights.Weights {
+					cellarPoolTickPowerMap[cellar][pa.FeeLevel][tw.Tick] =
+						cellarPoolTickPowerMap[cellar][pa.FeeLevel][tw.Tick].Add(tw.Weight.MulInt64(validatorPower))
+				}
+			}
+
+			// delete the commit as it has already been processed
+			// TODO: consider keeping the votes for a few voting windows in order to
+			// be able to submit evidence of inaccurate data feed
+			k.DeleteAllocationCommit(ctx, validatorAddr, cellar)
 
 			return false
 		})
 
-
-		valCelList := validatorCellarsMap[validatorAddr.String()]
-		sort.Strings(valCelList)
-		if !reflect.DeepEqual(valCelList, cellarList) {
-			return fmt.Errorf()
-		}
-
 		// mark the validator voting as true
-		validatorCommitsMap[validatorAddr.String()] = true
+		validatorsCommittedMap[validatorAddr.String()] = true
 
 		// remove the miss counter in the current voting window for validators who have already voted
 		k.DeleteMissCounter(ctx, validatorAddr)
 
-		votedPower += validator.GetConsensusPower()
+		votedPower += validatorPower
 
-
-		// Safety check. Already validated on msg validation
-		if len(commit.TickWeights.Weights) == 0 {
-			k.Logger(ctx).Debug("attempted to process empty tick weights in commit", "validator", validatorAddr.String())
-			return false
-		}
-
-		cellarAddr := common.HexToAddress(commit.CellarId)
-		validatorCellarsMap[validatorAddr.String()] = append(validatorCellarsMap[validatorAddr.String()], cellarAddr.String())
-
-		// save the oracle data for later processing
-		for _, oracleData := range commit.Feed.Data {
-			// oracleData, err := types.UnpackOracleData(oracleDataAny)
-			// if err != nil {
-			// 	// NOTE: this should never panic as the oracle data had already been checked before
-			// 	// setting it to store.
-			// 	panic(err)
-			// }
-
-			// add oracle data to maps
-			feederVote := types.FeederVote{
-				Data:    oracleData,
-				Address: validatorAddr,
-			}
-
-			dataID := oracleData.GetID()
-
-			oracleFeeds, ok := submittedFeedMap[dataID]
-			if ok {
-				submittedFeedMap[dataID] = append(oracleFeeds, feederVote)
-
-				datas := submittedDataMap[dataID]
-				submittedDataMap[dataID] = append(datas, oracleData)
-			} else {
-				submittedFeedMap[dataID] = []types.FeederVote{feederVote}
-				submittedDataMap[dataID] = []types.OracleData{oracleData}
-				submittedDataIDs = append(submittedDataIDs, dataID)
-			}
-		}
-
-		// delete the commit as it has already been processed
-		// TODO: consider keeping the votes for a few voting windows in order to
-		// be able to submit evidence of inaccurate data feed
-		k.DeleteAllocationCommit(ctx, validatorAddr, cellarAddr)
 		return false
 	})
-	if err != nil {
-		return err
-	}
 
 	// iterate over the full list of validators to increment miss counters if they didn't vote
 	totalPower := int64(0)
@@ -179,7 +152,7 @@ func (k Keeper) EndBlocker(ctx sdk.Context) {
 		validatorAddr := validator.GetOperator()
 
 		// only increment miss counter for validators who have previously submitted data
-		if !validatorCommitsMap[validatorAddr.String()] && k.HasMissCounter(ctx, validatorAddr) {
+		if !validatorsCommittedMap[validatorAddr.String()] && k.HasMissCounter(ctx, validatorAddr) {
 			// TODO: this is wrong because the feeder could submit a single oracle data uniswap pair instead of all the required
 			// ones and still be counted as if they voted correctly. Maybe consider adding each uniswap pair id to the params?
 			// TODO: we need to define what is the exact data that we want the validators to submit.
@@ -192,79 +165,7 @@ func (k Keeper) EndBlocker(ctx sdk.Context) {
 	// if the voted_power/total_power > params.VoteThreshold then we store the averages in the store
 	// TODO: check for sample size too as there could be only a few feeders with a large voting power that submitted the
 	// data to the oracle.
-	storeAverages := sdk.NewDec(votedPower).Quo(sdk.NewDec(totalPower)).GT(params.VoteThreshold)
-
-	// Now, compute the aggregated data (eg: avg, median, etc.) for each type of data tracked by the oracle
-	for _, id := range submittedDataIDs {
-		oracleDatas, ok := submittedDataMap[id]
-		if !ok {
-			// no oracle data for the current id was submitted
-			k.Logger(ctx).Debug(
-				"no oracle data submitted for existing identifier",
-				"id", id, "voting-period-start", fmt.Sprintf("%d", votePeriodStart),
-			)
-			continue
-		}
-
-		// aggregate the data  using the handler set up during app initialization
-		aggregatedData, err := k.oracleHandler(ctx, oracleDatas)
-		if err != nil {
-			// TODO: ensure correctness or consider logging instead?
-			panic(err)
-		}
-
-		if aggregatedData == nil {
-			k.Logger(ctx).Debug(
-				"aggregated data is nil",
-				"id", id, "voting-period-start", fmt.Sprintf("%d", votePeriodStart),
-			)
-			continue
-		}
-
-		// once we have the aggregated data for the data type, we set it in the store
-
-		// only store averages if there's enough voting power
-		if storeAverages {
-			k.SetAggregatedOracleData(ctx, ctx.BlockHeight(), aggregatedData)
-			k.SetOracleDataHeight(ctx, aggregatedData.GetID(), ctx.BlockHeight())
-		}
-
-		// store the "average" for scoring validators later
-		aggregateMap[aggregatedData.GetID()] = aggregatedData
-	}
-
-	for _, id := range submittedDataIDs {
-		aggregateData, ok := aggregateMap[id]
-		if !ok {
-			k.Logger(ctx).Debug(
-				"aggregated data for existing identifier",
-				"id", id, "voting-period-start", fmt.Sprintf("%d", votePeriodStart),
-			)
-			continue
-		}
-
-		feederVotes, ok := submittedFeedMap[id]
-		if !ok {
-			// no oracle feed vote for the current id was submitted
-			k.Logger(ctx).Debug(
-				"no feed vote submitted for existing identifier",
-				"id", id, "voting-period-start", fmt.Sprintf("%d", votePeriodStart),
-			)
-			continue
-		}
-
-		// Compare each validators vote for each data type against the
-		// averages to define which are eligable for rewards
-		for _, feederVote := range feederVotes {
-			if !feederVote.Data.Compare(aggregateData, params.TargetThreshold) {
-				continue
-			}
-
-			// TODO: reward validators / delegates
-			// TODO: maybe consider splitting the delegate / validator reward in equal parts because the validator has the stake and the feeder
-			// submits the data.
-		}
-	}
+	// storeAverages := sdk.NewDec(votedPower).Quo(sdk.NewDec(totalPower)).GT(params.VoteThreshold)
 
 	// slash validators who have missed to many votes
 	k.IterateMissCounters(ctx, func(validatorAddr sdk.ValAddress, counter int64) bool {

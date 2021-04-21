@@ -12,22 +12,33 @@ message AllocationPrecommit {
   string cellar_id = 2;
 }
 
-// Allocation is the XXX
+// Allocation is the commit for all allocations for a cellar by a validator
 message Allocation {
-  string              cellar_id = 1;
-  string               fee_level = 2 [
+  string cellar_id = 1;
+  PoolAllocations pool_allocations = 2;
+  string salt = 3;
+}
+
+// PoolAllocation is the allocation of weights within a fee level on a cellar
+message PoolAllocation {
+  string               fee_level = 1 [
     (gogoproto.jsontag) = "feeLevel",
     (gogoproto.moretags) = "yaml:\"feeLevel\"",
     (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
     (gogoproto.nullable) = false
   ];
-  TickWeights tick_weights = 3;
-  string salt = 4;
+  TickWeights tick_weights = 2;
 }
+
+// PoolAllocations is a struct containing a collection of PoolAllocation
+message PoolAllocations {
+  repeated PoolAllocation allocations = 1;
+}
+
 
 // TickWeight is the weighted Tick value
 message TickWeight {
-  Tick  tick = 1;
+  uint32 tick = 1;
   string weight = 2 [
     (gogoproto.jsontag) = "weight",
     (gogoproto.moretags) = "yaml:\"weight\"",
@@ -41,18 +52,15 @@ message TickWeights {
   repeated TickWeight weights = 1;
 }
 
-// Tick is the metadata for an instance of token data
-message Tick {
-  uint64 min = 1;
-  uint64 max = 2;
-}
+
+////////////
+// Params //
+////////////
 
 // Cellar is a collection of pools for a token pair
 message Cellar {
   string        cellar_id = 1;
-  string        token0 = 2;
-  string       token1 = 3;
-  repeated Pool pool = 4;
+  repeated Pool pool = 2;
 }
 
 // Pool collects tick information
@@ -63,5 +71,5 @@ message Pool {
     (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
     (gogoproto.nullable) = false
   ];
-  repeated Tick tick_ranges = 2;
+  repeated uint32 tick_ranges = 2;
 }

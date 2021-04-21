@@ -21,32 +21,23 @@ const (
 
 // Keys for oracle store, with <prefix><key> -> <value>
 var (
-	// - 0x01<oracle_data_type_hash><oracle_data_id> -> <OracleData>
-	OracleDataKeyPrefix = []byte{0x01} // key for oracle state data
+	// - <prefix><val_address><cel_address> -> <[]pool_allocation>
+	PoolAllocationKeyPrefix = []byte{0x01} //
 
-	// - 0x02<val_address><cel_address> -> <[]tick_weight>
-	AllocationTickWeightKeyPrefix = []byte{0x02} //
+	// - <prefix><val_address> -> <delegate_address>
+	AllocationDelegateKeyPrefix = []byte{0x02} // key for validator allocation delegation
 
-	// - 0x03<oracle_data_id> -> uint64
-	OracleDataHeightKeyPrefix = []byte{0x03}
+	// - <prefix><val_address><cel_address> -> <hash>
+	AllocationPrecommitKeyPrefix = []byte{0x03} // key for allocation precommits
 
-	// - 0x04<val_address> -> <delegate_address>
-	AllocationDelegateKeyPrefix = []byte{0x04} // key for validator allocation delegation
+	// - <prefix><val_address><cel_address> -> <allocation_commit>
+	AllocationCommitForCellarKeyPrefix = []byte{0x04} // key for allocation commits
 
-	// - 0x05<val_address><cel_address> -> <hash>
-	AllocationPrecommitKeyPrefix = []byte{0x05} // key for allocation precommits
+	// - <prefix> -> int64(height)
+	CommitPeriodStartKey = []byte{0x05} // key for commit period height start
 
-	// - 0x06<val_address><cel_address> -> <allocation_commit>
-	AllocationCommitForCellarKeyPrefix = []byte{0x06} // key for allocation commits
-
-	// - 0x07 -> int64(height)
-	CommitPeriodStartKey = []byte{0x07} // key for commit period height start
-
-	// - 0x08<val_address> -> int64(misses)
-	MissCounterKeyPrefix = []byte{0x08} // key for validator miss counters
-
-	// - 0x09<oracle_data_type_hash><oracle_data_id> -> <OracleData>
-	AggregatedOracleDataKeyPrefix = []byte{0x09} // key for oracle state data
+	// - <prefix><val_address> -> int64(misses)
+	MissCounterKeyPrefix = []byte{0x06} // key for validator miss counters
 )
 
 // GetAllocationDelegateKey returns the validator for a given delegate key
@@ -71,9 +62,9 @@ func GetAllocationCommitKeyPrefix(val sdk.ValAddress) []byte {
 	return append(AllocationCommitForCellarKeyPrefix, val.Bytes()...)
 }
 
-// GetAllocationTickWeightKey returns the key for tick_weights for a given cellar
-func GetAllocationTickWeightKey(val sdk.ValAddress, cel common.Address) []byte {
-	key := append(AllocationTickWeightKeyPrefix, val.Bytes()...)
+// GetPoolAllocationKey returns the key for pool allocations for a given cellar
+func GetPoolAllocationKey(val sdk.ValAddress, cel common.Address) []byte {
+	key := append(PoolAllocationKeyPrefix, val.Bytes()...)
 	return append(key, cel.Bytes()...)
 }
 

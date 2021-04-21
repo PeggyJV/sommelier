@@ -303,7 +303,7 @@ func (k Keeper) IterateValidatorAllocationCommits(ctx sdk.Context, val sdk.ValAd
 // GetAllocationTickWeights gets allocation tick weights for a validator for a given cellar
 func (k Keeper) GetAllocationTickWeights(ctx sdk.Context, val sdk.ValAddress, cel common.Address) (types.TickWeights, bool) {
 	store := ctx.KVStore(k.storeKey)
-	bz := store.Get(types.GetAllocationTickWeightKey(val, cel))
+	bz := store.Get(types.GetPoolAllocationKey(val, cel))
 	if len(bz) == 0 {
 		return types.TickWeights{}, false
 	}
@@ -313,35 +313,35 @@ func (k Keeper) GetAllocationTickWeights(ctx sdk.Context, val sdk.ValAddress, ce
 	return tickWeights, true
 }
 
-// SetAllocationTickWeights sets allocation tick weights for a validator for a given cellar
-func (k Keeper) SetAllocationTickWeights(ctx sdk.Context, val sdk.ValAddress, cel common.Address, tickWeights types.TickWeights) {
-	bz, err := k.cdc.MarshalInterface(&tickWeights)
+// SetPoolAllocations sets allocation tick weights for a validator for a given cellar
+func (k Keeper) SetPoolAllocations(ctx sdk.Context, val sdk.ValAddress, cel common.Address, poolAllocations types.PoolAllocations) {
+	bz, err := k.cdc.MarshalInterface(&poolAllocations)
 	if err != nil {
 		panic(err)
 	}
 
-	ctx.KVStore(k.storeKey).Set(types.GetAllocationTickWeightKey(val, cel), bz)
+	ctx.KVStore(k.storeKey).Set(types.GetPoolAllocationKey(val, cel), bz)
 }
 
 // DeleteAllocationTickWeights deletes the tick weights for a given validator and cellar
 // CONTRACT: must provide the validator address here not the delegate address
 func (k Keeper) DeleteAllocationTickWeights(ctx sdk.Context, val sdk.ValAddress, cel common.Address) {
-	ctx.KVStore(k.storeKey).Delete(types.GetAllocationTickWeightKey(val, cel))
+	ctx.KVStore(k.storeKey).Delete(types.GetPoolAllocationKey(val, cel))
 }
 
 // HasAllocationTickWeights returns if tick weights for a given validator and cellar exist
 // CONTRACT: must provide the validator address here not the delegate address
 func (k Keeper) HasAllocationTickWeights(ctx sdk.Context, val sdk.ValAddress, cel common.Address) bool {
-	return ctx.KVStore(k.storeKey).Has(types.GetAllocationTickWeightKey(val, cel))
+	return ctx.KVStore(k.storeKey).Has(types.GetPoolAllocationKey(val, cel))
 }
 
 // IterateAllocationTickWeights iterates over all tick weights in the store
 func (k Keeper) IterateAllocationTickWeights(ctx sdk.Context, handler func(val sdk.ValAddress, cel common.Address, tickWeights types.TickWeights) (stop bool)) {
 	store := ctx.KVStore(k.storeKey)
-	iter := sdk.KVStorePrefixIterator(store, types.AllocationTickWeightKeyPrefix)
+	iter := sdk.KVStorePrefixIterator(store, types.PoolAllocationKeyPrefix)
 	defer iter.Close()
 	for ; iter.Valid(); iter.Next() {
-		keyPair := bytes.NewBuffer(bytes.TrimPrefix(iter.Key(), types.AllocationTickWeightKeyPrefix))
+		keyPair := bytes.NewBuffer(bytes.TrimPrefix(iter.Key(), types.PoolAllocationKeyPrefix))
 		val := sdk.ValAddress(keyPair.Next(20))
 		cel := common.BytesToAddress(keyPair.Bytes())
 

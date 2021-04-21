@@ -163,13 +163,13 @@ func (m *MsgAllocationPrecommit) MustGetSigner() sdk.AccAddress {
 ///////////////////////
 
 // NewMsgAllocationCommit return a new MsgAllocationPrecommit
-func NewMsgAllocationCommit(commit *Allocation, signer sdk.AccAddress) *MsgAllocationCommit {
+func NewMsgAllocationCommit(commits []*Allocation, signer sdk.AccAddress) *MsgAllocationCommit {
 	if signer == nil {
 		return nil
 	}
 
 	return &MsgAllocationCommit{
-		Commit:   commit,
+		Commit:   commits,
 		Signer: signer.String(),
 	}
 }
@@ -179,32 +179,6 @@ func (m *MsgAllocationCommit) Route() string { return ModuleName }
 
 // Type implements sdk.Msg
 func (m *MsgAllocationCommit) Type() string { return TypeMsgAllocationCommit }
-
-func (ac *Allocation) ValidateBasic() error {
-	if ac.CellarId == "" {
-		return fmt.Errorf("no cellar id provided for commit")
-	}
-	if ac.FeeLevel.LTE(sdk.ZeroDec()) {
-		return fmt.Errorf("invalid fee level provided")
-	}
-
-	var totalWeight sdk.Dec
-	for _, tw := range ac.TickWeights.Weights {
-		if tw.Tick == nil {
-			return fmt.Errorf("no tick provided for tick weight")
-		}
-		if tw.Weight.LTE(sdk.ZeroDec()) {
-			return fmt.Errorf("invalid tick weight provided")
-		}
-		totalWeight = totalWeight.Add(tw.Weight)
-	}
-
-	if !totalWeight.Equal(sdk.OneDec()) {
-		return fmt.Errorf("tick weights do not total to 1.0")
-	}
-
-	return nil
-}
 
 // ValidateBasic implements sdk.Msg
 func (m *MsgAllocationCommit) ValidateBasic() error {
