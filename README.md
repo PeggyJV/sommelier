@@ -18,4 +18,11 @@ We have active, helpful communities on Twitter, Discord, and Telegram.
 
 ## Sommelier
 
-The initial release of the Sommelier blockchain will consist of a standard cosmos-sdk chain and the recently completed [Gravity Bridge refactor](https://github.com/peggyjv/gravity-bridge). 
+The initial release of the Sommelier blockchain will consist of a standard cosmos-sdk chain and the recently completed [Gravity Bridge refactor](https://github.com/peggyjv/gravity-bridge).
+
+### Gravity Bridge
+
+The Gravity Bridge requires some additional pieces to be deployed to support it:
+
+- [ ] [Ethereum Contract](https://github.com/PeggyJV/gravity-bridge/tree/main/solidity) and associated tooling
+- [ ] Orchestrator/Relayer binaries built from the `go.mod` commit 
