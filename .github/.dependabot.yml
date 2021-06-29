@@ -11,9 +11,9 @@ updates:
     interval: daily
   open-pull-requests-limit: 10
   reviewers:
-  - marbar3778
-  - fedekunze
   - jackzampolin
+  - mvid
+  - levicook
   labels:
   - automerge
   - dependencies
@@ -23,6 +23,6 @@ updates:
     interval: daily
   open-pull-requests-limit: 10
   reviewers:
-  - marbar3778
-  - fedekunze
   - jackzampolin
+  - mvid
+  - levicook
