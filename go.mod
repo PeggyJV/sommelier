@@ -6,6 +6,7 @@ require (
 	github.com/cosmos/cosmos-sdk v0.42.4-0.20210623214207-eb0fc466c99b
 	github.com/ethereum/go-ethereum v1.10.1 // indirect
 	github.com/gorilla/mux v1.8.0
+	github.com/peggyjv/gravity-bridge v0.1.4-0.20210707212951-fe341218a84e // indirect
 	github.com/peggyjv/gravity-bridge/module v0.0.0-20210628190121-c1e25f9a8514
 	github.com/rakyll/statik v0.1.7
 	github.com/spf13/cast v1.3.1
