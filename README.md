@@ -49,12 +49,12 @@ wget https://github.com/PeggyJV/sommelier/releases/download/v0.1.2/sommelier_0.1
 wget https://raw.githubusercontent.com/PeggyJV/sommelier/main/contrib/systemd/geth.goerli.service https://raw.githubusercontent.com/PeggyJV/sommelier/main/contrib/systemd/orchestrator.service https://raw.githubusercontent.com/PeggyJV/sommelier/main/contrib/systemd/sommelier.service
 
 # Modify the unit files to fit your environment
-nano geth.goreli.service
+nano geth.goerli.service
 nano orchestrator.service
 nano sommelier.service
 
 # And install them to systemd
-sudo mv geth.goreli.service /etc/systemd/system/ && sudo mv orchestrator.service /etc/systemd/system/ && sudo mv sommelier.service /etc/systemd/system/ && sudo systemctl daemon-reload
+sudo mv geth.goerli.service /etc/systemd/system/ && sudo mv orchestrator.service /etc/systemd/system/ && sudo mv sommelier.service /etc/systemd/system/ && sudo systemctl daemon-reload
 
 # Start geth
 sudo systemctl start geth && journalctl -u geth -f
