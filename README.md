@@ -28,21 +28,109 @@ The Gravity Bridge requires some additional pieces to be deployed to support it:
 - [ ] Orchestrator/Relayer binaries built from the `go.mod` commit 
 
 
+## Join the testnet!
+
+### Installation
+
 ```bash 
 # Create an installation directory
 mkdir install && cd install
 
 # Install Orchestrator
-wget https://github.com/PeggyJV/gravity-bridge/releases/download/v0.1.4/client https://github.com/PeggyJV/gravity-bridge/releases/download/v0.1.4/contract-deployer https://github.com/PeggyJV/gravity-bridge/releases/download/v0.1.4/orchestrator https://github.com/PeggyJV/gravity-bridge/releases/download/v0.1.4/relayer && chmod +x * && sudo mv * /usr/bin
+wget https://github.com/PeggyJV/gravity-bridge/releases/download/v0.1.5/client https://github.com/PeggyJV/gravity-bridge/releases/download/v0.1.5/contract-deployer https://github.com/PeggyJV/gravity-bridge/releases/download/v0.1.5/orchestrator https://github.com/PeggyJV/gravity-bridge/releases/download/v0.1.5/relayer && chmod +x * && sudo mv * /usr/bin
 
 # Install Geth
 wget https://gethstore.blob.core.windows.net/builds/geth-linux-amd64-1.10.4-aa637fd3.tar.gz && tar -xvf geth-linux-amd64-1.10.4-aa637fd3.tar.gz && sudo mv geth-linux-amd64-1.10.4-aa637fd3/geth /usr/bin/geth && rm -rf geth-linux-amd64-1.10.4-aa637fd3*
 
 # Install Sommelier
-wget https://github.com/PeggyJV/sommelier/releases/download/v0.1.1/sommelier_0.1.1_linux_amd64.tar.gz && tar -xf sommelier_0.1.1_linux_amd64.tar.gz && sudo mv sommelier /usr/bin && rm -rf sommelier_0.1.1_linux_amd64* LICENSE README.md
+wget https://github.com/PeggyJV/sommelier/releases/download/v0.1.2/sommelier_0.1.2_linux_amd64.tar.gz && tar -xf sommelier_0.1.2_linux_amd64.tar.gz && sudo mv sommelier /usr/bin && rm -rf sommelier_0.1.2_linux_amd64* LICENSE README.md
+
+# Fetch systemd unit files
+wget https://raw.githubusercontent.com/PeggyJV/sommelier/main/contrib/systemd/geth.goerli.service https://raw.githubusercontent.com/PeggyJV/sommelier/main/contrib/systemd/orchestrator.service https://raw.githubusercontent.com/PeggyJV/sommelier/main/contrib/systemd/sommelier.service
+
+# Modify the unit files to fit your environment
+nano geth.goreli.service
+nano orchestrator.service
+nano sommelier.service
+
+# And install them to systemd
+sudo mv geth.goreli.service /etc/systemd/system/ && sudo mv orchestrator.service /etc/systemd/system/ && sudo mv sommelier.service /etc/systemd/system/ && sudo systemctl daemon-reload
+
+# Start geth
+sudo systemctl start geth && journalctl -u geth -f
+
+# Initialize the validator files
+sommelier init myval --chain-id sommtest-1
+
+# create 2 cosmos keys and 1 ethereum key
+# NOTE: be sure to save the mnemonics and eth private key as you will need 
+# these as arguements for the orchestrator and the client software
+
+sommelier keys add validator # --keyring-backend test
+sommelier keys add orchestrator # --keyring-backend test
+# use metamask to create a new account/use exsting (goreli network)
+# there is an "export private key" function that returns the key for this
+# note: i've saved these in a keys.json file for easy access
+
+# go ask Jack for some testnet $$$$ for both cosmos addresses and for some goreli eth
+
+# Add the peers from contrib/testnets/peers.txt to the ~/.sommelier/config/config.toml file
+nano ~/.sommelier/config/config.toml
+
+# start your sommelier node - note it may take a minute or two to sync all of the blocks
+sudo systemctl start sommelier && journalctl -u sommelier -f
+
+# once your node is synced, create your validator 
+sommelier tx staking create-validator \
+  --amount=10000000stake \
+  --pubkey=$(sommelier tendermint show-validator) \
+  --moniker="mymoniker" \
+  --chain-id="sommtest-1" \
+  --commission-rate="0.10" \
+  --commission-max-rate="0.20" \
+  --commission-max-change-rate="0.01" \
+  --min-self-delegation="1000000" \
+  --gas="auto" \
+  --gas-prices="0.025stake" \
+  --from=validator
+
+# register delegate keys for eth and orchestrator keys
+sommelier tx gravity set-delegate-keys $(sommelier keys show validator --bech val -a) $(sommelier keys show orchestrator -a) 0x0000000000000000000000000000000000000000
+
+# edit the orchestrator unit file to include private keys for cosmos and eth as well as the proper contract address
+# then start it
+sudo nano /etc/systemd/system/orchestrator.service && sudo systemctl daemon-reload && sudo systemctl start orchestrator && journalctl -u orchestrator -f
 ```
 
-## Genesis File Fixes
+### Actions
+
+Now you can try the bridge!!
+
+```bash
+# send somm to ethereum
+client cosmos-to-eth \
+    --cosmos-phrase="$(jq -r '.orchestrator' ~/keys.json)" \
+    --cosmos-grpc="http://localhost:9090" \
+    --cosmos-denom="somm" \
+    --amount="100000000" \
+    --eth-destination="0x25E17020b70A46ee0A4F6cb7259E1d835e4310Bb" \
+    --cosmos-prefix="cosmos"
+
+# send goreli uniswap tokens to cosmos
+client eth-to-cosmos \
+    --ethereum-key="$(jq -r '.eth' ~/keys.json)" \
+    --ethereum-rpc="http://localhost:8545" \
+    --cosmos-prefix="cosmos" \
+    --contract-address="$(jq -r '.gravity' ~/keys.json)" \
+    --erc20-address="0x1f9840a85d5af5bf1d1762f925bdaddc4201f984" \
+    --amount="1.3530000" \
+    --cosmos-destination="$(sommelier keys show orchestrator -a)"
+    
+```
+
+## Notes:
+
+### Genesis File Changes Necessary
 
 ```bash
 # denom metadata
@@ -54,9 +142,10 @@ jq '.app_state.gravity.params.bridge_chain_id = "5"' ~/.sommelier/config/genesis
 mv ~/.sommelier/config/edited-genesis.json ~/.sommelier/config/genesis.json
 ```
 
-## Deploy Peggy Contract
+### Deploy Peggy Contract
+
 ```bash
-wget https://github.com/PeggyJV/gravity-bridge/releases/download/v0.1.4/Gravity.json
+wget https://github.com/PeggyJV/gravity-bridge/releases/download/v0.1.5/Gravity.json
 contract-deployer \
     --cosmos-node="http://localhost:26657" \
     --eth-node="http://localhost:8545" \
@@ -65,14 +154,17 @@ contract-deployer \
     --test-mode=false
 ```
 
+### Deploy Somm ERC20 representation
+
 ```bash
-orchestrator \
-    --cosmos-phrase="electric gesture amount absent someone pudding waste you pilot truth pioneer nose surprise flavor ask cost art grit ladder girl detect height pet primary" \
-    --ethereum-key=0xe24bfff133d5f90f046147cb4d23a6e68ae277e6855d58c5b1f1208822a68dec \
-    --cosmos-grpc=http://localhost:9090 \
-    --address-prefix=cosmos \
-    --ethereum-rpc=http://localhost:8545 \
-    --fees=somm \
-    --contract-address=0x0D08d893bf138D958a8e215880cBd307C1946dd5
+client deploy-erc20-representation \
+    --ethereum-key="0x0000000000000000000000000000000000000000000000000000000000000000"  
+    --cosmos-grpc="http://localhost:9090" 
+    --cosmos-prefix=cosmos 
+    --cosmos-denom=somm 
+    --ethereum-rpc=http://localhost:8545 
+    --contract-address="0x0000000000000000000000000000000000000000" 
+    --erc20-name=somm 
+    --erc20-symbol=somm 
+    --erc20-decimals=6
 ```
-    0x0D08d893bf138D958a8e215880cBd307C1946dd5

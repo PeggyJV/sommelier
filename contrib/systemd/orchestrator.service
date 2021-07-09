@@ -4,10 +4,17 @@ After=online.target
 
 [Service]
 Type=simple
-User=johnzampolin
+User=ubuntu
 Environment="RUST_LOG=INFO"
-WorkingDirectory=/home/johnzampolin
-ExecStart=/usr/bin/orchestrator --cosmos-phrase="electric gesture amount absent someone pudding waste you pilot truth pioneer nose surprise flavor ask cost art grit ladder girl detect height pet primary"  --ethereum-key=0xe24bfff133d5f90f046147cb4d23a6e68ae277e6855d58c5b1f1208822a68dec --cosmos-grpc=http://localhost:9090 --address-prefix=cosmos --ethereum-rpc=http://localhost:8545 --fees=somm --contract-address=0x0D08d893bf138D958a8e215880cBd307C1946dd5
+WorkingDirectory=/home/ubuntu
+ExecStart=/usr/bin/orchestrator \
+    --cosmos-phrase="clever math city pink tilt put antenna group explain arrow jelly valid end tell mountain below end early age other infant era elder pond" \
+    --ethereum-key=0x0000000000000000000000000000000000000000000000000000000000000000 \
+    --cosmos-grpc=http://localhost:9090 \
+    --address-prefix=cosmos \
+    --ethereum-rpc=http://localhost:8545 \
+    --fees=somm \
+    --contract-address="0x0000000000000000000000000000000000000000" 
 Restart=on-failure
 RestartSec=3
 LimitNOFILE=4096
