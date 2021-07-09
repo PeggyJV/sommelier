@@ -54,7 +54,7 @@ nano orchestrator.service
 nano sommelier.service
 
 # And install them to systemd
-sudo mv geth.goerli.service /etc/systemd/system/ && sudo mv orchestrator.service /etc/systemd/system/ && sudo mv sommelier.service /etc/systemd/system/ && sudo systemctl daemon-reload
+sudo mv geth.goerli.service /etc/systemd/system/geth.service && sudo mv orchestrator.service /etc/systemd/system/ && sudo mv sommelier.service /etc/systemd/system/ && sudo systemctl daemon-reload
 
 # Start geth
 sudo systemctl start geth && journalctl -u geth -f
@@ -76,6 +76,9 @@ sommelier keys add orchestrator # --keyring-backend test
 
 # Add the peers from contrib/testnets/peers.txt to the ~/.sommelier/config/config.toml file
 nano ~/.sommelier/config/config.toml
+
+# pull the genesis file 
+wget https://raw.githubusercontent.com/PeggyJV/sommelier/main/contrib/testnets/sommtest-1/genesis.json -O 
 
 # start your sommelier node - note it may take a minute or two to sync all of the blocks
 sudo systemctl start sommelier && journalctl -u sommelier -f
