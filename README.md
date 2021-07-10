@@ -78,7 +78,7 @@ sommelier keys add orchestrator # --keyring-backend test
 nano ~/.sommelier/config/config.toml
 
 # pull the genesis file 
-wget https://raw.githubusercontent.com/PeggyJV/sommelier/main/contrib/testnets/sommtest-1/genesis.json -O 
+wget https://raw.githubusercontent.com/PeggyJV/sommelier/main/contrib/testnets/sommtest-1/genesis.json - O 
 
 # start your sommelier node - note it may take a minute or two to sync all of the blocks
 sudo systemctl start sommelier && journalctl -u sommelier -f
