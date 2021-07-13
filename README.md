@@ -57,7 +57,7 @@ nano sommelier.service
 sudo mv geth.goerli.service /etc/systemd/system/geth.service && sudo mv orchestrator.service /etc/systemd/system/ && sudo mv sommelier.service /etc/systemd/system/ && sudo systemctl daemon-reload
 
 # Start geth
-sudo systemctl start geth && journalctl -u geth -f
+sudo systemctl start geth && sudo journalctl -u geth -f
 
 # Initialize the validator files
 sommelier init myval --chain-id sommtest-1
@@ -79,9 +79,10 @@ nano ~/.sommelier/config/config.toml
 
 # pull the genesis file 
 wget https://raw.githubusercontent.com/PeggyJV/sommelier/main/contrib/testnets/sommtest-1/genesis.json -O 
+mv genesis.json ~/.sommelier/config
 
 # start your sommelier node - note it may take a minute or two to sync all of the blocks
-sudo systemctl start sommelier && journalctl -u sommelier -f
+sudo systemctl start sommelier && sudo journalctl -u sommelier -f
 
 # once your node is synced, create your validator 
 sommelier tx staking create-validator \
@@ -102,7 +103,7 @@ sommelier tx gravity set-delegate-keys $(sommelier keys show validator --bech va
 
 # edit the orchestrator unit file to include private keys for cosmos and eth as well as the proper contract address
 # then start it
-sudo nano /etc/systemd/system/orchestrator.service && sudo systemctl daemon-reload && sudo systemctl start orchestrator && journalctl -u orchestrator -f
+sudo nano /etc/systemd/system/orchestrator.service && sudo systemctl daemon-reload && sudo systemctl start orchestrator && sudo journalctl -u orchestrator -f
 ```
 
 ### Actions
