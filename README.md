@@ -37,7 +37,7 @@ The Gravity Bridge requires some additional pieces to be deployed to support it:
 mkdir install && cd install
 
 # Install Orchestrator
-wget https://github.com/PeggyJV/gravity-bridge/releases/download/v0.1.5/client https://github.com/PeggyJV/gravity-bridge/releases/download/v0.1.5/contract-deployer https://github.com/PeggyJV/gravity-bridge/releases/download/v0.1.5/orchestrator https://github.com/PeggyJV/gravity-bridge/releases/download/v0.1.5/relayer && chmod +x * && sudo mv * /usr/bin
+wget https://github.com/PeggyJV/gravity-bridge/releases/download/v0.1.8/client https://github.com/PeggyJV/gravity-bridge/releases/download/v0.1.8/contract-deployer https://github.com/PeggyJV/gravity-bridge/releases/download/v0.1.8/orchestrator https://github.com/PeggyJV/gravity-bridge/releases/download/v0.1.8/relayer && chmod +x * && sudo mv * /usr/bin
 
 # Install Geth
 wget https://gethstore.blob.core.windows.net/builds/geth-linux-amd64-1.10.4-aa637fd3.tar.gz && tar -xvf geth-linux-amd64-1.10.4-aa637fd3.tar.gz && sudo mv geth-linux-amd64-1.10.4-aa637fd3/geth /usr/bin/geth && rm -rf geth-linux-amd64-1.10.4-aa637fd3*
@@ -148,7 +148,7 @@ mv ~/.sommelier/config/edited-genesis.json ~/.sommelier/config/genesis.json
 ### Deploy Peggy Contract
 
 ```bash
-wget https://github.com/PeggyJV/gravity-bridge/releases/download/v0.1.5/Gravity.json
+wget https://github.com/PeggyJV/gravity-bridge/releases/download/v0.1.8/Gravity.json
 contract-deployer \
     --cosmos-node="http://localhost:26657" \
     --eth-node="http://localhost:8545" \
