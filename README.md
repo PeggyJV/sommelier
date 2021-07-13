@@ -43,7 +43,7 @@ wget https://github.com/PeggyJV/gravity-bridge/releases/download/v0.1.8/client h
 wget https://gethstore.blob.core.windows.net/builds/geth-linux-amd64-1.10.4-aa637fd3.tar.gz && tar -xvf geth-linux-amd64-1.10.4-aa637fd3.tar.gz && sudo mv geth-linux-amd64-1.10.4-aa637fd3/geth /usr/bin/geth && rm -rf geth-linux-amd64-1.10.4-aa637fd3*
 
 # Install Sommelier
-wget https://github.com/PeggyJV/sommelier/releases/download/v0.1.2/sommelier_0.1.2_linux_amd64.tar.gz && tar -xf sommelier_0.1.2_linux_amd64.tar.gz && sudo mv sommelier /usr/bin && rm -rf sommelier_0.1.2_linux_amd64* LICENSE README.md
+wget https://github.com/PeggyJV/sommelier/releases/download/v0.1.3/sommelier_0.1.3_linux_amd64.tar.gz && tar -xf sommelier_0.1.3_linux_amd64.tar.gz && sudo mv sommelier /usr/bin && rm -rf sommelier_0.1.3_linux_amd64* LICENSE README.md
 
 # Fetch systemd unit files
 wget https://raw.githubusercontent.com/PeggyJV/sommelier/main/contrib/systemd/geth.goerli.service https://raw.githubusercontent.com/PeggyJV/sommelier/main/contrib/systemd/orchestrator.service https://raw.githubusercontent.com/PeggyJV/sommelier/main/contrib/systemd/sommelier.service
