@@ -94,12 +94,11 @@ sommelier tx staking create-validator \
   --commission-max-rate="0.20" \
   --commission-max-change-rate="0.01" \
   --min-self-delegation="1000000" \
-  --gas="auto" \
   --gas-prices="0.025stake" \
   --from=validator
 
 # register delegate keys for eth and orchestrator keys
-sommelier tx gravity set-delegate-keys $(sommelier keys show validator --bech val -a) $(sommelier keys show orchestrator -a) 0x0000000000000000000000000000000000000000
+sommelier tx gravity set-delegate-keys $(sommelier keys show validator --bech val -a) $(sommelier keys show orchestrator -a) 0x0000000000000000000000000000000000000000 --from validator --chain-id sommtest-1
 
 # edit the orchestrator unit file to include private keys for cosmos and eth as well as the proper contract address
 # then start it
