@@ -37,72 +37,87 @@ The Gravity Bridge requires some additional pieces to be deployed to support it:
 mkdir install && cd install
 
 # Install Orchestrator
-wget https://github.com/PeggyJV/gravity-bridge/releases/download/v0.1.8/client https://github.com/PeggyJV/gravity-bridge/releases/download/v0.1.8/contract-deployer https://github.com/PeggyJV/gravity-bridge/releases/download/v0.1.8/orchestrator https://github.com/PeggyJV/gravity-bridge/releases/download/v0.1.8/relayer && chmod +x * && sudo mv * /usr/bin
+wget https://github.com/PeggyJV/gravity-bridge/releases/download/v0.1.11/client https://github.com/PeggyJV/gravity-bridge/releases/download/v0.1.11/contract-deployer https://github.com/PeggyJV/gravity-bridge/releases/download/v0.1.11/orchestrator https://github.com/PeggyJV/gravity-bridge/releases/download/v0.1.11/relayer https://github.com/PeggyJV/gravity-bridge/releases/download/v0.1.11/gorc && chmod +x * && sudo mv * /usr/bin
 
 # Install Geth
 wget https://gethstore.blob.core.windows.net/builds/geth-linux-amd64-1.10.4-aa637fd3.tar.gz && tar -xvf geth-linux-amd64-1.10.4-aa637fd3.tar.gz && sudo mv geth-linux-amd64-1.10.4-aa637fd3/geth /usr/bin/geth && rm -rf geth-linux-amd64-1.10.4-aa637fd3*
 
 # Install Sommelier
-wget https://github.com/PeggyJV/sommelier/releases/download/v0.1.3/sommelier_0.1.3_linux_amd64.tar.gz && tar -xf sommelier_0.1.3_linux_amd64.tar.gz && sudo mv sommelier /usr/bin && rm -rf sommelier_0.1.3_linux_amd64* LICENSE README.md
+wget https://github.com/PeggyJV/sommelier/releases/download/v0.1.4/sommelier_0.1.4_linux_amd64.tar.gz && tar -xf sommelier_0.1.4_linux_amd64.tar.gz && sudo mv sommelier /usr/bin && rm -rf sommelier_0.1.4_linux_amd64* LICENSE README.md
 
 # Fetch systemd unit files
-wget https://raw.githubusercontent.com/PeggyJV/sommelier/main/contrib/systemd/geth.goerli.service https://raw.githubusercontent.com/PeggyJV/sommelier/main/contrib/systemd/orchestrator.service https://raw.githubusercontent.com/PeggyJV/sommelier/main/contrib/systemd/sommelier.service
+wget https://raw.githubusercontent.com/PeggyJV/sommelier/main/contrib/systemd/geth.goerli.service https://raw.githubusercontent.com/PeggyJV/sommelier/main/contrib/systemd/gorc.service https://raw.githubusercontent.com/PeggyJV/sommelier/main/contrib/systemd/sommelier.service
 
 # Modify the unit files to fit your environment
 nano geth.goerli.service
-nano orchestrator.service
+nano gorc.service
 nano sommelier.service
 
 # And install them to systemd
-sudo mv geth.goerli.service /etc/systemd/system/geth.service && sudo mv orchestrator.service /etc/systemd/system/ && sudo mv sommelier.service /etc/systemd/system/ && sudo systemctl daemon-reload
+sudo mv geth.goerli.service /etc/systemd/system/geth.service && sudo mv gorc.service /etc/systemd/system/ && sudo mv sommelier.service /etc/systemd/system/ && sudo systemctl daemon-reload
 
 # Start geth
 sudo systemctl start geth && journalctl -u geth -f
 
+# Init gorc configuration
+mkdir -p $HOME/gorc && cd $HOME/gorc
+wget https://raw.githubusercontent.com/PeggyJV/sommelier/main/contrib/testnets/sommtest-2/config.toml
+
+# modify gorc config for your environment
+nano config.toml
+
 # Initialize the validator files
-sommelier init myval --chain-id sommtest-1
+sommelier init myval --chain-id sommtest-2
 
-# create 2 cosmos keys and 1 ethereum key
-# NOTE: be sure to save the mnemonics and eth private key as you will need 
-# these as arguements for the orchestrator and the client software
+# create/restore 2 cosmos keys and 1 ethereum key
+# NOTE: be sure to save the mnemonics and eth private key
 
-sommelier keys add validator # --keyring-backend test
-sommelier keys add orchestrator # --keyring-backend test
-# use metamask to create a new account/use exsting (goreli network)
-# there is an "export private key" function that returns the key for this
-# note: i've saved these in a keys.json file for easy access
+# restore orchestrator key with gorc 
+gorc --config $HOME/gorc/config.toml keys cosmos restore orchestrator "{menmonic}"
 
-# go ask Jack for some testnet $$$$ for both cosmos addresses and for some goreli eth
+# restore eth priv key from metamask with gorc 
+gorc --config $HOME/gorc/config.toml keys eth import signer "0x0000..."
+
+# restore eth mnemonic with gorc
+gorc --config $HOME/gorc/config.toml keys eth restore signer "{menomonic}"
+
+# restore your validator mnemonic to the sommelier binary
+sommelier keys add validator --recover 
+
+# NOTE: at the end of this process you need to have:
+# - a key named "orchestrator" with funds on the cosmos chain in the gorc keystore
+# - a key named "signer" with funds on connected ETH chain in the gorc keystore
+# - a key named "validator" with funds on the cosmos chain in the sommelier keystore
 
 # Add the peers from contrib/testnets/peers.txt to the ~/.sommelier/config/config.toml file
 nano ~/.sommelier/config/config.toml
 
 # pull the genesis file 
-wget https://raw.githubusercontent.com/PeggyJV/sommelier/main/contrib/testnets/sommtest-1/genesis.json -O 
+wget https://raw.githubusercontent.com/PeggyJV/sommelier/main/contrib/testnets/sommtest-2/genesis.json -O $HOME/.sommelier/config/genesis.json
 
 # start your sommelier node - note it may take a minute or two to sync all of the blocks
 sudo systemctl start sommelier && journalctl -u sommelier -f
 
 # once your node is synced, create your validator 
 sommelier tx staking create-validator \
-  --amount=10000000stake \
+  --amount=1000000000usomm \
   --pubkey=$(sommelier tendermint show-validator) \
   --moniker="mymoniker" \
-  --chain-id="sommtest-1" \
+  --chain-id="sommtest-2" \
   --commission-rate="0.10" \
   --commission-max-rate="0.20" \
   --commission-max-change-rate="0.01" \
   --min-self-delegation="1000000" \
   --gas="auto" \
-  --gas-prices="0.025stake" \
+  --gas-prices="0.025usomm" \
   --from=validator
 
 # register delegate keys for eth and orchestrator keys
-sommelier tx gravity set-delegate-keys $(sommelier keys show validator --bech val -a) $(sommelier keys show orchestrator -a) 0x0000000000000000000000000000000000000000
+sommelier tx gravity set-delegate-keys $(sommelier keys show validator --bech val -a) $(sommelier keys show orchestrator -a) $(gorc --config $HOME/gorc/config.toml keys eth show signer)
 
 # edit the orchestrator unit file to include private keys for cosmos and eth as well as the proper contract address
 # then start it
-sudo nano /etc/systemd/system/orchestrator.service && sudo systemctl daemon-reload && sudo systemctl start orchestrator && journalctl -u orchestrator -f
+sudo systemctl start gorc && journalctl -u gorc -f
 ```
 
 ### Actions
@@ -137,7 +152,7 @@ client eth-to-cosmos \
 
 ```bash
 # denom metadata
-jq '.app_state.bank.denom_metadata += [{"base": "somm", display: "somm", "description": "A non-staking test token", "denom_units": [{"denom": "somm", "exponent": 6}]}, {"base": "stake", display: "stake", "description": "A staking test token", "denom_units": [{"denom": "stake", "exponent": 6}]}]' ~/.sommelier/config/genesis.json > ~/.sommelier/config/edited-genesis.json
+jq '.app_state.bank.denom_metadata += [{"base": "usomm", display: "usomm", "description": "A staking test token", "denom_units": [{"denom": "usomm", "exponent": 6}]}]' ~/.sommelier/config/genesis.json > ~/.sommelier/config/edited-genesis.json
 mv ~/.sommelier/config/edited-genesis.json ~/.sommelier/config/genesis.json
 
 # gravity params
