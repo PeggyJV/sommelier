@@ -100,7 +100,7 @@ sudo systemctl start sommelier && sudo journalctl -u sommelier -f
 
 # once your node is synced, create your validator 
 sommelier tx staking create-validator \
-  --amount=1000000000usomm \
+  --amount=1000000000000usomm \
   --pubkey=$(sommelier tendermint show-validator) \
   --moniker="mymoniker" \
   --chain-id="sommtest-2" \
@@ -131,7 +131,7 @@ client cosmos-to-eth \
     --cosmos-grpc="http://localhost:9090" \
     --cosmos-denom="somm" \
     --amount="100000000" \
-    --eth-destination="0x25E17020b70A46ee0A4F6cb7259E1d835e4310Bb" \
+    --eth-destination=$(gorc --config $HOME/gorc/config.toml keys eth show signer) \
     --cosmos-prefix="cosmos"
 
 # send goreli uniswap tokens to cosmos
@@ -140,7 +140,7 @@ client eth-to-cosmos \
     --ethereum-rpc="http://localhost:8545" \
     --cosmos-prefix="cosmos" \
     --contract-address="$(jq -r '.gravity' ~/keys.json)" \
-    --erc20-address="0x1f9840a85d5af5bf1d1762f925bdaddc4201f984" \
+    --erc20-address="0x0000000000000000000000000000000000000000" \
     --amount="1.3530000" \
     --cosmos-destination="$(sommelier keys show orchestrator -a)"
     
@@ -163,7 +163,7 @@ mv ~/.sommelier/config/edited-genesis.json ~/.sommelier/config/genesis.json
 ### Deploy Peggy Contract
 
 ```bash
-wget https://github.com/PeggyJV/gravity-bridge/releases/download/v0.1.8/Gravity.json
+wget https://github.com/PeggyJV/gravity-bridge/releases/download/v0.1.11/Gravity.json
 contract-deployer \
     --cosmos-node="http://localhost:26657" \
     --eth-node="http://localhost:8545" \
@@ -176,13 +176,13 @@ contract-deployer \
 
 ```bash
 client deploy-erc20-representation \
-    --ethereum-key="0x0000000000000000000000000000000000000000000000000000000000000000"  
-    --cosmos-grpc="http://localhost:9090" 
-    --cosmos-prefix=cosmos 
-    --cosmos-denom=somm 
-    --ethereum-rpc=http://localhost:8545 
-    --contract-address="0x0000000000000000000000000000000000000000" 
-    --erc20-name=somm 
-    --erc20-symbol=somm 
-    --erc20-decimals=6
+    --ethereum-key="0x0000000000000000000000000000000000000000000000000000000000000000" \
+    --cosmos-grpc="http://localhost:9090" \
+    --cosmos-prefix=cosmos \
+    --cosmos-denom=usomm \
+    --ethereum-rpc=http://localhost:8545 \
+    --contract-address="0x0000000000000000000000000000000000000000" \
+    --erc20-name=usomm \
+    --erc20-symbol=usomm \ 
+    --erc20-decimals=6 \
 ```
