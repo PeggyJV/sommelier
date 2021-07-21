@@ -57,7 +57,7 @@ nano sommelier.service
 sudo mv geth.goerli.service /etc/systemd/system/geth.service && sudo mv gorc.service /etc/systemd/system/ && sudo mv sommelier.service /etc/systemd/system/ && sudo systemctl daemon-reload
 
 # Start geth
-sudo systemctl start geth && journalctl -u geth -f
+sudo systemctl start geth && sudo journalctl -u geth -f
 
 # Init gorc configuration
 mkdir -p $HOME/gorc && cd $HOME/gorc
@@ -96,7 +96,7 @@ nano ~/.sommelier/config/config.toml
 wget https://raw.githubusercontent.com/PeggyJV/sommelier/main/contrib/testnets/sommtest-2/genesis.json -O $HOME/.sommelier/config/genesis.json
 
 # start your sommelier node - note it may take a minute or two to sync all of the blocks
-sudo systemctl start sommelier && journalctl -u sommelier -f
+sudo systemctl start sommelier && sudo journalctl -u sommelier -f
 
 # once your node is synced, create your validator 
 sommelier tx staking create-validator \
