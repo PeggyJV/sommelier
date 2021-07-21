@@ -306,7 +306,7 @@ func NewSommelierApp(
 
 	app.EthBridgeKeeper = ethbridgekeeper.NewKeeper(
 		appCodec, keys[ethbridgetypes.StoreKey], app.GetSubspace(ethbridgetypes.ModuleName),
-		app.StakingKeeper, app.BankKeeper, app.SlashingKeeper,
+		app.AccountKeeper, app.StakingKeeper, app.BankKeeper, app.SlashingKeeper,
 	)
 
 	// Create static IBC router, add transfer route, then set and seal it
