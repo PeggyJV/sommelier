@@ -73,13 +73,13 @@ sommelier init myval --chain-id sommtest-2
 # NOTE: be sure to save the mnemonics and eth private key
 
 # restore orchestrator key with gorc 
-gorc --config $HOME/gorc/config.toml keys cosmos restore orchestrator "{menmonic}"
+gorc --config $HOME/gorc/config.toml keys cosmos recover orchestrator "{menmonic}"
 
 # restore eth priv key from metamask with gorc 
 gorc --config $HOME/gorc/config.toml keys eth import signer "0x0000..."
 
 # restore eth mnemonic with gorc
-gorc --config $HOME/gorc/config.toml keys eth restore signer "{menomonic}"
+gorc --config $HOME/gorc/config.toml keys eth recover signer "{menomonic}"
 
 # restore your validator mnemonic to the sommelier binary
 sommelier keys add validator --recover 
