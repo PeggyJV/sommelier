@@ -1,7 +1,7 @@
 keystore = "/home/ubuntu/gorc/keystore/"
 
 [gravity]
-contract = "0xa236a96EF8b9D236f24c9104FaF48637795c25C5"
+contract = "0x35bD3842E377b4746A81F1c6D8E06a482a217A2a"
 fees_denom = "usomm"
 
 [ethereum]
