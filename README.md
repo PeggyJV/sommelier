@@ -37,13 +37,13 @@ The Gravity Bridge requires some additional pieces to be deployed to support it:
 mkdir install && cd install
 
 # Install Orchestrator
-wget https://github.com/PeggyJV/gravity-bridge/releases/download/v0.1.12/client https://github.com/PeggyJV/gravity-bridge/releases/download/v0.1.12/contract-deployer https://github.com/PeggyJV/gravity-bridge/releases/download/v0.1.12/orchestrator https://github.com/PeggyJV/gravity-bridge/releases/download/v0.1.12/relayer https://github.com/PeggyJV/gravity-bridge/releases/download/v0.1.12/gorc && chmod +x * && sudo mv * /usr/bin
+wget https://github.com/PeggyJV/gravity-bridge/releases/download/v0.1.14/client https://github.com/PeggyJV/gravity-bridge/releases/download/v0.1.14/contract-deployer https://github.com/PeggyJV/gravity-bridge/releases/download/v0.1.14/orchestrator https://github.com/PeggyJV/gravity-bridge/releases/download/v0.1.14/relayer https://github.com/PeggyJV/gravity-bridge/releases/download/v0.1.14/gorc && chmod +x * && sudo mv * /usr/bin
 
 # Install Geth
 wget https://gethstore.blob.core.windows.net/builds/geth-linux-amd64-1.10.4-aa637fd3.tar.gz && tar -xvf geth-linux-amd64-1.10.4-aa637fd3.tar.gz && sudo mv geth-linux-amd64-1.10.4-aa637fd3/geth /usr/bin/geth && rm -rf geth-linux-amd64-1.10.4-aa637fd3*
 
 # Install Sommelier
-wget https://github.com/PeggyJV/sommelier/releases/download/v0.1.6/sommelier_0.1.6_linux_amd64.tar.gz && tar -xf sommelier_0.1.6_linux_amd64.tar.gz && sudo mv sommelier /usr/bin && rm -rf sommelier_0.1.6_linux_amd64* LICENSE README.md
+wget https://github.com/PeggyJV/sommelier/releases/download/v0.1.7/sommelier_0.1.7_linux_amd64.tar.gz && tar -xf sommelier_0.1.7_linux_amd64.tar.gz && sudo mv sommelier /usr/bin && rm -rf sommelier_0.1.7_linux_amd64* LICENSE README.md
 
 # Fetch systemd unit files
 wget https://raw.githubusercontent.com/PeggyJV/sommelier/main/contrib/systemd/geth.goerli.service https://raw.githubusercontent.com/PeggyJV/sommelier/main/contrib/systemd/gorc.service https://raw.githubusercontent.com/PeggyJV/sommelier/main/contrib/systemd/sommelier.service
@@ -117,7 +117,7 @@ sommelier tx gravity set-delegate-keys \
     $(sommelier keys show validator --bech val -a) \               # validator address
     $(sommelier keys show orchestrator -a) \                       # orchestrator address
     $(gorc --config $HOME/gorc/config.toml keys eth show signer) \ # eth signer address
-    $(gorc --config $HOME/gorc/config sign-delegate-keys signer $(sommelier keys show validator --bech val -a) 0) \ 
+    $(gorc --config $HOME/gorc/config sign-delegate-keys signer $(sommelier keys show validator --bech val -a)) \ 
     --chain-id sommtest-2 \ 
     --from validator \ 
     --fees 25000usomm -y
@@ -158,19 +158,20 @@ client eth-to-cosmos \
 ### Genesis File Changes Necessary
 
 ```bash
+# change stake to usomm
+sed -i 's/stake/usomm/g' ~/.sommelier/config/genesis.json
+
 # denom metadata
-jq '.app_state.bank.denom_metadata += [{"base": "usomm", display: "somm", "description": "A staking test token", "denom_units": [{"denom": "usomm", "exponent": 0}, {"denom": "somm", "exponent": 6}]}]' ~/.sommelier/config/genesis.json > ~/.sommelier/config/edited-genesis.json
-mv ~/.sommelier/config/edited-genesis.json ~/.sommelier/config/genesis.json
+jq -rMc '.app_state.bank.denom_metadata += [{"base": "usomm", display: "somm", "description": "A staking test token", "denom_units": [{"denom": "usomm", "exponent": 0}, {"denom": "somm", "exponent": 6}]}]' ~/.sommelier/config/genesis.json > ~/.sommelier/config/genesis.json
 
 # gravity params
-jq '.app_state.gravity.params.bridge_chain_id = "5"' ~/.sommelier/config/genesis.json > ~/.sommelier/config/edited-genesis.json
-mv ~/.sommelier/config/edited-genesis.json ~/.sommelier/config/genesis.json
+jq -rMc '.app_state.gravity.params.bridge_chain_id = "5"' ~/.sommelier/config/genesis.json > ~/.sommelier/config/genesis.json
 ```
 
 ### Deploy Peggy Contract
 
 ```bash
-wget https://github.com/PeggyJV/gravity-bridge/releases/download/v0.1.12/Gravity.json
+wget https://github.com/PeggyJV/gravity-bridge/releases/download/v0.1.14/Gravity.json
 contract-deployer \
     --cosmos-node="http://localhost:26657" \
     --eth-node="http://localhost:8545" \
