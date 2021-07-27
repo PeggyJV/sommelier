@@ -61,13 +61,13 @@ sudo systemctl start geth && sudo journalctl -u geth -f
 
 # Init gorc configuration
 mkdir -p $HOME/gorc && cd $HOME/gorc
-wget https://raw.githubusercontent.com/PeggyJV/sommelier/main/contrib/testnets/sommtest-2/config.toml
+wget https://raw.githubusercontent.com/PeggyJV/sommelier/main/contrib/testnets/sommtest-3/config.toml
 
 # modify gorc config for your environment
 nano config.toml
 
 # Initialize the validator files
-sommelier init myval --chain-id sommtest-2
+sommelier init myval --chain-id sommtest-3
 
 # create/restore 2 cosmos keys and 1 ethereum key
 # NOTE: be sure to save the mnemonics and eth private key
