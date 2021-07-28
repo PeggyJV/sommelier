@@ -123,9 +123,8 @@ sommelier tx gravity set-delegate-keys \
     --from validator \ 
     --fees 25000usomm -y
 
-# edit the orchestrator unit file to include private keys for cosmos and eth as well as the proper contract address
-# then start it
-sudo systemctl start gorc && journalctl -u gorc -f
+# start the orchestrator
+sudo systemctl start gorc && sudo journalctl -u gorc -f
 ```
 
 ### Actions
