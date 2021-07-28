@@ -75,10 +75,12 @@ sommelier init myval --chain-id sommtest-3
 # restore orchestrator key with gorc 
 gorc --config $HOME/gorc/config.toml keys cosmos recover orchestrator "{menmonic}"
 
-# restore eth priv key from metamask with gorc 
+# restore eth key 
+
+# EITHER: restore eth priv key from metamask with gorc 
 gorc --config $HOME/gorc/config.toml keys eth import signer "0x0000..."
 
-# restore eth mnemonic with gorc
+# OR: restore eth mnemonic with gorc
 gorc --config $HOME/gorc/config.toml keys eth recover signer "{menomonic}"
 
 # restore your validator mnemonic to the sommelier binary
@@ -93,7 +95,7 @@ sommelier keys add validator --recover
 nano ~/.sommelier/config/config.toml
 
 # pull the genesis file 
-wget https://raw.githubusercontent.com/PeggyJV/sommelier/main/contrib/testnets/sommtest-2/genesis.json -O $HOME/.sommelier/config/genesis.json
+wget https://raw.githubusercontent.com/PeggyJV/sommelier/main/contrib/testnets/sommtest-3/genesis.json -O $HOME/.sommelier/config/genesis.json
 
 # start your sommelier node - note it may take a minute or two to sync all of the blocks
 sudo systemctl start sommelier && sudo journalctl -u sommelier -f
@@ -113,17 +115,16 @@ sommelier tx staking create-validator \
 
 # register delegate keys for eth and orchestrator keys
 sommelier tx gravity set-delegate-keys \
-    $(sommelier keys show validator --bech val -a) \               # validator address
-    $(sommelier keys show orchestrator -a) \                       # orchestrator address
+    $(sommelier keys show validator --bech val -a) \ # validator address
+    $(gorc --config $HOME/gorc/config.toml keys cosmos show orchestrator) \ # orchestrator address (this must be run manually and address extracted)
     $(gorc --config $HOME/gorc/config.toml keys eth show signer) \ # eth signer address
-    $(gorc --config $HOME/gorc/config sign-delegate-keys signer $(sommelier keys show validator --bech val -a)) \ 
+    $(gorc --config $HOME/gorc/config.toml sign-delegate-keys signer $(sommelier keys show validator --bech val -a)) \ 
     --chain-id sommtest-3 \ 
     --from validator \ 
     --fees 25000usomm -y
 
-# edit the orchestrator unit file to include private keys for cosmos and eth as well as the proper contract address
-# then start it
-sudo systemctl start gorc && journalctl -u gorc -f
+# start the orchestrator
+sudo systemctl start gorc && sudo journalctl -u gorc -f
 ```
 
 ### Actions
