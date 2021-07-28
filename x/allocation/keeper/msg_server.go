@@ -73,7 +73,6 @@ func (k Keeper) DecisionPrecommit(c context.Context, msg *types.MsgDecisionPreco
 
 	k.SetDecisionPrecommit(ctx, validatorAddr, *msg.Precommit)
 
-
 }
 
 // DecisionsCommit implements types.MsgServer

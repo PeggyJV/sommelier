@@ -16,7 +16,7 @@ var (
 	KeyMinValidPerWindow = []byte("minvalidperwindow")
 	KeySlashFraction     = []byte("slashfraction")
 	KeyTargetThreshold   = []byte("targetthreshold")
-	KeyCellars         = []byte("cellars")
+	KeyCellars           = []byte("cellars")
 )
 
 var _ paramtypes.ParamSet = &Params{}
@@ -75,7 +75,6 @@ func (p *Params) ValidateBasic() error {
 
 	return validateCellars(p.Cellars)
 }
-
 
 func validateVotePeriod(i interface{}) error {
 	votePeriod, ok := i.(int64)

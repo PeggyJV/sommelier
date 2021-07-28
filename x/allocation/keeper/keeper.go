@@ -19,7 +19,7 @@ type Keeper struct {
 	paramSpace    paramtypes.Subspace
 	stakingKeeper x.StakingKeeper
 
-	handlerSet    bool
+	handlerSet bool
 }
 
 // NewKeeper creates a new distribution Keeper instance
@@ -79,7 +79,6 @@ func (k Keeper) GetDelegateAddressFromValidator(ctx sdk.Context, val sdk.ValAddr
 func (k Keeper) IsDelegateAddress(ctx sdk.Context, del sdk.AccAddress) bool {
 	return ctx.KVStore(k.storeKey).Has(types.GetFeedDelegateKey(del))
 }
-
 
 // IterateDelegateAddresses iterates over all delegate address pairs in the store
 func (k Keeper) IterateDelegateAddresses(ctx sdk.Context, handler func(del sdk.AccAddress, val sdk.ValAddress) (stop bool)) {
@@ -189,7 +188,6 @@ func (k Keeper) IterateAllocationCommits(ctx sdk.Context, handler func(val sdk.V
 		}
 	}
 }
-
 
 ////////////////
 // VotePeriod //

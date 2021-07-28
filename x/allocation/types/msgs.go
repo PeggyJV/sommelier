@@ -17,7 +17,7 @@ var (
 const (
 	TypeMsgDelegateDecisions = "delegate_decisions"
 	TypeMsgDecisionPrecommit = "decision_precommit"
-	TypeMsgDecisionCommit = "decision_commit"
+	TypeMsgDecisionCommit    = "decision_commit"
 )
 
 //////////////////////////
@@ -102,11 +102,10 @@ func NewMsgDecisionPrecommit(hash tmbytes.HexBytes, signer sdk.AccAddress) *MsgD
 	}
 
 	return &MsgDecisionPrecommit{
-		Hash: hash,
+		Hash:   hash,
 		Signer: signer.String(),
 	}
 }
-
 
 // Route implements sdk.Msg
 func (m *MsgDecisionPrecommit) Route() string { return ModuleName }
@@ -132,7 +131,6 @@ func (m *MsgDecisionPrecommit) GetSignBytes() []byte {
 	panic("amino support disabled")
 }
 
-
 // GetSigners implements sdk.Msg
 func (m *MsgDecisionPrecommit) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{m.MustGetSigner()}
@@ -147,7 +145,6 @@ func (m *MsgDecisionPrecommit) MustGetSigner() sdk.AccAddress {
 	return addr
 }
 
-
 ///////////////////////
 // MsgDecisionCommit //
 ///////////////////////
@@ -159,8 +156,8 @@ func NewMsgDecisionCommit(decisions []*Decision, signer sdk.AccAddress) *MsgDeci
 	}
 
 	return &MsgDecisionCommit{
-		Decisions:   decisions,
-		Signer: signer.String(),
+		Decisions: decisions,
+		Signer:    signer.String(),
 	}
 }
 

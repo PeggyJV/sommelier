@@ -14,7 +14,6 @@ func DefaultGenesisState() GenesisState {
 	}
 }
 
-
 // Validate performs a basic stateless validation of the genesis fields.
 func (gs GenesisState) Validate() error {
 	seenDelegations := make(map[string]bool)
