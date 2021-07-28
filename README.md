@@ -75,10 +75,12 @@ sommelier init myval --chain-id sommtest-3
 # restore orchestrator key with gorc 
 gorc --config $HOME/gorc/config.toml keys cosmos recover orchestrator "{menmonic}"
 
-# restore eth priv key from metamask with gorc 
+# restore eth key 
+
+# EITHER: restore eth priv key from metamask with gorc 
 gorc --config $HOME/gorc/config.toml keys eth import signer "0x0000..."
 
-# restore eth mnemonic with gorc
+# OR: restore eth mnemonic with gorc
 gorc --config $HOME/gorc/config.toml keys eth recover signer "{menomonic}"
 
 # restore your validator mnemonic to the sommelier binary
@@ -93,7 +95,7 @@ sommelier keys add validator --recover
 nano ~/.sommelier/config/config.toml
 
 # pull the genesis file 
-wget https://raw.githubusercontent.com/PeggyJV/sommelier/main/contrib/testnets/sommtest-2/genesis.json -O $HOME/.sommelier/config/genesis.json
+wget https://raw.githubusercontent.com/PeggyJV/sommelier/main/contrib/testnets/sommtest-3/genesis.json -O $HOME/.sommelier/config/genesis.json
 
 # start your sommelier node - note it may take a minute or two to sync all of the blocks
 sudo systemctl start sommelier && sudo journalctl -u sommelier -f
@@ -103,7 +105,7 @@ sommelier tx staking create-validator \
   --amount=1000000000000usomm \
   --pubkey=$(sommelier tendermint show-validator) \
   --moniker="mymoniker" \
-  --chain-id="sommtest-2" \
+  --chain-id="sommtest-3" \
   --commission-rate="0.10" \
   --commission-max-rate="0.20" \
   --commission-max-change-rate="0.01" \
@@ -118,7 +120,7 @@ sommelier tx gravity set-delegate-keys \
     $(sommelier keys show orchestrator -a) \                       # orchestrator address
     $(gorc --config $HOME/gorc/config.toml keys eth show signer) \ # eth signer address
     $(gorc --config $HOME/gorc/config sign-delegate-keys signer $(sommelier keys show validator --bech val -a)) \ 
-    --chain-id sommtest-2 \ 
+    --chain-id sommtest-3 \ 
     --from validator \ 
     --fees 25000usomm -y
 
