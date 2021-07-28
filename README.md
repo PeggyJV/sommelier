@@ -108,8 +108,7 @@ sommelier tx staking create-validator \
   --commission-max-rate="0.20" \
   --commission-max-change-rate="0.01" \
   --min-self-delegation="1000000" \
-  --gas="auto" \
-  --gas-prices="0.025usomm" \
+  --fees="100000usomm" \
   --from=validator
 
 # register delegate keys for eth and orchestrator keys
