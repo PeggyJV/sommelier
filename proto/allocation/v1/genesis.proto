@@ -33,38 +33,8 @@ message Params {
         (gogoproto.nullable)   = false
     ];
 
-    // SlashWindow defines the number of blocks for the slashing window
-    int64  slash_window         = 3 [(gogoproto.moretags)   = "yaml:\"slash_window\""];
-
-    // MinValidPerWindow defines the number of misses a validator is allowed during
-    // each SlashWindow
-    string min_valid_per_window = 4 [
-        (gogoproto.moretags)   = "yaml:\"min_valid_per_window\"",
-        (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec", 
-        (gogoproto.nullable)   = false
-    ];
-
-    // SlashFraction defines the percentage of slash that a validator will suffer if it fails
-    // to send a vote
-    string slash_fraction       = 5 [
-        (gogoproto.moretags)   = "yaml:\"slash_fraction\"",
-        (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec", 
-        (gogoproto.nullable)   = false
-    ];
-
-    // TargetThreshold defines the max percentage difference that a given allocation data needs to have with
-    // the aggregated data in order for the feeder to be elegible for rewards.
-    string target_threshold     = 6 [
-        (gogoproto.moretags)   = "yaml:\"target_threshold\"",
-        (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec", 
-        (gogoproto.nullable)   = false
-    ];
-
-    // DataTypes defines which data types validators must submit each voting period
-    repeated string data_types  = 7 [(gogoproto.moretags)   = "yaml:\"data_types\""];
-
     // Cellars is the collection of pools that the allocation module references
-    repeated Cellar cellars = 8;
+    repeated Cellar cellars = 3;
 }
 
 // MissCounter stores the validator address and the number of associated misses

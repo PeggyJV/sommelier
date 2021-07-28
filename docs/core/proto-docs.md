@@ -314,7 +314,7 @@ MsgService defines the msgs that the oracle module handles.
 <a name="allocation.v1.GenesisState"></a>
 
 ### GenesisState
-GenesisState - all oracle state that must be provided at genesis
+GenesisState - all allocation state that must be provided at genesis
 
 
 | Field | Type | Label | Description |
@@ -347,18 +347,13 @@ MissCounter stores the validator address and the number of associated misses
 <a name="allocation.v1.Params"></a>
 
 ### Params
-Params oracle parameters
+Params allocation parameters
 
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | `vote_period` | [int64](#int64) |  | VotePeriod defines the number of blocks to wait for votes before attempting to tally |
 | `vote_threshold` | [string](#string) |  | VoteThreshold defines the percentage of bonded stake required to vote each period |
-| `slash_window` | [int64](#int64) |  | SlashWindow defines the number of blocks for the slashing window |
-| `min_valid_per_window` | [string](#string) |  | MinValidPerWindow defines the number of misses a validator is allowed during each SlashWindow |
-| `slash_fraction` | [string](#string) |  | SlashFraction defines the percentage of slash that a validator will suffer if it fails to send a vote |
-| `target_threshold` | [string](#string) |  | TargetThreshold defines the max percentage difference that a given oracle data needs to have with the aggregated data in order for the feeder to be elegible for rewards. |
-| `data_types` | [string](#string) | repeated | DataTypes defines which data types validators must submit each voting period |
 | `cellars` | [Cellar](#allocation.v1.Cellar) | repeated | Cellars is the collection of pools that the allocation module references |
 
 
@@ -385,7 +380,7 @@ Params oracle parameters
 <a name="allocation.v1.QueryAllocationCommitRequest"></a>
 
 ### QueryAllocationCommitRequest
-QueryOracleDataVoteRequest is the request type for the Query/QueryOracleDataVote gRPC method.
+QueryAllocationCommitRequest is the request type for the Query/QueryallocationDataVote gRPC method.
 
 
 | Field | Type | Label | Description |
@@ -401,12 +396,12 @@ QueryOracleDataVoteRequest is the request type for the Query/QueryOracleDataVote
 <a name="allocation.v1.QueryAllocationCommitResponse"></a>
 
 ### QueryAllocationCommitResponse
-QueryOracleDataVoteResponse is the response type for the Query/QueryOracleDataVote gRPC method.
+QueryAllocationCommitResponse is the response type for the Query/QueryallocationDataVote gRPC method.
 
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| `commit` | [Allocation](#allocation.v1.Allocation) |  | vote containing the oracle feed submitted within the latest voting period |
+| `commit` | [Allocation](#allocation.v1.Allocation) |  | vote containing the allocation feed submitted within the latest voting period |
 
 
 
@@ -432,7 +427,7 @@ QueryAllocationPrecommitRequest is the request type for the Query/AllocationPrec
 <a name="allocation.v1.QueryAllocationPrecommitResponse"></a>
 
 ### QueryAllocationPrecommitResponse
-QueryOracleDataPrevoteResponse is the response type for the Query/QueryOracleDataPrevote gRPC method.
+QueryAllocationPrecommitResponse is the response type for the Query/QueryallocationDataPrevote gRPC method.
 
 
 | Field | Type | Label | Description |
@@ -447,7 +442,7 @@ QueryOracleDataPrevoteResponse is the response type for the Query/QueryOracleDat
 <a name="allocation.v1.QueryCommitPeriodRequest"></a>
 
 ### QueryCommitPeriodRequest
-QueryVotePeriodRequest is the request type for the Query/VotePeriod gRPC method.
+QueryCommitPeriodRequest is the request type for the Query/VotePeriod gRPC method.
 
 
 
@@ -457,7 +452,7 @@ QueryVotePeriodRequest is the request type for the Query/VotePeriod gRPC method.
 <a name="allocation.v1.QueryCommitPeriodResponse"></a>
 
 ### QueryCommitPeriodResponse
-QueryVotePeriodResponse is the response type for the Query/VotePeriod gRPC method.
+QueryCommitPeriodResponse is the response type for the Query/VotePeriod gRPC method.
 
 
 | Field | Type | Label | Description |
@@ -524,7 +519,7 @@ QueryMissCounterResponse is the response type for the Query/MissCounter gRPC met
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| `miss_counter` | [int64](#int64) |  | number of oracle feed votes missed since the last counter reset |
+| `miss_counter` | [int64](#int64) |  | number of allocation feed votes missed since the last counter reset |
 
 
 
@@ -549,7 +544,7 @@ QueryParamsRequest is the response type for the Query/Params gRPC method.
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| `params` | [Params](#allocation.v1.Params) |  | oracle parameters |
+| `params` | [Params](#allocation.v1.Params) |  | allocation parameters |
 
 
 
@@ -595,17 +590,17 @@ QueryValidatorAddressResponse is the response type for the Query/Params gRPC met
 <a name="allocation.v1.Query"></a>
 
 ### Query
-Query defines the gRPC querier service for the oracle module.
+Query defines the gRPC querier service for the allocation module.
 
 | Method Name | Request Type | Response Type | Description | HTTP Verb | Endpoint |
 | ----------- | ------------ | ------------- | ------------| ------- | -------- |
-| `QueryParams` | [QueryParamsRequest](#allocation.v1.QueryParamsRequest) | [QueryParamsResponse](#allocation.v1.QueryParamsResponse) | QueryParams queries the oracle module parameters. | GET|/sommelier/allocation/v1/params|
+| `QueryParams` | [QueryParamsRequest](#allocation.v1.QueryParamsRequest) | [QueryParamsResponse](#allocation.v1.QueryParamsResponse) | QueryParams queries the allocation module parameters. | GET|/sommelier/allocation/v1/params|
 | `QueryDelegateAddress` | [QueryDelegateAddressRequest](#allocation.v1.QueryDelegateAddressRequest) | [QueryDelegateAddressResponse](#allocation.v1.QueryDelegateAddressResponse) | QueryDelegateAddress queries the delegate account address of a validator | GET|/sommelier/allocation/v1/delegates/{validator}|
 | `QueryValidatorAddress` | [QueryValidatorAddressRequest](#allocation.v1.QueryValidatorAddressRequest) | [QueryValidatorAddressResponse](#allocation.v1.QueryValidatorAddressResponse) | QueryValidatorAddress returns the validator address of a given delegate | GET|/sommelier/allocation/v1/validators/{delegate}|
-| `QueryAllocationPrecommit` | [QueryAllocationPrecommitRequest](#allocation.v1.QueryAllocationPrecommitRequest) | [QueryAllocationPrecommitResponse](#allocation.v1.QueryAllocationPrecommitResponse) | QueryOracleDataPrevote queries the validator prevote in the current voting period | GET|/sommelier/allocation/v1/precommits/{validator}|
-| `QueryAllocationCommit` | [QueryAllocationCommitRequest](#allocation.v1.QueryAllocationCommitRequest) | [QueryAllocationCommitResponse](#allocation.v1.QueryAllocationCommitResponse) | QueryOracleDataVote queries the validator vote in the current voting period | GET|/sommelier/allocation/v1/commits/{validator}|
+| `QueryAllocationPrecommit` | [QueryAllocationPrecommitRequest](#allocation.v1.QueryAllocationPrecommitRequest) | [QueryAllocationPrecommitResponse](#allocation.v1.QueryAllocationPrecommitResponse) | QueryAllocationPrecommit queries the validator prevote in the current voting period | GET|/sommelier/allocation/v1/precommits/{validator}|
+| `QueryAllocationCommit` | [QueryAllocationCommitRequest](#allocation.v1.QueryAllocationCommitRequest) | [QueryAllocationCommitResponse](#allocation.v1.QueryAllocationCommitResponse) | QueryAllocationCommit queries the validator vote in the current voting period | GET|/sommelier/allocation/v1/commits/{validator}|
 | `QueryCommitPeriod` | [QueryCommitPeriodRequest](#allocation.v1.QueryCommitPeriodRequest) | [QueryCommitPeriodResponse](#allocation.v1.QueryCommitPeriodResponse) | QueryVotePeriod queries the heights for the current voting period (current, start and end) | GET|/sommelier/allocation/v1/commit_period|
-| `QueryMissCounter` | [QueryMissCounterRequest](#allocation.v1.QueryMissCounterRequest) | [QueryMissCounterResponse](#allocation.v1.QueryMissCounterResponse) | QueryMissCounter queries the missed number of oracle data feed periods
+| `QueryMissCounter` | [QueryMissCounterRequest](#allocation.v1.QueryMissCounterRequest) | [QueryMissCounterResponse](#allocation.v1.QueryMissCounterResponse) | QueryMissCounter queries the missed number of allocation data feed periods
 
 todo: aggregate data handlers and types | GET|/sommelier/allocation/v1/miss_counters/{validator}|
 

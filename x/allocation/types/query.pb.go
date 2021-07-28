@@ -70,7 +70,7 @@ var xxx_messageInfo_QueryParamsRequest proto.InternalMessageInfo
 
 // QueryParamsRequest is the response type for the Query/Params gRPC method.
 type QueryParamsResponse struct {
-	// oracle parameters
+	// allocation parameters
 	Params Params `protobuf:"bytes,1,opt,name=params,proto3" json:"params"`
 }
 
@@ -353,7 +353,7 @@ func (m *QueryAllocationPrecommitRequest) GetCellar() string {
 	return ""
 }
 
-// QueryOracleDataPrevoteResponse is the response type for the Query/QueryOracleDataPrevote gRPC method.
+// QueryAllocationPrecommitResponse is the response type for the Query/QueryallocationDataPrevote gRPC method.
 type QueryAllocationPrecommitResponse struct {
 	// prevote submitted within the latest voting period
 	Precommit *AllocationPrecommit `protobuf:"bytes,1,opt,name=precommit,proto3" json:"precommit,omitempty"`
@@ -399,7 +399,7 @@ func (m *QueryAllocationPrecommitResponse) GetPrecommit() *AllocationPrecommit {
 	return nil
 }
 
-// QueryOracleDataVoteRequest is the request type for the Query/QueryOracleDataVote gRPC method.
+// QueryAllocationCommitRequest is the request type for the Query/QueryallocationDataVote gRPC method.
 type QueryAllocationCommitRequest struct {
 	// validator operator address
 	Validator string `protobuf:"bytes,1,opt,name=validator,proto3" json:"validator,omitempty"`
@@ -454,9 +454,9 @@ func (m *QueryAllocationCommitRequest) GetCellar() string {
 	return ""
 }
 
-// QueryOracleDataVoteResponse is the response type for the Query/QueryOracleDataVote gRPC method.
+// QueryAllocationCommitResponse is the response type for the Query/QueryallocationDataVote gRPC method.
 type QueryAllocationCommitResponse struct {
-	// vote containing the oracle feed submitted within the latest voting period
+	// vote containing the allocation feed submitted within the latest voting period
 	Commit *Allocation `protobuf:"bytes,1,opt,name=commit,proto3" json:"commit,omitempty"`
 }
 
@@ -500,7 +500,7 @@ func (m *QueryAllocationCommitResponse) GetCommit() *Allocation {
 	return nil
 }
 
-// QueryVotePeriodRequest is the request type for the Query/VotePeriod gRPC method.
+// QueryCommitPeriodRequest is the request type for the Query/VotePeriod gRPC method.
 type QueryCommitPeriodRequest struct {
 }
 
@@ -537,7 +537,7 @@ func (m *QueryCommitPeriodRequest) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_QueryCommitPeriodRequest proto.InternalMessageInfo
 
-// QueryVotePeriodResponse is the response type for the Query/VotePeriod gRPC method.
+// QueryCommitPeriodResponse is the response type for the Query/VotePeriod gRPC method.
 type QueryCommitPeriodResponse struct {
 	// block height at which the query was processed
 	CurrentHeight int64 `protobuf:"varint,1,opt,name=current_height,json=currentHeight,proto3" json:"current_height,omitempty"`
@@ -649,7 +649,7 @@ func (m *QueryMissCounterRequest) GetValidator() string {
 
 // QueryMissCounterResponse is the response type for the Query/MissCounter gRPC method.
 type QueryMissCounterResponse struct {
-	// number of oracle feed votes missed since the last counter reset
+	// number of allocation feed votes missed since the last counter reset
 	MissCounter int64 `protobuf:"varint,1,opt,name=miss_counter,json=missCounter,proto3" json:"miss_counter,omitempty"`
 }
 
@@ -778,19 +778,19 @@ const _ = grpc.SupportPackageIsVersion4
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
 type QueryClient interface {
-	// QueryParams queries the oracle module parameters.
+	// QueryParams queries the allocation module parameters.
 	QueryParams(ctx context.Context, in *QueryParamsRequest, opts ...grpc.CallOption) (*QueryParamsResponse, error)
 	// QueryDelegateAddress queries the delegate account address of a validator
 	QueryDelegateAddress(ctx context.Context, in *QueryDelegateAddressRequest, opts ...grpc.CallOption) (*QueryDelegateAddressResponse, error)
 	// QueryValidatorAddress returns the validator address of a given delegate
 	QueryValidatorAddress(ctx context.Context, in *QueryValidatorAddressRequest, opts ...grpc.CallOption) (*QueryValidatorAddressResponse, error)
-	// QueryOracleDataPrevote queries the validator prevote in the current voting period
+	// QueryAllocationPrecommit queries the validator prevote in the current voting period
 	QueryAllocationPrecommit(ctx context.Context, in *QueryAllocationPrecommitRequest, opts ...grpc.CallOption) (*QueryAllocationPrecommitResponse, error)
-	// QueryOracleDataVote queries the validator vote in the current voting period
+	// QueryAllocationCommit queries the validator vote in the current voting period
 	QueryAllocationCommit(ctx context.Context, in *QueryAllocationCommitRequest, opts ...grpc.CallOption) (*QueryAllocationCommitResponse, error)
 	// QueryVotePeriod queries the heights for the current voting period (current, start and end)
 	QueryCommitPeriod(ctx context.Context, in *QueryCommitPeriodRequest, opts ...grpc.CallOption) (*QueryCommitPeriodResponse, error)
-	// QueryMissCounter queries the missed number of oracle data feed periods
+	// QueryMissCounter queries the missed number of allocation data feed periods
 	QueryMissCounter(ctx context.Context, in *QueryMissCounterRequest, opts ...grpc.CallOption) (*QueryMissCounterResponse, error)
 }
 
@@ -867,19 +867,19 @@ func (c *queryClient) QueryMissCounter(ctx context.Context, in *QueryMissCounter
 
 // QueryServer is the server API for Query service.
 type QueryServer interface {
-	// QueryParams queries the oracle module parameters.
+	// QueryParams queries the allocation module parameters.
 	QueryParams(context.Context, *QueryParamsRequest) (*QueryParamsResponse, error)
 	// QueryDelegateAddress queries the delegate account address of a validator
 	QueryDelegateAddress(context.Context, *QueryDelegateAddressRequest) (*QueryDelegateAddressResponse, error)
 	// QueryValidatorAddress returns the validator address of a given delegate
 	QueryValidatorAddress(context.Context, *QueryValidatorAddressRequest) (*QueryValidatorAddressResponse, error)
-	// QueryOracleDataPrevote queries the validator prevote in the current voting period
+	// QueryAllocationPrecommit queries the validator prevote in the current voting period
 	QueryAllocationPrecommit(context.Context, *QueryAllocationPrecommitRequest) (*QueryAllocationPrecommitResponse, error)
-	// QueryOracleDataVote queries the validator vote in the current voting period
+	// QueryAllocationCommit queries the validator vote in the current voting period
 	QueryAllocationCommit(context.Context, *QueryAllocationCommitRequest) (*QueryAllocationCommitResponse, error)
 	// QueryVotePeriod queries the heights for the current voting period (current, start and end)
 	QueryCommitPeriod(context.Context, *QueryCommitPeriodRequest) (*QueryCommitPeriodResponse, error)
-	// QueryMissCounter queries the missed number of oracle data feed periods
+	// QueryMissCounter queries the missed number of allocation data feed periods
 	QueryMissCounter(context.Context, *QueryMissCounterRequest) (*QueryMissCounterResponse, error)
 }
 

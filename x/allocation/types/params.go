@@ -13,11 +13,7 @@ import (
 var (
 	KeyVotePeriod        = []byte("voteperiod")
 	KeyVoteThreshold     = []byte("votethreshold")
-	KeySlashWindow       = []byte("slashwindow")
-	KeyMinValidPerWindow = []byte("minvalidperwindow")
-	KeySlashFraction     = []byte("slashfraction")
-	KeyTargetThreshold   = []byte("targetthreshold")
-	KeyDataTypes         = []byte("datatypes")
+	KeyCellars     		 = []byte("cellars")
 )
 
 var _ paramtypes.ParamSet = &Params{}
@@ -31,12 +27,7 @@ func ParamKeyTable() paramtypes.KeyTable {
 func DefaultParams() Params {
 	return Params{
 		VotePeriod:        5,
-		VoteThreshold:     sdk.NewDecWithPrec(66, 2), // 66%
-		SlashWindow:       10000,
-		MinValidPerWindow: sdk.NewDecWithPrec(10, 2), // 10%
-		SlashFraction:     sdk.NewDecWithPrec(1, 3),  // 0.1%
-		TargetThreshold:   sdk.NewDecWithPrec(5, 3),  // 0.5%,
-		DataTypes:         []string{UniswapDataType},
+		VoteThreshold:     sdk.NewDecWithPrec(67, 2), // 67%
 	}
 }
 
@@ -45,11 +36,7 @@ func (p *Params) ParamSetPairs() paramtypes.ParamSetPairs {
 	return paramtypes.ParamSetPairs{
 		paramtypes.NewParamSetPair(KeyVotePeriod, &p.VotePeriod, validateVotePeriod),
 		paramtypes.NewParamSetPair(KeyVoteThreshold, &p.VoteThreshold, validateVoteThreshold),
-		paramtypes.NewParamSetPair(KeySlashWindow, &p.SlashWindow, validateSlashWindow),
-		paramtypes.NewParamSetPair(KeyMinValidPerWindow, &p.MinValidPerWindow, validateMinValidPerWindow),
-		paramtypes.NewParamSetPair(KeySlashFraction, &p.SlashFraction, validateSlashFraction),
-		paramtypes.NewParamSetPair(KeyTargetThreshold, &p.TargetThreshold, validateTargetThreshold),
-		paramtypes.NewParamSetPair(KeyDataTypes, &p.DataTypes, validateDataTypes),
+		paramtypes.NewParamSetPair(KeyCellars, &p.Cellars, validateCellars),
 	}
 }
 
@@ -61,20 +48,8 @@ func (p *Params) ValidateBasic() error {
 	if err := validateVoteThreshold(p.VoteThreshold); err != nil {
 		return err
 	}
-	if err := validateSlashWindow(p.SlashWindow); err != nil {
-		return err
-	}
-	if err := validateMinValidPerWindow(p.MinValidPerWindow); err != nil {
-		return err
-	}
-	if err := validateSlashFraction(p.SlashFraction); err != nil {
-		return err
-	}
-	if err := validateTargetThreshold(p.TargetThreshold); err != nil {
-		return err
-	}
 
-	return validateDataTypes(p.DataTypes)
+	return validateCellars(p.Cellars)
 }
 
 func validateVotePeriod(i interface{}) error {
@@ -109,71 +84,7 @@ func validateVoteThreshold(i interface{}) error {
 	return nil
 }
 
-func validateSlashWindow(i interface{}) error {
-	slashWindow, ok := i.(int64)
-	if !ok {
-		return fmt.Errorf("invalid parameter type: %T", i)
-	}
-
-	if slashWindow < 1 {
-		return fmt.Errorf("slashing window can't be zero or negative: %d", slashWindow)
-	}
-
-	return nil
-}
-
-func validateMinValidPerWindow(i interface{}) error {
-	minValidPerWindow, ok := i.(sdk.Dec)
-	if !ok {
-		return fmt.Errorf("invalid parameter type: %T", i)
-	}
-
-	if minValidPerWindow.IsNil() {
-		return errors.New("min valid per window cannot be nil")
-	}
-
-	if minValidPerWindow.LTE(sdk.ZeroDec()) || minValidPerWindow.GT(sdk.OneDec()) {
-		return fmt.Errorf("min valid per window value must be within the 0% - 100% range, got: %s", minValidPerWindow)
-	}
-
-	return nil
-}
-
-func validateSlashFraction(i interface{}) error {
-	slashFraction, ok := i.(sdk.Dec)
-	if !ok {
-		return fmt.Errorf("invalid parameter type: %T", i)
-	}
-
-	if slashFraction.IsNil() {
-		return errors.New("slash fraction cannot be nil")
-	}
-
-	if slashFraction.LTE(sdk.ZeroDec()) || slashFraction.GT(sdk.OneDec()) {
-		return fmt.Errorf("slash fraction value must be within the 0% - 100% range, got: %s", slashFraction)
-	}
-
-	return nil
-}
-
-func validateTargetThreshold(i interface{}) error {
-	targetThreshold, ok := i.(sdk.Dec)
-	if !ok {
-		return fmt.Errorf("invalid parameter type: %T", i)
-	}
-
-	if targetThreshold.IsNil() {
-		return errors.New("target threshold cannot be nil")
-	}
-
-	if targetThreshold.LTE(sdk.ZeroDec()) || targetThreshold.GT(sdk.OneDec()) {
-		return fmt.Errorf("target threshold value must be within the 0% - 100% range, got: %s", targetThreshold)
-	}
-
-	return nil
-}
-
-func validateDataTypes(i interface{}) error {
+func validateCellars(i interface{}) error {
 	dataTypes, ok := i.([]string)
 	if !ok {
 		return fmt.Errorf("invalid parameter type: %T", i)
