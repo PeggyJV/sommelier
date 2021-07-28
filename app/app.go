@@ -91,7 +91,7 @@ import (
 	appParams "github.com/peggyjv/sommelier/app/params"
 	"github.com/peggyjv/sommelier/x/allocation"
 	allocationkeeper "github.com/peggyjv/sommelier/x/allocation/keeper"
-	oracletypes "github.com/peggyjv/sommelier/x/allocation/types"
+	allocationtypes "github.com/peggyjv/sommelier/x/allocation/types"
 
 	// unnamed import of statik for swagger UI support
 	_ "github.com/cosmos/cosmos-sdk/client/docs/statik"
@@ -317,7 +317,7 @@ func NewSommelierApp(
 	)
 
 	app.AllocationKeeper = allocationkeeper.NewKeeper(
-		appCodec, keys[oracletypes.StoreKey], app.GetSubspace(oracletypes.ModuleName),
+		appCodec, keys[allocationtypes.StoreKey], app.GetSubspace(allocationtypes.ModuleName),
 		app.StakingKeeper,
 	)
 
