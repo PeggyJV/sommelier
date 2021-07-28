@@ -7,7 +7,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
-	"github.com/peggyjv/sommelier/x"
 	"github.com/peggyjv/sommelier/x/allocation/types"
 	"github.com/tendermint/tendermint/libs/log"
 )
@@ -17,7 +16,6 @@ type Keeper struct {
 	storeKey      sdk.StoreKey
 	cdc           codec.BinaryMarshaler
 	paramSpace    paramtypes.Subspace
-	stakingKeeper x.StakingKeeper
 
 	handlerSet bool
 }
@@ -25,7 +23,6 @@ type Keeper struct {
 // NewKeeper creates a new distribution Keeper instance
 func NewKeeper(
 	cdc codec.BinaryMarshaler, key sdk.StoreKey, paramSpace paramtypes.Subspace,
-	stakingKeeper x.StakingKeeper,
 ) Keeper {
 
 	// set KeyTable if it has not already been set
@@ -37,7 +34,6 @@ func NewKeeper(
 		storeKey:      key,
 		cdc:           cdc,
 		paramSpace:    paramSpace,
-		stakingKeeper: stakingKeeper,
 	}
 }
 
