@@ -106,9 +106,7 @@ func NewMsgAllocationPrecommit(hash tmbytes.HexBytes, signer sdk.AccAddress) *Ms
 	}
 
 	return &MsgAllocationPrecommit{
-		Precommit: []AllocationPrecommit{
-			Hash: hash,
-		},
+		Precommit: []*AllocationPrecommit{{Hash: hash}},
 		Signer: signer.String(),
 	}
 }
