@@ -100,10 +100,10 @@ sudo systemctl start sommelier && sudo journalctl -u sommelier -f
 
 # once your node is synced, create your validator 
 sommelier tx staking create-validator \
-  --amount=1000000000000usomm \
+  --amount=999999900000usomm \
   --pubkey=$(sommelier tendermint show-validator) \
   --moniker="mymoniker" \
-  --chain-id="sommtest-2" \
+  --chain-id="sommtest-3" \
   --commission-rate="0.10" \
   --commission-max-rate="0.20" \
   --commission-max-change-rate="0.01" \
@@ -118,7 +118,7 @@ sommelier tx gravity set-delegate-keys \
     $(sommelier keys show orchestrator -a) \                       # orchestrator address
     $(gorc --config $HOME/gorc/config.toml keys eth show signer) \ # eth signer address
     $(gorc --config $HOME/gorc/config sign-delegate-keys signer $(sommelier keys show validator --bech val -a)) \ 
-    --chain-id sommtest-2 \ 
+    --chain-id sommtest-3 \ 
     --from validator \ 
     --fees 25000usomm -y
 
