@@ -3,6 +3,7 @@ package keeper
 import (
 	"bytes"
 	"encoding/binary"
+
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -276,11 +277,10 @@ func (k Keeper) IterateAllocationCommitValidators(ctx sdk.Context, handler func(
 
 }
 
-// Iterates all of the commits for a provided validator
+// IterateValidatorAllocationCommits Iterates all of the commits for a provided validator
 func (k Keeper) IterateValidatorAllocationCommits(ctx sdk.Context, val sdk.ValAddress, handler func(cellar common.Address, commit types.Allocation) (stop bool)) {
 	store := ctx.KVStore(k.storeKey)
-	prefix := append(types.AllocationCommitForCellarKeyPrefix, val.Bytes()...)
-	iter := sdk.KVStorePrefixIterator(store, prefix)
+	iter := sdk.KVStorePrefixIterator(store, append(types.AllocationCommitForCellarKeyPrefix, val.Bytes()...))
 	defer iter.Close()
 
 	for ; iter.Valid(); iter.Next() {
