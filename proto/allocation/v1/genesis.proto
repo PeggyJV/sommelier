@@ -8,7 +8,7 @@ import "gogoproto/gogo.proto";
 option go_package = "github.com/peggyjv/sommelier/x/allocation/types";
 
 
-// GenesisState - all oracle state that must be provided at genesis
+// GenesisState - all allocation state that must be provided at genesis
 message GenesisState {
     Params                          params             = 1 [
         (gogoproto.nullable) = false
@@ -21,7 +21,7 @@ message GenesisState {
     ];
 }
 
-// Params oracle parameters
+// Params allocation parameters
 message Params {
     // VotePeriod defines the number of blocks to wait for votes before attempting to tally
     int64  vote_period          = 1 [(gogoproto.moretags)   = "yaml:\"vote_period\""];
@@ -52,7 +52,7 @@ message Params {
         (gogoproto.nullable)   = false
     ];
 
-    // TargetThreshold defines the max percentage difference that a given oracle data needs to have with
+    // TargetThreshold defines the max percentage difference that a given allocation data needs to have with
     // the aggregated data in order for the feeder to be elegible for rewards.
     string target_threshold     = 6 [
         (gogoproto.moretags)   = "yaml:\"target_threshold\"",
