@@ -102,7 +102,7 @@ sudo systemctl start sommelier && sudo journalctl -u sommelier -f
 
 # once your node is synced, create your validator 
 sommelier tx staking create-validator \
-  --amount=1000000000000usomm \
+  --amount=999999900000usomm \
   --pubkey=$(sommelier tendermint show-validator) \
   --moniker="mymoniker" \
   --chain-id="sommtest-3" \
@@ -110,8 +110,7 @@ sommelier tx staking create-validator \
   --commission-max-rate="0.20" \
   --commission-max-change-rate="0.01" \
   --min-self-delegation="1000000" \
-  --gas="auto" \
-  --gas-prices="0.025usomm" \
+  --fees="100000usomm" \
   --from=validator
 
 # register delegate keys for eth and orchestrator keys
