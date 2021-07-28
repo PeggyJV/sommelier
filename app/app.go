@@ -85,14 +85,10 @@ import (
 	upgradekeeper "github.com/cosmos/cosmos-sdk/x/upgrade/keeper"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
 
-	ethbridge "github.com/cosmos/gravity-bridge/module/x/gravity"
-	ethbridgekeeper "github.com/cosmos/gravity-bridge/module/x/gravity/keeper"
-	ethbridgetypes "github.com/cosmos/gravity-bridge/module/x/gravity/types"
-
+	ethbridge "github.com/peggyjv/gravity-bridge/module/x/gravity"
+	ethbridgekeeper "github.com/peggyjv/gravity-bridge/module/x/gravity/keeper"
+	ethbridgetypes "github.com/peggyjv/gravity-bridge/module/x/gravity/types"
 	appParams "github.com/peggyjv/sommelier/app/params"
-	"github.com/peggyjv/sommelier/x/il"
-	ilkeeper "github.com/peggyjv/sommelier/x/il/keeper"
-	iltypes "github.com/peggyjv/sommelier/x/il/types"
 	"github.com/peggyjv/sommelier/x/allocation"
 	allocationkeeper "github.com/peggyjv/sommelier/x/allocation/keeper"
 	oracletypes "github.com/peggyjv/sommelier/x/allocation/types"
@@ -119,7 +115,10 @@ var (
 		mint.AppModuleBasic{},
 		distr.AppModuleBasic{},
 		gov.NewAppModuleBasic(
-			paramsclient.ProposalHandler, distrclient.ProposalHandler, upgradeclient.ProposalHandler, upgradeclient.CancelProposalHandler,
+			paramsclient.ProposalHandler,
+			distrclient.ProposalHandler,
+			upgradeclient.ProposalHandler,
+			upgradeclient.CancelProposalHandler,
 		),
 		params.AppModuleBasic{},
 		crisis.AppModuleBasic{},
@@ -131,7 +130,6 @@ var (
 		vesting.AppModuleBasic{},
 		ethbridge.AppModuleBasic{},
 		allocation.AppModuleBasic{},
-		il.AppModuleBasic{},
 	)
 
 	// module account permissions
@@ -143,17 +141,14 @@ var (
 		stakingtypes.NotBondedPoolName: {authtypes.Burner, authtypes.Staking},
 		govtypes.ModuleName:            {authtypes.Burner},
 		ibctransfertypes.ModuleName:    {authtypes.Minter, authtypes.Burner},
-		oracletypes.ModuleName:         nil, // TODO:??
+		ethbridgetypes.ModuleName:      {authtypes.Minter, authtypes.Burner},
 	}
 
 	// module accounts that are allowed to receive tokens
 	allowedReceivingModAcc = map[string]bool{
-		oracletypes.ModuleName: true, // TODO: why?
-		distrtypes.ModuleName:  true,
+		distrtypes.ModuleName: true,
 	}
-)
 
-var (
 	_ simapp.App              = (*SommelierApp)(nil)
 	_ servertypes.Application = (*SommelierApp)(nil)
 )
@@ -189,13 +184,10 @@ type SommelierApp struct {
 	IBCKeeper        *ibckeeper.Keeper // IBC Keeper must be a pointer in the app, so we can SetRouter on it correctly
 	EvidenceKeeper   evidencekeeper.Keeper
 	TransferKeeper   ibctransferkeeper.Keeper
-
-	// gravity Ethereum bridge keeper
-	EthBridgeKeeper ethbridgekeeper.Keeper
+	EthBridgeKeeper  ethbridgekeeper.Keeper
 
 	// Sommelier keepers
 	AllocationKeeper allocationkeeper.Keeper
-	ILKeeper         ilkeeper.Keeper
 
 	// make capability scoped keepers public for test purposes (IBC only)
 	ScopedIBCKeeper      capabilitykeeper.ScopedKeeper
@@ -238,7 +230,6 @@ func NewSommelierApp(
 		govtypes.StoreKey, paramstypes.StoreKey, ibchost.StoreKey, upgradetypes.StoreKey,
 		evidencetypes.StoreKey, ibctransfertypes.StoreKey, capabilitytypes.StoreKey,
 		ethbridgetypes.ModuleName,
-		oracletypes.StoreKey, iltypes.ModuleName,
 	)
 	tkeys := sdk.NewTransientStoreKeys(paramstypes.TStoreKey)
 	memKeys := sdk.NewMemoryStoreKeys(capabilitytypes.MemStoreKey)
@@ -322,16 +313,12 @@ func NewSommelierApp(
 
 	app.EthBridgeKeeper = ethbridgekeeper.NewKeeper(
 		appCodec, keys[ethbridgetypes.StoreKey], app.GetSubspace(ethbridgetypes.ModuleName),
-		app.StakingKeeper, app.BankKeeper, app.SlashingKeeper,
+		app.AccountKeeper, app.StakingKeeper, app.BankKeeper, app.SlashingKeeper,
 	)
 
 	app.AllocationKeeper = allocationkeeper.NewKeeper(
 		appCodec, keys[oracletypes.StoreKey], app.GetSubspace(oracletypes.ModuleName),
 		app.StakingKeeper,
-	)
-
-	app.ILKeeper = ilkeeper.NewKeeper(
-		appCodec, keys[iltypes.StoreKey], app.GetSubspace(iltypes.ModuleName), app.AllocationKeeper, app.EthBridgeKeeper,
 	)
 
 	// Create static IBC router, add transfer route, then set and seal it
@@ -381,7 +368,6 @@ func NewSommelierApp(
 		transferModule,
 		ethbridge.NewAppModule(app.EthBridgeKeeper, app.BankKeeper),
 		allocation.NewAppModule(app.AllocationKeeper, appCodec),
-		il.NewAppModule(app.ILKeeper, appCodec),
 	)
 
 	// During begin block slashing happens after distr.BeginBlocker so that
@@ -390,17 +376,13 @@ func NewSommelierApp(
 	// NOTE: staking module is required if HistoricalEntries param > 0
 	app.mm.SetOrderBeginBlockers(
 		upgradetypes.ModuleName, minttypes.ModuleName, distrtypes.ModuleName, slashingtypes.ModuleName,
-		evidencetypes.ModuleName, stakingtypes.ModuleName, ibchost.ModuleName,
-		oracletypes.ModuleName,
+		evidencetypes.ModuleName, stakingtypes.ModuleName, ibchost.ModuleName, ethbridgetypes.ModuleName,
 	)
 
 	// NOTE: Impermanent loss module must always go after the oracle module to have the
 	// aggregated data available for stoploss execution. The bridge module doesn't require a
 	// specific endblock order.
-	app.mm.SetOrderEndBlockers(
-		crisistypes.ModuleName, oracletypes.ModuleName, govtypes.ModuleName, stakingtypes.ModuleName,
-		iltypes.ModuleName, ethbridgetypes.ModuleName,
-	)
+	app.mm.SetOrderEndBlockers(crisistypes.ModuleName, govtypes.ModuleName, stakingtypes.ModuleName, ethbridgetypes.ModuleName)
 
 	// NOTE: The genutils module must occur after staking so that pools are
 	// properly initialized with tokens from genesis accounts.
@@ -408,11 +390,10 @@ func NewSommelierApp(
 	// so that other modules that want to create or claim capabilities afterwards in InitChain
 	// can do so safely.
 	app.mm.SetOrderInitGenesis(
-		capabilitytypes.ModuleName, authtypes.ModuleName, banktypes.ModuleName, distrtypes.ModuleName, stakingtypes.ModuleName,
-		slashingtypes.ModuleName, govtypes.ModuleName, minttypes.ModuleName, crisistypes.ModuleName,
-		ibchost.ModuleName, genutiltypes.ModuleName, evidencetypes.ModuleName, ibctransfertypes.ModuleName,
-		// bridge and sommelier modules
-		ethbridgetypes.ModuleName, oracletypes.ModuleName, iltypes.ModuleName,
+		capabilitytypes.ModuleName, authtypes.ModuleName, banktypes.ModuleName, distrtypes.ModuleName,
+		stakingtypes.ModuleName, slashingtypes.ModuleName, govtypes.ModuleName, minttypes.ModuleName,
+		crisistypes.ModuleName, ibchost.ModuleName, genutiltypes.ModuleName, evidencetypes.ModuleName,
+		ibctransfertypes.ModuleName, ethbridgetypes.ModuleName,
 	)
 
 	app.mm.RegisterInvariants(&app.CrisisKeeper)
@@ -653,8 +634,6 @@ func initParamsKeeper(appCodec codec.BinaryMarshaler, legacyAmino *codec.LegacyA
 	paramsKeeper.Subspace(ibctransfertypes.ModuleName)
 	paramsKeeper.Subspace(ibchost.ModuleName)
 	paramsKeeper.Subspace(ethbridgetypes.ModuleName)
-	paramsKeeper.Subspace(oracletypes.ModuleName)
-	paramsKeeper.Subspace(iltypes.ModuleName)
 
 	return paramsKeeper
 }

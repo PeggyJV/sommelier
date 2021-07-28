@@ -1,0 +1,15 @@
+[Unit]
+Description=Goreli Geth Node
+After=online.target
+
+[Service]
+Type=simple
+User=ubuntu
+WorkingDirectory=/home/ubuntu
+ExecStart=/usr/bin/geth --syncmode "light" --goerli --http --cache 16
+Restart=on-failure
+RestartSec=3
+LimitNOFILE=4096
+
+[Install]
+WantedBy=multi-user.target
