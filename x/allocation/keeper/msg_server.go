@@ -11,8 +11,8 @@ import (
 
 var _ types.MsgServer = Keeper{}
 
-// DelegateDecisions implements types.MsgServer
-func (k Keeper) DelegateDecisions(c context.Context, msg *types.MsgDelegateDecisions) (*types.MsgDelegateDecisionsResponse, error) {
+// DelegateAllocations implements types.MsgServer
+func (k Keeper) DelegateAllocations(c context.Context, msg *types.MsgDelegateAllocations) (*types.MsgDelegateAllocationsResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
 
 	val, del := msg.MustGetValidator(), msg.MustGetDelegate()
@@ -43,18 +43,18 @@ func (k Keeper) DelegateDecisions(c context.Context, msg *types.MsgDelegateDecis
 		sdk.NewEvent(
 			sdk.EventTypeMessage,
 			sdk.NewAttribute(sdk.AttributeKeyModule, types.AttributeValueCategory),
-			sdk.NewAttribute(sdk.AttributeKeyAction, types.EventTypeDelegateDecisions),
+			sdk.NewAttribute(sdk.AttributeKeyAction, types.EventTypeDelegateAllocations),
 			sdk.NewAttribute(sdk.AttributeKeySender, msg.Validator),
 			sdk.NewAttribute(types.AttributeKeyValidator, msg.Validator),
 			sdk.NewAttribute(types.AttributeKeyDelegate, msg.Delegate),
 		),
 	)
 
-	return &types.MsgDelegateDecisionsResponse{}, nil
+	return &types.MsgDelegateAllocationsResponse{}, nil
 }
 
-// DecisionPrecommit implements types.MsgServer
-func (k Keeper) DecisionPrecommit(c context.Context, msg *types.MsgDecisionPrecommit) (*types.MsgDecisionPrecommitResponse, error) {
+// AllocationPrecommit implements types.MsgServer
+func (k Keeper) AllocationPrecommit(c context.Context, msg *types.MsgAllocationPrecommit) (*types.MsgAllocationPrecommitResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
 
 	signer := msg.MustGetSigner()
@@ -71,11 +71,14 @@ func (k Keeper) DecisionPrecommit(c context.Context, msg *types.MsgDecisionPreco
 		k.SetValidatorDelegateAddress(ctx, signer, validatorAddr)
 	}
 
-	k.SetDecisionPrecommit(ctx, validatorAddr, *msg.Precommit)
+	k.SetAllocationPrecommit(ctx, validatorAddr, *msg.Precommit)
 
+	return &types.MsgAllocationPrecommitResponse{}, nil
 }
 
-// DecisionsCommit implements types.MsgServer
-func (k Keeper) DecisionCommit(c context.Context, msg *types.MsgDecisionCommit) (*types.MsgDecisionCommitResponse, error) {
+// AllocationCommit implements types.MsgServer
+func (k Keeper) AllocationCommit(c context.Context, msg *types.MsgAllocationCommit) (*types.MsgAllocationCommitResponse, error) {
+	// todo: IMPLEMENT
 
+	return &types.MsgAllocationCommitResponse{}, nil
 }

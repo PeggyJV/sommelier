@@ -7,40 +7,40 @@ option go_package = "github.com/peggyjv/sommelier/x/allocation/types";
 
 // MsgService defines the messages the allocation module handles
 service Msg {
-  // DelegateDecisions creates an index in the store linking the validator and the delegate key
+  // DelegateAllocations creates an index in the store linking the validator and the delegate key
   // need to be able to query both the delegate and the validator given the other one
   rpc DelegateAllocations (MsgDelegateAllocations) returns (MsgDelegateAllocationsResponse);
-  // DecisionPrecommit stores the precommit hash indexed by validator address
+  // AllocationPrecommit stores the precommit hash indexed by validator address
   rpc AllocationPrecommit (MsgAllocationPrecommit) returns (MsgAllocationPrecommitResponse);
-  // DecisionCommit checks the precommit hash against the data, rejects the message if it doesn't match
+  // AllocationCommit checks the precommit hash against the data, rejects the message if it doesn't match
   // then records the commitment in the store indexed by validator address
   rpc AllocationCommit    (MsgAllocationCommit)    returns (MsgAllocationCommitResponse);
 }
 
-// MsgDelegateAllocations is the request type for DelegateDecisions
+// MsgDelegateAllocations is the request type for DelegateAllocations
 message MsgDelegateAllocations {
   string delegate = 1;
   string validator = 2;
 }
 
-// MsgDelegateAllocationsResponse is the response type for DelegateDecisions
+// MsgDelegateAllocationsResponse is the response type for DelegateAllocations
 message MsgDelegateAllocationsResponse {}
 
-// MsgAllocationPrecommit is the request type for DecisionPrecommit
+// MsgAllocationPrecommit is the request type for AllocationPrecommit
 message MsgAllocationPrecommit {
   AllocationPrecommit precommit = 1;
   string signer = 2;
 }
 
-// MsgAllocationPrecommitResponse is the response type for MsgDecisionPrecommit
+// MsgAllocationPrecommitResponse is the response type for MsgAllocationPrecommit
 message MsgAllocationPrecommitResponse {}
 
-// MsgAllocationCommit is the request type for DecisionCommit
+// MsgAllocationCommit is the request type for AllocationCommit
 message MsgAllocationCommit {
   repeated Allocation allocations = 1;
   string            salt = 2;
   string            signer = 3;
 }
 
-// MsgAllocationCommitResponse is the response type for the Msg/DecisionCommit gRPC method.
+// MsgAllocationCommitResponse is the response type for the Msg/AllocationCommit gRPC method.
 message MsgAllocationCommitResponse {}

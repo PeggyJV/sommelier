@@ -2,12 +2,12 @@ package cli
 
 import (
 	"fmt"
+	"github.com/peggyjv/sommelier/x/allocation/types"
 
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/client/tx"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/peggyjv/sommelier/x/oracle/types"
 
 	"github.com/spf13/cobra"
 )
@@ -46,7 +46,7 @@ func txDelegateFeedPermission() *cobra.Command {
 
 			validatorAddr := sdk.ValAddress(ctx.GetFromAddress())
 
-			msg := types.NewMsgDelegateFeedConsent(delegateAddress, validatorAddr)
+			msg := types.NewMsgDelegateAllocations(delegateAddress, validatorAddr)
 			if err = msg.ValidateBasic(); err != nil {
 				return fmt.Errorf("message validation failed: %w", err)
 			}

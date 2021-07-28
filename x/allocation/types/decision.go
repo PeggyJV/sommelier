@@ -1,5 +1,5 @@
 package types
 
-func (d Decision) Validate() error {
+func (d Allocation) Validate() error {
 	panic("UNIMPLEMENTED")
 }

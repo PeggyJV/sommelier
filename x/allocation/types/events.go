@@ -2,9 +2,9 @@ package types
 
 // allocation module event types
 const (
-	EventTypeDelegateDecisions = "delegate_decisions"
-	EventTypeDecisionPrecommit = "decision_precommit"
-	EventTypeDecisionCommit    = "allocation_commit"
+	EventTypeDelegateAllocations = "delegate_decisions"
+	EventTypeAllocationPrecommit = "decision_precommit"
+	EventTypeAllocationCommit    = "allocation_commit"
 	EventTypeCommitPeriod      = "allocation_commit"
 
 	AttributeKeySigner    = "signer"

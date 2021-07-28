@@ -27,7 +27,7 @@ var _ = math.Inf
 // proto package needs to be updated.
 const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
-// MsgDelegateAllocations is the request type for DelegateDecisions
+// MsgDelegateAllocations is the request type for DelegateAllocations
 type MsgDelegateAllocations struct {
 	Delegate  string `protobuf:"bytes,1,opt,name=delegate,proto3" json:"delegate,omitempty"`
 	Validator string `protobuf:"bytes,2,opt,name=validator,proto3" json:"validator,omitempty"`
@@ -80,7 +80,7 @@ func (m *MsgDelegateAllocations) GetValidator() string {
 	return ""
 }
 
-// MsgDelegateAllocationsResponse is the response type for DelegateDecisions
+// MsgDelegateAllocationsResponse is the response type for DelegateAllocations
 type MsgDelegateAllocationsResponse struct {
 }
 
@@ -117,7 +117,7 @@ func (m *MsgDelegateAllocationsResponse) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_MsgDelegateAllocationsResponse proto.InternalMessageInfo
 
-// MsgAllocationPrecommit is the request type for DecisionPrecommit
+// MsgAllocationPrecommit is the request type for AllocationPrecommit
 type MsgAllocationPrecommit struct {
 	Precommit *AllocationPrecommit `protobuf:"bytes,1,opt,name=precommit,proto3" json:"precommit,omitempty"`
 	Signer    string               `protobuf:"bytes,2,opt,name=signer,proto3" json:"signer,omitempty"`
@@ -170,7 +170,7 @@ func (m *MsgAllocationPrecommit) GetSigner() string {
 	return ""
 }
 
-// MsgAllocationPrecommitResponse is the response type for MsgDecisionPrecommit
+// MsgAllocationPrecommitResponse is the response type for MsgAllocationPrecommit
 type MsgAllocationPrecommitResponse struct {
 }
 
@@ -207,7 +207,7 @@ func (m *MsgAllocationPrecommitResponse) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_MsgAllocationPrecommitResponse proto.InternalMessageInfo
 
-// MsgAllocationCommit is the request type for DecisionCommit
+// MsgAllocationCommit is the request type for AllocationCommit
 type MsgAllocationCommit struct {
 	Allocations []*Allocation `protobuf:"bytes,1,rep,name=allocations,proto3" json:"allocations,omitempty"`
 	Salt        string        `protobuf:"bytes,2,opt,name=salt,proto3" json:"salt,omitempty"`
@@ -268,7 +268,7 @@ func (m *MsgAllocationCommit) GetSigner() string {
 	return ""
 }
 
-// MsgAllocationCommitResponse is the response type for the Msg/DecisionCommit gRPC method.
+// MsgAllocationCommitResponse is the response type for the Msg/AllocationCommit gRPC method.
 type MsgAllocationCommitResponse struct {
 }
 
@@ -355,12 +355,12 @@ const _ = grpc.SupportPackageIsVersion4
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
 type MsgClient interface {
-	// DelegateDecisions creates an index in the store linking the validator and the delegate key
+	// DelegateAllocations creates an index in the store linking the validator and the delegate key
 	// need to be able to query both the delegate and the validator given the other one
 	DelegateAllocations(ctx context.Context, in *MsgDelegateAllocations, opts ...grpc.CallOption) (*MsgDelegateAllocationsResponse, error)
-	// DecisionPrecommit stores the precommit hash indexed by validator address
+	// AllocationPrecommit stores the precommit hash indexed by validator address
 	AllocationPrecommit(ctx context.Context, in *MsgAllocationPrecommit, opts ...grpc.CallOption) (*MsgAllocationPrecommitResponse, error)
-	// DecisionCommit checks the precommit hash against the data, rejects the message if it doesn't match
+	// AllocationCommit checks the precommit hash against the data, rejects the message if it doesn't match
 	// then records the commitment in the store indexed by validator address
 	AllocationCommit(ctx context.Context, in *MsgAllocationCommit, opts ...grpc.CallOption) (*MsgAllocationCommitResponse, error)
 }
@@ -402,12 +402,12 @@ func (c *msgClient) AllocationCommit(ctx context.Context, in *MsgAllocationCommi
 
 // MsgServer is the server API for Msg service.
 type MsgServer interface {
-	// DelegateDecisions creates an index in the store linking the validator and the delegate key
+	// DelegateAllocations creates an index in the store linking the validator and the delegate key
 	// need to be able to query both the delegate and the validator given the other one
 	DelegateAllocations(context.Context, *MsgDelegateAllocations) (*MsgDelegateAllocationsResponse, error)
-	// DecisionPrecommit stores the precommit hash indexed by validator address
+	// AllocationPrecommit stores the precommit hash indexed by validator address
 	AllocationPrecommit(context.Context, *MsgAllocationPrecommit) (*MsgAllocationPrecommitResponse, error)
-	// DecisionCommit checks the precommit hash against the data, rejects the message if it doesn't match
+	// AllocationCommit checks the precommit hash against the data, rejects the message if it doesn't match
 	// then records the commitment in the store indexed by validator address
 	AllocationCommit(context.Context, *MsgAllocationCommit) (*MsgAllocationCommitResponse, error)
 }
