@@ -1,8 +1,11 @@
 package types
 
 import (
+	"bytes"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/ethereum/go-ethereum/common"
+	tmbytes "github.com/tendermint/tendermint/libs/bytes"
 )
 
 const (
@@ -19,56 +22,53 @@ const (
 	QuerierRoute = ModuleName
 )
 
-// Keys for oracle store, with <prefix><key> -> <value>
-var (
+// Keys for allocation store, with <prefix><key> -> <value>
+const (
+	_ = byte(iota)
 	// PoolAllocationKeyPrefix - <prefix><val_address><cel_address> -> <[]pool_allocation>
-	PoolAllocationKeyPrefix = []byte{0x01} //
+	PoolAllocationKeyPrefix
 
 	// AllocationDelegateKeyPrefix - <prefix><val_address> -> <delegate_address>
-	AllocationDelegateKeyPrefix = []byte{0x02} // key for validator allocation delegation
+	AllocationDelegateKeyPrefix // key for validator allocation delegation
 
 	// AllocationPrecommitKeyPrefix - <prefix><val_address><cel_address> -> <hash>
-	AllocationPrecommitKeyPrefix = []byte{0x03} // key for allocation precommits
+	AllocationPrecommitKeyPrefix // key for allocation precommits
 
 	// AllocationCommitForCellarKeyPrefix - <prefix><val_address><cel_address> -> <allocation_commit>
-	AllocationCommitForCellarKeyPrefix = []byte{0x04} // key for allocation commits
+	AllocationCommitForCellarKeyPrefix // key for allocation commits
 
 	// CommitPeriodStartKey - <prefix> -> int64(height)
-	CommitPeriodStartKey = []byte{0x05} // key for commit period height start
+	CommitPeriodStartKey // key for commit period height start
 
-	// MissCounterKeyPrefix - <prefix><val_address> -> int64(misses)
-	MissCounterKeyPrefix = []byte{0x06} // key for validator miss counters
+	// OutgoingAllocationTxKey - <prefix><invalidation_id><invalidation_nonce> -> int64(height)
+	OutgoingAllocationTxKey
 )
 
 // GetAllocationDelegateKey returns the validator for a given delegate key
 func GetAllocationDelegateKey(del sdk.AccAddress) []byte {
-	return append(AllocationDelegateKeyPrefix, del.Bytes()...)
+	return append([]byte{AllocationDelegateKeyPrefix}, del.Bytes()...)
 }
 
 // GetAllocationPrecommitKey returns the key for a validators prevote for a cellar
 func GetAllocationPrecommitKey(val sdk.ValAddress, cel common.Address) []byte {
-	key := append(AllocationPrecommitKeyPrefix, val.Bytes()...)
-	return append(key, cel.Bytes()...)
+	return bytes.Join([][]byte{{AllocationPrecommitKeyPrefix}, val.Bytes(), cel.Bytes()}, []byte{})
 }
 
 // GetAllocationCommitForCellarKey returns the key for a validators vote for a given cellar
 func GetAllocationCommitForCellarKey(val sdk.ValAddress, cel common.Address) []byte {
-	key := GetAllocationCommitKeyPrefix(val)
-	return append(key, cel.Bytes()...)
+	return append(GetAllocationCommitKeyPrefix(val), cel.Bytes()...)
 }
 
 // GetAllocationCommitKeyPrefix returns the key prefix for allocation commits for a validator
 func GetAllocationCommitKeyPrefix(val sdk.ValAddress) []byte {
-	return append(AllocationCommitForCellarKeyPrefix, val.Bytes()...)
+	return append([]byte{AllocationCommitForCellarKeyPrefix}, val.Bytes()...)
 }
 
 // GetPoolAllocationKey returns the key for pool allocations for a given cellar
 func GetPoolAllocationKey(val sdk.ValAddress, cel common.Address) []byte {
-	key := append(PoolAllocationKeyPrefix, val.Bytes()...)
-	return append(key, cel.Bytes()...)
+	return bytes.Join([][]byte{{PoolAllocationKeyPrefix}, val.Bytes(), cel.Bytes()}, []byte{})
 }
 
-// GetMissCounterKey returns the key for the stored miss counter for a given validator
-func GetMissCounterKey(val sdk.ValAddress) []byte {
-	return append(MissCounterKeyPrefix, val.Bytes()...)
+func GetOutgoingAllocationTxKey(invalidationID uint64, invalidationNonce tmbytes.HexBytes) []byte {
+	return bytes.Join([][]byte{{OutgoingAllocationTxKey}, sdk.Uint64ToBigEndian(invalidationID), invalidationNonce}, []byte{})
 }
