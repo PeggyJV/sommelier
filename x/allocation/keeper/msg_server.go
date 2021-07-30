@@ -87,10 +87,6 @@ func (k Keeper) AllocationPrecommit(c context.Context, msg *types.MsgAllocationP
 		hashList = append(hashList, ap.Hash.String())
 		k.SetAllocationPrecommit(ctx, validatorAddr, common.HexToAddress(ap.CellarId), *ap)
 	}
-	// set miss counter now that the validator committed the provote
-	if !k.HasMissCounter(ctx, validatorAddr) {
-		k.SetMissCounter(ctx, validatorAddr, 0)
-	}
 
 	ctx.EventManager().EmitEvents(
 		sdk.Events{

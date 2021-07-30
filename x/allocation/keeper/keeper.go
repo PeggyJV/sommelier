@@ -2,8 +2,6 @@ package keeper
 
 import (
 	"bytes"
-	"encoding/binary"
-
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -20,9 +18,6 @@ type Keeper struct {
 	cdc           codec.BinaryMarshaler
 	paramSpace    paramtypes.Subspace
 	stakingKeeper types.StakingKeeper
-
-	oracleHandler types.OracleHandler
-	handlerSet    bool
 }
 
 // NewKeeper creates a new distribution Keeper instance
@@ -49,16 +44,6 @@ func (k Keeper) Logger(ctx sdk.Context) log.Logger {
 	return ctx.Logger().With("module", "x/"+types.ModuleName)
 }
 
-// SetHandler sets the oracle handler into the keeper's fields. It will panic
-// if the handler is already set.
-func (k *Keeper) SetHandler(handlerFn types.OracleHandler) {
-	if k.handlerSet {
-		panic("oracle handler is already set")
-	}
-
-	k.oracleHandler = handlerFn
-	k.handlerSet = true
-}
 
 ////////////////////////
 // MsgDelegateAddress //
@@ -379,72 +364,6 @@ func (k Keeper) GetCommitPeriodStart(ctx sdk.Context) (int64, bool) {
 // HasCommitPeriodStart returns true if the vote period start has been set
 func (k Keeper) HasCommitPeriodStart(ctx sdk.Context) bool {
 	return ctx.KVStore(k.storeKey).Has(types.CommitPeriodStartKey)
-}
-
-/////////////////
-// MissCounter //
-/////////////////
-
-// IncrementMissCounter increments the miss counter for a validator
-func (k Keeper) IncrementMissCounter(ctx sdk.Context, val sdk.ValAddress) {
-	missCounter := k.GetMissCounter(ctx, val)
-	k.SetMissCounter(ctx, val, missCounter+1)
-}
-
-// GetMissCounter return the miss counter for a validator
-func (k Keeper) GetMissCounter(ctx sdk.Context, val sdk.ValAddress) int64 {
-	store := ctx.KVStore(k.storeKey)
-	bz := store.Get(types.GetMissCounterKey(val))
-	if len(bz) == 0 {
-		return 0
-	}
-	return int64(binary.BigEndian.Uint64(bz))
-}
-
-// SetMissCounter sets the miss counter for a given validator
-func (k Keeper) SetMissCounter(ctx sdk.Context, val sdk.ValAddress, misses int64) {
-	bz := make([]byte, 8)
-	binary.BigEndian.PutUint64(bz, uint64(misses))
-	ctx.KVStore(k.storeKey).Set(types.GetMissCounterKey(val), bz)
-}
-
-// HasMissCounter checks if a validator has an existing miss counter
-func (k Keeper) HasMissCounter(ctx sdk.Context, val sdk.ValAddress) bool {
-	return ctx.KVStore(k.storeKey).Has(types.GetMissCounterKey(val))
-}
-
-// DeleteMissCounter removes a validators miss counter
-func (k Keeper) DeleteMissCounter(ctx sdk.Context, val sdk.ValAddress) {
-	ctx.KVStore(k.storeKey).Delete(types.GetMissCounterKey(val))
-}
-
-// IterateMissCounters iterates over the miss counters
-func (k Keeper) IterateMissCounters(ctx sdk.Context, handler func(val sdk.ValAddress, counter int64) (stop bool)) {
-	store := ctx.KVStore(k.storeKey)
-	iter := sdk.KVStorePrefixIterator(store, types.MissCounterKeyPrefix)
-	defer iter.Close()
-	for ; iter.Valid(); iter.Next() {
-		count := binary.BigEndian.Uint64(iter.Value())
-		val := sdk.ValAddress(bytes.TrimPrefix(iter.Key(), types.MissCounterKeyPrefix))
-		if handler(val, int64(count)) {
-			break
-		}
-	}
-}
-
-// GetAllMissCounters returns all the miss counter values for all validators.
-func (k Keeper) GetAllMissCounters(ctx sdk.Context) []types.MissCounter {
-	missCounters := make([]types.MissCounter, 0)
-
-	k.IterateMissCounters(ctx, func(validatorAddr sdk.ValAddress, counter int64) bool {
-		missCounters = append(missCounters, types.MissCounter{
-			Validator: validatorAddr.String(),
-			Misses:    counter,
-		})
-		return false
-	})
-
-	return missCounters
 }
 
 ////////////

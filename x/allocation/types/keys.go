@@ -21,22 +21,22 @@ const (
 
 // Keys for oracle store, with <prefix><key> -> <value>
 var (
-	// - <prefix><val_address><cel_address> -> <[]pool_allocation>
+	// PoolAllocationKeyPrefix - <prefix><val_address><cel_address> -> <[]pool_allocation>
 	PoolAllocationKeyPrefix = []byte{0x01} //
 
-	// - <prefix><val_address> -> <delegate_address>
+	// AllocationDelegateKeyPrefix - <prefix><val_address> -> <delegate_address>
 	AllocationDelegateKeyPrefix = []byte{0x02} // key for validator allocation delegation
 
-	// - <prefix><val_address><cel_address> -> <hash>
+	// AllocationPrecommitKeyPrefix - <prefix><val_address><cel_address> -> <hash>
 	AllocationPrecommitKeyPrefix = []byte{0x03} // key for allocation precommits
 
-	// - <prefix><val_address><cel_address> -> <allocation_commit>
+	// AllocationCommitForCellarKeyPrefix - <prefix><val_address><cel_address> -> <allocation_commit>
 	AllocationCommitForCellarKeyPrefix = []byte{0x04} // key for allocation commits
 
-	// - <prefix> -> int64(height)
+	// CommitPeriodStartKey - <prefix> -> int64(height)
 	CommitPeriodStartKey = []byte{0x05} // key for commit period height start
 
-	// - <prefix><val_address> -> int64(misses)
+	// MissCounterKeyPrefix - <prefix><val_address> -> int64(misses)
 	MissCounterKeyPrefix = []byte{0x06} // key for validator miss counters
 )
 

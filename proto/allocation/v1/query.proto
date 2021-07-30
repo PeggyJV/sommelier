@@ -36,11 +36,6 @@ service Query {
     rpc QueryCommitPeriod(QueryCommitPeriodRequest) returns (QueryCommitPeriodResponse) {
         option (google.api.http).get = "/sommelier/allocation/v1/commit_period";
     }
-     // QueryMissCounter queries the missed number of allocation data feed periods
-    rpc QueryMissCounter(QueryMissCounterRequest) returns (QueryMissCounterResponse) {
-        option (google.api.http).get = "/sommelier/allocation/v1/miss_counters/{validator}";
-    }
-    // todo: aggregate data handlers and types
 }
 
 // QueryParamsRequest is the request type for the Query/Params gRPC method.
@@ -115,16 +110,4 @@ message QueryCommitPeriodResponse {
     int64 vote_period_start = 2;
     // block height at which the current voting period ends
     int64 vote_period_end   = 3; 
-}
-
-// QueryMissCounterRequest is the request type for the Query/MissCounter gRPC method.
-message QueryMissCounterRequest {
-    // validator operator address
-    string validator = 1;
-}
-
-// QueryMissCounterResponse is the response type for the Query/MissCounter gRPC method.
-message QueryMissCounterResponse {
-    // number of allocation feed votes missed since the last counter reset
-    int64 miss_counter = 1;
 }

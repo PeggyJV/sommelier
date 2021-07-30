@@ -16,9 +16,6 @@ message GenesisState {
     repeated MsgDelegateAllocations feeder_delegations = 2 [
         (gogoproto.nullable) = false
     ];
-    repeated MissCounter            miss_counters      = 3 [
-        (gogoproto.nullable) = false
-    ];
 }
 
 // Params allocation parameters
@@ -36,12 +33,3 @@ message Params {
     // Cellars is the collection of pools that the allocation module references
     repeated Cellar cellars = 3;
 }
-
-// MissCounter stores the validator address and the number of associated misses
-message MissCounter {
-    // validator operator address
-    string validator = 1;
-    // number of misses
-    int64  misses    = 2;
-}
-

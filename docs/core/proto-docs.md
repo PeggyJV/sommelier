@@ -26,7 +26,6 @@
   
 - [allocation/v1/genesis.proto](#allocation/v1/genesis.proto)
     - [GenesisState](#allocation.v1.GenesisState)
-    - [MissCounter](#allocation.v1.MissCounter)
     - [Params](#allocation.v1.Params)
   
 - [allocation/v1/query.proto](#allocation/v1/query.proto)
@@ -38,8 +37,6 @@
     - [QueryCommitPeriodResponse](#allocation.v1.QueryCommitPeriodResponse)
     - [QueryDelegateAddressRequest](#allocation.v1.QueryDelegateAddressRequest)
     - [QueryDelegateAddressResponse](#allocation.v1.QueryDelegateAddressResponse)
-    - [QueryMissCounterRequest](#allocation.v1.QueryMissCounterRequest)
-    - [QueryMissCounterResponse](#allocation.v1.QueryMissCounterResponse)
     - [QueryParamsRequest](#allocation.v1.QueryParamsRequest)
     - [QueryParamsResponse](#allocation.v1.QueryParamsResponse)
     - [QueryValidatorAddressRequest](#allocation.v1.QueryValidatorAddressRequest)
@@ -321,23 +318,6 @@ GenesisState - all allocation state that must be provided at genesis
 | ----- | ---- | ----- | ----------- |
 | `params` | [Params](#allocation.v1.Params) |  |  |
 | `feeder_delegations` | [MsgDelegateAllocations](#allocation.v1.MsgDelegateAllocations) | repeated |  |
-| `miss_counters` | [MissCounter](#allocation.v1.MissCounter) | repeated |  |
-
-
-
-
-
-
-<a name="allocation.v1.MissCounter"></a>
-
-### MissCounter
-MissCounter stores the validator address and the number of associated misses
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| `validator` | [string](#string) |  | validator operator address |
-| `misses` | [int64](#int64) |  | number of misses |
 
 
 
@@ -496,36 +476,6 @@ QueryDelegateAddressResponse is the response type for the Query/QueryDelegateAdd
 
 
 
-<a name="allocation.v1.QueryMissCounterRequest"></a>
-
-### QueryMissCounterRequest
-QueryMissCounterRequest is the request type for the Query/MissCounter gRPC method.
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| `validator` | [string](#string) |  | validator operator address |
-
-
-
-
-
-
-<a name="allocation.v1.QueryMissCounterResponse"></a>
-
-### QueryMissCounterResponse
-QueryMissCounterResponse is the response type for the Query/MissCounter gRPC method.
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| `miss_counter` | [int64](#int64) |  | number of allocation feed votes missed since the last counter reset |
-
-
-
-
-
-
 <a name="allocation.v1.QueryParamsRequest"></a>
 
 ### QueryParamsRequest
@@ -600,9 +550,6 @@ Query defines the gRPC querier service for the allocation module.
 | `QueryAllocationPrecommit` | [QueryAllocationPrecommitRequest](#allocation.v1.QueryAllocationPrecommitRequest) | [QueryAllocationPrecommitResponse](#allocation.v1.QueryAllocationPrecommitResponse) | QueryAllocationPrecommit queries the validator prevote in the current voting period | GET|/sommelier/allocation/v1/precommits/{validator}|
 | `QueryAllocationCommit` | [QueryAllocationCommitRequest](#allocation.v1.QueryAllocationCommitRequest) | [QueryAllocationCommitResponse](#allocation.v1.QueryAllocationCommitResponse) | QueryAllocationCommit queries the validator vote in the current voting period | GET|/sommelier/allocation/v1/commits/{validator}|
 | `QueryCommitPeriod` | [QueryCommitPeriodRequest](#allocation.v1.QueryCommitPeriodRequest) | [QueryCommitPeriodResponse](#allocation.v1.QueryCommitPeriodResponse) | QueryVotePeriod queries the heights for the current voting period (current, start and end) | GET|/sommelier/allocation/v1/commit_period|
-| `QueryMissCounter` | [QueryMissCounterRequest](#allocation.v1.QueryMissCounterRequest) | [QueryMissCounterResponse](#allocation.v1.QueryMissCounterResponse) | QueryMissCounter queries the missed number of allocation data feed periods
-
-todo: aggregate data handlers and types | GET|/sommelier/allocation/v1/miss_counters/{validator}|
 
  <!-- end services -->
 

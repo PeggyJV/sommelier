@@ -129,20 +129,3 @@ func (k Keeper) QueryCommitPeriod(c context.Context, _ *types.QueryCommitPeriodR
 		CurrentHeight:   ctx.BlockHeight(),
 	}, nil
 }
-
-// QueryMissCounter implements QueryServer
-func (k Keeper) QueryMissCounter(c context.Context, req *types.QueryMissCounterRequest) (*types.QueryMissCounterResponse, error) {
-	if req == nil {
-		return nil, status.Error(codes.InvalidArgument, "empty request")
-	}
-
-	ctx := sdk.UnwrapSDKContext(c)
-	validatorAddr, err := sdk.ValAddressFromBech32(req.Validator)
-	if err != nil {
-		return nil, status.Error(codes.InvalidArgument, err.Error())
-	}
-
-	return &types.QueryMissCounterResponse{
-		MissCounter: k.GetMissCounter(ctx, validatorAddr),
-	}, nil
-}
