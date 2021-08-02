@@ -81,8 +81,8 @@ func (k Keeper) AllocationPrecommit(c context.Context, msg *types.MsgAllocationP
 	}
 
 	// TODO: set precommit for current voting period
-	var hashList []string
-	var cellarList []string
+	hashList := make([]string, len(msg.Precommit))
+	cellarList := make([]string, len(msg.Precommit))
 	for _, ap := range msg.Precommit {
 		cellarList = append(cellarList, ap.CellarId)
 		hashList = append(hashList, ap.Hash.String())
