@@ -60,7 +60,7 @@ func (k Keeper) BeginBlocker(ctx sdk.Context) {
 type PowerWeight struct {
 	validator sdk.ValAddress
 	cellar    common.Address
-	fee_level sdk.Dec
+	feeLevel  sdk.Dec
 	power     int64
 	tick      uint32
 }
@@ -103,7 +103,7 @@ func (k Keeper) EndBlocker(ctx sdk.Context) {
 		// NOTE: the commit might have been submitted by a delegate, so we have to check the
 		// original validator address
 
-		validator := k.stakingKeeper.Validator(ctx, sdk.ValAddress(validatorAddr))
+		validator := k.stakingKeeper.Validator(ctx, validatorAddr)
 		if validator == nil {
 			// validator nor found, continue with next commit
 			k.Logger(ctx).Debug(

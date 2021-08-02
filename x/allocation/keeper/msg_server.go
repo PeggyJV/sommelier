@@ -26,9 +26,9 @@ func (k Keeper) DelegateAllocations(c context.Context, msg *types.MsgDelegateAll
 	val, del := msg.MustGetValidator(), msg.MustGetDelegate()
 
 	// check that the signer is a bonded validator and is not jailed
-	validator := k.stakingKeeper.Validator(ctx, sdk.ValAddress(val))
+	validator := k.stakingKeeper.Validator(ctx, val)
 	if validator == nil {
-		return nil, sdkerrors.Wrap(stakingtypes.ErrNoValidatorFound, sdk.ValAddress(val).String())
+		return nil, sdkerrors.Wrap(stakingtypes.ErrNoValidatorFound, val.String())
 	}
 
 	if validator.IsUnbonded() {
@@ -45,7 +45,7 @@ func (k Keeper) DelegateAllocations(c context.Context, msg *types.MsgDelegateAll
 		return nil, sdkerrors.Wrapf(sdkerrors.ErrUnauthorized, "feeder delegate %s cannot be a validator", del)
 	}
 
-	k.SetValidatorDelegateAddress(ctx, del, sdk.ValAddress(val))
+	k.SetValidatorDelegateAddress(ctx, del, val)
 
 	ctx.EventManager().EmitEvent(
 		sdk.NewEvent(

@@ -395,5 +395,5 @@ func (k Keeper) GetLatestInvalidationNonce(ctx sdk.Context) uint64 {
 
 func (k Keeper) SetLatestInvalidationNonce(ctx sdk.Context, invalidationNonce uint64) {
 	store := ctx.KVStore(k.storeKey)
-	store.Set([]byte{types.LatestInvalidationNonceKey}, sdk.Uint64ToBigEndian(uint64(invalidationNonce)))
+	store.Set([]byte{types.LatestInvalidationNonceKey}, sdk.Uint64ToBigEndian(invalidationNonce))
 }

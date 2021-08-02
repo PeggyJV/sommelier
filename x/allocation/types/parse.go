@@ -28,10 +28,3 @@ func TruncateDec(decStr string) (sdk.Dec, error) {
 }
 
 // MustTruncateDec is a util function that panics on TruncateDec error.
-func MustTruncateDec(decStr string) sdk.Dec {
-	dec, err := TruncateDec(decStr)
-	if err != nil {
-		panic(err)
-	}
-	return dec
-}
