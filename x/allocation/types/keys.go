@@ -5,7 +5,6 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/ethereum/go-ethereum/common"
-	tmbytes "github.com/tendermint/tendermint/libs/bytes"
 )
 
 const (
@@ -40,8 +39,8 @@ const (
 	// CommitPeriodStartKey - <prefix> -> int64(height)
 	CommitPeriodStartKey // key for commit period height start
 
-	// OutgoingAllocationTxKey - <prefix><invalidation_id><invalidation_nonce> -> int64(height)
-	OutgoingAllocationTxKey
+	// LatestInvalidationNonceKey - <prefix> -> uint64(latestNonce)
+	LatestInvalidationNonceKey
 )
 
 // GetAllocationDelegateKey returns the validator for a given delegate key
@@ -67,8 +66,4 @@ func GetAllocationCommitKeyPrefix(val sdk.ValAddress) []byte {
 // GetPoolAllocationKey returns the key for pool allocations for a given cellar
 func GetPoolAllocationKey(val sdk.ValAddress, cel common.Address) []byte {
 	return bytes.Join([][]byte{{PoolAllocationKeyPrefix}, val.Bytes(), cel.Bytes()}, []byte{})
-}
-
-func GetOutgoingAllocationTxKey(invalidationID uint64, invalidationNonce tmbytes.HexBytes) []byte {
-	return bytes.Join([][]byte{{OutgoingAllocationTxKey}, sdk.Uint64ToBigEndian(invalidationID), invalidationNonce}, []byte{})
 }

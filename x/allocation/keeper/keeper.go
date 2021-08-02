@@ -2,6 +2,7 @@ package keeper
 
 import (
 	"bytes"
+
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -18,12 +19,13 @@ type Keeper struct {
 	cdc           codec.BinaryMarshaler
 	paramSpace    paramtypes.Subspace
 	stakingKeeper types.StakingKeeper
+	gravityKeeper types.GravityKeeper
 }
 
 // NewKeeper creates a new distribution Keeper instance
 func NewKeeper(
 	cdc codec.BinaryMarshaler, key sdk.StoreKey, paramSpace paramtypes.Subspace,
-	stakingKeeper types.StakingKeeper,
+	stakingKeeper types.StakingKeeper, gravityKeeper types.GravityKeeper,
 ) Keeper {
 
 	// set KeyTable if it has not already been set
@@ -36,6 +38,7 @@ func NewKeeper(
 		cdc:           cdc,
 		paramSpace:    paramSpace,
 		stakingKeeper: stakingKeeper,
+		gravityKeeper: gravityKeeper,
 	}
 }
 
@@ -82,10 +85,10 @@ func (k Keeper) IsDelegateAddress(ctx sdk.Context, del sdk.AccAddress) bool {
 // IterateDelegateAddresses iterates over all delegate address pairs in the store
 func (k Keeper) IterateDelegateAddresses(ctx sdk.Context, handler func(del sdk.AccAddress, val sdk.ValAddress) (stop bool)) {
 	store := ctx.KVStore(k.storeKey)
-	iter := sdk.KVStorePrefixIterator(store, types.AllocationDelegateKeyPrefix)
+	iter := sdk.KVStorePrefixIterator(store, []byte{types.AllocationDelegateKeyPrefix})
 	defer iter.Close()
 	for ; iter.Valid(); iter.Next() {
-		del := sdk.AccAddress(bytes.TrimPrefix(iter.Key(), types.AllocationDelegateKeyPrefix))
+		del := sdk.AccAddress(bytes.TrimPrefix(iter.Key(), []byte{types.AllocationDelegateKeyPrefix}))
 		val := sdk.ValAddress(iter.Value())
 		if handler(del, val) {
 			break
@@ -155,12 +158,12 @@ func (k Keeper) HasAllocationPrecommit(ctx sdk.Context, val sdk.ValAddress, cel 
 // IterateAllocationPrecommits iterates over all prevotes in the store
 func (k Keeper) IterateAllocationPrecommits(ctx sdk.Context, cb func(val sdk.ValAddress, cel common.Address, precommit types.AllocationPrecommit) (stop bool)) {
 	store := ctx.KVStore(k.storeKey)
-	iter := sdk.KVStorePrefixIterator(store, types.AllocationPrecommitKeyPrefix)
+	iter := sdk.KVStorePrefixIterator(store, []byte{types.AllocationPrecommitKeyPrefix})
 	defer iter.Close()
 
 	for ; iter.Valid(); iter.Next() {
 		var precommit types.AllocationPrecommit
-		keyPair := bytes.NewBuffer(bytes.TrimPrefix(iter.Key(), types.AllocationPrecommitKeyPrefix))
+		keyPair := bytes.NewBuffer(bytes.TrimPrefix(iter.Key(), []byte{types.AllocationPrecommitKeyPrefix}))
 		val := sdk.ValAddress(keyPair.Next(20))
 		cel := common.BytesToAddress(keyPair.Bytes())
 
@@ -223,10 +226,10 @@ func (k Keeper) HasAllocationCommit(ctx sdk.Context, val sdk.ValAddress) bool {
 // IterateAllocationCommits iterates over all votes in the store
 func (k Keeper) IterateAllocationCommits(ctx sdk.Context, handler func(val sdk.ValAddress, cel common.Address, commit types.Allocation) (stop bool)) {
 	store := ctx.KVStore(k.storeKey)
-	iter := sdk.KVStorePrefixIterator(store, types.AllocationCommitForCellarKeyPrefix)
+	iter := sdk.KVStorePrefixIterator(store, []byte{types.AllocationCommitForCellarKeyPrefix})
 	defer iter.Close()
 	for ; iter.Valid(); iter.Next() {
-		keyPair := bytes.NewBuffer(bytes.TrimPrefix(iter.Key(), types.AllocationCommitForCellarKeyPrefix))
+		keyPair := bytes.NewBuffer(bytes.TrimPrefix(iter.Key(), []byte{types.AllocationCommitForCellarKeyPrefix}))
 		val := sdk.ValAddress(keyPair.Next(20))
 		cel := common.BytesToAddress(keyPair.Bytes())
 
@@ -241,13 +244,13 @@ func (k Keeper) IterateAllocationCommits(ctx sdk.Context, handler func(val sdk.V
 // IterateAllocationCommitValidators iterates over all validators who have committed allocations
 func (k Keeper) IterateAllocationCommitValidators(ctx sdk.Context, handler func(val sdk.ValAddress) (stop bool)) {
 	store := ctx.KVStore(k.storeKey)
-	iter := sdk.KVStorePrefixIterator(store, types.AllocationCommitForCellarKeyPrefix)
+	iter := sdk.KVStorePrefixIterator(store, []byte{types.AllocationCommitForCellarKeyPrefix})
 	defer iter.Close()
 
 	seenValidators := mapset.NewThreadUnsafeSet()
 
 	for ; iter.Valid(); iter.Next() {
-		keyPair := bytes.NewBuffer(bytes.TrimPrefix(iter.Key(), types.AllocationCommitForCellarKeyPrefix))
+		keyPair := bytes.NewBuffer(bytes.TrimPrefix(iter.Key(), []byte{types.AllocationCommitForCellarKeyPrefix}))
 		val := sdk.ValAddress(keyPair.Next(20))
 
 		// add seen validator to set. if already in set, don't return to consumer
@@ -265,11 +268,11 @@ func (k Keeper) IterateAllocationCommitValidators(ctx sdk.Context, handler func(
 // IterateValidatorAllocationCommits Iterates all of the commits for a provided validator
 func (k Keeper) IterateValidatorAllocationCommits(ctx sdk.Context, val sdk.ValAddress, handler func(cellar common.Address, commit types.Allocation) (stop bool)) {
 	store := ctx.KVStore(k.storeKey)
-	iter := sdk.KVStorePrefixIterator(store, append(types.AllocationCommitForCellarKeyPrefix, val.Bytes()...))
+	iter := sdk.KVStorePrefixIterator(store, append([]byte{types.AllocationCommitForCellarKeyPrefix}, val.Bytes()...))
 	defer iter.Close()
 
 	for ; iter.Valid(); iter.Next() {
-		keyPair := bytes.NewBuffer(bytes.TrimPrefix(iter.Key(), types.AllocationCommitForCellarKeyPrefix))
+		keyPair := bytes.NewBuffer(bytes.TrimPrefix(iter.Key(), []byte{types.AllocationCommitForCellarKeyPrefix}))
 		keyPair.Next(20)
 		cel := common.BytesToAddress(keyPair.Bytes())
 
@@ -323,10 +326,10 @@ func (k Keeper) HasAllocationTickWeights(ctx sdk.Context, val sdk.ValAddress, ce
 // IterateAllocationTickWeights iterates over all tick weights in the store
 func (k Keeper) IterateAllocationTickWeights(ctx sdk.Context, handler func(val sdk.ValAddress, cel common.Address, tickWeights types.TickWeights) (stop bool)) {
 	store := ctx.KVStore(k.storeKey)
-	iter := sdk.KVStorePrefixIterator(store, types.PoolAllocationKeyPrefix)
+	iter := sdk.KVStorePrefixIterator(store, []byte{types.PoolAllocationKeyPrefix})
 	defer iter.Close()
 	for ; iter.Valid(); iter.Next() {
-		keyPair := bytes.NewBuffer(bytes.TrimPrefix(iter.Key(), types.PoolAllocationKeyPrefix))
+		keyPair := bytes.NewBuffer(bytes.TrimPrefix(iter.Key(), []byte{types.PoolAllocationKeyPrefix}))
 		val := sdk.ValAddress(keyPair.Next(20))
 		cel := common.BytesToAddress(keyPair.Bytes())
 
@@ -347,13 +350,13 @@ func (k Keeper) IterateAllocationTickWeights(ctx sdk.Context, handler func(val s
 // SetCommitPeriodStart sets the current vote period start height
 func (k Keeper) SetCommitPeriodStart(ctx sdk.Context, height int64) {
 	store := ctx.KVStore(k.storeKey)
-	store.Set(types.CommitPeriodStartKey, sdk.Uint64ToBigEndian(uint64(height)))
+	store.Set([]byte{types.CommitPeriodStartKey}, sdk.Uint64ToBigEndian(uint64(height)))
 }
 
 // GetCommitPeriodStart returns the vote period start height
 func (k Keeper) GetCommitPeriodStart(ctx sdk.Context) (int64, bool) {
 	store := ctx.KVStore(k.storeKey)
-	bz := store.Get(types.CommitPeriodStartKey)
+	bz := store.Get([]byte{types.CommitPeriodStartKey})
 	if len(bz) == 0 {
 		return 0, false
 	}
@@ -363,7 +366,7 @@ func (k Keeper) GetCommitPeriodStart(ctx sdk.Context) (int64, bool) {
 
 // HasCommitPeriodStart returns true if the vote period start has been set
 func (k Keeper) HasCommitPeriodStart(ctx sdk.Context) bool {
-	return ctx.KVStore(k.storeKey).Has(types.CommitPeriodStartKey)
+	return ctx.KVStore(k.storeKey).Has([]byte{types.CommitPeriodStartKey})
 }
 
 ////////////
@@ -380,4 +383,19 @@ func (k Keeper) GetParamSet(ctx sdk.Context) types.Params {
 // SetParams sets the parameters in the store
 func (k Keeper) SetParams(ctx sdk.Context, params types.Params) {
 	k.paramSpace.SetParamSet(ctx, &params)
+}
+
+/////////////////////////
+// Invalidation Nonces //
+/////////////////////////
+
+func (k Keeper) GetLatestInvalidationNonce(ctx sdk.Context) uint64 {
+	store := ctx.KVStore(k.storeKey)
+	bz := store.Get([]byte{types.LatestInvalidationNonceKey})
+	return sdk.BigEndianToUint64(bz)
+}
+
+func (k Keeper) SetLatestInvalidationNonce(ctx sdk.Context, invalidationNonce uint64)  {
+	store := ctx.KVStore(k.storeKey)
+	store.Set([]byte{types.LatestInvalidationNonceKey}, sdk.Uint64ToBigEndian(uint64(invalidationNonce)))
 }

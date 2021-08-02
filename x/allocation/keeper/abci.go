@@ -3,8 +3,6 @@ package keeper
 import (
 	"fmt"
 	"github.com/ethereum/go-ethereum/common"
-	types2 "github.com/peggyjv/gravity-bridge/module/x/gravity/types"
-
 	"github.com/peggyjv/sommelier/x/allocation/types"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -152,7 +150,7 @@ func (k Keeper) EndBlocker(ctx sdk.Context) {
 	// if the voted_power/total_power > params.VoteThreshold then we submit the allocation to the contract
 	quorumReached := sdk.NewDec(votedPower).Quo(sdk.NewDec(totalPower)).GT(params.VoteThreshold)
 	if quorumReached {
-		CreateOutgoing
+		// todo: create new allocation contract call
 	}
 
 

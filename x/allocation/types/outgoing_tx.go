@@ -39,6 +39,9 @@ func (c CellarTicks) GetCheckpoint() []byte {
 		"rebalance",
 		rebalanceMethodName,
 	)
+	if err != nil {
+		panic(err)
+	} // todo: see if this can be recovered from
 
 	return crypto.Keccak256Hash(abiEncodedCall[4:]).Bytes()
 }

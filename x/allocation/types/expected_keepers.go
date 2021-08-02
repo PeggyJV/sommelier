@@ -3,6 +3,7 @@ package types
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
+	"github.com/peggyjv/gravity-bridge/module/x/gravity/types"
 )
 
 // StakingKeeper defines the expected staking keeper methods
@@ -17,4 +18,9 @@ type StakingKeeper interface {
 	ValidatorByConsAddr(sdk.Context, sdk.ConsAddress) stakingtypes.ValidatorI
 	Slash(sdk.Context, sdk.ConsAddress, int64, int64, sdk.Dec)
 	Jail(sdk.Context, sdk.ConsAddress)
+}
+
+// GravityKeeper defines the expected gravity keeper methods
+type GravityKeeper interface {
+	SetOutgoingTx(ctx sdk.Context, outgoing types.OutgoingTx)
 }
