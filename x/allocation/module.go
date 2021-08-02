@@ -79,8 +79,6 @@ func (b AppModuleBasic) RegisterInterfaces(registry codectypes.InterfaceRegistry
 	types.RegisterInterfaces(registry)
 }
 
-//___________________________
-
 // AppModule implements an application module for the oracle module.
 type AppModule struct {
 	AppModuleBasic
@@ -146,8 +144,6 @@ func (am AppModule) EndBlock(ctx sdk.Context, _ abci.RequestEndBlock) []abci.Val
 	am.keeper.EndBlocker(ctx)
 	return []abci.ValidatorUpdate{}
 }
-
-//____________________________________________________________________________
 
 // AppModuleSimulation functions
 
