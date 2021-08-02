@@ -2,7 +2,7 @@ package types
 
 import (
 	"errors"
-	fmt "fmt"
+	"fmt"
 	"strings"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -11,9 +11,9 @@ import (
 
 // Parameter keys
 var (
-	KeyVotePeriod        = []byte("voteperiod")
-	KeyVoteThreshold     = []byte("votethreshold")
-	KeyCellars     		 = []byte("cellars")
+	KeyVotePeriod    = []byte("voteperiod")
+	KeyVoteThreshold = []byte("votethreshold")
+	KeyCellars       = []byte("cellars")
 )
 
 var _ paramtypes.ParamSet = &Params{}
@@ -26,8 +26,8 @@ func ParamKeyTable() paramtypes.KeyTable {
 // DefaultParams returns default oracle parameters
 func DefaultParams() Params {
 	return Params{
-		VotePeriod:        5,
-		VoteThreshold:     sdk.NewDecWithPrec(67, 2), // 67%
+		VotePeriod:    5,
+		VoteThreshold: sdk.NewDecWithPrec(67, 2), // 67%
 	}
 }
 

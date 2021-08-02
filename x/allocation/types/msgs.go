@@ -107,7 +107,7 @@ func NewMsgAllocationPrecommit(hash tmbytes.HexBytes, signer sdk.AccAddress) *Ms
 
 	return &MsgAllocationPrecommit{
 		Precommit: []*AllocationPrecommit{{Hash: hash}},
-		Signer: signer.String(),
+		Signer:    signer.String(),
 	}
 }
 
@@ -167,7 +167,7 @@ func NewMsgAllocationCommit(commits []*Allocation, signer sdk.AccAddress) *MsgAl
 	}
 
 	return &MsgAllocationCommit{
-		Commit:   commits,
+		Commit: commits,
 		Signer: signer.String(),
 	}
 }
@@ -199,7 +199,9 @@ func (m *MsgAllocationCommit) GetSignBytes() []byte {
 }
 
 // GetSigners implements sdk.Msg
-func (m *MsgAllocationCommit) GetSigners() []sdk.AccAddress { return []sdk.AccAddress{m.MustGetSigner()} }
+func (m *MsgAllocationCommit) GetSigners() []sdk.AccAddress {
+	return []sdk.AccAddress{m.MustGetSigner()}
+}
 
 // MustGetSigner returns the signer address
 func (m *MsgAllocationCommit) MustGetSigner() sdk.AccAddress {

@@ -47,7 +47,6 @@ func (k Keeper) Logger(ctx sdk.Context) log.Logger {
 	return ctx.Logger().With("module", "x/"+types.ModuleName)
 }
 
-
 ////////////////////////
 // MsgDelegateAddress //
 ////////////////////////
@@ -211,7 +210,6 @@ func (k Keeper) DeleteAllocationCommit(ctx sdk.Context, val sdk.ValAddress, cel 
 func (k Keeper) HasAllocationCommitForCellar(ctx sdk.Context, val sdk.ValAddress, cel common.Address) bool {
 	return ctx.KVStore(k.storeKey).Has(types.GetAllocationCommitForCellarKey(val, cel))
 }
-
 
 // HasAllocationCommit gets the existence of any commit for a given validator
 // CONTRACT: must provide the validator address here not the delegate address
@@ -395,7 +393,7 @@ func (k Keeper) GetLatestInvalidationNonce(ctx sdk.Context) uint64 {
 	return sdk.BigEndianToUint64(bz)
 }
 
-func (k Keeper) SetLatestInvalidationNonce(ctx sdk.Context, invalidationNonce uint64)  {
+func (k Keeper) SetLatestInvalidationNonce(ctx sdk.Context, invalidationNonce uint64) {
 	store := ctx.KVStore(k.storeKey)
 	store.Set([]byte{types.LatestInvalidationNonceKey}, sdk.Uint64ToBigEndian(uint64(invalidationNonce)))
 }

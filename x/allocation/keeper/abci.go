@@ -153,7 +153,6 @@ func (k Keeper) EndBlocker(ctx sdk.Context) {
 		// todo: create new allocation contract call
 	}
 
-
 	// NOTE: the reward amount should be less than the slashed amount
 
 	// TODO: Setup module account for oracle module.
