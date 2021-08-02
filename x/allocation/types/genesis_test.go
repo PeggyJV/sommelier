@@ -27,7 +27,7 @@ func TestGenesisValidate(t *testing.T) {
 			name: "invalid feeder delegator",
 			genState: GenesisState{
 				Params: DefaultParams(),
-				FeederDelegations: []MsgDelegateFeedConsent{
+				FeederDelegations: []MsgDelegateAllocations{
 					{
 						Delegate:  "",
 						Validator: valAddr.String(),
@@ -40,7 +40,7 @@ func TestGenesisValidate(t *testing.T) {
 			name: "invalid feeder validator",
 			genState: GenesisState{
 				Params: DefaultParams(),
-				FeederDelegations: []MsgDelegateFeedConsent{
+				FeederDelegations: []MsgDelegateAllocations{
 					{
 						Delegate:  delAddr.String(),
 						Validator: "",
@@ -53,7 +53,7 @@ func TestGenesisValidate(t *testing.T) {
 			name: "equal feeder addresses",
 			genState: GenesisState{
 				Params: DefaultParams(),
-				FeederDelegations: []MsgDelegateFeedConsent{
+				FeederDelegations: []MsgDelegateAllocations{
 					{
 						Delegate:  delAddr.String(),
 						Validator: sdk.ValAddress(delAddr).String(),
@@ -66,74 +66,13 @@ func TestGenesisValidate(t *testing.T) {
 			name: "dup feeder delegation",
 			genState: GenesisState{
 				Params: DefaultParams(),
-				FeederDelegations: []MsgDelegateFeedConsent{
+				FeederDelegations: []MsgDelegateAllocations{
 					{
 						Delegate:  delAddr.String(),
 						Validator: valAddr.String(),
 					},
 					{
 						Delegate:  delAddr.String(),
-						Validator: valAddr.String(),
-					},
-				},
-			},
-			expPass: false,
-		},
-		{
-			name: "invalid counter",
-			genState: GenesisState{
-				Params: DefaultParams(),
-				FeederDelegations: []MsgDelegateFeedConsent{
-					{
-						Delegate:  delAddr.String(),
-						Validator: valAddr.String(),
-					},
-				},
-				MissCounters: []MissCounter{
-					{
-						Misses:    -1,
-						Validator: valAddr.String(),
-					},
-				},
-			},
-			expPass: false,
-		},
-		{
-			name: "invalid miss counter validator address",
-			genState: GenesisState{
-				Params: DefaultParams(),
-				FeederDelegations: []MsgDelegateFeedConsent{
-					{
-						Delegate:  delAddr.String(),
-						Validator: valAddr.String(),
-					},
-				},
-				MissCounters: []MissCounter{
-					{
-						Misses:    0,
-						Validator: "",
-					},
-				},
-			},
-			expPass: false,
-		},
-		{
-			name: "dup miss counter",
-			genState: GenesisState{
-				Params: DefaultParams(),
-				FeederDelegations: []MsgDelegateFeedConsent{
-					{
-						Delegate:  delAddr.String(),
-						Validator: valAddr.String(),
-					},
-				},
-				MissCounters: []MissCounter{
-					{
-						Misses:    1,
-						Validator: valAddr.String(),
-					},
-					{
-						Misses:    1,
 						Validator: valAddr.String(),
 					},
 				},
