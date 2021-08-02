@@ -57,13 +57,13 @@ func (k Keeper) BeginBlocker(ctx sdk.Context) {
 //
 // 7) Sets the new voting period to the next block
 
-type PowerWeight struct {
-	validator sdk.ValAddress
-	cellar    common.Address
-	feeLevel  sdk.Dec
-	power     int64
-	tick      uint32
-}
+//type PowerWeight struct {
+//	validator sdk.ValAddress
+//	cellar    common.Address
+//	feeLevel  sdk.Dec
+//	power     int64
+//	tick      uint32
+//}
 
 func (k Keeper) EndBlocker(ctx sdk.Context) {
 	params := k.GetParamSet(ctx)
@@ -148,10 +148,10 @@ func (k Keeper) EndBlocker(ctx sdk.Context) {
 	})
 
 	// if the voted_power/total_power > params.VoteThreshold then we submit the allocation to the contract
-	quorumReached := sdk.NewDec(votedPower).Quo(sdk.NewDec(totalPower)).GT(params.VoteThreshold)
-	if quorumReached {
-		// todo: create new allocation contract call
-	}
+	//quorumReached := sdk.NewDec(votedPower).Quo(sdk.NewDec(totalPower)).GT(params.VoteThreshold)
+	//if quorumReached {
+	//	// todo: create new allocation contract call
+	//}
 
 	// NOTE: the reward amount should be less than the slashed amount
 
