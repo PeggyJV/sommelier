@@ -16,7 +16,6 @@ func DefaultGenesisState() GenesisState {
 // Validate performs a basic stateless validation of the genesis fields.
 func (gs GenesisState) Validate() error {
 	seenDelegations := make(map[string]bool)
-	seenMissCounters := make(map[string]bool)
 
 	for i, feederDelegation := range gs.FeederDelegations {
 		if seenDelegations[feederDelegation.Validator] {
@@ -39,31 +38,10 @@ func (gs GenesisState) Validate() error {
 		seenDelegations[feederDelegation.Validator] = true
 	}
 
-	for i, missCounter := range gs.MissCounters {
-		if seenMissCounters[missCounter.Validator] {
-			return fmt.Errorf("duplicated miss counter for validator %s at index %d", missCounter.Validator, i)
-		}
-
-		if missCounter.Misses < 0 {
-			return fmt.Errorf("miss counter for validator %s cannot be negative: %d", missCounter.Validator, missCounter.Misses)
-		}
-
-		if _, err := sdk.ValAddressFromBech32(missCounter.Validator); err != nil {
-			return fmt.Errorf("invalid feeder at index %d: %w", i, err)
-		}
-
-		seenMissCounters[missCounter.Validator] = true
-	}
-
 	if err := gs.Params.ValidateBasic(); err != nil {
 		return err
 	}
 
-	supportedTypes := make(map[string]bool)
-
-	for _, dataType := range gs.Params.DataTypes {
-		supportedTypes[dataType] = true
-	}
 
 	return nil
 }
