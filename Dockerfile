@@ -1,17 +1,20 @@
 FROM golang:alpine AS build-env
 
-# Set up dependencies
-ENV PACKAGES curl make git libc-dev bash gcc linux-headers eudev-dev python3
+RUN apk add --no-cache curl make git libc-dev bash gcc linux-headers eudev-dev python3
 
 # Set working directory for the build
 WORKDIR /go/src/github.com/peggyjv/sommelier
 
+# Get dependancies - will also be cached if we won't change mod/sum
+COPY go.mod .
+COPY go.sum .
+RUN go mod download
+
 # Add source files
 COPY . .
 
-# Install minimum necessary dependencies, build Cosmos SDK, remove packages
-RUN apk add --no-cache $PACKAGES && \
-    make install
+# build Sommelier
+RUN make install
 
 # Final image
 FROM alpine:edge
