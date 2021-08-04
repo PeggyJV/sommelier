@@ -13,7 +13,6 @@ import (
 var (
 	KeyVotePeriod    = []byte("voteperiod")
 	KeyVoteThreshold = []byte("votethreshold")
-	KeyCellars       = []byte("cellars")
 )
 
 var _ paramtypes.ParamSet = &Params{}
@@ -36,7 +35,6 @@ func (p *Params) ParamSetPairs() paramtypes.ParamSetPairs {
 	return paramtypes.ParamSetPairs{
 		paramtypes.NewParamSetPair(KeyVotePeriod, &p.VotePeriod, validateVotePeriod),
 		paramtypes.NewParamSetPair(KeyVoteThreshold, &p.VoteThreshold, validateVoteThreshold),
-		paramtypes.NewParamSetPair(KeyCellars, &p.Cellars, validateCellars),
 	}
 }
 
@@ -48,8 +46,7 @@ func (p *Params) ValidateBasic() error {
 	if err := validateVoteThreshold(p.VoteThreshold); err != nil {
 		return err
 	}
-
-	return validateCellars(p.Cellars)
+	return nil
 }
 
 func validateVotePeriod(i interface{}) error {

@@ -110,6 +110,50 @@ func (k Keeper) GetAllAllocationDelegations(ctx sdk.Context) []types.MsgDelegate
 	return allocationDelegations
 }
 
+
+/////////////
+// Cellars //
+/////////////
+
+func (k Keeper) SetCellarByID(ctx sdk.Context, c types.Cellar) {
+	bz := k.cdc.MustMarshalBinaryBare(&c)
+	ctx.KVStore(k.storeKey).Set(types.GetCellarKey(c.Id), bz)
+}
+
+func (k Keeper) GetCellarByID(ctx sdk.Context, id string) (cellar types.Cellar, found bool) {
+	bz := ctx.KVStore(k.storeKey).Get(types.GetCellarKey(id))
+	if len(bz) == 0 {
+		return types.Cellar{}, false
+	}
+
+	k.cdc.MustUnmarshalBinaryBare(bz, &cellar)
+	return cellar, true
+}
+
+func (k Keeper) IterateCellars(ctx sdk.Context, cb func(cellar types.Cellar) (stop bool)) {
+	store := ctx.KVStore(k.storeKey)
+	iter := sdk.KVStorePrefixIterator(store, []byte{types.CellarKeyPrefix})
+	defer iter.Close()
+
+	for ; iter.Valid(); iter.Next() {
+		var cellar types.Cellar
+		k.cdc.MustUnmarshalBinaryBare(iter.Value(), &cellar)
+		if cb(cellar) {
+			break
+		}
+	}
+}
+
+func (k Keeper) GetCellars(ctx sdk.Context) (cellars []types.Cellar) {
+	k.IterateCellars(ctx, func(cellar types.Cellar) (stop bool) {
+		cellars = append(cellars, cellar)
+		return false
+	})
+
+	return
+}
+
+
 //////////////////////////
 // Allocation Precommit //
 //////////////////////////
@@ -281,65 +325,6 @@ func (k Keeper) IterateValidatorAllocationCommits(ctx sdk.Context, val sdk.ValAd
 		}
 	}
 }
-
-////////////////
-// TickWeight //
-////////////////
-
-// GetAllocationTickWeights gets allocation tick weights for a validator for a given cellar
-func (k Keeper) GetAllocationTickWeights(ctx sdk.Context, val sdk.ValAddress, cel common.Address) (types.TickWeights, bool) {
-	store := ctx.KVStore(k.storeKey)
-	bz := store.Get(types.GetPoolAllocationKey(val, cel))
-	if len(bz) == 0 {
-		return types.TickWeights{}, false
-	}
-
-	var tickWeights types.TickWeights
-	k.cdc.MustUnmarshalBinaryBare(bz, &tickWeights)
-	return tickWeights, true
-}
-
-// SetPoolAllocations sets allocation tick weights for a validator for a given cellar
-func (k Keeper) SetPoolAllocations(ctx sdk.Context, val sdk.ValAddress, cel common.Address, poolAllocations types.PoolAllocations) {
-	bz, err := k.cdc.MarshalInterface(&poolAllocations)
-	if err != nil {
-		panic(err)
-	}
-
-	ctx.KVStore(k.storeKey).Set(types.GetPoolAllocationKey(val, cel), bz)
-}
-
-// DeleteAllocationTickWeights deletes the tick weights for a given validator and cellar
-// CONTRACT: must provide the validator address here not the delegate address
-func (k Keeper) DeleteAllocationTickWeights(ctx sdk.Context, val sdk.ValAddress, cel common.Address) {
-	ctx.KVStore(k.storeKey).Delete(types.GetPoolAllocationKey(val, cel))
-}
-
-// HasAllocationTickWeights returns if tick weights for a given validator and cellar exist
-// CONTRACT: must provide the validator address here not the delegate address
-func (k Keeper) HasAllocationTickWeights(ctx sdk.Context, val sdk.ValAddress, cel common.Address) bool {
-	return ctx.KVStore(k.storeKey).Has(types.GetPoolAllocationKey(val, cel))
-}
-
-// IterateAllocationTickWeights iterates over all tick weights in the store
-func (k Keeper) IterateAllocationTickWeights(ctx sdk.Context, handler func(val sdk.ValAddress, cel common.Address, tickWeights types.TickWeights) (stop bool)) {
-	store := ctx.KVStore(k.storeKey)
-	iter := sdk.KVStorePrefixIterator(store, []byte{types.PoolAllocationKeyPrefix})
-	defer iter.Close()
-	for ; iter.Valid(); iter.Next() {
-		keyPair := bytes.NewBuffer(bytes.TrimPrefix(iter.Key(), []byte{types.PoolAllocationKeyPrefix}))
-		val := sdk.ValAddress(keyPair.Next(20))
-		cel := common.BytesToAddress(keyPair.Bytes())
-
-		var tickWeights types.TickWeights
-		k.cdc.MustUnmarshalBinaryBare(iter.Value(), &tickWeights)
-		if handler(val, cel, tickWeights) {
-			break
-		}
-	}
-}
-
-// todo: aggregation functions for tick weight data
 
 //////////////////
 // CommitPeriod //

@@ -18,18 +18,20 @@ message Allocation {
   string salt = 2;
 }
 
-////////////
-// Params //
-////////////
-
 // Cellar is a collection of pools for a token pair
 message Cellar {
-  string        cellar_id = 1;
+  string id = 1;
   repeated TickRange tick_ranges = 2;
 }
 
 message TickRange {
   uint64 upper = 1;
   uint64 lower = 2;
-  uint64 weight =3;
+  uint64 weight = 3;
+}
+
+message ManagedCellarsUpdateProposal {
+  string title = 1;
+  string description = 2;
+  repeated Cellar cellars = 3;
 }

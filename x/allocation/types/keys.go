@@ -24,8 +24,8 @@ const (
 // Keys for allocation store, with <prefix><key> -> <value>
 const (
 	_ = byte(iota)
-	// PoolAllocationKeyPrefix - <prefix><val_address><cel_address> -> <[]pool_allocation>
-	PoolAllocationKeyPrefix
+	// CellarKeyPrefix - <prefix><cellar_id> -> Cellar
+	CellarKeyPrefix
 
 	// AllocationDelegateKeyPrefix - <prefix><val_address> -> <delegate_address>
 	AllocationDelegateKeyPrefix // key for validator allocation delegation
@@ -63,7 +63,7 @@ func GetAllocationCommitKeyPrefix(val sdk.ValAddress) []byte {
 	return append([]byte{AllocationCommitForCellarKeyPrefix}, val.Bytes()...)
 }
 
-// GetPoolAllocationKey returns the key for pool allocations for a given cellar
-func GetPoolAllocationKey(val sdk.ValAddress, cel common.Address) []byte {
-	return bytes.Join([][]byte{{PoolAllocationKeyPrefix}, val.Bytes(), cel.Bytes()}, []byte{})
+// GetCellarKey
+func GetCellarKey(id string) []byte {
+	return append([]byte{CellarKeyPrefix}, []byte(id)...)
 }

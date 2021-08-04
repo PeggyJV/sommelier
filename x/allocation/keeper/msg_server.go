@@ -143,9 +143,8 @@ func (k Keeper) AllocationCommit(c context.Context, msg *types.MsgAllocationComm
 	}
 
 	cellarSet := mapset.NewThreadUnsafeSet()
-	params := k.GetParamSet(ctx)
-	for _, cellar := range params.Cellars {
-		cellarSet.Add(cellar.CellarId)
+	for _, cellar := range k.GetCellars(ctx) {
+		cellarSet.Add(cellar.Id)
 	}
 
 	// check if there's an existing vote for the current voting period start
@@ -154,12 +153,12 @@ func (k Keeper) AllocationCommit(c context.Context, msg *types.MsgAllocationComm
 	}
 
 	for _, commit := range msg.Commit {
-		cel := common.HexToAddress(commit.CellarId)
+		cel := common.HexToAddress(commit.Cellar.Id)
 
-		if cellarSet.Contains(commit.CellarId) {
-			cellarSet.Remove(commit.CellarId)
+		if cellarSet.Contains(commit.Cellar.Id) {
+			cellarSet.Remove(commit.Cellar.Id)
 		} else {
-			return nil, fmt.Errorf("commit for unknown cellar: %s", commit.CellarId)
+			return nil, fmt.Errorf("commit for unknown cellar: %s", commit.Cellar.Id)
 		}
 
 		// Get the precommit for that validator from the store
@@ -170,7 +169,7 @@ func (k Keeper) AllocationCommit(c context.Context, msg *types.MsgAllocationComm
 		}
 
 		// parse data to json in order to compute the vote hash and sort
-		jsonBz, err := json.Marshal(commit.PoolAllocations)
+		jsonBz, err := json.Marshal(commit.Cellar)
 		if err != nil {
 			return nil, sdkerrors.Wrap(
 				sdkerrors.ErrJSONMarshal, "failed to marshal json pool allocations",
@@ -190,16 +189,11 @@ func (k Keeper) AllocationCommit(c context.Context, msg *types.MsgAllocationComm
 			)
 		}
 
-		if !k.HasAllocationTickWeights(ctx, val, cel) {
-			k.SetPoolAllocations(ctx, val, cel, *commit.PoolAllocations)
-		}
-
 		allocationEvents = append(
 			allocationEvents,
 			sdk.NewEvent(
 				types.EventTypeAllocationCommit,
 				sdk.NewAttribute(types.AttributeKeyCellar, cel.String()),
-				sdk.NewAttribute(types.AttributePoolAllocations, commit.PoolAllocations.String()),
 				sdk.NewAttribute(types.AttributeKeyValidator, val.String()),
 			),
 		)
