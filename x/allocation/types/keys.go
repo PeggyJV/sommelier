@@ -64,6 +64,6 @@ func GetAllocationCommitKeyPrefix(val sdk.ValAddress) []byte {
 }
 
 // GetCellarKey
-func GetCellarKey(id string) []byte {
-	return append([]byte{CellarKeyPrefix}, []byte(id)...)
+func GetCellarKey(id common.Address) []byte {
+	return append([]byte{CellarKeyPrefix}, id.Bytes()...)
 }

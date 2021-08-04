@@ -94,8 +94,8 @@ func (k Keeper) EndBlocker(ctx sdk.Context) {
 		cellarPoolTickPowerMap = make(map[common.Address]map[sdk.Dec]map[uint32]sdk.Dec)
 	)
 
-	for _, cellar := range params.Cellars {
-		cellarsMap[common.HexToAddress(cellar.CellarId)] = cellar
+	for _, cellar := range k.GetCellars(ctx) {
+		cellarsMap[common.HexToAddress(cellar.Id)] = &cellar
 	}
 
 	// iterate over the data votes
