@@ -41,6 +41,9 @@ const (
 
 	// LatestInvalidationNonceKey - <prefix> -> uint64(latestNonce)
 	LatestInvalidationNonceKey
+
+	// CellarUpdateKey - <prefix><invalidationNonce> -> Cellar
+	CellarUpdateKey
 )
 
 // GetAllocationDelegateKey returns the validator for a given delegate key
@@ -63,7 +66,12 @@ func GetAllocationCommitKeyPrefix(val sdk.ValAddress) []byte {
 	return append([]byte{AllocationCommitForCellarKeyPrefix}, val.Bytes()...)
 }
 
-// GetCellarKey
-func GetCellarKey(id common.Address) []byte {
-	return append([]byte{CellarKeyPrefix}, id.Bytes()...)
+// GetCellarUpdateKey - the pending cellar update by invalidation nonce
+func GetCellarUpdateKey(invalidationNonce uint64) []byte {
+	return append([]byte{CellarKeyPrefix}, sdk.Uint64ToBigEndian(invalidationNonce)...)
+}
+
+// GetCellarKey - the cellar by id
+func GetCellarKey(address common.Address) []byte {
+	return append([]byte{CellarKeyPrefix}, address.Bytes()...)
 }

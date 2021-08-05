@@ -394,7 +394,24 @@ func (k Keeper) IncrementInvalidationNonce(ctx sdk.Context) uint64 {
 // Contract Calls //
 ////////////////////
 
-func (k Keeper) GetPendingCellarUpdate(ctx sdk.Context, invalidationNonce uint64) (types.Cellar, bool) {
+func (k Keeper) GetPendingCellarUpdate(ctx sdk.Context, invalidationNonce uint64) (types.CellarUpdate, bool) {
 	store := ctx.KVStore(k.storeKey)
+	bz := store.Get(types.GetCellarUpdateKey(invalidationNonce))
+	if len(bz) == 0 {
+		return types.CellarUpdate{}, false
+	}
 
+	var cellarUpdate types.CellarUpdate
+	k.cdc.MustUnmarshal(bz, &cellarUpdate)
+	return cellarUpdate, true
+}
+
+func(k Keeper) HasPendingCellarUpdate(ctx sdk.Context, invalidationNonce uint64) bool {
+	store := ctx.KVStore(k.storeKey)
+	return store.Has(types.GetCellarUpdateKey(invalidationNonce))
+}
+
+func (k Keeper) SetPendingCellarUpdate(ctx sdk.Context, cellarUpdate types.CellarUpdate) {
+	bz := k.cdc.MustMarshal(&cellarUpdate)
+	ctx.KVStore(k.storeKey).Set(types.GetCellarUpdateKey(cellarUpdate.InvalidationNonce), bz)
 }
