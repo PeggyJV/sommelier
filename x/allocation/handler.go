@@ -33,8 +33,10 @@ func NewHandler(k keeper.Keeper) sdk.Handler {
 func NewUpdateManagedCellarsProposalHandler(k keeper.Keeper) govtypes.Handler {
 	return func(ctx sdk.Context, content govtypes.Content) error {
 		switch c := content.(type) {
-		case *types.ManagedCellarsUpdateProposal:
-			return keeper.HandleUpdateManagedCellarsProposal(ctx, k, *c)
+		case *types.AddManagedCellarsProposal:
+			return keeper.HandleAddManagedCellarsProposal(ctx, k, *c)
+		case *types.RemoveManagedCellarsProposal:
+			return keeper.HandleRemoveManagedCellarsProposal(ctx, k, *c)
 
 		default:
 			return sdkerrors.Wrapf(sdkerrors.ErrUnknownRequest, "unrecognized allocation proposal content type: %T", c)

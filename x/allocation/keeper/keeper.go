@@ -117,11 +117,11 @@ func (k Keeper) GetAllAllocationDelegations(ctx sdk.Context) []types.MsgDelegate
 
 func (k Keeper) SetCellar(ctx sdk.Context, c types.Cellar) {
 	bz := k.cdc.MustMarshalBinaryBare(&c)
-	ctx.KVStore(k.storeKey).Set(types.GetCellarKey(c.Id), bz)
+	ctx.KVStore(k.storeKey).Set(types.GetCellarKey(c.Address()), bz)
 }
 
 func (k Keeper) GetCellarByID(ctx sdk.Context, id common.Address) (cellar types.Cellar, found bool) {
-	bz := ctx.KVStore(k.storeKey).Get(types.GetCellarKey(id.))
+	bz := ctx.KVStore(k.storeKey).Get(types.GetCellarKey(id))
 	if len(bz) == 0 {
 		return types.Cellar{}, false
 	}

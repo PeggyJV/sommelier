@@ -30,8 +30,14 @@ message TickRange {
   uint64 weight = 3;
 }
 
-message ManagedCellarsUpdateProposal {
+message AddManagedCellarsProposal {
   string title = 1;
   string description = 2;
-  repeated Cellar cellars = 3;
+  repeated string cellar_ids = 3;
+}
+
+message RemoveManagedCellarsProposal {
+  string title = 1;
+  string description = 2;
+  repeated string cellar_ids = 3;
 }

@@ -6,36 +6,64 @@ import (
 )
 
 const (
-	ProposalTypeManagedCellarsUpdate = "ManagedCellarsUpdate"
+	ProposalTypeAddManagedCellars = "AddManagedCellars"
+	ProposalTypeRemoveManagedCellars = "RemoveManagedCellars"
 )
 
-var _ govtypes.Content = &ManagedCellarsUpdateProposal{}
+var _ govtypes.Content = &AddManagedCellarsProposal{}
+var _ govtypes.Content = &RemoveManagedCellarsProposal{}
 
-func NewManagedCellarsUpdateProposal(cellars []*Cellar) *ManagedCellarsUpdateProposal {
-	return &ManagedCellarsUpdateProposal{Cellars: cellars}
+func NewAddManagedCellarsProposal(title string, description string, cellarIds []string) *AddManagedCellarsProposal {
+	return &AddManagedCellarsProposal{
+		Title:       title,
+		Description: description,
+		CellarIds:   cellarIds,
+	}
 }
 
-func (m *ManagedCellarsUpdateProposal) ProposalRoute() string {
+func (m *AddManagedCellarsProposal) ProposalRoute() string {
 	return RouterKey
 }
 
-func (m *ManagedCellarsUpdateProposal) ProposalType() string {
-	return ProposalTypeManagedCellarsUpdate
+func (m *AddManagedCellarsProposal) ProposalType() string {
+	return ProposalTypeAddManagedCellars
 }
 
-func (m *ManagedCellarsUpdateProposal) ValidateBasic() error {
+func (m *AddManagedCellarsProposal) ValidateBasic() error {
 	if err := govtypes.ValidateAbstract(m); err != nil {
 		return err
 	}
 
-	if len(m.Cellars) == 0 {
-		return fmt.Errorf("can't have a prosoposal with no cellars")
+	if len(m.CellarIds) == 0 {
+		return fmt.Errorf("can't have an add prosoposal with no cellars")
 	}
 
-	for _, c := range m.Cellars {
-		if err := c.ValidateBasic(); err != nil {
-			return err
-		}
+	return nil
+}
+
+func NewRemoveManagedCellarsProposal(title string, description string, cellarIds []string) *RemoveManagedCellarsProposal {
+	return &RemoveManagedCellarsProposal{
+		Title:       title,
+		Description: description,
+		CellarIds:   cellarIds,
+	}
+}
+
+func (m *RemoveManagedCellarsProposal) ProposalRoute() string {
+	return RouterKey
+}
+
+func (m *RemoveManagedCellarsProposal) ProposalType() string {
+	return ProposalTypeRemoveManagedCellars
+}
+
+func (m *RemoveManagedCellarsProposal) ValidateBasic() error {
+	if err := govtypes.ValidateAbstract(m); err != nil {
+		return err
+	}
+
+	if len(m.CellarIds) == 0 {
+		return fmt.Errorf("can't have a remove prosoposal with no cellars")
 	}
 
 	return nil

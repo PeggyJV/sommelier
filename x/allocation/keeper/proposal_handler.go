@@ -5,7 +5,14 @@ import (
 	"github.com/peggyjv/sommelier/x/allocation/types"
 )
 
-// HandleUpdateManagedCellarsProposal is a handler for executing a passed community spend proposal
-func HandleUpdateManagedCellarsProposal(ctx sdk.Context, k Keeper, p types.ManagedCellarsUpdateProposal) error {
+
+// HandleAddManagedCellarsProposal is a handler for executing a passed community cellar addition proposal
+func HandleAddManagedCellarsProposal(ctx sdk.Context, k Keeper, p types.AddManagedCellarsProposal) error {
+	panic("implement this") // todo: implement cellars proposal
+}
+
+
+// HandleRemoveManagedCellarsProposal is a handler for executing a passed community cellar removal proposal
+func HandleRemoveManagedCellarsProposal(ctx sdk.Context, k Keeper, p types.RemoveManagedCellarsProposal) error {
 	panic("implement this") // todo: implement cellars proposal
 }

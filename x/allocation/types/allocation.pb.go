@@ -244,24 +244,24 @@ func (m *TickRange) GetWeight() uint64 {
 	return 0
 }
 
-type ManagedCellarsUpdateProposal struct {
-	Title       string    `protobuf:"bytes,1,opt,name=title,proto3" json:"title,omitempty"`
-	Description string    `protobuf:"bytes,2,opt,name=description,proto3" json:"description,omitempty"`
-	Cellars     []*Cellar `protobuf:"bytes,3,rep,name=cellars,proto3" json:"cellars,omitempty"`
+type AddManagedCellarsProposal struct {
+	Title       string   `protobuf:"bytes,1,opt,name=title,proto3" json:"title,omitempty"`
+	Description string   `protobuf:"bytes,2,opt,name=description,proto3" json:"description,omitempty"`
+	CellarIds   []string `protobuf:"bytes,3,rep,name=cellar_ids,json=cellarIds,proto3" json:"cellar_ids,omitempty"`
 }
 
-func (m *ManagedCellarsUpdateProposal) Reset()         { *m = ManagedCellarsUpdateProposal{} }
-func (m *ManagedCellarsUpdateProposal) String() string { return proto.CompactTextString(m) }
-func (*ManagedCellarsUpdateProposal) ProtoMessage()    {}
-func (*ManagedCellarsUpdateProposal) Descriptor() ([]byte, []int) {
+func (m *AddManagedCellarsProposal) Reset()         { *m = AddManagedCellarsProposal{} }
+func (m *AddManagedCellarsProposal) String() string { return proto.CompactTextString(m) }
+func (*AddManagedCellarsProposal) ProtoMessage()    {}
+func (*AddManagedCellarsProposal) Descriptor() ([]byte, []int) {
 	return fileDescriptor_23d2c35dae4a6cad, []int{4}
 }
-func (m *ManagedCellarsUpdateProposal) XXX_Unmarshal(b []byte) error {
+func (m *AddManagedCellarsProposal) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *ManagedCellarsUpdateProposal) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *AddManagedCellarsProposal) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_ManagedCellarsUpdateProposal.Marshal(b, m, deterministic)
+		return xxx_messageInfo_AddManagedCellarsProposal.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -271,35 +271,95 @@ func (m *ManagedCellarsUpdateProposal) XXX_Marshal(b []byte, deterministic bool)
 		return b[:n], nil
 	}
 }
-func (m *ManagedCellarsUpdateProposal) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_ManagedCellarsUpdateProposal.Merge(m, src)
+func (m *AddManagedCellarsProposal) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_AddManagedCellarsProposal.Merge(m, src)
 }
-func (m *ManagedCellarsUpdateProposal) XXX_Size() int {
+func (m *AddManagedCellarsProposal) XXX_Size() int {
 	return m.Size()
 }
-func (m *ManagedCellarsUpdateProposal) XXX_DiscardUnknown() {
-	xxx_messageInfo_ManagedCellarsUpdateProposal.DiscardUnknown(m)
+func (m *AddManagedCellarsProposal) XXX_DiscardUnknown() {
+	xxx_messageInfo_AddManagedCellarsProposal.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_ManagedCellarsUpdateProposal proto.InternalMessageInfo
+var xxx_messageInfo_AddManagedCellarsProposal proto.InternalMessageInfo
 
-func (m *ManagedCellarsUpdateProposal) GetTitle() string {
+func (m *AddManagedCellarsProposal) GetTitle() string {
 	if m != nil {
 		return m.Title
 	}
 	return ""
 }
 
-func (m *ManagedCellarsUpdateProposal) GetDescription() string {
+func (m *AddManagedCellarsProposal) GetDescription() string {
 	if m != nil {
 		return m.Description
 	}
 	return ""
 }
 
-func (m *ManagedCellarsUpdateProposal) GetCellars() []*Cellar {
+func (m *AddManagedCellarsProposal) GetCellarIds() []string {
 	if m != nil {
-		return m.Cellars
+		return m.CellarIds
+	}
+	return nil
+}
+
+type RemoveManagedCellarsProposal struct {
+	Title       string   `protobuf:"bytes,1,opt,name=title,proto3" json:"title,omitempty"`
+	Description string   `protobuf:"bytes,2,opt,name=description,proto3" json:"description,omitempty"`
+	CellarIds   []string `protobuf:"bytes,3,rep,name=cellar_ids,json=cellarIds,proto3" json:"cellar_ids,omitempty"`
+}
+
+func (m *RemoveManagedCellarsProposal) Reset()         { *m = RemoveManagedCellarsProposal{} }
+func (m *RemoveManagedCellarsProposal) String() string { return proto.CompactTextString(m) }
+func (*RemoveManagedCellarsProposal) ProtoMessage()    {}
+func (*RemoveManagedCellarsProposal) Descriptor() ([]byte, []int) {
+	return fileDescriptor_23d2c35dae4a6cad, []int{5}
+}
+func (m *RemoveManagedCellarsProposal) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *RemoveManagedCellarsProposal) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_RemoveManagedCellarsProposal.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *RemoveManagedCellarsProposal) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_RemoveManagedCellarsProposal.Merge(m, src)
+}
+func (m *RemoveManagedCellarsProposal) XXX_Size() int {
+	return m.Size()
+}
+func (m *RemoveManagedCellarsProposal) XXX_DiscardUnknown() {
+	xxx_messageInfo_RemoveManagedCellarsProposal.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_RemoveManagedCellarsProposal proto.InternalMessageInfo
+
+func (m *RemoveManagedCellarsProposal) GetTitle() string {
+	if m != nil {
+		return m.Title
+	}
+	return ""
+}
+
+func (m *RemoveManagedCellarsProposal) GetDescription() string {
+	if m != nil {
+		return m.Description
+	}
+	return ""
+}
+
+func (m *RemoveManagedCellarsProposal) GetCellarIds() []string {
+	if m != nil {
+		return m.CellarIds
 	}
 	return nil
 }
@@ -309,40 +369,42 @@ func init() {
 	proto.RegisterType((*Allocation)(nil), "allocation.v1.Allocation")
 	proto.RegisterType((*Cellar)(nil), "allocation.v1.Cellar")
 	proto.RegisterType((*TickRange)(nil), "allocation.v1.TickRange")
-	proto.RegisterType((*ManagedCellarsUpdateProposal)(nil), "allocation.v1.ManagedCellarsUpdateProposal")
+	proto.RegisterType((*AddManagedCellarsProposal)(nil), "allocation.v1.AddManagedCellarsProposal")
+	proto.RegisterType((*RemoveManagedCellarsProposal)(nil), "allocation.v1.RemoveManagedCellarsProposal")
 }
 
 func init() { proto.RegisterFile("allocation/v1/allocation.proto", fileDescriptor_23d2c35dae4a6cad) }
 
 var fileDescriptor_23d2c35dae4a6cad = []byte{
-	// 428 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x74, 0x52, 0x31, 0x6f, 0x13, 0x31,
-	0x18, 0xcd, 0x25, 0x21, 0x90, 0x2f, 0xc0, 0x60, 0x0a, 0x3a, 0x01, 0x3a, 0xa2, 0x9b, 0xb2, 0x70,
-	0x56, 0x0b, 0x03, 0x8c, 0x84, 0x85, 0x4a, 0xa0, 0x56, 0x07, 0x2c, 0x2c, 0x95, 0x73, 0xf7, 0xc9,
-	0x31, 0xf5, 0x9d, 0x2d, 0xdb, 0x4d, 0x9b, 0x8d, 0x8d, 0x95, 0x9f, 0xc5, 0xd8, 0x91, 0x09, 0xa1,
-	0xe4, 0x5f, 0x30, 0xa1, 0xb3, 0xaf, 0xcd, 0x81, 0xc4, 0xf6, 0xde, 0xfb, 0x9e, 0x9e, 0xdf, 0x67,
-	0x1b, 0x12, 0x26, 0xa5, 0x2a, 0x98, 0x13, 0xaa, 0xa6, 0xab, 0x7d, 0xba, 0x63, 0x99, 0x36, 0xca,
-	0x29, 0x72, 0xa7, 0xa3, 0xac, 0xf6, 0x1f, 0xee, 0x71, 0xc5, 0x95, 0x9f, 0xd0, 0x06, 0x05, 0x53,
-	0xfa, 0x25, 0x82, 0x7b, 0xaf, 0xae, 0x7d, 0xc7, 0x06, 0x0b, 0x55, 0x55, 0xc2, 0x91, 0xb7, 0x30,
-	0x5c, 0x32, 0xbb, 0x8c, 0xa3, 0x69, 0x34, 0xbb, 0x3d, 0x7f, 0xf1, 0xfb, 0xe7, 0x93, 0xe7, 0x5c,
-	0xb8, 0xe5, 0xd9, 0x22, 0x2b, 0x54, 0x45, 0x1d, 0xd6, 0x25, 0x9a, 0x4a, 0xd4, 0xae, 0x0b, 0xa5,
-	0x58, 0x58, 0xba, 0x58, 0x3b, 0xb4, 0xd9, 0x1b, 0xbc, 0x98, 0x37, 0x20, 0xf7, 0x29, 0xe4, 0x11,
-	0x8c, 0x0b, 0x94, 0x92, 0x99, 0x13, 0x51, 0xc6, 0xfd, 0x69, 0x34, 0x1b, 0xe7, 0xb7, 0x82, 0x70,
-	0x58, 0xa6, 0x47, 0x00, 0xbb, 0x06, 0xe4, 0x29, 0x8c, 0xc2, 0xc4, 0x1f, 0x3d, 0x39, 0xb8, 0x9f,
-	0xfd, 0xb5, 0x46, 0xf6, 0xda, 0x0f, 0xf3, 0xd6, 0x44, 0x08, 0x0c, 0x2d, 0x93, 0xae, 0x0d, 0xf5,
-	0x38, 0x7d, 0x0f, 0xa3, 0xe0, 0x22, 0x77, 0xa1, 0x2f, 0x4a, 0x1f, 0x34, 0xce, 0xfb, 0xa2, 0x24,
-	0x2f, 0x61, 0xe2, 0x44, 0x71, 0x7a, 0x62, 0x58, 0xcd, 0xd1, 0xc6, 0xfd, 0xe9, 0x60, 0x36, 0x39,
-	0x88, 0xff, 0x39, 0xe1, 0x83, 0x28, 0x4e, 0xf3, 0xc6, 0x90, 0x83, 0xbb, 0x82, 0x36, 0x3d, 0x82,
-	0xf1, 0xf5, 0x80, 0xec, 0xc1, 0x8d, 0x33, 0xad, 0x31, 0x74, 0x1c, 0xe6, 0x81, 0x34, 0xaa, 0x54,
-	0xe7, 0x68, 0x7c, 0x99, 0x61, 0x1e, 0x08, 0x79, 0x00, 0xa3, 0x73, 0x14, 0x7c, 0xe9, 0xe2, 0x81,
-	0x97, 0x5b, 0x96, 0x7e, 0x8d, 0xe0, 0xf1, 0x3b, 0x56, 0x33, 0x8e, 0x65, 0x68, 0x6b, 0x3f, 0xea,
-	0x92, 0x39, 0x3c, 0x36, 0x4a, 0x2b, 0xcb, 0x64, 0x13, 0xe7, 0x84, 0x93, 0xd8, 0xf6, 0x0f, 0x84,
-	0x4c, 0x61, 0x52, 0xa2, 0x2d, 0x8c, 0xd0, 0x4d, 0xdf, 0x76, 0xef, 0xae, 0x44, 0x28, 0xdc, 0x0c,
-	0x97, 0x63, 0xe3, 0x81, 0x5f, 0xf0, 0x3f, 0x57, 0x78, 0xe5, 0x9a, 0x1f, 0x7e, 0xdf, 0x24, 0xd1,
-	0xe5, 0x26, 0x89, 0x7e, 0x6d, 0x92, 0xe8, 0xdb, 0x36, 0xe9, 0x5d, 0x6e, 0x93, 0xde, 0x8f, 0x6d,
-	0xd2, 0xfb, 0x44, 0x3b, 0x6f, 0xae, 0x91, 0xf3, 0xf5, 0xe7, 0x15, 0xb5, 0xaa, 0xaa, 0x50, 0x0a,
-	0x34, 0xf4, 0xa2, 0xf3, 0xe7, 0xa8, 0x5b, 0x6b, 0xb4, 0x8b, 0x91, 0xff, 0x55, 0xcf, 0xfe, 0x04,
-	0x00, 0x00, 0xff, 0xff, 0xd5, 0xb3, 0x5d, 0x99, 0x9c, 0x02, 0x00, 0x00,
+	// 437 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xbc, 0x52, 0x4d, 0x6f, 0xd3, 0x40,
+	0x14, 0xac, 0x93, 0x10, 0xe1, 0x17, 0xe0, 0xb0, 0x14, 0x64, 0xbe, 0x8c, 0xe5, 0x53, 0x2e, 0xd8,
+	0x6a, 0xe1, 0x00, 0xc7, 0x86, 0x0b, 0x95, 0x40, 0xad, 0x16, 0x4e, 0x5c, 0xaa, 0x8d, 0xf7, 0xc9,
+	0x59, 0xba, 0xf6, 0x5a, 0xbb, 0x9b, 0xb4, 0xb9, 0xf1, 0x13, 0xf8, 0x59, 0x1c, 0x7b, 0xe4, 0x84,
+	0x50, 0xf2, 0x2f, 0x38, 0x21, 0xef, 0xba, 0xa9, 0xe1, 0x07, 0x70, 0x9b, 0x99, 0x37, 0x9a, 0x37,
+	0xbb, 0x7a, 0x10, 0x33, 0x29, 0x55, 0xc1, 0xac, 0x50, 0x75, 0xbe, 0x3a, 0xc8, 0x6f, 0x58, 0xd6,
+	0x68, 0x65, 0x15, 0xb9, 0xdb, 0x53, 0x56, 0x07, 0x8f, 0xf7, 0x4b, 0x55, 0x2a, 0x37, 0xc9, 0x5b,
+	0xe4, 0x4d, 0xe9, 0xd7, 0x00, 0xee, 0x1f, 0xed, 0x7c, 0xa7, 0x1a, 0x0b, 0x55, 0x55, 0xc2, 0x92,
+	0xf7, 0x30, 0x5a, 0x30, 0xb3, 0x88, 0x82, 0x24, 0x98, 0xde, 0x99, 0xbd, 0xfe, 0xfd, 0xf3, 0xf9,
+	0xab, 0x52, 0xd8, 0xc5, 0x72, 0x9e, 0x15, 0xaa, 0xca, 0x2d, 0xd6, 0x1c, 0x75, 0x25, 0x6a, 0xdb,
+	0x87, 0x52, 0xcc, 0x4d, 0x3e, 0x5f, 0x5b, 0x34, 0xd9, 0x3b, 0xbc, 0x9c, 0xb5, 0x80, 0xba, 0x14,
+	0xf2, 0x04, 0xc2, 0x02, 0xa5, 0x64, 0xfa, 0x4c, 0xf0, 0x68, 0x90, 0x04, 0xd3, 0x90, 0xde, 0xf6,
+	0xc2, 0x31, 0x4f, 0x4f, 0x00, 0x6e, 0x1a, 0x90, 0x17, 0x30, 0xf6, 0x13, 0xb7, 0x7a, 0x72, 0xf8,
+	0x20, 0xfb, 0xeb, 0x19, 0xd9, 0x5b, 0x37, 0xa4, 0x9d, 0x89, 0x10, 0x18, 0x19, 0x26, 0x6d, 0x17,
+	0xea, 0x70, 0xfa, 0x11, 0xc6, 0xde, 0x45, 0xee, 0xc1, 0x40, 0x70, 0x17, 0x14, 0xd2, 0x81, 0xe0,
+	0xe4, 0x0d, 0x4c, 0xac, 0x28, 0xce, 0xcf, 0x34, 0xab, 0x4b, 0x34, 0xd1, 0x20, 0x19, 0x4e, 0x27,
+	0x87, 0xd1, 0x3f, 0x1b, 0x3e, 0x89, 0xe2, 0x9c, 0xb6, 0x06, 0x0a, 0xf6, 0x1a, 0x9a, 0xf4, 0x04,
+	0xc2, 0xdd, 0x80, 0xec, 0xc3, 0xad, 0x65, 0xd3, 0xa0, 0xef, 0x38, 0xa2, 0x9e, 0xb4, 0xaa, 0x54,
+	0x17, 0xa8, 0x5d, 0x99, 0x11, 0xf5, 0x84, 0x3c, 0x84, 0xf1, 0x05, 0x8a, 0x72, 0x61, 0xa3, 0xa1,
+	0x93, 0x3b, 0x96, 0x6a, 0x78, 0x74, 0xc4, 0xf9, 0x07, 0x56, 0xb3, 0x12, 0xb9, 0xef, 0x6b, 0x4e,
+	0xb5, 0x6a, 0x94, 0x61, 0xb2, 0x8d, 0xb2, 0xc2, 0x4a, 0xec, 0xba, 0x7b, 0x42, 0x12, 0x98, 0x70,
+	0x34, 0x85, 0x16, 0x4d, 0xdb, 0xb5, 0x7b, 0x73, 0x5f, 0x22, 0xcf, 0x00, 0x76, 0x1f, 0x6d, 0xa2,
+	0x61, 0x32, 0x9c, 0x86, 0x34, 0xbc, 0xfe, 0x69, 0x93, 0x2e, 0xe1, 0x29, 0xc5, 0x4a, 0xad, 0xf0,
+	0xbf, 0xae, 0x9d, 0x1d, 0x7f, 0xdf, 0xc4, 0xc1, 0xd5, 0x26, 0x0e, 0x7e, 0x6d, 0xe2, 0xe0, 0xdb,
+	0x36, 0xde, 0xbb, 0xda, 0xc6, 0x7b, 0x3f, 0xb6, 0xf1, 0xde, 0xe7, 0xbc, 0x77, 0x54, 0x0d, 0x96,
+	0xe5, 0xfa, 0xcb, 0x2a, 0x37, 0xaa, 0xaa, 0x50, 0x0a, 0xd4, 0xf9, 0x65, 0xef, 0xa8, 0x73, 0xbb,
+	0x6e, 0xd0, 0xcc, 0xc7, 0xee, 0x6c, 0x5f, 0xfe, 0x09, 0x00, 0x00, 0xff, 0xff, 0xae, 0x82, 0xf2,
+	0x59, 0xfd, 0x02, 0x00, 0x00,
 }
 
 func (m *AllocationPrecommit) Marshal() (dAtA []byte, err error) {
@@ -506,7 +568,7 @@ func (m *TickRange) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 
-func (m *ManagedCellarsUpdateProposal) Marshal() (dAtA []byte, err error) {
+func (m *AddManagedCellarsProposal) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -516,26 +578,67 @@ func (m *ManagedCellarsUpdateProposal) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *ManagedCellarsUpdateProposal) MarshalTo(dAtA []byte) (int, error) {
+func (m *AddManagedCellarsProposal) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *ManagedCellarsUpdateProposal) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *AddManagedCellarsProposal) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
 	_ = l
-	if len(m.Cellars) > 0 {
-		for iNdEx := len(m.Cellars) - 1; iNdEx >= 0; iNdEx-- {
-			{
-				size, err := m.Cellars[iNdEx].MarshalToSizedBuffer(dAtA[:i])
-				if err != nil {
-					return 0, err
-				}
-				i -= size
-				i = encodeVarintAllocation(dAtA, i, uint64(size))
-			}
+	if len(m.CellarIds) > 0 {
+		for iNdEx := len(m.CellarIds) - 1; iNdEx >= 0; iNdEx-- {
+			i -= len(m.CellarIds[iNdEx])
+			copy(dAtA[i:], m.CellarIds[iNdEx])
+			i = encodeVarintAllocation(dAtA, i, uint64(len(m.CellarIds[iNdEx])))
+			i--
+			dAtA[i] = 0x1a
+		}
+	}
+	if len(m.Description) > 0 {
+		i -= len(m.Description)
+		copy(dAtA[i:], m.Description)
+		i = encodeVarintAllocation(dAtA, i, uint64(len(m.Description)))
+		i--
+		dAtA[i] = 0x12
+	}
+	if len(m.Title) > 0 {
+		i -= len(m.Title)
+		copy(dAtA[i:], m.Title)
+		i = encodeVarintAllocation(dAtA, i, uint64(len(m.Title)))
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *RemoveManagedCellarsProposal) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *RemoveManagedCellarsProposal) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *RemoveManagedCellarsProposal) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.CellarIds) > 0 {
+		for iNdEx := len(m.CellarIds) - 1; iNdEx >= 0; iNdEx-- {
+			i -= len(m.CellarIds[iNdEx])
+			copy(dAtA[i:], m.CellarIds[iNdEx])
+			i = encodeVarintAllocation(dAtA, i, uint64(len(m.CellarIds[iNdEx])))
 			i--
 			dAtA[i] = 0x1a
 		}
@@ -639,7 +742,7 @@ func (m *TickRange) Size() (n int) {
 	return n
 }
 
-func (m *ManagedCellarsUpdateProposal) Size() (n int) {
+func (m *AddManagedCellarsProposal) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -653,9 +756,32 @@ func (m *ManagedCellarsUpdateProposal) Size() (n int) {
 	if l > 0 {
 		n += 1 + l + sovAllocation(uint64(l))
 	}
-	if len(m.Cellars) > 0 {
-		for _, e := range m.Cellars {
-			l = e.Size()
+	if len(m.CellarIds) > 0 {
+		for _, s := range m.CellarIds {
+			l = len(s)
+			n += 1 + l + sovAllocation(uint64(l))
+		}
+	}
+	return n
+}
+
+func (m *RemoveManagedCellarsProposal) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.Title)
+	if l > 0 {
+		n += 1 + l + sovAllocation(uint64(l))
+	}
+	l = len(m.Description)
+	if l > 0 {
+		n += 1 + l + sovAllocation(uint64(l))
+	}
+	if len(m.CellarIds) > 0 {
+		for _, s := range m.CellarIds {
+			l = len(s)
 			n += 1 + l + sovAllocation(uint64(l))
 		}
 	}
@@ -1125,7 +1251,7 @@ func (m *TickRange) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *ManagedCellarsUpdateProposal) Unmarshal(dAtA []byte) error {
+func (m *AddManagedCellarsProposal) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -1148,10 +1274,10 @@ func (m *ManagedCellarsUpdateProposal) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: ManagedCellarsUpdateProposal: wiretype end group for non-group")
+			return fmt.Errorf("proto: AddManagedCellarsProposal: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: ManagedCellarsUpdateProposal: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: AddManagedCellarsProposal: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
@@ -1220,9 +1346,9 @@ func (m *ManagedCellarsUpdateProposal) Unmarshal(dAtA []byte) error {
 			iNdEx = postIndex
 		case 3:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Cellars", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field CellarIds", wireType)
 			}
-			var msglen int
+			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowAllocation
@@ -1232,25 +1358,169 @@ func (m *ManagedCellarsUpdateProposal) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				msglen |= int(b&0x7F) << shift
+				stringLen |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
-			if msglen < 0 {
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
 				return ErrInvalidLengthAllocation
 			}
-			postIndex := iNdEx + msglen
+			postIndex := iNdEx + intStringLen
 			if postIndex < 0 {
 				return ErrInvalidLengthAllocation
 			}
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.Cellars = append(m.Cellars, &Cellar{})
-			if err := m.Cellars[len(m.Cellars)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+			m.CellarIds = append(m.CellarIds, string(dAtA[iNdEx:postIndex]))
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipAllocation(dAtA[iNdEx:])
+			if err != nil {
 				return err
 			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthAllocation
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *RemoveManagedCellarsProposal) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowAllocation
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: RemoveManagedCellarsProposal: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: RemoveManagedCellarsProposal: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Title", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowAllocation
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthAllocation
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthAllocation
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Title = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Description", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowAllocation
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthAllocation
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthAllocation
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Description = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 3:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field CellarIds", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowAllocation
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthAllocation
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthAllocation
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.CellarIds = append(m.CellarIds, string(dAtA[iNdEx:postIndex]))
 			iNdEx = postIndex
 		default:
 			iNdEx = preIndex

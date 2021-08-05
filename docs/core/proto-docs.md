@@ -5,10 +5,11 @@
 ## Table of Contents
 
 - [allocation/v1/allocation.proto](#allocation/v1/allocation.proto)
+    - [AddManagedCellarsProposal](#allocation.v1.AddManagedCellarsProposal)
     - [Allocation](#allocation.v1.Allocation)
     - [AllocationPrecommit](#allocation.v1.AllocationPrecommit)
     - [Cellar](#allocation.v1.Cellar)
-    - [ManagedCellarsUpdateProposal](#allocation.v1.ManagedCellarsUpdateProposal)
+    - [RemoveManagedCellarsProposal](#allocation.v1.RemoveManagedCellarsProposal)
     - [TickRange](#allocation.v1.TickRange)
   
 - [allocation/v1/tx.proto](#allocation/v1/tx.proto)
@@ -49,6 +50,23 @@
 <p align="right"><a href="#top">Top</a></p>
 
 ## allocation/v1/allocation.proto
+
+
+
+<a name="allocation.v1.AddManagedCellarsProposal"></a>
+
+### AddManagedCellarsProposal
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `title` | [string](#string) |  |  |
+| `description` | [string](#string) |  |  |
+| `cellar_ids` | [string](#string) | repeated |  |
+
+
+
 
 
 
@@ -101,9 +119,9 @@ Cellar is a collection of pools for a token pair
 
 
 
-<a name="allocation.v1.ManagedCellarsUpdateProposal"></a>
+<a name="allocation.v1.RemoveManagedCellarsProposal"></a>
 
-### ManagedCellarsUpdateProposal
+### RemoveManagedCellarsProposal
 
 
 
@@ -111,7 +129,7 @@ Cellar is a collection of pools for a token pair
 | ----- | ---- | ----- | ----------- |
 | `title` | [string](#string) |  |  |
 | `description` | [string](#string) |  |  |
-| `cellars` | [Cellar](#allocation.v1.Cellar) | repeated |  |
+| `cellar_ids` | [string](#string) | repeated |  |
 
 
 
