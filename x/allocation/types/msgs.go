@@ -59,7 +59,7 @@ func (m *MsgDelegateAllocations) ValidateBasic() error {
 	}
 
 	if sdk.AccAddress(validatorAddr).Equals(delegatorAddr) {
-		return sdkerrors.Wrap(stakingtypes.ErrBadValidatorAddr, "delegate address cannot match the delegator address")
+		return sdkerrors.Wrap(stakingtypes.ErrBadDelegatorAddr, "delegate address cannot match the delegator address")
 	}
 
 	return nil

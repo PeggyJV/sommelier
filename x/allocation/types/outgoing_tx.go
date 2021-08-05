@@ -1,7 +1,6 @@
 package types
 
 import (
-	"math/big"
 	"strings"
 
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
@@ -9,17 +8,8 @@ import (
 	"github.com/ethereum/go-ethereum/crypto"
 )
 
-type CellarTicks []*Tick
-
-type Tick struct {
-	TokenID   *big.Int
-	TickUpper uint32
-	TickLower uint32
-	Weight    uint32
-}
-
 // GetCheckpoint gets the checkpoint signature from the given outgoing tx batch
-func (c CellarTicks) GetCheckpoint() []byte {
+func (c Cellar) GetCheckpoint() []byte {
 
 	encodedCall, err := abi.JSON(strings.NewReader(cellarABI))
 	if err != nil {

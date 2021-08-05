@@ -9,6 +9,7 @@
     - [Allocation](#allocation.v1.Allocation)
     - [AllocationPrecommit](#allocation.v1.AllocationPrecommit)
     - [Cellar](#allocation.v1.Cellar)
+    - [CellarUpdate](#allocation.v1.CellarUpdate)
     - [RemoveManagedCellarsProposal](#allocation.v1.RemoveManagedCellarsProposal)
     - [TickRange](#allocation.v1.TickRange)
   
@@ -113,6 +114,22 @@ Cellar is a collection of pools for a token pair
 | ----- | ---- | ----- | ----------- |
 | `id` | [string](#string) |  |  |
 | `tick_ranges` | [TickRange](#allocation.v1.TickRange) | repeated |  |
+
+
+
+
+
+
+<a name="allocation.v1.CellarUpdate"></a>
+
+### CellarUpdate
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `invalidation_nonce` | [uint64](#uint64) |  |  |
+| `cellar` | [Cellar](#allocation.v1.Cellar) |  |  |
 
 
 

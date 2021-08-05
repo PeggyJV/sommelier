@@ -30,6 +30,11 @@ message TickRange {
   uint64 weight = 3;
 }
 
+message CellarUpdate {
+  uint64 invalidation_nonce = 1;
+  Cellar cellar = 2;
+}
+
 message AddManagedCellarsProposal {
   string title = 1;
   string description = 2;

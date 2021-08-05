@@ -16,7 +16,7 @@ import (
 // Keeper of the oracle store
 type Keeper struct {
 	storeKey      sdk.StoreKey
-	cdc           codec.BinaryMarshaler
+	cdc           codec.BinaryCodec
 	paramSpace    paramtypes.Subspace
 	stakingKeeper types.StakingKeeper
 	gravityKeeper types.GravityKeeper
@@ -24,7 +24,7 @@ type Keeper struct {
 
 // NewKeeper creates a new distribution Keeper instance
 func NewKeeper(
-	cdc codec.BinaryMarshaler, key sdk.StoreKey, paramSpace paramtypes.Subspace,
+	cdc codec.BinaryCodec, key sdk.StoreKey, paramSpace paramtypes.Subspace,
 	stakingKeeper types.StakingKeeper, gravityKeeper types.GravityKeeper,
 ) Keeper {
 
@@ -116,7 +116,7 @@ func (k Keeper) GetAllAllocationDelegations(ctx sdk.Context) []types.MsgDelegate
 /////////////
 
 func (k Keeper) SetCellar(ctx sdk.Context, c types.Cellar) {
-	bz := k.cdc.MustMarshalBinaryBare(&c)
+	bz := k.cdc.MustMarshal(&c)
 	ctx.KVStore(k.storeKey).Set(types.GetCellarKey(c.Address()), bz)
 }
 
@@ -126,7 +126,7 @@ func (k Keeper) GetCellarByID(ctx sdk.Context, id common.Address) (cellar types.
 		return types.Cellar{}, false
 	}
 
-	k.cdc.MustUnmarshalBinaryBare(bz, &cellar)
+	k.cdc.MustUnmarshal(bz, &cellar)
 	return cellar, true
 }
 
@@ -137,7 +137,7 @@ func (k Keeper) IterateCellars(ctx sdk.Context, cb func(cellar types.Cellar) (st
 
 	for ; iter.Valid(); iter.Next() {
 		var cellar types.Cellar
-		k.cdc.MustUnmarshalBinaryBare(iter.Value(), &cellar)
+		k.cdc.MustUnmarshal(iter.Value(), &cellar)
 		if cb(cellar) {
 			break
 		}
@@ -161,7 +161,7 @@ func (k Keeper) GetCellars(ctx sdk.Context) (cellars []types.Cellar) {
 // SetAllocationPrecommit sets the precommit for a given validator
 // CONTRACT: must provide the validator address here not the delegate address
 func (k Keeper) SetAllocationPrecommit(ctx sdk.Context, validatorAddr sdk.ValAddress, cellarAddr common.Address, precommit types.AllocationPrecommit) {
-	bz := k.cdc.MustMarshalBinaryBare(&precommit)
+	bz := k.cdc.MustMarshal(&precommit)
 	ctx.KVStore(k.storeKey).Set(types.GetAllocationPrecommitKey(validatorAddr, cellarAddr), bz)
 }
 
@@ -174,7 +174,7 @@ func (k Keeper) GetAllocationPrecommit(ctx sdk.Context, val sdk.ValAddress, cel 
 	}
 
 	var precommit types.AllocationPrecommit
-	k.cdc.MustUnmarshalBinaryBare(bz, &precommit)
+	k.cdc.MustUnmarshal(bz, &precommit)
 	return precommit, true
 }
 
@@ -210,7 +210,7 @@ func (k Keeper) IterateAllocationPrecommits(ctx sdk.Context, cb func(val sdk.Val
 		val := sdk.ValAddress(keyPair.Next(20))
 		cel := common.BytesToAddress(keyPair.Bytes())
 
-		k.cdc.MustUnmarshalBinaryBare(iter.Value(), &precommit)
+		k.cdc.MustUnmarshal(iter.Value(), &precommit)
 		if cb(val, cel, precommit) {
 			break
 		}
@@ -224,7 +224,7 @@ func (k Keeper) IterateAllocationPrecommits(ctx sdk.Context, cb func(val sdk.Val
 // SetAllocationCommit sets the prevote for a given validator
 // CONTRACT: must provide the validator address here not the delegate address
 func (k Keeper) SetAllocationCommit(ctx sdk.Context, val sdk.ValAddress, cel common.Address, allocationCommit types.Allocation) {
-	bz := k.cdc.MustMarshalBinaryBare(&allocationCommit)
+	bz := k.cdc.MustMarshal(&allocationCommit)
 	ctx.KVStore(k.storeKey).Set(types.GetAllocationCommitForCellarKey(val, cel), bz)
 }
 
@@ -239,7 +239,7 @@ func (k Keeper) GetAllocationCommit(ctx sdk.Context, val sdk.ValAddress, cel com
 	}
 
 	var allocationCommit types.Allocation
-	k.cdc.MustUnmarshalBinaryBare(bz, &allocationCommit)
+	k.cdc.MustUnmarshal(bz, &allocationCommit)
 	return allocationCommit, true
 }
 
@@ -276,7 +276,7 @@ func (k Keeper) IterateAllocationCommits(ctx sdk.Context, handler func(val sdk.V
 		cel := common.BytesToAddress(keyPair.Bytes())
 
 		var commit types.Allocation
-		k.cdc.MustUnmarshalBinaryBare(iter.Value(), &commit)
+		k.cdc.MustUnmarshal(iter.Value(), &commit)
 		if handler(val, cel, commit) {
 			break
 		}
@@ -319,7 +319,7 @@ func (k Keeper) IterateValidatorAllocationCommits(ctx sdk.Context, val sdk.ValAd
 		cel := common.BytesToAddress(keyPair.Bytes())
 
 		var commit types.Allocation
-		k.cdc.MustUnmarshalBinaryBare(iter.Value(), &commit)
+		k.cdc.MustUnmarshal(iter.Value(), &commit)
 		if handler(cel, commit) {
 			break
 		}
@@ -381,4 +381,20 @@ func (k Keeper) GetLatestInvalidationNonce(ctx sdk.Context) uint64 {
 func (k Keeper) SetLatestInvalidationNonce(ctx sdk.Context, invalidationNonce uint64) {
 	store := ctx.KVStore(k.storeKey)
 	store.Set([]byte{types.LatestInvalidationNonceKey}, sdk.Uint64ToBigEndian(invalidationNonce))
+}
+
+func (k Keeper) IncrementInvalidationNonce(ctx sdk.Context) uint64 {
+	store := ctx.KVStore(k.storeKey)
+	nextNonce := k.GetLatestInvalidationNonce(ctx) + 1
+	store.Set([]byte{types.LatestInvalidationNonceKey}, sdk.Uint64ToBigEndian(nextNonce))
+	return nextNonce
+}
+
+////////////////////
+// Contract Calls //
+////////////////////
+
+func (k Keeper) GetPendingCellarUpdate(ctx sdk.Context, invalidationNonce uint64) (types.Cellar, bool) {
+	store := ctx.KVStore(k.storeKey)
+
 }

@@ -91,7 +91,7 @@ func (k Keeper) EndBlocker(ctx sdk.Context) {
 		// cellarCommitsMap is a list of commits by cellar
 		cellarCommitsMap = make(map[common.Address][]types.Allocation)
 		// cellarTickWeightPowerMap is a map of cellars to pools to ticks with power adjusted allocations
-		cellarPoolTickPowerMap = make(map[common.Address]map[sdk.Dec]map[uint32]sdk.Dec)
+		cellarPowerMap = make(map[common.Address]map[int64]*types.Cellar)
 	)
 
 	for _, cellar := range k.GetCellars(ctx) {
@@ -118,12 +118,7 @@ func (k Keeper) EndBlocker(ctx sdk.Context) {
 
 		k.IterateValidatorAllocationCommits(ctx, validatorAddr, func(cellar common.Address, commit types.Allocation) bool {
 			cellarCommitsMap[cellar] = append(cellarCommitsMap[cellar], commit)
-			for _, pa := range commit.PoolAllocations.Allocations {
-				for _, tw := range pa.TickWeights.Weights {
-					cellarPoolTickPowerMap[cellar][pa.FeeLevel][tw.Tick] =
-						cellarPoolTickPowerMap[cellar][pa.FeeLevel][tw.Tick].Add(tw.Weight.MulInt64(validatorPower))
-				}
-			}
+			cellarPowerMap[cellar][validatorPower] = commit.Cellar
 
 			// delete the commit as it has already been processed
 			// TODO: consider keeping the votes for a few voting windows in order to
@@ -140,6 +135,8 @@ func (k Keeper) EndBlocker(ctx sdk.Context) {
 
 		return false
 	})
+
+	panic("todo: figure out if the votes for a cellar are high enough to merit a rebalance")
 
 	// iterate over the full list of validators to increment miss counters if they didn't vote
 	totalPower := int64(0)
