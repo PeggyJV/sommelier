@@ -15,7 +15,6 @@ import (
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
 	"github.com/peggyjv/sommelier/x/allocation/client/cli"
 	"github.com/peggyjv/sommelier/x/allocation/keeper"
-	"github.com/peggyjv/sommelier/x/allocation/simulation"
 	"github.com/peggyjv/sommelier/x/allocation/types"
 	"github.com/spf13/cobra"
 	abci "github.com/tendermint/tendermint/abci/types"
@@ -158,7 +157,6 @@ func (am AppModule) EndBlock(ctx sdk.Context, _ abci.RequestEndBlock) []abci.Val
 
 // GenerateGenesisState creates a randomized GenState of the distribution module.
 func (AppModule) GenerateGenesisState(simState *module.SimulationState) {
-	simulation.RandomizedGenState(simState)
 }
 
 // ProposalContents returns all the distribution content functions used to
@@ -169,10 +167,9 @@ func (am AppModule) ProposalContents(_ module.SimulationState) []sim.WeightedPro
 
 // RandomizedParams creates randomized distribution param changes for the simulator.
 func (AppModule) RandomizedParams(r *rand.Rand) []sim.ParamChange {
-	return simulation.ParamChanges(r)
+	return nil
 }
 
 // RegisterStoreDecoder registers a decoder for distribution module's types
 func (am AppModule) RegisterStoreDecoder(sdr sdk.StoreDecoderRegistry) {
-	sdr[types.StoreKey] = simulation.DecodeStore(am.cdc)
 }

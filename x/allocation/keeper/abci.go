@@ -114,7 +114,7 @@ func (k Keeper) EndBlocker(ctx sdk.Context) {
 			return false
 		}
 
-		validatorPower := validator.GetConsensusPower()
+		validatorPower := validator.GetConsensusPower(k.stakingKeeper.PowerReduction(ctx))
 
 		k.IterateValidatorAllocationCommits(ctx, validatorAddr, func(cellar common.Address, commit types.Allocation) bool {
 			cellarCommitsMap[cellar] = append(cellarCommitsMap[cellar], commit)
@@ -136,12 +136,12 @@ func (k Keeper) EndBlocker(ctx sdk.Context) {
 		return false
 	})
 
-	panic("todo: figure out if the votes for a cellar are high enough to merit a rebalance")
+	//panic("todo: figure out if the votes for a cellar are high enough to merit a rebalance")
 
 	// iterate over the full list of validators to increment miss counters if they didn't vote
 	totalPower := int64(0)
 	k.stakingKeeper.IterateBondedValidatorsByPower(ctx, func(_ int64, validator stakingtypes.ValidatorI) bool {
-		totalPower += validator.GetConsensusPower()
+		totalPower += validator.GetConsensusPower(k.stakingKeeper.PowerReduction(ctx))
 		return false
 	})
 
