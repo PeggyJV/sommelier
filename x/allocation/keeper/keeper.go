@@ -2,6 +2,7 @@ package keeper
 
 import (
 	"bytes"
+	"fmt"
 
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/store/prefix"
@@ -10,6 +11,7 @@ import (
 	mapset "github.com/deckarep/golang-set"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/peggyjv/sommelier/x/allocation/types"
+	tmbytes "github.com/tendermint/tendermint/libs/bytes"
 	"github.com/tendermint/tendermint/libs/log"
 )
 
@@ -414,4 +416,20 @@ func(k Keeper) HasPendingCellarUpdate(ctx sdk.Context, invalidationNonce uint64)
 func (k Keeper) SetPendingCellarUpdate(ctx sdk.Context, cellarUpdate types.CellarUpdate) {
 	bz := k.cdc.MustMarshal(&cellarUpdate)
 	ctx.KVStore(k.storeKey).Set(types.GetCellarUpdateKey(cellarUpdate.InvalidationNonce), bz)
+}
+
+func (k Keeper) CommitCellarUpdate(ctx sdk.Context, invalidationNonce uint64, invalidationScope tmbytes.HexBytes) {
+	cellarUpdate, ok := k.GetPendingCellarUpdate(ctx, invalidationNonce)
+	if !ok {
+		panic(fmt.Sprintf("cellar update with invalidation nonce %v not found", invalidationNonce))
+	}
+
+	if !bytes.Equal(cellarUpdate.Cellar.InvalidationScope(), invalidationScope) {
+		panic(fmt.Sprintf("stored invalidation scope did not match event invalidation scope: %v != %v", cellarUpdate.Cellar.InvalidationScope(), invalidationNonce))
+	}
+
+	k.SetCellar(ctx, *cellarUpdate.Cellar)
+
+	store := ctx.KVStore(k.storeKey)
+	store.Delete(types.GetCellarUpdateKey(cellarUpdate.InvalidationNonce))
 }
