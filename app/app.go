@@ -82,9 +82,6 @@ import (
 	gravitykeeper "github.com/peggyjv/gravity-bridge/module/x/gravity/keeper"
 	gravitytypes "github.com/peggyjv/gravity-bridge/module/x/gravity/types"
 	appParams "github.com/peggyjv/sommelier/app/params"
-	"github.com/peggyjv/sommelier/x/allocation"
-	allocationkeeper "github.com/peggyjv/sommelier/x/allocation/keeper"
-	allocationtypes "github.com/peggyjv/sommelier/x/allocation/types"
 	"github.com/rakyll/statik/fs"
 	abci "github.com/tendermint/tendermint/abci/types"
 	tmjson "github.com/tendermint/tendermint/libs/json"
@@ -128,7 +125,7 @@ var (
 		ibctransfer.AppModuleBasic{},
 		vesting.AppModuleBasic{},
 		gravity.AppModuleBasic{},
-		allocation.AppModuleBasic{},
+		// allocation.AppModuleBasic{},
 	)
 
 	// module account permissions
@@ -186,7 +183,7 @@ type SommelierApp struct {
 	GravityKeeper    gravitykeeper.Keeper
 
 	// Sommelier keepers
-	AllocationKeeper allocationkeeper.Keeper
+	// AllocationKeeper allocationkeeper.Keeper
 
 	// make capability scoped keepers public for test purposes (IBC only)
 	ScopedIBCKeeper      capabilitykeeper.ScopedKeeper
@@ -304,8 +301,8 @@ func NewSommelierApp(
 		AddRoute(paramproposal.RouterKey, params.NewParamChangeProposalHandler(app.ParamsKeeper)).
 		AddRoute(distrtypes.RouterKey, distr.NewCommunityPoolSpendProposalHandler(app.DistrKeeper)).
 		AddRoute(upgradetypes.RouterKey, upgrade.NewSoftwareUpgradeProposalHandler(app.UpgradeKeeper)).
-		AddRoute(ibcclienttypes.RouterKey, ibcclient.NewClientProposalHandler(app.IBCKeeper.ClientKeeper)).
-		AddRoute(allocationtypes.RouterKey, allocation.NewUpdateManagedCellarsProposalHandler(app.AllocationKeeper))
+		AddRoute(ibcclienttypes.RouterKey, ibcclient.NewClientProposalHandler(app.IBCKeeper.ClientKeeper)) //.
+	// AddRoute(allocationtypes.RouterKey, allocation.NewUpdateManagedCellarsProposalHandler(app.AllocationKeeper))
 	app.GovKeeper = govkeeper.NewKeeper(
 		appCodec, keys[govtypes.StoreKey], app.GetSubspace(govtypes.ModuleName), app.AccountKeeper, app.BankKeeper,
 		&stakingKeeper, govRouter,
@@ -327,13 +324,13 @@ func NewSommelierApp(
 
 	app.GravityKeeper.SetHooks(
 		gravitytypes.NewMultiGravityHooks(
-			app.AllocationKeeper.Hooks(),
-			))
+		// app.AllocationKeeper.Hooks(),
+		))
 
-	app.AllocationKeeper = allocationkeeper.NewKeeper(
-		appCodec, keys[allocationtypes.StoreKey], app.GetSubspace(allocationtypes.ModuleName),
-		app.StakingKeeper, app.GravityKeeper,
-	)
+	// app.AllocationKeeper = allocationkeeper.NewKeeper(
+	// 	appCodec, keys[allocationtypes.StoreKey], app.GetSubspace(allocationtypes.ModuleName),
+	// 	app.StakingKeeper, app.GravityKeeper,
+	// )
 
 	// Create static IBC router, add transfer route, then set and seal it
 	ibcRouter := ibcporttypes.NewRouter()
@@ -381,7 +378,7 @@ func NewSommelierApp(
 		params.NewAppModule(app.ParamsKeeper),
 		transferModule,
 		gravity.NewAppModule(app.GravityKeeper, app.BankKeeper),
-		allocation.NewAppModule(app.AllocationKeeper, appCodec),
+		// allocation.NewAppModule(app.AllocationKeeper, appCodec),
 	)
 
 	// During begin block slashing happens after distr.BeginBlocker so that
@@ -431,7 +428,7 @@ func NewSommelierApp(
 		evidence.NewAppModule(app.EvidenceKeeper),
 		ibc.NewAppModule(app.IBCKeeper),
 		transferModule,
-		allocation.NewAppModule(app.AllocationKeeper, appCodec),
+		// allocation.NewAppModule(app.AllocationKeeper, appCodec),
 	)
 
 	app.sm.RegisterStoreDecoders()
