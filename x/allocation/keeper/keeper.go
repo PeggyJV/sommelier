@@ -433,3 +433,8 @@ func (k Keeper) CommitCellarUpdate(ctx sdk.Context, invalidationNonce uint64, in
 	store := ctx.KVStore(k.storeKey)
 	store.Delete(types.GetCellarUpdateKey(cellarUpdate.InvalidationNonce))
 }
+
+func (k Keeper) DeleteCellar(ctx sdk.Context, cellarAddr common.Address) {
+	store := ctx.KVStore(k.storeKey)
+	store.Delete(types.GetCellarKey(cellarAddr))
+}
