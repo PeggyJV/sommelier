@@ -87,7 +87,7 @@ func (k Keeper) EndBlocker(ctx sdk.Context) {
 		// validators who submitted their vote
 		validatorsCommittedMap = make(map[string]bool)
 		// cellarMap is a map of cellars by address
-		cellarsMap = make(map[common.Address]*types.Cellar)
+		cellarsMap = make(map[common.Address]types.Cellar)
 		// cellarCommitsMap is a list of commits by cellar
 		cellarCommitsMap = make(map[common.Address][]types.Allocation)
 		// cellarTickWeightPowerMap is a map of cellars to pools to ticks with power adjusted allocations
@@ -95,7 +95,7 @@ func (k Keeper) EndBlocker(ctx sdk.Context) {
 	)
 
 	for _, cellar := range k.GetCellars(ctx) {
-		cellarsMap[common.HexToAddress(cellar.Id)] = &cellar
+		cellarsMap[common.HexToAddress(cellar.Id)] = cellar
 	}
 
 	// iterate over the data votes
