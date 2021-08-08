@@ -6,7 +6,7 @@ import (
 )
 
 const (
-	ProposalTypeAddManagedCellars = "AddManagedCellars"
+	ProposalTypeAddManagedCellars    = "AddManagedCellars"
 	ProposalTypeRemoveManagedCellars = "RemoveManagedCellars"
 )
 

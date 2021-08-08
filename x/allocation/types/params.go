@@ -3,8 +3,6 @@ package types
 import (
 	"errors"
 	"fmt"
-	"strings"
-
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
 )
@@ -76,21 +74,6 @@ func validateVoteThreshold(i interface{}) error {
 
 	if voteThreshold.LTE(sdk.ZeroDec()) || voteThreshold.GT(sdk.OneDec()) {
 		return fmt.Errorf("vote threshold value must be within the 0% - 100% range, got: %s", voteThreshold)
-	}
-
-	return nil
-}
-
-func validateCellars(i interface{}) error {
-	dataTypes, ok := i.([]string)
-	if !ok {
-		return fmt.Errorf("invalid parameter type: %T", i)
-	}
-
-	for i, dataType := range dataTypes {
-		if strings.TrimSpace(dataType) == "" {
-			return fmt.Errorf("oracle data type at index %d cannot be blank", i)
-		}
 	}
 
 	return nil

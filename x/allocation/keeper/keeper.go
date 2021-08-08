@@ -112,7 +112,6 @@ func (k Keeper) GetAllAllocationDelegations(ctx sdk.Context) []types.MsgDelegate
 	return allocationDelegations
 }
 
-
 /////////////
 // Cellars //
 /////////////
@@ -154,7 +153,6 @@ func (k Keeper) GetCellars(ctx sdk.Context) (cellars []types.Cellar) {
 
 	return
 }
-
 
 //////////////////////////
 // Allocation Precommit //
@@ -408,7 +406,7 @@ func (k Keeper) GetPendingCellarUpdate(ctx sdk.Context, invalidationNonce uint64
 	return cellarUpdate, true
 }
 
-func(k Keeper) HasPendingCellarUpdate(ctx sdk.Context, invalidationNonce uint64) bool {
+func (k Keeper) HasPendingCellarUpdate(ctx sdk.Context, invalidationNonce uint64) bool {
 	store := ctx.KVStore(k.storeKey)
 	return store.Has(types.GetCellarUpdateKey(invalidationNonce))
 }
