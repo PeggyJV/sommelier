@@ -1,0 +1,48 @@
+syntax = "proto3";
+package allocation.v1;
+
+import "gogoproto/gogo.proto";
+
+option go_package = "github.com/peggyjv/sommelier/x/allocation/types";
+
+// AllocationPrecommit defines an array of hashed data to be used for the precommit phase
+// of allocation
+message AllocationPrecommit {
+  bytes  hash = 1 [(gogoproto.casttype) = "github.com/tendermint/tendermint/libs/bytes.HexBytes"];
+  string cellar_id = 2;
+}
+
+// Allocation is the commit for all allocations for a cellar by a validator
+message Allocation {
+  Cellar cellar = 1;
+  string salt = 2;
+}
+
+// Cellar is a collection of pools for a token pair
+message Cellar {
+  string id = 1;
+  repeated TickRange tick_ranges = 2;
+}
+
+message TickRange {
+  uint64 upper = 1;
+  uint64 lower = 2;
+  uint64 weight = 3;
+}
+
+message CellarUpdate {
+  uint64 invalidation_nonce = 1;
+  Cellar cellar = 2;
+}
+
+message AddManagedCellarsProposal {
+  string title = 1;
+  string description = 2;
+  repeated string cellar_ids = 3;
+}
+
+message RemoveManagedCellarsProposal {
+  string title = 1;
+  string description = 2;
+  repeated string cellar_ids = 3;
+}

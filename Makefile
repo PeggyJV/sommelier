@@ -235,8 +235,10 @@ proto-check-breaking:
 
 TM_URL           = https://raw.githubusercontent.com/tendermint/tendermint/v0.34.0/proto/tendermint
 GOGO_PROTO_URL   = https://raw.githubusercontent.com/regen-network/protobuf/cosmos
-COSMOS_PROTO_URL = https://raw.githubusercontent.com/regen-network/cosmos-proto/main
-COSMOS_SDK_PROTO_URL = https://raw.githubusercontent.com/cosmos/cosmos-sdk/v0.40.0-rc6/proto/cosmos/base
+COSMOS_PROTO_URL = https://raw.githubusercontent.com/regen-network/cosmos-proto/master
+COSMOS_SDK_PROTO_URL = https://raw.githubusercontent.com/cosmos/cosmos-sdk/master/proto/cosmos/base
+GOOGLE_PROTO_URL   = https://raw.githubusercontent.com/googleapis/googleapis/master/google/api
+PROTOBUF_GOOGLE_URL = https://raw.githubusercontent.com/protocolbuffers/protobuf/master/src/google/protobuf
 
 TM_CRYPTO_TYPES     = third_party/proto/tendermint/crypto
 TM_ABCI_TYPES       = third_party/proto/tendermint/abci
@@ -246,17 +248,14 @@ TM_LIBS				= third_party/proto/tendermint/libs/bits
 
 GOGO_PROTO_TYPES    = third_party/proto/gogoproto
 COSMOS_PROTO_TYPES  = third_party/proto/cosmos_proto
+GOOGLE_PROTO_TYPES  = third_party/proto/google/api
+PROTOBUF_GOOGLE_TYPES = third_party/proto/google/protobuf
 
 SDK_ABCI_TYPES  	= third_party/proto/cosmos/base/abci/v1beta1
 SDK_QUERY_TYPES  	= third_party/proto/cosmos/base/query/v1beta1
 SDK_COIN_TYPES  	= third_party/proto/cosmos/base/v1beta1
 
 proto-update-deps:
-	# TODO: also download
-	# - google/api/annotations.proto
-	# - google/api/http.proto
-	# - google/api/httpbody.proto
-	# - google/protobuf/any.proto
 	mkdir -p $(GOGO_PROTO_TYPES)
 	curl -sSL $(GOGO_PROTO_URL)/gogoproto/gogo.proto > $(GOGO_PROTO_TYPES)/gogo.proto
 
@@ -290,6 +289,14 @@ proto-update-deps:
 
 	mkdir -p $(SDK_COIN_TYPES)
 	curl -sSL $(COSMOS_SDK_PROTO_URL)/v1beta1/coin.proto > $(SDK_COIN_TYPES)/coin.proto
+
+	mkdir -p $(GOOGLE_PROTO_TYPES)
+	curl -sSL $(GOOGLE_PROTO_URL)/annotations.proto > $(GOOGLE_PROTO_TYPES)/annotations.proto
+	curl -sSL $(GOOGLE_PROTO_URL)/http.proto > $(GOOGLE_PROTO_TYPES)/http.proto
+	curl -sSL $(GOOGLE_PROTO_URL)/httpbody.proto > $(GOOGLE_PROTO_TYPES)/httpbody.proto
+
+	mkdir -p $(PROTOBUF_GOOGLE_TYPES)
+	curl -sSL $(PROTOBUF_GOOGLE_URL)/any.proto > $(PROTOBUF_GOOGLE_TYPES)/any.proto
 
 PREFIX ?= /usr/local
 BIN ?= $(PREFIX)/bin

@@ -1,0 +1,32 @@
+syntax = "proto3";
+package allocation.v1;
+
+import "allocation/v1/tx.proto";
+import "allocation/v1/allocation.proto";
+import "gogoproto/gogo.proto";
+
+option go_package = "github.com/peggyjv/sommelier/x/allocation/types";
+
+
+// GenesisState - all allocation state that must be provided at genesis
+message GenesisState {
+    Params                          params             = 1 [
+        (gogoproto.nullable) = false
+    ];
+    repeated MsgDelegateAllocations feeder_delegations = 2 [
+        (gogoproto.nullable) = false
+    ];
+}
+
+// Params allocation parameters
+message Params {
+    // VotePeriod defines the number of blocks to wait for votes before attempting to tally
+    int64  vote_period          = 1 [(gogoproto.moretags)   = "yaml:\"vote_period\""];
+
+    // VoteThreshold defines the percentage of bonded stake required to vote each period
+    string vote_threshold       = 2 [
+        (gogoproto.moretags)   = "yaml:\"vote_threshold\"",
+        (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec", 
+        (gogoproto.nullable)   = false
+    ];
+}

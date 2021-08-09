@@ -1,0 +1,113 @@
+syntax = "proto3";
+package allocation.v1;
+
+import "gogoproto/gogo.proto";
+import "google/api/annotations.proto";
+import "allocation/v1/genesis.proto";
+import "allocation/v1/allocation.proto";
+import "cosmos_proto/cosmos.proto";
+import "cosmos/base/query/v1beta1/pagination.proto";
+
+option go_package = "github.com/peggyjv/sommelier/x/allocation/types";
+
+// Query defines the gRPC querier service for the allocation module.
+service Query {
+    // QueryParams queries the allocation module parameters.
+    rpc QueryParams(QueryParamsRequest) returns (QueryParamsResponse) {
+        option (google.api.http).get = "/sommelier/allocation/v1/params";
+    }
+    // QueryDelegateAddress queries the delegate account address of a validator
+    rpc QueryDelegateAddress(QueryDelegateAddressRequest) returns (QueryDelegateAddressResponse) {
+        option (google.api.http).get = "/sommelier/allocation/v1/delegates/{validator}";
+    }
+    // QueryValidatorAddress returns the validator address of a given delegate
+    rpc QueryValidatorAddress(QueryValidatorAddressRequest) returns (QueryValidatorAddressResponse) {
+        option (google.api.http).get = "/sommelier/allocation/v1/validators/{delegate}";
+    }
+    // QueryAllocationPrecommit queries the validator prevote in the current voting period
+    rpc QueryAllocationPrecommit(QueryAllocationPrecommitRequest) returns (QueryAllocationPrecommitResponse) {
+        option (google.api.http).get = "/sommelier/allocation/v1/precommits/{validator}";
+    }
+    // QueryAllocationCommit queries the validator vote in the current voting period
+    rpc QueryAllocationCommit(QueryAllocationCommitRequest) returns (QueryAllocationCommitResponse) {
+        option (google.api.http).get = "/sommelier/allocation/v1/commits/{validator}";
+    }
+    // QueryVotePeriod queries the heights for the current voting period (current, start and end)
+    rpc QueryCommitPeriod(QueryCommitPeriodRequest) returns (QueryCommitPeriodResponse) {
+        option (google.api.http).get = "/sommelier/allocation/v1/commit_period";
+    }
+}
+
+// QueryParamsRequest is the request type for the Query/Params gRPC method.
+message QueryParamsRequest {}
+
+// QueryParamsRequest is the response type for the Query/Params gRPC method.
+message QueryParamsResponse {
+    // allocation parameters
+    Params params = 1 [(gogoproto.nullable) = false];
+}
+
+// QueryDelegateAddressRequest is the request type for the Query/QueryDelegateAddress gRPC method.
+message QueryDelegateAddressRequest {
+    // validator operator address
+    string validator = 1;
+}
+
+// QueryDelegateAddressResponse is the response type for the Query/QueryDelegateAddress gRPC method.
+message QueryDelegateAddressResponse {
+    // delegate account address
+    string delegate = 2;
+}
+
+// QueryValidatorAddressRequest is the request type for the Query/Params gRPC method.
+message QueryValidatorAddressRequest {
+    // delegate account address
+    string delegate = 1;
+}
+
+// QueryValidatorAddressResponse is the response type for the Query/Params gRPC method.
+message QueryValidatorAddressResponse {
+    // validator operator address
+    string validator = 1;
+}
+
+// QueryAllocationPrecommitRequest is the request type for the Query/AllocationPrecommit gRPC method.
+message QueryAllocationPrecommitRequest {
+    // validator operator address
+    string validator = 1;
+    // cellar contract address
+    string cellar = 2;
+}
+
+// QueryAllocationPrecommitResponse is the response type for the Query/QueryallocationDataPrevote gRPC method.
+message QueryAllocationPrecommitResponse {
+    // prevote submitted within the latest voting period
+    AllocationPrecommit precommit = 1;
+}
+
+// QueryAllocationCommitRequest is the request type for the Query/QueryallocationDataVote gRPC method.
+message QueryAllocationCommitRequest {
+    // validator operator address
+    string validator = 1;
+    // cellar contract address
+    string cellar = 2;
+}
+
+// QueryAllocationCommitResponse is the response type for the Query/QueryallocationDataVote gRPC method.
+message QueryAllocationCommitResponse {
+    // vote containing the allocation feed submitted within the latest voting period
+    Allocation commit = 1;
+}
+
+// QueryCommitPeriodRequest is the request type for the Query/VotePeriod gRPC method.
+message QueryCommitPeriodRequest {}
+
+// QueryCommitPeriodResponse is the response type for the Query/VotePeriod gRPC method.
+message QueryCommitPeriodResponse {
+    // block height at which the query was processed
+    int64 current_height    = 1;
+    // latest vote period start block height
+    int64 vote_period_start = 2;
+    // block height at which the current voting period ends
+    int64 vote_period_end   = 3; 
+}
