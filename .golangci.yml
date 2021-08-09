@@ -12,7 +12,7 @@ linters:
     - dogsled
     # - errcheck
     - goconst
-    - gocritic
+    # - gocritic
     - gofmt
     - goimports
     - golint
@@ -20,7 +20,7 @@ linters:
     - gosimple
     - govet
     - ineffassign
-    - interfacer
+    # - interfacer
     - maligned
     - misspell
     - nakedret

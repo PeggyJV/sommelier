@@ -5,9 +5,10 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"strings"
+
 	mapset "github.com/deckarep/golang-set"
 	"github.com/ethereum/go-ethereum/common"
-	"strings"
 
 	"github.com/cosmos/cosmos-sdk/telemetry"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -26,9 +27,9 @@ func (k Keeper) DelegateAllocations(c context.Context, msg *types.MsgDelegateAll
 	val, del := msg.MustGetValidator(), msg.MustGetDelegate()
 
 	// check that the signer is a bonded validator and is not jailed
-	validator := k.stakingKeeper.Validator(ctx, sdk.ValAddress(val))
+	validator := k.stakingKeeper.Validator(ctx, val)
 	if validator == nil {
-		return nil, sdkerrors.Wrap(stakingtypes.ErrNoValidatorFound, sdk.ValAddress(val).String())
+		return nil, sdkerrors.Wrap(stakingtypes.ErrNoValidatorFound, val.String())
 	}
 
 	if validator.IsUnbonded() {
@@ -45,7 +46,7 @@ func (k Keeper) DelegateAllocations(c context.Context, msg *types.MsgDelegateAll
 		return nil, sdkerrors.Wrapf(sdkerrors.ErrUnauthorized, "feeder delegate %s cannot be a validator", del)
 	}
 
-	k.SetValidatorDelegateAddress(ctx, del, sdk.ValAddress(val))
+	k.SetValidatorDelegateAddress(ctx, del, val)
 
 	ctx.EventManager().EmitEvent(
 		sdk.NewEvent(
@@ -80,8 +81,8 @@ func (k Keeper) AllocationPrecommit(c context.Context, msg *types.MsgAllocationP
 	}
 
 	// TODO: set precommit for current voting period
-	var hashList []string
-	var cellarList []string
+	hashList := make([]string, len(msg.Precommit))
+	cellarList := make([]string, len(msg.Precommit))
 	for _, ap := range msg.Precommit {
 		cellarList = append(cellarList, ap.CellarId)
 		hashList = append(hashList, ap.Hash.String())
@@ -142,9 +143,8 @@ func (k Keeper) AllocationCommit(c context.Context, msg *types.MsgAllocationComm
 	}
 
 	cellarSet := mapset.NewThreadUnsafeSet()
-	params := k.GetParamSet(ctx)
-	for _, cellar := range params.Cellars {
-		cellarSet.Add(cellar.CellarId)
+	for _, cellar := range k.GetCellars(ctx) {
+		cellarSet.Add(cellar.Id)
 	}
 
 	// check if there's an existing vote for the current voting period start
@@ -153,12 +153,12 @@ func (k Keeper) AllocationCommit(c context.Context, msg *types.MsgAllocationComm
 	}
 
 	for _, commit := range msg.Commit {
-		cel := common.HexToAddress(commit.CellarId)
+		cel := common.HexToAddress(commit.Cellar.Id)
 
-		if cellarSet.Contains(commit.CellarId) {
-			cellarSet.Remove(commit.CellarId)
+		if cellarSet.Contains(commit.Cellar.Id) {
+			cellarSet.Remove(commit.Cellar.Id)
 		} else {
-			return nil, fmt.Errorf("commit for unknown cellar: %s", commit.CellarId)
+			return nil, fmt.Errorf("commit for unknown cellar: %s", commit.Cellar.Id)
 		}
 
 		// Get the precommit for that validator from the store
@@ -169,7 +169,7 @@ func (k Keeper) AllocationCommit(c context.Context, msg *types.MsgAllocationComm
 		}
 
 		// parse data to json in order to compute the vote hash and sort
-		jsonBz, err := json.Marshal(commit.PoolAllocations)
+		jsonBz, err := json.Marshal(commit.Cellar)
 		if err != nil {
 			return nil, sdkerrors.Wrap(
 				sdkerrors.ErrJSONMarshal, "failed to marshal json pool allocations",
@@ -189,16 +189,11 @@ func (k Keeper) AllocationCommit(c context.Context, msg *types.MsgAllocationComm
 			)
 		}
 
-		if !k.HasAllocationTickWeights(ctx, val, cel) {
-			k.SetPoolAllocations(ctx, val, cel, *commit.PoolAllocations)
-		}
-
 		allocationEvents = append(
 			allocationEvents,
 			sdk.NewEvent(
 				types.EventTypeAllocationCommit,
 				sdk.NewAttribute(types.AttributeKeyCellar, cel.String()),
-				sdk.NewAttribute(types.AttributePoolAllocations, commit.PoolAllocations.String()),
 				sdk.NewAttribute(types.AttributeKeyValidator, val.String()),
 			),
 		)

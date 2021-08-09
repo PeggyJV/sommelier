@@ -2,8 +2,7 @@ package types
 
 import (
 	"errors"
-	fmt "fmt"
-	"strings"
+	"fmt"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
@@ -11,9 +10,8 @@ import (
 
 // Parameter keys
 var (
-	KeyVotePeriod        = []byte("voteperiod")
-	KeyVoteThreshold     = []byte("votethreshold")
-	KeyCellars     		 = []byte("cellars")
+	KeyVotePeriod    = []byte("voteperiod")
+	KeyVoteThreshold = []byte("votethreshold")
 )
 
 var _ paramtypes.ParamSet = &Params{}
@@ -26,8 +24,8 @@ func ParamKeyTable() paramtypes.KeyTable {
 // DefaultParams returns default oracle parameters
 func DefaultParams() Params {
 	return Params{
-		VotePeriod:        5,
-		VoteThreshold:     sdk.NewDecWithPrec(67, 2), // 67%
+		VotePeriod:    5,
+		VoteThreshold: sdk.NewDecWithPrec(67, 2), // 67%
 	}
 }
 
@@ -36,7 +34,6 @@ func (p *Params) ParamSetPairs() paramtypes.ParamSetPairs {
 	return paramtypes.ParamSetPairs{
 		paramtypes.NewParamSetPair(KeyVotePeriod, &p.VotePeriod, validateVotePeriod),
 		paramtypes.NewParamSetPair(KeyVoteThreshold, &p.VoteThreshold, validateVoteThreshold),
-		paramtypes.NewParamSetPair(KeyCellars, &p.Cellars, validateCellars),
 	}
 }
 
@@ -48,8 +45,7 @@ func (p *Params) ValidateBasic() error {
 	if err := validateVoteThreshold(p.VoteThreshold); err != nil {
 		return err
 	}
-
-	return validateCellars(p.Cellars)
+	return nil
 }
 
 func validateVotePeriod(i interface{}) error {
@@ -79,21 +75,6 @@ func validateVoteThreshold(i interface{}) error {
 
 	if voteThreshold.LTE(sdk.ZeroDec()) || voteThreshold.GT(sdk.OneDec()) {
 		return fmt.Errorf("vote threshold value must be within the 0% - 100% range, got: %s", voteThreshold)
-	}
-
-	return nil
-}
-
-func validateCellars(i interface{}) error {
-	dataTypes, ok := i.([]string)
-	if !ok {
-		return fmt.Errorf("invalid parameter type: %T", i)
-	}
-
-	for i, dataType := range dataTypes {
-		if strings.TrimSpace(dataType) == "" {
-			return fmt.Errorf("oracle data type at index %d cannot be blank", i)
-		}
 	}
 
 	return nil

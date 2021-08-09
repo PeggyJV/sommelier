@@ -18,6 +18,7 @@ type StakingKeeper interface {
 	ValidatorByConsAddr(sdk.Context, sdk.ConsAddress) stakingtypes.ValidatorI
 	Slash(sdk.Context, sdk.ConsAddress, int64, int64, sdk.Dec)
 	Jail(sdk.Context, sdk.ConsAddress)
+	PowerReduction(ctx sdk.Context) sdk.Int
 }
 
 // GravityKeeper defines the expected gravity keeper methods

@@ -23,8 +23,6 @@ func GetQueryCmd() *cobra.Command {
 		queryAllocationPrecommit(),
 		queryAllocationCommit(),
 		queryVotePeriod(),
-		queryMissCounter(),
-		queryAggregatedAllocationData(),
 	}...)
 
 	return allocationQueryCmd
@@ -177,62 +175,4 @@ func queryVotePeriod() *cobra.Command {
 			return ctx.PrintProto(res)
 		},
 	}
-}
-
-func queryMissCounter() *cobra.Command {
-	return &cobra.Command{
-		Use:     "miss-counter [signer]",
-		Aliases: []string{"mc"},
-		Args:    cobra.ExactArgs(1),
-		Short:   "query miss counter for a validator from the chain given its address or the delegate address",
-		RunE: func(cmd *cobra.Command, args []string) error {
-			ctx, err := client.GetClientQueryContext(cmd)
-			if err != nil {
-				return err
-			}
-
-			queryClient := types.NewQueryClient(ctx)
-			req := &types.QueryMissCounterRequest{
-				Validator: args[0],
-			}
-
-			res, err := queryClient.QueryMissCounter(cmd.Context(), req)
-			if err != nil {
-				return err
-			}
-			return ctx.PrintProto(res)
-		},
-	}
-}
-
-func queryAggregatedAllocationData() *cobra.Command {
-	cmd := &cobra.Command{
-		Use:     "allocation-data [id]",
-		Aliases: []string{"ad"},
-		Args:    cobra.ExactArgs(1),
-		Short:   "query aggregated allocation data from the chain given its type",
-		RunE: func(cmd *cobra.Command, args []string) error {
-			ctx, err := client.GetClientQueryContext(cmd)
-			if err != nil {
-				return err
-			}
-
-			dataType, _ := cmd.Flags().GetString("type")
-
-			queryClient := types.NewQueryClient(ctx)
-			req := &types.QueryAggregateDataRequest{
-				Type: dataType,
-				Id:   args[0],
-			}
-
-			res, err := queryClient.QueryAggregateData(cmd.Context(), req)
-			if err != nil {
-				return err
-			}
-
-			return ctx.PrintProto(res)
-		},
-	}
-	cmd.Flags().StringP("type", "t", types.UniswapDataType, "type of allocation data to fetch")
-	return cmd
 }

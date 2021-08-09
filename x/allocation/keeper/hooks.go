@@ -2,30 +2,29 @@ package keeper
 
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
+	gravitytypes "github.com/peggyjv/gravity-bridge/module/x/gravity/types"
 )
 
 type Hooks struct {
 	k Keeper
 }
 
-var _ stakingtypes.StakingHooks = Hooks{}
+var _ gravitytypes.GravityHooks = Hooks{}
 
-// Hooks Create new allocation hooks
-func (k Keeper) Hooks() Hooks { return Hooks{k} }
+// Hooks Return the wrapper struct
+func (k Keeper) Hooks() Hooks {
+	return Hooks{k}
+}
 
-func (h Hooks) AfterValidatorCreated(ctx sdk.Context, valAddr sdk.ValAddress)                    {}
-func (h Hooks) AfterValidatorBonded(_ sdk.Context, _ sdk.ConsAddress, _ sdk.ValAddress)          {}
-func (h Hooks) AfterValidatorRemoved(ctx sdk.Context, _ sdk.ConsAddress, valAddr sdk.ValAddress) {}
-func (h Hooks) BeforeValidatorModified(ctx sdk.Context, valAddr sdk.ValAddress)                  {}
-func (h Hooks) AfterValidatorBeginUnbonding(ctx sdk.Context, consAddr sdk.ConsAddress, valAddr sdk.ValAddress) {
+func (h Hooks) AfterContractCallExecutedEvent(ctx sdk.Context, event gravitytypes.ContractCallExecutedEvent) {
+	h.k.CommitCellarUpdate(ctx, event.InvalidationNonce, event.InvalidationScope)
 }
-func (h Hooks) BeforeDelegationCreated(ctx sdk.Context, delAddr sdk.AccAddress, valAddr sdk.ValAddress) {
+
+func (h Hooks) AfterERC20DeployedEvent(ctx sdk.Context, event gravitytypes.ERC20DeployedEvent) {}
+
+func (h Hooks) AfterSignerSetExecutedEvent(ctx sdk.Context, event gravitytypes.SignerSetTxExecutedEvent) {
 }
-func (h Hooks) BeforeDelegationSharesModified(ctx sdk.Context, delAddr sdk.AccAddress, valAddr sdk.ValAddress) {
-}
-func (h Hooks) BeforeDelegationRemoved(ctx sdk.Context, delAddr sdk.AccAddress, valAddr sdk.ValAddress) {
-}
-func (h Hooks) AfterDelegationModified(ctx sdk.Context, delAddr sdk.AccAddress, valAddr sdk.ValAddress) {
-}
-func (h Hooks) BeforeValidatorSlashed(ctx sdk.Context, valAddr sdk.ValAddress, fraction sdk.Dec) {}
+
+func (h Hooks) AfterBatchExecutedEvent(ctx sdk.Context, event gravitytypes.BatchExecutedEvent) {}
+
+func (h Hooks) AfterSendToCosmosEvent(ctx sdk.Context, event gravitytypes.SendToCosmosEvent) {}

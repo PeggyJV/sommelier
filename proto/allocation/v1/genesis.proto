@@ -29,7 +29,4 @@ message Params {
         (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec", 
         (gogoproto.nullable)   = false
     ];
-
-    // Cellars is the collection of pools that the allocation module references
-    repeated Cellar cellars = 3;
 }

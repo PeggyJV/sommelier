@@ -5,14 +5,13 @@
 ## Table of Contents
 
 - [allocation/v1/allocation.proto](#allocation/v1/allocation.proto)
+    - [AddManagedCellarsProposal](#allocation.v1.AddManagedCellarsProposal)
     - [Allocation](#allocation.v1.Allocation)
     - [AllocationPrecommit](#allocation.v1.AllocationPrecommit)
     - [Cellar](#allocation.v1.Cellar)
-    - [Pool](#allocation.v1.Pool)
-    - [PoolAllocation](#allocation.v1.PoolAllocation)
-    - [PoolAllocations](#allocation.v1.PoolAllocations)
-    - [TickWeight](#allocation.v1.TickWeight)
-    - [TickWeights](#allocation.v1.TickWeights)
+    - [CellarUpdate](#allocation.v1.CellarUpdate)
+    - [RemoveManagedCellarsProposal](#allocation.v1.RemoveManagedCellarsProposal)
+    - [TickRange](#allocation.v1.TickRange)
   
 - [allocation/v1/tx.proto](#allocation/v1/tx.proto)
     - [MsgAllocationCommit](#allocation.v1.MsgAllocationCommit)
@@ -55,6 +54,23 @@
 
 
 
+<a name="allocation.v1.AddManagedCellarsProposal"></a>
+
+### AddManagedCellarsProposal
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `title` | [string](#string) |  |  |
+| `description` | [string](#string) |  |  |
+| `cellar_ids` | [string](#string) | repeated |  |
+
+
+
+
+
+
 <a name="allocation.v1.Allocation"></a>
 
 ### Allocation
@@ -63,8 +79,7 @@ Allocation is the commit for all allocations for a cellar by a validator
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| `cellar_id` | [string](#string) |  |  |
-| `pool_allocations` | [PoolAllocations](#allocation.v1.PoolAllocations) |  |  |
+| `cellar` | [Cellar](#allocation.v1.Cellar) |  |  |
 | `salt` | [string](#string) |  |  |
 
 
@@ -97,86 +112,58 @@ Cellar is a collection of pools for a token pair
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| `cellar_id` | [string](#string) |  |  |
-| `pool` | [Pool](#allocation.v1.Pool) | repeated |  |
+| `id` | [string](#string) |  |  |
+| `tick_ranges` | [TickRange](#allocation.v1.TickRange) | repeated |  |
 
 
 
 
 
 
-<a name="allocation.v1.Pool"></a>
+<a name="allocation.v1.CellarUpdate"></a>
 
-### Pool
-Pool collects tick information
+### CellarUpdate
+
 
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| `fee_level` | [string](#string) |  |  |
-| `tick_ranges` | [uint32](#uint32) | repeated |  |
+| `invalidation_nonce` | [uint64](#uint64) |  |  |
+| `cellar` | [Cellar](#allocation.v1.Cellar) |  |  |
 
 
 
 
 
 
-<a name="allocation.v1.PoolAllocation"></a>
+<a name="allocation.v1.RemoveManagedCellarsProposal"></a>
 
-### PoolAllocation
-PoolAllocation is the allocation of weights within a fee level on a cellar
+### RemoveManagedCellarsProposal
+
 
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| `fee_level` | [string](#string) |  |  |
-| `tick_weights` | [TickWeights](#allocation.v1.TickWeights) |  |  |
+| `title` | [string](#string) |  |  |
+| `description` | [string](#string) |  |  |
+| `cellar_ids` | [string](#string) | repeated |  |
 
 
 
 
 
 
-<a name="allocation.v1.PoolAllocations"></a>
+<a name="allocation.v1.TickRange"></a>
 
-### PoolAllocations
-PoolAllocations is a struct containing a collection of PoolAllocation
+### TickRange
+
 
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| `allocations` | [PoolAllocation](#allocation.v1.PoolAllocation) | repeated |  |
-
-
-
-
-
-
-<a name="allocation.v1.TickWeight"></a>
-
-### TickWeight
-TickWeight is the weighted Tick value
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| `tick` | [uint32](#uint32) |  |  |
-| `weight` | [string](#string) |  |  |
-
-
-
-
-
-
-<a name="allocation.v1.TickWeights"></a>
-
-### TickWeights
-TickWeights is a struct for holding a collection of TickWeight
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| `weights` | [TickWeight](#allocation.v1.TickWeight) | repeated |  |
+| `upper` | [uint64](#uint64) |  |  |
+| `lower` | [uint64](#uint64) |  |  |
+| `weight` | [uint64](#uint64) |  |  |
 
 
 
@@ -334,7 +321,6 @@ Params allocation parameters
 | ----- | ---- | ----- | ----------- |
 | `vote_period` | [int64](#int64) |  | VotePeriod defines the number of blocks to wait for votes before attempting to tally |
 | `vote_threshold` | [string](#string) |  | VoteThreshold defines the percentage of bonded stake required to vote each period |
-| `cellars` | [Cellar](#allocation.v1.Cellar) | repeated | Cellars is the collection of pools that the allocation module references |
 
 
 

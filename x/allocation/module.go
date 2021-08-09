@@ -15,7 +15,6 @@ import (
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
 	"github.com/peggyjv/sommelier/x/allocation/client/cli"
 	"github.com/peggyjv/sommelier/x/allocation/keeper"
-	"github.com/peggyjv/sommelier/x/allocation/simulation"
 	"github.com/peggyjv/sommelier/x/allocation/types"
 	"github.com/spf13/cobra"
 	abci "github.com/tendermint/tendermint/abci/types"
@@ -40,13 +39,13 @@ func (AppModuleBasic) RegisterLegacyAminoCodec(cdc *codec.LegacyAmino) {}
 
 // DefaultGenesis returns default genesis state as raw bytes for the oracle
 // module.
-func (AppModuleBasic) DefaultGenesis(cdc codec.JSONMarshaler) json.RawMessage {
+func (AppModuleBasic) DefaultGenesis(cdc codec.JSONCodec) json.RawMessage {
 	gs := types.DefaultGenesisState()
 	return cdc.MustMarshalJSON(&gs)
 }
 
 // ValidateGenesis performs genesis state validation for the oracle module.
-func (AppModuleBasic) ValidateGenesis(cdc codec.JSONMarshaler, _ client.TxEncodingConfig, bz json.RawMessage) error {
+func (AppModuleBasic) ValidateGenesis(cdc codec.JSONCodec, _ client.TxEncodingConfig, bz json.RawMessage) error {
 	var gs types.GenesisState
 	if err := cdc.UnmarshalJSON(bz, &gs); err != nil {
 		return err
@@ -79,17 +78,15 @@ func (b AppModuleBasic) RegisterInterfaces(registry codectypes.InterfaceRegistry
 	types.RegisterInterfaces(registry)
 }
 
-//___________________________
-
 // AppModule implements an application module for the oracle module.
 type AppModule struct {
 	AppModuleBasic
 	keeper keeper.Keeper
-	cdc    codec.Marshaler
+	cdc    codec.Codec
 }
 
 // NewAppModule creates a new AppModule object
-func NewAppModule(keeper keeper.Keeper, cdc codec.Marshaler) AppModule {
+func NewAppModule(keeper keeper.Keeper, cdc codec.Codec) AppModule {
 	return AppModule{
 		AppModuleBasic: AppModuleBasic{},
 		keeper:         keeper,
@@ -114,6 +111,15 @@ func (am AppModule) LegacyQuerierHandler(_ *codec.LegacyAmino) sdk.Querier {
 	return nil
 }
 
+// ConsensusVersion implements AppModule/ConsensusVersion.
+func (AppModule) ConsensusVersion() uint64 {
+	return 1
+}
+
+func (am AppModule) WeightedOperations(simState module.SimulationState) []sim.WeightedOperation {
+	return nil
+}
+
 // RegisterServices registers module services.
 func (am AppModule) RegisterServices(cfg module.Configurator) {
 	types.RegisterMsgServer(cfg.MsgServer(), am.keeper)
@@ -121,7 +127,7 @@ func (am AppModule) RegisterServices(cfg module.Configurator) {
 }
 
 // InitGenesis performs genesis initialization for the oracle module.
-func (am AppModule) InitGenesis(ctx sdk.Context, cdc codec.JSONMarshaler, data json.RawMessage) []abci.ValidatorUpdate {
+func (am AppModule) InitGenesis(ctx sdk.Context, cdc codec.JSONCodec, data json.RawMessage) []abci.ValidatorUpdate {
 	var genesisState types.GenesisState
 	cdc.MustUnmarshalJSON(data, &genesisState)
 	InitGenesis(ctx, am.keeper, genesisState)
@@ -131,7 +137,7 @@ func (am AppModule) InitGenesis(ctx sdk.Context, cdc codec.JSONMarshaler, data j
 
 // ExportGenesis returns the exported genesis state as raw bytes for the oracle
 // module.
-func (am AppModule) ExportGenesis(ctx sdk.Context, cdc codec.JSONMarshaler) json.RawMessage {
+func (am AppModule) ExportGenesis(ctx sdk.Context, cdc codec.JSONCodec) json.RawMessage {
 	genesisState := ExportGenesis(ctx, am.keeper)
 	return cdc.MustMarshalJSON(&genesisState)
 }
@@ -147,13 +153,10 @@ func (am AppModule) EndBlock(ctx sdk.Context, _ abci.RequestEndBlock) []abci.Val
 	return []abci.ValidatorUpdate{}
 }
 
-//____________________________________________________________________________
-
 // AppModuleSimulation functions
 
 // GenerateGenesisState creates a randomized GenState of the distribution module.
 func (AppModule) GenerateGenesisState(simState *module.SimulationState) {
-	simulation.RandomizedGenState(simState)
 }
 
 // ProposalContents returns all the distribution content functions used to
@@ -164,18 +167,9 @@ func (am AppModule) ProposalContents(_ module.SimulationState) []sim.WeightedPro
 
 // RandomizedParams creates randomized distribution param changes for the simulator.
 func (AppModule) RandomizedParams(r *rand.Rand) []sim.ParamChange {
-	return simulation.ParamChanges(r)
+	return nil
 }
 
 // RegisterStoreDecoder registers a decoder for distribution module's types
 func (am AppModule) RegisterStoreDecoder(sdr sdk.StoreDecoderRegistry) {
-	sdr[types.StoreKey] = simulation.DecodeStore(am.cdc)
-}
-
-// WeightedOperations returns the all the gov module operations with their respective weights.
-func (am AppModule) WeightedOperations(simState module.SimulationState) []sim.WeightedOperation {
-	return simulation.WeightedOperations(
-		simState.AppParams, simState.Cdc,
-		am.keeper,
-	)
 }

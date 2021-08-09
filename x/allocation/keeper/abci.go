@@ -2,6 +2,7 @@ package keeper
 
 import (
 	"fmt"
+
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/peggyjv/sommelier/x/allocation/types"
 
@@ -57,13 +58,13 @@ func (k Keeper) BeginBlocker(ctx sdk.Context) {
 //
 // 7) Sets the new voting period to the next block
 
-type PowerWeight struct {
-	validator sdk.ValAddress
-	cellar    common.Address
-	fee_level sdk.Dec
-	power     int64
-	tick      uint32
-}
+//type PowerWeight struct {
+//	validator sdk.ValAddress
+//	cellar    common.Address
+//	feeLevel  sdk.Dec
+//	power     int64
+//	tick      uint32
+//}
 
 func (k Keeper) EndBlocker(ctx sdk.Context) {
 	params := k.GetParamSet(ctx)
@@ -86,15 +87,15 @@ func (k Keeper) EndBlocker(ctx sdk.Context) {
 		// validators who submitted their vote
 		validatorsCommittedMap = make(map[string]bool)
 		// cellarMap is a map of cellars by address
-		cellarsMap = make(map[common.Address]*types.Cellar)
+		cellarsMap = make(map[common.Address]types.Cellar)
 		// cellarCommitsMap is a list of commits by cellar
 		cellarCommitsMap = make(map[common.Address][]types.Allocation)
 		// cellarTickWeightPowerMap is a map of cellars to pools to ticks with power adjusted allocations
-		cellarPoolTickPowerMap = make(map[common.Address]map[sdk.Dec]map[uint32]sdk.Dec)
+		cellarPowerMap = make(map[common.Address]map[int64]*types.Cellar)
 	)
 
-	for _, cellar := range params.Cellars {
-		cellarsMap[common.HexToAddress(cellar.CellarId)] = cellar
+	for _, cellar := range k.GetCellars(ctx) {
+		cellarsMap[common.HexToAddress(cellar.Id)] = cellar
 	}
 
 	// iterate over the data votes
@@ -103,7 +104,7 @@ func (k Keeper) EndBlocker(ctx sdk.Context) {
 		// NOTE: the commit might have been submitted by a delegate, so we have to check the
 		// original validator address
 
-		validator := k.stakingKeeper.Validator(ctx, sdk.ValAddress(validatorAddr))
+		validator := k.stakingKeeper.Validator(ctx, validatorAddr)
 		if validator == nil {
 			// validator nor found, continue with next commit
 			k.Logger(ctx).Debug(
@@ -113,16 +114,11 @@ func (k Keeper) EndBlocker(ctx sdk.Context) {
 			return false
 		}
 
-		validatorPower := validator.GetConsensusPower()
+		validatorPower := validator.GetConsensusPower(k.stakingKeeper.PowerReduction(ctx))
 
 		k.IterateValidatorAllocationCommits(ctx, validatorAddr, func(cellar common.Address, commit types.Allocation) bool {
 			cellarCommitsMap[cellar] = append(cellarCommitsMap[cellar], commit)
-			for _, pa := range commit.PoolAllocations.Allocations {
-				for _, tw := range pa.TickWeights.Weights {
-					cellarPoolTickPowerMap[cellar][pa.FeeLevel][tw.Tick] =
-						cellarPoolTickPowerMap[cellar][pa.FeeLevel][tw.Tick].Add(tw.Weight.MulInt64(validatorPower))
-				}
-			}
+			cellarPowerMap[cellar][validatorPower] = commit.Cellar
 
 			// delete the commit as it has already been processed
 			// TODO: consider keeping the votes for a few voting windows in order to
@@ -140,19 +136,20 @@ func (k Keeper) EndBlocker(ctx sdk.Context) {
 		return false
 	})
 
+	//panic("todo: figure out if the votes for a cellar are high enough to merit a rebalance")
+
 	// iterate over the full list of validators to increment miss counters if they didn't vote
 	totalPower := int64(0)
 	k.stakingKeeper.IterateBondedValidatorsByPower(ctx, func(_ int64, validator stakingtypes.ValidatorI) bool {
-		totalPower += validator.GetConsensusPower()
+		totalPower += validator.GetConsensusPower(k.stakingKeeper.PowerReduction(ctx))
 		return false
 	})
 
 	// if the voted_power/total_power > params.VoteThreshold then we submit the allocation to the contract
-	quorumReached := sdk.NewDec(votedPower).Quo(sdk.NewDec(totalPower)).GT(params.VoteThreshold)
-	if quorumReached {
-		// todo: create new allocation contract call
-	}
-
+	//quorumReached := sdk.NewDec(votedPower).Quo(sdk.NewDec(totalPower)).GT(params.VoteThreshold)
+	//if quorumReached {
+	//	// todo: create new allocation contract call
+	//}
 
 	// NOTE: the reward amount should be less than the slashed amount
 
