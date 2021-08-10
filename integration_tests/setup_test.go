@@ -29,13 +29,13 @@ import (
 )
 
 const (
-	testDenom      = "testsomm"
-	initBalanceStr = "110000000000utestsomm,100000000000testsomm"
+	testDenom           = "testsomm"
+	initBalanceStr      = "110000000000utestsomm,100000000000testsomm"
 	minGasPrice         = "0.00001"
 	ethChainID     uint = 15
-	nodeCount int = 4
-	repositoryName = "sommtestnet/testsomm"
-	bondDenom = "utestsomm"
+	nodeCount      int  = 4
+	repositoryName      = "sommtestnet/testsomm"
+	bondDenom           = "utestsomm"
 )
 
 var (
@@ -46,10 +46,10 @@ var (
 type IntegrationTestSuite struct {
 	suite.Suite
 
-	chain      *chain
-	dockerPool    *dockertest.Pool
-	dockerNetwork *dockertest.Network
-	ethResource   *dockertest.Resource
+	chain               *chain
+	dockerPool          *dockertest.Pool
+	dockerNetwork       *dockertest.Network
+	ethResource         *dockertest.Resource
 	valResources        []*dockertest.Resource
 	orchResources       []*dockertest.Resource
 	gravityContractAddr string
@@ -256,7 +256,6 @@ func (s *IntegrationTestSuite) initGenesis() {
 		writeFile(filepath.Join(val.configDir(), "config", "genesis.json"), bz)
 	}
 }
-
 
 func (s *IntegrationTestSuite) initValidatorConfigs() {
 	for i, val := range s.chain.validators {

@@ -2,9 +2,10 @@ package integration_tests
 
 import (
 	"fmt"
+	"io/ioutil"
+
 	"github.com/peggyjv/sommelier/app"
 	"github.com/peggyjv/sommelier/app/params"
-	"io/ioutil"
 
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/crypto/keys/ed25519"
@@ -48,7 +49,7 @@ type chain struct {
 	id            string
 	validators    []*validator
 	orchestrators []*orchestrator
-	sommNodes []*validator
+	sommNodes     []*validator
 }
 
 func newChain() (*chain, error) {
@@ -139,7 +140,6 @@ func (c *chain) createAndInitOrchestrators(count int) error {
 
 	return nil
 }
-
 
 func (c *chain) createAndInitOrchestratorsWithMnemonics(count int, mnemonics []string) error {
 	for i := 0; i < count; i++ {
