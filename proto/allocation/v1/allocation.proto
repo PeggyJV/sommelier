@@ -25,9 +25,9 @@ message Cellar {
 }
 
 message TickRange {
-  uint64 upper = 1;
-  uint64 lower = 2;
-  uint64 weight = 3;
+  int32 upper = 1;
+  int32 lower = 2;
+  uint32 weight = 3;
 }
 
 message CellarUpdate {

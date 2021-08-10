@@ -161,9 +161,9 @@ Cellar is a collection of pools for a token pair
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| `upper` | [uint64](#uint64) |  |  |
-| `lower` | [uint64](#uint64) |  |  |
-| `weight` | [uint64](#uint64) |  |  |
+| `upper` | [int32](#int32) |  |  |
+| `lower` | [int32](#int32) |  |  |
+| `weight` | [uint32](#uint32) |  |  |
 
 
 
