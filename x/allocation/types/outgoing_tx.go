@@ -17,13 +17,13 @@ func (c Cellar) GetCheckpoint() []byte {
 	}
 
 	type packTick struct {
-		tokenId *big.Int
-		upper   *big.Int
-		lower   *big.Int
-		weight  *big.Int
+		TokenId *big.Int `abi:"tokenId"`
+		Upper   *big.Int `abi:"tickUpper"`
+		Lower   *big.Int `abi:"tickLower"`
+		Weight  *big.Int `abi:"weight"`
 	}
 
-	ticks := []packTick{}
+	var ticks []packTick
 	for _, t := range c.TickRanges {
 		up := int64(t.Upper)
 		lo := int64(t.Lower)

@@ -21,7 +21,8 @@ func TestContractCallTxCheckpoint(t *testing.T) {
 
 	// hash from rust code
 	goldHash := "0x000000000...."[2:]
-	if goldHash != hex.EncodeToString(ourHash) {
-		t.Fail()
+	testHash := hex.EncodeToString(ourHash)
+	if goldHash != testHash {
+		t.Errorf("gold hash is not equal to generated hash:\n gold hash: %v\n test hash: %v", goldHash, testHash)
 	}
 }
