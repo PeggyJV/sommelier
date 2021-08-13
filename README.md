@@ -37,7 +37,7 @@ The Gravity Bridge requires some additional pieces to be deployed to support it:
 mkdir install && cd install
 
 # Install Orchestrator
-wget https://github.com/PeggyJV/gravity-bridge/releases/download/v0.1.14/client https://github.com/PeggyJV/gravity-bridge/releases/download/v0.1.14/contract-deployer https://github.com/PeggyJV/gravity-bridge/releases/download/v0.1.14/orchestrator https://github.com/PeggyJV/gravity-bridge/releases/download/v0.1.14/relayer https://github.com/PeggyJV/gravity-bridge/releases/download/v0.1.14/gorc && chmod +x * && sudo mv * /usr/bin
+wget https://github.com/PeggyJV/gravity-bridge/releases/download/v0.1.21/contract-deployer https://github.com/PeggyJV/gravity-bridge/releases/download/v0.1.21/orchestrator https://github.com/PeggyJV/gravity-bridge/releases/download/v0.1.21/relayer https://github.com/PeggyJV/gravity-bridge/releases/download/v0.1.21/gorc && chmod +x * && sudo mv * /usr/bin
 
 # Install Geth
 wget https://gethstore.blob.core.windows.net/builds/geth-linux-amd64-1.10.4-aa637fd3.tar.gz && tar -xvf geth-linux-amd64-1.10.4-aa637fd3.tar.gz && sudo mv geth-linux-amd64-1.10.4-aa637fd3/geth /usr/bin/geth && rm -rf geth-linux-amd64-1.10.4-aa637fd3*
@@ -133,7 +133,7 @@ Now you can try the bridge!!
 
 ```bash
 # send somm to ethereum
-client cosmos-to-eth \
+gorc cosmos-to-eth \
     --cosmos-phrase="$(jq -r '.orchestrator' ~/keys.json)" \
     --cosmos-grpc="http://localhost:9090" \
     --cosmos-denom="somm" \
@@ -142,7 +142,7 @@ client cosmos-to-eth \
     --cosmos-prefix="cosmos"
 
 # send goreli uniswap tokens to cosmos
-client eth-to-cosmos \
+gorc eth-to-cosmos \
     --ethereum-key="$(jq -r '.eth' ~/keys.json)" \
     --ethereum-rpc="http://localhost:8545" \
     --cosmos-prefix="cosmos" \
@@ -172,7 +172,7 @@ jq -rMc '.app_state.gravity.params.bridge_chain_id = "5"' ~/.sommelier/config/ge
 ### Deploy Peggy Contract
 
 ```bash
-wget https://github.com/PeggyJV/gravity-bridge/releases/download/v0.1.14/Gravity.json
+wget https://github.com/PeggyJV/gravity-bridge/releases/download/v0.1.21/Gravity.json
 contract-deployer \
     --cosmos-node="http://localhost:26657" \
     --eth-node="http://localhost:8545" \
@@ -184,8 +184,8 @@ contract-deployer \
 ### Deploy Somm ERC20 representation
 
 ```bash
-client deploy-erc20-representation \
-    --ethereum-key="0xe24bfff133d5f90f046147cb4d23a6e68ae277e6855d58c5b1f1208822a68dec" \
+gorc deploy erc20 \
+    --ethereum-key="0x0000000000000000000000000000000000000000000000000000000000000000" \
     --cosmos-grpc="http://localhost:9090" \
     --cosmos-prefix=cosmos \
     --cosmos-denom=usomm \
