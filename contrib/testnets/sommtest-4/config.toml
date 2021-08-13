@@ -1,0 +1,14 @@
+keystore = "/home/ubuntu/gorc/keystore/"
+
+[gravity]
+contract = "0x420152276Ed31914E69d7284F2c871f0ed50012C"
+fees_denom = "usomm"
+
+[ethereum]
+key_derivation_path = "m/44'/60'/0'/0/0"
+rpc = "http://localhost:8545"
+
+[cosmos]
+key_derivation_path = "m/44'/118'/0'/0/0"
+grpc = "http://localhost:9090"
+prefix = "somm"

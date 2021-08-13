@@ -43,7 +43,7 @@ wget https://github.com/PeggyJV/gravity-bridge/releases/download/v0.1.14/client 
 wget https://gethstore.blob.core.windows.net/builds/geth-linux-amd64-1.10.4-aa637fd3.tar.gz && tar -xvf geth-linux-amd64-1.10.4-aa637fd3.tar.gz && sudo mv geth-linux-amd64-1.10.4-aa637fd3/geth /usr/bin/geth && rm -rf geth-linux-amd64-1.10.4-aa637fd3*
 
 # Install Sommelier
-wget https://github.com/PeggyJV/sommelier/releases/download/v0.1.7/sommelier_0.1.7_linux_amd64.tar.gz && tar -xf sommelier_0.1.7_linux_amd64.tar.gz && sudo mv sommelier /usr/bin && rm -rf sommelier_0.1.7_linux_amd64* LICENSE README.md
+wget https://github.com/PeggyJV/sommelier/releases/download/v0.1.8/sommelier_0.1.8_linux_amd64.tar.gz && tar -xf sommelier_0.1.8_linux_amd64.tar.gz && sudo mv sommelier /usr/bin && rm -rf sommelier_0.1.8_linux_amd64* LICENSE README.md
 
 # Fetch systemd unit files
 wget https://raw.githubusercontent.com/PeggyJV/sommelier/main/contrib/systemd/geth.goerli.service https://raw.githubusercontent.com/PeggyJV/sommelier/main/contrib/systemd/gorc.service https://raw.githubusercontent.com/PeggyJV/sommelier/main/contrib/systemd/sommelier.service
@@ -61,13 +61,13 @@ sudo systemctl start geth && sudo journalctl -u geth -f
 
 # Init gorc configuration
 mkdir -p $HOME/gorc && cd $HOME/gorc
-wget https://raw.githubusercontent.com/PeggyJV/sommelier/main/contrib/testnets/sommtest-3/config.toml
+wget https://raw.githubusercontent.com/PeggyJV/sommelier/main/contrib/testnets/sommtest-4/config.toml
 
 # modify gorc config for your environment
 nano config.toml
 
 # Initialize the validator files
-sommelier init myval --chain-id sommtest-3
+sommelier init myval --chain-id sommtest-4
 
 # create/restore 2 cosmos keys and 1 ethereum key
 # NOTE: be sure to save the mnemonics and eth private key
@@ -95,7 +95,7 @@ sommelier keys add validator --recover
 nano ~/.sommelier/config/config.toml
 
 # pull the genesis file 
-wget https://raw.githubusercontent.com/PeggyJV/sommelier/main/contrib/testnets/sommtest-3/genesis.json -O $HOME/.sommelier/config/genesis.json
+wget https://raw.githubusercontent.com/PeggyJV/sommelier/main/contrib/testnets/sommtest-4/genesis.json -O $HOME/.sommelier/config/genesis.json
 
 # start your sommelier node - note it may take a minute or two to sync all of the blocks
 sudo systemctl start sommelier && sudo journalctl -u sommelier -f
@@ -105,7 +105,7 @@ sommelier tx staking create-validator \
   --amount=999999900000usomm \
   --pubkey=$(sommelier tendermint show-validator) \
   --moniker="mymoniker" \
-  --chain-id="sommtest-3" \
+  --chain-id="sommtest-4" \
   --commission-rate="0.10" \
   --commission-max-rate="0.20" \
   --commission-max-change-rate="0.01" \
@@ -119,7 +119,7 @@ sommelier tx gravity set-delegate-keys \
     $(gorc --config $HOME/gorc/config.toml keys cosmos show orchestrator) \ # orchestrator address (this must be run manually and address extracted)
     $(gorc --config $HOME/gorc/config.toml keys eth show signer) \ # eth signer address
     $(gorc --config $HOME/gorc/config.toml sign-delegate-keys signer $(sommelier keys show validator --bech val -a)) \ 
-    --chain-id sommtest-3 \ 
+    --chain-id sommtest-4 \ 
     --from validator \ 
     --fees 25000usomm -y
 
@@ -162,6 +162,7 @@ client eth-to-cosmos \
 sed -i 's/stake/usomm/g' ~/.sommelier/config/genesis.json
 
 # denom metadata
+# TODO: add name and symbol here
 jq -rMc '.app_state.bank.denom_metadata += [{"base": "usomm", display: "somm", "description": "A staking test token", "denom_units": [{"denom": "usomm", "exponent": 0}, {"denom": "somm", "exponent": 6}]}]' ~/.sommelier/config/genesis.json > ~/.sommelier/config/genesis.json
 
 # gravity params
@@ -184,13 +185,13 @@ contract-deployer \
 
 ```bash
 client deploy-erc20-representation \
-    --ethereum-key="0x0000000000000000000000000000000000000000000000000000000000000000" \
+    --ethereum-key="0xe24bfff133d5f90f046147cb4d23a6e68ae277e6855d58c5b1f1208822a68dec" \
     --cosmos-grpc="http://localhost:9090" \
     --cosmos-prefix=cosmos \
     --cosmos-denom=usomm \
     --ethereum-rpc=http://localhost:8545 \
-    --contract-address="0x0000000000000000000000000000000000000000" \
+    --contract-address="0x8887F26882a3F920e40A91969D1A40D1Ef7efe10" \
     --erc20-name=usomm \
-    --erc20-symbol=usomm \ 
-    --erc20-decimals=6 \
+    --erc20-symbol=usomm \
+    --erc20-decimals=6 
 ```
