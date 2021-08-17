@@ -1,30 +1,25 @@
 package types
 
 import (
+	"bytes"
 	"encoding/hex"
-	"fmt"
 	"testing"
 )
 
 func TestContractCallTxCheckpoint(t *testing.T) {
 
-	call := Cellar{
+	rebalanceHash := Cellar{
 		Id: "0x0000000000",
 		TickRanges: []*TickRange{
-			// TODO: replace with actual values from the rust code
 			{-189780, -192480, 160},
 			{-192480, -197880, 680},
 			{-197880, -200640, 160},
 		},
-	}
+	}.GetCheckpoint()
 
-	ourHash := call.GetCheckpoint()
-
-	// hash from rust code
-	goldHash := "0x21942107e0af59eee8101c5c940a932e8fdf243c6e9aff26b750b7b2eda62464"[2:]
-	fmt.Printf("%x\n", ourHash)
-	testHash := hex.EncodeToString(ourHash)
-	if goldHash != testHash {
-		t.Errorf("gold hash is not equal to generated hash:\n gold hash: %v\n test hash: %v", goldHash, testHash)
+	// hash from python brownie code cc @stevenj
+	testHash, _ := hex.DecodeString("0xd0f79d9bfeec64dbc27ccd281a20931cfadc07d87875c3289f55383e59f3ebbc"[2:])
+	if !bytes.Equal(testHash, rebalanceHash) {
+		t.Errorf("gold hash is not equal to generated hash:\n gold hash: %x\n test hash: %x", testHash, rebalanceHash)
 	}
 }
