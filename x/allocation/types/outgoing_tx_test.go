@@ -1,28 +1,28 @@
 package types
 
 import (
+	"bytes"
 	"encoding/hex"
 	"testing"
+
+	"github.com/stretchr/testify/require"
 )
 
 func TestContractCallTxCheckpoint(t *testing.T) {
 
-	call := Cellar{
+	rebalanceHash := Cellar{
 		Id: "0x0000000000",
 		TickRanges: []*TickRange{
-			// TODO: replace with actual values from the rust code
-			{19394, 191466, 19214124},
-			{19394, 191466, 19214124},
-			{19394, 191466, 19214124},
+			{-189780, -192480, 160},
+			{-192480, -197880, 680},
+			{-197880, -200640, 160},
 		},
-	}
+	}.GetCheckpoint()
 
-	ourHash := call.GetCheckpoint()
-
-	// hash from rust code
-	goldHash := "0x000000000...."[2:]
-	testHash := hex.EncodeToString(ourHash)
-	if goldHash != testHash {
-		t.Errorf("gold hash is not equal to generated hash:\n gold hash: %v\n test hash: %v", goldHash, testHash)
+	// hash from python brownie code cc @stevenj
+	testHash, err := hex.DecodeString("0xd0f79d9bfeec64dbc27ccd281a20931cfadc07d87875c3289f55383e59f3ebbc"[2:])
+	require.NoError(t, err)
+	if !bytes.Equal(testHash, rebalanceHash) {
+		t.Errorf("gold hash is not equal to generated hash:\n gold hash: %x\n test hash: %x", testHash, rebalanceHash)
 	}
 }
