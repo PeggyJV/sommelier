@@ -37,6 +37,8 @@ func (c Cellar) GetCheckpoint() []byte {
 		panic(err)
 	}
 
+	// TODO: why do I have to append the 0x in front here? Is this desirable? This is
+	// substantially different than the other calls
 	return crypto.Keccak256Hash([]byte(fmt.Sprintf("0x%x", abiEncodedCall))).Bytes()
 }
 
