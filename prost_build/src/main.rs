@@ -20,8 +20,6 @@ const EXCLUDED_PROTO_PACKAGES: &[&str] = &["gogoproto", "google", "tendermint", 
 /// Regex for locating instances of `cosmos-sdk-proto` in prost/tonic build output
 const COSMOS_SDK_PROTO_REGEX: &str = "(super::)+cosmos";
 
-/// A temporary directory for proto building
-const TMP_PATH: &str = "/tmp/sommelier/";
 /// the output directory
 const OUT_PATH: &str = "../somm_proto/src/prost/";
 
@@ -29,13 +27,14 @@ const OUT_PATH: &str = "../somm_proto/src/prost/";
 // working directory.
 
 fn main() {
+    let tmp_path: PathBuf = std::env::temp_dir();
     let out_path = Path::new(&OUT_PATH);
-    let tmp_path = Path::new(&TMP_PATH);
+    let tmp_path = Path::new(&tmp_path);
     compile_protos(out_path, tmp_path);
 }
 
 fn compile_protos(out_dir: &Path, tmp_dir: &Path) {
-    println!(
+    eprintln!(
         "[info] Compiling .proto files to Rust into '{}'...",
         out_dir.display()
     );
@@ -102,7 +101,7 @@ fn compile_protos(out_dir: &Path, tmp_dir: &Path) {
 }
 
 fn copy_generated_files(from_dir: &Path, to_dir: &Path) {
-    println!("Copying generated files into '{}'...", to_dir.display());
+    eprintln!("Copying generated files into '{}'...", to_dir.display());
 
     // Remove old compiled files
     remove_dir_all(&to_dir).unwrap_or_default();
