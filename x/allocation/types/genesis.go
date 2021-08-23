@@ -6,6 +6,8 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
+const DefaultParamspace = ModuleName
+
 // DefaultGenesisState get raw genesis raw message for testing
 func DefaultGenesisState() GenesisState {
 	return GenesisState{

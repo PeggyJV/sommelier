@@ -1,15 +1,14 @@
-package allocation
+package keeper
 
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/peggyjv/sommelier/x/allocation/keeper"
 	"github.com/peggyjv/sommelier/x/allocation/types"
 )
 
 // InitGenesis initialize default parameters
 // and the keeper's address to pubkey map
-func InitGenesis(ctx sdk.Context, k keeper.Keeper, gs types.GenesisState) {
-	k.SetParams(ctx, gs.Params)
+func InitGenesis(ctx sdk.Context, k Keeper, gs types.GenesisState) {
+	k.setParams(ctx, gs.Params)
 	// Set the vote period at initialization
 	k.SetCommitPeriodStart(ctx, ctx.BlockHeight())
 
@@ -25,7 +24,7 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, gs types.GenesisState) {
 // ExportGenesis writes the current store values
 // to a genesis file, which can be imported again
 // with InitGenesis
-func ExportGenesis(ctx sdk.Context, k keeper.Keeper) types.GenesisState {
+func ExportGenesis(ctx sdk.Context, k Keeper) types.GenesisState {
 	return types.GenesisState{
 		Params:            k.GetParamSet(ctx),
 		FeederDelegations: k.GetAllAllocationDelegations(ctx),

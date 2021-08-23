@@ -4,6 +4,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 	"github.com/peggyjv/gravity-bridge/module/x/gravity/types"
+	tmbytes "github.com/tendermint/tendermint/libs/bytes"
 )
 
 // StakingKeeper defines the expected staking keeper methods
@@ -24,4 +25,11 @@ type StakingKeeper interface {
 // GravityKeeper defines the expected gravity keeper methods
 type GravityKeeper interface {
 	SetOutgoingTx(ctx sdk.Context, outgoing types.OutgoingTx)
+	CreateContractCallTx(
+		ctx sdk.Context,
+		invalidationNonce uint64,
+		invalidationScope tmbytes.HexBytes,
+		payload []byte,
+		tokens []types.ERC20Token,
+		fees []types.ERC20Token) *types.ContractCallTx
 }

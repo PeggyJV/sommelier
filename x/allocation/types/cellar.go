@@ -10,7 +10,7 @@ func (c *Cellar) Address() common.Address {
 }
 
 func (c *Cellar) InvalidationScope() tmbytes.HexBytes {
-	panic("implement me")
+	return c.GetCheckpoint()
 }
 
 func (c *Cellar) abiEncodedTicks() (uppers []int32, lowers []int32, weights []uint32) {
@@ -21,4 +21,29 @@ func (c *Cellar) abiEncodedTicks() (uppers []int32, lowers []int32, weights []ui
 	}
 
 	return
+}
+
+func (c *Cellar) Equals(other Cellar) bool {
+	if c.Id != other.Id {
+		return false
+	}
+
+	if len(c.TickRanges) != len(other.TickRanges) {
+		return false
+	}
+
+	for _, tr := range c.TickRanges {
+		found := false
+		for _, otr := range other.TickRanges {
+			if tr.Equals(*otr) {
+				found = true
+			}
+		}
+
+		if !found {
+			return false
+		}
+	}
+
+	return true
 }

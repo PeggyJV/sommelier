@@ -3,6 +3,7 @@ package keeper
 import (
 	"bytes"
 	"fmt"
+	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/store/prefix"
@@ -29,7 +30,6 @@ func NewKeeper(
 	cdc codec.BinaryCodec, key sdk.StoreKey, paramSpace paramtypes.Subspace,
 	stakingKeeper types.StakingKeeper, gravityKeeper types.GravityKeeper,
 ) Keeper {
-
 	// set KeyTable if it has not already been set
 	if !paramSpace.HasKeyTable() {
 		paramSpace = paramSpace.WithKeyTable(types.ParamKeyTable())
@@ -363,8 +363,8 @@ func (k Keeper) GetParamSet(ctx sdk.Context) types.Params {
 	return p
 }
 
-// SetParams sets the parameters in the store
-func (k Keeper) SetParams(ctx sdk.Context, params types.Params) {
+// setParams sets the parameters in the store
+func (k Keeper) setParams(ctx sdk.Context, params types.Params) {
 	k.paramSpace.SetParamSet(ctx, &params)
 }
 
@@ -435,4 +435,65 @@ func (k Keeper) CommitCellarUpdate(ctx sdk.Context, invalidationNonce uint64, in
 func (k Keeper) DeleteCellar(ctx sdk.Context, cellarAddr common.Address) {
 	store := ctx.KVStore(k.storeKey)
 	store.Delete(types.GetCellarKey(cellarAddr))
+}
+
+///////////
+// Votes //
+///////////
+
+func (k Keeper) GetWinningVotes(ctx sdk.Context, threshold sdk.Dec) (winningVotes []types.Cellar) {
+	for _, cellar := range k.GetCellars(ctx) {
+		totalPower := int64(0)
+
+		var votes []types.Cellar
+		var votePowers []int64
+
+		// iterate over all bonded validators
+		k.stakingKeeper.IterateBondedValidatorsByPower(ctx, func(_ int64, validator stakingtypes.ValidatorI) bool {
+			validatorPower := validator.GetConsensusPower(k.stakingKeeper.PowerReduction(ctx))
+			totalPower += validatorPower
+
+			commit, ok := k.GetAllocationCommit(ctx, validator.GetOperator(), cellar.Address())
+			if !ok {
+				return false
+			}
+
+			found := false
+			for i, vote := range votes {
+				if vote.Equals(*commit.Cellar) {
+					votePowers[i] += validatorPower
+
+					found = true
+					break
+				}
+			}
+
+			if !found {
+				votes = append(votes, *commit.Cellar)
+				votePowers = append(votePowers, validatorPower)
+			}
+
+			// commit has been counted, removing from the store
+			k.DeleteAllocationCommit(ctx, validator.GetOperator(), cellar.Address())
+
+			return false
+		})
+
+		maxVoteIndex := 0
+		maxVotePower := int64(0)
+		for i, power := range votePowers {
+			if power > maxVotePower {
+				maxVotePower = power
+				maxVoteIndex = i
+			}
+		}
+
+		quorumReached := sdk.NewDec(maxVotePower).Quo(sdk.NewDec(totalPower)).GT(threshold)
+		if quorumReached {
+			winningVote := votes[maxVoteIndex]
+			winningVotes = append(winningVotes, winningVote)
+		}
+	}
+
+	return
 }
