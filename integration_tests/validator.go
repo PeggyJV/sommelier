@@ -8,8 +8,6 @@ import (
 	"path"
 	"path/filepath"
 
-	"github.com/peggyjv/sommelier/app"
-
 	sdkcrypto "github.com/cosmos/cosmos-sdk/crypto"
 	cryptocodec "github.com/cosmos/cosmos-sdk/crypto/codec"
 	"github.com/cosmos/cosmos-sdk/crypto/hd"
@@ -25,6 +23,7 @@ import (
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/crypto"
 	gravitytypes "github.com/peggyjv/gravity-bridge/module/x/gravity/types"
+	"github.com/peggyjv/sommelier/app"
 	tmcfg "github.com/tendermint/tendermint/config"
 	tmos "github.com/tendermint/tendermint/libs/os"
 	"github.com/tendermint/tendermint/p2p"
@@ -201,6 +200,17 @@ func (v *validator) generateEthereumKey() error {
 
 	return nil
 }
+
+
+func (v *validator) generateEthereumKeyFromMnemonic(mnemonic string) error {
+	ethKey, err := ethereumKeyFromMnemonic(mnemonic)
+	if err != nil {
+		return err
+	}
+	v.ethereumKey = *ethKey
+	return nil
+}
+
 
 func (v *validator) buildCreateValidatorMsg(amount sdk.Coin) (sdk.Msg, error) {
 	description := stakingtypes.NewDescription(v.moniker, "", "", "", "")

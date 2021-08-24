@@ -38,6 +38,34 @@ const (
 	bondDenom           = "utestsomm"
 )
 
+/*
+johnzampolin@sommelier-testnet-validator-1:~$ gorc --config ~/gorc/config.toml keys eth add one
+**Important** record this bip39-mnemonic in a safe place:
+say monitor orient heart super local purse cricket caution primary bring insane road expect rather help two extend own execute throw nation plunge subject
+0xd312f0f1B39D54Db2829537595fC1167B14d4b34
+johnzampolin@sommelier-testnet-validator-1:~$ gorc --config ~/gorc/config.toml keys eth add two
+**Important** record this bip39-mnemonic in a safe place:
+march carpet enact kiss tribe plastic wash enter index lift topic riot try juice replace supreme original shift hover adapt mutual holiday manual nut
+0x7bE2a04df4b9C3227928147461e19158eB2B11d1
+johnzampolin@sommelier-testnet-validator-1:~$ gorc --config ~/gorc/config.toml keys eth add three
+**Important** record this bip39-mnemonic in a safe place:
+assault section bleak gadget venture ship oblige pave fabric more initial april dutch scene parade shallow educate gesture lunar match patch hawk member problem
+0xb8c6886FDDa38adaa0F416722dd5554886C43055
+johnzampolin@sommelier-testnet-validator-1:~$ gorc --config ~/gorc/config.toml keys eth add four
+**Important** record this bip39-mnemonic in a safe place:
+receive roof marine sure lady hundred sea enact exist place bean wagon kingdom betray science photo loop funny bargain floor suspect only strike endless
+0x14fdAC734De10065093C4Ed4a83C41638378005A
+*/
+
+func MNEMONICS() [4]string {
+	return [4]string{
+		"say monitor orient heart super local purse cricket caution primary bring insane road expect rather help two extend own execute throw nation plunge subject",
+		"march carpet enact kiss tribe plastic wash enter index lift topic riot try juice replace supreme original shift hover adapt mutual holiday manual nut",
+		"assault section bleak gadget venture ship oblige pave fabric more initial april dutch scene parade shallow educate gesture lunar match patch hawk member problem",
+		"receive roof marine sure lady hundred sea enact exist place bean wagon kingdom betray science photo loop funny bargain floor suspect only strike endless",
+	}
+}
+
 var (
 	stakeAmount, _  = sdk.NewIntFromString("100000000000")
 	stakeAmountCoin = sdk.NewCoin(bondDenom, stakeAmount)
