@@ -5,12 +5,13 @@ package types
 
 import (
 	fmt "fmt"
-	_ "github.com/gogo/protobuf/gogoproto"
-	proto "github.com/gogo/protobuf/proto"
-	github_com_tendermint_tendermint_libs_bytes "github.com/tendermint/tendermint/libs/bytes"
 	io "io"
 	math "math"
 	math_bits "math/bits"
+
+	_ "github.com/gogo/protobuf/gogoproto"
+	proto "github.com/gogo/protobuf/proto"
+	github_com_tendermint_tendermint_libs_bytes "github.com/tendermint/tendermint/libs/bytes"
 )
 
 // Reference imports to suppress errors if they are not otherwise used.

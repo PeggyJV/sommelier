@@ -3,6 +3,7 @@ package keeper
 import (
 	"bytes"
 	"fmt"
+
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 
 	"github.com/cosmos/cosmos-sdk/codec"
