@@ -201,7 +201,6 @@ func (v *validator) generateEthereumKey() error {
 	return nil
 }
 
-
 func (v *validator) generateEthereumKeyFromMnemonic(mnemonic string) error {
 	ethKey, err := ethereumKeyFromMnemonic(mnemonic)
 	if err != nil {
@@ -210,7 +209,6 @@ func (v *validator) generateEthereumKeyFromMnemonic(mnemonic string) error {
 	v.ethereumKey = *ethKey
 	return nil
 }
-
 
 func (v *validator) buildCreateValidatorMsg(amount sdk.Coin) (sdk.Msg, error) {
 	description := stakingtypes.NewDescription(v.moniker, "", "", "", "")

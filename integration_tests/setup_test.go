@@ -180,7 +180,6 @@ func (s *IntegrationTestSuite) initNodesWithMnemonics(mnemonics ...string) {
 	}
 }
 
-
 func (s *IntegrationTestSuite) initEthereum() {
 	// generate ethereum keys for validators add them to the ethereum genesis
 	ethGenesis := EthereumGenesis{
