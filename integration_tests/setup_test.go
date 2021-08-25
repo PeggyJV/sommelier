@@ -33,32 +33,12 @@ const (
 	initBalanceStr      = "110000000000utestsomm,100000000000testsomm"
 	minGasPrice         = "0.00001"
 	ethChainID     uint = 15
-	nodeCount      int  = 4
 	repositoryName      = "sommtestnet/testsomm"
 	bondDenom           = "utestsomm"
 )
 
-/*
-johnzampolin@sommelier-testnet-validator-1:~$ gorc --config ~/gorc/config.toml keys eth add one
-**Important** record this bip39-mnemonic in a safe place:
-say monitor orient heart super local purse cricket caution primary bring insane road expect rather help two extend own execute throw nation plunge subject
-0xd312f0f1B39D54Db2829537595fC1167B14d4b34
-johnzampolin@sommelier-testnet-validator-1:~$ gorc --config ~/gorc/config.toml keys eth add two
-**Important** record this bip39-mnemonic in a safe place:
-march carpet enact kiss tribe plastic wash enter index lift topic riot try juice replace supreme original shift hover adapt mutual holiday manual nut
-0x7bE2a04df4b9C3227928147461e19158eB2B11d1
-johnzampolin@sommelier-testnet-validator-1:~$ gorc --config ~/gorc/config.toml keys eth add three
-**Important** record this bip39-mnemonic in a safe place:
-assault section bleak gadget venture ship oblige pave fabric more initial april dutch scene parade shallow educate gesture lunar match patch hawk member problem
-0xb8c6886FDDa38adaa0F416722dd5554886C43055
-johnzampolin@sommelier-testnet-validator-1:~$ gorc --config ~/gorc/config.toml keys eth add four
-**Important** record this bip39-mnemonic in a safe place:
-receive roof marine sure lady hundred sea enact exist place bean wagon kingdom betray science photo loop funny bargain floor suspect only strike endless
-0x14fdAC734De10065093C4Ed4a83C41638378005A
-*/
-
-func MNEMONICS() [4]string {
-	return [4]string{
+func MNEMONICS() []string {
+	return []string{
 		"say monitor orient heart super local purse cricket caution primary bring insane road expect rather help two extend own execute throw nation plunge subject",
 		"march carpet enact kiss tribe plastic wash enter index lift topic riot try juice replace supreme original shift hover adapt mutual holiday manual nut",
 		"assault section bleak gadget venture ship oblige pave fabric more initial april dutch scene parade shallow educate gesture lunar match patch hawk member problem",
@@ -97,7 +77,8 @@ func (s *IntegrationTestSuite) SetupSuite() {
 	s.T().Logf("starting e2e infrastructure; chain-id: %s; datadir: %s", s.chain.id, s.chain.dataDir)
 
 	// initialization
-	s.initNodes(nodeCount)
+	mnemonics := MNEMONICS()
+	s.initNodesWithMnemonics(mnemonics...)
 	s.initEthereum()
 	s.initGenesis()
 	s.initValidatorConfigs()
@@ -170,6 +151,36 @@ func (s *IntegrationTestSuite) initNodes(nodeCount int) {
 	}
 }
 
+func (s *IntegrationTestSuite) initNodesWithMnemonics(mnemonics ...string) {
+	s.Require().NoError(s.chain.createAndInitValidatorsWithMnemonics(mnemonics))
+	s.Require().NoError(s.chain.createAndInitOrchestratorsWithMnemonics(mnemonics))
+
+	// initialize a genesis file for the first validator
+	val0ConfigDir := s.chain.validators[0].configDir()
+	for _, val := range s.chain.validators {
+		s.Require().NoError(
+			addGenesisAccount(val0ConfigDir, "", initBalanceStr, val.keyInfo.GetAddress()),
+		)
+	}
+
+	// add orchestrator accounts to genesis file
+	for _, orch := range s.chain.orchestrators {
+		s.Require().NoError(
+			addGenesisAccount(val0ConfigDir, "", initBalanceStr, orch.keyInfo.GetAddress()),
+		)
+	}
+
+	// copy the genesis file to the remaining validators
+	for _, val := range s.chain.validators[1:] {
+		_, err := copyFile(
+			filepath.Join(val0ConfigDir, "config", "genesis.json"),
+			filepath.Join(val.configDir(), "config", "genesis.json"),
+		)
+		s.Require().NoError(err)
+	}
+}
+
+
 func (s *IntegrationTestSuite) initEthereum() {
 	// generate ethereum keys for validators add them to the ethereum genesis
 	ethGenesis := EthereumGenesis{
@@ -186,6 +197,32 @@ func (s *IntegrationTestSuite) initEthereum() {
 	ethGenesis.Alloc["0xBf660843528035a5A4921534E156a27e64B231fE"] = alloc
 	for _, val := range s.chain.validators {
 		s.Require().NoError(val.generateEthereumKey())
+		ethGenesis.Alloc[val.ethereumKey.address] = alloc
+	}
+
+	ethGenBz, err := json.MarshalIndent(ethGenesis, "", "  ")
+	s.Require().NoError(err)
+
+	// write out the genesis file
+	s.Require().NoError(writeFile(filepath.Join(s.chain.configDir(), "eth_genesis.json"), ethGenBz))
+}
+
+func (s *IntegrationTestSuite) initEthereumFromMnemonics(mnemonics []string) {
+	// generate ethereum keys for validators add them to the ethereum genesis
+	ethGenesis := EthereumGenesis{
+		Difficulty: "0x400",
+		GasLimit:   "0xB71B00",
+		Config:     EthereumConfig{ChainID: ethChainID},
+		Alloc:      make(map[string]Allocation, len(s.chain.validators)+1),
+	}
+
+	alloc := Allocation{
+		Balance: "0x1337000000000000000000",
+	}
+
+	ethGenesis.Alloc["0xBf660843528035a5A4921534E156a27e64B231fE"] = alloc
+	for i, val := range s.chain.validators {
+		s.Require().NoError(val.generateEthereumKeyFromMnemonic(mnemonics[i]))
 		ethGenesis.Alloc[val.ethereumKey.address] = alloc
 	}
 

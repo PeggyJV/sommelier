@@ -94,8 +94,8 @@ func (c *chain) createAndInitValidators(count int) error {
 	return nil
 }
 
-func (c *chain) createAndInitValidatorsWithMnemonics(count int, mnemonics []string) error {
-	for i := 0; i < count; i++ {
+func (c *chain) createAndInitValidatorsWithMnemonics(mnemonics []string) error {
+	for i := 0; i < len(mnemonics); i++ {
 		// create node
 		node := c.createValidator(i)
 
@@ -141,8 +141,8 @@ func (c *chain) createAndInitOrchestrators(count int) error {
 	return nil
 }
 
-func (c *chain) createAndInitOrchestratorsWithMnemonics(count int, mnemonics []string) error {
-	for i := 0; i < count; i++ {
+func (c *chain) createAndInitOrchestratorsWithMnemonics(mnemonics []string) error {
+	for i := 0; i < len(mnemonics); i++ {
 		// create orchestrator
 		orchestrator := c.createOrchestrator(i)
 
