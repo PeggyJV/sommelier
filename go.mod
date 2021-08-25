@@ -11,6 +11,7 @@ require (
 	github.com/golang/protobuf v1.5.2
 	github.com/gorilla/mux v1.8.0
 	github.com/grpc-ecosystem/grpc-gateway v1.16.0
+	github.com/peggyjv/gravity-bridge v0.1.22-0.20210825143845-58c1d2fc2f34 // indirect
 	github.com/peggyjv/gravity-bridge/module v0.1.21
 	github.com/rakyll/statik v0.1.7
 	github.com/regen-network/cosmos-proto v0.3.1
