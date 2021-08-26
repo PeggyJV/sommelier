@@ -10,12 +10,15 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "@nomiclabs/hardhat-ethers": "^2.0.2",
+    "@nomiclabs/hardhat-waffle": "^2.0.1",
     "chai": "^4.3.4",
     "ethereum-waffle": "^3.4.0",
     "ethers": "^5.4.5",
     "hardhat": "^2.6.0",
     "hardhat-ethers": "^1.0.1",
     "hardhat-waffle": "^0.0.1-security",
+    "ts-node": "^10.2.1",
     "typechain": "^5.1.2",
     "typechain-target-ethers-v5": "^5.0.1"
   }
