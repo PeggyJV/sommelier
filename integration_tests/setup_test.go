@@ -366,6 +366,11 @@ func (s *IntegrationTestSuite) initValidatorConfigs() {
 	}
 }
 
+func (s *IntegrationTestSuite) runHardhatContainer() {
+	s.T().Log("starting Ethereum Hardhat container...")
+
+}
+
 func (s *IntegrationTestSuite) runEthContainer() {
 	s.T().Log("starting Ethereum container...")
 

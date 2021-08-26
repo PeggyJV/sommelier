@@ -107,7 +107,7 @@ func (c *chain) createAndInitValidatorsWithMnemonics(mnemonics []string) error {
 		c.validators = append(c.validators, node)
 
 		// create keys
-		if err := node.createKeyFromMnemonic("val", mnemonics[i]); err != nil {
+		if err := node.createKeyFromMnemonic("val", mnemonics[i], ""); err != nil {
 			return err
 		}
 		if err := node.createNodeKey(); err != nil {
@@ -127,7 +127,7 @@ func (c *chain) createAndInitOrchestrators(count int) error {
 		orchestrator := c.createOrchestrator(i)
 
 		// create keys
-		mnemonic, info, err := createMemoryKey()
+		mnemonic, info, err := createMemoryKey("orchestrator")
 		if err != nil {
 			return err
 		}
@@ -147,7 +147,7 @@ func (c *chain) createAndInitOrchestratorsWithMnemonics(mnemonics []string) erro
 		orchestrator := c.createOrchestrator(i)
 
 		// create keys
-		info, err := createMemoryKeyFromMnemonic(mnemonics[i])
+		info, err := createMemoryKeyFromMnemonic(mnemonics[i], "orchestrator")
 		if err != nil {
 			return err
 		}

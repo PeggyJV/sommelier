@@ -134,7 +134,7 @@ func (v *validator) createConsensusKey() error {
 	return nil
 }
 
-func (v *validator) createKeyFromMnemonic(name, mnemonic string) error {
+func (v *validator) createKeyFromMnemonic(name, mnemonic string, passphrase string) error {
 	kb, err := keyring.New(keyringAppName, keyring.BackendTest, v.configDir(), nil)
 	if err != nil {
 		return err
@@ -146,7 +146,7 @@ func (v *validator) createKeyFromMnemonic(name, mnemonic string) error {
 		return err
 	}
 
-	info, err := kb.NewAccount(name, mnemonic, "", sdk.FullFundraiserPath, algo)
+	info, err := kb.NewAccount(name, mnemonic, passphrase, sdk.FullFundraiserPath, algo)
 	if err != nil {
 		return err
 	}
@@ -174,7 +174,7 @@ func (v *validator) createKey(name string) error {
 		return err
 	}
 
-	return v.createKeyFromMnemonic(name, mnemonic)
+	return v.createKeyFromMnemonic(name, mnemonic, "")
 }
 
 func (v *validator) generateEthereumKey() error {
