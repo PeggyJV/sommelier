@@ -37,7 +37,8 @@ module.exports = {
   networks: {
     hardhat: {
       forking: {
-        url: "https://mainnet.infura.io/v3/d6f22be0f7fd447186086d2495779003"
+        url: "https://mainnet.infura.io/v3/d6f22be0f7fd447186086d2495779003",
+        blockNumber: 13103326
       }
     },
   },
