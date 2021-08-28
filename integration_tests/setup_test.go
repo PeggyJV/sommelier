@@ -375,7 +375,7 @@ func (s *IntegrationTestSuite) runEthContainer() {
 	s.T().Log("starting Ethereum container...")
 
 	_, err := copyFile(
-		filepath.Join("./", "eth.Dockerfile"),
+		filepath.Join("./", "ethereum", "Dockerfile"),
 		filepath.Join(s.chain.configDir(), "eth.Dockerfile"),
 	)
 	s.Require().NoError(err)

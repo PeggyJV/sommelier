@@ -65,7 +65,7 @@ package integration_tests
 //	})
 //}
 
-func (s *IntegrationTestSuite) TestSommelierRebalance() {
+func (s *IntegrationTestSuite) TestRebalance() {
 	s.Run("Bring up chain", func() {
 
 	})
