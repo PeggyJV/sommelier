@@ -83,9 +83,6 @@ import (
 	ibchost "github.com/cosmos/ibc-go/modules/core/24-host"
 	ibckeeper "github.com/cosmos/ibc-go/modules/core/keeper"
 	"github.com/gorilla/mux"
-	"github.com/peggyjv/gravity-bridge/module/x/gravity"
-	gravitykeeper "github.com/peggyjv/gravity-bridge/module/x/gravity/keeper"
-	gravitytypes "github.com/peggyjv/gravity-bridge/module/x/gravity/types"
 	appParams "github.com/peggyjv/sommelier/app/params"
 	"github.com/rakyll/statik/fs"
 	abci "github.com/tendermint/tendermint/abci/types"
@@ -131,8 +128,6 @@ var (
 		ibctransfer.AppModuleBasic{},
 		vesting.AppModuleBasic{},
 		authzmodule.AppModuleBasic{},
-		gravity.AppModuleBasic{},
-		// allocation.AppModuleBasic{},
 	)
 
 	// module account permissions
@@ -144,7 +139,6 @@ var (
 		stakingtypes.NotBondedPoolName: {authtypes.Burner, authtypes.Staking},
 		govtypes.ModuleName:            {authtypes.Burner},
 		ibctransfertypes.ModuleName:    {authtypes.Minter, authtypes.Burner},
-		gravitytypes.ModuleName:        {authtypes.Minter, authtypes.Burner},
 	}
 
 	// module accounts that are allowed to receive tokens
@@ -187,12 +181,8 @@ type SommelierApp struct {
 	IBCKeeper        *ibckeeper.Keeper // IBC Keeper must be a pointer in the app, so we can SetRouter on it correctly
 	EvidenceKeeper   evidencekeeper.Keeper
 	TransferKeeper   ibctransferkeeper.Keeper
-	GravityKeeper    gravitykeeper.Keeper
 	AuthzKeeper      authzkeeper.Keeper
 	FeeGrantKeeper   feegrantkeeper.Keeper
-
-	// Sommelier keepers
-	// AllocationKeeper allocationkeeper.Keeper
 
 	// make capability scoped keepers public for test purposes (IBC only)
 	ScopedIBCKeeper      capabilitykeeper.ScopedKeeper
@@ -234,7 +224,7 @@ func NewSommelierApp(
 		minttypes.StoreKey, distrtypes.StoreKey, slashingtypes.StoreKey,
 		govtypes.StoreKey, paramstypes.StoreKey, ibchost.StoreKey, upgradetypes.StoreKey,
 		evidencetypes.StoreKey, ibctransfertypes.StoreKey, capabilitytypes.StoreKey,
-		gravitytypes.ModuleName, feegrant.StoreKey, authzkeeper.StoreKey,
+		feegrant.StoreKey, authzkeeper.StoreKey,
 	)
 	tkeys := sdk.NewTransientStoreKeys(paramstypes.TStoreKey)
 	memKeys := sdk.NewMemoryStoreKeys(capabilitytypes.MemStoreKey)
@@ -329,22 +319,6 @@ func NewSommelierApp(
 	)
 	transferModule := ibctransfer.NewAppModule(app.TransferKeeper)
 
-	// todo: check if default power reduction is appropriate
-	app.GravityKeeper = gravitykeeper.NewKeeper(
-		appCodec, keys[gravitytypes.StoreKey], app.GetSubspace(gravitytypes.ModuleName),
-		app.AccountKeeper, app.StakingKeeper, app.BankKeeper, app.SlashingKeeper, sdk.DefaultPowerReduction,
-	)
-
-	app.GravityKeeper.SetHooks(
-		gravitytypes.NewMultiGravityHooks(
-		// app.AllocationKeeper.Hooks(),
-		))
-
-	// app.AllocationKeeper = allocationkeeper.NewKeeper(
-	// 	appCodec, keys[allocationtypes.StoreKey], app.GetSubspace(allocationtypes.ModuleName),
-	// 	app.StakingKeeper, app.GravityKeeper,
-	// )
-
 	// Create static IBC router, add transfer route, then set and seal it
 	ibcRouter := ibcporttypes.NewRouter()
 	ibcRouter.AddRoute(ibctransfertypes.ModuleName, transferModule)
@@ -392,10 +366,7 @@ func NewSommelierApp(
 		ibc.NewAppModule(app.IBCKeeper),
 		params.NewAppModule(app.ParamsKeeper),
 		transferModule,
-		gravity.NewAppModule(app.GravityKeeper, app.BankKeeper),
 		authzmodule.NewAppModule(appCodec, app.AuthzKeeper, app.AccountKeeper, app.BankKeeper, app.interfaceRegistry),
-
-		// allocation.NewAppModule(app.AllocationKeeper, appCodec),
 	)
 
 	// During begin block slashing happens after distr.BeginBlocker so that
@@ -404,13 +375,13 @@ func NewSommelierApp(
 	// NOTE: staking module is required if HistoricalEntries param > 0
 	app.mm.SetOrderBeginBlockers(
 		upgradetypes.ModuleName, minttypes.ModuleName, distrtypes.ModuleName, slashingtypes.ModuleName,
-		evidencetypes.ModuleName, stakingtypes.ModuleName, ibchost.ModuleName, gravitytypes.ModuleName,
+		evidencetypes.ModuleName, stakingtypes.ModuleName, ibchost.ModuleName,
 	)
 
 	// NOTE: Impermanent loss module must always go after the oracle module to have the
 	// aggregated data available for stoploss execution. The bridge module doesn't require a
 	// specific endblock order.
-	app.mm.SetOrderEndBlockers(crisistypes.ModuleName, govtypes.ModuleName, stakingtypes.ModuleName, gravitytypes.ModuleName)
+	app.mm.SetOrderEndBlockers(crisistypes.ModuleName, govtypes.ModuleName, stakingtypes.ModuleName)
 
 	// NOTE: The genutils module must occur after staking so that pools are
 	// properly initialized with tokens from genesis accounts.
@@ -421,7 +392,7 @@ func NewSommelierApp(
 		capabilitytypes.ModuleName, authtypes.ModuleName, banktypes.ModuleName, distrtypes.ModuleName,
 		stakingtypes.ModuleName, slashingtypes.ModuleName, govtypes.ModuleName, minttypes.ModuleName,
 		crisistypes.ModuleName, ibchost.ModuleName, genutiltypes.ModuleName, evidencetypes.ModuleName,
-		ibctransfertypes.ModuleName, gravitytypes.ModuleName, authz.ModuleName,
+		ibctransfertypes.ModuleName, authz.ModuleName,
 		feegrant.ModuleName,
 	)
 
@@ -661,7 +632,6 @@ func initParamsKeeper(appCodec codec.BinaryCodec, legacyAmino *codec.LegacyAmino
 	paramsKeeper.Subspace(crisistypes.ModuleName)
 	paramsKeeper.Subspace(ibctransfertypes.ModuleName)
 	paramsKeeper.Subspace(ibchost.ModuleName)
-	paramsKeeper.Subspace(gravitytypes.ModuleName)
 
 	return paramsKeeper
 }
