@@ -377,6 +377,9 @@ e2e_clean_slate: e2e_build_images
 	@sudo rm -fr testdata
 	@cd integration_tests && go test -c
 
-e2e_rebalance: e2e_build_images
+e2e_basic: e2e_clean_slate
+	@integration_tests/integration_tests.test -test.run TestBasicChain -test.failfast -test.v || make -s fail
+
+e2e_rebalance: e2e_clean_slate
 	@integration_tests/integration_tests.test -test.run TestRebalance -test.failfast -test.v || make -s fail
 

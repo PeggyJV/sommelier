@@ -92,7 +92,6 @@ func (s *IntegrationTestSuite) SetupSuite() {
 	// container infrastructure
 	s.runEthContainer()
 	s.runValidators()
-	s.runContractDeployment()
 	s.runOrchestrators()
 }
 
@@ -373,26 +372,20 @@ func (s *IntegrationTestSuite) runHardhatContainer() {
 
 func (s *IntegrationTestSuite) runEthContainer() {
 	s.T().Log("starting Ethereum container...")
+	var err error
 
-	_, err := copyFile(
-		filepath.Join("./", "ethereum", "Dockerfile"),
-		filepath.Join(s.chain.configDir(), "eth.Dockerfile"),
-	)
-	s.Require().NoError(err)
+	runOpts := dockertest.RunOptions{
+		Name: "ethereum",
+		Repository: "ethereum",
+		Tag: "prebuilt",
+		NetworkID: s.dockerNetwork.Network.ID,
+		PortBindings: map[docker.Port][]docker.PortBinding{
+			"8545/tcp": {{HostIP: "", HostPort: "8545"}},
+		},
+	}
 
-	s.ethResource, err = s.dockerPool.BuildAndRunWithBuildOptions(
-		&dockertest.BuildOptions{
-			Dockerfile: "eth.Dockerfile",
-			ContextDir: s.chain.configDir(),
-		},
-		&dockertest.RunOptions{
-			Name:      "ethereum",
-			NetworkID: s.dockerNetwork.Network.ID,
-			PortBindings: map[docker.Port][]docker.PortBinding{
-				"8545/tcp": {{HostIP: "", HostPort: "8545"}},
-			},
-			Env: []string{},
-		},
+	s.ethResource, err = s.dockerPool.RunWithOptions(
+		&runOpts,
 		noRestart,
 	)
 	s.Require().NoError(err)
@@ -402,6 +395,7 @@ func (s *IntegrationTestSuite) runEthContainer() {
 
 	// Wait for the Ethereum node to start producing blocks; DAG completion takes
 	// about two minutes.
+	// todo (mvid): do we need this if we are using hardhat?
 	s.Require().Eventually(
 		func() bool {
 			ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
@@ -416,7 +410,7 @@ func (s *IntegrationTestSuite) runEthContainer() {
 		},
 		5*time.Minute,
 		10*time.Second,
-		"geth node failed to produce a block",
+		"ethereum node failed to produce a block",
 	)
 
 	s.T().Logf("started Ethereum container: %s", s.ethResource.Container.ID)
@@ -480,67 +474,6 @@ func (s *IntegrationTestSuite) runValidators() {
 		time.Second,
 		"validator node failed to produce blocks",
 	)
-}
-
-func (s *IntegrationTestSuite) runContractDeployment() {
-	s.T().Log("starting contract deployer container...")
-
-	resource, err := s.dockerPool.RunWithOptions(
-		&dockertest.RunOptions{
-			Name:       "gravity-contract-deployer",
-			NetworkID:  s.dockerNetwork.Network.ID,
-			Repository: repositoryName,
-			// NOTE: container names are prefixed with '/'
-			Entrypoint: []string{
-				"contract-deployer",
-				"--cosmos-node",
-				fmt.Sprintf("http://%s:26657", s.valResources[0].Container.Name[1:]),
-				"--eth-node",
-				fmt.Sprintf("http://%s:8545", s.ethResource.Container.Name[1:]),
-				"--eth-privkey",
-				"0xb1bab011e03a9862664706fc3bbaa1b16651528e5f0e7fbfcbfdd8be302a13e7",
-				"--contract",
-				"/var/data/Gravity.json",
-			},
-		},
-		noRestart,
-	)
-	s.Require().NoError(err)
-
-	s.T().Logf("started contract deployer: %s", resource.Container.ID)
-
-	// wait for the container to finish executing, i.e. deploys the gravity contract
-	container := resource.Container
-	for container.State.Running {
-		time.Sleep(10 * time.Second)
-
-		container, err = s.dockerPool.Client.InspectContainer(resource.Container.ID)
-		s.Require().NoError(err)
-	}
-
-	var containerLogsBuf bytes.Buffer
-	s.Require().NoError(s.dockerPool.Client.Logs(
-		docker.LogsOptions{
-			Container:    resource.Container.ID,
-			OutputStream: &containerLogsBuf,
-			Stdout:       true,
-		},
-	), containerLogsBuf.String())
-
-	var gravityContractAddr string
-	for _, s := range strings.Split(containerLogsBuf.String(), "\n") {
-		if strings.HasPrefix(s, "Gravity deployed at Address") {
-			tokens := strings.Split(s, "-")
-			gravityContractAddr = strings.ReplaceAll(tokens[1], " ", "")
-			break
-		}
-	}
-
-	s.Require().NoError(s.dockerPool.RemoveContainerByName(container.Name))
-	s.Require().NotEmpty(gravityContractAddr)
-
-	s.T().Logf("deployed gravity contract: %s", gravityContractAddr)
-	s.gravityContractAddr = gravityContractAddr
 }
 
 func (s *IntegrationTestSuite) runOrchestrators() {
@@ -655,4 +588,9 @@ func noRestart(config *docker.HostConfig) {
 	config.RestartPolicy = docker.RestartPolicy{
 		Name: "no",
 	}
+}
+
+func (s *IntegrationTestSuite) TestBasicChain() {
+	// this test verifies that the setup functions all operate as expected
+	s.Run("bring up basic chain", func() {})
 }

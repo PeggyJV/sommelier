@@ -66,7 +66,7 @@ package integration_tests
 //}
 
 func (s *IntegrationTestSuite) TestRebalance() {
-	s.Run("Bring up chain", func() {
+	s.Run("Bring up chain, and submit a re-balance", func() {
 
 	})
 }
