@@ -351,6 +351,7 @@ tools-clean:
 # Integration tests #
 #####################
 
+#PACKAGES_E2E=$(shell go list ./... | grep '/integration_tests')
 ORCHESTRATOR_IMAGE := "ghcr.io/peggyjv/gravity-bridge-orchestrator:v0.1.25"
 
 e2e_build_images:

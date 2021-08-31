@@ -1,5 +1,4 @@
 integration_tests/
-!integration_tests/genesis.json
 docs/
 Dockerfile
 

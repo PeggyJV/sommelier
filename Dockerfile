@@ -22,15 +22,13 @@ FROM alpine:edge
 ENV SOMM /somm
 
 # Install ca-certificates
-RUN apk add --update ca-certificates
+RUN apk add --update ca-certificates bash
 
 # create and expose config dir
 RUN mkdir -p /somm/.sommelier/config
 RUN chmod -R 777 /somm/.sommelier/config
 RUN mkdir  /somm/.sommelier/data
 RUN chmod 777 /somm/.sommelier/data
-
-COPY ./integration_tests/genesis.json /somm/.sommelier/config/genesis.json
 
 RUN addgroup sommuser && \
     adduser -S -G sommuser sommuser -h "$SOMM"
