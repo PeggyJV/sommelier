@@ -460,12 +460,12 @@ func (s *IntegrationTestSuite) runValidators() {
 		if val.index == 0 {
 			runOpts.PortBindings = map[docker.Port][]docker.PortBinding{
 				"1317/tcp":  {{HostIP: "", HostPort: "1317"}},
-				"6060/tcp":  {{HostIP: "", HostPort: "6060"}},
-				"6061/tcp":  {{HostIP: "", HostPort: "6061"}},
-				"6062/tcp":  {{HostIP: "", HostPort: "6062"}},
-				"6063/tcp":  {{HostIP: "", HostPort: "6063"}},
-				"6064/tcp":  {{HostIP: "", HostPort: "6064"}},
-				"6065/tcp":  {{HostIP: "", HostPort: "6065"}},
+				//"6060/tcp":  {{HostIP: "", HostPort: "6060"}},
+				//"6061/tcp":  {{HostIP: "", HostPort: "6061"}},
+				//"6062/tcp":  {{HostIP: "", HostPort: "6062"}},
+				//"6063/tcp":  {{HostIP: "", HostPort: "6063"}},
+				//"6064/tcp":  {{HostIP: "", HostPort: "6064"}},
+				//"6065/tcp":  {{HostIP: "", HostPort: "6065"}},
 				"9090/tcp":  {{HostIP: "", HostPort: "9090"}},
 				"26656/tcp": {{HostIP: "", HostPort: "26656"}},
 				"26657/tcp": {{HostIP: "", HostPort: "26657"}},
@@ -564,8 +564,8 @@ prefix = "testsomm"
 					fmt.Sprintf("%s/:/root/gorc", gorcCfgPath),
 				},
 				Env: []string{
-					fmt.Sprintf("UMEE_E2E_ORCH_MNEMONIC=%s", orch.mnemonic),
-					fmt.Sprintf("UMEE_E2E_ETH_PRIV_KEY=%s", val.ethereumKey.privateKey),
+					fmt.Sprintf("ORCH_MNEMONIC=%s", orch.mnemonic),
+					fmt.Sprintf("ETH_PRIV_KEY=%s", val.ethereumKey.privateKey),
 				},
 				Entrypoint: []string{
 					"sh",

@@ -9,4 +9,6 @@ RUN yarn
 
 COPY . .
 
+EXPOSE 8545
+
 CMD npx hardhat integration_test_setup
