@@ -358,7 +358,7 @@ e2e_build_images:
 	@docker build -t sommelier:prebuilt -f Dockerfile .
 	@docker build -t ethereum:prebuilt -f integration_tests/ethereum/Dockerfile integration_tests/ethereum/
 
-e2e_clean_slate: e2e_build_images
+e2e_clean_slate:
 	@docker rm --force \
 		$(shell docker ps -qa --filter="name=ethereum") \
 		$(shell docker ps -qa --filter="name=sommelier") \
@@ -374,7 +374,6 @@ e2e_clean_slate: e2e_build_images
 		2>/dev/null \
 		|| true
 	@docker network rm testnet 1>/dev/null 2>/dev/null || true
-	@sudo rm -fr testdata
 	@cd integration_tests && go test -c
 
 e2e_basic: e2e_clean_slate
@@ -382,4 +381,3 @@ e2e_basic: e2e_clean_slate
 
 e2e_rebalance: e2e_clean_slate
 	@integration_tests/integration_tests.test -test.run TestRebalance -test.failfast -test.v || make -s fail
-

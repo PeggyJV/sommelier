@@ -24,6 +24,14 @@ ENV SOMM /somm
 # Install ca-certificates
 RUN apk add --update ca-certificates
 
+# create and expose config dir
+RUN mkdir -p /somm/.sommelier/config
+RUN chmod -R 777 /somm/.sommelier/config
+RUN mkdir  /somm/.sommelier/data
+RUN chmod 777 /somm/.sommelier/data
+
+COPY ./integration_tests/genesis.json /somm/.sommelier/config/genesis.json
+
 RUN addgroup sommuser && \
     adduser -S -G sommuser sommuser -h "$SOMM"
     
@@ -34,4 +42,4 @@ WORKDIR $SOMM
 # Copy over binaries from the build-env
 COPY --from=build-env /go/bin/sommelier /usr/bin/sommelier
 
-CMD ["sommelier"]
+CMD ["sommelier", "start"]

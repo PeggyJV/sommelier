@@ -13,18 +13,13 @@ import (
 	"testing"
 	"time"
 
-	"github.com/cosmos/cosmos-sdk/server"
 	srvconfig "github.com/cosmos/cosmos-sdk/server/config"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
-	genutiltypes "github.com/cosmos/cosmos-sdk/x/genutil/types"
-	"github.com/ethereum/go-ethereum/ethclient"
 	"github.com/ory/dockertest/v3"
 	"github.com/ory/dockertest/v3/docker"
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/suite"
 	tmconfig "github.com/tendermint/tendermint/config"
-	tmjson "github.com/tendermint/tendermint/libs/json"
 	rpchttp "github.com/tendermint/tendermint/rpc/client/http"
 )
 
@@ -33,7 +28,6 @@ const (
 	initBalanceStr      = "110000000000utestsomm,100000000000testsomm"
 	minGasPrice         = "0.00001"
 	ethChainID     uint = 15
-	repositoryName      = "sommtestnet/testsomm"
 	bondDenom           = "utestsomm"
 )
 
@@ -80,7 +74,7 @@ func (s *IntegrationTestSuite) SetupSuite() {
 	mnemonics := MNEMONICS()
 	s.initNodesWithMnemonics(mnemonics...)
 	s.initEthereum()
-	s.initGenesis()
+	//s.initGenesis()
 	s.initValidatorConfigs()
 
 	s.dockerPool, err = dockertest.NewPool("")
@@ -121,62 +115,62 @@ func (s *IntegrationTestSuite) TearDownSuite() {
 	s.Require().NoError(s.dockerPool.RemoveNetwork(s.dockerNetwork))
 }
 
-func (s *IntegrationTestSuite) initNodes(nodeCount int) {
-	s.Require().NoError(s.chain.createAndInitValidators(nodeCount))
-	s.Require().NoError(s.chain.createAndInitOrchestrators(nodeCount))
-
-	// initialize a genesis file for the first validator
-	val0ConfigDir := s.chain.validators[0].configDir()
-	for _, val := range s.chain.validators {
-		s.Require().NoError(
-			addGenesisAccount(val0ConfigDir, "", initBalanceStr, val.keyInfo.GetAddress()),
-		)
-	}
-
-	// add orchestrator accounts to genesis file
-	for _, orch := range s.chain.orchestrators {
-		s.Require().NoError(
-			addGenesisAccount(val0ConfigDir, "", initBalanceStr, orch.keyInfo.GetAddress()),
-		)
-	}
-
-	// copy the genesis file to the remaining validators
-	for _, val := range s.chain.validators[1:] {
-		_, err := copyFile(
-			filepath.Join(val0ConfigDir, "config", "genesis.json"),
-			filepath.Join(val.configDir(), "config", "genesis.json"),
-		)
-		s.Require().NoError(err)
-	}
-}
+//func (s *IntegrationTestSuite) initNodes(nodeCount int) {
+//	s.Require().NoError(s.chain.createAndInitValidators(nodeCount))
+//	s.Require().NoError(s.chain.createAndInitOrchestrators(nodeCount))
+//
+//	// initialize a genesis file for the first validator
+//	val0ConfigDir := s.chain.validators[0].configDir()
+//	for _, val := range s.chain.validators {
+//		s.Require().NoError(
+//			addGenesisAccount(val0ConfigDir, "", initBalanceStr, val.keyInfo.GetAddress()),
+//		)
+//	}
+//
+//	// add orchestrator accounts to genesis file
+//	for _, orch := range s.chain.orchestrators {
+//		s.Require().NoError(
+//			addGenesisAccount(val0ConfigDir, "", initBalanceStr, orch.keyInfo.GetAddress()),
+//		)
+//	}
+//
+//	// copy the genesis file to the remaining validators
+//	for _, val := range s.chain.validators[1:] {
+//		_, err := copyFile(
+//			filepath.Join(val0ConfigDir, "config", "genesis.json"),
+//			filepath.Join(val.configDir(), "config", "genesis.json"),
+//		)
+//		s.Require().NoError(err)
+//	}
+//}
 
 func (s *IntegrationTestSuite) initNodesWithMnemonics(mnemonics ...string) {
 	s.Require().NoError(s.chain.createAndInitValidatorsWithMnemonics(mnemonics))
 	s.Require().NoError(s.chain.createAndInitOrchestratorsWithMnemonics(mnemonics))
 
 	// initialize a genesis file for the first validator
-	val0ConfigDir := s.chain.validators[0].configDir()
-	for _, val := range s.chain.validators {
-		s.Require().NoError(
-			addGenesisAccount(val0ConfigDir, "", initBalanceStr, val.keyInfo.GetAddress()),
-		)
-	}
-
-	// add orchestrator accounts to genesis file
-	for _, orch := range s.chain.orchestrators {
-		s.Require().NoError(
-			addGenesisAccount(val0ConfigDir, "", initBalanceStr, orch.keyInfo.GetAddress()),
-		)
-	}
-
-	// copy the genesis file to the remaining validators
-	for _, val := range s.chain.validators[1:] {
-		_, err := copyFile(
-			filepath.Join(val0ConfigDir, "config", "genesis.json"),
-			filepath.Join(val.configDir(), "config", "genesis.json"),
-		)
-		s.Require().NoError(err)
-	}
+	//val0ConfigDir := s.chain.validators[0].configDir()
+	//for _, val := range s.chain.validators {
+	//	s.Require().NoError(
+	//		addGenesisAccount(val0ConfigDir, "", initBalanceStr, val.keyInfo.GetAddress()),
+	//	)
+	//}
+	//
+	//// add orchestrator accounts to genesis file
+	//for _, orch := range s.chain.orchestrators {
+	//	s.Require().NoError(
+	//		addGenesisAccount(val0ConfigDir, "", initBalanceStr, orch.keyInfo.GetAddress()),
+	//	)
+	//}
+	//
+	//// copy the genesis file to the remaining validators
+	//for _, val := range s.chain.validators[1:] {
+	//	_, err := copyFile(
+	//		filepath.Join(val0ConfigDir, "config", "genesis.json"),
+	//		filepath.Join(val.configDir(), "config", "genesis.json"),
+	//	)
+	//	s.Require().NoError(err)
+	//}
 }
 
 func (s *IntegrationTestSuite) initEthereum() {
@@ -231,94 +225,94 @@ func (s *IntegrationTestSuite) initEthereumFromMnemonics(mnemonics []string) {
 	s.Require().NoError(writeFile(filepath.Join(s.chain.configDir(), "eth_genesis.json"), ethGenBz))
 }
 
-func (s *IntegrationTestSuite) initGenesis() {
-	serverCtx := server.NewDefaultContext()
-	config := serverCtx.Config
-
-	config.SetRoot(s.chain.validators[0].configDir())
-	config.Moniker = s.chain.validators[0].moniker
-
-	genFilePath := config.GenesisFile()
-	appGenState, genDoc, err := genutiltypes.GenesisStateFromGenFile(genFilePath)
-	s.Require().NoError(err)
-
-	var bankGenState banktypes.GenesisState
-	s.Require().NoError(cdc.UnmarshalJSON(appGenState[banktypes.ModuleName], &bankGenState))
-
-	bankGenState.DenomMetadata = append(bankGenState.DenomMetadata, banktypes.Metadata{
-		Description: "The native staking token of the test somm network",
-		Display:     "testsomm",
-		Base:        bondDenom,
-		DenomUnits: []*banktypes.DenomUnit{
-			{
-				Denom:    bondDenom,
-				Exponent: 0,
-				Aliases: []string{
-					"tsomm",
-				},
-			},
-			{
-				Denom:    "testsomm",
-				Exponent: 6,
-			},
-		},
-	})
-	bankGenState.DenomMetadata = append(bankGenState.DenomMetadata, banktypes.Metadata{
-		Description: "An example stable token",
-		Display:     testDenom,
-		Base:        testDenom,
-		DenomUnits: []*banktypes.DenomUnit{
-			{
-				Denom:    testDenom,
-				Exponent: 0,
-			},
-		},
-	})
-
-	bz, err := cdc.MarshalJSON(&bankGenState)
-	s.Require().NoError(err)
-	appGenState[banktypes.ModuleName] = bz
-
-	var genUtilGenState genutiltypes.GenesisState
-	s.Require().NoError(cdc.UnmarshalJSON(appGenState[genutiltypes.ModuleName], &genUtilGenState))
-
-	// generate genesis txs
-	genTxs := make([]json.RawMessage, len(s.chain.validators))
-	for i, val := range s.chain.validators {
-		createValmsg, err := val.buildCreateValidatorMsg(stakeAmountCoin)
-		s.Require().NoError(err)
-
-		delKeysMsg := val.buildDelegateKeysMsg()
-		s.Require().NoError(err)
-
-		signedTx, err := val.signMsg(createValmsg, delKeysMsg)
-		s.Require().NoError(err)
-
-		txRaw, err := cdc.MarshalJSON(signedTx)
-		s.Require().NoError(err)
-
-		genTxs[i] = txRaw
-	}
-
-	genUtilGenState.GenTxs = genTxs
-
-	bz, err = cdc.MarshalJSON(&genUtilGenState)
-	s.Require().NoError(err)
-	appGenState[genutiltypes.ModuleName] = bz
-
-	bz, err = json.MarshalIndent(appGenState, "", "  ")
-	s.Require().NoError(err)
-
-	genDoc.AppState = bz
-
-	bz, err = tmjson.MarshalIndent(genDoc, "", "  ")
-	s.Require().NoError(err)
-
-	// write the updated genesis file to each validator
-	for _, val := range s.chain.validators {
-		writeFile(filepath.Join(val.configDir(), "config", "genesis.json"), bz)
-	}
-}
+//func (s *IntegrationTestSuite) initGenesis() {
+//	serverCtx := server.NewDefaultContext()
+//	config := serverCtx.Config
+//
+//	config.SetRoot(s.chain.validators[0].configDir())
+//	config.Moniker = s.chain.validators[0].moniker
+//
+//	genFilePath := config.GenesisFile()
+//	appGenState, genDoc, err := genutiltypes.GenesisStateFromGenFile(genFilePath)
+//	s.Require().NoError(err)
+//
+//	var bankGenState banktypes.GenesisState
+//	s.Require().NoError(cdc.UnmarshalJSON(appGenState[banktypes.ModuleName], &bankGenState))
+//
+//	bankGenState.DenomMetadata = append(bankGenState.DenomMetadata, banktypes.Metadata{
+//		Description: "The native staking token of the test somm network",
+//		Display:     "testsomm",
+//		Base:        bondDenom,
+//		DenomUnits: []*banktypes.DenomUnit{
+//			{
+//				Denom:    bondDenom,
+//				Exponent: 0,
+//				Aliases: []string{
+//					"tsomm",
+//				},
+//			},
+//			{
+//				Denom:    "testsomm",
+//				Exponent: 6,
+//			},
+//		},
+//	})
+//	bankGenState.DenomMetadata = append(bankGenState.DenomMetadata, banktypes.Metadata{
+//		Description: "An example stable token",
+//		Display:     testDenom,
+//		Base:        testDenom,
+//		DenomUnits: []*banktypes.DenomUnit{
+//			{
+//				Denom:    testDenom,
+//				Exponent: 0,
+//			},
+//		},
+//	})
+//
+//	bz, err := cdc.MarshalJSON(&bankGenState)
+//	s.Require().NoError(err)
+//	appGenState[banktypes.ModuleName] = bz
+//
+//	var genUtilGenState genutiltypes.GenesisState
+//	s.Require().NoError(cdc.UnmarshalJSON(appGenState[genutiltypes.ModuleName], &genUtilGenState))
+//
+//	// generate genesis txs
+//	genTxs := make([]json.RawMessage, len(s.chain.validators))
+//	for i, val := range s.chain.validators {
+//		createValmsg, err := val.buildCreateValidatorMsg(stakeAmountCoin)
+//		s.Require().NoError(err)
+//
+//		delKeysMsg := val.buildDelegateKeysMsg()
+//		s.Require().NoError(err)
+//
+//		signedTx, err := val.signMsg(createValmsg, delKeysMsg)
+//		s.Require().NoError(err)
+//
+//		txRaw, err := cdc.MarshalJSON(signedTx)
+//		s.Require().NoError(err)
+//
+//		genTxs[i] = txRaw
+//	}
+//
+//	genUtilGenState.GenTxs = genTxs
+//
+//	bz, err = cdc.MarshalJSON(&genUtilGenState)
+//	s.Require().NoError(err)
+//	appGenState[genutiltypes.ModuleName] = bz
+//
+//	bz, err = json.MarshalIndent(appGenState, "", "  ")
+//	s.Require().NoError(err)
+//
+//	genDoc.AppState = bz
+//
+//	bz, err = tmjson.MarshalIndent(genDoc, "", "  ")
+//	s.Require().NoError(err)
+//
+//	// write the updated genesis file to each validator
+//	for _, val := range s.chain.validators {
+//		writeFile(filepath.Join(val.configDir(), "config", "genesis.json"), bz)
+//	}
+//}
 
 func (s *IntegrationTestSuite) initValidatorConfigs() {
 	for i, val := range s.chain.validators {
@@ -390,28 +384,28 @@ func (s *IntegrationTestSuite) runEthContainer() {
 	)
 	s.Require().NoError(err)
 
-	ethClient, err := ethclient.Dial(fmt.Sprintf("http://%s", s.ethResource.GetHostPort("8545/tcp")))
-	s.Require().NoError(err)
+	//ethClient, err := ethclient.Dial(fmt.Sprintf("http://%s", s.ethResource.GetHostPort("8545/tcp")))
+	//s.Require().NoError(err)
 
 	// Wait for the Ethereum node to start producing blocks; DAG completion takes
 	// about two minutes.
 	// todo (mvid): do we need this if we are using hardhat?
-	s.Require().Eventually(
-		func() bool {
-			ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
-			defer cancel()
-
-			height, err := ethClient.BlockNumber(ctx)
-			if err != nil {
-				return false
-			}
-
-			return height > 1
-		},
-		5*time.Minute,
-		10*time.Second,
-		"ethereum node failed to produce a block",
-	)
+	//s.Require().Eventually(
+	//	func() bool {
+	//		ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
+	//		defer cancel()
+	//
+	//		height, err := ethClient.BlockNumber(ctx)
+	//		if err != nil {
+	//			return false
+	//		}
+	//
+	//		return height > 1
+	//	},
+	//	5*time.Minute,
+	//	10*time.Second,
+	//	"ethereum node failed to produce a block",
+	//)
 
 	s.T().Logf("started Ethereum container: %s", s.ethResource.Container.ID)
 }
@@ -424,10 +418,11 @@ func (s *IntegrationTestSuite) runValidators() {
 		runOpts := &dockertest.RunOptions{
 			Name:      val.instanceName(),
 			NetworkID: s.dockerNetwork.Network.ID,
+			Repository: "sommelier",
+			Tag: "prebuilt",
 			Mounts: []string{
-				fmt.Sprintf("%s/:/root/.testsomm", val.configDir()),
+				fmt.Sprintf("%s/:/somm/.sommelier", val.configDir()),
 			},
-			Repository: repositoryName,
 		}
 
 		// expose the first validator for debugging and communication
@@ -532,10 +527,11 @@ prefix = "testsomm"
 			&dockertest.RunOptions{
 				Name:      orch.instanceName(),
 				NetworkID: s.dockerNetwork.Network.ID,
+				Repository: "orchestrator",
+				Tag: "prebuilt",
 				Mounts: []string{
 					fmt.Sprintf("%s/:/root/gorc", gorcCfgPath),
 				},
-				Repository: repositoryName,
 				Env: []string{
 					fmt.Sprintf("UMEE_E2E_ORCH_MNEMONIC=%s", orch.mnemonic),
 					fmt.Sprintf("UMEE_E2E_ETH_PRIV_KEY=%s", val.ethereumKey.privateKey),
@@ -592,5 +588,7 @@ func noRestart(config *docker.HostConfig) {
 
 func (s *IntegrationTestSuite) TestBasicChain() {
 	// this test verifies that the setup functions all operate as expected
-	s.Run("bring up basic chain", func() {})
+	s.Run("bring up basic chain", func() {
+		s.Require().Fail("force fail")
+	})
 }

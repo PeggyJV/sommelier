@@ -165,7 +165,7 @@ func (c *chain) createValidator(index int) *validator {
 	return &validator{
 		chain:   c,
 		index:   index,
-		moniker: "testsomm",
+		moniker: "sommelier",
 	}
 }
 
