@@ -5,7 +5,7 @@ RUN apk add --no-cache git
 
 COPY package.json package.json
 COPY yarn.lock yarn.lock
-RUN yarn
+RUN yarn install
 
 COPY . .
 

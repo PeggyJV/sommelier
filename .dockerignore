@@ -1,4 +1,5 @@
 integration_tests/
+!integration_tests/gorc_bootstrap.sh
 docs/
 Dockerfile
 

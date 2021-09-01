@@ -470,6 +470,7 @@ func (s *IntegrationTestSuite) runValidators() {
 				"26656/tcp": {{HostIP: "", HostPort: "26656"}},
 				"26657/tcp": {{HostIP: "", HostPort: "26657"}},
 			}
+			runOpts.ExposedPorts = []string{"1317/tcp", "9090/tcp", "26656/tcp", "26657/tcp"}
 		}
 
 		resource, err := s.dockerPool.RunWithOptions(runOpts, noRestart)

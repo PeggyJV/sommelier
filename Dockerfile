@@ -34,7 +34,7 @@ RUN addgroup sommuser && \
     adduser -S -G sommuser sommuser -h "$SOMM"
     
 USER sommuser
-EXPOSE 1317 6060 6061 6062 6063 6064 6065 9090 26656 26657
+#EXPOSE 1317 6060 6061 6062 6063 6064 6065 9090 26656 26657
 
 WORKDIR $SOMM
 
