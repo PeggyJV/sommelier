@@ -28,4 +28,4 @@ replace google.golang.org/grpc => google.golang.org/grpc v1.33.2
 
 replace github.com/gogo/protobuf => github.com/regen-network/protobuf v1.3.3-alpha.regen.1
 
-replace github.com/cosmos/ibc-go => github.com/strangelove-ventures/ibc-go v0.1.0
+replace github.com/cosmos/ibc-go => github.com/strangelove-ventures/ibc-go v0.2.0
