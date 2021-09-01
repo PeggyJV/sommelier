@@ -62,4 +62,5 @@ node_modules
 solidity/dist
 cache
 artifacts
+!integration_tests/ethereum/artifacts
 *.test

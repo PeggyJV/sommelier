@@ -5,10 +5,12 @@ RUN apk add --no-cache git
 
 COPY package.json package.json
 COPY yarn.lock yarn.lock
-RUN yarn install
+
+RUN yarn install --production=false
+RUN npm config set user 0
 
 COPY . .
 
 EXPOSE 8545
 
-CMD npx hardhat integration_test_setup
+CMD yarn start
