@@ -1,5 +1,3 @@
-#!/busybox/sh
-
 set -ex
 
 # import orchestrator Sommelier key

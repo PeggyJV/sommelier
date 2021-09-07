@@ -356,6 +356,7 @@ ORCHESTRATOR_IMAGE := "ghcr.io/peggyjv/gravity-bridge-orchestrator:v0.2.1"
 
 e2e_build_images:
 	@docker pull $(ORCHESTRATOR_IMAGE)
+	@docker tag $(ORCHESTRATOR_IMAGE) orchestrator:prebuilt
 	@docker build -t sommelier:prebuilt -f Dockerfile .
 	@docker build -t ethereum:prebuilt -f integration_tests/ethereum/Dockerfile integration_tests/ethereum/
 

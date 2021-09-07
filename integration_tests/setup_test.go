@@ -571,7 +571,7 @@ prefix = "testsomm"
 				Entrypoint: []string{
 					"sh",
 					"-c",
-					"ls -la /root/gorc/ && chmod +x /root/gorc/gorc_bootstrap.sh && /root/gorc/gorc_bootstrap.sh",
+					"chmod +x /root/gorc/gorc_bootstrap.sh && /root/gorc/gorc_bootstrap.sh",
 				},
 			},
 			noRestart,
