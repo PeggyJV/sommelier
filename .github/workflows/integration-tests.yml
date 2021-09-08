@@ -12,6 +12,7 @@ on:
 env:
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository }}
+  ORCHESTRATOR_IMAGE_NAME: ghcr.io/peggyjv/gravity-bridge-orchestrator:v0.2.1
 
 jobs:
   sommelier-build:
@@ -59,3 +60,103 @@ jobs:
         run: |
           rm -rf /tmp/.buildx-cache
           mv /tmp/.buildx-cache-new /tmp/.buildx-cache
+
+  hardhat-build:
+    permissions:
+      contents: read
+      packages: write
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout
+        uses: actions/checkout@v2
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+      - name: Cache Docker layers
+        uses: actions/cache@v2
+        id: docker-cache
+        with:
+          path: /tmp/.buildx-cache
+          # Key is named differently to avoid collision
+          key: ${{ runner.os }}-multi-buildx-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-multi-buildx
+      - name: container-login
+        uses: docker/login-action@v1
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: labels
+        id: meta
+        uses: docker/metadata-action@v3
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-hardhat
+      - name: build-and-push
+        uses: docker/build-push-action@v2
+        with:
+          context: integration_tests
+          file: Dockerfile
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          builder: ${{ steps.buildx.outputs.name }}
+          cache-from: type=local,src=/tmp/.buildx-cache
+          cache-to: type=local,mode=max,dest=/tmp/.buildx-cache-new
+      - name: Move Docker cache
+        run: |
+          rm -rf /tmp/.buildx-cache
+          mv /tmp/.buildx-cache-new /tmp/.buildx-cache
+
+  integration-tests:
+    runs-on: ubuntu-latest
+    needs: [ rust-build, go-build, test-runner-build, solidity-build ]
+    strategy:
+      fail-fast: false
+      matrix:
+        test_type: ["Rebalance"]
+    steps:
+      - name: Set up Go 1.16
+        uses: actions/setup-go@v2
+        with:
+          go-version: ^1.16
+      - name: checkout
+        uses: actions/checkout@v2
+      - name: go-cache
+        uses: actions/cache@v2
+        with:
+          path: |
+            ~/.cache/go-build
+            ~/go/pkg/mod
+          key: ${{ runner.os }}-go-${{ hashFiles('go.sum') }}
+      - name: container-login
+        uses: docker/login-action@v1
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: docker sommelier metadata
+        id: meta-sommelier
+        uses: docker/metadata-action@v3
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-sommelier
+      - name: docker hardhat metadata
+        id: meta-hardhat
+        uses: docker/metadata-action@v3
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-hardhat
+      - name: pull sommelier image
+        run: docker pull ${{ steps.meta-sommelier.outputs.tags }}
+      - name: rename sommelier image
+        run: docker tag ${{ steps.meta-sommelier.outputs.tags }} sommelier:prebuilt
+      - name: pull hardhat image
+        run: docker pull ${{ steps.meta-hardhat.outputs.tags }}
+      - name: rename hardhat image
+        run: docker tag ${{ steps.meta-hardhat.outputs.tags }} hardhat:prebuilt
+      - name: pull orchestrator image
+        run: docker pull ${{ env.ORCHESTRATOR_IMAGE_NAME }}
+      - name: rename sommelier image
+        run: docker tag ${{ env.ORCHESTRATOR_IMAGE_NAME }} orchestrator:prebuilt
+      - name: build go test binary
+        run: cd integration_tests && go test -c
+      - name: Run all up ci test
+        run: ./integration_tests/integration_tests.test -test.failfast -test.v -test.run IntegrationTestSuite -testify.m Test${{ matrix.test_type }}
