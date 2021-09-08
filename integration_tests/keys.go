@@ -23,21 +23,7 @@ func createMnemonic() (string, error) {
 	return mnemonic, nil
 }
 
-func createMemoryKey(passphrase string) (mnemonic string, info *keyring.Info, err error) {
-	mnemonic, err = createMnemonic()
-	if err != nil {
-		return "", nil, err
-	}
-
-	account, err := createMemoryKeyFromMnemonic(mnemonic, passphrase)
-	if err != nil {
-		return "", nil, err
-	}
-
-	return mnemonic, account, nil
-}
-
-func createMemoryKeyFromMnemonic(mnemonic string, passphrase string) (*keyring.Info, error) {
+func createMemoryKeyFromMnemonic(mnemonic string, passphrase string, hdPath *hd.BIP44Params) (*keyring.Info, error) {
 	kb, err := keyring.New("testnet", keyring.BackendMemory, "", nil)
 	if err != nil {
 		return nil, err
@@ -49,7 +35,13 @@ func createMemoryKeyFromMnemonic(mnemonic string, passphrase string) (*keyring.I
 		return nil, err
 	}
 
-	account, err := kb.NewAccount("", mnemonic, passphrase, sdk.FullFundraiserPath, algo)
+	var pathString string
+	if hdPath == nil {
+		pathString = sdk.FullFundraiserPath
+	} else {
+		pathString = hdPath.String()
+	}
+	account, err := kb.NewAccount("", mnemonic, passphrase, pathString, algo)
 	if err != nil {
 		return nil, err
 	}

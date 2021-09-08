@@ -2,6 +2,7 @@ package integration_tests
 
 import (
 	"fmt"
+	"github.com/cosmos/cosmos-sdk/crypto/hd"
 	"io/ioutil"
 
 	"github.com/peggyjv/sommelier/app"
@@ -134,14 +135,15 @@ func (c *chain) createAndInitOrchestrators(count int) error {
 	return c.createAndInitOrchestratorsWithMnemonics(mnemonics)
 }
 
-
 func (c *chain) createAndInitOrchestratorsWithMnemonics(mnemonics []string) error {
+	hdPath := hd.CreateHDPath(sdk.CoinType, 1, 0)
+
 	for i := 0; i < len(mnemonics); i++ {
 		// create orchestrator
 		orchestrator := c.createOrchestrator(i)
 
 		// create keys
-		info, err := createMemoryKeyFromMnemonic(mnemonics[i], "orchestrator")
+		info, err := createMemoryKeyFromMnemonic(mnemonics[i], "", hdPath)
 		if err != nil {
 			return err
 		}

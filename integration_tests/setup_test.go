@@ -513,9 +513,9 @@ fees_denom = "%s"
 [ethereum]
 key_derivation_path = "m/44'/60'/0'/0/0"
 rpc = "http://%s:8545"
-
+g
 [cosmos]
-key_derivation_path = "m/44'/118'/0'/0/0"
+key_derivation_path = "m/44'/118'/0'/1/0"
 grpc = "http://%s:9090"
 gas_price = { amount = %s, denom = "%s" }
 prefix = "somm"

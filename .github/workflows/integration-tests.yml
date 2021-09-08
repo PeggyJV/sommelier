@@ -157,5 +157,5 @@ jobs:
         run: docker tag ${{ env.ORCHESTRATOR_IMAGE_NAME }} orchestrator:prebuilt
       - name: build go test binary
         run: cd integration_tests && go test -c
-      - name: Run all up ci test
+      - name: Run end to end test
         run: ./integration_tests/integration_tests.test -test.failfast -test.v -test.run IntegrationTestSuite -testify.m Test${{ matrix.test_type }}
