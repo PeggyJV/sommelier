@@ -1,5 +1,9 @@
 package integration_tests
 
+import (
+	rpchttp "github.com/tendermint/tendermint/rpc/client/http"
+)
+
 //func (s *IntegrationTestSuite) TestPhotonTokenTransfers() {
 //	// deploy photon ERC20 token contact
 //	var photonERC20Addr string
@@ -67,6 +71,14 @@ package integration_tests
 
 func (s *IntegrationTestSuite) TestRebalance() {
 	s.Run("Bring up chain, and submit a re-balance", func() {
+		s.T().Logf("creating clients")
 
+		//ethClient, err := ethclient.Dial(fmt.Sprintf("http://%s", s.ethResource.GetHostPort("8545/tcp")))
+		//s.Require().NoError(err)
+
+		_, err := rpchttp.New("tcp://localhost:26657", "/websocket")
+		s.Require().NoError(err)
+
+		//rpcClient.
 	})
 }

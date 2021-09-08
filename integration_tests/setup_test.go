@@ -5,6 +5,8 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/ethclient"
 	"os"
 	"path"
 	"path/filepath"
@@ -407,6 +409,7 @@ func (s *IntegrationTestSuite) runEthContainer() {
 		PortBindings: map[docker.Port][]docker.PortBinding{
 			"8545/tcp": {{HostIP: "", HostPort: "8545"}},
 		},
+		ExposedPorts: []string{"8545/tcp"},
 	}
 
 	s.ethResource, err = s.dockerPool.RunWithOptions(
@@ -415,28 +418,26 @@ func (s *IntegrationTestSuite) runEthContainer() {
 	)
 	s.Require().NoError(err)
 
-	//ethClient, err := ethclient.Dial(fmt.Sprintf("http://%s", s.ethResource.GetHostPort("8545/tcp")))
-	//s.Require().NoError(err)
+	ethClient, err := ethclient.Dial(fmt.Sprintf("http://%s", s.ethResource.GetHostPort("8545/tcp")))
+	s.Require().NoError(err)
 
-	// Wait for the Ethereum node to start producing blocks; DAG completion takes
-	// about two minutes.
-	// todo (mvid): do we need this if we are using hardhat?
-	//s.Require().Eventually(
-	//	func() bool {
-	//		ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
-	//		defer cancel()
-	//
-	//		height, err := ethClient.BlockNumber(ctx)
-	//		if err != nil {
-	//			return false
-	//		}
-	//
-	//		return height > 1
-	//	},
-	//	5*time.Minute,
-	//	10*time.Second,
-	//	"ethereum node failed to produce a block",
-	//)
+	// Wait for the Ethereum node to respond to a request
+	s.Require().Eventually(
+		func() bool {
+			ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
+			defer cancel()
+
+			_, err := ethClient.BalanceAt(ctx, common.HexToAddress("0xB6C951cf962977f123bF37de42945f7ca1cd2A52"), nil)
+			if err != nil {
+				return false
+			}
+
+			return true
+		},
+		5*time.Minute,
+		10*time.Second,
+		"ethereum node failed to respond",
+	)
 
 	s.T().Logf("started Ethereum container: %s", s.ethResource.Container.ID)
 }
@@ -460,12 +461,6 @@ func (s *IntegrationTestSuite) runValidators() {
 		if val.index == 0 {
 			runOpts.PortBindings = map[docker.Port][]docker.PortBinding{
 				"1317/tcp":  {{HostIP: "", HostPort: "1317"}},
-				//"6060/tcp":  {{HostIP: "", HostPort: "6060"}},
-				//"6061/tcp":  {{HostIP: "", HostPort: "6061"}},
-				//"6062/tcp":  {{HostIP: "", HostPort: "6062"}},
-				//"6063/tcp":  {{HostIP: "", HostPort: "6063"}},
-				//"6064/tcp":  {{HostIP: "", HostPort: "6064"}},
-				//"6065/tcp":  {{HostIP: "", HostPort: "6065"}},
 				"9090/tcp":  {{HostIP: "", HostPort: "9090"}},
 				"26656/tcp": {{HostIP: "", HostPort: "26656"}},
 				"26657/tcp": {{HostIP: "", HostPort: "26657"}},
@@ -522,7 +517,7 @@ rpc = "http://%s:8545"
 key_derivation_path = "m/44'/118'/0'/0/0"
 grpc = "http://%s:9090"
 gas_price = { amount = %s, denom = "%s" }
-prefix = "testsomm"
+prefix = "somm"
 `,
 			s.gravityContractAddr,
 			testDenom,
@@ -567,6 +562,7 @@ prefix = "testsomm"
 				Env: []string{
 					fmt.Sprintf("ORCH_MNEMONIC=%s", orch.mnemonic),
 					fmt.Sprintf("ETH_PRIV_KEY=%s", val.ethereumKey.privateKey),
+					fmt.Sprintf("RUST_BACKTRACE=full"),
 				},
 				Entrypoint: []string{
 					"sh",
@@ -620,7 +616,5 @@ func noRestart(config *docker.HostConfig) {
 
 func (s *IntegrationTestSuite) TestBasicChain() {
 	// this test verifies that the setup functions all operate as expected
-	s.Run("bring up basic chain", func() {
-		s.Require().Fail("force fail")
-	})
+	s.Run("bring up basic chain", func() {})
 }
