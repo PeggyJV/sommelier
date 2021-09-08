@@ -546,7 +546,7 @@ prefix = "somm"
 		// NOTE: If the Docker build changes, the script might have to be modified
 		// as it relies on busybox.
 		_, err := copyFile(
-			filepath.Join("./", "gorc_bootstrap.sh"),
+			filepath.Join("integration_tests", "gorc_bootstrap.sh"),
 			filepath.Join(gorcCfgPath, "gorc_bootstrap.sh"),
 		)
 		s.Require().NoError(err)
