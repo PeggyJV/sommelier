@@ -584,10 +584,10 @@ prefix = "somm"
 		s.T().Logf("started orchestrator container: %s", resource.Container.ID)
 	}
 
-	// TODO: [bez] Determine if there is a way to check the health or status of
+	// TODO(mvid) Determine if there is a way to check the health or status of
 	// the gorc orchestrator processes. For now, we search the logs to determine
-	// when each orchestrator resource has seen a validator set update.
-	match := "relayer::valset_relaying: Consideration: looks good"
+	// when each orchestrator resource has synced all batches
+	match := "orchestrator::main_loop: No unsigned batches! Everything good!"
 	for _, resource := range s.orchResources {
 		s.T().Logf("waiting for orchestrator to be healthy: %s", resource.Container.ID)
 

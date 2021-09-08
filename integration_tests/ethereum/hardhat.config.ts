@@ -30,8 +30,6 @@ task('integration_test_setup', 'Sets up contracts for the integration test', asy
   console.log(`Tx hash: ${hash}`);
   console.log('='.repeat(80));
 
-  await hre.run('node');
-
   // Take over vitalik.eth
   await hre.network.provider.request({
     method: "hardhat_impersonateAccount",
@@ -54,6 +52,9 @@ task('integration_test_setup', 'Sets up contracts for the integration test', asy
       value: hre.ethers.utils.parseEther('100')
     });
   }
+
+  // start the ethereum node after all setup is complete
+  await hre.run('node');
 });
 
 /**
