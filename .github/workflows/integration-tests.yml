@@ -94,7 +94,7 @@ jobs:
         uses: docker/build-push-action@v2
         with:
           context: integration_tests
-          file: Dockerfile
+          file: integration_tests/Dockerfile
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}

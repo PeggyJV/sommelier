@@ -17,7 +17,7 @@ func (c Cellar) GetCheckpoint() []byte {
 	}
 
 	type packTick struct {
-		TokenId *big.Int `abi:"tokenId"`
+		TokenID *big.Int `abi:"tokenId"`
 		Upper   *big.Int `abi:"tickUpper"`
 		Lower   *big.Int `abi:"tickLower"`
 		Weight  *big.Int `abi:"weight"`
