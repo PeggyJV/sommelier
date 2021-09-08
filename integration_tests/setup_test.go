@@ -83,7 +83,7 @@ func (s *IntegrationTestSuite) SetupSuite() {
 	// initialization
 	mnemonics := MNEMONICS()
 	s.initNodesWithMnemonics(mnemonics...)
-	s.initEthereum()
+	s.initEthereumFromMnemonics(mnemonics)
 	s.initGenesis()
 	s.initValidatorConfigs()
 
@@ -515,7 +515,7 @@ key_derivation_path = "m/44'/60'/0'/0/0"
 rpc = "http://%s:8545"
 
 [cosmos]
-key_derivation_path = "m/44'/118'/0'/1/0"
+key_derivation_path = "m/44'/118'/1'/0/0"
 grpc = "http://%s:9090"
 gas_price = { amount = %s, denom = "%s" }
 prefix = "somm"
