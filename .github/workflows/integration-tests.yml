@@ -150,10 +150,10 @@ jobs:
       - name: pull hardhat image
         run: docker pull ${{ steps.meta-hardhat.outputs.tags }}
       - name: rename hardhat image
-        run: docker tag ${{ steps.meta-hardhat.outputs.tags }} hardhat:prebuilt
+        run: docker tag ${{ steps.meta-hardhat.outputs.tags }} ethereum:prebuilt
       - name: pull orchestrator image
         run: docker pull ${{ env.ORCHESTRATOR_IMAGE_NAME }}
-      - name: rename sommelier image
+      - name: rename orchestrator image
         run: docker tag ${{ env.ORCHESTRATOR_IMAGE_NAME }} orchestrator:prebuilt
       - name: build go test binary
         run: cd integration_tests && go test -c

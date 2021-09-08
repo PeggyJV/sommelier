@@ -7,7 +7,7 @@ import (
 	sdktx "github.com/cosmos/cosmos-sdk/types/tx"
 )
 
-const DERIVATION_PATH = "m/44'/60'/0'/0/0"
+const DerivationPath = "m/44'/60'/0'/0/0"
 
 func decodeTx(txBytes []byte) (*sdktx.Tx, error) {
 	var raw sdktx.TxRaw

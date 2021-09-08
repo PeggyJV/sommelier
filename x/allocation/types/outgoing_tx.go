@@ -23,7 +23,7 @@ func (c Cellar) GetCheckpoint() []byte {
 		Weight  *big.Int `abi:"weight"`
 	}
 
-	var ticks []packTick
+	ticks := make([]packTick, len(c.TickRanges))
 	for _, t := range c.TickRanges {
 		up := int64(t.Upper)
 		lo := int64(t.Lower)

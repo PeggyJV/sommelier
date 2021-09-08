@@ -63,7 +63,7 @@ func ethereumKeyFromMnemonic(mnemonic string) (*ethereumKey, error) {
 		return nil, err
 	}
 
-	path, err := hdwallet.ParseDerivationPath(DERIVATION_PATH)
+	path, err := hdwallet.ParseDerivationPath(DerivationPath)
 	if err != nil {
 		return nil, err
 	}

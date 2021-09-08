@@ -496,5 +496,5 @@ func (k Keeper) GetWinningVotes(ctx sdk.Context, threshold sdk.Dec) (winningVote
 		}
 	}
 
-	return
+	return winningVotes
 }
