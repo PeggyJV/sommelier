@@ -305,6 +305,7 @@ GenesisState - all allocation state that must be provided at genesis
 | ----- | ---- | ----- | ----------- |
 | `params` | [Params](#allocation.v1.Params) |  |  |
 | `feeder_delegations` | [MsgDelegateAllocations](#allocation.v1.MsgDelegateAllocations) | repeated |  |
+| `cellars` | [Cellar](#allocation.v1.Cellar) | repeated |  |
 
 
 

@@ -12,6 +12,7 @@ const DefaultParamspace = ModuleName
 func DefaultGenesisState() GenesisState {
 	return GenesisState{
 		Params: DefaultParams(),
+		Cellars: []*Cellar{},
 	}
 }
 
@@ -38,6 +39,12 @@ func (gs GenesisState) Validate() error {
 			return fmt.Errorf("delegate address %s cannot be equal to validator address %s", feederDelegation.Delegate, feederDelegation.Validator)
 		}
 		seenDelegations[feederDelegation.Validator] = true
+	}
+
+	for _, cellar := range gs.Cellars {
+		if err := cellar.ValidateBasic(); err != nil {
+			return err
+		}
 	}
 
 	if err := gs.Params.ValidateBasic(); err != nil {

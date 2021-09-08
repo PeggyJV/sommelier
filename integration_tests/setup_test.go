@@ -14,6 +14,8 @@ import (
 	"testing"
 	"time"
 
+	"github.com/peggyjv/sommelier/x/allocation/types"
+
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/ethclient"
 
@@ -40,6 +42,7 @@ const (
 	minGasPrice         = "0.00001"
 	ethChainID     uint = 15
 	bondDenom           = "utestsomm"
+	hardhatCellarID = "0x6ea5992aB4A78D5720bD12A089D13c073d04B55d"
 )
 
 func MNEMONICS() []string {
@@ -335,6 +338,17 @@ func (s *IntegrationTestSuite) initGenesis() {
 	s.Require().NoError(err)
 	appGenState[genutiltypes.ModuleName] = bz
 
+	var allocationGenState types.GenesisState
+	s.Require().NoError(cdc.UnmarshalJSON(appGenState[types.ModuleName], &allocationGenState))
+
+	allocationGenState.Cellars = []*types.Cellar{
+		{
+			hardhatCellarID, 
+			[]*types.TickRange{},
+			},
+	}
+
+	// serialize genesis state
 	bz, err = json.MarshalIndent(appGenState, "", "  ")
 	s.Require().NoError(err)
 
