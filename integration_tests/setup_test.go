@@ -5,6 +5,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"math/big"
 	"os"
 	"path"
 	"path/filepath"
@@ -428,8 +429,12 @@ func (s *IntegrationTestSuite) runEthContainer() {
 			ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
 			defer cancel()
 
-			_, err := ethClient.BalanceAt(ctx, common.HexToAddress("0xB6C951cf962977f123bF37de42945f7ca1cd2A52"), nil)
+			balance, err := ethClient.BalanceAt(ctx, common.HexToAddress("0xd312f0f1B39D54Db2829537595fC1167B14d4b34"), nil)
 			if err != nil {
+				return false
+			}
+
+			if balance == nil || (balance.Cmp(big.NewInt(0)) == 0) {
 				return false
 			}
 
