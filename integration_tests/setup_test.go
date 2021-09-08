@@ -5,8 +5,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/ethclient"
 	"os"
 	"path"
 	"path/filepath"
@@ -14,6 +12,9 @@ import (
 	"strings"
 	"testing"
 	"time"
+
+	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/ethclient"
 
 	"github.com/cosmos/cosmos-sdk/server"
 	srvconfig "github.com/cosmos/cosmos-sdk/server/config"
@@ -402,10 +403,10 @@ func (s *IntegrationTestSuite) runEthContainer() {
 	var err error
 
 	runOpts := dockertest.RunOptions{
-		Name: "ethereum",
+		Name:       "ethereum",
 		Repository: "ethereum",
-		Tag: "prebuilt",
-		NetworkID: s.dockerNetwork.Network.ID,
+		Tag:        "prebuilt",
+		NetworkID:  s.dockerNetwork.Network.ID,
 		PortBindings: map[docker.Port][]docker.PortBinding{
 			"8545/tcp": {{HostIP: "", HostPort: "8545"}},
 		},
@@ -448,10 +449,10 @@ func (s *IntegrationTestSuite) runValidators() {
 	s.valResources = make([]*dockertest.Resource, len(s.chain.validators))
 	for i, val := range s.chain.validators {
 		runOpts := &dockertest.RunOptions{
-			Name:      val.instanceName(),
-			NetworkID: s.dockerNetwork.Network.ID,
+			Name:       val.instanceName(),
+			NetworkID:  s.dockerNetwork.Network.ID,
 			Repository: "sommelier",
-			Tag: "prebuilt",
+			Tag:        "prebuilt",
 			Mounts: []string{
 				fmt.Sprintf("%s/:/somm/.sommelier", val.configDir()),
 			},
@@ -552,10 +553,10 @@ prefix = "somm"
 
 		resource, err := s.dockerPool.RunWithOptions(
 			&dockertest.RunOptions{
-				Name:      orch.instanceName(),
-				NetworkID: s.dockerNetwork.Network.ID,
+				Name:       orch.instanceName(),
+				NetworkID:  s.dockerNetwork.Network.ID,
 				Repository: "orchestrator",
-				Tag: "prebuilt",
+				Tag:        "prebuilt",
 				Mounts: []string{
 					fmt.Sprintf("%s/:/root/gorc", gorcCfgPath),
 				},
