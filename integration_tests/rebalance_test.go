@@ -79,6 +79,5 @@ func (s *IntegrationTestSuite) TestRebalance() {
 		_, err := rpchttp.New("tcp://localhost:26657", "/websocket")
 		s.Require().NoError(err)
 
-		//rpcClient.
 	})
 }
