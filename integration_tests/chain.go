@@ -122,24 +122,18 @@ func (c *chain) createAndInitValidatorsWithMnemonics(mnemonics []string) error {
 }
 
 func (c *chain) createAndInitOrchestrators(count int) error {
+	mnemonics := make([]string, count)
 	for i := 0; i < count; i++ {
-		// create orchestrator
-		orchestrator := c.createOrchestrator(i)
-
-		// create keys
-		mnemonic, info, err := createMemoryKey("orchestrator")
+		mnemonic, err := createMnemonic()
 		if err != nil {
 			return err
 		}
-
-		orchestrator.keyInfo = *info
-		orchestrator.mnemonic = mnemonic
-
-		c.orchestrators = append(c.orchestrators, orchestrator)
+		mnemonics = append(mnemonics, mnemonic)
 	}
 
-	return nil
+	return c.createAndInitOrchestratorsWithMnemonics(mnemonics)
 }
+
 
 func (c *chain) createAndInitOrchestratorsWithMnemonics(mnemonics []string) error {
 	for i := 0; i < len(mnemonics); i++ {
