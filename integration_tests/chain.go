@@ -2,8 +2,9 @@ package integration_tests
 
 import (
 	"fmt"
-	"github.com/cosmos/cosmos-sdk/crypto/hd"
 	"io/ioutil"
+
+	"github.com/cosmos/cosmos-sdk/crypto/hd"
 
 	"github.com/peggyjv/sommelier/app"
 	"github.com/peggyjv/sommelier/app/params"
