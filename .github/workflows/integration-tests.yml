@@ -93,8 +93,8 @@ jobs:
       - name: build-and-push
         uses: docker/build-push-action@v2
         with:
-          context: integration_tests
-          file: integration_tests/Dockerfile
+          context: integration_tests/ethereum
+          file: integration_tests/ethereum/Dockerfile
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
