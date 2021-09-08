@@ -12,7 +12,8 @@ on:
 env:
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository }}
-  ORCHESTRATOR_IMAGE_NAME: ghcr.io/peggyjv/gravity-bridge-orchestrator:v0.2.1
+  ORCHESTRATOR_VERSION: v0.2.1
+  ORCHESTRATOR_IMAGE_NAME: ghcr.io/peggyjv/gravity-bridge-orchestrator:${{ env.ORCHESTRATOR_VERSION }}
 
 jobs:
   sommelier-build:
