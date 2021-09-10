@@ -38,3 +38,5 @@ Ref: https://keepachangelog.com/en/1.0.0/
 ## [Unreleased]
 
 ### Improvements
+
+* [\#69](https://github.com/PeggyJV/sommelier/pull/69) Bump Go to `v1.17`, ibc-go to `v1.2` and Tendermint to `v0.34.13`.
