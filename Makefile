@@ -387,6 +387,7 @@ e2e_rebalance: e2e_clean_slate
 fail:
 	@echo 'test failed; dumping container logs into ./testlogs for review'
 	@mkdir testlogs
+	@docker logs ethereum > testlogs/ethereum.log>&1 || true
 	@docker logs validator0 > testlogs/validator0.log 2>&1 || true
 	@docker logs validator1 > testlogs/validator1.log 2>&1 || true
 	@docker logs validator2 > testlogs/validator2.log 2>&1 || true

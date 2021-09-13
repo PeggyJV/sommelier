@@ -26,21 +26,25 @@ func (s *IntegrationTestSuite) TestRebalance() {
 				To:         &hardhatCellar,
 				Gas:        0,
 				GasPrice:   suggestedGasPrice,
-				GasFeeCap:  big.NewInt(1),
-				GasTipCap:  big.NewInt(1),
+				GasFeeCap:  big.NewInt(50000000000),
+				GasTipCap:  big.NewInt(50000000000),
 				Value:      nil,
-				Data:       types.CellarTickInfo(uint(i)),
+				Data:       types.ABIEncodedCellarTickInfoBytes(uint(i)),
 				AccessList: nil,
 			}, nil)
 			s.T().Logf("bytes received %b", bz)
 			s.Require().NoError(err)
-
 		}
 		salt := "testsalt"
 		commit := types.Allocation{
 			Cellar: &types.Cellar{
-				Id:         hardhatCellar.String(),
-				TickRanges: []*types.TickRange{},
+				Id: hardhatCellar.String(),
+				TickRanges: []*types.TickRange{
+					{200, 100, 10},
+					{300, 200, 20},
+					{400, 300, 30},
+					{500, 400, 40},
+				},
 			},
 		}
 

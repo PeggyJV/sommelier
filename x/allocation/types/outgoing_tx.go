@@ -9,8 +9,8 @@ import (
 	"github.com/ethereum/go-ethereum/crypto"
 )
 
-// GetCheckpoint gets the checkpoint signature from the given outgoing tx batch
-func (c Cellar) GetCheckpoint() []byte {
+// ABIEncodedRebalanceBytes gets the checkpoint signature from the given outgoing tx batch
+func (c Cellar) ABIEncodedRebalanceBytes() []byte {
 	encodedCall, err := abi.JSON(strings.NewReader(rebalanceABI))
 	if err != nil {
 		panic(sdkerrors.Wrap(err, "bad ABI definition in code"))
@@ -65,7 +65,7 @@ const rebalanceABI = `[{
 // solidity types to go types examples
 // https://github.com/ethereum/go-ethereum/blob/master/accounts/abi/type_test.go#L143
 
-func CellarTickInfo(index uint) []byte {
+func ABIEncodedCellarTickInfoBytes(index uint) []byte {
 	encodedCall, err := abi.JSON(strings.NewReader(cellarTickInfoABI))
 	if err != nil {
 		panic(sdkerrors.Wrap(err, "bad ABI definition in code"))

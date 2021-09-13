@@ -8,7 +8,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestContractCallTxCheckpoint(t *testing.T) {
+func TestABIEncodedRebalanceBytes(t *testing.T) {
 
 	rebalanceHash := Cellar{
 		Id: "0x0000000000",
@@ -17,7 +17,7 @@ func TestContractCallTxCheckpoint(t *testing.T) {
 			{-192480, -197880, 680},
 			{-197880, -200640, 160},
 		},
-	}.GetCheckpoint()
+	}.ABIEncodedRebalanceBytes()
 
 	// hash from python brownie code cc @stevenj
 	testHash, err := hex.DecodeString("0xd0f79d9bfeec64dbc27ccd281a20931cfadc07d87875c3289f55383e59f3ebbc"[2:])
@@ -27,7 +27,7 @@ func TestContractCallTxCheckpoint(t *testing.T) {
 	}
 }
 
-func TestContractCallTxCellarTickInfo(t *testing.T) {
-	tickInfoHash := CellarTickInfo(0)
+func TestABIEncodedCellarTickInfoBytes(t *testing.T) {
+	tickInfoHash := ABIEncodedCellarTickInfoBytes(0)
 	t.Logf("hash: %b", tickInfoHash)
 }
