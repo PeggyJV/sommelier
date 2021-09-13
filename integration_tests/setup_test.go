@@ -42,7 +42,6 @@ const (
 	minGasPrice          = "0.00001"
 	ethChainID      uint = 15
 	bondDenom            = "utestsomm"
-	hardhatCellarID      = "0x6ea5992aB4A78D5720bD12A089D13c073d04B55d"
 )
 
 func MNEMONICS() []string {
@@ -57,6 +56,7 @@ func MNEMONICS() []string {
 var (
 	stakeAmount, _  = sdk.NewIntFromString("100000000000")
 	stakeAmountCoin = sdk.NewCoin(bondDenom, stakeAmount)
+	hardhatCellar = common.HexToAddress("0x6ea5992aB4A78D5720bD12A089D13c073d04B55d")
 )
 
 type IntegrationTestSuite struct {
@@ -343,7 +343,7 @@ func (s *IntegrationTestSuite) initGenesis() {
 
 	allocationGenState.Cellars = []*types.Cellar{
 		{
-			hardhatCellarID,
+			hardhatCellar.String(),
 			[]*types.TickRange{},
 		},
 	}

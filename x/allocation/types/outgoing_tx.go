@@ -64,3 +64,53 @@ const rebalanceABI = `[{
 
 // solidity types to go types examples
 // https://github.com/ethereum/go-ethereum/blob/master/accounts/abi/type_test.go#L143
+
+func CellarTickInfo(index uint) []byte {
+	encodedCall, err := abi.JSON(strings.NewReader(cellarTickInfoABI))
+	if err != nil {
+		panic(sdkerrors.Wrap(err, "bad ABI definition in code"))
+	}
+
+	abiEncodedCall, err := encodedCall.Pack("cellarTickInfo", big.NewInt(int64(index)))
+	if err != nil {
+		panic(err)
+	}
+
+	return crypto.Keccak256Hash(abiEncodedCall).Bytes()
+}
+
+const cellarTickInfoABI = `[{
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "name": "cellarTickInfo",
+    "outputs": [
+      {
+        "internalType": "uint184",
+        "name": "tokenId",
+        "type": "uint184"
+      },
+      {
+        "internalType": "int24",
+        "name": "tickUpper",
+        "type": "int24"
+      },
+      {
+        "internalType": "int24",
+        "name": "tickLower",
+        "type": "int24"
+      },
+      {
+        "internalType": "uint24",
+        "name": "weight",
+        "type": "uint24"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  }]
+`

@@ -26,3 +26,8 @@ func TestContractCallTxCheckpoint(t *testing.T) {
 		t.Errorf("gold hash is not equal to generated hash:\n gold hash: %x\n test hash: %x", testHash, rebalanceHash)
 	}
 }
+
+func TestContractCallTxCellarTickInfo(t *testing.T) {
+	tickInfoHash := CellarTickInfo(0)
+	t.Logf("hash: %b", tickInfoHash)
+}
