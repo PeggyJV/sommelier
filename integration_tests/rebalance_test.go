@@ -1,40 +1,16 @@
 package integration_tests
 
 import (
-	"context"
-	"fmt"
-	"github.com/ethereum/go-ethereum"
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/ethclient"
 	"github.com/peggyjv/sommelier/x/allocation/types"
-	"math/big"
 )
 
 func (s *IntegrationTestSuite) TestRebalance() {
 	s.Run("Bring up chain, and submit a re-balance", func() {
 
-		ethClient, err := ethclient.Dial(fmt.Sprintf("http://%s", s.ethResource.GetHostPort("8545/tcp")))
+		trs, err := s.getTickRanges()
 		s.Require().NoError(err)
+		s.Require().Len(trs, 4)
 
-		suggestedGasPrice, err := ethClient.SuggestGasPrice(context.Background())
-		s.Require().NoError(err)
-
-		//tickInfos := [4]types.TickRange{}
-		for i := 0; i < 4; i++ {
-			bz, err := ethClient.CallContract(context.Background(), ethereum.CallMsg{
-				From:       common.HexToAddress(s.chain.validators[0].ethereumKey.address),
-				To:         &hardhatCellar,
-				Gas:        0,
-				GasPrice:   suggestedGasPrice,
-				GasFeeCap:  big.NewInt(50000000000),
-				GasTipCap:  big.NewInt(50000000000),
-				Value:      nil,
-				Data:       types.ABIEncodedCellarTickInfoBytes(uint(i)),
-				AccessList: nil,
-			}, nil)
-			s.T().Logf("bytes received %b", bz)
-			s.Require().NoError(err)
-		}
 		salt := "testsalt"
 		commit := types.Allocation{
 			Cellar: &types.Cellar{
@@ -78,6 +54,13 @@ func (s *IntegrationTestSuite) TestRebalance() {
 		}
 
 		s.T().Logf("checking for updated tick ranges in cellar")
-		s.Require().Fail("UNIMPLEMENTED")
+		trs, err = s.getTickRanges()
+		s.Require().NoError(err)
+		s.Require().Len(trs, 4)
+		for i, tr := range trs {
+			s.Require().Equal((i + 2) * 100, tr.Upper)
+			s.Require().Equal((i + 1) * 100, tr.Lower)
+			s.Require().Equal((i + 1) * 10, tr.Weight)
+		}
 	})
 }

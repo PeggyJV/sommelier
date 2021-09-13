@@ -9,6 +9,13 @@ import (
 	"github.com/ethereum/go-ethereum/crypto"
 )
 
+type ABIEncodedTickRange struct {
+	TokenID *big.Int `abi:"tokenId"`
+	Upper   *big.Int `abi:"tickUpper"`
+	Lower   *big.Int `abi:"tickLower"`
+	Weight  *big.Int `abi:"weight"`
+}
+
 // ABIEncodedRebalanceBytes gets the checkpoint signature from the given outgoing tx batch
 func (c Cellar) ABIEncodedRebalanceBytes() []byte {
 	encodedCall, err := abi.JSON(strings.NewReader(rebalanceABI))
@@ -16,19 +23,14 @@ func (c Cellar) ABIEncodedRebalanceBytes() []byte {
 		panic(sdkerrors.Wrap(err, "bad ABI definition in code"))
 	}
 
-	type packTick struct {
-		TokenID *big.Int `abi:"tokenId"`
-		Upper   *big.Int `abi:"tickUpper"`
-		Lower   *big.Int `abi:"tickLower"`
-		Weight  *big.Int `abi:"weight"`
-	}
 
-	ticks := make([]packTick, len(c.TickRanges))
+
+	ticks := make([]ABIEncodedTickRange, len(c.TickRanges))
 	for _, t := range c.TickRanges {
 		up := int64(t.Upper)
 		lo := int64(t.Lower)
 		we := uint64(t.Weight)
-		ticks = append(ticks, packTick{big.NewInt(0), big.NewInt(up), big.NewInt(lo), new(big.Int).SetUint64(we)})
+		ticks = append(ticks, ABIEncodedTickRange{big.NewInt(0), big.NewInt(up), big.NewInt(lo), new(big.Int).SetUint64(we)})
 	}
 
 	abiEncodedCall, err := encodedCall.Pack("rebalance", ticks)

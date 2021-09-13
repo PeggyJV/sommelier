@@ -5,6 +5,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"github.com/ethereum/go-ethereum"
 	"math/big"
 	"os"
 	"path"
@@ -638,6 +639,44 @@ func noRestart(config *docker.HostConfig) {
 	config.RestartPolicy = docker.RestartPolicy{
 		Name: "no",
 	}
+}
+
+
+func (s *IntegrationTestSuite) getTickRanges() ([]types.TickRange, error) {
+	ethClient, err := ethclient.Dial(fmt.Sprintf("http://%s", s.ethResource.GetHostPort("8545/tcp")))
+	s.Require().NoError(err)
+
+	suggestedGasPrice, err := ethClient.SuggestGasPrice(context.Background())
+	s.Require().NoError(err)
+
+	tickRanges := make([]types.TickRange, 4)
+	for i := 0; i < 4; i++ {
+		bz, err := ethClient.CallContract(context.Background(), ethereum.CallMsg{
+			From:       common.HexToAddress(s.chain.validators[0].ethereumKey.address),
+			To:         &hardhatCellar,
+			Gas:        0,
+			GasPrice:   suggestedGasPrice,
+			GasFeeCap:  big.NewInt(50000000000),
+			GasTipCap:  big.NewInt(50000000000),
+			Value:      nil,
+			Data:       types.ABIEncodedCellarTickInfoBytes(uint(i)),
+			AccessList: nil,
+		}, nil)
+		s.T().Logf("bytes received %b", bz)
+		s.Require().NoError(err)
+
+		var abiTickRange types.ABIEncodedTickRange
+		err = json.Unmarshal(bz, &abiTickRange)
+		s.Require().NoError(err)
+
+		tickRanges = append(tickRanges, types.TickRange{
+			Upper: int32(abiTickRange.Upper.Int64()),
+			Lower: int32(abiTickRange.Lower.Int64()),
+			Weight: uint32(abiTickRange.Weight.Uint64()),
+		})
+	}
+
+	return tickRanges, nil
 }
 
 func (s *IntegrationTestSuite) TestBasicChain() {
