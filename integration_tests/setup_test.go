@@ -503,7 +503,9 @@ func (s *IntegrationTestSuite) runValidators() {
 		func() bool {
 			status, err := rpcClient.Status(context.Background())
 			if err != nil {
-				s.T().Logf(err.Error())
+				s.T().Logf("can't get container status: %s", err.Error())
+				container, _ := s.dockerPool.ContainerByName("validator0")
+				s.T().Logf("state: %v, health: %v", container.Container.State.Status, container.Container.State.Health)
 				return false
 			}
 
@@ -681,5 +683,6 @@ func (s *IntegrationTestSuite) getTickRanges() ([]types.TickRange, error) {
 
 func (s *IntegrationTestSuite) TestBasicChain() {
 	// this test verifies that the setup functions all operate as expected
-	s.Run("bring up basic chain", func() {})
+	s.Run("bring up basic chain", func() {
+	})
 }

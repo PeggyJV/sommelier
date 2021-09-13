@@ -1,13 +1,8 @@
 package integration_tests
 
 import (
-	"context"
 	"fmt"
-	"github.com/ethereum/go-ethereum"
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/ethclient"
 	"io/ioutil"
-	"math/big"
 	"os"
 
 	"github.com/cosmos/cosmos-sdk/client"
