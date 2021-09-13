@@ -504,8 +504,12 @@ func (s *IntegrationTestSuite) runValidators() {
 			status, err := rpcClient.Status(context.Background())
 			if err != nil {
 				s.T().Logf("can't get container status: %s", err.Error())
-				container, _ := s.dockerPool.ContainerByName("validator0")
-				s.T().Logf("state: %v, health: %v", container.Container.State.Status, container.Container.State.Health)
+				container, ok := s.dockerPool.ContainerByName("sommelier0")
+				if !ok {
+					s.T().Logf("no container by 'sommelier0'")
+				} else {
+					s.T().Logf("state: %v, health: %v", container.Container.State.Status, container.Container.State.Health)
+				}
 				return false
 			}
 
