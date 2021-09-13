@@ -508,7 +508,7 @@ func (s *IntegrationTestSuite) runValidators() {
 
 			// let the node produce a few blocks
 			if status.SyncInfo.CatchingUp {
-				s.T().Logf("catching up: %s", status.SyncInfo.CatchingUp)
+				s.T().Logf("catching up: %t", status.SyncInfo.CatchingUp)
 				return false
 			}
 			if status.SyncInfo.LatestBlockHeight < 5 {

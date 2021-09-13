@@ -61,7 +61,6 @@ type chain struct {
 	id            string
 	validators    []*validator
 	orchestrators []*orchestrator
-	sommNodes     []*validator
 }
 
 func newChain() (*chain, error) {

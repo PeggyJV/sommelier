@@ -30,9 +30,10 @@ func InitGenesis(ctx sdk.Context, k Keeper, gs types.GenesisState) {
 // with InitGenesis
 func ExportGenesis(ctx sdk.Context, k Keeper) types.GenesisState {
 	var cellars []*types.Cellar
-	for _, cellar := range k.GetCellars(ctx) {
+	k.IterateCellars(ctx, func(cellar types.Cellar) (stop bool) {
 		cellars = append(cellars, &cellar)
-	}
+		return false
+	})
 
 	return types.GenesisState{
 		Params:            k.GetParamSet(ctx),

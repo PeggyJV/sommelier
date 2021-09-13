@@ -43,5 +43,8 @@ func (s *IntegrationTestSuite) TestRebalance() {
 			s.Require().NoError(err, "unable to send precommit")
 			s.Require().NotZerof(response.Code, "non-zero response from rpc call for msg", commitMsg)
 		}
+
+		s.T().Logf("checking for updated tick ranges in cellar")
+		s.Require().Fail("UNIMPLEMENTED")
 	})
 }
