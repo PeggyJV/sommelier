@@ -508,6 +508,9 @@ func (s *IntegrationTestSuite) runValidators() {
 				if !ok {
 					s.T().Logf("no container by 'sommelier0'")
 				} else {
+					if container.Container.State.Status == "exited" {
+						s.Fail("validators exited. state: %s logs: \n%s", container.Container.State.String(), s.logsByContainerID(container.Container.ID))
+					}
 					s.T().Logf("state: %v, health: %v", container.Container.State.Status, container.Container.State.Health)
 				}
 				return false
@@ -645,6 +648,20 @@ func noRestart(config *docker.HostConfig) {
 	config.RestartPolicy = docker.RestartPolicy{
 		Name: "no",
 	}
+}
+
+func (s *IntegrationTestSuite) logsByContainerID(id string) string {
+	var containerLogsBuf bytes.Buffer
+	s.Require().NoError(s.dockerPool.Client.Logs(
+		docker.LogsOptions{
+			Container:    id,
+			OutputStream: &containerLogsBuf,
+			Stdout:       true,
+			Stderr:       true,
+		},
+	))
+
+	return containerLogsBuf.String()
 }
 
 
