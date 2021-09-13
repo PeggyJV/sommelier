@@ -375,7 +375,7 @@ e2e_clean_slate:
 		1>/dev/null \
 		2>/dev/null \
 		|| true
-	@docker network rm testnet 1>/dev/null 2>/dev/null || true
+	@docker network prune --force 1>/dev/null 2>/dev/null || true
 	@cd integration_tests && go test -c
 
 e2e_basic: e2e_clean_slate
@@ -383,3 +383,16 @@ e2e_basic: e2e_clean_slate
 
 e2e_rebalance: e2e_clean_slate
 	@integration_tests/integration_tests.test -test.failfast -test.v -test.run IntegrationTestSuite -testify.m TestRebalance || make -s fail
+
+fail:
+	@echo 'test failed; dumping container logs into ./testlogs for review'
+	@mkdir testlogs
+	@docker logs validator0 > testlogs/validator0.log 2>&1 || true
+	@docker logs validator1 > testlogs/validator1.log 2>&1 || true
+	@docker logs validator2 > testlogs/validator2.log 2>&1 || true
+	@docker logs validator3 > testlogs/validator3.log 2>&1 || true
+	@docker logs orchestrator0 > testlogs/orchestrator0.log 2>&1 || true
+	@docker logs orchestrator1 > testlogs/orchestrator1.log 2>&1 || true
+	@docker logs orchestrator2 > testlogs/orchestrator2.log 2>&1 || true
+	@docker logs orchestrator3 > testlogs/orchestrator3.log 2>&1 || true
+	@false

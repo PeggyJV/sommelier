@@ -40,7 +40,7 @@ func (s *IntegrationTestSuite) TestRebalance() {
 			}
 
 			response, err := s.chain.sendMsgs(*clientCtx, &commitMsg)
-			s.Require().NoError(err, "unable to sign precommit")
+			s.Require().NoError(err, "unable to send precommit")
 			s.Require().NotZerof(response.Code, "non-zero response from rpc call for msg", commitMsg)
 		}
 	})

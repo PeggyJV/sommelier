@@ -18,6 +18,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/tx/signing"
 	sdkTx "github.com/cosmos/cosmos-sdk/x/auth/tx"
+	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 	gravitytypes "github.com/peggyjv/gravity-bridge/module/x/gravity/types"
 	"github.com/peggyjv/sommelier/app"
@@ -221,6 +222,7 @@ func (c *chain) clientContext(nodeURI string, val validator) (*client.Context, e
 		WithClient(rpcClient).
 		WithBroadcastMode(flags.BroadcastBlock).
 		WithKeyring(kb).
+		WithAccountRetriever(authtypes.AccountRetriever{}).
 		WithOutputFormat("json").
 		WithFrom("val").
 		WithFromName("val").
