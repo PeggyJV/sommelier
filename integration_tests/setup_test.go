@@ -502,18 +502,24 @@ func (s *IntegrationTestSuite) runValidators() {
 		func() bool {
 			status, err := rpcClient.Status(context.Background())
 			if err != nil {
+				s.T().Logf(err.Error())
 				return false
 			}
 
 			// let the node produce a few blocks
-			if status.SyncInfo.CatchingUp || status.SyncInfo.LatestBlockHeight < 5 {
+			if status.SyncInfo.CatchingUp {
+				s.T().Logf("catching up: %s", status.SyncInfo.CatchingUp)
+				return false
+			}
+			if status.SyncInfo.LatestBlockHeight < 5 {
+				s.T().Logf("block height %d", status.SyncInfo.LatestBlockHeight)
 				return false
 			}
 
 			return true
 		},
-		5*time.Minute,
-		time.Second,
+		10*time.Minute,
+		15*time.Second,
 		"validator node failed to produce blocks",
 	)
 }
