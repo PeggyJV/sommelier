@@ -187,9 +187,7 @@ func (c *chain) clientContext(nodeURI string, val validator) (*client.Context, e
 		&stakingtypes.MsgCreateValidator{},
 		&gravitytypes.MsgDelegateKeys{},
 		&types.MsgAllocationCommit{},
-		&types.MsgAllocationCommitResponse{},
 		&types.MsgAllocationPrecommit{},
-		&types.MsgAllocationPrecommitResponse{},
 	)
 	interfaceRegistry.RegisterImplementations((*cryptotypes.PubKey)(nil), &secp256k1.PubKey{}, &ed25519.PubKey{})
 
@@ -202,15 +200,6 @@ func (c *chain) clientContext(nodeURI string, val validator) (*client.Context, e
 		TxConfig:          txCfg,
 		Amino:             amino,
 	}
-	//
-	//std.RegisterLegacyAminoCodec(encodingConfig.Amino)
-	//std.RegisterInterfaces(encodingConfig.InterfaceRegistry)
-	//simapp.ModuleBasics.RegisterLegacyAminoCodec(encodingConfig.Amino)
-	//simapp.ModuleBasics.RegisterInterfaces(encodingConfig.InterfaceRegistry)
-	//ibc.AppModuleBasic{}.RegisterInterfaces(encodingConfig.InterfaceRegistry)
-	//transfer.AppModuleBasic{}.RegisterLegacyAminoCodec(encodingConfig.Amino)
-	//transfer.AppModuleBasic{}.RegisterInterfaces(encodingConfig.InterfaceRegistry)
-
 	rpcClient, err := rpchttp.New(nodeURI, "/websocket")
 	if err != nil {
 		return nil, err
