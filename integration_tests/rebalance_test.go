@@ -1,83 +1,47 @@
 package integration_tests
 
 import (
-	rpchttp "github.com/tendermint/tendermint/rpc/client/http"
+	"github.com/peggyjv/sommelier/x/allocation/types"
 )
-
-//func (s *IntegrationTestSuite) TestPhotonTokenTransfers() {
-//	// deploy photon ERC20 token contact
-//	var photonERC20Addr string
-//	s.Run("deploy_photon_erc20", func() {
-//		photonERC20Addr = s.deployERC20Token("photon")
-//	})
-//
-//	// send 100 photon tokens from Umee to Ethereum
-//	s.Run("send_photon_tokens_to_eth", func() {
-//		ethRecipient := s.chain.validators[1].ethereumKey.address
-//		s.sendFromUmeeToEth(0, ethRecipient, "100photon", "10photon", "3photon")
-//
-//		umeeEndpoint := fmt.Sprintf("http://%s", s.valResources[0].GetHostPort("1317/tcp"))
-//		fromAddr := s.chain.validators[0].keyInfo.GetAddress()
-//
-//		// require the sender's (validator) balance decreased
-//		balance, err := queryUmeeDenomBalance(umeeEndpoint, fromAddr.String(), "photon")
-//		s.Require().NoError(err)
-//		s.Require().Equal(99999999887, balance)
-//
-//		expEthBalance := 100
-//		ethEndpoint := fmt.Sprintf("http://%s", s.ethResource.GetHostPort("8545/tcp"))
-//
-//		// require the Ethereum recipient balance increased
-//		s.Require().Eventually(
-//			func() bool {
-//				ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
-//				defer cancel()
-//
-//				b, err := queryEthTokenBalance(ctx, ethEndpoint, photonERC20Addr, ethRecipient)
-//				if err != nil {
-//					return false
-//				}
-//
-//				return b == expEthBalance
-//			},
-//			2*time.Minute,
-//			5*time.Second,
-//		)
-//	})
-//
-//	// send 100 photon tokens from Ethereum back to Umee
-//	s.Run("send_photon_tokens_from_eth", func() {
-//		s.sendFromEthToUmee(1, photonERC20Addr, s.chain.validators[0].keyInfo.GetAddress().String(), "100")
-//
-//		umeeEndpoint := fmt.Sprintf("http://%s", s.valResources[0].GetHostPort("1317/tcp"))
-//		toAddr := s.chain.validators[0].keyInfo.GetAddress()
-//		expBalance := 99999999987
-//
-//		// require the original sender's (validator) balance increased
-//		s.Require().Eventually(
-//			func() bool {
-//				b, err := queryUmeeDenomBalance(umeeEndpoint, toAddr.String(), "photon")
-//				if err != nil {
-//					return false
-//				}
-//
-//				return b == expBalance
-//			},
-//			2*time.Minute,
-//			5*time.Second,
-//		)
-//	})
-//}
 
 func (s *IntegrationTestSuite) TestRebalance() {
 	s.Run("Bring up chain, and submit a re-balance", func() {
-		s.T().Logf("creating clients")
+		s.T().Logf("sending pre-commits")
 
-		//ethClient, err := ethclient.Dial(fmt.Sprintf("http://%s", s.ethResource.GetHostPort("8545/tcp")))
-		//s.Require().NoError(err)
+		salt := "testsalt"
+		commit := types.Allocation{
+			Cellar: &types.Cellar{
+				Id:         "0x6ea5992aB4A78D5720bD12A089D13c073d04B55d",
+				TickRanges: []*types.TickRange{},
+			},
+		}
 
-		_, err := rpchttp.New("tcp://localhost:26657", "/websocket")
-		s.Require().NoError(err)
+		for _, val := range s.chain.validators {
+			clientCtx, err := s.chain.clientContext("tcp://localhost:26657", *val)
+			s.Require().NoError(err)
 
+			hash, err := val.hashCellar(*commit.Cellar, salt)
+			s.Require().NoError(err, "unable to hash cellar")
+			precommitMsg := types.NewMsgAllocationPrecommit(hash, val.keyInfo.GetAddress())
+
+			response, err := s.chain.sendMsgs(*clientCtx, precommitMsg)
+			s.Require().NoError(err, "unable to sign precommit")
+			s.Require().NotZerof(response.Code, "non-zero response from rpc call for msg", precommitMsg)
+		}
+
+		s.T().Logf("sending commits")
+		for _, val := range s.chain.validators {
+			clientCtx, err := s.chain.clientContext("tcp://localhost:26657", *val)
+			s.Require().NoError(err)
+
+			commitMsg := types.MsgAllocationCommit{
+				Commit: []*types.Allocation{&commit},
+				Signer: val.keyInfo.GetAddress().String(),
+			}
+
+			response, err := s.chain.sendMsgs(*clientCtx, &commitMsg)
+			s.Require().NoError(err, "unable to sign precommit")
+			s.Require().NotZerof(response.Code, "non-zero response from rpc call for msg", commitMsg)
+		}
 	})
 }

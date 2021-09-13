@@ -37,6 +37,6 @@ func ExportGenesis(ctx sdk.Context, k Keeper) types.GenesisState {
 	return types.GenesisState{
 		Params:            k.GetParamSet(ctx),
 		FeederDelegations: k.GetAllAllocationDelegations(ctx),
-		Cellars: cellars,
+		Cellars:           cellars,
 	}
 }

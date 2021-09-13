@@ -8,6 +8,8 @@ import (
 	"path"
 	"path/filepath"
 
+	"github.com/peggyjv/sommelier/x/allocation/types"
+
 	sdkcrypto "github.com/cosmos/cosmos-sdk/crypto"
 	cryptocodec "github.com/cosmos/cosmos-sdk/crypto/codec"
 	"github.com/cosmos/cosmos-sdk/crypto/hd"
@@ -338,4 +340,13 @@ func (v *validator) signMsg(msgs ...sdk.Msg) (*sdktx.Tx, error) {
 	}
 
 	return decodeTx(bz)
+}
+
+func (v *validator) hashCellar(cellar types.Cellar, salt string) ([]byte, error) {
+	hash, err := cellar.Hash(salt, sdk.ValAddress(v.keyInfo.GetAddress()))
+	if err != nil {
+		return nil, err
+	}
+
+	return hash, nil
 }

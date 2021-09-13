@@ -37,12 +37,12 @@ import (
 )
 
 const (
-	testDenom           = "testsomm"
-	initBalanceStr      = "110000000000utestsomm,100000000000testsomm"
-	minGasPrice         = "0.00001"
-	ethChainID     uint = 15
-	bondDenom           = "utestsomm"
-	hardhatCellarID = "0x6ea5992aB4A78D5720bD12A089D13c073d04B55d"
+	testDenom            = "testsomm"
+	initBalanceStr       = "110000000000utestsomm,100000000000testsomm"
+	minGasPrice          = "0.00001"
+	ethChainID      uint = 15
+	bondDenom            = "utestsomm"
+	hardhatCellarID      = "0x6ea5992aB4A78D5720bD12A089D13c073d04B55d"
 )
 
 func MNEMONICS() []string {
@@ -343,9 +343,9 @@ func (s *IntegrationTestSuite) initGenesis() {
 
 	allocationGenState.Cellars = []*types.Cellar{
 		{
-			hardhatCellarID, 
+			hardhatCellarID,
 			[]*types.TickRange{},
-			},
+		},
 	}
 
 	// serialize genesis state

@@ -3,20 +3,28 @@ package integration_tests
 import (
 	"fmt"
 	"io/ioutil"
+	"os"
 
-	"github.com/cosmos/cosmos-sdk/crypto/hd"
-
-	"github.com/peggyjv/sommelier/app"
-	"github.com/peggyjv/sommelier/app/params"
-
+	"github.com/cosmos/cosmos-sdk/client"
+	"github.com/cosmos/cosmos-sdk/client/flags"
+	"github.com/cosmos/cosmos-sdk/client/tx"
 	"github.com/cosmos/cosmos-sdk/codec"
+	sdkTypes "github.com/cosmos/cosmos-sdk/codec/types"
+	"github.com/cosmos/cosmos-sdk/crypto/hd"
+	"github.com/cosmos/cosmos-sdk/crypto/keyring"
 	"github.com/cosmos/cosmos-sdk/crypto/keys/ed25519"
 	"github.com/cosmos/cosmos-sdk/crypto/keys/secp256k1"
 	cryptotypes "github.com/cosmos/cosmos-sdk/crypto/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/cosmos/cosmos-sdk/types/tx/signing"
+	sdkTx "github.com/cosmos/cosmos-sdk/x/auth/tx"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 	gravitytypes "github.com/peggyjv/gravity-bridge/module/x/gravity/types"
+	"github.com/peggyjv/sommelier/app"
+	"github.com/peggyjv/sommelier/app/params"
+	"github.com/peggyjv/sommelier/x/allocation/types"
 	tmrand "github.com/tendermint/tendermint/libs/rand"
+	rpchttp "github.com/tendermint/tendermint/rpc/client/http"
 )
 
 const (
@@ -170,4 +178,120 @@ func (c *chain) createOrchestrator(index int) *orchestrator {
 	return &orchestrator{
 		index: index,
 	}
+}
+
+func (c *chain) clientContext(nodeURI string, val validator) (*client.Context, error) {
+	amino := codec.NewLegacyAmino()
+	interfaceRegistry := sdkTypes.NewInterfaceRegistry()
+	interfaceRegistry.RegisterImplementations((*sdk.Msg)(nil),
+		&stakingtypes.MsgCreateValidator{},
+		&gravitytypes.MsgDelegateKeys{},
+		&types.MsgAllocationCommit{},
+		&types.MsgAllocationCommitResponse{},
+		&types.MsgAllocationPrecommit{},
+		&types.MsgAllocationPrecommitResponse{},
+	)
+	interfaceRegistry.RegisterImplementations((*cryptotypes.PubKey)(nil), &secp256k1.PubKey{}, &ed25519.PubKey{})
+
+	protoCodec := codec.NewProtoCodec(interfaceRegistry)
+	txCfg := sdkTx.NewTxConfig(protoCodec, sdkTx.DefaultSignModes)
+
+	encodingConfig := params.EncodingConfig{
+		InterfaceRegistry: interfaceRegistry,
+		Marshaler:         protoCodec,
+		TxConfig:          txCfg,
+		Amino:             amino,
+	}
+	//
+	//std.RegisterLegacyAminoCodec(encodingConfig.Amino)
+	//std.RegisterInterfaces(encodingConfig.InterfaceRegistry)
+	//simapp.ModuleBasics.RegisterLegacyAminoCodec(encodingConfig.Amino)
+	//simapp.ModuleBasics.RegisterInterfaces(encodingConfig.InterfaceRegistry)
+	//ibc.AppModuleBasic{}.RegisterInterfaces(encodingConfig.InterfaceRegistry)
+	//transfer.AppModuleBasic{}.RegisterLegacyAminoCodec(encodingConfig.Amino)
+	//transfer.AppModuleBasic{}.RegisterInterfaces(encodingConfig.InterfaceRegistry)
+
+	rpcClient, err := rpchttp.New(nodeURI, "/websocket")
+	if err != nil {
+		return nil, err
+	}
+
+	kb, err := keyring.New(keyringAppName, keyring.BackendTest, val.configDir(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	clientContext := client.Context{}.
+		WithChainID(c.id).
+		WithCodec(protoCodec).
+		WithInterfaceRegistry(encodingConfig.InterfaceRegistry).
+		WithTxConfig(encodingConfig.TxConfig).
+		WithLegacyAmino(encodingConfig.Amino).
+		WithInput(os.Stdin).
+		WithNodeURI(nodeURI).
+		WithClient(rpcClient).
+		WithBroadcastMode(flags.BroadcastBlock).
+		WithKeyring(kb).
+		WithOutputFormat("json").
+		WithFrom("val").
+		WithFromName("val").
+		WithFromAddress(val.keyInfo.GetAddress()).
+		WithSkipConfirmation(true)
+
+	return &clientContext, nil
+}
+
+func (c *chain) sendMsgs(clientCtx client.Context, msgs ...sdk.Msg) (*sdk.TxResponse, error) {
+	txf := tx.Factory{}.
+		WithAccountRetriever(clientCtx.AccountRetriever).
+		WithChainID(c.id).
+		WithTxConfig(clientCtx.TxConfig).
+		WithGasAdjustment(1.2).
+		//WithGasPrices("").
+		WithKeybase(clientCtx.Keyring).
+		WithSignMode(signing.SignMode_SIGN_MODE_DIRECT)
+
+	from := clientCtx.GetFromAddress()
+
+	if err := txf.AccountRetriever().EnsureExists(clientCtx, from); err != nil {
+		return nil, err
+	}
+
+	initNum, initSeq := txf.AccountNumber(), txf.Sequence()
+	if initNum == 0 || initSeq == 0 {
+		num, seq, err := txf.AccountRetriever().GetAccountNumberSequence(clientCtx, from)
+		if err != nil {
+			return nil, err
+		}
+
+		if initNum == 0 {
+			txf = txf.WithAccountNumber(num)
+		}
+
+		if initSeq == 0 {
+			txf = txf.WithSequence(seq)
+		}
+	}
+
+	txb, err := txf.BuildUnsignedTx(msgs...)
+	if err != nil {
+		return nil, err
+	}
+
+	err = tx.Sign(txf, "val", txb, false)
+	if err != nil {
+		return nil, err
+	}
+
+	txBytes, err := clientCtx.TxConfig.TxEncoder()(txb.GetTx())
+	if err != nil {
+		return nil, err
+	}
+
+	res, err := clientCtx.BroadcastTx(txBytes)
+	if err != nil {
+		return nil, err
+	}
+
+	return res, nil
 }
