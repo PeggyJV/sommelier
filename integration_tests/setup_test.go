@@ -382,6 +382,10 @@ func (s *IntegrationTestSuite) initValidatorConfigs() {
 		valConfig.StateSync.Enable = false
 		valConfig.LogLevel = "info"
 
+		// speed up blocks
+		valConfig.Consensus.TimeoutCommit = 1 * time.Second
+		valConfig.Consensus.TimeoutPropose = 1 * time.Second
+
 		var peers []string
 
 		for j := 0; j < len(s.chain.validators); j++ {
@@ -510,6 +514,7 @@ func (s *IntegrationTestSuite) runValidators() {
 				} else {
 					if container.Container.State.Status == "exited" {
 						s.Fail("validators exited. state: %s logs: \n%s", container.Container.State.String(), s.logsByContainerID(container.Container.ID))
+						s.T().Fail()
 					}
 					s.T().Logf("state: %v, health: %v", container.Container.State.Status, container.Container.State.Health)
 				}
