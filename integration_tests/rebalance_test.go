@@ -71,10 +71,8 @@ func (s *IntegrationTestSuite) TestRebalance() {
 			clientCtx, err := s.chain.clientContext("tcp://localhost:26657", *val)
 			s.Require().NoError(err)
 
-			commitMsg := types.MsgAllocationCommit{
-				Commit: []*types.Allocation{&commit},
-				Signer: val.keyInfo.GetAddress().String(),
-			}
+			commitMsg := types.NewMsgAllocationCommit([]*types.Allocation{&commit}, val.keyInfo.GetAddress(),
+		)
 
 			response, err := s.chain.sendMsgs(*clientCtx, &commitMsg)
 			s.Require().NoError(err, "unable to send commit")
