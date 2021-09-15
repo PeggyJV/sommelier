@@ -18,8 +18,6 @@ func GetQueryCmd() *cobra.Command {
 
 	allocationQueryCmd.AddCommand([]*cobra.Command{
 		queryParams(),
-		queryDelegateAddress(),
-		queryValidatorAddress(),
 		queryAllocationPrecommit(),
 		queryAllocationCommit(),
 		queryVotePeriod(),
@@ -45,56 +43,6 @@ func queryParams() *cobra.Command {
 			req := &types.QueryParamsRequest{}
 
 			res, err := queryClient.QueryParams(cmd.Context(), req)
-			if err != nil {
-				return err
-			}
-
-			return ctx.PrintProto(res)
-		},
-	}
-}
-
-func queryDelegateAddress() *cobra.Command {
-	return &cobra.Command{
-		Use:     "delegate-address [validator-address]",
-		Aliases: []string{"del"},
-		Args:    cobra.ExactArgs(1),
-		Short:   "query delegate address from the chain given validators address",
-		RunE: func(cmd *cobra.Command, args []string) error {
-			ctx, err := client.GetClientQueryContext(cmd)
-			if err != nil {
-				return err
-			}
-
-			queryClient := types.NewQueryClient(ctx)
-			req := &types.QueryDelegateAddressRequest{Validator: args[0]}
-
-			res, err := queryClient.QueryDelegateAddress(cmd.Context(), req)
-			if err != nil {
-				return err
-			}
-
-			return ctx.PrintProto(res)
-		},
-	}
-}
-
-func queryValidatorAddress() *cobra.Command {
-	return &cobra.Command{
-		Use:     "validator-address [delegate-address]",
-		Aliases: []string{"val"},
-		Args:    cobra.ExactArgs(1),
-		Short:   "query validator address from the chain given the address that validator delegated to",
-		RunE: func(cmd *cobra.Command, args []string) error {
-			ctx, err := client.GetClientQueryContext(cmd)
-			if err != nil {
-				return err
-			}
-
-			queryClient := types.NewQueryClient(ctx)
-			req := &types.QueryValidatorAddressRequest{Delegate: args[0]}
-
-			res, err := queryClient.QueryValidatorAddress(cmd.Context(), req)
 			if err != nil {
 				return err
 			}

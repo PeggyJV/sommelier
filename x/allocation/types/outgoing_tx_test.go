@@ -17,7 +17,7 @@ func TestABIEncodedRebalanceBytes(t *testing.T) {
 			{-192480, -197880, 680},
 			{-197880, -200640, 160},
 		},
-	}.ABIEncodedRebalanceBytes()
+	}.ABIEncodedRebalanceHash()
 
 	// hash from python brownie code cc @stevenj
 	testHash, err := hex.DecodeString("0xd0f79d9bfeec64dbc27ccd281a20931cfadc07d87875c3289f55383e59f3ebbc"[2:])

@@ -3,6 +3,7 @@ package types
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
+	"github.com/ethereum/go-ethereum/common"
 	"github.com/peggyjv/gravity-bridge/module/x/gravity/types"
 	tmbytes "github.com/tendermint/tendermint/libs/bytes"
 )
@@ -32,4 +33,8 @@ type GravityKeeper interface {
 		payload []byte,
 		tokens []types.ERC20Token,
 		fees []types.ERC20Token) *types.ContractCallTx
+	GetOrchestratorValidatorAddress(ctx sdk.Context, orchAddr sdk.AccAddress) sdk.ValAddress
+	GetValidatorEthereumAddress(ctx sdk.Context, valAddr sdk.ValAddress) common.Address
+	GetEthereumOrchestratorAddress(ctx sdk.Context, ethAddr common.Address) sdk.AccAddress
+	SetOrchestratorValidatorAddress(ctx sdk.Context, val sdk.ValAddress, orchAddr sdk.AccAddress)
 }

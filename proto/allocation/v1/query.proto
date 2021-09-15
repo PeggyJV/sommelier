@@ -16,14 +16,6 @@ service Query {
     rpc QueryParams(QueryParamsRequest) returns (QueryParamsResponse) {
         option (google.api.http).get = "/sommelier/allocation/v1/params";
     }
-    // QueryDelegateAddress queries the delegate account address of a validator
-    rpc QueryDelegateAddress(QueryDelegateAddressRequest) returns (QueryDelegateAddressResponse) {
-        option (google.api.http).get = "/sommelier/allocation/v1/delegates/{validator}";
-    }
-    // QueryValidatorAddress returns the validator address of a given delegate
-    rpc QueryValidatorAddress(QueryValidatorAddressRequest) returns (QueryValidatorAddressResponse) {
-        option (google.api.http).get = "/sommelier/allocation/v1/validators/{delegate}";
-    }
     // QueryAllocationPrecommit queries the validator prevote in the current voting period
     rpc QueryAllocationPrecommit(QueryAllocationPrecommitRequest) returns (QueryAllocationPrecommitResponse) {
         option (google.api.http).get = "/sommelier/allocation/v1/precommits/{validator}";
@@ -45,30 +37,6 @@ message QueryParamsRequest {}
 message QueryParamsResponse {
     // allocation parameters
     Params params = 1 [(gogoproto.nullable) = false];
-}
-
-// QueryDelegateAddressRequest is the request type for the Query/QueryDelegateAddress gRPC method.
-message QueryDelegateAddressRequest {
-    // validator operator address
-    string validator = 1;
-}
-
-// QueryDelegateAddressResponse is the response type for the Query/QueryDelegateAddress gRPC method.
-message QueryDelegateAddressResponse {
-    // delegate account address
-    string delegate = 2;
-}
-
-// QueryValidatorAddressRequest is the request type for the Query/Params gRPC method.
-message QueryValidatorAddressRequest {
-    // delegate account address
-    string delegate = 1;
-}
-
-// QueryValidatorAddressResponse is the response type for the Query/Params gRPC method.
-message QueryValidatorAddressResponse {
-    // validator operator address
-    string validator = 1;
 }
 
 // QueryAllocationPrecommitRequest is the request type for the Query/AllocationPrecommit gRPC method.

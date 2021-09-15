@@ -87,7 +87,7 @@ func (k Keeper) EndBlocker(ctx sdk.Context) {
 			ctx,
 			k.IncrementInvalidationNonce(ctx),
 			wv.InvalidationScope(),
-			wv.ABIEncodedRebalanceBytes(),
+			wv.ABIEncodedRebalanceHash(),
 			[]gravitytypes.ERC20Token{}, // tokens are always zero
 			[]gravitytypes.ERC20Token{})
 		k.gravityKeeper.SetOutgoingTx(ctx, contractCall)

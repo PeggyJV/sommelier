@@ -18,8 +18,6 @@
     - [MsgAllocationCommitResponse](#allocation.v1.MsgAllocationCommitResponse)
     - [MsgAllocationPrecommit](#allocation.v1.MsgAllocationPrecommit)
     - [MsgAllocationPrecommitResponse](#allocation.v1.MsgAllocationPrecommitResponse)
-    - [MsgDelegateAllocations](#allocation.v1.MsgDelegateAllocations)
-    - [MsgDelegateAllocationsResponse](#allocation.v1.MsgDelegateAllocationsResponse)
   
     - [Msg](#allocation.v1.Msg)
   
@@ -34,12 +32,8 @@
     - [QueryAllocationPrecommitResponse](#allocation.v1.QueryAllocationPrecommitResponse)
     - [QueryCommitPeriodRequest](#allocation.v1.QueryCommitPeriodRequest)
     - [QueryCommitPeriodResponse](#allocation.v1.QueryCommitPeriodResponse)
-    - [QueryDelegateAddressRequest](#allocation.v1.QueryDelegateAddressRequest)
-    - [QueryDelegateAddressResponse](#allocation.v1.QueryDelegateAddressResponse)
     - [QueryParamsRequest](#allocation.v1.QueryParamsRequest)
     - [QueryParamsResponse](#allocation.v1.QueryParamsResponse)
-    - [QueryValidatorAddressRequest](#allocation.v1.QueryValidatorAddressRequest)
-    - [QueryValidatorAddressResponse](#allocation.v1.QueryValidatorAddressResponse)
   
     - [Query](#allocation.v1.Query)
   
@@ -239,33 +233,6 @@ MsgAllocationPrecommitResponse is the response type for the Msg/AllocationPrecom
 
 
 
-
-<a name="allocation.v1.MsgDelegateAllocations"></a>
-
-### MsgDelegateAllocations
-MsgDelegateAllocations defines sdk.Msg for delegating allocation rights from a validator
-to another address, must be signed by an active validator
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| `delegate` | [string](#string) |  | delegate account address |
-| `validator` | [string](#string) |  | validator operator address |
-
-
-
-
-
-
-<a name="allocation.v1.MsgDelegateAllocationsResponse"></a>
-
-### MsgDelegateAllocationsResponse
-MsgDelegateAllocationsResponse is the response type for the Msg/DelegateAllocations gRPC method.
-
-
-
-
-
  <!-- end messages -->
 
  <!-- end enums -->
@@ -280,9 +247,8 @@ MsgService defines the msgs that the oracle module handles.
 
 | Method Name | Request Type | Response Type | Description | HTTP Verb | Endpoint |
 | ----------- | ------------ | ------------- | ------------| ------- | -------- |
-| `DelegateAllocations` | [MsgDelegateAllocations](#allocation.v1.MsgDelegateAllocations) | [MsgDelegateAllocationsResponse](#allocation.v1.MsgDelegateAllocationsResponse) | DelegateAllocations defines a message that delegates the allocating to an account address. | |
-| `AllocationPrecommit` | [MsgAllocationPrecommit](#allocation.v1.MsgAllocationPrecommit) | [MsgAllocationPrecommitResponse](#allocation.v1.MsgAllocationPrecommitResponse) | OracleDataPrevote defines a message that commits a hash of a oracle data feed before the data is actually submitted. | |
-| `AllocationCommit` | [MsgAllocationCommit](#allocation.v1.MsgAllocationCommit) | [MsgAllocationCommitResponse](#allocation.v1.MsgAllocationCommitResponse) | OracleDataVote defines a message to submit the actual oracle data that was committed by the feeder through the prevote. | |
+| `AllocationPrecommit` | [MsgAllocationPrecommit](#allocation.v1.MsgAllocationPrecommit) | [MsgAllocationPrecommitResponse](#allocation.v1.MsgAllocationPrecommitResponse) | AllocationPrecommit defines a message that commits a hash of allocation data feed before the data is actually submitted. | |
+| `AllocationCommit` | [MsgAllocationCommit](#allocation.v1.MsgAllocationCommit) | [MsgAllocationCommitResponse](#allocation.v1.MsgAllocationCommitResponse) | AllocationCommit defines a message to submit the actual allocation data that was committed by the feeder through the pre-commit. | |
 
  <!-- end services -->
 
@@ -304,7 +270,6 @@ GenesisState - all allocation state that must be provided at genesis
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | `params` | [Params](#allocation.v1.Params) |  |  |
-| `feeder_delegations` | [MsgDelegateAllocations](#allocation.v1.MsgDelegateAllocations) | repeated |  |
 | `cellars` | [Cellar](#allocation.v1.Cellar) | repeated |  |
 
 
@@ -433,36 +398,6 @@ QueryCommitPeriodResponse is the response type for the Query/VotePeriod gRPC met
 
 
 
-<a name="allocation.v1.QueryDelegateAddressRequest"></a>
-
-### QueryDelegateAddressRequest
-QueryDelegateAddressRequest is the request type for the Query/QueryDelegateAddress gRPC method.
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| `validator` | [string](#string) |  | validator operator address |
-
-
-
-
-
-
-<a name="allocation.v1.QueryDelegateAddressResponse"></a>
-
-### QueryDelegateAddressResponse
-QueryDelegateAddressResponse is the response type for the Query/QueryDelegateAddress gRPC method.
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| `delegate` | [string](#string) |  | delegate account address |
-
-
-
-
-
-
 <a name="allocation.v1.QueryParamsRequest"></a>
 
 ### QueryParamsRequest
@@ -487,36 +422,6 @@ QueryParamsRequest is the response type for the Query/Params gRPC method.
 
 
 
-
-<a name="allocation.v1.QueryValidatorAddressRequest"></a>
-
-### QueryValidatorAddressRequest
-QueryValidatorAddressRequest is the request type for the Query/Params gRPC method.
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| `delegate` | [string](#string) |  | delegate account address |
-
-
-
-
-
-
-<a name="allocation.v1.QueryValidatorAddressResponse"></a>
-
-### QueryValidatorAddressResponse
-QueryValidatorAddressResponse is the response type for the Query/Params gRPC method.
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| `validator` | [string](#string) |  | validator operator address |
-
-
-
-
-
  <!-- end messages -->
 
  <!-- end enums -->
@@ -532,8 +437,6 @@ Query defines the gRPC querier service for the allocation module.
 | Method Name | Request Type | Response Type | Description | HTTP Verb | Endpoint |
 | ----------- | ------------ | ------------- | ------------| ------- | -------- |
 | `QueryParams` | [QueryParamsRequest](#allocation.v1.QueryParamsRequest) | [QueryParamsResponse](#allocation.v1.QueryParamsResponse) | QueryParams queries the allocation module parameters. | GET|/sommelier/allocation/v1/params|
-| `QueryDelegateAddress` | [QueryDelegateAddressRequest](#allocation.v1.QueryDelegateAddressRequest) | [QueryDelegateAddressResponse](#allocation.v1.QueryDelegateAddressResponse) | QueryDelegateAddress queries the delegate account address of a validator | GET|/sommelier/allocation/v1/delegates/{validator}|
-| `QueryValidatorAddress` | [QueryValidatorAddressRequest](#allocation.v1.QueryValidatorAddressRequest) | [QueryValidatorAddressResponse](#allocation.v1.QueryValidatorAddressResponse) | QueryValidatorAddress returns the validator address of a given delegate | GET|/sommelier/allocation/v1/validators/{delegate}|
 | `QueryAllocationPrecommit` | [QueryAllocationPrecommitRequest](#allocation.v1.QueryAllocationPrecommitRequest) | [QueryAllocationPrecommitResponse](#allocation.v1.QueryAllocationPrecommitResponse) | QueryAllocationPrecommit queries the validator prevote in the current voting period | GET|/sommelier/allocation/v1/precommits/{validator}|
 | `QueryAllocationCommit` | [QueryAllocationCommitRequest](#allocation.v1.QueryAllocationCommitRequest) | [QueryAllocationCommitResponse](#allocation.v1.QueryAllocationCommitResponse) | QueryAllocationCommit queries the validator vote in the current voting period | GET|/sommelier/allocation/v1/commits/{validator}|
 | `QueryCommitPeriod` | [QueryCommitPeriodRequest](#allocation.v1.QueryCommitPeriodRequest) | [QueryCommitPeriodResponse](#allocation.v1.QueryCommitPeriodResponse) | QueryVotePeriod queries the heights for the current voting period (current, start and end) | GET|/sommelier/allocation/v1/commit_period|

@@ -13,56 +13,6 @@ import (
 
 var _ types.QueryServer = Keeper{}
 
-// QueryDelegateAddress implements QueryServer
-func (k Keeper) QueryDelegateAddress(c context.Context, req *types.QueryDelegateAddressRequest) (*types.QueryDelegateAddressResponse, error) {
-	if req == nil {
-		return nil, status.Error(codes.InvalidArgument, "empty request")
-	}
-
-	ctx := sdk.UnwrapSDKContext(c)
-
-	val, err := sdk.ValAddressFromBech32(req.Validator)
-	if err != nil {
-		return nil, status.Error(codes.InvalidArgument, err.Error())
-	}
-
-	delegateAddr := k.GetDelegateAddressFromValidator(ctx, val)
-	if delegateAddr == nil {
-		return nil, status.Errorf(
-			codes.NotFound, "delegator address for validator %s", req.Validator,
-		)
-	}
-
-	return &types.QueryDelegateAddressResponse{
-		Delegate: delegateAddr.String(),
-	}, nil
-}
-
-// QueryValidatorAddress implements QueryServer
-func (k Keeper) QueryValidatorAddress(c context.Context, req *types.QueryValidatorAddressRequest) (*types.QueryValidatorAddressResponse, error) {
-	if req == nil {
-		return nil, status.Error(codes.InvalidArgument, "empty request")
-	}
-
-	ctx := sdk.UnwrapSDKContext(c)
-
-	del, err := sdk.AccAddressFromBech32(req.Delegate)
-	if err != nil {
-		return nil, status.Error(codes.InvalidArgument, err.Error())
-	}
-
-	validatorAddr := k.GetValidatorAddressFromDelegate(ctx, del)
-	if validatorAddr == nil {
-		return nil, status.Errorf(
-			codes.NotFound, "delegator address for delegate %s", req.Delegate,
-		)
-	}
-
-	return &types.QueryValidatorAddressResponse{
-		Validator: validatorAddr.String(),
-	}, nil
-}
-
 // QueryAllocationPrecommit implements QueryServer
 func (k Keeper) QueryAllocationPrecommit(c context.Context, req *types.QueryAllocationPrecommitRequest) (*types.QueryAllocationPrecommitResponse, error) {
 	if req == nil {

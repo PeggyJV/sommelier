@@ -16,8 +16,8 @@ type ABIEncodedTickRange struct {
 	Weight  *big.Int `abi:"weight"`
 }
 
-// ABIEncodedRebalanceBytes gets the checkpoint signature from the given outgoing tx batch
-func (c Cellar) ABIEncodedRebalanceBytes() []byte {
+// ABIEncodedRebalanceHash gets the checkpoint signature from the given outgoing tx batch
+func (c Cellar) ABIEncodedRebalanceHash() []byte {
 	encodedCall, err := abi.JSON(strings.NewReader(rebalanceABI))
 	if err != nil {
 		panic(sdkerrors.Wrap(err, "bad ABI definition in code"))
@@ -78,7 +78,27 @@ func ABIEncodedCellarTickInfoBytes(index uint) []byte {
 		panic(err)
 	}
 
-	return crypto.Keccak256Hash(abiEncodedCall).Bytes()
+	return abiEncodedCall
+}
+
+func BytesToABIEncodedTickRange(bz []byte) (*TickRange, error) {
+	encodedCall, err := abi.JSON(strings.NewReader(cellarTickInfoABI))
+	if err != nil {
+		panic(sdkerrors.Wrap(err, "bad ABI definition in code"))
+	}
+
+	var abiEncodedTickRange ABIEncodedTickRange
+	if err := encodedCall.UnpackIntoInterface(&abiEncodedTickRange, "cellarTickInfo", bz); err != nil {
+		return nil, err
+	}
+
+	tr := TickRange{
+		Upper:  int32(abiEncodedTickRange.Upper.Int64()),
+		Lower:  int32(abiEncodedTickRange.Lower.Int64()),
+		Weight: uint32(abiEncodedTickRange.Weight.Uint64()),
+	}
+
+	return &tr, nil
 }
 
 const cellarTickInfoABI = `[{

@@ -241,7 +241,6 @@ func (c *chain) sendMsgs(clientCtx client.Context, msgs ...sdk.Msg) (*sdk.TxResp
 		WithChainID(c.id).
 		WithTxConfig(clientCtx.TxConfig).
 		WithGasAdjustment(1.2).
-		//WithGasPrices("").
 		WithKeybase(clientCtx.Keyring).
 		WithSignMode(signing.SignMode_SIGN_MODE_DIRECT)
 

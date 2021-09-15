@@ -14,7 +14,7 @@ func (c *Cellar) Address() common.Address {
 }
 
 func (c *Cellar) InvalidationScope() tmbytes.HexBytes {
-	return c.ABIEncodedRebalanceBytes()
+	return c.ABIEncodedRebalanceHash()
 }
 
 func (c *Cellar) Equals(other Cellar) bool {

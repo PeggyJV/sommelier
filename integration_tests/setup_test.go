@@ -383,8 +383,8 @@ func (s *IntegrationTestSuite) initValidatorConfigs() {
 		valConfig.LogLevel = "info"
 
 		// speed up blocks
-		valConfig.Consensus.TimeoutCommit = 1 * time.Second
-		valConfig.Consensus.TimeoutPropose = 1 * time.Second
+		//valConfig.Consensus.TimeoutCommit = 10 * time.Second
+		//valConfig.Consensus.TimeoutPropose = 10 * time.Second
 
 		var peers []string
 
@@ -407,6 +407,7 @@ func (s *IntegrationTestSuite) initValidatorConfigs() {
 
 		appConfig := srvconfig.DefaultConfig()
 		appConfig.API.Enable = true
+		appConfig.Pruning = "nothing"
 		appConfig.MinGasPrices = fmt.Sprintf("%s%s", minGasPrice, testDenom)
 
 		srvconfig.WriteConfigFile(appCfgPath, appConfig)
@@ -671,39 +672,24 @@ func (s *IntegrationTestSuite) logsByContainerID(id string) string {
 	return containerLogsBuf.String()
 }
 
-
 func (s *IntegrationTestSuite) getTickRanges() ([]types.TickRange, error) {
 	ethClient, err := ethclient.Dial(fmt.Sprintf("http://%s", s.ethResource.GetHostPort("8545/tcp")))
 	s.Require().NoError(err)
 
-	suggestedGasPrice, err := ethClient.SuggestGasPrice(context.Background())
-	s.Require().NoError(err)
-
-	tickRanges := make([]types.TickRange, 4)
-	for i := 0; i < 4; i++ {
+	tickRanges := make([]types.TickRange, 3)
+	for i := 0; i < 3; i++ {
 		bz, err := ethClient.CallContract(context.Background(), ethereum.CallMsg{
 			From:       common.HexToAddress(s.chain.validators[0].ethereumKey.address),
 			To:         &hardhatCellar,
 			Gas:        0,
-			GasPrice:   suggestedGasPrice,
-			GasFeeCap:  big.NewInt(50000000000),
-			GasTipCap:  big.NewInt(50000000000),
-			Value:      nil,
 			Data:       types.ABIEncodedCellarTickInfoBytes(uint(i)),
-			AccessList: nil,
 		}, nil)
-		s.T().Logf("bytes received %b", bz)
 		s.Require().NoError(err)
 
-		var abiTickRange types.ABIEncodedTickRange
-		err = json.Unmarshal(bz, &abiTickRange)
+		tr, err := types.BytesToABIEncodedTickRange(bz)
 		s.Require().NoError(err)
 
-		tickRanges = append(tickRanges, types.TickRange{
-			Upper: int32(abiTickRange.Upper.Int64()),
-			Lower: int32(abiTickRange.Lower.Int64()),
-			Weight: uint32(abiTickRange.Weight.Uint64()),
-		})
+		tickRanges[i] = *tr
 	}
 
 	return tickRanges, nil

@@ -5,13 +5,10 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
-
 	tmbytes "github.com/tendermint/tendermint/libs/bytes"
 )
 
 var (
-	_ sdk.Msg = &MsgDelegateAllocations{}
 	_ sdk.Msg = &MsgAllocationPrecommit{}
 	_ sdk.Msg = &MsgAllocationCommit{}
 )
@@ -23,77 +20,6 @@ const (
 	TypeMsgAllocationPrecommit = "allocation_precommit"
 	TypeMsgAllocationCommit    = "allocation_commit"
 )
-
-////////////////////////////
-// MsgDelegateAllocations //
-////////////////////////////
-
-// NewMsgDelegateAllocations returns a new MsgDelegateAllocations
-func NewMsgDelegateAllocations(del sdk.AccAddress, val sdk.ValAddress) *MsgDelegateAllocations {
-	if del == nil || val == nil {
-		return nil
-	}
-
-	return &MsgDelegateAllocations{
-		Validator: val.String(),
-		Delegate:  del.String(),
-	}
-}
-
-// Route implements sdk.Msg
-func (m *MsgDelegateAllocations) Route() string { return ModuleName }
-
-// Type implements sdk.Msg
-func (m *MsgDelegateAllocations) Type() string { return TypeMsgDelegateAllocations }
-
-// ValidateBasic implements sdk.Msg
-func (m *MsgDelegateAllocations) ValidateBasic() error {
-	validatorAddr, err := sdk.ValAddressFromBech32(m.Validator)
-	if err != nil {
-		return sdkerrors.Wrap(sdkerrors.ErrInvalidAddress, err.Error())
-	}
-
-	delegatorAddr, err := sdk.AccAddressFromBech32(m.Delegate)
-	if err != nil {
-		return sdkerrors.Wrap(sdkerrors.ErrInvalidAddress, err.Error())
-	}
-
-	if sdk.AccAddress(validatorAddr).Equals(delegatorAddr) {
-		return sdkerrors.Wrap(stakingtypes.ErrBadDelegatorAddr, "delegate address cannot match the delegator address")
-	}
-
-	return nil
-}
-
-// GetSignBytes implements sdk.Msg
-func (m *MsgDelegateAllocations) GetSignBytes() []byte {
-	panic("amino support disabled")
-}
-
-// GetSigners implements sdk.Msg
-func (m *MsgDelegateAllocations) GetSigners() []sdk.AccAddress {
-	return []sdk.AccAddress{sdk.AccAddress(m.MustGetValidator())}
-}
-
-// MustGetValidator returns the sdk.ValAddress for the validator
-func (m *MsgDelegateAllocations) MustGetValidator() sdk.ValAddress {
-	validatorAddr, err := sdk.ValAddressFromBech32(m.Validator)
-	if err != nil {
-		panic(err)
-	}
-
-	return validatorAddr
-}
-
-// MustGetDelegate returns the sdk.AccAddress for the delegate
-func (m *MsgDelegateAllocations) MustGetDelegate() sdk.AccAddress {
-	delegatorAddr, err := sdk.AccAddressFromBech32(m.Delegate)
-	if err != nil {
-		panic(err)
-	}
-
-	return delegatorAddr
-}
 
 //////////////////////////
 // MsgAllocationPrecommit //

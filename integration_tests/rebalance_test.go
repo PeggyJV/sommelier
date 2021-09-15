@@ -1,7 +1,10 @@
 package integration_tests
 
 import (
+	"context"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/peggyjv/sommelier/x/allocation/types"
+	"time"
 )
 
 func (s *IntegrationTestSuite) TestRebalance() {
@@ -9,7 +12,7 @@ func (s *IntegrationTestSuite) TestRebalance() {
 
 		trs, err := s.getTickRanges()
 		s.Require().NoError(err)
-		s.Require().Len(trs, 4)
+		s.Require().Len(trs, 3)
 
 		salt := "testsalt"
 		commit := types.Allocation{
@@ -34,9 +37,34 @@ func (s *IntegrationTestSuite) TestRebalance() {
 			precommitMsg := types.NewMsgAllocationPrecommit(hash, val.keyInfo.GetAddress())
 
 			response, err := s.chain.sendMsgs(*clientCtx, precommitMsg)
-			s.Require().NoError(err, "unable to sign precommit")
-			s.Require().NotZerof(response.Code, "non-zero response from rpc call for msg", precommitMsg)
+			s.Require().NoError(err, "unable to send precommit")
+			s.Require().Zerof(response.Code, "non-zero response from rpc call for msg %s, response %s", precommitMsg, response)
 		}
+
+		s.T().Logf("checking pre-commit for first validator")
+		val := s.chain.validators[0]
+		s.Require().Eventuallyf(func() bool {
+			clientCtx, err := s.chain.clientContext("tcp://localhost:26657", *val)
+			s.Require().NoError(err)
+
+			queryClient := types.NewQueryClient(clientCtx)
+			res, err := queryClient.QueryAllocationPrecommit(context.Background(), &types.QueryAllocationPrecommitRequest{
+				Validator: sdk.ValAddress(val.keyInfo.GetAddress()).String(),
+				Cellar:    hardhatCellar.String(),
+			})
+			if err != nil {
+				return false
+			}
+			if res == nil {
+				return false
+			}
+
+			return true
+		},
+		30 * time.Second,
+		2 * time.Second,
+		"pre-commit not found for validator %s",
+		val.keyInfo.GetAddress().String())
 
 		s.T().Logf("sending commits")
 		for _, val := range s.chain.validators {

@@ -9,25 +9,11 @@ option go_package = "github.com/peggyjv/sommelier/x/allocation/types";
 
 // MsgService defines the msgs that the oracle module handles.
 service Msg {
-     // DelegateAllocations defines a message that delegates the allocating to an account address.
-    rpc DelegateAllocations (MsgDelegateAllocations) returns (MsgDelegateAllocationsResponse);
-    // OracleDataPrevote defines a message that commits a hash of a oracle data feed before the data is actually submitted.
+    // AllocationPrecommit defines a message that commits a hash of allocation data feed before the data is actually submitted.
     rpc AllocationPrecommit   (MsgAllocationPrecommit)   returns (MsgAllocationPrecommitResponse);
-    // OracleDataVote defines a message to submit the actual oracle data that was committed by the feeder through the prevote.
+    // AllocationCommit defines a message to submit the actual allocation data that was committed by the feeder through the pre-commit.
     rpc AllocationCommit      (MsgAllocationCommit)      returns (MsgAllocationCommitResponse);
 }
-
-// MsgDelegateAllocations defines sdk.Msg for delegating allocation rights from a validator
-// to another address, must be signed by an active validator
-message MsgDelegateAllocations {
-    // delegate account address
-    string delegate  = 1;
-    // validator operator address
-    string validator = 2;
-}
-
-// MsgDelegateAllocationsResponse is the response type for the Msg/DelegateAllocations gRPC method.
-message MsgDelegateAllocationsResponse {}
 
 
 // MsgAllocationPrecommit - sdk.Msg for prevoting on an array of oracle data types.

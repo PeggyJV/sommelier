@@ -50,69 +50,6 @@ func (k Keeper) Logger(ctx sdk.Context) log.Logger {
 	return ctx.Logger().With("module", "x/"+types.ModuleName)
 }
 
-////////////////////////
-// MsgDelegateAddress //
-////////////////////////
-
-// SetValidatorDelegateAddress sets a new address that will have the power to send data on behalf of the validator
-func (k Keeper) SetValidatorDelegateAddress(ctx sdk.Context, del sdk.AccAddress, val sdk.ValAddress) {
-	ctx.KVStore(k.storeKey).Set(types.GetAllocationDelegateKey(del), val.Bytes())
-}
-
-// GetValidatorAddressFromDelegate returns the delegate address for a given validator
-func (k Keeper) GetValidatorAddressFromDelegate(ctx sdk.Context, del sdk.AccAddress) sdk.ValAddress {
-	return ctx.KVStore(k.storeKey).Get(types.GetAllocationDelegateKey(del))
-}
-
-// GetDelegateAddressFromValidator returns the validator address for a given delegate
-func (k Keeper) GetDelegateAddressFromValidator(ctx sdk.Context, val sdk.ValAddress) sdk.AccAddress {
-	var address sdk.AccAddress
-	// TODO: create secondary index
-	k.IterateDelegateAddresses(ctx, func(delegatorAddr sdk.AccAddress, validatorAddr sdk.ValAddress) bool {
-		if !val.Equals(validatorAddr) {
-			return false
-		}
-
-		address = delegatorAddr
-		return true
-	})
-	return address
-}
-
-// IsDelegateAddress returns true if the validator has delegated their feed to an address
-func (k Keeper) IsDelegateAddress(ctx sdk.Context, del sdk.AccAddress) bool {
-	return ctx.KVStore(k.storeKey).Has(types.GetAllocationDelegateKey(del))
-}
-
-// IterateDelegateAddresses iterates over all delegate address pairs in the store
-func (k Keeper) IterateDelegateAddresses(ctx sdk.Context, handler func(del sdk.AccAddress, val sdk.ValAddress) (stop bool)) {
-	store := ctx.KVStore(k.storeKey)
-	iter := sdk.KVStorePrefixIterator(store, []byte{types.AllocationDelegateKeyPrefix})
-	defer iter.Close()
-	for ; iter.Valid(); iter.Next() {
-		del := sdk.AccAddress(bytes.TrimPrefix(iter.Key(), []byte{types.AllocationDelegateKeyPrefix}))
-		val := sdk.ValAddress(iter.Value())
-		if handler(del, val) {
-			break
-		}
-	}
-}
-
-// GetAllAllocationDelegations returns all the delegations for allocations
-func (k Keeper) GetAllAllocationDelegations(ctx sdk.Context) []types.MsgDelegateAllocations {
-	allocationDelegations := make([]types.MsgDelegateAllocations, 0)
-
-	k.IterateDelegateAddresses(ctx, func(del sdk.AccAddress, val sdk.ValAddress) bool {
-		allocationDelegations = append(allocationDelegations, types.MsgDelegateAllocations{
-			Delegate:  del.String(),
-			Validator: val.String(),
-		})
-		return false
-	})
-
-	return allocationDelegations
-}
-
 /////////////
 // Cellars //
 /////////////
