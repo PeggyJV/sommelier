@@ -28,13 +28,13 @@ func (s *IntegrationTestSuite) TestRebalance() {
 		}
 
 		s.T().Logf("sending pre-commits")
-		for i, val := range s.chain.validators {
+		for _, val := range s.chain.validators {
 			clientCtx, err := s.chain.clientContext("tcp://localhost:26657", *val)
 			s.Require().NoError(err)
 
 			hash, err := val.hashCellar(*commit.Cellar, salt)
 			s.Require().NoError(err, "unable to hash cellar")
-			precommitMsg := types.NewMsgAllocationPrecommit(hash, s.chain.orchestrators[i].keyInfo.GetAddress())
+			precommitMsg := types.NewMsgAllocationPrecommit(hash, val.keyInfo.GetAddress())
 
 			response, err := s.chain.sendMsgs(*clientCtx, precommitMsg)
 			s.Require().NoError(err, "unable to send precommit")

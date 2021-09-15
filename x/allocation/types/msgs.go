@@ -16,7 +16,6 @@ var (
 // var _ codectypes.UnpackInterfacesMessage = &MsgAllocationCommit{}
 
 const (
-	TypeMsgDelegateAllocations = "delegate_allocations"
 	TypeMsgAllocationPrecommit = "allocation_precommit"
 	TypeMsgAllocationCommit    = "allocation_commit"
 )
