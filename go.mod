@@ -16,7 +16,7 @@ require (
 	github.com/regen-network/cosmos-proto v0.3.1
 	github.com/spf13/cast v1.4.1
 	github.com/spf13/cobra v1.2.1
-	github.com/strangelove-ventures/packet-forward-middleware v0.0.0-20210915162242-44cec64a9f44
+	github.com/strangelove-ventures/packet-forward-middleware v0.0.0-20210915182124-cf896193a0ba
 	github.com/stretchr/testify v1.7.0
 	github.com/tendermint/tendermint v0.34.13
 	github.com/tendermint/tm-db v0.6.4
