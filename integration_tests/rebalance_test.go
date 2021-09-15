@@ -28,13 +28,13 @@ func (s *IntegrationTestSuite) TestRebalance() {
 		}
 
 		s.T().Logf("sending pre-commits")
-		for _, val := range s.chain.validators {
+		for i, val := range s.chain.validators {
 			clientCtx, err := s.chain.clientContext("tcp://localhost:26657", *val)
 			s.Require().NoError(err)
 
 			hash, err := val.hashCellar(*commit.Cellar, salt)
 			s.Require().NoError(err, "unable to hash cellar")
-			precommitMsg := types.NewMsgAllocationPrecommit(hash, val.keyInfo.GetAddress())
+			precommitMsg := types.NewMsgAllocationPrecommit(hash, s.chain.orchestrators[i].keyInfo.GetAddress())
 
 			response, err := s.chain.sendMsgs(*clientCtx, precommitMsg)
 			s.Require().NoError(err, "unable to send precommit")
@@ -77,8 +77,8 @@ func (s *IntegrationTestSuite) TestRebalance() {
 			}
 
 			response, err := s.chain.sendMsgs(*clientCtx, &commitMsg)
-			s.Require().NoError(err, "unable to send precommit")
-			s.Require().NotZerof(response.Code, "non-zero response from rpc call for msg", commitMsg)
+			s.Require().NoError(err, "unable to send commit")
+			s.Require().Zerof(response.Code, "non-zero response from rpc call for msg %s, response %s", commitMsg, response)
 		}
 
 		s.T().Logf("checking for updated tick ranges in cellar")
