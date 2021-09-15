@@ -71,10 +71,9 @@ func (s *IntegrationTestSuite) TestRebalance() {
 			clientCtx, err := s.chain.clientContext("tcp://localhost:26657", *val)
 			s.Require().NoError(err)
 
-			commitMsg := types.NewMsgAllocationCommit([]*types.Allocation{&commit}, val.keyInfo.GetAddress(),
-		)
+			commitMsg := types.NewMsgAllocationCommit([]*types.Allocation{&commit}, val.keyInfo.GetAddress())
 
-			response, err := s.chain.sendMsgs(*clientCtx, &commitMsg)
+			response, err := s.chain.sendMsgs(*clientCtx, commitMsg)
 			s.Require().NoError(err, "unable to send commit")
 			s.Require().Zerof(response.Code, "non-zero response from rpc call for msg %s, response %s", commitMsg, response)
 		}

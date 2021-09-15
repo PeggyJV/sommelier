@@ -64,7 +64,16 @@ type chain struct {
 }
 
 func newChain() (*chain, error) {
-	tmpDir, err := ioutil.TempDir("", "somm-e2e-testnet")
+	var dir string
+	var err error
+	if _, found := os.LookupEnv("CI"); found {
+		dir, err = os.Getwd()
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	tmpDir, err := ioutil.TempDir(dir, "somm-e2e-testnet")
 	if err != nil {
 		return nil, err
 	}
