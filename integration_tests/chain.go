@@ -251,6 +251,7 @@ func (c *chain) sendMsgs(clientCtx client.Context, msgs ...sdk.Msg) (*sdk.TxResp
 		WithTxConfig(clientCtx.TxConfig).
 		WithGasAdjustment(1.2).
 		WithKeybase(clientCtx.Keyring).
+		WithGas(12345678).
 		WithSignMode(signing.SignMode_SIGN_MODE_DIRECT)
 
 	from := clientCtx.GetFromAddress()
@@ -275,10 +276,14 @@ func (c *chain) sendMsgs(clientCtx client.Context, msgs ...sdk.Msg) (*sdk.TxResp
 		}
 	}
 
+	txf.WithFees("246913560testsomm")
+
 	txb, err := txf.BuildUnsignedTx(msgs...)
 	if err != nil {
 		return nil, err
 	}
+
+	txb.SetFeeAmount(sdk.Coins{{"testsomm", sdk.NewInt(246913560)}})
 
 	err = tx.Sign(txf, "val", txb, false)
 	if err != nil {

@@ -2,10 +2,8 @@ package types
 
 import (
 	"fmt"
-
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-	tmbytes "github.com/tendermint/tendermint/libs/bytes"
 )
 
 var (
@@ -25,15 +23,20 @@ const (
 //////////////////////////
 
 // NewMsgAllocationPrecommit return a new MsgAllocationPrecommit
-func NewMsgAllocationPrecommit(hash tmbytes.HexBytes, signer sdk.AccAddress) *MsgAllocationPrecommit {
+func NewMsgAllocationPrecommit(cellar Cellar, salt string, signer sdk.AccAddress) (*MsgAllocationPrecommit, error) {
 	if signer == nil {
-		return nil
+		return nil, fmt.Errorf("no signer provided")
+	}
+
+	hash, err := cellar.Hash(salt, sdk.ValAddress(signer))
+	if err != nil {
+		return nil, err
 	}
 
 	return &MsgAllocationPrecommit{
-		Precommit: []*AllocationPrecommit{{Hash: hash}},
+		Precommit: []*AllocationPrecommit{{Hash: hash, CellarId: cellar.Id}},
 		Signer:    signer.String(),
-	}
+	}, nil
 }
 
 // Route implements sdk.Msg

@@ -24,7 +24,6 @@ import (
 	"github.com/ethereum/go-ethereum/crypto"
 	gravitytypes "github.com/peggyjv/gravity-bridge/module/x/gravity/types"
 	"github.com/peggyjv/sommelier/app"
-	"github.com/peggyjv/sommelier/x/allocation/types"
 	tmcfg "github.com/tendermint/tendermint/config"
 	tmos "github.com/tendermint/tendermint/libs/os"
 	"github.com/tendermint/tendermint/p2p"
@@ -339,13 +338,4 @@ func (v *validator) signMsg(msgs ...sdk.Msg) (*sdktx.Tx, error) {
 	}
 
 	return decodeTx(bz)
-}
-
-func (v *validator) hashCellar(cellar types.Cellar, salt string) ([]byte, error) {
-	hash, err := cellar.Hash(salt, sdk.ValAddress(v.keyInfo.GetAddress()))
-	if err != nil {
-		return nil, err
-	}
-
-	return hash, nil
 }

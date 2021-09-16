@@ -385,13 +385,14 @@ e2e_rebalance: e2e_clean_slate
 	@integration_tests/integration_tests.test -test.failfast -test.v -test.run IntegrationTestSuite -testify.m TestRebalance || make -s fail
 
 fail:
+	@echo 'currently this doesnt work because the test is cleaned up before exit'
 	@echo 'test failed; dumping container logs into ./testlogs for review'
 	@mkdir testlogs
 	@docker logs ethereum > testlogs/ethereum.log>&1 || true
-	@docker logs validator0 > testlogs/validator0.log 2>&1 || true
-	@docker logs validator1 > testlogs/validator1.log 2>&1 || true
-	@docker logs validator2 > testlogs/validator2.log 2>&1 || true
-	@docker logs validator3 > testlogs/validator3.log 2>&1 || true
+	@docker logs sommelier0 > testlogs/sommelier0.log 2>&1 || true
+	@docker logs sommelier1 > testlogs/sommelier1.log 2>&1 || true
+	@docker logs sommelier2 > testlogs/sommelier2.log 2>&1 || true
+	@docker logs sommelier3 > testlogs/sommelier3.log 2>&1 || true
 	@docker logs orchestrator0 > testlogs/orchestrator0.log 2>&1 || true
 	@docker logs orchestrator1 > testlogs/orchestrator1.log 2>&1 || true
 	@docker logs orchestrator2 > testlogs/orchestrator2.log 2>&1 || true

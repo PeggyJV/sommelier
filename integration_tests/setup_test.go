@@ -40,7 +40,7 @@ import (
 const (
 	testDenom            = "testsomm"
 	initBalanceStr       = "110000000000utestsomm,100000000000testsomm"
-	minGasPrice          = "0.00001"
+	minGasPrice          = "2"
 	ethChainID      uint = 15
 	bondDenom            = "utestsomm"
 )
@@ -481,6 +481,7 @@ func (s *IntegrationTestSuite) runValidators() {
 			Mounts: []string{
 				fmt.Sprintf("%s/:/somm/.sommelier", val.configDir()),
 			},
+			Entrypoint: []string{"sommelier", "start", "--trace=true"},
 		}
 
 		// expose the first validator for debugging and communication

@@ -32,9 +32,8 @@ func (s *IntegrationTestSuite) TestRebalance() {
 			clientCtx, err := s.chain.clientContext("tcp://localhost:26657", *val)
 			s.Require().NoError(err)
 
-			hash, err := val.hashCellar(*commit.Cellar, salt)
-			s.Require().NoError(err, "unable to hash cellar")
-			precommitMsg := types.NewMsgAllocationPrecommit(hash, val.keyInfo.GetAddress())
+			precommitMsg, err := types.NewMsgAllocationPrecommit(*commit.Cellar, salt, val.keyInfo.GetAddress())
+			s.Require().NoError(err, "unable to create precommit")
 
 			response, err := s.chain.sendMsgs(*clientCtx, precommitMsg)
 			s.Require().NoError(err, "unable to send precommit")
