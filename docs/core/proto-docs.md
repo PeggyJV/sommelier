@@ -96,7 +96,7 @@ of allocation
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| `hash` | [bytes](#bytes) |  |  |
+| `hash` | [bytes](#bytes) |  | bytes hash = 1 [(gogoproto.casttype) = "github.com/tendermint/tendermint/libs/bytes.HexBytes"]; |
 | `cellar_id` | [string](#string) |  |  |
 
 

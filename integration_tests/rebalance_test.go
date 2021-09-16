@@ -1,6 +1,7 @@
 package integration_tests
 
 import (
+	"bytes"
 	"context"
 	"time"
 
@@ -66,7 +67,9 @@ func (s *IntegrationTestSuite) TestRebalance() {
 				return false
 			}
 			if res.VotePeriodStart != res.CurrentHeight {
-				s.T().Logf("current height: %d, period end: %d", res.CurrentHeight, res.VotePeriodEnd)
+				if res.CurrentHeight % 10 == 0 {
+					s.T().Logf("current height: %d, period end: %d", res.CurrentHeight, res.VotePeriodEnd)
+				}
 				return false
 			}
 
@@ -90,9 +93,10 @@ func (s *IntegrationTestSuite) TestRebalance() {
 				if response.Code != 0 {
 					return false
 				}
+
+				s.T().Logf("precommit for %d node with hash %s sent successfully", i, precommitMsg.Precommit[0].Hash, )
 				return true
 			}, 10*time.Second, 500*time.Millisecond, "unable to deploy precommit for node %d", i)
-			s.T().Logf("precommit for %d node sent successfully", i)
 		}
 
 		s.T().Logf("checking pre-commit for first validator")
@@ -132,7 +136,13 @@ func (s *IntegrationTestSuite) TestRebalance() {
 				clientCtx, err := s.chain.clientContext("tcp://localhost:26657", orch.keyring, "orch", orch.keyInfo.GetAddress())
 				s.Require().NoError(err)
 
+				precommitMsg, err := types.NewMsgAllocationPrecommit(*commit.Cellar, commit.Salt, orch.keyInfo.GetAddress())
+				s.Require().NoError(err)
 				commitMsg := types.NewMsgAllocationCommit([]*types.Allocation{&commit}, orch.keyInfo.GetAddress())
+				commitHash, err := commit.Cellar.Hash(commit.Salt, sdk.ValAddress(orch.keyInfo.GetAddress()))
+				s.Require().NoError(err)
+				s.Require().True(bytes.Equal(commitHash, precommitMsg.Precommit[0].Hash))
+				s.T().Logf("precommit: %x commit: %x, signer %s, commit %s", commitHash, precommitMsg.Precommit[0].Hash, orch.keyInfo.GetAddress(), commit)
 
 				response, err := s.chain.sendMsgs(*clientCtx, commitMsg)
 				if err != nil {
@@ -140,7 +150,9 @@ func (s *IntegrationTestSuite) TestRebalance() {
 					return false
 				}
 				if response.Code != 0 {
-					s.T().Logf("code: %d, response: %s", response.Code, response.RawLog)
+					if response.Code != 32 {
+						s.T().Logf("response: %s", response)
+					}
 					return false
 				}
 

@@ -8,7 +8,8 @@ option go_package = "github.com/peggyjv/sommelier/x/allocation/types";
 // AllocationPrecommit defines an array of hashed data to be used for the precommit phase
 // of allocation
 message AllocationPrecommit {
-  bytes  hash = 1 [(gogoproto.casttype) = "github.com/tendermint/tendermint/libs/bytes.HexBytes"];
+//  bytes  hash = 1 [(gogoproto.casttype) = "github.com/tendermint/tendermint/libs/bytes.HexBytes"];
+  bytes  hash = 1;
   string cellar_id = 2;
 }
 

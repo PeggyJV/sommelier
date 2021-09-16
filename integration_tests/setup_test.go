@@ -354,7 +354,7 @@ func (s *IntegrationTestSuite) initGenesis() {
 			},
 		},
 	}
-	allocationGenState.Params.VotePeriod = 50
+	allocationGenState.Params.VotePeriod = 30
 	bz, err = cdc.MarshalJSON(&allocationGenState)
 	s.Require().NoError(err)
 	appGenState[types.ModuleName] = bz

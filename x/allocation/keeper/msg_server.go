@@ -51,7 +51,7 @@ func (k Keeper) AllocationPrecommit(c context.Context, msg *types.MsgAllocationP
 			return nil, fmt.Errorf("precommit for unknown cellar ID %s", ap.CellarId)
 		}
 		cellarList = append(cellarList, ap.CellarId)
-		hashList = append(hashList, ap.Hash.String())
+		hashList = append(hashList, string(ap.Hash))
 		k.SetAllocationPrecommit(ctx, validatorAddr, common.HexToAddress(ap.CellarId), *ap)
 	}
 
@@ -96,8 +96,6 @@ func (k Keeper) AllocationCommit(c context.Context, msg *types.MsgAllocationComm
 		// everytime the a validator feeder submits oracle data
 		k.gravityKeeper.SetOrchestratorValidatorAddress(ctx, val, signer)
 	}
-
-	// check that the validator is still bonded and is not jailed
 
 	allocationEvents := sdk.Events{
 		sdk.NewEvent(
@@ -151,7 +149,7 @@ func (k Keeper) AllocationCommit(c context.Context, msg *types.MsgAllocationComm
 		if !bytes.Equal(commitHash, precommit.Hash) {
 			return nil, sdkerrors.Wrapf(
 				types.ErrHashMismatch,
-				"precommit %x ≠ commit %x", precommit.Hash, commitHash,
+				"precommit %x ≠ commit %x. commit %s, signer %s", precommit.Hash, commitHash, commit, signer,
 			)
 		}
 
