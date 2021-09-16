@@ -15,7 +15,6 @@ func (s *IntegrationTestSuite) TestRebalance() {
 		s.Require().NoError(err)
 		s.Require().Len(trs, 3)
 
-		salt := "testsalt"
 		commit := types.Allocation{
 			Cellar: &types.Cellar{
 				Id: hardhatCellar.String(),
@@ -26,6 +25,7 @@ func (s *IntegrationTestSuite) TestRebalance() {
 					{500, 400, 40},
 				},
 			},
+			Salt: "testsalt",
 		}
 
 		s.T().Logf("checking that test cellar exists in the chain")
@@ -50,10 +50,7 @@ func (s *IntegrationTestSuite) TestRebalance() {
 				}
 			}
 			return false
-		},
-			30*time.Second,
-			2*time.Second,
-			"hardhat cellar not found in chain")
+		}, 30*time.Second, 2*time.Second,"hardhat cellar not found in chain")
 
 		s.T().Logf("wait for new vote period start")
 		val = s.chain.validators[0]
@@ -69,11 +66,12 @@ func (s *IntegrationTestSuite) TestRebalance() {
 				return false
 			}
 			if res.VotePeriodStart != res.CurrentHeight {
+				s.T().Logf("current height: %d, period end: %d", res.CurrentHeight, res.VotePeriodEnd)
 				return false
 			}
 
 			return true
-		}, 65*time.Second, 1*time.Second,"new vote period never seen")
+		}, 105*time.Second, 1*time.Second,"new vote period never seen")
 
 		s.T().Logf("sending pre-commits")
 		for i, orch := range s.chain.orchestrators {
@@ -81,7 +79,7 @@ func (s *IntegrationTestSuite) TestRebalance() {
 				clientCtx, err := s.chain.clientContext("tcp://localhost:26657", orch.keyring, "orch", orch.keyInfo.GetAddress())
 				s.Require().NoError(err)
 
-				precommitMsg, err := types.NewMsgAllocationPrecommit(*commit.Cellar, salt, orch.keyInfo.GetAddress())
+				precommitMsg, err := types.NewMsgAllocationPrecommit(*commit.Cellar, commit.Salt, orch.keyInfo.GetAddress())
 				s.Require().NoError(err, "unable to create precommit")
 
 				response, err := s.chain.sendMsgs(*clientCtx, precommitMsg)
@@ -106,10 +104,6 @@ func (s *IntegrationTestSuite) TestRebalance() {
 			s.Require().NoError(err)
 
 			queryClient := types.NewQueryClient(clientCtx)
-
-			all, err := queryClient.QueryAllocationPrecommits(context.Background(), &types.QueryAllocationPrecommitsRequest{})
-			s.T().Logf("all %s", all.Precommits)
-
 			res, err := queryClient.QueryAllocationPrecommit(context.Background(), &types.QueryAllocationPrecommitRequest{
 				Validator: sdk.ValAddress(val.keyInfo.GetAddress()).String(),
 				Cellar:    hardhatCellar.String(),
@@ -120,7 +114,7 @@ func (s *IntegrationTestSuite) TestRebalance() {
 			if res == nil {
 				return false
 			}
-			expectedPrecommit, err := types.NewMsgAllocationPrecommit(*commit.Cellar, salt, s.chain.orchestrators[0].keyInfo.GetAddress())
+			expectedPrecommit, err := types.NewMsgAllocationPrecommit(*commit.Cellar, commit.Salt, s.chain.orchestrators[0].keyInfo.GetAddress())
 			s.Require().NoError(err, "unable to create precommit")
 			s.Require().Equal(res.Precommit.CellarId, commit.Cellar.Id, "cellar ids unequal")
 			s.Require().Equal(res.Precommit.Hash, expectedPrecommit.Precommit[0].Hash, "commit hashes unequal")
@@ -142,9 +136,11 @@ func (s *IntegrationTestSuite) TestRebalance() {
 
 				response, err := s.chain.sendMsgs(*clientCtx, commitMsg)
 				if err != nil {
+					s.T().Logf("error: %s", err)
 					return false
 				}
 				if response.Code != 0 {
+					s.T().Logf("code: %d, response: %s", response.Code, response.RawLog)
 					return false
 				}
 

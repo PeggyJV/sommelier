@@ -393,8 +393,8 @@ func (s *IntegrationTestSuite) initValidatorConfigs() {
 		valConfig.LogLevel = "info"
 
 		// speed up blocks
-		valConfig.Consensus.TimeoutCommit = 2 * time.Second
-		valConfig.Consensus.TimeoutPropose = 2 * time.Second
+		valConfig.Consensus.TimeoutCommit = 1 * time.Second
+		valConfig.Consensus.TimeoutPropose = 1 * time.Second
 
 		var peers []string
 
