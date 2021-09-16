@@ -18,11 +18,19 @@ service Query {
     }
     // QueryAllocationPrecommit queries the validator prevote in the current voting period
     rpc QueryAllocationPrecommit(QueryAllocationPrecommitRequest) returns (QueryAllocationPrecommitResponse) {
-        option (google.api.http).get = "/sommelier/allocation/v1/precommits/{validator}";
+        option (google.api.http).get = "/sommelier/allocation/v1/precommits/{validator}/{cellar}";
+    }
+    // QueryAllocationPrecommits queries all allocation precommits in the voting period
+    rpc QueryAllocationPrecommits(QueryAllocationPrecommitsRequest) returns (QueryAllocationPrecommitsResponse) {
+        option (google.api.http).get = "/sommelier/allocation/v1/precommits";
     }
     // QueryAllocationCommit queries the validator vote in the current voting period
     rpc QueryAllocationCommit(QueryAllocationCommitRequest) returns (QueryAllocationCommitResponse) {
-        option (google.api.http).get = "/sommelier/allocation/v1/commits/{validator}";
+        option (google.api.http).get = "/sommelier/allocation/v1/commits/{validator}/{cellar}";
+    }
+    // QueryAllocationCommits queries all validator allocation commits
+    rpc QueryAllocationCommits(QueryAllocationCommitsRequest) returns (QueryAllocationCommitsResponse) {
+        option (google.api.http).get = "/sommelier/allocation/v1/commits";
     }
     // QueryVotePeriod queries the heights for the current voting period (current, start and end)
     rpc QueryCommitPeriod(QueryCommitPeriodRequest) returns (QueryCommitPeriodResponse) {
@@ -51,10 +59,19 @@ message QueryAllocationPrecommitRequest {
     string cellar = 2;
 }
 
-// QueryAllocationPrecommitResponse is the response type for the Query/QueryallocationDataPrevote gRPC method.
+// QueryAllocationPrecommitResponse is the response type for the Query/AllocationPrecommit gRPC method.
 message QueryAllocationPrecommitResponse {
     // prevote submitted within the latest voting period
     AllocationPrecommit precommit = 1;
+}
+
+// QueryAllocationPrecommitsRequest is the request type for the Query/AllocationPrecommits gRPC method.
+message QueryAllocationPrecommitsRequest {}
+
+// QueryAllocationPrecommitResponse is the response type for the Query/AllocationPrecommits gRPC method.
+message QueryAllocationPrecommitsResponse {
+    // prevote submitted within the latest voting period
+    repeated AllocationPrecommit precommits = 1;
 }
 
 // QueryAllocationCommitRequest is the request type for the Query/QueryallocationDataVote gRPC method.
@@ -71,10 +88,20 @@ message QueryAllocationCommitResponse {
     Allocation commit = 1;
 }
 
-// QueryCommitPeriodRequest is the request type for the Query/VotePeriod gRPC method.
+// QueryAllocationCommitsRequest is the request type for the Query/QueryAllocationCommits gRPC method.
+message QueryAllocationCommitsRequest {
+}
+
+// QueryAllocationCommitsResponse is the response type for the Query/QueryAllocationCommits gRPC method.
+message QueryAllocationCommitsResponse {
+    // votes containing the allocation feed submitted within the latest voting period
+    repeated Allocation commits = 1;
+}
+
+// QueryCommitPeriodRequest is the request type for the Query/QueryCommitPeriod gRPC method.
 message QueryCommitPeriodRequest {}
 
-// QueryCommitPeriodResponse is the response type for the Query/VotePeriod gRPC method.
+// QueryCommitPeriodResponse is the response type for the Query/QueryCommitPeriod gRPC method.
 message QueryCommitPeriodResponse {
     // block height at which the query was processed
     int64 current_height    = 1;

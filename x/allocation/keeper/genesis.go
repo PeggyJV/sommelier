@@ -28,7 +28,7 @@ func ExportGenesis(ctx sdk.Context, k Keeper) types.GenesisState {
 	})
 
 	return types.GenesisState{
-		Params:            k.GetParamSet(ctx),
-		Cellars:           cellars,
+		Params:  k.GetParamSet(ctx),
+		Cellars: cellars,
 	}
 }

@@ -36,6 +36,21 @@ func (k Keeper) QueryAllocationPrecommit(c context.Context, req *types.QueryAllo
 	}, nil
 }
 
+// QueryAllocationPrecommits implements QueryServer
+func (k Keeper) QueryAllocationPrecommits(c context.Context, _ *types.QueryAllocationPrecommitsRequest) (*types.QueryAllocationPrecommitsResponse, error) {
+	ctx := sdk.UnwrapSDKContext(c)
+
+	var precommits []*types.AllocationPrecommit
+	k.IterateAllocationPrecommits(ctx, func(val sdk.ValAddress, cel common.Address, precommit types.AllocationPrecommit) (stop bool) {
+		precommits = append(precommits, &precommit)
+		return false
+	})
+
+	return &types.QueryAllocationPrecommitsResponse{
+		Precommits: precommits,
+	}, nil
+}
+
 // QueryAllocationCommit implements QueryServer
 func (k Keeper) QueryAllocationCommit(c context.Context, req *types.QueryAllocationCommitRequest) (*types.QueryAllocationCommitResponse, error) {
 	if req == nil {
@@ -56,6 +71,22 @@ func (k Keeper) QueryAllocationCommit(c context.Context, req *types.QueryAllocat
 
 	return &types.QueryAllocationCommitResponse{
 		Commit: &allocationCommit,
+	}, nil
+}
+
+// QueryAllocationCommits implements QueryServer
+func (k Keeper) QueryAllocationCommits(c context.Context, _ *types.QueryAllocationCommitsRequest) (*types.QueryAllocationCommitsResponse, error) {
+	ctx := sdk.UnwrapSDKContext(c)
+
+	var commits []*types.Allocation
+	k.IterateAllocationCommits(ctx, func(val sdk.ValAddress, cel common.Address, commit types.Allocation) (stop bool) {
+		commits = append(commits, &commit)
+		return false
+	})
+
+
+	return &types.QueryAllocationCommitsResponse{
+		Commits: commits,
 	}, nil
 }
 

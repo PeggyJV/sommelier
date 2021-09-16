@@ -162,13 +162,14 @@ func (c *chain) createAndInitOrchestratorsWithMnemonics(mnemonics []string) erro
 		orchestrator := c.createOrchestrator(i)
 
 		// create keys
-		info, err := createMemoryKeyFromMnemonic(mnemonics[i], "", hdPath)
+		info, kb, err := createMemoryKeyFromMnemonic("orch", mnemonics[i], "", hdPath)
 		if err != nil {
 			return err
 		}
 
 		orchestrator.keyInfo = *info
 		orchestrator.mnemonic = mnemonics[i]
+		orchestrator.keyring = kb
 
 		c.orchestrators = append(c.orchestrators, orchestrator)
 	}
@@ -190,7 +191,7 @@ func (c *chain) createOrchestrator(index int) *orchestrator {
 	}
 }
 
-func (c *chain) clientContext(nodeURI string, val validator) (*client.Context, error) {
+func (c *chain) clientContext(nodeURI string, kb *keyring.Keyring, fromName string, fromAddr sdk.AccAddress) (*client.Context, error) {
 	amino := codec.NewLegacyAmino()
 	interfaceRegistry := sdkTypes.NewInterfaceRegistry()
 	interfaceRegistry.RegisterImplementations((*sdk.Msg)(nil),
@@ -218,11 +219,6 @@ func (c *chain) clientContext(nodeURI string, val validator) (*client.Context, e
 		return nil, err
 	}
 
-	kb, err := keyring.New(keyringAppName, keyring.BackendTest, val.configDir(), nil)
-	if err != nil {
-		return nil, err
-	}
-
 	clientContext := client.Context{}.
 		WithChainID(c.id).
 		WithCodec(protoCodec).
@@ -233,12 +229,12 @@ func (c *chain) clientContext(nodeURI string, val validator) (*client.Context, e
 		WithNodeURI(nodeURI).
 		WithClient(rpcClient).
 		WithBroadcastMode(flags.BroadcastBlock).
-		WithKeyring(kb).
+		WithKeyring(*kb).
 		WithAccountRetriever(authtypes.AccountRetriever{}).
 		WithOutputFormat("json").
-		WithFrom("val").
-		WithFromName("val").
-		WithFromAddress(val.keyInfo.GetAddress()).
+		WithFrom(fromName).
+		WithFromName(fromName).
+		WithFromAddress(fromAddr).
 		WithSkipConfirmation(true)
 
 	return &clientContext, nil
@@ -254,15 +250,16 @@ func (c *chain) sendMsgs(clientCtx client.Context, msgs ...sdk.Msg) (*sdk.TxResp
 		WithGas(12345678).
 		WithSignMode(signing.SignMode_SIGN_MODE_DIRECT)
 
-	from := clientCtx.GetFromAddress()
+	fromAddr := clientCtx.GetFromAddress()
+	fromName := clientCtx.GetFromName()
 
-	if err := txf.AccountRetriever().EnsureExists(clientCtx, from); err != nil {
+	if err := txf.AccountRetriever().EnsureExists(clientCtx, fromAddr); err != nil {
 		return nil, err
 	}
 
 	initNum, initSeq := txf.AccountNumber(), txf.Sequence()
 	if initNum == 0 || initSeq == 0 {
-		num, seq, err := txf.AccountRetriever().GetAccountNumberSequence(clientCtx, from)
+		num, seq, err := txf.AccountRetriever().GetAccountNumberSequence(clientCtx, fromAddr)
 		if err != nil {
 			return nil, err
 		}
@@ -285,7 +282,7 @@ func (c *chain) sendMsgs(clientCtx client.Context, msgs ...sdk.Msg) (*sdk.TxResp
 
 	txb.SetFeeAmount(sdk.Coins{{"testsomm", sdk.NewInt(246913560)}})
 
-	err = tx.Sign(txf, "val", txb, false)
+	err = tx.Sign(txf, fromName, txb, false)
 	if err != nil {
 		return nil, err
 	}

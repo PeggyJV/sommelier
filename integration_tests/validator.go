@@ -4,6 +4,7 @@ import (
 	"crypto/ecdsa"
 	"encoding/json"
 	"fmt"
+	"github.com/cosmos/cosmos-sdk/client"
 	"os"
 	"path"
 	"path/filepath"
@@ -338,4 +339,16 @@ func (v *validator) signMsg(msgs ...sdk.Msg) (*sdktx.Tx, error) {
 	}
 
 	return decodeTx(bz)
+}
+
+func (v *validator) keyring() (keyring.Keyring, error) {
+	return keyring.New(keyringAppName, keyring.BackendTest, v.configDir(), nil)
+}
+
+func (v *validator) clientContext(nodeURI string) (*client.Context, error) {
+	kb, err := v.keyring()
+	if err != nil {
+		return nil, err
+	}
+	return v.chain.clientContext(nodeURI, &kb, "val", v.keyInfo.GetAddress())
 }

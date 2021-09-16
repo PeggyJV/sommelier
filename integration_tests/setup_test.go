@@ -5,7 +5,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"github.com/ethereum/go-ethereum"
 	"math/big"
 	"os"
 	"path"
@@ -14,6 +13,8 @@ import (
 	"strings"
 	"testing"
 	"time"
+
+	"github.com/ethereum/go-ethereum"
 
 	"github.com/peggyjv/sommelier/x/allocation/types"
 
@@ -38,11 +39,11 @@ import (
 )
 
 const (
-	testDenom            = "testsomm"
-	initBalanceStr       = "110000000000utestsomm,100000000000testsomm"
-	minGasPrice          = "2"
-	ethChainID      uint = 15
-	bondDenom            = "utestsomm"
+	testDenom           = "testsomm"
+	initBalanceStr      = "110000000000utestsomm,100000000000testsomm"
+	minGasPrice         = "2"
+	ethChainID     uint = 15
+	bondDenom           = "utestsomm"
 )
 
 func MNEMONICS() []string {
@@ -57,7 +58,7 @@ func MNEMONICS() []string {
 var (
 	stakeAmount, _  = sdk.NewIntFromString("100000000000")
 	stakeAmountCoin = sdk.NewCoin(bondDenom, stakeAmount)
-	hardhatCellar = common.HexToAddress("0x6ea5992aB4A78D5720bD12A089D13c073d04B55d")
+	hardhatCellar   = common.HexToAddress("0x6ea5992aB4A78D5720bD12A089D13c073d04B55d")
 )
 
 type IntegrationTestSuite struct {
@@ -110,6 +111,7 @@ func (s *IntegrationTestSuite) TearDownSuite() {
 		s.Require().NoError(err)
 
 		if skipCleanup {
+			s.T().Log("skipping teardown")
 			return
 		}
 	}
@@ -352,6 +354,7 @@ func (s *IntegrationTestSuite) initGenesis() {
 			},
 		},
 	}
+	allocationGenState.Params.VotePeriod = 50
 	bz, err = cdc.MarshalJSON(&allocationGenState)
 	s.Require().NoError(err)
 	appGenState[types.ModuleName] = bz
@@ -390,8 +393,8 @@ func (s *IntegrationTestSuite) initValidatorConfigs() {
 		valConfig.LogLevel = "info"
 
 		// speed up blocks
-		//valConfig.Consensus.TimeoutCommit = 10 * time.Second
-		//valConfig.Consensus.TimeoutPropose = 10 * time.Second
+		valConfig.Consensus.TimeoutCommit = 2 * time.Second
+		valConfig.Consensus.TimeoutPropose = 2 * time.Second
 
 		var peers []string
 
@@ -524,7 +527,7 @@ func (s *IntegrationTestSuite) runValidators() {
 					s.T().Logf("no container by 'sommelier0'")
 				} else {
 					if container.Container.State.Status == "exited" {
-						s.Fail("validators exited. state: %s logs: \n%s", container.Container.State.String(), s.logsByContainerID(container.Container.ID))
+						s.Fail("validators exited", "state: %s logs: \n%s", container.Container.State.String(), s.logsByContainerID(container.Container.ID))
 						s.T().FailNow()
 					}
 					s.T().Logf("state: %v, health: %v", container.Container.State.Status, container.Container.State.Health)
@@ -537,7 +540,7 @@ func (s *IntegrationTestSuite) runValidators() {
 				s.T().Logf("catching up: %t", status.SyncInfo.CatchingUp)
 				return false
 			}
-			if status.SyncInfo.LatestBlockHeight < 5 {
+			if status.SyncInfo.LatestBlockHeight < 2 {
 				s.T().Logf("block height %d", status.SyncInfo.LatestBlockHeight)
 				return false
 			}
@@ -687,10 +690,10 @@ func (s *IntegrationTestSuite) getTickRanges() ([]types.TickRange, error) {
 	tickRanges := make([]types.TickRange, 3)
 	for i := 0; i < 3; i++ {
 		bz, err := ethClient.CallContract(context.Background(), ethereum.CallMsg{
-			From:       common.HexToAddress(s.chain.validators[0].ethereumKey.address),
-			To:         &hardhatCellar,
-			Gas:        0,
-			Data:       types.ABIEncodedCellarTickInfoBytes(uint(i)),
+			From: common.HexToAddress(s.chain.validators[0].ethereumKey.address),
+			To:   &hardhatCellar,
+			Gas:  0,
+			Data: types.ABIEncodedCellarTickInfoBytes(uint(i)),
 		}, nil)
 		s.Require().NoError(err)
 

@@ -38,7 +38,6 @@ const (
 
 	// LatestInvalidationNonceKey - <prefix> -> uint64(latestNonce)
 	LatestInvalidationNonceKey
-
 )
 
 // GetAllocationPrecommitKey returns the key for a validators prevote for a cellar

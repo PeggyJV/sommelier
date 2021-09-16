@@ -23,8 +23,6 @@ func (c Cellar) ABIEncodedRebalanceHash() []byte {
 		panic(sdkerrors.Wrap(err, "bad ABI definition in code"))
 	}
 
-
-
 	ticks := make([]ABIEncodedTickRange, len(c.TickRanges))
 	for _, t := range c.TickRanges {
 		up := int64(t.Upper)

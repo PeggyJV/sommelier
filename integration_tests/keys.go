@@ -23,16 +23,16 @@ func createMnemonic() (string, error) {
 	return mnemonic, nil
 }
 
-func createMemoryKeyFromMnemonic(mnemonic string, passphrase string, hdPath *hd.BIP44Params) (*keyring.Info, error) {
+func createMemoryKeyFromMnemonic(name string, mnemonic string, passphrase string, hdPath *hd.BIP44Params) (*keyring.Info, *keyring.Keyring, error) {
 	kb, err := keyring.New("testnet", keyring.BackendMemory, "", nil)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
 	keyringAlgos, _ := kb.SupportedAlgorithms()
 	algo, err := keyring.NewSigningAlgoFromString(string(hd.Secp256k1Type), keyringAlgos)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
 	var pathString string
@@ -41,12 +41,12 @@ func createMemoryKeyFromMnemonic(mnemonic string, passphrase string, hdPath *hd.
 	} else {
 		pathString = hdPath.String()
 	}
-	account, err := kb.NewAccount("", mnemonic, passphrase, pathString, algo)
+	account, err := kb.NewAccount(name, mnemonic, passphrase, pathString, algo)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
-	return &account, nil
+	return &account, &kb, nil
 }
 
 func ethereumKeyFromMnemonic(mnemonic string) (*ethereumKey, error) {

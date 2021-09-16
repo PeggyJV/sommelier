@@ -28,8 +28,12 @@
 - [allocation/v1/query.proto](#allocation/v1/query.proto)
     - [QueryAllocationCommitRequest](#allocation.v1.QueryAllocationCommitRequest)
     - [QueryAllocationCommitResponse](#allocation.v1.QueryAllocationCommitResponse)
+    - [QueryAllocationCommitsRequest](#allocation.v1.QueryAllocationCommitsRequest)
+    - [QueryAllocationCommitsResponse](#allocation.v1.QueryAllocationCommitsResponse)
     - [QueryAllocationPrecommitRequest](#allocation.v1.QueryAllocationPrecommitRequest)
     - [QueryAllocationPrecommitResponse](#allocation.v1.QueryAllocationPrecommitResponse)
+    - [QueryAllocationPrecommitsRequest](#allocation.v1.QueryAllocationPrecommitsRequest)
+    - [QueryAllocationPrecommitsResponse](#allocation.v1.QueryAllocationPrecommitsResponse)
     - [QueryCellarsRequest](#allocation.v1.QueryCellarsRequest)
     - [QueryCellarsResponse](#allocation.v1.QueryCellarsResponse)
     - [QueryCommitPeriodRequest](#allocation.v1.QueryCommitPeriodRequest)
@@ -342,6 +346,31 @@ QueryAllocationCommitResponse is the response type for the Query/Queryallocation
 
 
 
+<a name="allocation.v1.QueryAllocationCommitsRequest"></a>
+
+### QueryAllocationCommitsRequest
+QueryAllocationCommitsRequest is the request type for the Query/QueryAllocationCommits gRPC method.
+
+
+
+
+
+
+<a name="allocation.v1.QueryAllocationCommitsResponse"></a>
+
+### QueryAllocationCommitsResponse
+QueryAllocationCommitsResponse is the response type for the Query/QueryAllocationCommits gRPC method.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `commits` | [Allocation](#allocation.v1.Allocation) | repeated | votes containing the allocation feed submitted within the latest voting period |
+
+
+
+
+
+
 <a name="allocation.v1.QueryAllocationPrecommitRequest"></a>
 
 ### QueryAllocationPrecommitRequest
@@ -361,12 +390,37 @@ QueryAllocationPrecommitRequest is the request type for the Query/AllocationPrec
 <a name="allocation.v1.QueryAllocationPrecommitResponse"></a>
 
 ### QueryAllocationPrecommitResponse
-QueryAllocationPrecommitResponse is the response type for the Query/QueryallocationDataPrevote gRPC method.
+QueryAllocationPrecommitResponse is the response type for the Query/AllocationPrecommit gRPC method.
 
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | `precommit` | [AllocationPrecommit](#allocation.v1.AllocationPrecommit) |  | prevote submitted within the latest voting period |
+
+
+
+
+
+
+<a name="allocation.v1.QueryAllocationPrecommitsRequest"></a>
+
+### QueryAllocationPrecommitsRequest
+QueryAllocationPrecommitsRequest is the request type for the Query/AllocationPrecommits gRPC method.
+
+
+
+
+
+
+<a name="allocation.v1.QueryAllocationPrecommitsResponse"></a>
+
+### QueryAllocationPrecommitsResponse
+QueryAllocationPrecommitResponse is the response type for the Query/AllocationPrecommits gRPC method.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `precommits` | [AllocationPrecommit](#allocation.v1.AllocationPrecommit) | repeated | prevote submitted within the latest voting period |
 
 
 
@@ -401,7 +455,7 @@ QueryCellarsResponse is the response type for Query/QueryCellars gRPC method.
 <a name="allocation.v1.QueryCommitPeriodRequest"></a>
 
 ### QueryCommitPeriodRequest
-QueryCommitPeriodRequest is the request type for the Query/VotePeriod gRPC method.
+QueryCommitPeriodRequest is the request type for the Query/QueryCommitPeriod gRPC method.
 
 
 
@@ -411,7 +465,7 @@ QueryCommitPeriodRequest is the request type for the Query/VotePeriod gRPC metho
 <a name="allocation.v1.QueryCommitPeriodResponse"></a>
 
 ### QueryCommitPeriodResponse
-QueryCommitPeriodResponse is the response type for the Query/VotePeriod gRPC method.
+QueryCommitPeriodResponse is the response type for the Query/QueryCommitPeriod gRPC method.
 
 
 | Field | Type | Label | Description |
@@ -464,8 +518,10 @@ Query defines the gRPC querier service for the allocation module.
 | Method Name | Request Type | Response Type | Description | HTTP Verb | Endpoint |
 | ----------- | ------------ | ------------- | ------------| ------- | -------- |
 | `QueryParams` | [QueryParamsRequest](#allocation.v1.QueryParamsRequest) | [QueryParamsResponse](#allocation.v1.QueryParamsResponse) | QueryParams queries the allocation module parameters. | GET|/sommelier/allocation/v1/params|
-| `QueryAllocationPrecommit` | [QueryAllocationPrecommitRequest](#allocation.v1.QueryAllocationPrecommitRequest) | [QueryAllocationPrecommitResponse](#allocation.v1.QueryAllocationPrecommitResponse) | QueryAllocationPrecommit queries the validator prevote in the current voting period | GET|/sommelier/allocation/v1/precommits/{validator}|
-| `QueryAllocationCommit` | [QueryAllocationCommitRequest](#allocation.v1.QueryAllocationCommitRequest) | [QueryAllocationCommitResponse](#allocation.v1.QueryAllocationCommitResponse) | QueryAllocationCommit queries the validator vote in the current voting period | GET|/sommelier/allocation/v1/commits/{validator}|
+| `QueryAllocationPrecommit` | [QueryAllocationPrecommitRequest](#allocation.v1.QueryAllocationPrecommitRequest) | [QueryAllocationPrecommitResponse](#allocation.v1.QueryAllocationPrecommitResponse) | QueryAllocationPrecommit queries the validator prevote in the current voting period | GET|/sommelier/allocation/v1/precommits/{validator}/{cellar}|
+| `QueryAllocationPrecommits` | [QueryAllocationPrecommitsRequest](#allocation.v1.QueryAllocationPrecommitsRequest) | [QueryAllocationPrecommitsResponse](#allocation.v1.QueryAllocationPrecommitsResponse) | QueryAllocationPrecommits queries all allocation precommits in the voting period | GET|/sommelier/allocation/v1/precommits|
+| `QueryAllocationCommit` | [QueryAllocationCommitRequest](#allocation.v1.QueryAllocationCommitRequest) | [QueryAllocationCommitResponse](#allocation.v1.QueryAllocationCommitResponse) | QueryAllocationCommit queries the validator vote in the current voting period | GET|/sommelier/allocation/v1/commits/{validator}/{cellar}|
+| `QueryAllocationCommits` | [QueryAllocationCommitsRequest](#allocation.v1.QueryAllocationCommitsRequest) | [QueryAllocationCommitsResponse](#allocation.v1.QueryAllocationCommitsResponse) | QueryAllocationCommits queries all validator allocation commits | GET|/sommelier/allocation/v1/commits|
 | `QueryCommitPeriod` | [QueryCommitPeriodRequest](#allocation.v1.QueryCommitPeriodRequest) | [QueryCommitPeriodResponse](#allocation.v1.QueryCommitPeriodResponse) | QueryVotePeriod queries the heights for the current voting period (current, start and end) | GET|/sommelier/allocation/v1/commit_period|
 | `QueryCellars` | [QueryCellarsRequest](#allocation.v1.QueryCellarsRequest) | [QueryCellarsResponse](#allocation.v1.QueryCellarsResponse) | QueryCellars returns all cellars and current tick ranges | GET|/sommelier/allocation/v1/cellars|
 

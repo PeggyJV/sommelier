@@ -169,7 +169,7 @@ func (m *QueryAllocationPrecommitRequest) GetCellar() string {
 	return ""
 }
 
-// QueryAllocationPrecommitResponse is the response type for the Query/QueryallocationDataPrevote gRPC method.
+// QueryAllocationPrecommitResponse is the response type for the Query/AllocationPrecommit gRPC method.
 type QueryAllocationPrecommitResponse struct {
 	// prevote submitted within the latest voting period
 	Precommit *AllocationPrecommit `protobuf:"bytes,1,opt,name=precommit,proto3" json:"precommit,omitempty"`
@@ -215,6 +215,89 @@ func (m *QueryAllocationPrecommitResponse) GetPrecommit() *AllocationPrecommit {
 	return nil
 }
 
+// QueryAllocationPrecommitsRequest is the request type for the Query/AllocationPrecommits gRPC method.
+type QueryAllocationPrecommitsRequest struct {
+}
+
+func (m *QueryAllocationPrecommitsRequest) Reset()         { *m = QueryAllocationPrecommitsRequest{} }
+func (m *QueryAllocationPrecommitsRequest) String() string { return proto.CompactTextString(m) }
+func (*QueryAllocationPrecommitsRequest) ProtoMessage()    {}
+func (*QueryAllocationPrecommitsRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_b27a95d8c59345b2, []int{4}
+}
+func (m *QueryAllocationPrecommitsRequest) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *QueryAllocationPrecommitsRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_QueryAllocationPrecommitsRequest.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *QueryAllocationPrecommitsRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryAllocationPrecommitsRequest.Merge(m, src)
+}
+func (m *QueryAllocationPrecommitsRequest) XXX_Size() int {
+	return m.Size()
+}
+func (m *QueryAllocationPrecommitsRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryAllocationPrecommitsRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QueryAllocationPrecommitsRequest proto.InternalMessageInfo
+
+// QueryAllocationPrecommitResponse is the response type for the Query/AllocationPrecommits gRPC method.
+type QueryAllocationPrecommitsResponse struct {
+	// prevote submitted within the latest voting period
+	Precommits []*AllocationPrecommit `protobuf:"bytes,1,rep,name=precommits,proto3" json:"precommits,omitempty"`
+}
+
+func (m *QueryAllocationPrecommitsResponse) Reset()         { *m = QueryAllocationPrecommitsResponse{} }
+func (m *QueryAllocationPrecommitsResponse) String() string { return proto.CompactTextString(m) }
+func (*QueryAllocationPrecommitsResponse) ProtoMessage()    {}
+func (*QueryAllocationPrecommitsResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_b27a95d8c59345b2, []int{5}
+}
+func (m *QueryAllocationPrecommitsResponse) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *QueryAllocationPrecommitsResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_QueryAllocationPrecommitsResponse.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *QueryAllocationPrecommitsResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryAllocationPrecommitsResponse.Merge(m, src)
+}
+func (m *QueryAllocationPrecommitsResponse) XXX_Size() int {
+	return m.Size()
+}
+func (m *QueryAllocationPrecommitsResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryAllocationPrecommitsResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QueryAllocationPrecommitsResponse proto.InternalMessageInfo
+
+func (m *QueryAllocationPrecommitsResponse) GetPrecommits() []*AllocationPrecommit {
+	if m != nil {
+		return m.Precommits
+	}
+	return nil
+}
+
 // QueryAllocationCommitRequest is the request type for the Query/QueryallocationDataVote gRPC method.
 type QueryAllocationCommitRequest struct {
 	// validator operator address
@@ -227,7 +310,7 @@ func (m *QueryAllocationCommitRequest) Reset()         { *m = QueryAllocationCom
 func (m *QueryAllocationCommitRequest) String() string { return proto.CompactTextString(m) }
 func (*QueryAllocationCommitRequest) ProtoMessage()    {}
 func (*QueryAllocationCommitRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_b27a95d8c59345b2, []int{4}
+	return fileDescriptor_b27a95d8c59345b2, []int{6}
 }
 func (m *QueryAllocationCommitRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -280,7 +363,7 @@ func (m *QueryAllocationCommitResponse) Reset()         { *m = QueryAllocationCo
 func (m *QueryAllocationCommitResponse) String() string { return proto.CompactTextString(m) }
 func (*QueryAllocationCommitResponse) ProtoMessage()    {}
 func (*QueryAllocationCommitResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_b27a95d8c59345b2, []int{5}
+	return fileDescriptor_b27a95d8c59345b2, []int{7}
 }
 func (m *QueryAllocationCommitResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -316,7 +399,90 @@ func (m *QueryAllocationCommitResponse) GetCommit() *Allocation {
 	return nil
 }
 
-// QueryCommitPeriodRequest is the request type for the Query/VotePeriod gRPC method.
+// QueryAllocationCommitsRequest is the request type for the Query/QueryAllocationCommits gRPC method.
+type QueryAllocationCommitsRequest struct {
+}
+
+func (m *QueryAllocationCommitsRequest) Reset()         { *m = QueryAllocationCommitsRequest{} }
+func (m *QueryAllocationCommitsRequest) String() string { return proto.CompactTextString(m) }
+func (*QueryAllocationCommitsRequest) ProtoMessage()    {}
+func (*QueryAllocationCommitsRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_b27a95d8c59345b2, []int{8}
+}
+func (m *QueryAllocationCommitsRequest) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *QueryAllocationCommitsRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_QueryAllocationCommitsRequest.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *QueryAllocationCommitsRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryAllocationCommitsRequest.Merge(m, src)
+}
+func (m *QueryAllocationCommitsRequest) XXX_Size() int {
+	return m.Size()
+}
+func (m *QueryAllocationCommitsRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryAllocationCommitsRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QueryAllocationCommitsRequest proto.InternalMessageInfo
+
+// QueryAllocationCommitsResponse is the response type for the Query/QueryAllocationCommits gRPC method.
+type QueryAllocationCommitsResponse struct {
+	// votes containing the allocation feed submitted within the latest voting period
+	Commits []*Allocation `protobuf:"bytes,1,rep,name=commits,proto3" json:"commits,omitempty"`
+}
+
+func (m *QueryAllocationCommitsResponse) Reset()         { *m = QueryAllocationCommitsResponse{} }
+func (m *QueryAllocationCommitsResponse) String() string { return proto.CompactTextString(m) }
+func (*QueryAllocationCommitsResponse) ProtoMessage()    {}
+func (*QueryAllocationCommitsResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_b27a95d8c59345b2, []int{9}
+}
+func (m *QueryAllocationCommitsResponse) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *QueryAllocationCommitsResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_QueryAllocationCommitsResponse.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *QueryAllocationCommitsResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryAllocationCommitsResponse.Merge(m, src)
+}
+func (m *QueryAllocationCommitsResponse) XXX_Size() int {
+	return m.Size()
+}
+func (m *QueryAllocationCommitsResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryAllocationCommitsResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QueryAllocationCommitsResponse proto.InternalMessageInfo
+
+func (m *QueryAllocationCommitsResponse) GetCommits() []*Allocation {
+	if m != nil {
+		return m.Commits
+	}
+	return nil
+}
+
+// QueryCommitPeriodRequest is the request type for the Query/QueryCommitPeriod gRPC method.
 type QueryCommitPeriodRequest struct {
 }
 
@@ -324,7 +490,7 @@ func (m *QueryCommitPeriodRequest) Reset()         { *m = QueryCommitPeriodReque
 func (m *QueryCommitPeriodRequest) String() string { return proto.CompactTextString(m) }
 func (*QueryCommitPeriodRequest) ProtoMessage()    {}
 func (*QueryCommitPeriodRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_b27a95d8c59345b2, []int{6}
+	return fileDescriptor_b27a95d8c59345b2, []int{10}
 }
 func (m *QueryCommitPeriodRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -353,7 +519,7 @@ func (m *QueryCommitPeriodRequest) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_QueryCommitPeriodRequest proto.InternalMessageInfo
 
-// QueryCommitPeriodResponse is the response type for the Query/VotePeriod gRPC method.
+// QueryCommitPeriodResponse is the response type for the Query/QueryCommitPeriod gRPC method.
 type QueryCommitPeriodResponse struct {
 	// block height at which the query was processed
 	CurrentHeight int64 `protobuf:"varint,1,opt,name=current_height,json=currentHeight,proto3" json:"current_height,omitempty"`
@@ -367,7 +533,7 @@ func (m *QueryCommitPeriodResponse) Reset()         { *m = QueryCommitPeriodResp
 func (m *QueryCommitPeriodResponse) String() string { return proto.CompactTextString(m) }
 func (*QueryCommitPeriodResponse) ProtoMessage()    {}
 func (*QueryCommitPeriodResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_b27a95d8c59345b2, []int{7}
+	return fileDescriptor_b27a95d8c59345b2, []int{11}
 }
 func (m *QueryCommitPeriodResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -425,7 +591,7 @@ func (m *QueryCellarsRequest) Reset()         { *m = QueryCellarsRequest{} }
 func (m *QueryCellarsRequest) String() string { return proto.CompactTextString(m) }
 func (*QueryCellarsRequest) ProtoMessage()    {}
 func (*QueryCellarsRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_b27a95d8c59345b2, []int{8}
+	return fileDescriptor_b27a95d8c59345b2, []int{12}
 }
 func (m *QueryCellarsRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -463,7 +629,7 @@ func (m *QueryCellarsResponse) Reset()         { *m = QueryCellarsResponse{} }
 func (m *QueryCellarsResponse) String() string { return proto.CompactTextString(m) }
 func (*QueryCellarsResponse) ProtoMessage()    {}
 func (*QueryCellarsResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_b27a95d8c59345b2, []int{9}
+	return fileDescriptor_b27a95d8c59345b2, []int{13}
 }
 func (m *QueryCellarsResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -504,8 +670,12 @@ func init() {
 	proto.RegisterType((*QueryParamsResponse)(nil), "allocation.v1.QueryParamsResponse")
 	proto.RegisterType((*QueryAllocationPrecommitRequest)(nil), "allocation.v1.QueryAllocationPrecommitRequest")
 	proto.RegisterType((*QueryAllocationPrecommitResponse)(nil), "allocation.v1.QueryAllocationPrecommitResponse")
+	proto.RegisterType((*QueryAllocationPrecommitsRequest)(nil), "allocation.v1.QueryAllocationPrecommitsRequest")
+	proto.RegisterType((*QueryAllocationPrecommitsResponse)(nil), "allocation.v1.QueryAllocationPrecommitsResponse")
 	proto.RegisterType((*QueryAllocationCommitRequest)(nil), "allocation.v1.QueryAllocationCommitRequest")
 	proto.RegisterType((*QueryAllocationCommitResponse)(nil), "allocation.v1.QueryAllocationCommitResponse")
+	proto.RegisterType((*QueryAllocationCommitsRequest)(nil), "allocation.v1.QueryAllocationCommitsRequest")
+	proto.RegisterType((*QueryAllocationCommitsResponse)(nil), "allocation.v1.QueryAllocationCommitsResponse")
 	proto.RegisterType((*QueryCommitPeriodRequest)(nil), "allocation.v1.QueryCommitPeriodRequest")
 	proto.RegisterType((*QueryCommitPeriodResponse)(nil), "allocation.v1.QueryCommitPeriodResponse")
 	proto.RegisterType((*QueryCellarsRequest)(nil), "allocation.v1.QueryCellarsRequest")
@@ -515,49 +685,55 @@ func init() {
 func init() { proto.RegisterFile("allocation/v1/query.proto", fileDescriptor_b27a95d8c59345b2) }
 
 var fileDescriptor_b27a95d8c59345b2 = []byte{
-	// 669 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xac, 0x95, 0x4f, 0x4f, 0xd4, 0x5c,
-	0x14, 0xc6, 0xa7, 0xcc, 0xfb, 0x8e, 0xe1, 0x20, 0x12, 0xae, 0x60, 0x66, 0x2a, 0x16, 0xa8, 0x11,
-	0x26, 0x48, 0x7a, 0x33, 0x60, 0xe2, 0x56, 0x21, 0xc6, 0x3f, 0x2b, 0xac, 0x26, 0x26, 0x6e, 0x26,
-	0x77, 0x66, 0x6e, 0x4a, 0x4d, 0xdb, 0x5b, 0x7a, 0xef, 0x34, 0x12, 0xc3, 0x42, 0x13, 0xf7, 0x26,
-	0x26, 0x7c, 0x06, 0x3f, 0x80, 0x1f, 0x82, 0x25, 0x89, 0x1b, 0x57, 0xc6, 0x80, 0x1f, 0xc4, 0xcc,
-	0xbd, 0x77, 0x98, 0x16, 0xda, 0x81, 0x85, 0x3b, 0x7a, 0xce, 0x73, 0x9e, 0xf3, 0xa3, 0x7d, 0x4e,
-	0x06, 0x1a, 0x24, 0x08, 0x58, 0x97, 0x08, 0x9f, 0x45, 0x38, 0x6d, 0xe1, 0xbd, 0x3e, 0x4d, 0xf6,
-	0x9d, 0x38, 0x61, 0x82, 0xa1, 0xe9, 0x51, 0xcb, 0x49, 0x5b, 0xe6, 0x9c, 0xc7, 0x3c, 0x26, 0x3b,
-	0x78, 0xf0, 0x97, 0x12, 0x99, 0x0b, 0x1e, 0x63, 0x5e, 0x40, 0x31, 0x89, 0x7d, 0x4c, 0xa2, 0x88,
-	0x09, 0xa9, 0xe7, 0xba, 0x7b, 0x3b, 0xef, 0xee, 0xd1, 0x88, 0x72, 0x7f, 0xd8, 0xb4, 0xf2, 0xcd,
-	0xcc, 0x36, 0xd5, 0x6f, 0x74, 0x19, 0x0f, 0x19, 0x6f, 0xab, 0x9d, 0xea, 0x41, 0xb7, 0xd6, 0xd4,
-	0x13, 0xee, 0x10, 0x4e, 0x15, 0x33, 0x4e, 0x5b, 0x1d, 0x2a, 0x48, 0x0b, 0xc7, 0xc4, 0xf3, 0xa3,
-	0x8c, 0x8d, 0x3d, 0x07, 0xe8, 0xe5, 0x40, 0xb1, 0x43, 0x12, 0x12, 0x72, 0x97, 0xee, 0xf5, 0x29,
-	0x17, 0xf6, 0x0b, 0xb8, 0x99, 0xab, 0xf2, 0x98, 0x45, 0x9c, 0xa2, 0x4d, 0xa8, 0xc5, 0xb2, 0x52,
-	0x37, 0x96, 0x8c, 0xe6, 0xd4, 0xc6, 0xbc, 0x93, 0x7b, 0x09, 0x8e, 0x92, 0x6f, 0xfd, 0x77, 0xf4,
-	0x6b, 0xb1, 0xe2, 0x6a, 0xa9, 0xfd, 0x06, 0x16, 0xa5, 0xd7, 0xe3, 0x33, 0xe9, 0x4e, 0x42, 0xbb,
-	0x2c, 0x0c, 0x7d, 0xa1, 0xd7, 0xa1, 0x05, 0x98, 0x4c, 0x49, 0xe0, 0xf7, 0x88, 0x60, 0x89, 0xb4,
-	0x9e, 0x74, 0x47, 0x05, 0x74, 0x0b, 0x6a, 0x5d, 0x1a, 0x04, 0x24, 0xa9, 0x4f, 0xc8, 0x96, 0x7e,
-	0xb2, 0x7b, 0xb0, 0x54, 0x6e, 0xac, 0x89, 0x1f, 0xc1, 0x64, 0x3c, 0x2c, 0x6a, 0x68, 0xfb, 0x1c,
-	0x74, 0xd1, 0xf8, 0x68, 0xc8, 0x7e, 0x0d, 0x0b, 0xe7, 0xb6, 0x6c, 0xff, 0x03, 0x76, 0x17, 0xee,
-	0x94, 0xb8, 0x6a, 0xf0, 0x16, 0xd4, 0x72, 0xd4, 0x8d, 0x52, 0x6a, 0x57, 0x0b, 0x6d, 0x13, 0xea,
-	0xd2, 0x53, 0x39, 0xed, 0xd0, 0xc4, 0x67, 0xbd, 0xe1, 0x07, 0x3d, 0x34, 0xa0, 0x51, 0xd0, 0xd4,
-	0xcb, 0xee, 0xc1, 0x8d, 0x6e, 0x3f, 0x49, 0x68, 0x24, 0xda, 0xbb, 0xd4, 0xf7, 0x76, 0xd5, 0xd2,
-	0xaa, 0x3b, 0xad, 0xab, 0xcf, 0x64, 0x11, 0xad, 0xc1, 0x6c, 0xca, 0x04, 0x6d, 0xc7, 0x72, 0xba,
-	0xcd, 0x05, 0x49, 0x84, 0xfc, 0xbf, 0xaa, 0xee, 0xcc, 0xa0, 0xa1, 0x5c, 0x5f, 0x0d, 0xca, 0x68,
-	0x05, 0x66, 0xb2, 0x5a, 0x1a, 0xf5, 0xea, 0x55, 0xe5, 0x39, 0x52, 0x3e, 0x89, 0x7a, 0xf6, 0xbc,
-	0x4e, 0xda, 0xb6, 0x7c, 0x2f, 0x67, 0x01, 0x7c, 0x0a, 0x73, 0xf9, 0xb2, 0x26, 0xc5, 0x70, 0x4d,
-	0xbd, 0xc1, 0x41, 0x04, 0xab, 0x05, 0x11, 0x54, 0x03, 0xee, 0x50, 0xb5, 0xf1, 0xb9, 0x06, 0xff,
-	0x4b, 0x27, 0x74, 0x00, 0x53, 0x99, 0x4c, 0xa3, 0xe5, 0x73, 0x83, 0x17, 0xaf, 0xc0, 0xb4, 0xc7,
-	0x49, 0x14, 0x90, 0xbd, 0xfa, 0xe9, 0xc7, 0x9f, 0xaf, 0x13, 0xcb, 0x68, 0x11, 0x73, 0x16, 0x86,
-	0x34, 0xf0, 0x69, 0x82, 0xf3, 0x97, 0xab, 0xce, 0x00, 0x7d, 0x37, 0xf4, 0xe7, 0x29, 0xc8, 0x1b,
-	0x72, 0x8a, 0x36, 0x95, 0x1f, 0x8c, 0x89, 0xaf, 0xac, 0xd7, 0x98, 0x0f, 0x25, 0x66, 0x0b, 0xe1,
-	0x72, 0xcc, 0xe1, 0x0c, 0xc7, 0x1f, 0xce, 0xf2, 0x7b, 0x80, 0xbe, 0x19, 0x30, 0x5f, 0x98, 0x54,
-	0x74, 0x7f, 0x3c, 0x43, 0xee, 0x4a, 0xcc, 0xf5, 0xab, 0x89, 0x35, 0xed, 0x03, 0x49, 0xeb, 0xa0,
-	0xf5, 0x52, 0xda, 0x22, 0xd4, 0x43, 0x03, 0x66, 0x2f, 0x64, 0x1c, 0xad, 0x16, 0x6d, 0x2e, 0x38,
-	0x11, 0xb3, 0x79, 0xb9, 0x50, 0xe3, 0x39, 0x12, 0xaf, 0x89, 0x56, 0x2e, 0xc1, 0xd3, 0xe1, 0x47,
-	0x1f, 0x0d, 0xb8, 0x9e, 0x4d, 0x33, 0x2a, 0x0c, 0x56, 0xfe, 0x02, 0xcc, 0xbb, 0x63, 0x35, 0x9a,
-	0xa4, 0x29, 0x49, 0x6c, 0xb4, 0x54, 0x4e, 0xa2, 0x26, 0xb6, 0x9e, 0x1f, 0x9d, 0x58, 0xc6, 0xf1,
-	0x89, 0x65, 0xfc, 0x3e, 0xb1, 0x8c, 0x2f, 0xa7, 0x56, 0xe5, 0xf8, 0xd4, 0xaa, 0xfc, 0x3c, 0xb5,
-	0x2a, 0x6f, 0xb1, 0xe7, 0x8b, 0xdd, 0x7e, 0xc7, 0xe9, 0xb2, 0x10, 0xc7, 0xd4, 0xf3, 0xf6, 0xdf,
-	0xa5, 0x19, 0xb7, 0xf7, 0x59, 0x3f, 0xb1, 0x1f, 0x53, 0xde, 0xa9, 0xc9, 0x5f, 0x8e, 0xcd, 0xbf,
-	0x01, 0x00, 0x00, 0xff, 0xff, 0xd1, 0x1e, 0x44, 0x04, 0x1d, 0x07, 0x00, 0x00,
+	// 768 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xac, 0x56, 0x4f, 0x4f, 0x13, 0x41,
+	0x14, 0xef, 0x52, 0x2d, 0xf2, 0x10, 0x09, 0x23, 0x90, 0x76, 0xc5, 0x2d, 0x0c, 0x01, 0x1a, 0xd0,
+	0x8e, 0x85, 0x18, 0x8d, 0x89, 0x09, 0x42, 0x8c, 0x7f, 0x4e, 0xb8, 0x6a, 0x4c, 0xbc, 0x34, 0xdb,
+	0x76, 0xb2, 0xac, 0x69, 0x77, 0x96, 0xdd, 0x6d, 0x23, 0x21, 0x1c, 0xf4, 0x13, 0x98, 0x98, 0x70,
+	0xf5, 0x03, 0x78, 0xf2, 0x03, 0x78, 0xe7, 0x48, 0xe2, 0xc5, 0x93, 0x31, 0x60, 0xe2, 0xd7, 0x30,
+	0x9d, 0x99, 0x6e, 0x77, 0xcb, 0x6e, 0xd9, 0x83, 0xb7, 0xee, 0x7b, 0xbf, 0xf7, 0x7b, 0xbf, 0xf9,
+	0xcd, 0xbc, 0x97, 0x42, 0xc1, 0x68, 0x36, 0x59, 0xdd, 0xf0, 0x2d, 0x66, 0x93, 0x4e, 0x85, 0xec,
+	0xb5, 0xa9, 0xbb, 0x5f, 0x76, 0x5c, 0xe6, 0x33, 0x34, 0xd1, 0x4f, 0x95, 0x3b, 0x15, 0x75, 0xda,
+	0x64, 0x26, 0xe3, 0x19, 0xd2, 0xfd, 0x25, 0x40, 0xea, 0x9c, 0xc9, 0x98, 0xd9, 0xa4, 0xc4, 0x70,
+	0x2c, 0x62, 0xd8, 0x36, 0xf3, 0x39, 0xde, 0x93, 0xd9, 0x1b, 0x51, 0x76, 0x93, 0xda, 0xd4, 0xb3,
+	0x7a, 0x49, 0x2d, 0x9a, 0x0c, 0x75, 0x13, 0xf9, 0x42, 0x9d, 0x79, 0x2d, 0xe6, 0x55, 0x45, 0x4f,
+	0xf1, 0x21, 0x53, 0xab, 0xe2, 0x8b, 0xd4, 0x0c, 0x8f, 0x0a, 0xcd, 0xa4, 0x53, 0xa9, 0x51, 0xdf,
+	0xa8, 0x10, 0xc7, 0x30, 0x2d, 0x3b, 0x44, 0x83, 0xa7, 0x01, 0xbd, 0xe8, 0x22, 0x76, 0x0c, 0xd7,
+	0x68, 0x79, 0x3a, 0xdd, 0x6b, 0x53, 0xcf, 0xc7, 0xcf, 0xe1, 0x7a, 0x24, 0xea, 0x39, 0xcc, 0xf6,
+	0x28, 0xda, 0x80, 0x9c, 0xc3, 0x23, 0x79, 0x65, 0x5e, 0x29, 0x8d, 0xaf, 0xcf, 0x94, 0x23, 0x26,
+	0x94, 0x05, 0x7c, 0xeb, 0xd2, 0xf1, 0xaf, 0x62, 0x46, 0x97, 0x50, 0xfc, 0x06, 0x8a, 0x9c, 0xeb,
+	0x51, 0x00, 0xdd, 0x71, 0x69, 0x9d, 0xb5, 0x5a, 0x96, 0x2f, 0xdb, 0xa1, 0x39, 0x18, 0xeb, 0x18,
+	0x4d, 0xab, 0x61, 0xf8, 0xcc, 0xe5, 0xd4, 0x63, 0x7a, 0x3f, 0x80, 0x66, 0x21, 0x57, 0xa7, 0xcd,
+	0xa6, 0xe1, 0xe6, 0x47, 0x78, 0x4a, 0x7e, 0xe1, 0x06, 0xcc, 0x27, 0x13, 0x4b, 0xc5, 0x9b, 0x30,
+	0xe6, 0xf4, 0x82, 0x52, 0x34, 0x1e, 0x10, 0x1d, 0x57, 0xde, 0x2f, 0xc2, 0x38, 0xb9, 0x4b, 0x60,
+	0x97, 0x09, 0x0b, 0x43, 0x30, 0x52, 0xca, 0x16, 0x40, 0xc0, 0xda, 0x35, 0x30, 0x9b, 0x52, 0x4b,
+	0xa8, 0x0a, 0xbf, 0x82, 0xb9, 0x81, 0x46, 0xdb, 0xff, 0xc1, 0x48, 0x1d, 0x6e, 0x26, 0xb0, 0x4a,
+	0xe9, 0x15, 0xc8, 0x45, 0x2c, 0x2c, 0x24, 0xca, 0xd6, 0x25, 0x10, 0x17, 0x13, 0x38, 0x03, 0xcf,
+	0x5e, 0x83, 0x96, 0x04, 0x08, 0x5e, 0xdb, 0x68, 0xd4, 0xad, 0x21, 0x6d, 0x7b, 0x48, 0xac, 0x42,
+	0x9e, 0xd3, 0x0a, 0xb2, 0x1d, 0xea, 0x5a, 0xac, 0xd1, 0x6b, 0x79, 0xa4, 0x40, 0x21, 0x26, 0x29,
+	0xdb, 0x2d, 0xc1, 0xb5, 0x7a, 0xdb, 0x75, 0xa9, 0xed, 0x57, 0x77, 0xa9, 0x65, 0xee, 0x8a, 0xc3,
+	0x66, 0xf5, 0x09, 0x19, 0x7d, 0xca, 0x83, 0x68, 0x15, 0xa6, 0x3a, 0xcc, 0xa7, 0x55, 0x87, 0x57,
+	0x57, 0x3d, 0xdf, 0x70, 0x7d, 0xee, 0x67, 0x56, 0x9f, 0xec, 0x26, 0x04, 0xeb, 0xcb, 0x6e, 0x18,
+	0x2d, 0xc3, 0x64, 0x18, 0x4b, 0xed, 0x46, 0x3e, 0x2b, 0x38, 0xfb, 0xc8, 0xc7, 0x76, 0x03, 0xcf,
+	0xc8, 0x71, 0xdb, 0xe6, 0xf7, 0x11, 0x58, 0xf4, 0x04, 0xa6, 0xa3, 0x61, 0xa9, 0x94, 0xc0, 0xa8,
+	0xb8, 0xb9, 0x9e, 0x31, 0x83, 0x73, 0x28, 0x0a, 0xf4, 0x1e, 0x6a, 0xfd, 0xef, 0x15, 0xb8, 0xcc,
+	0x99, 0xd0, 0x21, 0x8c, 0x87, 0x06, 0x1b, 0x2d, 0x0c, 0x14, 0x9e, 0x5f, 0x05, 0x2a, 0x1e, 0x06,
+	0x11, 0x82, 0xf0, 0xca, 0xc7, 0x1f, 0x7f, 0x3e, 0x8f, 0x2c, 0xa0, 0x22, 0xf1, 0x58, 0xab, 0x45,
+	0x9b, 0x16, 0x75, 0x49, 0x74, 0x7d, 0x89, 0x5d, 0x80, 0xbe, 0x2b, 0xf2, 0x7a, 0x62, 0x1e, 0x3a,
+	0x2a, 0xc7, 0x75, 0x4a, 0xde, 0x1a, 0x2a, 0x49, 0x8d, 0x97, 0x32, 0x37, 0xb9, 0xcc, 0x07, 0xe8,
+	0x7e, 0xb2, 0xcc, 0x60, 0xd4, 0xc8, 0x41, 0x30, 0x37, 0x87, 0xe4, 0x40, 0x18, 0x79, 0x88, 0xbe,
+	0xf6, 0x5e, 0x50, 0xdc, 0xa4, 0xa3, 0xb4, 0x82, 0x02, 0x6f, 0xef, 0xa4, 0x2f, 0x90, 0x47, 0x58,
+	0xe3, 0x47, 0x58, 0x42, 0x8b, 0x29, 0x8e, 0x80, 0xbe, 0x29, 0x30, 0x13, 0x3b, 0x63, 0x68, 0x6d,
+	0x78, 0xe3, 0xc8, 0x52, 0x51, 0x6f, 0xa5, 0x03, 0x4b, 0x85, 0x0f, 0xb9, 0xc2, 0x7b, 0xe8, 0x6e,
+	0xa2, 0xc2, 0xa1, 0x0e, 0x7f, 0x51, 0x60, 0x36, 0x7e, 0x2f, 0xa0, 0x54, 0x3a, 0x02, 0x6f, 0x6f,
+	0xa7, 0x44, 0x4b, 0xd9, 0x25, 0x2e, 0x1b, 0xa3, 0xf9, 0x8b, 0x64, 0xa3, 0x23, 0x05, 0xa6, 0xce,
+	0x6d, 0x11, 0xb4, 0x12, 0xd7, 0x2e, 0x66, 0x09, 0xa9, 0xa5, 0x8b, 0x81, 0x52, 0x52, 0x99, 0x4b,
+	0x2a, 0xa1, 0xe5, 0x0b, 0x24, 0xc9, 0xf5, 0x82, 0x3e, 0x28, 0x70, 0x35, 0xbc, 0x2f, 0x50, 0xec,
+	0xe8, 0x46, 0x77, 0x8c, 0xba, 0x38, 0x14, 0x93, 0xde, 0x1c, 0x51, 0xb1, 0xf5, 0xec, 0xf8, 0x54,
+	0x53, 0x4e, 0x4e, 0x35, 0xe5, 0xf7, 0xa9, 0xa6, 0x7c, 0x3a, 0xd3, 0x32, 0x27, 0x67, 0x5a, 0xe6,
+	0xe7, 0x99, 0x96, 0x79, 0x4b, 0x4c, 0xcb, 0xdf, 0x6d, 0xd7, 0xca, 0x75, 0xd6, 0x22, 0x0e, 0x35,
+	0xcd, 0xfd, 0x77, 0x9d, 0x10, 0xdb, 0xfb, 0x30, 0x9f, 0xbf, 0xef, 0x50, 0xaf, 0x96, 0xe3, 0x7f,
+	0x50, 0x36, 0xfe, 0x05, 0x00, 0x00, 0xff, 0xff, 0x4f, 0x25, 0xf8, 0xe4, 0x84, 0x09, 0x00, 0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -576,8 +752,12 @@ type QueryClient interface {
 	QueryParams(ctx context.Context, in *QueryParamsRequest, opts ...grpc.CallOption) (*QueryParamsResponse, error)
 	// QueryAllocationPrecommit queries the validator prevote in the current voting period
 	QueryAllocationPrecommit(ctx context.Context, in *QueryAllocationPrecommitRequest, opts ...grpc.CallOption) (*QueryAllocationPrecommitResponse, error)
+	// QueryAllocationPrecommits queries all allocation precommits in the voting period
+	QueryAllocationPrecommits(ctx context.Context, in *QueryAllocationPrecommitsRequest, opts ...grpc.CallOption) (*QueryAllocationPrecommitsResponse, error)
 	// QueryAllocationCommit queries the validator vote in the current voting period
 	QueryAllocationCommit(ctx context.Context, in *QueryAllocationCommitRequest, opts ...grpc.CallOption) (*QueryAllocationCommitResponse, error)
+	// QueryAllocationCommits queries all validator allocation commits
+	QueryAllocationCommits(ctx context.Context, in *QueryAllocationCommitsRequest, opts ...grpc.CallOption) (*QueryAllocationCommitsResponse, error)
 	// QueryVotePeriod queries the heights for the current voting period (current, start and end)
 	QueryCommitPeriod(ctx context.Context, in *QueryCommitPeriodRequest, opts ...grpc.CallOption) (*QueryCommitPeriodResponse, error)
 	// QueryCellars returns all cellars and current tick ranges
@@ -610,9 +790,27 @@ func (c *queryClient) QueryAllocationPrecommit(ctx context.Context, in *QueryAll
 	return out, nil
 }
 
+func (c *queryClient) QueryAllocationPrecommits(ctx context.Context, in *QueryAllocationPrecommitsRequest, opts ...grpc.CallOption) (*QueryAllocationPrecommitsResponse, error) {
+	out := new(QueryAllocationPrecommitsResponse)
+	err := c.cc.Invoke(ctx, "/allocation.v1.Query/QueryAllocationPrecommits", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *queryClient) QueryAllocationCommit(ctx context.Context, in *QueryAllocationCommitRequest, opts ...grpc.CallOption) (*QueryAllocationCommitResponse, error) {
 	out := new(QueryAllocationCommitResponse)
 	err := c.cc.Invoke(ctx, "/allocation.v1.Query/QueryAllocationCommit", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *queryClient) QueryAllocationCommits(ctx context.Context, in *QueryAllocationCommitsRequest, opts ...grpc.CallOption) (*QueryAllocationCommitsResponse, error) {
+	out := new(QueryAllocationCommitsResponse)
+	err := c.cc.Invoke(ctx, "/allocation.v1.Query/QueryAllocationCommits", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -643,8 +841,12 @@ type QueryServer interface {
 	QueryParams(context.Context, *QueryParamsRequest) (*QueryParamsResponse, error)
 	// QueryAllocationPrecommit queries the validator prevote in the current voting period
 	QueryAllocationPrecommit(context.Context, *QueryAllocationPrecommitRequest) (*QueryAllocationPrecommitResponse, error)
+	// QueryAllocationPrecommits queries all allocation precommits in the voting period
+	QueryAllocationPrecommits(context.Context, *QueryAllocationPrecommitsRequest) (*QueryAllocationPrecommitsResponse, error)
 	// QueryAllocationCommit queries the validator vote in the current voting period
 	QueryAllocationCommit(context.Context, *QueryAllocationCommitRequest) (*QueryAllocationCommitResponse, error)
+	// QueryAllocationCommits queries all validator allocation commits
+	QueryAllocationCommits(context.Context, *QueryAllocationCommitsRequest) (*QueryAllocationCommitsResponse, error)
 	// QueryVotePeriod queries the heights for the current voting period (current, start and end)
 	QueryCommitPeriod(context.Context, *QueryCommitPeriodRequest) (*QueryCommitPeriodResponse, error)
 	// QueryCellars returns all cellars and current tick ranges
@@ -661,8 +863,14 @@ func (*UnimplementedQueryServer) QueryParams(ctx context.Context, req *QueryPara
 func (*UnimplementedQueryServer) QueryAllocationPrecommit(ctx context.Context, req *QueryAllocationPrecommitRequest) (*QueryAllocationPrecommitResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method QueryAllocationPrecommit not implemented")
 }
+func (*UnimplementedQueryServer) QueryAllocationPrecommits(ctx context.Context, req *QueryAllocationPrecommitsRequest) (*QueryAllocationPrecommitsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method QueryAllocationPrecommits not implemented")
+}
 func (*UnimplementedQueryServer) QueryAllocationCommit(ctx context.Context, req *QueryAllocationCommitRequest) (*QueryAllocationCommitResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method QueryAllocationCommit not implemented")
+}
+func (*UnimplementedQueryServer) QueryAllocationCommits(ctx context.Context, req *QueryAllocationCommitsRequest) (*QueryAllocationCommitsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method QueryAllocationCommits not implemented")
 }
 func (*UnimplementedQueryServer) QueryCommitPeriod(ctx context.Context, req *QueryCommitPeriodRequest) (*QueryCommitPeriodResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method QueryCommitPeriod not implemented")
@@ -711,6 +919,24 @@ func _Query_QueryAllocationPrecommit_Handler(srv interface{}, ctx context.Contex
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Query_QueryAllocationPrecommits_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryAllocationPrecommitsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QueryServer).QueryAllocationPrecommits(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/allocation.v1.Query/QueryAllocationPrecommits",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServer).QueryAllocationPrecommits(ctx, req.(*QueryAllocationPrecommitsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _Query_QueryAllocationCommit_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(QueryAllocationCommitRequest)
 	if err := dec(in); err != nil {
@@ -725,6 +951,24 @@ func _Query_QueryAllocationCommit_Handler(srv interface{}, ctx context.Context, 
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(QueryServer).QueryAllocationCommit(ctx, req.(*QueryAllocationCommitRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Query_QueryAllocationCommits_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryAllocationCommitsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QueryServer).QueryAllocationCommits(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/allocation.v1.Query/QueryAllocationCommits",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServer).QueryAllocationCommits(ctx, req.(*QueryAllocationCommitsRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -778,8 +1022,16 @@ var _Query_serviceDesc = grpc.ServiceDesc{
 			Handler:    _Query_QueryAllocationPrecommit_Handler,
 		},
 		{
+			MethodName: "QueryAllocationPrecommits",
+			Handler:    _Query_QueryAllocationPrecommits_Handler,
+		},
+		{
 			MethodName: "QueryAllocationCommit",
 			Handler:    _Query_QueryAllocationCommit_Handler,
+		},
+		{
+			MethodName: "QueryAllocationCommits",
+			Handler:    _Query_QueryAllocationCommits_Handler,
 		},
 		{
 			MethodName: "QueryCommitPeriod",
@@ -922,6 +1174,66 @@ func (m *QueryAllocationPrecommitResponse) MarshalToSizedBuffer(dAtA []byte) (in
 	return len(dAtA) - i, nil
 }
 
+func (m *QueryAllocationPrecommitsRequest) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *QueryAllocationPrecommitsRequest) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *QueryAllocationPrecommitsRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	return len(dAtA) - i, nil
+}
+
+func (m *QueryAllocationPrecommitsResponse) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *QueryAllocationPrecommitsResponse) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *QueryAllocationPrecommitsResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.Precommits) > 0 {
+		for iNdEx := len(m.Precommits) - 1; iNdEx >= 0; iNdEx-- {
+			{
+				size, err := m.Precommits[iNdEx].MarshalToSizedBuffer(dAtA[:i])
+				if err != nil {
+					return 0, err
+				}
+				i -= size
+				i = encodeVarintQuery(dAtA, i, uint64(size))
+			}
+			i--
+			dAtA[i] = 0xa
+		}
+	}
+	return len(dAtA) - i, nil
+}
+
 func (m *QueryAllocationCommitRequest) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
@@ -990,6 +1302,66 @@ func (m *QueryAllocationCommitResponse) MarshalToSizedBuffer(dAtA []byte) (int, 
 		}
 		i--
 		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *QueryAllocationCommitsRequest) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *QueryAllocationCommitsRequest) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *QueryAllocationCommitsRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	return len(dAtA) - i, nil
+}
+
+func (m *QueryAllocationCommitsResponse) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *QueryAllocationCommitsResponse) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *QueryAllocationCommitsResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.Commits) > 0 {
+		for iNdEx := len(m.Commits) - 1; iNdEx >= 0; iNdEx-- {
+			{
+				size, err := m.Commits[iNdEx].MarshalToSizedBuffer(dAtA[:i])
+				if err != nil {
+					return 0, err
+				}
+				i -= size
+				i = encodeVarintQuery(dAtA, i, uint64(size))
+			}
+			i--
+			dAtA[i] = 0xa
+		}
 	}
 	return len(dAtA) - i, nil
 }
@@ -1176,6 +1548,30 @@ func (m *QueryAllocationPrecommitResponse) Size() (n int) {
 	return n
 }
 
+func (m *QueryAllocationPrecommitsRequest) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	return n
+}
+
+func (m *QueryAllocationPrecommitsResponse) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if len(m.Precommits) > 0 {
+		for _, e := range m.Precommits {
+			l = e.Size()
+			n += 1 + l + sovQuery(uint64(l))
+		}
+	}
+	return n
+}
+
 func (m *QueryAllocationCommitRequest) Size() (n int) {
 	if m == nil {
 		return 0
@@ -1202,6 +1598,30 @@ func (m *QueryAllocationCommitResponse) Size() (n int) {
 	if m.Commit != nil {
 		l = m.Commit.Size()
 		n += 1 + l + sovQuery(uint64(l))
+	}
+	return n
+}
+
+func (m *QueryAllocationCommitsRequest) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	return n
+}
+
+func (m *QueryAllocationCommitsResponse) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if len(m.Commits) > 0 {
+		for _, e := range m.Commits {
+			l = e.Size()
+			n += 1 + l + sovQuery(uint64(l))
+		}
 	}
 	return n
 }
@@ -1596,6 +2016,140 @@ func (m *QueryAllocationPrecommitResponse) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
+func (m *QueryAllocationPrecommitsRequest) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuery
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: QueryAllocationPrecommitsRequest: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: QueryAllocationPrecommitsRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuery(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *QueryAllocationPrecommitsResponse) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuery
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: QueryAllocationPrecommitsResponse: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: QueryAllocationPrecommitsResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Precommits", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Precommits = append(m.Precommits, &AllocationPrecommit{})
+			if err := m.Precommits[len(m.Precommits)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuery(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
 func (m *QueryAllocationCommitRequest) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
@@ -1772,6 +2326,140 @@ func (m *QueryAllocationCommitResponse) Unmarshal(dAtA []byte) error {
 				m.Commit = &Allocation{}
 			}
 			if err := m.Commit.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuery(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *QueryAllocationCommitsRequest) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuery
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: QueryAllocationCommitsRequest: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: QueryAllocationCommitsRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuery(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *QueryAllocationCommitsResponse) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuery
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: QueryAllocationCommitsResponse: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: QueryAllocationCommitsResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Commits", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Commits = append(m.Commits, &Allocation{})
+			if err := m.Commits[len(m.Commits)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex

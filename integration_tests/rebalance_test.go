@@ -2,9 +2,10 @@ package integration_tests
 
 import (
 	"context"
+	"time"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/peggyjv/sommelier/x/allocation/types"
-	"time"
 )
 
 func (s *IntegrationTestSuite) TestRebalance() {
@@ -30,7 +31,9 @@ func (s *IntegrationTestSuite) TestRebalance() {
 		s.T().Logf("checking that test cellar exists in the chain")
 		val := s.chain.validators[0]
 		s.Require().Eventuallyf(func() bool {
-			clientCtx, err := s.chain.clientContext("tcp://localhost:26657", *val)
+			kb, err := val.keyring()
+			s.Require().NoError(err)
+			clientCtx, err := s.chain.clientContext("tcp://localhost:26657", &kb, "val", val.keyInfo.GetAddress())
 			s.Require().NoError(err)
 
 			queryClient := types.NewQueryClient(clientCtx)
@@ -48,30 +51,45 @@ func (s *IntegrationTestSuite) TestRebalance() {
 			}
 			return false
 		},
-			30 * time.Second,
-			2 * time.Second,
+			30*time.Second,
+			2*time.Second,
 			"hardhat cellar not found in chain")
 
 		s.T().Logf("sending pre-commits")
-		for _, val := range s.chain.validators {
-			clientCtx, err := s.chain.clientContext("tcp://localhost:26657", *val)
-			s.Require().NoError(err)
+		for i, orch := range s.chain.orchestrators {
+			s.Require().Eventuallyf(func() bool {
+				clientCtx, err := s.chain.clientContext("tcp://localhost:26657", orch.keyring, "orch", orch.keyInfo.GetAddress())
+				s.Require().NoError(err)
 
-			precommitMsg, err := types.NewMsgAllocationPrecommit(*commit.Cellar, salt, val.keyInfo.GetAddress())
-			s.Require().NoError(err, "unable to create precommit")
+				precommitMsg, err := types.NewMsgAllocationPrecommit(*commit.Cellar, salt, orch.keyInfo.GetAddress())
+				s.Require().NoError(err, "unable to create precommit")
 
-			response, err := s.chain.sendMsgs(*clientCtx, precommitMsg)
-			s.Require().NoError(err, "unable to send precommit")
-			s.Require().Zerof(response.Code, "non-zero response from rpc call for msg %s, response %s", precommitMsg, response)
+				response, err := s.chain.sendMsgs(*clientCtx, precommitMsg)
+				if err != nil {
+					s.T().Logf("error: %s", err)
+					return false
+				}
+				if response.Code != 0 {
+					return false
+				}
+				return true
+			}, 10 * time.Second, 500 * time.Millisecond, "unable to deploy precommit for node %d", i)
+			s.T().Logf("precommit for %d node sent successfully", i)
 		}
 
 		s.T().Logf("checking pre-commit for first validator")
 		val = s.chain.validators[0]
 		s.Require().Eventuallyf(func() bool {
-			clientCtx, err := s.chain.clientContext("tcp://localhost:26657", *val)
+			kb, err := val.keyring()
+			s.Require().NoError(err)
+			clientCtx, err := s.chain.clientContext("tcp://localhost:26657", &kb, "val", val.keyInfo.GetAddress())
 			s.Require().NoError(err)
 
 			queryClient := types.NewQueryClient(clientCtx)
+
+			all, err := queryClient.QueryAllocationPrecommits(context.Background(), &types.QueryAllocationPrecommitsRequest{})
+			s.T().Logf("all %s", all.Precommits)
+
 			res, err := queryClient.QueryAllocationPrecommit(context.Background(), &types.QueryAllocationPrecommitRequest{
 				Validator: sdk.ValAddress(val.keyInfo.GetAddress()).String(),
 				Cellar:    hardhatCellar.String(),
@@ -82,28 +100,36 @@ func (s *IntegrationTestSuite) TestRebalance() {
 			if res == nil {
 				return false
 			}
-			expectedPrecommit, err := types.NewMsgAllocationPrecommit(*commit.Cellar, salt, val.keyInfo.GetAddress())
+			expectedPrecommit, err := types.NewMsgAllocationPrecommit(*commit.Cellar, salt, s.chain.orchestrators[0].keyInfo.GetAddress())
 			s.Require().NoError(err, "unable to create precommit")
 			s.Require().Equal(res.Precommit.CellarId, commit.Cellar.Id, "cellar ids unequal")
 			s.Require().Equal(res.Precommit.Hash, expectedPrecommit.Precommit[0].Hash, "commit hashes unequal")
 
 			return true
 		},
-		30 * time.Second,
-		2 * time.Second,
-		"pre-commit not found for validator %s",
-		val.keyInfo.GetAddress().String())
+			30 * time.Second,
+			2 * time.Second,
+			"pre-commit not found for validator %s",
+			val.keyInfo.GetAddress().String())
 
 		s.T().Logf("sending commits")
-		for _, val := range s.chain.validators {
-			clientCtx, err := s.chain.clientContext("tcp://localhost:26657", *val)
-			s.Require().NoError(err)
+		for i, orch := range s.chain.orchestrators {
+			s.Require().Eventuallyf(func() bool {
+				clientCtx, err := s.chain.clientContext("tcp://localhost:26657", orch.keyring, "orch", orch.keyInfo.GetAddress())
+				s.Require().NoError(err)
 
-			commitMsg := types.NewMsgAllocationCommit([]*types.Allocation{&commit}, val.keyInfo.GetAddress())
+				commitMsg := types.NewMsgAllocationCommit([]*types.Allocation{&commit}, orch.keyInfo.GetAddress())
 
-			response, err := s.chain.sendMsgs(*clientCtx, commitMsg)
-			s.Require().NoError(err, "unable to send commit")
-			s.Require().Zerof(response.Code, "non-zero response from rpc call for msg %s, response %s", commitMsg, response)
+				response, err := s.chain.sendMsgs(*clientCtx,  commitMsg)
+				if err != nil {
+					return false
+				}
+				if response.Code != 0 {
+					return false
+				}
+
+				return true
+			}, 10 * time.Second, 500 * time.Millisecond, "unable to deploy commit for node %d", i)
 		}
 
 		s.T().Logf("checking for updated tick ranges in cellar")
@@ -111,9 +137,9 @@ func (s *IntegrationTestSuite) TestRebalance() {
 		s.Require().NoError(err)
 		s.Require().Len(trs, 4)
 		for i, tr := range trs {
-			s.Require().Equal((i + 2) * 100, tr.Upper)
-			s.Require().Equal((i + 1) * 100, tr.Lower)
-			s.Require().Equal((i + 1) * 10, tr.Weight)
+			s.Require().Equal((i+2)*100, tr.Upper)
+			s.Require().Equal((i+1)*100, tr.Lower)
+			s.Require().Equal((i+1)*10, tr.Weight)
 		}
 	})
 }

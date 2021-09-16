@@ -379,15 +379,15 @@ e2e_clean_slate:
 	@cd integration_tests && go test -c
 
 e2e_basic: e2e_clean_slate
+	@E2E_SKIP_CLEANUP=true
 	@integration_tests/integration_tests.test -test.run TestBasicChain -test.failfast -test.v || make -s fail
 
 e2e_rebalance: e2e_clean_slate
+	@E2E_SKIP_CLEANUP=true
 	@integration_tests/integration_tests.test -test.failfast -test.v -test.run IntegrationTestSuite -testify.m TestRebalance || make -s fail
 
 fail:
-	@echo 'currently this doesnt work because the test is cleaned up before exit'
 	@echo 'test failed; dumping container logs into ./testlogs for review'
-	@mkdir testlogs
 	@docker logs ethereum > testlogs/ethereum.log>&1 || true
 	@docker logs sommelier0 > testlogs/sommelier0.log 2>&1 || true
 	@docker logs sommelier1 > testlogs/sommelier1.log 2>&1 || true
