@@ -30,6 +30,8 @@
     - [QueryAllocationCommitResponse](#allocation.v1.QueryAllocationCommitResponse)
     - [QueryAllocationPrecommitRequest](#allocation.v1.QueryAllocationPrecommitRequest)
     - [QueryAllocationPrecommitResponse](#allocation.v1.QueryAllocationPrecommitResponse)
+    - [QueryCellarsRequest](#allocation.v1.QueryCellarsRequest)
+    - [QueryCellarsResponse](#allocation.v1.QueryCellarsResponse)
     - [QueryCommitPeriodRequest](#allocation.v1.QueryCommitPeriodRequest)
     - [QueryCommitPeriodResponse](#allocation.v1.QueryCommitPeriodResponse)
     - [QueryParamsRequest](#allocation.v1.QueryParamsRequest)
@@ -371,6 +373,31 @@ QueryAllocationPrecommitResponse is the response type for the Query/Queryallocat
 
 
 
+<a name="allocation.v1.QueryCellarsRequest"></a>
+
+### QueryCellarsRequest
+QueryCellarsRequest is the request type for Query/QueryCellars gRPC method.
+
+
+
+
+
+
+<a name="allocation.v1.QueryCellarsResponse"></a>
+
+### QueryCellarsResponse
+QueryCellarsResponse is the response type for Query/QueryCellars gRPC method.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `cellars` | [Cellar](#allocation.v1.Cellar) | repeated |  |
+
+
+
+
+
+
 <a name="allocation.v1.QueryCommitPeriodRequest"></a>
 
 ### QueryCommitPeriodRequest
@@ -440,6 +467,7 @@ Query defines the gRPC querier service for the allocation module.
 | `QueryAllocationPrecommit` | [QueryAllocationPrecommitRequest](#allocation.v1.QueryAllocationPrecommitRequest) | [QueryAllocationPrecommitResponse](#allocation.v1.QueryAllocationPrecommitResponse) | QueryAllocationPrecommit queries the validator prevote in the current voting period | GET|/sommelier/allocation/v1/precommits/{validator}|
 | `QueryAllocationCommit` | [QueryAllocationCommitRequest](#allocation.v1.QueryAllocationCommitRequest) | [QueryAllocationCommitResponse](#allocation.v1.QueryAllocationCommitResponse) | QueryAllocationCommit queries the validator vote in the current voting period | GET|/sommelier/allocation/v1/commits/{validator}|
 | `QueryCommitPeriod` | [QueryCommitPeriodRequest](#allocation.v1.QueryCommitPeriodRequest) | [QueryCommitPeriodResponse](#allocation.v1.QueryCommitPeriodResponse) | QueryVotePeriod queries the heights for the current voting period (current, start and end) | GET|/sommelier/allocation/v1/commit_period|
+| `QueryCellars` | [QueryCellarsRequest](#allocation.v1.QueryCellarsRequest) | [QueryCellarsResponse](#allocation.v1.QueryCellarsResponse) | QueryCellars returns all cellars and current tick ranges | GET|/sommelier/allocation/v1/cellars|
 
  <!-- end services -->
 

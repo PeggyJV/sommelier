@@ -80,3 +80,15 @@ func (k Keeper) QueryCommitPeriod(c context.Context, _ *types.QueryCommitPeriodR
 		CurrentHeight:   ctx.BlockHeight(),
 	}, nil
 }
+
+func (k Keeper) QueryCellars(c context.Context, _ *types.QueryCellarsRequest) (*types.QueryCellarsResponse, error) {
+	ctx := sdk.UnwrapSDKContext(c)
+
+	var cellars []*types.Cellar
+	k.IterateCellars(ctx, func(cellar types.Cellar) (stop bool) {
+		cellars = append(cellars, &cellar)
+		return false
+	})
+
+	return &types.QueryCellarsResponse{Cellars: cellars}, nil
+}

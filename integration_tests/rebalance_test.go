@@ -27,6 +27,31 @@ func (s *IntegrationTestSuite) TestRebalance() {
 			},
 		}
 
+		s.T().Logf("checking that test cellar exists in the chain")
+		val := s.chain.validators[0]
+		s.Require().Eventuallyf(func() bool {
+			clientCtx, err := s.chain.clientContext("tcp://localhost:26657", *val)
+			s.Require().NoError(err)
+
+			queryClient := types.NewQueryClient(clientCtx)
+			res, err := queryClient.QueryCellars(context.Background(), &types.QueryCellarsRequest{})
+			if err != nil {
+				return false
+			}
+			if res == nil {
+				return false
+			}
+			for _, c := range res.Cellars {
+				if c.Id == commit.Cellar.Id {
+					return true
+				}
+			}
+			return false
+		},
+			30 * time.Second,
+			2 * time.Second,
+			"hardhat cellar not found in chain")
+
 		s.T().Logf("sending pre-commits")
 		for _, val := range s.chain.validators {
 			clientCtx, err := s.chain.clientContext("tcp://localhost:26657", *val)
@@ -41,7 +66,7 @@ func (s *IntegrationTestSuite) TestRebalance() {
 		}
 
 		s.T().Logf("checking pre-commit for first validator")
-		val := s.chain.validators[0]
+		val = s.chain.validators[0]
 		s.Require().Eventuallyf(func() bool {
 			clientCtx, err := s.chain.clientContext("tcp://localhost:26657", *val)
 			s.Require().NoError(err)
@@ -57,6 +82,10 @@ func (s *IntegrationTestSuite) TestRebalance() {
 			if res == nil {
 				return false
 			}
+			expectedPrecommit, err := types.NewMsgAllocationPrecommit(*commit.Cellar, salt, val.keyInfo.GetAddress())
+			s.Require().NoError(err, "unable to create precommit")
+			s.Require().Equal(res.Precommit.CellarId, commit.Cellar.Id, "cellar ids unequal")
+			s.Require().Equal(res.Precommit.Hash, expectedPrecommit.Precommit[0].Hash, "commit hashes unequal")
 
 			return true
 		},

@@ -41,7 +41,15 @@ func (k Keeper) AllocationPrecommit(c context.Context, msg *types.MsgAllocationP
 	// TODO: set precommit for current voting period
 	hashList := make([]string, len(msg.Precommit))
 	cellarList := make([]string, len(msg.Precommit))
+
+	cellarSet := mapset.NewThreadUnsafeSet()
+	for _, cellar := range k.GetCellars(ctx) {
+		cellarSet.Add(cellar.Id)
+	}
 	for _, ap := range msg.Precommit {
+		if !cellarSet.Contains(ap.CellarId) {
+			return nil, fmt.Errorf("precommit for unknown cellar ID %s", ap.CellarId)
+		}
 		cellarList = append(cellarList, ap.CellarId)
 		hashList = append(hashList, ap.Hash.String())
 		k.SetAllocationPrecommit(ctx, validatorAddr, common.HexToAddress(ap.CellarId), *ap)

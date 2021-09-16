@@ -345,9 +345,16 @@ func (s *IntegrationTestSuite) initGenesis() {
 	allocationGenState.Cellars = []*types.Cellar{
 		{
 			hardhatCellar.String(),
-			[]*types.TickRange{},
+			[]*types.TickRange{
+				{-189720, -192660, 160},
+				{-192660, -198540, 680},
+				{-198540, -201540, 160},
+			},
 		},
 	}
+	bz, err = cdc.MarshalJSON(&allocationGenState)
+	s.Require().NoError(err)
+	appGenState[types.ModuleName] = bz
 
 	// serialize genesis state
 	bz, err = json.MarshalIndent(appGenState, "", "  ")

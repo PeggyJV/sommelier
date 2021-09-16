@@ -28,6 +28,10 @@ service Query {
     rpc QueryCommitPeriod(QueryCommitPeriodRequest) returns (QueryCommitPeriodResponse) {
         option (google.api.http).get = "/sommelier/allocation/v1/commit_period";
     }
+    // QueryCellars returns all cellars and current tick ranges
+    rpc QueryCellars(QueryCellarsRequest) returns (QueryCellarsResponse) {
+        option (google.api.http).get = "/sommelier/allocation/v1/cellars";
+    }
 }
 
 // QueryParamsRequest is the request type for the Query/Params gRPC method.
@@ -78,4 +82,12 @@ message QueryCommitPeriodResponse {
     int64 vote_period_start = 2;
     // block height at which the current voting period ends
     int64 vote_period_end   = 3; 
+}
+
+// QueryCellarsRequest is the request type for Query/QueryCellars gRPC method.
+message QueryCellarsRequest {}
+
+// QueryCellarsResponse is the response type for Query/QueryCellars gRPC method.
+message QueryCellarsResponse {
+    repeated Cellar cellars = 1;
 }
