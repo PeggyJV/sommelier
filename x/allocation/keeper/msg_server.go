@@ -20,11 +20,7 @@ import (
 
 var _ types.MsgServer = Keeper{}
 
-// AllocationPrecommit implements types.MsgServer
-func (k Keeper) AllocationPrecommit(c context.Context, msg *types.MsgAllocationPrecommit) (*types.MsgAllocationPrecommitResponse, error) {
-	ctx := sdk.UnwrapSDKContext(c)
-
-	signer := msg.MustGetSigner()
+func (k Keeper) signerToValAddr(ctx sdk.Context, signer sdk.AccAddress) (sdk.ValAddress, error) {
 	validatorAddr := k.gravityKeeper.GetOrchestratorValidatorAddress(ctx, signer)
 	if validatorAddr == nil {
 		validator := k.stakingKeeper.Validator(ctx, sdk.ValAddress(signer))
@@ -36,6 +32,18 @@ func (k Keeper) AllocationPrecommit(c context.Context, msg *types.MsgAllocationP
 		// NOTE: we set the validator address so we don't have to call look up for the validator
 		// everytime a validator feeder submits oracle data
 		k.gravityKeeper.SetOrchestratorValidatorAddress(ctx, validatorAddr, signer)
+	}
+	return validatorAddr, nil
+}
+
+// AllocationPrecommit implements types.MsgServer
+func (k Keeper) AllocationPrecommit(c context.Context, msg *types.MsgAllocationPrecommit) (*types.MsgAllocationPrecommitResponse, error) {
+	ctx := sdk.UnwrapSDKContext(c)
+
+	signer := msg.MustGetSigner()
+	validatorAddr, err := k.signerToValAddr(ctx, signer)
+	if err != nil {
+		return nil, err
 	}
 
 	// TODO: set precommit for current voting period
@@ -84,17 +92,9 @@ func (k Keeper) AllocationCommit(c context.Context, msg *types.MsgAllocationComm
 
 	// Make sure that the message was properly signed
 	signer := msg.MustGetSigner()
-	val := k.gravityKeeper.GetOrchestratorValidatorAddress(ctx, signer)
-	if val == nil {
-		validator := k.stakingKeeper.Validator(ctx, sdk.ValAddress(signer))
-		if validator == nil {
-			return nil, sdkerrors.Wrap(stakingtypes.ErrNoValidatorFound, sdk.ValAddress(signer).String())
-		}
-
-		val = validator.GetOperator()
-		// NOTE: we set the validator address so we don't have to call look up for the validator
-		// everytime the a validator feeder submits oracle data
-		k.gravityKeeper.SetOrchestratorValidatorAddress(ctx, val, signer)
+	val, err := k.signerToValAddr(ctx, signer)
+	if err != nil {
+		return nil, err
 	}
 
 	allocationEvents := sdk.Events{
