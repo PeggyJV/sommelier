@@ -4,10 +4,11 @@ import (
 	"crypto/ecdsa"
 	"encoding/json"
 	"fmt"
-	"github.com/cosmos/cosmos-sdk/client"
 	"os"
 	"path"
 	"path/filepath"
+
+	"github.com/cosmos/cosmos-sdk/client"
 
 	sdkcrypto "github.com/cosmos/cosmos-sdk/crypto"
 	cryptocodec "github.com/cosmos/cosmos-sdk/crypto/codec"

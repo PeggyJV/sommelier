@@ -51,7 +51,7 @@ func (s *IntegrationTestSuite) TestRebalance() {
 				}
 			}
 			return false
-		}, 30*time.Second, 2*time.Second,"hardhat cellar not found in chain")
+		}, 30*time.Second, 2*time.Second, "hardhat cellar not found in chain")
 
 		s.T().Logf("wait for new vote period start")
 		val = s.chain.validators[0]
@@ -67,14 +67,14 @@ func (s *IntegrationTestSuite) TestRebalance() {
 				return false
 			}
 			if res.VotePeriodStart != res.CurrentHeight {
-				if res.CurrentHeight % 10 == 0 {
+				if res.CurrentHeight%10 == 0 {
 					s.T().Logf("current height: %d, period end: %d", res.CurrentHeight, res.VotePeriodEnd)
 				}
 				return false
 			}
 
 			return true
-		}, 105*time.Second, 1*time.Second,"new vote period never seen")
+		}, 105*time.Second, 1*time.Second, "new vote period never seen")
 
 		s.T().Logf("sending pre-commits")
 		for i, orch := range s.chain.orchestrators {
@@ -94,7 +94,7 @@ func (s *IntegrationTestSuite) TestRebalance() {
 					return false
 				}
 
-				s.T().Logf("precommit for %d node with hash %s sent successfully", i, precommitMsg.Precommit[0].Hash, )
+				s.T().Logf("precommit for %d node with hash %s sent successfully", i, precommitMsg.Precommit[0].Hash)
 				return true
 			}, 10*time.Second, 500*time.Millisecond, "unable to deploy precommit for node %d", i)
 		}
@@ -142,7 +142,6 @@ func (s *IntegrationTestSuite) TestRebalance() {
 				commitHash, err := commit.Cellar.Hash(commit.Salt, sdk.ValAddress(orch.keyInfo.GetAddress()))
 				s.Require().NoError(err)
 				s.Require().True(bytes.Equal(commitHash, precommitMsg.Precommit[0].Hash))
-				s.T().Logf("precommit: %x commit: %x, signer %s, commit %s", commitHash, precommitMsg.Precommit[0].Hash, orch.keyInfo.GetAddress(), commit)
 
 				response, err := s.chain.sendMsgs(*clientCtx, commitMsg)
 				if err != nil {

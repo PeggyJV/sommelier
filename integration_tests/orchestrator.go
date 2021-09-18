@@ -10,7 +10,7 @@ type orchestrator struct {
 	index    int
 	mnemonic string
 	keyInfo  keyring.Info
-	keyring *keyring.Keyring
+	keyring  *keyring.Keyring
 }
 
 func (o *orchestrator) instanceName() string {

@@ -84,7 +84,6 @@ func (k Keeper) QueryAllocationCommits(c context.Context, _ *types.QueryAllocati
 		return false
 	})
 
-
 	return &types.QueryAllocationCommitsResponse{
 		Commits: commits,
 	}, nil

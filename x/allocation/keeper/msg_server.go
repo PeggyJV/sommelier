@@ -3,7 +3,6 @@ package keeper
 import (
 	"bytes"
 	"context"
-	"encoding/hex"
 	"fmt"
 	"strings"
 
@@ -132,19 +131,11 @@ func (k Keeper) AllocationCommit(c context.Context, msg *types.MsgAllocationComm
 			return nil, sdkerrors.Wrap(types.ErrNoPrecommit, val.String())
 		}
 
-		// marshal the protobuf message to computing the hash
-		databytes, err := commit.Cellar.Marshal()
-
-		if err != nil {
-			return nil, sdkerrors.Wrap(
-				sdkerrors.ErrJSONMarshal, "failed to marshal json pool allocations",
-			)
-		}
-
-		hexbytes := hex.EncodeToString(databytes)
-
 		// calculate the vote hash on the server
-		commitHash := types.DataHash(commit.Salt, hexbytes, val)
+		commitHash, err := commit.Cellar.Hash(commit.Salt, val)
+		if err != nil {
+			return nil, sdkerrors.Wrap(sdkerrors.ErrJSONMarshal, "failed to hash cellar allocation")
+		}
 
 		// compare to precommit hash
 		if !bytes.Equal(commitHash, precommit.Hash) {

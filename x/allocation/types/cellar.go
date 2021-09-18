@@ -1,7 +1,8 @@
 package types
 
 import (
-	"encoding/json"
+	"encoding/hex"
+	"fmt"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
@@ -43,14 +44,19 @@ func (c *Cellar) Equals(other Cellar) bool {
 }
 
 func (c *Cellar) Hash(salt string, val sdk.ValAddress) ([]byte, error) {
-	jsonBz, err := json.Marshal(c)
+	fmt.Printf("hash function XXX salt %s, val %s, cellar %s", salt, val.String(), c)
+	databytes, err := c.Marshal()
+
 	if err != nil {
 		return nil, sdkerrors.Wrap(
 			sdkerrors.ErrJSONMarshal, "failed to marshal cellar",
 		)
 	}
 
-	jsonBz = sdk.MustSortJSON(jsonBz)
-	commitHash := DataHash(salt, string(jsonBz), val)
+	hexbytes := hex.EncodeToString(databytes)
+
+	// calculate the vote hash on the server
+	commitHash := DataHash(salt, hexbytes, val)
+
 	return commitHash, nil
 }
