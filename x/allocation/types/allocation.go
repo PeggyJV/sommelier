@@ -9,7 +9,6 @@ import (
 
 // DataHash returns the hash for a precommit given the proper args
 func DataHash(salt, jsonData string, signer sdk.ValAddress) []byte {
-	fmt.Printf("salt: %s, json %s, signer %s", salt, jsonData, signer.String())
 	h := sha256.New()
 	h.Write([]byte(fmt.Sprintf("%s:%s:%s", salt, jsonData, signer.String())))
 	return h.Sum(nil)

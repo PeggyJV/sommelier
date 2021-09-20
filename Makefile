@@ -352,7 +352,7 @@ tools-clean:
 #####################
 
 #PACKAGES_E2E=$(shell go list ./... | grep '/integration_tests')
-ORCHESTRATOR_IMAGE := "ghcr.io/peggyjv/gravity-bridge-orchestrator:v0.2.1"
+ORCHESTRATOR_IMAGE := "ghcr.io/peggyjv/gravity-bridge-orchestrator:v0.2.13"
 
 e2e_build_images:
 	@docker pull $(ORCHESTRATOR_IMAGE)
@@ -383,8 +383,7 @@ e2e_basic: e2e_clean_slate
 	@integration_tests/integration_tests.test -test.run TestBasicChain -test.failfast -test.v || make -s fail
 
 e2e_rebalance: e2e_clean_slate
-	@E2E_SKIP_CLEANUP=true
-	@integration_tests/integration_tests.test -test.failfast -test.v -test.run IntegrationTestSuite -testify.m TestRebalance || make -s fail
+	@E2E_SKIP_CLEANUP=true integration_tests/integration_tests.test -test.failfast -test.v -test.run IntegrationTestSuite -testify.m TestRebalance || make -s fail
 
 fail:
 	@echo 'test failed; dumping container logs into ./testlogs for review'

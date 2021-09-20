@@ -24,12 +24,12 @@ const (
 //////////////////////////
 
 // NewMsgAllocationPrecommit return a new MsgAllocationPrecommit
-func NewMsgAllocationPrecommit(cellar Cellar, salt string, signer sdk.AccAddress) (*MsgAllocationPrecommit, error) {
+func NewMsgAllocationPrecommit(cellar Cellar, salt string, signer sdk.AccAddress, val sdk.ValAddress) (*MsgAllocationPrecommit, error) {
 	if signer == nil {
 		return nil, fmt.Errorf("no signer provided")
 	}
 
-	hash, err := cellar.Hash(salt, sdk.ValAddress(signer))
+	hash, err := cellar.Hash(salt, val)
 	if err != nil {
 		return nil, err
 	}

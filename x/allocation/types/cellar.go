@@ -2,8 +2,6 @@ package types
 
 import (
 	"encoding/hex"
-	"fmt"
-
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/ethereum/go-ethereum/common"
@@ -44,7 +42,7 @@ func (c *Cellar) Equals(other Cellar) bool {
 }
 
 func (c *Cellar) Hash(salt string, val sdk.ValAddress) ([]byte, error) {
-	fmt.Printf("hash function XXX salt %s, val %s, cellar %s", salt, val.String(), c)
+	//fmt.Printf("hash function XXX salt %s, val %s, cellar %s", salt, val.String(), c)
 	databytes, err := c.Marshal()
 
 	if err != nil {
