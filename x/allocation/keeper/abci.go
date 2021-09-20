@@ -80,9 +80,12 @@ func (k Keeper) EndBlocker(ctx sdk.Context) {
 	k.Logger(ctx).Info("tallying allocation votes", "height", fmt.Sprintf("%d", ctx.BlockHeight()))
 	winningVotes := k.GetWinningVotes(ctx, params.VoteThreshold)
 
-	k.Logger(ctx).Info("package all winning allocation votes into one contract call")
+	k.Logger(ctx).Info("package all winning allocation votes into contract calls")
 	// todo: implement batch sends to save on gas
 	for _, wv := range winningVotes {
+		k.Logger(ctx).Info("setting outgoing tx for contract call",
+			"cellar", wv.String(),
+			"tick ranges length", len(wv.TickRanges))
 		contractCall := k.gravityKeeper.CreateContractCallTx(
 			ctx,
 			k.IncrementInvalidationNonce(ctx),

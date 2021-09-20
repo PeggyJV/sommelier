@@ -24,11 +24,11 @@ func (c Cellar) ABIEncodedRebalanceHash() []byte {
 	}
 
 	ticks := make([]ABIEncodedTickRange, len(c.TickRanges))
-	for _, t := range c.TickRanges {
+	for i, t := range c.TickRanges {
 		up := int64(t.Upper)
 		lo := int64(t.Lower)
 		we := uint64(t.Weight)
-		ticks = append(ticks, ABIEncodedTickRange{big.NewInt(0), big.NewInt(up), big.NewInt(lo), new(big.Int).SetUint64(we)})
+		ticks[i] = ABIEncodedTickRange{big.NewInt(0), big.NewInt(up), big.NewInt(lo), new(big.Int).SetUint64(we)}
 	}
 
 	abiEncodedCall, err := encodedCall.Pack("rebalance", ticks)
