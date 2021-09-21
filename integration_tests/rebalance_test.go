@@ -2,6 +2,7 @@ package integration_tests
 
 import (
 	"context"
+	gravitytypes "github.com/peggyjv/gravity-bridge/module/x/gravity/types"
 	"time"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -92,7 +93,9 @@ func (s *IntegrationTestSuite) TestRebalance() {
 					return false
 				}
 				if response.Code != 0 {
-					s.T().Log(response)
+					if response.Code != 32 {
+						s.T().Log(response)
+					}
 					return false
 				}
 
@@ -134,15 +137,15 @@ func (s *IntegrationTestSuite) TestRebalance() {
 				val.keyInfo.GetAddress().String())
 		}
 
-		kb, err := val.keyring()
+		//kb, err := val.keyring()
 
-		clientCtx, err := s.chain.clientContext("tcp://localhost:26657", &kb, "val", val.keyInfo.GetAddress())
-		s.Require().NoError(err)
-		queryClient := types.NewQueryClient(clientCtx)
-		res, err := queryClient.QueryAllocationPrecommits(context.Background(), &types.QueryAllocationPrecommitsRequest{})
-		for _, pc := range res.Precommits {
-			s.T().Logf("precommit: hash %x", pc.Hash)
-		}
+		//clientCtx, err := s.chain.clientContext("tcp://localhost:26657", &kb, "val", val.keyInfo.GetAddress())
+		//s.Require().NoError(err)
+		//queryClient := types.NewQueryClient(clientCtx)
+		//res, err := queryClient.QueryAllocationPrecommits(context.Background(), &types.QueryAllocationPrecommitsRequest{})
+		//for _, pc := range res.Precommits {
+		//	s.T().Logf("precommit: hash %x", pc.Hash)
+		//}
 
 		s.T().Logf("sending commits")
 		for i, orch := range s.chain.orchestrators {
@@ -168,6 +171,34 @@ func (s *IntegrationTestSuite) TestRebalance() {
 			}, 10*time.Second, 500*time.Millisecond, "unable to deploy commit for node %d", i)
 		}
 
+
+		s.T().Logf("checking commits for validators")
+		for _, val := range s.chain.validators {
+			s.Require().Eventuallyf(func() bool {
+				kb, err := val.keyring()
+				s.Require().NoError(err)
+				clientCtx, err := s.chain.clientContext("tcp://localhost:26657", &kb, "val", val.keyInfo.GetAddress())
+				s.Require().NoError(err)
+
+				queryClient := types.NewQueryClient(clientCtx)
+				res, err := queryClient.QueryAllocationCommit(context.Background(), &types.QueryAllocationCommitRequest{sdk.ValAddress(val.keyInfo.GetAddress()).String(), hardhatCellar.String()})
+				if err != nil {
+					return false
+				}
+				if res == nil {
+					return false
+				}
+				s.Require().Equal(res.Commit.Cellar.Id, commit.Cellar.Id, "cellar ids unequal")
+
+				return true
+			},
+				30*time.Second,
+				2*time.Second,
+				"commit not found for validator %s",
+				val.keyInfo.GetAddress().String())
+		}
+
+
 		s.T().Logf("waiting for end of vote period, endblocker to run")
 		val = s.chain.validators[0]
 		s.Require().Eventuallyf(func() bool {
@@ -182,7 +213,7 @@ func (s *IntegrationTestSuite) TestRebalance() {
 				return false
 			}
 			if res.VotePeriodStart != res.CurrentHeight {
-				if res.CurrentHeight%10 == 0 {
+				if res.CurrentHeight % 10 == 0 {
 					s.T().Logf("current height: %d, period end: %d", res.CurrentHeight, res.VotePeriodEnd)
 				}
 				return false
@@ -192,13 +223,48 @@ func (s *IntegrationTestSuite) TestRebalance() {
 		}, 105*time.Second, 1*time.Second, "new vote period never seen")
 
 		s.T().Logf("checking for updated tick ranges in cellar")
-		trs, err = s.getTickRanges()
-		s.Require().NoError(err)
-		s.Require().Len(trs, 4)
-		for i, tr := range trs {
-			s.Require().Equal((i+2)*100, tr.Upper)
-			s.Require().Equal((i+1)*100, tr.Lower)
-			s.Require().Equal((i+1)*10, tr.Weight)
-		}
+		s.Require().Eventuallyf(func() bool {
+			kb, err := val.keyring()
+			s.Require().NoError(err)
+			clientCtx, err := s.chain.clientContext("tcp://localhost:26657", &kb, "val", val.keyInfo.GetAddress())
+			s.Require().NoError(err)
+			gravityQueryClient := gravitytypes.NewQueryClient(clientCtx)
+			res, err := gravityQueryClient.UnsignedContractCallTxs(context.Background(), &gravitytypes.UnsignedContractCallTxsRequest{
+				Address: val.keyInfo.GetAddress().String(),
+			})
+			if err != nil {
+				s.T().Logf("error: %s", err)
+				if res != nil {
+					s.T().Logf("response: %s", res)
+				}
+			}
+			s.T().Logf("unsigned contract call txs: %s", res.Calls)
+
+			trs, err = s.getTickRanges()
+			if err != nil {
+				s.T().Logf("error: %s", err)
+				return false
+			}
+			if len(trs) != 4 {
+				s.T().Logf("wrong length: %d", len(trs))
+				return false
+			}
+			for i, tr := range trs {
+				if int32((i+2)*100) != tr.Upper {
+					s.T().Logf("wrong upper %s", tr.String())
+					return false
+				}
+				if int32((i+1)*100) != tr.Lower {
+					s.T().Logf("wrong lower %s", tr.String())
+					return false
+				}
+				if uint32((i+1)*10) != tr.Weight {
+					s.T().Logf("wrong weight %s", tr.String())
+					return false
+				}
+			}
+
+			return true
+		}, 300*time.Second, 2*time.Second, "cellar ticks never updated")
 	})
 }

@@ -5,6 +5,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	gravitytypes "github.com/peggyjv/gravity-bridge/module/x/gravity/types"
 	"math/big"
 	"os"
 	"path"
@@ -59,6 +60,7 @@ var (
 	stakeAmount, _  = sdk.NewIntFromString("100000000000")
 	stakeAmountCoin = sdk.NewCoin(bondDenom, stakeAmount)
 	hardhatCellar   = common.HexToAddress("0x6ea5992aB4A78D5720bD12A089D13c073d04B55d")
+	gravityContract = common.HexToAddress("0xFbB0BCfed0c82043A7d5387C35Ad8450b44A4cde")
 )
 
 type IntegrationTestSuite struct {
@@ -70,7 +72,6 @@ type IntegrationTestSuite struct {
 	ethResource         *dockertest.Resource
 	valResources        []*dockertest.Resource
 	orchResources       []*dockertest.Resource
-	gravityContractAddr string
 }
 
 func TestIntegrationTestSuite(t *testing.T) {
@@ -359,6 +360,14 @@ func (s *IntegrationTestSuite) initGenesis() {
 	s.Require().NoError(err)
 	appGenState[types.ModuleName] = bz
 
+	// set contract addr
+	var gravityGenState gravitytypes.GenesisState
+	s.Require().NoError(cdc.UnmarshalJSON(appGenState[gravitytypes.ModuleName], &gravityGenState))
+	gravityGenState.Params.BridgeEthereumAddress = gravityContract.String()
+	bz, err = cdc.MarshalJSON(&gravityGenState)
+	s.Require().NoError(err)
+	appGenState[gravitytypes.ModuleName] = bz
+
 	// serialize genesis state
 	bz, err = json.MarshalIndent(appGenState, "", "  ")
 	s.Require().NoError(err)
@@ -574,7 +583,7 @@ grpc = "http://%s:9090"
 gas_price = { amount = %s, denom = "%s" }
 prefix = "somm"
 `,
-			s.gravityContractAddr,
+			gravityContract.String(),
 			testDenom,
 			// NOTE: container names are prefixed with '/'
 			s.ethResource.Container.Name[1:],
