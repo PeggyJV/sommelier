@@ -239,6 +239,20 @@ func (s *IntegrationTestSuite) TestRebalance() {
 				}
 			}
 			s.T().Logf("unsigned contract call txs: %s", res.Calls)
+			
+			confirmsRes, err := gravityQueryClient.ContractCallTxConfirmations(context.Background(), &gravitytypes.ContractCallTxConfirmationsRequest{
+				InvalidationScope: commit.Cellar.ABIEncodedRebalanceHash(),
+				InvalidationNonce: 1,
+			})
+
+			if err != nil {
+				s.T().Logf("error: %s", err)
+				if res != nil {
+					s.T().Logf("response: %s", confirmsRes)
+				}
+			}
+			s.T().Logf("contract call tx confirms: %s", confirmsRes.Signatures)
+
 
 			trs, err = s.getTickRanges()
 			if err != nil {
