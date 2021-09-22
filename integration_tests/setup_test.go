@@ -626,7 +626,8 @@ prefix = "somm"
 				Env: []string{
 					fmt.Sprintf("ORCH_MNEMONIC=%s", orch.mnemonic),
 					fmt.Sprintf("ETH_PRIV_KEY=%s", val.ethereumKey.privateKey),
-					fmt.Sprintf("RUST_BACKTRACE=full"),
+					"RUST_BACKTRACE=full",
+					"RUST_LOG=trace",
 				},
 				Entrypoint: []string{
 					"sh",

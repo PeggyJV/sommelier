@@ -27,7 +27,7 @@ require (
 	github.com/onsi/gomega v1.11.0 // indirect
 	github.com/opencontainers/runc v1.0.1 // indirect
 	github.com/ory/dockertest/v3 v3.7.0
-	github.com/peggyjv/gravity-bridge/module v0.2.14-0.20210921210619-0b020d6c912d
+	github.com/peggyjv/gravity-bridge/module v0.2.14-0.20210922143031-4bcab2a393fb
 	//github.com/peggyjv/gravity-bridge/module v0.2.0
 	github.com/rakyll/statik v0.1.7
 	github.com/regen-network/cosmos-proto v0.3.1
