@@ -627,7 +627,7 @@ prefix = "somm"
 					fmt.Sprintf("ORCH_MNEMONIC=%s", orch.mnemonic),
 					fmt.Sprintf("ETH_PRIV_KEY=%s", val.ethereumKey.privateKey),
 					"RUST_BACKTRACE=full",
-					"RUST_LOG=trace",
+					"RUST_LOG=debug",
 				},
 				Entrypoint: []string{
 					"sh",

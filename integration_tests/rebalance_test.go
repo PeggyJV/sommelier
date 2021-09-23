@@ -239,7 +239,7 @@ func (s *IntegrationTestSuite) TestRebalance() {
 				}
 			}
 			s.T().Logf("unsigned contract call txs: %s", res.Calls)
-			
+
 			confirmsRes, err := gravityQueryClient.ContractCallTxConfirmations(context.Background(), &gravitytypes.ContractCallTxConfirmationsRequest{
 				InvalidationScope: commit.Cellar.ABIEncodedRebalanceHash(),
 				InvalidationNonce: 1,
@@ -253,6 +253,7 @@ func (s *IntegrationTestSuite) TestRebalance() {
 			}
 			s.T().Logf("contract call tx confirms: %s", confirmsRes.Signatures)
 
+			//contractCallRes, err := gravityQueryClient.ContractCallTx()
 
 			trs, err = s.getTickRanges()
 			if err != nil {
@@ -279,6 +280,6 @@ func (s *IntegrationTestSuite) TestRebalance() {
 			}
 
 			return true
-		}, 300*time.Second, 2*time.Second, "cellar ticks never updated")
+		}, 30*time.Second, 2*time.Second, "cellar ticks never updated")
 	})
 }
