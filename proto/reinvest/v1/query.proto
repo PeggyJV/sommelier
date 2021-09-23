@@ -1,0 +1,88 @@
+syntax = "proto3";
+package reinvest.v1;
+
+import "gogoproto/gogo.proto";
+import "google/api/annotations.proto";
+import "reinvest/v1/genesis.proto";
+import "reinvest/v1/reinvest.proto";
+import "cosmos_proto/cosmos.proto";
+import "cosmos/base/query/v1beta1/pagination.proto";
+
+option go_package = "github.com/peggyjv/sommelier/x/reinvest/types";
+
+// Query defines the gRPC querier service for the reinvest module.
+service Query {
+    // QueryParams queries the reinvest module parameters.
+    rpc QueryParams(QueryParamsRequest) returns (QueryParamsResponse) {
+        option (google.api.http).get = "/sommelier/reinvest/v1/params";
+    }
+    // QueryRevinvestVotes queries all reinvest precommits in the voting period
+    rpc QueryRevinvestVotes(QueryReinvestVotesRequest) returns (QueryReinvestVotesResponse) {
+        option (google.api.http).get = "/sommelier/reinvest/v1/reinvest_votes";
+    }
+    // QueryReinvestVote queries the validator vote in the current voting period
+    rpc QueryReinvestVote(QueryReinvestVoteRequest) returns (QueryReinvestVoteResponse) {
+        option (google.api.http).get = "/sommelier/reinvest/v1/reinvest_votes/{validator}/{cellar}";
+    }
+    // QueryVotePeriod queries the voting period details
+    rpc QueryVotePeriod(QueryVotePeriodRequest) returns (QueryVotePeriodResponse) {
+        option (google.api.http).get = "/sommelier/reinvest/v1/vote_period";
+    }
+    // QueryCellars returns all cellars and current tick ranges
+    rpc QueryCellars(QueryCellarsRequest) returns (QueryCellarsResponse) {
+        option (google.api.http).get = "/sommelier/reinvest/v1/cellars";
+    }
+}
+
+// QueryParamsRequest is the request type for the Query/Params gRPC method.
+message QueryParamsRequest {}
+
+// QueryParamsRequest is the response type for the Query/Params gRPC method.
+message QueryParamsResponse {
+    // reinvest parameters
+    Params params = 1 [(gogoproto.nullable) = false];
+}
+
+// QueryReinvestVotesRequest is the request type for the Query/reinvestPrecommits gRPC method.
+message QueryReinvestVotesRequest {}
+
+// QueryreinvestPrecommitResponse is the response type for the Query/reinvestPrecommits gRPC method.
+message QueryReinvestVotesResponse {
+    // prevote submitted within the latest voting period
+    repeated ReinvestVote reinvest_votes = 1;
+}
+
+// QueryReinvestVoteRequest is the request type for the Query/QueryreinvestDataVote gRPC method.
+message QueryReinvestVoteRequest {
+    // validator operator address
+    string validator = 1;
+    // cellar contract address
+    string cellar = 2;
+}
+
+// QueryReinvestVoteResponse is the response type for the Query/QueryreinvestDataVote gRPC method.
+message QueryReinvestVoteResponse {
+    // vote containing the reinvest feed submitted within the latest voting period
+    ReinvestVote reinvest_vote = 1;
+}
+
+// QueryVotePeriodRequest is the request type for the Query/QueryCommitPeriod gRPC method.
+message QueryVotePeriodRequest {}
+
+// QueryVotePeriodResponse is the response type for the Query/QueryVotePeriod gRPC method.
+message QueryVotePeriodResponse {
+    // block height at which the query was processed
+    int64 current_height    = 1;
+    // latest vote period start block height
+    int64 vote_period_start = 2;
+    // block height at which the current voting period ends
+    int64 vote_period_end   = 3; 
+}
+
+// QueryCellarsRequest is the request type for Query/QueryCellars gRPC method.
+message QueryCellarsRequest {}
+
+// QueryCellarsResponse is the response type for Query/QueryCellars gRPC method.
+message QueryCellarsResponse {
+    repeated Cellar cellars = 1;
+}

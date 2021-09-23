@@ -56,14 +56,6 @@ func (k Keeper) BeginBlocker(ctx sdk.Context) {
 //
 // 7) Sets the new voting period to the next block
 
-//type PowerWeight struct {
-//	validator sdk.ValAddress
-//	cellar    common.Address
-//	feeLevel  sdk.Dec
-//	power     int64
-//	tick      uint32
-//}
-
 func (k Keeper) EndBlocker(ctx sdk.Context) {
 	params := k.GetParamSet(ctx)
 	votePeriodStart, found := k.GetCommitPeriodStart(ctx)

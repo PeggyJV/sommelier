@@ -43,6 +43,37 @@
   
     - [Query](#allocation.v1.Query)
   
+- [reinvest/v1/reinvest.proto](#reinvest/v1/reinvest.proto)
+    - [AddManagedCellarsProposal](#reinvest.v1.AddManagedCellarsProposal)
+    - [Cellar](#reinvest.v1.Cellar)
+    - [CellarUpdate](#reinvest.v1.CellarUpdate)
+    - [ReinvestVote](#reinvest.v1.ReinvestVote)
+    - [RemoveManagedCellarsProposal](#reinvest.v1.RemoveManagedCellarsProposal)
+  
+- [reinvest/v1/tx.proto](#reinvest/v1/tx.proto)
+    - [MsgReinvestVote](#reinvest.v1.MsgReinvestVote)
+    - [MsgReinvestVoteResponse](#reinvest.v1.MsgReinvestVoteResponse)
+  
+    - [Msg](#reinvest.v1.Msg)
+  
+- [reinvest/v1/genesis.proto](#reinvest/v1/genesis.proto)
+    - [GenesisState](#reinvest.v1.GenesisState)
+    - [Params](#reinvest.v1.Params)
+  
+- [reinvest/v1/query.proto](#reinvest/v1/query.proto)
+    - [QueryCellarsRequest](#reinvest.v1.QueryCellarsRequest)
+    - [QueryCellarsResponse](#reinvest.v1.QueryCellarsResponse)
+    - [QueryParamsRequest](#reinvest.v1.QueryParamsRequest)
+    - [QueryParamsResponse](#reinvest.v1.QueryParamsResponse)
+    - [QueryReinvestVoteRequest](#reinvest.v1.QueryReinvestVoteRequest)
+    - [QueryReinvestVoteResponse](#reinvest.v1.QueryReinvestVoteResponse)
+    - [QueryReinvestVotesRequest](#reinvest.v1.QueryReinvestVotesRequest)
+    - [QueryReinvestVotesResponse](#reinvest.v1.QueryReinvestVotesResponse)
+    - [QueryVotePeriodRequest](#reinvest.v1.QueryVotePeriodRequest)
+    - [QueryVotePeriodResponse](#reinvest.v1.QueryVotePeriodResponse)
+  
+    - [Query](#reinvest.v1.Query)
+  
 - [Scalar Value Types](#scalar-value-types)
 
 
@@ -524,6 +555,366 @@ Query defines the gRPC querier service for the allocation module.
 | `QueryAllocationCommits` | [QueryAllocationCommitsRequest](#allocation.v1.QueryAllocationCommitsRequest) | [QueryAllocationCommitsResponse](#allocation.v1.QueryAllocationCommitsResponse) | QueryAllocationCommits queries all validator allocation commits | GET|/sommelier/allocation/v1/commits|
 | `QueryCommitPeriod` | [QueryCommitPeriodRequest](#allocation.v1.QueryCommitPeriodRequest) | [QueryCommitPeriodResponse](#allocation.v1.QueryCommitPeriodResponse) | QueryVotePeriod queries the heights for the current voting period (current, start and end) | GET|/sommelier/allocation/v1/commit_period|
 | `QueryCellars` | [QueryCellarsRequest](#allocation.v1.QueryCellarsRequest) | [QueryCellarsResponse](#allocation.v1.QueryCellarsResponse) | QueryCellars returns all cellars and current tick ranges | GET|/sommelier/allocation/v1/cellars|
+
+ <!-- end services -->
+
+
+
+<a name="reinvest/v1/reinvest.proto"></a>
+<p align="right"><a href="#top">Top</a></p>
+
+## reinvest/v1/reinvest.proto
+
+
+
+<a name="reinvest.v1.AddManagedCellarsProposal"></a>
+
+### AddManagedCellarsProposal
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `title` | [string](#string) |  |  |
+| `description` | [string](#string) |  |  |
+| `cellar_ids` | [string](#string) | repeated |  |
+
+
+
+
+
+
+<a name="reinvest.v1.Cellar"></a>
+
+### Cellar
+Cellar is a managed contract with a reinvest function
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `id` | [string](#string) |  |  |
+
+
+
+
+
+
+<a name="reinvest.v1.CellarUpdate"></a>
+
+### CellarUpdate
+CellarUpdate is a struct for the ContractCallTx
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `invalidation_nonce` | [uint64](#uint64) |  |  |
+| `cellar` | [Cellar](#reinvest.v1.Cellar) |  |  |
+
+
+
+
+
+
+<a name="reinvest.v1.ReinvestVote"></a>
+
+### ReinvestVote
+Reinvest is a vote by a validator to reinvest a particular
+cellars rewards
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `cellar` | [Cellar](#reinvest.v1.Cellar) | repeated |  |
+
+
+
+
+
+
+<a name="reinvest.v1.RemoveManagedCellarsProposal"></a>
+
+### RemoveManagedCellarsProposal
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `title` | [string](#string) |  |  |
+| `description` | [string](#string) |  |  |
+| `cellar_ids` | [string](#string) | repeated |  |
+
+
+
+
+
+ <!-- end messages -->
+
+ <!-- end enums -->
+
+ <!-- end HasExtensions -->
+
+ <!-- end services -->
+
+
+
+<a name="reinvest/v1/tx.proto"></a>
+<p align="right"><a href="#top">Top</a></p>
+
+## reinvest/v1/tx.proto
+
+
+
+<a name="reinvest.v1.MsgReinvestVote"></a>
+
+### MsgReinvestVote
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `reinvest_votes` | [ReinvestVote](#reinvest.v1.ReinvestVote) | repeated |  |
+| `signer` | [string](#string) |  |  |
+
+
+
+
+
+
+<a name="reinvest.v1.MsgReinvestVoteResponse"></a>
+
+### MsgReinvestVoteResponse
+MsgReinvestVoteResponse is the response type for the Msg/AllocationPrecommitResponse gRPC method.
+
+
+
+
+
+ <!-- end messages -->
+
+ <!-- end enums -->
+
+ <!-- end HasExtensions -->
+
+
+<a name="reinvest.v1.Msg"></a>
+
+### Msg
+MsgService defines the msgs that the oracle module handles.
+
+| Method Name | Request Type | Response Type | Description | HTTP Verb | Endpoint |
+| ----------- | ------------ | ------------- | ------------| ------- | -------- |
+| `ReinvestVote` | [MsgReinvestVote](#reinvest.v1.MsgReinvestVote) | [MsgReinvestVoteResponse](#reinvest.v1.MsgReinvestVoteResponse) | ReinvestVote defines a message that commits a validators reinvest vote | |
+
+ <!-- end services -->
+
+
+
+<a name="reinvest/v1/genesis.proto"></a>
+<p align="right"><a href="#top">Top</a></p>
+
+## reinvest/v1/genesis.proto
+
+
+
+<a name="reinvest.v1.GenesisState"></a>
+
+### GenesisState
+GenesisState - all reinvest state that must be provided at genesis
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `params` | [Params](#reinvest.v1.Params) |  |  |
+| `cellars` | [Cellar](#reinvest.v1.Cellar) | repeated |  |
+
+
+
+
+
+
+<a name="reinvest.v1.Params"></a>
+
+### Params
+Params reinvest parameters
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `vote_period` | [int64](#int64) |  | VotePeriod defines the number of blocks to wait for votes before attempting to tally |
+| `vote_threshold` | [string](#string) |  | VoteThreshold defines the percentage of bonded stake required to vote each period |
+
+
+
+
+
+ <!-- end messages -->
+
+ <!-- end enums -->
+
+ <!-- end HasExtensions -->
+
+ <!-- end services -->
+
+
+
+<a name="reinvest/v1/query.proto"></a>
+<p align="right"><a href="#top">Top</a></p>
+
+## reinvest/v1/query.proto
+
+
+
+<a name="reinvest.v1.QueryCellarsRequest"></a>
+
+### QueryCellarsRequest
+QueryCellarsRequest is the request type for Query/QueryCellars gRPC method.
+
+
+
+
+
+
+<a name="reinvest.v1.QueryCellarsResponse"></a>
+
+### QueryCellarsResponse
+QueryCellarsResponse is the response type for Query/QueryCellars gRPC method.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `cellars` | [Cellar](#reinvest.v1.Cellar) | repeated |  |
+
+
+
+
+
+
+<a name="reinvest.v1.QueryParamsRequest"></a>
+
+### QueryParamsRequest
+QueryParamsRequest is the request type for the Query/Params gRPC method.
+
+
+
+
+
+
+<a name="reinvest.v1.QueryParamsResponse"></a>
+
+### QueryParamsResponse
+QueryParamsRequest is the response type for the Query/Params gRPC method.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `params` | [Params](#reinvest.v1.Params) |  | reinvest parameters |
+
+
+
+
+
+
+<a name="reinvest.v1.QueryReinvestVoteRequest"></a>
+
+### QueryReinvestVoteRequest
+QueryReinvestVoteRequest is the request type for the Query/QueryreinvestDataVote gRPC method.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `validator` | [string](#string) |  | validator operator address |
+| `cellar` | [string](#string) |  | cellar contract address |
+
+
+
+
+
+
+<a name="reinvest.v1.QueryReinvestVoteResponse"></a>
+
+### QueryReinvestVoteResponse
+QueryReinvestVoteResponse is the response type for the Query/QueryreinvestDataVote gRPC method.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `reinvest_vote` | [ReinvestVote](#reinvest.v1.ReinvestVote) |  | vote containing the reinvest feed submitted within the latest voting period |
+
+
+
+
+
+
+<a name="reinvest.v1.QueryReinvestVotesRequest"></a>
+
+### QueryReinvestVotesRequest
+QueryReinvestVotesRequest is the request type for the Query/reinvestPrecommits gRPC method.
+
+
+
+
+
+
+<a name="reinvest.v1.QueryReinvestVotesResponse"></a>
+
+### QueryReinvestVotesResponse
+QueryreinvestPrecommitResponse is the response type for the Query/reinvestPrecommits gRPC method.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `reinvest_votes` | [ReinvestVote](#reinvest.v1.ReinvestVote) | repeated | prevote submitted within the latest voting period |
+
+
+
+
+
+
+<a name="reinvest.v1.QueryVotePeriodRequest"></a>
+
+### QueryVotePeriodRequest
+QueryVotePeriodRequest is the request type for the Query/QueryCommitPeriod gRPC method.
+
+
+
+
+
+
+<a name="reinvest.v1.QueryVotePeriodResponse"></a>
+
+### QueryVotePeriodResponse
+QueryVotePeriodResponse is the response type for the Query/QueryVotePeriod gRPC method.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `current_height` | [int64](#int64) |  | block height at which the query was processed |
+| `vote_period_start` | [int64](#int64) |  | latest vote period start block height |
+| `vote_period_end` | [int64](#int64) |  | block height at which the current voting period ends |
+
+
+
+
+
+ <!-- end messages -->
+
+ <!-- end enums -->
+
+ <!-- end HasExtensions -->
+
+
+<a name="reinvest.v1.Query"></a>
+
+### Query
+Query defines the gRPC querier service for the reinvest module.
+
+| Method Name | Request Type | Response Type | Description | HTTP Verb | Endpoint |
+| ----------- | ------------ | ------------- | ------------| ------- | -------- |
+| `QueryParams` | [QueryParamsRequest](#reinvest.v1.QueryParamsRequest) | [QueryParamsResponse](#reinvest.v1.QueryParamsResponse) | QueryParams queries the reinvest module parameters. | GET|/sommelier/reinvest/v1/params|
+| `QueryRevinvestVotes` | [QueryReinvestVotesRequest](#reinvest.v1.QueryReinvestVotesRequest) | [QueryReinvestVotesResponse](#reinvest.v1.QueryReinvestVotesResponse) | QueryRevinvestVotes queries all reinvest precommits in the voting period | GET|/sommelier/reinvest/v1/reinvest_votes|
+| `QueryReinvestVote` | [QueryReinvestVoteRequest](#reinvest.v1.QueryReinvestVoteRequest) | [QueryReinvestVoteResponse](#reinvest.v1.QueryReinvestVoteResponse) | QueryReinvestVote queries the validator vote in the current voting period | GET|/sommelier/reinvest/v1/reinvest_votes/{validator}/{cellar}|
+| `QueryVotePeriod` | [QueryVotePeriodRequest](#reinvest.v1.QueryVotePeriodRequest) | [QueryVotePeriodResponse](#reinvest.v1.QueryVotePeriodResponse) | QueryVotePeriod queries the voting period details | GET|/sommelier/reinvest/v1/vote_period|
+| `QueryCellars` | [QueryCellarsRequest](#reinvest.v1.QueryCellarsRequest) | [QueryCellarsResponse](#reinvest.v1.QueryCellarsResponse) | QueryCellars returns all cellars and current tick ranges | GET|/sommelier/reinvest/v1/cellars|
 
  <!-- end services -->
 

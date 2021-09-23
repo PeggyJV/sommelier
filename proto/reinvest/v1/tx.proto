@@ -1,0 +1,22 @@
+syntax = "proto3";
+package reinvest.v1;
+
+import "cosmos_proto/cosmos.proto";
+import "google/protobuf/any.proto";
+import "reinvest/v1/reinvest.proto";
+
+option go_package = "github.com/peggyjv/sommelier/x/reinvest/types";
+
+// MsgService defines the msgs that the oracle module handles.
+service Msg {
+    // ReinvestVote defines a message that commits a validators reinvest vote
+    rpc ReinvestVote   (MsgReinvestVote)   returns (MsgReinvestVoteResponse);
+}
+
+message MsgReinvestVote {
+    ReinvestVote reinvest_votes = 1;
+    string       signer  = 2;
+}
+
+// MsgReinvestVoteResponse is the response type for the Msg/AllocationPrecommitResponse gRPC method.
+message MsgReinvestVoteResponse {}
