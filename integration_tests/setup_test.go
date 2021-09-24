@@ -498,7 +498,7 @@ func (s *IntegrationTestSuite) runValidators() {
 			Repository: "sommelier",
 			Tag:        "prebuilt",
 			Mounts: []string{
-				fmt.Sprintf("%s/:/somm/.sommelier", val.configDir()),
+				fmt.Sprintf("%s/:/root/.sommelier", val.configDir()),
 			},
 			Entrypoint: []string{"sommelier", "start", "--trace=true"},
 		}
