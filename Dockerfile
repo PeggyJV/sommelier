@@ -30,7 +30,7 @@ RUN apk add --update ca-certificates bash
 #RUN mkdir  /somm/.sommelier/data
 #RUN chmod 777 /somm/.sommelier/data
 
-RUN #addgroup sommuser && \
+# RUN addgroup sommuser && \
 #    adduser -S -G sommuser sommuser -h "$SOMM"
     
 #USER sommuser
