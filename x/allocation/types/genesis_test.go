@@ -3,15 +3,11 @@ package types
 import (
 	"testing"
 
+	"github.com/ethereum/go-ethereum/common"
 	"github.com/stretchr/testify/require"
-
-	"github.com/cosmos/cosmos-sdk/crypto/keys/secp256k1"
-	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
 func TestGenesisValidate(t *testing.T) {
-	delAddr := sdk.AccAddress(secp256k1.GenPrivKey().PubKey().Address())
-	valAddr := sdk.ValAddress(secp256k1.GenPrivKey().PubKey().Address())
 
 	testCases := []struct {
 		name     string
@@ -27,10 +23,14 @@ func TestGenesisValidate(t *testing.T) {
 			name: "invalid feeder delegator",
 			genState: GenesisState{
 				Params: DefaultParams(),
-				FeederDelegations: []MsgDelegateAllocations{
+				Cellars: []*Cellar{
 					{
-						Delegate:  "",
-						Validator: valAddr.String(),
+						common.HexToAddress("0x6ea5992aB4A78D5720bD12A089D13c073d04B55d").String(),
+						[]*TickRange{
+							{-189720, -192660, 160},
+							{-192660, -198540, 680},
+							{-198540, -201540, 160},
+						},
 					},
 				},
 			},
@@ -40,10 +40,14 @@ func TestGenesisValidate(t *testing.T) {
 			name: "invalid feeder validator",
 			genState: GenesisState{
 				Params: DefaultParams(),
-				FeederDelegations: []MsgDelegateAllocations{
+				Cellars: []*Cellar{
 					{
-						Delegate:  delAddr.String(),
-						Validator: "",
+						common.HexToAddress("0x6ea5992aB4A78D5720bD12A089D13c073d04B55d").String(),
+						[]*TickRange{
+							{-189720, -192660, 160},
+							{-192660, -198540, 680},
+							{-198540, -201540, 160},
+						},
 					},
 				},
 			},
@@ -53,10 +57,14 @@ func TestGenesisValidate(t *testing.T) {
 			name: "equal feeder addresses",
 			genState: GenesisState{
 				Params: DefaultParams(),
-				FeederDelegations: []MsgDelegateAllocations{
+				Cellars: []*Cellar{
 					{
-						Delegate:  delAddr.String(),
-						Validator: sdk.ValAddress(delAddr).String(),
+						common.HexToAddress("0x6ea5992aB4A78D5720bD12A089D13c073d04B55d").String(),
+						[]*TickRange{
+							{-189720, -192660, 160},
+							{-192660, -198540, 680},
+							{-198540, -201540, 160},
+						},
 					},
 				},
 			},
@@ -66,14 +74,14 @@ func TestGenesisValidate(t *testing.T) {
 			name: "dup feeder delegation",
 			genState: GenesisState{
 				Params: DefaultParams(),
-				FeederDelegations: []MsgDelegateAllocations{
+				Cellars: []*Cellar{
 					{
-						Delegate:  delAddr.String(),
-						Validator: valAddr.String(),
-					},
-					{
-						Delegate:  delAddr.String(),
-						Validator: valAddr.String(),
+						common.HexToAddress("0x6ea5992aB4A78D5720bD12A089D13c073d04B55d").String(),
+						[]*TickRange{
+							{-189720, -192660, 160},
+							{-192660, -198540, 680},
+							{-198540, -201540, 160},
+						},
 					},
 				},
 			},

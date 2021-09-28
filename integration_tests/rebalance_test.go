@@ -2,8 +2,9 @@ package integration_tests
 
 import (
 	"context"
-	gravitytypes "github.com/peggyjv/gravity-bridge/module/x/gravity/types"
 	"time"
+
+	gravitytypes "github.com/peggyjv/gravity-bridge/module/x/gravity/types"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/peggyjv/sommelier/x/allocation/types"
@@ -99,7 +100,7 @@ func (s *IntegrationTestSuite) TestRebalance() {
 					return false
 				}
 
-				s.T().Logf("precommit for %d node with hash %s sent successfully", i, precommitMsg.Precommit[0].Hash)
+				s.T().Logf("precommit for %d node with hash %x sent successfully", i, precommitMsg.Precommit[0].Hash)
 				return true
 			}, 10*time.Second, 500*time.Millisecond, "unable to deploy precommit for node %d", i)
 		}
@@ -171,7 +172,6 @@ func (s *IntegrationTestSuite) TestRebalance() {
 			}, 10*time.Second, 500*time.Millisecond, "unable to deploy commit for node %d", i)
 		}
 
-
 		s.T().Logf("checking commits for validators")
 		for _, val := range s.chain.validators {
 			s.Require().Eventuallyf(func() bool {
@@ -198,7 +198,6 @@ func (s *IntegrationTestSuite) TestRebalance() {
 				val.keyInfo.GetAddress().String())
 		}
 
-
 		s.T().Logf("waiting for end of vote period, endblocker to run")
 		val = s.chain.validators[0]
 		s.Require().Eventuallyf(func() bool {
@@ -213,7 +212,7 @@ func (s *IntegrationTestSuite) TestRebalance() {
 				return false
 			}
 			if res.VotePeriodStart != res.CurrentHeight {
-				if res.CurrentHeight % 10 == 0 {
+				if res.CurrentHeight%10 == 0 {
 					s.T().Logf("current height: %d, period end: %d", res.CurrentHeight, res.VotePeriodEnd)
 				}
 				return false
