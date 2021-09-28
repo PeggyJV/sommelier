@@ -155,7 +155,7 @@ func (s *IntegrationTestSuite) initNodes(nodeCount int) {
 
 	// copy the genesis file to the remaining validators
 	for _, val := range s.chain.validators[1:] {
-		_, err := copyFile(
+		err := copyFile(
 			filepath.Join(val0ConfigDir, "config", "genesis.json"),
 			filepath.Join(val.configDir(), "config", "genesis.json"),
 		)
@@ -184,7 +184,7 @@ func (s *IntegrationTestSuite) initNodesWithMnemonics(mnemonics ...string) {
 
 	// copy the genesis file to the remaining validators
 	for _, val := range s.chain.validators[1:] {
-		_, err := copyFile(
+		err := copyFile(
 			filepath.Join(val0ConfigDir, "config", "genesis.json"),
 			filepath.Join(val.configDir(), "config", "genesis.json"),
 		)
@@ -348,11 +348,11 @@ func (s *IntegrationTestSuite) initGenesis() {
 
 	allocationGenState.Cellars = []*types.Cellar{
 		{
-			hardhatCellar.String(),
-			[]*types.TickRange{
-				{-189720, -192660, 160},
-				{-192660, -198540, 680},
-				{-198540, -201540, 160},
+			Id: hardhatCellar.String(),
+			TickRanges: []*types.TickRange{
+				{Upper: -189720, Lower: -192660, Weight: 160},
+				{Upper: -192660, Lower: -198540, Weight: 680},
+				{Upper: -198540, Lower: -201540, Weight: 160},
 			},
 		},
 	}
@@ -609,7 +609,7 @@ prefix = "somm"
 		//
 		// NOTE: If the Docker build changes, the script might have to be modified
 		// as it relies on busybox.
-		_, err := copyFile(
+		err := copyFile(
 			filepath.Join("integration_tests", "gorc_bootstrap.sh"),
 			filepath.Join(gorcCfgPath, "gorc_bootstrap.sh"),
 		)
@@ -649,6 +649,7 @@ prefix = "somm"
 	// when each orchestrator resource has synced all batches
 	match := "orchestrator::main_loop: No unsigned batches! Everything good!"
 	for _, resource := range s.orchResources {
+		resource := resource
 		s.T().Logf("waiting for orchestrator to be healthy: %s", resource.Container.ID)
 
 		s.Require().Eventuallyf(
@@ -694,7 +695,7 @@ func (s *IntegrationTestSuite) logsByContainerID(id string) string {
 	return containerLogsBuf.String()
 }
 
-func (s *IntegrationTestSuite) getTickRanges() ([]types.TickRange, error) {
+func (s *IntegrationTestSuite) getTickRanges() []types.TickRange {
 	ethClient, err := ethclient.Dial(fmt.Sprintf("http://%s", s.ethResource.GetHostPort("8545/tcp")))
 	s.Require().NoError(err)
 
@@ -714,7 +715,7 @@ func (s *IntegrationTestSuite) getTickRanges() ([]types.TickRange, error) {
 		tickRanges[i] = *tr
 	}
 
-	return tickRanges, nil
+	return tickRanges
 }
 
 func (s *IntegrationTestSuite) TestBasicChain() {

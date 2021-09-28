@@ -381,6 +381,7 @@ func (k Keeper) DeleteCellar(ctx sdk.Context, cellarAddr common.Address) {
 
 func (k Keeper) GetWinningVotes(ctx sdk.Context, threshold sdk.Dec) (winningVotes []types.Cellar) {
 	for _, cellar := range k.GetCellars(ctx) {
+		cellar := cellar
 		totalPower := int64(0)
 
 		var votes []types.Cellar

@@ -13,18 +13,17 @@ import (
 func (s *IntegrationTestSuite) TestRebalance() {
 	s.Run("Bring up chain, and submit a re-balance", func() {
 
-		trs, err := s.getTickRanges()
-		s.Require().NoError(err)
+		trs := s.getTickRanges()
 		s.Require().Len(trs, 3)
 
 		commit := types.Allocation{
 			Cellar: &types.Cellar{
 				Id: hardhatCellar.String(),
 				TickRanges: []*types.TickRange{
-					{200, 100, 10},
-					{300, 200, 20},
-					{400, 300, 30},
-					{500, 400, 40},
+					{Upper: 200, Lower: 100, Weight: 10},
+					{Upper: 300, Lower: 200, Weight: 20},
+					{Upper: 400, Lower: 300, Weight: 30},
+					{Upper: 500, Lower: 400, Weight: 40},
 				},
 			},
 			Salt: "testsalt",
@@ -79,6 +78,8 @@ func (s *IntegrationTestSuite) TestRebalance() {
 
 		s.T().Logf("sending pre-commits")
 		for i, orch := range s.chain.orchestrators {
+			i := i
+			orch := orch
 			s.Require().Eventuallyf(func() bool {
 				clientCtx, err := s.chain.clientContext("tcp://localhost:26657", orch.keyring, "orch", orch.keyInfo.GetAddress())
 				s.Require().NoError(err)
@@ -107,6 +108,8 @@ func (s *IntegrationTestSuite) TestRebalance() {
 
 		s.T().Logf("checking pre-commits for validators")
 		for i, val := range s.chain.validators {
+			i := i
+			val := val
 			s.Require().Eventuallyf(func() bool {
 				kb, err := val.keyring()
 				s.Require().NoError(err)
@@ -150,6 +153,8 @@ func (s *IntegrationTestSuite) TestRebalance() {
 
 		s.T().Logf("sending commits")
 		for i, orch := range s.chain.orchestrators {
+			i := i
+			orch := orch
 			s.Require().Eventuallyf(func() bool {
 				clientCtx, err := s.chain.clientContext("tcp://localhost:26657", orch.keyring, "orch", orch.keyInfo.GetAddress())
 				s.Require().NoError(err)
@@ -174,6 +179,7 @@ func (s *IntegrationTestSuite) TestRebalance() {
 
 		s.T().Logf("checking commits for validators")
 		for _, val := range s.chain.validators {
+			val := val
 			s.Require().Eventuallyf(func() bool {
 				kb, err := val.keyring()
 				s.Require().NoError(err)
@@ -181,7 +187,7 @@ func (s *IntegrationTestSuite) TestRebalance() {
 				s.Require().NoError(err)
 
 				queryClient := types.NewQueryClient(clientCtx)
-				res, err := queryClient.QueryAllocationCommit(context.Background(), &types.QueryAllocationCommitRequest{sdk.ValAddress(val.keyInfo.GetAddress()).String(), hardhatCellar.String()})
+				res, err := queryClient.QueryAllocationCommit(context.Background(), &types.QueryAllocationCommitRequest{Validator: sdk.ValAddress(val.keyInfo.GetAddress()).String(), Cellar: hardhatCellar.String()})
 				if err != nil {
 					return false
 				}
@@ -255,7 +261,7 @@ func (s *IntegrationTestSuite) TestRebalance() {
 			}
 			s.T().Logf("contract call tx confirms: %s", confirmsRes.Signatures)
 
-			trs, err = s.getTickRanges()
+			trs = s.getTickRanges()
 			if err != nil {
 				s.T().Logf("error: %s", err)
 				return false

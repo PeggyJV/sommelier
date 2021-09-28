@@ -59,6 +59,8 @@ issues:
   max-issues-per-linter: 10000
   max-same-issues: 10000
 
+  fix: true
+
 linters-settings:
   dogsled:
     max-blank-identifiers: 3

@@ -280,7 +280,7 @@ func (c *chain) sendMsgs(clientCtx client.Context, msgs ...sdk.Msg) (*sdk.TxResp
 		return nil, err
 	}
 
-	txb.SetFeeAmount(sdk.Coins{{"testsomm", sdk.NewInt(246913560)}})
+	txb.SetFeeAmount(sdk.Coins{{Denom: "testsomm", Amount: sdk.NewInt(246913560)}})
 
 	err = tx.Sign(txf, fromName, txb, false)
 	if err != nil {

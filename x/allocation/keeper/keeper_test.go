@@ -33,24 +33,22 @@ var (
 
 func TestGetWinningVotes(t *testing.T) {
 	testCases := []VoteCalculatorTestCase{
-		{"Single voter",
-			"Check that a single voter returns it's vote",
-			cellarAddrA,
-			[]ValCellar{
-				{vallAddrA,
-					types.Cellar{cellarAddrA.String(), []*types.TickRange{
-						{100, -100, 30},
+		{title: "Single voter",
+			description: "Check that a single voter returns it's vote",
+			CellarID:    cellarAddrA,
+			ValCellars: []ValCellar{
+				{Val: vallAddrA,
+					Cellar: types.Cellar{Id: cellarAddrA.String(), TickRanges: []*types.TickRange{
+						{Upper: 100, Lower: -100, Weight: 30},
 					},
 					},
 				},
 			},
-			[]types.Cellar{
+			WinningVotes: []types.Cellar{
 				{
-					cellarAddrA.String(),
-					[]*types.TickRange{
-						{100,
-							-100,
-							30},
+					Id: cellarAddrA.String(),
+					TickRanges: []*types.TickRange{
+						{Upper: 100, Lower: -100, Weight: 30},
 					},
 				},
 			},
@@ -89,10 +87,10 @@ func TestHashingPreCommitsAndCommits(t *testing.T) {
 		Cellar: &types.Cellar{
 			Id: testCellar.String(),
 			TickRanges: []*types.TickRange{
-				{200, 100, 10},
-				{300, 200, 20},
-				{400, 300, 30},
-				{500, 400, 40},
+				{Upper: 200, Lower: 100, Weight: 10},
+				{Upper: 300, Lower: 200, Weight: 20},
+				{Upper: 400, Lower: 300, Weight: 30},
+				{Upper: 500, Lower: 400, Weight: 40},
 			},
 		},
 		Salt: "testsalt",

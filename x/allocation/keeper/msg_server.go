@@ -140,6 +140,9 @@ func (k Keeper) AllocationCommit(c context.Context, msg *types.MsgAllocationComm
 
 		// compare to precommit hash
 		cellarJSON, err := json.Marshal(commit.Cellar)
+		if err != nil {
+			return nil, err
+		}
 		if !bytes.Equal(commitHash, precommit.Hash) {
 			k.Logger(ctx).Error(
 				"error with hash",
