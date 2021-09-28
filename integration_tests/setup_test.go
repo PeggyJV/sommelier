@@ -5,7 +5,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	gravitytypes "github.com/peggyjv/gravity-bridge/module/x/gravity/types"
 	"math/big"
 	"os"
 	"path"
@@ -14,6 +13,8 @@ import (
 	"strings"
 	"testing"
 	"time"
+
+	gravitytypes "github.com/peggyjv/gravity-bridge/module/x/gravity/types"
 
 	"github.com/ethereum/go-ethereum"
 
@@ -66,12 +67,12 @@ var (
 type IntegrationTestSuite struct {
 	suite.Suite
 
-	chain               *chain
-	dockerPool          *dockertest.Pool
-	dockerNetwork       *dockertest.Network
-	ethResource         *dockertest.Resource
-	valResources        []*dockertest.Resource
-	orchResources       []*dockertest.Resource
+	chain         *chain
+	dockerPool    *dockertest.Pool
+	dockerNetwork *dockertest.Network
+	ethResource   *dockertest.Resource
+	valResources  []*dockertest.Resource
+	orchResources []*dockertest.Resource
 }
 
 func TestIntegrationTestSuite(t *testing.T) {

@@ -139,19 +139,19 @@ func (k Keeper) AllocationCommit(c context.Context, msg *types.MsgAllocationComm
 		}
 
 		// compare to precommit hash
-		cellarJson, err := json.Marshal(commit.Cellar)
+		cellarJSON, err := json.Marshal(commit.Cellar)
 		if !bytes.Equal(commitHash, precommit.Hash) {
 			k.Logger(ctx).Error(
 				"error with hash",
 				"msg", msg.String(),
-				"commit", cellarJson,
+				"commit", cellarJSON,
 				"signer", val.String(),
 				"salt", commit.Salt,
 				"precommit hash", string(precommit.Hash),
 			)
 			return nil, sdkerrors.Wrapf(
 				types.ErrHashMismatch,
-				"precommit %x ≠ commit %x. cellar json: %s, signer val %s", precommit.Hash, commitHash, string(cellarJson), val,
+				"precommit %x ≠ commit %x. cellar json: %s, signer val %s", precommit.Hash, commitHash, string(cellarJSON), val,
 			)
 		}
 
