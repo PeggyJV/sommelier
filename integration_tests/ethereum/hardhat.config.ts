@@ -1,4 +1,5 @@
 import "@nomiclabs/hardhat-waffle";
+// import "@nomiclabs/hardhat-etherscan";
 import { task } from 'hardhat/config';
 import CellarArtifact from './artifacts/Cellar.json';
 
@@ -17,6 +18,10 @@ task('integration_test_setup', 'Sets up contracts for the integration test', asy
   });
 
   const signer = await hre.ethers.getSigner(ADDRESSES.CELLAR_OWNER);
+
+  // Attach Gravity contract
+  const Gravity = hre.ethers.getContractAt("Gravity", ADDRESSES.GRAVITY);
+  const gravity = await Gravity
 
   // Transfer ownership to gravity
   const Cellar = new hre.ethers.ContractFactory(CellarArtifact.abi, CellarArtifact.bytecode, signer);

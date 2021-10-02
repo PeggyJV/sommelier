@@ -22,5 +22,8 @@
     "ts-node": "^10.2.1",
     "typechain": "^5.1.2",
     "typechain-target-ethers-v5": "^5.0.1"
+  },
+  "dependencies": {
+    "@openzeppelin/contracts": "^4.3.2"
   }
 }
