@@ -1,7 +1,7 @@
 import '@nomiclabs/hardhat-waffle';
 // import "@nomiclabs/hardhat-etherscan";
 import { task } from 'hardhat/config';
-import CellarArtifact from './artifacts/Cellar.json';
+// import CellarArtifact from './artifacts/Cellar.json';
 
 task(
     'integration_test_setup',
@@ -14,27 +14,32 @@ task(
             WHALE: '0xd8da6bf26964af9d7eed9e03e53415d37aa96045',
         };
 
+        console.log("taking over cellar owner")
         // Take over the cellar owner so we can transfer ownership
         await hre.network.provider.request({
             method: 'hardhat_impersonateAccount',
             params: [ADDRESSES.CELLAR_OWNER],
         });
 
+        console.log("getting signer")
         const signer = await hre.ethers.getSigner(ADDRESSES.CELLAR_OWNER);
 
+        console.log("retrieving gravity contract")
         // Attach Gravity contract
         const Gravity = hre.ethers.getContractAt('Gravity', ADDRESSES.GRAVITY);
         const gravity = await Gravity;
 
+        console.log("retrieving cellar contract")
         // Transfer ownership to gravity
-        const Cellar = new hre.ethers.ContractFactory(
-            CellarArtifact.abi,
-            CellarArtifact.bytecode,
+        const Cellar = hre.ethers.getContractAt('CellarPoolShare',
+            ADDRESSES.CELLAR,
             signer,
         );
-        const cellar = await Cellar.attach(ADDRESSES.CELLAR);
+        const cellar = await Cellar;
 
-        const { hash } = await cellar.transferOwnership(ADDRESSES.GRAVITY);
+        console.log("transferring ownership")
+        let transfer = await cellar.transferOwnership(ADDRESSES.GRAVITY);
+        const hash = transfer.hash;
 
         // Send ETH to needed accounts
 
@@ -88,6 +93,14 @@ module.exports = {
         compilers: [
             {
                 version: '0.6.6',
+                settings: {
+                    optimizer: {
+                        enabled: true,
+                    },
+                },
+            },
+            {
+                version: '0.7.6',
                 settings: {
                     optimizer: {
                         enabled: true,
