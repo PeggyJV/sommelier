@@ -1,7 +1,6 @@
 import '@nomiclabs/hardhat-waffle';
-// import "@nomiclabs/hardhat-etherscan";
+import "@nomiclabs/hardhat-etherscan";
 import { task } from 'hardhat/config';
-// import CellarArtifact from './artifacts/Cellar.json';
 
 task(
     'integration_test_setup',
@@ -25,6 +24,10 @@ task(
         );
         const gravity = await Gravity;
         console.log(`attached to gravity: ${gravity}`)
+
+        const response = await hre.run("verify:verify", {
+            address: ADDRESSES.GRAVITY,
+        })
 
         console.log('taking over cellar owner');
         // Take over the cellar owner so we can transfer ownership
@@ -96,6 +99,9 @@ module.exports = {
                 blockNumber: 13357100,
             },
         },
+        mainnet: {
+            url: 'https://mainnet.infura.io/v3/d6f22be0f7fd447186086d2495779003',
+        },
     },
     solidity: {
         compilers: [
@@ -136,4 +142,7 @@ module.exports = {
     gasReporter: {
         enabled: true,
     },
+    etherscan: {
+        apiKey: "AT8Y7TGWDWQUBTTM78M1PFP5TQGYGDCJEU"
+    }
 };
