@@ -1,5 +1,4 @@
 import '@nomiclabs/hardhat-waffle';
-import "@nomiclabs/hardhat-etherscan";
 import { task } from 'hardhat/config';
 
 task(
@@ -24,10 +23,6 @@ task(
         );
         const gravity = await Gravity;
         console.log(`attached to gravity: ${gravity}`)
-
-        const response = await hre.run("verify:verify", {
-            address: ADDRESSES.GRAVITY,
-        })
 
         console.log('taking over cellar owner');
         // Take over the cellar owner so we can transfer ownership
@@ -142,7 +137,4 @@ module.exports = {
     gasReporter: {
         enabled: true,
     },
-    etherscan: {
-        apiKey: "AT8Y7TGWDWQUBTTM78M1PFP5TQGYGDCJEU"
-    }
 };
