@@ -14,31 +14,34 @@ task(
             WHALE: '0xd8da6bf26964af9d7eed9e03e53415d37aa96045',
         };
 
-        console.log("taking over cellar owner")
+        console.log('taking over cellar owner');
         // Take over the cellar owner so we can transfer ownership
         await hre.network.provider.request({
             method: 'hardhat_impersonateAccount',
             params: [ADDRESSES.CELLAR_OWNER],
         });
 
-        console.log("getting signer")
+        console.log('getting signer');
         const signer = await hre.ethers.getSigner(ADDRESSES.CELLAR_OWNER);
 
-        console.log("retrieving gravity contract")
+        console.log('retrieving gravity contract');
         // Attach Gravity contract
         const Gravity = hre.ethers.getContractAt('Gravity', ADDRESSES.GRAVITY);
         const gravity = await Gravity;
 
-        console.log("retrieving cellar contract")
+        console.log('retrieving cellar contract');
         // Transfer ownership to gravity
-        const Cellar = hre.ethers.getContractAt('CellarPoolShare',
+        const Cellar = hre.ethers.getContractAt(
+            'CellarPoolShare',
             ADDRESSES.CELLAR,
             signer,
         );
         const cellar = await Cellar;
 
-        console.log("transferring ownership")
-        let transfer = await cellar.transferOwnership(ADDRESSES.GRAVITY);
+        let transfer = await cellar.transferOwnership(ADDRESSES.GRAVITY, {
+            gasPrice: hre.ethers.BigNumber.from('99916001694'),
+        });
+        console.log(`transfer ${transfer}`);
         const hash = transfer.hash;
 
         // Send ETH to needed accounts
@@ -85,7 +88,7 @@ module.exports = {
         hardhat: {
             forking: {
                 url: 'https://mainnet.infura.io/v3/d6f22be0f7fd447186086d2495779003',
-                blockNumber: 13103326,
+                blockNumber: 13357100,
             },
         },
     },
