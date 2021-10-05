@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "npx hardhat integration_test_setup"
+    "start": "npx hardhat integration_test_setup --verbose"
   },
   "keywords": [],
   "author": "",
@@ -24,6 +24,6 @@
     "typechain-target-ethers-v5": "^5.0.1"
   },
   "dependencies": {
-    "@openzeppelin/contracts": "^4.3.2"
+    "@openzeppelin/contracts": "3.1.0"
   }
 }

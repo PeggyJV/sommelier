@@ -10,9 +10,21 @@ task(
         const ADDRESSES = {
             CELLAR_OWNER: '0xB6C951cf962977f123bF37de42945f7ca1cd2A52',
             CELLAR: '0x6ea5992aB4A78D5720bD12A089D13c073d04B55d',
+            GRAVITY_OWNER: '0xc6f89c23e136134cD70B8402F1165F3194953A8d',
             GRAVITY: '0xFbB0BCfed0c82043A7d5387C35Ad8450b44A4cde',
             WHALE: '0xd8da6bf26964af9d7eed9e03e53415d37aa96045',
         };
+
+        console.log('retrieving gravity contract');
+        const gravitySigner = await hre.ethers.getSigner(ADDRESSES.GRAVITY_OWNER)
+        // Attach Gravity contract
+        const Gravity = hre.ethers.getContractAt(
+            'Gravity',
+            ADDRESSES.GRAVITY,
+            gravitySigner
+        );
+        const gravity = await Gravity;
+        console.log(`attached to gravity: ${gravity}`)
 
         console.log('taking over cellar owner');
         // Take over the cellar owner so we can transfer ownership
@@ -21,28 +33,21 @@ task(
             params: [ADDRESSES.CELLAR_OWNER],
         });
 
-        console.log('getting signer');
-        const signer = await hre.ethers.getSigner(ADDRESSES.CELLAR_OWNER);
-
-        console.log('retrieving gravity contract');
-        // Attach Gravity contract
-        const Gravity = hre.ethers.getContractAt('Gravity', ADDRESSES.GRAVITY);
-        const gravity = await Gravity;
+        console.log('getting cellar signer');
+        const cellarSigner = await hre.ethers.getSigner(ADDRESSES.CELLAR_OWNER);
 
         console.log('retrieving cellar contract');
         // Transfer ownership to gravity
         const Cellar = hre.ethers.getContractAt(
             'CellarPoolShare',
             ADDRESSES.CELLAR,
-            signer,
+            cellarSigner,
         );
         const cellar = await Cellar;
 
-        let transfer = await cellar.transferOwnership(ADDRESSES.GRAVITY, {
+        let { hash } = await cellar.transferOwnership(ADDRESSES.GRAVITY, {
             gasPrice: hre.ethers.BigNumber.from('99916001694'),
         });
-        console.log(`transfer ${transfer}`);
-        const hash = transfer.hash;
 
         // Send ETH to needed accounts
 
