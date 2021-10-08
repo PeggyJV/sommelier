@@ -2,6 +2,7 @@ package types
 
 import (
 	"encoding/hex"
+	"github.com/ethereum/go-ethereum/crypto"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
@@ -14,7 +15,7 @@ func (c *Cellar) Address() common.Address {
 }
 
 func (c *Cellar) InvalidationScope() tmbytes.HexBytes {
-	return c.ABIEncodedRebalanceHash()
+	return crypto.Keccak256Hash(c.ABIEncodedRebalanceBytes()).Bytes()
 }
 
 func (c *Cellar) Equals(other Cellar) bool {

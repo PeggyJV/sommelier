@@ -7,6 +7,8 @@ import "@openzeppelin/contracts/utils/Address.sol";
 import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 import "./CosmosToken.sol";
 
+import "hardhat/console.sol";
+
 pragma experimental ABIEncoderV2;
 
 // This is being used purely to avoid stack too deep errors
@@ -502,6 +504,7 @@ contract Gravity is ReentrancyGuard {
         }
 
         // Make call to logic contract
+        console.log("function call with %s", _args);
         bytes memory returnData = Address.functionCall(_args.logicContractAddress, _args.payload);
 
         // Send fees to msg.sender

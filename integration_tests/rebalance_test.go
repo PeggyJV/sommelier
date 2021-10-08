@@ -249,7 +249,7 @@ func (s *IntegrationTestSuite) TestRebalance() {
 			}
 
 			confirmsRes, err := gravityQueryClient.ContractCallTxConfirmations(context.Background(), &gravitytypes.ContractCallTxConfirmationsRequest{
-				InvalidationScope: commit.Cellar.ABIEncodedRebalanceHash(),
+				InvalidationScope: commit.Cellar.ABIEncodedRebalanceBytes(),
 				InvalidationNonce: 1,
 			})
 
