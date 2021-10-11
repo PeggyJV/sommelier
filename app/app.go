@@ -90,6 +90,10 @@ import (
 	"github.com/peggyjv/sommelier/x/allocation"
 	allocationkeeper "github.com/peggyjv/sommelier/x/allocation/keeper"
 	allocationtypes "github.com/peggyjv/sommelier/x/allocation/types"
+	"github.com/peggyjv/sommelier/x/wasm"
+	wasmconfig "github.com/peggyjv/sommelier/x/wasm/config"
+	wasmkeeper "github.com/peggyjv/sommelier/x/wasm/keeper"
+	wasmtypes "github.com/peggyjv/sommelier/x/wasm/types"
 	"github.com/rakyll/statik/fs"
 	abci "github.com/tendermint/tendermint/abci/types"
 	tmjson "github.com/tendermint/tendermint/libs/json"
@@ -136,6 +140,7 @@ var (
 		authzmodule.AppModuleBasic{},
 		gravity.AppModuleBasic{},
 		allocation.AppModuleBasic{},
+		wasm.AppModuleBasic{},
 	)
 
 	// module account permissions
@@ -193,6 +198,7 @@ type SommelierApp struct {
 	GravityKeeper    gravitykeeper.Keeper
 	AuthzKeeper      authzkeeper.Keeper
 	FeeGrantKeeper   feegrantkeeper.Keeper
+	WasmKeeper       wasmkeeper.Keeper
 
 	// Sommelier keepers
 	AllocationKeeper allocationkeeper.Keeper
@@ -238,6 +244,7 @@ func NewSommelierApp(
 		govtypes.StoreKey, paramstypes.StoreKey, ibchost.StoreKey, upgradetypes.StoreKey,
 		evidencetypes.StoreKey, ibctransfertypes.StoreKey, capabilitytypes.StoreKey,
 		gravitytypes.ModuleName, feegrant.StoreKey, authzkeeper.StoreKey, allocationtypes.ModuleName,
+		wasmtypes.ModuleName,
 	)
 	tkeys := sdk.NewTransientStoreKeys(paramstypes.TStoreKey)
 	memKeys := sdk.NewMemoryStoreKeys(capabilitytypes.MemStoreKey)
@@ -348,10 +355,16 @@ func NewSommelierApp(
 		app.StakingKeeper, app.GravityKeeper,
 	)
 
+
 	// Create static IBC router, add transfer route, then set and seal it
 	ibcRouter := ibcporttypes.NewRouter()
 	ibcRouter.AddRoute(ibctransfertypes.ModuleName, transferModule)
 	app.IBCKeeper.SetRouter(ibcRouter)
+
+	wasmConfig := wasmconfig.DefaultConfig()
+	app.WasmKeeper = wasmkeeper.NewKeeper(
+		appCodec, keys[wasmtypes.StoreKey], app.GetSubspace(wasmtypes.ModuleName), app.AccountKeeper,
+		app.BankKeeper, app.GravityKeeper, app.MsgServiceRouter(), app.GRPCQueryRouter(), "", homePath, wasmConfig)
 
 	// create evidence keeper with router
 	evidenceKeeper := evidencekeeper.NewKeeper(
@@ -398,23 +411,24 @@ func NewSommelierApp(
 		gravity.NewAppModule(app.GravityKeeper, app.BankKeeper),
 		authzmodule.NewAppModule(appCodec, app.AuthzKeeper, app.AccountKeeper, app.BankKeeper, app.interfaceRegistry),
 		allocation.NewAppModule(app.AllocationKeeper, appCodec),
+		wasm.NewAppModule(appCodec, app.WasmKeeper, app.AccountKeeper, app.BankKeeper, app.interfaceRegistry),
 	)
 
 	// During begin block slashing happens after distr.BeginBlocker so that
-	// there is nothing left over in the validator fee pool, so as to keep the
+	// there is nothing left over in the validator fee pool, to keep the
 	// CanWithdrawInvariant invariant.
 	// NOTE: staking module is required if HistoricalEntries param > 0
 	app.mm.SetOrderBeginBlockers(
 		upgradetypes.ModuleName, minttypes.ModuleName, distrtypes.ModuleName, slashingtypes.ModuleName,
 		evidencetypes.ModuleName, stakingtypes.ModuleName, ibchost.ModuleName, gravitytypes.ModuleName,
-		allocationtypes.ModuleName,
+		allocationtypes.ModuleName, wasmtypes.ModuleName,
 	)
 
 	// NOTE: Impermanent loss module must always go after the oracle module to have the
 	// aggregated data available for stoploss execution. The bridge module doesn't require a
 	// specific endblock order.
 	app.mm.SetOrderEndBlockers(crisistypes.ModuleName, govtypes.ModuleName, stakingtypes.ModuleName,
-		gravitytypes.ModuleName, allocationtypes.ModuleName,
+		gravitytypes.ModuleName, allocationtypes.ModuleName, wasmtypes.ModuleName,
 	)
 
 	// NOTE: The genutils module must occur after staking so that pools are
@@ -427,7 +441,7 @@ func NewSommelierApp(
 		stakingtypes.ModuleName, slashingtypes.ModuleName, govtypes.ModuleName, minttypes.ModuleName,
 		crisistypes.ModuleName, ibchost.ModuleName, genutiltypes.ModuleName, evidencetypes.ModuleName,
 		ibctransfertypes.ModuleName, gravitytypes.ModuleName, authz.ModuleName,
-		feegrant.ModuleName, allocationtypes.ModuleName,
+		feegrant.ModuleName, allocationtypes.ModuleName, wasmtypes.ModuleName,
 	)
 
 	app.mm.RegisterInvariants(&app.CrisisKeeper)
@@ -453,6 +467,7 @@ func NewSommelierApp(
 		ibc.NewAppModule(app.IBCKeeper),
 		authzmodule.NewAppModule(appCodec, app.AuthzKeeper, app.AccountKeeper, app.BankKeeper, app.interfaceRegistry),
 		allocation.NewAppModule(app.AllocationKeeper, appCodec),
+		wasm.NewAppModule(appCodec, app.WasmKeeper, app.AccountKeeper, app.BankKeeper, app.interfaceRegistry),
 	)
 
 	app.sm.RegisterStoreDecoders()
@@ -668,6 +683,7 @@ func initParamsKeeper(appCodec codec.BinaryCodec, legacyAmino *codec.LegacyAmino
 	paramsKeeper.Subspace(ibchost.ModuleName)
 	paramsKeeper.Subspace(gravitytypes.ModuleName)
 	paramsKeeper.Subspace(allocationtypes.ModuleName)
+	paramsKeeper.Subspace(wasmtypes.ModuleName)
 
 	return paramsKeeper
 }
