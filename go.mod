@@ -3,7 +3,7 @@ module github.com/peggyjv/sommelier
 go 1.15
 
 require (
-	github.com/CosmWasm/wasmvm v1.0.0-soon2 // indirect
+	github.com/CosmWasm/wasmvm v1.0.0-soon2
 	github.com/cenkalti/backoff/v4 v4.1.1 // indirect
 	github.com/cosmos/cosmos-sdk v0.44.1
 	github.com/cosmos/go-bip39 v1.0.0
@@ -31,8 +31,10 @@ require (
 	github.com/tendermint/tm-db v0.6.4
 	github.com/terra-money/core v0.5.6
 	github.com/xeipuuv/gojsonpointer v0.0.0-20190905194746-02993c407bfb // indirect
+	golang.org/x/sync v0.0.0-20210220032951-036812b2e83c
 	google.golang.org/genproto v0.0.0-20210828152312-66f60bf46e71
 	google.golang.org/grpc v1.40.0
+	gopkg.in/yaml.v2 v2.4.0
 )
 
 replace google.golang.org/grpc => google.golang.org/grpc v1.33.2
