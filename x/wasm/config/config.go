@@ -59,24 +59,3 @@ func GetConfig(appOpts servertypes.AppOptions) *Config {
 		NumReadVMs:             cast.ToUint32(appOpts.Get("wasm.num-read-vms")),
 	}
 }
-
-// DefaultConfigTemplate default config template for wasm module
-const DefaultConfigTemplate = `
-[wasm]
-# The maximum gas amount can be spent for contract query.
-# The contract query will invoke contract execution vm,
-# so we need to restrict the max usage to prevent DoS attack
-contract-query-gas-limit = "{{ .WASMConfig.ContractQueryGasLimit }}"
-
-# The flag to specify whether print contract logs or not
-contract-debug-mode = "{{ .WASMConfig.ContractDebugMode }}"
-
-# The write WASM VM memory cache size in MiB not bytes
-write-vm-memory-cache-size = "{{ .WASMConfig.WriteVMMemoryCacheSize }}"
-
-# The read WASM VM memory cache size in MiB not bytes
-read-vm-memory-cache-size = "{{ .WASMConfig.ReadVMMemoryCacheSize }}"
-
-# The number of read WASM VMs
-num-read-vms = "{{ .WASMConfig.NumReadVMs }}"
-`

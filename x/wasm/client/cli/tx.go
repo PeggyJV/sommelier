@@ -15,14 +15,12 @@ import (
 	"github.com/cosmos/cosmos-sdk/client/tx"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	feeutils "github.com/terra-money/core/custom/auth/client/utils"
 	wasmUtils "github.com/peggyjv/sommelier/x/wasm/client/utils"
 	"github.com/peggyjv/sommelier/x/wasm/types"
+	feeutils "github.com/terra-money/core/custom/auth/client/utils"
 )
 
 const (
-	flagTo            = "to"
-	flagAmount        = "amount"
 	flagAdmin         = "admin"
 	flagMigrateCodeID = "migrate-code-id"
 )

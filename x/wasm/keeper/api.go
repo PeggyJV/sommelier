@@ -67,7 +67,7 @@ func (k Keeper) getWasmVMGasRemaining(ctx sdk.Context) uint64 {
 		return math.MaxUint64
 	}
 
-	remaining := (meter.Limit() - meter.GasConsumed())
+	remaining := meter.Limit() - meter.GasConsumed()
 	return types.ToWasmVMGas(remaining)
 }
 

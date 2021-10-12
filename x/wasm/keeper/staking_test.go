@@ -78,12 +78,6 @@ type ClaimsResponse struct {
 	Claims string `json:"claims,omitempty"`
 }
 
-type TokenInfoResponse struct {
-	Name     string `json:"name"`
-	Symbol   string `json:"symbol"`
-	Decimals uint8  `json:"decimals"`
-}
-
 type InvestmentResponse struct {
 	TokenSupply  string         `json:"token_supply"`
 	StakedTokens sdk.Coin       `json:"staked_tokens"`

@@ -20,12 +20,12 @@ import (
 
 func registerTxRoutes(clientCtx client.Context, r *mux.Router) {
 	r.HandleFunc("/wasm/codes", storeCodeHandlerFn(clientCtx)).Methods("POST")
-	r.HandleFunc(fmt.Sprintf("/wasm/codes/{%s}", RestCodeID), instantiateContractHandlerFn(clientCtx)).Methods("POST")
-	r.HandleFunc(fmt.Sprintf("/wasm/codes/{%s}/migrate", RestCodeID), migrateCodeHandlerFn(clientCtx)).Methods("POST")
-	r.HandleFunc(fmt.Sprintf("/wasm/contracts/{%s}", RestContractAddress), executeContractHandlerFn(clientCtx)).Methods("POST")
-	r.HandleFunc(fmt.Sprintf("/wasm/contract/{%s}/migrate", RestContractAddress), migrateContractHandlerFn(clientCtx)).Methods("POST")
-	r.HandleFunc(fmt.Sprintf("/wasm/contract/{%s}/admin/update", RestContractAddress), updateContractAdminHandlerFn(clientCtx)).Methods("POST")
-	r.HandleFunc(fmt.Sprintf("/wasm/contract/{%s}/admin/clear", RestContractAddress), clearContractAdminHandlerFn(clientCtx)).Methods("POST")
+	r.HandleFunc(fmt.Sprintf("/wasm/codes/{%s}", CodeID), instantiateContractHandlerFn(clientCtx)).Methods("POST")
+	r.HandleFunc(fmt.Sprintf("/wasm/codes/{%s}/migrate", CodeID), migrateCodeHandlerFn(clientCtx)).Methods("POST")
+	r.HandleFunc(fmt.Sprintf("/wasm/contracts/{%s}", ContractAddress), executeContractHandlerFn(clientCtx)).Methods("POST")
+	r.HandleFunc(fmt.Sprintf("/wasm/contract/{%s}/migrate", ContractAddress), migrateContractHandlerFn(clientCtx)).Methods("POST")
+	r.HandleFunc(fmt.Sprintf("/wasm/contract/{%s}/admin/update", ContractAddress), updateContractAdminHandlerFn(clientCtx)).Methods("POST")
+	r.HandleFunc(fmt.Sprintf("/wasm/contract/{%s}/admin/clear", ContractAddress), clearContractAdminHandlerFn(clientCtx)).Methods("POST")
 }
 
 type storeCodeReq struct {
@@ -125,7 +125,7 @@ func migrateCodeHandlerFn(clientCtx client.Context) http.HandlerFunc {
 		}
 
 		vars := mux.Vars(r)
-		strCodeID := vars[RestCodeID]
+		strCodeID := vars[CodeID]
 
 		// get the id of the code to migrate
 		codeID, err := strconv.ParseUint(strCodeID, 10, 64)
@@ -173,7 +173,7 @@ func instantiateContractHandlerFn(clientCtx client.Context) http.HandlerFunc {
 			return
 		}
 		vars := mux.Vars(r)
-		strCodeID := vars[RestCodeID]
+		strCodeID := vars[CodeID]
 
 		req.BaseReq = req.BaseReq.Sanitize()
 		if !req.BaseReq.ValidateBasic(w) {
@@ -243,7 +243,7 @@ func executeContractHandlerFn(clientCtx client.Context) http.HandlerFunc {
 			return
 		}
 		vars := mux.Vars(r)
-		contractAddr := vars[RestContractAddress]
+		contractAddr := vars[ContractAddress]
 
 		req.BaseReq = req.BaseReq.Sanitize()
 		if !req.BaseReq.ValidateBasic(w) {
@@ -304,7 +304,7 @@ func migrateContractHandlerFn(clientCtx client.Context) http.HandlerFunc {
 			return
 		}
 		vars := mux.Vars(r)
-		contractAddr := vars[RestContractAddress]
+		contractAddr := vars[ContractAddress]
 
 		req.BaseReq = req.BaseReq.Sanitize()
 		if !req.BaseReq.ValidateBasic(w) {
@@ -354,7 +354,7 @@ func updateContractAdminHandlerFn(clientCtx client.Context) http.HandlerFunc {
 			return
 		}
 		vars := mux.Vars(r)
-		contractAddr := vars[RestContractAddress]
+		contractAddr := vars[ContractAddress]
 
 		req.BaseReq = req.BaseReq.Sanitize()
 		if !req.BaseReq.ValidateBasic(w) {
@@ -396,7 +396,7 @@ func clearContractAdminHandlerFn(clientCtx client.Context) http.HandlerFunc {
 			return
 		}
 		vars := mux.Vars(r)
-		contractAddr := vars[RestContractAddress]
+		contractAddr := vars[ContractAddress]
 
 		req.BaseReq = req.BaseReq.Sanitize()
 		if !req.BaseReq.ValidateBasic(w) {

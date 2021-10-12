@@ -61,19 +61,6 @@ type simulateResponse struct {
 	BuyCoin  wasmvmtypes.Coin `json:"buy"`
 }
 
-// MakerTreasuryQuerymsg nolint
-type MakerTreasuryQuerymsg struct {
-	Reflect treasuryQueryMsg `json:"reflect,omitempty"`
-}
-
-type treasuryQueryMsg struct {
-	TerraQueryWrapper treasuryQueryWrapper `json:"query"`
-}
-
-type treasuryQueryWrapper struct {
-	Route     string                   `json:"route"`
-	QueryData treasurywasm.CosmosQuery `json:"query_data"`
-}
 
 // Binding query messages
 type bindingsTesterSwapQueryMsg struct {

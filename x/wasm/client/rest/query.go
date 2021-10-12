@@ -17,10 +17,10 @@ import (
 )
 
 func registerQueryRoutes(clientCtx client.Context, rtr *mux.Router) {
-	rtr.HandleFunc(fmt.Sprintf("/wasm/codes/{%s}", RestCodeID), queryCodeInfoHandlerFn(clientCtx)).Methods("GET")
-	rtr.HandleFunc(fmt.Sprintf("/wasm/contracts/{%s}", RestContractAddress), queryContractInfoHandlerFn(clientCtx)).Methods("GET")
-	rtr.HandleFunc(fmt.Sprintf("/wasm/contracts/{%s}/store", RestContractAddress), queryContractStoreHandlerFn(clientCtx)).Methods("GET")
-	rtr.HandleFunc(fmt.Sprintf("/wasm/contracts/{%s}/store/raw", RestContractAddress), queryRawStoreHandlerFn(clientCtx)).Methods("GET")
+	rtr.HandleFunc(fmt.Sprintf("/wasm/codes/{%s}", CodeID), queryCodeInfoHandlerFn(clientCtx)).Methods("GET")
+	rtr.HandleFunc(fmt.Sprintf("/wasm/contracts/{%s}", ContractAddress), queryContractInfoHandlerFn(clientCtx)).Methods("GET")
+	rtr.HandleFunc(fmt.Sprintf("/wasm/contracts/{%s}/store", ContractAddress), queryContractStoreHandlerFn(clientCtx)).Methods("GET")
+	rtr.HandleFunc(fmt.Sprintf("/wasm/contracts/{%s}/store/raw", ContractAddress), queryRawStoreHandlerFn(clientCtx)).Methods("GET")
 	rtr.HandleFunc("/wasm/parameters", queryParamsHandlerFn(clientCtx)).Methods("GET")
 }
 
@@ -32,7 +32,7 @@ func queryCodeInfoHandlerFn(clientCtx client.Context) http.HandlerFunc {
 		}
 
 		vars := mux.Vars(r)
-		codeIDStr := vars[RestCodeID]
+		codeIDStr := vars[CodeID]
 
 		codeID, err := strconv.ParseUint(codeIDStr, 10, 64)
 		if err != nil {
@@ -65,7 +65,7 @@ func queryContractInfoHandlerFn(clientCtx client.Context) http.HandlerFunc {
 		}
 
 		vars := mux.Vars(r)
-		contractAddrStr := vars[RestContractAddress]
+		contractAddrStr := vars[ContractAddress]
 
 		addr, err := sdk.AccAddressFromBech32(contractAddrStr)
 		if err != nil {
@@ -100,7 +100,7 @@ func queryContractStoreHandlerFn(clientCtx client.Context) http.HandlerFunc {
 		}
 
 		vars := mux.Vars(r)
-		contractAddrStr := vars[RestContractAddress]
+		contractAddrStr := vars[ContractAddress]
 		queryMsg := r.URL.Query().Get("query_msg")
 		queryMsgBz := []byte(queryMsg)
 		if !json.Valid(queryMsgBz) {
@@ -141,7 +141,7 @@ func queryRawStoreHandlerFn(clientCtx client.Context) http.HandlerFunc {
 		}
 
 		vars := mux.Vars(r)
-		contractAddrStr := vars[RestContractAddress]
+		contractAddrStr := vars[ContractAddress]
 		keyBz, err := base64.StdEncoding.DecodeString(r.URL.Query().Get("key"))
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())

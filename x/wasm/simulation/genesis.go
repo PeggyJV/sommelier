@@ -18,7 +18,6 @@ const (
 	maxContractGasKey      = "max_contract_gas"
 	maxContractMsgSizeKey  = "max_contract_msg_size"
 	maxContractDataSizeKey = "max_contract_data_size"
-	EventParamsKey         = "event_params"
 )
 
 // GenMaxContractSize randomized MaxContractSize

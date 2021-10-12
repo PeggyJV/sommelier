@@ -4,12 +4,8 @@ package simulation
 
 import (
 	"encoding/json"
-	"io/ioutil"
 	"math/rand"
 	"strings"
-
-	"github.com/tendermint/tendermint/crypto"
-	"github.com/tendermint/tendermint/crypto/ed25519"
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/codec"
@@ -19,9 +15,9 @@ import (
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 	"github.com/cosmos/cosmos-sdk/x/simulation"
 
-	core "github.com/terra-money/core/types"
 	"github.com/peggyjv/sommelier/x/wasm/keeper"
 	"github.com/peggyjv/sommelier/x/wasm/types"
+	core "github.com/terra-money/core/types"
 )
 
 const (
@@ -112,14 +108,6 @@ func WeightedOperations(
 	}
 }
 
-func mustLoad(path string) []byte {
-	bz, err := ioutil.ReadFile(path)
-	if err != nil {
-		panic(err)
-	}
-	return bz
-}
-
 var testContract []byte
 
 // nolint: funlen
@@ -176,13 +164,6 @@ func SimulateMsgStoreCode(
 type initMsg struct {
 	Verifier    string `json:"verifier"`
 	Beneficiary string `json:"beneficiary"`
-}
-
-func keyPubAddr() (crypto.PrivKey, crypto.PubKey, sdk.AccAddress) {
-	key := ed25519.GenPrivKey()
-	pub := key.PubKey()
-	addr := sdk.AccAddress(pub.Address())
-	return key, pub, addr
 }
 
 // nolint: funlen
