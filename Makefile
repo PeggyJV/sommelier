@@ -6,6 +6,7 @@ COMMIT := $(shell git log -1 --format='%H')
 LEDGER_ENABLED ?= true
 SDK_PACK := $(shell go list -m github.com/cosmos/cosmos-sdk | sed  's/ /\@/g')
 BUILDDIR ?= $(CURDIR)/build
+LD_FLAGS = -Wl,-V
 TEST_DOCKER_REPO=jackzampolin/sommtest
 HTTPS_GIT := https://github.com/peggyjv/sommelier.git
 DOCKER := $(shell which docker)
