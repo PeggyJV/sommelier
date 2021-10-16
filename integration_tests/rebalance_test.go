@@ -2,6 +2,7 @@ package integration_tests
 
 import (
 	"context"
+	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 	"time"
 
 	gravitytypes "github.com/peggyjv/gravity-bridge/module/x/gravity/types"
@@ -52,6 +53,40 @@ func (s *IntegrationTestSuite) TestRebalance() {
 			}
 			return false
 		}, 30*time.Second, 2*time.Second, "hardhat cellar not found in chain")
+
+		s.T().Logf("Trigger valset update via redelegation")
+		val = s.chain.validators[0]
+		s.Require().Eventuallyf(func() bool {
+			kb, err := val.keyring()
+			s.Require().NoError(err)
+
+			clientCtx, err := s.chain.clientContext("tcp://localhost:26657", &kb, "val", val.keyInfo.GetAddress())
+			s.Require().NoError(err)
+
+			redelegateMsg := stakingtypes.NewMsgBeginRedelegate(
+				s.chain.validators[0].keyInfo.GetAddress(),
+				sdk.ValAddress(s.chain.validators[0].keyInfo.GetAddress()),
+				sdk.ValAddress(s.chain.validators[1].keyInfo.GetAddress()),
+				sdk.Coin{
+					Denom:  testDenom,
+					Amount: sdk.NewInt(1073741824/2),
+				},
+			)
+			response, err := s.chain.sendMsgs(*clientCtx, redelegateMsg)
+			if err != nil {
+				s.T().Logf("error: %s", err)
+				return false
+			}
+			if response.Code != 0 {
+				if response.Code != 32 {
+					s.T().Log(response)
+				}
+				return false
+			}
+
+			return true
+		}, 10*time.Second, 500*time.Millisecond, "unable to send redelegation from first node to second", )
+
 
 		s.T().Logf("wait for new vote period start")
 		val = s.chain.validators[0]
