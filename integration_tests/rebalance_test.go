@@ -68,7 +68,7 @@ func (s *IntegrationTestSuite) TestRebalance() {
 				sdk.ValAddress(s.chain.validators[0].keyInfo.GetAddress()),
 				sdk.ValAddress(s.chain.validators[1].keyInfo.GetAddress()),
 				sdk.Coin{
-					Denom:  testDenom,
+					Denom:  bondDenom,
 					Amount: sdk.NewInt(1073741824/2),
 				},
 			)
