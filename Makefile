@@ -354,10 +354,13 @@ tools-clean:
 #ORCHESTRATOR_IMAGE := "ghcr.io/peggyjv/gravity-bridge-orchestrator:v0.2.13"
 # pointing at a specific PR currently, for testing
 ORCHESTRATOR_IMAGE := "ghcr.io/peggyjv/gravity-bridge-orchestrator:pr-203"
+CONTRACT_DEPLOYER_IMAGE := "ghcr.io/peggyjv/gravity-bridge-solidity:latest"
 
 e2e_build_images:
 	@docker pull $(ORCHESTRATOR_IMAGE)
 	@docker tag $(ORCHESTRATOR_IMAGE) orchestrator:prebuilt
+	@docker pull $(CONTRACT_DEPLOYER_IMAGE)
+	@docker tag $(CONTRACT_DEPLOYER_IMAGE) contract-deployer:prebuilt
 	@docker build -t sommelier:prebuilt -f Dockerfile .
 	@docker build -t ethereum:prebuilt -f integration_tests/ethereum/Dockerfile integration_tests/ethereum/
 
