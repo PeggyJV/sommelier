@@ -115,190 +115,6 @@ func (m *QueryParamsResponse) GetParams() Params {
 	return Params{}
 }
 
-// QueryDelegateAddressRequest is the request type for the Query/QueryDelegateAddress gRPC method.
-type QueryDelegateAddressRequest struct {
-	// validator operator address
-	Validator string `protobuf:"bytes,1,opt,name=validator,proto3" json:"validator,omitempty"`
-}
-
-func (m *QueryDelegateAddressRequest) Reset()         { *m = QueryDelegateAddressRequest{} }
-func (m *QueryDelegateAddressRequest) String() string { return proto.CompactTextString(m) }
-func (*QueryDelegateAddressRequest) ProtoMessage()    {}
-func (*QueryDelegateAddressRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_b27a95d8c59345b2, []int{2}
-}
-func (m *QueryDelegateAddressRequest) XXX_Unmarshal(b []byte) error {
-	return m.Unmarshal(b)
-}
-func (m *QueryDelegateAddressRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	if deterministic {
-		return xxx_messageInfo_QueryDelegateAddressRequest.Marshal(b, m, deterministic)
-	} else {
-		b = b[:cap(b)]
-		n, err := m.MarshalToSizedBuffer(b)
-		if err != nil {
-			return nil, err
-		}
-		return b[:n], nil
-	}
-}
-func (m *QueryDelegateAddressRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_QueryDelegateAddressRequest.Merge(m, src)
-}
-func (m *QueryDelegateAddressRequest) XXX_Size() int {
-	return m.Size()
-}
-func (m *QueryDelegateAddressRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_QueryDelegateAddressRequest.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_QueryDelegateAddressRequest proto.InternalMessageInfo
-
-func (m *QueryDelegateAddressRequest) GetValidator() string {
-	if m != nil {
-		return m.Validator
-	}
-	return ""
-}
-
-// QueryDelegateAddressResponse is the response type for the Query/QueryDelegateAddress gRPC method.
-type QueryDelegateAddressResponse struct {
-	// delegate account address
-	Delegate string `protobuf:"bytes,2,opt,name=delegate,proto3" json:"delegate,omitempty"`
-}
-
-func (m *QueryDelegateAddressResponse) Reset()         { *m = QueryDelegateAddressResponse{} }
-func (m *QueryDelegateAddressResponse) String() string { return proto.CompactTextString(m) }
-func (*QueryDelegateAddressResponse) ProtoMessage()    {}
-func (*QueryDelegateAddressResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_b27a95d8c59345b2, []int{3}
-}
-func (m *QueryDelegateAddressResponse) XXX_Unmarshal(b []byte) error {
-	return m.Unmarshal(b)
-}
-func (m *QueryDelegateAddressResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	if deterministic {
-		return xxx_messageInfo_QueryDelegateAddressResponse.Marshal(b, m, deterministic)
-	} else {
-		b = b[:cap(b)]
-		n, err := m.MarshalToSizedBuffer(b)
-		if err != nil {
-			return nil, err
-		}
-		return b[:n], nil
-	}
-}
-func (m *QueryDelegateAddressResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_QueryDelegateAddressResponse.Merge(m, src)
-}
-func (m *QueryDelegateAddressResponse) XXX_Size() int {
-	return m.Size()
-}
-func (m *QueryDelegateAddressResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_QueryDelegateAddressResponse.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_QueryDelegateAddressResponse proto.InternalMessageInfo
-
-func (m *QueryDelegateAddressResponse) GetDelegate() string {
-	if m != nil {
-		return m.Delegate
-	}
-	return ""
-}
-
-// QueryValidatorAddressRequest is the request type for the Query/Params gRPC method.
-type QueryValidatorAddressRequest struct {
-	// delegate account address
-	Delegate string `protobuf:"bytes,1,opt,name=delegate,proto3" json:"delegate,omitempty"`
-}
-
-func (m *QueryValidatorAddressRequest) Reset()         { *m = QueryValidatorAddressRequest{} }
-func (m *QueryValidatorAddressRequest) String() string { return proto.CompactTextString(m) }
-func (*QueryValidatorAddressRequest) ProtoMessage()    {}
-func (*QueryValidatorAddressRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_b27a95d8c59345b2, []int{4}
-}
-func (m *QueryValidatorAddressRequest) XXX_Unmarshal(b []byte) error {
-	return m.Unmarshal(b)
-}
-func (m *QueryValidatorAddressRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	if deterministic {
-		return xxx_messageInfo_QueryValidatorAddressRequest.Marshal(b, m, deterministic)
-	} else {
-		b = b[:cap(b)]
-		n, err := m.MarshalToSizedBuffer(b)
-		if err != nil {
-			return nil, err
-		}
-		return b[:n], nil
-	}
-}
-func (m *QueryValidatorAddressRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_QueryValidatorAddressRequest.Merge(m, src)
-}
-func (m *QueryValidatorAddressRequest) XXX_Size() int {
-	return m.Size()
-}
-func (m *QueryValidatorAddressRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_QueryValidatorAddressRequest.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_QueryValidatorAddressRequest proto.InternalMessageInfo
-
-func (m *QueryValidatorAddressRequest) GetDelegate() string {
-	if m != nil {
-		return m.Delegate
-	}
-	return ""
-}
-
-// QueryValidatorAddressResponse is the response type for the Query/Params gRPC method.
-type QueryValidatorAddressResponse struct {
-	// validator operator address
-	Validator string `protobuf:"bytes,1,opt,name=validator,proto3" json:"validator,omitempty"`
-}
-
-func (m *QueryValidatorAddressResponse) Reset()         { *m = QueryValidatorAddressResponse{} }
-func (m *QueryValidatorAddressResponse) String() string { return proto.CompactTextString(m) }
-func (*QueryValidatorAddressResponse) ProtoMessage()    {}
-func (*QueryValidatorAddressResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_b27a95d8c59345b2, []int{5}
-}
-func (m *QueryValidatorAddressResponse) XXX_Unmarshal(b []byte) error {
-	return m.Unmarshal(b)
-}
-func (m *QueryValidatorAddressResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	if deterministic {
-		return xxx_messageInfo_QueryValidatorAddressResponse.Marshal(b, m, deterministic)
-	} else {
-		b = b[:cap(b)]
-		n, err := m.MarshalToSizedBuffer(b)
-		if err != nil {
-			return nil, err
-		}
-		return b[:n], nil
-	}
-}
-func (m *QueryValidatorAddressResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_QueryValidatorAddressResponse.Merge(m, src)
-}
-func (m *QueryValidatorAddressResponse) XXX_Size() int {
-	return m.Size()
-}
-func (m *QueryValidatorAddressResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_QueryValidatorAddressResponse.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_QueryValidatorAddressResponse proto.InternalMessageInfo
-
-func (m *QueryValidatorAddressResponse) GetValidator() string {
-	if m != nil {
-		return m.Validator
-	}
-	return ""
-}
-
 // QueryAllocationPrecommitRequest is the request type for the Query/AllocationPrecommit gRPC method.
 type QueryAllocationPrecommitRequest struct {
 	// validator operator address
@@ -311,7 +127,7 @@ func (m *QueryAllocationPrecommitRequest) Reset()         { *m = QueryAllocation
 func (m *QueryAllocationPrecommitRequest) String() string { return proto.CompactTextString(m) }
 func (*QueryAllocationPrecommitRequest) ProtoMessage()    {}
 func (*QueryAllocationPrecommitRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_b27a95d8c59345b2, []int{6}
+	return fileDescriptor_b27a95d8c59345b2, []int{2}
 }
 func (m *QueryAllocationPrecommitRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -354,7 +170,7 @@ func (m *QueryAllocationPrecommitRequest) GetCellar() string {
 	return ""
 }
 
-// QueryAllocationPrecommitResponse is the response type for the Query/QueryallocationDataPrevote gRPC method.
+// QueryAllocationPrecommitResponse is the response type for the Query/AllocationPrecommit gRPC method.
 type QueryAllocationPrecommitResponse struct {
 	// prevote submitted within the latest voting period
 	Precommit *AllocationPrecommit `protobuf:"bytes,1,opt,name=precommit,proto3" json:"precommit,omitempty"`
@@ -364,7 +180,7 @@ func (m *QueryAllocationPrecommitResponse) Reset()         { *m = QueryAllocatio
 func (m *QueryAllocationPrecommitResponse) String() string { return proto.CompactTextString(m) }
 func (*QueryAllocationPrecommitResponse) ProtoMessage()    {}
 func (*QueryAllocationPrecommitResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_b27a95d8c59345b2, []int{7}
+	return fileDescriptor_b27a95d8c59345b2, []int{3}
 }
 func (m *QueryAllocationPrecommitResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -400,6 +216,89 @@ func (m *QueryAllocationPrecommitResponse) GetPrecommit() *AllocationPrecommit {
 	return nil
 }
 
+// QueryAllocationPrecommitsRequest is the request type for the Query/AllocationPrecommits gRPC method.
+type QueryAllocationPrecommitsRequest struct {
+}
+
+func (m *QueryAllocationPrecommitsRequest) Reset()         { *m = QueryAllocationPrecommitsRequest{} }
+func (m *QueryAllocationPrecommitsRequest) String() string { return proto.CompactTextString(m) }
+func (*QueryAllocationPrecommitsRequest) ProtoMessage()    {}
+func (*QueryAllocationPrecommitsRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_b27a95d8c59345b2, []int{4}
+}
+func (m *QueryAllocationPrecommitsRequest) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *QueryAllocationPrecommitsRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_QueryAllocationPrecommitsRequest.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *QueryAllocationPrecommitsRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryAllocationPrecommitsRequest.Merge(m, src)
+}
+func (m *QueryAllocationPrecommitsRequest) XXX_Size() int {
+	return m.Size()
+}
+func (m *QueryAllocationPrecommitsRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryAllocationPrecommitsRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QueryAllocationPrecommitsRequest proto.InternalMessageInfo
+
+// QueryAllocationPrecommitResponse is the response type for the Query/AllocationPrecommits gRPC method.
+type QueryAllocationPrecommitsResponse struct {
+	// prevote submitted within the latest voting period
+	Precommits []*AllocationPrecommit `protobuf:"bytes,1,rep,name=precommits,proto3" json:"precommits,omitempty"`
+}
+
+func (m *QueryAllocationPrecommitsResponse) Reset()         { *m = QueryAllocationPrecommitsResponse{} }
+func (m *QueryAllocationPrecommitsResponse) String() string { return proto.CompactTextString(m) }
+func (*QueryAllocationPrecommitsResponse) ProtoMessage()    {}
+func (*QueryAllocationPrecommitsResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_b27a95d8c59345b2, []int{5}
+}
+func (m *QueryAllocationPrecommitsResponse) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *QueryAllocationPrecommitsResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_QueryAllocationPrecommitsResponse.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *QueryAllocationPrecommitsResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryAllocationPrecommitsResponse.Merge(m, src)
+}
+func (m *QueryAllocationPrecommitsResponse) XXX_Size() int {
+	return m.Size()
+}
+func (m *QueryAllocationPrecommitsResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryAllocationPrecommitsResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QueryAllocationPrecommitsResponse proto.InternalMessageInfo
+
+func (m *QueryAllocationPrecommitsResponse) GetPrecommits() []*AllocationPrecommit {
+	if m != nil {
+		return m.Precommits
+	}
+	return nil
+}
+
 // QueryAllocationCommitRequest is the request type for the Query/QueryallocationDataVote gRPC method.
 type QueryAllocationCommitRequest struct {
 	// validator operator address
@@ -412,7 +311,7 @@ func (m *QueryAllocationCommitRequest) Reset()         { *m = QueryAllocationCom
 func (m *QueryAllocationCommitRequest) String() string { return proto.CompactTextString(m) }
 func (*QueryAllocationCommitRequest) ProtoMessage()    {}
 func (*QueryAllocationCommitRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_b27a95d8c59345b2, []int{8}
+	return fileDescriptor_b27a95d8c59345b2, []int{6}
 }
 func (m *QueryAllocationCommitRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -465,7 +364,7 @@ func (m *QueryAllocationCommitResponse) Reset()         { *m = QueryAllocationCo
 func (m *QueryAllocationCommitResponse) String() string { return proto.CompactTextString(m) }
 func (*QueryAllocationCommitResponse) ProtoMessage()    {}
 func (*QueryAllocationCommitResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_b27a95d8c59345b2, []int{9}
+	return fileDescriptor_b27a95d8c59345b2, []int{7}
 }
 func (m *QueryAllocationCommitResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -501,7 +400,90 @@ func (m *QueryAllocationCommitResponse) GetCommit() *Allocation {
 	return nil
 }
 
-// QueryCommitPeriodRequest is the request type for the Query/VotePeriod gRPC method.
+// QueryAllocationCommitsRequest is the request type for the Query/QueryAllocationCommits gRPC method.
+type QueryAllocationCommitsRequest struct {
+}
+
+func (m *QueryAllocationCommitsRequest) Reset()         { *m = QueryAllocationCommitsRequest{} }
+func (m *QueryAllocationCommitsRequest) String() string { return proto.CompactTextString(m) }
+func (*QueryAllocationCommitsRequest) ProtoMessage()    {}
+func (*QueryAllocationCommitsRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_b27a95d8c59345b2, []int{8}
+}
+func (m *QueryAllocationCommitsRequest) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *QueryAllocationCommitsRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_QueryAllocationCommitsRequest.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *QueryAllocationCommitsRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryAllocationCommitsRequest.Merge(m, src)
+}
+func (m *QueryAllocationCommitsRequest) XXX_Size() int {
+	return m.Size()
+}
+func (m *QueryAllocationCommitsRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryAllocationCommitsRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QueryAllocationCommitsRequest proto.InternalMessageInfo
+
+// QueryAllocationCommitsResponse is the response type for the Query/QueryAllocationCommits gRPC method.
+type QueryAllocationCommitsResponse struct {
+	// votes containing the allocation feed submitted within the latest voting period
+	Commits []*Allocation `protobuf:"bytes,1,rep,name=commits,proto3" json:"commits,omitempty"`
+}
+
+func (m *QueryAllocationCommitsResponse) Reset()         { *m = QueryAllocationCommitsResponse{} }
+func (m *QueryAllocationCommitsResponse) String() string { return proto.CompactTextString(m) }
+func (*QueryAllocationCommitsResponse) ProtoMessage()    {}
+func (*QueryAllocationCommitsResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_b27a95d8c59345b2, []int{9}
+}
+func (m *QueryAllocationCommitsResponse) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *QueryAllocationCommitsResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_QueryAllocationCommitsResponse.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *QueryAllocationCommitsResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryAllocationCommitsResponse.Merge(m, src)
+}
+func (m *QueryAllocationCommitsResponse) XXX_Size() int {
+	return m.Size()
+}
+func (m *QueryAllocationCommitsResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryAllocationCommitsResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QueryAllocationCommitsResponse proto.InternalMessageInfo
+
+func (m *QueryAllocationCommitsResponse) GetCommits() []*Allocation {
+	if m != nil {
+		return m.Commits
+	}
+	return nil
+}
+
+// QueryCommitPeriodRequest is the request type for the Query/QueryCommitPeriod gRPC method.
 type QueryCommitPeriodRequest struct {
 }
 
@@ -538,7 +520,7 @@ func (m *QueryCommitPeriodRequest) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_QueryCommitPeriodRequest proto.InternalMessageInfo
 
-// QueryCommitPeriodResponse is the response type for the Query/VotePeriod gRPC method.
+// QueryCommitPeriodResponse is the response type for the Query/QueryCommitPeriod gRPC method.
 type QueryCommitPeriodResponse struct {
 	// block height at which the query was processed
 	CurrentHeight int64 `protobuf:"varint,1,opt,name=current_height,json=currentHeight,proto3" json:"current_height,omitempty"`
@@ -602,71 +584,157 @@ func (m *QueryCommitPeriodResponse) GetVotePeriodEnd() int64 {
 	return 0
 }
 
+// QueryCellarsRequest is the request type for Query/QueryCellars gRPC method.
+type QueryCellarsRequest struct {
+}
+
+func (m *QueryCellarsRequest) Reset()         { *m = QueryCellarsRequest{} }
+func (m *QueryCellarsRequest) String() string { return proto.CompactTextString(m) }
+func (*QueryCellarsRequest) ProtoMessage()    {}
+func (*QueryCellarsRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_b27a95d8c59345b2, []int{12}
+}
+func (m *QueryCellarsRequest) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *QueryCellarsRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_QueryCellarsRequest.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *QueryCellarsRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryCellarsRequest.Merge(m, src)
+}
+func (m *QueryCellarsRequest) XXX_Size() int {
+	return m.Size()
+}
+func (m *QueryCellarsRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryCellarsRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QueryCellarsRequest proto.InternalMessageInfo
+
+// QueryCellarsResponse is the response type for Query/QueryCellars gRPC method.
+type QueryCellarsResponse struct {
+	Cellars []*Cellar `protobuf:"bytes,1,rep,name=cellars,proto3" json:"cellars,omitempty"`
+}
+
+func (m *QueryCellarsResponse) Reset()         { *m = QueryCellarsResponse{} }
+func (m *QueryCellarsResponse) String() string { return proto.CompactTextString(m) }
+func (*QueryCellarsResponse) ProtoMessage()    {}
+func (*QueryCellarsResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_b27a95d8c59345b2, []int{13}
+}
+func (m *QueryCellarsResponse) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *QueryCellarsResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_QueryCellarsResponse.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *QueryCellarsResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryCellarsResponse.Merge(m, src)
+}
+func (m *QueryCellarsResponse) XXX_Size() int {
+	return m.Size()
+}
+func (m *QueryCellarsResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryCellarsResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QueryCellarsResponse proto.InternalMessageInfo
+
+func (m *QueryCellarsResponse) GetCellars() []*Cellar {
+	if m != nil {
+		return m.Cellars
+	}
+	return nil
+}
+
 func init() {
 	proto.RegisterType((*QueryParamsRequest)(nil), "allocation.v1.QueryParamsRequest")
 	proto.RegisterType((*QueryParamsResponse)(nil), "allocation.v1.QueryParamsResponse")
-	proto.RegisterType((*QueryDelegateAddressRequest)(nil), "allocation.v1.QueryDelegateAddressRequest")
-	proto.RegisterType((*QueryDelegateAddressResponse)(nil), "allocation.v1.QueryDelegateAddressResponse")
-	proto.RegisterType((*QueryValidatorAddressRequest)(nil), "allocation.v1.QueryValidatorAddressRequest")
-	proto.RegisterType((*QueryValidatorAddressResponse)(nil), "allocation.v1.QueryValidatorAddressResponse")
 	proto.RegisterType((*QueryAllocationPrecommitRequest)(nil), "allocation.v1.QueryAllocationPrecommitRequest")
 	proto.RegisterType((*QueryAllocationPrecommitResponse)(nil), "allocation.v1.QueryAllocationPrecommitResponse")
+	proto.RegisterType((*QueryAllocationPrecommitsRequest)(nil), "allocation.v1.QueryAllocationPrecommitsRequest")
+	proto.RegisterType((*QueryAllocationPrecommitsResponse)(nil), "allocation.v1.QueryAllocationPrecommitsResponse")
 	proto.RegisterType((*QueryAllocationCommitRequest)(nil), "allocation.v1.QueryAllocationCommitRequest")
 	proto.RegisterType((*QueryAllocationCommitResponse)(nil), "allocation.v1.QueryAllocationCommitResponse")
+	proto.RegisterType((*QueryAllocationCommitsRequest)(nil), "allocation.v1.QueryAllocationCommitsRequest")
+	proto.RegisterType((*QueryAllocationCommitsResponse)(nil), "allocation.v1.QueryAllocationCommitsResponse")
 	proto.RegisterType((*QueryCommitPeriodRequest)(nil), "allocation.v1.QueryCommitPeriodRequest")
 	proto.RegisterType((*QueryCommitPeriodResponse)(nil), "allocation.v1.QueryCommitPeriodResponse")
+	proto.RegisterType((*QueryCellarsRequest)(nil), "allocation.v1.QueryCellarsRequest")
+	proto.RegisterType((*QueryCellarsResponse)(nil), "allocation.v1.QueryCellarsResponse")
 }
 
 func init() { proto.RegisterFile("allocation/v1/query.proto", fileDescriptor_b27a95d8c59345b2) }
 
 var fileDescriptor_b27a95d8c59345b2 = []byte{
-	// 726 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xac, 0x55, 0xd1, 0x4e, 0x13, 0x4d,
-	0x14, 0xee, 0xc2, 0xff, 0x57, 0x19, 0x82, 0x84, 0x11, 0x4c, 0xbb, 0x60, 0x81, 0x4d, 0x04, 0x82,
-	0x64, 0xc7, 0x82, 0xd1, 0x44, 0x63, 0x22, 0xa8, 0x89, 0x7a, 0x85, 0xab, 0xd1, 0xc4, 0x9b, 0x66,
-	0xda, 0x9d, 0x2c, 0x6b, 0x76, 0x77, 0x96, 0x9d, 0x69, 0x23, 0x21, 0xdc, 0xf8, 0x04, 0x26, 0x26,
-	0xbc, 0x82, 0xc6, 0x6b, 0x1f, 0x82, 0x4b, 0x12, 0x6f, 0xb8, 0x32, 0x06, 0x7c, 0x10, 0xd3, 0x99,
-	0xd9, 0x76, 0xb7, 0xcc, 0x42, 0x2f, 0xbc, 0xeb, 0x9c, 0xf3, 0x9d, 0xef, 0x7c, 0xe7, 0xec, 0x7c,
-	0x53, 0x50, 0xc5, 0x41, 0x40, 0x5b, 0x98, 0xfb, 0x34, 0x42, 0x9d, 0x3a, 0xda, 0x6d, 0x93, 0x64,
-	0xcf, 0x8e, 0x13, 0xca, 0x29, 0x9c, 0xe8, 0xa7, 0xec, 0x4e, 0xdd, 0x9c, 0xf6, 0xa8, 0x47, 0x45,
-	0x06, 0x75, 0x7f, 0x49, 0x90, 0x39, 0xe7, 0x51, 0xea, 0x05, 0x04, 0xe1, 0xd8, 0x47, 0x38, 0x8a,
-	0x28, 0x17, 0x78, 0xa6, 0xb2, 0xb3, 0x79, 0x76, 0x8f, 0x44, 0x84, 0xf9, 0x69, 0xb2, 0x96, 0x4f,
-	0x66, 0xba, 0xc9, 0x7c, 0xb5, 0x45, 0x59, 0x48, 0x59, 0x43, 0xf6, 0x94, 0x07, 0x95, 0x5a, 0x95,
-	0x27, 0xd4, 0xc4, 0x8c, 0x48, 0xcd, 0xa8, 0x53, 0x6f, 0x12, 0x8e, 0xeb, 0x28, 0xc6, 0x9e, 0x1f,
-	0x65, 0x68, 0xac, 0x69, 0x00, 0x5f, 0x75, 0x11, 0xdb, 0x38, 0xc1, 0x21, 0x73, 0xc8, 0x6e, 0x9b,
-	0x30, 0x6e, 0xbd, 0x04, 0xd7, 0x73, 0x51, 0x16, 0xd3, 0x88, 0x11, 0xb8, 0x01, 0xca, 0xb1, 0x88,
-	0x54, 0x8c, 0x05, 0x63, 0x65, 0x7c, 0x7d, 0xc6, 0xce, 0x2d, 0xc1, 0x96, 0xf0, 0xad, 0xff, 0x8e,
-	0x7e, 0xcd, 0x97, 0x1c, 0x05, 0xb5, 0x1e, 0x82, 0x59, 0xc1, 0xf5, 0x94, 0x04, 0xc4, 0xc3, 0x9c,
-	0x6c, 0xba, 0x6e, 0x42, 0x58, 0xda, 0x0a, 0xce, 0x81, 0xb1, 0x0e, 0x0e, 0x7c, 0x17, 0x73, 0x9a,
-	0x08, 0xda, 0x31, 0xa7, 0x1f, 0xb0, 0x1e, 0x80, 0x39, 0x7d, 0xb1, 0x52, 0x64, 0x82, 0xab, 0xae,
-	0x4a, 0x55, 0x46, 0x44, 0x71, 0xef, 0xdc, 0xab, 0x7d, 0x9b, 0xb2, 0x0d, 0x74, 0xce, 0xd6, 0x1a,
-	0x03, 0xb5, 0x8f, 0xc0, 0xcd, 0x82, 0x5a, 0xd5, 0xf8, 0x62, 0xd9, 0xef, 0xc0, 0xbc, 0x28, 0xdf,
-	0xec, 0xad, 0x67, 0x3b, 0x21, 0x2d, 0x1a, 0x86, 0x3e, 0x1f, 0x6a, 0x6e, 0x78, 0x03, 0x94, 0x5b,
-	0x24, 0x08, 0x70, 0xa2, 0xa6, 0x52, 0x27, 0xcb, 0x05, 0x0b, 0xc5, 0xc4, 0x4a, 0xda, 0x63, 0x30,
-	0x16, 0xa7, 0x41, 0xf5, 0xa1, 0xac, 0x81, 0x0f, 0xa5, 0x2b, 0xef, 0x17, 0x59, 0x6f, 0xd4, 0xe6,
-	0xfa, 0xb0, 0x27, 0xff, 0x40, 0xbb, 0xa3, 0x76, 0x7a, 0x9e, 0x55, 0x09, 0xaf, 0x83, 0x72, 0x4e,
-	0x75, 0xb5, 0x50, 0xb5, 0xa3, 0x80, 0x96, 0x09, 0x2a, 0x82, 0x53, 0x32, 0x6d, 0x93, 0xc4, 0xa7,
-	0x6e, 0x7a, 0x89, 0x0f, 0x0d, 0x50, 0xd5, 0x24, 0x55, 0xb3, 0x5b, 0xe0, 0x5a, 0xab, 0x9d, 0x24,
-	0x24, 0xe2, 0x8d, 0x1d, 0xe2, 0x7b, 0x3b, 0xb2, 0xe9, 0xa8, 0x33, 0xa1, 0xa2, 0xcf, 0x45, 0x10,
-	0xae, 0x82, 0xa9, 0x0e, 0xe5, 0xa4, 0x11, 0x8b, 0xea, 0x06, 0xe3, 0x38, 0xe1, 0x62, 0xae, 0x51,
-	0x67, 0xb2, 0x9b, 0x90, 0xac, 0xaf, 0xbb, 0x61, 0xb8, 0x04, 0x26, 0xb3, 0x58, 0x12, 0xb9, 0x95,
-	0x51, 0xc9, 0xd9, 0x47, 0x3e, 0x8b, 0xdc, 0xf5, 0x93, 0x2b, 0xe0, 0x7f, 0x21, 0x0c, 0x1e, 0x80,
-	0xf1, 0x8c, 0xcf, 0xe0, 0xe2, 0xc0, 0xc0, 0xe7, 0x9d, 0x69, 0x5a, 0x17, 0x41, 0xe4, 0x68, 0xd6,
-	0xf2, 0xa7, 0x9f, 0x7f, 0xbe, 0x8c, 0x2c, 0xc2, 0x79, 0xc4, 0x68, 0x18, 0x92, 0xc0, 0x27, 0x09,
-	0xca, 0xbf, 0x26, 0xd2, 0x9a, 0xf0, 0xab, 0x01, 0xa6, 0x75, 0xf6, 0x82, 0xab, 0xba, 0x2e, 0x7a,
-	0x03, 0x9b, 0xb7, 0x87, 0xc2, 0x2a, 0x69, 0xf7, 0x84, 0xb4, 0x3b, 0xd0, 0x2e, 0x94, 0x96, 0x5a,
-	0x90, 0xa1, 0xfd, 0xde, 0x95, 0x3a, 0x80, 0xdf, 0x0d, 0x30, 0xa3, 0x35, 0x24, 0xd4, 0xb6, 0x2f,
-	0xb0, 0xbc, 0xb9, 0x36, 0x1c, 0x78, 0x68, 0xb1, 0x3d, 0x85, 0x0c, 0xed, 0xa7, 0xc2, 0x0f, 0xe0,
-	0x0f, 0x43, 0xdd, 0x4a, 0x8d, 0xcd, 0xa0, 0xad, 0x93, 0x50, 0xfc, 0x4e, 0x98, 0x68, 0x68, 0xbc,
-	0x52, 0x7d, 0x5f, 0xa8, 0xae, 0x43, 0x54, 0xfc, 0xf5, 0xd3, 0x9a, 0xfc, 0x8e, 0xbf, 0xa5, 0x3b,
-	0x1e, 0x34, 0xa8, 0x7e, 0xc7, 0x05, 0x8f, 0x83, 0x7e, 0xc7, 0x45, 0x9e, 0xb7, 0xee, 0x0a, 0xb5,
-	0x36, 0x5c, 0x2b, 0x54, 0xab, 0x93, 0x7a, 0x68, 0x80, 0xa9, 0x73, 0xd6, 0x86, 0xcb, 0xba, 0xce,
-	0x9a, 0x97, 0xc1, 0x5c, 0xb9, 0x1c, 0xa8, 0xe4, 0xd9, 0x42, 0xde, 0x0a, 0x5c, 0xba, 0x44, 0x9e,
-	0xf2, 0xfc, 0xd6, 0x8b, 0xa3, 0xd3, 0x9a, 0x71, 0x7c, 0x5a, 0x33, 0x7e, 0x9f, 0xd6, 0x8c, 0xcf,
-	0x67, 0xb5, 0xd2, 0xf1, 0x59, 0xad, 0x74, 0x72, 0x56, 0x2b, 0xbd, 0x47, 0x9e, 0xcf, 0x77, 0xda,
-	0x4d, 0xbb, 0x45, 0x43, 0x14, 0x13, 0xcf, 0xdb, 0xfb, 0xd0, 0xc9, 0x70, 0x7e, 0xcc, 0xb2, 0xf2,
-	0xbd, 0x98, 0xb0, 0x66, 0x59, 0xfc, 0x41, 0x6f, 0xfc, 0x0d, 0x00, 0x00, 0xff, 0xff, 0x59, 0xbd,
-	0x3b, 0xa1, 0x84, 0x08, 0x00, 0x00,
+	// 768 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xac, 0x56, 0x4f, 0x4f, 0x13, 0x41,
+	0x14, 0xef, 0x52, 0x2d, 0xf2, 0x10, 0x09, 0x23, 0x90, 0x76, 0xc5, 0x2d, 0x0c, 0x01, 0x1a, 0xd0,
+	0x8e, 0x85, 0x18, 0x8d, 0x89, 0x09, 0x42, 0x8c, 0x7f, 0x4e, 0xb8, 0x6a, 0x4c, 0xbc, 0x34, 0xdb,
+	0x76, 0xb2, 0xac, 0x69, 0x77, 0x96, 0xdd, 0x6d, 0x23, 0x21, 0x1c, 0xf4, 0x13, 0x98, 0x98, 0x70,
+	0xf5, 0x03, 0x78, 0xf2, 0x03, 0x78, 0xe7, 0x48, 0xe2, 0xc5, 0x93, 0x31, 0x60, 0xe2, 0xd7, 0x30,
+	0x9d, 0x99, 0x6e, 0x77, 0xcb, 0x6e, 0xd9, 0x83, 0xb7, 0xee, 0x7b, 0xbf, 0xf7, 0x7b, 0xbf, 0xf9,
+	0xcd, 0xbc, 0x97, 0x42, 0xc1, 0x68, 0x36, 0x59, 0xdd, 0xf0, 0x2d, 0x66, 0x93, 0x4e, 0x85, 0xec,
+	0xb5, 0xa9, 0xbb, 0x5f, 0x76, 0x5c, 0xe6, 0x33, 0x34, 0xd1, 0x4f, 0x95, 0x3b, 0x15, 0x75, 0xda,
+	0x64, 0x26, 0xe3, 0x19, 0xd2, 0xfd, 0x25, 0x40, 0xea, 0x9c, 0xc9, 0x98, 0xd9, 0xa4, 0xc4, 0x70,
+	0x2c, 0x62, 0xd8, 0x36, 0xf3, 0x39, 0xde, 0x93, 0xd9, 0x1b, 0x51, 0x76, 0x93, 0xda, 0xd4, 0xb3,
+	0x7a, 0x49, 0x2d, 0x9a, 0x0c, 0x75, 0x13, 0xf9, 0x42, 0x9d, 0x79, 0x2d, 0xe6, 0x55, 0x45, 0x4f,
+	0xf1, 0x21, 0x53, 0xab, 0xe2, 0x8b, 0xd4, 0x0c, 0x8f, 0x0a, 0xcd, 0xa4, 0x53, 0xa9, 0x51, 0xdf,
+	0xa8, 0x10, 0xc7, 0x30, 0x2d, 0x3b, 0x44, 0x83, 0xa7, 0x01, 0xbd, 0xe8, 0x22, 0x76, 0x0c, 0xd7,
+	0x68, 0x79, 0x3a, 0xdd, 0x6b, 0x53, 0xcf, 0xc7, 0xcf, 0xe1, 0x7a, 0x24, 0xea, 0x39, 0xcc, 0xf6,
+	0x28, 0xda, 0x80, 0x9c, 0xc3, 0x23, 0x79, 0x65, 0x5e, 0x29, 0x8d, 0xaf, 0xcf, 0x94, 0x23, 0x26,
+	0x94, 0x05, 0x7c, 0xeb, 0xd2, 0xf1, 0xaf, 0x62, 0x46, 0x97, 0x50, 0xfc, 0x06, 0x8a, 0x9c, 0xeb,
+	0x51, 0x00, 0xdd, 0x71, 0x69, 0x9d, 0xb5, 0x5a, 0x96, 0x2f, 0xdb, 0xa1, 0x39, 0x18, 0xeb, 0x18,
+	0x4d, 0xab, 0x61, 0xf8, 0xcc, 0xe5, 0xd4, 0x63, 0x7a, 0x3f, 0x80, 0x66, 0x21, 0x57, 0xa7, 0xcd,
+	0xa6, 0xe1, 0xe6, 0x47, 0x78, 0x4a, 0x7e, 0xe1, 0x06, 0xcc, 0x27, 0x13, 0x4b, 0xc5, 0x9b, 0x30,
+	0xe6, 0xf4, 0x82, 0x52, 0x34, 0x1e, 0x10, 0x1d, 0x57, 0xde, 0x2f, 0xc2, 0x38, 0xb9, 0x4b, 0x60,
+	0x97, 0x09, 0x0b, 0x43, 0x30, 0x52, 0xca, 0x16, 0x40, 0xc0, 0xda, 0x35, 0x30, 0x9b, 0x52, 0x4b,
+	0xa8, 0x0a, 0xbf, 0x82, 0xb9, 0x81, 0x46, 0xdb, 0xff, 0xc1, 0x48, 0x1d, 0x6e, 0x26, 0xb0, 0x4a,
+	0xe9, 0x15, 0xc8, 0x45, 0x2c, 0x2c, 0x24, 0xca, 0xd6, 0x25, 0x10, 0x17, 0x13, 0x38, 0x03, 0xcf,
+	0x5e, 0x83, 0x96, 0x04, 0x08, 0x5e, 0xdb, 0x68, 0xd4, 0xad, 0x21, 0x6d, 0x7b, 0x48, 0xac, 0x42,
+	0x9e, 0xd3, 0x0a, 0xb2, 0x1d, 0xea, 0x5a, 0xac, 0xd1, 0x6b, 0x79, 0xa4, 0x40, 0x21, 0x26, 0x29,
+	0xdb, 0x2d, 0xc1, 0xb5, 0x7a, 0xdb, 0x75, 0xa9, 0xed, 0x57, 0x77, 0xa9, 0x65, 0xee, 0x8a, 0xc3,
+	0x66, 0xf5, 0x09, 0x19, 0x7d, 0xca, 0x83, 0x68, 0x15, 0xa6, 0x3a, 0xcc, 0xa7, 0x55, 0x87, 0x57,
+	0x57, 0x3d, 0xdf, 0x70, 0x7d, 0xee, 0x67, 0x56, 0x9f, 0xec, 0x26, 0x04, 0xeb, 0xcb, 0x6e, 0x18,
+	0x2d, 0xc3, 0x64, 0x18, 0x4b, 0xed, 0x46, 0x3e, 0x2b, 0x38, 0xfb, 0xc8, 0xc7, 0x76, 0x03, 0xcf,
+	0xc8, 0x71, 0xdb, 0xe6, 0xf7, 0x11, 0x58, 0xf4, 0x04, 0xa6, 0xa3, 0x61, 0xa9, 0x94, 0xc0, 0xa8,
+	0xb8, 0xb9, 0x9e, 0x31, 0x83, 0x73, 0x28, 0x0a, 0xf4, 0x1e, 0x6a, 0xfd, 0xef, 0x15, 0xb8, 0xcc,
+	0x99, 0xd0, 0x21, 0x8c, 0x87, 0x06, 0x1b, 0x2d, 0x0c, 0x14, 0x9e, 0x5f, 0x05, 0x2a, 0x1e, 0x06,
+	0x11, 0x82, 0xf0, 0xca, 0xc7, 0x1f, 0x7f, 0x3e, 0x8f, 0x2c, 0xa0, 0x22, 0xf1, 0x58, 0xab, 0x45,
+	0x9b, 0x16, 0x75, 0x49, 0x74, 0x7d, 0x89, 0x5d, 0x80, 0xbe, 0x2b, 0xf2, 0x7a, 0x62, 0x1e, 0x3a,
+	0x2a, 0xc7, 0x75, 0x4a, 0xde, 0x1a, 0x2a, 0x49, 0x8d, 0x97, 0x32, 0x37, 0xb9, 0xcc, 0x07, 0xe8,
+	0x7e, 0xb2, 0xcc, 0x60, 0xd4, 0xc8, 0x41, 0x30, 0x37, 0x87, 0xe4, 0x40, 0x18, 0x79, 0x88, 0xbe,
+	0xf6, 0x5e, 0x50, 0xdc, 0xa4, 0xa3, 0xb4, 0x82, 0x02, 0x6f, 0xef, 0xa4, 0x2f, 0x90, 0x47, 0x58,
+	0xe3, 0x47, 0x58, 0x42, 0x8b, 0x29, 0x8e, 0x80, 0xbe, 0x29, 0x30, 0x13, 0x3b, 0x63, 0x68, 0x6d,
+	0x78, 0xe3, 0xc8, 0x52, 0x51, 0x6f, 0xa5, 0x03, 0x4b, 0x85, 0x0f, 0xb9, 0xc2, 0x7b, 0xe8, 0x6e,
+	0xa2, 0xc2, 0xa1, 0x0e, 0x7f, 0x51, 0x60, 0x36, 0x7e, 0x2f, 0xa0, 0x54, 0x3a, 0x02, 0x6f, 0x6f,
+	0xa7, 0x44, 0x4b, 0xd9, 0x25, 0x2e, 0x1b, 0xa3, 0xf9, 0x8b, 0x64, 0xa3, 0x23, 0x05, 0xa6, 0xce,
+	0x6d, 0x11, 0xb4, 0x12, 0xd7, 0x2e, 0x66, 0x09, 0xa9, 0xa5, 0x8b, 0x81, 0x52, 0x52, 0x99, 0x4b,
+	0x2a, 0xa1, 0xe5, 0x0b, 0x24, 0xc9, 0xf5, 0x82, 0x3e, 0x28, 0x70, 0x35, 0xbc, 0x2f, 0x50, 0xec,
+	0xe8, 0x46, 0x77, 0x8c, 0xba, 0x38, 0x14, 0x93, 0xde, 0x1c, 0x51, 0xb1, 0xf5, 0xec, 0xf8, 0x54,
+	0x53, 0x4e, 0x4e, 0x35, 0xe5, 0xf7, 0xa9, 0xa6, 0x7c, 0x3a, 0xd3, 0x32, 0x27, 0x67, 0x5a, 0xe6,
+	0xe7, 0x99, 0x96, 0x79, 0x4b, 0x4c, 0xcb, 0xdf, 0x6d, 0xd7, 0xca, 0x75, 0xd6, 0x22, 0x0e, 0x35,
+	0xcd, 0xfd, 0x77, 0x9d, 0x10, 0xdb, 0xfb, 0x30, 0x9f, 0xbf, 0xef, 0x50, 0xaf, 0x96, 0xe3, 0x7f,
+	0x50, 0x36, 0xfe, 0x05, 0x00, 0x00, 0xff, 0xff, 0x4f, 0x25, 0xf8, 0xe4, 0x84, 0x09, 0x00, 0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -683,16 +751,18 @@ const _ = grpc.SupportPackageIsVersion4
 type QueryClient interface {
 	// QueryParams queries the allocation module parameters.
 	QueryParams(ctx context.Context, in *QueryParamsRequest, opts ...grpc.CallOption) (*QueryParamsResponse, error)
-	// QueryDelegateAddress queries the delegate account address of a validator
-	QueryDelegateAddress(ctx context.Context, in *QueryDelegateAddressRequest, opts ...grpc.CallOption) (*QueryDelegateAddressResponse, error)
-	// QueryValidatorAddress returns the validator address of a given delegate
-	QueryValidatorAddress(ctx context.Context, in *QueryValidatorAddressRequest, opts ...grpc.CallOption) (*QueryValidatorAddressResponse, error)
 	// QueryAllocationPrecommit queries the validator prevote in the current voting period
 	QueryAllocationPrecommit(ctx context.Context, in *QueryAllocationPrecommitRequest, opts ...grpc.CallOption) (*QueryAllocationPrecommitResponse, error)
+	// QueryAllocationPrecommits queries all allocation precommits in the voting period
+	QueryAllocationPrecommits(ctx context.Context, in *QueryAllocationPrecommitsRequest, opts ...grpc.CallOption) (*QueryAllocationPrecommitsResponse, error)
 	// QueryAllocationCommit queries the validator vote in the current voting period
 	QueryAllocationCommit(ctx context.Context, in *QueryAllocationCommitRequest, opts ...grpc.CallOption) (*QueryAllocationCommitResponse, error)
+	// QueryAllocationCommits queries all validator allocation commits
+	QueryAllocationCommits(ctx context.Context, in *QueryAllocationCommitsRequest, opts ...grpc.CallOption) (*QueryAllocationCommitsResponse, error)
 	// QueryVotePeriod queries the heights for the current voting period (current, start and end)
 	QueryCommitPeriod(ctx context.Context, in *QueryCommitPeriodRequest, opts ...grpc.CallOption) (*QueryCommitPeriodResponse, error)
+	// QueryCellars returns all cellars and current tick ranges
+	QueryCellars(ctx context.Context, in *QueryCellarsRequest, opts ...grpc.CallOption) (*QueryCellarsResponse, error)
 }
 
 type queryClient struct {
@@ -712,27 +782,18 @@ func (c *queryClient) QueryParams(ctx context.Context, in *QueryParamsRequest, o
 	return out, nil
 }
 
-func (c *queryClient) QueryDelegateAddress(ctx context.Context, in *QueryDelegateAddressRequest, opts ...grpc.CallOption) (*QueryDelegateAddressResponse, error) {
-	out := new(QueryDelegateAddressResponse)
-	err := c.cc.Invoke(ctx, "/allocation.v1.Query/QueryDelegateAddress", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *queryClient) QueryValidatorAddress(ctx context.Context, in *QueryValidatorAddressRequest, opts ...grpc.CallOption) (*QueryValidatorAddressResponse, error) {
-	out := new(QueryValidatorAddressResponse)
-	err := c.cc.Invoke(ctx, "/allocation.v1.Query/QueryValidatorAddress", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
 func (c *queryClient) QueryAllocationPrecommit(ctx context.Context, in *QueryAllocationPrecommitRequest, opts ...grpc.CallOption) (*QueryAllocationPrecommitResponse, error) {
 	out := new(QueryAllocationPrecommitResponse)
 	err := c.cc.Invoke(ctx, "/allocation.v1.Query/QueryAllocationPrecommit", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *queryClient) QueryAllocationPrecommits(ctx context.Context, in *QueryAllocationPrecommitsRequest, opts ...grpc.CallOption) (*QueryAllocationPrecommitsResponse, error) {
+	out := new(QueryAllocationPrecommitsResponse)
+	err := c.cc.Invoke(ctx, "/allocation.v1.Query/QueryAllocationPrecommits", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -748,9 +809,27 @@ func (c *queryClient) QueryAllocationCommit(ctx context.Context, in *QueryAlloca
 	return out, nil
 }
 
+func (c *queryClient) QueryAllocationCommits(ctx context.Context, in *QueryAllocationCommitsRequest, opts ...grpc.CallOption) (*QueryAllocationCommitsResponse, error) {
+	out := new(QueryAllocationCommitsResponse)
+	err := c.cc.Invoke(ctx, "/allocation.v1.Query/QueryAllocationCommits", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *queryClient) QueryCommitPeriod(ctx context.Context, in *QueryCommitPeriodRequest, opts ...grpc.CallOption) (*QueryCommitPeriodResponse, error) {
 	out := new(QueryCommitPeriodResponse)
 	err := c.cc.Invoke(ctx, "/allocation.v1.Query/QueryCommitPeriod", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *queryClient) QueryCellars(ctx context.Context, in *QueryCellarsRequest, opts ...grpc.CallOption) (*QueryCellarsResponse, error) {
+	out := new(QueryCellarsResponse)
+	err := c.cc.Invoke(ctx, "/allocation.v1.Query/QueryCellars", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -761,16 +840,18 @@ func (c *queryClient) QueryCommitPeriod(ctx context.Context, in *QueryCommitPeri
 type QueryServer interface {
 	// QueryParams queries the allocation module parameters.
 	QueryParams(context.Context, *QueryParamsRequest) (*QueryParamsResponse, error)
-	// QueryDelegateAddress queries the delegate account address of a validator
-	QueryDelegateAddress(context.Context, *QueryDelegateAddressRequest) (*QueryDelegateAddressResponse, error)
-	// QueryValidatorAddress returns the validator address of a given delegate
-	QueryValidatorAddress(context.Context, *QueryValidatorAddressRequest) (*QueryValidatorAddressResponse, error)
 	// QueryAllocationPrecommit queries the validator prevote in the current voting period
 	QueryAllocationPrecommit(context.Context, *QueryAllocationPrecommitRequest) (*QueryAllocationPrecommitResponse, error)
+	// QueryAllocationPrecommits queries all allocation precommits in the voting period
+	QueryAllocationPrecommits(context.Context, *QueryAllocationPrecommitsRequest) (*QueryAllocationPrecommitsResponse, error)
 	// QueryAllocationCommit queries the validator vote in the current voting period
 	QueryAllocationCommit(context.Context, *QueryAllocationCommitRequest) (*QueryAllocationCommitResponse, error)
+	// QueryAllocationCommits queries all validator allocation commits
+	QueryAllocationCommits(context.Context, *QueryAllocationCommitsRequest) (*QueryAllocationCommitsResponse, error)
 	// QueryVotePeriod queries the heights for the current voting period (current, start and end)
 	QueryCommitPeriod(context.Context, *QueryCommitPeriodRequest) (*QueryCommitPeriodResponse, error)
+	// QueryCellars returns all cellars and current tick ranges
+	QueryCellars(context.Context, *QueryCellarsRequest) (*QueryCellarsResponse, error)
 }
 
 // UnimplementedQueryServer can be embedded to have forward compatible implementations.
@@ -780,20 +861,23 @@ type UnimplementedQueryServer struct {
 func (*UnimplementedQueryServer) QueryParams(ctx context.Context, req *QueryParamsRequest) (*QueryParamsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method QueryParams not implemented")
 }
-func (*UnimplementedQueryServer) QueryDelegateAddress(ctx context.Context, req *QueryDelegateAddressRequest) (*QueryDelegateAddressResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method QueryDelegateAddress not implemented")
-}
-func (*UnimplementedQueryServer) QueryValidatorAddress(ctx context.Context, req *QueryValidatorAddressRequest) (*QueryValidatorAddressResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method QueryValidatorAddress not implemented")
-}
 func (*UnimplementedQueryServer) QueryAllocationPrecommit(ctx context.Context, req *QueryAllocationPrecommitRequest) (*QueryAllocationPrecommitResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method QueryAllocationPrecommit not implemented")
+}
+func (*UnimplementedQueryServer) QueryAllocationPrecommits(ctx context.Context, req *QueryAllocationPrecommitsRequest) (*QueryAllocationPrecommitsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method QueryAllocationPrecommits not implemented")
 }
 func (*UnimplementedQueryServer) QueryAllocationCommit(ctx context.Context, req *QueryAllocationCommitRequest) (*QueryAllocationCommitResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method QueryAllocationCommit not implemented")
 }
+func (*UnimplementedQueryServer) QueryAllocationCommits(ctx context.Context, req *QueryAllocationCommitsRequest) (*QueryAllocationCommitsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method QueryAllocationCommits not implemented")
+}
 func (*UnimplementedQueryServer) QueryCommitPeriod(ctx context.Context, req *QueryCommitPeriodRequest) (*QueryCommitPeriodResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method QueryCommitPeriod not implemented")
+}
+func (*UnimplementedQueryServer) QueryCellars(ctx context.Context, req *QueryCellarsRequest) (*QueryCellarsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method QueryCellars not implemented")
 }
 
 func RegisterQueryServer(s grpc1.Server, srv QueryServer) {
@@ -818,42 +902,6 @@ func _Query_QueryParams_Handler(srv interface{}, ctx context.Context, dec func(i
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Query_QueryDelegateAddress_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(QueryDelegateAddressRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(QueryServer).QueryDelegateAddress(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/allocation.v1.Query/QueryDelegateAddress",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(QueryServer).QueryDelegateAddress(ctx, req.(*QueryDelegateAddressRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _Query_QueryValidatorAddress_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(QueryValidatorAddressRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(QueryServer).QueryValidatorAddress(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/allocation.v1.Query/QueryValidatorAddress",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(QueryServer).QueryValidatorAddress(ctx, req.(*QueryValidatorAddressRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
 func _Query_QueryAllocationPrecommit_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(QueryAllocationPrecommitRequest)
 	if err := dec(in); err != nil {
@@ -868,6 +916,24 @@ func _Query_QueryAllocationPrecommit_Handler(srv interface{}, ctx context.Contex
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(QueryServer).QueryAllocationPrecommit(ctx, req.(*QueryAllocationPrecommitRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Query_QueryAllocationPrecommits_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryAllocationPrecommitsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QueryServer).QueryAllocationPrecommits(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/allocation.v1.Query/QueryAllocationPrecommits",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServer).QueryAllocationPrecommits(ctx, req.(*QueryAllocationPrecommitsRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -890,6 +956,24 @@ func _Query_QueryAllocationCommit_Handler(srv interface{}, ctx context.Context, 
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Query_QueryAllocationCommits_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryAllocationCommitsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QueryServer).QueryAllocationCommits(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/allocation.v1.Query/QueryAllocationCommits",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServer).QueryAllocationCommits(ctx, req.(*QueryAllocationCommitsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _Query_QueryCommitPeriod_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(QueryCommitPeriodRequest)
 	if err := dec(in); err != nil {
@@ -908,6 +992,24 @@ func _Query_QueryCommitPeriod_Handler(srv interface{}, ctx context.Context, dec 
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Query_QueryCellars_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryCellarsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QueryServer).QueryCellars(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/allocation.v1.Query/QueryCellars",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServer).QueryCellars(ctx, req.(*QueryCellarsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 var _Query_serviceDesc = grpc.ServiceDesc{
 	ServiceName: "allocation.v1.Query",
 	HandlerType: (*QueryServer)(nil),
@@ -917,24 +1019,28 @@ var _Query_serviceDesc = grpc.ServiceDesc{
 			Handler:    _Query_QueryParams_Handler,
 		},
 		{
-			MethodName: "QueryDelegateAddress",
-			Handler:    _Query_QueryDelegateAddress_Handler,
-		},
-		{
-			MethodName: "QueryValidatorAddress",
-			Handler:    _Query_QueryValidatorAddress_Handler,
-		},
-		{
 			MethodName: "QueryAllocationPrecommit",
 			Handler:    _Query_QueryAllocationPrecommit_Handler,
+		},
+		{
+			MethodName: "QueryAllocationPrecommits",
+			Handler:    _Query_QueryAllocationPrecommits_Handler,
 		},
 		{
 			MethodName: "QueryAllocationCommit",
 			Handler:    _Query_QueryAllocationCommit_Handler,
 		},
 		{
+			MethodName: "QueryAllocationCommits",
+			Handler:    _Query_QueryAllocationCommits_Handler,
+		},
+		{
 			MethodName: "QueryCommitPeriod",
 			Handler:    _Query_QueryCommitPeriod_Handler,
+		},
+		{
+			MethodName: "QueryCellars",
+			Handler:    _Query_QueryCellars_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
@@ -994,126 +1100,6 @@ func (m *QueryParamsResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	}
 	i--
 	dAtA[i] = 0xa
-	return len(dAtA) - i, nil
-}
-
-func (m *QueryDelegateAddressRequest) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
-	dAtA = make([]byte, size)
-	n, err := m.MarshalToSizedBuffer(dAtA[:size])
-	if err != nil {
-		return nil, err
-	}
-	return dAtA[:n], nil
-}
-
-func (m *QueryDelegateAddressRequest) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
-	return m.MarshalToSizedBuffer(dAtA[:size])
-}
-
-func (m *QueryDelegateAddressRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
-	i := len(dAtA)
-	_ = i
-	var l int
-	_ = l
-	if len(m.Validator) > 0 {
-		i -= len(m.Validator)
-		copy(dAtA[i:], m.Validator)
-		i = encodeVarintQuery(dAtA, i, uint64(len(m.Validator)))
-		i--
-		dAtA[i] = 0xa
-	}
-	return len(dAtA) - i, nil
-}
-
-func (m *QueryDelegateAddressResponse) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
-	dAtA = make([]byte, size)
-	n, err := m.MarshalToSizedBuffer(dAtA[:size])
-	if err != nil {
-		return nil, err
-	}
-	return dAtA[:n], nil
-}
-
-func (m *QueryDelegateAddressResponse) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
-	return m.MarshalToSizedBuffer(dAtA[:size])
-}
-
-func (m *QueryDelegateAddressResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
-	i := len(dAtA)
-	_ = i
-	var l int
-	_ = l
-	if len(m.Delegate) > 0 {
-		i -= len(m.Delegate)
-		copy(dAtA[i:], m.Delegate)
-		i = encodeVarintQuery(dAtA, i, uint64(len(m.Delegate)))
-		i--
-		dAtA[i] = 0x12
-	}
-	return len(dAtA) - i, nil
-}
-
-func (m *QueryValidatorAddressRequest) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
-	dAtA = make([]byte, size)
-	n, err := m.MarshalToSizedBuffer(dAtA[:size])
-	if err != nil {
-		return nil, err
-	}
-	return dAtA[:n], nil
-}
-
-func (m *QueryValidatorAddressRequest) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
-	return m.MarshalToSizedBuffer(dAtA[:size])
-}
-
-func (m *QueryValidatorAddressRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
-	i := len(dAtA)
-	_ = i
-	var l int
-	_ = l
-	if len(m.Delegate) > 0 {
-		i -= len(m.Delegate)
-		copy(dAtA[i:], m.Delegate)
-		i = encodeVarintQuery(dAtA, i, uint64(len(m.Delegate)))
-		i--
-		dAtA[i] = 0xa
-	}
-	return len(dAtA) - i, nil
-}
-
-func (m *QueryValidatorAddressResponse) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
-	dAtA = make([]byte, size)
-	n, err := m.MarshalToSizedBuffer(dAtA[:size])
-	if err != nil {
-		return nil, err
-	}
-	return dAtA[:n], nil
-}
-
-func (m *QueryValidatorAddressResponse) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
-	return m.MarshalToSizedBuffer(dAtA[:size])
-}
-
-func (m *QueryValidatorAddressResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
-	i := len(dAtA)
-	_ = i
-	var l int
-	_ = l
-	if len(m.Validator) > 0 {
-		i -= len(m.Validator)
-		copy(dAtA[i:], m.Validator)
-		i = encodeVarintQuery(dAtA, i, uint64(len(m.Validator)))
-		i--
-		dAtA[i] = 0xa
-	}
 	return len(dAtA) - i, nil
 }
 
@@ -1185,6 +1171,66 @@ func (m *QueryAllocationPrecommitResponse) MarshalToSizedBuffer(dAtA []byte) (in
 		}
 		i--
 		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *QueryAllocationPrecommitsRequest) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *QueryAllocationPrecommitsRequest) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *QueryAllocationPrecommitsRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	return len(dAtA) - i, nil
+}
+
+func (m *QueryAllocationPrecommitsResponse) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *QueryAllocationPrecommitsResponse) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *QueryAllocationPrecommitsResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.Precommits) > 0 {
+		for iNdEx := len(m.Precommits) - 1; iNdEx >= 0; iNdEx-- {
+			{
+				size, err := m.Precommits[iNdEx].MarshalToSizedBuffer(dAtA[:i])
+				if err != nil {
+					return 0, err
+				}
+				i -= size
+				i = encodeVarintQuery(dAtA, i, uint64(size))
+			}
+			i--
+			dAtA[i] = 0xa
+		}
 	}
 	return len(dAtA) - i, nil
 }
@@ -1261,6 +1307,66 @@ func (m *QueryAllocationCommitResponse) MarshalToSizedBuffer(dAtA []byte) (int, 
 	return len(dAtA) - i, nil
 }
 
+func (m *QueryAllocationCommitsRequest) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *QueryAllocationCommitsRequest) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *QueryAllocationCommitsRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	return len(dAtA) - i, nil
+}
+
+func (m *QueryAllocationCommitsResponse) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *QueryAllocationCommitsResponse) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *QueryAllocationCommitsResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.Commits) > 0 {
+		for iNdEx := len(m.Commits) - 1; iNdEx >= 0; iNdEx-- {
+			{
+				size, err := m.Commits[iNdEx].MarshalToSizedBuffer(dAtA[:i])
+				if err != nil {
+					return 0, err
+				}
+				i -= size
+				i = encodeVarintQuery(dAtA, i, uint64(size))
+			}
+			i--
+			dAtA[i] = 0xa
+		}
+	}
+	return len(dAtA) - i, nil
+}
+
 func (m *QueryCommitPeriodRequest) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
@@ -1322,6 +1428,66 @@ func (m *QueryCommitPeriodResponse) MarshalToSizedBuffer(dAtA []byte) (int, erro
 	return len(dAtA) - i, nil
 }
 
+func (m *QueryCellarsRequest) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *QueryCellarsRequest) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *QueryCellarsRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	return len(dAtA) - i, nil
+}
+
+func (m *QueryCellarsResponse) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *QueryCellarsResponse) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *QueryCellarsResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.Cellars) > 0 {
+		for iNdEx := len(m.Cellars) - 1; iNdEx >= 0; iNdEx-- {
+			{
+				size, err := m.Cellars[iNdEx].MarshalToSizedBuffer(dAtA[:i])
+				if err != nil {
+					return 0, err
+				}
+				i -= size
+				i = encodeVarintQuery(dAtA, i, uint64(size))
+			}
+			i--
+			dAtA[i] = 0xa
+		}
+	}
+	return len(dAtA) - i, nil
+}
+
 func encodeVarintQuery(dAtA []byte, offset int, v uint64) int {
 	offset -= sovQuery(v)
 	base := offset
@@ -1353,58 +1519,6 @@ func (m *QueryParamsResponse) Size() (n int) {
 	return n
 }
 
-func (m *QueryDelegateAddressRequest) Size() (n int) {
-	if m == nil {
-		return 0
-	}
-	var l int
-	_ = l
-	l = len(m.Validator)
-	if l > 0 {
-		n += 1 + l + sovQuery(uint64(l))
-	}
-	return n
-}
-
-func (m *QueryDelegateAddressResponse) Size() (n int) {
-	if m == nil {
-		return 0
-	}
-	var l int
-	_ = l
-	l = len(m.Delegate)
-	if l > 0 {
-		n += 1 + l + sovQuery(uint64(l))
-	}
-	return n
-}
-
-func (m *QueryValidatorAddressRequest) Size() (n int) {
-	if m == nil {
-		return 0
-	}
-	var l int
-	_ = l
-	l = len(m.Delegate)
-	if l > 0 {
-		n += 1 + l + sovQuery(uint64(l))
-	}
-	return n
-}
-
-func (m *QueryValidatorAddressResponse) Size() (n int) {
-	if m == nil {
-		return 0
-	}
-	var l int
-	_ = l
-	l = len(m.Validator)
-	if l > 0 {
-		n += 1 + l + sovQuery(uint64(l))
-	}
-	return n
-}
-
 func (m *QueryAllocationPrecommitRequest) Size() (n int) {
 	if m == nil {
 		return 0
@@ -1431,6 +1545,30 @@ func (m *QueryAllocationPrecommitResponse) Size() (n int) {
 	if m.Precommit != nil {
 		l = m.Precommit.Size()
 		n += 1 + l + sovQuery(uint64(l))
+	}
+	return n
+}
+
+func (m *QueryAllocationPrecommitsRequest) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	return n
+}
+
+func (m *QueryAllocationPrecommitsResponse) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if len(m.Precommits) > 0 {
+		for _, e := range m.Precommits {
+			l = e.Size()
+			n += 1 + l + sovQuery(uint64(l))
+		}
 	}
 	return n
 }
@@ -1465,6 +1603,30 @@ func (m *QueryAllocationCommitResponse) Size() (n int) {
 	return n
 }
 
+func (m *QueryAllocationCommitsRequest) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	return n
+}
+
+func (m *QueryAllocationCommitsResponse) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if len(m.Commits) > 0 {
+		for _, e := range m.Commits {
+			l = e.Size()
+			n += 1 + l + sovQuery(uint64(l))
+		}
+	}
+	return n
+}
+
 func (m *QueryCommitPeriodRequest) Size() (n int) {
 	if m == nil {
 		return 0
@@ -1488,6 +1650,30 @@ func (m *QueryCommitPeriodResponse) Size() (n int) {
 	}
 	if m.VotePeriodEnd != 0 {
 		n += 1 + sovQuery(uint64(m.VotePeriodEnd))
+	}
+	return n
+}
+
+func (m *QueryCellarsRequest) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	return n
+}
+
+func (m *QueryCellarsResponse) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if len(m.Cellars) > 0 {
+		for _, e := range m.Cellars {
+			l = e.Size()
+			n += 1 + l + sovQuery(uint64(l))
+		}
 	}
 	return n
 }
@@ -1609,334 +1795,6 @@ func (m *QueryParamsResponse) Unmarshal(dAtA []byte) error {
 			if err := m.Params.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
-			iNdEx = postIndex
-		default:
-			iNdEx = preIndex
-			skippy, err := skipQuery(dAtA[iNdEx:])
-			if err != nil {
-				return err
-			}
-			if (skippy < 0) || (iNdEx+skippy) < 0 {
-				return ErrInvalidLengthQuery
-			}
-			if (iNdEx + skippy) > l {
-				return io.ErrUnexpectedEOF
-			}
-			iNdEx += skippy
-		}
-	}
-
-	if iNdEx > l {
-		return io.ErrUnexpectedEOF
-	}
-	return nil
-}
-func (m *QueryDelegateAddressRequest) Unmarshal(dAtA []byte) error {
-	l := len(dAtA)
-	iNdEx := 0
-	for iNdEx < l {
-		preIndex := iNdEx
-		var wire uint64
-		for shift := uint(0); ; shift += 7 {
-			if shift >= 64 {
-				return ErrIntOverflowQuery
-			}
-			if iNdEx >= l {
-				return io.ErrUnexpectedEOF
-			}
-			b := dAtA[iNdEx]
-			iNdEx++
-			wire |= uint64(b&0x7F) << shift
-			if b < 0x80 {
-				break
-			}
-		}
-		fieldNum := int32(wire >> 3)
-		wireType := int(wire & 0x7)
-		if wireType == 4 {
-			return fmt.Errorf("proto: QueryDelegateAddressRequest: wiretype end group for non-group")
-		}
-		if fieldNum <= 0 {
-			return fmt.Errorf("proto: QueryDelegateAddressRequest: illegal tag %d (wire type %d)", fieldNum, wire)
-		}
-		switch fieldNum {
-		case 1:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Validator", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowQuery
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthQuery
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthQuery
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.Validator = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
-		default:
-			iNdEx = preIndex
-			skippy, err := skipQuery(dAtA[iNdEx:])
-			if err != nil {
-				return err
-			}
-			if (skippy < 0) || (iNdEx+skippy) < 0 {
-				return ErrInvalidLengthQuery
-			}
-			if (iNdEx + skippy) > l {
-				return io.ErrUnexpectedEOF
-			}
-			iNdEx += skippy
-		}
-	}
-
-	if iNdEx > l {
-		return io.ErrUnexpectedEOF
-	}
-	return nil
-}
-func (m *QueryDelegateAddressResponse) Unmarshal(dAtA []byte) error {
-	l := len(dAtA)
-	iNdEx := 0
-	for iNdEx < l {
-		preIndex := iNdEx
-		var wire uint64
-		for shift := uint(0); ; shift += 7 {
-			if shift >= 64 {
-				return ErrIntOverflowQuery
-			}
-			if iNdEx >= l {
-				return io.ErrUnexpectedEOF
-			}
-			b := dAtA[iNdEx]
-			iNdEx++
-			wire |= uint64(b&0x7F) << shift
-			if b < 0x80 {
-				break
-			}
-		}
-		fieldNum := int32(wire >> 3)
-		wireType := int(wire & 0x7)
-		if wireType == 4 {
-			return fmt.Errorf("proto: QueryDelegateAddressResponse: wiretype end group for non-group")
-		}
-		if fieldNum <= 0 {
-			return fmt.Errorf("proto: QueryDelegateAddressResponse: illegal tag %d (wire type %d)", fieldNum, wire)
-		}
-		switch fieldNum {
-		case 2:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Delegate", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowQuery
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthQuery
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthQuery
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.Delegate = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
-		default:
-			iNdEx = preIndex
-			skippy, err := skipQuery(dAtA[iNdEx:])
-			if err != nil {
-				return err
-			}
-			if (skippy < 0) || (iNdEx+skippy) < 0 {
-				return ErrInvalidLengthQuery
-			}
-			if (iNdEx + skippy) > l {
-				return io.ErrUnexpectedEOF
-			}
-			iNdEx += skippy
-		}
-	}
-
-	if iNdEx > l {
-		return io.ErrUnexpectedEOF
-	}
-	return nil
-}
-func (m *QueryValidatorAddressRequest) Unmarshal(dAtA []byte) error {
-	l := len(dAtA)
-	iNdEx := 0
-	for iNdEx < l {
-		preIndex := iNdEx
-		var wire uint64
-		for shift := uint(0); ; shift += 7 {
-			if shift >= 64 {
-				return ErrIntOverflowQuery
-			}
-			if iNdEx >= l {
-				return io.ErrUnexpectedEOF
-			}
-			b := dAtA[iNdEx]
-			iNdEx++
-			wire |= uint64(b&0x7F) << shift
-			if b < 0x80 {
-				break
-			}
-		}
-		fieldNum := int32(wire >> 3)
-		wireType := int(wire & 0x7)
-		if wireType == 4 {
-			return fmt.Errorf("proto: QueryValidatorAddressRequest: wiretype end group for non-group")
-		}
-		if fieldNum <= 0 {
-			return fmt.Errorf("proto: QueryValidatorAddressRequest: illegal tag %d (wire type %d)", fieldNum, wire)
-		}
-		switch fieldNum {
-		case 1:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Delegate", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowQuery
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthQuery
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthQuery
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.Delegate = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
-		default:
-			iNdEx = preIndex
-			skippy, err := skipQuery(dAtA[iNdEx:])
-			if err != nil {
-				return err
-			}
-			if (skippy < 0) || (iNdEx+skippy) < 0 {
-				return ErrInvalidLengthQuery
-			}
-			if (iNdEx + skippy) > l {
-				return io.ErrUnexpectedEOF
-			}
-			iNdEx += skippy
-		}
-	}
-
-	if iNdEx > l {
-		return io.ErrUnexpectedEOF
-	}
-	return nil
-}
-func (m *QueryValidatorAddressResponse) Unmarshal(dAtA []byte) error {
-	l := len(dAtA)
-	iNdEx := 0
-	for iNdEx < l {
-		preIndex := iNdEx
-		var wire uint64
-		for shift := uint(0); ; shift += 7 {
-			if shift >= 64 {
-				return ErrIntOverflowQuery
-			}
-			if iNdEx >= l {
-				return io.ErrUnexpectedEOF
-			}
-			b := dAtA[iNdEx]
-			iNdEx++
-			wire |= uint64(b&0x7F) << shift
-			if b < 0x80 {
-				break
-			}
-		}
-		fieldNum := int32(wire >> 3)
-		wireType := int(wire & 0x7)
-		if wireType == 4 {
-			return fmt.Errorf("proto: QueryValidatorAddressResponse: wiretype end group for non-group")
-		}
-		if fieldNum <= 0 {
-			return fmt.Errorf("proto: QueryValidatorAddressResponse: illegal tag %d (wire type %d)", fieldNum, wire)
-		}
-		switch fieldNum {
-		case 1:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Validator", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowQuery
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthQuery
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthQuery
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.Validator = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
@@ -2135,6 +1993,140 @@ func (m *QueryAllocationPrecommitResponse) Unmarshal(dAtA []byte) error {
 				m.Precommit = &AllocationPrecommit{}
 			}
 			if err := m.Precommit.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuery(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *QueryAllocationPrecommitsRequest) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuery
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: QueryAllocationPrecommitsRequest: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: QueryAllocationPrecommitsRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuery(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *QueryAllocationPrecommitsResponse) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuery
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: QueryAllocationPrecommitsResponse: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: QueryAllocationPrecommitsResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Precommits", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Precommits = append(m.Precommits, &AllocationPrecommit{})
+			if err := m.Precommits[len(m.Precommits)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex
@@ -2359,6 +2351,140 @@ func (m *QueryAllocationCommitResponse) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
+func (m *QueryAllocationCommitsRequest) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuery
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: QueryAllocationCommitsRequest: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: QueryAllocationCommitsRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuery(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *QueryAllocationCommitsResponse) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuery
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: QueryAllocationCommitsResponse: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: QueryAllocationCommitsResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Commits", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Commits = append(m.Commits, &Allocation{})
+			if err := m.Commits[len(m.Commits)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuery(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
 func (m *QueryCommitPeriodRequest) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
@@ -2495,6 +2621,140 @@ func (m *QueryCommitPeriodResponse) Unmarshal(dAtA []byte) error {
 					break
 				}
 			}
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuery(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *QueryCellarsRequest) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuery
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: QueryCellarsRequest: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: QueryCellarsRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuery(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *QueryCellarsResponse) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuery
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: QueryCellarsResponse: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: QueryCellarsResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Cellars", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Cellars = append(m.Cellars, &Cellar{})
+			if err := m.Cellars[len(m.Cellars)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
 			skippy, err := skipQuery(dAtA[iNdEx:])

@@ -3,7 +3,7 @@ package keeper
 import (
 	"bytes"
 	"context"
-	"encoding/hex"
+	"encoding/json"
 	"fmt"
 	"strings"
 
@@ -20,54 +20,8 @@ import (
 
 var _ types.MsgServer = Keeper{}
 
-// DelegateAllocations implements types.MsgServer
-func (k Keeper) DelegateAllocations(c context.Context, msg *types.MsgDelegateAllocations) (*types.MsgDelegateAllocationsResponse, error) {
-	ctx := sdk.UnwrapSDKContext(c)
-
-	val, del := msg.MustGetValidator(), msg.MustGetDelegate()
-
-	// check that the signer is a bonded validator and is not jailed
-	validator := k.stakingKeeper.Validator(ctx, val)
-	if validator == nil {
-		return nil, sdkerrors.Wrap(stakingtypes.ErrNoValidatorFound, val.String())
-	}
-
-	if validator.IsUnbonded() {
-		return nil, sdkerrors.Wrapf(sdkerrors.ErrUnauthorized, "validator %s cannot be unbonded", validator.GetOperator())
-	}
-
-	if validator.IsJailed() {
-		return nil, sdkerrors.Wrap(stakingtypes.ErrValidatorJailed, validator.GetOperator().String())
-	}
-
-	// check that the delegate feeder is not a validator, this prevents mirroring and freeloading
-	// See https://medium.com/fabric-ventures/decentralised-oracles-a-comprehensive-overview-d3168b9a8841
-	if k.stakingKeeper.Validator(ctx, sdk.ValAddress(del)) != nil {
-		return nil, sdkerrors.Wrapf(sdkerrors.ErrUnauthorized, "feeder delegate %s cannot be a validator", del)
-	}
-
-	k.SetValidatorDelegateAddress(ctx, del, val)
-
-	ctx.EventManager().EmitEvent(
-		sdk.NewEvent(
-			sdk.EventTypeMessage,
-			sdk.NewAttribute(sdk.AttributeKeyModule, types.AttributeValueCategory),
-			sdk.NewAttribute(sdk.AttributeKeyAction, types.EventTypeDelegateAllocations),
-			sdk.NewAttribute(sdk.AttributeKeySender, msg.Validator),
-			sdk.NewAttribute(types.AttributeKeyValidator, msg.Validator),
-			sdk.NewAttribute(types.AttributeKeyDeleagate, msg.Delegate),
-		),
-	)
-
-	return &types.MsgDelegateAllocationsResponse{}, nil
-}
-
-// AllocationPrecommit implements types.MsgServer
-func (k Keeper) AllocationPrecommit(c context.Context, msg *types.MsgAllocationPrecommit) (*types.MsgAllocationPrecommitResponse, error) {
-	ctx := sdk.UnwrapSDKContext(c)
-
-	signer := msg.MustGetSigner()
-	validatorAddr := k.GetValidatorAddressFromDelegate(ctx, signer)
+func (k Keeper) signerToValAddr(ctx sdk.Context, signer sdk.AccAddress) (sdk.ValAddress, error) {
+	validatorAddr := k.gravityKeeper.GetOrchestratorValidatorAddress(ctx, signer)
 	if validatorAddr == nil {
 		validator := k.stakingKeeper.Validator(ctx, sdk.ValAddress(signer))
 		if validator == nil {
@@ -76,16 +30,36 @@ func (k Keeper) AllocationPrecommit(c context.Context, msg *types.MsgAllocationP
 
 		validatorAddr = validator.GetOperator()
 		// NOTE: we set the validator address so we don't have to call look up for the validator
-		// everytime the a validator feeder submits oracle data
-		k.SetValidatorDelegateAddress(ctx, signer, validatorAddr)
+		// everytime a validator feeder submits oracle data
+		k.gravityKeeper.SetOrchestratorValidatorAddress(ctx, validatorAddr, signer)
+	}
+	return validatorAddr, nil
+}
+
+// AllocationPrecommit implements types.MsgServer
+func (k Keeper) AllocationPrecommit(c context.Context, msg *types.MsgAllocationPrecommit) (*types.MsgAllocationPrecommitResponse, error) {
+	ctx := sdk.UnwrapSDKContext(c)
+
+	signer := msg.MustGetSigner()
+	validatorAddr, err := k.signerToValAddr(ctx, signer)
+	if err != nil {
+		return nil, err
 	}
 
 	// TODO: set precommit for current voting period
 	hashList := make([]string, len(msg.Precommit))
 	cellarList := make([]string, len(msg.Precommit))
+
+	cellarSet := mapset.NewThreadUnsafeSet()
+	for _, cellar := range k.GetCellars(ctx) {
+		cellarSet.Add(cellar.Id)
+	}
 	for _, ap := range msg.Precommit {
+		if !cellarSet.Contains(ap.CellarId) {
+			return nil, fmt.Errorf("precommit for unknown cellar ID %s", ap.CellarId)
+		}
 		cellarList = append(cellarList, ap.CellarId)
-		hashList = append(hashList, ap.Hash.String())
+		hashList = append(hashList, string(ap.Hash))
 		k.SetAllocationPrecommit(ctx, validatorAddr, common.HexToAddress(ap.CellarId), *ap)
 	}
 
@@ -118,20 +92,10 @@ func (k Keeper) AllocationCommit(c context.Context, msg *types.MsgAllocationComm
 
 	// Make sure that the message was properly signed
 	signer := msg.MustGetSigner()
-	val := k.GetValidatorAddressFromDelegate(ctx, signer)
-	if val == nil {
-		validator := k.stakingKeeper.Validator(ctx, sdk.ValAddress(signer))
-		if validator == nil {
-			return nil, sdkerrors.Wrap(stakingtypes.ErrNoValidatorFound, sdk.ValAddress(signer).String())
-		}
-
-		val = validator.GetOperator()
-		// NOTE: we set the validator address so we don't have to call look up for the validator
-		// everytime the a validator feeder submits oracle data
-		k.SetValidatorDelegateAddress(ctx, signer, val)
+	val, err := k.signerToValAddr(ctx, signer)
+	if err != nil {
+		return nil, err
 	}
-
-	// check that the validator is still bonded and is not jailed
 
 	allocationEvents := sdk.Events{
 		sdk.NewEvent(
@@ -168,25 +132,29 @@ func (k Keeper) AllocationCommit(c context.Context, msg *types.MsgAllocationComm
 			return nil, sdkerrors.Wrap(types.ErrNoPrecommit, val.String())
 		}
 
-		// marshal the protobuf message to computing the hash
-		databytes, err := commit.Cellar.Marshal()
-
+		// calculate the vote hash on the server
+		commitHash, err := commit.Cellar.Hash(commit.Salt, val)
 		if err != nil {
-			return nil, sdkerrors.Wrap(
-				sdkerrors.ErrJSONMarshal, "failed to marshal json pool allocations",
-			)
+			return nil, sdkerrors.Wrap(sdkerrors.ErrJSONMarshal, "failed to hash cellar allocation")
 		}
 
-		hexbytes := hex.EncodeToString(databytes)
-
-		// calculate the vote hash on the server
-		commitHash := types.DataHash(commit.Salt, hexbytes, val)
-
 		// compare to precommit hash
+		cellarJSON, err := json.Marshal(commit.Cellar)
+		if err != nil {
+			return nil, err
+		}
 		if !bytes.Equal(commitHash, precommit.Hash) {
+			k.Logger(ctx).Error(
+				"error with hash",
+				"msg", msg.String(),
+				"commit", cellarJSON,
+				"signer", val.String(),
+				"salt", commit.Salt,
+				"precommit hash", string(precommit.Hash),
+			)
 			return nil, sdkerrors.Wrapf(
 				types.ErrHashMismatch,
-				"precommit %x ≠ commit %x", precommit.Hash, commitHash,
+				"precommit %x ≠ commit %x. cellar json: %s, signer val %s", precommit.Hash, commitHash, string(cellarJSON), val,
 			)
 		}
 

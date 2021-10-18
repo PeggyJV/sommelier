@@ -13,9 +13,7 @@ message GenesisState {
     Params                          params             = 1 [
         (gogoproto.nullable) = false
     ];
-    repeated MsgDelegateAllocations feeder_delegations = 2 [
-        (gogoproto.nullable) = false
-    ];
+    repeated Cellar cellars = 2;
 }
 
 // Params allocation parameters

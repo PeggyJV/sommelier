@@ -1,5 +1,5 @@
-run:
-  tests: false
+#run:
+#  tests: false
 #   # timeout for analysis, e.g. 30s, 5m, default is 1m
 #   timeout: 5m
 
@@ -58,6 +58,8 @@ issues:
         - stylecheck
   max-issues-per-linter: 10000
   max-same-issues: 10000
+
+  fix: true
 
 linters-settings:
   dogsled:

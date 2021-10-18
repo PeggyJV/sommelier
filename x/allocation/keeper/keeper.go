@@ -4,6 +4,8 @@ import (
 	"bytes"
 	"fmt"
 
+	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
+
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -29,7 +31,6 @@ func NewKeeper(
 	cdc codec.BinaryCodec, key sdk.StoreKey, paramSpace paramtypes.Subspace,
 	stakingKeeper types.StakingKeeper, gravityKeeper types.GravityKeeper,
 ) Keeper {
-
 	// set KeyTable if it has not already been set
 	if !paramSpace.HasKeyTable() {
 		paramSpace = paramSpace.WithKeyTable(types.ParamKeyTable())
@@ -47,69 +48,6 @@ func NewKeeper(
 // Logger returns a module-specific logger.
 func (k Keeper) Logger(ctx sdk.Context) log.Logger {
 	return ctx.Logger().With("module", "x/"+types.ModuleName)
-}
-
-////////////////////////
-// MsgDelegateAddress //
-////////////////////////
-
-// SetValidatorDelegateAddress sets a new address that will have the power to send data on behalf of the validator
-func (k Keeper) SetValidatorDelegateAddress(ctx sdk.Context, del sdk.AccAddress, val sdk.ValAddress) {
-	ctx.KVStore(k.storeKey).Set(types.GetAllocationDelegateKey(del), val.Bytes())
-}
-
-// GetValidatorAddressFromDelegate returns the delegate address for a given validator
-func (k Keeper) GetValidatorAddressFromDelegate(ctx sdk.Context, del sdk.AccAddress) sdk.ValAddress {
-	return ctx.KVStore(k.storeKey).Get(types.GetAllocationDelegateKey(del))
-}
-
-// GetDelegateAddressFromValidator returns the validator address for a given delegate
-func (k Keeper) GetDelegateAddressFromValidator(ctx sdk.Context, val sdk.ValAddress) sdk.AccAddress {
-	var address sdk.AccAddress
-	// TODO: create secondary index
-	k.IterateDelegateAddresses(ctx, func(delegatorAddr sdk.AccAddress, validatorAddr sdk.ValAddress) bool {
-		if !val.Equals(validatorAddr) {
-			return false
-		}
-
-		address = delegatorAddr
-		return true
-	})
-	return address
-}
-
-// IsDelegateAddress returns true if the validator has delegated their feed to an address
-func (k Keeper) IsDelegateAddress(ctx sdk.Context, del sdk.AccAddress) bool {
-	return ctx.KVStore(k.storeKey).Has(types.GetAllocationDelegateKey(del))
-}
-
-// IterateDelegateAddresses iterates over all delegate address pairs in the store
-func (k Keeper) IterateDelegateAddresses(ctx sdk.Context, handler func(del sdk.AccAddress, val sdk.ValAddress) (stop bool)) {
-	store := ctx.KVStore(k.storeKey)
-	iter := sdk.KVStorePrefixIterator(store, []byte{types.AllocationDelegateKeyPrefix})
-	defer iter.Close()
-	for ; iter.Valid(); iter.Next() {
-		del := sdk.AccAddress(bytes.TrimPrefix(iter.Key(), []byte{types.AllocationDelegateKeyPrefix}))
-		val := sdk.ValAddress(iter.Value())
-		if handler(del, val) {
-			break
-		}
-	}
-}
-
-// GetAllAllocationDelegations returns all the delegations for allocations
-func (k Keeper) GetAllAllocationDelegations(ctx sdk.Context) []types.MsgDelegateAllocations {
-	allocationDelegations := make([]types.MsgDelegateAllocations, 0)
-
-	k.IterateDelegateAddresses(ctx, func(del sdk.AccAddress, val sdk.ValAddress) bool {
-		allocationDelegations = append(allocationDelegations, types.MsgDelegateAllocations{
-			Delegate:  del.String(),
-			Validator: val.String(),
-		})
-		return false
-	})
-
-	return allocationDelegations
 }
 
 /////////////
@@ -363,8 +301,8 @@ func (k Keeper) GetParamSet(ctx sdk.Context) types.Params {
 	return p
 }
 
-// SetParams sets the parameters in the store
-func (k Keeper) SetParams(ctx sdk.Context, params types.Params) {
+// setParams sets the parameters in the store
+func (k Keeper) setParams(ctx sdk.Context, params types.Params) {
 	k.paramSpace.SetParamSet(ctx, &params)
 }
 
@@ -435,4 +373,66 @@ func (k Keeper) CommitCellarUpdate(ctx sdk.Context, invalidationNonce uint64, in
 func (k Keeper) DeleteCellar(ctx sdk.Context, cellarAddr common.Address) {
 	store := ctx.KVStore(k.storeKey)
 	store.Delete(types.GetCellarKey(cellarAddr))
+}
+
+///////////
+// Votes //
+///////////
+
+func (k Keeper) GetWinningVotes(ctx sdk.Context, threshold sdk.Dec) (winningVotes []types.Cellar) {
+	for _, cellar := range k.GetCellars(ctx) {
+		cellar := cellar
+		totalPower := int64(0)
+
+		var votes []types.Cellar
+		var votePowers []int64
+
+		// iterate over all bonded validators
+		k.stakingKeeper.IterateBondedValidatorsByPower(ctx, func(_ int64, validator stakingtypes.ValidatorI) bool {
+			validatorPower := validator.GetConsensusPower(k.stakingKeeper.PowerReduction(ctx))
+			totalPower += validatorPower
+
+			commit, ok := k.GetAllocationCommit(ctx, validator.GetOperator(), cellar.Address())
+			if !ok {
+				return false
+			}
+
+			found := false
+			for i, vote := range votes {
+				if vote.Equals(*commit.Cellar) {
+					votePowers[i] += validatorPower
+
+					found = true
+					break
+				}
+			}
+
+			if !found {
+				votes = append(votes, *commit.Cellar)
+				votePowers = append(votePowers, validatorPower)
+			}
+
+			// commit has been counted, removing from the store
+			k.DeleteAllocationCommit(ctx, validator.GetOperator(), cellar.Address())
+
+			return false
+		})
+
+		maxVoteIndex := 0
+		maxVotePower := int64(0)
+		for i, power := range votePowers {
+			if power > maxVotePower {
+				maxVotePower = power
+				maxVoteIndex = i
+			}
+		}
+
+		quorumReached := sdk.NewDec(maxVotePower).Quo(sdk.NewDec(totalPower)).GT(threshold)
+		if quorumReached {
+			winningVote := votes[maxVoteIndex]
+			winningVotes = append(winningVotes, winningVote)
+		}
+	}
+
+	return winningVotes
 }

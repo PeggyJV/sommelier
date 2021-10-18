@@ -13,56 +13,6 @@ import (
 
 var _ types.QueryServer = Keeper{}
 
-// QueryDelegateAddress implements QueryServer
-func (k Keeper) QueryDelegateAddress(c context.Context, req *types.QueryDelegateAddressRequest) (*types.QueryDelegateAddressResponse, error) {
-	if req == nil {
-		return nil, status.Error(codes.InvalidArgument, "empty request")
-	}
-
-	ctx := sdk.UnwrapSDKContext(c)
-
-	val, err := sdk.ValAddressFromBech32(req.Validator)
-	if err != nil {
-		return nil, status.Error(codes.InvalidArgument, err.Error())
-	}
-
-	delegateAddr := k.GetDelegateAddressFromValidator(ctx, val)
-	if delegateAddr == nil {
-		return nil, status.Errorf(
-			codes.NotFound, "delegator address for validator %s", req.Validator,
-		)
-	}
-
-	return &types.QueryDelegateAddressResponse{
-		Delegate: delegateAddr.String(),
-	}, nil
-}
-
-// QueryValidatorAddress implements QueryServer
-func (k Keeper) QueryValidatorAddress(c context.Context, req *types.QueryValidatorAddressRequest) (*types.QueryValidatorAddressResponse, error) {
-	if req == nil {
-		return nil, status.Error(codes.InvalidArgument, "empty request")
-	}
-
-	ctx := sdk.UnwrapSDKContext(c)
-
-	del, err := sdk.AccAddressFromBech32(req.Delegate)
-	if err != nil {
-		return nil, status.Error(codes.InvalidArgument, err.Error())
-	}
-
-	validatorAddr := k.GetValidatorAddressFromDelegate(ctx, del)
-	if validatorAddr == nil {
-		return nil, status.Errorf(
-			codes.NotFound, "delegator address for delegate %s", req.Delegate,
-		)
-	}
-
-	return &types.QueryValidatorAddressResponse{
-		Validator: validatorAddr.String(),
-	}, nil
-}
-
 // QueryAllocationPrecommit implements QueryServer
 func (k Keeper) QueryAllocationPrecommit(c context.Context, req *types.QueryAllocationPrecommitRequest) (*types.QueryAllocationPrecommitResponse, error) {
 	if req == nil {
@@ -83,6 +33,21 @@ func (k Keeper) QueryAllocationPrecommit(c context.Context, req *types.QueryAllo
 
 	return &types.QueryAllocationPrecommitResponse{
 		Precommit: &precommit,
+	}, nil
+}
+
+// QueryAllocationPrecommits implements QueryServer
+func (k Keeper) QueryAllocationPrecommits(c context.Context, _ *types.QueryAllocationPrecommitsRequest) (*types.QueryAllocationPrecommitsResponse, error) {
+	ctx := sdk.UnwrapSDKContext(c)
+
+	var precommits []*types.AllocationPrecommit
+	k.IterateAllocationPrecommits(ctx, func(val sdk.ValAddress, cel common.Address, precommit types.AllocationPrecommit) (stop bool) {
+		precommits = append(precommits, &precommit)
+		return false
+	})
+
+	return &types.QueryAllocationPrecommitsResponse{
+		Precommits: precommits,
 	}, nil
 }
 
@@ -109,6 +74,21 @@ func (k Keeper) QueryAllocationCommit(c context.Context, req *types.QueryAllocat
 	}, nil
 }
 
+// QueryAllocationCommits implements QueryServer
+func (k Keeper) QueryAllocationCommits(c context.Context, _ *types.QueryAllocationCommitsRequest) (*types.QueryAllocationCommitsResponse, error) {
+	ctx := sdk.UnwrapSDKContext(c)
+
+	var commits []*types.Allocation
+	k.IterateAllocationCommits(ctx, func(val sdk.ValAddress, cel common.Address, commit types.Allocation) (stop bool) {
+		commits = append(commits, &commit)
+		return false
+	})
+
+	return &types.QueryAllocationCommitsResponse{
+		Commits: commits,
+	}, nil
+}
+
 // QueryParams implements QueryServer
 func (k Keeper) QueryParams(c context.Context, _ *types.QueryParamsRequest) (*types.QueryParamsResponse, error) {
 	return &types.QueryParamsResponse{
@@ -129,4 +109,16 @@ func (k Keeper) QueryCommitPeriod(c context.Context, _ *types.QueryCommitPeriodR
 		VotePeriodEnd:   votePeriodStart + k.GetParamSet(ctx).VotePeriod,
 		CurrentHeight:   ctx.BlockHeight(),
 	}, nil
+}
+
+func (k Keeper) QueryCellars(c context.Context, _ *types.QueryCellarsRequest) (*types.QueryCellarsResponse, error) {
+	ctx := sdk.UnwrapSDKContext(c)
+
+	var cellars []*types.Cellar
+	k.IterateCellars(ctx, func(cellar types.Cellar) (stop bool) {
+		cellars = append(cellars, &cellar)
+		return false
+	})
+
+	return &types.QueryCellarsResponse{Cellars: cellars}, nil
 }

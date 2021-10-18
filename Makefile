@@ -346,3 +346,55 @@ tools-clean:
 	rm -f proto-tools-stamp buf-stampmodule
 
 .PHONY: proto-all proto-gen proto-swagger-gen proto-format proto-lint proto-check-breaking proto-update-deps
+
+#####################
+# Integration tests #
+#####################
+
+#ORCHESTRATOR_IMAGE := "ghcr.io/peggyjv/gravity-bridge-orchestrator:v0.2.13"
+# pointing at a specific PR currently, for testing
+ORCHESTRATOR_IMAGE := "ghcr.io/peggyjv/gravity-bridge-orchestrator:pr-203"
+
+e2e_build_images:
+	@docker pull $(ORCHESTRATOR_IMAGE)
+	@docker tag $(ORCHESTRATOR_IMAGE) orchestrator:prebuilt
+	@docker build -t sommelier:prebuilt -f Dockerfile .
+	@docker build -t ethereum:prebuilt -f integration_tests/ethereum/Dockerfile integration_tests/ethereum/
+
+e2e_clean_slate:
+	@docker rm --force \
+		$(shell docker ps -qa --filter="name=ethereum") \
+		$(shell docker ps -qa --filter="name=sommelier") \
+		$(shell docker ps -qa --filter="name=orchestrator") \
+		1>/dev/null \
+		2>/dev/null \
+		|| true
+	@docker wait \
+		$(shell docker ps -qa --filter="name=ethereum") \
+		$(shell docker ps -qa --filter="name=sommelier") \
+		$(shell docker ps -qa --filter="name=orchestrator") \
+		1>/dev/null \
+		2>/dev/null \
+		|| true
+	@docker network prune --force 1>/dev/null 2>/dev/null || true
+	@cd integration_tests && go test -c
+
+e2e_basic: e2e_clean_slate
+	@E2E_SKIP_CLEANUP=true
+	@integration_tests/integration_tests.test -test.run TestBasicChain -test.failfast -test.v || make -s fail
+
+e2e_rebalance: e2e_clean_slate
+	@E2E_SKIP_CLEANUP=true integration_tests/integration_tests.test -test.failfast -test.v -test.run IntegrationTestSuite -testify.m TestRebalance || make -s fail
+
+fail:
+	@echo 'test failed; dumping container logs into ./testlogs for review'
+	@docker logs ethereum > testlogs/ethereum.log>&1 || true
+	@docker logs sommelier0 > testlogs/sommelier0.log 2>&1 || true
+	@docker logs sommelier1 > testlogs/sommelier1.log 2>&1 || true
+	@docker logs sommelier2 > testlogs/sommelier2.log 2>&1 || true
+	@docker logs sommelier3 > testlogs/sommelier3.log 2>&1 || true
+	@docker logs orchestrator0 > testlogs/orchestrator0.log 2>&1 || true
+	@docker logs orchestrator1 > testlogs/orchestrator1.log 2>&1 || true
+	@docker logs orchestrator2 > testlogs/orchestrator2.log 2>&1 || true
+	@docker logs orchestrator3 > testlogs/orchestrator3.log 2>&1 || true
+	@false

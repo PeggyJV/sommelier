@@ -27,9 +27,6 @@ const (
 	// CellarKeyPrefix - <prefix><cellar_id> -> Cellar
 	CellarKeyPrefix
 
-	// AllocationDelegateKeyPrefix - <prefix><val_address> -> <delegate_address>
-	AllocationDelegateKeyPrefix // key for validator allocation delegation
-
 	// AllocationPrecommitKeyPrefix - <prefix><val_address><cel_address> -> <hash>
 	AllocationPrecommitKeyPrefix // key for allocation precommits
 
@@ -41,15 +38,7 @@ const (
 
 	// LatestInvalidationNonceKey - <prefix> -> uint64(latestNonce)
 	LatestInvalidationNonceKey
-
-	// CellarUpdateKey - <prefix><invalidationNonce> -> Cellar
-	CellarUpdateKey
 )
-
-// GetAllocationDelegateKey returns the validator for a given delegate key
-func GetAllocationDelegateKey(del sdk.AccAddress) []byte {
-	return append([]byte{AllocationDelegateKeyPrefix}, del.Bytes()...)
-}
 
 // GetAllocationPrecommitKey returns the key for a validators prevote for a cellar
 func GetAllocationPrecommitKey(val sdk.ValAddress, cel common.Address) []byte {

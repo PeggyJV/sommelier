@@ -54,9 +54,9 @@ func validateVotePeriod(i interface{}) error {
 		return fmt.Errorf("invalid parameter type: %T", i)
 	}
 
-	if votePeriod < 4 || votePeriod > 10 {
+	if votePeriod < 4 || votePeriod > 100 {
 		return fmt.Errorf(
-			"vote period should be between 4 and 10 blocks: %d", votePeriod,
+			"vote period should be between 4 and 100 blocks: %d", votePeriod,
 		)
 	}
 
