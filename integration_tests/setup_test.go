@@ -61,18 +61,19 @@ var (
 	stakeAmount, _  = sdk.NewIntFromString("100000000000")
 	stakeAmountCoin = sdk.NewCoin(bondDenom, stakeAmount)
 	hardhatCellar   = common.HexToAddress("0x6ea5992aB4A78D5720bD12A089D13c073d04B55d")
-	gravityContract = common.HexToAddress("0xFbB0BCfed0c82043A7d5387C35Ad8450b44A4cde")
+	gravityContract = common.HexToAddress("0x0000000000000000000000000000000000000000")
 )
 
 type IntegrationTestSuite struct {
 	suite.Suite
 
-	chain         *chain
-	dockerPool    *dockertest.Pool
-	dockerNetwork *dockertest.Network
-	ethResource   *dockertest.Resource
-	valResources  []*dockertest.Resource
-	orchResources []*dockertest.Resource
+	chain                    *chain
+	dockerPool               *dockertest.Pool
+	dockerNetwork            *dockertest.Network
+	ethResource              *dockertest.Resource
+	contractDeployerResource *dockertest.Resource
+	valResources             []*dockertest.Resource
+	orchResources            []*dockertest.Resource
 }
 
 func TestIntegrationTestSuite(t *testing.T) {
@@ -104,6 +105,7 @@ func (s *IntegrationTestSuite) SetupSuite() {
 	// container infrastructure
 	s.runEthContainer()
 	s.runValidators()
+	s.runContractDeployerContainer()
 	s.runOrchestrators()
 }
 
@@ -365,6 +367,7 @@ func (s *IntegrationTestSuite) initGenesis() {
 	var gravityGenState gravitytypes.GenesisState
 	s.Require().NoError(cdc.UnmarshalJSON(appGenState[gravitytypes.ModuleName], &gravityGenState))
 	gravityGenState.Params.GravityId = "gravitytest"
+	// setting the address to a zero address to pass validation. it will be changed later
 	gravityGenState.Params.BridgeEthereumAddress = gravityContract.String()
 	bz, err = cdc.MarshalJSON(&gravityGenState)
 	s.Require().NoError(err)
@@ -487,6 +490,61 @@ func (s *IntegrationTestSuite) runEthContainer() {
 	)
 
 	s.T().Logf("started Ethereum container: %s", s.ethResource.Container.ID)
+}
+
+func (s *IntegrationTestSuite) runContractDeployerContainer() {
+	s.T().Log("starting Contract Deployer container...")
+	var err error
+
+	runOpts := dockertest.RunOptions{
+		Name:       "contract-deployer",
+		Repository: "contract-deployer",
+		Tag:        "prebuilt",
+		NetworkID:  s.dockerNetwork.Network.ID,
+		PortBindings: map[docker.Port][]docker.PortBinding{
+			"8545/tcp": {{HostIP: "", HostPort: "8545"}},
+		},
+		Cmd: []string{"npx",
+			"ts-node",
+			"contract-deployer.ts",
+			`--cosmos-node="http://sommelier0:26657"`,
+			`--eth-node="http://ethereum:8545"`,
+			`--eth-privkey=0xb1bab011e03a9862664706fc3bbaa1b16651528e5f0e7fbfcbfdd8be302a13e7`,
+			"--contract=artifacts/contracts/Gravity.sol/Gravity.json",
+			"--test-mode=true",
+		},
+	}
+
+	s.contractDeployerResource, err = s.dockerPool.RunWithOptions(
+		&runOpts,
+		noRestart,
+	)
+	s.Require().NoError(err)
+
+	contractDeployerLogOutput := bytes.Buffer{}
+	err = s.dockerPool.Client.Logs(docker.LogsOptions{
+		Container:    s.contractDeployerResource.Container.ID,
+		OutputStream: &contractDeployerLogOutput,
+		Stdout:       true,
+	})
+	s.Require().NoError(err, "error getting contract deployer logs")
+
+	s.Require().Eventuallyf(func() bool {
+		for _, s := range strings.Split(contractDeployerLogOutput.String(), "\n") {
+			if strings.HasPrefix(s, "Gravity deployed at Address") {
+				strSpl := strings.Split(s, "-")
+				gravityContract = common.HexToAddress(strings.ReplaceAll(strSpl[1], " ", ""))
+				return true
+			}
+		}
+		return false
+	},
+		time.Minute*5, time.Second*30, "failed to find deployed contract log")
+
+	s.T().Logf("deployed gravity contract at: %s", gravityContract.String())
+	//err = s.dockerPool.RemoveContainerByName(s.contractDeployerResource.Container.Name)
+	//s.Require().NoError(err, "error removing contract deployer container")
+	//s.Require().NotEmptyf(gravityContract, "empty gravity contract")
 }
 
 func (s *IntegrationTestSuite) runValidators() {

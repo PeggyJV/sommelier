@@ -369,6 +369,7 @@ e2e_clean_slate:
 		$(shell docker ps -qa --filter="name=ethereum") \
 		$(shell docker ps -qa --filter="name=sommelier") \
 		$(shell docker ps -qa --filter="name=orchestrator") \
+		$(shell docker ps -qa --filter="name=contract-deployer") \
 		1>/dev/null \
 		2>/dev/null \
 		|| true
@@ -376,6 +377,7 @@ e2e_clean_slate:
 		$(shell docker ps -qa --filter="name=ethereum") \
 		$(shell docker ps -qa --filter="name=sommelier") \
 		$(shell docker ps -qa --filter="name=orchestrator") \
+		$(shell docker ps -qa --filter="name=contract-deployer") \
 		1>/dev/null \
 		2>/dev/null \
 		|| true
@@ -400,4 +402,5 @@ fail:
 	@docker logs orchestrator1 > testlogs/orchestrator1.log 2>&1 || true
 	@docker logs orchestrator2 > testlogs/orchestrator2.log 2>&1 || true
 	@docker logs orchestrator3 > testlogs/orchestrator3.log 2>&1 || true
+	@docker logs contract-deployer > testlogs/contract-deployer.log 2>&1 || true
 	@false

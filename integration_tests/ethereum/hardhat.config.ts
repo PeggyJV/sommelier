@@ -11,6 +11,7 @@ task(
             GRAVITY_OWNER: '0xc6f89c23e136134cD70B8402F1165F3194953A8d',
             GRAVITY: '0xFbB0BCfed0c82043A7d5387C35Ad8450b44A4cde',
             WHALE: '0xd8da6bf26964af9d7eed9e03e53415d37aa96045',
+            CONTRACT_DEPLOYER: '0xBf660843528035a5A4921534E156a27e64B231fE',
         };
 
         console.log('retrieving gravity contract');
@@ -69,6 +70,7 @@ task(
             '0x7bE2a04df4b9C3227928147461e19158eB2B11d1',
             '0xb8c6886FDDa38adaa0F416722dd5554886C43055',
             '0x14fdAC734De10065093C4Ed4a83C41638378005A',
+            ADDRESSES.CONTRACT_DEPLOYER,
         ];
 
         for (let addr of recipients) {
@@ -93,9 +95,6 @@ module.exports = {
                 url: 'https://mainnet.infura.io/v3/d6f22be0f7fd447186086d2495779003',
                 blockNumber: 13357100,
             },
-        },
-        mainnet: {
-            url: 'https://mainnet.infura.io/v3/d6f22be0f7fd447186086d2495779003',
         },
     },
     solidity: {
