@@ -1,6 +1,6 @@
-import {ethers, network } from "hardhat";
+import {ethers, network} from "hardhat";
 import {BigNumberish, Signer} from "ethers";
-import {ADDRESSES, VALIDATORS} from "../hardhat.config";
+import {ADDRESSES, VALIDATORS} from "../addresses";
 
 const hre = require("hardhat");
 
@@ -15,10 +15,11 @@ export function makeCheckpoint(
     gravityId: string
 ) {
     const methodName = ethers.utils.formatBytes32String("checkpoint");
+    const gravityIDBytes = ethers.utils.formatBytes32String(gravityId);
 
     let abiEncoded = ethers.utils.defaultAbiCoder.encode(
         ["bytes32", "bytes32", "uint256", "address[]", "uint256[]"],
-        [gravityId, methodName, valsetNonce, validators, powers]
+        [gravityIDBytes, methodName, valsetNonce, validators, powers]
     );
 
     return ethers.utils.keccak256(abiEncoded);
@@ -27,7 +28,6 @@ export function makeCheckpoint(
 export async function deployTestnetContract() {
     let powers: number[] = [1073741824,1073741824,1073741824,1073741824];
     let powerThreshold: number = 6666;
-
     let {gravity} = await deployContracts("gravitytest", VALIDATORS, powers, powerThreshold);
 
     console.log('taking over cellar owner');
