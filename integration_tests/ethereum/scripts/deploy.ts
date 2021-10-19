@@ -26,7 +26,7 @@ export async function deployTestnetContract() {
     let powers: number[] = [1073741824,1073741824,1073741824,1073741824];
     let powerThreshold: number = 6666;
 
-    let {gravity, checkpoint} = deployContracts("gravitytest", VALIDATORS, powers, powerThreshold);
+    let {gravity} = await deployContracts("gravitytest", VALIDATORS, powers, powerThreshold);
 
     console.log('taking over cellar owner');
     // Take over the cellar owner so we can transfer ownership
@@ -42,14 +42,11 @@ export async function deployTestnetContract() {
     );
     const cellar = await Cellar;
 
-    let { hash } = await cellar.transferOwnership(ADDRESSES.GRAVITY, {
+    let { hash } = await cellar.transferOwnership(gravity.address, {
         gasPrice: ethers.BigNumber.from('99916001694'),
     });
     console.log(
         `Cellar contract at ${cellar.address} is now owned by Gravity contract at ${gravity.address}`,
-    );
-    console.log(
-        `Cellar contract at ${ADDRESSES.CELLAR} is now owned by Gravity contract at ${ADDRESSES.GRAVITY}`,
     );
 }
 
