@@ -1,7 +1,6 @@
-import {ethers} from "hardhat";
+import {ethers, network} from "hardhat";
 import {BigNumberish, Signer} from "ethers";
-import {SignerWithAddress} from "@nomiclabs/hardhat-ethers/signers";
-
+import {ADDRESSES, VALIDATORS} from "../hardhat.config";
 
 export async function getSignerAddresses(signers: Signer[]) {
     return await Promise.all(signers.map(signer => signer.getAddress()));
@@ -24,18 +23,35 @@ export function makeCheckpoint(
 }
 
 export async function deployTestnetContract() {
-    let valAddresses: string[] = [
-        '0xd312f0f1B39D54Db2829537595fC1167B14d4b34',
-        '0x7bE2a04df4b9C3227928147461e19158eB2B11d1',
-        '0xb8c6886FDDa38adaa0F416722dd5554886C43055',
-        '0x14fdAC734De10065093C4Ed4a83C41638378005A'
-    ];
     let powers: number[] = [1073741824,1073741824,1073741824,1073741824];
     let powerThreshold: number = 6666;
 
-    let {gravity, checkpoint} = deployContracts("gravitytest", valAddresses, powers, powerThreshold);
+    let {gravity, checkpoint} = deployContracts("gravitytest", VALIDATORS, powers, powerThreshold);
 
- }
+    console.log('taking over cellar owner');
+    // Take over the cellar owner so we can transfer ownership
+    await network.provider.request({
+        method: 'hardhat_impersonateAccount',
+        params: [ADDRESSES.CELLAR_OWNER],
+    });
+    const cellarSigner = await ethers.getSigner(ADDRESSES.CELLAR_OWNER);
+    const Cellar = ethers.getContractAt(
+        'CellarPoolShare',
+        ADDRESSES.CELLAR,
+        cellarSigner,
+    );
+    const cellar = await Cellar;
+
+    let { hash } = await cellar.transferOwnership(ADDRESSES.GRAVITY, {
+        gasPrice: ethers.BigNumber.from('99916001694'),
+    });
+    console.log(
+        `Cellar contract at ${cellar.address} is now owned by Gravity contract at ${gravity.address}`,
+    );
+    console.log(
+        `Cellar contract at ${ADDRESSES.CELLAR} is now owned by Gravity contract at ${ADDRESSES.GRAVITY}`,
+    );
+}
 
 export async function deployContracts(
     gravityId: string = "foo",
@@ -43,8 +59,11 @@ export async function deployContracts(
     powers: number[],
     powerThreshold: number
 ) {
+    console.log(`creating gravity contract`)
     const Gravity = await ethers.getContractFactory("Gravity");
+    console.log(`creating checkpoint`)
     const checkpoint = makeCheckpoint(valAddresses, powers, 0, gravityId);
+    console.log(`deploying gravity contract`)
     const gravity = (await Gravity.deploy(
         gravityId,
         powerThreshold,
