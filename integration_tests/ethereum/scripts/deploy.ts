@@ -1,6 +1,6 @@
 import {ethers, network} from "hardhat";
 import {BigNumberish, Signer} from "ethers";
-import {ADDRESSES, VALIDATORS} from "../addresses";
+import * as constants from "../addresses";
 
 const hre = require("hardhat");
 
@@ -28,18 +28,18 @@ export function makeCheckpoint(
 export async function deployTestnetContract() {
     let powers: number[] = [1073741824,1073741824,1073741824,1073741824];
     let powerThreshold: number = 6666;
-    let {gravity} = await deployContracts("gravitytest", VALIDATORS, powers, powerThreshold);
+    let {gravity} = await deployContracts("gravitytest", constants.VALIDATORS, powers, powerThreshold);
 
     console.log('taking over cellar owner');
     // Take over the cellar owner so we can transfer ownership
     await network.provider.request({
         method: 'hardhat_impersonateAccount',
-        params: [ADDRESSES.CELLAR_OWNER],
+        params: [constants.CELLAR_OWNER],
     });
-    const cellarSigner = await ethers.getSigner(ADDRESSES.CELLAR_OWNER);
+    const cellarSigner = await ethers.getSigner(constants.CELLAR_OWNER);
     const Cellar = ethers.getContractAt(
         'CellarPoolShare',
-        ADDRESSES.CELLAR,
+        constants.CELLAR,
         cellarSigner,
     );
     const cellar = await Cellar;
@@ -67,7 +67,7 @@ export async function deployContracts(
     const checkpoint = makeCheckpoint(valAddresses, powers, 0, gravityId);
     console.log(`deploying gravity contract`)
     const gravity = (await Gravity.deploy(
-        gravityId,
+        ethers.utils.formatBytes32String(gravityId),
         powerThreshold,
         valAddresses,
         powers

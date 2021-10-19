@@ -1,6 +1,6 @@
 import '@nomiclabs/hardhat-waffle';
 import {task} from 'hardhat/config';
-import {ADDRESSES, VALIDATORS} from "./addresses";
+import * as constants from "./addresses";
 
 task(
     'integration_test_setup',
@@ -53,13 +53,13 @@ task(
         // Take over vitalik.eth
         await hre.network.provider.request({
             method: 'hardhat_impersonateAccount',
-            params: [ADDRESSES.WHALE],
+            params: [constants.WHALE],
         });
 
         // Send ETH to needed parties
-        const whaleSigner = await hre.ethers.getSigner(ADDRESSES.WHALE);
+        const whaleSigner = await hre.ethers.getSigner(constants.WHALE);
 
-        for (let addr of VALIDATORS) {
+        for (let addr of constants.VALIDATORS) {
             await whaleSigner.sendTransaction({
                 to: addr,
                 value: hre.ethers.utils.parseEther('100'),
