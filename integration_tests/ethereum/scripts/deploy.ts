@@ -1,6 +1,8 @@
-import {ethers, network} from "hardhat";
+import {ethers, network } from "hardhat";
 import {BigNumberish, Signer} from "ethers";
 import {ADDRESSES, VALIDATORS} from "../hardhat.config";
+
+const hre = require("hardhat");
 
 export async function getSignerAddresses(signers: Signer[]) {
     return await Promise.all(signers.map(signer => signer.getAddress()));
@@ -48,6 +50,9 @@ export async function deployTestnetContract() {
     console.log(
         `Cellar contract at ${cellar.address} is now owned by Gravity contract at ${gravity.address}`,
     );
+
+    await hre.run('node');
+
 }
 
 export async function deployContracts(
@@ -73,3 +78,9 @@ export async function deployContracts(
 
     return { gravity, checkpoint };
 }
+
+deployTestnetContract().then(() => process.exit(0))
+    .catch((error) => {
+        console.error(error);
+        process.exit(1);
+    });

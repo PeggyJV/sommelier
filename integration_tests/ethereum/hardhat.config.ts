@@ -80,7 +80,7 @@ task(
         }
 
         // start the ethereum node after all setup is complete
-        await hre.run('node');
+        // await hre.run('node');
     },
 );
 
