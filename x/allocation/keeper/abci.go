@@ -2,6 +2,7 @@ package keeper
 
 import (
 	"fmt"
+	"github.com/ethereum/go-ethereum/common"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	gravitytypes "github.com/peggyjv/gravity-bridge/module/x/gravity/types"
@@ -90,6 +91,7 @@ func (k Keeper) EndBlocker(ctx sdk.Context) {
 			ctx,
 			k.IncrementInvalidationNonce(ctx),
 			wv.InvalidationScope(),
+			common.HexToAddress(wv.Id),
 			wv.ABIEncodedRebalanceBytes(),
 			[]gravitytypes.ERC20Token{}, // tokens are always zero
 			[]gravitytypes.ERC20Token{})
