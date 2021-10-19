@@ -51,6 +51,22 @@ export async function deployTestnetContract() {
         `Cellar contract at ${cellar.address} is now owned by Gravity contract at ${gravity.address}`,
     );
 
+    // Take over vitalik.eth
+    await hre.network.provider.request({
+        method: 'hardhat_impersonateAccount',
+        params: [constants.WHALE],
+    });
+
+    // Send ETH to needed parties
+    const whaleSigner = await hre.ethers.getSigner(constants.WHALE);
+
+    for (let addr of constants.VALIDATORS) {
+        await whaleSigner.sendTransaction({
+            to: addr,
+            value: hre.ethers.utils.parseEther('100'),
+        });
+    }
+
     await hre.run('node');
 
 }
@@ -74,7 +90,7 @@ export async function deployContracts(
     ));
 
     await gravity.deployed();
-    console.log(`gravity contract deployed at ${gravity.address}`)
+    console.log(`gravity contract deployed at - ${gravity.address}`)
 
     return { gravity, checkpoint };
 }

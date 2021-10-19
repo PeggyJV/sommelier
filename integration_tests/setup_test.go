@@ -453,6 +453,7 @@ func (s *IntegrationTestSuite) runEthContainer() {
 			"8545/tcp": {{HostIP: "", HostPort: "8545"}},
 		},
 		ExposedPorts: []string{"8545/tcp"},
+		Cmd: []string{"yarn", "run", "deploy"},
 	}
 
 	s.ethResource, err = s.dockerPool.RunWithOptions(
@@ -485,6 +486,28 @@ func (s *IntegrationTestSuite) runEthContainer() {
 		10*time.Second,
 		"ethereum node failed to respond",
 	)
+
+	s.T().Logf("waiting for contract to deploy")
+	ethereumLogOutput := bytes.Buffer{}
+	err = s.dockerPool.Client.Logs(docker.LogsOptions{
+		Container:    s.ethResource.Container.ID,
+		OutputStream: &ethereumLogOutput,
+		Stdout:       true,
+	})
+	s.Require().NoError(err, "error getting contract deployer logs")
+
+	s.Require().Eventuallyf(func() bool {
+
+		for _, s := range strings.Split(ethereumLogOutput.String(), "\n") {
+			if strings.HasPrefix(s, "Gravity deployed at Address") {
+				strSpl := strings.Split(s, "-")
+				gravityContract = common.HexToAddress(strings.ReplaceAll(strSpl[1], " ", ""))
+				return true
+			}
+		}
+		return false
+	}, time.Minute * 5, time.Second * 10, "unable to retrieve gravity address from logs")
+
 
 	s.T().Logf("started Ethereum container: %s", s.ethResource.Container.ID)
 }

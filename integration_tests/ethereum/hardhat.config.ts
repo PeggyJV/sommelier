@@ -51,20 +51,20 @@ task(
         // console.log('='.repeat(80));
 
         // Take over vitalik.eth
-        await hre.network.provider.request({
-            method: 'hardhat_impersonateAccount',
-            params: [constants.WHALE],
-        });
-
-        // Send ETH to needed parties
-        const whaleSigner = await hre.ethers.getSigner(constants.WHALE);
-
-        for (let addr of constants.VALIDATORS) {
-            await whaleSigner.sendTransaction({
-                to: addr,
-                value: hre.ethers.utils.parseEther('100'),
-            });
-        }
+        // await hre.network.provider.request({
+        //     method: 'hardhat_impersonateAccount',
+        //     params: [constants.WHALE],
+        // });
+        //
+        // // Send ETH to needed parties
+        // const whaleSigner = await hre.ethers.getSigner(constants.WHALE);
+        //
+        // for (let addr of constants.VALIDATORS) {
+        //     await whaleSigner.sendTransaction({
+        //         to: addr,
+        //         value: hre.ethers.utils.parseEther('100'),
+        //     });
+        // }
 
         // start the ethereum node after all setup is complete
         // await hre.run('node');
