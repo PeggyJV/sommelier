@@ -61,7 +61,7 @@ var (
 	stakeAmount, _  = sdk.NewIntFromString("100000000000")
 	stakeAmountCoin = sdk.NewCoin(bondDenom, stakeAmount)
 	hardhatCellar   = common.HexToAddress("0x6ea5992aB4A78D5720bD12A089D13c073d04B55d")
-	gravityContract = common.HexToAddress("0xFbB0BCfed0c82043A7d5387C35Ad8450b44A4cde")
+	gravityContract = common.HexToAddress("0x04C89607413713Ec9775E14b954286519d836FEf")
 )
 
 type IntegrationTestSuite struct {
@@ -470,12 +470,18 @@ func (s *IntegrationTestSuite) runEthContainer() {
 			ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
 			defer cancel()
 
-			balance, err := ethClient.BalanceAt(ctx, common.HexToAddress("0xd312f0f1B39D54Db2829537595fC1167B14d4b34"), nil)
+			balance, err := ethClient.BalanceAt(ctx, common.HexToAddress(s.chain.validators[0].ethereumKey.address), nil)
 			if err != nil {
+				s.T().Logf("error querying balance: %e", err)
 				return false
 			}
 
-			if balance == nil || (balance.Cmp(big.NewInt(0)) == 0) {
+			if balance == nil {
+				s.T().Logf("balance for first validator is nil")
+			}
+
+			if balance.Cmp(big.NewInt(0)) == 0 {
+				s.T().Logf("balance for first validator is %s", balance.String())
 				return false
 			}
 
@@ -485,6 +491,28 @@ func (s *IntegrationTestSuite) runEthContainer() {
 		10*time.Second,
 		"ethereum node failed to respond",
 	)
+
+	s.T().Logf("waiting for contract to deploy")
+	ethereumLogOutput := bytes.Buffer{}
+	err = s.dockerPool.Client.Logs(docker.LogsOptions{
+		Container:    s.ethResource.Container.ID,
+		OutputStream: &ethereumLogOutput,
+		Stdout:       true,
+	})
+	s.Require().NoError(err, "error getting contract deployer logs")
+
+	s.Require().Eventuallyf(func() bool {
+
+		for _, s := range strings.Split(ethereumLogOutput.String(), "\n") {
+			if strings.HasPrefix(s, "gravity contract deployed at") {
+				strSpl := strings.Split(s, "-")
+				gravityContract = common.HexToAddress(strings.ReplaceAll(strSpl[1], " ", ""))
+				return true
+			}
+		}
+		return false
+	}, time.Minute * 5, time.Second * 10, "unable to retrieve gravity address from logs")
+	s.T().Logf("gravity contrained deployed at %s", gravityContract.String())
 
 	s.T().Logf("started Ethereum container: %s", s.ethResource.Container.ID)
 }

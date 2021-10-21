@@ -504,7 +504,7 @@ contract Gravity is ReentrancyGuard {
         }
 
         // Make call to logic contract
-        console.log("function call with %s", _args);
+//        console.log("function call with %s", _args);
         bytes memory returnData = Address.functionCall(_args.logicContractAddress, _args.payload);
 
         // Send fees to msg.sender
