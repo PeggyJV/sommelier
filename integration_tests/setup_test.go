@@ -607,6 +607,8 @@ key_derivation_path = "m/44'/118'/1'/0/0"
 grpc = "http://%s:9090"
 gas_price = { amount = %s, denom = "%s" }
 prefix = "somm"
+gas_adjustment = 2.0
+msg_batch_size = 5
 `,
 			gravityContract.String(),
 			testDenom,
