@@ -17,7 +17,7 @@ require (
 	github.com/miguelmota/go-ethereum-hdwallet v0.1.1
 	github.com/moby/term v0.0.0-20210619224110-3f7ff695adc6 // indirect
 	github.com/ory/dockertest/v3 v3.7.0
-	github.com/peggyjv/gravity-bridge/module v0.2.22-0.20211019205229-c7f2022fe9f5
+	github.com/peggyjv/gravity-bridge/module v0.2.24-0.20211021201041-7adedf6b8916
 	//github.com/peggyjv/gravity-bridge/module v0.2.0
 	github.com/rakyll/statik v0.1.7
 	github.com/regen-network/cosmos-proto v0.3.1
