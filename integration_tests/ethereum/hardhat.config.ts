@@ -3,41 +3,24 @@ import '@nomiclabs/hardhat-waffle';
 import {task} from "hardhat/config";
 import * as constants from "./addresses";
 
-export async function deployContracts(
-    ethers: any,
-    gravityId: string = "foo",
-    valAddresses: string[],
-    powers: number[],
-    powerThreshold: number
-) {
-    console.log(`creating gravity contract`)
-    const Gravity = await ethers.getContractFactory("Gravity");
-    console.log(`creating checkpoint`)
-    // const checkpoint = makeCheckpoint(ethers, valAddresses, powers, 0, gravityId);
-    console.log(`deploying gravity contract`)
-    const gravity = (await Gravity.deploy(
-        ethers.utils.formatBytes32String(gravityId),
-        powerThreshold,
-        valAddresses,
-        powers
-    ));
-
-    await gravity.deployed();
-    console.log(`gravity contract deployed at - ${gravity.address}`)
-
-    return { gravity };
-}
-
 task(
     'integration_test_setup',
     'Sets up contracts for the integration test',
     async (args, hre) => {
-
         let powers: number[] = [1073741824,1073741824,1073741824,1073741824];
         let powerThreshold: number = 6666;
-        let {gravity} = await deployContracts(hre.ethers,"gravitytest", constants.VALIDATORS, powers, powerThreshold);
 
-        console.log('taking over cellar owner');
+        const Gravity = await hre.ethers.getContractFactory("Gravity");
+        const gravity = (await Gravity.deploy(
+            hre.ethers.utils.formatBytes32String("gravitytest"),
+            powerThreshold,
+            constants.VALIDATORS,
+            powers
+        ));
+
+        await gravity.deployed();
+        console.log(`gravity contract deployed at - ${gravity.address}`)
+
         // Take over the cellar owner so we can transfer ownership
         await hre.network.provider.request({
             method: 'hardhat_impersonateAccount',
@@ -59,7 +42,6 @@ task(
         );
 
         // Take over vitalik.eth
-        console.log("taking over whale account")
         await hre.network.provider.request({
             method: 'hardhat_impersonateAccount',
             params: [constants.WHALE],
@@ -69,14 +51,12 @@ task(
         const whaleSigner = await hre.ethers.getSigner(constants.WHALE);
 
         for (let addr of constants.VALIDATORS) {
-            console.log(`sending 100 eth to: ${addr}`);
             await whaleSigner.sendTransaction({
                 to: addr,
                 value: hre.ethers.utils.parseEther('100'),
             });
         }
 
-        console.log("node is listening")
         await hre.run('node');
     });
 
@@ -91,9 +71,6 @@ module.exports = {
                 url: 'https://mainnet.infura.io/v3/d6f22be0f7fd447186086d2495779003',
                 blockNumber: 13357100,
             },
-        },
-        mainnet: {
-            url: 'https://mainnet.infura.io/v3/d6f22be0f7fd447186086d2495779003',
         },
     },
     solidity: {
