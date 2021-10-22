@@ -1,4 +1,4 @@
-export const CELLAR = '0x6ea5992aB4A78D5720bD12A089D13c073d04B55d';
+export const CELLAR = '0x08c0a0B8D2eDB1d040d4f2C00A1d2f9d9b9F2677';
 export const CELLAR_OWNER = '0xB6C951cf962977f123bF37de42945f7ca1cd2A52';
 export const WHALE = '0xd8da6bf26964af9d7eed9e03e53415d37aa96045';
 export const VALIDATORS = [

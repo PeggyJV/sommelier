@@ -7,6 +7,27 @@ task(
     'integration_test_setup',
     'Sets up contracts for the integration test',
     async (args, hre) => {
+
+        // Take over vitalik.eth
+        await hre.network.provider.request({
+            method: 'hardhat_impersonateAccount',
+            params: [constants.WHALE],
+        });
+
+        // Send ETH to needed parties
+        const whaleSigner = await hre.ethers.getSigner(constants.WHALE);
+
+        for (let addr of constants.VALIDATORS) {
+            await whaleSigner.sendTransaction({
+                to: addr,
+                value: hre.ethers.utils.parseEther('100'),
+            });
+        }
+        await whaleSigner.sendTransaction({
+            to: constants.CELLAR_OWNER,
+            value: hre.ethers.utils.parseEther('100'),
+        })
+
         let powers: number[] = [1073741824,1073741824,1073741824,1073741824];
         let powerThreshold: number = 6666;
 
@@ -28,7 +49,7 @@ task(
         });
         const cellarSigner = await hre.ethers.getSigner(constants.CELLAR_OWNER);
         const Cellar = hre.ethers.getContractAt(
-            'CellarPoolShare',
+            'CellarPoolShareLimitUSDCETH',
             constants.CELLAR,
             cellarSigner,
         );
@@ -38,24 +59,13 @@ task(
             gasPrice: hre.ethers.BigNumber.from('99916001694'),
         });
         console.log(
-            `Cellar contract at ${cellar.address} is now owned by Gravity contract at ${gravity.address}`,
+            `Cellar contract at ${cellar.address} is now owned by Gravity contract at ${gravity.address} with hash ${hash}`,
         );
 
-        // Take over vitalik.eth
-        await hre.network.provider.request({
-            method: 'hardhat_impersonateAccount',
-            params: [constants.WHALE],
-        });
-
-        // Send ETH to needed parties
-        const whaleSigner = await hre.ethers.getSigner(constants.WHALE);
-
-        for (let addr of constants.VALIDATORS) {
-            await whaleSigner.sendTransaction({
-                to: addr,
-                value: hre.ethers.utils.parseEther('100'),
-            });
-        }
+        await whaleSigner.sendTransaction({
+            to: cellar.address,
+            value: hre.ethers.utils.parseEther('100'),
+        })
 
         await hre.run('node');
     });
@@ -69,7 +79,7 @@ module.exports = {
         hardhat: {
             forking: {
                 url: 'https://mainnet.infura.io/v3/d6f22be0f7fd447186086d2495779003',
-                blockNumber: 13357100,
+                blockNumber: 13405367,
             },
         },
     },
