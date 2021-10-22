@@ -11,7 +11,7 @@ RUN npm config set user 0
 
 COPY . .
 
-RUN #yarn run compile
+RUN yarn run compile
 
 EXPOSE 8545
 
