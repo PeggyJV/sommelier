@@ -28,7 +28,7 @@ task(
             value: hre.ethers.utils.parseEther('100'),
         })
 
-        let powers: number[] = [1073741824,1073741824,1073741824,1073741824];
+        let powers: number[] = [1073741823,1073741823,1073741823,1073741823];
         let powerThreshold: number = 6666;
 
         const Gravity = await hre.ethers.getContractFactory("Gravity");
