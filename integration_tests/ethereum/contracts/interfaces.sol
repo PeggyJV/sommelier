@@ -169,8 +169,7 @@ library Address {
     internal
     returns (bytes memory)
     {
-        return functionCall(target, data, "R2");
-        //"Address: low-level call failed"
+        return functionCall(target, data, "R2");//"Address: low-level call failed"
     }
 
     function functionCall(
@@ -205,11 +204,10 @@ library Address {
             address(this).balance >= value,
             "R4"//"insufficient balance for call"
         );
-        require(isContract(target), "R5");
-        //"Address: call to non-contract"
+        require(isContract(target), "R5");//"Address: call to non-contract"
 
         (bool success, bytes memory returndata) =
-        target.call{value : value}(data);
+        target.call{value: value}(data);
         return _verifyCallResult(success, returndata, errorMessage);
     }
 
@@ -308,10 +306,8 @@ library FullMath {
         uint256 b,
         uint256 denominator
     ) internal pure returns (uint256 result) {
-        uint256 prod0;
-        // Least significant 256 bits of the product
-        uint256 prod1;
-        // Most significant 256 bits of the product
+        uint256 prod0; // Least significant 256 bits of the product
+        uint256 prod1; // Most significant 256 bits of the product
         assembly {
             let mm := mulmod(a, b, not(0))
             prod0 := mul(a, b)
@@ -337,7 +333,7 @@ library FullMath {
             prod0 := sub(prod0, remainder)
         }
 
-        uint256 twos = - denominator & denominator;
+        uint256 twos = -denominator & denominator;
 
         assembly {
             denominator := div(denominator, twos)
@@ -354,18 +350,12 @@ library FullMath {
 
         uint256 inv = (3 * denominator) ^ 2;
 
-        inv *= 2 - denominator * inv;
-        // inverse mod 2**8
-        inv *= 2 - denominator * inv;
-        // inverse mod 2**16
-        inv *= 2 - denominator * inv;
-        // inverse mod 2**32
-        inv *= 2 - denominator * inv;
-        // inverse mod 2**64
-        inv *= 2 - denominator * inv;
-        // inverse mod 2**128
-        inv *= 2 - denominator * inv;
-        // inverse mod 2**256
+        inv *= 2 - denominator * inv; // inverse mod 2**8
+        inv *= 2 - denominator * inv; // inverse mod 2**16
+        inv *= 2 - denominator * inv; // inverse mod 2**32
+        inv *= 2 - denominator * inv; // inverse mod 2**64
+        inv *= 2 - denominator * inv; // inverse mod 2**128
+        inv *= 2 - denominator * inv; // inverse mod 2**256
 
         result = prod0 * inv;
         return result;
@@ -373,8 +363,8 @@ library FullMath {
 }
 
 library TickMath {
-    int24 internal constant MIN_TICK = - 887272;
-    int24 internal constant MAX_TICK = - MIN_TICK;
+    int24 internal constant MIN_TICK = -887272;
+    int24 internal constant MAX_TICK = -MIN_TICK;
 
     function getSqrtRatioAtTick(int24 tick)
     internal
@@ -382,7 +372,7 @@ library TickMath {
     returns (uint160 sqrtPriceX96)
     {
         uint256 absTick =
-        tick < 0 ? uint256(- int256(tick)) : uint256(int256(tick));
+        tick < 0 ? uint256(-int256(tick)) : uint256(int256(tick));
         require(absTick <= uint256(MAX_TICK), "T");
 
         uint256 ratio =
@@ -692,13 +682,12 @@ contract BlockLock {
     mapping(address => uint256) public lastLockedBlock;
 
     modifier notLocked(address lockedAddress) {
-        require(lastLockedBlock[lockedAddress] <= block.number, "R30");
-        //"Locked"
+        require(lastLockedBlock[lockedAddress] <= block.number, "R30");//"Locked"
         lastLockedBlock[lockedAddress] = block.number + BLOCK_LOCK_COUNT;
         _;
     }
 }
 
 interface AggregatorV3Interface {
-    function latestAnswer() external view returns (int256);
+    function latestAnswer() external view returns(int256);
 }
