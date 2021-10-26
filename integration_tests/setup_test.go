@@ -60,7 +60,7 @@ func MNEMONICS() []string {
 var (
 	stakeAmount, _  = sdk.NewIntFromString("100000000000")
 	stakeAmountCoin = sdk.NewCoin(bondDenom, stakeAmount)
-	hardhatCellar   = common.HexToAddress("0x6ea5992aB4A78D5720bD12A089D13c073d04B55d")
+	hardhatCellar   = common.HexToAddress("0x08c0a0B8D2eDB1d040d4f2C00A1d2f9d9b9F2677")
 	gravityContract = common.HexToAddress("0x04C89607413713Ec9775E14b954286519d836FEf")
 )
 

@@ -14,16 +14,16 @@ func (s *IntegrationTestSuite) TestRebalance() {
 	s.Run("Bring up chain, and submit a re-balance", func() {
 
 		trs := s.getTickRanges()
-		s.Require().Len(trs, 3)
+		s.Require().Len(trs, 1)
+		s.Require().Equal(int32(198780), trs[0].Upper)
+		s.Require().Equal(int32(198120), trs[0].Lower)
+		s.Require().Equal(uint32(100), trs[0].Weight)
 
 		commit := types.Allocation{
 			Cellar: &types.Cellar{
 				Id: hardhatCellar.String(),
 				TickRanges: []*types.TickRange{
-					{Upper: 200, Lower: 100, Weight: 10},
-					{Upper: 300, Lower: 200, Weight: 20},
-					{Upper: 400, Lower: 300, Weight: 30},
-					{Upper: 500, Lower: 400, Weight: 40},
+					{Upper: 200000, Lower: 190000, Weight: 200},
 				},
 			},
 			Salt: "testsalt",
