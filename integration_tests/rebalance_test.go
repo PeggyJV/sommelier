@@ -13,11 +13,10 @@ import (
 func (s *IntegrationTestSuite) TestRebalance() {
 	s.Run("Bring up chain, and submit a re-balance", func() {
 
-		trs := s.getTickRanges()
-		s.Require().Len(trs, 1)
-		s.Require().Equal(int32(198780), trs[0].Upper)
-		s.Require().Equal(int32(198120), trs[0].Lower)
-		s.Require().Equal(uint32(100), trs[0].Weight)
+		tickRange := s.getFirstTickRange()
+		s.Require().Equal(int32(198780), tickRange.Upper)
+		s.Require().Equal(int32(192120), tickRange.Lower)
+		s.Require().Equal(uint32(100), tickRange.Weight)
 
 		commit := types.Allocation{
 			Cellar: &types.Cellar{
@@ -295,29 +294,19 @@ func (s *IntegrationTestSuite) TestRebalance() {
 			}
 			s.T().Logf("contract call tx confirms: %s", confirmsRes.Signatures)
 
-			trs = s.getTickRanges()
-			if err != nil {
-				s.T().Logf("error: %s", err)
-				return false
-			}
-			if len(trs) != 4 {
-				s.T().Logf("wrong length: %d", len(trs))
-				return false
-			}
-			for i, tr := range trs {
-				if int32((i+2)*100) != tr.Upper {
-					s.T().Logf("wrong upper %s", tr.String())
+			tickRange = s.getFirstTickRange()
+				if commit.Cellar.TickRanges[0].Upper != tickRange.Upper {
+					s.T().Logf("wrong upper %s", tickRange.String())
 					return false
 				}
-				if int32((i+1)*100) != tr.Lower {
-					s.T().Logf("wrong lower %s", tr.String())
+				if commit.Cellar.TickRanges[0].Lower != tickRange.Lower {
+					s.T().Logf("wrong lower %s", tickRange.String())
 					return false
 				}
-				if uint32((i+1)*10) != tr.Weight {
-					s.T().Logf("wrong weight %s", tr.String())
+				if commit.Cellar.TickRanges[0].Weight != tickRange.Weight {
+					s.T().Logf("wrong weight %s", tickRange.String())
 					return false
 				}
-			}
 
 			return true
 		}, 30*time.Second, 2*time.Second, "cellar ticks never updated")

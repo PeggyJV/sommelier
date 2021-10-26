@@ -511,7 +511,7 @@ func (s *IntegrationTestSuite) runEthContainer() {
 			}
 		}
 		return false
-	}, time.Minute * 5, time.Second * 10, "unable to retrieve gravity address from logs")
+	}, time.Minute*5, time.Second*10, "unable to retrieve gravity address from logs")
 	s.T().Logf("gravity contrained deployed at %s", gravityContract.String())
 
 	s.T().Logf("started Ethereum container: %s", s.ethResource.Container.ID)
@@ -726,27 +726,22 @@ func (s *IntegrationTestSuite) logsByContainerID(id string) string {
 	return containerLogsBuf.String()
 }
 
-func (s *IntegrationTestSuite) getTickRanges() []types.TickRange {
+func (s *IntegrationTestSuite) getFirstTickRange() types.TickRange {
 	ethClient, err := ethclient.Dial(fmt.Sprintf("http://%s", s.ethResource.GetHostPort("8545/tcp")))
 	s.Require().NoError(err)
 
-	tickRanges := make([]types.TickRange, 3)
-	for i := 0; i < 3; i++ {
-		bz, err := ethClient.CallContract(context.Background(), ethereum.CallMsg{
-			From: common.HexToAddress(s.chain.validators[0].ethereumKey.address),
-			To:   &hardhatCellar,
-			Gas:  0,
-			Data: types.ABIEncodedCellarTickInfoBytes(uint(i)),
-		}, nil)
-		s.Require().NoError(err)
+	bz, err := ethClient.CallContract(context.Background(), ethereum.CallMsg{
+		From: common.HexToAddress(s.chain.validators[0].ethereumKey.address),
+		To:   &hardhatCellar,
+		Gas:  0,
+		Data: types.ABIEncodedCellarTickInfoBytes(uint(0)),
+	}, nil)
+	s.Require().NoError(err)
 
-		tr, err := types.BytesToABIEncodedTickRange(bz)
-		s.Require().NoError(err)
+	tr, err := types.BytesToABIEncodedTickRange(bz)
+	s.Require().NoError(err)
 
-		tickRanges[i] = *tr
-	}
-
-	return tickRanges
+	return *tr
 }
 
 func (s *IntegrationTestSuite) TestBasicChain() {
