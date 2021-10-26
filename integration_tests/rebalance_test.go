@@ -309,6 +309,6 @@ func (s *IntegrationTestSuite) TestRebalance() {
 				}
 
 			return true
-		}, 30*time.Second, 2*time.Second, "cellar ticks never updated")
+		}, 5*time.Minute, 30*time.Second, "cellar ticks never updated")
 	})
 }
