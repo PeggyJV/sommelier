@@ -18,10 +18,10 @@ const (
 )
 
 //////////////////////////
-// MsgAllocationPrecommit //
+// MsgReinvestVote //
 //////////////////////////
 
-// NewMsgReinvestVote return a new MsgAllocationPrecommit
+// NewMsgReinvestVote return a new MsgReinvestVote
 func NewMsgReinvestVote(votes *ReinvestVote, signer sdk.AccAddress, val sdk.ValAddress) (*MsgReinvestVote, error) {
 	if signer == nil {
 		return nil, fmt.Errorf("no signer provided")
@@ -42,13 +42,13 @@ func NewMsgReinvestVote(votes *ReinvestVote, signer sdk.AccAddress, val sdk.ValA
 }
 
 // Route implements sdk.Msg
-func (m *MsgAllocationPrecommit) Route() string { return ModuleName }
+func (m *MsgReinvestVote) Route() string { return ModuleName }
 
 // Type implements sdk.Msg
-func (m *MsgAllocationPrecommit) Type() string { return TypeMsgReinvestVote }
+func (m *MsgReinvestVote) Type() string { return TypeMsgReinvestVote }
 
 // ValidateBasic implements sdk.Msg
-func (m *MsgAllocationPrecommit) ValidateBasic() error {
+func (m *MsgReinvestVote) ValidateBasic() error {
 	if _, err := sdk.AccAddressFromBech32(m.Signer); err != nil {
 		return sdkerrors.Wrap(sdkerrors.ErrInvalidAddress, err.Error())
 	}
@@ -68,17 +68,17 @@ func (m *MsgAllocationPrecommit) ValidateBasic() error {
 }
 
 // GetSignBytes implements sdk.Msg
-func (m *MsgAllocationPrecommit) GetSignBytes() []byte {
+func (m *MsgReinvestVote) GetSignBytes() []byte {
 	panic("amino support disabled")
 }
 
 // GetSigners implements sdk.Msg
-func (m *MsgAllocationPrecommit) GetSigners() []sdk.AccAddress {
+func (m *MsgReinvestVote) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{m.MustGetSigner()}
 }
 
 // MustGetSigner returns the signer address
-func (m *MsgAllocationPrecommit) MustGetSigner() sdk.AccAddress {
+func (m *MsgReinvestVote) MustGetSigner() sdk.AccAddress {
 	addr, err := sdk.AccAddressFromBech32(m.Signer)
 	if err != nil {
 		panic(err)
@@ -90,7 +90,7 @@ func (m *MsgAllocationPrecommit) MustGetSigner() sdk.AccAddress {
 // MsgAllocationCommit //
 ///////////////////////
 
-// NewMsgAllocationCommit return a new MsgAllocationPrecommit
+// NewMsgAllocationCommit return a new MsgReinvestVote
 func NewMsgAllocationCommit(commits []*Allocation, signer sdk.AccAddress) *MsgAllocationCommit {
 	if signer == nil {
 		return nil

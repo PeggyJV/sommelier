@@ -49,6 +49,7 @@ message QueryReinvestVotesRequest {}
 // QueryreinvestPrecommitResponse is the response type for the Query/reinvestPrecommits gRPC method.
 message QueryReinvestVotesResponse {
     // prevote submitted within the latest voting period
+    // TODO: better query response here
     repeated ReinvestVote reinvest_votes = 1;
 }
 
