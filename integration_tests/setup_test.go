@@ -697,8 +697,8 @@ msg_batch_size = 5
 
 				return strings.Contains(containerLogsBuf.String(), match)
 			},
-			30*time.Second,
-			2*time.Second,
+			3*time.Minute,
+			20*time.Second,
 			"orchestrator %s not healthy",
 			resource.Container.ID,
 		)
