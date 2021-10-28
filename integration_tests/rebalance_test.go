@@ -22,7 +22,7 @@ func (s *IntegrationTestSuite) TestRebalance() {
 			Cellar: &types.Cellar{
 				Id: hardhatCellar.String(),
 				TickRanges: []*types.TickRange{
-					{Upper: 200000, Lower: 190000, Weight: 200},
+					{Upper: 198840, Lower: 192180, Weight: 100},
 				},
 			},
 			Salt: "testsalt",
