@@ -726,9 +726,11 @@ func (s *IntegrationTestSuite) logsByContainerID(id string) string {
 	return containerLogsBuf.String()
 }
 
-func (s *IntegrationTestSuite) getFirstTickRange() types.TickRange {
+func (s *IntegrationTestSuite) getFirstTickRange() (*types.TickRange, error) {
 	ethClient, err := ethclient.Dial(fmt.Sprintf("http://%s", s.ethResource.GetHostPort("8545/tcp")))
-	s.Require().NoError(err)
+	if err != nil {
+		return nil, err
+	}
 
 	bz, err := ethClient.CallContract(context.Background(), ethereum.CallMsg{
 		From: common.HexToAddress(s.chain.validators[0].ethereumKey.address),
@@ -736,12 +738,15 @@ func (s *IntegrationTestSuite) getFirstTickRange() types.TickRange {
 		Gas:  0,
 		Data: types.ABIEncodedCellarTickInfoBytes(uint(0)),
 	}, nil)
-	s.Require().NoError(err)
-
+	if err != nil {
+		return nil, err
+	}
 	tr, err := types.BytesToABIEncodedTickRange(bz)
-	s.Require().NoError(err)
+	if err != nil {
+		return nil, err
+	}
 
-	return *tr
+	return tr, nil
 }
 
 func (s *IntegrationTestSuite) TestBasicChain() {
