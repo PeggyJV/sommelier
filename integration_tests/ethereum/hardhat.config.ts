@@ -67,6 +67,8 @@ task(
             value: hre.ethers.utils.parseEther('100'),
         })
 
+        await hre.network.provider.send("evm_setIntervalMining", [5000]);
+
         await hre.run('node');
     });
 
