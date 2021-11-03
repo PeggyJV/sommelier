@@ -13,7 +13,7 @@ private
 
 # Build
 vendor
-build
+integration_tests/brownie/build
 docs/_build
 docs/tutorial
 */node_modules

@@ -11,6 +11,7 @@ RUN npm config set user 0
 
 COPY . .
 
+ENV HARDHAT_MAX_MEMORY 8000
 RUN yarn run compile
 
 EXPOSE 8545

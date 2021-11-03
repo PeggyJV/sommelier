@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "npx hardhat integration_test_setup --verbose",
+    "start": "npx --max_old_space_size=8000 hardhat integration_test_setup --verbose",
     "compile": "npx hardhat compile"
   },
   "keywords": [],
@@ -16,7 +16,7 @@
     "chai": "^4.3.4",
     "ethereum-waffle": "^3.4.0",
     "ethers": "^5.4.5",
-    "hardhat": "^2.6.0",
+    "hardhat": "^2.6.7",
     "hardhat-ethers": "^1.0.1",
     "hardhat-waffle": "^0.0.1-security",
     "ts-node": "^10.2.1",

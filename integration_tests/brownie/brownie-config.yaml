@@ -1,0 +1,9 @@
+networks:
+    development:
+        cmd_settings:
+            unlock:
+                - 0xd8da6bf26964af9d7eed9e03e53415d37aa96045 # whale
+                - 0xFbB0BCfed0c82043A7d5387C35Ad8450b44A4cde # gravity
+                - 0xc6f89c23e136134cD70B8402F1165F3194953A8d # gravity owner
+                - 0x08c0a0B8D2eDB1d040d4f2C00A1d2f9d9b9F2677 # cellar
+                - 0xB6C951cf962977f123bF37de42945f7ca1cd2A52 # cellar owner
