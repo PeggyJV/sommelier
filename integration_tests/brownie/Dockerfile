@@ -10,26 +10,21 @@ ENV PYTHONFAULTHANDLER 1
 RUN pip install pipenv
 RUN apt-get update && apt-get install -y --no-install-recommends gcc build-essential python3-dev libssl-dev npm bash
 
-RUN mkdir /code
-WORKDIR /code
+RUN mkdir /testnet
+WORKDIR /testnet
 
 # Install python dependencies in /.venv
-COPY Pipfile .
-COPY Pipfile.lock .
+COPY Pipfile /testnet
+COPY Pipfile.lock /testnet
 RUN PIPENV_VENV_IN_PROJECT=1 pipenv install --deploy
 
-ENV PATH="/code/.venv/bin:$PATH"
+#ENV PATH="/code/.venv/bin:$PATH"
 ENV WEB3_INFURA_PROJECT_ID d6f22be0f7fd447186086d2495779003
 
 RUN npm install -g ganache-cli
 EXPOSE 8545
 
-COPY . /code
-
-#RUN pipenv run brownie accounts import somm0 somm0.json
-#RUN pipenv run brownie accounts import somm1 somm1.json
-#RUN pipenv run brownie accounts import somm2 somm2.json
-#RUN pipenv run brownie accounts import somm3 somm3.json
+COPY . /testnet
 
 #RUN
 CMD ["sh", "startup.sh"]
