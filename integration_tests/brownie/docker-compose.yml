@@ -1,0 +1,12 @@
+version: '3'
+services:
+  sandbox:
+    build:
+      context: .
+      args:
+        - WEB3_INFURA_PROJECT_ID=XXX
+    environment:
+        - WEB3_INFURA_PROJECT_ID=XXX
+    volumes:
+      - .:/code
+    command: tail -f /dev/null
