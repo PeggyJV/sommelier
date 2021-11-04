@@ -9,29 +9,31 @@ VALIDATOR_MNEMONICS = [
 
 
 def main():
+    # Named accounts
     whale = accounts[0]
     gravity_contract = accounts[1]
     # gravity_owner = accounts[2]
     cellar_contract = accounts[3]
     cellar_owner = accounts[4]
 
+    # Import From Mnemonic
     sommelier0 = accounts.from_mnemonic(VALIDATOR_MNEMONICS[0])
     sommelier1 = accounts.from_mnemonic(VALIDATOR_MNEMONICS[1])
     sommelier2 = accounts.from_mnemonic(VALIDATOR_MNEMONICS[2])
     sommelier3 = accounts.from_mnemonic(VALIDATOR_MNEMONICS[3])
+    
+    # Wire some ETH to each useful account
+    amount = 10
+    whale.transfer(sommelier0, amount * 1000000000000000000)
+    whale.transfer(sommelier1, amount * 1000000000000000000)
+    whale.transfer(sommelier2, amount * 1000000000000000000)
+    whale.transfer(sommelier3, amount * 1000000000000000000)
+    whale.transfer(cellar_contract, amount * 1000000000000000000)
+    whale.transfer(gravity_contract, amount * 1000000000000000000)
 
-    whale.transfer(sommelier0, 100 * 1000000000000000000)
-    whale.transfer(sommelier1, 100 * 1000000000000000000)
-    whale.transfer(sommelier2, 100 * 1000000000000000000)
-    whale.transfer(sommelier3, 100 * 1000000000000000000)
-    whale.transfer(cellar_contract, 100 * 1000000000000000000)
-    whale.transfer(gravity_contract, 100 * 1000000000000000000)
-
+    # Transfer Ownership
     cellar = interface.CellarPoolShareLimitUSDCETH('0x08c0a0B8D2eDB1d040d4f2C00A1d2f9d9b9F2677')
-    response = cellar.transferOwnership.call(gravity_contract, {
-        'from': cellar_owner,
-        'gas_limit': 99916001694,
-    })
-    print(response)
+    cellar.transferOwnership(cellar_owner, {'from': cellar.owner()})
+
 
 
