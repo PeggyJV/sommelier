@@ -1,4 +1,4 @@
-from brownie import accounts, interface
+from brownie import *
 
 VALIDATOR_MNEMONICS = [
     "say monitor orient heart super local purse cricket caution primary bring insane road expect rather help two extend own execute throw nation plunge subject",
