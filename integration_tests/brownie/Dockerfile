@@ -1,21 +1,31 @@
-FROM python:3.8
+FROM python:3.8-slim as base
 
-# Set up code directory
-RUN mkdir -p /usr/src/app
-WORKDIR /usr/src/app
+# Setup env
+ENV LANG C.UTF-8
+ENV LC_ALL C.UTF-8
+ENV PYTHONDONTWRITEBYTECODE 1
+ENV PYTHONFAULTHANDLER 1
 
-# Install linux dependencies
-RUN apt-get update
-RUN apt-get install -y libssl-dev npm bash
+#FROM base AS python-deps
+
+# Install pipenv and compilation dependencies
+RUN pip install pipenv
+RUN apt-get update && apt-get install -y --no-install-recommends gcc build-essential python3-dev libssl-dev npm bash
+
+# Install python dependencies in /.venv
+COPY Pipfile .
+COPY Pipfile.lock .
+RUN PIPENV_VENV_IN_PROJECT=1 pipenv install --deploy
+
+
+#FROM base AS runtime
+# Copy virtual env from python-deps stage
+#COPY --from=python-deps /.venv /.venv
+ENV PATH="/.venv/bin:$PATH"
 
 RUN npm install -g ganache-cli
 
-COPY Pipfile .
-COPY Pipfile.lock .
-RUN pipenv sync
-
-WORKDIR /code
-COPY . /code
+COPY . .
 
 #RUN pipenv run brownie accounts import somm0 somm0.json
 #RUN pipenv run brownie accounts import somm1 somm1.json
@@ -23,4 +33,4 @@ COPY . /code
 #RUN pipenv run brownie accounts import somm3 somm3.json
 
 #RUN
-CMD startup.sh
+CMD ["sh", "startup.sh"]
