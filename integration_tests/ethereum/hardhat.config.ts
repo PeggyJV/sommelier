@@ -23,10 +23,6 @@ task(
                 value: hre.ethers.utils.parseEther('100'),
             });
         }
-        await whaleSigner.sendTransaction({
-            to: constants.CELLAR_OWNER,
-            value: hre.ethers.utils.parseEther('100'),
-        })
 
         let powers: number[] = [1073741823,1073741823,1073741823,1073741823];
         let powerThreshold: number = 6666;
@@ -43,31 +39,59 @@ task(
         console.log(`gravity contract deployed at - ${gravity.address}`)
 
         // Take over the cellar owner so we can transfer ownership
-        await hre.network.provider.request({
-            method: 'hardhat_impersonateAccount',
-            params: [constants.CELLAR_OWNER],
-        });
-        const cellarSigner = await hre.ethers.getSigner(constants.CELLAR_OWNER);
-        const Cellar = hre.ethers.getContractAt(
-            'CellarPoolShareLimitUSDCETH',
-            constants.CELLAR,
-            cellarSigner,
-        );
-        const cellar = await Cellar;
+        // await hre.network.provider.request({
+        //     method: 'hardhat_impersonateAccount',
+        //     params: [constants.CELLAR_OWNER],
+        // });
+        // const cellarSigner = await hre.ethers.getSigner(constants.CELLAR_OWNER);
+        // const Cellar = hre.ethers.getContractAt(
+        //     'CellarPoolShareLimitUSDCETH',
+        //     constants.CELLAR,
+        //     cellarSigner,
+        // );
+        // const cellar = await Cellar;
 
-        let { hash } = await cellar.transferOwnership(gravity.address, {
-            gasPrice: hre.ethers.BigNumber.from('99916001694'),
-        });
-        console.log(
-            `Cellar contract at ${cellar.address} is now owned by Gravity contract at ${gravity.address} with hash ${hash}`,
-        );
+        const Cellar = await hre.ethers.getContractFactory("CellarPoolShare");
+        const cellar = (await Cellar.deploy(
+            "mock cellar",
+            "mock",
+            "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+            "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+            3000,
+            [],
+        ));
+        await cellar.deployed();
+        console.log(`cellar contract deploy at - ${cellar.address}`);
 
         await whaleSigner.sendTransaction({
             to: cellar.address,
             value: hre.ethers.utils.parseEther('100'),
         })
 
-        await hre.network.provider.send("evm_setIntervalMining", [5000]);
+        await hre.network.provider.request({
+            method: 'hardhat_impersonateAccount',
+            params: [cellar.signer],
+        });
+        let cellarSignerAddress = await cellar.signer.getAddress()
+        let pulledCellar = await hre.ethers.getContractAt(
+            "CellarPoolShare",
+            cellar.address,
+            cellar.signer,
+        )
+
+        let { hash } = await pulledCellar.transferOwnership(gravity.address, {
+            gasPrice: hre.ethers.BigNumber.from('99916001694'),
+        });
+        console.log(
+            `Cellar contract at ${pulledCellar.address} is now owned by Gravity contract at ${gravity.address} with hash ${hash}`,
+        );
+
+        // await whaleSigner.sendTransaction({
+        //     to: cellar.address,
+        //     value: hre.ethers.utils.parseEther('100'),
+        // })
+
+        // await hre.network.provider.send("evm_setIntervalMining", [5000]);
 
         await hre.run('node');
     });
@@ -80,7 +104,7 @@ module.exports = {
     networks: {
         hardhat: {
             forking: {
-                url: 'https://mainnet.infura.io/v3/d6f22be0f7fd447186086d2495779003',
+                url: 'https://eth-mainnet.alchemyapi.io/v2/lErlJJCjh4o6eXRbSXel1jVcBmCvAJfx',
                 blockNumber: 13405367,
             },
         },
