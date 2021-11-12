@@ -63,27 +63,28 @@ task(
         await cellar.deployed();
         console.log(`cellar contract deploy at - ${cellar.address}`);
 
-        await whaleSigner.sendTransaction({
-            to: cellar.address,
-            value: hre.ethers.utils.parseEther('100'),
-        })
+        // await whaleSigner.sendTransaction({
+        //     to: cellar.address,
+        //     value: hre.ethers.utils.parseEther('100'),
+        // })
 
+        let cellarSignerAddress = await cellar.signer.getAddress()
         await hre.network.provider.request({
             method: 'hardhat_impersonateAccount',
-            params: [cellar.signer],
+            params: [cellarSignerAddress],
         });
-        let cellarSignerAddress = await cellar.signer.getAddress()
-        let pulledCellar = await hre.ethers.getContractAt(
-            "CellarPoolShare",
-            cellar.address,
-            cellar.signer,
-        )
+        // let pulledCellar = await hre.ethers.getContractAt(
+        //     "CellarPoolShare",
+        //     cellar.address,
+        //     cellar.signer,
+        // )
 
-        let { hash } = await pulledCellar.transferOwnership(gravity.address, {
+        let { hash } = await cellar.transferOwnership(gravity.address, {
             gasPrice: hre.ethers.BigNumber.from('99916001694'),
+            from: cellarSignerAddress
         });
         console.log(
-            `Cellar contract at ${pulledCellar.address} is now owned by Gravity contract at ${gravity.address} with hash ${hash}`,
+            `Cellar contract at ${cellar.address} is now owned by Gravity contract at ${gravity.address} with hash ${hash}`,
         );
 
         // await whaleSigner.sendTransaction({
