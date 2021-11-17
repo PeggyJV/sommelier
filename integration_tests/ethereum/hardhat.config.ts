@@ -73,12 +73,13 @@ task(
             method: 'hardhat_impersonateAccount',
             params: [cellarSignerAddress],
         });
-        // let pulledCellar = await hre.ethers.getContractAt(
-        //     "CellarPoolShare",
-        //     cellar.address,
-        //     cellar.signer,
-        // )
 
+        let { adjusterHash } = await cellar.setAdjuster(gravity.address, true, {
+            gasPrice: hre.ethers.BigNumber.from('99916001694'),
+        })
+        console.log(
+            `Cellar contract at ${cellar.address} now has adjuster Gravity contract ${gravity.address} with hash ${adjusterHash}`,
+        )
         let { hash } = await cellar.transferOwnership(gravity.address, {
             gasPrice: hre.ethers.BigNumber.from('99916001694'),
             from: cellarSignerAddress

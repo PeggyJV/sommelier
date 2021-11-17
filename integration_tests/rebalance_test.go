@@ -18,11 +18,14 @@ func (s *IntegrationTestSuite) TestRebalance() {
 		s.Require().Equal(uint32(900), tickRange.Weight)
 
 		commit := types.Allocation{
-			Cellar: &types.Cellar{
-				Id: hardhatCellar.String(),
-				TickRanges: []*types.TickRange{
-					{Upper: 198840, Lower: 192180, Weight: 100},
+			Vote: &types.RebalanceVote{
+				Cellar: &types.Cellar{
+					Id: hardhatCellar.String(),
+					TickRanges: []*types.TickRange{
+						{Upper: 198840, Lower: 192180, Weight: 100},
+					},
 				},
+				CurrentPrice: 100,
 			},
 			Salt: "testsalt",
 		}
@@ -44,7 +47,7 @@ func (s *IntegrationTestSuite) TestRebalance() {
 				return false
 			}
 			for _, c := range res.Cellars {
-				if c.Id == commit.Cellar.Id {
+				if c.Id == commit.Vote.Cellar.Id {
 					return true
 				}
 			}
@@ -84,7 +87,7 @@ func (s *IntegrationTestSuite) TestRebalance() {
 
 				delegatedVal := s.chain.validators[i]
 
-				precommitMsg, err := types.NewMsgAllocationPrecommit(*commit.Cellar, commit.Salt, orch.keyInfo.GetAddress(), sdk.ValAddress(delegatedVal.keyInfo.GetAddress()))
+				precommitMsg, err := types.NewMsgAllocationPrecommit(*commit.Vote, commit.Salt, orch.keyInfo.GetAddress(), sdk.ValAddress(delegatedVal.keyInfo.GetAddress()))
 				s.Require().NoError(err, "unable to create precommit")
 
 				response, err := s.chain.sendMsgs(*clientCtx, precommitMsg)
@@ -126,9 +129,9 @@ func (s *IntegrationTestSuite) TestRebalance() {
 				if res == nil {
 					return false
 				}
-				expectedPrecommit, err := types.NewMsgAllocationPrecommit(*commit.Cellar, commit.Salt, s.chain.orchestrators[i].keyInfo.GetAddress(), sdk.ValAddress(val.keyInfo.GetAddress()))
+				expectedPrecommit, err := types.NewMsgAllocationPrecommit(*commit.Vote, commit.Salt, s.chain.orchestrators[i].keyInfo.GetAddress(), sdk.ValAddress(val.keyInfo.GetAddress()))
 				s.Require().NoError(err, "unable to create precommit")
-				s.Require().Equal(res.Precommit.CellarId, commit.Cellar.Id, "cellar ids unequal")
+				s.Require().Equal(res.Precommit.CellarId, commit.Vote.Cellar.Id, "cellar ids unequal")
 				s.Require().Equal(res.Precommit.Hash, expectedPrecommit.Precommit[0].Hash, "commit hashes unequal")
 
 				return true
@@ -182,7 +185,7 @@ func (s *IntegrationTestSuite) TestRebalance() {
 				if res == nil {
 					return false
 				}
-				s.Require().Equal(res.Commit.Cellar.Id, commit.Cellar.Id, "cellar ids unequal")
+				s.Require().Equal(res.Commit.Vote.Cellar.Id, commit.Vote.Cellar.Id, "cellar ids unequal")
 
 				return true
 			},
@@ -254,15 +257,15 @@ func (s *IntegrationTestSuite) TestRebalance() {
 				s.T().Logf("got error %e querying ticks", err)
 				return false
 			}
-			if commit.Cellar.TickRanges[0].Upper != tickRange.Upper {
+			if commit.Vote.Cellar.TickRanges[0].Upper != tickRange.Upper {
 				s.T().Logf("wrong upper %s", tickRange.String())
 				return false
 			}
-			if commit.Cellar.TickRanges[0].Lower != tickRange.Lower {
+			if commit.Vote.Cellar.TickRanges[0].Lower != tickRange.Lower {
 				s.T().Logf("wrong lower %s", tickRange.String())
 				return false
 			}
-			if commit.Cellar.TickRanges[0].Weight != tickRange.Weight {
+			if commit.Vote.Cellar.TickRanges[0].Weight != tickRange.Weight {
 				s.T().Logf("wrong weight %s", tickRange.String())
 				return false
 			}
@@ -270,4 +273,6 @@ func (s *IntegrationTestSuite) TestRebalance() {
 			return true
 		}, 5*time.Minute, 5*time.Second, "cellar ticks never updated")
 	})
+
+	s.T().Logf("ticks updated")
 }
