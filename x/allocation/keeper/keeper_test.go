@@ -61,7 +61,10 @@ func TestGetWinningVotes(t *testing.T) {
 
 		for _, vc := range test.ValCellars {
 			commit := types.Allocation{
-				Cellar: &vc.Cellar,
+				Vote: &types.RebalanceVote{
+					Cellar: &vc.Cellar,
+					CurrentPrice: 100,
+				},
 				Salt:   "testsalt",
 			}
 
@@ -84,14 +87,17 @@ func TestHashingPreCommitsAndCommits(t *testing.T) {
 	testCellar := common.HexToAddress("0x6ea5992aB4A78D5720bD12A089D13c073d04B55d")
 
 	commit := types.Allocation{
-		Cellar: &types.Cellar{
-			Id: testCellar.String(),
-			TickRanges: []*types.TickRange{
-				{Upper: 200, Lower: 100, Weight: 10},
-				{Upper: 300, Lower: 200, Weight: 20},
-				{Upper: 400, Lower: 300, Weight: 30},
-				{Upper: 500, Lower: 400, Weight: 40},
+		Vote: &types.RebalanceVote{
+			Cellar: &types.Cellar{
+				Id: testCellar.String(),
+				TickRanges: []*types.TickRange{
+					{Upper: 200, Lower: 100, Weight: 10},
+					{Upper: 300, Lower: 200, Weight: 20},
+					{Upper: 400, Lower: 300, Weight: 30},
+					{Upper: 500, Lower: 400, Weight: 40},
+				},
 			},
+			CurrentPrice: 100,
 		},
 		Salt: "testsalt",
 	}
@@ -100,18 +106,18 @@ func TestHashingPreCommitsAndCommits(t *testing.T) {
 	require.NoError(t, err, "unable to parse acc addr")
 	testVal := sdktypes.ValAddress(testAcc)
 
-	preCommitMsg, err := types.NewMsgAllocationPrecommit(*commit.Cellar, commit.Salt, testAcc, testVal)
+	preCommitMsg, err := types.NewMsgAllocationPrecommit(*commit.Vote.Cellar, commit.Salt, testAcc, testVal)
 	require.NoError(t, err, "can't make precommit message")
 
 	// store precommit
 	input.AllocationKeeper.SetAllocationPrecommit(ctx, testVal, testCellar, *preCommitMsg.Precommit[0])
 
 	// retrieve precommit
-	pc, found := input.AllocationKeeper.GetAllocationPrecommit(ctx, testVal, common.HexToAddress(commit.Cellar.Id))
+	pc, found := input.AllocationKeeper.GetAllocationPrecommit(ctx, testVal, common.HexToAddress(commit.Vote.Cellar.Id))
 	require.True(t, found, "didn't find precommit")
 	require.Equal(t, preCommitMsg.Precommit[0].Hash, pc.Hash, "bytes unequal after retrieving precommit")
 
-	commitHash, err := commit.Cellar.Hash(commit.Salt, testVal)
+	commitHash, err := commit.Vote.Cellar.Hash(commit.Salt, testVal)
 	require.NoError(t, err, "couldn't hash commit")
 	require.Equal(t, pc.Hash, commitHash, "hashes don't match")
 }

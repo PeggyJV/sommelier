@@ -10,6 +10,7 @@
     - [AllocationPrecommit](#allocation.v1.AllocationPrecommit)
     - [Cellar](#allocation.v1.Cellar)
     - [CellarUpdate](#allocation.v1.CellarUpdate)
+    - [RebalanceVote](#allocation.v1.RebalanceVote)
     - [RemoveManagedCellarsProposal](#allocation.v1.RemoveManagedCellarsProposal)
     - [TickRange](#allocation.v1.TickRange)
   
@@ -79,7 +80,7 @@ Allocation is the commit for all allocations for a cellar by a validator
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| `cellar` | [Cellar](#allocation.v1.Cellar) |  |  |
+| `vote` | [RebalanceVote](#allocation.v1.RebalanceVote) |  |  |
 | `salt` | [string](#string) |  |  |
 
 
@@ -129,7 +130,23 @@ Cellar is a collection of pools for a token pair
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | `invalidation_nonce` | [uint64](#uint64) |  |  |
+| `vote` | [RebalanceVote](#allocation.v1.RebalanceVote) |  |  |
+
+
+
+
+
+
+<a name="allocation.v1.RebalanceVote"></a>
+
+### RebalanceVote
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
 | `cellar` | [Cellar](#allocation.v1.Cellar) |  |  |
+| `current_price` | [uint64](#uint64) |  |  |
 
 
 

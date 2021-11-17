@@ -86,12 +86,13 @@ func (k Keeper) EndBlocker(ctx sdk.Context) {
 	for _, wv := range winningVotes {
 		k.Logger(ctx).Info("setting outgoing tx for contract call",
 			"cellar", wv.String(),
-			"tick ranges length", len(wv.TickRanges))
+			"tick ranges length", len(wv.Cellar.TickRanges),
+			"current price", wv.CurrentPrice)
 		contractCall := k.gravityKeeper.CreateContractCallTx(
 			ctx,
 			k.IncrementInvalidationNonce(ctx),
 			wv.InvalidationScope(),
-			common.HexToAddress(wv.Id),
+			common.HexToAddress(wv.Cellar.Id),
 			wv.ABIEncodedRebalanceBytes(),
 			[]gravitytypes.ERC20Token{}, // tokens are always zero
 			[]gravitytypes.ERC20Token{})

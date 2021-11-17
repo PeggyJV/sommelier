@@ -13,9 +13,9 @@ func (s *IntegrationTestSuite) TestRebalance() {
 
 		tickRange, err := s.getFirstTickRange()
 		s.Require().NoError(err)
-		s.Require().Equal(int32(198780), tickRange.Upper)
-		s.Require().Equal(int32(192120), tickRange.Lower)
-		s.Require().Equal(uint32(100), tickRange.Weight)
+		s.Require().Equal(int32(600), tickRange.Upper)
+		s.Require().Equal(int32(300), tickRange.Lower)
+		s.Require().Equal(uint32(900), tickRange.Weight)
 
 		commit := types.Allocation{
 			Cellar: &types.Cellar{
