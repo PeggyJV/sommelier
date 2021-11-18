@@ -220,38 +220,6 @@ func (s *IntegrationTestSuite) TestRebalance() {
 
 		s.T().Logf("checking for updated tick ranges in cellar")
 		s.Require().Eventuallyf(func() bool {
-			//kb, err := val.keyring()
-			//s.Require().NoError(err)
-			//clientCtx, err := s.chain.clientContext("tcp://localhost:26657", &kb, "val", val.keyInfo.GetAddress())
-			//s.Require().NoError(err)
-			//gravityQueryClient := gravitytypes.NewQueryClient(clientCtx)
-			//res, err := gravityQueryClient.UnsignedContractCallTxs(context.Background(), &gravitytypes.UnsignedContractCallTxsRequest{
-			//	Address: val.keyInfo.GetAddress().String(),
-			//})
-			//if err != nil {
-			//	s.T().Logf("error: %s", err)
-			//	if res != nil {
-			//		s.T().Logf("response: %s", res)
-			//	}
-			//}
-			//s.T().Logf("unsigned contract call txs: %s", res.Calls)
-			//for _, call := range res.Calls {
-			//	s.T().Logf("contract call; nonce: %d, scope: %x, store index: %x", call.InvalidationNonce, call.InvalidationScope, call.GetStoreIndex())
-			//}
-
-			//confirmsRes, err := gravityQueryClient.ContractCallTxConfirmations(context.Background(), &gravitytypes.ContractCallTxConfirmationsRequest{
-			//	InvalidationScope: commit.Cellar.ABIEncodedRebalanceBytes(),
-			//	InvalidationNonce: 1,
-			//})
-			//
-			//if err != nil {
-			//	s.T().Logf("error: %s", err)
-			//	if res != nil {
-			//		s.T().Logf("response: %s", confirmsRes)
-			//	}
-			//}
-			//s.T().Logf("contract call tx confirms: %s", confirmsRes.Signatures)
-
 			tickRange, err = s.getFirstTickRange()
 			if err != nil {
 				s.T().Logf("got error %e querying ticks", err)
@@ -272,7 +240,29 @@ func (s *IntegrationTestSuite) TestRebalance() {
 
 			return true
 		}, 5*time.Minute, 5*time.Second, "cellar ticks never updated")
-	})
 
-	s.T().Logf("ticks updated")
+		s.T().Logf("checking to see if hooks updated cellars on chain")
+		val = s.chain.validators[0]
+		s.Require().Eventuallyf(func() bool {
+			kb, err := val.keyring()
+			s.Require().NoError(err)
+			clientCtx, err := s.chain.clientContext("tcp://localhost:26657", &kb, "val", val.keyInfo.GetAddress())
+			s.Require().NoError(err)
+
+			queryClient := types.NewQueryClient(clientCtx)
+			res, err := queryClient.QueryCellars(context.Background(), &types.QueryCellarsRequest{})
+			if err != nil {
+				return false
+			}
+			s.Require().Len(res.Cellars, 1, "incorrect number of cellars on chain")
+			s.T().Logf("cellars %s", res.Cellars)
+			if !res.Cellars[0].Equals(*commit.Vote.Cellar) {
+				s.T().Logf("unequal cellars %s %s", res.Cellars[0].String(), commit.Vote.Cellar.String())
+				return false
+			}
+
+			return true
+		}, 100*time.Second, 10*time.Second, "on chain cellars never updated")
+
+	})
 }

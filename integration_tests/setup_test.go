@@ -350,9 +350,7 @@ func (s *IntegrationTestSuite) initGenesis() {
 		{
 			Id: hardhatCellar.String(),
 			TickRanges: []*types.TickRange{
-				{Upper: -189720, Lower: -192660, Weight: 160},
-				{Upper: -192660, Lower: -198540, Weight: 680},
-				{Upper: -198540, Lower: -201540, Weight: 160},
+				{Upper: 600, Lower: 300, Weight: 900},
 			},
 		},
 	}

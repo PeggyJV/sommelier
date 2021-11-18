@@ -38,19 +38,6 @@ task(
         await gravity.deployed();
         console.log(`gravity contract deployed at - ${gravity.address}`)
 
-        // Take over the cellar owner so we can transfer ownership
-        // await hre.network.provider.request({
-        //     method: 'hardhat_impersonateAccount',
-        //     params: [constants.CELLAR_OWNER],
-        // });
-        // const cellarSigner = await hre.ethers.getSigner(constants.CELLAR_OWNER);
-        // const Cellar = hre.ethers.getContractAt(
-        //     'CellarPoolShareLimitUSDCETH',
-        //     constants.CELLAR,
-        //     cellarSigner,
-        // );
-        // const cellar = await Cellar;
-
         const Cellar = await hre.ethers.getContractFactory("CellarPoolShare");
         const cellar = (await Cellar.deploy(
             "mock cellar",
@@ -62,11 +49,6 @@ task(
         ));
         await cellar.deployed();
         console.log(`cellar contract deploy at - ${cellar.address}`);
-
-        // await whaleSigner.sendTransaction({
-        //     to: cellar.address,
-        //     value: hre.ethers.utils.parseEther('100'),
-        // })
 
         let cellarSignerAddress = await cellar.signer.getAddress()
         await hre.network.provider.request({
@@ -87,13 +69,6 @@ task(
         console.log(
             `Cellar contract at ${cellar.address} is now owned by Gravity contract at ${gravity.address} with hash ${hash}`,
         );
-
-        // await whaleSigner.sendTransaction({
-        //     to: cellar.address,
-        //     value: hre.ethers.utils.parseEther('100'),
-        // })
-
-        // await hre.network.provider.send("evm_setIntervalMining", [5000]);
 
         await hre.run('node');
     });
