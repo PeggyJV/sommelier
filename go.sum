@@ -939,6 +939,14 @@ github.com/pborman/uuid v0.0.0-20170112150404-1b00554d8222/go.mod h1:VyrYX9gd7ir
 github.com/pborman/uuid v1.2.0/go.mod h1:X/NO0urCmaxf9VXbdlT7C2Yzkj2IKimNn4k+gtPdI/k=
 github.com/peggyjv/gravity-bridge/module v0.2.24-0.20211021221644-388ea1bfa46e h1:Gxeyn0POXChhq8fWcID9vYNGM6MJYfsEhnRN2NM/M/0=
 github.com/peggyjv/gravity-bridge/module v0.2.24-0.20211021221644-388ea1bfa46e/go.mod h1:7sqblrhSS7+I94DDIWz98N2mcXR5hL7f+EaV054sBMQ=
+github.com/peggyjv/gravity-bridge/module v0.2.24-0.20211028214436-e3b2b41e3e3d h1:/hmeI8wl1bJ7DjI3J86fimnalYtg67LJGqE5sg16FQw=
+github.com/peggyjv/gravity-bridge/module v0.2.24-0.20211028214436-e3b2b41e3e3d/go.mod h1:7sqblrhSS7+I94DDIWz98N2mcXR5hL7f+EaV054sBMQ=
+github.com/peggyjv/gravity-bridge/module v0.2.24-0.20211118025356-46c1e7da925e h1:vhZeYuN+rXNE1NTZaecQjkUeQAkyqNLyx7VA6lc9ktE=
+github.com/peggyjv/gravity-bridge/module v0.2.24-0.20211118025356-46c1e7da925e/go.mod h1:7sqblrhSS7+I94DDIWz98N2mcXR5hL7f+EaV054sBMQ=
+github.com/peggyjv/gravity-bridge/module v0.2.24-0.20211118185005-2b7a3f3e7e46 h1:kmD62aFZpYjN5c94qsDmTaE8z0BzftEinSkRTFkDfWQ=
+github.com/peggyjv/gravity-bridge/module v0.2.24-0.20211118185005-2b7a3f3e7e46/go.mod h1:7sqblrhSS7+I94DDIWz98N2mcXR5hL7f+EaV054sBMQ=
+github.com/peggyjv/gravity-bridge/module v0.2.24-0.20211118191750-6900f7222934 h1:hhA802qZBmWJKnj60R0IA78hauCRcadf1B+4i1WxlrY=
+github.com/peggyjv/gravity-bridge/module v0.2.24-0.20211118191750-6900f7222934/go.mod h1:7sqblrhSS7+I94DDIWz98N2mcXR5hL7f+EaV054sBMQ=
 github.com/pelletier/go-toml v1.2.0/go.mod h1:5z9KED0ma1S8pY6P1sdut58dfprrGBbd/94hg7ilaic=
 github.com/pelletier/go-toml v1.9.3 h1:zeC5b1GviRUyKYd6OJPvBU/mcVDVoL1OhT17FCt5dSQ=
 github.com/pelletier/go-toml v1.9.3/go.mod h1:u1nR/EPcESfeI/szUZKdtJ0xRNbUoANCkoOuaOx1Y+c=

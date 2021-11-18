@@ -333,12 +333,12 @@ func NewSommelierApp(
 	transferModule := ibctransfer.NewAppModule(app.TransferKeeper)
 
 	// todo: check if default power reduction is appropriate
-	app.GravityKeeper = gravitykeeper.NewKeeper(
+	gravityKeeper := gravitykeeper.NewKeeper(
 		appCodec, keys[gravitytypes.StoreKey], app.GetSubspace(gravitytypes.ModuleName),
 		app.AccountKeeper, app.StakingKeeper, app.BankKeeper, app.SlashingKeeper, sdk.DefaultPowerReduction,
 	)
 
-	app.GravityKeeper.SetHooks(
+	app.GravityKeeper = *gravityKeeper.SetHooks(
 		gravitytypes.NewMultiGravityHooks(
 			app.AllocationKeeper.Hooks(),
 		))

@@ -1,7 +1,7 @@
 FROM node:14-alpine3.13
 
 RUN apk update
-RUN apk add --no-cache git
+RUN apk add --no-cache git python
 
 COPY package.json package.json
 COPY yarn.lock yarn.lock
