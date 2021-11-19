@@ -77,11 +77,13 @@ task(
 /**
  * @type import('hardhat/config').HardhatUserConfig
  */
+const ARCHIVE_NODE_URL = process.env.ARCHIVE_NODE_URL;
+
 module.exports = {
     networks: {
         hardhat: {
             forking: {
-                url: 'https://eth-mainnet.alchemyapi.io/v2/lErlJJCjh4o6eXRbSXel1jVcBmCvAJfx',
+                url: ARCHIVE_NODE_URL,
                 blockNumber: 13405367,
             },
         },

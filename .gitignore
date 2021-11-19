@@ -64,3 +64,6 @@ cache
 artifacts
 !integration_tests/ethereum/artifacts
 *.test
+
+# don't save the env file
+.env

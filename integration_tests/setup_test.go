@@ -451,6 +451,7 @@ func (s *IntegrationTestSuite) runEthContainer() {
 			"8545/tcp": {{HostIP: "", HostPort: "8545"}},
 		},
 		ExposedPorts: []string{"8545/tcp"},
+		Env: []string{fmt.Sprintf("ARCHIVE_NODE_URL=%s", os.Getenv("ARCHIVE_NODE_URL"))},
 	}
 
 	s.ethResource, err = s.dockerPool.RunWithOptions(

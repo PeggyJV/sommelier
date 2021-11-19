@@ -380,7 +380,6 @@ e2e_clean_slate:
 	@cd integration_tests && go test -c
 
 e2e_basic: e2e_clean_slate
-	@E2E_SKIP_CLEANUP=true
 	@integration_tests/integration_tests.test -test.run TestBasicChain -test.failfast -test.v || make -s fail
 
 e2e_rebalance: e2e_clean_slate
