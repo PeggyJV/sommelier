@@ -161,3 +161,5 @@ jobs:
         run: cd integration_tests && go test -c
       - name: Run end to end test
         run: ./integration_tests/integration_tests.test -test.failfast -test.v -test.run IntegrationTestSuite -testify.m Test${{ matrix.test_type }}
+        env:
+          ARCHIVE_NODE_URL: ${{ secrets.ARCHIVE_NODE_URL }}
