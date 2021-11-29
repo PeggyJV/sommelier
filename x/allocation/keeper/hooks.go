@@ -17,6 +17,10 @@ func (k Keeper) Hooks() Hooks {
 }
 
 func (h Hooks) AfterContractCallExecutedEvent(ctx sdk.Context, event gravitytypes.ContractCallExecutedEvent) {
+	h.k.Logger(ctx).Info("after contract call executed event",
+		"event", event,
+		"store key", h.k.storeKey,
+		"keeper", h.k)
 	h.k.CommitCellarUpdate(ctx, event.InvalidationNonce, event.InvalidationScope)
 }
 

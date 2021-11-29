@@ -88,9 +88,20 @@ func (k Keeper) EndBlocker(ctx sdk.Context) {
 			"cellar", wv.String(),
 			"tick ranges length", len(wv.Cellar.TickRanges),
 			"current price", wv.CurrentPrice)
+
+		// increment invalidation nonce
+		invalidationNonce := k.IncrementInvalidationNonce(ctx)
+
+		// set pending cellar update
+		k.SetPendingCellarUpdate(ctx, types.CellarUpdate{
+			InvalidationNonce: invalidationNonce,
+			Vote:              &wv,
+		})
+
+		// submit contract call to bridge
 		contractCall := k.gravityKeeper.CreateContractCallTx(
 			ctx,
-			k.IncrementInvalidationNonce(ctx),
+			invalidationNonce,
 			wv.InvalidationScope(),
 			common.HexToAddress(wv.Cellar.Id),
 			wv.ABIEncodedRebalanceBytes(),
