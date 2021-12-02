@@ -4,7 +4,7 @@ go 1.15
 
 require (
 	github.com/cenkalti/backoff/v4 v4.1.1 // indirect
-	github.com/cosmos/cosmos-sdk v0.44.1
+	github.com/cosmos/cosmos-sdk v0.44.2
 	github.com/cosmos/go-bip39 v1.0.0
 	github.com/cosmos/ibc-go v1.0.1
 	github.com/deckarep/golang-set v0.0.0-20180603214616-504e848d77ea
