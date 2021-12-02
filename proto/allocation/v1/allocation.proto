@@ -13,9 +13,14 @@ message AllocationPrecommit {
   string cellar_id = 2;
 }
 
+message RebalanceVote {
+  Cellar cellar = 1;
+  uint64 current_price = 2;
+}
+
 // Allocation is the commit for all allocations for a cellar by a validator
 message Allocation {
-  Cellar cellar = 1;
+  RebalanceVote vote = 1;
   string salt = 2;
 }
 
@@ -33,7 +38,7 @@ message TickRange {
 
 message CellarUpdate {
   uint64 invalidation_nonce = 1;
-  Cellar cellar = 2;
+  RebalanceVote vote = 2;
 }
 
 message AddManagedCellarsProposal {

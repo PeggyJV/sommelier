@@ -14,28 +14,27 @@ type ABIEncodedTickRange struct {
 }
 
 // ABIEncodedRebalanceBytes gets the checkpoint signature from the given outgoing tx batch
-func (c Cellar) ABIEncodedRebalanceBytes() []byte {
+func (rv RebalanceVote) ABIEncodedRebalanceBytes() []byte {
 	encodedCall, err := abiJSON()
 	if err != nil {
 		panic(sdkerrors.Wrap(err, "bad ABI definition in code"))
 	}
 
-	ticks := make([]ABIEncodedTickRange, len(c.TickRanges))
-	for i, t := range c.TickRanges {
+	ticks := make([]ABIEncodedTickRange, len(rv.Cellar.TickRanges))
+	for i, t := range rv.Cellar.TickRanges {
 		up := int64(t.Upper)
 		lo := int64(t.Lower)
 		we := uint64(t.Weight)
 		ticks[i] = ABIEncodedTickRange{big.NewInt(0), big.NewInt(up), big.NewInt(lo), new(big.Int).SetUint64(we)}
 	}
 
-	abiEncodedCall, err := encodedCall.Pack("rebalance", ticks)
+	abiEncodedCall, err := encodedCall.Pack("rebalance", ticks, new(big.Int).SetUint64(rv.CurrentPrice))
 	if err != nil {
 		panic(err)
 	}
 	println("rebalance payload: ", hex.EncodeToString(abiEncodedCall))
 
 	return abiEncodedCall
-	//return crypto.Keccak256Hash(abiEncodedCall).Bytes()
 }
 
 // tuple[] packing example

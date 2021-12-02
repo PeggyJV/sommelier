@@ -24,18 +24,18 @@ const (
 //////////////////////////
 
 // NewMsgAllocationPrecommit return a new MsgAllocationPrecommit
-func NewMsgAllocationPrecommit(cellar Cellar, salt string, signer sdk.AccAddress, val sdk.ValAddress) (*MsgAllocationPrecommit, error) {
+func NewMsgAllocationPrecommit(vote RebalanceVote, salt string, signer sdk.AccAddress, val sdk.ValAddress) (*MsgAllocationPrecommit, error) {
 	if signer == nil {
 		return nil, fmt.Errorf("no signer provided")
 	}
 
-	hash, err := cellar.Hash(salt, val)
+	hash, err := vote.Hash(salt, val)
 	if err != nil {
 		return nil, err
 	}
 
 	return &MsgAllocationPrecommit{
-		Precommit: []*AllocationPrecommit{{Hash: hash, CellarId: cellar.Id}},
+		Precommit: []*AllocationPrecommit{{Hash: hash, CellarId: vote.Cellar.Id}},
 		Signer:    signer.String(),
 	}, nil
 }

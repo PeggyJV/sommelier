@@ -2,6 +2,7 @@ package keeper
 
 import (
 	"fmt"
+	"github.com/ethereum/go-ethereum/common"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	gravitytypes "github.com/peggyjv/gravity-bridge/module/x/gravity/types"
@@ -85,11 +86,24 @@ func (k Keeper) EndBlocker(ctx sdk.Context) {
 	for _, wv := range winningVotes {
 		k.Logger(ctx).Info("setting outgoing tx for contract call",
 			"cellar", wv.String(),
-			"tick ranges length", len(wv.TickRanges))
+			"tick ranges length", len(wv.Cellar.TickRanges),
+			"current price", wv.CurrentPrice)
+
+		// increment invalidation nonce
+		invalidationNonce := k.IncrementInvalidationNonce(ctx)
+
+		// set pending cellar update
+		k.SetPendingCellarUpdate(ctx, types.CellarUpdate{
+			InvalidationNonce: invalidationNonce,
+			Vote:              &wv,
+		})
+
+		// submit contract call to bridge
 		contractCall := k.gravityKeeper.CreateContractCallTx(
 			ctx,
-			k.IncrementInvalidationNonce(ctx),
+			invalidationNonce,
 			wv.InvalidationScope(),
+			common.HexToAddress(wv.Cellar.Id),
 			wv.ABIEncodedRebalanceBytes(),
 			[]gravitytypes.ERC20Token{}, // tokens are always zero
 			[]gravitytypes.ERC20Token{})
