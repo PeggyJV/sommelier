@@ -2,16 +2,24 @@
 /// of allocation
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct AllocationPrecommit {
+    ///  bytes  hash = 1 [(gogoproto.casttype) = "github.com/tendermint/tendermint/libs/bytes.HexBytes"];
     #[prost(bytes = "vec", tag = "1")]
     pub hash: ::prost::alloc::vec::Vec<u8>,
     #[prost(string, tag = "2")]
     pub cellar_id: ::prost::alloc::string::String,
 }
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct RebalanceVote {
+    #[prost(message, optional, tag = "1")]
+    pub cellar: ::core::option::Option<Cellar>,
+    #[prost(uint64, tag = "2")]
+    pub current_price: u64,
+}
 /// Allocation is the commit for all allocations for a cellar by a validator
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct Allocation {
     #[prost(message, optional, tag = "1")]
-    pub cellar: ::core::option::Option<Cellar>,
+    pub vote: ::core::option::Option<RebalanceVote>,
     #[prost(string, tag = "2")]
     pub salt: ::prost::alloc::string::String,
 }
@@ -25,19 +33,19 @@ pub struct Cellar {
 }
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct TickRange {
-    #[prost(uint64, tag = "1")]
-    pub upper: u64,
-    #[prost(uint64, tag = "2")]
-    pub lower: u64,
-    #[prost(uint64, tag = "3")]
-    pub weight: u64,
+    #[prost(int32, tag = "1")]
+    pub upper: i32,
+    #[prost(int32, tag = "2")]
+    pub lower: i32,
+    #[prost(uint32, tag = "3")]
+    pub weight: u32,
 }
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct CellarUpdate {
     #[prost(uint64, tag = "1")]
     pub invalidation_nonce: u64,
     #[prost(message, optional, tag = "2")]
-    pub cellar: ::core::option::Option<Cellar>,
+    pub vote: ::core::option::Option<RebalanceVote>,
 }
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct AddManagedCellarsProposal {
@@ -57,20 +65,6 @@ pub struct RemoveManagedCellarsProposal {
     #[prost(string, repeated, tag = "3")]
     pub cellar_ids: ::prost::alloc::vec::Vec<::prost::alloc::string::String>,
 }
-/// MsgDelegateAllocations defines sdk.Msg for delegating allocation rights from a validator
-/// to another address, must be signed by an active validator
-#[derive(Clone, PartialEq, ::prost::Message)]
-pub struct MsgDelegateAllocations {
-    /// delegate account address
-    #[prost(string, tag = "1")]
-    pub delegate: ::prost::alloc::string::String,
-    /// validator operator address
-    #[prost(string, tag = "2")]
-    pub validator: ::prost::alloc::string::String,
-}
-/// MsgDelegateAllocationsResponse is the response type for the Msg/DelegateAllocations gRPC method.
-#[derive(Clone, PartialEq, ::prost::Message)]
-pub struct MsgDelegateAllocationsResponse {}
 /// MsgAllocationPrecommit - sdk.Msg for prevoting on an array of oracle data types.
 /// The purpose of the prevote is to hide vote for data with hashes formatted as hex string:
 /// SHA256("{salt}:{data_cannonical_json}:{voter}")
@@ -133,23 +127,7 @@ pub mod msg_client {
             let inner = tonic::client::Grpc::with_interceptor(inner, interceptor);
             Self { inner }
         }
-        #[doc = " DelegateAllocations defines a message that delegates the allocating to an account address."]
-        pub async fn delegate_allocations(
-            &mut self,
-            request: impl tonic::IntoRequest<super::MsgDelegateAllocations>,
-        ) -> Result<tonic::Response<super::MsgDelegateAllocationsResponse>, tonic::Status> {
-            self.inner.ready().await.map_err(|e| {
-                tonic::Status::new(
-                    tonic::Code::Unknown,
-                    format!("Service was not ready: {}", e.into()),
-                )
-            })?;
-            let codec = tonic::codec::ProstCodec::default();
-            let path =
-                http::uri::PathAndQuery::from_static("/allocation.v1.Msg/DelegateAllocations");
-            self.inner.unary(request.into_request(), path, codec).await
-        }
-        #[doc = " OracleDataPrevote defines a message that commits a hash of a oracle data feed before the data is actually submitted."]
+        #[doc = " AllocationPrecommit defines a message that commits a hash of allocation data feed before the data is actually submitted."]
         pub async fn allocation_precommit(
             &mut self,
             request: impl tonic::IntoRequest<super::MsgAllocationPrecommit>,
@@ -165,7 +143,7 @@ pub mod msg_client {
                 http::uri::PathAndQuery::from_static("/allocation.v1.Msg/AllocationPrecommit");
             self.inner.unary(request.into_request(), path, codec).await
         }
-        #[doc = " OracleDataVote defines a message to submit the actual oracle data that was committed by the feeder through the prevote."]
+        #[doc = " AllocationCommit defines a message to submit the actual allocation data that was committed by the feeder through the pre-commit."]
         pub async fn allocation_commit(
             &mut self,
             request: impl tonic::IntoRequest<super::MsgAllocationCommit>,
@@ -200,7 +178,7 @@ pub struct GenesisState {
     #[prost(message, optional, tag = "1")]
     pub params: ::core::option::Option<Params>,
     #[prost(message, repeated, tag = "2")]
-    pub feeder_delegations: ::prost::alloc::vec::Vec<MsgDelegateAllocations>,
+    pub cellars: ::prost::alloc::vec::Vec<Cellar>,
 }
 /// Params allocation parameters
 #[derive(Clone, PartialEq, ::prost::Message)]
@@ -222,34 +200,6 @@ pub struct QueryParamsResponse {
     #[prost(message, optional, tag = "1")]
     pub params: ::core::option::Option<Params>,
 }
-/// QueryDelegateAddressRequest is the request type for the Query/QueryDelegateAddress gRPC method.
-#[derive(Clone, PartialEq, ::prost::Message)]
-pub struct QueryDelegateAddressRequest {
-    /// validator operator address
-    #[prost(string, tag = "1")]
-    pub validator: ::prost::alloc::string::String,
-}
-/// QueryDelegateAddressResponse is the response type for the Query/QueryDelegateAddress gRPC method.
-#[derive(Clone, PartialEq, ::prost::Message)]
-pub struct QueryDelegateAddressResponse {
-    /// delegate account address
-    #[prost(string, tag = "2")]
-    pub delegate: ::prost::alloc::string::String,
-}
-/// QueryValidatorAddressRequest is the request type for the Query/Params gRPC method.
-#[derive(Clone, PartialEq, ::prost::Message)]
-pub struct QueryValidatorAddressRequest {
-    /// delegate account address
-    #[prost(string, tag = "1")]
-    pub delegate: ::prost::alloc::string::String,
-}
-/// QueryValidatorAddressResponse is the response type for the Query/Params gRPC method.
-#[derive(Clone, PartialEq, ::prost::Message)]
-pub struct QueryValidatorAddressResponse {
-    /// validator operator address
-    #[prost(string, tag = "1")]
-    pub validator: ::prost::alloc::string::String,
-}
 /// QueryAllocationPrecommitRequest is the request type for the Query/AllocationPrecommit gRPC method.
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct QueryAllocationPrecommitRequest {
@@ -260,12 +210,22 @@ pub struct QueryAllocationPrecommitRequest {
     #[prost(string, tag = "2")]
     pub cellar: ::prost::alloc::string::String,
 }
-/// QueryAllocationPrecommitResponse is the response type for the Query/QueryallocationDataPrevote gRPC method.
+/// QueryAllocationPrecommitResponse is the response type for the Query/AllocationPrecommit gRPC method.
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct QueryAllocationPrecommitResponse {
     /// prevote submitted within the latest voting period
     #[prost(message, optional, tag = "1")]
     pub precommit: ::core::option::Option<AllocationPrecommit>,
+}
+/// QueryAllocationPrecommitsRequest is the request type for the Query/AllocationPrecommits gRPC method.
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct QueryAllocationPrecommitsRequest {}
+/// QueryAllocationPrecommitResponse is the response type for the Query/AllocationPrecommits gRPC method.
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct QueryAllocationPrecommitsResponse {
+    /// prevote submitted within the latest voting period
+    #[prost(message, repeated, tag = "1")]
+    pub precommits: ::prost::alloc::vec::Vec<AllocationPrecommit>,
 }
 /// QueryAllocationCommitRequest is the request type for the Query/QueryallocationDataVote gRPC method.
 #[derive(Clone, PartialEq, ::prost::Message)]
@@ -284,10 +244,20 @@ pub struct QueryAllocationCommitResponse {
     #[prost(message, optional, tag = "1")]
     pub commit: ::core::option::Option<Allocation>,
 }
-/// QueryCommitPeriodRequest is the request type for the Query/VotePeriod gRPC method.
+/// QueryAllocationCommitsRequest is the request type for the Query/QueryAllocationCommits gRPC method.
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct QueryAllocationCommitsRequest {}
+/// QueryAllocationCommitsResponse is the response type for the Query/QueryAllocationCommits gRPC method.
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct QueryAllocationCommitsResponse {
+    /// votes containing the allocation feed submitted within the latest voting period
+    #[prost(message, repeated, tag = "1")]
+    pub commits: ::prost::alloc::vec::Vec<Allocation>,
+}
+/// QueryCommitPeriodRequest is the request type for the Query/QueryCommitPeriod gRPC method.
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct QueryCommitPeriodRequest {}
-/// QueryCommitPeriodResponse is the response type for the Query/VotePeriod gRPC method.
+/// QueryCommitPeriodResponse is the response type for the Query/QueryCommitPeriod gRPC method.
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct QueryCommitPeriodResponse {
     /// block height at which the query was processed
@@ -299,6 +269,15 @@ pub struct QueryCommitPeriodResponse {
     /// block height at which the current voting period ends
     #[prost(int64, tag = "3")]
     pub vote_period_end: i64,
+}
+/// QueryCellarsRequest is the request type for Query/QueryCellars gRPC method.
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct QueryCellarsRequest {}
+/// QueryCellarsResponse is the response type for Query/QueryCellars gRPC method.
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct QueryCellarsResponse {
+    #[prost(message, repeated, tag = "1")]
+    pub cellars: ::prost::alloc::vec::Vec<Cellar>,
 }
 #[doc = r" Generated client implementations."]
 pub mod query_client {
@@ -349,38 +328,6 @@ pub mod query_client {
             let path = http::uri::PathAndQuery::from_static("/allocation.v1.Query/QueryParams");
             self.inner.unary(request.into_request(), path, codec).await
         }
-        #[doc = " QueryDelegateAddress queries the delegate account address of a validator"]
-        pub async fn query_delegate_address(
-            &mut self,
-            request: impl tonic::IntoRequest<super::QueryDelegateAddressRequest>,
-        ) -> Result<tonic::Response<super::QueryDelegateAddressResponse>, tonic::Status> {
-            self.inner.ready().await.map_err(|e| {
-                tonic::Status::new(
-                    tonic::Code::Unknown,
-                    format!("Service was not ready: {}", e.into()),
-                )
-            })?;
-            let codec = tonic::codec::ProstCodec::default();
-            let path =
-                http::uri::PathAndQuery::from_static("/allocation.v1.Query/QueryDelegateAddress");
-            self.inner.unary(request.into_request(), path, codec).await
-        }
-        #[doc = " QueryValidatorAddress returns the validator address of a given delegate"]
-        pub async fn query_validator_address(
-            &mut self,
-            request: impl tonic::IntoRequest<super::QueryValidatorAddressRequest>,
-        ) -> Result<tonic::Response<super::QueryValidatorAddressResponse>, tonic::Status> {
-            self.inner.ready().await.map_err(|e| {
-                tonic::Status::new(
-                    tonic::Code::Unknown,
-                    format!("Service was not ready: {}", e.into()),
-                )
-            })?;
-            let codec = tonic::codec::ProstCodec::default();
-            let path =
-                http::uri::PathAndQuery::from_static("/allocation.v1.Query/QueryValidatorAddress");
-            self.inner.unary(request.into_request(), path, codec).await
-        }
         #[doc = " QueryAllocationPrecommit queries the validator prevote in the current voting period"]
         pub async fn query_allocation_precommit(
             &mut self,
@@ -396,6 +343,24 @@ pub mod query_client {
             let codec = tonic::codec::ProstCodec::default();
             let path = http::uri::PathAndQuery::from_static(
                 "/allocation.v1.Query/QueryAllocationPrecommit",
+            );
+            self.inner.unary(request.into_request(), path, codec).await
+        }
+        #[doc = " QueryAllocationPrecommits queries all allocation precommits in the voting period"]
+        pub async fn query_allocation_precommits(
+            &mut self,
+            request: impl tonic::IntoRequest<super::QueryAllocationPrecommitsRequest>,
+        ) -> Result<tonic::Response<super::QueryAllocationPrecommitsResponse>, tonic::Status>
+        {
+            self.inner.ready().await.map_err(|e| {
+                tonic::Status::new(
+                    tonic::Code::Unknown,
+                    format!("Service was not ready: {}", e.into()),
+                )
+            })?;
+            let codec = tonic::codec::ProstCodec::default();
+            let path = http::uri::PathAndQuery::from_static(
+                "/allocation.v1.Query/QueryAllocationPrecommits",
             );
             self.inner.unary(request.into_request(), path, codec).await
         }
@@ -415,6 +380,22 @@ pub mod query_client {
                 http::uri::PathAndQuery::from_static("/allocation.v1.Query/QueryAllocationCommit");
             self.inner.unary(request.into_request(), path, codec).await
         }
+        #[doc = " QueryAllocationCommits queries all validator allocation commits"]
+        pub async fn query_allocation_commits(
+            &mut self,
+            request: impl tonic::IntoRequest<super::QueryAllocationCommitsRequest>,
+        ) -> Result<tonic::Response<super::QueryAllocationCommitsResponse>, tonic::Status> {
+            self.inner.ready().await.map_err(|e| {
+                tonic::Status::new(
+                    tonic::Code::Unknown,
+                    format!("Service was not ready: {}", e.into()),
+                )
+            })?;
+            let codec = tonic::codec::ProstCodec::default();
+            let path =
+                http::uri::PathAndQuery::from_static("/allocation.v1.Query/QueryAllocationCommits");
+            self.inner.unary(request.into_request(), path, codec).await
+        }
         #[doc = " QueryVotePeriod queries the heights for the current voting period (current, start and end)"]
         pub async fn query_commit_period(
             &mut self,
@@ -429,6 +410,21 @@ pub mod query_client {
             let codec = tonic::codec::ProstCodec::default();
             let path =
                 http::uri::PathAndQuery::from_static("/allocation.v1.Query/QueryCommitPeriod");
+            self.inner.unary(request.into_request(), path, codec).await
+        }
+        #[doc = " QueryCellars returns all cellars and current tick ranges"]
+        pub async fn query_cellars(
+            &mut self,
+            request: impl tonic::IntoRequest<super::QueryCellarsRequest>,
+        ) -> Result<tonic::Response<super::QueryCellarsResponse>, tonic::Status> {
+            self.inner.ready().await.map_err(|e| {
+                tonic::Status::new(
+                    tonic::Code::Unknown,
+                    format!("Service was not ready: {}", e.into()),
+                )
+            })?;
+            let codec = tonic::codec::ProstCodec::default();
+            let path = http::uri::PathAndQuery::from_static("/allocation.v1.Query/QueryCellars");
             self.inner.unary(request.into_request(), path, codec).await
         }
     }
