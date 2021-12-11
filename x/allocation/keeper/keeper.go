@@ -360,11 +360,11 @@ func (k Keeper) CommitCellarUpdate(ctx sdk.Context, invalidationNonce uint64, in
 		panic(fmt.Sprintf("cellar update with invalidation nonce %v not found", invalidationNonce))
 	}
 
-	if !bytes.Equal(cellarUpdate.Cellar.InvalidationScope(), invalidationScope) {
-		panic(fmt.Sprintf("stored invalidation scope did not match event invalidation scope: %v != %v", cellarUpdate.Cellar.InvalidationScope(), invalidationNonce))
-	}
+	//if !bytes.Equal(cellarUpdate.Cellar.InvalidationScope(), invalidationScope) {
+	//	panic(fmt.Sprintf("stored invalidation scope did not match event invalidation scope: %v != %v", cellarUpdate.Cellar.InvalidationScope(), invalidationNonce))
+	//}
 
-	k.SetCellar(ctx, *cellarUpdate.Cellar)
+	k.SetCellar(ctx, *cellarUpdate.Vote.Cellar)
 
 	store := ctx.KVStore(k.storeKey)
 	store.Delete(types.GetCellarUpdateKey(cellarUpdate.InvalidationNonce))
@@ -379,12 +379,12 @@ func (k Keeper) DeleteCellar(ctx sdk.Context, cellarAddr common.Address) {
 // Votes //
 ///////////
 
-func (k Keeper) GetWinningVotes(ctx sdk.Context, threshold sdk.Dec) (winningVotes []types.Cellar) {
+func (k Keeper) GetWinningVotes(ctx sdk.Context, threshold sdk.Dec) (winningVotes []types.RebalanceVote) {
 	for _, cellar := range k.GetCellars(ctx) {
 		cellar := cellar
 		totalPower := int64(0)
 
-		var votes []types.Cellar
+		var votes []types.RebalanceVote
 		var votePowers []int64
 
 		// iterate over all bonded validators
@@ -399,7 +399,7 @@ func (k Keeper) GetWinningVotes(ctx sdk.Context, threshold sdk.Dec) (winningVote
 
 			found := false
 			for i, vote := range votes {
-				if vote.Equals(*commit.Cellar) {
+				if vote.Equals(*commit.Vote) {
 					votePowers[i] += validatorPower
 
 					found = true
@@ -408,7 +408,7 @@ func (k Keeper) GetWinningVotes(ctx sdk.Context, threshold sdk.Dec) (winningVote
 			}
 
 			if !found {
-				votes = append(votes, *commit.Cellar)
+				votes = append(votes, *commit.Vote)
 				votePowers = append(votePowers, validatorPower)
 			}
 

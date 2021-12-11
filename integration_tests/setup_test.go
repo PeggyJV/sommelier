@@ -60,8 +60,8 @@ func MNEMONICS() []string {
 var (
 	stakeAmount, _  = sdk.NewIntFromString("100000000000")
 	stakeAmountCoin = sdk.NewCoin(bondDenom, stakeAmount)
-	hardhatCellar   = common.HexToAddress("0x6ea5992aB4A78D5720bD12A089D13c073d04B55d")
-	gravityContract = common.HexToAddress("0xFbB0BCfed0c82043A7d5387C35Ad8450b44A4cde")
+	hardhatCellar   = common.HexToAddress("0x4C4a2f8c81640e47606d3fd77B353E87Ba015584")
+	gravityContract = common.HexToAddress("0x04C89607413713Ec9775E14b954286519d836FEf")
 )
 
 type IntegrationTestSuite struct {
@@ -350,9 +350,7 @@ func (s *IntegrationTestSuite) initGenesis() {
 		{
 			Id: hardhatCellar.String(),
 			TickRanges: []*types.TickRange{
-				{Upper: -189720, Lower: -192660, Weight: 160},
-				{Upper: -192660, Lower: -198540, Weight: 680},
-				{Upper: -198540, Lower: -201540, Weight: 160},
+				{Upper: 600, Lower: 300, Weight: 900},
 			},
 		},
 	}
@@ -444,6 +442,9 @@ func (s *IntegrationTestSuite) runEthContainer() {
 	s.T().Log("starting Ethereum container...")
 	var err error
 
+	nodeURL := os.Getenv("ARCHIVE_NODE_URL")
+	s.Require().NotEmptyf(nodeURL, "ARCHIVE_NODE_URL env variable must be set")
+
 	runOpts := dockertest.RunOptions{
 		Name:       "ethereum",
 		Repository: "ethereum",
@@ -453,6 +454,7 @@ func (s *IntegrationTestSuite) runEthContainer() {
 			"8545/tcp": {{HostIP: "", HostPort: "8545"}},
 		},
 		ExposedPorts: []string{"8545/tcp"},
+		Env: []string{fmt.Sprintf("ARCHIVE_NODE_URL=%s", nodeURL)},
 	}
 
 	s.ethResource, err = s.dockerPool.RunWithOptions(
@@ -470,12 +472,18 @@ func (s *IntegrationTestSuite) runEthContainer() {
 			ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
 			defer cancel()
 
-			balance, err := ethClient.BalanceAt(ctx, common.HexToAddress("0xd312f0f1B39D54Db2829537595fC1167B14d4b34"), nil)
+			balance, err := ethClient.BalanceAt(ctx, common.HexToAddress(s.chain.validators[0].ethereumKey.address), nil)
 			if err != nil {
+				s.T().Logf("error querying balance: %e", err)
 				return false
 			}
 
-			if balance == nil || (balance.Cmp(big.NewInt(0)) == 0) {
+			if balance == nil {
+				s.T().Logf("balance for first validator is nil")
+			}
+
+			if balance.Cmp(big.NewInt(0)) == 0 {
+				s.T().Logf("balance for first validator is %s", balance.String())
 				return false
 			}
 
@@ -485,6 +493,28 @@ func (s *IntegrationTestSuite) runEthContainer() {
 		10*time.Second,
 		"ethereum node failed to respond",
 	)
+
+	s.T().Logf("waiting for contract to deploy")
+	ethereumLogOutput := bytes.Buffer{}
+	err = s.dockerPool.Client.Logs(docker.LogsOptions{
+		Container:    s.ethResource.Container.ID,
+		OutputStream: &ethereumLogOutput,
+		Stdout:       true,
+	})
+	s.Require().NoError(err, "error getting contract deployer logs")
+
+	s.Require().Eventuallyf(func() bool {
+
+		for _, s := range strings.Split(ethereumLogOutput.String(), "\n") {
+			if strings.HasPrefix(s, "gravity contract deployed at") {
+				strSpl := strings.Split(s, "-")
+				gravityContract = common.HexToAddress(strings.ReplaceAll(strSpl[1], " ", ""))
+				return true
+			}
+		}
+		return false
+	}, time.Minute*5, time.Second*10, "unable to retrieve gravity address from logs")
+	s.T().Logf("gravity contrained deployed at %s", gravityContract.String())
 
 	s.T().Logf("started Ethereum container: %s", s.ethResource.Container.ID)
 }
@@ -584,6 +614,8 @@ key_derivation_path = "m/44'/118'/1'/0/0"
 grpc = "http://%s:9090"
 gas_price = { amount = %s, denom = "%s" }
 prefix = "somm"
+gas_adjustment = 2.0
+msg_batch_size = 5
 `,
 			gravityContract.String(),
 			testDenom,
@@ -667,8 +699,8 @@ prefix = "somm"
 
 				return strings.Contains(containerLogsBuf.String(), match)
 			},
-			30*time.Second,
-			2*time.Second,
+			3*time.Minute,
+			20*time.Second,
 			"orchestrator %s not healthy",
 			resource.Container.ID,
 		)
@@ -696,27 +728,27 @@ func (s *IntegrationTestSuite) logsByContainerID(id string) string {
 	return containerLogsBuf.String()
 }
 
-func (s *IntegrationTestSuite) getTickRanges() []types.TickRange {
+func (s *IntegrationTestSuite) getFirstTickRange() (*types.TickRange, error) {
 	ethClient, err := ethclient.Dial(fmt.Sprintf("http://%s", s.ethResource.GetHostPort("8545/tcp")))
-	s.Require().NoError(err)
-
-	tickRanges := make([]types.TickRange, 3)
-	for i := 0; i < 3; i++ {
-		bz, err := ethClient.CallContract(context.Background(), ethereum.CallMsg{
-			From: common.HexToAddress(s.chain.validators[0].ethereumKey.address),
-			To:   &hardhatCellar,
-			Gas:  0,
-			Data: types.ABIEncodedCellarTickInfoBytes(uint(i)),
-		}, nil)
-		s.Require().NoError(err)
-
-		tr, err := types.BytesToABIEncodedTickRange(bz)
-		s.Require().NoError(err)
-
-		tickRanges[i] = *tr
+	if err != nil {
+		return nil, err
 	}
 
-	return tickRanges
+	bz, err := ethClient.CallContract(context.Background(), ethereum.CallMsg{
+		From: common.HexToAddress(s.chain.validators[0].ethereumKey.address),
+		To:   &hardhatCellar,
+		Gas:  0,
+		Data: types.ABIEncodedCellarTickInfoBytes(uint(0)),
+	}, nil)
+	if err != nil {
+		return nil, err
+	}
+	tr, err := types.BytesToABIEncodedTickRange(bz)
+	if err != nil {
+		return nil, err
+	}
+
+	return tr, nil
 }
 
 func (s *IntegrationTestSuite) TestBasicChain() {

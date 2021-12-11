@@ -30,6 +30,7 @@ type GravityKeeper interface {
 		ctx sdk.Context,
 		invalidationNonce uint64,
 		invalidationScope tmbytes.HexBytes,
+		address common.Address,
 		payload []byte,
 		tokens []types.ERC20Token,
 		fees []types.ERC20Token) *types.ContractCallTx

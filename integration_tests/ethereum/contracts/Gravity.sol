@@ -1,13 +1,12 @@
 pragma solidity ^0.6.6;
 
+import "hardhat/console.sol";
 import "@openzeppelin/contracts/math/SafeMath.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/SafeERC20.sol";
 import "@openzeppelin/contracts/utils/Address.sol";
 import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 import "./CosmosToken.sol";
-
-import "hardhat/console.sol";
 
 pragma experimental ABIEncoderV2;
 
@@ -504,7 +503,10 @@ contract Gravity is ReentrancyGuard {
         }
 
         // Make call to logic contract
-        console.log("function call with %s", _args);
+        console.log("nonce:%d", _args.invalidationNonce);
+//        console.log("invalidation id(scope):%b", _args.invalidationId);
+//        console.log("payload:%s", bytes32ToString(_args.payload));
+//        console.log("timeout:%d", _args.timeOut);
         bytes memory returnData = Address.functionCall(_args.logicContractAddress, _args.payload);
 
         // Send fees to msg.sender

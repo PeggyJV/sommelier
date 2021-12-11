@@ -117,12 +117,12 @@ func (k Keeper) AllocationCommit(c context.Context, msg *types.MsgAllocationComm
 	}
 
 	for _, commit := range msg.Commit {
-		cel := common.HexToAddress(commit.Cellar.Id)
+		cel := common.HexToAddress(commit.Vote.Cellar.Id)
 
-		if cellarSet.Contains(commit.Cellar.Id) {
-			cellarSet.Remove(commit.Cellar.Id)
+		if cellarSet.Contains(commit.Vote.Cellar.Id) {
+			cellarSet.Remove(commit.Vote.Cellar.Id)
 		} else {
-			return nil, fmt.Errorf("commit for unknown cellar: %s", commit.Cellar.Id)
+			return nil, fmt.Errorf("commit for unknown cellar: %s", commit.Vote.Cellar.Id)
 		}
 
 		// Get the precommit for that validator from the store
@@ -133,13 +133,13 @@ func (k Keeper) AllocationCommit(c context.Context, msg *types.MsgAllocationComm
 		}
 
 		// calculate the vote hash on the server
-		commitHash, err := commit.Cellar.Hash(commit.Salt, val)
+		commitHash, err := commit.Vote.Hash(commit.Salt, val)
 		if err != nil {
 			return nil, sdkerrors.Wrap(sdkerrors.ErrJSONMarshal, "failed to hash cellar allocation")
 		}
 
 		// compare to precommit hash
-		cellarJSON, err := json.Marshal(commit.Cellar)
+		cellarJSON, err := json.Marshal(commit.Vote)
 		if err != nil {
 			return nil, err
 		}

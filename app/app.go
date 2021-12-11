@@ -237,7 +237,7 @@ func NewSommelierApp(
 		minttypes.StoreKey, distrtypes.StoreKey, slashingtypes.StoreKey,
 		govtypes.StoreKey, paramstypes.StoreKey, ibchost.StoreKey, upgradetypes.StoreKey,
 		evidencetypes.StoreKey, ibctransfertypes.StoreKey, capabilitytypes.StoreKey,
-		gravitytypes.ModuleName, feegrant.StoreKey, authzkeeper.StoreKey, allocationtypes.ModuleName,
+		gravitytypes.StoreKey, feegrant.StoreKey, authzkeeper.StoreKey, allocationtypes.StoreKey,
 	)
 	tkeys := sdk.NewTransientStoreKeys(paramstypes.TStoreKey)
 	memKeys := sdk.NewMemoryStoreKeys(capabilitytypes.MemStoreKey)
@@ -338,15 +338,15 @@ func NewSommelierApp(
 		app.AccountKeeper, app.StakingKeeper, app.BankKeeper, app.SlashingKeeper, sdk.DefaultPowerReduction,
 	)
 
-	app.GravityKeeper.SetHooks(
-		gravitytypes.NewMultiGravityHooks(
-			app.AllocationKeeper.Hooks(),
-		))
-
 	app.AllocationKeeper = allocationkeeper.NewKeeper(
 		appCodec, keys[allocationtypes.StoreKey], app.GetSubspace(allocationtypes.ModuleName),
 		app.StakingKeeper, app.GravityKeeper,
 	)
+
+	app.GravityKeeper = *app.GravityKeeper.SetHooks(
+		gravitytypes.NewMultiGravityHooks(
+			app.AllocationKeeper.Hooks(),
+		))
 
 	// Create static IBC router, add transfer route, then set and seal it
 	ibcRouter := ibcporttypes.NewRouter()

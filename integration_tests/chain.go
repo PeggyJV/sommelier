@@ -276,7 +276,7 @@ func (c *chain) sendMsgs(clientCtx client.Context, msgs ...sdk.Msg) (*sdk.TxResp
 
 	txf.WithFees("246913560testsomm")
 
-	txb, err := txf.BuildUnsignedTx(msgs...)
+	txb, err := tx.BuildUnsignedTx(txf, msgs...)
 	if err != nil {
 		return nil, err
 	}

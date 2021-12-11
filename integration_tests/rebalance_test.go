@@ -2,10 +2,7 @@ package integration_tests
 
 import (
 	"context"
-	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 	"time"
-
-	gravitytypes "github.com/peggyjv/gravity-bridge/module/x/gravity/types"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/peggyjv/sommelier/x/allocation/types"
@@ -14,18 +11,21 @@ import (
 func (s *IntegrationTestSuite) TestRebalance() {
 	s.Run("Bring up chain, and submit a re-balance", func() {
 
-		trs := s.getTickRanges()
-		s.Require().Len(trs, 3)
+		tickRange, err := s.getFirstTickRange()
+		s.Require().NoError(err)
+		s.Require().Equal(int32(600), tickRange.Upper)
+		s.Require().Equal(int32(300), tickRange.Lower)
+		s.Require().Equal(uint32(900), tickRange.Weight)
 
 		commit := types.Allocation{
-			Cellar: &types.Cellar{
-				Id: hardhatCellar.String(),
-				TickRanges: []*types.TickRange{
-					{Upper: 200, Lower: 100, Weight: 10},
-					{Upper: 300, Lower: 200, Weight: 20},
-					{Upper: 400, Lower: 300, Weight: 30},
-					{Upper: 500, Lower: 400, Weight: 40},
+			Vote: &types.RebalanceVote{
+				Cellar: &types.Cellar{
+					Id: hardhatCellar.String(),
+					TickRanges: []*types.TickRange{
+						{Upper: 198840, Lower: 192180, Weight: 100},
+					},
 				},
+				CurrentPrice: 100,
 			},
 			Salt: "testsalt",
 		}
@@ -47,46 +47,12 @@ func (s *IntegrationTestSuite) TestRebalance() {
 				return false
 			}
 			for _, c := range res.Cellars {
-				if c.Id == commit.Cellar.Id {
+				if c.Id == commit.Vote.Cellar.Id {
 					return true
 				}
 			}
 			return false
 		}, 30*time.Second, 2*time.Second, "hardhat cellar not found in chain")
-
-		s.T().Logf("Trigger valset update via redelegation")
-		val = s.chain.validators[0]
-		s.Require().Eventuallyf(func() bool {
-			kb, err := val.keyring()
-			s.Require().NoError(err)
-
-			clientCtx, err := s.chain.clientContext("tcp://localhost:26657", &kb, "val", val.keyInfo.GetAddress())
-			s.Require().NoError(err)
-
-			redelegateMsg := stakingtypes.NewMsgBeginRedelegate(
-				s.chain.validators[0].keyInfo.GetAddress(),
-				sdk.ValAddress(s.chain.validators[0].keyInfo.GetAddress()),
-				sdk.ValAddress(s.chain.validators[1].keyInfo.GetAddress()),
-				sdk.Coin{
-					Denom:  bondDenom,
-					Amount: sdk.NewInt(1073741824/2),
-				},
-			)
-			response, err := s.chain.sendMsgs(*clientCtx, redelegateMsg)
-			if err != nil {
-				s.T().Logf("error: %s", err)
-				return false
-			}
-			if response.Code != 0 {
-				if response.Code != 32 {
-					s.T().Log(response)
-				}
-				return false
-			}
-
-			return true
-		}, 10*time.Second, 500*time.Millisecond, "unable to send redelegation from first node to second", )
-
 
 		s.T().Logf("wait for new vote period start")
 		val = s.chain.validators[0]
@@ -121,7 +87,7 @@ func (s *IntegrationTestSuite) TestRebalance() {
 
 				delegatedVal := s.chain.validators[i]
 
-				precommitMsg, err := types.NewMsgAllocationPrecommit(*commit.Cellar, commit.Salt, orch.keyInfo.GetAddress(), sdk.ValAddress(delegatedVal.keyInfo.GetAddress()))
+				precommitMsg, err := types.NewMsgAllocationPrecommit(*commit.Vote, commit.Salt, orch.keyInfo.GetAddress(), sdk.ValAddress(delegatedVal.keyInfo.GetAddress()))
 				s.Require().NoError(err, "unable to create precommit")
 
 				response, err := s.chain.sendMsgs(*clientCtx, precommitMsg)
@@ -163,9 +129,9 @@ func (s *IntegrationTestSuite) TestRebalance() {
 				if res == nil {
 					return false
 				}
-				expectedPrecommit, err := types.NewMsgAllocationPrecommit(*commit.Cellar, commit.Salt, s.chain.orchestrators[i].keyInfo.GetAddress(), sdk.ValAddress(val.keyInfo.GetAddress()))
+				expectedPrecommit, err := types.NewMsgAllocationPrecommit(*commit.Vote, commit.Salt, s.chain.orchestrators[i].keyInfo.GetAddress(), sdk.ValAddress(val.keyInfo.GetAddress()))
 				s.Require().NoError(err, "unable to create precommit")
-				s.Require().Equal(res.Precommit.CellarId, commit.Cellar.Id, "cellar ids unequal")
+				s.Require().Equal(res.Precommit.CellarId, commit.Vote.Cellar.Id, "cellar ids unequal")
 				s.Require().Equal(res.Precommit.Hash, expectedPrecommit.Precommit[0].Hash, "commit hashes unequal")
 
 				return true
@@ -175,16 +141,6 @@ func (s *IntegrationTestSuite) TestRebalance() {
 				"pre-commit not found for validator %s",
 				val.keyInfo.GetAddress().String())
 		}
-
-		//kb, err := val.keyring()
-
-		//clientCtx, err := s.chain.clientContext("tcp://localhost:26657", &kb, "val", val.keyInfo.GetAddress())
-		//s.Require().NoError(err)
-		//queryClient := types.NewQueryClient(clientCtx)
-		//res, err := queryClient.QueryAllocationPrecommits(context.Background(), &types.QueryAllocationPrecommitsRequest{})
-		//for _, pc := range res.Precommits {
-		//	s.T().Logf("precommit: hash %x", pc.Hash)
-		//}
 
 		s.T().Logf("sending commits")
 		for i, orch := range s.chain.orchestrators {
@@ -229,7 +185,7 @@ func (s *IntegrationTestSuite) TestRebalance() {
 				if res == nil {
 					return false
 				}
-				s.Require().Equal(res.Commit.Cellar.Id, commit.Cellar.Id, "cellar ids unequal")
+				s.Require().Equal(res.Commit.Vote.Cellar.Id, commit.Vote.Cellar.Id, "cellar ids unequal")
 
 				return true
 			},
@@ -264,63 +220,49 @@ func (s *IntegrationTestSuite) TestRebalance() {
 
 		s.T().Logf("checking for updated tick ranges in cellar")
 		s.Require().Eventuallyf(func() bool {
+			tickRange, err = s.getFirstTickRange()
+			if err != nil {
+				s.T().Logf("got error %e querying ticks", err)
+				return false
+			}
+			if commit.Vote.Cellar.TickRanges[0].Upper != tickRange.Upper {
+				s.T().Logf("wrong upper %s", tickRange.String())
+				return false
+			}
+			if commit.Vote.Cellar.TickRanges[0].Lower != tickRange.Lower {
+				s.T().Logf("wrong lower %s", tickRange.String())
+				return false
+			}
+			if commit.Vote.Cellar.TickRanges[0].Weight != tickRange.Weight {
+				s.T().Logf("wrong weight %s", tickRange.String())
+				return false
+			}
+
+			return true
+		}, 5*time.Minute, 5*time.Second, "cellar ticks never updated")
+
+		s.T().Logf("checking to see if hooks updated cellars on chain")
+		val = s.chain.validators[0]
+		s.Require().Eventuallyf(func() bool {
 			kb, err := val.keyring()
 			s.Require().NoError(err)
 			clientCtx, err := s.chain.clientContext("tcp://localhost:26657", &kb, "val", val.keyInfo.GetAddress())
 			s.Require().NoError(err)
-			gravityQueryClient := gravitytypes.NewQueryClient(clientCtx)
-			res, err := gravityQueryClient.UnsignedContractCallTxs(context.Background(), &gravitytypes.UnsignedContractCallTxsRequest{
-				Address: val.keyInfo.GetAddress().String(),
-			})
-			if err != nil {
-				s.T().Logf("error: %s", err)
-				if res != nil {
-					s.T().Logf("response: %s", res)
-				}
-			}
-			//s.T().Logf("unsigned contract call txs: %s", res.Calls)
-			for _, call := range res.Calls {
-				s.T().Logf("contract call; nonce: %d, scope: %x, store index: %x", call.InvalidationNonce, call.InvalidationScope, call.GetStoreIndex())
-			}
 
-			confirmsRes, err := gravityQueryClient.ContractCallTxConfirmations(context.Background(), &gravitytypes.ContractCallTxConfirmationsRequest{
-				InvalidationScope: commit.Cellar.ABIEncodedRebalanceBytes(),
-				InvalidationNonce: 1,
-			})
-
+			queryClient := types.NewQueryClient(clientCtx)
+			res, err := queryClient.QueryCellars(context.Background(), &types.QueryCellarsRequest{})
 			if err != nil {
-				s.T().Logf("error: %s", err)
-				if res != nil {
-					s.T().Logf("response: %s", confirmsRes)
-				}
-			}
-			s.T().Logf("contract call tx confirms: %s", confirmsRes.Signatures)
-
-			trs = s.getTickRanges()
-			if err != nil {
-				s.T().Logf("error: %s", err)
 				return false
 			}
-			if len(trs) != 4 {
-				s.T().Logf("wrong length: %d", len(trs))
+			s.Require().Len(res.Cellars, 1, "incorrect number of cellars on chain")
+			s.T().Logf("cellars %s", res.Cellars)
+			if !res.Cellars[0].Equals(*commit.Vote.Cellar) {
+				s.T().Logf("unequal cellars %s %s", res.Cellars[0].String(), commit.Vote.Cellar.String())
 				return false
-			}
-			for i, tr := range trs {
-				if int32((i+2)*100) != tr.Upper {
-					s.T().Logf("wrong upper %s", tr.String())
-					return false
-				}
-				if int32((i+1)*100) != tr.Lower {
-					s.T().Logf("wrong lower %s", tr.String())
-					return false
-				}
-				if uint32((i+1)*10) != tr.Weight {
-					s.T().Logf("wrong weight %s", tr.String())
-					return false
-				}
 			}
 
 			return true
-		}, 30*time.Second, 2*time.Second, "cellar ticks never updated")
+		}, 100*time.Second, 10*time.Second, "on chain cellars never updated")
+
 	})
 }

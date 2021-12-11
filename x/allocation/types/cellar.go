@@ -2,21 +2,18 @@ package types
 
 import (
 	"encoding/hex"
-	"github.com/ethereum/go-ethereum/crypto"
-
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/ethereum/go-ethereum/common"
-	tmbytes "github.com/tendermint/tendermint/libs/bytes"
 )
 
 func (c *Cellar) Address() common.Address {
 	return common.HexToAddress(c.Id)
 }
 
-func (c *Cellar) InvalidationScope() tmbytes.HexBytes {
-	return crypto.Keccak256Hash(c.ABIEncodedRebalanceBytes()).Bytes()
-}
+//func (c *Cellar) InvalidationScope() tmbytes.HexBytes {
+//	return crypto.Keccak256Hash(c.ABIEncodedRebalanceBytes()).Bytes()
+//}
 
 func (c *Cellar) Equals(other Cellar) bool {
 	if c.Id != other.Id {
@@ -44,7 +41,6 @@ func (c *Cellar) Equals(other Cellar) bool {
 }
 
 func (c *Cellar) Hash(salt string, val sdk.ValAddress) ([]byte, error) {
-	//fmt.Printf("hash function XXX salt %s, val %s, cellar %s", salt, val.String(), c)
 	databytes, err := c.Marshal()
 
 	if err != nil {

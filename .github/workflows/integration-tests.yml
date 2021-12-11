@@ -107,6 +107,7 @@ jobs:
           mv /tmp/.buildx-cache-new /tmp/.buildx-cache
 
   integration-tests:
+    environment: CI
     runs-on: ubuntu-latest
     needs: [ sommelier-build, hardhat-build ]
     strategy:
@@ -161,3 +162,5 @@ jobs:
         run: cd integration_tests && go test -c
       - name: Run end to end test
         run: ./integration_tests/integration_tests.test -test.failfast -test.v -test.run IntegrationTestSuite -testify.m Test${{ matrix.test_type }}
+        env:
+          ARCHIVE_NODE_URL: ${{ secrets.ARCHIVE_NODE_URL }}

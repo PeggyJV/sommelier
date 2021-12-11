@@ -15,12 +15,13 @@ func DataHash(salt, jsonData string, signer sdk.ValAddress) []byte {
 }
 
 func (ac *Allocation) ValidateBasic() error {
-	if ac.Cellar == nil {
-		return fmt.Errorf("no cellar provided for allocation")
+	err := ac.Vote.Cellar.ValidateBasic()
+	if err != nil {
+		return err
 	}
 
-	if err := ac.Cellar.ValidateBasic(); err != nil {
-		return err
+	if ac.Vote.CurrentPrice == 0 {
+		return fmt.Errorf("invalid current price of zero")
 	}
 
 	return nil

@@ -351,9 +351,7 @@ tools-clean:
 # Integration tests #
 #####################
 
-#ORCHESTRATOR_IMAGE := "ghcr.io/peggyjv/gravity-bridge-orchestrator:v0.2.13"
-# pointing at a specific PR currently, for testing
-ORCHESTRATOR_IMAGE := "ghcr.io/peggyjv/gravity-bridge-orchestrator:pr-203"
+ORCHESTRATOR_IMAGE := "ghcr.io/peggyjv/gravity-bridge-orchestrator:v0.2.23"
 
 e2e_build_images:
 	@docker pull $(ORCHESTRATOR_IMAGE)
@@ -380,7 +378,6 @@ e2e_clean_slate:
 	@cd integration_tests && go test -c
 
 e2e_basic: e2e_clean_slate
-	@E2E_SKIP_CLEANUP=true
 	@integration_tests/integration_tests.test -test.run TestBasicChain -test.failfast -test.v || make -s fail
 
 e2e_rebalance: e2e_clean_slate
@@ -388,7 +385,7 @@ e2e_rebalance: e2e_clean_slate
 
 fail:
 	@echo 'test failed; dumping container logs into ./testlogs for review'
-	@docker logs ethereum > testlogs/ethereum.log>&1 || true
+	@docker logs ethereum > testlogs/ethereum.log 2>&1 || true
 	@docker logs sommelier0 > testlogs/sommelier0.log 2>&1 || true
 	@docker logs sommelier1 > testlogs/sommelier1.log 2>&1 || true
 	@docker logs sommelier2 > testlogs/sommelier2.log 2>&1 || true
