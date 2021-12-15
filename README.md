@@ -109,7 +109,7 @@ sommelier tx staking create-validator \
   --commission-rate="0.10" \
   --commission-max-rate="0.20" \
   --commission-max-change-rate="0.01" \
-  --min-self-delegation="1000000" \
+  --min-self-delegation="1" \
   --fees="100000usomm" \
   --from=validator
 
