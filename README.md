@@ -110,7 +110,6 @@ sommelier tx staking create-validator \
   --commission-max-rate="0.20" \
   --commission-max-change-rate="0.01" \
   --min-self-delegation="1" \
-  --fees="100000usomm" \
   --from=validator
 
 # register delegate keys for eth and orchestrator keys
@@ -121,7 +120,7 @@ sommelier tx gravity set-delegate-keys \
     $(gorc --config $HOME/gorc/config.toml sign-delegate-keys signer $(sommelier keys show validator --bech val -a)) \ 
     --chain-id sommtest-4 \ 
     --from validator \ 
-    --fees 25000usomm -y
+    -y
 
 # start the orchestrator
 sudo systemctl start gorc && sudo journalctl -u gorc -f
