@@ -119,8 +119,8 @@ sommelier tx staking create-validator \
   --commission-max-rate="0.20" \
   --commission-max-change-rate="0.01" \
   --min-self-delegation="1" \
-  --gas 300000   
-  --fees="0usomm"
+  --gas 300000 \
+  --fees="0usomm" \
   --from=validator
 
 # register delegate keys for eth and orchestrator keys
@@ -128,9 +128,9 @@ sommelier tx gravity set-delegate-keys \
     $(sommelier keys show validator --bech val -a) \ # validator address
     $(gorc --config $HOME/gorc/config.toml keys cosmos show orchestrator) \ # orchestrator address (this must be run manually and address extracted)
     $(gorc --config $HOME/gorc/config.toml keys eth show signer) \ # eth signer address
-    $(gorc --config $HOME/gorc/config.toml sign-delegate-keys signer $(sommelier keys show validator --bech val -a)) \ 
-    --chain-id sommelier-2 \ 
-    --from validator \ 
+    $(gorc --config $HOME/gorc/config.toml sign-delegate-keys signer $(sommelier keys show validator --bech val -a)) \
+    --chain-id sommelier-2 \
+    --from validator \
     -y
 
 # start the orchestrator
