@@ -62,10 +62,10 @@ func TestGetWinningVotes(t *testing.T) {
 		for _, vc := range test.ValCellars {
 			commit := types.Allocation{
 				Vote: &types.RebalanceVote{
-					Cellar: &vc.Cellar,
+					Cellar:       &vc.Cellar,
 					CurrentPrice: 100,
 				},
-				Salt:   "testsalt",
+				Salt: "testsalt",
 			}
 
 			if _, found := input.AllocationKeeper.GetCellarByID(ctx, common.HexToAddress(vc.Cellar.Id)); !found {
@@ -106,7 +106,7 @@ func TestHashingPreCommitsAndCommits(t *testing.T) {
 	require.NoError(t, err, "unable to parse acc addr")
 	testVal := sdktypes.ValAddress(testAcc)
 
-	preCommitMsg, err := types.NewMsgAllocationPrecommit(*commit.Vote.Cellar, commit.Salt, testAcc, testVal)
+	preCommitMsg, err := types.NewMsgAllocationPrecommit(*commit.Vote, commit.Salt, testAcc, testVal)
 	require.NoError(t, err, "can't make precommit message")
 
 	// store precommit
