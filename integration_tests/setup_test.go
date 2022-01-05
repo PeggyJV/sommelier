@@ -50,10 +50,10 @@ const (
 
 func MNEMONICS() []string {
 	return []string{
-		"say monitor orient heart super local purse cricket caution primary bring insane road expect rather help two extend own execute throw nation plunge subject",
+		"receive roof marine sure lady hundred sea enact exist place bean wagon kingdom betray science photo loop funny bargain floor suspect only strike endless",
 		"march carpet enact kiss tribe plastic wash enter index lift topic riot try juice replace supreme original shift hover adapt mutual holiday manual nut",
 		"assault section bleak gadget venture ship oblige pave fabric more initial april dutch scene parade shallow educate gesture lunar match patch hawk member problem",
-		"receive roof marine sure lady hundred sea enact exist place bean wagon kingdom betray science photo loop funny bargain floor suspect only strike endless",
+		"say monitor orient heart super local purse cricket caution primary bring insane road expect rather help two extend own execute throw nation plunge subject",
 	}
 }
 
@@ -454,7 +454,7 @@ func (s *IntegrationTestSuite) runEthContainer() {
 			"8545/tcp": {{HostIP: "", HostPort: "8545"}},
 		},
 		ExposedPorts: []string{"8545/tcp"},
-		Env: []string{fmt.Sprintf("ARCHIVE_NODE_URL=%s", nodeURL)},
+		Env:          []string{fmt.Sprintf("ARCHIVE_NODE_URL=%s", nodeURL)},
 	}
 
 	s.ethResource, err = s.dockerPool.RunWithOptions(
