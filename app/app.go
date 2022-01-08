@@ -104,7 +104,7 @@ import (
 
 const appName = "SommelierApp"
 const upgradeName = "CabFranc"
-const newGravityContractAddress = ""
+const newGravityContractAddress = "0x0000000000000000000000000000000000000000"
 const newGravityContractDeployHeight = 1000
 
 var (
