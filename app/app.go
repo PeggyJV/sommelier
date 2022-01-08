@@ -79,7 +79,6 @@ import (
 	ibc "github.com/cosmos/ibc-go/v2/modules/core"
 	ibcclient "github.com/cosmos/ibc-go/v2/modules/core/02-client"
 	ibcclienttypes "github.com/cosmos/ibc-go/v2/modules/core/02-client/types"
-	ibcconnectiontypes "github.com/cosmos/ibc-go/v2/modules/core/03-connection/types"
 	ibcporttypes "github.com/cosmos/ibc-go/v2/modules/core/05-port/types"
 	ibchost "github.com/cosmos/ibc-go/v2/modules/core/24-host"
 	ibckeeper "github.com/cosmos/ibc-go/v2/modules/core/keeper"
@@ -207,6 +206,8 @@ type SommelierApp struct {
 
 	// the module manager
 	mm *module.Manager
+
+	configurator module.Configurator
 
 	// simulation manager
 	sm *module.SimulationManager
@@ -438,6 +439,8 @@ func NewSommelierApp(
 	app.mm.RegisterRoutes(app.Router(), app.QueryRouter(), encodingConfig.Amino)
 	app.mm.RegisterServices(module.NewConfigurator(app.appCodec, app.MsgServiceRouter(), app.GRPCQueryRouter()))
 
+	app.configurator = module.NewConfigurator(app.appCodec, app.MsgServiceRouter(), app.GRPCQueryRouter())
+	app.mm.RegisterServices(app.configurator)
 	// create the simulation manager and define the order of the modules for deterministic simulations
 	//
 	// NOTE: this is not required apps that don't use the simulator for fuzz testing
@@ -489,15 +492,16 @@ func NewSommelierApp(
 	app.UpgradeKeeper.SetUpgradeHandler(
 		upgradeName,
 		func(ctx sdk.Context, _ upgradetypes.Plan, _ module.VersionMap) (module.VersionMap, error) {
-			app.IBCKeeper.ConnectionKeeper.SetParams(ctx, ibcconnectiontypes.DefaultParams())
-
 			fromVM := make(map[string]uint64)
 			for moduleName := range app.mm.Modules {
 				fromVM[moduleName] = 1
 			}
+
+			delete(fromVM, allocationtypes.ModuleName)
+
 			app.GravityKeeper.MigrateGravityContract(ctx, newGravityContractAddress, newGravityContractDeployHeight)
 
-			return app.mm.RunMigrations(ctx, module.NewConfigurator(app.appCodec, app.MsgServiceRouter(), app.GRPCQueryRouter()), fromVM)
+			return app.mm.RunMigrations(ctx, app.configurator, fromVM)
 		},
 	)
 
