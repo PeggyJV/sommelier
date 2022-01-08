@@ -437,8 +437,7 @@ func NewSommelierApp(
 
 	app.mm.RegisterInvariants(&app.CrisisKeeper)
 	app.mm.RegisterRoutes(app.Router(), app.QueryRouter(), encodingConfig.Amino)
-	app.mm.RegisterServices(module.NewConfigurator(app.appCodec, app.MsgServiceRouter(), app.GRPCQueryRouter()))
-
+	// app.mm.RegisterServices(module.NewConfigurator(app.appCodec, app.MsgServiceRouter(), app.GRPCQueryRouter()))
 	app.configurator = module.NewConfigurator(app.appCodec, app.MsgServiceRouter(), app.GRPCQueryRouter())
 	app.mm.RegisterServices(app.configurator)
 	// create the simulation manager and define the order of the modules for deterministic simulations
@@ -492,16 +491,22 @@ func NewSommelierApp(
 	app.UpgradeKeeper.SetUpgradeHandler(
 		upgradeName,
 		func(ctx sdk.Context, _ upgradetypes.Plan, _ module.VersionMap) (module.VersionMap, error) {
-			fromVM := make(map[string]uint64)
-			for moduleName := range app.mm.Modules {
-				fromVM[moduleName] = 1
+			// fromVM := make(map[string]uint64)
+			// for moduleName := range app.mm.Modules {
+			// 	fromVM[moduleName] = 1
+			// }
+			params := allocationtypes.DefaultGenesisState()
+			genstate, err := app.appCodec.MarshalJSON(&params)
+			if err != nil {
+				return nil, err
 			}
-
-			delete(fromVM, allocationtypes.ModuleName)
+			// json.RawMessage(genstate)
+			app.mm.Modules[allocationtypes.ModuleName].InitGenesis(ctx, app.appCodec, genstate)
+			// delete(fromVM, allocationtypes.ModuleName)
 
 			app.GravityKeeper.MigrateGravityContract(ctx, newGravityContractAddress, newGravityContractDeployHeight)
 
-			return app.mm.RunMigrations(ctx, app.configurator, fromVM)
+			return nil, nil
 		},
 	)
 
