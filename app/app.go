@@ -491,16 +491,16 @@ func NewSommelierApp(
 	app.UpgradeKeeper.SetUpgradeHandler(
 		upgradeName,
 		func(ctx sdk.Context, _ upgradetypes.Plan, _ module.VersionMap) (module.VersionMap, error) {
-			fromVM := make(map[string]uint64)
-			for moduleName := range app.mm.Modules {
-				fromVM[moduleName] = 1
-			}
+			// fromVM := make(map[string]uint64)
+			// for moduleName := range app.mm.Modules {
+			// 	fromVM[moduleName] = 1
+			// }
 
-			delete(fromVM, allocationtypes.ModuleName)
+			// delete(fromVM, allocationtypes.ModuleName)
 
 			app.GravityKeeper.MigrateGravityContract(ctx, newGravityContractAddress, newGravityContractDeployHeight)
 
-			return app.mm.RunMigrations(ctx, app.configurator, fromVM)
+			return nil, nil
 		},
 	)
 
