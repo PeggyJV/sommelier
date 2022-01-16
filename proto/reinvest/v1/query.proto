@@ -1,0 +1,41 @@
+syntax = "proto3";
+package reinvest.v1;
+
+import "gogoproto/gogo.proto";
+import "google/api/annotations.proto";
+import "reinvest/v1/genesis.proto";
+import "reinvest/v1/reinvest.proto";
+import "cosmos_proto/cosmos.proto";
+import "cosmos/base/query/v1beta1/pagination.proto";
+
+option go_package = "github.com/peggyjv/sommelier/x/reinvest/types";
+
+// Query defines the gRPC query service for the reinvest module.
+service Query {
+  // QueryParams queries the allocation module parameters.
+  rpc QueryParams(QueryParamsRequest) returns (QueryParamsResponse) {
+    option (google.api.http).get = "/sommelier/reinvest/v1/params";
+  }
+  // QuerySubmittedReinvestments queries the submitted reinvestments awaiting vote
+  rpc QuerySubmittedReinvestments(QuerySubmittedReinvestmentsRequest) returns (QuerySubmittedReinvestmentsResponse) {
+    option (google.api.http).get = "/sommelier/reinvest/v1/submitted";
+  }
+}
+
+// QueryParamsRequest is the request type for the Query/Params gRPC method.
+message QueryParamsRequest {}
+
+// QueryParamsRequest is the response type for the Query/Params gRPC method.
+message QueryParamsResponse {
+  // allocation parameters
+  Params params = 1 [(gogoproto.nullable) = false];
+}
+
+// QuerySubmittedReinvestmentsRequest is the request type for the Query/QuerySubmittedReinvests gRPC query method.
+message QuerySubmittedReinvestmentsRequest {}
+
+// QuerySubmittedReinvestmentsResponse is the response type for the Query/QuerySubmittedReinvests gRPC query method.
+message QuerySubmittedReinvestmentsResponse {
+  // reinvests in keeper awaiting vote
+  repeated Reinvestment reinvests = 1;
+}

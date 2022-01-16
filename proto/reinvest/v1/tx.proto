@@ -1,0 +1,24 @@
+syntax = "proto3";
+package reinvest.v1;
+
+import "cosmos_proto/cosmos.proto";
+import "google/protobuf/any.proto";
+import "reinvest/v1/reinvest.proto";
+
+option go_package = "github.com/peggyjv/sommelier/x/reinvest/types";
+
+// MsgService defines the msgs that the reinvest module handles
+service Msg {
+  // ReinvestSubmission defines a message
+  rpc SubmitReinvest (MsgSubmitReinvestRequest) returns (MsgSubmitReinvestResponse);
+}
+
+// MsgSubmitReinvestRequest - sdk.Msg for submitting calls to Ethereum through the gravity bridge contract
+message MsgSubmitReinvestRequest {
+  // the reinvestment to send across the bridge
+  Reinvestment reinvestment = 1;
+  // signer account address
+  string signer = 2;
+}
+
+message MsgSubmitReinvestResponse {}

@@ -44,6 +44,27 @@
   
     - [Query](#allocation.v1.Query)
   
+- [reinvest/v1/reinvest.proto](#reinvest/v1/reinvest.proto)
+    - [Reinvestment](#reinvest.v1.Reinvestment)
+  
+- [reinvest/v1/tx.proto](#reinvest/v1/tx.proto)
+    - [MsgSubmitReinvestRequest](#reinvest.v1.MsgSubmitReinvestRequest)
+    - [MsgSubmitReinvestResponse](#reinvest.v1.MsgSubmitReinvestResponse)
+  
+    - [Msg](#reinvest.v1.Msg)
+  
+- [reinvest/v1/genesis.proto](#reinvest/v1/genesis.proto)
+    - [GenesisState](#reinvest.v1.GenesisState)
+    - [Params](#reinvest.v1.Params)
+  
+- [reinvest/v1/query.proto](#reinvest/v1/query.proto)
+    - [QueryParamsRequest](#reinvest.v1.QueryParamsRequest)
+    - [QueryParamsResponse](#reinvest.v1.QueryParamsResponse)
+    - [QuerySubmittedReinvestmentsRequest](#reinvest.v1.QuerySubmittedReinvestmentsRequest)
+    - [QuerySubmittedReinvestmentsResponse](#reinvest.v1.QuerySubmittedReinvestmentsResponse)
+  
+    - [Query](#reinvest.v1.Query)
+  
 - [Scalar Value Types](#scalar-value-types)
 
 
@@ -266,7 +287,7 @@ MsgAllocationPrecommitResponse is the response type for the Msg/AllocationPrecom
 <a name="allocation.v1.Msg"></a>
 
 ### Msg
-MsgService defines the msgs that the oracle module handles.
+MsgService defines the msgs that the allocation module handles.
 
 | Method Name | Request Type | Response Type | Description | HTTP Verb | Endpoint |
 | ----------- | ------------ | ------------- | ------------| ------- | -------- |
@@ -541,6 +562,215 @@ Query defines the gRPC querier service for the allocation module.
 | `QueryAllocationCommits` | [QueryAllocationCommitsRequest](#allocation.v1.QueryAllocationCommitsRequest) | [QueryAllocationCommitsResponse](#allocation.v1.QueryAllocationCommitsResponse) | QueryAllocationCommits queries all validator allocation commits | GET|/sommelier/allocation/v1/commits|
 | `QueryCommitPeriod` | [QueryCommitPeriodRequest](#allocation.v1.QueryCommitPeriodRequest) | [QueryCommitPeriodResponse](#allocation.v1.QueryCommitPeriodResponse) | QueryVotePeriod queries the heights for the current voting period (current, start and end) | GET|/sommelier/allocation/v1/commit_period|
 | `QueryCellars` | [QueryCellarsRequest](#allocation.v1.QueryCellarsRequest) | [QueryCellarsResponse](#allocation.v1.QueryCellarsResponse) | QueryCellars returns all cellars and current tick ranges | GET|/sommelier/allocation/v1/cellars|
+
+ <!-- end services -->
+
+
+
+<a name="reinvest/v1/reinvest.proto"></a>
+<p align="right"><a href="#top">Top</a></p>
+
+## reinvest/v1/reinvest.proto
+
+
+
+<a name="reinvest.v1.Reinvestment"></a>
+
+### Reinvestment
+MsgSubmitReinvestRequest - sdk.Msg for submitting calls to Ethereum through the gravity bridge contract
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `body` | [string](#string) |  | body containing the ABI encoded string to send to the contract |
+| `address` | [string](#string) |  | address of the contract to send the call |
+
+
+
+
+
+ <!-- end messages -->
+
+ <!-- end enums -->
+
+ <!-- end HasExtensions -->
+
+ <!-- end services -->
+
+
+
+<a name="reinvest/v1/tx.proto"></a>
+<p align="right"><a href="#top">Top</a></p>
+
+## reinvest/v1/tx.proto
+
+
+
+<a name="reinvest.v1.MsgSubmitReinvestRequest"></a>
+
+### MsgSubmitReinvestRequest
+MsgSubmitReinvestRequest - sdk.Msg for submitting calls to Ethereum through the gravity bridge contract
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `reinvestment` | [Reinvestment](#reinvest.v1.Reinvestment) |  | the reinvestment to send across the bridge |
+| `signer` | [string](#string) |  | signer account address |
+
+
+
+
+
+
+<a name="reinvest.v1.MsgSubmitReinvestResponse"></a>
+
+### MsgSubmitReinvestResponse
+
+
+
+
+
+
+ <!-- end messages -->
+
+ <!-- end enums -->
+
+ <!-- end HasExtensions -->
+
+
+<a name="reinvest.v1.Msg"></a>
+
+### Msg
+MsgService defines the msgs that the reinvest module handles
+
+| Method Name | Request Type | Response Type | Description | HTTP Verb | Endpoint |
+| ----------- | ------------ | ------------- | ------------| ------- | -------- |
+| `SubmitReinvest` | [MsgSubmitReinvestRequest](#reinvest.v1.MsgSubmitReinvestRequest) | [MsgSubmitReinvestResponse](#reinvest.v1.MsgSubmitReinvestResponse) | ReinvestSubmission defines a message | |
+
+ <!-- end services -->
+
+
+
+<a name="reinvest/v1/genesis.proto"></a>
+<p align="right"><a href="#top">Top</a></p>
+
+## reinvest/v1/genesis.proto
+
+
+
+<a name="reinvest.v1.GenesisState"></a>
+
+### GenesisState
+GenesisState - all reinvest state that must be provided at genesis
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `params` | [Params](#reinvest.v1.Params) |  |  |
+| `addresses` | [string](#string) | repeated |  |
+
+
+
+
+
+
+<a name="reinvest.v1.Params"></a>
+
+### Params
+Params reinvest parameters
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `vote_period` | [int64](#int64) |  | VotePeriod defines the number of blocks to wait for votes before attempting to tally |
+| `vote_threshold` | [string](#string) |  | VoteThreshold defines the percentage of bonded stake required to vote each period |
+
+
+
+
+
+ <!-- end messages -->
+
+ <!-- end enums -->
+
+ <!-- end HasExtensions -->
+
+ <!-- end services -->
+
+
+
+<a name="reinvest/v1/query.proto"></a>
+<p align="right"><a href="#top">Top</a></p>
+
+## reinvest/v1/query.proto
+
+
+
+<a name="reinvest.v1.QueryParamsRequest"></a>
+
+### QueryParamsRequest
+QueryParamsRequest is the request type for the Query/Params gRPC method.
+
+
+
+
+
+
+<a name="reinvest.v1.QueryParamsResponse"></a>
+
+### QueryParamsResponse
+QueryParamsRequest is the response type for the Query/Params gRPC method.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `params` | [Params](#reinvest.v1.Params) |  | allocation parameters |
+
+
+
+
+
+
+<a name="reinvest.v1.QuerySubmittedReinvestmentsRequest"></a>
+
+### QuerySubmittedReinvestmentsRequest
+QuerySubmittedReinvestmentsRequest is the request type for the Query/QuerySubmittedReinvests gRPC query method.
+
+
+
+
+
+
+<a name="reinvest.v1.QuerySubmittedReinvestmentsResponse"></a>
+
+### QuerySubmittedReinvestmentsResponse
+QuerySubmittedReinvestmentsResponse is the response type for the Query/QuerySubmittedReinvests gRPC query method.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `reinvests` | [Reinvestment](#reinvest.v1.Reinvestment) | repeated | reinvests in keeper awaiting vote |
+
+
+
+
+
+ <!-- end messages -->
+
+ <!-- end enums -->
+
+ <!-- end HasExtensions -->
+
+
+<a name="reinvest.v1.Query"></a>
+
+### Query
+Query defines the gRPC query service for the reinvest module.
+
+| Method Name | Request Type | Response Type | Description | HTTP Verb | Endpoint |
+| ----------- | ------------ | ------------- | ------------| ------- | -------- |
+| `QueryParams` | [QueryParamsRequest](#reinvest.v1.QueryParamsRequest) | [QueryParamsResponse](#reinvest.v1.QueryParamsResponse) | QueryParams queries the allocation module parameters. | GET|/sommelier/reinvest/v1/params|
+| `QuerySubmittedReinvestments` | [QuerySubmittedReinvestmentsRequest](#reinvest.v1.QuerySubmittedReinvestmentsRequest) | [QuerySubmittedReinvestmentsResponse](#reinvest.v1.QuerySubmittedReinvestmentsResponse) | QuerySubmittedReinvestments queries the submitted reinvestments awaiting vote | GET|/sommelier/reinvest/v1/submitted|
 
  <!-- end services -->
 

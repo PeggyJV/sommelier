@@ -7,7 +7,7 @@ import "allocation/v1/allocation.proto";
 
 option go_package = "github.com/peggyjv/sommelier/x/allocation/types";
 
-// MsgService defines the msgs that the oracle module handles.
+// MsgService defines the msgs that the allocation module handles.
 service Msg {
     // AllocationPrecommit defines a message that commits a hash of allocation data feed before the data is actually submitted.
     rpc AllocationPrecommit   (MsgAllocationPrecommit)   returns (MsgAllocationPrecommitResponse);
