@@ -70,6 +70,11 @@ task(
             `Cellar contract at ${cellar.address} is now owned by Gravity contract at ${gravity.address} with hash ${hash}`,
         );
 
+        const Counter = await hre.ethers.getContractFactory("Counter");
+        const counter = await Counter.deploy();
+        await counter.deployed();
+        console.log(`counter contract deployed at - ${counter.address}`);
+
         await hre.network.provider.send("evm_setIntervalMining", [1000]);
 
         await hre.run('node');

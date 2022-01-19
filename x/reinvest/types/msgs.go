@@ -19,12 +19,13 @@ const (
 //////////////////////////
 
 // NewMsgSubmitReinvestRequest return a new MsgSubmitReinvestRequest
-func NewMsgSubmitReinvestRequest(body string, address common.Address) (*MsgSubmitReinvestRequest, error) {
+func NewMsgSubmitReinvestRequest(body []byte, address common.Address, signer sdk.AccAddress) (*MsgSubmitReinvestRequest, error) {
 	return &MsgSubmitReinvestRequest{
 		Reinvestment: &Reinvestment{
 			Body:    body,
 			Address: address.String(),
 		},
+		Signer: signer.String(),
 	}, nil
 }
 

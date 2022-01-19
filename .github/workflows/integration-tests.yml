@@ -113,7 +113,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        test_type: [ "Rebalance" ]
+        test_type: [ "Rebalance", "Reinvest" ]
     steps:
       - name: Set up Go 1.16
         uses: actions/setup-go@v2

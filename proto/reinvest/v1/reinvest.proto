@@ -7,8 +7,8 @@ option go_package = "github.com/peggyjv/sommelier/x/reinvest/types";
 
 // MsgSubmitReinvestRequest - sdk.Msg for submitting calls to Ethereum through the gravity bridge contract
 message Reinvestment {
-  // body containing the ABI encoded string to send to the contract
-  string body = 1;
+  // body containing the ABI encoded bytes to send to the contract
+  bytes body = 1;
   // address of the contract to send the call
   string address = 2;
 }

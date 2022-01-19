@@ -13,6 +13,7 @@ import (
 	sim "github.com/cosmos/cosmos-sdk/types/simulation"
 	"github.com/gorilla/mux"
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
+	"github.com/peggyjv/sommelier/x/reinvest/client/cli"
 	"github.com/peggyjv/sommelier/x/reinvest/keeper"
 	"github.com/peggyjv/sommelier/x/reinvest/types"
 	"github.com/spf13/cobra"

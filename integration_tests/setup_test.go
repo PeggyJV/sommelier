@@ -60,8 +60,11 @@ func MNEMONICS() []string {
 var (
 	stakeAmount, _  = sdk.NewIntFromString("100000000000")
 	stakeAmountCoin = sdk.NewCoin(bondDenom, stakeAmount)
+
+	// todo(mvid): split these out into their respective tests
 	hardhatCellar   = common.HexToAddress("0x4C4a2f8c81640e47606d3fd77B353E87Ba015584")
 	gravityContract = common.HexToAddress("0x04C89607413713Ec9775E14b954286519d836FEf")
+	counterContract = common.HexToAddress("0x0000000000000000000000000000000000000000")
 )
 
 type IntegrationTestSuite struct {
@@ -509,6 +512,11 @@ func (s *IntegrationTestSuite) runEthContainer() {
 			if strings.HasPrefix(s, "gravity contract deployed at") {
 				strSpl := strings.Split(s, "-")
 				gravityContract = common.HexToAddress(strings.ReplaceAll(strSpl[1], " ", ""))
+				// continue, this is not the last contract deployed
+			}
+			if strings.HasPrefix(s, "counter contract deployed at") {
+				strSpl := strings.Split(s, "-")
+				counterContract = common.HexToAddress(strings.ReplaceAll(strSpl[1], " ", ""))
 				return true
 			}
 		}

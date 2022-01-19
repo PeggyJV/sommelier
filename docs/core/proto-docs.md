@@ -58,6 +58,8 @@
     - [Params](#reinvest.v1.Params)
   
 - [reinvest/v1/query.proto](#reinvest/v1/query.proto)
+    - [QueryCommitPeriodRequest](#reinvest.v1.QueryCommitPeriodRequest)
+    - [QueryCommitPeriodResponse](#reinvest.v1.QueryCommitPeriodResponse)
     - [QueryParamsRequest](#reinvest.v1.QueryParamsRequest)
     - [QueryParamsResponse](#reinvest.v1.QueryParamsResponse)
     - [QuerySubmittedReinvestmentsRequest](#reinvest.v1.QuerySubmittedReinvestmentsRequest)
@@ -582,7 +584,7 @@ MsgSubmitReinvestRequest - sdk.Msg for submitting calls to Ethereum through the 
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| `body` | [string](#string) |  | body containing the ABI encoded string to send to the contract |
+| `body` | [bytes](#bytes) |  | body containing the ABI encoded bytes to send to the contract |
 | `address` | [string](#string) |  | address of the contract to send the call |
 
 
@@ -667,7 +669,6 @@ GenesisState - all reinvest state that must be provided at genesis
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | `params` | [Params](#reinvest.v1.Params) |  |  |
-| `addresses` | [string](#string) | repeated |  |
 
 
 
@@ -703,6 +704,33 @@ Params reinvest parameters
 <p align="right"><a href="#top">Top</a></p>
 
 ## reinvest/v1/query.proto
+
+
+
+<a name="reinvest.v1.QueryCommitPeriodRequest"></a>
+
+### QueryCommitPeriodRequest
+QueryCommitPeriodRequest is the request type for the Query/QueryCommitPeriod gRPC method.
+
+
+
+
+
+
+<a name="reinvest.v1.QueryCommitPeriodResponse"></a>
+
+### QueryCommitPeriodResponse
+QueryCommitPeriodResponse is the response type for the Query/QueryCommitPeriod gRPC method.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `current_height` | [int64](#int64) |  | block height at which the query was processed |
+| `vote_period_start` | [int64](#int64) |  | latest vote period start block height |
+| `vote_period_end` | [int64](#int64) |  | block height at which the current voting period ends |
+
+
+
 
 
 
@@ -771,6 +799,7 @@ Query defines the gRPC query service for the reinvest module.
 | ----------- | ------------ | ------------- | ------------| ------- | -------- |
 | `QueryParams` | [QueryParamsRequest](#reinvest.v1.QueryParamsRequest) | [QueryParamsResponse](#reinvest.v1.QueryParamsResponse) | QueryParams queries the allocation module parameters. | GET|/sommelier/reinvest/v1/params|
 | `QuerySubmittedReinvestments` | [QuerySubmittedReinvestmentsRequest](#reinvest.v1.QuerySubmittedReinvestmentsRequest) | [QuerySubmittedReinvestmentsResponse](#reinvest.v1.QuerySubmittedReinvestmentsResponse) | QuerySubmittedReinvestments queries the submitted reinvestments awaiting vote | GET|/sommelier/reinvest/v1/submitted|
+| `QueryCommitPeriod` | [QueryCommitPeriodRequest](#reinvest.v1.QueryCommitPeriodRequest) | [QueryCommitPeriodResponse](#reinvest.v1.QueryCommitPeriodResponse) | QueryVotePeriod queries the heights for the current voting period (current, start and end) | GET|/sommelier/allocation/v1/commit_period|
 
  <!-- end services -->
 
