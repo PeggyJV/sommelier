@@ -351,9 +351,9 @@ tools-clean:
 # Integration tests #
 #####################
 
-ORCHESTRATOR_IMAGE := "ghcr.io/peggyjv/gravity-bridge-orchestrator:v0.3.0"
+ORCHESTRATOR_IMAGE := "ghcr.io/peggyjv/gravity-bridge-orchestrator:v0.3.4"
 
-e2e_build_images:
+e2e_build_images: e2e_clean_slate
 	@docker pull $(ORCHESTRATOR_IMAGE)
 	@docker tag $(ORCHESTRATOR_IMAGE) orchestrator:prebuilt
 	@docker build -t sommelier:prebuilt -f Dockerfile .

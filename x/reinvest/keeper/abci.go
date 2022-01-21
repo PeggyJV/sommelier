@@ -79,7 +79,7 @@ func (k Keeper) EndBlocker(ctx sdk.Context) {
 		contractCall := k.gravityKeeper.CreateContractCallTx(
 			ctx,
 			invalidationNonce,
-			wv.Body,
+			wv.InvalidationScope(),
 			common.HexToAddress(wv.Address),
 			wv.Body,
 			[]gravitytypes.ERC20Token{}, // tokens are always zero
