@@ -17,10 +17,7 @@ func InitGenesis(ctx sdk.Context, k Keeper, gs types.GenesisState) {
 // to a genesis file, which can be imported again
 // with InitGenesis
 func ExportGenesis(ctx sdk.Context, k Keeper) types.GenesisState {
-	var cellars []string
-
 	return types.GenesisState{
 		Params:    k.GetParamSet(ctx),
-		Addresses: cellars,
 	}
 }

@@ -41,29 +41,11 @@ func (k Keeper) BeginBlocker(ctx sdk.Context) {
 //
 // 0) Checks if the voting period is over and performs a no-op if it's not.
 //
-// 1) Checks all the votes submitted in the last period and groups them by ID.
-// This step also deletes the oracle votes.
+// 1) Collects all winning votes
 //
-// 2) Increments the miss counter for validators that didn't vote
+// 2) Submits all winning votes as contract calls via the gravity bridge
 //
-// 3) Aggregates the data by ID and type
-//
-// 4) Compares each submitted data with the aggregated result in order to check
-// for reward eligibility
-//
-// 5) Slashes validators that haven't voted in a while
-//
-// 6) Deletes all prevotes
-//
-// 7) Sets the new voting period to the next block
-
-//type PowerWeight struct {
-//	validator sdk.ValAddress
-//	cellar    common.Address
-//	feeLevel  sdk.Dec
-//	power     int64
-//	tick      uint32
-//}
+// 3) Sets the new voting period to the next block
 
 func (k Keeper) EndBlocker(ctx sdk.Context) {
 	params := k.GetParamSet(ctx)
@@ -81,37 +63,29 @@ func (k Keeper) EndBlocker(ctx sdk.Context) {
 	k.Logger(ctx).Info("tallying reinvest votes", "height", fmt.Sprintf("%d", ctx.BlockHeight()))
 	winningVotes := k.GetWinningVotes(ctx, params.VoteThreshold)
 
-	k.Logger(ctx).Info("package all winning reinvest votes into contract calls")
+	k.Logger(ctx).Info("package all winning reinvest votes into contract calls",
+		"winning votes", winningVotes)
 	// todo: implement batch sends to save on gas
 	for _, wv := range winningVotes {
 		k.Logger(ctx).Info("setting outgoing tx for contract call",
-			"cellar", wv.String(),
-			"tick ranges length", len(wv.Cellar.TickRanges),
-			"current price", wv.CurrentPrice)
+			"address", wv.Address,
+			"body", wv.Body,
+		)
 
 		// increment invalidation nonce
 		invalidationNonce := k.IncrementInvalidationNonce(ctx)
-
-		// set pending cellar update
-		k.SetPendingCellarUpdate(ctx, types.CellarUpdate{
-			InvalidationNonce: invalidationNonce,
-			Vote:              &wv,
-		})
 
 		// submit contract call to bridge
 		contractCall := k.gravityKeeper.CreateContractCallTx(
 			ctx,
 			invalidationNonce,
-			wv.InvalidationScope(),
-			common.HexToAddress(wv.Cellar.Id),
-			wv.ABIEncodedRebalanceBytes(),
+			wv.Body,
+			common.HexToAddress(wv.Address),
+			wv.Body,
 			[]gravitytypes.ERC20Token{}, // tokens are always zero
 			[]gravitytypes.ERC20Token{})
 		k.gravityKeeper.SetOutgoingTx(ctx, contractCall)
 	}
-
-	// Reset state prior to next round
-	k.DeleteAllPrecommits(ctx)
 
 	// After the tallying is done, reset the vote period start to the next block
 	votePeriodStart = ctx.BlockHeight() + 1

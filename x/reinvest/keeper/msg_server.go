@@ -46,7 +46,7 @@ func (k Keeper) SubmitReinvest(c context.Context, msg *types.MsgSubmitReinvestRe
 				sdk.NewAttribute(sdk.AttributeKeyModule, types.AttributeValueCategory),
 			),
 			sdk.NewEvent(
-				types.EventTypereinvestPrecommit,
+				types.EventTypeReinvest,
 				sdk.NewAttribute(types.AttributeKeySigner, signer.String()),
 				sdk.NewAttribute(types.AttributeKeyValidator, validatorAddr.String()),
 				sdk.NewAttribute(types.AttributeKeyReinvestment, msg.Reinvestment.String()),

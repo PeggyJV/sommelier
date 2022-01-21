@@ -2,6 +2,7 @@ package app
 
 import (
 	"fmt"
+	"github.com/peggyjv/sommelier/x/reinvest"
 	"io"
 	"net/http"
 	"os"
@@ -90,6 +91,8 @@ import (
 	"github.com/peggyjv/sommelier/x/allocation"
 	allocationkeeper "github.com/peggyjv/sommelier/x/allocation/keeper"
 	allocationtypes "github.com/peggyjv/sommelier/x/allocation/types"
+	reinvesttypes "github.com/peggyjv/sommelier/x/reinvest/types"
+	reinvestkeeper "github.com/peggyjv/sommelier/x/reinvest/keeper"
 	"github.com/rakyll/statik/fs"
 	abci "github.com/tendermint/tendermint/abci/types"
 	tmjson "github.com/tendermint/tendermint/libs/json"
@@ -139,6 +142,7 @@ var (
 		authzmodule.AppModuleBasic{},
 		gravity.AppModuleBasic{},
 		allocation.AppModuleBasic{},
+		reinvest.AppModuleBasic{},
 	)
 
 	// module account permissions
@@ -199,6 +203,7 @@ type SommelierApp struct {
 
 	// Sommelier keepers
 	AllocationKeeper allocationkeeper.Keeper
+	ReinvestKeeper   reinvestkeeper.Keeper
 
 	// make capability scoped keepers public for test purposes (IBC only)
 	ScopedIBCKeeper      capabilitykeeper.ScopedKeeper
@@ -243,6 +248,7 @@ func NewSommelierApp(
 		govtypes.StoreKey, paramstypes.StoreKey, ibchost.StoreKey, upgradetypes.StoreKey,
 		evidencetypes.StoreKey, ibctransfertypes.StoreKey, capabilitytypes.StoreKey,
 		gravitytypes.StoreKey, feegrant.StoreKey, authzkeeper.StoreKey, allocationtypes.StoreKey,
+		reinvesttypes.StoreKey,
 	)
 	tkeys := sdk.NewTransientStoreKeys(paramstypes.TStoreKey)
 	memKeys := sdk.NewMemoryStoreKeys(capabilitytypes.MemStoreKey)
@@ -348,9 +354,15 @@ func NewSommelierApp(
 		app.StakingKeeper, app.GravityKeeper,
 	)
 
+	app.ReinvestKeeper = reinvestkeeper.NewKeeper(
+		appCodec, keys[reinvesttypes.StoreKey], app.GetSubspace(reinvesttypes.ModuleName),
+		app.StakingKeeper, app.GravityKeeper,
+	)
+
 	app.GravityKeeper = *app.GravityKeeper.SetHooks(
 		gravitytypes.NewMultiGravityHooks(
 			app.AllocationKeeper.Hooks(),
+			app.ReinvestKeeper.Hooks(),
 		))
 
 	// Create static IBC router, add transfer route, then set and seal it
@@ -403,6 +415,7 @@ func NewSommelierApp(
 		gravity.NewAppModule(app.GravityKeeper, app.BankKeeper),
 		authzmodule.NewAppModule(appCodec, app.AuthzKeeper, app.AccountKeeper, app.BankKeeper, app.interfaceRegistry),
 		allocation.NewAppModule(app.AllocationKeeper, appCodec),
+		reinvest.NewAppModule(app.ReinvestKeeper, appCodec),
 	)
 
 	// During begin block slashing happens after distr.BeginBlocker so that
@@ -412,14 +425,14 @@ func NewSommelierApp(
 	app.mm.SetOrderBeginBlockers(
 		upgradetypes.ModuleName, minttypes.ModuleName, distrtypes.ModuleName, slashingtypes.ModuleName,
 		evidencetypes.ModuleName, stakingtypes.ModuleName, ibchost.ModuleName, gravitytypes.ModuleName,
-		allocationtypes.ModuleName,
+		allocationtypes.ModuleName, reinvesttypes.ModuleName,
 	)
 
 	// NOTE: Impermanent loss module must always go after the oracle module to have the
 	// aggregated data available for stoploss execution. The bridge module doesn't require a
 	// specific endblock order.
 	app.mm.SetOrderEndBlockers(crisistypes.ModuleName, govtypes.ModuleName, stakingtypes.ModuleName,
-		gravitytypes.ModuleName, allocationtypes.ModuleName,
+		gravitytypes.ModuleName, allocationtypes.ModuleName, reinvesttypes.ModuleName,
 	)
 
 	// NOTE: The genutils module must occur after staking so that pools are
@@ -432,7 +445,7 @@ func NewSommelierApp(
 		stakingtypes.ModuleName, slashingtypes.ModuleName, govtypes.ModuleName, minttypes.ModuleName,
 		crisistypes.ModuleName, ibchost.ModuleName, genutiltypes.ModuleName, evidencetypes.ModuleName,
 		ibctransfertypes.ModuleName, gravitytypes.ModuleName, authz.ModuleName,
-		feegrant.ModuleName, allocationtypes.ModuleName,
+		feegrant.ModuleName, allocationtypes.ModuleName, reinvesttypes.ModuleName,
 	)
 
 	app.mm.RegisterInvariants(&app.CrisisKeeper)
@@ -459,6 +472,7 @@ func NewSommelierApp(
 		ibc.NewAppModule(app.IBCKeeper),
 		authzmodule.NewAppModule(appCodec, app.AuthzKeeper, app.AccountKeeper, app.BankKeeper, app.interfaceRegistry),
 		allocation.NewAppModule(app.AllocationKeeper, appCodec),
+		reinvest.NewAppModule(app.ReinvestKeeper, appCodec),
 	)
 
 	app.sm.RegisterStoreDecoders()
@@ -697,6 +711,7 @@ func initParamsKeeper(appCodec codec.BinaryCodec, legacyAmino *codec.LegacyAmino
 	paramsKeeper.Subspace(ibchost.ModuleName)
 	paramsKeeper.Subspace(gravitytypes.ModuleName)
 	paramsKeeper.Subspace(allocationtypes.ModuleName)
+	paramsKeeper.Subspace(reinvesttypes.ModuleName)
 
 	return paramsKeeper
 }

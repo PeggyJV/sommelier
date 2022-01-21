@@ -3,6 +3,7 @@ package integration_tests
 import (
 	"context"
 	"fmt"
+	"math/big"
 	"strings"
 	"time"
 
@@ -88,6 +89,13 @@ func ABIEncodedInc() []byte {
 	return abiEncodedCall
 }
 
+func UnpackEthUInt(bz []byte) sdk.Int {
+	output := big.NewInt(0)
+	output.SetBytes(bz)
+
+	return sdk.NewIntFromBigInt(output)
+}
+
 func (s *IntegrationTestSuite) getCurrentCount() (*sdk.Int, error) {
 	ethClient, err := ethclient.Dial(fmt.Sprintf("http://%s", s.ethResource.GetHostPort("8545/tcp")))
 	if err != nil {
@@ -104,17 +112,9 @@ func (s *IntegrationTestSuite) getCurrentCount() (*sdk.Int, error) {
 		return nil, err
 	}
 
-	encodedCall, err := abi.JSON(strings.NewReader(CounterABI))
-	if err != nil {
-		return nil, err
-	}
+	count := UnpackEthUInt(bz)
 
-	var getInt sdk.Int
-	if err := encodedCall.UnpackIntoInterface(&getInt, "get", bz); err != nil {
-		return nil, err
-	}
-
-	return &getInt, nil
+	return &count, nil
 }
 
 func (s *IntegrationTestSuite) TestReinvest() {
@@ -123,7 +123,7 @@ func (s *IntegrationTestSuite) TestReinvest() {
 		// makes sure ethereum can be contacted and counter contract is working
 		count, err := s.getCurrentCount()
 		s.Require().NoError(err)
-		s.Require().Equal(sdk.ZeroInt(), count)
+		s.Require().Equal(int64(0), count.Int64())
 
 		s.T().Logf("wait for new vote period start")
 		val := s.chain.validators[0]
@@ -205,13 +205,13 @@ func (s *IntegrationTestSuite) TestReinvest() {
 				s.T().Logf("got error %e querying count", err)
 				return false
 			}
-			if *count != sdk.OneInt() {
+			if count.Int64() != int64(1) {
 				s.T().Logf("wrong count %s", count.String())
 				return false
 			}
 
 			return true
-		}, 5*time.Minute, 5*time.Second, "count never updated")
+		}, 1*time.Minute, 5*time.Second, "count never updated")
 
 	})
 }

@@ -112,44 +112,49 @@ func (k Keeper) IterateReinvestments(ctx sdk.Context, handler func(val sdk.ValAd
 	}
 }
 
-// IterateReinvestmentValidators iterates over all validators who have committed reinvests
-func (k Keeper) IterateReinvestmentValidators(ctx sdk.Context, handler func(val sdk.ValAddress) (stop bool)) {
+// IterateReinvestmentAddresses iterates over all addresses who have committed reinvests
+func (k Keeper) IterateReinvestmentAddresses(ctx sdk.Context, handler func(addr common.Address) (stop bool)) {
 	store := ctx.KVStore(k.storeKey)
 	iter := sdk.KVStorePrefixIterator(store, []byte{types.ReinvestmentForAddressKeyPrefix})
 	defer iter.Close()
 
-	seenValidators := mapset.NewThreadUnsafeSet()
-
-	for ; iter.Valid(); iter.Next() {
-		keyPair := bytes.NewBuffer(bytes.TrimPrefix(iter.Key(), []byte{types.ReinvestmentForAddressKeyPrefix}))
-		val := sdk.ValAddress(keyPair.Next(20))
-
-		// add seen validator to set. if already in set, don't return to consumer
-		if !seenValidators.Add(val) {
-			continue
-		}
-
-		if handler(val) {
-			break
-		}
-	}
-
-}
-
-// IterateValidatorsReinvements Iterates all of the commits for a provided validator
-func (k Keeper) IterateValidatorsReinvements(ctx sdk.Context, val sdk.ValAddress, handler func(cellar common.Address, commit types.Reinvestment) (stop bool)) {
-	store := ctx.KVStore(k.storeKey)
-	iter := sdk.KVStorePrefixIterator(store, append([]byte{types.ReinvestmentForAddressKeyPrefix}, val.Bytes()...))
-	defer iter.Close()
+	seenAddresses := mapset.NewThreadUnsafeSet()
 
 	for ; iter.Valid(); iter.Next() {
 		keyPair := bytes.NewBuffer(bytes.TrimPrefix(iter.Key(), []byte{types.ReinvestmentForAddressKeyPrefix}))
 		keyPair.Next(20)
-		cel := common.BytesToAddress(keyPair.Bytes())
+		address := common.BytesToAddress(keyPair.Bytes())
 
-		var commit types.Reinvestment
-		k.cdc.MustUnmarshal(iter.Value(), &commit)
-		if handler(cel, commit) {
+		// add seen address to set. if already in set, don't return to consumer
+		if !seenAddresses.Add(address) {
+			continue
+		}
+
+		if handler(address) {
+			break
+		}
+	}
+}
+
+// IterateAddressReinvestments iterates over all reinvestments for an address
+func (k Keeper) IterateAddressReinvestments(ctx sdk.Context, handler func(addr common.Address) (stop bool)) {
+	store := ctx.KVStore(k.storeKey)
+	iter := sdk.KVStorePrefixIterator(store, []byte{types.ReinvestmentForAddressKeyPrefix})
+	defer iter.Close()
+
+	seenAddresses := mapset.NewThreadUnsafeSet()
+
+	for ; iter.Valid(); iter.Next() {
+		keyPair := bytes.NewBuffer(bytes.TrimPrefix(iter.Key(), []byte{types.ReinvestmentForAddressKeyPrefix}))
+		keyPair.Next(20)
+		address := common.BytesToAddress(keyPair.Bytes())
+
+		// add seen address to set. if already in set, don't return to consumer
+		if !seenAddresses.Add(address) {
+			continue
+		}
+
+		if handler(address) {
 			break
 		}
 	}
@@ -195,4 +200,75 @@ func (k Keeper) GetParamSet(ctx sdk.Context) types.Params {
 // setParams sets the parameters in the store
 func (k Keeper) setParams(ctx sdk.Context, params types.Params) {
 	k.paramSpace.SetParamSet(ctx, &params)
+}
+
+
+/////////////////////////
+// Invalidation Nonces //
+/////////////////////////
+
+func (k Keeper) GetLatestInvalidationNonce(ctx sdk.Context) uint64 {
+	store := ctx.KVStore(k.storeKey)
+	bz := store.Get([]byte{types.LatestInvalidationNonceKey})
+	return sdk.BigEndianToUint64(bz)
+}
+
+func (k Keeper) SetLatestInvalidationNonce(ctx sdk.Context, invalidationNonce uint64) {
+	store := ctx.KVStore(k.storeKey)
+	store.Set([]byte{types.LatestInvalidationNonceKey}, sdk.Uint64ToBigEndian(invalidationNonce))
+}
+
+func (k Keeper) IncrementInvalidationNonce(ctx sdk.Context) uint64 {
+	store := ctx.KVStore(k.storeKey)
+	nextNonce := k.GetLatestInvalidationNonce(ctx) + 1
+	store.Set([]byte{types.LatestInvalidationNonceKey}, sdk.Uint64ToBigEndian(nextNonce))
+	return nextNonce
+}
+
+
+///////////
+// Votes //
+///////////
+
+func (k Keeper) GetWinningVotes(ctx sdk.Context, threshold sdk.Dec) (winningVotes []types.Reinvestment) {
+
+	var reinvestments []types.Reinvestment
+	var reinvestmentPowers []int64
+
+	totalPower := k.stakingKeeper.GetLastTotalPower(ctx)
+
+	k.IterateReinvestments(ctx, func(val sdk.ValAddress, addr common.Address, reinvestment types.Reinvestment) (stop bool) {
+		validator := k.stakingKeeper.Validator(ctx, val)
+		validatorPower := validator.GetConsensusPower(k.stakingKeeper.PowerReduction(ctx))
+
+		found := false
+		for i, rv := range reinvestments {
+			if rv.Equals(reinvestment) {
+				reinvestmentPowers[i] += validatorPower
+
+				found = true
+				break
+			}
+		}
+
+		if !found {
+			reinvestments = append(reinvestments, reinvestment)
+			reinvestmentPowers = append(reinvestmentPowers, validatorPower)
+		}
+
+		k.DeleteReinvestment(ctx, val, addr)
+
+		return false
+	})
+
+	var winningReinvestments []types.Reinvestment
+
+	for i, power := range reinvestmentPowers {
+		quorumReached := sdk.NewDec(power).Quo(totalPower.ToDec()).GT(threshold)
+		if quorumReached {
+			winningReinvestments = append(winningReinvestments, reinvestments[i])
+		}
+	}
+
+	return winningReinvestments
 }
