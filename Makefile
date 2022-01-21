@@ -386,7 +386,6 @@ e2e_rebalance: e2e_clean_slate
 e2e_reinvest: e2e_clean_slate
 	@E2E_SKIP_CLEANUP=true integration_tests/integration_tests.test -test.failfast -test.v -test.run IntegrationTestSuite -testify.m TestReinvest || make -s fail
 
-
 fail:
 	@echo 'test failed; dumping container logs into ./testlogs for review'
 	@docker logs ethereum > testlogs/ethereum.log 2>&1 || true

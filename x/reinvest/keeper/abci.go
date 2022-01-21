@@ -63,7 +63,7 @@ func (k Keeper) EndBlocker(ctx sdk.Context) {
 	k.Logger(ctx).Info("tallying reinvest votes", "height", fmt.Sprintf("%d", ctx.BlockHeight()))
 	winningVotes := k.GetWinningVotes(ctx, params.VoteThreshold)
 
-	k.Logger(ctx).Info("package all winning reinvest votes into contract calls",
+	k.Logger(ctx).Info("packaging all winning reinvest votes into contract calls",
 		"winning votes", winningVotes)
 	// todo: implement batch sends to save on gas
 	for _, wv := range winningVotes {
