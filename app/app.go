@@ -102,9 +102,10 @@ import (
 )
 
 const appName = "SommelierApp"
-const upgradeName = "CabernetFranc"
-const newGravityContractAddress = "0x0000000000000000000000000000000000000000"
-const newGravityContractDeployHeight = 1000
+
+// const upgradeName = "CabernetFranc"
+// const newGravityContractAddress = "0x0000000000000000000000000000000000000000"
+// const newGravityContractDeployHeight = 1000
 
 var (
 	// DefaultNodeHome default home directories for the application daemon
@@ -488,12 +489,12 @@ func NewSommelierApp(
 	app.SetEndBlocker(app.EndBlocker)
 
 	// Setup an upgrade handler if doing an upgrade module upgrade
-	app.UpgradeKeeper.SetUpgradeHandler(
-		upgradeName,
-		func(ctx sdk.Context, _ upgradetypes.Plan, vm module.VersionMap) (module.VersionMap, error) {
-			return vm, nil
-		},
-	)
+	// app.UpgradeKeeper.SetUpgradeHandler(
+	// 	upgradeName,
+	// 	func(ctx sdk.Context, _ upgradetypes.Plan, vm module.VersionMap) (module.VersionMap, error) {
+	// 		return vm, nil
+	// 	},
+	// )
 
 	if loadLatest {
 		if err := app.LoadLatestVersion(); err != nil {
