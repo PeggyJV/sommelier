@@ -102,9 +102,10 @@ import (
 )
 
 const appName = "SommelierApp"
-const upgradeName = "CabernetFranc"
-const newGravityContractAddress = "0x0000000000000000000000000000000000000000"
-const newGravityContractDeployHeight = 1000
+
+// const upgradeName = "CabernetFranc"
+// const newGravityContractAddress = "0x0000000000000000000000000000000000000000"
+// const newGravityContractDeployHeight = 1000
 
 var (
 	// DefaultNodeHome default home directories for the application daemon
@@ -488,27 +489,12 @@ func NewSommelierApp(
 	app.SetEndBlocker(app.EndBlocker)
 
 	// Setup an upgrade handler if doing an upgrade module upgrade
-	app.UpgradeKeeper.SetUpgradeHandler(
-		upgradeName,
-		func(ctx sdk.Context, _ upgradetypes.Plan, _ module.VersionMap) (module.VersionMap, error) {
-			// fromVM := make(map[string]uint64)
-			// for moduleName := range app.mm.Modules {
-			// 	fromVM[moduleName] = 1
-			// }
-			params := allocationtypes.DefaultGenesisState()
-			genstate, err := app.appCodec.MarshalJSON(&params)
-			if err != nil {
-				return nil, err
-			}
-			// json.RawMessage(genstate)
-			app.mm.Modules[allocationtypes.ModuleName].InitGenesis(ctx, app.appCodec, genstate)
-			// delete(fromVM, allocationtypes.ModuleName)
-
-			app.GravityKeeper.MigrateGravityContract(ctx, newGravityContractAddress, newGravityContractDeployHeight)
-
-			return nil, nil
-		},
-	)
+	// app.UpgradeKeeper.SetUpgradeHandler(
+	// 	upgradeName,
+	// 	func(ctx sdk.Context, _ upgradetypes.Plan, vm module.VersionMap) (module.VersionMap, error) {
+	// 		return vm, nil
+	// 	},
+	// )
 
 	if loadLatest {
 		if err := app.LoadLatestVersion(); err != nil {
