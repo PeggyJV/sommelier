@@ -1,0 +1,24 @@
+syntax = "proto3";
+package cork.v1;
+
+import "cosmos_proto/cosmos.proto";
+import "google/protobuf/any.proto";
+import "cork/v1/cork.proto";
+
+option go_package = "github.com/peggyjv/sommelier/x/cork/types";
+
+// MsgService defines the msgs that the cork module handles
+service Msg {
+  // CorkSubmission defines a message
+  rpc SubmitCork (MsgSubmitCorkRequest) returns (MsgSubmitCorkResponse);
+}
+
+// MsgSubmitCorkRequest - sdk.Msg for submitting calls to Ethereum through the gravity bridge contract
+message MsgSubmitCorkRequest {
+  // the cork to send across the bridge
+  Cork cork = 1;
+  // signer account address
+  string signer = 2;
+}
+
+message MsgSubmitCorkResponse {}

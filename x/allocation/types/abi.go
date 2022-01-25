@@ -721,7 +721,7 @@ const CellarABI = `
           "type": "uint256"
         }
       ],
-      "name": "reinvest",
+      "name": "cork",
       "outputs": [],
       "stateMutability": "nonpayable",
       "type": "function"

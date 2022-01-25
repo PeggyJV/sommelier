@@ -384,7 +384,7 @@ e2e_rebalance: e2e_clean_slate
 	integration_tests/integration_tests.test -test.failfast -test.v -test.run IntegrationTestSuite -testify.m TestRebalance || make -s fail
 
 e2e_reinvest: e2e_clean_slate
-	@E2E_SKIP_CLEANUP=true integration_tests/integration_tests.test -test.failfast -test.v -test.run IntegrationTestSuite -testify.m TestReinvest || make -s fail
+	@E2E_SKIP_CLEANUP=true integration_tests/integration_tests.test -test.failfast -test.v -test.run IntegrationTestSuite -testify.m TestCork || make -s fail
 
 fail:
 	@echo 'test failed; dumping container logs into ./testlogs for review'

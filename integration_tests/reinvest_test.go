@@ -13,7 +13,7 @@ import (
 	"github.com/ethereum/go-ethereum/accounts/abi"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/ethclient"
-	"github.com/peggyjv/sommelier/x/reinvest/types"
+	"github.com/peggyjv/sommelier/x/cork/types"
 )
 
 const CounterABI = `
@@ -117,8 +117,8 @@ func (s *IntegrationTestSuite) getCurrentCount() (*sdk.Int, error) {
 	return &count, nil
 }
 
-func (s *IntegrationTestSuite) TestReinvest() {
-	s.Run("Bring up chain, and submit a reinvest call to ethereum", func() {
+func (s *IntegrationTestSuite) TestCork() {
+	s.Run("Bring up chain, and submit a cork call to ethereum", func() {
 
 		// makes sure ethereum can be contacted and counter contract is working
 		count, err := s.getCurrentCount()
@@ -147,7 +147,7 @@ func (s *IntegrationTestSuite) TestReinvest() {
 			return true
 		}, 105*time.Second, 1*time.Second, "new vote period never seen")
 
-		s.T().Logf("sending reinvest calls")
+		s.T().Logf("sending cork calls")
 		for i, orch := range s.chain.orchestrators {
 			i := i
 			orch := orch
@@ -155,10 +155,10 @@ func (s *IntegrationTestSuite) TestReinvest() {
 				clientCtx, err := s.chain.clientContext("tcp://localhost:26657", orch.keyring, "orch", orch.keyInfo.GetAddress())
 				s.Require().NoError(err)
 
-				reinvestMsg, err := types.NewMsgSubmitReinvestRequest(ABIEncodedInc(), counterContract, orch.keyInfo.GetAddress())
-				s.Require().NoError(err, "unable to create reinvest msg")
+				corkMsg, err := types.NewMsgSubmitCorkRequest(ABIEncodedInc(), counterContract, orch.keyInfo.GetAddress())
+				s.Require().NoError(err, "unable to create cork msg")
 
-				response, err := s.chain.sendMsgs(*clientCtx, reinvestMsg)
+				response, err := s.chain.sendMsgs(*clientCtx, corkMsg)
 				if err != nil {
 					s.T().Logf("error: %s", err)
 					return false
@@ -170,9 +170,9 @@ func (s *IntegrationTestSuite) TestReinvest() {
 					return false
 				}
 
-				s.T().Logf("reinvest msg for %d node sent successfully", i)
+				s.T().Logf("cork msg for %d node sent successfully", i)
 				return true
-			}, 10*time.Second, 500*time.Millisecond, "unable to deploy reinvest msg for node %d", i)
+			}, 10*time.Second, 500*time.Millisecond, "unable to deploy cork msg for node %d", i)
 		}
 
 		s.T().Logf("waiting for end of vote period, endblocker to run")

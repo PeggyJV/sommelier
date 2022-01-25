@@ -44,28 +44,28 @@
   
     - [Query](#allocation.v1.Query)
   
-- [reinvest/v1/reinvest.proto](#reinvest/v1/reinvest.proto)
-    - [Reinvestment](#reinvest.v1.Reinvestment)
+- [cork/v1/cork.proto](#cork/v1/cork.proto)
+    - [Cork](#cork.v1.Cork)
   
-- [reinvest/v1/tx.proto](#reinvest/v1/tx.proto)
-    - [MsgSubmitReinvestRequest](#reinvest.v1.MsgSubmitReinvestRequest)
-    - [MsgSubmitReinvestResponse](#reinvest.v1.MsgSubmitReinvestResponse)
+- [cork/v1/tx.proto](#cork/v1/tx.proto)
+    - [MsgSubmitCorkRequest](#cork.v1.MsgSubmitCorkRequest)
+    - [MsgSubmitCorkResponse](#cork.v1.MsgSubmitCorkResponse)
   
-    - [Msg](#reinvest.v1.Msg)
+    - [Msg](#cork.v1.Msg)
   
-- [reinvest/v1/genesis.proto](#reinvest/v1/genesis.proto)
-    - [GenesisState](#reinvest.v1.GenesisState)
-    - [Params](#reinvest.v1.Params)
+- [cork/v1/genesis.proto](#cork/v1/genesis.proto)
+    - [GenesisState](#cork.v1.GenesisState)
+    - [Params](#cork.v1.Params)
   
-- [reinvest/v1/query.proto](#reinvest/v1/query.proto)
-    - [QueryCommitPeriodRequest](#reinvest.v1.QueryCommitPeriodRequest)
-    - [QueryCommitPeriodResponse](#reinvest.v1.QueryCommitPeriodResponse)
-    - [QueryParamsRequest](#reinvest.v1.QueryParamsRequest)
-    - [QueryParamsResponse](#reinvest.v1.QueryParamsResponse)
-    - [QuerySubmittedReinvestmentsRequest](#reinvest.v1.QuerySubmittedReinvestmentsRequest)
-    - [QuerySubmittedReinvestmentsResponse](#reinvest.v1.QuerySubmittedReinvestmentsResponse)
+- [cork/v1/query.proto](#cork/v1/query.proto)
+    - [QueryCommitPeriodRequest](#cork.v1.QueryCommitPeriodRequest)
+    - [QueryCommitPeriodResponse](#cork.v1.QueryCommitPeriodResponse)
+    - [QueryParamsRequest](#cork.v1.QueryParamsRequest)
+    - [QueryParamsResponse](#cork.v1.QueryParamsResponse)
+    - [QuerySubmittedCorksRequest](#cork.v1.QuerySubmittedCorksRequest)
+    - [QuerySubmittedCorksResponse](#cork.v1.QuerySubmittedCorksResponse)
   
-    - [Query](#reinvest.v1.Query)
+    - [Query](#cork.v1.Query)
   
 - [Scalar Value Types](#scalar-value-types)
 
@@ -569,17 +569,17 @@ Query defines the gRPC querier service for the allocation module.
 
 
 
-<a name="reinvest/v1/reinvest.proto"></a>
+<a name="cork/v1/cork.proto"></a>
 <p align="right"><a href="#top">Top</a></p>
 
-## reinvest/v1/reinvest.proto
+## cork/v1/cork.proto
 
 
 
-<a name="reinvest.v1.Reinvestment"></a>
+<a name="cork.v1.Cork"></a>
 
-### Reinvestment
-MsgSubmitReinvestRequest - sdk.Msg for submitting calls to Ethereum through the gravity bridge contract
+### Cork
+MsgSubmitCorkRequest - sdk.Msg for submitting calls to Ethereum through the gravity bridge contract
 
 
 | Field | Type | Label | Description |
@@ -601,22 +601,22 @@ MsgSubmitReinvestRequest - sdk.Msg for submitting calls to Ethereum through the 
 
 
 
-<a name="reinvest/v1/tx.proto"></a>
+<a name="cork/v1/tx.proto"></a>
 <p align="right"><a href="#top">Top</a></p>
 
-## reinvest/v1/tx.proto
+## cork/v1/tx.proto
 
 
 
-<a name="reinvest.v1.MsgSubmitReinvestRequest"></a>
+<a name="cork.v1.MsgSubmitCorkRequest"></a>
 
-### MsgSubmitReinvestRequest
-MsgSubmitReinvestRequest - sdk.Msg for submitting calls to Ethereum through the gravity bridge contract
+### MsgSubmitCorkRequest
+MsgSubmitCorkRequest - sdk.Msg for submitting calls to Ethereum through the gravity bridge contract
 
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| `reinvestment` | [Reinvestment](#reinvest.v1.Reinvestment) |  | the reinvestment to send across the bridge |
+| `cork` | [Cork](#cork.v1.Cork) |  | the cork to send across the bridge |
 | `signer` | [string](#string) |  | signer account address |
 
 
@@ -624,9 +624,9 @@ MsgSubmitReinvestRequest - sdk.Msg for submitting calls to Ethereum through the 
 
 
 
-<a name="reinvest.v1.MsgSubmitReinvestResponse"></a>
+<a name="cork.v1.MsgSubmitCorkResponse"></a>
 
-### MsgSubmitReinvestResponse
+### MsgSubmitCorkResponse
 
 
 
@@ -640,45 +640,45 @@ MsgSubmitReinvestRequest - sdk.Msg for submitting calls to Ethereum through the 
  <!-- end HasExtensions -->
 
 
-<a name="reinvest.v1.Msg"></a>
+<a name="cork.v1.Msg"></a>
 
 ### Msg
-MsgService defines the msgs that the reinvest module handles
+MsgService defines the msgs that the cork module handles
 
 | Method Name | Request Type | Response Type | Description | HTTP Verb | Endpoint |
 | ----------- | ------------ | ------------- | ------------| ------- | -------- |
-| `SubmitReinvest` | [MsgSubmitReinvestRequest](#reinvest.v1.MsgSubmitReinvestRequest) | [MsgSubmitReinvestResponse](#reinvest.v1.MsgSubmitReinvestResponse) | ReinvestSubmission defines a message | |
+| `SubmitCork` | [MsgSubmitCorkRequest](#cork.v1.MsgSubmitCorkRequest) | [MsgSubmitCorkResponse](#cork.v1.MsgSubmitCorkResponse) | CorkSubmission defines a message | |
 
  <!-- end services -->
 
 
 
-<a name="reinvest/v1/genesis.proto"></a>
+<a name="cork/v1/genesis.proto"></a>
 <p align="right"><a href="#top">Top</a></p>
 
-## reinvest/v1/genesis.proto
+## cork/v1/genesis.proto
 
 
 
-<a name="reinvest.v1.GenesisState"></a>
+<a name="cork.v1.GenesisState"></a>
 
 ### GenesisState
-GenesisState - all reinvest state that must be provided at genesis
+GenesisState - all cork state that must be provided at genesis
 
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| `params` | [Params](#reinvest.v1.Params) |  |  |
+| `params` | [Params](#cork.v1.Params) |  |  |
 
 
 
 
 
 
-<a name="reinvest.v1.Params"></a>
+<a name="cork.v1.Params"></a>
 
 ### Params
-Params reinvest parameters
+Params cork parameters
 
 
 | Field | Type | Label | Description |
@@ -700,14 +700,14 @@ Params reinvest parameters
 
 
 
-<a name="reinvest/v1/query.proto"></a>
+<a name="cork/v1/query.proto"></a>
 <p align="right"><a href="#top">Top</a></p>
 
-## reinvest/v1/query.proto
+## cork/v1/query.proto
 
 
 
-<a name="reinvest.v1.QueryCommitPeriodRequest"></a>
+<a name="cork.v1.QueryCommitPeriodRequest"></a>
 
 ### QueryCommitPeriodRequest
 QueryCommitPeriodRequest is the request type for the Query/QueryCommitPeriod gRPC method.
@@ -717,7 +717,7 @@ QueryCommitPeriodRequest is the request type for the Query/QueryCommitPeriod gRP
 
 
 
-<a name="reinvest.v1.QueryCommitPeriodResponse"></a>
+<a name="cork.v1.QueryCommitPeriodResponse"></a>
 
 ### QueryCommitPeriodResponse
 QueryCommitPeriodResponse is the response type for the Query/QueryCommitPeriod gRPC method.
@@ -734,7 +734,7 @@ QueryCommitPeriodResponse is the response type for the Query/QueryCommitPeriod g
 
 
 
-<a name="reinvest.v1.QueryParamsRequest"></a>
+<a name="cork.v1.QueryParamsRequest"></a>
 
 ### QueryParamsRequest
 QueryParamsRequest is the request type for the Query/Params gRPC method.
@@ -744,7 +744,7 @@ QueryParamsRequest is the request type for the Query/Params gRPC method.
 
 
 
-<a name="reinvest.v1.QueryParamsResponse"></a>
+<a name="cork.v1.QueryParamsResponse"></a>
 
 ### QueryParamsResponse
 QueryParamsRequest is the response type for the Query/Params gRPC method.
@@ -752,32 +752,32 @@ QueryParamsRequest is the response type for the Query/Params gRPC method.
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| `params` | [Params](#reinvest.v1.Params) |  | allocation parameters |
+| `params` | [Params](#cork.v1.Params) |  | allocation parameters |
 
 
 
 
 
 
-<a name="reinvest.v1.QuerySubmittedReinvestmentsRequest"></a>
+<a name="cork.v1.QuerySubmittedCorksRequest"></a>
 
-### QuerySubmittedReinvestmentsRequest
-QuerySubmittedReinvestmentsRequest is the request type for the Query/QuerySubmittedReinvests gRPC query method.
-
-
+### QuerySubmittedCorksRequest
+QuerySubmittedCorksRequest is the request type for the Query/QuerySubmittedCorks gRPC query method.
 
 
 
 
-<a name="reinvest.v1.QuerySubmittedReinvestmentsResponse"></a>
 
-### QuerySubmittedReinvestmentsResponse
-QuerySubmittedReinvestmentsResponse is the response type for the Query/QuerySubmittedReinvests gRPC query method.
+
+<a name="cork.v1.QuerySubmittedCorksResponse"></a>
+
+### QuerySubmittedCorksResponse
+QuerySubmittedCorksResponse is the response type for the Query/QuerySubmittedCorks gRPC query method.
 
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| `reinvests` | [Reinvestment](#reinvest.v1.Reinvestment) | repeated | reinvests in keeper awaiting vote |
+| `corks` | [Cork](#cork.v1.Cork) | repeated | corks in keeper awaiting vote |
 
 
 
@@ -790,16 +790,16 @@ QuerySubmittedReinvestmentsResponse is the response type for the Query/QuerySubm
  <!-- end HasExtensions -->
 
 
-<a name="reinvest.v1.Query"></a>
+<a name="cork.v1.Query"></a>
 
 ### Query
-Query defines the gRPC query service for the reinvest module.
+Query defines the gRPC query service for the cork module.
 
 | Method Name | Request Type | Response Type | Description | HTTP Verb | Endpoint |
 | ----------- | ------------ | ------------- | ------------| ------- | -------- |
-| `QueryParams` | [QueryParamsRequest](#reinvest.v1.QueryParamsRequest) | [QueryParamsResponse](#reinvest.v1.QueryParamsResponse) | QueryParams queries the allocation module parameters. | GET|/sommelier/reinvest/v1/params|
-| `QuerySubmittedReinvestments` | [QuerySubmittedReinvestmentsRequest](#reinvest.v1.QuerySubmittedReinvestmentsRequest) | [QuerySubmittedReinvestmentsResponse](#reinvest.v1.QuerySubmittedReinvestmentsResponse) | QuerySubmittedReinvestments queries the submitted reinvestments awaiting vote | GET|/sommelier/reinvest/v1/submitted|
-| `QueryCommitPeriod` | [QueryCommitPeriodRequest](#reinvest.v1.QueryCommitPeriodRequest) | [QueryCommitPeriodResponse](#reinvest.v1.QueryCommitPeriodResponse) | QueryVotePeriod queries the heights for the current voting period (current, start and end) | GET|/sommelier/allocation/v1/commit_period|
+| `QueryParams` | [QueryParamsRequest](#cork.v1.QueryParamsRequest) | [QueryParamsResponse](#cork.v1.QueryParamsResponse) | QueryParams queries the allocation module parameters. | GET|/sommelier/cork/v1/params|
+| `QuerySubmittedCorks` | [QuerySubmittedCorksRequest](#cork.v1.QuerySubmittedCorksRequest) | [QuerySubmittedCorksResponse](#cork.v1.QuerySubmittedCorksResponse) | QuerySubmittedCorks queries the submitted corks awaiting vote | GET|/sommelier/cork/v1/submitted|
+| `QueryCommitPeriod` | [QueryCommitPeriodRequest](#cork.v1.QueryCommitPeriodRequest) | [QueryCommitPeriodResponse](#cork.v1.QueryCommitPeriodResponse) | QueryVotePeriod queries the heights for the current voting period (current, start and end) | GET|/sommelier/allocation/v1/commit_period|
 
  <!-- end services -->
 
