@@ -37,13 +37,13 @@ The Gravity Bridge requires some additional pieces to be deployed to support it:
 mkdir install && cd install
 
 # Install Orchestrator
-wget https://github.com/PeggyJV/gravity-bridge/releases/download/v0.1.21/contract-deployer https://github.com/PeggyJV/gravity-bridge/releases/download/v0.1.21/orchestrator https://github.com/PeggyJV/gravity-bridge/releases/download/v0.1.21/relayer https://github.com/PeggyJV/gravity-bridge/releases/download/v0.1.21/gorc && chmod +x * && sudo mv * /usr/bin
+wget https://github.com/PeggyJV/gravity-bridge/releases/download/v0.3.8/contract-deployer https://github.com/PeggyJV/gravity-bridge/releases/download/v0.3.8/orchestrator https://github.com/PeggyJV/gravity-bridge/releases/download/v0.3.8/relayer https://github.com/PeggyJV/gravity-bridge/releases/download/v0.3.8/gorc && chmod +x * && sudo mv * /usr/bin
 
 # Install Geth
 wget https://gethstore.blob.core.windows.net/builds/geth-linux-amd64-1.10.4-aa637fd3.tar.gz && tar -xvf geth-linux-amd64-1.10.4-aa637fd3.tar.gz && sudo mv geth-linux-amd64-1.10.4-aa637fd3/geth /usr/bin/geth && rm -rf geth-linux-amd64-1.10.4-aa637fd3*
 
 # Install Sommelier
-wget https://github.com/PeggyJV/sommelier/releases/download/v2.0.0/sommelier_2.0.0_linux_amd64.tar.gz && tar -xf sommelier_2.0.0_linux_amd64.tar.gz && sudo mv sommelier /usr/bin && rm -rf sommelier_2.0.0_linux_amd64* LICENSE README.md
+wget https://github.com/PeggyJV/sommelier/releases/download/v3.0.7/sommelier_3.0.7_linux_amd64.tar.gz && tar -xf sommelier_3.0.7_linux_amd64.tar.gz && sudo mv sommelier /usr/bin && rm -rf sommelier_3.0.7_linux_amd64* LICENSE README.md
 
 # Fetch systemd unit files
 wget https://raw.githubusercontent.com/PeggyJV/sommelier/main/contrib/systemd/geth.service https://raw.githubusercontent.com/PeggyJV/sommelier/main/contrib/systemd/gorc.service https://raw.githubusercontent.com/PeggyJV/sommelier/main/contrib/systemd/sommelier.service
@@ -61,13 +61,14 @@ sudo systemctl start geth && sudo journalctl -u geth -f
 
 # Init gorc configuration
 mkdir -p $HOME/gorc && cd $HOME/gorc
-wget https://raw.githubusercontent.com/PeggyJV/sommelier/main/contrib/mainnet/sommelier-2/config.toml
+wget https://raw.githubusercontent.com/PeggyJV/sommelier/main/contrib/mainnet/sommelier-3/config.toml
 
 # modify gorc config for your environment
+# You can use alchemy, infura endpoint as RPC and not necessarily need to sync the blockchain eth with geth
 nano config.toml
 
 # Initialize the validator files
-sommelier init myval --chain-id sommelier-2
+sommelier init myval --chain-id sommelier-3
 
 # create/restore 2 cosmos keys and 1 ethereum key
 # NOTE: be sure to save the mnemonics and eth private key
@@ -100,11 +101,11 @@ sommelier keys add validator
 # - a key named "signer" with funds on connected ETH chain in the gorc keystore
 # - a key named "validator" with funds on the cosmos chain in the sommelier keystore
 
-# Add the peers from contrib/mainnet/sommelier-2/peers.txt to the ~/.sommelier/config/config.toml file
+# Add the peers from contrib/mainnet/sommelier-3/peers.txt to the ~/.sommelier/config/config.toml file
 nano ~/.sommelier/config/config.toml
 
 # pull the genesis file 
-wget https://raw.githubusercontent.com/PeggyJV/sommelier/main/contrib/mainnet/sommelier-2/genesis.json -O $HOME/.sommelier/config/genesis.json
+wget https://raw.githubusercontent.com/PeggyJV/sommelier/main/contrib/mainnet/sommelier-3/genesis.json -O $HOME/.sommelier/config/genesis.json
 
 # start your sommelier node - note it may take a minute or two to sync all of the blocks
 sudo systemctl start sommelier && sudo journalctl -u sommelier -f
@@ -114,7 +115,7 @@ sommelier tx staking create-validator \
   --amount=1000000usomm \
   --pubkey=$(sommelier tendermint show-validator) \
   --moniker="MYMONIKER" \
-  --chain-id="sommelier-2" \
+  --chain-id="sommelier-3" \
   --commission-rate="0.10" \
   --commission-max-rate="0.20" \
   --commission-max-change-rate="0.01" \
@@ -129,7 +130,7 @@ sommelier tx gravity set-delegate-keys \
     $(gorc --config $HOME/gorc/config.toml keys cosmos show orchestrator) \ # orchestrator address (this must be run manually and address extracted)
     $(gorc --config $HOME/gorc/config.toml keys eth show signer) \ # eth signer address
     $(gorc --config $HOME/gorc/config.toml sign-delegate-keys signer $(sommelier keys show validator --bech val -a)) \ 
-    --chain-id sommelier-2 \ 
+    --chain-id sommtest-4 \ 
     --from validator \ 
     -y
 
