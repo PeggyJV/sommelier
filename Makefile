@@ -351,7 +351,7 @@ tools-clean:
 # Integration tests #
 #####################
 
-ORCHESTRATOR_IMAGE := "ghcr.io/peggyjv/gravity-bridge-orchestrator:v0.3.0"
+ORCHESTRATOR_IMAGE := "ghcr.io/peggyjv/gravity-bridge-orchestrator:v0.3.8"
 
 e2e_build_images:
 	@docker pull $(ORCHESTRATOR_IMAGE)
