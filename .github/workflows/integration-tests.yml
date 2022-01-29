@@ -62,7 +62,7 @@ jobs:
 
   hardhat-build:
     permissions:
-      contents: read
+      contents: write
       packages: write
     runs-on: ubuntu-latest
     steps:
