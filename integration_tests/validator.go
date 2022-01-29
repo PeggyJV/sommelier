@@ -33,16 +33,15 @@ import (
 )
 
 type validator struct {
-	chain            *chain
-	index            int
-	moniker          string
-	mnemonic         string
-	keyInfo          keyring.Info
-	privateKey       cryptotypes.PrivKey
-	consensusKey     privval.FilePVKey
-	consensusPrivKey cryptotypes.PrivKey
-	nodeKey          p2p.NodeKey
-	ethereumKey      ethereumKey
+	chain        *chain
+	index        int
+	moniker      string
+	mnemonic     string
+	keyInfo      keyring.Info
+	privateKey   cryptotypes.PrivKey
+	consensusKey privval.FilePVKey
+	nodeKey      p2p.NodeKey
+	ethereumKey  ethereumKey
 }
 
 type ethereumKey struct {

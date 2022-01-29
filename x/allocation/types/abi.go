@@ -1,8 +1,9 @@
 package types
 
 import (
-	"github.com/ethereum/go-ethereum/accounts/abi"
 	"strings"
+
+	"github.com/ethereum/go-ethereum/accounts/abi"
 )
 
 const CellarABI = `

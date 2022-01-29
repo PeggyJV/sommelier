@@ -2,6 +2,7 @@ package keeper
 
 import (
 	"fmt"
+
 	"github.com/ethereum/go-ethereum/common"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -83,7 +84,7 @@ func (k Keeper) EndBlocker(ctx sdk.Context) {
 
 	k.Logger(ctx).Info("package all winning allocation votes into contract calls")
 	// todo: implement batch sends to save on gas
-	for _, wv := range winningVotes {
+	for i, wv := range winningVotes {
 		k.Logger(ctx).Info("setting outgoing tx for contract call",
 			"cellar", wv.String(),
 			"tick ranges length", len(wv.Cellar.TickRanges),
@@ -95,7 +96,7 @@ func (k Keeper) EndBlocker(ctx sdk.Context) {
 		// set pending cellar update
 		k.SetPendingCellarUpdate(ctx, types.CellarUpdate{
 			InvalidationNonce: invalidationNonce,
-			Vote:              &wv,
+			Vote:              &winningVotes[i],
 		})
 
 		// submit contract call to bridge
