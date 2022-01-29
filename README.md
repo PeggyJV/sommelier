@@ -40,10 +40,10 @@ mkdir install && cd install
 wget https://github.com/PeggyJV/gravity-bridge/releases/download/v0.1.21/contract-deployer https://github.com/PeggyJV/gravity-bridge/releases/download/v0.1.21/orchestrator https://github.com/PeggyJV/gravity-bridge/releases/download/v0.1.21/relayer https://github.com/PeggyJV/gravity-bridge/releases/download/v0.1.21/gorc && chmod +x * && sudo mv * /usr/bin
 
 # Install Geth
-wget https://gethstore.blob.core.windows.net/builds/geth-linux-amd64-1.10.4-aa637fd3.tar.gz && tar -xvf geth-linux-amd64-1.10.4-aa637fd3.tar.gz && sudo mv geth-linux-amd64-1.10.4-aa637fd3/geth /usr/bin/geth && rm -rf geth-linux-amd64-1.10.4-aa637fd3*
+wget https://gethstore.blob.core.windows.net/builds/geth-linux-amd64-1.10.15-8be800ff.tar.gz && tar -xvf geth-linux-amd64-1.10.15-8be800ff.tar.gz && sudo mv geth-linux-amd64-1.10.15-8be800ff.tar.gz /usr/bin/geth && rm -rf geth-linux-amd64-1.10.15-8be800ff*
 
 # Install Sommelier
-wget https://github.com/PeggyJV/sommelier/releases/download/v2.0.0/sommelier_2.0.0_linux_amd64.tar.gz && tar -xf sommelier_2.0.0_linux_amd64.tar.gz && sudo mv sommelier /usr/bin && rm -rf sommelier_2.0.0_linux_amd64* LICENSE README.md
+wget https://github.com/PeggyJV/sommelier/releases/download/v3.0.7/sommelier_3.0.7_linux_amd64.tar.gz && tar -xf sommelier_3.0.7_linux_amd64.tar.gz && sudo mv sommelier /usr/bin && rm -rf sommelier_2.0.0_linux_amd64* LICENSE README.md
 
 # Fetch systemd unit files
 wget https://raw.githubusercontent.com/PeggyJV/sommelier/main/contrib/systemd/geth.service https://raw.githubusercontent.com/PeggyJV/sommelier/main/contrib/systemd/gorc.service https://raw.githubusercontent.com/PeggyJV/sommelier/main/contrib/systemd/sommelier.service
