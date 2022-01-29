@@ -18,7 +18,6 @@ jobs:
         with:
           PATTERNS: |
             **/**.go
-            !integration_tests/**
             go.mod
             go.sum
       - uses: golangci/golangci-lint-action@master

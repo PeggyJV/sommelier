@@ -8,8 +8,6 @@ import (
 	"path"
 	"path/filepath"
 
-	"github.com/cosmos/cosmos-sdk/client"
-
 	sdkcrypto "github.com/cosmos/cosmos-sdk/crypto"
 	cryptocodec "github.com/cosmos/cosmos-sdk/crypto/codec"
 	"github.com/cosmos/cosmos-sdk/crypto/hd"
@@ -169,7 +167,7 @@ func (v *validator) createKeyFromMnemonic(name, mnemonic string, passphrase stri
 	return nil
 }
 
-func (v *validator) createKey(name string) error {
+func (v *validator) createKey(name string) error { // nolint:unused
 	mnemonic, err := createMnemonic()
 	if err != nil {
 		return err
@@ -178,7 +176,7 @@ func (v *validator) createKey(name string) error {
 	return v.createKeyFromMnemonic(name, mnemonic, "")
 }
 
-func (v *validator) generateEthereumKey() error {
+func (v *validator) generateEthereumKey() error { // nolint:unused
 	privateKey, err := crypto.GenerateKey()
 	if err != nil {
 		return err
@@ -343,12 +341,4 @@ func (v *validator) signMsg(msgs ...sdk.Msg) (*sdktx.Tx, error) {
 
 func (v *validator) keyring() (keyring.Keyring, error) {
 	return keyring.New(keyringAppName, keyring.BackendTest, v.configDir(), nil)
-}
-
-func (v *validator) clientContext(nodeURI string) (*client.Context, error) {
-	kb, err := v.keyring()
-	if err != nil {
-		return nil, err
-	}
-	return v.chain.clientContext(nodeURI, &kb, "val", v.keyInfo.GetAddress())
 }
