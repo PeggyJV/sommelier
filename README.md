@@ -37,13 +37,13 @@ The Gravity Bridge requires some additional pieces to be deployed to support it:
 mkdir install && cd install
 
 # Install Orchestrator
-wget https://github.com/PeggyJV/gravity-bridge/releases/download/v0.1.21/contract-deployer https://github.com/PeggyJV/gravity-bridge/releases/download/v0.1.21/orchestrator https://github.com/PeggyJV/gravity-bridge/releases/download/v0.1.21/relayer https://github.com/PeggyJV/gravity-bridge/releases/download/v0.1.21/gorc && chmod +x * && sudo mv * /usr/bin
+wget https://github.com/PeggyJV/gravity-bridge/releases/download/v0.3.8/contract-deployer https://github.com/PeggyJV/gravity-bridge/releases/download/v0.3.8/orchestrator https://github.com/PeggyJV/gravity-bridge/releases/download/v0.1.21/relayer https://github.com/PeggyJV/gravity-bridge/releases/download/v0.3.8/gorc && chmod +x * && sudo mv * /usr/bin
 
 # Install Geth
 wget https://gethstore.blob.core.windows.net/builds/geth-linux-amd64-1.10.15-8be800ff.tar.gz && tar -xvf geth-linux-amd64-1.10.15-8be800ff.tar.gz && sudo mv geth-linux-amd64-1.10.15-8be800ff.tar.gz /usr/bin/geth && rm -rf geth-linux-amd64-1.10.15-8be800ff*
 
 # Install Sommelier
-wget https://github.com/PeggyJV/sommelier/releases/download/v3.0.7/sommelier_3.0.7_linux_amd64.tar.gz && tar -xf sommelier_3.0.7_linux_amd64.tar.gz && sudo mv sommelier /usr/bin && rm -rf sommelier_2.0.0_linux_amd64* LICENSE README.md
+wget https://github.com/PeggyJV/sommelier/releases/download/v3.0.7/sommelier_3.0.7_linux_amd64.tar.gz && tar -xf sommelier_3.0.7_linux_amd64.tar.gz && sudo mv sommelier /usr/bin && rm -rf sommelier_3.0.7_linux_amd64* LICENSE README.md
 
 # Fetch systemd unit files
 wget https://raw.githubusercontent.com/PeggyJV/sommelier/main/contrib/systemd/geth.service https://raw.githubusercontent.com/PeggyJV/sommelier/main/contrib/systemd/gorc.service https://raw.githubusercontent.com/PeggyJV/sommelier/main/contrib/systemd/sommelier.service
