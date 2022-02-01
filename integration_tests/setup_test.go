@@ -683,7 +683,7 @@ msg_batch_size = 5
 	// TODO(mvid) Determine if there is a way to check the health or status of
 	// the gorc orchestrator processes. For now, we search the logs to determine
 	// when each orchestrator resource has synced all batches
-	match := "orchestrator::main_loop: No unsigned batches! Everything good!"
+	match := "No unsigned batches! Everything good!"
 	for _, resource := range s.orchResources {
 		resource := resource
 		s.T().Logf("waiting for orchestrator to be healthy: %s", resource.Container.ID)
