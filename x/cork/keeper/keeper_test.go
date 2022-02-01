@@ -36,15 +36,15 @@ func TestGetWinningVotes(t *testing.T) {
 			ValCellars: []ValCellar{
 				{Val: vallAddrA,
 					Cork: types.Cork{
-						Address: exampleAddrA.String(),
-						Body:    []byte{33},
+						TargetContractAddress: exampleAddrA.String(),
+						EncodedContractCall:   []byte{33},
 					},
 				},
 			},
 			WinningVotes: []types.Cork{
 				{
-					Address: exampleAddrA.String(),
-					Body:    []byte{33},
+					TargetContractAddress: exampleAddrA.String(),
+					EncodedContractCall:   []byte{33},
 				},
 			},
 		},
@@ -57,14 +57,14 @@ func TestGetWinningVotes(t *testing.T) {
 
 		for _, vc := range test.ValCellars {
 			commit := types.Cork{
-				Address: exampleAddrA.String(),
-				Body:    []byte{33},
+				TargetContractAddress: exampleAddrA.String(),
+				EncodedContractCall:   []byte{33},
 			}
 
 			input.corkKeeper.SetCork(ctx, vc.Val, commit)
 		}
 
-		winningVotes := input.corkKeeper.GetWinningVotes(ctx, sdktypes.MustNewDecFromStr("0.66"))
+		winningVotes := input.corkKeeper.GetApprovedCorks(ctx, sdktypes.MustNewDecFromStr("0.66"))
 		require.Lenf(t, winningVotes, 1, test.description)
 	}
 }

@@ -7,9 +7,9 @@ option go_package = "github.com/peggyjv/sommelier/x/cork/types";
 
 // MsgSubmitCorkRequest - sdk.Msg for submitting calls to Ethereum through the gravity bridge contract
 message Cork {
-  // body containing the ABI encoded bytes to send to the contract
-  bytes body = 1;
+  // call body containing the ABI encoded bytes to send to the contract
+  bytes encoded_contract_call = 1;
   // address of the contract to send the call
-  string address = 2;
+  string target_contract_address = 2;
 }
 

@@ -584,8 +584,8 @@ MsgSubmitCorkRequest - sdk.Msg for submitting calls to Ethereum through the grav
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| `body` | [bytes](#bytes) |  | body containing the ABI encoded bytes to send to the contract |
-| `address` | [string](#string) |  | address of the contract to send the call |
+| `encoded_contract_call` | [bytes](#bytes) |  | call body containing the ABI encoded bytes to send to the contract |
+| `target_contract_address` | [string](#string) |  | address of the contract to send the call |
 
 
 

@@ -22,8 +22,8 @@ const (
 func NewMsgSubmitCorkRequest(body []byte, address common.Address, signer sdk.AccAddress) (*MsgSubmitCorkRequest, error) {
 	return &MsgSubmitCorkRequest{
 		Cork: &Cork{
-			Body:    body,
-			Address: address.String(),
+			EncodedContractCall:    body,
+			TargetContractAddress: address.String(),
 		},
 		Signer: signer.String(),
 	}, nil

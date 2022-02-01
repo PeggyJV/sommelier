@@ -62,15 +62,15 @@ func (k Keeper) EndBlocker(ctx sdk.Context) {
 	}
 
 	k.Logger(ctx).Info("tallying cork votes", "height", fmt.Sprintf("%d", ctx.BlockHeight()))
-	winningVotes := k.GetWinningVotes(ctx, params.VoteThreshold)
+	winningVotes := k.GetApprovedCorks(ctx, params.VoteThreshold)
 
 	k.Logger(ctx).Info("packaging all winning cork votes into contract calls",
 		"winning votes", winningVotes)
 	// todo: implement batch sends to save on gas
 	for _, wv := range winningVotes {
 		k.Logger(ctx).Info("setting outgoing tx for contract call",
-			"address", wv.Address,
-			"body", wv.Body,
+			"address", wv.TargetContractAddress,
+			"encoded contract call", wv.EncodedContractCall,
 		)
 
 		// increment invalidation nonce
@@ -81,8 +81,8 @@ func (k Keeper) EndBlocker(ctx sdk.Context) {
 			ctx,
 			invalidationNonce,
 			wv.InvalidationScope(),
-			common.HexToAddress(wv.Address),
-			wv.Body,
+			common.HexToAddress(wv.TargetContractAddress),
+			wv.EncodedContractCall,
 			[]gravitytypes.ERC20Token{}, // tokens are always zero
 			[]gravitytypes.ERC20Token{})
 		k.gravityKeeper.SetOutgoingTx(ctx, contractCall)

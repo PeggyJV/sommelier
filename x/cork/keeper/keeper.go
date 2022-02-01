@@ -7,7 +7,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
-	mapset "github.com/deckarep/golang-set"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/peggyjv/sommelier/x/cork/types"
 	"github.com/tendermint/tendermint/libs/log"
@@ -54,15 +53,15 @@ func (k Keeper) Logger(ctx sdk.Context) log.Logger {
 // CONTRACT: must provide the validator address here not the delegate address
 func (k Keeper) SetCork(ctx sdk.Context, val sdk.ValAddress, cork types.Cork) {
 	bz := k.cdc.MustMarshal(&cork)
-	ctx.KVStore(k.storeKey).Set(types.GetCorkForValidatorAddressKey(val, common.HexToAddress(cork.Address)), bz)
+	ctx.KVStore(k.storeKey).Set(types.GetCorkForValidatorAddressKey(val, common.HexToAddress(cork.TargetContractAddress)), bz)
 }
 
 // GetCork gets the prevote for a given validator
 // CONTRACT: must provide the validator address here not the delegate address
-func (k Keeper) GetCork(ctx sdk.Context, val sdk.ValAddress, cel common.Address) (types.Cork, bool) {
+func (k Keeper) GetCork(ctx sdk.Context, val sdk.ValAddress, contract common.Address) (types.Cork, bool) {
 	store := ctx.KVStore(k.storeKey)
 
-	bz := store.Get(types.GetCorkForValidatorAddressKey(val, cel))
+	bz := store.Get(types.GetCorkForValidatorAddressKey(val, contract))
 	if len(bz) == 0 {
 		return types.Cork{}, false
 	}
@@ -74,8 +73,8 @@ func (k Keeper) GetCork(ctx sdk.Context, val sdk.ValAddress, cel common.Address)
 
 // DeleteCork deletes the prevote for a given validator
 // CONTRACT: must provide the validator address here not the delegate address
-func (k Keeper) DeleteCork(ctx sdk.Context, val sdk.ValAddress, cel common.Address) {
-	ctx.KVStore(k.storeKey).Delete(types.GetCorkForValidatorAddressKey(val, cel))
+func (k Keeper) DeleteCork(ctx sdk.Context, val sdk.ValAddress, contract common.Address) {
+	ctx.KVStore(k.storeKey).Delete(types.GetCorkForValidatorAddressKey(val, contract))
 }
 
 // HasCorkForContract gets the prevote for a given validator
@@ -95,66 +94,18 @@ func (k Keeper) HasCork(ctx sdk.Context, val sdk.ValAddress) bool {
 }
 
 // IterateCorks iterates over all votes in the store
-func (k Keeper) IterateCorks(ctx sdk.Context, handler func(val sdk.ValAddress, cel common.Address, cork types.Cork) (stop bool)) {
+func (k Keeper) IterateCorks(ctx sdk.Context, handler func(val sdk.ValAddress, contract common.Address, cork types.Cork) (stop bool)) {
 	store := ctx.KVStore(k.storeKey)
 	iter := sdk.KVStorePrefixIterator(store, []byte{types.CorkForAddressKeyPrefix})
 	defer iter.Close()
 	for ; iter.Valid(); iter.Next() {
 		keyPair := bytes.NewBuffer(bytes.TrimPrefix(iter.Key(), []byte{types.CorkForAddressKeyPrefix}))
 		val := sdk.ValAddress(keyPair.Next(20))
-		cel := common.BytesToAddress(keyPair.Bytes())
+		contract := common.BytesToAddress(keyPair.Bytes())
 
 		var cork types.Cork
 		k.cdc.MustUnmarshal(iter.Value(), &cork)
-		if handler(val, cel, cork) {
-			break
-		}
-	}
-}
-
-// IterateCorkAddresses iterates over all addresses who have committed corks
-func (k Keeper) IterateCorkAddresses(ctx sdk.Context, handler func(addr common.Address) (stop bool)) {
-	store := ctx.KVStore(k.storeKey)
-	iter := sdk.KVStorePrefixIterator(store, []byte{types.CorkForAddressKeyPrefix})
-	defer iter.Close()
-
-	seenAddresses := mapset.NewThreadUnsafeSet()
-
-	for ; iter.Valid(); iter.Next() {
-		keyPair := bytes.NewBuffer(bytes.TrimPrefix(iter.Key(), []byte{types.CorkForAddressKeyPrefix}))
-		keyPair.Next(20)
-		address := common.BytesToAddress(keyPair.Bytes())
-
-		// add seen address to set. if already in set, don't return to consumer
-		if !seenAddresses.Add(address) {
-			continue
-		}
-
-		if handler(address) {
-			break
-		}
-	}
-}
-
-// IterateAddressCorks iterates over all corks for an address
-func (k Keeper) IterateAddressCorks(ctx sdk.Context, handler func(addr common.Address) (stop bool)) {
-	store := ctx.KVStore(k.storeKey)
-	iter := sdk.KVStorePrefixIterator(store, []byte{types.CorkForAddressKeyPrefix})
-	defer iter.Close()
-
-	seenAddresses := mapset.NewThreadUnsafeSet()
-
-	for ; iter.Valid(); iter.Next() {
-		keyPair := bytes.NewBuffer(bytes.TrimPrefix(iter.Key(), []byte{types.CorkForAddressKeyPrefix}))
-		keyPair.Next(20)
-		address := common.BytesToAddress(keyPair.Bytes())
-
-		// add seen address to set. if already in set, don't return to consumer
-		if !seenAddresses.Add(address) {
-			continue
-		}
-
-		if handler(address) {
+		if handler(val, contract, cork) {
 			break
 		}
 	}
@@ -228,7 +179,7 @@ func (k Keeper) IncrementInvalidationNonce(ctx sdk.Context) uint64 {
 // Votes //
 ///////////
 
-func (k Keeper) GetWinningVotes(ctx sdk.Context, threshold sdk.Dec) (winningVotes []types.Cork) {
+func (k Keeper) GetApprovedCorks(ctx sdk.Context, threshold sdk.Dec) (approvedCorks []types.Cork) {
 
 	var corks []types.Cork
 	var corkPowers []int64
@@ -240,8 +191,8 @@ func (k Keeper) GetWinningVotes(ctx sdk.Context, threshold sdk.Dec) (winningVote
 		validatorPower := validator.GetConsensusPower(k.stakingKeeper.PowerReduction(ctx))
 
 		found := false
-		for i, rv := range corks {
-			if rv.Equals(cork) {
+		for i, c := range corks {
+			if c.Equals(cork) {
 				corkPowers[i] += validatorPower
 
 				found = true

@@ -8,19 +8,19 @@ import (
 	tmbytes "github.com/tendermint/tendermint/libs/bytes"
 )
 
-func (rv *Cork) InvalidationScope() tmbytes.HexBytes {
-	return crypto.Keccak256Hash(rv.Body).Bytes()
+func (c *Cork) InvalidationScope() tmbytes.HexBytes {
+	return crypto.Keccak256Hash(c.EncodedContractCall).Bytes()
 }
 
-func (rv *Cork) Equals(other Cork) bool {
-	firstAddr := common.HexToAddress(rv.Address)
-	secondAddr := common.HexToAddress(other.Address)
+func (c *Cork) Equals(other Cork) bool {
+	firstAddr := common.HexToAddress(c.TargetContractAddress)
+	secondAddr := common.HexToAddress(other.TargetContractAddress)
 
-	if firstAddr.Hex() != secondAddr.Hex() {
+	if firstAddr != secondAddr {
 		return false
 	}
 
-	if !bytes.Equal(rv.Body, other.Body) {
+	if !bytes.Equal(c.EncodedContractCall, other.EncodedContractCall) {
 		return false
 	}
 

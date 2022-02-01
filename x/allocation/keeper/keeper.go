@@ -360,10 +360,6 @@ func (k Keeper) CommitCellarUpdate(ctx sdk.Context, invalidationNonce uint64, in
 		panic(fmt.Sprintf("cellar update with invalidation nonce %v not found", invalidationNonce))
 	}
 
-	//if !bytes.Equal(cellarUpdate.Cellar.InvalidationScope(), invalidationScope) {
-	//	panic(fmt.Sprintf("stored invalidation scope did not match event invalidation scope: %v != %v", cellarUpdate.Cellar.InvalidationScope(), invalidationNonce))
-	//}
-
 	k.SetCellar(ctx, *cellarUpdate.Vote.Cellar)
 
 	store := ctx.KVStore(k.storeKey)
