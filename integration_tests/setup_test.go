@@ -18,7 +18,7 @@ import (
 
 	"github.com/ethereum/go-ethereum"
 
-	"github.com/peggyjv/sommelier/x/allocation/types"
+	"github.com/peggyjv/sommelier/v3/x/allocation/types"
 
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/ethclient"
