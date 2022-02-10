@@ -2,7 +2,7 @@ package cli
 
 import (
 	"github.com/cosmos/cosmos-sdk/client"
-	"github.com/peggyjv/sommelier/x/cork/types"
+	"github.com/peggyjv/sommelier/v3/x/cork/types"
 	"github.com/spf13/cobra"
 )
 

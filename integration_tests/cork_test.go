@@ -13,7 +13,7 @@ import (
 	"github.com/ethereum/go-ethereum/accounts/abi"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/ethclient"
-	"github.com/peggyjv/sommelier/x/cork/types"
+	"github.com/peggyjv/sommelier/v3/x/cork/types"
 )
 
 const CounterABI = `

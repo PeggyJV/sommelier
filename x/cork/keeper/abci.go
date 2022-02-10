@@ -7,7 +7,7 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	gravitytypes "github.com/peggyjv/gravity-bridge/module/x/gravity/types"
-	"github.com/peggyjv/sommelier/x/cork/types"
+	"github.com/peggyjv/sommelier/v3/x/cork/types"
 )
 
 // BeginBlocker is called at the beginning of every block
