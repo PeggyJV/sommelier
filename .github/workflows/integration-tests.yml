@@ -115,10 +115,11 @@ jobs:
       matrix:
         test_type: [ "Rebalance", "Cork" ]
     steps:
-      - name: Set up Go 1.16
-        uses: actions/setup-go@v2
-        with:
-          go-version: ^1.16
+# Not needed on self hosted test runner that already has go installed
+#       - name: Set up Go 1.16
+#         uses: actions/setup-go@v2
+#         with:
+#           go-version: ^1.16
       - name: checkout
         uses: actions/checkout@v2
       - name: go-cache
