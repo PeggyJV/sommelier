@@ -5,7 +5,7 @@ import (
 
 	sdktypes "github.com/cosmos/cosmos-sdk/types"
 	"github.com/ethereum/go-ethereum/common"
-	"github.com/peggyjv/sommelier/x/allocation/types"
+	"github.com/peggyjv/sommelier/v3/x/allocation/types"
 	"github.com/stretchr/testify/require"
 )
 
