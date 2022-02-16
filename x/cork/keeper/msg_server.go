@@ -2,10 +2,10 @@ package keeper
 
 import (
 	"context"
-
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
+	"github.com/ethereum/go-ethereum/common"
 
 	"github.com/peggyjv/sommelier/v3/x/cork/types"
 )
@@ -31,6 +31,10 @@ func (k Keeper) signerToValAddr(ctx sdk.Context, signer sdk.AccAddress) (sdk.Val
 // SubmitCork implements types.MsgServer
 func (k Keeper) SubmitCork(c context.Context, msg *types.MsgSubmitCorkRequest) (*types.MsgSubmitCorkResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
+
+	if !k.HasCellarID(ctx, common.HexToAddress(msg.Cork.TargetContractAddress)) {
+		return nil, types.ErrUnmanagedCellarAddress
+	}
 
 	signer := msg.MustGetSigner()
 	validatorAddr, err := k.signerToValAddr(ctx, signer)

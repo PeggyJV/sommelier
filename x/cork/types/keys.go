@@ -31,6 +31,9 @@ const (
 
 	// LatestInvalidationNonceKey - <prefix> -> uint64(latestNonce)
 	LatestInvalidationNonceKey
+
+	// CellarIDsKey - <prefix> -> []string
+	CellarIDsKey
 )
 
 // GetCorkForValidatorAddressKey returns the key for a validators vote for a given address
@@ -41,4 +44,8 @@ func GetCorkForValidatorAddressKey(val sdk.ValAddress, contract common.Address) 
 // GetCorkValidatorKeyPrefix returns the key prefix for cork commits for a validator
 func GetCorkValidatorKeyPrefix(val sdk.ValAddress) []byte {
 	return append([]byte{CorkForAddressKeyPrefix}, val.Bytes()...)
+}
+
+func MakeCellarIDsKey() []byte {
+	return []byte{CellarIDsKey}
 }

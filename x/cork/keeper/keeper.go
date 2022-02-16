@@ -221,3 +221,38 @@ func (k Keeper) GetApprovedCorks(ctx sdk.Context, threshold sdk.Dec) (approvedCo
 
 	return winningCorks
 }
+
+/////////////
+// Cellars //
+/////////////
+
+func (k Keeper) SetCellarIDs(ctx sdk.Context, c types.CellarIDSet) {
+	bz := k.cdc.MustMarshal(&c)
+	ctx.KVStore(k.storeKey).Set(types.MakeCellarIDsKey(), bz)
+}
+
+func (k Keeper) GetCellarIDs(ctx sdk.Context) (cellars []common.Address) {
+	store := ctx.KVStore(k.storeKey)
+	bz := store.Get(types.MakeCellarIDsKey())
+
+	var cids types.CellarIDSet
+	k.cdc.MustUnmarshal(bz, &cids)
+
+	for _, cid := range cids.Ids {
+		cellars = append(cellars, common.HexToAddress(cid))
+	}
+
+	return cellars
+}
+
+func (k Keeper) HasCellarID(ctx sdk.Context, address common.Address) (found bool) {
+	found = false
+	for _, id := range k.GetCellarIDs(ctx) {
+		if id == address {
+			found = true
+			break
+		}
+	}
+
+	return found
+}

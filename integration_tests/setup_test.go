@@ -5,6 +5,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	corktypes "github.com/peggyjv/sommelier/v3/x/cork/types"
 	"math/big"
 	"os"
 	"path"
@@ -361,6 +362,13 @@ func (s *IntegrationTestSuite) initGenesis() {
 	bz, err = cdc.MarshalJSON(&allocationGenState)
 	s.Require().NoError(err)
 	appGenState[types.ModuleName] = bz
+
+	var corkGenState corktypes.GenesisState
+	s.Require().NoError(cdc.UnmarshalJSON(appGenState[corktypes.ModuleName], &corkGenState))
+	corkGenState.CellarIds.Ids = []string{counterContract.Hex()}
+	bz, err = cdc.MarshalJSON(&corkGenState)
+	s.Require().NoError(err)
+	appGenState[corktypes.ModuleName] = bz
 
 	// set contract addr
 	var gravityGenState gravitytypes.GenesisState

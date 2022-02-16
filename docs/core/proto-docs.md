@@ -45,7 +45,10 @@
     - [Query](#allocation.v1.Query)
   
 - [cork/v1/cork.proto](#cork/v1/cork.proto)
+    - [AddManagedCellarsProposal](#cork.v1.AddManagedCellarsProposal)
+    - [CellarIDSet](#cork.v1.CellarIDSet)
     - [Cork](#cork.v1.Cork)
+    - [RemoveManagedCellarsProposal](#cork.v1.RemoveManagedCellarsProposal)
   
 - [cork/v1/tx.proto](#cork/v1/tx.proto)
     - [MsgSubmitCorkRequest](#cork.v1.MsgSubmitCorkRequest)
@@ -576,6 +579,38 @@ Query defines the gRPC querier service for the allocation module.
 
 
 
+<a name="cork.v1.AddManagedCellarsProposal"></a>
+
+### AddManagedCellarsProposal
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `title` | [string](#string) |  |  |
+| `description` | [string](#string) |  |  |
+| `cellar_ids` | [CellarIDSet](#cork.v1.CellarIDSet) |  |  |
+
+
+
+
+
+
+<a name="cork.v1.CellarIDSet"></a>
+
+### CellarIDSet
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `ids` | [string](#string) | repeated |  |
+
+
+
+
+
+
 <a name="cork.v1.Cork"></a>
 
 ### Cork
@@ -586,6 +621,23 @@ MsgSubmitCorkRequest - sdk.Msg for submitting calls to Ethereum through the grav
 | ----- | ---- | ----- | ----------- |
 | `encoded_contract_call` | [bytes](#bytes) |  | call body containing the ABI encoded bytes to send to the contract |
 | `target_contract_address` | [string](#string) |  | address of the contract to send the call |
+
+
+
+
+
+
+<a name="cork.v1.RemoveManagedCellarsProposal"></a>
+
+### RemoveManagedCellarsProposal
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `title` | [string](#string) |  |  |
+| `description` | [string](#string) |  |  |
+| `cellar_ids` | [CellarIDSet](#cork.v1.CellarIDSet) |  |  |
 
 
 
@@ -669,6 +721,7 @@ GenesisState - all cork state that must be provided at genesis
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | `params` | [Params](#cork.v1.Params) |  |  |
+| `cellar_ids` | [CellarIDSet](#cork.v1.CellarIDSet) |  |  |
 
 
 

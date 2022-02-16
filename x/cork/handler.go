@@ -2,6 +2,7 @@ package cork
 
 import (
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
@@ -19,6 +20,20 @@ func NewHandler(k keeper.Keeper) sdk.Handler {
 			return sdk.WrapServiceResult(ctx, res, err)
 		default:
 			return nil, sdkerrors.Wrapf(sdkerrors.ErrUnknownRequest, "unrecognized oracle message type: %T", msg)
+		}
+	}
+}
+
+func NewUpdateCellarIDsProposalHandler(k keeper.Keeper) govtypes.Handler {
+	return func(ctx sdk.Context, content govtypes.Content) error {
+		switch c := content.(type) {
+		case *types.AddManagedCellarsProposal:
+			return keeper.HandleAddManagedCellarsProposal(ctx, k, *c)
+		case *types.RemoveManagedCellarsProposal:
+			return keeper.HandleRemoveManagedCellarsProposal(ctx, k, *c)
+
+		default:
+			return sdkerrors.Wrapf(sdkerrors.ErrUnknownRequest, "unrecognized allocation proposal content type: %T", c)
 		}
 	}
 }
