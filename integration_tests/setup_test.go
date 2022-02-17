@@ -96,6 +96,11 @@ func (s *IntegrationTestSuite) SetupSuite() {
 	mnemonics := MNEMONICS()
 	s.initNodesWithMnemonics(mnemonics...)
 	s.initEthereumFromMnemonics(mnemonics)
+
+	// run the eth container so that the contract addresses are available
+	s.runEthContainer()
+
+	// continue generating node genesis
 	s.initGenesis()
 	s.initValidatorConfigs()
 
@@ -106,7 +111,6 @@ func (s *IntegrationTestSuite) SetupSuite() {
 	s.Require().NoError(err)
 
 	// container infrastructure
-	s.runEthContainer()
 	s.runValidators()
 	s.runOrchestrators()
 }
