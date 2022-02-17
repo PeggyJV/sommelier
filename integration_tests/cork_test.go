@@ -125,8 +125,34 @@ func (s *IntegrationTestSuite) TestCork() {
 		s.Require().NoError(err)
 		s.Require().Equal(int64(0), count.Int64())
 
-		s.T().Logf("wait for new vote period start")
+		s.T().Logf("verify that contract exists in allowed addresses")
 		val := s.chain.validators[0]
+		s.Require().Eventuallyf(func() bool {
+			kb, err := val.keyring()
+			s.Require().NoError(err)
+			clientCtx, err := s.chain.clientContext("tcp://localhost:26657", &kb, "val", val.keyInfo.GetAddress())
+			s.Require().NoError(err)
+
+			queryClient := types.NewQueryClient(clientCtx)
+			res, err := queryClient.QueryCellarIDs(context.Background(), &types.QueryCellarIDsRequest{})
+			if err != nil {
+				return false
+			}
+
+			found := false
+			for _, id := range res.CellarIds {
+				s.T().Logf("managed addresses: %v", res.CellarIds)
+				if common.HexToAddress(id) == counterContract {
+					found = true
+					break
+				}
+			}
+			
+			return found
+		}, 10*time.Second, 2*time.Second, "did not find address in managed cellars")
+
+		s.T().Logf("wait for new vote period start")
+		val = s.chain.validators[0]
 		s.Require().Eventuallyf(func() bool {
 			kb, err := val.keyring()
 			s.Require().NoError(err)

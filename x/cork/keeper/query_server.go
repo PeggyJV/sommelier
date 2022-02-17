@@ -50,3 +50,15 @@ func (k Keeper) QueryCommitPeriod(c context.Context, _ *types.QueryCommitPeriodR
 		CurrentHeight:   ctx.BlockHeight(),
 	}, nil
 }
+
+func (k Keeper) QueryCellarIDs(c context.Context, _ *types.QueryCellarIDsRequest) (*types.QueryCellarIDsResponse, error) {
+	ctx := sdk.UnwrapSDKContext(c)
+
+	var ids []string
+
+	for _, id := range k.GetCellarIDs(ctx) {
+		ids = append(ids, id.Hex())
+	}
+
+	return &types.QueryCellarIDsResponse{CellarIds: ids}, nil
+}

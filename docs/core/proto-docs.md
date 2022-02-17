@@ -61,6 +61,8 @@
     - [Params](#cork.v1.Params)
   
 - [cork/v1/query.proto](#cork/v1/query.proto)
+    - [QueryCellarIDsRequest](#cork.v1.QueryCellarIDsRequest)
+    - [QueryCellarIDsResponse](#cork.v1.QueryCellarIDsResponse)
     - [QueryCommitPeriodRequest](#cork.v1.QueryCommitPeriodRequest)
     - [QueryCommitPeriodResponse](#cork.v1.QueryCommitPeriodResponse)
     - [QueryParamsRequest](#cork.v1.QueryParamsRequest)
@@ -760,6 +762,31 @@ Params cork parameters
 
 
 
+<a name="cork.v1.QueryCellarIDsRequest"></a>
+
+### QueryCellarIDsRequest
+QueryCellarIDsRequest is the request type for Query/QueryCellarIDs gRPC method.
+
+
+
+
+
+
+<a name="cork.v1.QueryCellarIDsResponse"></a>
+
+### QueryCellarIDsResponse
+QueryCellarIDsResponse is the response type for Query/QueryCellars gRPC method.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `cellar_ids` | [string](#string) | repeated |  |
+
+
+
+
+
+
 <a name="cork.v1.QueryCommitPeriodRequest"></a>
 
 ### QueryCommitPeriodRequest
@@ -852,7 +879,8 @@ Query defines the gRPC query service for the cork module.
 | ----------- | ------------ | ------------- | ------------| ------- | -------- |
 | `QueryParams` | [QueryParamsRequest](#cork.v1.QueryParamsRequest) | [QueryParamsResponse](#cork.v1.QueryParamsResponse) | QueryParams queries the allocation module parameters. | GET|/sommelier/cork/v1/params|
 | `QuerySubmittedCorks` | [QuerySubmittedCorksRequest](#cork.v1.QuerySubmittedCorksRequest) | [QuerySubmittedCorksResponse](#cork.v1.QuerySubmittedCorksResponse) | QuerySubmittedCorks queries the submitted corks awaiting vote | GET|/sommelier/cork/v1/submitted|
-| `QueryCommitPeriod` | [QueryCommitPeriodRequest](#cork.v1.QueryCommitPeriodRequest) | [QueryCommitPeriodResponse](#cork.v1.QueryCommitPeriodResponse) | QueryVotePeriod queries the heights for the current voting period (current, start and end) | GET|/sommelier/allocation/v1/commit_period|
+| `QueryCommitPeriod` | [QueryCommitPeriodRequest](#cork.v1.QueryCommitPeriodRequest) | [QueryCommitPeriodResponse](#cork.v1.QueryCommitPeriodResponse) | QueryVotePeriod queries the heights for the current voting period (current, start and end) | GET|/sommelier/cork/v1/commit_period|
+| `QueryCellarIDs` | [QueryCellarIDsRequest](#cork.v1.QueryCellarIDsRequest) | [QueryCellarIDsResponse](#cork.v1.QueryCellarIDsResponse) | QueryCellarIDs returns all cellars and current tick ranges | GET|/sommelier/cork/v1/cellar_ids|
 
  <!-- end services -->
 
