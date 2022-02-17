@@ -19,8 +19,8 @@ func HandleAddManagedCellarsProposal(ctx sdk.Context, k Keeper, p types.AddManag
 	}
 
 	var outputCellarIDs types.CellarIDSet
-	for k, _ := range IDMap {
-		outputCellarIDs.Ids = append(outputCellarIDs.Ids, k.Hex())
+	for key := range IDMap {
+		outputCellarIDs.Ids = append(outputCellarIDs.Ids, key.Hex())
 	}
 	k.SetCellarIDs(ctx, outputCellarIDs)
 

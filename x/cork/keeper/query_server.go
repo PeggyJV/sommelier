@@ -54,11 +54,10 @@ func (k Keeper) QueryCommitPeriod(c context.Context, _ *types.QueryCommitPeriodR
 func (k Keeper) QueryCellarIDs(c context.Context, _ *types.QueryCellarIDsRequest) (*types.QueryCellarIDsResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
 
-	var ids []string
-
+	response := &types.QueryCellarIDsResponse{}
 	for _, id := range k.GetCellarIDs(ctx) {
-		ids = append(ids, id.Hex())
+		response.CellarIds = append(response.CellarIds, id.Hex())
 	}
 
-	return &types.QueryCellarIDsResponse{CellarIds: ids}, nil
+	return response, nil
 }
