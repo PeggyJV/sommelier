@@ -89,6 +89,10 @@ func (s *IntegrationTestSuite) SetupSuite() {
 	var err error
 	s.chain, err = newChain()
 	s.Require().NoError(err)
+	s.dockerPool, err = dockertest.NewPool("")
+	s.Require().NoError(err)
+	s.dockerNetwork, err = s.dockerPool.CreateNetwork(fmt.Sprintf("%s-testnet", s.chain.id))
+	s.Require().NoError(err)
 
 	s.T().Logf("starting e2e infrastructure; chain-id: %s; datadir: %s", s.chain.id, s.chain.dataDir)
 
@@ -103,12 +107,6 @@ func (s *IntegrationTestSuite) SetupSuite() {
 	// continue generating node genesis
 	s.initGenesis()
 	s.initValidatorConfigs()
-
-	s.dockerPool, err = dockertest.NewPool("")
-	s.Require().NoError(err)
-
-	s.dockerNetwork, err = s.dockerPool.CreateNetwork(fmt.Sprintf("%s-testnet", s.chain.id))
-	s.Require().NoError(err)
 
 	// container infrastructure
 	s.runValidators()
