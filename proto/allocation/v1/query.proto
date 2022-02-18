@@ -8,7 +8,7 @@ import "allocation/v1/allocation.proto";
 import "cosmos_proto/cosmos.proto";
 import "cosmos/base/query/v1beta1/pagination.proto";
 
-option go_package = "github.com/peggyjv/sommelier/x/allocation/types";
+option go_package = "github.com/peggyjv/sommelier/v3/x/allocation/types";
 
 // Query defines the gRPC querier service for the allocation module.
 service Query {
