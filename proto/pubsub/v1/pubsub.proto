@@ -1,0 +1,45 @@
+syntax = "proto3";
+package pubsub.v1;
+
+option go_package = "github.com/peggyjv/sommelier/v3/x/pubsub/types";
+
+message Publisher {
+  string domain = 1;
+  string ca_cert = 2;
+  string address = 3;
+  string proof_url = 4;
+}
+
+message Subscriber {
+  string domain = 1;
+  string ca_cert = 2;
+  string address = 3;
+  string proof_url = 4;
+}
+
+message PublisherIntent {
+  string subscription_id = 1;
+  string publisher_domain = 2;
+  string method = 3;
+  string pull_url = 4;
+  string allowed_subscribers = 5;
+  string allowed_addresses = 6;
+}
+
+message SubscriberIntent {
+  string subscsription_id = 1;
+  string publisher_domain = 2;
+  string push_url = 3;
+}
+
+message AddPublisherProposal {
+  string title = 1;
+  string description = 2;
+  Publisher publisher = 3;
+}
+
+message RemovePublisherProposal {
+  string title = 1;
+  string description = 2;
+  Publisher publisher = 3;
+}
