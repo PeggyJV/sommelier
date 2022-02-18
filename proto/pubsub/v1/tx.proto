@@ -1,0 +1,8 @@
+syntax = "proto3";
+package pubsub.v1;
+
+option go_package = "github.com/peggyjv/sommelier/v3/x/pubsub/types";
+
+service Msg {
+}
+
