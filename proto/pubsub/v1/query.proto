@@ -1,0 +1,22 @@
+syntax = "proto3";
+package pubsub.v1;
+
+import "gogoproto/gogo.proto";
+import "google/api/annotations.proto";
+import "cosmos/base/query/v1beta1/pagination.proto";
+import "pubsub/v1/params.proto"
+
+option go_package = "github.com/peggyjv/sommelier/v3/x/pubsub/types";
+
+service Query {
+  rpc Params(QueryParamsRequest) returns (QueryParamsResponse) {
+    option (google.api.http).get = "/peggyjv/sommelier/pubsub/params";
+  }
+}
+
+message QueryParamsRequest {}
+
+message QueryParamsResponse {
+  Params params = 1 [(gogoproto.nullable) = false];
+}
+
