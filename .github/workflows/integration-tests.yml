@@ -159,8 +159,8 @@ jobs:
         run: docker pull ${{ env.ORCHESTRATOR_IMAGE_NAME }}
       - name: rename orchestrator image
         run: docker tag ${{ env.ORCHESTRATOR_IMAGE_NAME }} orchestrator:prebuilt
-      - name: delete existing network
-        run: docker rm -f $(docker ps -aq)
+      - name: clean the slate
+        run: make e2e_clean_slate
       - name: build go test binary
         run: cd integration_tests && go test -c
       - name: Run end to end test
