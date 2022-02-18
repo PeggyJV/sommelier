@@ -1,8 +1,58 @@
 syntax = "proto3";
 package pubsub.v1;
 
+import "pubsub/v1/pubsub.proto";
+
 option go_package = "github.com/peggyjv/sommelier/v3/x/pubsub/types";
 
 service Msg {
+    rpc RemovePublisher (MsgRemovePublisher) returns (MsgRemovePublisherResponse);
+    rpc AddSubscriber (MsgAddSubscriber) returns (MsgAddSubscriberResponse);
+    rpc RemoveSubscriber (MsgRemoveSubscriber) returns (MsgRemoveSubscriberResponse);
+    rpc AddPublisherIntent (MsgAddPublisherIntent) returns (MsgAddPublisherIntentResponse);
+    rpc RemovePublisherIntent (MsgRemovePublisherIntent) returns (MsgRemovePublisherIntentResponse);
+    rpc AddSubcriberIntet (MsgAddSubscriberIntent) returns (MsgAddSubscriberIntentResponse);
+    rpc RemoveSubscriberIntent (MsgRemoveSubscriberIntent) returns (MsgRemoveSubscriberIntentResponse);
 }
 
+message MsgRemovePublisher {
+  Publisher publisher = 1;
+}
+
+message MsgRemovePublisherResponse {}
+
+message MsgAddSubscriber {
+  Subscriber subscriber = 1;
+}
+
+message MsgAddSubscriberResponse {}
+
+message MsgRemoveSubscriber {
+  Subscriber subscriber = 1;
+}
+
+message MsgRemoveSubscriberResponse {}
+
+message MsgAddPublisherIntent {
+  PublisherIntent publisher_intent = 1;
+}
+
+message MsgAddPublisherIntentResponse {}
+
+message MsgRemovePublisherIntent {
+  PublisherIntent publisher_intent = 1;
+}
+
+message MsgRemovePublisherIntentResponse {}
+
+message MsgAddSubscriberIntent {
+  SubscriberIntent subscriber_intent = 1;
+}
+
+message MsgAddSubscriberIntentResponse {}
+
+message MsgRemoveSubscriberIntent {
+  SubscriberIntent subscriber_intent = 1;
+}
+
+message MsgRemoveSubscriberIntentResponse {}
