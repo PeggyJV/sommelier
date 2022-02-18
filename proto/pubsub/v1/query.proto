@@ -4,7 +4,7 @@ package pubsub.v1;
 import "gogoproto/gogo.proto";
 import "google/api/annotations.proto";
 import "cosmos/base/query/v1beta1/pagination.proto";
-import "pubsub/v1/params.proto"
+import "pubsub/v1/params.proto";
 
 option go_package = "github.com/peggyjv/sommelier/v3/x/pubsub/types";
 
