@@ -110,34 +110,1178 @@ func (m *QueryParamsResponse) GetParams() Params {
 	return Params{}
 }
 
+type QueryPublisherRequest struct {
+	PublisherDomain string `protobuf:"bytes,1,opt,name=publisher_domain,json=publisherDomain,proto3" json:"publisher_domain,omitempty"`
+}
+
+func (m *QueryPublisherRequest) Reset()         { *m = QueryPublisherRequest{} }
+func (m *QueryPublisherRequest) String() string { return proto.CompactTextString(m) }
+func (*QueryPublisherRequest) ProtoMessage()    {}
+func (*QueryPublisherRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_1eae429cdae9f3b6, []int{2}
+}
+func (m *QueryPublisherRequest) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *QueryPublisherRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_QueryPublisherRequest.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *QueryPublisherRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryPublisherRequest.Merge(m, src)
+}
+func (m *QueryPublisherRequest) XXX_Size() int {
+	return m.Size()
+}
+func (m *QueryPublisherRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryPublisherRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QueryPublisherRequest proto.InternalMessageInfo
+
+func (m *QueryPublisherRequest) GetPublisherDomain() string {
+	if m != nil {
+		return m.PublisherDomain
+	}
+	return ""
+}
+
+type QueryPublisherResponse struct {
+	Publisher *Publisher `protobuf:"bytes,1,opt,name=publisher,proto3" json:"publisher,omitempty"`
+}
+
+func (m *QueryPublisherResponse) Reset()         { *m = QueryPublisherResponse{} }
+func (m *QueryPublisherResponse) String() string { return proto.CompactTextString(m) }
+func (*QueryPublisherResponse) ProtoMessage()    {}
+func (*QueryPublisherResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_1eae429cdae9f3b6, []int{3}
+}
+func (m *QueryPublisherResponse) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *QueryPublisherResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_QueryPublisherResponse.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *QueryPublisherResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryPublisherResponse.Merge(m, src)
+}
+func (m *QueryPublisherResponse) XXX_Size() int {
+	return m.Size()
+}
+func (m *QueryPublisherResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryPublisherResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QueryPublisherResponse proto.InternalMessageInfo
+
+func (m *QueryPublisherResponse) GetPublisher() *Publisher {
+	if m != nil {
+		return m.Publisher
+	}
+	return nil
+}
+
+type QueryPublishersRequest struct {
+}
+
+func (m *QueryPublishersRequest) Reset()         { *m = QueryPublishersRequest{} }
+func (m *QueryPublishersRequest) String() string { return proto.CompactTextString(m) }
+func (*QueryPublishersRequest) ProtoMessage()    {}
+func (*QueryPublishersRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_1eae429cdae9f3b6, []int{4}
+}
+func (m *QueryPublishersRequest) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *QueryPublishersRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_QueryPublishersRequest.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *QueryPublishersRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryPublishersRequest.Merge(m, src)
+}
+func (m *QueryPublishersRequest) XXX_Size() int {
+	return m.Size()
+}
+func (m *QueryPublishersRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryPublishersRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QueryPublishersRequest proto.InternalMessageInfo
+
+type QueryPublishersResponse struct {
+	Publishers []*Publisher `protobuf:"bytes,1,rep,name=publishers,proto3" json:"publishers,omitempty"`
+}
+
+func (m *QueryPublishersResponse) Reset()         { *m = QueryPublishersResponse{} }
+func (m *QueryPublishersResponse) String() string { return proto.CompactTextString(m) }
+func (*QueryPublishersResponse) ProtoMessage()    {}
+func (*QueryPublishersResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_1eae429cdae9f3b6, []int{5}
+}
+func (m *QueryPublishersResponse) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *QueryPublishersResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_QueryPublishersResponse.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *QueryPublishersResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryPublishersResponse.Merge(m, src)
+}
+func (m *QueryPublishersResponse) XXX_Size() int {
+	return m.Size()
+}
+func (m *QueryPublishersResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryPublishersResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QueryPublishersResponse proto.InternalMessageInfo
+
+func (m *QueryPublishersResponse) GetPublishers() []*Publisher {
+	if m != nil {
+		return m.Publishers
+	}
+	return nil
+}
+
+type QuerySubscriberRequest struct {
+	SubscriberDomain string `protobuf:"bytes,1,opt,name=subscriber_domain,json=subscriberDomain,proto3" json:"subscriber_domain,omitempty"`
+}
+
+func (m *QuerySubscriberRequest) Reset()         { *m = QuerySubscriberRequest{} }
+func (m *QuerySubscriberRequest) String() string { return proto.CompactTextString(m) }
+func (*QuerySubscriberRequest) ProtoMessage()    {}
+func (*QuerySubscriberRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_1eae429cdae9f3b6, []int{6}
+}
+func (m *QuerySubscriberRequest) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *QuerySubscriberRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_QuerySubscriberRequest.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *QuerySubscriberRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QuerySubscriberRequest.Merge(m, src)
+}
+func (m *QuerySubscriberRequest) XXX_Size() int {
+	return m.Size()
+}
+func (m *QuerySubscriberRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_QuerySubscriberRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QuerySubscriberRequest proto.InternalMessageInfo
+
+func (m *QuerySubscriberRequest) GetSubscriberDomain() string {
+	if m != nil {
+		return m.SubscriberDomain
+	}
+	return ""
+}
+
+type QuerySubscriberResponse struct {
+	Subscriber *Subscriber `protobuf:"bytes,1,opt,name=subscriber,proto3" json:"subscriber,omitempty"`
+}
+
+func (m *QuerySubscriberResponse) Reset()         { *m = QuerySubscriberResponse{} }
+func (m *QuerySubscriberResponse) String() string { return proto.CompactTextString(m) }
+func (*QuerySubscriberResponse) ProtoMessage()    {}
+func (*QuerySubscriberResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_1eae429cdae9f3b6, []int{7}
+}
+func (m *QuerySubscriberResponse) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *QuerySubscriberResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_QuerySubscriberResponse.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *QuerySubscriberResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QuerySubscriberResponse.Merge(m, src)
+}
+func (m *QuerySubscriberResponse) XXX_Size() int {
+	return m.Size()
+}
+func (m *QuerySubscriberResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_QuerySubscriberResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QuerySubscriberResponse proto.InternalMessageInfo
+
+func (m *QuerySubscriberResponse) GetSubscriber() *Subscriber {
+	if m != nil {
+		return m.Subscriber
+	}
+	return nil
+}
+
+type QuerySubscribersRequest struct {
+}
+
+func (m *QuerySubscribersRequest) Reset()         { *m = QuerySubscribersRequest{} }
+func (m *QuerySubscribersRequest) String() string { return proto.CompactTextString(m) }
+func (*QuerySubscribersRequest) ProtoMessage()    {}
+func (*QuerySubscribersRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_1eae429cdae9f3b6, []int{8}
+}
+func (m *QuerySubscribersRequest) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *QuerySubscribersRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_QuerySubscribersRequest.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *QuerySubscribersRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QuerySubscribersRequest.Merge(m, src)
+}
+func (m *QuerySubscribersRequest) XXX_Size() int {
+	return m.Size()
+}
+func (m *QuerySubscribersRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_QuerySubscribersRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QuerySubscribersRequest proto.InternalMessageInfo
+
+type QuerySubscribersResponse struct {
+	Subscribers []*Subscriber `protobuf:"bytes,1,rep,name=subscribers,proto3" json:"subscribers,omitempty"`
+}
+
+func (m *QuerySubscribersResponse) Reset()         { *m = QuerySubscribersResponse{} }
+func (m *QuerySubscribersResponse) String() string { return proto.CompactTextString(m) }
+func (*QuerySubscribersResponse) ProtoMessage()    {}
+func (*QuerySubscribersResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_1eae429cdae9f3b6, []int{9}
+}
+func (m *QuerySubscribersResponse) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *QuerySubscribersResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_QuerySubscribersResponse.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *QuerySubscribersResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QuerySubscribersResponse.Merge(m, src)
+}
+func (m *QuerySubscribersResponse) XXX_Size() int {
+	return m.Size()
+}
+func (m *QuerySubscribersResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_QuerySubscribersResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QuerySubscribersResponse proto.InternalMessageInfo
+
+func (m *QuerySubscribersResponse) GetSubscribers() []*Subscriber {
+	if m != nil {
+		return m.Subscribers
+	}
+	return nil
+}
+
+type QueryPublisherIntentRequest struct {
+	PublisherDomain string `protobuf:"bytes,1,opt,name=publisher_domain,json=publisherDomain,proto3" json:"publisher_domain,omitempty"`
+	SubscriptionId  string `protobuf:"bytes,2,opt,name=subscription_id,json=subscriptionId,proto3" json:"subscription_id,omitempty"`
+}
+
+func (m *QueryPublisherIntentRequest) Reset()         { *m = QueryPublisherIntentRequest{} }
+func (m *QueryPublisherIntentRequest) String() string { return proto.CompactTextString(m) }
+func (*QueryPublisherIntentRequest) ProtoMessage()    {}
+func (*QueryPublisherIntentRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_1eae429cdae9f3b6, []int{10}
+}
+func (m *QueryPublisherIntentRequest) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *QueryPublisherIntentRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_QueryPublisherIntentRequest.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *QueryPublisherIntentRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryPublisherIntentRequest.Merge(m, src)
+}
+func (m *QueryPublisherIntentRequest) XXX_Size() int {
+	return m.Size()
+}
+func (m *QueryPublisherIntentRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryPublisherIntentRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QueryPublisherIntentRequest proto.InternalMessageInfo
+
+func (m *QueryPublisherIntentRequest) GetPublisherDomain() string {
+	if m != nil {
+		return m.PublisherDomain
+	}
+	return ""
+}
+
+func (m *QueryPublisherIntentRequest) GetSubscriptionId() string {
+	if m != nil {
+		return m.SubscriptionId
+	}
+	return ""
+}
+
+type QueryPublisherIntentResponse struct {
+	PublisherIntent *PublisherIntent `protobuf:"bytes,1,opt,name=publisher_intent,json=publisherIntent,proto3" json:"publisher_intent,omitempty"`
+}
+
+func (m *QueryPublisherIntentResponse) Reset()         { *m = QueryPublisherIntentResponse{} }
+func (m *QueryPublisherIntentResponse) String() string { return proto.CompactTextString(m) }
+func (*QueryPublisherIntentResponse) ProtoMessage()    {}
+func (*QueryPublisherIntentResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_1eae429cdae9f3b6, []int{11}
+}
+func (m *QueryPublisherIntentResponse) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *QueryPublisherIntentResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_QueryPublisherIntentResponse.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *QueryPublisherIntentResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryPublisherIntentResponse.Merge(m, src)
+}
+func (m *QueryPublisherIntentResponse) XXX_Size() int {
+	return m.Size()
+}
+func (m *QueryPublisherIntentResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryPublisherIntentResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QueryPublisherIntentResponse proto.InternalMessageInfo
+
+func (m *QueryPublisherIntentResponse) GetPublisherIntent() *PublisherIntent {
+	if m != nil {
+		return m.PublisherIntent
+	}
+	return nil
+}
+
+type QueryPublisherIntentsRequest struct {
+}
+
+func (m *QueryPublisherIntentsRequest) Reset()         { *m = QueryPublisherIntentsRequest{} }
+func (m *QueryPublisherIntentsRequest) String() string { return proto.CompactTextString(m) }
+func (*QueryPublisherIntentsRequest) ProtoMessage()    {}
+func (*QueryPublisherIntentsRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_1eae429cdae9f3b6, []int{12}
+}
+func (m *QueryPublisherIntentsRequest) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *QueryPublisherIntentsRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_QueryPublisherIntentsRequest.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *QueryPublisherIntentsRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryPublisherIntentsRequest.Merge(m, src)
+}
+func (m *QueryPublisherIntentsRequest) XXX_Size() int {
+	return m.Size()
+}
+func (m *QueryPublisherIntentsRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryPublisherIntentsRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QueryPublisherIntentsRequest proto.InternalMessageInfo
+
+type QueryPublisherIntentsResponse struct {
+	PublisherIntents []*PublisherIntent `protobuf:"bytes,1,rep,name=publisher_intents,json=publisherIntents,proto3" json:"publisher_intents,omitempty"`
+}
+
+func (m *QueryPublisherIntentsResponse) Reset()         { *m = QueryPublisherIntentsResponse{} }
+func (m *QueryPublisherIntentsResponse) String() string { return proto.CompactTextString(m) }
+func (*QueryPublisherIntentsResponse) ProtoMessage()    {}
+func (*QueryPublisherIntentsResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_1eae429cdae9f3b6, []int{13}
+}
+func (m *QueryPublisherIntentsResponse) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *QueryPublisherIntentsResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_QueryPublisherIntentsResponse.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *QueryPublisherIntentsResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryPublisherIntentsResponse.Merge(m, src)
+}
+func (m *QueryPublisherIntentsResponse) XXX_Size() int {
+	return m.Size()
+}
+func (m *QueryPublisherIntentsResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryPublisherIntentsResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QueryPublisherIntentsResponse proto.InternalMessageInfo
+
+func (m *QueryPublisherIntentsResponse) GetPublisherIntents() []*PublisherIntent {
+	if m != nil {
+		return m.PublisherIntents
+	}
+	return nil
+}
+
+type QueryPublisherIntentsByPublisherDomainRequest struct {
+	PublisherDomain string `protobuf:"bytes,1,opt,name=publisher_domain,json=publisherDomain,proto3" json:"publisher_domain,omitempty"`
+}
+
+func (m *QueryPublisherIntentsByPublisherDomainRequest) Reset() {
+	*m = QueryPublisherIntentsByPublisherDomainRequest{}
+}
+func (m *QueryPublisherIntentsByPublisherDomainRequest) String() string {
+	return proto.CompactTextString(m)
+}
+func (*QueryPublisherIntentsByPublisherDomainRequest) ProtoMessage() {}
+func (*QueryPublisherIntentsByPublisherDomainRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_1eae429cdae9f3b6, []int{14}
+}
+func (m *QueryPublisherIntentsByPublisherDomainRequest) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *QueryPublisherIntentsByPublisherDomainRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_QueryPublisherIntentsByPublisherDomainRequest.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *QueryPublisherIntentsByPublisherDomainRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryPublisherIntentsByPublisherDomainRequest.Merge(m, src)
+}
+func (m *QueryPublisherIntentsByPublisherDomainRequest) XXX_Size() int {
+	return m.Size()
+}
+func (m *QueryPublisherIntentsByPublisherDomainRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryPublisherIntentsByPublisherDomainRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QueryPublisherIntentsByPublisherDomainRequest proto.InternalMessageInfo
+
+func (m *QueryPublisherIntentsByPublisherDomainRequest) GetPublisherDomain() string {
+	if m != nil {
+		return m.PublisherDomain
+	}
+	return ""
+}
+
+type QueryPublisherIntentsByPublisherDomainResponse struct {
+	PublisherIntents []*PublisherIntent `protobuf:"bytes,1,rep,name=publisher_intents,json=publisherIntents,proto3" json:"publisher_intents,omitempty"`
+}
+
+func (m *QueryPublisherIntentsByPublisherDomainResponse) Reset() {
+	*m = QueryPublisherIntentsByPublisherDomainResponse{}
+}
+func (m *QueryPublisherIntentsByPublisherDomainResponse) String() string {
+	return proto.CompactTextString(m)
+}
+func (*QueryPublisherIntentsByPublisherDomainResponse) ProtoMessage() {}
+func (*QueryPublisherIntentsByPublisherDomainResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_1eae429cdae9f3b6, []int{15}
+}
+func (m *QueryPublisherIntentsByPublisherDomainResponse) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *QueryPublisherIntentsByPublisherDomainResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_QueryPublisherIntentsByPublisherDomainResponse.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *QueryPublisherIntentsByPublisherDomainResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryPublisherIntentsByPublisherDomainResponse.Merge(m, src)
+}
+func (m *QueryPublisherIntentsByPublisherDomainResponse) XXX_Size() int {
+	return m.Size()
+}
+func (m *QueryPublisherIntentsByPublisherDomainResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryPublisherIntentsByPublisherDomainResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QueryPublisherIntentsByPublisherDomainResponse proto.InternalMessageInfo
+
+func (m *QueryPublisherIntentsByPublisherDomainResponse) GetPublisherIntents() []*PublisherIntent {
+	if m != nil {
+		return m.PublisherIntents
+	}
+	return nil
+}
+
+type QueryPublisherIntentsBySubscriptionIdRequest struct {
+	SubscriptionId string `protobuf:"bytes,1,opt,name=subscription_id,json=subscriptionId,proto3" json:"subscription_id,omitempty"`
+}
+
+func (m *QueryPublisherIntentsBySubscriptionIdRequest) Reset() {
+	*m = QueryPublisherIntentsBySubscriptionIdRequest{}
+}
+func (m *QueryPublisherIntentsBySubscriptionIdRequest) String() string {
+	return proto.CompactTextString(m)
+}
+func (*QueryPublisherIntentsBySubscriptionIdRequest) ProtoMessage() {}
+func (*QueryPublisherIntentsBySubscriptionIdRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_1eae429cdae9f3b6, []int{16}
+}
+func (m *QueryPublisherIntentsBySubscriptionIdRequest) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *QueryPublisherIntentsBySubscriptionIdRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_QueryPublisherIntentsBySubscriptionIdRequest.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *QueryPublisherIntentsBySubscriptionIdRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryPublisherIntentsBySubscriptionIdRequest.Merge(m, src)
+}
+func (m *QueryPublisherIntentsBySubscriptionIdRequest) XXX_Size() int {
+	return m.Size()
+}
+func (m *QueryPublisherIntentsBySubscriptionIdRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryPublisherIntentsBySubscriptionIdRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QueryPublisherIntentsBySubscriptionIdRequest proto.InternalMessageInfo
+
+func (m *QueryPublisherIntentsBySubscriptionIdRequest) GetSubscriptionId() string {
+	if m != nil {
+		return m.SubscriptionId
+	}
+	return ""
+}
+
+type QueryPublisherIntentsBySubscriptionIdResponse struct {
+	PublisherIntents []*PublisherIntent `protobuf:"bytes,1,rep,name=publisher_intents,json=publisherIntents,proto3" json:"publisher_intents,omitempty"`
+}
+
+func (m *QueryPublisherIntentsBySubscriptionIdResponse) Reset() {
+	*m = QueryPublisherIntentsBySubscriptionIdResponse{}
+}
+func (m *QueryPublisherIntentsBySubscriptionIdResponse) String() string {
+	return proto.CompactTextString(m)
+}
+func (*QueryPublisherIntentsBySubscriptionIdResponse) ProtoMessage() {}
+func (*QueryPublisherIntentsBySubscriptionIdResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_1eae429cdae9f3b6, []int{17}
+}
+func (m *QueryPublisherIntentsBySubscriptionIdResponse) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *QueryPublisherIntentsBySubscriptionIdResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_QueryPublisherIntentsBySubscriptionIdResponse.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *QueryPublisherIntentsBySubscriptionIdResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryPublisherIntentsBySubscriptionIdResponse.Merge(m, src)
+}
+func (m *QueryPublisherIntentsBySubscriptionIdResponse) XXX_Size() int {
+	return m.Size()
+}
+func (m *QueryPublisherIntentsBySubscriptionIdResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryPublisherIntentsBySubscriptionIdResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QueryPublisherIntentsBySubscriptionIdResponse proto.InternalMessageInfo
+
+func (m *QueryPublisherIntentsBySubscriptionIdResponse) GetPublisherIntents() []*PublisherIntent {
+	if m != nil {
+		return m.PublisherIntents
+	}
+	return nil
+}
+
+type QuerySubscriberIntentRequest struct {
+	SubscriberDomain string `protobuf:"bytes,1,opt,name=subscriber_domain,json=subscriberDomain,proto3" json:"subscriber_domain,omitempty"`
+	SubscriptionId   string `protobuf:"bytes,2,opt,name=subscription_id,json=subscriptionId,proto3" json:"subscription_id,omitempty"`
+}
+
+func (m *QuerySubscriberIntentRequest) Reset()         { *m = QuerySubscriberIntentRequest{} }
+func (m *QuerySubscriberIntentRequest) String() string { return proto.CompactTextString(m) }
+func (*QuerySubscriberIntentRequest) ProtoMessage()    {}
+func (*QuerySubscriberIntentRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_1eae429cdae9f3b6, []int{18}
+}
+func (m *QuerySubscriberIntentRequest) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *QuerySubscriberIntentRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_QuerySubscriberIntentRequest.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *QuerySubscriberIntentRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QuerySubscriberIntentRequest.Merge(m, src)
+}
+func (m *QuerySubscriberIntentRequest) XXX_Size() int {
+	return m.Size()
+}
+func (m *QuerySubscriberIntentRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_QuerySubscriberIntentRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QuerySubscriberIntentRequest proto.InternalMessageInfo
+
+func (m *QuerySubscriberIntentRequest) GetSubscriberDomain() string {
+	if m != nil {
+		return m.SubscriberDomain
+	}
+	return ""
+}
+
+func (m *QuerySubscriberIntentRequest) GetSubscriptionId() string {
+	if m != nil {
+		return m.SubscriptionId
+	}
+	return ""
+}
+
+type QuerySubscriberIntentResponse struct {
+	SubscriberIntent *SubscriberIntent `protobuf:"bytes,1,opt,name=subscriber_intent,json=subscriberIntent,proto3" json:"subscriber_intent,omitempty"`
+}
+
+func (m *QuerySubscriberIntentResponse) Reset()         { *m = QuerySubscriberIntentResponse{} }
+func (m *QuerySubscriberIntentResponse) String() string { return proto.CompactTextString(m) }
+func (*QuerySubscriberIntentResponse) ProtoMessage()    {}
+func (*QuerySubscriberIntentResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_1eae429cdae9f3b6, []int{19}
+}
+func (m *QuerySubscriberIntentResponse) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *QuerySubscriberIntentResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_QuerySubscriberIntentResponse.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *QuerySubscriberIntentResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QuerySubscriberIntentResponse.Merge(m, src)
+}
+func (m *QuerySubscriberIntentResponse) XXX_Size() int {
+	return m.Size()
+}
+func (m *QuerySubscriberIntentResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_QuerySubscriberIntentResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QuerySubscriberIntentResponse proto.InternalMessageInfo
+
+func (m *QuerySubscriberIntentResponse) GetSubscriberIntent() *SubscriberIntent {
+	if m != nil {
+		return m.SubscriberIntent
+	}
+	return nil
+}
+
+type QuerySubscriberIntentsRequest struct {
+}
+
+func (m *QuerySubscriberIntentsRequest) Reset()         { *m = QuerySubscriberIntentsRequest{} }
+func (m *QuerySubscriberIntentsRequest) String() string { return proto.CompactTextString(m) }
+func (*QuerySubscriberIntentsRequest) ProtoMessage()    {}
+func (*QuerySubscriberIntentsRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_1eae429cdae9f3b6, []int{20}
+}
+func (m *QuerySubscriberIntentsRequest) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *QuerySubscriberIntentsRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_QuerySubscriberIntentsRequest.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *QuerySubscriberIntentsRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QuerySubscriberIntentsRequest.Merge(m, src)
+}
+func (m *QuerySubscriberIntentsRequest) XXX_Size() int {
+	return m.Size()
+}
+func (m *QuerySubscriberIntentsRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_QuerySubscriberIntentsRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QuerySubscriberIntentsRequest proto.InternalMessageInfo
+
+type QuerySubscriberIntentsResponse struct {
+	SubscriberIntents []*SubscriberIntent `protobuf:"bytes,1,rep,name=subscriber_intents,json=subscriberIntents,proto3" json:"subscriber_intents,omitempty"`
+}
+
+func (m *QuerySubscriberIntentsResponse) Reset()         { *m = QuerySubscriberIntentsResponse{} }
+func (m *QuerySubscriberIntentsResponse) String() string { return proto.CompactTextString(m) }
+func (*QuerySubscriberIntentsResponse) ProtoMessage()    {}
+func (*QuerySubscriberIntentsResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_1eae429cdae9f3b6, []int{21}
+}
+func (m *QuerySubscriberIntentsResponse) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *QuerySubscriberIntentsResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_QuerySubscriberIntentsResponse.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *QuerySubscriberIntentsResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QuerySubscriberIntentsResponse.Merge(m, src)
+}
+func (m *QuerySubscriberIntentsResponse) XXX_Size() int {
+	return m.Size()
+}
+func (m *QuerySubscriberIntentsResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_QuerySubscriberIntentsResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QuerySubscriberIntentsResponse proto.InternalMessageInfo
+
+func (m *QuerySubscriberIntentsResponse) GetSubscriberIntents() []*SubscriberIntent {
+	if m != nil {
+		return m.SubscriberIntents
+	}
+	return nil
+}
+
+type QuerySubscriberIntentsBySubscriberDomainRequest struct {
+	SubscriberDomain string `protobuf:"bytes,1,opt,name=subscriber_domain,json=subscriberDomain,proto3" json:"subscriber_domain,omitempty"`
+}
+
+func (m *QuerySubscriberIntentsBySubscriberDomainRequest) Reset() {
+	*m = QuerySubscriberIntentsBySubscriberDomainRequest{}
+}
+func (m *QuerySubscriberIntentsBySubscriberDomainRequest) String() string {
+	return proto.CompactTextString(m)
+}
+func (*QuerySubscriberIntentsBySubscriberDomainRequest) ProtoMessage() {}
+func (*QuerySubscriberIntentsBySubscriberDomainRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_1eae429cdae9f3b6, []int{22}
+}
+func (m *QuerySubscriberIntentsBySubscriberDomainRequest) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *QuerySubscriberIntentsBySubscriberDomainRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_QuerySubscriberIntentsBySubscriberDomainRequest.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *QuerySubscriberIntentsBySubscriberDomainRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QuerySubscriberIntentsBySubscriberDomainRequest.Merge(m, src)
+}
+func (m *QuerySubscriberIntentsBySubscriberDomainRequest) XXX_Size() int {
+	return m.Size()
+}
+func (m *QuerySubscriberIntentsBySubscriberDomainRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_QuerySubscriberIntentsBySubscriberDomainRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QuerySubscriberIntentsBySubscriberDomainRequest proto.InternalMessageInfo
+
+func (m *QuerySubscriberIntentsBySubscriberDomainRequest) GetSubscriberDomain() string {
+	if m != nil {
+		return m.SubscriberDomain
+	}
+	return ""
+}
+
+type QuerySubscriberIntentsBySubscriberDomainResponse struct {
+	SubscriberIntents []*SubscriberIntent `protobuf:"bytes,1,rep,name=subscriber_intents,json=subscriberIntents,proto3" json:"subscriber_intents,omitempty"`
+}
+
+func (m *QuerySubscriberIntentsBySubscriberDomainResponse) Reset() {
+	*m = QuerySubscriberIntentsBySubscriberDomainResponse{}
+}
+func (m *QuerySubscriberIntentsBySubscriberDomainResponse) String() string {
+	return proto.CompactTextString(m)
+}
+func (*QuerySubscriberIntentsBySubscriberDomainResponse) ProtoMessage() {}
+func (*QuerySubscriberIntentsBySubscriberDomainResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_1eae429cdae9f3b6, []int{23}
+}
+func (m *QuerySubscriberIntentsBySubscriberDomainResponse) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *QuerySubscriberIntentsBySubscriberDomainResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_QuerySubscriberIntentsBySubscriberDomainResponse.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *QuerySubscriberIntentsBySubscriberDomainResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QuerySubscriberIntentsBySubscriberDomainResponse.Merge(m, src)
+}
+func (m *QuerySubscriberIntentsBySubscriberDomainResponse) XXX_Size() int {
+	return m.Size()
+}
+func (m *QuerySubscriberIntentsBySubscriberDomainResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_QuerySubscriberIntentsBySubscriberDomainResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QuerySubscriberIntentsBySubscriberDomainResponse proto.InternalMessageInfo
+
+func (m *QuerySubscriberIntentsBySubscriberDomainResponse) GetSubscriberIntents() []*SubscriberIntent {
+	if m != nil {
+		return m.SubscriberIntents
+	}
+	return nil
+}
+
+type QuerySubscriberIntentsBySubscriptionIdRequest struct {
+	SubscriptionId string `protobuf:"bytes,1,opt,name=subscription_id,json=subscriptionId,proto3" json:"subscription_id,omitempty"`
+}
+
+func (m *QuerySubscriberIntentsBySubscriptionIdRequest) Reset() {
+	*m = QuerySubscriberIntentsBySubscriptionIdRequest{}
+}
+func (m *QuerySubscriberIntentsBySubscriptionIdRequest) String() string {
+	return proto.CompactTextString(m)
+}
+func (*QuerySubscriberIntentsBySubscriptionIdRequest) ProtoMessage() {}
+func (*QuerySubscriberIntentsBySubscriptionIdRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_1eae429cdae9f3b6, []int{24}
+}
+func (m *QuerySubscriberIntentsBySubscriptionIdRequest) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *QuerySubscriberIntentsBySubscriptionIdRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_QuerySubscriberIntentsBySubscriptionIdRequest.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *QuerySubscriberIntentsBySubscriptionIdRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QuerySubscriberIntentsBySubscriptionIdRequest.Merge(m, src)
+}
+func (m *QuerySubscriberIntentsBySubscriptionIdRequest) XXX_Size() int {
+	return m.Size()
+}
+func (m *QuerySubscriberIntentsBySubscriptionIdRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_QuerySubscriberIntentsBySubscriptionIdRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QuerySubscriberIntentsBySubscriptionIdRequest proto.InternalMessageInfo
+
+func (m *QuerySubscriberIntentsBySubscriptionIdRequest) GetSubscriptionId() string {
+	if m != nil {
+		return m.SubscriptionId
+	}
+	return ""
+}
+
+type QuerySubscriberIntentsBySubscriptionIdResponse struct {
+	SubscriberIntents []*SubscriberIntent `protobuf:"bytes,1,rep,name=subscriber_intents,json=subscriberIntents,proto3" json:"subscriber_intents,omitempty"`
+}
+
+func (m *QuerySubscriberIntentsBySubscriptionIdResponse) Reset() {
+	*m = QuerySubscriberIntentsBySubscriptionIdResponse{}
+}
+func (m *QuerySubscriberIntentsBySubscriptionIdResponse) String() string {
+	return proto.CompactTextString(m)
+}
+func (*QuerySubscriberIntentsBySubscriptionIdResponse) ProtoMessage() {}
+func (*QuerySubscriberIntentsBySubscriptionIdResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_1eae429cdae9f3b6, []int{25}
+}
+func (m *QuerySubscriberIntentsBySubscriptionIdResponse) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *QuerySubscriberIntentsBySubscriptionIdResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_QuerySubscriberIntentsBySubscriptionIdResponse.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *QuerySubscriberIntentsBySubscriptionIdResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QuerySubscriberIntentsBySubscriptionIdResponse.Merge(m, src)
+}
+func (m *QuerySubscriberIntentsBySubscriptionIdResponse) XXX_Size() int {
+	return m.Size()
+}
+func (m *QuerySubscriberIntentsBySubscriptionIdResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_QuerySubscriberIntentsBySubscriptionIdResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QuerySubscriberIntentsBySubscriptionIdResponse proto.InternalMessageInfo
+
+func (m *QuerySubscriberIntentsBySubscriptionIdResponse) GetSubscriberIntents() []*SubscriberIntent {
+	if m != nil {
+		return m.SubscriberIntents
+	}
+	return nil
+}
+
 func init() {
 	proto.RegisterType((*QueryParamsRequest)(nil), "pubsub.v1.QueryParamsRequest")
 	proto.RegisterType((*QueryParamsResponse)(nil), "pubsub.v1.QueryParamsResponse")
+	proto.RegisterType((*QueryPublisherRequest)(nil), "pubsub.v1.QueryPublisherRequest")
+	proto.RegisterType((*QueryPublisherResponse)(nil), "pubsub.v1.QueryPublisherResponse")
+	proto.RegisterType((*QueryPublishersRequest)(nil), "pubsub.v1.QueryPublishersRequest")
+	proto.RegisterType((*QueryPublishersResponse)(nil), "pubsub.v1.QueryPublishersResponse")
+	proto.RegisterType((*QuerySubscriberRequest)(nil), "pubsub.v1.QuerySubscriberRequest")
+	proto.RegisterType((*QuerySubscriberResponse)(nil), "pubsub.v1.QuerySubscriberResponse")
+	proto.RegisterType((*QuerySubscribersRequest)(nil), "pubsub.v1.QuerySubscribersRequest")
+	proto.RegisterType((*QuerySubscribersResponse)(nil), "pubsub.v1.QuerySubscribersResponse")
+	proto.RegisterType((*QueryPublisherIntentRequest)(nil), "pubsub.v1.QueryPublisherIntentRequest")
+	proto.RegisterType((*QueryPublisherIntentResponse)(nil), "pubsub.v1.QueryPublisherIntentResponse")
+	proto.RegisterType((*QueryPublisherIntentsRequest)(nil), "pubsub.v1.QueryPublisherIntentsRequest")
+	proto.RegisterType((*QueryPublisherIntentsResponse)(nil), "pubsub.v1.QueryPublisherIntentsResponse")
+	proto.RegisterType((*QueryPublisherIntentsByPublisherDomainRequest)(nil), "pubsub.v1.QueryPublisherIntentsByPublisherDomainRequest")
+	proto.RegisterType((*QueryPublisherIntentsByPublisherDomainResponse)(nil), "pubsub.v1.QueryPublisherIntentsByPublisherDomainResponse")
+	proto.RegisterType((*QueryPublisherIntentsBySubscriptionIdRequest)(nil), "pubsub.v1.QueryPublisherIntentsBySubscriptionIdRequest")
+	proto.RegisterType((*QueryPublisherIntentsBySubscriptionIdResponse)(nil), "pubsub.v1.QueryPublisherIntentsBySubscriptionIdResponse")
+	proto.RegisterType((*QuerySubscriberIntentRequest)(nil), "pubsub.v1.QuerySubscriberIntentRequest")
+	proto.RegisterType((*QuerySubscriberIntentResponse)(nil), "pubsub.v1.QuerySubscriberIntentResponse")
+	proto.RegisterType((*QuerySubscriberIntentsRequest)(nil), "pubsub.v1.QuerySubscriberIntentsRequest")
+	proto.RegisterType((*QuerySubscriberIntentsResponse)(nil), "pubsub.v1.QuerySubscriberIntentsResponse")
+	proto.RegisterType((*QuerySubscriberIntentsBySubscriberDomainRequest)(nil), "pubsub.v1.QuerySubscriberIntentsBySubscriberDomainRequest")
+	proto.RegisterType((*QuerySubscriberIntentsBySubscriberDomainResponse)(nil), "pubsub.v1.QuerySubscriberIntentsBySubscriberDomainResponse")
+	proto.RegisterType((*QuerySubscriberIntentsBySubscriptionIdRequest)(nil), "pubsub.v1.QuerySubscriberIntentsBySubscriptionIdRequest")
+	proto.RegisterType((*QuerySubscriberIntentsBySubscriptionIdResponse)(nil), "pubsub.v1.QuerySubscriberIntentsBySubscriptionIdResponse")
 }
 
 func init() { proto.RegisterFile("pubsub/v1/query.proto", fileDescriptor_1eae429cdae9f3b6) }
 
 var fileDescriptor_1eae429cdae9f3b6 = []byte{
-	// 302 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x74, 0x90, 0xbf, 0x4e, 0xc3, 0x30,
-	0x10, 0x87, 0x13, 0x04, 0x95, 0x30, 0x13, 0xa6, 0x20, 0x54, 0x81, 0xa9, 0x32, 0x55, 0x0c, 0x3e,
-	0xa5, 0x7d, 0x83, 0x0e, 0x88, 0x11, 0x3a, 0xb2, 0xd9, 0x95, 0x65, 0x82, 0x9a, 0x9c, 0x1b, 0x3b,
-	0x11, 0x65, 0xe4, 0x09, 0x90, 0x78, 0xa9, 0x8e, 0x95, 0x58, 0x98, 0x10, 0x4a, 0x78, 0x10, 0xd4,
-	0x38, 0xfc, 0x13, 0xb0, 0x59, 0xbf, 0xfb, 0xee, 0xbb, 0x3b, 0x93, 0x7d, 0x53, 0x48, 0x5b, 0x48,
-	0x28, 0x63, 0x98, 0x17, 0x2a, 0x5f, 0x70, 0x93, 0xa3, 0x43, 0xba, 0xed, 0x63, 0x5e, 0xc6, 0xbd,
-	0xae, 0x46, 0x8d, 0x4d, 0x0a, 0xeb, 0x97, 0x07, 0x7a, 0x47, 0x1a, 0x51, 0xcf, 0x14, 0x08, 0x93,
-	0x80, 0xc8, 0x32, 0x74, 0xc2, 0x25, 0x98, 0xd9, 0xb6, 0x7a, 0x3a, 0x45, 0x9b, 0xa2, 0x05, 0x29,
-	0xac, 0xf2, 0x5e, 0x28, 0x63, 0xa9, 0x9c, 0x88, 0xc1, 0x08, 0x9d, 0x64, 0x0d, 0xdc, 0xb2, 0x07,
-	0x5f, 0x1b, 0x18, 0x91, 0x8b, 0xb4, 0x75, 0x44, 0x5d, 0x42, 0x2f, 0xd7, 0x9d, 0x17, 0x4d, 0x38,
-	0x51, 0xf3, 0x42, 0x59, 0x17, 0x9d, 0x91, 0xbd, 0x1f, 0xa9, 0x35, 0x98, 0x59, 0x45, 0x81, 0x74,
-	0x7c, 0xf3, 0x61, 0xd8, 0x0f, 0x07, 0x3b, 0xc3, 0x5d, 0xfe, 0x79, 0x00, 0xf7, 0xe8, 0x78, 0x73,
-	0xf9, 0x72, 0x12, 0x4c, 0x5a, 0x6c, 0x78, 0x47, 0xb6, 0x1a, 0x0f, 0x9d, 0x93, 0x8e, 0x07, 0xe8,
-	0xf1, 0xb7, 0x9e, 0xdf, 0x93, 0x7b, 0xec, 0xbf, 0xb2, 0x5f, 0x21, 0x1a, 0xdc, 0x3f, 0xbd, 0x3d,
-	0x6e, 0x44, 0xb4, 0x0f, 0x46, 0x69, 0xbd, 0xb8, 0x29, 0xc1, 0x62, 0x9a, 0xaa, 0x59, 0xa2, 0x72,
-	0x68, 0x4f, 0xf4, 0xb3, 0xc7, 0xe7, 0xcb, 0x8a, 0x85, 0xab, 0x8a, 0x85, 0xaf, 0x15, 0x0b, 0x1f,
-	0x6a, 0x16, 0xac, 0x6a, 0x16, 0x3c, 0xd7, 0x2c, 0xb8, 0xe2, 0x3a, 0x71, 0xd7, 0x85, 0xe4, 0x53,
-	0x4c, 0xff, 0xb0, 0x94, 0x23, 0xb8, 0xfd, 0x50, 0xb9, 0x85, 0x51, 0x56, 0x76, 0x9a, 0xaf, 0x1a,
-	0xbd, 0x07, 0x00, 0x00, 0xff, 0xff, 0x66, 0x6d, 0x3c, 0x30, 0xc6, 0x01, 0x00, 0x00,
+	// 1070 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xb4, 0x58, 0xcd, 0x6f, 0xdc, 0x54,
+	0x10, 0x8f, 0x0b, 0x44, 0xca, 0x54, 0x6a, 0xb2, 0x43, 0x52, 0x82, 0xd3, 0x38, 0xe9, 0xab, 0x48,
+	0x36, 0x7c, 0xac, 0x49, 0x1a, 0xe8, 0x47, 0xe0, 0xc0, 0x42, 0xa1, 0x85, 0x96, 0x96, 0x04, 0x04,
+	0xea, 0x81, 0xc8, 0x4e, 0xac, 0x8d, 0xd1, 0xee, 0xda, 0xd9, 0xe7, 0x5d, 0x75, 0x55, 0x82, 0x04,
+	0x07, 0xce, 0x20, 0x0e, 0x48, 0x1c, 0xb8, 0xf2, 0x4f, 0x70, 0xe1, 0xd6, 0x63, 0x25, 0x2e, 0x9c,
+	0x50, 0x94, 0x70, 0xe0, 0xc6, 0x81, 0x7f, 0x00, 0xe5, 0x79, 0xfc, 0xf9, 0xec, 0xb5, 0x77, 0x49,
+	0x6f, 0xd1, 0xbc, 0x79, 0xf3, 0xfb, 0xfd, 0xe6, 0xcd, 0x8c, 0x27, 0x0b, 0x33, 0x6e, 0xd7, 0xe4,
+	0x5d, 0x53, 0xef, 0xad, 0xea, 0xfb, 0x5d, 0xab, 0xd3, 0xaf, 0xb9, 0x1d, 0xc7, 0x73, 0x70, 0xc2,
+	0x37, 0xd7, 0x7a, 0xab, 0xea, 0x74, 0xc3, 0x69, 0x38, 0xc2, 0xaa, 0x9f, 0xfc, 0xe5, 0x3b, 0xa8,
+	0x17, 0x1a, 0x8e, 0xd3, 0x68, 0x5a, 0xba, 0xe1, 0xda, 0xba, 0xd1, 0x6e, 0x3b, 0x9e, 0xe1, 0xd9,
+	0x4e, 0x9b, 0xd3, 0xe9, 0x8b, 0x3b, 0x0e, 0x6f, 0x39, 0x5c, 0x37, 0x0d, 0x6e, 0xf9, 0x71, 0xf5,
+	0xde, 0xaa, 0x69, 0x79, 0xc6, 0xaa, 0xee, 0x1a, 0x0d, 0xbb, 0x2d, 0x9c, 0xc9, 0xf7, 0x7c, 0xc4,
+	0xc0, 0x35, 0x3a, 0x46, 0x8b, 0x67, 0xd8, 0x7d, 0x32, 0xc2, 0xce, 0xa6, 0x01, 0x3f, 0x3a, 0x89,
+	0x78, 0x4f, 0x38, 0x6f, 0x5a, 0xfb, 0x5d, 0x8b, 0x7b, 0xec, 0x5d, 0x78, 0x36, 0x61, 0xe5, 0xae,
+	0xd3, 0xe6, 0x16, 0xea, 0x30, 0xee, 0x07, 0x9d, 0x55, 0x16, 0x95, 0xea, 0xd9, 0xb5, 0x4a, 0x2d,
+	0x14, 0x56, 0xf3, 0x5d, 0xeb, 0x4f, 0x3f, 0xfa, 0x73, 0x61, 0x6c, 0x93, 0xdc, 0x58, 0x1d, 0x66,
+	0xfc, 0x38, 0x5d, 0xb3, 0x69, 0xf3, 0x3d, 0xab, 0x43, 0x00, 0xb8, 0x02, 0x53, 0x6e, 0x60, 0xdb,
+	0xde, 0x75, 0x5a, 0x86, 0xdd, 0x16, 0x31, 0x27, 0x36, 0x27, 0x43, 0xfb, 0x3b, 0xc2, 0xcc, 0x6e,
+	0xc3, 0xf9, 0x74, 0x0c, 0xa2, 0xb3, 0x06, 0x13, 0xa1, 0x33, 0x31, 0x9a, 0x8e, 0x33, 0x0a, 0x2f,
+	0x44, 0x6e, 0x6c, 0x36, 0x1d, 0x2d, 0xd4, 0x7c, 0x17, 0x9e, 0x93, 0x4e, 0x08, 0x68, 0x1d, 0x20,
+	0x8c, 0x70, 0xa2, 0xfd, 0xa9, 0x5c, 0xa4, 0x98, 0x1f, 0xbb, 0x41, 0x50, 0x5b, 0x5d, 0x93, 0xef,
+	0x74, 0x6c, 0x33, 0x52, 0xff, 0x12, 0x54, 0x78, 0x68, 0x4c, 0xca, 0x9f, 0x8a, 0x0e, 0x48, 0xff,
+	0x3d, 0xe2, 0x15, 0x0f, 0x43, 0xbc, 0x5e, 0x03, 0x88, 0xdc, 0x29, 0x03, 0x33, 0x31, 0x5e, 0xb1,
+	0x2b, 0x31, 0x47, 0xf6, 0xbc, 0x14, 0x31, 0x4c, 0xc2, 0x16, 0xcc, 0xca, 0x47, 0x84, 0x76, 0x05,
+	0xce, 0x46, 0x41, 0x82, 0x34, 0xe4, 0xc0, 0xc5, 0x3d, 0xd9, 0x3e, 0xcc, 0x25, 0x33, 0x7b, 0xab,
+	0xed, 0x59, 0x6d, 0x6f, 0xf8, 0x5a, 0xc0, 0x65, 0x98, 0xa4, 0xc0, 0xee, 0x49, 0xcd, 0x6f, 0xdb,
+	0xbb, 0xb3, 0x67, 0x84, 0xe7, 0xb9, 0xb8, 0xf9, 0xd6, 0x2e, 0xb3, 0xe0, 0x42, 0x36, 0x24, 0x69,
+	0xb9, 0x11, 0xc7, 0xb4, 0xc5, 0x19, 0xe5, 0x4f, 0xcd, 0x7a, 0x57, 0xba, 0x1d, 0xf1, 0xf1, 0x0d,
+	0x4c, 0xcb, 0x86, 0x09, 0xd3, 0xb9, 0x07, 0xf3, 0x39, 0xe7, 0xc4, 0xe3, 0x3d, 0xa8, 0xa4, 0x79,
+	0x04, 0x99, 0x1d, 0x44, 0x64, 0x2a, 0x45, 0x84, 0xb3, 0xfb, 0xf0, 0x4a, 0x26, 0x52, 0x3d, 0xb2,
+	0xf8, 0x39, 0x1c, 0xa1, 0x03, 0xfb, 0x50, 0x2b, 0x1b, 0xfb, 0xb4, 0x65, 0x7d, 0x0a, 0x2f, 0xe7,
+	0x40, 0x6f, 0x25, 0x1e, 0x3c, 0x50, 0x95, 0x51, 0x20, 0x4a, 0x66, 0x81, 0x3c, 0xc8, 0xcd, 0x57,
+	0x3a, 0xf0, 0x69, 0x4b, 0xf2, 0xa8, 0x66, 0xa2, 0x6e, 0x49, 0xb6, 0xc3, 0x30, 0xc3, 0xa1, 0x7c,
+	0x43, 0xd8, 0x54, 0x89, 0x32, 0x2a, 0xe9, 0xbb, 0x99, 0x80, 0x4d, 0xb4, 0xc4, 0x5c, 0x66, 0x8f,
+	0x07, 0x02, 0x79, 0xca, 0xc2, 0x16, 0x72, 0xa0, 0xc2, 0xae, 0x68, 0x82, 0x96, 0xe7, 0x40, 0x64,
+	0xde, 0x07, 0x94, 0xc8, 0x04, 0xd9, 0x1e, 0xc8, 0xa6, 0x92, 0x66, 0xc3, 0xd9, 0xe7, 0xa0, 0x67,
+	0xa3, 0xd5, 0x63, 0xa6, 0x64, 0x6f, 0x0c, 0x35, 0x9f, 0xbf, 0x82, 0x57, 0xcb, 0xc7, 0x7f, 0x02,
+	0xfa, 0x3e, 0xa3, 0x4a, 0xce, 0xc7, 0x1f, 0xb5, 0x47, 0xbe, 0xa4, 0xbe, 0x2f, 0x11, 0xf9, 0xf4,
+	0x75, 0xad, 0xfd, 0x82, 0xf0, 0x8c, 0x80, 0xc7, 0x26, 0x8c, 0xfb, 0xdb, 0x05, 0xce, 0xc7, 0x62,
+	0xc8, 0x6b, 0x8b, 0xaa, 0xe5, 0x1d, 0xfb, 0xf4, 0xd8, 0xa5, 0x6f, 0x7e, 0xff, 0xeb, 0x87, 0x33,
+	0xf3, 0x38, 0xa7, 0x73, 0xa7, 0xd5, 0xb2, 0x9a, 0xb6, 0xd5, 0xd1, 0xd3, 0xfb, 0x12, 0x7e, 0xaf,
+	0xc0, 0xb9, 0xe4, 0x68, 0xc0, 0x45, 0x29, 0x6e, 0x6a, 0x9f, 0x51, 0x2f, 0x0e, 0xf0, 0x20, 0xf0,
+	0xeb, 0x02, 0x7c, 0x1d, 0xd7, 0xb2, 0xc1, 0xc3, 0xbd, 0x41, 0x7f, 0x98, 0x9e, 0xcb, 0x07, 0xf8,
+	0xb5, 0x02, 0x93, 0xa9, 0xe5, 0x04, 0xf3, 0x21, 0xc3, 0x7c, 0xb0, 0x41, 0x2e, 0x44, 0x6b, 0x59,
+	0xd0, 0xba, 0x88, 0x0b, 0x05, 0xb4, 0xf0, 0x47, 0x05, 0xa6, 0xa8, 0x1c, 0x78, 0xf0, 0x56, 0x32,
+	0x09, 0x69, 0xd9, 0x91, 0x49, 0xc8, 0x8b, 0x0c, 0x7b, 0x43, 0x90, 0x78, 0x1d, 0xd7, 0x33, 0x49,
+	0xc4, 0x76, 0x09, 0xfd, 0xa1, 0xd4, 0x98, 0x07, 0xf8, 0xad, 0x02, 0x95, 0x34, 0x33, 0x8e, 0x03,
+	0x70, 0xc3, 0x04, 0x5d, 0x1a, 0xe8, 0x43, 0xe4, 0xaa, 0x82, 0x1c, 0xc3, 0xc5, 0x22, 0x72, 0xf8,
+	0xab, 0x02, 0xd3, 0x59, 0x5f, 0x15, 0x5c, 0xca, 0x7d, 0x88, 0xc4, 0xec, 0x57, 0x97, 0x0b, 0xfd,
+	0x88, 0xd3, 0x96, 0xe0, 0x74, 0x07, 0x3f, 0x18, 0xfc, 0x6a, 0x41, 0x0b, 0x66, 0xd4, 0x54, 0x98,
+	0xc9, 0x60, 0x08, 0x1c, 0xe0, 0x4f, 0x4a, 0x7a, 0x5d, 0xa7, 0x5e, 0xc4, 0x22, 0x5e, 0x61, 0x42,
+	0xab, 0xc5, 0x8e, 0xa4, 0xa0, 0x26, 0x14, 0x54, 0x71, 0xa9, 0x9c, 0x02, 0x3c, 0x54, 0x60, 0xa9,
+	0xdc, 0x16, 0x82, 0x57, 0x8b, 0x48, 0xe4, 0x2d, 0x45, 0xea, 0xb5, 0x11, 0x6e, 0x92, 0x9e, 0xb7,
+	0x84, 0x9e, 0x0d, 0xbc, 0x36, 0xf2, 0x8b, 0xe0, 0x3f, 0x0a, 0xbc, 0x50, 0x6a, 0x29, 0xc1, 0x2b,
+	0xc5, 0x3c, 0x33, 0x67, 0xbf, 0x7a, 0x75, 0xf8, 0x8b, 0xa3, 0x55, 0xdc, 0xb6, 0xd9, 0xdf, 0x4e,
+	0x15, 0x58, 0x46, 0xc5, 0xfd, 0x16, 0x54, 0x5c, 0xfa, 0x83, 0x20, 0x57, 0x5c, 0xce, 0xba, 0x24,
+	0x57, 0x5c, 0xde, 0x86, 0xc3, 0x3e, 0x11, 0x0a, 0xee, 0xe2, 0x9d, 0x82, 0x3e, 0x8e, 0x9e, 0x48,
+	0x9e, 0x35, 0x19, 0x1a, 0x7e, 0x56, 0xa4, 0xff, 0xf3, 0x82, 0xb6, 0x29, 0xe4, 0x16, 0xf6, 0xcd,
+	0x4a, 0x09, 0x4f, 0x92, 0xa1, 0x0b, 0x19, 0x2b, 0xb8, 0x5c, 0x52, 0x06, 0xfe, 0xad, 0x40, 0xb5,
+	0xec, 0x86, 0x82, 0xd7, 0x0b, 0x89, 0xe4, 0xae, 0x4d, 0xea, 0xc6, 0x48, 0x77, 0x49, 0xd6, 0xdb,
+	0x42, 0xd6, 0x9b, 0xb8, 0xf1, 0x3f, 0x5e, 0x07, 0xff, 0x0d, 0x86, 0x44, 0xe1, 0xca, 0x22, 0x0f,
+	0x89, 0xb2, 0xfb, 0x93, 0x3c, 0x24, 0x4a, 0xef, 0x47, 0xec, 0x63, 0x21, 0xf2, 0x43, 0xbc, 0x5d,
+	0x52, 0x64, 0xa9, 0x2e, 0xaa, 0xdf, 0x7c, 0x74, 0xa4, 0x29, 0x8f, 0x8f, 0x34, 0xe5, 0xf0, 0x48,
+	0x53, 0xbe, 0x3b, 0xd6, 0xc6, 0x1e, 0x1f, 0x6b, 0x63, 0x7f, 0x1c, 0x6b, 0x63, 0xf7, 0x6b, 0x0d,
+	0xdb, 0xdb, 0xeb, 0x9a, 0xb5, 0x1d, 0xa7, 0xa5, 0xbb, 0x56, 0xa3, 0xd1, 0xff, 0xa2, 0x17, 0x43,
+	0xee, 0x5d, 0xd6, 0x1f, 0x04, 0xf0, 0x5e, 0xdf, 0xb5, 0xb8, 0x39, 0x2e, 0x7e, 0x14, 0xba, 0xfc,
+	0x5f, 0x00, 0x00, 0x00, 0xff, 0xff, 0xe6, 0xb5, 0xe9, 0x16, 0xc8, 0x12, 0x00, 0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -153,6 +1297,18 @@ const _ = grpc.SupportPackageIsVersion4
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
 type QueryClient interface {
 	Params(ctx context.Context, in *QueryParamsRequest, opts ...grpc.CallOption) (*QueryParamsResponse, error)
+	QueryPublisher(ctx context.Context, in *QueryPublisherRequest, opts ...grpc.CallOption) (*QueryPublisherResponse, error)
+	QueryPublishers(ctx context.Context, in *QueryPublishersRequest, opts ...grpc.CallOption) (*QueryPublishersResponse, error)
+	QuerySusbscriber(ctx context.Context, in *QuerySubscriberRequest, opts ...grpc.CallOption) (*QuerySubscriberResponse, error)
+	QuerySusbscribers(ctx context.Context, in *QuerySubscribersRequest, opts ...grpc.CallOption) (*QuerySubscribersResponse, error)
+	QueryPublisherIntent(ctx context.Context, in *QueryPublisherIntentRequest, opts ...grpc.CallOption) (*QueryPublisherIntentResponse, error)
+	QueryPublisherIntents(ctx context.Context, in *QueryPublisherIntentsRequest, opts ...grpc.CallOption) (*QueryPublisherIntentsResponse, error)
+	QueryPublisherIntentsByPublisherDomain(ctx context.Context, in *QueryPublisherIntentsByPublisherDomainRequest, opts ...grpc.CallOption) (*QueryPublisherIntentsByPublisherDomainResponse, error)
+	QueryPublisherIntentsBySubscriptionId(ctx context.Context, in *QueryPublisherIntentsBySubscriptionIdRequest, opts ...grpc.CallOption) (*QueryPublisherIntentsBySubscriptionIdResponse, error)
+	QuerySubscriberIntent(ctx context.Context, in *QuerySubscriberIntentRequest, opts ...grpc.CallOption) (*QuerySubscriberIntentResponse, error)
+	QuerySubscriberIntents(ctx context.Context, in *QuerySubscriberIntentsRequest, opts ...grpc.CallOption) (*QuerySubscriberIntentsResponse, error)
+	QuerySubscriberIntentsBySubscriberDomain(ctx context.Context, in *QuerySubscriberIntentsBySubscriberDomainRequest, opts ...grpc.CallOption) (*QuerySubscriberIntentsBySubscriberDomainResponse, error)
+	QuerySubscriberIntentsBySubscriptionId(ctx context.Context, in *QuerySubscriberIntentsBySubscriptionIdRequest, opts ...grpc.CallOption) (*QuerySubscriberIntentsBySubscriptionIdResponse, error)
 }
 
 type queryClient struct {
@@ -172,9 +1328,129 @@ func (c *queryClient) Params(ctx context.Context, in *QueryParamsRequest, opts .
 	return out, nil
 }
 
+func (c *queryClient) QueryPublisher(ctx context.Context, in *QueryPublisherRequest, opts ...grpc.CallOption) (*QueryPublisherResponse, error) {
+	out := new(QueryPublisherResponse)
+	err := c.cc.Invoke(ctx, "/pubsub.v1.Query/QueryPublisher", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *queryClient) QueryPublishers(ctx context.Context, in *QueryPublishersRequest, opts ...grpc.CallOption) (*QueryPublishersResponse, error) {
+	out := new(QueryPublishersResponse)
+	err := c.cc.Invoke(ctx, "/pubsub.v1.Query/QueryPublishers", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *queryClient) QuerySusbscriber(ctx context.Context, in *QuerySubscriberRequest, opts ...grpc.CallOption) (*QuerySubscriberResponse, error) {
+	out := new(QuerySubscriberResponse)
+	err := c.cc.Invoke(ctx, "/pubsub.v1.Query/QuerySusbscriber", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *queryClient) QuerySusbscribers(ctx context.Context, in *QuerySubscribersRequest, opts ...grpc.CallOption) (*QuerySubscribersResponse, error) {
+	out := new(QuerySubscribersResponse)
+	err := c.cc.Invoke(ctx, "/pubsub.v1.Query/QuerySusbscribers", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *queryClient) QueryPublisherIntent(ctx context.Context, in *QueryPublisherIntentRequest, opts ...grpc.CallOption) (*QueryPublisherIntentResponse, error) {
+	out := new(QueryPublisherIntentResponse)
+	err := c.cc.Invoke(ctx, "/pubsub.v1.Query/QueryPublisherIntent", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *queryClient) QueryPublisherIntents(ctx context.Context, in *QueryPublisherIntentsRequest, opts ...grpc.CallOption) (*QueryPublisherIntentsResponse, error) {
+	out := new(QueryPublisherIntentsResponse)
+	err := c.cc.Invoke(ctx, "/pubsub.v1.Query/QueryPublisherIntents", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *queryClient) QueryPublisherIntentsByPublisherDomain(ctx context.Context, in *QueryPublisherIntentsByPublisherDomainRequest, opts ...grpc.CallOption) (*QueryPublisherIntentsByPublisherDomainResponse, error) {
+	out := new(QueryPublisherIntentsByPublisherDomainResponse)
+	err := c.cc.Invoke(ctx, "/pubsub.v1.Query/QueryPublisherIntentsByPublisherDomain", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *queryClient) QueryPublisherIntentsBySubscriptionId(ctx context.Context, in *QueryPublisherIntentsBySubscriptionIdRequest, opts ...grpc.CallOption) (*QueryPublisherIntentsBySubscriptionIdResponse, error) {
+	out := new(QueryPublisherIntentsBySubscriptionIdResponse)
+	err := c.cc.Invoke(ctx, "/pubsub.v1.Query/QueryPublisherIntentsBySubscriptionId", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *queryClient) QuerySubscriberIntent(ctx context.Context, in *QuerySubscriberIntentRequest, opts ...grpc.CallOption) (*QuerySubscriberIntentResponse, error) {
+	out := new(QuerySubscriberIntentResponse)
+	err := c.cc.Invoke(ctx, "/pubsub.v1.Query/QuerySubscriberIntent", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *queryClient) QuerySubscriberIntents(ctx context.Context, in *QuerySubscriberIntentsRequest, opts ...grpc.CallOption) (*QuerySubscriberIntentsResponse, error) {
+	out := new(QuerySubscriberIntentsResponse)
+	err := c.cc.Invoke(ctx, "/pubsub.v1.Query/QuerySubscriberIntents", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *queryClient) QuerySubscriberIntentsBySubscriberDomain(ctx context.Context, in *QuerySubscriberIntentsBySubscriberDomainRequest, opts ...grpc.CallOption) (*QuerySubscriberIntentsBySubscriberDomainResponse, error) {
+	out := new(QuerySubscriberIntentsBySubscriberDomainResponse)
+	err := c.cc.Invoke(ctx, "/pubsub.v1.Query/QuerySubscriberIntentsBySubscriberDomain", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *queryClient) QuerySubscriberIntentsBySubscriptionId(ctx context.Context, in *QuerySubscriberIntentsBySubscriptionIdRequest, opts ...grpc.CallOption) (*QuerySubscriberIntentsBySubscriptionIdResponse, error) {
+	out := new(QuerySubscriberIntentsBySubscriptionIdResponse)
+	err := c.cc.Invoke(ctx, "/pubsub.v1.Query/QuerySubscriberIntentsBySubscriptionId", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // QueryServer is the server API for Query service.
 type QueryServer interface {
 	Params(context.Context, *QueryParamsRequest) (*QueryParamsResponse, error)
+	QueryPublisher(context.Context, *QueryPublisherRequest) (*QueryPublisherResponse, error)
+	QueryPublishers(context.Context, *QueryPublishersRequest) (*QueryPublishersResponse, error)
+	QuerySusbscriber(context.Context, *QuerySubscriberRequest) (*QuerySubscriberResponse, error)
+	QuerySusbscribers(context.Context, *QuerySubscribersRequest) (*QuerySubscribersResponse, error)
+	QueryPublisherIntent(context.Context, *QueryPublisherIntentRequest) (*QueryPublisherIntentResponse, error)
+	QueryPublisherIntents(context.Context, *QueryPublisherIntentsRequest) (*QueryPublisherIntentsResponse, error)
+	QueryPublisherIntentsByPublisherDomain(context.Context, *QueryPublisherIntentsByPublisherDomainRequest) (*QueryPublisherIntentsByPublisherDomainResponse, error)
+	QueryPublisherIntentsBySubscriptionId(context.Context, *QueryPublisherIntentsBySubscriptionIdRequest) (*QueryPublisherIntentsBySubscriptionIdResponse, error)
+	QuerySubscriberIntent(context.Context, *QuerySubscriberIntentRequest) (*QuerySubscriberIntentResponse, error)
+	QuerySubscriberIntents(context.Context, *QuerySubscriberIntentsRequest) (*QuerySubscriberIntentsResponse, error)
+	QuerySubscriberIntentsBySubscriberDomain(context.Context, *QuerySubscriberIntentsBySubscriberDomainRequest) (*QuerySubscriberIntentsBySubscriberDomainResponse, error)
+	QuerySubscriberIntentsBySubscriptionId(context.Context, *QuerySubscriberIntentsBySubscriptionIdRequest) (*QuerySubscriberIntentsBySubscriptionIdResponse, error)
 }
 
 // UnimplementedQueryServer can be embedded to have forward compatible implementations.
@@ -183,6 +1459,42 @@ type UnimplementedQueryServer struct {
 
 func (*UnimplementedQueryServer) Params(ctx context.Context, req *QueryParamsRequest) (*QueryParamsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Params not implemented")
+}
+func (*UnimplementedQueryServer) QueryPublisher(ctx context.Context, req *QueryPublisherRequest) (*QueryPublisherResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method QueryPublisher not implemented")
+}
+func (*UnimplementedQueryServer) QueryPublishers(ctx context.Context, req *QueryPublishersRequest) (*QueryPublishersResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method QueryPublishers not implemented")
+}
+func (*UnimplementedQueryServer) QuerySusbscriber(ctx context.Context, req *QuerySubscriberRequest) (*QuerySubscriberResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method QuerySusbscriber not implemented")
+}
+func (*UnimplementedQueryServer) QuerySusbscribers(ctx context.Context, req *QuerySubscribersRequest) (*QuerySubscribersResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method QuerySusbscribers not implemented")
+}
+func (*UnimplementedQueryServer) QueryPublisherIntent(ctx context.Context, req *QueryPublisherIntentRequest) (*QueryPublisherIntentResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method QueryPublisherIntent not implemented")
+}
+func (*UnimplementedQueryServer) QueryPublisherIntents(ctx context.Context, req *QueryPublisherIntentsRequest) (*QueryPublisherIntentsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method QueryPublisherIntents not implemented")
+}
+func (*UnimplementedQueryServer) QueryPublisherIntentsByPublisherDomain(ctx context.Context, req *QueryPublisherIntentsByPublisherDomainRequest) (*QueryPublisherIntentsByPublisherDomainResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method QueryPublisherIntentsByPublisherDomain not implemented")
+}
+func (*UnimplementedQueryServer) QueryPublisherIntentsBySubscriptionId(ctx context.Context, req *QueryPublisherIntentsBySubscriptionIdRequest) (*QueryPublisherIntentsBySubscriptionIdResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method QueryPublisherIntentsBySubscriptionId not implemented")
+}
+func (*UnimplementedQueryServer) QuerySubscriberIntent(ctx context.Context, req *QuerySubscriberIntentRequest) (*QuerySubscriberIntentResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method QuerySubscriberIntent not implemented")
+}
+func (*UnimplementedQueryServer) QuerySubscriberIntents(ctx context.Context, req *QuerySubscriberIntentsRequest) (*QuerySubscriberIntentsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method QuerySubscriberIntents not implemented")
+}
+func (*UnimplementedQueryServer) QuerySubscriberIntentsBySubscriberDomain(ctx context.Context, req *QuerySubscriberIntentsBySubscriberDomainRequest) (*QuerySubscriberIntentsBySubscriberDomainResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method QuerySubscriberIntentsBySubscriberDomain not implemented")
+}
+func (*UnimplementedQueryServer) QuerySubscriberIntentsBySubscriptionId(ctx context.Context, req *QuerySubscriberIntentsBySubscriptionIdRequest) (*QuerySubscriberIntentsBySubscriptionIdResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method QuerySubscriberIntentsBySubscriptionId not implemented")
 }
 
 func RegisterQueryServer(s grpc1.Server, srv QueryServer) {
@@ -207,6 +1519,222 @@ func _Query_Params_Handler(srv interface{}, ctx context.Context, dec func(interf
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Query_QueryPublisher_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryPublisherRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QueryServer).QueryPublisher(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/pubsub.v1.Query/QueryPublisher",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServer).QueryPublisher(ctx, req.(*QueryPublisherRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Query_QueryPublishers_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryPublishersRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QueryServer).QueryPublishers(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/pubsub.v1.Query/QueryPublishers",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServer).QueryPublishers(ctx, req.(*QueryPublishersRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Query_QuerySusbscriber_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QuerySubscriberRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QueryServer).QuerySusbscriber(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/pubsub.v1.Query/QuerySusbscriber",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServer).QuerySusbscriber(ctx, req.(*QuerySubscriberRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Query_QuerySusbscribers_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QuerySubscribersRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QueryServer).QuerySusbscribers(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/pubsub.v1.Query/QuerySusbscribers",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServer).QuerySusbscribers(ctx, req.(*QuerySubscribersRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Query_QueryPublisherIntent_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryPublisherIntentRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QueryServer).QueryPublisherIntent(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/pubsub.v1.Query/QueryPublisherIntent",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServer).QueryPublisherIntent(ctx, req.(*QueryPublisherIntentRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Query_QueryPublisherIntents_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryPublisherIntentsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QueryServer).QueryPublisherIntents(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/pubsub.v1.Query/QueryPublisherIntents",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServer).QueryPublisherIntents(ctx, req.(*QueryPublisherIntentsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Query_QueryPublisherIntentsByPublisherDomain_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryPublisherIntentsByPublisherDomainRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QueryServer).QueryPublisherIntentsByPublisherDomain(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/pubsub.v1.Query/QueryPublisherIntentsByPublisherDomain",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServer).QueryPublisherIntentsByPublisherDomain(ctx, req.(*QueryPublisherIntentsByPublisherDomainRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Query_QueryPublisherIntentsBySubscriptionId_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryPublisherIntentsBySubscriptionIdRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QueryServer).QueryPublisherIntentsBySubscriptionId(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/pubsub.v1.Query/QueryPublisherIntentsBySubscriptionId",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServer).QueryPublisherIntentsBySubscriptionId(ctx, req.(*QueryPublisherIntentsBySubscriptionIdRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Query_QuerySubscriberIntent_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QuerySubscriberIntentRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QueryServer).QuerySubscriberIntent(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/pubsub.v1.Query/QuerySubscriberIntent",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServer).QuerySubscriberIntent(ctx, req.(*QuerySubscriberIntentRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Query_QuerySubscriberIntents_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QuerySubscriberIntentsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QueryServer).QuerySubscriberIntents(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/pubsub.v1.Query/QuerySubscriberIntents",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServer).QuerySubscriberIntents(ctx, req.(*QuerySubscriberIntentsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Query_QuerySubscriberIntentsBySubscriberDomain_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QuerySubscriberIntentsBySubscriberDomainRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QueryServer).QuerySubscriberIntentsBySubscriberDomain(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/pubsub.v1.Query/QuerySubscriberIntentsBySubscriberDomain",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServer).QuerySubscriberIntentsBySubscriberDomain(ctx, req.(*QuerySubscriberIntentsBySubscriberDomainRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Query_QuerySubscriberIntentsBySubscriptionId_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QuerySubscriberIntentsBySubscriptionIdRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QueryServer).QuerySubscriberIntentsBySubscriptionId(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/pubsub.v1.Query/QuerySubscriberIntentsBySubscriptionId",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServer).QuerySubscriberIntentsBySubscriptionId(ctx, req.(*QuerySubscriberIntentsBySubscriptionIdRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 var _Query_serviceDesc = grpc.ServiceDesc{
 	ServiceName: "pubsub.v1.Query",
 	HandlerType: (*QueryServer)(nil),
@@ -214,6 +1742,54 @@ var _Query_serviceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "Params",
 			Handler:    _Query_Params_Handler,
+		},
+		{
+			MethodName: "QueryPublisher",
+			Handler:    _Query_QueryPublisher_Handler,
+		},
+		{
+			MethodName: "QueryPublishers",
+			Handler:    _Query_QueryPublishers_Handler,
+		},
+		{
+			MethodName: "QuerySusbscriber",
+			Handler:    _Query_QuerySusbscriber_Handler,
+		},
+		{
+			MethodName: "QuerySusbscribers",
+			Handler:    _Query_QuerySusbscribers_Handler,
+		},
+		{
+			MethodName: "QueryPublisherIntent",
+			Handler:    _Query_QueryPublisherIntent_Handler,
+		},
+		{
+			MethodName: "QueryPublisherIntents",
+			Handler:    _Query_QueryPublisherIntents_Handler,
+		},
+		{
+			MethodName: "QueryPublisherIntentsByPublisherDomain",
+			Handler:    _Query_QueryPublisherIntentsByPublisherDomain_Handler,
+		},
+		{
+			MethodName: "QueryPublisherIntentsBySubscriptionId",
+			Handler:    _Query_QueryPublisherIntentsBySubscriptionId_Handler,
+		},
+		{
+			MethodName: "QuerySubscriberIntent",
+			Handler:    _Query_QuerySubscriberIntent_Handler,
+		},
+		{
+			MethodName: "QuerySubscriberIntents",
+			Handler:    _Query_QuerySubscriberIntents_Handler,
+		},
+		{
+			MethodName: "QuerySubscriberIntentsBySubscriberDomain",
+			Handler:    _Query_QuerySubscriberIntentsBySubscriberDomain_Handler,
+		},
+		{
+			MethodName: "QuerySubscriberIntentsBySubscriptionId",
+			Handler:    _Query_QuerySubscriberIntentsBySubscriptionId_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
@@ -276,6 +1852,788 @@ func (m *QueryParamsResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 
+func (m *QueryPublisherRequest) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *QueryPublisherRequest) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *QueryPublisherRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.PublisherDomain) > 0 {
+		i -= len(m.PublisherDomain)
+		copy(dAtA[i:], m.PublisherDomain)
+		i = encodeVarintQuery(dAtA, i, uint64(len(m.PublisherDomain)))
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *QueryPublisherResponse) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *QueryPublisherResponse) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *QueryPublisherResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if m.Publisher != nil {
+		{
+			size, err := m.Publisher.MarshalToSizedBuffer(dAtA[:i])
+			if err != nil {
+				return 0, err
+			}
+			i -= size
+			i = encodeVarintQuery(dAtA, i, uint64(size))
+		}
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *QueryPublishersRequest) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *QueryPublishersRequest) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *QueryPublishersRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	return len(dAtA) - i, nil
+}
+
+func (m *QueryPublishersResponse) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *QueryPublishersResponse) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *QueryPublishersResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.Publishers) > 0 {
+		for iNdEx := len(m.Publishers) - 1; iNdEx >= 0; iNdEx-- {
+			{
+				size, err := m.Publishers[iNdEx].MarshalToSizedBuffer(dAtA[:i])
+				if err != nil {
+					return 0, err
+				}
+				i -= size
+				i = encodeVarintQuery(dAtA, i, uint64(size))
+			}
+			i--
+			dAtA[i] = 0xa
+		}
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *QuerySubscriberRequest) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *QuerySubscriberRequest) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *QuerySubscriberRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.SubscriberDomain) > 0 {
+		i -= len(m.SubscriberDomain)
+		copy(dAtA[i:], m.SubscriberDomain)
+		i = encodeVarintQuery(dAtA, i, uint64(len(m.SubscriberDomain)))
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *QuerySubscriberResponse) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *QuerySubscriberResponse) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *QuerySubscriberResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if m.Subscriber != nil {
+		{
+			size, err := m.Subscriber.MarshalToSizedBuffer(dAtA[:i])
+			if err != nil {
+				return 0, err
+			}
+			i -= size
+			i = encodeVarintQuery(dAtA, i, uint64(size))
+		}
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *QuerySubscribersRequest) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *QuerySubscribersRequest) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *QuerySubscribersRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	return len(dAtA) - i, nil
+}
+
+func (m *QuerySubscribersResponse) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *QuerySubscribersResponse) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *QuerySubscribersResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.Subscribers) > 0 {
+		for iNdEx := len(m.Subscribers) - 1; iNdEx >= 0; iNdEx-- {
+			{
+				size, err := m.Subscribers[iNdEx].MarshalToSizedBuffer(dAtA[:i])
+				if err != nil {
+					return 0, err
+				}
+				i -= size
+				i = encodeVarintQuery(dAtA, i, uint64(size))
+			}
+			i--
+			dAtA[i] = 0xa
+		}
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *QueryPublisherIntentRequest) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *QueryPublisherIntentRequest) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *QueryPublisherIntentRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.SubscriptionId) > 0 {
+		i -= len(m.SubscriptionId)
+		copy(dAtA[i:], m.SubscriptionId)
+		i = encodeVarintQuery(dAtA, i, uint64(len(m.SubscriptionId)))
+		i--
+		dAtA[i] = 0x12
+	}
+	if len(m.PublisherDomain) > 0 {
+		i -= len(m.PublisherDomain)
+		copy(dAtA[i:], m.PublisherDomain)
+		i = encodeVarintQuery(dAtA, i, uint64(len(m.PublisherDomain)))
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *QueryPublisherIntentResponse) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *QueryPublisherIntentResponse) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *QueryPublisherIntentResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if m.PublisherIntent != nil {
+		{
+			size, err := m.PublisherIntent.MarshalToSizedBuffer(dAtA[:i])
+			if err != nil {
+				return 0, err
+			}
+			i -= size
+			i = encodeVarintQuery(dAtA, i, uint64(size))
+		}
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *QueryPublisherIntentsRequest) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *QueryPublisherIntentsRequest) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *QueryPublisherIntentsRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	return len(dAtA) - i, nil
+}
+
+func (m *QueryPublisherIntentsResponse) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *QueryPublisherIntentsResponse) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *QueryPublisherIntentsResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.PublisherIntents) > 0 {
+		for iNdEx := len(m.PublisherIntents) - 1; iNdEx >= 0; iNdEx-- {
+			{
+				size, err := m.PublisherIntents[iNdEx].MarshalToSizedBuffer(dAtA[:i])
+				if err != nil {
+					return 0, err
+				}
+				i -= size
+				i = encodeVarintQuery(dAtA, i, uint64(size))
+			}
+			i--
+			dAtA[i] = 0xa
+		}
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *QueryPublisherIntentsByPublisherDomainRequest) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *QueryPublisherIntentsByPublisherDomainRequest) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *QueryPublisherIntentsByPublisherDomainRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.PublisherDomain) > 0 {
+		i -= len(m.PublisherDomain)
+		copy(dAtA[i:], m.PublisherDomain)
+		i = encodeVarintQuery(dAtA, i, uint64(len(m.PublisherDomain)))
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *QueryPublisherIntentsByPublisherDomainResponse) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *QueryPublisherIntentsByPublisherDomainResponse) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *QueryPublisherIntentsByPublisherDomainResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.PublisherIntents) > 0 {
+		for iNdEx := len(m.PublisherIntents) - 1; iNdEx >= 0; iNdEx-- {
+			{
+				size, err := m.PublisherIntents[iNdEx].MarshalToSizedBuffer(dAtA[:i])
+				if err != nil {
+					return 0, err
+				}
+				i -= size
+				i = encodeVarintQuery(dAtA, i, uint64(size))
+			}
+			i--
+			dAtA[i] = 0xa
+		}
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *QueryPublisherIntentsBySubscriptionIdRequest) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *QueryPublisherIntentsBySubscriptionIdRequest) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *QueryPublisherIntentsBySubscriptionIdRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.SubscriptionId) > 0 {
+		i -= len(m.SubscriptionId)
+		copy(dAtA[i:], m.SubscriptionId)
+		i = encodeVarintQuery(dAtA, i, uint64(len(m.SubscriptionId)))
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *QueryPublisherIntentsBySubscriptionIdResponse) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *QueryPublisherIntentsBySubscriptionIdResponse) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *QueryPublisherIntentsBySubscriptionIdResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.PublisherIntents) > 0 {
+		for iNdEx := len(m.PublisherIntents) - 1; iNdEx >= 0; iNdEx-- {
+			{
+				size, err := m.PublisherIntents[iNdEx].MarshalToSizedBuffer(dAtA[:i])
+				if err != nil {
+					return 0, err
+				}
+				i -= size
+				i = encodeVarintQuery(dAtA, i, uint64(size))
+			}
+			i--
+			dAtA[i] = 0xa
+		}
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *QuerySubscriberIntentRequest) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *QuerySubscriberIntentRequest) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *QuerySubscriberIntentRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.SubscriptionId) > 0 {
+		i -= len(m.SubscriptionId)
+		copy(dAtA[i:], m.SubscriptionId)
+		i = encodeVarintQuery(dAtA, i, uint64(len(m.SubscriptionId)))
+		i--
+		dAtA[i] = 0x12
+	}
+	if len(m.SubscriberDomain) > 0 {
+		i -= len(m.SubscriberDomain)
+		copy(dAtA[i:], m.SubscriberDomain)
+		i = encodeVarintQuery(dAtA, i, uint64(len(m.SubscriberDomain)))
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *QuerySubscriberIntentResponse) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *QuerySubscriberIntentResponse) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *QuerySubscriberIntentResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if m.SubscriberIntent != nil {
+		{
+			size, err := m.SubscriberIntent.MarshalToSizedBuffer(dAtA[:i])
+			if err != nil {
+				return 0, err
+			}
+			i -= size
+			i = encodeVarintQuery(dAtA, i, uint64(size))
+		}
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *QuerySubscriberIntentsRequest) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *QuerySubscriberIntentsRequest) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *QuerySubscriberIntentsRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	return len(dAtA) - i, nil
+}
+
+func (m *QuerySubscriberIntentsResponse) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *QuerySubscriberIntentsResponse) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *QuerySubscriberIntentsResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.SubscriberIntents) > 0 {
+		for iNdEx := len(m.SubscriberIntents) - 1; iNdEx >= 0; iNdEx-- {
+			{
+				size, err := m.SubscriberIntents[iNdEx].MarshalToSizedBuffer(dAtA[:i])
+				if err != nil {
+					return 0, err
+				}
+				i -= size
+				i = encodeVarintQuery(dAtA, i, uint64(size))
+			}
+			i--
+			dAtA[i] = 0xa
+		}
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *QuerySubscriberIntentsBySubscriberDomainRequest) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *QuerySubscriberIntentsBySubscriberDomainRequest) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *QuerySubscriberIntentsBySubscriberDomainRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.SubscriberDomain) > 0 {
+		i -= len(m.SubscriberDomain)
+		copy(dAtA[i:], m.SubscriberDomain)
+		i = encodeVarintQuery(dAtA, i, uint64(len(m.SubscriberDomain)))
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *QuerySubscriberIntentsBySubscriberDomainResponse) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *QuerySubscriberIntentsBySubscriberDomainResponse) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *QuerySubscriberIntentsBySubscriberDomainResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.SubscriberIntents) > 0 {
+		for iNdEx := len(m.SubscriberIntents) - 1; iNdEx >= 0; iNdEx-- {
+			{
+				size, err := m.SubscriberIntents[iNdEx].MarshalToSizedBuffer(dAtA[:i])
+				if err != nil {
+					return 0, err
+				}
+				i -= size
+				i = encodeVarintQuery(dAtA, i, uint64(size))
+			}
+			i--
+			dAtA[i] = 0xa
+		}
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *QuerySubscriberIntentsBySubscriptionIdRequest) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *QuerySubscriberIntentsBySubscriptionIdRequest) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *QuerySubscriberIntentsBySubscriptionIdRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.SubscriptionId) > 0 {
+		i -= len(m.SubscriptionId)
+		copy(dAtA[i:], m.SubscriptionId)
+		i = encodeVarintQuery(dAtA, i, uint64(len(m.SubscriptionId)))
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *QuerySubscriberIntentsBySubscriptionIdResponse) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *QuerySubscriberIntentsBySubscriptionIdResponse) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *QuerySubscriberIntentsBySubscriptionIdResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.SubscriberIntents) > 0 {
+		for iNdEx := len(m.SubscriberIntents) - 1; iNdEx >= 0; iNdEx-- {
+			{
+				size, err := m.SubscriberIntents[iNdEx].MarshalToSizedBuffer(dAtA[:i])
+				if err != nil {
+					return 0, err
+				}
+				i -= size
+				i = encodeVarintQuery(dAtA, i, uint64(size))
+			}
+			i--
+			dAtA[i] = 0xa
+		}
+	}
+	return len(dAtA) - i, nil
+}
+
 func encodeVarintQuery(dAtA []byte, offset int, v uint64) int {
 	offset -= sovQuery(v)
 	base := offset
@@ -304,6 +2662,326 @@ func (m *QueryParamsResponse) Size() (n int) {
 	_ = l
 	l = m.Params.Size()
 	n += 1 + l + sovQuery(uint64(l))
+	return n
+}
+
+func (m *QueryPublisherRequest) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.PublisherDomain)
+	if l > 0 {
+		n += 1 + l + sovQuery(uint64(l))
+	}
+	return n
+}
+
+func (m *QueryPublisherResponse) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if m.Publisher != nil {
+		l = m.Publisher.Size()
+		n += 1 + l + sovQuery(uint64(l))
+	}
+	return n
+}
+
+func (m *QueryPublishersRequest) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	return n
+}
+
+func (m *QueryPublishersResponse) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if len(m.Publishers) > 0 {
+		for _, e := range m.Publishers {
+			l = e.Size()
+			n += 1 + l + sovQuery(uint64(l))
+		}
+	}
+	return n
+}
+
+func (m *QuerySubscriberRequest) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.SubscriberDomain)
+	if l > 0 {
+		n += 1 + l + sovQuery(uint64(l))
+	}
+	return n
+}
+
+func (m *QuerySubscriberResponse) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if m.Subscriber != nil {
+		l = m.Subscriber.Size()
+		n += 1 + l + sovQuery(uint64(l))
+	}
+	return n
+}
+
+func (m *QuerySubscribersRequest) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	return n
+}
+
+func (m *QuerySubscribersResponse) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if len(m.Subscribers) > 0 {
+		for _, e := range m.Subscribers {
+			l = e.Size()
+			n += 1 + l + sovQuery(uint64(l))
+		}
+	}
+	return n
+}
+
+func (m *QueryPublisherIntentRequest) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.PublisherDomain)
+	if l > 0 {
+		n += 1 + l + sovQuery(uint64(l))
+	}
+	l = len(m.SubscriptionId)
+	if l > 0 {
+		n += 1 + l + sovQuery(uint64(l))
+	}
+	return n
+}
+
+func (m *QueryPublisherIntentResponse) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if m.PublisherIntent != nil {
+		l = m.PublisherIntent.Size()
+		n += 1 + l + sovQuery(uint64(l))
+	}
+	return n
+}
+
+func (m *QueryPublisherIntentsRequest) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	return n
+}
+
+func (m *QueryPublisherIntentsResponse) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if len(m.PublisherIntents) > 0 {
+		for _, e := range m.PublisherIntents {
+			l = e.Size()
+			n += 1 + l + sovQuery(uint64(l))
+		}
+	}
+	return n
+}
+
+func (m *QueryPublisherIntentsByPublisherDomainRequest) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.PublisherDomain)
+	if l > 0 {
+		n += 1 + l + sovQuery(uint64(l))
+	}
+	return n
+}
+
+func (m *QueryPublisherIntentsByPublisherDomainResponse) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if len(m.PublisherIntents) > 0 {
+		for _, e := range m.PublisherIntents {
+			l = e.Size()
+			n += 1 + l + sovQuery(uint64(l))
+		}
+	}
+	return n
+}
+
+func (m *QueryPublisherIntentsBySubscriptionIdRequest) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.SubscriptionId)
+	if l > 0 {
+		n += 1 + l + sovQuery(uint64(l))
+	}
+	return n
+}
+
+func (m *QueryPublisherIntentsBySubscriptionIdResponse) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if len(m.PublisherIntents) > 0 {
+		for _, e := range m.PublisherIntents {
+			l = e.Size()
+			n += 1 + l + sovQuery(uint64(l))
+		}
+	}
+	return n
+}
+
+func (m *QuerySubscriberIntentRequest) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.SubscriberDomain)
+	if l > 0 {
+		n += 1 + l + sovQuery(uint64(l))
+	}
+	l = len(m.SubscriptionId)
+	if l > 0 {
+		n += 1 + l + sovQuery(uint64(l))
+	}
+	return n
+}
+
+func (m *QuerySubscriberIntentResponse) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if m.SubscriberIntent != nil {
+		l = m.SubscriberIntent.Size()
+		n += 1 + l + sovQuery(uint64(l))
+	}
+	return n
+}
+
+func (m *QuerySubscriberIntentsRequest) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	return n
+}
+
+func (m *QuerySubscriberIntentsResponse) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if len(m.SubscriberIntents) > 0 {
+		for _, e := range m.SubscriberIntents {
+			l = e.Size()
+			n += 1 + l + sovQuery(uint64(l))
+		}
+	}
+	return n
+}
+
+func (m *QuerySubscriberIntentsBySubscriberDomainRequest) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.SubscriberDomain)
+	if l > 0 {
+		n += 1 + l + sovQuery(uint64(l))
+	}
+	return n
+}
+
+func (m *QuerySubscriberIntentsBySubscriberDomainResponse) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if len(m.SubscriberIntents) > 0 {
+		for _, e := range m.SubscriberIntents {
+			l = e.Size()
+			n += 1 + l + sovQuery(uint64(l))
+		}
+	}
+	return n
+}
+
+func (m *QuerySubscriberIntentsBySubscriptionIdRequest) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.SubscriptionId)
+	if l > 0 {
+		n += 1 + l + sovQuery(uint64(l))
+	}
+	return n
+}
+
+func (m *QuerySubscriberIntentsBySubscriptionIdResponse) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if len(m.SubscriberIntents) > 0 {
+		for _, e := range m.SubscriberIntents {
+			l = e.Size()
+			n += 1 + l + sovQuery(uint64(l))
+		}
+	}
 	return n
 }
 
@@ -422,6 +3100,1942 @@ func (m *QueryParamsResponse) Unmarshal(dAtA []byte) error {
 				return io.ErrUnexpectedEOF
 			}
 			if err := m.Params.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuery(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *QueryPublisherRequest) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuery
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: QueryPublisherRequest: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: QueryPublisherRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field PublisherDomain", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.PublisherDomain = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuery(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *QueryPublisherResponse) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuery
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: QueryPublisherResponse: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: QueryPublisherResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Publisher", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Publisher == nil {
+				m.Publisher = &Publisher{}
+			}
+			if err := m.Publisher.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuery(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *QueryPublishersRequest) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuery
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: QueryPublishersRequest: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: QueryPublishersRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuery(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *QueryPublishersResponse) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuery
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: QueryPublishersResponse: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: QueryPublishersResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Publishers", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Publishers = append(m.Publishers, &Publisher{})
+			if err := m.Publishers[len(m.Publishers)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuery(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *QuerySubscriberRequest) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuery
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: QuerySubscriberRequest: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: QuerySubscriberRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field SubscriberDomain", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.SubscriberDomain = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuery(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *QuerySubscriberResponse) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuery
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: QuerySubscriberResponse: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: QuerySubscriberResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Subscriber", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Subscriber == nil {
+				m.Subscriber = &Subscriber{}
+			}
+			if err := m.Subscriber.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuery(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *QuerySubscribersRequest) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuery
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: QuerySubscribersRequest: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: QuerySubscribersRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuery(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *QuerySubscribersResponse) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuery
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: QuerySubscribersResponse: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: QuerySubscribersResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Subscribers", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Subscribers = append(m.Subscribers, &Subscriber{})
+			if err := m.Subscribers[len(m.Subscribers)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuery(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *QueryPublisherIntentRequest) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuery
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: QueryPublisherIntentRequest: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: QueryPublisherIntentRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field PublisherDomain", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.PublisherDomain = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field SubscriptionId", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.SubscriptionId = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuery(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *QueryPublisherIntentResponse) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuery
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: QueryPublisherIntentResponse: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: QueryPublisherIntentResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field PublisherIntent", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.PublisherIntent == nil {
+				m.PublisherIntent = &PublisherIntent{}
+			}
+			if err := m.PublisherIntent.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuery(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *QueryPublisherIntentsRequest) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuery
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: QueryPublisherIntentsRequest: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: QueryPublisherIntentsRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuery(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *QueryPublisherIntentsResponse) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuery
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: QueryPublisherIntentsResponse: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: QueryPublisherIntentsResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field PublisherIntents", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.PublisherIntents = append(m.PublisherIntents, &PublisherIntent{})
+			if err := m.PublisherIntents[len(m.PublisherIntents)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuery(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *QueryPublisherIntentsByPublisherDomainRequest) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuery
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: QueryPublisherIntentsByPublisherDomainRequest: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: QueryPublisherIntentsByPublisherDomainRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field PublisherDomain", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.PublisherDomain = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuery(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *QueryPublisherIntentsByPublisherDomainResponse) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuery
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: QueryPublisherIntentsByPublisherDomainResponse: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: QueryPublisherIntentsByPublisherDomainResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field PublisherIntents", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.PublisherIntents = append(m.PublisherIntents, &PublisherIntent{})
+			if err := m.PublisherIntents[len(m.PublisherIntents)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuery(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *QueryPublisherIntentsBySubscriptionIdRequest) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuery
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: QueryPublisherIntentsBySubscriptionIdRequest: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: QueryPublisherIntentsBySubscriptionIdRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field SubscriptionId", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.SubscriptionId = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuery(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *QueryPublisherIntentsBySubscriptionIdResponse) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuery
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: QueryPublisherIntentsBySubscriptionIdResponse: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: QueryPublisherIntentsBySubscriptionIdResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field PublisherIntents", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.PublisherIntents = append(m.PublisherIntents, &PublisherIntent{})
+			if err := m.PublisherIntents[len(m.PublisherIntents)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuery(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *QuerySubscriberIntentRequest) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuery
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: QuerySubscriberIntentRequest: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: QuerySubscriberIntentRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field SubscriberDomain", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.SubscriberDomain = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field SubscriptionId", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.SubscriptionId = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuery(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *QuerySubscriberIntentResponse) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuery
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: QuerySubscriberIntentResponse: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: QuerySubscriberIntentResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field SubscriberIntent", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.SubscriberIntent == nil {
+				m.SubscriberIntent = &SubscriberIntent{}
+			}
+			if err := m.SubscriberIntent.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuery(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *QuerySubscriberIntentsRequest) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuery
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: QuerySubscriberIntentsRequest: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: QuerySubscriberIntentsRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuery(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *QuerySubscriberIntentsResponse) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuery
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: QuerySubscriberIntentsResponse: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: QuerySubscriberIntentsResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field SubscriberIntents", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.SubscriberIntents = append(m.SubscriberIntents, &SubscriberIntent{})
+			if err := m.SubscriberIntents[len(m.SubscriberIntents)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuery(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *QuerySubscriberIntentsBySubscriberDomainRequest) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuery
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: QuerySubscriberIntentsBySubscriberDomainRequest: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: QuerySubscriberIntentsBySubscriberDomainRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field SubscriberDomain", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.SubscriberDomain = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuery(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *QuerySubscriberIntentsBySubscriberDomainResponse) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuery
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: QuerySubscriberIntentsBySubscriberDomainResponse: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: QuerySubscriberIntentsBySubscriberDomainResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field SubscriberIntents", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.SubscriberIntents = append(m.SubscriberIntents, &SubscriberIntent{})
+			if err := m.SubscriberIntents[len(m.SubscriberIntents)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuery(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *QuerySubscriberIntentsBySubscriptionIdRequest) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuery
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: QuerySubscriberIntentsBySubscriptionIdRequest: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: QuerySubscriberIntentsBySubscriptionIdRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field SubscriptionId", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.SubscriptionId = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuery(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *QuerySubscriberIntentsBySubscriptionIdResponse) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuery
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: QuerySubscriberIntentsBySubscriptionIdResponse: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: QuerySubscriberIntentsBySubscriptionIdResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field SubscriberIntents", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.SubscriberIntents = append(m.SubscriberIntents, &SubscriberIntent{})
+			if err := m.SubscriberIntents[len(m.SubscriberIntents)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex

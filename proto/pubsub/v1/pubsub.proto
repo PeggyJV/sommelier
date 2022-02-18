@@ -28,8 +28,9 @@ message PublisherIntent {
 
 message SubscriberIntent {
   string subscsription_id = 1;
-  string publisher_domain = 2;
-  string push_url = 3;
+  string subscriber_domain = 2;
+  string publisher_domain = 3;
+  string push_url = 4;
 }
 
 message AddPublisherProposal {
