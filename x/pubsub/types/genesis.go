@@ -1,24 +1,47 @@
 package types
 
-import (
-// this line is used by starport scaffolding # genesis/types/import
-)
+const DefaultParamspace = ModuleName
 
-// DefaultIndex is the default capability global index
-const DefaultIndex uint64 = 1
-
-// DefaultGenesis returns the default Capability genesis state
-func DefaultGenesis() *GenesisState {
-	return &GenesisState{
-	    // this line is used by starport scaffolding # genesis/types/default
-	    Params:	DefaultParams(),
+// DefaultGenesisState get raw genesis raw message for testing
+func DefaultGenesisState() GenesisState {
+	return GenesisState{
+		Params:            DefaultParams(),
+		Publishers:        []*Publisher{},
+		Subscribers:       []*Subscriber{},
+		PublisherIntents:  []*PublisherIntent{},
+		SubscriberIntents: []*SubscriberIntent{},
 	}
 }
 
-// Validate performs basic genesis state validation returning an error upon any
-// failure.
+// Validate performs a basic stateless validation of the genesis fields.
 func (gs GenesisState) Validate() error {
-    // this line is used by starport scaffolding # genesis/types/validate
+	if err := gs.Params.Validate(); err != nil {
+		return err
+	}
 
-	return gs.Params.Validate()
+	for _, publisher := range gs.Publishers {
+		if err := publisher.ValidateBasic(); err != nil {
+			return err
+		}
+	}
+
+	for _, subscriber := range gs.Subscribers {
+		if err := subscriber.ValidateBasic(); err != nil {
+			return err
+		}
+	}
+
+	for _, publisherIntent := range gs.PublisherIntents {
+		if err := publisherIntent.ValidateBasic(); err != nil {
+			return err
+		}
+	}
+
+	for _, subscriberIntent := range gs.SubscriberIntents {
+		if err := subscriberIntent.ValidateBasic(); err != nil {
+			return err
+		}
+	}
+
+	return nil
 }

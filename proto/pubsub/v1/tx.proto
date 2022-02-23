@@ -11,7 +11,7 @@ service Msg {
     rpc RemoveSubscriber (MsgRemoveSubscriber) returns (MsgRemoveSubscriberResponse);
     rpc AddPublisherIntent (MsgAddPublisherIntent) returns (MsgAddPublisherIntentResponse);
     rpc RemovePublisherIntent (MsgRemovePublisherIntent) returns (MsgRemovePublisherIntentResponse);
-    rpc AddSubcriberIntet (MsgAddSubscriberIntent) returns (MsgAddSubscriberIntentResponse);
+    rpc AddSubscriberIntent (MsgAddSubscriberIntent) returns (MsgAddSubscriberIntentResponse);
     rpc RemoveSubscriberIntent (MsgRemoveSubscriberIntent) returns (MsgRemoveSubscriberIntentResponse);
 }
 
