@@ -32,7 +32,10 @@ require (
 	github.com/xeipuuv/gojsonpointer v0.0.0-20190905194746-02993c407bfb // indirect
 	google.golang.org/genproto v0.0.0-20220118154757-00ab72f36ad5
 	google.golang.org/grpc v1.43.0
+	gopkg.in/yaml.v2 v2.4.0 // indirect
 )
+
+// TODO(bolten): figure out why it's addking a gopkg.in indirect dep
 
 replace google.golang.org/grpc => google.golang.org/grpc v1.33.2
 
