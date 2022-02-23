@@ -5,7 +5,7 @@ import "allocation/v1/tx.proto";
 import "allocation/v1/allocation.proto";
 import "gogoproto/gogo.proto";
 
-option go_package = "github.com/peggyjv/sommelier/x/allocation/types";
+option go_package = "github.com/peggyjv/sommelier/v3/x/allocation/types";
 
 
 // GenesisState - all allocation state that must be provided at genesis

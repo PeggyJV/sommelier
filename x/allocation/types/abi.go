@@ -1,8 +1,9 @@
 package types
 
 import (
-	"github.com/ethereum/go-ethereum/accounts/abi"
 	"strings"
+
+	"github.com/ethereum/go-ethereum/accounts/abi"
 )
 
 const CellarABI = `
@@ -721,7 +722,7 @@ const CellarABI = `
           "type": "uint256"
         }
       ],
-      "name": "reinvest",
+      "name": "cork",
       "outputs": [],
       "stateMutability": "nonpayable",
       "type": "function"

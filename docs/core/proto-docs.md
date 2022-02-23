@@ -44,6 +44,34 @@
   
     - [Query](#allocation.v1.Query)
   
+- [cork/v1/cork.proto](#cork/v1/cork.proto)
+    - [AddManagedCellarsProposal](#cork.v1.AddManagedCellarsProposal)
+    - [CellarIDSet](#cork.v1.CellarIDSet)
+    - [Cork](#cork.v1.Cork)
+    - [RemoveManagedCellarsProposal](#cork.v1.RemoveManagedCellarsProposal)
+  
+- [cork/v1/tx.proto](#cork/v1/tx.proto)
+    - [MsgSubmitCorkRequest](#cork.v1.MsgSubmitCorkRequest)
+    - [MsgSubmitCorkResponse](#cork.v1.MsgSubmitCorkResponse)
+  
+    - [Msg](#cork.v1.Msg)
+  
+- [cork/v1/genesis.proto](#cork/v1/genesis.proto)
+    - [GenesisState](#cork.v1.GenesisState)
+    - [Params](#cork.v1.Params)
+  
+- [cork/v1/query.proto](#cork/v1/query.proto)
+    - [QueryCellarIDsRequest](#cork.v1.QueryCellarIDsRequest)
+    - [QueryCellarIDsResponse](#cork.v1.QueryCellarIDsResponse)
+    - [QueryCommitPeriodRequest](#cork.v1.QueryCommitPeriodRequest)
+    - [QueryCommitPeriodResponse](#cork.v1.QueryCommitPeriodResponse)
+    - [QueryParamsRequest](#cork.v1.QueryParamsRequest)
+    - [QueryParamsResponse](#cork.v1.QueryParamsResponse)
+    - [QuerySubmittedCorksRequest](#cork.v1.QuerySubmittedCorksRequest)
+    - [QuerySubmittedCorksResponse](#cork.v1.QuerySubmittedCorksResponse)
+  
+    - [Query](#cork.v1.Query)
+  
 - [Scalar Value Types](#scalar-value-types)
 
 
@@ -266,7 +294,7 @@ MsgAllocationPrecommitResponse is the response type for the Msg/AllocationPrecom
 <a name="allocation.v1.Msg"></a>
 
 ### Msg
-MsgService defines the msgs that the oracle module handles.
+MsgService defines the msgs that the allocation module handles.
 
 | Method Name | Request Type | Response Type | Description | HTTP Verb | Endpoint |
 | ----------- | ------------ | ------------- | ------------| ------- | -------- |
@@ -541,6 +569,318 @@ Query defines the gRPC querier service for the allocation module.
 | `QueryAllocationCommits` | [QueryAllocationCommitsRequest](#allocation.v1.QueryAllocationCommitsRequest) | [QueryAllocationCommitsResponse](#allocation.v1.QueryAllocationCommitsResponse) | QueryAllocationCommits queries all validator allocation commits | GET|/sommelier/allocation/v1/commits|
 | `QueryCommitPeriod` | [QueryCommitPeriodRequest](#allocation.v1.QueryCommitPeriodRequest) | [QueryCommitPeriodResponse](#allocation.v1.QueryCommitPeriodResponse) | QueryVotePeriod queries the heights for the current voting period (current, start and end) | GET|/sommelier/allocation/v1/commit_period|
 | `QueryCellars` | [QueryCellarsRequest](#allocation.v1.QueryCellarsRequest) | [QueryCellarsResponse](#allocation.v1.QueryCellarsResponse) | QueryCellars returns all cellars and current tick ranges | GET|/sommelier/allocation/v1/cellars|
+
+ <!-- end services -->
+
+
+
+<a name="cork/v1/cork.proto"></a>
+<p align="right"><a href="#top">Top</a></p>
+
+## cork/v1/cork.proto
+
+
+
+<a name="cork.v1.AddManagedCellarsProposal"></a>
+
+### AddManagedCellarsProposal
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `title` | [string](#string) |  |  |
+| `description` | [string](#string) |  |  |
+| `cellar_ids` | [CellarIDSet](#cork.v1.CellarIDSet) |  |  |
+
+
+
+
+
+
+<a name="cork.v1.CellarIDSet"></a>
+
+### CellarIDSet
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `ids` | [string](#string) | repeated |  |
+
+
+
+
+
+
+<a name="cork.v1.Cork"></a>
+
+### Cork
+MsgSubmitCorkRequest - sdk.Msg for submitting calls to Ethereum through the gravity bridge contract
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `encoded_contract_call` | [bytes](#bytes) |  | call body containing the ABI encoded bytes to send to the contract |
+| `target_contract_address` | [string](#string) |  | address of the contract to send the call |
+
+
+
+
+
+
+<a name="cork.v1.RemoveManagedCellarsProposal"></a>
+
+### RemoveManagedCellarsProposal
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `title` | [string](#string) |  |  |
+| `description` | [string](#string) |  |  |
+| `cellar_ids` | [CellarIDSet](#cork.v1.CellarIDSet) |  |  |
+
+
+
+
+
+ <!-- end messages -->
+
+ <!-- end enums -->
+
+ <!-- end HasExtensions -->
+
+ <!-- end services -->
+
+
+
+<a name="cork/v1/tx.proto"></a>
+<p align="right"><a href="#top">Top</a></p>
+
+## cork/v1/tx.proto
+
+
+
+<a name="cork.v1.MsgSubmitCorkRequest"></a>
+
+### MsgSubmitCorkRequest
+MsgSubmitCorkRequest - sdk.Msg for submitting calls to Ethereum through the gravity bridge contract
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `cork` | [Cork](#cork.v1.Cork) |  | the cork to send across the bridge |
+| `signer` | [string](#string) |  | signer account address |
+
+
+
+
+
+
+<a name="cork.v1.MsgSubmitCorkResponse"></a>
+
+### MsgSubmitCorkResponse
+
+
+
+
+
+
+ <!-- end messages -->
+
+ <!-- end enums -->
+
+ <!-- end HasExtensions -->
+
+
+<a name="cork.v1.Msg"></a>
+
+### Msg
+MsgService defines the msgs that the cork module handles
+
+| Method Name | Request Type | Response Type | Description | HTTP Verb | Endpoint |
+| ----------- | ------------ | ------------- | ------------| ------- | -------- |
+| `SubmitCork` | [MsgSubmitCorkRequest](#cork.v1.MsgSubmitCorkRequest) | [MsgSubmitCorkResponse](#cork.v1.MsgSubmitCorkResponse) | CorkSubmission defines a message | |
+
+ <!-- end services -->
+
+
+
+<a name="cork/v1/genesis.proto"></a>
+<p align="right"><a href="#top">Top</a></p>
+
+## cork/v1/genesis.proto
+
+
+
+<a name="cork.v1.GenesisState"></a>
+
+### GenesisState
+GenesisState - all cork state that must be provided at genesis
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `params` | [Params](#cork.v1.Params) |  |  |
+| `cellar_ids` | [CellarIDSet](#cork.v1.CellarIDSet) |  |  |
+
+
+
+
+
+
+<a name="cork.v1.Params"></a>
+
+### Params
+Params cork parameters
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `vote_period` | [int64](#int64) |  | VotePeriod defines the number of blocks to wait for votes before attempting to tally |
+| `vote_threshold` | [string](#string) |  | VoteThreshold defines the percentage of bonded stake required to vote each period |
+
+
+
+
+
+ <!-- end messages -->
+
+ <!-- end enums -->
+
+ <!-- end HasExtensions -->
+
+ <!-- end services -->
+
+
+
+<a name="cork/v1/query.proto"></a>
+<p align="right"><a href="#top">Top</a></p>
+
+## cork/v1/query.proto
+
+
+
+<a name="cork.v1.QueryCellarIDsRequest"></a>
+
+### QueryCellarIDsRequest
+QueryCellarIDsRequest is the request type for Query/QueryCellarIDs gRPC method.
+
+
+
+
+
+
+<a name="cork.v1.QueryCellarIDsResponse"></a>
+
+### QueryCellarIDsResponse
+QueryCellarIDsResponse is the response type for Query/QueryCellars gRPC method.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `cellar_ids` | [string](#string) | repeated |  |
+
+
+
+
+
+
+<a name="cork.v1.QueryCommitPeriodRequest"></a>
+
+### QueryCommitPeriodRequest
+QueryCommitPeriodRequest is the request type for the Query/QueryCommitPeriod gRPC method.
+
+
+
+
+
+
+<a name="cork.v1.QueryCommitPeriodResponse"></a>
+
+### QueryCommitPeriodResponse
+QueryCommitPeriodResponse is the response type for the Query/QueryCommitPeriod gRPC method.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `current_height` | [int64](#int64) |  | block height at which the query was processed |
+| `vote_period_start` | [int64](#int64) |  | latest vote period start block height |
+| `vote_period_end` | [int64](#int64) |  | block height at which the current voting period ends |
+
+
+
+
+
+
+<a name="cork.v1.QueryParamsRequest"></a>
+
+### QueryParamsRequest
+QueryParamsRequest is the request type for the Query/Params gRPC method.
+
+
+
+
+
+
+<a name="cork.v1.QueryParamsResponse"></a>
+
+### QueryParamsResponse
+QueryParamsRequest is the response type for the Query/Params gRPC method.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `params` | [Params](#cork.v1.Params) |  | allocation parameters |
+
+
+
+
+
+
+<a name="cork.v1.QuerySubmittedCorksRequest"></a>
+
+### QuerySubmittedCorksRequest
+QuerySubmittedCorksRequest is the request type for the Query/QuerySubmittedCorks gRPC query method.
+
+
+
+
+
+
+<a name="cork.v1.QuerySubmittedCorksResponse"></a>
+
+### QuerySubmittedCorksResponse
+QuerySubmittedCorksResponse is the response type for the Query/QuerySubmittedCorks gRPC query method.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `corks` | [Cork](#cork.v1.Cork) | repeated | corks in keeper awaiting vote |
+
+
+
+
+
+ <!-- end messages -->
+
+ <!-- end enums -->
+
+ <!-- end HasExtensions -->
+
+
+<a name="cork.v1.Query"></a>
+
+### Query
+Query defines the gRPC query service for the cork module.
+
+| Method Name | Request Type | Response Type | Description | HTTP Verb | Endpoint |
+| ----------- | ------------ | ------------- | ------------| ------- | -------- |
+| `QueryParams` | [QueryParamsRequest](#cork.v1.QueryParamsRequest) | [QueryParamsResponse](#cork.v1.QueryParamsResponse) | QueryParams queries the allocation module parameters. | GET|/sommelier/cork/v1/params|
+| `QuerySubmittedCorks` | [QuerySubmittedCorksRequest](#cork.v1.QuerySubmittedCorksRequest) | [QuerySubmittedCorksResponse](#cork.v1.QuerySubmittedCorksResponse) | QuerySubmittedCorks queries the submitted corks awaiting vote | GET|/sommelier/cork/v1/submitted|
+| `QueryCommitPeriod` | [QueryCommitPeriodRequest](#cork.v1.QueryCommitPeriodRequest) | [QueryCommitPeriodResponse](#cork.v1.QueryCommitPeriodResponse) | QueryVotePeriod queries the heights for the current voting period (current, start and end) | GET|/sommelier/cork/v1/commit_period|
+| `QueryCellarIDs` | [QueryCellarIDsRequest](#cork.v1.QueryCellarIDsRequest) | [QueryCellarIDsResponse](#cork.v1.QueryCellarIDsResponse) | QueryCellarIDs returns all cellars and current tick ranges | GET|/sommelier/cork/v1/cellar_ids|
 
  <!-- end services -->
 

@@ -2,14 +2,15 @@ package types
 
 import (
 	"encoding/hex"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/ethereum/go-ethereum/crypto"
 	tmbytes "github.com/tendermint/tendermint/libs/bytes"
 )
 
-func (c *RebalanceVote) InvalidationScope() tmbytes.HexBytes {
-	return crypto.Keccak256Hash(c.ABIEncodedRebalanceBytes()).Bytes()
+func (rv *RebalanceVote) InvalidationScope() tmbytes.HexBytes {
+	return crypto.Keccak256Hash(rv.ABIEncodedRebalanceBytes()).Bytes()
 }
 
 func (rv *RebalanceVote) Equals(other RebalanceVote) bool {
@@ -24,8 +25,8 @@ func (rv *RebalanceVote) Equals(other RebalanceVote) bool {
 	return true
 }
 
-func (c *RebalanceVote) Hash(salt string, val sdk.ValAddress) ([]byte, error) {
-	databytes, err := c.Marshal()
+func (rv *RebalanceVote) Hash(salt string, val sdk.ValAddress) ([]byte, error) {
+	databytes, err := rv.Marshal()
 
 	if err != nil {
 		return nil, sdkerrors.Wrap(

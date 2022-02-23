@@ -5,6 +5,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	corktypes "github.com/peggyjv/sommelier/v3/x/cork/types"
 	"math/big"
 	"os"
 	"path"
@@ -60,8 +61,11 @@ func MNEMONICS() []string {
 var (
 	stakeAmount, _  = sdk.NewIntFromString("100000000000")
 	stakeAmountCoin = sdk.NewCoin(bondDenom, stakeAmount)
+
+	// todo(mvid): split these out into their respective tests
 	hardhatCellar   = common.HexToAddress("0x4C4a2f8c81640e47606d3fd77B353E87Ba015584")
 	gravityContract = common.HexToAddress("0x04C89607413713Ec9775E14b954286519d836FEf")
+	counterContract = common.HexToAddress("0x0000000000000000000000000000000000000000")
 )
 
 type IntegrationTestSuite struct {
@@ -85,6 +89,10 @@ func (s *IntegrationTestSuite) SetupSuite() {
 	var err error
 	s.chain, err = newChain()
 	s.Require().NoError(err)
+	s.dockerPool, err = dockertest.NewPool("")
+	s.Require().NoError(err)
+	s.dockerNetwork, err = s.dockerPool.CreateNetwork(fmt.Sprintf("%s-testnet", s.chain.id))
+	s.Require().NoError(err)
 
 	s.T().Logf("starting e2e infrastructure; chain-id: %s; datadir: %s", s.chain.id, s.chain.dataDir)
 
@@ -92,17 +100,15 @@ func (s *IntegrationTestSuite) SetupSuite() {
 	mnemonics := MNEMONICS()
 	s.initNodesWithMnemonics(mnemonics...)
 	s.initEthereumFromMnemonics(mnemonics)
+
+	// run the eth container so that the contract addresses are available
+	s.runEthContainer()
+
+	// continue generating node genesis
 	s.initGenesis()
 	s.initValidatorConfigs()
 
-	s.dockerPool, err = dockertest.NewPool("")
-	s.Require().NoError(err)
-
-	s.dockerNetwork, err = s.dockerPool.CreateNetwork(fmt.Sprintf("%s-testnet", s.chain.id))
-	s.Require().NoError(err)
-
 	// container infrastructure
-	s.runEthContainer()
 	s.runValidators()
 	s.runOrchestrators()
 }
@@ -134,7 +140,7 @@ func (s *IntegrationTestSuite) TearDownSuite() {
 	s.Require().NoError(s.dockerPool.RemoveNetwork(s.dockerNetwork))
 }
 
-func (s *IntegrationTestSuite) initNodes(nodeCount int) {
+func (s *IntegrationTestSuite) initNodes(nodeCount int) { // nolint:unused
 	s.Require().NoError(s.chain.createAndInitValidators(nodeCount))
 	s.Require().NoError(s.chain.createAndInitOrchestrators(nodeCount))
 
@@ -192,7 +198,7 @@ func (s *IntegrationTestSuite) initNodesWithMnemonics(mnemonics ...string) {
 	}
 }
 
-func (s *IntegrationTestSuite) initEthereum() {
+func (s *IntegrationTestSuite) initEthereum() { // nolint:unused
 	// generate ethereum keys for validators add them to the ethereum genesis
 	ethGenesis := EthereumGenesis{
 		Difficulty: "0x400",
@@ -359,6 +365,15 @@ func (s *IntegrationTestSuite) initGenesis() {
 	s.Require().NoError(err)
 	appGenState[types.ModuleName] = bz
 
+	var corkGenState corktypes.GenesisState
+	s.Require().NoError(cdc.UnmarshalJSON(appGenState[corktypes.ModuleName], &corkGenState))
+	corkGenState.CellarIds = &corktypes.CellarIDSet{
+		Ids: []string{counterContract.Hex()},
+	}
+	bz, err = cdc.MarshalJSON(&corkGenState)
+	s.Require().NoError(err)
+	appGenState[corktypes.ModuleName] = bz
+
 	// set contract addr
 	var gravityGenState gravitytypes.GenesisState
 	s.Require().NoError(cdc.UnmarshalJSON(appGenState[gravitytypes.ModuleName], &gravityGenState))
@@ -433,11 +448,6 @@ func (s *IntegrationTestSuite) initValidatorConfigs() {
 	}
 }
 
-func (s *IntegrationTestSuite) runHardhatContainer() {
-	s.T().Log("starting Ethereum Hardhat container...")
-
-}
-
 func (s *IntegrationTestSuite) runEthContainer() {
 	s.T().Log("starting Ethereum container...")
 	var err error
@@ -509,6 +519,11 @@ func (s *IntegrationTestSuite) runEthContainer() {
 			if strings.HasPrefix(s, "gravity contract deployed at") {
 				strSpl := strings.Split(s, "-")
 				gravityContract = common.HexToAddress(strings.ReplaceAll(strSpl[1], " ", ""))
+				// continue, this is not the last contract deployed
+			}
+			if strings.HasPrefix(s, "counter contract deployed at") {
+				strSpl := strings.Split(s, "-")
+				counterContract = common.HexToAddress(strings.ReplaceAll(strSpl[1], " ", ""))
 				return true
 			}
 		}
@@ -680,7 +695,7 @@ msg_batch_size = 5
 	// TODO(mvid) Determine if there is a way to check the health or status of
 	// the gorc orchestrator processes. For now, we search the logs to determine
 	// when each orchestrator resource has synced all batches
-	match := "orchestrator::main_loop: No unsigned batches! Everything good!"
+	match := "No unsigned batches! Everything good!"
 	for _, resource := range s.orchResources {
 		resource := resource
 		s.T().Logf("waiting for orchestrator to be healthy: %s", resource.Container.ID)
