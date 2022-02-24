@@ -21,15 +21,15 @@ const EXCLUDED_PROTO_PACKAGES: &[&str] = &["gogoproto", "google", "tendermint", 
 const COSMOS_SDK_PROTO_REGEX: &str = "(super::)+cosmos";
 
 /// the output directory
+const TMP_PATH: &str = "/tmp/sommelier";
 const OUT_PATH: &str = "../somm_proto/src/prost/";
 
 // All paths must end with a / and either be absolute or include a ./ to reference the current
 // working directory.
 
 fn main() {
-    let tmp_path: PathBuf = std::env::temp_dir();
     let out_path = Path::new(&OUT_PATH);
-    let tmp_path = Path::new(&tmp_path);
+    let tmp_path = Path::new(&TMP_PATH);
     compile_protos(out_path, tmp_path);
 }
 
@@ -44,15 +44,17 @@ fn compile_protos(out_dir: &Path, tmp_dir: &Path) {
     // this gives us the repo root by going up two levels from the module root
     let root = root.parent().unwrap().to_path_buf();
 
-    let mut somm_proto_dir = root.clone();
-    somm_proto_dir.push("proto/allocation/v1");
+    let mut allocation_proto_dir = root.clone();
+    allocation_proto_dir.push("proto/allocation/v1");
+    let mut cork_proto_dir = root.clone();
+    cork_proto_dir.push("proto/cork/v1");
     let mut somm_proto_include_dir = root.clone();
     somm_proto_include_dir.push("proto");
     let mut third_party_proto_include_dir = root;
     third_party_proto_include_dir.push("third_party/proto");
 
     // Paths
-    let proto_paths = [somm_proto_dir];
+    let proto_paths = [allocation_proto_dir, cork_proto_dir];
     // we need to have an include which is just the folder of our protos to satisfy protoc
     // which insists that any passed file be included in a directory passed as an include
     let proto_include_paths = [somm_proto_include_dir, third_party_proto_include_dir];
