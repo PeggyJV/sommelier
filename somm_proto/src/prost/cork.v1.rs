@@ -1,12 +1,35 @@
 /// MsgSubmitCorkRequest - sdk.Msg for submitting calls to Ethereum through the gravity bridge contract
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct Cork {
-    /// body containing the ABI encoded bytes to send to the contract
+    /// call body containing the ABI encoded bytes to send to the contract
     #[prost(bytes = "vec", tag = "1")]
-    pub body: ::prost::alloc::vec::Vec<u8>,
+    pub encoded_contract_call: ::prost::alloc::vec::Vec<u8>,
     /// address of the contract to send the call
     #[prost(string, tag = "2")]
-    pub address: ::prost::alloc::string::String,
+    pub target_contract_address: ::prost::alloc::string::String,
+}
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct CellarIdSet {
+    #[prost(string, repeated, tag = "1")]
+    pub ids: ::prost::alloc::vec::Vec<::prost::alloc::string::String>,
+}
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct AddManagedCellarsProposal {
+    #[prost(string, tag = "1")]
+    pub title: ::prost::alloc::string::String,
+    #[prost(string, tag = "2")]
+    pub description: ::prost::alloc::string::String,
+    #[prost(message, optional, tag = "3")]
+    pub cellar_ids: ::core::option::Option<CellarIdSet>,
+}
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct RemoveManagedCellarsProposal {
+    #[prost(string, tag = "1")]
+    pub title: ::prost::alloc::string::String,
+    #[prost(string, tag = "2")]
+    pub description: ::prost::alloc::string::String,
+    #[prost(message, optional, tag = "3")]
+    pub cellar_ids: ::core::option::Option<CellarIdSet>,
 }
 /// MsgSubmitCorkRequest - sdk.Msg for submitting calls to Ethereum through the gravity bridge contract
 #[derive(Clone, PartialEq, ::prost::Message)]
@@ -88,6 +111,8 @@ pub mod msg_client {
 pub struct GenesisState {
     #[prost(message, optional, tag = "1")]
     pub params: ::core::option::Option<Params>,
+    #[prost(message, optional, tag = "2")]
+    pub cellar_ids: ::core::option::Option<CellarIdSet>,
 }
 /// Params cork parameters
 #[derive(Clone, PartialEq, ::prost::Message)]
@@ -134,6 +159,15 @@ pub struct QueryCommitPeriodResponse {
     /// block height at which the current voting period ends
     #[prost(int64, tag = "3")]
     pub vote_period_end: i64,
+}
+/// QueryCellarIDsRequest is the request type for Query/QueryCellarIDs gRPC method.
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct QueryCellarIDsRequest {}
+/// QueryCellarIDsResponse is the response type for Query/QueryCellars gRPC method.
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct QueryCellarIDsResponse {
+    #[prost(string, repeated, tag = "1")]
+    pub cellar_ids: ::prost::alloc::vec::Vec<::prost::alloc::string::String>,
 }
 #[doc = r" Generated client implementations."]
 pub mod query_client {
@@ -212,6 +246,21 @@ pub mod query_client {
             })?;
             let codec = tonic::codec::ProstCodec::default();
             let path = http::uri::PathAndQuery::from_static("/cork.v1.Query/QueryCommitPeriod");
+            self.inner.unary(request.into_request(), path, codec).await
+        }
+        #[doc = " QueryCellarIDs returns all cellars and current tick ranges"]
+        pub async fn query_cellar_i_ds(
+            &mut self,
+            request: impl tonic::IntoRequest<super::QueryCellarIDsRequest>,
+        ) -> Result<tonic::Response<super::QueryCellarIDsResponse>, tonic::Status> {
+            self.inner.ready().await.map_err(|e| {
+                tonic::Status::new(
+                    tonic::Code::Unknown,
+                    format!("Service was not ready: {}", e.into()),
+                )
+            })?;
+            let codec = tonic::codec::ProstCodec::default();
+            let path = http::uri::PathAndQuery::from_static("/cork.v1.Query/QueryCellarIDs");
             self.inner.unary(request.into_request(), path, codec).await
         }
     }
