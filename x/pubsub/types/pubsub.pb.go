@@ -22,6 +22,61 @@ var _ = math.Inf
 // proto package needs to be updated.
 const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
+// used to properly serialize the subscriber address string depending on type
+type SubscriberType int32
+
+const (
+	SubscriberType_VALIDATOR SubscriberType = 0
+	SubscriberType_ACCOUNT   SubscriberType = 1
+)
+
+var SubscriberType_name = map[int32]string{
+	0: "VALIDATOR",
+	1: "ACCOUNT",
+}
+
+var SubscriberType_value = map[string]int32{
+	"VALIDATOR": 0,
+	"ACCOUNT":   1,
+}
+
+func (x SubscriberType) String() string {
+	return proto.EnumName(SubscriberType_name, int32(x))
+}
+
+func (SubscriberType) EnumDescriptor() ([]byte, []int) {
+	return fileDescriptor_3164155f25b3675d, []int{0}
+}
+
+// determines what types of subscribers may subscribe to a given publisher intent
+type AllowedSubscribers int32
+
+const (
+	AllowedSubscribers_ANY        AllowedSubscribers = 0
+	AllowedSubscribers_VALIDATORS AllowedSubscribers = 1
+	AllowedSubscribers_LIST       AllowedSubscribers = 2
+)
+
+var AllowedSubscribers_name = map[int32]string{
+	0: "ANY",
+	1: "VALIDATORS",
+	2: "LIST",
+}
+
+var AllowedSubscribers_value = map[string]int32{
+	"ANY":        0,
+	"VALIDATORS": 1,
+	"LIST":       2,
+}
+
+func (x AllowedSubscribers) String() string {
+	return proto.EnumName(AllowedSubscribers_name, int32(x))
+}
+
+func (AllowedSubscribers) EnumDescriptor() ([]byte, []int) {
+	return fileDescriptor_3164155f25b3675d, []int{1}
+}
+
 type Publisher struct {
 	Domain   string `protobuf:"bytes,1,opt,name=domain,proto3" json:"domain,omitempty"`
 	CaCert   string `protobuf:"bytes,2,opt,name=ca_cert,json=caCert,proto3" json:"ca_cert,omitempty"`
@@ -91,10 +146,12 @@ func (m *Publisher) GetProofUrl() string {
 }
 
 type Subscriber struct {
-	Domain   string `protobuf:"bytes,1,opt,name=domain,proto3" json:"domain,omitempty"`
-	CaCert   string `protobuf:"bytes,2,opt,name=ca_cert,json=caCert,proto3" json:"ca_cert,omitempty"`
-	Address  string `protobuf:"bytes,3,opt,name=address,proto3" json:"address,omitempty"`
-	ProofUrl string `protobuf:"bytes,4,opt,name=proof_url,json=proofUrl,proto3" json:"proof_url,omitempty"`
+	Address        string         `protobuf:"bytes,1,opt,name=address,proto3" json:"address,omitempty"`
+	SubscriberType SubscriberType `protobuf:"varint,2,opt,name=subscriber_type,json=subscriberType,proto3,enum=pubsub.v1.SubscriberType" json:"subscriber_type,omitempty"`
+	// the below fields are optional, and only required if the subscriber wants to use "push" subscriptions
+	Domain   string `protobuf:"bytes,3,opt,name=domain,proto3" json:"domain,omitempty"`
+	CaCert   string `protobuf:"bytes,4,opt,name=ca_cert,json=caCert,proto3" json:"ca_cert,omitempty"`
+	ProofUrl string `protobuf:"bytes,5,opt,name=proof_url,json=proofUrl,proto3" json:"proof_url,omitempty"`
 }
 
 func (m *Subscriber) Reset()         { *m = Subscriber{} }
@@ -130,6 +187,20 @@ func (m *Subscriber) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_Subscriber proto.InternalMessageInfo
 
+func (m *Subscriber) GetAddress() string {
+	if m != nil {
+		return m.Address
+	}
+	return ""
+}
+
+func (m *Subscriber) GetSubscriberType() SubscriberType {
+	if m != nil {
+		return m.SubscriberType
+	}
+	return SubscriberType_VALIDATOR
+}
+
 func (m *Subscriber) GetDomain() string {
 	if m != nil {
 		return m.Domain
@@ -144,13 +215,6 @@ func (m *Subscriber) GetCaCert() string {
 	return ""
 }
 
-func (m *Subscriber) GetAddress() string {
-	if m != nil {
-		return m.Address
-	}
-	return ""
-}
-
 func (m *Subscriber) GetProofUrl() string {
 	if m != nil {
 		return m.ProofUrl
@@ -159,12 +223,12 @@ func (m *Subscriber) GetProofUrl() string {
 }
 
 type PublisherIntent struct {
-	SubscriptionId     string `protobuf:"bytes,1,opt,name=subscription_id,json=subscriptionId,proto3" json:"subscription_id,omitempty"`
-	PublisherDomain    string `protobuf:"bytes,2,opt,name=publisher_domain,json=publisherDomain,proto3" json:"publisher_domain,omitempty"`
-	Method             string `protobuf:"bytes,3,opt,name=method,proto3" json:"method,omitempty"`
-	PullUrl            string `protobuf:"bytes,4,opt,name=pull_url,json=pullUrl,proto3" json:"pull_url,omitempty"`
-	AllowedSubscribers string `protobuf:"bytes,5,opt,name=allowed_subscribers,json=allowedSubscribers,proto3" json:"allowed_subscribers,omitempty"`
-	AllowedAddresses   string `protobuf:"bytes,6,opt,name=allowed_addresses,json=allowedAddresses,proto3" json:"allowed_addresses,omitempty"`
+	SubscriptionId     string             `protobuf:"bytes,1,opt,name=subscription_id,json=subscriptionId,proto3" json:"subscription_id,omitempty"`
+	PublisherDomain    string             `protobuf:"bytes,2,opt,name=publisher_domain,json=publisherDomain,proto3" json:"publisher_domain,omitempty"`
+	Method             string             `protobuf:"bytes,3,opt,name=method,proto3" json:"method,omitempty"`
+	PullUrl            string             `protobuf:"bytes,4,opt,name=pull_url,json=pullUrl,proto3" json:"pull_url,omitempty"`
+	AllowedSubscribers AllowedSubscribers `protobuf:"varint,5,opt,name=allowed_subscribers,json=allowedSubscribers,proto3,enum=pubsub.v1.AllowedSubscribers" json:"allowed_subscribers,omitempty"`
+	AllowedAddresses   []string           `protobuf:"bytes,6,rep,name=allowed_addresses,json=allowedAddresses,proto3" json:"allowed_addresses,omitempty"`
 }
 
 func (m *PublisherIntent) Reset()         { *m = PublisherIntent{} }
@@ -228,25 +292,25 @@ func (m *PublisherIntent) GetPullUrl() string {
 	return ""
 }
 
-func (m *PublisherIntent) GetAllowedSubscribers() string {
+func (m *PublisherIntent) GetAllowedSubscribers() AllowedSubscribers {
 	if m != nil {
 		return m.AllowedSubscribers
 	}
-	return ""
+	return AllowedSubscribers_ANY
 }
 
-func (m *PublisherIntent) GetAllowedAddresses() string {
+func (m *PublisherIntent) GetAllowedAddresses() []string {
 	if m != nil {
 		return m.AllowedAddresses
 	}
-	return ""
+	return nil
 }
 
 type SubscriberIntent struct {
-	SubscsriptionId  string `protobuf:"bytes,1,opt,name=subscsription_id,json=subscsriptionId,proto3" json:"subscsription_id,omitempty"`
-	SubscriberDomain string `protobuf:"bytes,2,opt,name=subscriber_domain,json=subscriberDomain,proto3" json:"subscriber_domain,omitempty"`
-	PublisherDomain  string `protobuf:"bytes,3,opt,name=publisher_domain,json=publisherDomain,proto3" json:"publisher_domain,omitempty"`
-	PushUrl          string `protobuf:"bytes,4,opt,name=push_url,json=pushUrl,proto3" json:"push_url,omitempty"`
+	SubscsriptionId   string `protobuf:"bytes,1,opt,name=subscsription_id,json=subscsriptionId,proto3" json:"subscsription_id,omitempty"`
+	SubscriberAddress string `protobuf:"bytes,2,opt,name=subscriber_address,json=subscriberAddress,proto3" json:"subscriber_address,omitempty"`
+	PublisherDomain   string `protobuf:"bytes,3,opt,name=publisher_domain,json=publisherDomain,proto3" json:"publisher_domain,omitempty"`
+	PushUrl           string `protobuf:"bytes,4,opt,name=push_url,json=pushUrl,proto3" json:"push_url,omitempty"`
 }
 
 func (m *SubscriberIntent) Reset()         { *m = SubscriberIntent{} }
@@ -289,9 +353,9 @@ func (m *SubscriberIntent) GetSubscsriptionId() string {
 	return ""
 }
 
-func (m *SubscriberIntent) GetSubscriberDomain() string {
+func (m *SubscriberIntent) GetSubscriberAddress() string {
 	if m != nil {
-		return m.SubscriberDomain
+		return m.SubscriberAddress
 	}
 	return ""
 }
@@ -431,6 +495,8 @@ func (m *RemovePublisherProposal) GetPublisher() *Publisher {
 }
 
 func init() {
+	proto.RegisterEnum("pubsub.v1.SubscriberType", SubscriberType_name, SubscriberType_value)
+	proto.RegisterEnum("pubsub.v1.AllowedSubscribers", AllowedSubscribers_name, AllowedSubscribers_value)
 	proto.RegisterType((*Publisher)(nil), "pubsub.v1.Publisher")
 	proto.RegisterType((*Subscriber)(nil), "pubsub.v1.Subscriber")
 	proto.RegisterType((*PublisherIntent)(nil), "pubsub.v1.PublisherIntent")
@@ -442,36 +508,44 @@ func init() {
 func init() { proto.RegisterFile("pubsub/v1/pubsub.proto", fileDescriptor_3164155f25b3675d) }
 
 var fileDescriptor_3164155f25b3675d = []byte{
-	// 463 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xc4, 0x93, 0x41, 0x6f, 0xd3, 0x30,
-	0x14, 0xc7, 0x6b, 0xc6, 0xda, 0xf5, 0x4d, 0xa2, 0xc1, 0x54, 0x5d, 0x10, 0x52, 0x34, 0xf5, 0x02,
-	0x13, 0x52, 0xa2, 0x6d, 0x9f, 0x60, 0xc0, 0x81, 0xde, 0xa6, 0xa2, 0x5d, 0xb8, 0x44, 0x49, 0x6c,
-	0x9a, 0x20, 0xa7, 0xb6, 0xfc, 0x9c, 0xc0, 0xae, 0x48, 0xdc, 0xf9, 0x28, 0x7c, 0x0c, 0x8e, 0x3b,
-	0x72, 0x44, 0xed, 0x77, 0xe0, 0x8c, 0xea, 0xb8, 0x49, 0x2b, 0x76, 0x86, 0x9b, 0xdf, 0xfb, 0xdb,
-	0x7a, 0xbf, 0xff, 0xdf, 0x7a, 0x30, 0x51, 0x55, 0x8a, 0x55, 0x1a, 0xd5, 0xe7, 0x51, 0x73, 0x0a,
-	0x95, 0x96, 0x46, 0xd2, 0xa1, 0xab, 0xea, 0xf3, 0x29, 0xc2, 0xf0, 0xba, 0x4a, 0x45, 0x81, 0x39,
-	0xd7, 0x74, 0x02, 0x7d, 0x26, 0xcb, 0xa4, 0x58, 0xfa, 0xe4, 0x94, 0xbc, 0x18, 0xce, 0x5d, 0x45,
-	0x4f, 0x60, 0x90, 0x25, 0x71, 0xc6, 0xb5, 0xf1, 0x1f, 0x34, 0x42, 0x96, 0xbc, 0xe6, 0xda, 0x50,
-	0x1f, 0x06, 0x09, 0x63, 0x9a, 0x23, 0xfa, 0x07, 0x56, 0xd8, 0x96, 0xf4, 0x19, 0x0c, 0x95, 0x96,
-	0xf2, 0x43, 0x5c, 0x69, 0xe1, 0x3f, 0xb4, 0xda, 0x91, 0x6d, 0xdc, 0x68, 0x31, 0x35, 0x00, 0xef,
-	0xaa, 0x14, 0x33, 0x5d, 0xa4, 0xff, 0x70, 0xea, 0x6f, 0x02, 0xa3, 0xd6, 0xeb, 0x6c, 0x69, 0xf8,
-	0xd2, 0xd0, 0xe7, 0x30, 0xc2, 0x86, 0x44, 0x99, 0x42, 0x2e, 0xe3, 0x82, 0x39, 0x88, 0x47, 0xbb,
-	0xed, 0x19, 0xa3, 0x67, 0xe0, 0xa9, 0xed, 0xdb, 0xd8, 0xe1, 0x36, 0x54, 0xa3, 0xb6, 0xff, 0xa6,
-	0xe1, 0x9e, 0x40, 0xbf, 0xe4, 0x26, 0x97, 0xcc, 0xd1, 0xb9, 0x8a, 0x3e, 0x85, 0x23, 0x55, 0x09,
-	0xb1, 0xc3, 0x36, 0xd8, 0xd4, 0x37, 0x5a, 0xd0, 0x08, 0x9e, 0x24, 0x42, 0xc8, 0x4f, 0x9c, 0xc5,
-	0xd8, 0x06, 0x83, 0xfe, 0xa1, 0xbd, 0x45, 0x9d, 0xd4, 0x45, 0x86, 0xf4, 0x25, 0x3c, 0xde, 0x3e,
-	0x70, 0xde, 0x39, 0xfa, 0x7d, 0x7b, 0xdd, 0x73, 0xc2, 0xd5, 0xb6, 0x3f, 0xfd, 0x4e, 0xc0, 0xeb,
-	0x1e, 0x3b, 0xe7, 0x67, 0xe0, 0xd9, 0x51, 0xf8, 0x97, 0xf5, 0xd1, 0x5e, 0x7f, 0xc6, 0x36, 0xc3,
-	0x3a, 0xaa, 0x7d, 0xf3, 0x5e, 0x27, 0x38, 0xf7, 0xf7, 0x05, 0x75, 0x70, 0x7f, 0x50, 0x36, 0x10,
-	0xcc, 0xf7, 0x03, 0xc1, 0x7c, 0xf3, 0x57, 0x5f, 0x08, 0x8c, 0xaf, 0x18, 0x6b, 0xbf, 0xeb, 0x5a,
-	0x4b, 0x25, 0x31, 0x11, 0x74, 0x0c, 0x87, 0xa6, 0x30, 0x82, 0x3b, 0xd6, 0xa6, 0xa0, 0xa7, 0x70,
-	0xcc, 0x78, 0xfb, 0x5d, 0x8e, 0x6d, 0xb7, 0x45, 0x2f, 0x60, 0xd8, 0x8e, 0xb7, 0x3c, 0xc7, 0x17,
-	0xe3, 0xb0, 0x5d, 0x83, 0xb0, 0x1d, 0x34, 0xef, 0xae, 0x4d, 0xbf, 0x12, 0x38, 0x99, 0xf3, 0x52,
-	0xd6, 0xfc, 0xbf, 0x72, 0xbc, 0x7a, 0xfb, 0x63, 0x15, 0x90, 0xbb, 0x55, 0x40, 0x7e, 0xad, 0x02,
-	0xf2, 0x6d, 0x1d, 0xf4, 0xee, 0xd6, 0x41, 0xef, 0xe7, 0x3a, 0xe8, 0xbd, 0x0f, 0x17, 0x85, 0xc9,
-	0xab, 0x34, 0xcc, 0x64, 0x19, 0x29, 0xbe, 0x58, 0xdc, 0x7e, 0xac, 0x23, 0x94, 0x65, 0xc9, 0x45,
-	0xc1, 0x75, 0x54, 0x5f, 0x46, 0x9f, 0xdd, 0xe2, 0x47, 0xe6, 0x56, 0x71, 0x4c, 0xfb, 0x76, 0xff,
-	0x2f, 0xff, 0x04, 0x00, 0x00, 0xff, 0xff, 0x60, 0xb4, 0xf3, 0xde, 0x19, 0x04, 0x00, 0x00,
+	// 585 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xc4, 0x94, 0xbf, 0x6f, 0xd3, 0x40,
+	0x14, 0xc7, 0x73, 0x4d, 0x9b, 0xd4, 0xaf, 0xc2, 0x71, 0x8f, 0x2a, 0x75, 0x85, 0xb0, 0xa2, 0x2c,
+	0xb4, 0x05, 0x62, 0x35, 0x1d, 0x98, 0xdd, 0x74, 0x20, 0x52, 0x95, 0x56, 0x4e, 0x82, 0x04, 0x8b,
+	0x65, 0xc7, 0x47, 0x62, 0x64, 0xe7, 0xac, 0x3b, 0x3b, 0x90, 0x15, 0x89, 0x9d, 0x85, 0x7f, 0x84,
+	0x89, 0x3f, 0x81, 0xb1, 0x23, 0x23, 0x4a, 0xfe, 0x11, 0x14, 0xff, 0x36, 0x29, 0x33, 0x9b, 0xdf,
+	0xf7, 0xdd, 0xbd, 0xfb, 0xbe, 0xcf, 0x3b, 0x1f, 0x34, 0xfd, 0xd0, 0xe2, 0xa1, 0xa5, 0x2e, 0x2e,
+	0xd4, 0xf8, 0xab, 0xe3, 0x33, 0x1a, 0x50, 0x2c, 0x24, 0xd1, 0xe2, 0xa2, 0xcd, 0x41, 0xb8, 0x0b,
+	0x2d, 0xd7, 0xe1, 0x33, 0xc2, 0x70, 0x13, 0x6a, 0x36, 0xf5, 0x4c, 0x67, 0x2e, 0xa3, 0x16, 0x3a,
+	0x15, 0xf4, 0x24, 0xc2, 0xc7, 0x50, 0x9f, 0x98, 0xc6, 0x84, 0xb0, 0x40, 0xde, 0x89, 0x13, 0x13,
+	0xb3, 0x47, 0x58, 0x80, 0x65, 0xa8, 0x9b, 0xb6, 0xcd, 0x08, 0xe7, 0x72, 0x35, 0x4a, 0xa4, 0x21,
+	0x7e, 0x02, 0x82, 0xcf, 0x28, 0x7d, 0x6f, 0x84, 0xcc, 0x95, 0x77, 0xa3, 0xdc, 0x7e, 0x24, 0x8c,
+	0x99, 0xdb, 0xfe, 0x81, 0x00, 0x86, 0xa1, 0xc5, 0x27, 0xcc, 0xb1, 0x08, 0x2b, 0x56, 0x41, 0xe5,
+	0x2a, 0x57, 0xd0, 0xe0, 0xd9, 0x3a, 0x23, 0x58, 0xfa, 0x24, 0x32, 0x20, 0x76, 0x4f, 0x3a, 0x59,
+	0x0b, 0x9d, 0xbc, 0xd2, 0x68, 0xe9, 0x13, 0x5d, 0xe4, 0xa5, 0xb8, 0xd0, 0x54, 0xf5, 0x5f, 0x4d,
+	0xed, 0x96, 0x9a, 0x2a, 0x59, 0xdf, 0xfb, 0xcb, 0xfa, 0xb7, 0x1d, 0x68, 0x64, 0xc0, 0xfa, 0xf3,
+	0x80, 0xcc, 0x03, 0xfc, 0x2c, 0x73, 0xe9, 0x07, 0x0e, 0x9d, 0x1b, 0x8e, 0x9d, 0xf4, 0x21, 0x16,
+	0xe5, 0xbe, 0x8d, 0xcf, 0x40, 0xf2, 0xd3, 0xbd, 0x46, 0x62, 0x2a, 0x06, 0xda, 0xc8, 0xf4, 0xeb,
+	0xd8, 0x5d, 0x13, 0x6a, 0x1e, 0x09, 0x66, 0xd4, 0x4e, 0x5d, 0xc7, 0x11, 0x3e, 0x81, 0x7d, 0x3f,
+	0x74, 0xdd, 0x02, 0xd6, 0xfa, 0x26, 0x1e, 0x33, 0x17, 0x0f, 0xe0, 0xb1, 0xe9, 0xba, 0xf4, 0x23,
+	0xb1, 0x8d, 0x1c, 0x01, 0x8f, 0x3a, 0x10, 0xbb, 0x4f, 0x0b, 0xc0, 0xb4, 0x78, 0x55, 0xce, 0x8d,
+	0xeb, 0xd8, 0xdc, 0xd2, 0xf0, 0x73, 0x38, 0x4c, 0xeb, 0x25, 0xf3, 0x20, 0x5c, 0xae, 0xb5, 0xaa,
+	0xa7, 0x82, 0x2e, 0x25, 0x09, 0x2d, 0xd5, 0xdb, 0xdf, 0x11, 0x48, 0xf9, 0xe6, 0x04, 0xcc, 0x19,
+	0x48, 0x91, 0x13, 0xbe, 0x45, 0xa6, 0x51, 0xd2, 0xfb, 0x36, 0x7e, 0x09, 0xb8, 0x30, 0xe9, 0xf4,
+	0x3a, 0xc4, 0x70, 0x0e, 0xf3, 0x4c, 0x72, 0xe0, 0x83, 0x24, 0xab, 0x0f, 0x93, 0x8c, 0x88, 0xf1,
+	0x59, 0x99, 0x18, 0x9f, 0x6d, 0x86, 0xf9, 0x19, 0xc1, 0x91, 0x66, 0xdb, 0xd9, 0x3c, 0xef, 0x18,
+	0xf5, 0x29, 0x37, 0x5d, 0x7c, 0x04, 0x7b, 0x81, 0x13, 0xb8, 0x24, 0x71, 0x1b, 0x07, 0xb8, 0x05,
+	0x07, 0x36, 0xc9, 0xe6, 0x99, 0x98, 0x2b, 0x4a, 0xb8, 0x0b, 0x42, 0x76, 0x7c, 0xe4, 0xe7, 0xa0,
+	0x7b, 0x54, 0x00, 0x9f, 0x1d, 0xa4, 0xe7, 0xcb, 0xda, 0x5f, 0x10, 0x1c, 0xeb, 0xc4, 0xa3, 0x0b,
+	0xf2, 0x5f, 0x7d, 0x9c, 0xbf, 0x00, 0xb1, 0xfc, 0x27, 0xe1, 0x47, 0x20, 0xbc, 0xd1, 0x6e, 0xfa,
+	0xd7, 0xda, 0xe8, 0x56, 0x97, 0x2a, 0xf8, 0x00, 0xea, 0x5a, 0xaf, 0x77, 0x3b, 0x1e, 0x8c, 0x24,
+	0x74, 0xfe, 0x0a, 0xf0, 0xf6, 0x35, 0xc2, 0x75, 0xa8, 0x6a, 0x83, 0xb7, 0x52, 0x05, 0x8b, 0x00,
+	0xd9, 0xd6, 0xa1, 0x84, 0xf0, 0x3e, 0xec, 0xde, 0xf4, 0x87, 0x23, 0x69, 0xe7, 0xea, 0xf5, 0xcf,
+	0x95, 0x82, 0xee, 0x57, 0x0a, 0xfa, 0xbd, 0x52, 0xd0, 0xd7, 0xb5, 0x52, 0xb9, 0x5f, 0x2b, 0x95,
+	0x5f, 0x6b, 0xa5, 0xf2, 0xae, 0x33, 0x75, 0x82, 0x59, 0x68, 0x75, 0x26, 0xd4, 0x53, 0x7d, 0x32,
+	0x9d, 0x2e, 0x3f, 0x2c, 0x54, 0x4e, 0x3d, 0x8f, 0xb8, 0x0e, 0x61, 0xea, 0xe2, 0x52, 0xfd, 0x94,
+	0xbc, 0x62, 0xea, 0xe6, 0x21, 0xe0, 0x56, 0x2d, 0x7a, 0xcc, 0x2e, 0xff, 0x04, 0x00, 0x00, 0xff,
+	0xff, 0x08, 0x92, 0xda, 0xa8, 0xe6, 0x04, 0x00, 0x00,
 }
 
 func (m *Publisher) Marshal() (dAtA []byte, err error) {
@@ -550,26 +624,31 @@ func (m *Subscriber) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 		copy(dAtA[i:], m.ProofUrl)
 		i = encodeVarintPubsub(dAtA, i, uint64(len(m.ProofUrl)))
 		i--
-		dAtA[i] = 0x22
-	}
-	if len(m.Address) > 0 {
-		i -= len(m.Address)
-		copy(dAtA[i:], m.Address)
-		i = encodeVarintPubsub(dAtA, i, uint64(len(m.Address)))
-		i--
-		dAtA[i] = 0x1a
+		dAtA[i] = 0x2a
 	}
 	if len(m.CaCert) > 0 {
 		i -= len(m.CaCert)
 		copy(dAtA[i:], m.CaCert)
 		i = encodeVarintPubsub(dAtA, i, uint64(len(m.CaCert)))
 		i--
-		dAtA[i] = 0x12
+		dAtA[i] = 0x22
 	}
 	if len(m.Domain) > 0 {
 		i -= len(m.Domain)
 		copy(dAtA[i:], m.Domain)
 		i = encodeVarintPubsub(dAtA, i, uint64(len(m.Domain)))
+		i--
+		dAtA[i] = 0x1a
+	}
+	if m.SubscriberType != 0 {
+		i = encodeVarintPubsub(dAtA, i, uint64(m.SubscriberType))
+		i--
+		dAtA[i] = 0x10
+	}
+	if len(m.Address) > 0 {
+		i -= len(m.Address)
+		copy(dAtA[i:], m.Address)
+		i = encodeVarintPubsub(dAtA, i, uint64(len(m.Address)))
 		i--
 		dAtA[i] = 0xa
 	}
@@ -597,18 +676,18 @@ func (m *PublisherIntent) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	var l int
 	_ = l
 	if len(m.AllowedAddresses) > 0 {
-		i -= len(m.AllowedAddresses)
-		copy(dAtA[i:], m.AllowedAddresses)
-		i = encodeVarintPubsub(dAtA, i, uint64(len(m.AllowedAddresses)))
-		i--
-		dAtA[i] = 0x32
+		for iNdEx := len(m.AllowedAddresses) - 1; iNdEx >= 0; iNdEx-- {
+			i -= len(m.AllowedAddresses[iNdEx])
+			copy(dAtA[i:], m.AllowedAddresses[iNdEx])
+			i = encodeVarintPubsub(dAtA, i, uint64(len(m.AllowedAddresses[iNdEx])))
+			i--
+			dAtA[i] = 0x32
+		}
 	}
-	if len(m.AllowedSubscribers) > 0 {
-		i -= len(m.AllowedSubscribers)
-		copy(dAtA[i:], m.AllowedSubscribers)
-		i = encodeVarintPubsub(dAtA, i, uint64(len(m.AllowedSubscribers)))
+	if m.AllowedSubscribers != 0 {
+		i = encodeVarintPubsub(dAtA, i, uint64(m.AllowedSubscribers))
 		i--
-		dAtA[i] = 0x2a
+		dAtA[i] = 0x28
 	}
 	if len(m.PullUrl) > 0 {
 		i -= len(m.PullUrl)
@@ -675,10 +754,10 @@ func (m *SubscriberIntent) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 		i--
 		dAtA[i] = 0x1a
 	}
-	if len(m.SubscriberDomain) > 0 {
-		i -= len(m.SubscriberDomain)
-		copy(dAtA[i:], m.SubscriberDomain)
-		i = encodeVarintPubsub(dAtA, i, uint64(len(m.SubscriberDomain)))
+	if len(m.SubscriberAddress) > 0 {
+		i -= len(m.SubscriberAddress)
+		copy(dAtA[i:], m.SubscriberAddress)
+		i = encodeVarintPubsub(dAtA, i, uint64(len(m.SubscriberAddress)))
 		i--
 		dAtA[i] = 0x12
 	}
@@ -832,15 +911,18 @@ func (m *Subscriber) Size() (n int) {
 	}
 	var l int
 	_ = l
+	l = len(m.Address)
+	if l > 0 {
+		n += 1 + l + sovPubsub(uint64(l))
+	}
+	if m.SubscriberType != 0 {
+		n += 1 + sovPubsub(uint64(m.SubscriberType))
+	}
 	l = len(m.Domain)
 	if l > 0 {
 		n += 1 + l + sovPubsub(uint64(l))
 	}
 	l = len(m.CaCert)
-	if l > 0 {
-		n += 1 + l + sovPubsub(uint64(l))
-	}
-	l = len(m.Address)
 	if l > 0 {
 		n += 1 + l + sovPubsub(uint64(l))
 	}
@@ -873,13 +955,14 @@ func (m *PublisherIntent) Size() (n int) {
 	if l > 0 {
 		n += 1 + l + sovPubsub(uint64(l))
 	}
-	l = len(m.AllowedSubscribers)
-	if l > 0 {
-		n += 1 + l + sovPubsub(uint64(l))
+	if m.AllowedSubscribers != 0 {
+		n += 1 + sovPubsub(uint64(m.AllowedSubscribers))
 	}
-	l = len(m.AllowedAddresses)
-	if l > 0 {
-		n += 1 + l + sovPubsub(uint64(l))
+	if len(m.AllowedAddresses) > 0 {
+		for _, s := range m.AllowedAddresses {
+			l = len(s)
+			n += 1 + l + sovPubsub(uint64(l))
+		}
 	}
 	return n
 }
@@ -894,7 +977,7 @@ func (m *SubscriberIntent) Size() (n int) {
 	if l > 0 {
 		n += 1 + l + sovPubsub(uint64(l))
 	}
-	l = len(m.SubscriberDomain)
+	l = len(m.SubscriberAddress)
 	if l > 0 {
 		n += 1 + l + sovPubsub(uint64(l))
 	}
@@ -1166,6 +1249,57 @@ func (m *Subscriber) Unmarshal(dAtA []byte) error {
 		switch fieldNum {
 		case 1:
 			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Address", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowPubsub
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthPubsub
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthPubsub
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Address = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 2:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field SubscriberType", wireType)
+			}
+			m.SubscriberType = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowPubsub
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.SubscriberType |= SubscriberType(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 3:
+			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Domain", wireType)
 			}
 			var stringLen uint64
@@ -1196,7 +1330,7 @@ func (m *Subscriber) Unmarshal(dAtA []byte) error {
 			}
 			m.Domain = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
-		case 2:
+		case 4:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field CaCert", wireType)
 			}
@@ -1228,39 +1362,7 @@ func (m *Subscriber) Unmarshal(dAtA []byte) error {
 			}
 			m.CaCert = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
-		case 3:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Address", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowPubsub
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthPubsub
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthPubsub
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.Address = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
-		case 4:
+		case 5:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field ProofUrl", wireType)
 			}
@@ -1471,10 +1573,10 @@ func (m *PublisherIntent) Unmarshal(dAtA []byte) error {
 			m.PullUrl = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		case 5:
-			if wireType != 2 {
+			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field AllowedSubscribers", wireType)
 			}
-			var stringLen uint64
+			m.AllowedSubscribers = 0
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowPubsub
@@ -1484,24 +1586,11 @@ func (m *PublisherIntent) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
+				m.AllowedSubscribers |= AllowedSubscribers(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthPubsub
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthPubsub
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.AllowedSubscribers = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
 		case 6:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field AllowedAddresses", wireType)
@@ -1532,7 +1621,7 @@ func (m *PublisherIntent) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.AllowedAddresses = string(dAtA[iNdEx:postIndex])
+			m.AllowedAddresses = append(m.AllowedAddresses, string(dAtA[iNdEx:postIndex]))
 			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
@@ -1618,7 +1707,7 @@ func (m *SubscriberIntent) Unmarshal(dAtA []byte) error {
 			iNdEx = postIndex
 		case 2:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field SubscriberDomain", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field SubscriberAddress", wireType)
 			}
 			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
@@ -1646,7 +1735,7 @@ func (m *SubscriberIntent) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.SubscriberDomain = string(dAtA[iNdEx:postIndex])
+			m.SubscriberAddress = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		case 3:
 			if wireType != 2 {
