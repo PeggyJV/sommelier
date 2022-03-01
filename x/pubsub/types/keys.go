@@ -26,34 +26,34 @@ const (
 	_ = byte(iota)
 
 	// PublisherPrefix - <prefix><publisher_domain> -> Publisher
-	PublisherPrefix
+	PublisherKeyPrefix
 
 	// SubscriberPrefix - <prefix><subscriber_address> -> Subscriber
-	SubscriberPrefix
+	SubscriberKeyPrefix
 
 	// PublisherIntentPrefix - <prefix><publisher_domain><subscription_id> -> PublisherIntent
-	PublisherIntentPrefix
+	PublisherIntentKeyPrefix
 
 	// SubscriberIntentPrefix - <prefix><subscriber_address><subscription_id> -> SubscriberIntent
-	SubscriberIntentPrefix
+	SubscriberIntentKeyPrefix
 )
 
 // GetPublisherKey returns the key for a Publisher
 func GetPublisherKey(publisherDomain string) []byte {
-	return append([]byte{PublisherPrefix}, []byte(publisherDomain)...)
+	return append([]byte{PublisherKeyPrefix}, []byte(publisherDomain)...)
 }
 
 // GetSubscriberKey returns the key for a Subscriber
 func GetSubscriberKey(subscriberAddress sdk.Address) []byte {
-	return append([]byte{SubscriberPrefix}, subscriberAddress.Bytes()...)
+	return append([]byte{SubscriberKeyPrefix}, subscriberAddress.Bytes()...)
 }
 
 // GetPublisherIntentKey returns the key for a PublisherIntent
 func GetPublisherIntentkey(publisherDomain string, subscriptionId string) []byte {
-	return bytes.Join([][]byte{{PublisherIntentPrefix}, []byte(publisherDomain), []byte(subscriptionId)}, []byte{})
+	return bytes.Join([][]byte{{PublisherIntentKeyPrefix}, []byte(publisherDomain), []byte(subscriptionId)}, []byte{})
 }
 
 // GetSubscriberIntentKey returns the key for a SubscriberIntent
 func GetSubscriberIntentKey(subscriberAddress sdk.Address, subscriptionId string) []byte {
-	return bytes.Join([][]byte{{SubscriberIntentPrefix}, subscriberAddress.Bytes(), []byte(subscriptionId)}, []byte{})
+	return bytes.Join([][]byte{{SubscriberIntentKeyPrefix}, subscriberAddress.Bytes(), []byte(subscriptionId)}, []byte{})
 }
