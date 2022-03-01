@@ -4,25 +4,18 @@ package pubsub.v1;
 option go_package = "github.com/peggyjv/sommelier/v3/x/pubsub/types";
 
 message Publisher {
-  string domain = 1; // unique lookup key
+  string domain = 1; // unique key
   string ca_cert = 2;
   string address = 3;
   string proof_url = 4;
 }
 
-// used to properly serialize the subscriber address string depending on type
-enum SubscriberType {
-  VALIDATOR = 0;
-  ACCOUNT = 1;
-}
-
 message Subscriber {
-  string address = 1; // unique lookup key, either a validator address or account address
-  SubscriberType subscriber_type = 2;
+  string address = 1; // unique key, account address representation of either an account or a validator
   // the below fields are optional, and only required if the subscriber wants to use "push" subscriptions
-  string domain = 3;
-  string ca_cert = 4;
-  string proof_url = 5;
+  string domain = 2;
+  string ca_cert = 3;
+  string proof_url = 4;
 }
 
 // determines what types of subscribers may subscribe to a given publisher intent
@@ -33,15 +26,18 @@ enum AllowedSubscribers {
 }
 
 message PublisherIntent {
+  // unique key is subscription_id and publisher_domain tuple
   string subscription_id = 1;
   string publisher_domain = 2;
   string method = 3;
   string pull_url = 4; // optional, only needs to be set if using the "pull" method
   AllowedSubscribers allowed_subscribers = 5;
-  repeated string allowed_addresses = 6; // optional, must be provided if allowed_subscribers is LIST
+  repeated string allowed_addresses = 6; // optional, must be provided if allowed_subscribers is LIST, list of account addresses
 }
 
 message SubscriberIntent {
+  // unique key is subscription_id and subscriber_address tuple, a given subscriber can only subscribe to one publisher per
+  // subscription_id at a time
   string subscsription_id = 1;
   string subscriber_address = 2;
   string publisher_domain = 3;

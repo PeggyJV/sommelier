@@ -44,7 +44,7 @@ func GetPublisherKey(publisherDomain string) []byte {
 }
 
 // GetSubscriberKey returns the key for a Subscriber
-func GetSubscriberKey(subscriberAddress sdk.Address) []byte {
+func GetSubscriberKey(subscriberAddress sdk.AccAddress) []byte {
 	return append([]byte{SubscriberKeyPrefix}, subscriberAddress.Bytes()...)
 }
 
@@ -54,6 +54,6 @@ func GetPublisherIntentKey(publisherDomain string, subscriptionId string) []byte
 }
 
 // GetSubscriberIntentKey returns the key for a SubscriberIntent
-func GetSubscriberIntentKey(subscriberAddress sdk.Address, subscriptionId string) []byte {
+func GetSubscriberIntentKey(subscriberAddress sdk.AccAddress, subscriptionId string) []byte {
 	return bytes.Join([][]byte{{SubscriberIntentKeyPrefix}, subscriberAddress.Bytes(), []byte(subscriptionId)}, []byte{})
 }

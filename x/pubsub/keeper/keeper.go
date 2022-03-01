@@ -92,12 +92,12 @@ func (k Keeper) GetPublishers(ctx sdk.Context) (publishers []types.Publisher) {
 // Subscriber //
 ////////////////
 
-func (k Keeper) SetSubscriber(ctx sdk.Context, subscriberAddress sdk.Address, subscriber types.Subscriber) {
+func (k Keeper) SetSubscriber(ctx sdk.Context, subscriberAddress sdk.AccAddress, subscriber types.Subscriber) {
 	bz := k.cdc.MustMarshal(&subscriber)
 	ctx.KVStore(k.storeKey).Set(types.GetSubscriberKey(subscriberAddress), bz)
 }
 
-func (k Keeper) GetSubscriber(ctx sdk.Context, subscriberAddress sdk.Address) (subscriber types.Subscriber, found bool) {
+func (k Keeper) GetSubscriber(ctx sdk.Context, subscriberAddress sdk.AccAddress) (subscriber types.Subscriber, found bool) {
 	bz := ctx.KVStore(k.storeKey).Get(types.GetSubscriberKey(subscriberAddress))
 	if len(bz) == 0 {
 		return types.Subscriber{}, false
@@ -117,12 +117,7 @@ func (k Keeper) IterateSubscribers(ctx sdk.Context, handler func(subscriberAddre
 		k.cdc.MustUnmarshal(iter.Value(), &subscriber)
 
 		addressKey := bytes.NewBuffer(bytes.TrimPrefix(iter.Key(), []byte{types.SubscriberKeyPrefix}))
-		var subscriberAddress sdk.Address
-		if subscriber.SubscriberType == types.SubscriberType_VALIDATOR {
-			subscriberAddress = sdk.ValAddress(addressKey.Bytes())
-		} else {
-			subscriberAddress = sdk.AccAddress(addressKey.Bytes())
-		}
+		subscriberAddress := sdk.AccAddress(addressKey.Bytes())
 
 		if handler(subscriberAddress, subscriber) {
 			break
@@ -186,12 +181,12 @@ func (k Keeper) GetPublisherIntents(ctx sdk.Context) (publisherIntents []types.P
 // SubscriberIntent //
 //////////////////////
 
-func (k Keeper) SetSubscriberIntent(ctx sdk.Context, subscriberAddress sdk.Address, subscriberIntent types.SubscriberIntent) {
+func (k Keeper) SetSubscriberIntent(ctx sdk.Context, subscriberAddress sdk.AccAddress, subscriberIntent types.SubscriberIntent) {
 	bz := k.cdc.MustMarshal(&subscriberIntent)
 	ctx.KVStore(k.storeKey).Set(types.GetSubscriberIntentKey(subscriberAddress, subscriberIntent.SubscsriptionId), bz)
 }
 
-func (k Keeper) GetSubscriberIntent(ctx sdk.Context, subscriberAddress sdk.Address, subscriptionId string) (subscriberIntent types.SubscriberIntent, found bool) {
+func (k Keeper) GetSubscriberIntent(ctx sdk.Context, subscriberAddress sdk.AccAddress, subscriptionId string) (subscriberIntent types.SubscriberIntent, found bool) {
 	bz := ctx.KVStore(k.storeKey).Get(types.GetSubscriberIntentKey(subscriberAddress, subscriptionId))
 	if len(bz) == 0 {
 		return types.SubscriberIntent{}, false
@@ -201,7 +196,7 @@ func (k Keeper) GetSubscriberIntent(ctx sdk.Context, subscriberAddress sdk.Addre
 	return subscriberIntent, true
 }
 
-func (k Keeper) IterateSubscriberIntents(ctx sdk.Context, handler func(subscriberIntentAddress sdk.Address, subscriberIntent types.SubscriberIntent) (stop bool)) {
+func (k Keeper) IterateSubscriberIntents(ctx sdk.Context, handler func(subscriberAddress sdk.AccAddress, subscriberIntent types.SubscriberIntent) (stop bool)) {
 	store := ctx.KVStore(k.storeKey)
 	iter := sdk.KVStorePrefixIterator(store, []byte{types.SubscriberIntentKeyPrefix})
 	defer iter.Close()
@@ -211,21 +206,16 @@ func (k Keeper) IterateSubscriberIntents(ctx sdk.Context, handler func(subscribe
 		k.cdc.MustUnmarshal(iter.Value(), &subscriberIntent)
 
 		addressKey := bytes.NewBuffer(bytes.TrimPrefix(iter.Key(), []byte{types.SubscriberIntentKeyPrefix}))
-		var subscriberIntentAddress sdk.Address
-		if subscriberIntent.SubscriberIntentType == types.SubscriberIntentType_VALIDATOR {
-			subscriberIntentAddress = sdk.ValAddress(addressKey.Next(20))
-		} else {
-			subscriberIntentAddress = sdk.AccAddress(addressKey.Next(20))
-		}
+		subscriberAddress := sdk.AccAddress(addressKey.Next(20))
 
-		if handler(subscriberIntentAddress, subscriberIntent) {
+		if handler(subscriberAddress, subscriberIntent) {
 			break
 		}
 	}
 }
 
 func (k Keeper) GetSubscriberIntents(ctx sdk.Context) (subscriberIntents []types.SubscriberIntent) {
-	k.IterateSubscriberIntents(ctx, func(subscriberIntentAddress sdk.Address, subscriberIntent types.SubscriberIntent) (stop bool) {
+	k.IterateSubscriberIntents(ctx, func(subscriberAddress sdk.AccAddress, subscriberIntent types.SubscriberIntent) (stop bool) {
 		subscriberIntents = append(subscriberIntents, subscriberIntent)
 		return false
 	})
