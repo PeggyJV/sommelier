@@ -134,15 +134,15 @@ func request_Query_QuerySusbscriber_0(ctx context.Context, marshaler runtime.Mar
 		_   = err
 	)
 
-	val, ok = pathParams["subscriber_domain"]
+	val, ok = pathParams["subscriber_address"]
 	if !ok {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "subscriber_domain")
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "subscriber_address")
 	}
 
-	protoReq.SubscriberDomain, err = runtime.String(val)
+	protoReq.SubscriberAddress, err = runtime.String(val)
 
 	if err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "subscriber_domain", err)
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "subscriber_address", err)
 	}
 
 	msg, err := client.QuerySusbscriber(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
@@ -161,15 +161,15 @@ func local_request_Query_QuerySusbscriber_0(ctx context.Context, marshaler runti
 		_   = err
 	)
 
-	val, ok = pathParams["subscriber_domain"]
+	val, ok = pathParams["subscriber_address"]
 	if !ok {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "subscriber_domain")
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "subscriber_address")
 	}
 
-	protoReq.SubscriberDomain, err = runtime.String(val)
+	protoReq.SubscriberAddress, err = runtime.String(val)
 
 	if err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "subscriber_domain", err)
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "subscriber_address", err)
 	}
 
 	msg, err := server.QuerySusbscriber(ctx, &protoReq)
@@ -408,15 +408,15 @@ func request_Query_QuerySubscriberIntent_0(ctx context.Context, marshaler runtim
 		_   = err
 	)
 
-	val, ok = pathParams["subscriber_domain"]
+	val, ok = pathParams["subscriber_address"]
 	if !ok {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "subscriber_domain")
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "subscriber_address")
 	}
 
-	protoReq.SubscriberDomain, err = runtime.String(val)
+	protoReq.SubscriberAddress, err = runtime.String(val)
 
 	if err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "subscriber_domain", err)
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "subscriber_address", err)
 	}
 
 	val, ok = pathParams["subscription_id"]
@@ -446,15 +446,15 @@ func local_request_Query_QuerySubscriberIntent_0(ctx context.Context, marshaler 
 		_   = err
 	)
 
-	val, ok = pathParams["subscriber_domain"]
+	val, ok = pathParams["subscriber_address"]
 	if !ok {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "subscriber_domain")
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "subscriber_address")
 	}
 
-	protoReq.SubscriberDomain, err = runtime.String(val)
+	protoReq.SubscriberAddress, err = runtime.String(val)
 
 	if err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "subscriber_domain", err)
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "subscriber_address", err)
 	}
 
 	val, ok = pathParams["subscription_id"]
@@ -492,7 +492,7 @@ func local_request_Query_QuerySubscriberIntents_0(ctx context.Context, marshaler
 }
 
 func request_Query_QuerySubscriberIntentsBySubscriberDomain_0(ctx context.Context, marshaler runtime.Marshaler, client QueryClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq QuerySubscriberIntentsBySubscriberDomainRequest
+	var protoReq QuerySubscriberIntentsBySubscriberAddressRequest
 	var metadata runtime.ServerMetadata
 
 	var (
@@ -502,15 +502,15 @@ func request_Query_QuerySubscriberIntentsBySubscriberDomain_0(ctx context.Contex
 		_   = err
 	)
 
-	val, ok = pathParams["subscriber_domain"]
+	val, ok = pathParams["subscriber_address"]
 	if !ok {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "subscriber_domain")
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "subscriber_address")
 	}
 
-	protoReq.SubscriberDomain, err = runtime.String(val)
+	protoReq.SubscriberAddress, err = runtime.String(val)
 
 	if err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "subscriber_domain", err)
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "subscriber_address", err)
 	}
 
 	msg, err := client.QuerySubscriberIntentsBySubscriberDomain(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
@@ -519,7 +519,7 @@ func request_Query_QuerySubscriberIntentsBySubscriberDomain_0(ctx context.Contex
 }
 
 func local_request_Query_QuerySubscriberIntentsBySubscriberDomain_0(ctx context.Context, marshaler runtime.Marshaler, server QueryServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq QuerySubscriberIntentsBySubscriberDomainRequest
+	var protoReq QuerySubscriberIntentsBySubscriberAddressRequest
 	var metadata runtime.ServerMetadata
 
 	var (
@@ -529,15 +529,15 @@ func local_request_Query_QuerySubscriberIntentsBySubscriberDomain_0(ctx context.
 		_   = err
 	)
 
-	val, ok = pathParams["subscriber_domain"]
+	val, ok = pathParams["subscriber_address"]
 	if !ok {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "subscriber_domain")
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "subscriber_address")
 	}
 
-	protoReq.SubscriberDomain, err = runtime.String(val)
+	protoReq.SubscriberAddress, err = runtime.String(val)
 
 	if err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "subscriber_domain", err)
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "subscriber_address", err)
 	}
 
 	msg, err := server.QuerySubscriberIntentsBySubscriberDomain(ctx, &protoReq)
@@ -1215,7 +1215,7 @@ var (
 
 	pattern_Query_QueryPublishers_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"sommelier", "pubsub", "v1", "publishers"}, "", runtime.AssumeColonVerbOpt(true)))
 
-	pattern_Query_QuerySusbscriber_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"sommelier", "pubsub", "v1", "subscribers", "subscriber_domain"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_QuerySusbscriber_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"sommelier", "pubsub", "v1", "subscribers", "subscriber_address"}, "", runtime.AssumeColonVerbOpt(true)))
 
 	pattern_Query_QuerySusbscribers_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"sommelier", "pubsub", "v1", "subscribers"}, "", runtime.AssumeColonVerbOpt(true)))
 
@@ -1227,11 +1227,11 @@ var (
 
 	pattern_Query_QueryPublisherIntentsBySubscriptionId_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"sommelier", "pubsub", "v1", "publisher_intents_by_subscription_id", "subscription_id"}, "", runtime.AssumeColonVerbOpt(true)))
 
-	pattern_Query_QuerySubscriberIntent_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4, 1, 0, 4, 1, 5, 5}, []string{"sommelier", "pubsub", "v1", "subscriber_intents", "subscriber_domain", "subscription_id"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_QuerySubscriberIntent_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4, 1, 0, 4, 1, 5, 5}, []string{"sommelier", "pubsub", "v1", "subscriber_intents", "subscriber_address", "subscription_id"}, "", runtime.AssumeColonVerbOpt(true)))
 
 	pattern_Query_QuerySubscriberIntents_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"sommelier", "pubsub", "v1", "subscriber_intents"}, "", runtime.AssumeColonVerbOpt(true)))
 
-	pattern_Query_QuerySubscriberIntentsBySubscriberDomain_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"sommelier", "pubsub", "v1", "subscriber_intents", "subscriber_domain"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_QuerySubscriberIntentsBySubscriberDomain_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"sommelier", "pubsub", "v1", "subscriber_intents", "subscriber_address"}, "", runtime.AssumeColonVerbOpt(true)))
 
 	pattern_Query_QuerySubscriberIntentsBySubscriptionId_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"sommelier", "pubsub", "v1", "subscriber_intents_by_subscription_id", "subscription_id"}, "", runtime.AssumeColonVerbOpt(true)))
 )

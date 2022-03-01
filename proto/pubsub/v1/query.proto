@@ -23,7 +23,7 @@ service Query {
   }
 
   rpc QuerySusbscriber(QuerySubscriberRequest) returns (QuerySubscriberResponse) {
-    option (google.api.http).get = "/sommelier/pubsub/v1/subscribers/{subscriber_domain}";
+    option (google.api.http).get = "/sommelier/pubsub/v1/subscribers/{subscriber_address}";
   }
 
   rpc QuerySusbscribers(QuerySubscribersRequest) returns (QuerySubscribersResponse) {
@@ -47,15 +47,15 @@ service Query {
   }
 
   rpc QuerySubscriberIntent(QuerySubscriberIntentRequest) returns (QuerySubscriberIntentResponse) {
-    option (google.api.http).get = "/sommelier/pubsub/v1/subscriber_intents/{subscriber_domain}/{subscription_id}";
+    option (google.api.http).get = "/sommelier/pubsub/v1/subscriber_intents/{subscriber_address}/{subscription_id}";
   }
 
   rpc QuerySubscriberIntents(QuerySubscriberIntentsRequest) returns (QuerySubscriberIntentsResponse) {
     option (google.api.http).get = "/sommelier/pubsub/v1/subscriber_intents";
   }
 
-  rpc QuerySubscriberIntentsBySubscriberDomain(QuerySubscriberIntentsBySubscriberDomainRequest) returns (QuerySubscriberIntentsBySubscriberDomainResponse) {
-    option (google.api.http).get = "/sommelier/pubsub/v1/subscriber_intents/{subscriber_domain}";
+  rpc QuerySubscriberIntentsBySubscriberDomain(QuerySubscriberIntentsBySubscriberAddressRequest) returns (QuerySubscriberIntentsBySubscriberAddressResponse) {
+    option (google.api.http).get = "/sommelier/pubsub/v1/subscriber_intents/{subscriber_address}";
   }
 
   rpc QuerySubscriberIntentsBySubscriptionId(QuerySubscriberIntentsBySubscriptionIdRequest) returns (QuerySubscriberIntentsBySubscriptionIdResponse) {
@@ -85,7 +85,7 @@ message QueryPublishersResponse {
 }
 
 message QuerySubscriberRequest {
-  string subscriber_domain = 1;
+  string subscriber_address = 1;
 }
 
 message QuerySubscriberResponse {
@@ -130,7 +130,7 @@ message QueryPublisherIntentsBySubscriptionIdResponse {
 }
 
 message QuerySubscriberIntentRequest {
-  string subscriber_domain = 1;
+  string subscriber_address = 1;
   string subscription_id = 2;
 }
 
@@ -144,11 +144,11 @@ message QuerySubscriberIntentsResponse {
   repeated SubscriberIntent subscriber_intents = 1;
 }
 
-message QuerySubscriberIntentsBySubscriberDomainRequest {
-  string subscriber_domain = 1;
+message QuerySubscriberIntentsBySubscriberAddressRequest {
+  string subscriber_address = 1;
 }
 
-message QuerySubscriberIntentsBySubscriberDomainResponse {
+message QuerySubscriberIntentsBySubscriberAddressResponse {
   repeated SubscriberIntent subscriber_intents = 1;
 }
 
