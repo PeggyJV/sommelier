@@ -7,8 +7,6 @@ import (
 	"github.com/peggyjv/sommelier/v3/x/pubsub/types"
 )
 
-// TODO(bolten): fill out genesis funcs
-
 // InitGenesis initializes the module's state from a provided genesis
 // state.
 func InitGenesis(ctx sdk.Context, k Keeper, gs types.GenesisState) {
