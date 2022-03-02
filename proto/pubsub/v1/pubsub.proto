@@ -3,59 +3,109 @@ package pubsub.v1;
 
 option go_package = "github.com/peggyjv/sommelier/v3/x/pubsub/types";
 
+// represents a publisher, which are added via governance
 message Publisher {
-  string domain = 1; // unique key
+  // unique key, FQDN of the publisher, max length of 256
+  string domain = 1;
+
+  // base64 of the publisher's self-signed CA cert PEM file, expecting TLS 1.3 compatible ECDSA certificates, max length 2048
   string ca_cert = 2;
+
+  // account address of the publisher
   string address = 3;
+
+  // URL in the format https://<domain>/<address>/cacert.pem, max length of 512
   string proof_url = 4;
 }
 
+// represents a subscriber, can be set or modified by the owner of the subscriber address
 message Subscriber {
-  string address = 1; // unique key, account address representation of either an account or a validator
+  // unique key, account address representation of either an account or a validator
+  string address = 1;
+
   // the below fields are optional, and only required if the subscriber wants to use "push" subscriptions
+
+  // FQDN of the subscriber, max length of 256
   string domain = 2;
+
+  // base64 of the subscriber's self-signed CA cert PEM file, expecting TLS 1.3 compatible ECDSA certificates, max length 2048
   string ca_cert = 3;
+
+  // URL in the format https://<domain>/<address>/cacert.pem, max length of 512
   string proof_url = 4;
 }
 
 // for a given PublisherIntent, whether or not it is pulled or pushed
 enum PublishMethod {
+  // subscribers should pull from the provided URL
   PULL = 0;
+
+  // subscribers must provide a URL to receive push messages
   PUSH = 1;
 }
 
 // for a given PublisherIntent, determines what types of subscribers may subscribe
 enum AllowedSubscribers {
+  // any valid account address
   ANY = 0;
+
+  // account address must map to a validator in the active validator set
   VALIDATORS = 1;
+
+  // a specific list of account addresses
   LIST = 2;
 }
 
+// represents a publisher committing to sending messages for a specific subscription ID
 message PublisherIntent {
   // unique key is subscription_id and publisher_domain tuple
-  string subscription_id = 1; // max length of 128 characters
+
+  // arbitary string representing a subscription, max length of 128
+  string subscription_id = 1;
+
+  // FQDN of the publisher, max length of 256
   string publisher_domain = 2;
+
+  // either PULL or PUSH (see enum above for details)
   PublishMethod method = 3;
-  string pull_url = 4; // optional, only needs to be set if using the "pull" method
+
+  // optional, only needs to be set if using the PULL method, max length of 512
+  string pull_url = 4;
+
+  // either ANY, VALIDATORS, or LIST (see enum above for details)
   AllowedSubscribers allowed_subscribers = 5;
-  repeated string allowed_addresses = 6; // optional, must be provided if allowed_subscribers is LIST, list of account addresses
+
+  // optional, must be provided if allowed_subscribers is LIST, list of account addresses, max length 512
+  repeated string allowed_addresses = 6;
 }
 
+// represents a subscriber requesting messages for a specific subscription ID and publisher
 message SubscriberIntent {
   // unique key is subscription_id and subscriber_address tuple, a given subscriber can only subscribe to one publisher per
   // subscription_id at a time
+
+  // arbitary string representing a subscription, max length of 128
   string subscription_id = 1;
+
+  // account address of the subscriber
   string subscriber_address = 2;
+
+  // FQDN of the publisher, max length of 256
   string publisher_domain = 3;
-  string push_url = 4; // optional, only needs to be set if the PublisherIntent for this subscription uses the PUSH method
+
+  // optional, only needs to be set if the PublisherIntent for this subscription uses the PUSH method, max length of 512
+  string push_url = 4;
 }
 
+// governance proposal to add a publisher
 message AddPublisherProposal {
   string title = 1;
   string description = 2;
   Publisher publisher = 3;
 }
 
+// governance proposal to remove a publisher (publisher's can remove themselves, but this might be necessary in the
+// event of a malicious publisher or a key compromise)
 message RemovePublisherProposal {
   string title = 1;
   string description = 2;
