@@ -1,6 +1,11 @@
 package types
 
-import sdk "github.com/cosmos/cosmos-sdk/types"
+import (
+	fmt "fmt"
+
+	sdk "github.com/cosmos/cosmos-sdk/types"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+)
 
 var (
 	_ sdk.Msg = &MsgAddPublisherIntent{}
@@ -22,15 +27,20 @@ const (
 	TypeMsgRemovePublisher        = "remove_publisher"
 )
 
-// TODO(bolten): fill out msg boilerplate
-
 ///////////////////////////
 // MsgAddPublisherIntent //
 ///////////////////////////
 
 // NewMsgAddPublisherIntent returns a new MsgAddPublisherIntent
-func NewMsgAddPublisherIntent() (*MsgAddPublisherIntent, error) {
-	return nil, nil
+func NewMsgAddPublisherIntent(publisherIntent PublisherIntent, signer sdk.AccAddress) (*MsgAddPublisherIntent, error) {
+	if signer == nil {
+		return nil, fmt.Errorf("no signer provided")
+	}
+
+	return &MsgAddPublisherIntent{
+		PublisherIntent: &publisherIntent,
+		Signer:          signer.String(),
+	}, nil
 }
 
 // Route implements sdk.Msg
@@ -41,7 +51,15 @@ func (m *MsgAddPublisherIntent) Type() string { return TypeMsgAddPublisherIntent
 
 // ValidateBasic implements sdk.Msg
 func (m *MsgAddPublisherIntent) ValidateBasic() error {
-	return nil
+	if _, err := sdk.AccAddressFromBech32(m.Signer); err != nil {
+		return sdkerrors.Wrap(sdkerrors.ErrInvalidAddress, err.Error())
+	}
+
+	if m.PublisherIntent == nil {
+		return fmt.Errorf("empty PublisherIntent")
+	}
+
+	return m.PublisherIntent.ValidateBasic()
 }
 
 // GetSignBytes implements sdk.Msg
@@ -68,8 +86,15 @@ func (m *MsgAddPublisherIntent) MustGetSigner() sdk.AccAddress {
 ////////////////////////////
 
 // NewMsgAddSubscriberIntent returns a new MsgAddSubscriberIntent
-func NewMsgAddSubscriberIntent() (*MsgAddSubscriberIntent, error) {
-	return nil, nil
+func NewMsgAddSubscriberIntent(subscriberIntent SubscriberIntent, signer sdk.AccAddress) (*MsgAddSubscriberIntent, error) {
+	if signer == nil {
+		return nil, fmt.Errorf("no signer provided")
+	}
+
+	return &MsgAddSubscriberIntent{
+		SubscriberIntent: &subscriberIntent,
+		Signer:           signer.String(),
+	}, nil
 }
 
 // Route implements sdk.Msg
@@ -80,7 +105,15 @@ func (m *MsgAddSubscriberIntent) Type() string { return TypeMsgAddSubscriberInte
 
 // ValidateBasic implements sdk.Msg
 func (m *MsgAddSubscriberIntent) ValidateBasic() error {
-	return nil
+	if _, err := sdk.AccAddressFromBech32(m.Signer); err != nil {
+		return sdkerrors.Wrap(sdkerrors.ErrInvalidAddress, err.Error())
+	}
+
+	if m.SubscriberIntent == nil {
+		return fmt.Errorf("empty SubscriberIntent")
+	}
+
+	return m.SubscriberIntent.ValidateBasic()
 }
 
 // GetSignBytes implements sdk.Msg
@@ -107,8 +140,15 @@ func (m *MsgAddSubscriberIntent) MustGetSigner() sdk.AccAddress {
 //////////////////////
 
 // NewMsgAddSubscriber returns a new MsgAddSubscriber
-func NewMsgAddSubscriber() (*MsgAddSubscriber, error) {
-	return nil, nil
+func NewMsgAddSubscriber(subscriber Subscriber, signer sdk.AccAddress) (*MsgAddSubscriber, error) {
+	if signer == nil {
+		return nil, fmt.Errorf("no signer provided")
+	}
+
+	return &MsgAddSubscriber{
+		Subscriber: &subscriber,
+		Signer:     signer.String(),
+	}, nil
 }
 
 // Route implements sdk.Msg
@@ -119,7 +159,15 @@ func (m *MsgAddSubscriber) Type() string { return TypeMsgAddSubscriber }
 
 // ValidateBasic implements sdk.Msg
 func (m *MsgAddSubscriber) ValidateBasic() error {
-	return nil
+	if _, err := sdk.AccAddressFromBech32(m.Signer); err != nil {
+		return sdkerrors.Wrap(sdkerrors.ErrInvalidAddress, err.Error())
+	}
+
+	if m.Subscriber == nil {
+		return fmt.Errorf("empty Subscriber")
+	}
+
+	return m.Subscriber.ValidateBasic()
 }
 
 // GetSignBytes implements sdk.Msg
@@ -146,8 +194,15 @@ func (m *MsgAddSubscriber) MustGetSigner() sdk.AccAddress {
 //////////////////////////////
 
 // NewMsgRemovePublisherIntent returns a new MsgRemovePublisherIntent
-func NewMsgRemovePublisherIntent() (*MsgRemovePublisherIntent, error) {
-	return nil, nil
+func NewMsgRemovePublisherIntent(publisherIntent PublisherIntent, signer sdk.AccAddress) (*MsgRemovePublisherIntent, error) {
+	if signer == nil {
+		return nil, fmt.Errorf("no signer provided")
+	}
+
+	return &MsgRemovePublisherIntent{
+		PublisherIntent: &publisherIntent,
+		Signer:          signer.String(),
+	}, nil
 }
 
 // Route implements sdk.Msg
@@ -158,7 +213,15 @@ func (m *MsgRemovePublisherIntent) Type() string { return TypeMsgRemovePublisher
 
 // ValidateBasic implements sdk.Msg
 func (m *MsgRemovePublisherIntent) ValidateBasic() error {
-	return nil
+	if _, err := sdk.AccAddressFromBech32(m.Signer); err != nil {
+		return sdkerrors.Wrap(sdkerrors.ErrInvalidAddress, err.Error())
+	}
+
+	if m.PublisherIntent == nil {
+		return fmt.Errorf("empty PublisherIntent")
+	}
+
+	return m.PublisherIntent.ValidateBasic()
 }
 
 // GetSignBytes implements sdk.Msg
@@ -185,8 +248,15 @@ func (m *MsgRemovePublisherIntent) MustGetSigner() sdk.AccAddress {
 ///////////////////////////////
 
 // NewMsgRemoveSubscriberIntent returns a new MsgRemoveSubscriberIntent
-func NewMsgRemoveSubscriberIntent() (*MsgRemoveSubscriberIntent, error) {
-	return nil, nil
+func NewMsgRemoveSubscriberIntent(subscriberIntent SubscriberIntent, signer sdk.AccAddress) (*MsgRemoveSubscriberIntent, error) {
+	if signer == nil {
+		return nil, fmt.Errorf("no signer provided")
+	}
+
+	return &MsgRemoveSubscriberIntent{
+		SubscriberIntent: &subscriberIntent,
+		Signer:           signer.String(),
+	}, nil
 }
 
 // Route implements sdk.Msg
@@ -197,7 +267,15 @@ func (m *MsgRemoveSubscriberIntent) Type() string { return TypeMsgRemoveSubscrib
 
 // ValidateBasic implements sdk.Msg
 func (m *MsgRemoveSubscriberIntent) ValidateBasic() error {
-	return nil
+	if _, err := sdk.AccAddressFromBech32(m.Signer); err != nil {
+		return sdkerrors.Wrap(sdkerrors.ErrInvalidAddress, err.Error())
+	}
+
+	if m.SubscriberIntent == nil {
+		return fmt.Errorf("empty SubscriberIntent")
+	}
+
+	return m.SubscriberIntent.ValidateBasic()
 }
 
 // GetSignBytes implements sdk.Msg
@@ -224,8 +302,15 @@ func (m *MsgRemoveSubscriberIntent) MustGetSigner() sdk.AccAddress {
 /////////////////////////
 
 // NewMsgRemoveSubscriber returns a new MsgRemoveSubscriber
-func NewMsgRemoveSubscriber() (*MsgRemoveSubscriber, error) {
-	return nil, nil
+func NewMsgRemoveSubscriber(subscriber Subscriber, signer sdk.AccAddress) (*MsgRemoveSubscriber, error) {
+	if signer == nil {
+		return nil, fmt.Errorf("no signer provided")
+	}
+
+	return &MsgRemoveSubscriber{
+		Subscriber: &subscriber,
+		Signer:     signer.String(),
+	}, nil
 }
 
 // Route implements sdk.Msg
@@ -236,7 +321,15 @@ func (m *MsgRemoveSubscriber) Type() string { return TypeMsgRemoveSubscriber }
 
 // ValidateBasic implements sdk.Msg
 func (m *MsgRemoveSubscriber) ValidateBasic() error {
-	return nil
+	if _, err := sdk.AccAddressFromBech32(m.Signer); err != nil {
+		return sdkerrors.Wrap(sdkerrors.ErrInvalidAddress, err.Error())
+	}
+
+	if m.Subscriber == nil {
+		return fmt.Errorf("empty Subscriber")
+	}
+
+	return m.Subscriber.ValidateBasic()
 }
 
 // GetSignBytes implements sdk.Msg
@@ -263,8 +356,15 @@ func (m *MsgRemoveSubscriber) MustGetSigner() sdk.AccAddress {
 ////////////////////////
 
 // NewMsgRemovePublisher returns a new MsgRemovePublisher
-func NewMsgRemovePublisher() (*MsgRemovePublisher, error) {
-	return nil, nil
+func NewMsgRemovePublisher(publisher Publisher, signer sdk.AccAddress) (*MsgRemovePublisher, error) {
+	if signer == nil {
+		return nil, fmt.Errorf("no signer provided")
+	}
+
+	return &MsgRemovePublisher{
+		Publisher: &publisher,
+		Signer:    signer.String(),
+	}, nil
 }
 
 // Route implements sdk.Msg
@@ -275,7 +375,15 @@ func (m *MsgRemovePublisher) Type() string { return TypeMsgRemovePublisher }
 
 // ValidateBasic implements sdk.Msg
 func (m *MsgRemovePublisher) ValidateBasic() error {
-	return nil
+	if _, err := sdk.AccAddressFromBech32(m.Signer); err != nil {
+		return sdkerrors.Wrap(sdkerrors.ErrInvalidAddress, err.Error())
+	}
+
+	if m.Publisher == nil {
+		return fmt.Errorf("empty Publisher")
+	}
+
+	return m.Publisher.ValidateBasic()
 }
 
 // GetSignBytes implements sdk.Msg
