@@ -17,42 +17,49 @@ service Msg {
 
 message MsgRemovePublisher {
   Publisher publisher = 1;
+  string signer = 2;
 }
 
 message MsgRemovePublisherResponse {}
 
 message MsgAddSubscriber {
   Subscriber subscriber = 1;
+  string signer = 2;
 }
 
 message MsgAddSubscriberResponse {}
 
 message MsgRemoveSubscriber {
   Subscriber subscriber = 1;
+  string signer = 2;
 }
 
 message MsgRemoveSubscriberResponse {}
 
 message MsgAddPublisherIntent {
   PublisherIntent publisher_intent = 1;
+  string signer = 2;
 }
 
 message MsgAddPublisherIntentResponse {}
 
 message MsgRemovePublisherIntent {
   PublisherIntent publisher_intent = 1;
+  string signer = 2;
 }
 
 message MsgRemovePublisherIntentResponse {}
 
 message MsgAddSubscriberIntent {
   SubscriberIntent subscriber_intent = 1;
+  string signer = 2;
 }
 
 message MsgAddSubscriberIntentResponse {}
 
 message MsgRemoveSubscriberIntent {
   SubscriberIntent subscriber_intent = 1;
+  string signer = 2;
 }
 
 message MsgRemoveSubscriberIntentResponse {}
