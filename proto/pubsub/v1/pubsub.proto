@@ -33,7 +33,7 @@ enum AllowedSubscribers {
 
 message PublisherIntent {
   // unique key is subscription_id and publisher_domain tuple
-  string subscription_id = 1;
+  string subscription_id = 1; // max length of 128 characters
   string publisher_domain = 2;
   PublishMethod method = 3;
   string pull_url = 4; // optional, only needs to be set if using the "pull" method
@@ -44,10 +44,10 @@ message PublisherIntent {
 message SubscriberIntent {
   // unique key is subscription_id and subscriber_address tuple, a given subscriber can only subscribe to one publisher per
   // subscription_id at a time
-  string subscsription_id = 1;
+  string subscription_id = 1;
   string subscriber_address = 2;
   string publisher_domain = 3;
-  string push_url = 4;
+  string push_url = 4; // optional, only needs to be set if the PublisherIntent for this subscription uses the PUSH method
 }
 
 message AddPublisherProposal {
