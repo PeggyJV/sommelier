@@ -119,7 +119,7 @@ func (k Keeper) GetSubscriber(ctx sdk.Context, subscriberAddress sdk.AccAddress)
 	return subscriber, true
 }
 
-func (k Keeper) IterateSubscribers(ctx sdk.Context, handler func(subscriberAddress sdk.Address, subscriber types.Subscriber) (stop bool)) {
+func (k Keeper) IterateSubscribers(ctx sdk.Context, handler func(subscriberAddress sdk.AccAddress, subscriber types.Subscriber) (stop bool)) {
 	store := ctx.KVStore(k.storeKey)
 	iter := sdk.KVStorePrefixIterator(store, []byte{types.SubscriberKeyPrefix})
 	defer iter.Close()
@@ -138,7 +138,7 @@ func (k Keeper) IterateSubscribers(ctx sdk.Context, handler func(subscriberAddre
 }
 
 func (k Keeper) GetSubscribers(ctx sdk.Context) (subscribers []types.Subscriber) {
-	k.IterateSubscribers(ctx, func(subscriberAddress sdk.Address, subscriber types.Subscriber) (stop bool) {
+	k.IterateSubscribers(ctx, func(subscriberAddress sdk.AccAddress, subscriber types.Subscriber) (stop bool) {
 		subscribers = append(subscribers, subscriber)
 		return false
 	})
