@@ -11,8 +11,6 @@ import (
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
-// TODO(bolten): fill out ValidateBasic functions
-
 func (p *Publisher) ValidateBasic() error {
 	if p.Domain == "" {
 		return fmt.Errorf("empty domain")
