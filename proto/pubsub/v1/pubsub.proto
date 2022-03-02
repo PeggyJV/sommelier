@@ -14,7 +14,7 @@ message Publisher {
   // account address of the publisher
   string address = 3;
 
-  // URL in the format https://<domain>/<address>/cacert.pem, max length of 512
+  // URL in the format https://<domain>/<address>/cacert.pem serving a cert matching ca_cert, max length of 512
   string proof_url = 4;
 }
 
@@ -31,7 +31,7 @@ message Subscriber {
   // base64 of the subscriber's self-signed CA cert PEM file, expecting TLS 1.3 compatible ECDSA certificates, max length 2048
   string ca_cert = 3;
 
-  // URL in the format https://<domain>/<address>/cacert.pem, max length of 512
+  // URL in the format https://<domain>/<address>/cacert.pem serving a cert matching ca_cert, max length of 512
   string proof_url = 4;
 }
 
