@@ -43,7 +43,19 @@ func (k Keeper) Logger(ctx sdk.Context) log.Logger {
 	return ctx.Logger().With("module", fmt.Sprintf("x/%s", types.ModuleName))
 }
 
-// TODO(bolten): add keeper support functions here
+////////////
+// Params //
+////////////
+
+func (k Keeper) GetParams(ctx sdk.Context) types.Params {
+	var p types.Params
+	k.paramSpace.GetParamSet(ctx, &p)
+	return p
+}
+
+func (k Keeper) SetParams(ctx sdk.Context, params types.Params) {
+	k.paramSpace.SetParamSet(ctx, &params)
+}
 
 ///////////////
 // Publisher //
@@ -183,7 +195,7 @@ func (k Keeper) GetPublisherIntents(ctx sdk.Context) (publisherIntents []types.P
 
 func (k Keeper) SetSubscriberIntent(ctx sdk.Context, subscriberAddress sdk.AccAddress, subscriberIntent types.SubscriberIntent) {
 	bz := k.cdc.MustMarshal(&subscriberIntent)
-	ctx.KVStore(k.storeKey).Set(types.GetSubscriberIntentKey(subscriberAddress, subscriberIntent.SubscsriptionId), bz)
+	ctx.KVStore(k.storeKey).Set(types.GetSubscriberIntentKey(subscriberAddress, subscriberIntent.SubscriptionId), bz)
 }
 
 func (k Keeper) GetSubscriberIntent(ctx sdk.Context, subscriberAddress sdk.AccAddress, subscriptionId string) (subscriberIntent types.SubscriberIntent, found bool) {
