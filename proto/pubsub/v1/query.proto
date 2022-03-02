@@ -22,11 +22,11 @@ service Query {
     option (google.api.http).get = "/sommelier/pubsub/v1/publishers";
   }
 
-  rpc QuerySusbscriber(QuerySubscriberRequest) returns (QuerySubscriberResponse) {
+  rpc QuerySubscriber(QuerySubscriberRequest) returns (QuerySubscriberResponse) {
     option (google.api.http).get = "/sommelier/pubsub/v1/subscribers/{subscriber_address}";
   }
 
-  rpc QuerySusbscribers(QuerySubscribersRequest) returns (QuerySubscribersResponse) {
+  rpc QuerySubscribers(QuerySubscribersRequest) returns (QuerySubscribersResponse) {
     option (google.api.http).get = "/sommelier/pubsub/v1/subscribers";
   }
 
@@ -54,7 +54,7 @@ service Query {
     option (google.api.http).get = "/sommelier/pubsub/v1/subscriber_intents";
   }
 
-  rpc QuerySubscriberIntentsBySubscriberDomain(QuerySubscriberIntentsBySubscriberAddressRequest) returns (QuerySubscriberIntentsBySubscriberAddressResponse) {
+  rpc QuerySubscriberIntentsBySubscriberAddress(QuerySubscriberIntentsBySubscriberAddressRequest) returns (QuerySubscriberIntentsBySubscriberAddressResponse) {
     option (google.api.http).get = "/sommelier/pubsub/v1/subscriber_intents/{subscriber_address}";
   }
 

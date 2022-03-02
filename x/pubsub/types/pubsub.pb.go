@@ -26,7 +26,9 @@ const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 type PublishMethod int32
 
 const (
+	// subscribers should pull from the provided URL
 	PublishMethod_PULL PublishMethod = 0
+	// subscribers must provide a URL to receive push messages
 	PublishMethod_PUSH PublishMethod = 1
 )
 
@@ -52,9 +54,12 @@ func (PublishMethod) EnumDescriptor() ([]byte, []int) {
 type AllowedSubscribers int32
 
 const (
-	AllowedSubscribers_ANY        AllowedSubscribers = 0
+	// any valid account address
+	AllowedSubscribers_ANY AllowedSubscribers = 0
+	// account address must map to a validator in the active validator set
 	AllowedSubscribers_VALIDATORS AllowedSubscribers = 1
-	AllowedSubscribers_LIST       AllowedSubscribers = 2
+	// a specific list of account addresses
+	AllowedSubscribers_LIST AllowedSubscribers = 2
 )
 
 var AllowedSubscribers_name = map[int32]string{
@@ -77,10 +82,15 @@ func (AllowedSubscribers) EnumDescriptor() ([]byte, []int) {
 	return fileDescriptor_3164155f25b3675d, []int{1}
 }
 
+// represents a publisher, which are added via governance
 type Publisher struct {
-	Domain   string `protobuf:"bytes,1,opt,name=domain,proto3" json:"domain,omitempty"`
-	CaCert   string `protobuf:"bytes,2,opt,name=ca_cert,json=caCert,proto3" json:"ca_cert,omitempty"`
-	Address  string `protobuf:"bytes,3,opt,name=address,proto3" json:"address,omitempty"`
+	// unique key, FQDN of the publisher, max length of 256
+	Domain string `protobuf:"bytes,1,opt,name=domain,proto3" json:"domain,omitempty"`
+	// base64 of the publisher's self-signed CA cert PEM file, expecting TLS 1.3 compatible ECDSA certificates, max length 4096
+	CaCert string `protobuf:"bytes,2,opt,name=ca_cert,json=caCert,proto3" json:"ca_cert,omitempty"`
+	// account address of the publisher
+	Address string `protobuf:"bytes,3,opt,name=address,proto3" json:"address,omitempty"`
+	// URL in the format https://<domain>/<address>/cacert.pem serving a cert matching ca_cert, max length of 512
 	ProofUrl string `protobuf:"bytes,4,opt,name=proof_url,json=proofUrl,proto3" json:"proof_url,omitempty"`
 }
 
@@ -145,11 +155,15 @@ func (m *Publisher) GetProofUrl() string {
 	return ""
 }
 
+// represents a subscriber, can be set or modified by the owner of the subscriber address
 type Subscriber struct {
+	// unique key, account address representation of either an account or a validator
 	Address string `protobuf:"bytes,1,opt,name=address,proto3" json:"address,omitempty"`
-	// the below fields are optional, and only required if the subscriber wants to use "push" subscriptions
-	Domain   string `protobuf:"bytes,2,opt,name=domain,proto3" json:"domain,omitempty"`
-	CaCert   string `protobuf:"bytes,3,opt,name=ca_cert,json=caCert,proto3" json:"ca_cert,omitempty"`
+	// FQDN of the subscriber, max length of 256
+	Domain string `protobuf:"bytes,2,opt,name=domain,proto3" json:"domain,omitempty"`
+	// base64 of the subscriber's self-signed CA cert PEM file, expecting TLS 1.3 compatible ECDSA certificates, max length 4096
+	CaCert string `protobuf:"bytes,3,opt,name=ca_cert,json=caCert,proto3" json:"ca_cert,omitempty"`
+	// URL in the format https://<domain>/<address>/cacert.pem serving a cert matching ca_cert, max length of 512
 	ProofUrl string `protobuf:"bytes,4,opt,name=proof_url,json=proofUrl,proto3" json:"proof_url,omitempty"`
 }
 
@@ -214,14 +228,20 @@ func (m *Subscriber) GetProofUrl() string {
 	return ""
 }
 
+// represents a publisher committing to sending messages for a specific subscription ID
 type PublisherIntent struct {
-	// unique key is subscription_id and publisher_domain tuple
-	SubscriptionId     string             `protobuf:"bytes,1,opt,name=subscription_id,json=subscriptionId,proto3" json:"subscription_id,omitempty"`
-	PublisherDomain    string             `protobuf:"bytes,2,opt,name=publisher_domain,json=publisherDomain,proto3" json:"publisher_domain,omitempty"`
-	Method             PublishMethod      `protobuf:"varint,3,opt,name=method,proto3,enum=pubsub.v1.PublishMethod" json:"method,omitempty"`
-	PullUrl            string             `protobuf:"bytes,4,opt,name=pull_url,json=pullUrl,proto3" json:"pull_url,omitempty"`
+	// arbitary string representing a subscription, max length of 128
+	SubscriptionId string `protobuf:"bytes,1,opt,name=subscription_id,json=subscriptionId,proto3" json:"subscription_id,omitempty"`
+	// FQDN of the publisher, max length of 256
+	PublisherDomain string `protobuf:"bytes,2,opt,name=publisher_domain,json=publisherDomain,proto3" json:"publisher_domain,omitempty"`
+	// either PULL or PUSH (see enum above for details)
+	Method PublishMethod `protobuf:"varint,3,opt,name=method,proto3,enum=pubsub.v1.PublishMethod" json:"method,omitempty"`
+	// optional, only needs to be set if using the PULL method, max length of 512
+	PullUrl string `protobuf:"bytes,4,opt,name=pull_url,json=pullUrl,proto3" json:"pull_url,omitempty"`
+	// either ANY, VALIDATORS, or LIST (see enum above for details)
 	AllowedSubscribers AllowedSubscribers `protobuf:"varint,5,opt,name=allowed_subscribers,json=allowedSubscribers,proto3,enum=pubsub.v1.AllowedSubscribers" json:"allowed_subscribers,omitempty"`
-	AllowedAddresses   []string           `protobuf:"bytes,6,rep,name=allowed_addresses,json=allowedAddresses,proto3" json:"allowed_addresses,omitempty"`
+	// optional, must be provided if allowed_subscribers is LIST, list of account addresses, max length 512
+	AllowedAddresses []string `protobuf:"bytes,6,rep,name=allowed_addresses,json=allowedAddresses,proto3" json:"allowed_addresses,omitempty"`
 }
 
 func (m *PublisherIntent) Reset()         { *m = PublisherIntent{} }
@@ -299,13 +319,16 @@ func (m *PublisherIntent) GetAllowedAddresses() []string {
 	return nil
 }
 
+// represents a subscriber requesting messages for a specific subscription ID and publisher
 type SubscriberIntent struct {
-	// unique key is subscription_id and subscriber_address tuple, a given subscriber can only subscribe to one publisher per
-	// subscription_id at a time
-	SubscriptionId    string `protobuf:"bytes,1,opt,name=subscription_id,json=subscriptionId,proto3" json:"subscription_id,omitempty"`
+	// arbitary string representing a subscription, max length of 128
+	SubscriptionId string `protobuf:"bytes,1,opt,name=subscription_id,json=subscriptionId,proto3" json:"subscription_id,omitempty"`
+	// account address of the subscriber
 	SubscriberAddress string `protobuf:"bytes,2,opt,name=subscriber_address,json=subscriberAddress,proto3" json:"subscriber_address,omitempty"`
-	PublisherDomain   string `protobuf:"bytes,3,opt,name=publisher_domain,json=publisherDomain,proto3" json:"publisher_domain,omitempty"`
-	PushUrl           string `protobuf:"bytes,4,opt,name=push_url,json=pushUrl,proto3" json:"push_url,omitempty"`
+	// FQDN of the publisher, max length of 256
+	PublisherDomain string `protobuf:"bytes,3,opt,name=publisher_domain,json=publisherDomain,proto3" json:"publisher_domain,omitempty"`
+	// optional, only needs to be set if the PublisherIntent for this subscription uses the PUSH method, max length of 512
+	PushUrl string `protobuf:"bytes,4,opt,name=push_url,json=pushUrl,proto3" json:"push_url,omitempty"`
 }
 
 func (m *SubscriberIntent) Reset()         { *m = SubscriberIntent{} }
@@ -369,6 +392,7 @@ func (m *SubscriberIntent) GetPushUrl() string {
 	return ""
 }
 
+// governance proposal to add a publisher
 type AddPublisherProposal struct {
 	Title       string     `protobuf:"bytes,1,opt,name=title,proto3" json:"title,omitempty"`
 	Description string     `protobuf:"bytes,2,opt,name=description,proto3" json:"description,omitempty"`
@@ -429,6 +453,8 @@ func (m *AddPublisherProposal) GetPublisher() *Publisher {
 	return nil
 }
 
+// governance proposal to remove a publisher (publisher's can remove themselves, but this might be necessary in the
+// event of a malicious publisher or a key compromise)
 type RemovePublisherProposal struct {
 	Title       string     `protobuf:"bytes,1,opt,name=title,proto3" json:"title,omitempty"`
 	Description string     `protobuf:"bytes,2,opt,name=description,proto3" json:"description,omitempty"`

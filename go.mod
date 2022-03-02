@@ -15,13 +15,14 @@ require (
 	github.com/google/uuid v1.2.0 // indirect
 	github.com/gorilla/mux v1.8.0
 	github.com/grpc-ecosystem/grpc-gateway v1.16.0
-	github.com/grpc-ecosystem/grpc-gateway/v2 v2.7.3 // indirect
+	github.com/grpc-ecosystem/grpc-gateway/v2 v2.8.0 // indirect
 	github.com/miguelmota/go-ethereum-hdwallet v0.1.1
 	github.com/moby/term v0.0.0-20210619224110-3f7ff695adc6 // indirect
 	github.com/ory/dockertest/v3 v3.7.0
 	github.com/peggyjv/gravity-bridge/module v0.3.9
 	github.com/rakyll/statik v0.1.7
 	github.com/regen-network/cosmos-proto v0.3.1
+	github.com/spf13/afero v1.6.0 // indirect
 	github.com/spf13/cast v1.4.1
 	github.com/spf13/cobra v1.2.1
 	github.com/spf13/viper v1.8.1
@@ -30,8 +31,8 @@ require (
 	github.com/tendermint/tm-db v0.6.4
 	github.com/tklauser/go-sysconf v0.3.7 // indirect
 	github.com/xeipuuv/gojsonpointer v0.0.0-20190905194746-02993c407bfb // indirect
-	google.golang.org/genproto v0.0.0-20220118154757-00ab72f36ad5
-	google.golang.org/grpc v1.43.0
+	google.golang.org/genproto v0.0.0-20220302033224-9aa15565e42a
+	google.golang.org/grpc v1.44.0
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 )
 

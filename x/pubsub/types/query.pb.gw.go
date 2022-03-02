@@ -123,7 +123,7 @@ func local_request_Query_QueryPublishers_0(ctx context.Context, marshaler runtim
 
 }
 
-func request_Query_QuerySusbscriber_0(ctx context.Context, marshaler runtime.Marshaler, client QueryClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+func request_Query_QuerySubscriber_0(ctx context.Context, marshaler runtime.Marshaler, client QueryClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var protoReq QuerySubscriberRequest
 	var metadata runtime.ServerMetadata
 
@@ -145,12 +145,12 @@ func request_Query_QuerySusbscriber_0(ctx context.Context, marshaler runtime.Mar
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "subscriber_address", err)
 	}
 
-	msg, err := client.QuerySusbscriber(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
+	msg, err := client.QuerySubscriber(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
 	return msg, metadata, err
 
 }
 
-func local_request_Query_QuerySusbscriber_0(ctx context.Context, marshaler runtime.Marshaler, server QueryServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+func local_request_Query_QuerySubscriber_0(ctx context.Context, marshaler runtime.Marshaler, server QueryServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var protoReq QuerySubscriberRequest
 	var metadata runtime.ServerMetadata
 
@@ -172,25 +172,25 @@ func local_request_Query_QuerySusbscriber_0(ctx context.Context, marshaler runti
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "subscriber_address", err)
 	}
 
-	msg, err := server.QuerySusbscriber(ctx, &protoReq)
+	msg, err := server.QuerySubscriber(ctx, &protoReq)
 	return msg, metadata, err
 
 }
 
-func request_Query_QuerySusbscribers_0(ctx context.Context, marshaler runtime.Marshaler, client QueryClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+func request_Query_QuerySubscribers_0(ctx context.Context, marshaler runtime.Marshaler, client QueryClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var protoReq QuerySubscribersRequest
 	var metadata runtime.ServerMetadata
 
-	msg, err := client.QuerySusbscribers(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
+	msg, err := client.QuerySubscribers(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
 	return msg, metadata, err
 
 }
 
-func local_request_Query_QuerySusbscribers_0(ctx context.Context, marshaler runtime.Marshaler, server QueryServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+func local_request_Query_QuerySubscribers_0(ctx context.Context, marshaler runtime.Marshaler, server QueryServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var protoReq QuerySubscribersRequest
 	var metadata runtime.ServerMetadata
 
-	msg, err := server.QuerySusbscribers(ctx, &protoReq)
+	msg, err := server.QuerySubscribers(ctx, &protoReq)
 	return msg, metadata, err
 
 }
@@ -491,7 +491,7 @@ func local_request_Query_QuerySubscriberIntents_0(ctx context.Context, marshaler
 
 }
 
-func request_Query_QuerySubscriberIntentsBySubscriberDomain_0(ctx context.Context, marshaler runtime.Marshaler, client QueryClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+func request_Query_QuerySubscriberIntentsBySubscriberAddress_0(ctx context.Context, marshaler runtime.Marshaler, client QueryClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var protoReq QuerySubscriberIntentsBySubscriberAddressRequest
 	var metadata runtime.ServerMetadata
 
@@ -513,12 +513,12 @@ func request_Query_QuerySubscriberIntentsBySubscriberDomain_0(ctx context.Contex
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "subscriber_address", err)
 	}
 
-	msg, err := client.QuerySubscriberIntentsBySubscriberDomain(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
+	msg, err := client.QuerySubscriberIntentsBySubscriberAddress(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
 	return msg, metadata, err
 
 }
 
-func local_request_Query_QuerySubscriberIntentsBySubscriberDomain_0(ctx context.Context, marshaler runtime.Marshaler, server QueryServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+func local_request_Query_QuerySubscriberIntentsBySubscriberAddress_0(ctx context.Context, marshaler runtime.Marshaler, server QueryServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var protoReq QuerySubscriberIntentsBySubscriberAddressRequest
 	var metadata runtime.ServerMetadata
 
@@ -540,7 +540,7 @@ func local_request_Query_QuerySubscriberIntentsBySubscriberDomain_0(ctx context.
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "subscriber_address", err)
 	}
 
-	msg, err := server.QuerySubscriberIntentsBySubscriberDomain(ctx, &protoReq)
+	msg, err := server.QuerySubscriberIntentsBySubscriberAddress(ctx, &protoReq)
 	return msg, metadata, err
 
 }
@@ -674,7 +674,7 @@ func RegisterQueryHandlerServer(ctx context.Context, mux *runtime.ServeMux, serv
 
 	})
 
-	mux.Handle("GET", pattern_Query_QuerySusbscriber_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("GET", pattern_Query_QuerySubscriber_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		var stream runtime.ServerTransportStream
@@ -685,7 +685,7 @@ func RegisterQueryHandlerServer(ctx context.Context, mux *runtime.ServeMux, serv
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := local_request_Query_QuerySusbscriber_0(rctx, inboundMarshaler, server, req, pathParams)
+		resp, md, err := local_request_Query_QuerySubscriber_0(rctx, inboundMarshaler, server, req, pathParams)
 		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
@@ -693,11 +693,11 @@ func RegisterQueryHandlerServer(ctx context.Context, mux *runtime.ServeMux, serv
 			return
 		}
 
-		forward_Query_QuerySusbscriber_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_Query_QuerySubscriber_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
-	mux.Handle("GET", pattern_Query_QuerySusbscribers_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("GET", pattern_Query_QuerySubscribers_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		var stream runtime.ServerTransportStream
@@ -708,7 +708,7 @@ func RegisterQueryHandlerServer(ctx context.Context, mux *runtime.ServeMux, serv
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := local_request_Query_QuerySusbscribers_0(rctx, inboundMarshaler, server, req, pathParams)
+		resp, md, err := local_request_Query_QuerySubscribers_0(rctx, inboundMarshaler, server, req, pathParams)
 		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
@@ -716,7 +716,7 @@ func RegisterQueryHandlerServer(ctx context.Context, mux *runtime.ServeMux, serv
 			return
 		}
 
-		forward_Query_QuerySusbscribers_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_Query_QuerySubscribers_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
@@ -858,7 +858,7 @@ func RegisterQueryHandlerServer(ctx context.Context, mux *runtime.ServeMux, serv
 
 	})
 
-	mux.Handle("GET", pattern_Query_QuerySubscriberIntentsBySubscriberDomain_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("GET", pattern_Query_QuerySubscriberIntentsBySubscriberAddress_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		var stream runtime.ServerTransportStream
@@ -869,7 +869,7 @@ func RegisterQueryHandlerServer(ctx context.Context, mux *runtime.ServeMux, serv
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := local_request_Query_QuerySubscriberIntentsBySubscriberDomain_0(rctx, inboundMarshaler, server, req, pathParams)
+		resp, md, err := local_request_Query_QuerySubscriberIntentsBySubscriberAddress_0(rctx, inboundMarshaler, server, req, pathParams)
 		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
@@ -877,7 +877,7 @@ func RegisterQueryHandlerServer(ctx context.Context, mux *runtime.ServeMux, serv
 			return
 		}
 
-		forward_Query_QuerySubscriberIntentsBySubscriberDomain_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_Query_QuerySubscriberIntentsBySubscriberAddress_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
@@ -1005,7 +1005,7 @@ func RegisterQueryHandlerClient(ctx context.Context, mux *runtime.ServeMux, clie
 
 	})
 
-	mux.Handle("GET", pattern_Query_QuerySusbscriber_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("GET", pattern_Query_QuerySubscriber_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
@@ -1014,18 +1014,18 @@ func RegisterQueryHandlerClient(ctx context.Context, mux *runtime.ServeMux, clie
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_Query_QuerySusbscriber_0(rctx, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_Query_QuerySubscriber_0(rctx, inboundMarshaler, client, req, pathParams)
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
 
-		forward_Query_QuerySusbscriber_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_Query_QuerySubscriber_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
-	mux.Handle("GET", pattern_Query_QuerySusbscribers_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("GET", pattern_Query_QuerySubscribers_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
@@ -1034,14 +1034,14 @@ func RegisterQueryHandlerClient(ctx context.Context, mux *runtime.ServeMux, clie
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_Query_QuerySusbscribers_0(rctx, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_Query_QuerySubscribers_0(rctx, inboundMarshaler, client, req, pathParams)
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
 
-		forward_Query_QuerySusbscribers_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_Query_QuerySubscribers_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
@@ -1165,7 +1165,7 @@ func RegisterQueryHandlerClient(ctx context.Context, mux *runtime.ServeMux, clie
 
 	})
 
-	mux.Handle("GET", pattern_Query_QuerySubscriberIntentsBySubscriberDomain_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("GET", pattern_Query_QuerySubscriberIntentsBySubscriberAddress_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
@@ -1174,14 +1174,14 @@ func RegisterQueryHandlerClient(ctx context.Context, mux *runtime.ServeMux, clie
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_Query_QuerySubscriberIntentsBySubscriberDomain_0(rctx, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_Query_QuerySubscriberIntentsBySubscriberAddress_0(rctx, inboundMarshaler, client, req, pathParams)
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
 
-		forward_Query_QuerySubscriberIntentsBySubscriberDomain_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_Query_QuerySubscriberIntentsBySubscriberAddress_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
@@ -1215,9 +1215,9 @@ var (
 
 	pattern_Query_QueryPublishers_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"sommelier", "pubsub", "v1", "publishers"}, "", runtime.AssumeColonVerbOpt(true)))
 
-	pattern_Query_QuerySusbscriber_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"sommelier", "pubsub", "v1", "subscribers", "subscriber_address"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_QuerySubscriber_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"sommelier", "pubsub", "v1", "subscribers", "subscriber_address"}, "", runtime.AssumeColonVerbOpt(true)))
 
-	pattern_Query_QuerySusbscribers_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"sommelier", "pubsub", "v1", "subscribers"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_QuerySubscribers_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"sommelier", "pubsub", "v1", "subscribers"}, "", runtime.AssumeColonVerbOpt(true)))
 
 	pattern_Query_QueryPublisherIntent_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4, 1, 0, 4, 1, 5, 5}, []string{"sommelier", "pubsub", "v1", "publisher_intents", "publisher_domain", "subscription_id"}, "", runtime.AssumeColonVerbOpt(true)))
 
@@ -1231,7 +1231,7 @@ var (
 
 	pattern_Query_QuerySubscriberIntents_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"sommelier", "pubsub", "v1", "subscriber_intents"}, "", runtime.AssumeColonVerbOpt(true)))
 
-	pattern_Query_QuerySubscriberIntentsBySubscriberDomain_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"sommelier", "pubsub", "v1", "subscriber_intents", "subscriber_address"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_QuerySubscriberIntentsBySubscriberAddress_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"sommelier", "pubsub", "v1", "subscriber_intents", "subscriber_address"}, "", runtime.AssumeColonVerbOpt(true)))
 
 	pattern_Query_QuerySubscriberIntentsBySubscriptionId_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"sommelier", "pubsub", "v1", "subscriber_intents_by_subscription_id", "subscription_id"}, "", runtime.AssumeColonVerbOpt(true)))
 )
@@ -1243,9 +1243,9 @@ var (
 
 	forward_Query_QueryPublishers_0 = runtime.ForwardResponseMessage
 
-	forward_Query_QuerySusbscriber_0 = runtime.ForwardResponseMessage
+	forward_Query_QuerySubscriber_0 = runtime.ForwardResponseMessage
 
-	forward_Query_QuerySusbscribers_0 = runtime.ForwardResponseMessage
+	forward_Query_QuerySubscribers_0 = runtime.ForwardResponseMessage
 
 	forward_Query_QueryPublisherIntent_0 = runtime.ForwardResponseMessage
 
@@ -1259,7 +1259,7 @@ var (
 
 	forward_Query_QuerySubscriberIntents_0 = runtime.ForwardResponseMessage
 
-	forward_Query_QuerySubscriberIntentsBySubscriberDomain_0 = runtime.ForwardResponseMessage
+	forward_Query_QuerySubscriberIntentsBySubscriberAddress_0 = runtime.ForwardResponseMessage
 
 	forward_Query_QuerySubscriberIntentsBySubscriptionId_0 = runtime.ForwardResponseMessage
 )
