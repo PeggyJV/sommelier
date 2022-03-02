@@ -29,6 +29,7 @@ const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
 type MsgRemovePublisher struct {
 	Publisher *Publisher `protobuf:"bytes,1,opt,name=publisher,proto3" json:"publisher,omitempty"`
+	Signer    string     `protobuf:"bytes,2,opt,name=signer,proto3" json:"signer,omitempty"`
 }
 
 func (m *MsgRemovePublisher) Reset()         { *m = MsgRemovePublisher{} }
@@ -71,6 +72,13 @@ func (m *MsgRemovePublisher) GetPublisher() *Publisher {
 	return nil
 }
 
+func (m *MsgRemovePublisher) GetSigner() string {
+	if m != nil {
+		return m.Signer
+	}
+	return ""
+}
+
 type MsgRemovePublisherResponse struct {
 }
 
@@ -109,6 +117,7 @@ var xxx_messageInfo_MsgRemovePublisherResponse proto.InternalMessageInfo
 
 type MsgAddSubscriber struct {
 	Subscriber *Subscriber `protobuf:"bytes,1,opt,name=subscriber,proto3" json:"subscriber,omitempty"`
+	Signer     string      `protobuf:"bytes,2,opt,name=signer,proto3" json:"signer,omitempty"`
 }
 
 func (m *MsgAddSubscriber) Reset()         { *m = MsgAddSubscriber{} }
@@ -151,6 +160,13 @@ func (m *MsgAddSubscriber) GetSubscriber() *Subscriber {
 	return nil
 }
 
+func (m *MsgAddSubscriber) GetSigner() string {
+	if m != nil {
+		return m.Signer
+	}
+	return ""
+}
+
 type MsgAddSubscriberResponse struct {
 }
 
@@ -189,6 +205,7 @@ var xxx_messageInfo_MsgAddSubscriberResponse proto.InternalMessageInfo
 
 type MsgRemoveSubscriber struct {
 	Subscriber *Subscriber `protobuf:"bytes,1,opt,name=subscriber,proto3" json:"subscriber,omitempty"`
+	Signer     string      `protobuf:"bytes,2,opt,name=signer,proto3" json:"signer,omitempty"`
 }
 
 func (m *MsgRemoveSubscriber) Reset()         { *m = MsgRemoveSubscriber{} }
@@ -231,6 +248,13 @@ func (m *MsgRemoveSubscriber) GetSubscriber() *Subscriber {
 	return nil
 }
 
+func (m *MsgRemoveSubscriber) GetSigner() string {
+	if m != nil {
+		return m.Signer
+	}
+	return ""
+}
+
 type MsgRemoveSubscriberResponse struct {
 }
 
@@ -269,6 +293,7 @@ var xxx_messageInfo_MsgRemoveSubscriberResponse proto.InternalMessageInfo
 
 type MsgAddPublisherIntent struct {
 	PublisherIntent *PublisherIntent `protobuf:"bytes,1,opt,name=publisher_intent,json=publisherIntent,proto3" json:"publisher_intent,omitempty"`
+	Signer          string           `protobuf:"bytes,2,opt,name=signer,proto3" json:"signer,omitempty"`
 }
 
 func (m *MsgAddPublisherIntent) Reset()         { *m = MsgAddPublisherIntent{} }
@@ -311,6 +336,13 @@ func (m *MsgAddPublisherIntent) GetPublisherIntent() *PublisherIntent {
 	return nil
 }
 
+func (m *MsgAddPublisherIntent) GetSigner() string {
+	if m != nil {
+		return m.Signer
+	}
+	return ""
+}
+
 type MsgAddPublisherIntentResponse struct {
 }
 
@@ -349,6 +381,7 @@ var xxx_messageInfo_MsgAddPublisherIntentResponse proto.InternalMessageInfo
 
 type MsgRemovePublisherIntent struct {
 	PublisherIntent *PublisherIntent `protobuf:"bytes,1,opt,name=publisher_intent,json=publisherIntent,proto3" json:"publisher_intent,omitempty"`
+	Signer          string           `protobuf:"bytes,2,opt,name=signer,proto3" json:"signer,omitempty"`
 }
 
 func (m *MsgRemovePublisherIntent) Reset()         { *m = MsgRemovePublisherIntent{} }
@@ -391,6 +424,13 @@ func (m *MsgRemovePublisherIntent) GetPublisherIntent() *PublisherIntent {
 	return nil
 }
 
+func (m *MsgRemovePublisherIntent) GetSigner() string {
+	if m != nil {
+		return m.Signer
+	}
+	return ""
+}
+
 type MsgRemovePublisherIntentResponse struct {
 }
 
@@ -429,6 +469,7 @@ var xxx_messageInfo_MsgRemovePublisherIntentResponse proto.InternalMessageInfo
 
 type MsgAddSubscriberIntent struct {
 	SubscriberIntent *SubscriberIntent `protobuf:"bytes,1,opt,name=subscriber_intent,json=subscriberIntent,proto3" json:"subscriber_intent,omitempty"`
+	Signer           string            `protobuf:"bytes,2,opt,name=signer,proto3" json:"signer,omitempty"`
 }
 
 func (m *MsgAddSubscriberIntent) Reset()         { *m = MsgAddSubscriberIntent{} }
@@ -471,6 +512,13 @@ func (m *MsgAddSubscriberIntent) GetSubscriberIntent() *SubscriberIntent {
 	return nil
 }
 
+func (m *MsgAddSubscriberIntent) GetSigner() string {
+	if m != nil {
+		return m.Signer
+	}
+	return ""
+}
+
 type MsgAddSubscriberIntentResponse struct {
 }
 
@@ -509,6 +557,7 @@ var xxx_messageInfo_MsgAddSubscriberIntentResponse proto.InternalMessageInfo
 
 type MsgRemoveSubscriberIntent struct {
 	SubscriberIntent *SubscriberIntent `protobuf:"bytes,1,opt,name=subscriber_intent,json=subscriberIntent,proto3" json:"subscriber_intent,omitempty"`
+	Signer           string            `protobuf:"bytes,2,opt,name=signer,proto3" json:"signer,omitempty"`
 }
 
 func (m *MsgRemoveSubscriberIntent) Reset()         { *m = MsgRemoveSubscriberIntent{} }
@@ -549,6 +598,13 @@ func (m *MsgRemoveSubscriberIntent) GetSubscriberIntent() *SubscriberIntent {
 		return m.SubscriberIntent
 	}
 	return nil
+}
+
+func (m *MsgRemoveSubscriberIntent) GetSigner() string {
+	if m != nil {
+		return m.Signer
+	}
+	return ""
 }
 
 type MsgRemoveSubscriberIntentResponse struct {
@@ -607,38 +663,39 @@ func init() {
 func init() { proto.RegisterFile("pubsub/v1/tx.proto", fileDescriptor_de188e882df4c8a7) }
 
 var fileDescriptor_de188e882df4c8a7 = []byte{
-	// 485 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xac, 0x95, 0xdf, 0x8a, 0xd3, 0x40,
-	0x14, 0xc6, 0x1b, 0x44, 0xc1, 0x23, 0xb2, 0x75, 0xd6, 0x96, 0x35, 0xb5, 0x63, 0x36, 0x55, 0x59,
-	0x51, 0x12, 0xb6, 0x8b, 0x0f, 0xa0, 0x20, 0x74, 0xc1, 0x82, 0xc6, 0x0b, 0x61, 0x2f, 0xfc, 0x33,
-	0xdd, 0x21, 0x1b, 0x69, 0x9a, 0x90, 0x49, 0xc2, 0xee, 0x5b, 0xf8, 0x22, 0xbe, 0x87, 0x97, 0x7b,
-	0xe9, 0xa5, 0xb4, 0x2f, 0x22, 0x26, 0xd3, 0x93, 0x7f, 0xd3, 0xec, 0xc2, 0xf6, 0x32, 0xe7, 0x7c,
-	0x73, 0x7e, 0x5f, 0xbe, 0xe4, 0x30, 0x40, 0xc2, 0x84, 0x89, 0x84, 0xd9, 0xe9, 0xa1, 0x1d, 0x9f,
-	0x5b, 0x61, 0x14, 0xc4, 0x01, 0xb9, 0x9b, 0xd7, 0xac, 0xf4, 0x50, 0xef, 0x17, 0x6d, 0x59, 0xcc,
-	0x24, 0xe6, 0x04, 0xc8, 0x54, 0xb8, 0x0e, 0xf7, 0x83, 0x94, 0x7f, 0x48, 0xd8, 0xdc, 0x13, 0x67,
-	0x3c, 0x22, 0x63, 0xf8, 0x7f, 0x34, 0x7f, 0xd8, 0xd3, 0x0c, 0xed, 0xe0, 0xde, 0xf8, 0xa1, 0x85,
-	0xc3, 0x2c, 0x14, 0x3a, 0x85, 0xcc, 0x7c, 0x0c, 0x7a, 0x73, 0x92, 0xc3, 0x45, 0x18, 0x2c, 0x04,
-	0x37, 0x8f, 0xa1, 0x3b, 0x15, 0xee, 0x9b, 0xd3, 0xd3, 0x4f, 0x09, 0x13, 0xb3, 0xc8, 0x63, 0x3c,
-	0x22, 0xaf, 0x01, 0x04, 0x3e, 0x49, 0x4c, 0xaf, 0x84, 0x29, 0xa4, 0x4e, 0x49, 0x68, 0xea, 0xb0,
-	0x57, 0x1f, 0x85, 0x98, 0xf7, 0xb0, 0x8b, 0x26, 0x6e, 0x4e, 0x1a, 0xc2, 0x40, 0x31, 0x0d, 0x61,
-	0x5f, 0xa0, 0x97, 0x1b, 0xc1, 0xd7, 0x3d, 0x5e, 0xc4, 0x7c, 0x11, 0x93, 0x77, 0xd0, 0xc5, 0x5c,
-	0xbe, 0x7a, 0x59, 0x4d, 0x42, 0x75, 0x55, 0x8a, 0xf9, 0x29, 0x67, 0x27, 0xac, 0x16, 0xcc, 0x27,
-	0x30, 0x54, 0xce, 0x47, 0x03, 0xdf, 0xb3, 0x24, 0x6a, 0x91, 0x6f, 0xd7, 0x83, 0x09, 0xc6, 0x26,
-	0x04, 0xda, 0x60, 0xd0, 0xaf, 0x7f, 0x10, 0x69, 0x62, 0x02, 0x0f, 0x8a, 0x38, 0xab, 0x2e, 0x06,
-	0xca, 0xf8, 0xe5, 0xe4, 0xae, 0xa8, 0x55, 0x4c, 0x03, 0xa8, 0x9a, 0x81, 0x2e, 0x38, 0x3c, 0x52,
-	0x7c, 0xac, 0xad, 0x1b, 0x19, 0xc1, 0xfe, 0x46, 0xcc, 0xda, 0xcb, 0xf8, 0xd7, 0x6d, 0xb8, 0x35,
-	0x15, 0x2e, 0xf9, 0x0c, 0x3b, 0xf5, 0xd5, 0x1a, 0x96, 0x70, 0xcd, 0x64, 0xf5, 0x67, 0xad, 0xed,
-	0x35, 0x80, 0x7c, 0x84, 0xfb, 0xd5, 0x5d, 0x1a, 0x54, 0xcf, 0x55, 0x9a, 0xfa, 0xa8, 0xa5, 0x89,
-	0x23, 0x4f, 0xa0, 0xdb, 0xd8, 0x1b, 0xaa, 0x72, 0x53, 0x1a, 0xfc, 0xbc, 0xbd, 0x8f, 0xb3, 0xbf,
-	0x01, 0x51, 0xac, 0x89, 0xd1, 0xb0, 0x55, 0x53, 0xe8, 0x07, 0x57, 0x29, 0x90, 0xe0, 0x41, 0x4f,
-	0xbd, 0x07, 0xa3, 0xd6, 0x40, 0x25, 0xe7, 0xe5, 0x35, 0x44, 0x88, 0x9a, 0xc1, 0xae, 0xea, 0x5f,
-	0xdf, 0x6f, 0x09, 0x59, 0x62, 0x5e, 0x5c, 0x29, 0x41, 0xc8, 0x1c, 0xfa, 0x1b, 0x7e, 0xe5, 0xa7,
-	0xed, 0x99, 0x4b, 0xd4, 0xab, 0xeb, 0xa8, 0xd6, 0xb4, 0xb7, 0x93, 0xdf, 0x4b, 0xaa, 0x5d, 0x2e,
-	0xa9, 0xf6, 0x77, 0x49, 0xb5, 0x9f, 0x2b, 0xda, 0xb9, 0x5c, 0xd1, 0xce, 0x9f, 0x15, 0xed, 0x9c,
-	0x58, 0xae, 0x17, 0x9f, 0x25, 0xcc, 0x9a, 0x05, 0xbe, 0x1d, 0x72, 0xd7, 0xbd, 0xf8, 0x91, 0xda,
-	0x22, 0xf0, 0x7d, 0x3e, 0xf7, 0x78, 0x64, 0xa7, 0x47, 0xf6, 0xb9, 0xbc, 0x4f, 0xec, 0xf8, 0x22,
-	0xe4, 0x82, 0xdd, 0xc9, 0xae, 0x95, 0xa3, 0x7f, 0x01, 0x00, 0x00, 0xff, 0xff, 0x6e, 0x38, 0xfa,
-	0x69, 0x8f, 0x06, 0x00, 0x00,
+	// 506 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xbc, 0x95, 0xdf, 0x8a, 0xd3, 0x40,
+	0x14, 0x87, 0x1b, 0xc5, 0x85, 0x3d, 0x22, 0x5b, 0x67, 0x6d, 0xa9, 0xa9, 0x1d, 0xb3, 0xad, 0x4a,
+	0x45, 0x49, 0xd8, 0x2e, 0x3e, 0x80, 0x82, 0xb0, 0x5e, 0x14, 0x34, 0x5e, 0x08, 0x7b, 0xe3, 0x9a,
+	0x76, 0xc8, 0x46, 0xda, 0x24, 0x64, 0x92, 0xb0, 0x15, 0x7c, 0x07, 0x5f, 0xc4, 0xf7, 0xf0, 0x72,
+	0x2f, 0xbd, 0x94, 0xf6, 0x45, 0xc4, 0x64, 0x7a, 0xf2, 0x6f, 0x92, 0xdd, 0x1b, 0x7b, 0x39, 0x33,
+	0xbf, 0x39, 0xdf, 0xc7, 0x39, 0x9d, 0x06, 0x88, 0x1f, 0x59, 0x3c, 0xb2, 0x8c, 0xf8, 0xd8, 0x08,
+	0x2f, 0x75, 0x3f, 0xf0, 0x42, 0x8f, 0xec, 0xa7, 0x7b, 0x7a, 0x7c, 0xac, 0x76, 0xb3, 0x63, 0xb1,
+	0x99, 0x44, 0x86, 0xe7, 0x40, 0xa6, 0xdc, 0x36, 0xd9, 0xd2, 0x8b, 0xd9, 0xfb, 0xc8, 0x5a, 0x38,
+	0xfc, 0x82, 0x05, 0x64, 0x02, 0xff, 0xae, 0xa6, 0x8b, 0x9e, 0xa2, 0x29, 0xe3, 0xbb, 0x93, 0x07,
+	0x3a, 0x16, 0xd3, 0x31, 0x68, 0x66, 0x31, 0xd2, 0x85, 0x3d, 0xee, 0xd8, 0x2e, 0x0b, 0x7a, 0xb7,
+	0x34, 0x65, 0xbc, 0x6f, 0x8a, 0xd5, 0xf0, 0x11, 0xa8, 0x55, 0x82, 0xc9, 0xb8, 0xef, 0xb9, 0x9c,
+	0x0d, 0xbf, 0x40, 0x7b, 0xca, 0xed, 0xd7, 0xf3, 0xf9, 0xc7, 0xc8, 0xe2, 0xb3, 0xc0, 0xb1, 0x58,
+	0x40, 0x5e, 0x01, 0x70, 0x5c, 0x09, 0x7c, 0x27, 0x87, 0xcf, 0xa2, 0x66, 0x2e, 0x58, 0x2b, 0xa0,
+	0x42, 0xaf, 0x8c, 0x40, 0xfc, 0x1c, 0x0e, 0x51, 0xee, 0xff, 0x19, 0x0c, 0xa0, 0x2f, 0xa1, 0xa0,
+	0x44, 0x0c, 0x9d, 0x54, 0x10, 0xdb, 0xf3, 0xce, 0x0d, 0x99, 0x1b, 0x92, 0xb7, 0xd0, 0xc6, 0xfe,
+	0x7e, 0x76, 0x92, 0x3d, 0x21, 0xa3, 0xca, 0xa6, 0x91, 0xde, 0x32, 0x0f, 0xfc, 0x52, 0x99, 0x3a,
+	0xad, 0xc7, 0x30, 0x90, 0x72, 0x51, 0x6c, 0x95, 0x74, 0xae, 0x34, 0xba, 0xdd, 0xb8, 0x0d, 0x41,
+	0xab, 0x43, 0xa3, 0xde, 0x37, 0xe8, 0x96, 0x07, 0x2b, 0xaa, 0x9e, 0xc2, 0xfd, 0x6c, 0x2c, 0x45,
+	0xbb, 0xbe, 0x74, 0x8c, 0xa2, 0x72, 0x9b, 0x97, 0x2b, 0xd5, 0xf9, 0x69, 0x40, 0xe5, 0x6c, 0xb4,
+	0xfb, 0x0e, 0x0f, 0x25, 0x43, 0xdf, 0x99, 0xe0, 0x08, 0x8e, 0x6a, 0xf1, 0x5b, 0xc7, 0xc9, 0xcf,
+	0x3b, 0x70, 0x7b, 0xca, 0x6d, 0xf2, 0x09, 0x0e, 0xca, 0x7f, 0x01, 0x83, 0x9c, 0x46, 0x75, 0x12,
+	0xea, 0xd3, 0xc6, 0xe3, 0x2d, 0x80, 0x7c, 0x80, 0x7b, 0xc5, 0xb7, 0xdd, 0x2f, 0xde, 0x2b, 0x1c,
+	0xaa, 0xa3, 0x86, 0x43, 0x2c, 0x79, 0x06, 0xed, 0xca, 0x7b, 0xa5, 0x32, 0x9b, 0x5c, 0xe1, 0x67,
+	0xcd, 0xe7, 0x58, 0xfb, 0x1c, 0x88, 0xe4, 0x19, 0x6a, 0x15, 0xad, 0x52, 0x42, 0x1d, 0x5f, 0x97,
+	0x40, 0x82, 0x03, 0x1d, 0xf9, 0x7b, 0x1a, 0x35, 0x36, 0x54, 0x70, 0x5e, 0xdc, 0x20, 0x84, 0xa8,
+	0x19, 0x1c, 0xca, 0xde, 0xc6, 0x51, 0x43, 0x93, 0x05, 0xe6, 0xf9, 0xb5, 0x11, 0x84, 0x2c, 0xa0,
+	0x5b, 0xf3, 0x13, 0x7f, 0xd2, 0xdc, 0x73, 0x81, 0x7a, 0x79, 0x93, 0xd4, 0x96, 0xf6, 0xe6, 0xf4,
+	0xd7, 0x9a, 0x2a, 0x57, 0x6b, 0xaa, 0xfc, 0x59, 0x53, 0xe5, 0xc7, 0x86, 0xb6, 0xae, 0x36, 0xb4,
+	0xf5, 0x7b, 0x43, 0x5b, 0x67, 0xba, 0xed, 0x84, 0x17, 0x91, 0xa5, 0xcf, 0xbc, 0xa5, 0xe1, 0x33,
+	0xdb, 0x5e, 0x7d, 0x8d, 0x0d, 0xee, 0x2d, 0x97, 0x6c, 0xe1, 0xb0, 0xc0, 0x88, 0x4f, 0x8c, 0x4b,
+	0xf1, 0xdd, 0x33, 0xc2, 0x95, 0xcf, 0xb8, 0xb5, 0x97, 0x7c, 0xfe, 0x4e, 0xfe, 0x06, 0x00, 0x00,
+	0xff, 0xff, 0x72, 0xf7, 0x35, 0x87, 0x37, 0x07, 0x00, 0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -957,6 +1014,13 @@ func (m *MsgRemovePublisher) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	_ = i
 	var l int
 	_ = l
+	if len(m.Signer) > 0 {
+		i -= len(m.Signer)
+		copy(dAtA[i:], m.Signer)
+		i = encodeVarintTx(dAtA, i, uint64(len(m.Signer)))
+		i--
+		dAtA[i] = 0x12
+	}
 	if m.Publisher != nil {
 		{
 			size, err := m.Publisher.MarshalToSizedBuffer(dAtA[:i])
@@ -1015,6 +1079,13 @@ func (m *MsgAddSubscriber) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	_ = i
 	var l int
 	_ = l
+	if len(m.Signer) > 0 {
+		i -= len(m.Signer)
+		copy(dAtA[i:], m.Signer)
+		i = encodeVarintTx(dAtA, i, uint64(len(m.Signer)))
+		i--
+		dAtA[i] = 0x12
+	}
 	if m.Subscriber != nil {
 		{
 			size, err := m.Subscriber.MarshalToSizedBuffer(dAtA[:i])
@@ -1073,6 +1144,13 @@ func (m *MsgRemoveSubscriber) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	_ = i
 	var l int
 	_ = l
+	if len(m.Signer) > 0 {
+		i -= len(m.Signer)
+		copy(dAtA[i:], m.Signer)
+		i = encodeVarintTx(dAtA, i, uint64(len(m.Signer)))
+		i--
+		dAtA[i] = 0x12
+	}
 	if m.Subscriber != nil {
 		{
 			size, err := m.Subscriber.MarshalToSizedBuffer(dAtA[:i])
@@ -1131,6 +1209,13 @@ func (m *MsgAddPublisherIntent) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	_ = i
 	var l int
 	_ = l
+	if len(m.Signer) > 0 {
+		i -= len(m.Signer)
+		copy(dAtA[i:], m.Signer)
+		i = encodeVarintTx(dAtA, i, uint64(len(m.Signer)))
+		i--
+		dAtA[i] = 0x12
+	}
 	if m.PublisherIntent != nil {
 		{
 			size, err := m.PublisherIntent.MarshalToSizedBuffer(dAtA[:i])
@@ -1189,6 +1274,13 @@ func (m *MsgRemovePublisherIntent) MarshalToSizedBuffer(dAtA []byte) (int, error
 	_ = i
 	var l int
 	_ = l
+	if len(m.Signer) > 0 {
+		i -= len(m.Signer)
+		copy(dAtA[i:], m.Signer)
+		i = encodeVarintTx(dAtA, i, uint64(len(m.Signer)))
+		i--
+		dAtA[i] = 0x12
+	}
 	if m.PublisherIntent != nil {
 		{
 			size, err := m.PublisherIntent.MarshalToSizedBuffer(dAtA[:i])
@@ -1247,6 +1339,13 @@ func (m *MsgAddSubscriberIntent) MarshalToSizedBuffer(dAtA []byte) (int, error) 
 	_ = i
 	var l int
 	_ = l
+	if len(m.Signer) > 0 {
+		i -= len(m.Signer)
+		copy(dAtA[i:], m.Signer)
+		i = encodeVarintTx(dAtA, i, uint64(len(m.Signer)))
+		i--
+		dAtA[i] = 0x12
+	}
 	if m.SubscriberIntent != nil {
 		{
 			size, err := m.SubscriberIntent.MarshalToSizedBuffer(dAtA[:i])
@@ -1305,6 +1404,13 @@ func (m *MsgRemoveSubscriberIntent) MarshalToSizedBuffer(dAtA []byte) (int, erro
 	_ = i
 	var l int
 	_ = l
+	if len(m.Signer) > 0 {
+		i -= len(m.Signer)
+		copy(dAtA[i:], m.Signer)
+		i = encodeVarintTx(dAtA, i, uint64(len(m.Signer)))
+		i--
+		dAtA[i] = 0x12
+	}
 	if m.SubscriberIntent != nil {
 		{
 			size, err := m.SubscriberIntent.MarshalToSizedBuffer(dAtA[:i])
@@ -1364,6 +1470,10 @@ func (m *MsgRemovePublisher) Size() (n int) {
 		l = m.Publisher.Size()
 		n += 1 + l + sovTx(uint64(l))
 	}
+	l = len(m.Signer)
+	if l > 0 {
+		n += 1 + l + sovTx(uint64(l))
+	}
 	return n
 }
 
@@ -1384,6 +1494,10 @@ func (m *MsgAddSubscriber) Size() (n int) {
 	_ = l
 	if m.Subscriber != nil {
 		l = m.Subscriber.Size()
+		n += 1 + l + sovTx(uint64(l))
+	}
+	l = len(m.Signer)
+	if l > 0 {
 		n += 1 + l + sovTx(uint64(l))
 	}
 	return n
@@ -1408,6 +1522,10 @@ func (m *MsgRemoveSubscriber) Size() (n int) {
 		l = m.Subscriber.Size()
 		n += 1 + l + sovTx(uint64(l))
 	}
+	l = len(m.Signer)
+	if l > 0 {
+		n += 1 + l + sovTx(uint64(l))
+	}
 	return n
 }
 
@@ -1428,6 +1546,10 @@ func (m *MsgAddPublisherIntent) Size() (n int) {
 	_ = l
 	if m.PublisherIntent != nil {
 		l = m.PublisherIntent.Size()
+		n += 1 + l + sovTx(uint64(l))
+	}
+	l = len(m.Signer)
+	if l > 0 {
 		n += 1 + l + sovTx(uint64(l))
 	}
 	return n
@@ -1452,6 +1574,10 @@ func (m *MsgRemovePublisherIntent) Size() (n int) {
 		l = m.PublisherIntent.Size()
 		n += 1 + l + sovTx(uint64(l))
 	}
+	l = len(m.Signer)
+	if l > 0 {
+		n += 1 + l + sovTx(uint64(l))
+	}
 	return n
 }
 
@@ -1474,6 +1600,10 @@ func (m *MsgAddSubscriberIntent) Size() (n int) {
 		l = m.SubscriberIntent.Size()
 		n += 1 + l + sovTx(uint64(l))
 	}
+	l = len(m.Signer)
+	if l > 0 {
+		n += 1 + l + sovTx(uint64(l))
+	}
 	return n
 }
 
@@ -1494,6 +1624,10 @@ func (m *MsgRemoveSubscriberIntent) Size() (n int) {
 	_ = l
 	if m.SubscriberIntent != nil {
 		l = m.SubscriberIntent.Size()
+		n += 1 + l + sovTx(uint64(l))
+	}
+	l = len(m.Signer)
+	if l > 0 {
 		n += 1 + l + sovTx(uint64(l))
 	}
 	return n
@@ -1578,6 +1712,38 @@ func (m *MsgRemovePublisher) Unmarshal(dAtA []byte) error {
 			if err := m.Publisher.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Signer", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTx
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthTx
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthTx
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Signer = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
@@ -1715,6 +1881,38 @@ func (m *MsgAddSubscriber) Unmarshal(dAtA []byte) error {
 				return err
 			}
 			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Signer", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTx
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthTx
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthTx
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Signer = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
 			skippy, err := skipTx(dAtA[iNdEx:])
@@ -1850,6 +2048,38 @@ func (m *MsgRemoveSubscriber) Unmarshal(dAtA []byte) error {
 			if err := m.Subscriber.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Signer", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTx
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthTx
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthTx
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Signer = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
@@ -1987,6 +2217,38 @@ func (m *MsgAddPublisherIntent) Unmarshal(dAtA []byte) error {
 				return err
 			}
 			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Signer", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTx
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthTx
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthTx
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Signer = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
 			skippy, err := skipTx(dAtA[iNdEx:])
@@ -2122,6 +2384,38 @@ func (m *MsgRemovePublisherIntent) Unmarshal(dAtA []byte) error {
 			if err := m.PublisherIntent.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Signer", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTx
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthTx
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthTx
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Signer = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
@@ -2259,6 +2553,38 @@ func (m *MsgAddSubscriberIntent) Unmarshal(dAtA []byte) error {
 				return err
 			}
 			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Signer", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTx
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthTx
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthTx
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Signer = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
 			skippy, err := skipTx(dAtA[iNdEx:])
@@ -2394,6 +2720,38 @@ func (m *MsgRemoveSubscriberIntent) Unmarshal(dAtA []byte) error {
 			if err := m.SubscriberIntent.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Signer", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTx
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthTx
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthTx
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Signer = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
