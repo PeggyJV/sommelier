@@ -4,7 +4,8 @@ import (
 	"crypto/x509"
 	"encoding/base64"
 	"encoding/pem"
-	fmt "fmt"
+	"fmt"
+	"net/url"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
@@ -175,10 +176,12 @@ func (si *SubscriberIntent) ValidateBasic() error {
 }
 
 func ValidateDomain(domain string) error {
-	// TODO(bolten): should we attempt to verify with a regex that it's a well-formatted domain?
-	// also the 256 limit is arbitrary, but we should set one
 	if len(domain) > 256 {
 		return fmt.Errorf("domain over max length of 256: %d", len(domain))
+	}
+
+	if _, err := url.Parse(fmt.Sprintf("https://%s", domain)); err != nil {
+		return fmt.Errorf("invalid URL format: %s", err.Error())
 	}
 
 	return nil
@@ -197,11 +200,13 @@ func ValidateProofUrl(proofUrl string, domain string, address string) error {
 	return nil
 }
 
-func ValidateGenericUrl(url string) error {
-	// TODO(bolten): should we attempt to verify with a regex that it's a well-formatted URL?
-	// also, the 512 limit is arbitrary, but we should set one
-	if len(url) > 512 {
-		return fmt.Errorf("URL over max length of 512: %d", len(url))
+func ValidateGenericUrl(urlString string) error {
+	if len(urlString) > 512 {
+		return fmt.Errorf("URL over max length of 512: %d", len(urlString))
+	}
+
+	if _, err := url.Parse(urlString); err != nil {
+		return fmt.Errorf("invalid URL format: %s", err.Error())
 	}
 
 	return nil
