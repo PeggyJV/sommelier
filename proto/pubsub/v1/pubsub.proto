@@ -18,7 +18,13 @@ message Subscriber {
   string proof_url = 4;
 }
 
-// determines what types of subscribers may subscribe to a given publisher intent
+// for a given PublisherIntent, whether or not it is pulled or pushed
+enum PublishMethod {
+  PULL = 0;
+  PUSH = 1;
+}
+
+// for a given PublisherIntent, determines what types of subscribers may subscribe
 enum AllowedSubscribers {
   ANY = 0;
   VALIDATORS = 1;
@@ -29,7 +35,7 @@ message PublisherIntent {
   // unique key is subscription_id and publisher_domain tuple
   string subscription_id = 1;
   string publisher_domain = 2;
-  string method = 3;
+  PublishMethod method = 3;
   string pull_url = 4; // optional, only needs to be set if using the "pull" method
   AllowedSubscribers allowed_subscribers = 5;
   repeated string allowed_addresses = 6; // optional, must be provided if allowed_subscribers is LIST, list of account addresses
