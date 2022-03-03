@@ -45,7 +45,7 @@ message MsgAddPublisherIntentResponse {}
 
 message MsgRemovePublisherIntent {
   string publisher_domain = 1;
-  string subscsription_id = 2;
+  string subscription_id = 2;
   string signer = 3;
 }
 
