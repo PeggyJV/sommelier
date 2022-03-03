@@ -15,7 +15,7 @@ func DefaultGenesisState() GenesisState {
 
 // Validate performs a basic stateless validation of the genesis fields.
 func (gs GenesisState) Validate() error {
-	if err := gs.Params.Validate(); err != nil {
+	if err := gs.Params.ValidateBasic(); err != nil {
 		return err
 	}
 
