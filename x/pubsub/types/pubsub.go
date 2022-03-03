@@ -6,6 +6,7 @@ import (
 	"encoding/pem"
 	"fmt"
 	"net/url"
+	"strings"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
@@ -248,6 +249,10 @@ func ValidateCaCertificateBase64(certBase64 string) error {
 func ValidateSubscriptionId(subscriptionId string) error {
 	if len(subscriptionId) > 128 {
 		return fmt.Errorf("subscription ID over max length of 128: %d", len(subscriptionId))
+	}
+
+	if strings.Contains(subscriptionId, "|") {
+		return fmt.Errorf("subscription IDs may not contain the pipe character '|'")
 	}
 
 	return nil
