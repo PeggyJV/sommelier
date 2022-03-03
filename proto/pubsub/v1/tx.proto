@@ -61,7 +61,6 @@ message MsgAddSubscriberIntentResponse {}
 message MsgRemoveSubscriberIntent {
   string subscription_id = 1;
   string subscriber_address = 2;
-  string publisher_domain = 3;
   string signer = 4;
 }
 
