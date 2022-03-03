@@ -86,12 +86,12 @@ func (AllowedSubscribers) EnumDescriptor() ([]byte, []int) {
 type Publisher struct {
 	// unique key, FQDN of the publisher, max length of 256
 	Domain string `protobuf:"bytes,1,opt,name=domain,proto3" json:"domain,omitempty"`
-	// base64 of the publisher's self-signed CA cert PEM file, expecting TLS 1.3 compatible ECDSA certificates, max length 4096
-	CaCert string `protobuf:"bytes,2,opt,name=ca_cert,json=caCert,proto3" json:"ca_cert,omitempty"`
 	// account address of the publisher
-	Address string `protobuf:"bytes,3,opt,name=address,proto3" json:"address,omitempty"`
+	Address string `protobuf:"bytes,2,opt,name=address,proto3" json:"address,omitempty"`
 	// URL in the format https://<domain>/<address>/cacert.pem serving a cert matching ca_cert, max length of 512
-	ProofUrl string `protobuf:"bytes,4,opt,name=proof_url,json=proofUrl,proto3" json:"proof_url,omitempty"`
+	ProofUrl string `protobuf:"bytes,3,opt,name=proof_url,json=proofUrl,proto3" json:"proof_url,omitempty"`
+	// base64 of the publisher's self-signed CA cert PEM file, expecting TLS 1.3 compatible ECDSA certificates, max length 4096
+	CaCert string `protobuf:"bytes,4,opt,name=ca_cert,json=caCert,proto3" json:"ca_cert,omitempty"`
 }
 
 func (m *Publisher) Reset()         { *m = Publisher{} }
@@ -134,13 +134,6 @@ func (m *Publisher) GetDomain() string {
 	return ""
 }
 
-func (m *Publisher) GetCaCert() string {
-	if m != nil {
-		return m.CaCert
-	}
-	return ""
-}
-
 func (m *Publisher) GetAddress() string {
 	if m != nil {
 		return m.Address
@@ -155,16 +148,23 @@ func (m *Publisher) GetProofUrl() string {
 	return ""
 }
 
+func (m *Publisher) GetCaCert() string {
+	if m != nil {
+		return m.CaCert
+	}
+	return ""
+}
+
 // represents a subscriber, can be set or modified by the owner of the subscriber address
 type Subscriber struct {
 	// unique key, account address representation of either an account or a validator
 	Address string `protobuf:"bytes,1,opt,name=address,proto3" json:"address,omitempty"`
 	// FQDN of the subscriber, max length of 256
 	Domain string `protobuf:"bytes,2,opt,name=domain,proto3" json:"domain,omitempty"`
-	// base64 of the subscriber's self-signed CA cert PEM file, expecting TLS 1.3 compatible ECDSA certificates, max length 4096
-	CaCert string `protobuf:"bytes,3,opt,name=ca_cert,json=caCert,proto3" json:"ca_cert,omitempty"`
 	// URL in the format https://<domain>/<address>/cacert.pem serving a cert matching ca_cert, max length of 512
-	ProofUrl string `protobuf:"bytes,4,opt,name=proof_url,json=proofUrl,proto3" json:"proof_url,omitempty"`
+	ProofUrl string `protobuf:"bytes,3,opt,name=proof_url,json=proofUrl,proto3" json:"proof_url,omitempty"`
+	// base64 of the subscriber's self-signed CA cert PEM file, expecting TLS 1.3 compatible ECDSA certificates, max length 4096
+	CaCert string `protobuf:"bytes,4,opt,name=ca_cert,json=caCert,proto3" json:"ca_cert,omitempty"`
 }
 
 func (m *Subscriber) Reset()         { *m = Subscriber{} }
@@ -214,16 +214,16 @@ func (m *Subscriber) GetDomain() string {
 	return ""
 }
 
-func (m *Subscriber) GetCaCert() string {
+func (m *Subscriber) GetProofUrl() string {
 	if m != nil {
-		return m.CaCert
+		return m.ProofUrl
 	}
 	return ""
 }
 
-func (m *Subscriber) GetProofUrl() string {
+func (m *Subscriber) GetCaCert() string {
 	if m != nil {
-		return m.ProofUrl
+		return m.CaCert
 	}
 	return ""
 }
@@ -392,11 +392,14 @@ func (m *SubscriberIntent) GetPushUrl() string {
 	return ""
 }
 
-// governance proposal to add a publisher
+// governance proposal to add a publisher, the last four fields are the same as the Publisher type
 type AddPublisherProposal struct {
-	Title       string     `protobuf:"bytes,1,opt,name=title,proto3" json:"title,omitempty"`
-	Description string     `protobuf:"bytes,2,opt,name=description,proto3" json:"description,omitempty"`
-	Publisher   *Publisher `protobuf:"bytes,3,opt,name=publisher,proto3" json:"publisher,omitempty"`
+	Title       string `protobuf:"bytes,1,opt,name=title,proto3" json:"title,omitempty"`
+	Description string `protobuf:"bytes,2,opt,name=description,proto3" json:"description,omitempty"`
+	Domain      string `protobuf:"bytes,3,opt,name=domain,proto3" json:"domain,omitempty"`
+	Address     string `protobuf:"bytes,4,opt,name=address,proto3" json:"address,omitempty"`
+	ProofUrl    string `protobuf:"bytes,5,opt,name=proof_url,json=proofUrl,proto3" json:"proof_url,omitempty"`
+	CaCert      string `protobuf:"bytes,6,opt,name=ca_cert,json=caCert,proto3" json:"ca_cert,omitempty"`
 }
 
 func (m *AddPublisherProposal) Reset()         { *m = AddPublisherProposal{} }
@@ -446,19 +449,41 @@ func (m *AddPublisherProposal) GetDescription() string {
 	return ""
 }
 
-func (m *AddPublisherProposal) GetPublisher() *Publisher {
+func (m *AddPublisherProposal) GetDomain() string {
 	if m != nil {
-		return m.Publisher
+		return m.Domain
 	}
-	return nil
+	return ""
+}
+
+func (m *AddPublisherProposal) GetAddress() string {
+	if m != nil {
+		return m.Address
+	}
+	return ""
+}
+
+func (m *AddPublisherProposal) GetProofUrl() string {
+	if m != nil {
+		return m.ProofUrl
+	}
+	return ""
+}
+
+func (m *AddPublisherProposal) GetCaCert() string {
+	if m != nil {
+		return m.CaCert
+	}
+	return ""
 }
 
 // governance proposal to remove a publisher (publisher's can remove themselves, but this might be necessary in the
-// event of a malicious publisher or a key compromise)
+// event of a malicious publisher or a key compromise), since Publisher's are unique by domain, it's the only
+// necessary information to remove one
 type RemovePublisherProposal struct {
-	Title       string     `protobuf:"bytes,1,opt,name=title,proto3" json:"title,omitempty"`
-	Description string     `protobuf:"bytes,2,opt,name=description,proto3" json:"description,omitempty"`
-	Publisher   *Publisher `protobuf:"bytes,3,opt,name=publisher,proto3" json:"publisher,omitempty"`
+	Title       string `protobuf:"bytes,1,opt,name=title,proto3" json:"title,omitempty"`
+	Description string `protobuf:"bytes,2,opt,name=description,proto3" json:"description,omitempty"`
+	Domain      string `protobuf:"bytes,3,opt,name=domain,proto3" json:"domain,omitempty"`
 }
 
 func (m *RemovePublisherProposal) Reset()         { *m = RemovePublisherProposal{} }
@@ -508,11 +533,11 @@ func (m *RemovePublisherProposal) GetDescription() string {
 	return ""
 }
 
-func (m *RemovePublisherProposal) GetPublisher() *Publisher {
+func (m *RemovePublisherProposal) GetDomain() string {
 	if m != nil {
-		return m.Publisher
+		return m.Domain
 	}
-	return nil
+	return ""
 }
 
 func init() {
@@ -529,42 +554,42 @@ func init() {
 func init() { proto.RegisterFile("pubsub/v1/pubsub.proto", fileDescriptor_3164155f25b3675d) }
 
 var fileDescriptor_3164155f25b3675d = []byte{
-	// 549 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xc4, 0x94, 0x41, 0x6f, 0xd3, 0x30,
-	0x14, 0xc7, 0xeb, 0x76, 0x6b, 0x97, 0x37, 0xd1, 0x66, 0xa6, 0xda, 0x82, 0x10, 0x51, 0x55, 0x0e,
-	0x8c, 0x21, 0x1a, 0xd6, 0x1d, 0x38, 0x07, 0x76, 0x58, 0xa5, 0x32, 0xaa, 0x74, 0x45, 0x82, 0x4b,
-	0x95, 0x34, 0xa6, 0x0d, 0x72, 0xea, 0xc8, 0x76, 0x0a, 0xbb, 0x22, 0x71, 0xe7, 0x9b, 0xc0, 0xc7,
-	0xe0, 0xb8, 0x23, 0x47, 0xd4, 0x7e, 0x11, 0xd4, 0xc4, 0x4d, 0x5a, 0x75, 0x20, 0x71, 0xe2, 0x96,
-	0xf7, 0xff, 0xdb, 0xef, 0xfd, 0xf2, 0xb7, 0x65, 0x38, 0x8c, 0x62, 0x4f, 0xc4, 0x9e, 0x35, 0x3b,
-	0xb5, 0xd2, 0xaf, 0x56, 0xc4, 0x99, 0x64, 0x58, 0x53, 0xd5, 0xec, 0xb4, 0x29, 0x40, 0xeb, 0xc5,
-	0x1e, 0x0d, 0xc4, 0x84, 0x70, 0x7c, 0x08, 0x65, 0x9f, 0x85, 0x6e, 0x30, 0x35, 0x50, 0x03, 0x1d,
-	0x6b, 0x8e, 0xaa, 0xf0, 0x11, 0x54, 0x46, 0xee, 0x70, 0x44, 0xb8, 0x34, 0x8a, 0xa9, 0x31, 0x72,
-	0x5f, 0x12, 0x2e, 0xb1, 0x01, 0x15, 0xd7, 0xf7, 0x39, 0x11, 0xc2, 0x28, 0x25, 0xc6, 0xaa, 0xc4,
-	0xf7, 0x41, 0x8b, 0x38, 0x63, 0xef, 0x87, 0x31, 0xa7, 0xc6, 0x4e, 0xe2, 0xed, 0x25, 0xc2, 0x80,
-	0xd3, 0xa6, 0x04, 0xe8, 0xc7, 0x9e, 0x18, 0xf1, 0xc0, 0x23, 0x7c, 0xbd, 0x09, 0xda, 0x6c, 0x92,
-	0xf3, 0x14, 0xff, 0xc4, 0x53, 0xda, 0xe0, 0xf9, 0xeb, 0xd4, 0x6f, 0x45, 0xa8, 0x65, 0xff, 0xda,
-	0x99, 0x4a, 0x32, 0x95, 0xf8, 0x11, 0xd4, 0x44, 0x4a, 0x12, 0xc9, 0x80, 0x4d, 0x87, 0x81, 0xaf,
-	0x18, 0xaa, 0xeb, 0x72, 0xc7, 0xc7, 0x8f, 0x41, 0x8f, 0x56, 0x7b, 0x87, 0x1b, 0x50, 0xb5, 0x4c,
-	0x3f, 0x4f, 0xe9, 0x9e, 0x41, 0x39, 0x24, 0x72, 0xc2, 0xfc, 0x04, 0xae, 0xda, 0x36, 0x5a, 0x59,
-	0xdc, 0x2d, 0x35, 0xff, 0x55, 0xe2, 0x3b, 0x6a, 0x1d, 0xbe, 0x07, 0x7b, 0x51, 0x4c, 0xe9, 0x1a,
-	0x75, 0x65, 0x59, 0x0f, 0x38, 0xc5, 0x97, 0x70, 0xd7, 0xa5, 0x94, 0x7d, 0x24, 0xfe, 0x50, 0x64,
-	0x91, 0x09, 0x63, 0x37, 0xe9, 0xfc, 0x60, 0xad, 0xb3, 0x9d, 0xae, 0xca, 0x73, 0x15, 0x0e, 0x76,
-	0xb7, 0x34, 0xfc, 0x04, 0x0e, 0x56, 0xfd, 0x54, 0xca, 0x44, 0x18, 0xe5, 0x46, 0xe9, 0x58, 0x73,
-	0x74, 0x65, 0xd8, 0x2b, 0xbd, 0xf9, 0x1d, 0x81, 0x9e, 0x6f, 0xfe, 0xd7, 0xc8, 0x9e, 0x02, 0xce,
-	0x91, 0x57, 0xd3, 0x54, 0x68, 0x07, 0xb9, 0xa3, 0xc6, 0xdd, 0x9a, 0x70, 0xe9, 0xf6, 0x84, 0x93,
-	0xbc, 0xc4, 0x64, 0x33, 0x2f, 0x31, 0x59, 0x1e, 0xf2, 0x67, 0x04, 0x75, 0xdb, 0xf7, 0xb3, 0x73,
-	0xee, 0x71, 0x16, 0x31, 0xe1, 0x52, 0x5c, 0x87, 0x5d, 0x19, 0x48, 0x4a, 0x14, 0x6c, 0x5a, 0xe0,
-	0x06, 0xec, 0xfb, 0x24, 0x83, 0x56, 0x70, 0xeb, 0x12, 0x6e, 0x83, 0x96, 0x8d, 0x4f, 0x78, 0xf6,
-	0xdb, 0xf5, 0xed, 0x03, 0x25, 0xdc, 0xc9, 0x97, 0x35, 0xbf, 0x20, 0x38, 0x72, 0x48, 0xc8, 0x66,
-	0xe4, 0xbf, 0x72, 0x9c, 0x3c, 0x84, 0x3b, 0x1b, 0x17, 0x0e, 0xef, 0xc1, 0x4e, 0x6f, 0xd0, 0xed,
-	0xea, 0x85, 0xf4, 0xab, 0x7f, 0xa1, 0xa3, 0x93, 0xe7, 0x80, 0xb7, 0xef, 0x0e, 0xae, 0x40, 0xc9,
-	0xbe, 0x7c, 0xab, 0x17, 0x70, 0x15, 0xe0, 0x8d, 0xdd, 0xed, 0x9c, 0xdb, 0x57, 0xaf, 0x9d, 0xbe,
-	0x8e, 0x96, 0x1b, 0xbb, 0x9d, 0xfe, 0x95, 0x5e, 0x7c, 0x71, 0xf1, 0x63, 0x6e, 0xa2, 0x9b, 0xb9,
-	0x89, 0x7e, 0xcd, 0x4d, 0xf4, 0x75, 0x61, 0x16, 0x6e, 0x16, 0x66, 0xe1, 0xe7, 0xc2, 0x2c, 0xbc,
-	0x6b, 0x8d, 0x03, 0x39, 0x89, 0xbd, 0xd6, 0x88, 0x85, 0x56, 0x44, 0xc6, 0xe3, 0xeb, 0x0f, 0x33,
-	0x4b, 0xb0, 0x30, 0x24, 0x34, 0x20, 0xdc, 0x9a, 0x9d, 0x59, 0x9f, 0xd4, 0x7b, 0x64, 0xc9, 0xeb,
-	0x88, 0x08, 0xaf, 0x9c, 0x3c, 0x4b, 0x67, 0xbf, 0x03, 0x00, 0x00, 0xff, 0xff, 0x66, 0x44, 0xf5,
-	0xfa, 0xb0, 0x04, 0x00, 0x00,
+	// 546 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xb4, 0x94, 0xcf, 0x6e, 0xd3, 0x40,
+	0x10, 0xc6, 0xe3, 0xfc, 0xcf, 0x20, 0x12, 0x77, 0xa9, 0x5a, 0x23, 0x84, 0x15, 0x85, 0x03, 0xa5,
+	0x88, 0x98, 0xd2, 0x03, 0x67, 0x43, 0x0f, 0x8d, 0x14, 0x4a, 0xe4, 0x34, 0x48, 0x70, 0xb1, 0xec,
+	0xec, 0x92, 0x18, 0xad, 0xb3, 0xd6, 0xee, 0x3a, 0xd0, 0xb7, 0xe0, 0x4d, 0xe0, 0xc4, 0x33, 0x70,
+	0xec, 0x91, 0x23, 0x4a, 0x5e, 0x04, 0xc5, 0xde, 0x38, 0xb1, 0xda, 0x22, 0x81, 0xd4, 0x9b, 0x67,
+	0x66, 0x77, 0xf6, 0x37, 0x9f, 0xbf, 0x5d, 0xd8, 0x8b, 0x62, 0x5f, 0xc4, 0xbe, 0x35, 0x3f, 0xb2,
+	0xd2, 0xaf, 0x6e, 0xc4, 0x99, 0x64, 0xa8, 0xa1, 0xa2, 0xf9, 0x51, 0x47, 0x40, 0x63, 0x10, 0xfb,
+	0x34, 0x10, 0x53, 0xc2, 0xd1, 0x1e, 0x54, 0x31, 0x0b, 0xbd, 0x60, 0x66, 0x68, 0x6d, 0xed, 0xa0,
+	0xe1, 0xa8, 0x08, 0x19, 0x50, 0xf3, 0x30, 0xe6, 0x44, 0x08, 0xa3, 0x98, 0x14, 0xd6, 0x21, 0x7a,
+	0x00, 0x8d, 0x88, 0x33, 0xf6, 0xd1, 0x8d, 0x39, 0x35, 0x4a, 0x49, 0xad, 0x9e, 0x24, 0x46, 0x9c,
+	0xa2, 0x7d, 0xa8, 0x8d, 0x3d, 0x77, 0x4c, 0xb8, 0x34, 0xca, 0x69, 0xbf, 0xb1, 0xf7, 0x9a, 0x70,
+	0xd9, 0x91, 0x00, 0xc3, 0xd8, 0x17, 0x63, 0x1e, 0xf8, 0x84, 0x6f, 0x77, 0xd7, 0xf2, 0xdd, 0x37,
+	0x3c, 0xc5, 0x1c, 0xcf, 0xff, 0x9d, 0xfa, 0xad, 0x08, 0xad, 0x6c, 0xd6, 0xde, 0x4c, 0x92, 0x99,
+	0x44, 0x8f, 0xa1, 0x25, 0x52, 0x92, 0x48, 0x06, 0x6c, 0xe6, 0x06, 0x58, 0x31, 0x34, 0xb7, 0xd3,
+	0x3d, 0x8c, 0x9e, 0x80, 0x1e, 0xad, 0xf7, 0xba, 0x39, 0xa8, 0x56, 0x96, 0x3f, 0x49, 0xe9, 0x9e,
+	0x43, 0x35, 0x24, 0x72, 0xca, 0x70, 0x82, 0xd6, 0x7c, 0x61, 0x74, 0x33, 0xb9, 0xbb, 0xea, 0xfc,
+	0x37, 0x49, 0xdd, 0x51, 0xeb, 0xd0, 0x7d, 0xa8, 0x47, 0x31, 0xa5, 0xc9, 0x38, 0x29, 0x73, 0x6d,
+	0x15, 0xaf, 0xa6, 0x39, 0x83, 0x7b, 0x1e, 0xa5, 0xec, 0x33, 0xc1, 0xae, 0xc8, 0x24, 0x13, 0x46,
+	0x25, 0xe9, 0xfc, 0x70, 0xab, 0xb3, 0x9d, 0xae, 0xda, 0xe8, 0x2a, 0x1c, 0xe4, 0x5d, 0xc9, 0xa1,
+	0xa7, 0xb0, 0xb3, 0xee, 0xa7, 0x54, 0x26, 0xc2, 0xa8, 0xb6, 0x4b, 0x07, 0x0d, 0x47, 0x57, 0x05,
+	0x7b, 0x9d, 0xef, 0x7c, 0xd7, 0x40, 0xdf, 0x6c, 0xfe, 0x57, 0xc9, 0x9e, 0x01, 0xda, 0x20, 0xbb,
+	0x79, 0x03, 0xed, 0x6c, 0x2a, 0xea, 0xb8, 0x6b, 0x15, 0x2e, 0x5d, 0xaf, 0x70, 0xa2, 0x97, 0x98,
+	0xe6, 0xf5, 0x12, 0xd3, 0x11, 0xa7, 0x9d, 0x1f, 0x1a, 0xec, 0xda, 0x18, 0x67, 0xff, 0x79, 0xc0,
+	0x59, 0xc4, 0x84, 0x47, 0xd1, 0x2e, 0x54, 0x64, 0x20, 0x29, 0x51, 0xb0, 0x69, 0x80, 0xda, 0x70,
+	0x07, 0x93, 0x0c, 0x5a, 0xc1, 0x6d, 0xa7, 0xb6, 0x3c, 0x58, 0xba, 0xe9, 0x4e, 0x94, 0xff, 0x72,
+	0x27, 0x2a, 0x37, 0xbb, 0xb3, 0x9a, 0x73, 0x67, 0x00, 0xfb, 0x0e, 0x09, 0xd9, 0x9c, 0xdc, 0x3a,
+	0xfa, 0xe1, 0x23, 0xb8, 0x9b, 0xf3, 0x21, 0xaa, 0x43, 0x79, 0x30, 0xea, 0xf7, 0xf5, 0x42, 0xfa,
+	0x35, 0x3c, 0xd5, 0xb5, 0xc3, 0x97, 0x80, 0xae, 0x5a, 0x0a, 0xd5, 0xa0, 0x64, 0x9f, 0xbd, 0xd7,
+	0x0b, 0xa8, 0x09, 0xf0, 0xce, 0xee, 0xf7, 0x4e, 0xec, 0xf3, 0xb7, 0xce, 0x50, 0xd7, 0x56, 0x1b,
+	0xfb, 0xbd, 0xe1, 0xb9, 0x5e, 0x7c, 0x75, 0xfa, 0x73, 0x61, 0x6a, 0x97, 0x0b, 0x53, 0xfb, 0xbd,
+	0x30, 0xb5, 0xaf, 0x4b, 0xb3, 0x70, 0xb9, 0x34, 0x0b, 0xbf, 0x96, 0x66, 0xe1, 0x43, 0x77, 0x12,
+	0xc8, 0x69, 0xec, 0x77, 0xc7, 0x2c, 0xb4, 0x22, 0x32, 0x99, 0x5c, 0x7c, 0x9a, 0x5b, 0x82, 0x85,
+	0x21, 0xa1, 0x01, 0xe1, 0xd6, 0xfc, 0xd8, 0xfa, 0xa2, 0x9e, 0x29, 0x4b, 0x5e, 0x44, 0x44, 0xf8,
+	0xd5, 0xe4, 0xb5, 0x3a, 0xfe, 0x13, 0x00, 0x00, 0xff, 0xff, 0xd3, 0xd0, 0x01, 0x81, 0xc7, 0x04,
+	0x00, 0x00,
 }
 
 func (m *Publisher) Marshal() (dAtA []byte, err error) {
@@ -587,24 +612,24 @@ func (m *Publisher) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	_ = i
 	var l int
 	_ = l
+	if len(m.CaCert) > 0 {
+		i -= len(m.CaCert)
+		copy(dAtA[i:], m.CaCert)
+		i = encodeVarintPubsub(dAtA, i, uint64(len(m.CaCert)))
+		i--
+		dAtA[i] = 0x22
+	}
 	if len(m.ProofUrl) > 0 {
 		i -= len(m.ProofUrl)
 		copy(dAtA[i:], m.ProofUrl)
 		i = encodeVarintPubsub(dAtA, i, uint64(len(m.ProofUrl)))
 		i--
-		dAtA[i] = 0x22
+		dAtA[i] = 0x1a
 	}
 	if len(m.Address) > 0 {
 		i -= len(m.Address)
 		copy(dAtA[i:], m.Address)
 		i = encodeVarintPubsub(dAtA, i, uint64(len(m.Address)))
-		i--
-		dAtA[i] = 0x1a
-	}
-	if len(m.CaCert) > 0 {
-		i -= len(m.CaCert)
-		copy(dAtA[i:], m.CaCert)
-		i = encodeVarintPubsub(dAtA, i, uint64(len(m.CaCert)))
 		i--
 		dAtA[i] = 0x12
 	}
@@ -638,17 +663,17 @@ func (m *Subscriber) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	_ = i
 	var l int
 	_ = l
-	if len(m.ProofUrl) > 0 {
-		i -= len(m.ProofUrl)
-		copy(dAtA[i:], m.ProofUrl)
-		i = encodeVarintPubsub(dAtA, i, uint64(len(m.ProofUrl)))
-		i--
-		dAtA[i] = 0x22
-	}
 	if len(m.CaCert) > 0 {
 		i -= len(m.CaCert)
 		copy(dAtA[i:], m.CaCert)
 		i = encodeVarintPubsub(dAtA, i, uint64(len(m.CaCert)))
+		i--
+		dAtA[i] = 0x22
+	}
+	if len(m.ProofUrl) > 0 {
+		i -= len(m.ProofUrl)
+		copy(dAtA[i:], m.ProofUrl)
+		i = encodeVarintPubsub(dAtA, i, uint64(len(m.ProofUrl)))
 		i--
 		dAtA[i] = 0x1a
 	}
@@ -803,15 +828,31 @@ func (m *AddPublisherProposal) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	_ = i
 	var l int
 	_ = l
-	if m.Publisher != nil {
-		{
-			size, err := m.Publisher.MarshalToSizedBuffer(dAtA[:i])
-			if err != nil {
-				return 0, err
-			}
-			i -= size
-			i = encodeVarintPubsub(dAtA, i, uint64(size))
-		}
+	if len(m.CaCert) > 0 {
+		i -= len(m.CaCert)
+		copy(dAtA[i:], m.CaCert)
+		i = encodeVarintPubsub(dAtA, i, uint64(len(m.CaCert)))
+		i--
+		dAtA[i] = 0x32
+	}
+	if len(m.ProofUrl) > 0 {
+		i -= len(m.ProofUrl)
+		copy(dAtA[i:], m.ProofUrl)
+		i = encodeVarintPubsub(dAtA, i, uint64(len(m.ProofUrl)))
+		i--
+		dAtA[i] = 0x2a
+	}
+	if len(m.Address) > 0 {
+		i -= len(m.Address)
+		copy(dAtA[i:], m.Address)
+		i = encodeVarintPubsub(dAtA, i, uint64(len(m.Address)))
+		i--
+		dAtA[i] = 0x22
+	}
+	if len(m.Domain) > 0 {
+		i -= len(m.Domain)
+		copy(dAtA[i:], m.Domain)
+		i = encodeVarintPubsub(dAtA, i, uint64(len(m.Domain)))
 		i--
 		dAtA[i] = 0x1a
 	}
@@ -852,15 +893,10 @@ func (m *RemovePublisherProposal) MarshalToSizedBuffer(dAtA []byte) (int, error)
 	_ = i
 	var l int
 	_ = l
-	if m.Publisher != nil {
-		{
-			size, err := m.Publisher.MarshalToSizedBuffer(dAtA[:i])
-			if err != nil {
-				return 0, err
-			}
-			i -= size
-			i = encodeVarintPubsub(dAtA, i, uint64(size))
-		}
+	if len(m.Domain) > 0 {
+		i -= len(m.Domain)
+		copy(dAtA[i:], m.Domain)
+		i = encodeVarintPubsub(dAtA, i, uint64(len(m.Domain)))
 		i--
 		dAtA[i] = 0x1a
 	}
@@ -902,15 +938,15 @@ func (m *Publisher) Size() (n int) {
 	if l > 0 {
 		n += 1 + l + sovPubsub(uint64(l))
 	}
-	l = len(m.CaCert)
-	if l > 0 {
-		n += 1 + l + sovPubsub(uint64(l))
-	}
 	l = len(m.Address)
 	if l > 0 {
 		n += 1 + l + sovPubsub(uint64(l))
 	}
 	l = len(m.ProofUrl)
+	if l > 0 {
+		n += 1 + l + sovPubsub(uint64(l))
+	}
+	l = len(m.CaCert)
 	if l > 0 {
 		n += 1 + l + sovPubsub(uint64(l))
 	}
@@ -931,11 +967,11 @@ func (m *Subscriber) Size() (n int) {
 	if l > 0 {
 		n += 1 + l + sovPubsub(uint64(l))
 	}
-	l = len(m.CaCert)
+	l = len(m.ProofUrl)
 	if l > 0 {
 		n += 1 + l + sovPubsub(uint64(l))
 	}
-	l = len(m.ProofUrl)
+	l = len(m.CaCert)
 	if l > 0 {
 		n += 1 + l + sovPubsub(uint64(l))
 	}
@@ -1014,8 +1050,20 @@ func (m *AddPublisherProposal) Size() (n int) {
 	if l > 0 {
 		n += 1 + l + sovPubsub(uint64(l))
 	}
-	if m.Publisher != nil {
-		l = m.Publisher.Size()
+	l = len(m.Domain)
+	if l > 0 {
+		n += 1 + l + sovPubsub(uint64(l))
+	}
+	l = len(m.Address)
+	if l > 0 {
+		n += 1 + l + sovPubsub(uint64(l))
+	}
+	l = len(m.ProofUrl)
+	if l > 0 {
+		n += 1 + l + sovPubsub(uint64(l))
+	}
+	l = len(m.CaCert)
+	if l > 0 {
 		n += 1 + l + sovPubsub(uint64(l))
 	}
 	return n
@@ -1035,8 +1083,8 @@ func (m *RemovePublisherProposal) Size() (n int) {
 	if l > 0 {
 		n += 1 + l + sovPubsub(uint64(l))
 	}
-	if m.Publisher != nil {
-		l = m.Publisher.Size()
+	l = len(m.Domain)
+	if l > 0 {
 		n += 1 + l + sovPubsub(uint64(l))
 	}
 	return n
@@ -1111,38 +1159,6 @@ func (m *Publisher) Unmarshal(dAtA []byte) error {
 			iNdEx = postIndex
 		case 2:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field CaCert", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowPubsub
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthPubsub
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthPubsub
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.CaCert = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
-		case 3:
-			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Address", wireType)
 			}
 			var stringLen uint64
@@ -1173,7 +1189,7 @@ func (m *Publisher) Unmarshal(dAtA []byte) error {
 			}
 			m.Address = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
-		case 4:
+		case 3:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field ProofUrl", wireType)
 			}
@@ -1204,6 +1220,38 @@ func (m *Publisher) Unmarshal(dAtA []byte) error {
 				return io.ErrUnexpectedEOF
 			}
 			m.ProofUrl = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 4:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field CaCert", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowPubsub
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthPubsub
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthPubsub
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.CaCert = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
@@ -1321,38 +1369,6 @@ func (m *Subscriber) Unmarshal(dAtA []byte) error {
 			iNdEx = postIndex
 		case 3:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field CaCert", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowPubsub
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthPubsub
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthPubsub
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.CaCert = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
-		case 4:
-			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field ProofUrl", wireType)
 			}
 			var stringLen uint64
@@ -1382,6 +1398,38 @@ func (m *Subscriber) Unmarshal(dAtA []byte) error {
 				return io.ErrUnexpectedEOF
 			}
 			m.ProofUrl = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 4:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field CaCert", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowPubsub
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthPubsub
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthPubsub
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.CaCert = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
@@ -1893,9 +1941,9 @@ func (m *AddPublisherProposal) Unmarshal(dAtA []byte) error {
 			iNdEx = postIndex
 		case 3:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Publisher", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field Domain", wireType)
 			}
-			var msglen int
+			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowPubsub
@@ -1905,27 +1953,119 @@ func (m *AddPublisherProposal) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				msglen |= int(b&0x7F) << shift
+				stringLen |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
-			if msglen < 0 {
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
 				return ErrInvalidLengthPubsub
 			}
-			postIndex := iNdEx + msglen
+			postIndex := iNdEx + intStringLen
 			if postIndex < 0 {
 				return ErrInvalidLengthPubsub
 			}
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			if m.Publisher == nil {
-				m.Publisher = &Publisher{}
+			m.Domain = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 4:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Address", wireType)
 			}
-			if err := m.Publisher.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
-				return err
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowPubsub
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
 			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthPubsub
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthPubsub
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Address = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 5:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field ProofUrl", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowPubsub
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthPubsub
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthPubsub
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.ProofUrl = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 6:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field CaCert", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowPubsub
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthPubsub
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthPubsub
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.CaCert = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
@@ -2043,9 +2183,9 @@ func (m *RemovePublisherProposal) Unmarshal(dAtA []byte) error {
 			iNdEx = postIndex
 		case 3:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Publisher", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field Domain", wireType)
 			}
-			var msglen int
+			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowPubsub
@@ -2055,27 +2195,23 @@ func (m *RemovePublisherProposal) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				msglen |= int(b&0x7F) << shift
+				stringLen |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
-			if msglen < 0 {
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
 				return ErrInvalidLengthPubsub
 			}
-			postIndex := iNdEx + msglen
+			postIndex := iNdEx + intStringLen
 			if postIndex < 0 {
 				return ErrInvalidLengthPubsub
 			}
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			if m.Publisher == nil {
-				m.Publisher = &Publisher{}
-			}
-			if err := m.Publisher.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
-				return err
-			}
+			m.Domain = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
