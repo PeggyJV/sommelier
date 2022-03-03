@@ -44,8 +44,8 @@ message MsgAddPublisherIntent {
 message MsgAddPublisherIntentResponse {}
 
 message MsgRemovePublisherIntent {
-  string publisher_domain = 1;
-  string subscription_id = 2;
+  string subscription_id = 1;
+  string publisher_domain = 2;
   string signer = 3;
 }
 
@@ -59,8 +59,8 @@ message MsgAddSubscriberIntent {
 message MsgAddSubscriberIntentResponse {}
 
 message MsgRemoveSubscriberIntent {
-  string subscriber_address = 1;
-  string subscription_id = 2;
+  string subscription_id = 1;
+  string subscriber_address = 2;
   string publisher_domain = 3;
   string signer = 4;
 }
