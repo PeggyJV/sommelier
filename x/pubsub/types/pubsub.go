@@ -21,14 +21,6 @@ func (p *Publisher) ValidateBasic() error {
 		return fmt.Errorf("invalid domain: %s", err.Error())
 	}
 
-	if p.CaCert == "" {
-		return fmt.Errorf("empty CA cert")
-	}
-
-	if err := ValidateCaCertificateBase64(p.CaCert); err != nil {
-		return fmt.Errorf("invalid CA certificate: %s", err.Error())
-	}
-
 	if p.Address == "" {
 		return fmt.Errorf("empty address")
 	}
@@ -44,6 +36,14 @@ func (p *Publisher) ValidateBasic() error {
 
 	if err := ValidateProofUrl(p.ProofUrl, p.Domain, p.Address); err != nil {
 		return fmt.Errorf("invalid proof URL: %s", err.Error())
+	}
+
+	if p.CaCert == "" {
+		return fmt.Errorf("empty CA cert")
+	}
+
+	if err := ValidateCaCertificateBase64(p.CaCert); err != nil {
+		return fmt.Errorf("invalid CA certificate: %s", err.Error())
 	}
 
 	return nil
@@ -68,15 +68,15 @@ func (s *Subscriber) ValidateBasic() error {
 		}
 	}
 
-	if s.CaCert != "" {
-		if err := ValidateCaCertificateBase64(s.CaCert); err != nil {
-			return fmt.Errorf("invalid CA certificate: %s", err.Error())
-		}
-	}
-
 	if s.ProofUrl != "" {
 		if err := ValidateProofUrl(s.ProofUrl, s.Domain, s.Address); err != nil {
 			return fmt.Errorf("invalid proof URL: %s", err.Error())
+		}
+	}
+
+	if s.CaCert != "" {
+		if err := ValidateCaCertificateBase64(s.CaCert); err != nil {
+			return fmt.Errorf("invalid CA certificate: %s", err.Error())
 		}
 	}
 
@@ -193,7 +193,7 @@ func ValidateProofUrl(proofUrl string, domain string, address string) error {
 
 	validProofUrl := fmt.Sprintf("https://%s/%s/cacert.pem", domain, address)
 	if proofUrl != validProofUrl {
-		return fmt.Errorf("Invalid proof URL format, should be: %s", validProofUrl)
+		return fmt.Errorf("invalid proof URL format, should be: %s", validProofUrl)
 	}
 
 	return nil
