@@ -39,35 +39,11 @@ func InitGenesis(ctx sdk.Context, k Keeper, gs types.GenesisState) {
 
 // ExportGenesis returns the module's exported genesis.
 func ExportGenesis(ctx sdk.Context, k Keeper) types.GenesisState {
-	var publishers []*types.Publisher
-	k.IteratePublishers(ctx, func(publisher types.Publisher) (stop bool) {
-		publishers = append(publishers, &publisher)
-		return false
-	})
-
-	var subscribers []*types.Subscriber
-	k.IterateSubscribers(ctx, func(subscriberAddress sdk.AccAddress, subscriber types.Subscriber) (stop bool) {
-		subscribers = append(subscribers, &subscriber)
-		return false
-	})
-
-	var publisherIntents []*types.PublisherIntent
-	k.IteratePublisherIntents(ctx, func(publisherIntent types.PublisherIntent) (stop bool) {
-		publisherIntents = append(publisherIntents, &publisherIntent)
-		return false
-	})
-
-	var subscriberIntents []*types.SubscriberIntent
-	k.IterateSubscriberIntents(ctx, func(subscriberAddress sdk.AccAddress, subscriberIntent types.SubscriberIntent) (stop bool) {
-		subscriberIntents = append(subscriberIntents, &subscriberIntent)
-		return false
-	})
-
 	return types.GenesisState{
 		Params:            k.GetParams(ctx),
-		Publishers:        publishers,
-		Subscribers:       subscribers,
-		PublisherIntents:  publisherIntents,
-		SubscriberIntents: subscriberIntents,
+		Publishers:        k.GetPublishers(ctx),
+		Subscribers:       k.GetSubscribers(ctx),
+		PublisherIntents:  k.GetPublisherIntents(ctx),
+		SubscriberIntents: k.GetSubscriberIntents(ctx),
 	}
 }

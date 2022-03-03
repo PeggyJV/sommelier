@@ -26,7 +26,6 @@ func NewKeeper(
 	stakingKeeper types.StakingKeeper,
 
 ) Keeper {
-	// set KeyTable if it has not already been set
 	if !paramSpace.HasKeyTable() {
 		paramSpace = paramSpace.WithKeyTable(types.ParamKeyTable())
 	}
@@ -78,7 +77,7 @@ func (k Keeper) GetPublisher(ctx sdk.Context, publisherDomain string) (publisher
 
 func (k Keeper) IteratePublishers(ctx sdk.Context, handler func(publisher types.Publisher) (stop bool)) {
 	store := ctx.KVStore(k.storeKey)
-	iter := sdk.KVStorePrefixIterator(store, []byte{types.PublisherKeyPrefix})
+	iter := sdk.KVStorePrefixIterator(store, types.GetPublishersPrefix())
 	defer iter.Close()
 
 	for ; iter.Valid(); iter.Next() {
@@ -91,13 +90,17 @@ func (k Keeper) IteratePublishers(ctx sdk.Context, handler func(publisher types.
 	}
 }
 
-func (k Keeper) GetPublishers(ctx sdk.Context) (publishers []types.Publisher) {
+func (k Keeper) GetPublishers(ctx sdk.Context) (publishers []*types.Publisher) {
 	k.IteratePublishers(ctx, func(publisher types.Publisher) (stop bool) {
-		publishers = append(publishers, publisher)
+		publishers = append(publishers, &publisher)
 		return false
 	})
 
 	return
+}
+
+func (k Keeper) DeletePublisher(ctx sdk.Context, publisher types.Publisher) {
+	ctx.KVStore(k.storeKey).Delete(types.GetPublisherKey(publisher.Domain))
 }
 
 ////////////////
@@ -121,14 +124,14 @@ func (k Keeper) GetSubscriber(ctx sdk.Context, subscriberAddress sdk.AccAddress)
 
 func (k Keeper) IterateSubscribers(ctx sdk.Context, handler func(subscriberAddress sdk.AccAddress, subscriber types.Subscriber) (stop bool)) {
 	store := ctx.KVStore(k.storeKey)
-	iter := sdk.KVStorePrefixIterator(store, []byte{types.SubscriberKeyPrefix})
+	iter := sdk.KVStorePrefixIterator(store, types.GetSubscribersPrefix())
 	defer iter.Close()
 
 	for ; iter.Valid(); iter.Next() {
 		var subscriber types.Subscriber
 		k.cdc.MustUnmarshal(iter.Value(), &subscriber)
 
-		addressKey := bytes.NewBuffer(bytes.TrimPrefix(iter.Key(), []byte{types.SubscriberKeyPrefix}))
+		addressKey := bytes.NewBuffer(bytes.TrimPrefix(iter.Key(), types.GetSubscribersPrefix()))
 		subscriberAddress := sdk.AccAddress(addressKey.Bytes())
 
 		if handler(subscriberAddress, subscriber) {
@@ -137,13 +140,17 @@ func (k Keeper) IterateSubscribers(ctx sdk.Context, handler func(subscriberAddre
 	}
 }
 
-func (k Keeper) GetSubscribers(ctx sdk.Context) (subscribers []types.Subscriber) {
+func (k Keeper) GetSubscribers(ctx sdk.Context) (subscribers []*types.Subscriber) {
 	k.IterateSubscribers(ctx, func(subscriberAddress sdk.AccAddress, subscriber types.Subscriber) (stop bool) {
-		subscribers = append(subscribers, subscriber)
+		subscribers = append(subscribers, &subscriber)
 		return false
 	})
 
 	return
+}
+
+func (k Keeper) DeleteSubscriber(ctx sdk.Context, subscriber types.Subscriber) {
+	ctx.KVStore(k.storeKey).Delete(types.GetSubscriberKey(sdk.AccAddress(subscriber.Address)))
 }
 
 /////////////////////
@@ -152,11 +159,12 @@ func (k Keeper) GetSubscribers(ctx sdk.Context) (subscribers []types.Subscriber)
 
 func (k Keeper) SetPublisherIntent(ctx sdk.Context, publisherIntent types.PublisherIntent) {
 	bz := k.cdc.MustMarshal(&publisherIntent)
-	ctx.KVStore(k.storeKey).Set(types.GetPublisherIntentKey(publisherIntent.PublisherDomain, publisherIntent.SubscriptionId), bz)
+	ctx.KVStore(k.storeKey).Set(types.GetPublisherIntentByPublisherDomainKey(publisherIntent.PublisherDomain, publisherIntent.SubscriptionId), bz)
+	ctx.KVStore(k.storeKey).Set(types.GetPublisherIntentBySubscriptionIdKey(publisherIntent.SubscriptionId, publisherIntent.PublisherDomain), bz)
 }
 
 func (k Keeper) GetPublisherIntent(ctx sdk.Context, publisherDomain string, subscriptionId string) (publisherIntent types.PublisherIntent, found bool) {
-	bz := ctx.KVStore(k.storeKey).Get(types.GetPublisherIntentKey(publisherDomain, subscriptionId))
+	bz := ctx.KVStore(k.storeKey).Get(types.GetPublisherIntentByPublisherDomainKey(publisherDomain, subscriptionId))
 	if len(bz) == 0 {
 		return types.PublisherIntent{}, false
 	}
@@ -167,7 +175,7 @@ func (k Keeper) GetPublisherIntent(ctx sdk.Context, publisherDomain string, subs
 
 func (k Keeper) IteratePublisherIntents(ctx sdk.Context, handler func(publisherIntent types.PublisherIntent) (stop bool)) {
 	store := ctx.KVStore(k.storeKey)
-	iter := sdk.KVStorePrefixIterator(store, []byte{types.PublisherIntentKeyPrefix})
+	iter := sdk.KVStorePrefixIterator(store, types.GetPublisherIntentsPrefix())
 	defer iter.Close()
 
 	for ; iter.Valid(); iter.Next() {
@@ -180,13 +188,35 @@ func (k Keeper) IteratePublisherIntents(ctx sdk.Context, handler func(publisherI
 	}
 }
 
-func (k Keeper) GetPublisherIntents(ctx sdk.Context) (publisherIntents []types.PublisherIntent) {
-	k.IteratePublisherIntents(ctx, func(publisherIntent types.PublisherIntent) (stop bool) {
-		publisherIntents = append(publisherIntents, publisherIntent)
-		return false
-	})
+func (k Keeper) GetPublisherIntents(ctx sdk.Context) (publisherIntents []*types.PublisherIntent) {
+	return k.getPublisherIntentsByKeyPrefix(ctx, types.GetPublisherIntentsPrefix())
+}
+
+func (k Keeper) GetPublisherIntentsByPublisherDomain(ctx sdk.Context, publisherDomain string) (publisherIntents []*types.PublisherIntent) {
+	return k.getPublisherIntentsByKeyPrefix(ctx, types.GetPublisherIntentsByPublisherDomainPrefix(publisherDomain))
+}
+
+func (k Keeper) GetPublisherIntentsBySubscriptionId(ctx sdk.Context, subscriptionId string) (publisherIntents []*types.PublisherIntent) {
+	return k.getPublisherIntentsByKeyPrefix(ctx, types.GetPublisherIntentsBySubscriptionIdPrefix(subscriptionId))
+}
+
+func (k Keeper) getPublisherIntentsByKeyPrefix(ctx sdk.Context, keyPrefix []byte) (publisherIntents []*types.PublisherIntent) {
+	store := ctx.KVStore(k.storeKey)
+	iter := sdk.KVStorePrefixIterator(store, keyPrefix)
+	defer iter.Close()
+
+	for ; iter.Valid(); iter.Next() {
+		var publisherIntent types.PublisherIntent
+		k.cdc.MustUnmarshal(iter.Value(), &publisherIntent)
+		publisherIntents = append(publisherIntents, &publisherIntent)
+	}
 
 	return
+}
+
+func (k Keeper) DeletePublisherIntent(ctx sdk.Context, publisherIntent types.PublisherIntent) {
+	ctx.KVStore(k.storeKey).Delete(types.GetPublisherIntentByPublisherDomainKey(publisherIntent.PublisherDomain, publisherIntent.SubscriptionId))
+	ctx.KVStore(k.storeKey).Delete(types.GetPublisherIntentBySubscriptionIdKey(publisherIntent.SubscriptionId, publisherIntent.PublisherDomain))
 }
 
 //////////////////////
@@ -195,11 +225,12 @@ func (k Keeper) GetPublisherIntents(ctx sdk.Context) (publisherIntents []types.P
 
 func (k Keeper) SetSubscriberIntent(ctx sdk.Context, subscriberAddress sdk.AccAddress, subscriberIntent types.SubscriberIntent) {
 	bz := k.cdc.MustMarshal(&subscriberIntent)
-	ctx.KVStore(k.storeKey).Set(types.GetSubscriberIntentKey(subscriberAddress, subscriberIntent.SubscriptionId), bz)
+	ctx.KVStore(k.storeKey).Set(types.GetSubscriberIntentBySubscriberAddressKey(subscriberAddress, subscriberIntent.SubscriptionId), bz)
+	ctx.KVStore(k.storeKey).Set(types.GetSubscriberIntentBySubscriptionIdKey(subscriberIntent.SubscriptionId, subscriberAddress), bz)
 }
 
 func (k Keeper) GetSubscriberIntent(ctx sdk.Context, subscriberAddress sdk.AccAddress, subscriptionId string) (subscriberIntent types.SubscriberIntent, found bool) {
-	bz := ctx.KVStore(k.storeKey).Get(types.GetSubscriberIntentKey(subscriberAddress, subscriptionId))
+	bz := ctx.KVStore(k.storeKey).Get(types.GetSubscriberIntentBySubscriberAddressKey(subscriberAddress, subscriptionId))
 	if len(bz) == 0 {
 		return types.SubscriberIntent{}, false
 	}
@@ -210,14 +241,14 @@ func (k Keeper) GetSubscriberIntent(ctx sdk.Context, subscriberAddress sdk.AccAd
 
 func (k Keeper) IterateSubscriberIntents(ctx sdk.Context, handler func(subscriberAddress sdk.AccAddress, subscriberIntent types.SubscriberIntent) (stop bool)) {
 	store := ctx.KVStore(k.storeKey)
-	iter := sdk.KVStorePrefixIterator(store, []byte{types.SubscriberIntentKeyPrefix})
+	iter := sdk.KVStorePrefixIterator(store, types.GetSubscriberIntentsPrefix())
 	defer iter.Close()
 
 	for ; iter.Valid(); iter.Next() {
 		var subscriberIntent types.SubscriberIntent
 		k.cdc.MustUnmarshal(iter.Value(), &subscriberIntent)
 
-		addressKey := bytes.NewBuffer(bytes.TrimPrefix(iter.Key(), []byte{types.SubscriberIntentKeyPrefix}))
+		addressKey := bytes.NewBuffer(bytes.TrimPrefix(iter.Key(), types.GetSubscriberIntentsPrefix()))
 		subscriberAddress := sdk.AccAddress(addressKey.Next(20))
 
 		if handler(subscriberAddress, subscriberIntent) {
@@ -226,11 +257,33 @@ func (k Keeper) IterateSubscriberIntents(ctx sdk.Context, handler func(subscribe
 	}
 }
 
-func (k Keeper) GetSubscriberIntents(ctx sdk.Context) (subscriberIntents []types.SubscriberIntent) {
-	k.IterateSubscriberIntents(ctx, func(subscriberAddress sdk.AccAddress, subscriberIntent types.SubscriberIntent) (stop bool) {
-		subscriberIntents = append(subscriberIntents, subscriberIntent)
-		return false
-	})
+func (k Keeper) GetSubscriberIntents(ctx sdk.Context) (subscriberIntents []*types.SubscriberIntent) {
+	return k.getSubscriberIntentsByKeyPrefix(ctx, types.GetSubscriberIntentsPrefix())
+}
+
+func (k Keeper) GetSubscriberIntentsBySubscriberAddress(ctx sdk.Context, subscriberAddress sdk.AccAddress) (subscriberIntents []*types.SubscriberIntent) {
+	return k.getSubscriberIntentsByKeyPrefix(ctx, types.GetSubscriberIntentsBySubscriberAddressPrefix(subscriberAddress))
+}
+
+func (k Keeper) GetSubscriberIntentsBySubscriptionId(ctx sdk.Context, subscriptionId string) (subscriberIntents []*types.SubscriberIntent) {
+	return k.getSubscriberIntentsByKeyPrefix(ctx, types.GetSubscriberIntentsBySubscriptionIdPrefix(subscriptionId))
+}
+
+func (k Keeper) getSubscriberIntentsByKeyPrefix(ctx sdk.Context, keyPrefix []byte) (subscriberIntents []*types.SubscriberIntent) {
+	store := ctx.KVStore(k.storeKey)
+	iter := sdk.KVStorePrefixIterator(store, keyPrefix)
+	defer iter.Close()
+
+	for ; iter.Valid(); iter.Next() {
+		var subscriberIntent types.SubscriberIntent
+		k.cdc.MustUnmarshal(iter.Value(), &subscriberIntent)
+		subscriberIntents = append(subscriberIntents, &subscriberIntent)
+	}
 
 	return
+}
+
+func (k Keeper) DeleteSubscriberIntent(ctx sdk.Context, subscriberAddress sdk.AccAddress, subscriberIntent types.SubscriberIntent) {
+	ctx.KVStore(k.storeKey).Delete(types.GetSubscriberIntentBySubscriberAddressKey(subscriberAddress, subscriberIntent.SubscriptionId))
+	ctx.KVStore(k.storeKey).Delete(types.GetSubscriberIntentBySubscriptionIdKey(subscriberIntent.SubscriptionId, subscriberAddress))
 }
