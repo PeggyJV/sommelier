@@ -44,6 +44,9 @@ const (
 
 	// SubscriberIntentBySubscriptionIdKeyPrefix - <prefix>|<subscription_id>|<subscriber_address>| -> SubscriberIntent
 	SubscriberIntentBySubscriptionIdKeyPrefix
+
+	// SubscriberIntentByPublisherDomainKeyPrefix - <prefix>|<publisher_domain>|<subscriber_address>|<subscription_id>| -> SubscriberIntent
+	SubscriberIntentByPublisherDomainKeyPrefix
 )
 
 func delimiter() []byte {
@@ -122,6 +125,12 @@ func GetSubscriberIntentsBySubscriptionIdPrefix(subscriptionId string) []byte {
 	return append(key, delimiter()...)
 }
 
+// GetSubscriberIntentsByPublisherDomainPrefix returns a prefix for all SubscriberIntents indexed by publisher domain
+func GetSubscriberIntentsByPublisherDomainPrefix(publisherDomain string) []byte {
+	key := bytes.Join([][]byte{{SubscriberIntentByPublisherDomainKeyPrefix}, []byte(publisherDomain)}, delimiter())
+	return append(key, delimiter()...)
+}
+
 // GetSubscriberIntentBySubscriberAddressKey returns the key for a SubscriberIntent indexed by address
 func GetSubscriberIntentBySubscriberAddressKey(subscriberAddress sdk.AccAddress, subscriptionId string) []byte {
 	key := bytes.Join([][]byte{{SubscriberIntentBySubscriberAddressKeyPrefix}, subscriberAddress.Bytes(), []byte(subscriptionId)}, delimiter())
@@ -129,7 +138,13 @@ func GetSubscriberIntentBySubscriberAddressKey(subscriberAddress sdk.AccAddress,
 }
 
 // GetSubscriberIntentBySubscriptionIdKey returns the key for a SubscriberIntent indexed by subscription ID
-// since the last element is a fixed size we don't need a trailing delimiter
-func GetSubscriberIntentBySubscriptionIdKey(subsciptionId string, subscriberAddress sdk.AccAddress) []byte {
-	return bytes.Join([][]byte{{SubscriberIntentBySubscriptionIdKeyPrefix}, []byte(subsciptionId), subscriberAddress.Bytes()}, delimiter())
+func GetSubscriberIntentBySubscriptionIdKey(subscriptionId string, subscriberAddress sdk.AccAddress) []byte {
+	key := bytes.Join([][]byte{{SubscriberIntentBySubscriptionIdKeyPrefix}, []byte(subscriptionId), subscriberAddress.Bytes()}, delimiter())
+	return append(key, delimiter()...)
+}
+
+// GetSubscriberIntentByPublisherDomainKey returns the key for a SubscriberIntent indexed by publisher domain
+func GetSubscriberIntentByPublisherDomainKey(publisherDomain string, subscriberAddress sdk.AccAddress, subscriptionId string) []byte {
+	key := bytes.Join([][]byte{{SubscriberIntentByPublisherDomainKeyPrefix}, []byte(publisherDomain), subscriberAddress.Bytes(), []byte(subscriptionId)}, delimiter())
+	return append(key, delimiter()...)
 }

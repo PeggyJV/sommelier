@@ -101,6 +101,10 @@ func (k Keeper) GetPublishers(ctx sdk.Context) (publishers []*types.Publisher) {
 
 func (k Keeper) DeletePublisher(ctx sdk.Context, publisher types.Publisher) {
 	ctx.KVStore(k.storeKey).Delete(types.GetPublisherKey(publisher.Domain))
+
+	for _, publisherIntent := range k.GetPublisherIntentsByPublisherDomain(ctx, publisher.Domain) {
+		k.DeletePublisherIntent(ctx, *publisherIntent)
+	}
 }
 
 ////////////////
@@ -149,8 +153,11 @@ func (k Keeper) GetSubscribers(ctx sdk.Context) (subscribers []*types.Subscriber
 	return
 }
 
-func (k Keeper) DeleteSubscriber(ctx sdk.Context, subscriber types.Subscriber) {
-	ctx.KVStore(k.storeKey).Delete(types.GetSubscriberKey(sdk.AccAddress(subscriber.Address)))
+func (k Keeper) DeleteSubscriber(ctx sdk.Context, subscriberAddress sdk.AccAddress, subscriber types.Subscriber) {
+	ctx.KVStore(k.storeKey).Delete(types.GetSubscriberKey(subscriberAddress))
+	for _, subscriberIntent := range k.GetSubscriberIntentsBySubscriberAddress(ctx, subscriberAddress) {
+		k.DeleteSubscriberIntent(ctx, subscriberAddress, *subscriberIntent)
+	}
 }
 
 /////////////////////
@@ -217,6 +224,12 @@ func (k Keeper) getPublisherIntentsByKeyPrefix(ctx sdk.Context, keyPrefix []byte
 func (k Keeper) DeletePublisherIntent(ctx sdk.Context, publisherIntent types.PublisherIntent) {
 	ctx.KVStore(k.storeKey).Delete(types.GetPublisherIntentByPublisherDomainKey(publisherIntent.PublisherDomain, publisherIntent.SubscriptionId))
 	ctx.KVStore(k.storeKey).Delete(types.GetPublisherIntentBySubscriptionIdKey(publisherIntent.SubscriptionId, publisherIntent.PublisherDomain))
+
+	for _, subscriberIntent := range k.GetSubscriberIntentsByPublisherDomain(ctx, publisherIntent.PublisherDomain) {
+		if publisherIntent.SubscriptionId == subscriberIntent.SubscriptionId {
+			k.DeleteSubscriberIntent(ctx, sdk.AccAddress(subscriberIntent.SubscriberAddress), *subscriberIntent)
+		}
+	}
 }
 
 //////////////////////
@@ -225,8 +238,12 @@ func (k Keeper) DeletePublisherIntent(ctx sdk.Context, publisherIntent types.Pub
 
 func (k Keeper) SetSubscriberIntent(ctx sdk.Context, subscriberAddress sdk.AccAddress, subscriberIntent types.SubscriberIntent) {
 	bz := k.cdc.MustMarshal(&subscriberIntent)
+
+	// TODO(bolten): we are storing three different indices to improve query processing speed at the cost of additional storage
+	// is this the right trade-off, or should we use a single index and manually compose those query responses with iterators?
 	ctx.KVStore(k.storeKey).Set(types.GetSubscriberIntentBySubscriberAddressKey(subscriberAddress, subscriberIntent.SubscriptionId), bz)
 	ctx.KVStore(k.storeKey).Set(types.GetSubscriberIntentBySubscriptionIdKey(subscriberIntent.SubscriptionId, subscriberAddress), bz)
+	ctx.KVStore(k.storeKey).Set(types.GetSubscriberIntentByPublisherDomainKey(subscriberIntent.PublisherDomain, subscriberAddress, subscriberIntent.SubscriptionId), bz)
 }
 
 func (k Keeper) GetSubscriberIntent(ctx sdk.Context, subscriberAddress sdk.AccAddress, subscriptionId string) (subscriberIntent types.SubscriberIntent, found bool) {
@@ -269,6 +286,10 @@ func (k Keeper) GetSubscriberIntentsBySubscriptionId(ctx sdk.Context, subscripti
 	return k.getSubscriberIntentsByKeyPrefix(ctx, types.GetSubscriberIntentsBySubscriptionIdPrefix(subscriptionId))
 }
 
+func (k Keeper) GetSubscriberIntentsByPublisherDomain(ctx sdk.Context, publisherDomain string) (subscriberIntents []*types.SubscriberIntent) {
+	return k.getSubscriberIntentsByKeyPrefix(ctx, types.GetSubscriberIntentsByPublisherDomainPrefix(publisherDomain))
+}
+
 func (k Keeper) getSubscriberIntentsByKeyPrefix(ctx sdk.Context, keyPrefix []byte) (subscriberIntents []*types.SubscriberIntent) {
 	store := ctx.KVStore(k.storeKey)
 	iter := sdk.KVStorePrefixIterator(store, keyPrefix)
@@ -286,4 +307,5 @@ func (k Keeper) getSubscriberIntentsByKeyPrefix(ctx sdk.Context, keyPrefix []byt
 func (k Keeper) DeleteSubscriberIntent(ctx sdk.Context, subscriberAddress sdk.AccAddress, subscriberIntent types.SubscriberIntent) {
 	ctx.KVStore(k.storeKey).Delete(types.GetSubscriberIntentBySubscriberAddressKey(subscriberAddress, subscriberIntent.SubscriptionId))
 	ctx.KVStore(k.storeKey).Delete(types.GetSubscriberIntentBySubscriptionIdKey(subscriberIntent.SubscriptionId, subscriberAddress))
+	ctx.KVStore(k.storeKey).Delete(types.GetSubscriberIntentByPublisherDomainKey(subscriberIntent.PublisherDomain, subscriberAddress, subscriberIntent.SubscriptionId))
 }
