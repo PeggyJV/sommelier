@@ -12,8 +12,6 @@ const (
 var _ govtypes.Content = &AddPublisherProposal{}
 var _ govtypes.Content = &RemovePublisherProposal{}
 
-// TODO(bolten): fill out proposal boilerplate
-
 //////////////////////////
 // AddPublisherProposal //
 //////////////////////////
