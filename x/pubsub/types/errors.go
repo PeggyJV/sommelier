@@ -6,6 +6,5 @@ import (
 
 // x/pubsub module sentinel errors
 var (
-	// TODO(bolten): fill out errors here
-	ErrSample = sdkerrors.Register(ModuleName, 1100, "sample error")
+	ErrAlreadyExists = sdkerrors.Register(ModuleName, 2, "entity already exists")
 )
