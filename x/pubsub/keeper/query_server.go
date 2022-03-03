@@ -86,7 +86,7 @@ func (k Keeper) QueryPublisherIntent(c context.Context, req *types.QueryPublishe
 		return nil, status.Error(codes.InvalidArgument, fmt.Sprintf("invalid subscription ID: %s", err.Error()))
 	}
 
-	publisherIntent, found := k.GetPublisherIntent(sdk.UnwrapSDKContext(c), req.PublisherDomain, req.SubscriptionId)
+	publisherIntent, found := k.GetPublisherIntent(sdk.UnwrapSDKContext(c), req.SubscriptionId, req.PublisherDomain)
 	if !found {
 		return nil, status.Error(codes.NotFound, "publisher intent")
 	}
@@ -144,7 +144,7 @@ func (k Keeper) QuerySubscriberIntent(c context.Context, req *types.QuerySubscri
 		return nil, status.Error(codes.InvalidArgument, fmt.Sprintf("invalid subscription ID: %s", err.Error()))
 	}
 
-	subscriberIntent, found := k.GetSubscriberIntent(sdk.UnwrapSDKContext(c), addr, req.SubscriptionId)
+	subscriberIntent, found := k.GetSubscriberIntent(sdk.UnwrapSDKContext(c), req.SubscriptionId, addr)
 	if !found {
 		return nil, status.Error(codes.NotFound, "subscriber intent")
 	}

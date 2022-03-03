@@ -75,7 +75,7 @@ message PublisherIntent {
   // either ANY, VALIDATORS, or LIST (see enum above for details)
   AllowedSubscribers allowed_subscribers = 5;
 
-  // optional, must be provided if allowed_subscribers is LIST, list of account addresses, max length 512
+  // optional, must be provided if allowed_subscribers is LIST, list of account addresses, max length 256
   repeated string allowed_addresses = 6;
 }
 

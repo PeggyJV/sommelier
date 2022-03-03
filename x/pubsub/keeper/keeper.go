@@ -99,11 +99,11 @@ func (k Keeper) GetPublishers(ctx sdk.Context) (publishers []*types.Publisher) {
 	return
 }
 
-func (k Keeper) DeletePublisher(ctx sdk.Context, publisher types.Publisher) {
-	ctx.KVStore(k.storeKey).Delete(types.GetPublisherKey(publisher.Domain))
+func (k Keeper) DeletePublisher(ctx sdk.Context, publisherDomain string) {
+	ctx.KVStore(k.storeKey).Delete(types.GetPublisherKey(publisherDomain))
 
-	for _, publisherIntent := range k.GetPublisherIntentsByPublisherDomain(ctx, publisher.Domain) {
-		k.DeletePublisherIntent(ctx, *publisherIntent)
+	for _, publisherIntent := range k.GetPublisherIntentsByPublisherDomain(ctx, publisherDomain) {
+		k.DeletePublisherIntent(ctx, publisherIntent.SubscriptionId, publisherIntent.PublisherDomain)
 	}
 }
 
@@ -111,6 +111,9 @@ func (k Keeper) DeletePublisher(ctx sdk.Context, publisher types.Publisher) {
 // Subscriber //
 ////////////////
 
+// TODO(bolten): we are requiring sdk.AccAddress rather than using the string, as there is potential for
+// a conversion error between a bech32 string and an sdk.AccAddress and it takes up a smaller keyspace...
+// is this worth the added complexity given that we have a lot of other variable-length keys?
 func (k Keeper) SetSubscriber(ctx sdk.Context, subscriberAddress sdk.AccAddress, subscriber types.Subscriber) {
 	bz := k.cdc.MustMarshal(&subscriber)
 	ctx.KVStore(k.storeKey).Set(types.GetSubscriberKey(subscriberAddress), bz)
@@ -153,10 +156,11 @@ func (k Keeper) GetSubscribers(ctx sdk.Context) (subscribers []*types.Subscriber
 	return
 }
 
-func (k Keeper) DeleteSubscriber(ctx sdk.Context, subscriberAddress sdk.AccAddress, subscriber types.Subscriber) {
+func (k Keeper) DeleteSubscriber(ctx sdk.Context, subscriberAddress sdk.AccAddress) {
 	ctx.KVStore(k.storeKey).Delete(types.GetSubscriberKey(subscriberAddress))
+
 	for _, subscriberIntent := range k.GetSubscriberIntentsBySubscriberAddress(ctx, subscriberAddress) {
-		k.DeleteSubscriberIntent(ctx, subscriberAddress, *subscriberIntent)
+		k.DeleteSubscriberIntent(ctx, subscriberIntent.SubscriptionId, subscriberAddress, subscriberIntent.PublisherDomain)
 	}
 }
 
@@ -170,7 +174,7 @@ func (k Keeper) SetPublisherIntent(ctx sdk.Context, publisherIntent types.Publis
 	ctx.KVStore(k.storeKey).Set(types.GetPublisherIntentBySubscriptionIdKey(publisherIntent.SubscriptionId, publisherIntent.PublisherDomain), bz)
 }
 
-func (k Keeper) GetPublisherIntent(ctx sdk.Context, publisherDomain string, subscriptionId string) (publisherIntent types.PublisherIntent, found bool) {
+func (k Keeper) GetPublisherIntent(ctx sdk.Context, subscriptionId string, publisherDomain string) (publisherIntent types.PublisherIntent, found bool) {
 	bz := ctx.KVStore(k.storeKey).Get(types.GetPublisherIntentByPublisherDomainKey(publisherDomain, subscriptionId))
 	if len(bz) == 0 {
 		return types.PublisherIntent{}, false
@@ -221,15 +225,15 @@ func (k Keeper) getPublisherIntentsByKeyPrefix(ctx sdk.Context, keyPrefix []byte
 	return
 }
 
-func (k Keeper) DeletePublisherIntent(ctx sdk.Context, publisherIntent types.PublisherIntent) {
-	ctx.KVStore(k.storeKey).Delete(types.GetPublisherIntentByPublisherDomainKey(publisherIntent.PublisherDomain, publisherIntent.SubscriptionId))
-	ctx.KVStore(k.storeKey).Delete(types.GetPublisherIntentBySubscriptionIdKey(publisherIntent.SubscriptionId, publisherIntent.PublisherDomain))
+func (k Keeper) DeletePublisherIntent(ctx sdk.Context, subscriptionId string, publisherDomain string) {
+	ctx.KVStore(k.storeKey).Delete(types.GetPublisherIntentByPublisherDomainKey(publisherDomain, subscriptionId))
+	ctx.KVStore(k.storeKey).Delete(types.GetPublisherIntentBySubscriptionIdKey(subscriptionId, publisherDomain))
 
-	for _, subscriberIntent := range k.GetSubscriberIntentsByPublisherDomain(ctx, publisherIntent.PublisherDomain) {
-		if publisherIntent.SubscriptionId == subscriberIntent.SubscriptionId {
+	for _, subscriberIntent := range k.GetSubscriberIntentsByPublisherDomain(ctx, publisherDomain) {
+		if subscriptionId == subscriberIntent.SubscriptionId {
 			// we can ignore the error result since these values will not be stored in the keeper if they are not valid bech32
 			addr, _ := sdk.AccAddressFromBech32(subscriberIntent.SubscriberAddress)
-			k.DeleteSubscriberIntent(ctx, addr, *subscriberIntent)
+			k.DeleteSubscriberIntent(ctx, subscriberIntent.SubscriptionId, addr, subscriberIntent.PublisherDomain)
 		}
 	}
 }
@@ -248,7 +252,7 @@ func (k Keeper) SetSubscriberIntent(ctx sdk.Context, subscriberAddress sdk.AccAd
 	ctx.KVStore(k.storeKey).Set(types.GetSubscriberIntentByPublisherDomainKey(subscriberIntent.PublisherDomain, subscriberAddress, subscriberIntent.SubscriptionId), bz)
 }
 
-func (k Keeper) GetSubscriberIntent(ctx sdk.Context, subscriberAddress sdk.AccAddress, subscriptionId string) (subscriberIntent types.SubscriberIntent, found bool) {
+func (k Keeper) GetSubscriberIntent(ctx sdk.Context, subscriptionId string, subscriberAddress sdk.AccAddress) (subscriberIntent types.SubscriberIntent, found bool) {
 	bz := ctx.KVStore(k.storeKey).Get(types.GetSubscriberIntentBySubscriberAddressKey(subscriberAddress, subscriptionId))
 	if len(bz) == 0 {
 		return types.SubscriberIntent{}, false
@@ -306,8 +310,8 @@ func (k Keeper) getSubscriberIntentsByKeyPrefix(ctx sdk.Context, keyPrefix []byt
 	return
 }
 
-func (k Keeper) DeleteSubscriberIntent(ctx sdk.Context, subscriberAddress sdk.AccAddress, subscriberIntent types.SubscriberIntent) {
-	ctx.KVStore(k.storeKey).Delete(types.GetSubscriberIntentBySubscriberAddressKey(subscriberAddress, subscriberIntent.SubscriptionId))
-	ctx.KVStore(k.storeKey).Delete(types.GetSubscriberIntentBySubscriptionIdKey(subscriberIntent.SubscriptionId, subscriberAddress))
-	ctx.KVStore(k.storeKey).Delete(types.GetSubscriberIntentByPublisherDomainKey(subscriberIntent.PublisherDomain, subscriberAddress, subscriberIntent.SubscriptionId))
+func (k Keeper) DeleteSubscriberIntent(ctx sdk.Context, subscriptionId string, subscriberAddress sdk.AccAddress, publisherDomain string) {
+	ctx.KVStore(k.storeKey).Delete(types.GetSubscriberIntentBySubscriberAddressKey(subscriberAddress, subscriptionId))
+	ctx.KVStore(k.storeKey).Delete(types.GetSubscriberIntentBySubscriptionIdKey(subscriptionId, subscriberAddress))
+	ctx.KVStore(k.storeKey).Delete(types.GetSubscriberIntentByPublisherDomainKey(publisherDomain, subscriberAddress, subscriptionId))
 }
