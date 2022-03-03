@@ -240,7 +240,7 @@ type PublisherIntent struct {
 	PullUrl string `protobuf:"bytes,4,opt,name=pull_url,json=pullUrl,proto3" json:"pull_url,omitempty"`
 	// either ANY, VALIDATORS, or LIST (see enum above for details)
 	AllowedSubscribers AllowedSubscribers `protobuf:"varint,5,opt,name=allowed_subscribers,json=allowedSubscribers,proto3,enum=pubsub.v1.AllowedSubscribers" json:"allowed_subscribers,omitempty"`
-	// optional, must be provided if allowed_subscribers is LIST, list of account addresses, max length 512
+	// optional, must be provided if allowed_subscribers is LIST, list of account addresses, max length 256
 	AllowedAddresses []string `protobuf:"bytes,6,rep,name=allowed_addresses,json=allowedAddresses,proto3" json:"allowed_addresses,omitempty"`
 }
 
