@@ -61,7 +61,7 @@ message MsgAddSubscriberIntentResponse {}
 message MsgRemoveSubscriberIntent {
   string subscription_id = 1;
   string subscriber_address = 2;
-  string signer = 4;
+  string signer = 3;
 }
 
 message MsgRemoveSubscriberIntentResponse {}
