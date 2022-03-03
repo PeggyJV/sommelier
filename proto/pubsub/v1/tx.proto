@@ -16,7 +16,7 @@ service Msg {
 }
 
 message MsgRemovePublisher {
-  Publisher publisher = 1;
+  string publisher_domain = 1;
   string signer = 2;
 }
 
@@ -30,7 +30,7 @@ message MsgAddSubscriber {
 message MsgAddSubscriberResponse {}
 
 message MsgRemoveSubscriber {
-  Subscriber subscriber = 1;
+  string subscriber_address = 1;
   string signer = 2;
 }
 
@@ -44,8 +44,9 @@ message MsgAddPublisherIntent {
 message MsgAddPublisherIntentResponse {}
 
 message MsgRemovePublisherIntent {
-  PublisherIntent publisher_intent = 1;
-  string signer = 2;
+  string publisher_domain = 1;
+  string subscsription_id = 2;
+  string signer = 3;
 }
 
 message MsgRemovePublisherIntentResponse {}
@@ -58,8 +59,10 @@ message MsgAddSubscriberIntent {
 message MsgAddSubscriberIntentResponse {}
 
 message MsgRemoveSubscriberIntent {
-  SubscriberIntent subscriber_intent = 1;
-  string signer = 2;
+  string subscriber_address = 1;
+  string subscription_id = 2;
+  string publisher_domain = 3;
+  string signer = 4;
 }
 
 message MsgRemoveSubscriberIntentResponse {}
