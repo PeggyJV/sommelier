@@ -62,6 +62,9 @@ service Query {
     option (google.api.http).get = "/sommelier/pubsub/v1/subscriber_intents_by_subscription_id/{subscription_id}";
   }
 
+  rpc QuerySubscriberIntentsByPublisherDomain(QuerySubscriberIntentsByPublisherDomainRequest) returns (QuerySubscriberIntentsByPublisherDomainResponse) {
+    option (google.api.http).get = "/sommelier/pubsub/v1/subscriber_intents_by_publisher_domain/{publisher_domain}";
+  }
 }
 
 message QueryParamsRequest {}
@@ -157,5 +160,13 @@ message QuerySubscriberIntentsBySubscriptionIdRequest {
 }
 
 message QuerySubscriberIntentsBySubscriptionIdResponse {
+  repeated SubscriberIntent subscriber_intents = 1;
+}
+
+message QuerySubscriberIntentsByPublisherDomainRequest {
+  string publisher_domain = 1;
+}
+
+message QuerySubscriberIntentsByPublisherDomainResponse {
   repeated SubscriberIntent subscriber_intents = 1;
 }

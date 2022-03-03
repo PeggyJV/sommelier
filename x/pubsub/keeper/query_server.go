@@ -188,3 +188,17 @@ func (k Keeper) QuerySubscriberIntentsBySubscriptionId(c context.Context, req *t
 		SubscriberIntents: k.GetSubscriberIntentsBySubscriptionId(sdk.UnwrapSDKContext(c), req.SubscriptionId),
 	}, nil
 }
+
+func (k Keeper) QuerySubscriberIntentsByPublisherDomain(c context.Context, req *types.QuerySubscriberIntentsByPublisherDomainRequest) (*types.QuerySubscriberIntentsByPublisherDomainResponse, error) {
+	if req == nil {
+		return nil, status.Error(codes.InvalidArgument, "empty request")
+	}
+
+	if err := types.ValidateDomain(req.PublisherDomain); err != nil {
+		return nil, status.Error(codes.InvalidArgument, fmt.Sprintf("invalid publisher domain: %s", err.Error()))
+	}
+
+	return &types.QuerySubscriberIntentsByPublisherDomainResponse{
+		SubscriberIntents: k.GetSubscriberIntentsByPublisherDomain(sdk.UnwrapSDKContext(c), req.PublisherDomain),
+	}, nil
+}
