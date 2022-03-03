@@ -20,6 +20,8 @@ const (
 	listSeparator              = ","
 )
 
+// TODO(bolten): fill out tx commands
+
 // GetTxCmd returns the transaction commands for this module
 func GetTxCmd() *cobra.Command {
 	cmd := &cobra.Command{
@@ -30,7 +32,5 @@ func GetTxCmd() *cobra.Command {
 		RunE:                       client.ValidateCmd,
 	}
 
-	// this line is used by starport scaffolding # 1
-
-	return cmd 
+	return cmd
 }
