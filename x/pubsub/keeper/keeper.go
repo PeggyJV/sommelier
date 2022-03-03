@@ -227,7 +227,9 @@ func (k Keeper) DeletePublisherIntent(ctx sdk.Context, publisherIntent types.Pub
 
 	for _, subscriberIntent := range k.GetSubscriberIntentsByPublisherDomain(ctx, publisherIntent.PublisherDomain) {
 		if publisherIntent.SubscriptionId == subscriberIntent.SubscriptionId {
-			k.DeleteSubscriberIntent(ctx, sdk.AccAddress(subscriberIntent.SubscriberAddress), *subscriberIntent)
+			// we can ignore the error result since these values will not be stored in the keeper if they are not valid bech32
+			addr, _ := sdk.AccAddressFromBech32(subscriberIntent.SubscriberAddress)
+			k.DeleteSubscriberIntent(ctx, addr, *subscriberIntent)
 		}
 	}
 }
