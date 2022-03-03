@@ -194,13 +194,14 @@ func (m *MsgAddSubscriber) MustGetSigner() sdk.AccAddress {
 //////////////////////////////
 
 // NewMsgRemovePublisherIntent returns a new MsgRemovePublisherIntent
-func NewMsgRemovePublisherIntent(publisherIntent PublisherIntent, signer sdk.AccAddress) (*MsgRemovePublisherIntent, error) {
+func NewMsgRemovePublisherIntent(subscriptionId string, publisherDomain string, signer sdk.AccAddress) (*MsgRemovePublisherIntent, error) {
 	if signer == nil {
 		return nil, fmt.Errorf("no signer provided")
 	}
 
 	return &MsgRemovePublisherIntent{
-		PublisherIntent: &publisherIntent,
+		SubscriptionId:  subscriptionId,
+		PublisherDomain: publisherDomain,
 		Signer:          signer.String(),
 	}, nil
 }
@@ -217,11 +218,15 @@ func (m *MsgRemovePublisherIntent) ValidateBasic() error {
 		return sdkerrors.Wrap(sdkerrors.ErrInvalidAddress, err.Error())
 	}
 
-	if m.PublisherIntent == nil {
-		return fmt.Errorf("empty PublisherIntent")
+	if err := ValidateSubscriptionId(m.SubscriptionId); err != nil {
+		return fmt.Errorf("invalid subscription ID: %s", err.Error())
 	}
 
-	return m.PublisherIntent.ValidateBasic()
+	if err := ValidateDomain(m.PublisherDomain); err != nil {
+		return fmt.Errorf("invalid publisher domain: %s", err.Error())
+	}
+
+	return nil
 }
 
 // GetSignBytes implements sdk.Msg
@@ -248,14 +253,15 @@ func (m *MsgRemovePublisherIntent) MustGetSigner() sdk.AccAddress {
 ///////////////////////////////
 
 // NewMsgRemoveSubscriberIntent returns a new MsgRemoveSubscriberIntent
-func NewMsgRemoveSubscriberIntent(subscriberIntent SubscriberIntent, signer sdk.AccAddress) (*MsgRemoveSubscriberIntent, error) {
+func NewMsgRemoveSubscriberIntent(subscriptionId string, subscriberAddress sdk.AccAddress, signer sdk.AccAddress) (*MsgRemoveSubscriberIntent, error) {
 	if signer == nil {
 		return nil, fmt.Errorf("no signer provided")
 	}
 
 	return &MsgRemoveSubscriberIntent{
-		SubscriberIntent: &subscriberIntent,
-		Signer:           signer.String(),
+		SubscriptionId:    subscriptionId,
+		SubscriberAddress: subscriberAddress.String(),
+		Signer:            signer.String(),
 	}, nil
 }
 
@@ -271,11 +277,15 @@ func (m *MsgRemoveSubscriberIntent) ValidateBasic() error {
 		return sdkerrors.Wrap(sdkerrors.ErrInvalidAddress, err.Error())
 	}
 
-	if m.SubscriberIntent == nil {
-		return fmt.Errorf("empty SubscriberIntent")
+	if err := ValidateSubscriptionId(m.SubscriptionId); err != nil {
+		return fmt.Errorf("invalid subscription ID: %s", err.Error())
 	}
 
-	return m.SubscriberIntent.ValidateBasic()
+	if _, err := sdk.AccAddressFromBech32(m.SubscriberAddress); err != nil {
+		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid subscriber address: %s", err.Error())
+	}
+
+	return nil
 }
 
 // GetSignBytes implements sdk.Msg
@@ -302,14 +312,14 @@ func (m *MsgRemoveSubscriberIntent) MustGetSigner() sdk.AccAddress {
 /////////////////////////
 
 // NewMsgRemoveSubscriber returns a new MsgRemoveSubscriber
-func NewMsgRemoveSubscriber(subscriber Subscriber, signer sdk.AccAddress) (*MsgRemoveSubscriber, error) {
+func NewMsgRemoveSubscriber(subscriberAddress sdk.AccAddress, signer sdk.AccAddress) (*MsgRemoveSubscriber, error) {
 	if signer == nil {
 		return nil, fmt.Errorf("no signer provided")
 	}
 
 	return &MsgRemoveSubscriber{
-		Subscriber: &subscriber,
-		Signer:     signer.String(),
+		SubscriberAddress: subscriberAddress.String(),
+		Signer:            signer.String(),
 	}, nil
 }
 
@@ -325,11 +335,11 @@ func (m *MsgRemoveSubscriber) ValidateBasic() error {
 		return sdkerrors.Wrap(sdkerrors.ErrInvalidAddress, err.Error())
 	}
 
-	if m.Subscriber == nil {
-		return fmt.Errorf("empty Subscriber")
+	if _, err := sdk.AccAddressFromBech32(m.SubscriberAddress); err != nil {
+		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid subscriber address: %s", err.Error())
 	}
 
-	return m.Subscriber.ValidateBasic()
+	return nil
 }
 
 // GetSignBytes implements sdk.Msg
@@ -356,14 +366,14 @@ func (m *MsgRemoveSubscriber) MustGetSigner() sdk.AccAddress {
 ////////////////////////
 
 // NewMsgRemovePublisher returns a new MsgRemovePublisher
-func NewMsgRemovePublisher(publisher Publisher, signer sdk.AccAddress) (*MsgRemovePublisher, error) {
+func NewMsgRemovePublisher(publisherDomain string, signer sdk.AccAddress) (*MsgRemovePublisher, error) {
 	if signer == nil {
 		return nil, fmt.Errorf("no signer provided")
 	}
 
 	return &MsgRemovePublisher{
-		Publisher: &publisher,
-		Signer:    signer.String(),
+		PublisherDomain: publisherDomain,
+		Signer:          signer.String(),
 	}, nil
 }
 
@@ -379,11 +389,11 @@ func (m *MsgRemovePublisher) ValidateBasic() error {
 		return sdkerrors.Wrap(sdkerrors.ErrInvalidAddress, err.Error())
 	}
 
-	if m.Publisher == nil {
-		return fmt.Errorf("empty Publisher")
+	if err := ValidateDomain(m.PublisherDomain); err != nil {
+		return fmt.Errorf("invalid publisher domain: %s", err.Error())
 	}
 
-	return m.Publisher.ValidateBasic()
+	return nil
 }
 
 // GetSignBytes implements sdk.Msg

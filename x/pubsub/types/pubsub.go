@@ -12,34 +12,29 @@ import (
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
-func (p *Publisher) ValidateBasic() error {
-	if p.Domain == "" {
-		return fmt.Errorf("empty domain")
-	}
+const (
+	MaxDomainLength         = 256
+	MaxUrlLength            = 512
+	MaxCertLength           = 4096
+	MaxSubscriptionIdLength = 128
+	MaxAllowedSubscribers   = 256
+)
 
+///////////////////
+// ValidateBasic //
+///////////////////
+
+func (p *Publisher) ValidateBasic() error {
 	if err := ValidateDomain(p.Domain); err != nil {
 		return fmt.Errorf("invalid domain: %s", err.Error())
 	}
 
-	if p.Address == "" {
-		return fmt.Errorf("empty address")
-	}
-
-	if _, err := sdk.AccAddressFromBech32(p.Address); err != nil {
-		return sdkerrors.Wrap(sdkerrors.ErrInvalidAddress,
-			fmt.Sprintf("address %s is invalid: %s", p.Address, err.Error()))
-	}
-
-	if p.ProofUrl == "" {
-		return fmt.Errorf("empty proof URL")
+	if err := ValidateAddress(p.Address); err != nil {
+		return fmt.Errorf("invalid address: %s", err.Error())
 	}
 
 	if err := ValidateProofUrl(p.ProofUrl, p.Domain, p.Address); err != nil {
 		return fmt.Errorf("invalid proof URL: %s", err.Error())
-	}
-
-	if p.CaCert == "" {
-		return fmt.Errorf("empty CA cert")
 	}
 
 	if err := ValidateCaCertificateBase64(p.CaCert); err != nil {
@@ -50,13 +45,8 @@ func (p *Publisher) ValidateBasic() error {
 }
 
 func (s *Subscriber) ValidateBasic() error {
-	if s.Address == "" {
-		return fmt.Errorf("empty address")
-	}
-
-	if _, err := sdk.AccAddressFromBech32(s.Address); err != nil {
-		return sdkerrors.Wrap(sdkerrors.ErrInvalidAddress,
-			fmt.Sprintf("address %s is invalid: %s", s.Address, err.Error()))
+	if err := ValidateAddress(s.Address); err != nil {
+		return fmt.Errorf("invalid address: %s", err.Error())
 	}
 
 	// if a subcsriber does not provide a domain, ca_cert, and proof_url, they will not be able to
@@ -84,16 +74,8 @@ func (s *Subscriber) ValidateBasic() error {
 }
 
 func (pi *PublisherIntent) ValidateBasic() error {
-	if pi.SubscriptionId == "" {
-		return fmt.Errorf("empty subscription ID")
-	}
-
 	if err := ValidateSubscriptionId(pi.SubscriptionId); err != nil {
 		return fmt.Errorf("invalid subscription ID: %s", err.Error())
-	}
-
-	if pi.PublisherDomain == "" {
-		return fmt.Errorf("empty publisher domain")
 	}
 
 	if err := ValidateDomain(pi.PublisherDomain); err != nil {
@@ -126,8 +108,14 @@ func (pi *PublisherIntent) ValidateBasic() error {
 			return fmt.Errorf("empty list of allowed addresses when it is required by the allowed subscribers LIST value")
 		}
 
+		// TODO(bolten): currently set to 256, how many addresses should we allow in this list given that it is heavy on
+		// storage and must be iterated over?
+		if len(pi.AllowedAddresses) > MaxAllowedSubscribers {
+			return fmt.Errorf("allowed address list over maximum length of %d: %d", MaxAllowedSubscribers, len(pi.AllowedAddresses))
+		}
+
 		for _, allowedAddress := range pi.AllowedAddresses {
-			if _, err := sdk.AccAddressFromBech32(allowedAddress); err != nil {
+			if err := ValidateAddress(allowedAddress); err != nil {
 				return sdkerrors.Wrap(sdkerrors.ErrInvalidAddress,
 					fmt.Sprintf("allowed address entry %s is invalid: %s", allowedAddress, err.Error()))
 			}
@@ -138,25 +126,12 @@ func (pi *PublisherIntent) ValidateBasic() error {
 }
 
 func (si *SubscriberIntent) ValidateBasic() error {
-	if si.SubscriptionId == "" {
-		return fmt.Errorf("empty subscription ID")
-	}
-
 	if err := ValidateSubscriptionId(si.SubscriptionId); err != nil {
 		return fmt.Errorf("invalid subscription ID: %s", err.Error())
 	}
 
-	if si.SubscriberAddress == "" {
-		return fmt.Errorf("empty subscriber address")
-	}
-
-	if _, err := sdk.AccAddressFromBech32(si.SubscriberAddress); err != nil {
-		return sdkerrors.Wrap(sdkerrors.ErrInvalidAddress,
-			fmt.Sprintf("subscriber address %s is invalid: %s", si.SubscriberAddress, err.Error()))
-	}
-
-	if si.PublisherDomain == "" {
-		return fmt.Errorf("empty publisher domain")
+	if err := ValidateAddress(si.SubscriberAddress); err != nil {
+		return fmt.Errorf("invalid subscriber address: %s", err.Error())
 	}
 
 	if err := ValidateDomain(si.PublisherDomain); err != nil {
@@ -174,9 +149,17 @@ func (si *SubscriberIntent) ValidateBasic() error {
 	return nil
 }
 
+///////////////////////
+// Field Validations //
+///////////////////////
+
 func ValidateDomain(domain string) error {
-	if len(domain) > 256 {
-		return fmt.Errorf("domain over max length of 256: %d", len(domain))
+	if domain == "" {
+		return fmt.Errorf("empty domain")
+	}
+
+	if len(domain) > MaxDomainLength {
+		return fmt.Errorf("domain over max length of %d: %d", MaxDomainLength, len(domain))
 	}
 
 	if _, err := url.Parse(fmt.Sprintf("https://%s", domain)); err != nil {
@@ -186,7 +169,23 @@ func ValidateDomain(domain string) error {
 	return nil
 }
 
+func ValidateAddress(address string) error {
+	if address == "" {
+		return fmt.Errorf("empty address")
+	}
+
+	if _, err := sdk.AccAddressFromBech32(address); err != nil {
+		return sdkerrors.Wrap(sdkerrors.ErrInvalidAddress, fmt.Sprintf("invalid address: %s", err.Error()))
+	}
+
+	return nil
+}
+
 func ValidateProofUrl(proofUrl string, domain string, address string) error {
+	if proofUrl == "" {
+		return fmt.Errorf("empty proof URL")
+	}
+
 	if err := ValidateGenericUrl(proofUrl); err != nil {
 		return err
 	}
@@ -200,8 +199,12 @@ func ValidateProofUrl(proofUrl string, domain string, address string) error {
 }
 
 func ValidateGenericUrl(urlString string) error {
-	if len(urlString) > 512 {
-		return fmt.Errorf("URL over max length of 512: %d", len(urlString))
+	if urlString == "" {
+		return fmt.Errorf("empty URL")
+	}
+
+	if len(urlString) > MaxUrlLength {
+		return fmt.Errorf("URL over max length of %d: %d", MaxUrlLength, len(urlString))
 	}
 
 	if _, err := url.Parse(urlString); err != nil {
@@ -212,8 +215,12 @@ func ValidateGenericUrl(urlString string) error {
 }
 
 func ValidateCaCertificateBase64(certBase64 string) error {
-	if len(certBase64) > 4096 {
-		return fmt.Errorf("CA cert over max length of 4096: %d", len(certBase64))
+	if certBase64 == "" {
+		return fmt.Errorf("empty CA certificate")
+	}
+
+	if len(certBase64) > MaxCertLength {
+		return fmt.Errorf("CA cert over max length of %d: %d", MaxCertLength, len(certBase64))
 	}
 
 	certBytes, err := base64.StdEncoding.DecodeString(certBase64)
@@ -247,8 +254,12 @@ func ValidateCaCertificateBase64(certBase64 string) error {
 }
 
 func ValidateSubscriptionId(subscriptionId string) error {
-	if len(subscriptionId) > 128 {
-		return fmt.Errorf("subscription ID over max length of 128: %d", len(subscriptionId))
+	if subscriptionId == "" {
+		return fmt.Errorf("empty subscription ID")
+	}
+
+	if len(subscriptionId) > MaxSubscriptionIdLength {
+		return fmt.Errorf("subscription ID over max length of %d: %d", MaxSubscriptionIdLength, len(subscriptionId))
 	}
 
 	if strings.Contains(subscriptionId, "|") {
