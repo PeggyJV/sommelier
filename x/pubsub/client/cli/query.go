@@ -13,6 +13,8 @@ import (
 	"github.com/peggyjv/sommelier/v3/x/pubsub/types"
 )
 
+// TODO(bolten): add query CLI commands
+
 // GetQueryCmd returns the cli query commands for this module
 func GetQueryCmd(queryRoute string) *cobra.Command {
 	// Group pubsub queries under a subcommand
@@ -25,8 +27,6 @@ func GetQueryCmd(queryRoute string) *cobra.Command {
 	}
 
 	cmd.AddCommand(CmdQueryParams())
-	// this line is used by starport scaffolding # 1
 
-	return cmd 
+	return cmd
 }
-
