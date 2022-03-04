@@ -162,6 +162,7 @@ func ValidateDomain(domain string) error {
 		return fmt.Errorf("domain over max length of %d: %d", MaxDomainLength, len(domain))
 	}
 
+	// TODO(bolten): perhaps we should add a regex to ensure a limited character set for the domain
 	if _, err := url.Parse(fmt.Sprintf("https://%s", domain)); err != nil {
 		return fmt.Errorf("invalid URL format: %s", err.Error())
 	}
@@ -262,6 +263,7 @@ func ValidateSubscriptionId(subscriptionId string) error {
 		return fmt.Errorf("subscription ID over max length of %d: %d", MaxSubscriptionIdLength, len(subscriptionId))
 	}
 
+	// TODO(bolten): any other character limitations we should add here?
 	if strings.Contains(subscriptionId, "|") {
 		return fmt.Errorf("subscription IDs may not contain the pipe character '|'")
 	}
