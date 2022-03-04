@@ -2,8 +2,9 @@ package types
 
 import (
 	"encoding/hex"
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"math/big"
+
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
 type ABIEncodedTickRange struct {

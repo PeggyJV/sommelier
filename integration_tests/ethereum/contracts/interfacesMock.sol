@@ -1066,7 +1066,7 @@ interface ICellarPoolShare is IERC20 {
         uint256 amount1
     );
 
-    /// @notice Emitted when reinvest swap fees into cellar for checking fees
+    /// @notice Emitted when cork swap fees into cellar for checking fees
     /// @param fees0 collected token0
     /// @param fees1 collected token1
     /// @param managementFee0 management fee of token0
@@ -1152,7 +1152,7 @@ interface ICellarPoolShare is IERC20 {
     /// @param _cellarTickInfo new tick tier information
     function rebalance(CellarTickInfo[] memory _cellarTickInfo, uint256 currentPrice) external;
 
-    /// @notice collect fee and reinvest in liquidity
+    /// @notice collect fee and cork in liquidity
     function reinvest(uint256 currentPriceX96) external;
 
     /// @notice set validator

@@ -1,5 +1,5 @@
 import '@nomiclabs/hardhat-ethers';
-import '@nomiclabs/hardhat-waffle';
+// import '@nomiclabs/hardhat-waffle';
 import {task} from "hardhat/config";
 import * as constants from "./addresses";
 
@@ -69,6 +69,11 @@ task(
         console.log(
             `Cellar contract at ${cellar.address} is now owned by Gravity contract at ${gravity.address} with hash ${hash}`,
         );
+
+        const Counter = await hre.ethers.getContractFactory("Counter");
+        const counter = await Counter.deploy();
+        await counter.deployed();
+        console.log(`counter contract deployed at - ${counter.address}`);
 
         await hre.network.provider.send("evm_setIntervalMining", [1000]);
 

@@ -97,7 +97,7 @@ pub struct MsgAllocationCommitResponse {}
 pub mod msg_client {
     #![allow(unused_variables, dead_code, missing_docs)]
     use tonic::codegen::*;
-    #[doc = " MsgService defines the msgs that the oracle module handles."]
+    #[doc = " MsgService defines the msgs that the allocation module handles."]
     pub struct MsgClient<T> {
         inner: tonic::client::Grpc<T>,
     }

@@ -90,6 +90,9 @@ import (
 	"github.com/peggyjv/sommelier/v3/x/allocation"
 	allocationkeeper "github.com/peggyjv/sommelier/v3/x/allocation/keeper"
 	allocationtypes "github.com/peggyjv/sommelier/v3/x/allocation/types"
+	"github.com/peggyjv/sommelier/v3/x/cork"
+	corkkeeper "github.com/peggyjv/sommelier/v3/x/cork/keeper"
+	corktypes "github.com/peggyjv/sommelier/v3/x/cork/types"
 	"github.com/peggyjv/sommelier/v3/x/pubsub"
 	pubsubkeeper "github.com/peggyjv/sommelier/v3/x/pubsub/keeper"
 	pubsubtypes "github.com/peggyjv/sommelier/v3/x/pubsub/types"
@@ -145,6 +148,7 @@ var (
 		authzmodule.AppModuleBasic{},
 		gravity.AppModuleBasic{},
 		allocation.AppModuleBasic{},
+		cork.AppModuleBasic{},
 		pubsub.AppModuleBasic{},
 	)
 
@@ -207,6 +211,7 @@ type SommelierApp struct {
 
 	// Sommelier keepers
 	AllocationKeeper allocationkeeper.Keeper
+	CorkKeeper       corkkeeper.Keeper
 
 	// make capability scoped keepers public for test purposes (IBC only)
 	ScopedIBCKeeper      capabilitykeeper.ScopedKeeper
@@ -251,7 +256,7 @@ func NewSommelierApp(
 		govtypes.StoreKey, paramstypes.StoreKey, ibchost.StoreKey, upgradetypes.StoreKey,
 		evidencetypes.StoreKey, ibctransfertypes.StoreKey, capabilitytypes.StoreKey,
 		gravitytypes.StoreKey, feegrant.StoreKey, authzkeeper.StoreKey, allocationtypes.StoreKey,
-		pubsubtypes.StoreKey,
+		corktypes.StoreKey, pubsubtypes.StoreKey,
 	)
 	tkeys := sdk.NewTransientStoreKeys(paramstypes.TStoreKey)
 	memKeys := sdk.NewMemoryStoreKeys(capabilitytypes.MemStoreKey)
@@ -334,6 +339,7 @@ func NewSommelierApp(
 		AddRoute(upgradetypes.RouterKey, upgrade.NewSoftwareUpgradeProposalHandler(app.UpgradeKeeper)).
 		AddRoute(ibcclienttypes.RouterKey, ibcclient.NewClientProposalHandler(app.IBCKeeper.ClientKeeper)).
 		AddRoute(allocationtypes.RouterKey, allocation.NewUpdateManagedCellarsProposalHandler(app.AllocationKeeper)).
+		AddRoute(corktypes.RouterKey, cork.NewUpdateCellarIDsProposalHandler(app.CorkKeeper)).
 		AddRoute(pubsubtypes.RouterKey, pubsub.NewUpdatePublishersProposalHandler(app.PubsubKeeper))
 	app.GovKeeper = govkeeper.NewKeeper(
 		appCodec, keys[govtypes.StoreKey], app.GetSubspace(govtypes.ModuleName), app.AccountKeeper, app.BankKeeper,
@@ -359,6 +365,11 @@ func NewSommelierApp(
 		app.StakingKeeper, app.GravityKeeper,
 	)
 
+	app.CorkKeeper = corkkeeper.NewKeeper(
+		appCodec, keys[corktypes.StoreKey], app.GetSubspace(corktypes.ModuleName),
+		app.StakingKeeper, app.GravityKeeper,
+	)
+
 	app.PubsubKeeper = pubsubkeeper.NewKeeper(
 		appCodec, keys[pubsubtypes.StoreKey], app.GetSubspace(pubsubtypes.ModuleName),
 		app.StakingKeeper,
@@ -367,6 +378,7 @@ func NewSommelierApp(
 	app.GravityKeeper = *app.GravityKeeper.SetHooks(
 		gravitytypes.NewMultiGravityHooks(
 			app.AllocationKeeper.Hooks(),
+			app.CorkKeeper.Hooks(),
 		))
 
 	// Create static IBC router, add transfer route, then set and seal it
@@ -419,6 +431,7 @@ func NewSommelierApp(
 		gravity.NewAppModule(app.GravityKeeper, app.BankKeeper),
 		authzmodule.NewAppModule(appCodec, app.AuthzKeeper, app.AccountKeeper, app.BankKeeper, app.interfaceRegistry),
 		allocation.NewAppModule(app.AllocationKeeper, appCodec),
+		cork.NewAppModule(app.CorkKeeper, appCodec),
 		pubsub.NewAppModule(appCodec, app.PubsubKeeper, app.StakingKeeper),
 	)
 
@@ -431,13 +444,13 @@ func NewSommelierApp(
 		upgradetypes.ModuleName, capabilitytypes.ModuleName, minttypes.ModuleName, distrtypes.ModuleName, slashingtypes.ModuleName,
 		evidencetypes.ModuleName, stakingtypes.ModuleName, ibchost.ModuleName, ibctransfertypes.ModuleName, authtypes.ModuleName,
 		banktypes.ModuleName, govtypes.ModuleName, crisistypes.ModuleName, genutiltypes.ModuleName, authz.ModuleName, feegrant.ModuleName,
-		paramstypes.ModuleName, gravitytypes.ModuleName, allocationtypes.ModuleName, pubsubtypes.ModuleName,
+		paramstypes.ModuleName, gravitytypes.ModuleName, allocationtypes.ModuleName, corktypes.ModuleName, pubsubtypes.ModuleName,
 	)
 	app.mm.SetOrderEndBlockers(
 		crisistypes.ModuleName, govtypes.ModuleName, stakingtypes.ModuleName, ibchost.ModuleName, ibctransfertypes.ModuleName,
 		capabilitytypes.ModuleName, authtypes.ModuleName, banktypes.ModuleName, distrtypes.ModuleName, slashingtypes.ModuleName,
 		minttypes.ModuleName, genutiltypes.ModuleName, evidencetypes.ModuleName, authz.ModuleName, feegrant.ModuleName, paramstypes.ModuleName,
-		upgradetypes.ModuleName, gravitytypes.ModuleName, allocationtypes.ModuleName, pubsubtypes.ModuleName,
+		upgradetypes.ModuleName, gravitytypes.ModuleName, allocationtypes.ModuleName, corktypes.ModuleName, pubsubtypes.ModuleName,
 	)
 
 	// NOTE: The genutils module must occur after staking so that pools are
@@ -450,7 +463,7 @@ func NewSommelierApp(
 		stakingtypes.ModuleName, slashingtypes.ModuleName, govtypes.ModuleName, minttypes.ModuleName,
 		crisistypes.ModuleName, ibchost.ModuleName, genutiltypes.ModuleName, evidencetypes.ModuleName,
 		ibctransfertypes.ModuleName, gravitytypes.ModuleName, authz.ModuleName,
-		feegrant.ModuleName, allocationtypes.ModuleName, pubsubtypes.ModuleName,
+		feegrant.ModuleName, allocationtypes.ModuleName, corktypes.ModuleName, pubsubtypes.ModuleName,
 	)
 
 	app.mm.RegisterInvariants(&app.CrisisKeeper)
@@ -477,6 +490,7 @@ func NewSommelierApp(
 		ibc.NewAppModule(app.IBCKeeper),
 		authzmodule.NewAppModule(appCodec, app.AuthzKeeper, app.AccountKeeper, app.BankKeeper, app.interfaceRegistry),
 		allocation.NewAppModule(app.AllocationKeeper, appCodec),
+		cork.NewAppModule(app.CorkKeeper, appCodec),
 		pubsub.NewAppModule(appCodec, app.PubsubKeeper, app.StakingKeeper),
 	)
 
@@ -701,6 +715,7 @@ func initParamsKeeper(appCodec codec.BinaryCodec, legacyAmino *codec.LegacyAmino
 	paramsKeeper.Subspace(ibchost.ModuleName)
 	paramsKeeper.Subspace(gravitytypes.ModuleName)
 	paramsKeeper.Subspace(allocationtypes.ModuleName)
+	paramsKeeper.Subspace(corktypes.ModuleName)
 	paramsKeeper.Subspace(pubsubtypes.ModuleName)
 
 	return paramsKeeper

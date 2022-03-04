@@ -1,0 +1,30 @@
+syntax = "proto3";
+package cork.v1;
+
+import "cosmos_proto/cosmos.proto";
+
+option go_package = "github.com/peggyjv/sommelier/v3/x/cork/types";
+
+// MsgSubmitCorkRequest - sdk.Msg for submitting calls to Ethereum through the gravity bridge contract
+message Cork {
+  // call body containing the ABI encoded bytes to send to the contract
+  bytes encoded_contract_call = 1;
+  // address of the contract to send the call
+  string target_contract_address = 2;
+}
+
+message CellarIDSet {
+  repeated string ids = 1;
+}
+
+message AddManagedCellarsProposal {
+  string title = 1;
+  string description = 2;
+  CellarIDSet cellar_ids = 3;
+}
+
+message RemoveManagedCellarsProposal {
+  string title = 1;
+  string description = 2;
+  CellarIDSet cellar_ids = 3;
+}
