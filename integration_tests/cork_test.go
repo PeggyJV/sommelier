@@ -3,6 +3,7 @@ package integration_tests
 import (
 	"context"
 	"fmt"
+	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 	"math/big"
 	"strings"
 	"time"
@@ -125,6 +126,34 @@ func (s *IntegrationTestSuite) TestCork() {
 		s.Require().NoError(err)
 		s.Require().Equal(int64(0), count.Int64())
 
+		s.T().Logf("create governance proposal to add counter contract")
+		orch := s.chain.orchestrators[0]
+		clientCtx, err := s.chain.clientContext("tcp://localhost:26657", orch.keyring, "orch", orch.keyInfo.GetAddress())
+		s.Require().NoError(err)
+
+		proposal := types.AddManagedCellarsProposal{
+			Title:       "add counter contract in test",
+			Description: "test description",
+			CellarIds: &types.CellarIDSet{
+				Ids: []string{counterContract.Hex()},
+			},
+		}
+		proposalMsg, err := govtypes.NewMsgSubmitProposal(
+			&proposal,
+			sdk.Coins{
+				{
+					Denom:  testDenom,
+					Amount: stakeAmount.Quo(sdk.NewInt(1000)),
+				},
+			},
+			orch.keyInfo.GetAddress(),
+		)
+		s.Require().NoError(err, "unable to create governance proposal")
+
+		response, err := s.chain.sendMsgs(*clientCtx, proposalMsg)
+		s.Require().NoError(err)
+		s.Require().Zero(response.Code)
+
 		s.T().Logf("verify that contract exists in allowed addresses")
 		val := s.chain.validators[0]
 		s.Require().Eventuallyf(func() bool {
@@ -147,7 +176,7 @@ func (s *IntegrationTestSuite) TestCork() {
 					break
 				}
 			}
-			
+
 			return found
 		}, 10*time.Second, 2*time.Second, "did not find address in managed cellars")
 

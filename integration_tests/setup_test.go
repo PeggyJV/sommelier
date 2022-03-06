@@ -5,6 +5,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 	corktypes "github.com/peggyjv/sommelier/v3/x/cork/types"
 	"math/big"
 	"os"
@@ -297,6 +298,15 @@ func (s *IntegrationTestSuite) initGenesis() {
 	bz, err := cdc.MarshalJSON(&bankGenState)
 	s.Require().NoError(err)
 	appGenState[banktypes.ModuleName] = bz
+
+	var govGenState govtypes.GenesisState
+	s.Require().NoError(cdc.UnmarshalJSON(appGenState[govtypes.ModuleName], &govGenState))
+	
+	// set 10-second voting period to allow gov proposals in tests
+	govGenState.VotingParams.VotingPeriod = time.Second * 10
+	bz, err = cdc.MarshalJSON(&govGenState)
+	s.Require().NoError(err)
+	appGenState[govtypes.ModuleName] = bz
 
 	// set crisis denom
 	var crisisGenState crisistypes.GenesisState
