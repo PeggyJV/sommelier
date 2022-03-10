@@ -3,13 +3,13 @@ package integration_tests
 import (
 	"context"
 	"fmt"
-	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 	"math/big"
 	"strings"
 	"time"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 	"github.com/ethereum/go-ethereum"
 	"github.com/ethereum/go-ethereum/accounts/abi"
 	"github.com/ethereum/go-ethereum/common"
@@ -152,7 +152,7 @@ func (s *IntegrationTestSuite) TestCork() {
 
 		response, err := s.chain.sendMsgs(*clientCtx, proposalMsg)
 		s.Require().NoError(err)
-		s.Require().Zero(response.Code)
+		s.Require().Zero(response.Code, "raw log: %s", response.RawLog)
 
 		s.T().Logf("verify that contract exists in allowed addresses")
 		val := s.chain.validators[0]
