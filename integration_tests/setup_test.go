@@ -5,8 +5,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
-	corktypes "github.com/peggyjv/sommelier/v3/x/cork/types"
 	"math/big"
 	"os"
 	"path"
@@ -15,6 +13,9 @@ import (
 	"strings"
 	"testing"
 	"time"
+
+	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
+	corktypes "github.com/peggyjv/sommelier/v3/x/cork/types"
 
 	gravitytypes "github.com/peggyjv/gravity-bridge/module/x/gravity/types"
 

@@ -2,10 +2,11 @@ package integration_tests
 
 import (
 	"fmt"
-	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
-	corktypes "github.com/peggyjv/sommelier/v3/x/cork/types"
 	"io/ioutil"
 	"os"
+
+	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
+	corktypes "github.com/peggyjv/sommelier/v3/x/cork/types"
 
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"

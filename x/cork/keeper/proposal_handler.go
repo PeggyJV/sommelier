@@ -20,7 +20,7 @@ func HandleAddManagedCellarsProposal(ctx sdk.Context, k Keeper, p types.AddManag
 		IDMap[common.HexToAddress(cellarID)] = true
 	}
 
-	var ids []string
+	ids := make([]string, len(IDMap))
 	for key := range IDMap {
 		ids = append(ids, key.Hex())
 	}
