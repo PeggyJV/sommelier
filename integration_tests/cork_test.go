@@ -297,7 +297,7 @@ func (s *IntegrationTestSuite) TestCork() {
 			return true
 		}, 1*time.Minute, 5*time.Second, "count never updated")
 
-		s.T().Log("submit proposal removing cellar ID")
+		s.T().Log("create proposal removing cellar ID")
 		orch = s.chain.orchestrators[1]
 		clientCtx, err = s.chain.clientContext("tcp://localhost:26657", orch.keyring, "orch", orch.keyInfo.GetAddress())
 		s.Require().NoError(err)
@@ -320,7 +320,7 @@ func (s *IntegrationTestSuite) TestCork() {
 		)
 		s.Require().NoError(err, "unable to create removal governance proposal")
 
-		s.T().Log("submit proposal removing test cellar ID")
+		s.T().Log("submit proposal removing cellar ID")
 		submitRemoveProposalResponse, err := s.chain.sendMsgs(*clientCtx, removeProposalMsg)
 		s.Require().NoError(err)
 		s.Require().Zero(submitRemoveProposalResponse.Code, "raw log: %s", submitProposalResponse.RawLog)
@@ -361,6 +361,17 @@ func (s *IntegrationTestSuite) TestCork() {
 
 			return len(res.CellarIds) == 0
 		}, 10*time.Second, 2*time.Second, "address was never removed")
+
+		s.T().Logf("sending failing cork call")
+		orch = s.chain.orchestrators[0]
+		clientCtx, err = s.chain.clientContext("tcp://localhost:26657", orch.keyring, "orch", orch.keyInfo.GetAddress())
+		s.Require().NoError(err)
+
+		failingCorkMsg, err := types.NewMsgSubmitCorkRequest(ABIEncodedInc(), counterContract, orch.keyInfo.GetAddress())
+		s.Require().NoError(err, "unable to create cork msg")
+		failingCorkResponse, err := s.chain.sendMsgs(*clientCtx, failingCorkMsg)
+		s.Require().NoError(err)
+		s.Require().NotZero(failingCorkResponse.Code, "cork call didn't fail: %s", failingCorkResponse)
 
 	})
 }

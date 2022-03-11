@@ -7,8 +7,8 @@ import (
 )
 
 const (
-	ProposalTypeAddManagedCellars    = "AddManagedCellars"
-	ProposalTypeRemoveManagedCellars = "RemoveManagedCellars"
+	ProposalTypeAddManagedCellars    = "AddManagedCellarIDs"
+	ProposalTypeRemoveManagedCellars = "RemoveManagedCellarIDs"
 )
 
 var _ govtypes.Content = &AddManagedCellarsProposal{}
@@ -16,10 +16,10 @@ var _ govtypes.Content = &RemoveManagedCellarsProposal{}
 
 func init() {
 	govtypes.RegisterProposalType(ProposalTypeAddManagedCellars)
-	govtypes.RegisterProposalTypeCodec(&AddManagedCellarsProposal{}, "sommelier/AddManagedCellarsProposal")
+	govtypes.RegisterProposalTypeCodec(&AddManagedCellarsProposal{}, "sommelier/AddManagedCellarIDsProposal")
 
 	govtypes.RegisterProposalType(ProposalTypeRemoveManagedCellars)
-	govtypes.RegisterProposalTypeCodec(&RemoveManagedCellarsProposal{}, "sommelier/RemoveManagedCellarsProposal")
+	govtypes.RegisterProposalTypeCodec(&RemoveManagedCellarsProposal{}, "sommelier/RemoveManagedCellarIDsProposal")
 
 }
 
