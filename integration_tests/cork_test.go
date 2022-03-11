@@ -143,7 +143,7 @@ func (s *IntegrationTestSuite) TestCork() {
 			sdk.Coins{
 				{
 					Denom:  testDenom,
-					Amount: stakeAmount.Quo(sdk.NewInt(1000)),
+					Amount: stakeAmount.Quo(sdk.NewInt(2)),
 				},
 			},
 			orch.keyInfo.GetAddress(),
