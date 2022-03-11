@@ -1,6 +1,8 @@
 package keeper
 
 import (
+	"sort"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/peggyjv/sommelier/v3/x/cork/types"
@@ -18,11 +20,12 @@ func HandleAddManagedCellarsProposal(ctx sdk.Context, k Keeper, p types.AddManag
 		IDMap[common.HexToAddress(cellarID)] = true
 	}
 
-	var outputCellarIDs types.CellarIDSet
+	var ids []string
 	for key := range IDMap {
-		outputCellarIDs.Ids = append(outputCellarIDs.Ids, key.Hex())
+		ids = append(ids, key.Hex())
 	}
-	k.SetCellarIDs(ctx, outputCellarIDs)
+	sort.Strings(ids)
+	k.SetCellarIDs(ctx, types.CellarIDSet{Ids: ids})
 
 	return nil
 }
