@@ -162,11 +162,13 @@ func (s *IntegrationTestSuite) TestCork() {
 		s.Require().Equal(govtypes.StatusVotingPeriod, proposalsQueryResponse.Proposals[0].Status, "not proposal id 1")
 
 		s.T().Logf("vote for proposal allowing contract")
-		for _, orch := range s.chain.orchestrators {
-			clientCtx, err := s.chain.clientContext("tcp://localhost:26657", orch.keyring, "orch", orch.keyInfo.GetAddress())
+		for _, val := range s.chain.validators {
+			kr, err := val.keyring()
+			s.Require().NoError(err)
+			clientCtx, err := s.chain.clientContext("tcp://localhost:26657", &kr, "val", val.keyInfo.GetAddress())
 			s.Require().NoError(err)
 
-			voteMsg := govtypes.NewMsgVote(orch.keyInfo.GetAddress(), 1, govtypes.OptionYes)
+			voteMsg := govtypes.NewMsgVote(val.keyInfo.GetAddress(), 1, govtypes.OptionYes)
 			voteResponse, err := s.chain.sendMsgs(*clientCtx, voteMsg)
 			s.Require().NoError(err)
 			s.Require().Zero(voteResponse.Code, "vote error: %s", voteResponse.RawLog)
@@ -175,9 +177,10 @@ func (s *IntegrationTestSuite) TestCork() {
 		s.Require().Eventuallyf(func() bool {
 			proposalQueryResponse, err := govQueryClient.Proposal(context.Background(), &govtypes.QueryProposalRequest{ProposalId: 1})
 			s.Require().NoError(err)
-			s.T().Logf("proposal: %s", proposalQueryResponse.Proposal.String())
+			s.T().Logf("proposal status: %s", proposalQueryResponse.Proposal.Status)
+			s.T().Logf("proposal tally: %s", proposalQueryResponse.Proposal.FinalTallyResult.String())
 			return govtypes.StatusPassed == proposalQueryResponse.Proposal.Status
-		}, time.Second*30, time.Second*5, "proposal was never accepted")
+		}, time.Second*70, time.Second*5, "proposal was never accepted")
 
 		s.T().Logf("verify that contract exists in allowed addresses")
 		val := s.chain.validators[0]
