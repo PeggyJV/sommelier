@@ -301,9 +301,10 @@ func (s *IntegrationTestSuite) initGenesis() {
 
 	var govGenState govtypes.GenesisState
 	s.Require().NoError(cdc.UnmarshalJSON(appGenState[govtypes.ModuleName], &govGenState))
-	
+
 	// set 10-second voting period to allow gov proposals in tests
 	govGenState.VotingParams.VotingPeriod = time.Second * 10
+	govGenState.DepositParams.MinDeposit = sdk.Coins{{Denom: testDenom, Amount: sdk.OneInt()}}
 	bz, err = cdc.MarshalJSON(&govGenState)
 	s.Require().NoError(err)
 	appGenState[govtypes.ModuleName] = bz
@@ -377,9 +378,7 @@ func (s *IntegrationTestSuite) initGenesis() {
 
 	var corkGenState corktypes.GenesisState
 	s.Require().NoError(cdc.UnmarshalJSON(appGenState[corktypes.ModuleName], &corkGenState))
-	corkGenState.CellarIds = &corktypes.CellarIDSet{
-		Ids: []string{counterContract.Hex()},
-	}
+	corkGenState.CellarIds = &corktypes.CellarIDSet{}
 	bz, err = cdc.MarshalJSON(&corkGenState)
 	s.Require().NoError(err)
 	appGenState[corktypes.ModuleName] = bz

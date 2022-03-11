@@ -150,9 +150,34 @@ func (s *IntegrationTestSuite) TestCork() {
 		)
 		s.Require().NoError(err, "unable to create governance proposal")
 
-		response, err := s.chain.sendMsgs(*clientCtx, proposalMsg)
+		submitProposalResponse, err := s.chain.sendMsgs(*clientCtx, proposalMsg)
 		s.Require().NoError(err)
-		s.Require().Zero(response.Code, "raw log: %s", response.RawLog)
+		s.Require().Zero(submitProposalResponse.Code, "raw log: %s", submitProposalResponse.RawLog)
+
+		govQueryClient := govtypes.NewQueryClient(clientCtx)
+		proposalsQueryResponse, err := govQueryClient.Proposals(context.Background(), &govtypes.QueryProposalsRequest{})
+		s.Require().NoError(err)
+		s.Require().NotEmpty(proposalsQueryResponse.Proposals)
+		s.Require().Equal(uint64(1), proposalsQueryResponse.Proposals[0].ProposalId, "not proposal id 1")
+		s.Require().Equal(govtypes.StatusVotingPeriod, proposalsQueryResponse.Proposals[0].Status, "not proposal id 1")
+
+		s.T().Logf("vote for proposal allowing contract")
+		for _, orch := range s.chain.orchestrators {
+			clientCtx, err := s.chain.clientContext("tcp://localhost:26657", orch.keyring, "orch", orch.keyInfo.GetAddress())
+			s.Require().NoError(err)
+
+			voteMsg := govtypes.NewMsgVote(orch.keyInfo.GetAddress(), 1, govtypes.OptionYes)
+			voteResponse, err := s.chain.sendMsgs(*clientCtx, voteMsg)
+			s.Require().NoError(err)
+			s.Require().Zero(voteResponse.Code, "vote error: %s", voteResponse.RawLog)
+		}
+
+		s.Require().Eventuallyf(func() bool {
+			proposalQueryResponse, err := govQueryClient.Proposal(context.Background(), &govtypes.QueryProposalRequest{ProposalId: 1})
+			s.Require().NoError(err)
+			s.T().Logf("proposal: %s", proposalQueryResponse.Proposal.String())
+			return govtypes.StatusPassed == proposalQueryResponse.Proposal.Status
+		}, time.Second*30, time.Second*5, "proposal was never accepted")
 
 		s.T().Logf("verify that contract exists in allowed addresses")
 		val := s.chain.validators[0]
