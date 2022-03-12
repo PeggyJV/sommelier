@@ -360,7 +360,7 @@ func (s *IntegrationTestSuite) TestCork() {
 			}
 
 			return len(res.CellarIds) == 0
-		}, 10*time.Second, 2*time.Second, "address was never removed")
+		}, 30*time.Second, 5*time.Second, "address was never removed")
 
 		s.T().Logf("sending failing cork call")
 		orch = s.chain.orchestrators[0]
