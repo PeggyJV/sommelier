@@ -10,14 +10,16 @@ import (
 
 // HandleAddManagedCellarsProposal is a handler for executing a passed community cellar addition proposal
 func HandleAddManagedCellarsProposal(ctx sdk.Context, k Keeper, p types.AddManagedCellarsProposal) error {
-	var IDMap = make(map[common.Address]bool)
+	IDMap := make(map[common.Address]bool)
 
 	for _, existingID := range k.GetCellarIDs(ctx) {
 		IDMap[existingID] = true
 	}
 
 	for _, cellarID := range p.CellarIds.Ids {
-		IDMap[common.HexToAddress(cellarID)] = true
+		if cellarID != "" {
+			IDMap[common.HexToAddress(cellarID)] = true
+		}
 	}
 
 	ids := make([]string, len(IDMap))
