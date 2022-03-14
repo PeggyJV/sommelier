@@ -24,9 +24,9 @@ func HandleAddManagedCellarsProposal(ctx sdk.Context, k Keeper, p types.AddManag
 		}
 	}
 
-	var idStrings []string
-	for _, cid := range cellarIDs {
-		idStrings = append(idStrings, cid.String())
+	idStrings := make([]string, len(cellarIDs))
+	for i, cid := range cellarIDs {
+		idStrings[i] = cid.String()
 	}
 
 	sort.Strings(idStrings)
