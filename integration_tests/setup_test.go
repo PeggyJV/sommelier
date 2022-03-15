@@ -285,7 +285,7 @@ func (s *IntegrationTestSuite) initGenesis() {
 	var govGenState govtypes.GenesisState
 	s.Require().NoError(cdc.UnmarshalJSON(appGenState[govtypes.ModuleName], &govGenState))
 
-	// set 10-second voting period to allow gov proposals in tests
+	// set short voting period to allow gov proposals in tests
 	govGenState.VotingParams.VotingPeriod = time.Second * 20
 	govGenState.DepositParams.MinDeposit = sdk.Coins{{Denom: testDenom, Amount: sdk.OneInt()}}
 	bz, err = cdc.MarshalJSON(&govGenState)
