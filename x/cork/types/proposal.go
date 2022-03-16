@@ -7,18 +7,18 @@ import (
 )
 
 const (
-	ProposalTypeAddManagedCellars    = "AddManagedCellarIDs"
-	ProposalTypeRemoveManagedCellars = "RemoveManagedCellarIDs"
+	ProposalTypeAddManagedCellarIDs    = "AddManagedCellarIDs"
+	ProposalTypeRemoveManagedCellarIDs = "RemoveManagedCellarIDs"
 )
 
 var _ govtypes.Content = &AddManagedCellarsProposal{}
 var _ govtypes.Content = &RemoveManagedCellarsProposal{}
 
 func init() {
-	govtypes.RegisterProposalType(ProposalTypeAddManagedCellars)
+	govtypes.RegisterProposalType(ProposalTypeAddManagedCellarIDs)
 	govtypes.RegisterProposalTypeCodec(&AddManagedCellarsProposal{}, "sommelier/AddManagedCellarIDsProposal")
 
-	govtypes.RegisterProposalType(ProposalTypeRemoveManagedCellars)
+	govtypes.RegisterProposalType(ProposalTypeRemoveManagedCellarIDs)
 	govtypes.RegisterProposalTypeCodec(&RemoveManagedCellarsProposal{}, "sommelier/RemoveManagedCellarIDsProposal")
 
 }
@@ -36,7 +36,7 @@ func (m *AddManagedCellarsProposal) ProposalRoute() string {
 }
 
 func (m *AddManagedCellarsProposal) ProposalType() string {
-	return ProposalTypeAddManagedCellars
+	return ProposalTypeAddManagedCellarIDs
 }
 
 func (m *AddManagedCellarsProposal) ValidateBasic() error {
@@ -64,7 +64,7 @@ func (m *RemoveManagedCellarsProposal) ProposalRoute() string {
 }
 
 func (m *RemoveManagedCellarsProposal) ProposalType() string {
-	return ProposalTypeRemoveManagedCellars
+	return ProposalTypeRemoveManagedCellarIDs
 }
 
 func (m *RemoveManagedCellarsProposal) ValidateBasic() error {
