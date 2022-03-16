@@ -142,7 +142,7 @@ func (s *IntegrationTestSuite) TestCork() {
 		clientCtx, err = s.chain.clientContext("tcp://localhost:26657", orch.keyring, "orch", orch.keyInfo.GetAddress())
 		s.Require().NoError(err)
 
-		proposal := types.AddManagedCellarsProposal{
+		proposal := types.AddManagedCellarIDsProposal{
 			Title:       "add counter contract in test",
 			Description: "test description",
 			CellarIds: &types.CellarIDSet{
@@ -313,7 +313,7 @@ func (s *IntegrationTestSuite) TestCork() {
 		orch = s.chain.orchestrators[1]
 		clientCtx, err = s.chain.clientContext("tcp://localhost:26657", orch.keyring, "orch", orch.keyInfo.GetAddress())
 		s.Require().NoError(err)
-		removeProposal := types.RemoveManagedCellarsProposal{
+		removeProposal := types.RemoveManagedCellarIDsProposal{
 			Title:       "remove counter contract in test",
 			Description: "test description",
 			CellarIds: &types.CellarIDSet{

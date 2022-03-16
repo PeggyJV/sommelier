@@ -9,7 +9,7 @@ import (
 )
 
 // HandleAddManagedCellarsProposal is a handler for executing a passed community cellar addition proposal
-func HandleAddManagedCellarsProposal(ctx sdk.Context, k Keeper, p types.AddManagedCellarsProposal) error {
+func HandleAddManagedCellarsProposal(ctx sdk.Context, k Keeper, p types.AddManagedCellarIDsProposal) error {
 	cellarIDs := k.GetCellarIDs(ctx)
 
 	for _, proposedCellarID := range p.CellarIds.Ids {
@@ -36,7 +36,7 @@ func HandleAddManagedCellarsProposal(ctx sdk.Context, k Keeper, p types.AddManag
 }
 
 // HandleRemoveManagedCellarsProposal is a handler for executing a passed community cellar removal proposal
-func HandleRemoveManagedCellarsProposal(ctx sdk.Context, k Keeper, p types.RemoveManagedCellarsProposal) error {
+func HandleRemoveManagedCellarsProposal(ctx sdk.Context, k Keeper, p types.RemoveManagedCellarIDsProposal) error {
 	var outputCellarIDs types.CellarIDSet
 
 	for _, existingID := range k.GetCellarIDs(ctx) {

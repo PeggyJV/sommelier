@@ -11,35 +11,35 @@ const (
 	ProposalTypeRemoveManagedCellarIDs = "RemoveManagedCellarIDs"
 )
 
-var _ govtypes.Content = &AddManagedCellarsProposal{}
-var _ govtypes.Content = &RemoveManagedCellarsProposal{}
+var _ govtypes.Content = &AddManagedCellarIDsProposal{}
+var _ govtypes.Content = &RemoveManagedCellarIDsProposal{}
 
 func init() {
 	govtypes.RegisterProposalType(ProposalTypeAddManagedCellarIDs)
-	govtypes.RegisterProposalTypeCodec(&AddManagedCellarsProposal{}, "sommelier/AddManagedCellarIDsProposal")
+	govtypes.RegisterProposalTypeCodec(&AddManagedCellarIDsProposal{}, "sommelier/AddManagedCellarIDsProposal")
 
 	govtypes.RegisterProposalType(ProposalTypeRemoveManagedCellarIDs)
-	govtypes.RegisterProposalTypeCodec(&RemoveManagedCellarsProposal{}, "sommelier/RemoveManagedCellarIDsProposal")
+	govtypes.RegisterProposalTypeCodec(&RemoveManagedCellarIDsProposal{}, "sommelier/RemoveManagedCellarIDsProposal")
 
 }
 
-func NewAddManagedCellarsProposal(title string, description string, cellarIds []string) *AddManagedCellarsProposal {
-	return &AddManagedCellarsProposal{
+func NewAddManagedCellarIDsProposal(title string, description string, cellarIds []string) *AddManagedCellarIDsProposal {
+	return &AddManagedCellarIDsProposal{
 		Title:       title,
 		Description: description,
 		CellarIds:   &CellarIDSet{Ids: cellarIds},
 	}
 }
 
-func (m *AddManagedCellarsProposal) ProposalRoute() string {
+func (m *AddManagedCellarIDsProposal) ProposalRoute() string {
 	return RouterKey
 }
 
-func (m *AddManagedCellarsProposal) ProposalType() string {
+func (m *AddManagedCellarIDsProposal) ProposalType() string {
 	return ProposalTypeAddManagedCellarIDs
 }
 
-func (m *AddManagedCellarsProposal) ValidateBasic() error {
+func (m *AddManagedCellarIDsProposal) ValidateBasic() error {
 	if err := govtypes.ValidateAbstract(m); err != nil {
 		return err
 	}
@@ -51,23 +51,23 @@ func (m *AddManagedCellarsProposal) ValidateBasic() error {
 	return nil
 }
 
-func NewRemoveManagedCellarsProposal(title string, description string, cellarIds []string) *RemoveManagedCellarsProposal {
-	return &RemoveManagedCellarsProposal{
+func NewRemoveManagedCellarIDsProposal(title string, description string, cellarIds []string) *RemoveManagedCellarIDsProposal {
+	return &RemoveManagedCellarIDsProposal{
 		Title:       title,
 		Description: description,
 		CellarIds:   &CellarIDSet{Ids: cellarIds},
 	}
 }
 
-func (m *RemoveManagedCellarsProposal) ProposalRoute() string {
+func (m *RemoveManagedCellarIDsProposal) ProposalRoute() string {
 	return RouterKey
 }
 
-func (m *RemoveManagedCellarsProposal) ProposalType() string {
+func (m *RemoveManagedCellarIDsProposal) ProposalType() string {
 	return ProposalTypeRemoveManagedCellarIDs
 }
 
-func (m *RemoveManagedCellarsProposal) ValidateBasic() error {
+func (m *RemoveManagedCellarIDsProposal) ValidateBasic() error {
 	if err := govtypes.ValidateAbstract(m); err != nil {
 		return err
 	}

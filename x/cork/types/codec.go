@@ -15,8 +15,8 @@ func RegisterInterfaces(registry codectypes.InterfaceRegistry) {
 	)
 
 	registry.RegisterImplementations((*govtypes.Content)(nil),
-		&AddManagedCellarsProposal{},
-		&RemoveManagedCellarsProposal{},
+		&AddManagedCellarIDsProposal{},
+		&RemoveManagedCellarIDsProposal{},
 	)
 
 	msgservice.RegisterMsgServiceDesc(registry, &_Msg_serviceDesc)

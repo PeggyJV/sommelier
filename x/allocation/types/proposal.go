@@ -14,7 +14,7 @@ const (
 var _ govtypes.Content = &AddManagedCellarsProposal{}
 var _ govtypes.Content = &RemoveManagedCellarsProposal{}
 
-func NewAddManagedCellarsProposal(title string, description string, cellarIds []string) *AddManagedCellarsProposal {
+func NewAddManagedCellarIDsProposal(title string, description string, cellarIds []string) *AddManagedCellarsProposal {
 	return &AddManagedCellarsProposal{
 		Title:       title,
 		Description: description,
