@@ -126,7 +126,7 @@ func (s *IntegrationTestSuite) TestCork() {
 		s.Require().NoError(err)
 		s.Require().Equal(int64(0), count.Int64())
 
-		s.T().Log("verify that there are no allowed addresses on the new chain")
+		s.T().Log("verify that there is one allowed addresses on the new chain")
 		val := s.chain.validators[0]
 		kb, err := val.keyring()
 		s.Require().NoError(err)
@@ -135,7 +135,7 @@ func (s *IntegrationTestSuite) TestCork() {
 		queryClient := types.NewQueryClient(clientCtx)
 		res, err := queryClient.QueryCellarIDs(context.Background(), &types.QueryCellarIDsRequest{})
 		s.Require().NoError(err)
-		s.Require().Empty(res.CellarIds)
+		s.Require().Len(res.CellarIds, 1)
 
 		s.T().Logf("create governance proposal to add counter contract")
 		orch := s.chain.orchestrators[0]
@@ -368,10 +368,20 @@ func (s *IntegrationTestSuite) TestCork() {
 			queryClient := types.NewQueryClient(clientCtx)
 			res, err := queryClient.QueryCellarIDs(context.Background(), &types.QueryCellarIDsRequest{})
 			if err != nil {
+				s.T().Logf("error: %s", err)
 				return false
 			}
 
-			return len(res.CellarIds) == 0
+			found := false
+			for _, id := range res.CellarIds {
+				s.T().Logf("managed addresses: %v", res.CellarIds)
+				if common.HexToAddress(id) == counterContract {
+					found = true
+					break
+				}
+			}
+
+			return !found
 		}, 30*time.Second, 5*time.Second, "address was never removed")
 
 		s.T().Logf("sending failing cork call")
@@ -383,7 +393,6 @@ func (s *IntegrationTestSuite) TestCork() {
 		s.Require().NoError(err, "unable to create cork msg")
 		failingCorkResponse, err := s.chain.sendMsgs(*clientCtx, failingCorkMsg)
 		s.Require().NoError(err)
-		s.Require().NotZero(failingCorkResponse.Code, "cork call didn't fail: %s", failingCorkResponse)
-
+		s.Require().Equal(types.ErrUnmanagedCellarAddress, failingCorkResponse.Code, "cork call didn't fail: %s", failingCorkResponse)
 	})
 }

@@ -55,9 +55,11 @@ var (
 	stakeAmountCoin = sdk.NewCoin(testDenom, stakeAmount)
 
 	// todo(mvid): split these out into their respective tests
-	hardhatCellar   = common.HexToAddress("0x4C4a2f8c81640e47606d3fd77B353E87Ba015584")
-	gravityContract = common.HexToAddress("0x04C89607413713Ec9775E14b954286519d836FEf")
-	counterContract = common.HexToAddress("0x0000000000000000000000000000000000000000")
+	hardhatCellar         = common.HexToAddress("0x4C4a2f8c81640e47606d3fd77B353E87Ba015584")
+	gravityContract       = common.HexToAddress("0x04C89607413713Ec9775E14b954286519d836FEf")
+	counterContract       = common.HexToAddress("0x0000000000000000000000000000000000000000")
+	unusedGenesisContract = common.HexToAddress("0x0000000000000000000000000000000000000001")
+	unusedAddedContract   = common.HexToAddress("0x0000000000000000000000000000000000000002")
 )
 
 func MNEMONICS() []string {
@@ -361,7 +363,7 @@ func (s *IntegrationTestSuite) initGenesis() {
 
 	var corkGenState corktypes.GenesisState
 	s.Require().NoError(cdc.UnmarshalJSON(appGenState[corktypes.ModuleName], &corkGenState))
-	corkGenState.CellarIds = &corktypes.CellarIDSet{}
+	corkGenState.CellarIds = &corktypes.CellarIDSet{Ids: []string{unusedGenesisContract.String()}}
 	bz, err = cdc.MarshalJSON(&corkGenState)
 	s.Require().NoError(err)
 	appGenState[corktypes.ModuleName] = bz
