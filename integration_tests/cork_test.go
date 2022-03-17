@@ -146,7 +146,7 @@ func (s *IntegrationTestSuite) TestCork() {
 			Title:       "add counter contract in test",
 			Description: "test description",
 			CellarIds: &types.CellarIDSet{
-				Ids: []string{counterContract.Hex()},
+				Ids: []string{counterContract.Hex(), unusedAddedContract.Hex()},
 			},
 		}
 		proposalMsg, err := govtypes.NewMsgSubmitProposal(
@@ -393,6 +393,6 @@ func (s *IntegrationTestSuite) TestCork() {
 		s.Require().NoError(err, "unable to create cork msg")
 		failingCorkResponse, err := s.chain.sendMsgs(*clientCtx, failingCorkMsg)
 		s.Require().NoError(err)
-		s.Require().Equal(types.ErrUnmanagedCellarAddress, failingCorkResponse.Code, "cork call didn't fail: %s", failingCorkResponse)
+		s.Require().Equal(types.ErrUnmanagedCellarAddress.ABCICode(), failingCorkResponse.Code, "cork call didn't fail: %s", failingCorkResponse)
 	})
 }
