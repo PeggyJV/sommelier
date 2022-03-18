@@ -335,7 +335,7 @@ func (s *IntegrationTestSuite) TestCork() {
 		s.T().Log("submit proposal removing cellar ID")
 		submitRemoveProposalResponse, err := s.chain.sendMsgs(*clientCtx, removeProposalMsg)
 		s.Require().NoError(err)
-		s.Require().Zero(submitRemoveProposalResponse.Code, "raw log: %s", submitProposalResponse.RawLog)
+		s.Require().Zero(submitRemoveProposalResponse.Code, "raw log: %s", submitRemoveProposalResponse.RawLog)
 
 		s.T().Log("vote for proposal removing contract")
 		for _, val := range s.chain.validators {
