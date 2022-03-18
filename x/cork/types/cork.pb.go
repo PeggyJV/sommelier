@@ -122,22 +122,22 @@ func (m *CellarIDSet) GetIds() []string {
 	return nil
 }
 
-type AddManagedCellarsProposal struct {
+type AddManagedCellarIDsProposal struct {
 	Title       string       `protobuf:"bytes,1,opt,name=title,proto3" json:"title,omitempty"`
 	Description string       `protobuf:"bytes,2,opt,name=description,proto3" json:"description,omitempty"`
 	CellarIds   *CellarIDSet `protobuf:"bytes,3,opt,name=cellar_ids,json=cellarIds,proto3" json:"cellar_ids,omitempty"`
 }
 
-func (m *AddManagedCellarsProposal) Reset()         { *m = AddManagedCellarsProposal{} }
-func (m *AddManagedCellarsProposal) String() string { return proto.CompactTextString(m) }
-func (*AddManagedCellarsProposal) ProtoMessage()    {}
-func (*AddManagedCellarsProposal) Descriptor() ([]byte, []int) {
+func (m *AddManagedCellarIDsProposal) Reset()         { *m = AddManagedCellarIDsProposal{} }
+func (m *AddManagedCellarIDsProposal) String() string { return proto.CompactTextString(m) }
+func (*AddManagedCellarIDsProposal) ProtoMessage()    {}
+func (*AddManagedCellarIDsProposal) Descriptor() ([]byte, []int) {
 	return fileDescriptor_79882ab39b78d896, []int{2}
 }
-func (m *AddManagedCellarsProposal) XXX_Unmarshal(b []byte) error {
+func (m *AddManagedCellarIDsProposal) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *AddManagedCellarsProposal) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *AddManagedCellarIDsProposal) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
 		return xxx_messageInfo_AddManagedCellarsProposal.Marshal(b, m, deterministic)
 	} else {
@@ -149,55 +149,55 @@ func (m *AddManagedCellarsProposal) XXX_Marshal(b []byte, deterministic bool) ([
 		return b[:n], nil
 	}
 }
-func (m *AddManagedCellarsProposal) XXX_Merge(src proto.Message) {
+func (m *AddManagedCellarIDsProposal) XXX_Merge(src proto.Message) {
 	xxx_messageInfo_AddManagedCellarsProposal.Merge(m, src)
 }
-func (m *AddManagedCellarsProposal) XXX_Size() int {
+func (m *AddManagedCellarIDsProposal) XXX_Size() int {
 	return m.Size()
 }
-func (m *AddManagedCellarsProposal) XXX_DiscardUnknown() {
+func (m *AddManagedCellarIDsProposal) XXX_DiscardUnknown() {
 	xxx_messageInfo_AddManagedCellarsProposal.DiscardUnknown(m)
 }
 
 var xxx_messageInfo_AddManagedCellarsProposal proto.InternalMessageInfo
 
-func (m *AddManagedCellarsProposal) GetTitle() string {
+func (m *AddManagedCellarIDsProposal) GetTitle() string {
 	if m != nil {
 		return m.Title
 	}
 	return ""
 }
 
-func (m *AddManagedCellarsProposal) GetDescription() string {
+func (m *AddManagedCellarIDsProposal) GetDescription() string {
 	if m != nil {
 		return m.Description
 	}
 	return ""
 }
 
-func (m *AddManagedCellarsProposal) GetCellarIds() *CellarIDSet {
+func (m *AddManagedCellarIDsProposal) GetCellarIds() *CellarIDSet {
 	if m != nil {
 		return m.CellarIds
 	}
 	return nil
 }
 
-type RemoveManagedCellarsProposal struct {
+type RemoveManagedCellarIDsProposal struct {
 	Title       string       `protobuf:"bytes,1,opt,name=title,proto3" json:"title,omitempty"`
 	Description string       `protobuf:"bytes,2,opt,name=description,proto3" json:"description,omitempty"`
 	CellarIds   *CellarIDSet `protobuf:"bytes,3,opt,name=cellar_ids,json=cellarIds,proto3" json:"cellar_ids,omitempty"`
 }
 
-func (m *RemoveManagedCellarsProposal) Reset()         { *m = RemoveManagedCellarsProposal{} }
-func (m *RemoveManagedCellarsProposal) String() string { return proto.CompactTextString(m) }
-func (*RemoveManagedCellarsProposal) ProtoMessage()    {}
-func (*RemoveManagedCellarsProposal) Descriptor() ([]byte, []int) {
+func (m *RemoveManagedCellarIDsProposal) Reset()         { *m = RemoveManagedCellarIDsProposal{} }
+func (m *RemoveManagedCellarIDsProposal) String() string { return proto.CompactTextString(m) }
+func (*RemoveManagedCellarIDsProposal) ProtoMessage()    {}
+func (*RemoveManagedCellarIDsProposal) Descriptor() ([]byte, []int) {
 	return fileDescriptor_79882ab39b78d896, []int{3}
 }
-func (m *RemoveManagedCellarsProposal) XXX_Unmarshal(b []byte) error {
+func (m *RemoveManagedCellarIDsProposal) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *RemoveManagedCellarsProposal) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *RemoveManagedCellarIDsProposal) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
 		return xxx_messageInfo_RemoveManagedCellarsProposal.Marshal(b, m, deterministic)
 	} else {
@@ -209,33 +209,33 @@ func (m *RemoveManagedCellarsProposal) XXX_Marshal(b []byte, deterministic bool)
 		return b[:n], nil
 	}
 }
-func (m *RemoveManagedCellarsProposal) XXX_Merge(src proto.Message) {
+func (m *RemoveManagedCellarIDsProposal) XXX_Merge(src proto.Message) {
 	xxx_messageInfo_RemoveManagedCellarsProposal.Merge(m, src)
 }
-func (m *RemoveManagedCellarsProposal) XXX_Size() int {
+func (m *RemoveManagedCellarIDsProposal) XXX_Size() int {
 	return m.Size()
 }
-func (m *RemoveManagedCellarsProposal) XXX_DiscardUnknown() {
+func (m *RemoveManagedCellarIDsProposal) XXX_DiscardUnknown() {
 	xxx_messageInfo_RemoveManagedCellarsProposal.DiscardUnknown(m)
 }
 
 var xxx_messageInfo_RemoveManagedCellarsProposal proto.InternalMessageInfo
 
-func (m *RemoveManagedCellarsProposal) GetTitle() string {
+func (m *RemoveManagedCellarIDsProposal) GetTitle() string {
 	if m != nil {
 		return m.Title
 	}
 	return ""
 }
 
-func (m *RemoveManagedCellarsProposal) GetDescription() string {
+func (m *RemoveManagedCellarIDsProposal) GetDescription() string {
 	if m != nil {
 		return m.Description
 	}
 	return ""
 }
 
-func (m *RemoveManagedCellarsProposal) GetCellarIds() *CellarIDSet {
+func (m *RemoveManagedCellarIDsProposal) GetCellarIds() *CellarIDSet {
 	if m != nil {
 		return m.CellarIds
 	}
@@ -245,8 +245,8 @@ func (m *RemoveManagedCellarsProposal) GetCellarIds() *CellarIDSet {
 func init() {
 	proto.RegisterType((*Cork)(nil), "cork.v1.Cork")
 	proto.RegisterType((*CellarIDSet)(nil), "cork.v1.CellarIDSet")
-	proto.RegisterType((*AddManagedCellarsProposal)(nil), "cork.v1.AddManagedCellarsProposal")
-	proto.RegisterType((*RemoveManagedCellarsProposal)(nil), "cork.v1.RemoveManagedCellarsProposal")
+	proto.RegisterType((*AddManagedCellarIDsProposal)(nil), "cork.v1.AddManagedCellarIDsProposal")
+	proto.RegisterType((*RemoveManagedCellarIDsProposal)(nil), "cork.v1.RemoveManagedCellarIDsProposal")
 }
 
 func init() { proto.RegisterFile("cork/v1/cork.proto", fileDescriptor_79882ab39b78d896) }
@@ -346,7 +346,7 @@ func (m *CellarIDSet) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 
-func (m *AddManagedCellarsProposal) Marshal() (dAtA []byte, err error) {
+func (m *AddManagedCellarIDsProposal) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -356,12 +356,12 @@ func (m *AddManagedCellarsProposal) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *AddManagedCellarsProposal) MarshalTo(dAtA []byte) (int, error) {
+func (m *AddManagedCellarIDsProposal) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *AddManagedCellarsProposal) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *AddManagedCellarIDsProposal) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -395,7 +395,7 @@ func (m *AddManagedCellarsProposal) MarshalToSizedBuffer(dAtA []byte) (int, erro
 	return len(dAtA) - i, nil
 }
 
-func (m *RemoveManagedCellarsProposal) Marshal() (dAtA []byte, err error) {
+func (m *RemoveManagedCellarIDsProposal) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -405,12 +405,12 @@ func (m *RemoveManagedCellarsProposal) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *RemoveManagedCellarsProposal) MarshalTo(dAtA []byte) (int, error) {
+func (m *RemoveManagedCellarIDsProposal) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *RemoveManagedCellarsProposal) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *RemoveManagedCellarIDsProposal) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -487,7 +487,7 @@ func (m *CellarIDSet) Size() (n int) {
 	return n
 }
 
-func (m *AddManagedCellarsProposal) Size() (n int) {
+func (m *AddManagedCellarIDsProposal) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -508,7 +508,7 @@ func (m *AddManagedCellarsProposal) Size() (n int) {
 	return n
 }
 
-func (m *RemoveManagedCellarsProposal) Size() (n int) {
+func (m *RemoveManagedCellarIDsProposal) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -733,7 +733,7 @@ func (m *CellarIDSet) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *AddManagedCellarsProposal) Unmarshal(dAtA []byte) error {
+func (m *AddManagedCellarIDsProposal) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -756,10 +756,10 @@ func (m *AddManagedCellarsProposal) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: AddManagedCellarsProposal: wiretype end group for non-group")
+			return fmt.Errorf("proto: AddManagedCellarIDsProposal: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: AddManagedCellarsProposal: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: AddManagedCellarIDsProposal: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
@@ -883,7 +883,7 @@ func (m *AddManagedCellarsProposal) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *RemoveManagedCellarsProposal) Unmarshal(dAtA []byte) error {
+func (m *RemoveManagedCellarIDsProposal) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -906,10 +906,10 @@ func (m *RemoveManagedCellarsProposal) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: RemoveManagedCellarsProposal: wiretype end group for non-group")
+			return fmt.Errorf("proto: RemoveManagedCellarIDsProposal: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: RemoveManagedCellarsProposal: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: RemoveManagedCellarIDsProposal: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:

@@ -5,6 +5,9 @@ import (
 	"io/ioutil"
 	"os"
 
+	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
+	corktypes "github.com/peggyjv/sommelier/v3/x/cork/types"
+
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/client/tx"
@@ -200,6 +203,10 @@ func (c *chain) clientContext(nodeURI string, kb *keyring.Keyring, fromName stri
 		&gravitytypes.MsgDelegateKeys{},
 		&types.MsgAllocationCommit{},
 		&types.MsgAllocationPrecommit{},
+	)
+	interfaceRegistry.RegisterImplementations((*govtypes.Content)(nil),
+		&corktypes.AddManagedCellarIDsProposal{},
+		&corktypes.RemoveManagedCellarIDsProposal{},
 	)
 	interfaceRegistry.RegisterImplementations((*cryptotypes.PubKey)(nil), &secp256k1.PubKey{}, &ed25519.PubKey{})
 

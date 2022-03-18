@@ -45,10 +45,10 @@
     - [Query](#allocation.v1.Query)
   
 - [cork/v1/cork.proto](#cork/v1/cork.proto)
-    - [AddManagedCellarsProposal](#cork.v1.AddManagedCellarsProposal)
+    - [AddManagedCellarIDsProposal](#cork.v1.AddManagedCellarIDsProposal)
     - [CellarIDSet](#cork.v1.CellarIDSet)
     - [Cork](#cork.v1.Cork)
-    - [RemoveManagedCellarsProposal](#cork.v1.RemoveManagedCellarsProposal)
+    - [RemoveManagedCellarIDsProposal](#cork.v1.RemoveManagedCellarIDsProposal)
   
 - [cork/v1/tx.proto](#cork/v1/tx.proto)
     - [MsgSubmitCorkRequest](#cork.v1.MsgSubmitCorkRequest)
@@ -581,9 +581,9 @@ Query defines the gRPC querier service for the allocation module.
 
 
 
-<a name="cork.v1.AddManagedCellarsProposal"></a>
+<a name="cork.v1.AddManagedCellarIDsProposal"></a>
 
-### AddManagedCellarsProposal
+### AddManagedCellarIDsProposal
 
 
 
@@ -629,9 +629,9 @@ MsgSubmitCorkRequest - sdk.Msg for submitting calls to Ethereum through the grav
 
 
 
-<a name="cork.v1.RemoveManagedCellarsProposal"></a>
+<a name="cork.v1.RemoveManagedCellarIDsProposal"></a>
 
-### RemoveManagedCellarsProposal
+### RemoveManagedCellarIDsProposal
 
 
 

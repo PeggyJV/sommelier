@@ -27,9 +27,9 @@ func NewHandler(k keeper.Keeper) sdk.Handler {
 func NewUpdateCellarIDsProposalHandler(k keeper.Keeper) govtypes.Handler {
 	return func(ctx sdk.Context, content govtypes.Content) error {
 		switch c := content.(type) {
-		case *types.AddManagedCellarsProposal:
+		case *types.AddManagedCellarIDsProposal:
 			return keeper.HandleAddManagedCellarsProposal(ctx, k, *c)
-		case *types.RemoveManagedCellarsProposal:
+		case *types.RemoveManagedCellarIDsProposal:
 			return keeper.HandleRemoveManagedCellarsProposal(ctx, k, *c)
 
 		default:

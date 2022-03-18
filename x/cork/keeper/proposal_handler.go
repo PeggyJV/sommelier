@@ -1,34 +1,42 @@
 package keeper
 
 import (
+	"sort"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/peggyjv/sommelier/v3/x/cork/types"
 )
 
 // HandleAddManagedCellarsProposal is a handler for executing a passed community cellar addition proposal
-func HandleAddManagedCellarsProposal(ctx sdk.Context, k Keeper, p types.AddManagedCellarsProposal) error {
-	var IDMap map[common.Address]bool
+func HandleAddManagedCellarsProposal(ctx sdk.Context, k Keeper, p types.AddManagedCellarIDsProposal) error {
+	cellarIDs := k.GetCellarIDs(ctx)
 
-	for _, existingID := range k.GetCellarIDs(ctx) {
-		IDMap[existingID] = true
+	for _, proposedCellarID := range p.CellarIds.Ids {
+		found := false
+		for _, id := range cellarIDs {
+			if id == common.HexToAddress(proposedCellarID) {
+				found = true
+			}
+		}
+		if !found {
+			cellarIDs = append(cellarIDs, common.HexToAddress(proposedCellarID))
+		}
 	}
 
-	for _, cellarID := range p.CellarIds.Ids {
-		IDMap[common.HexToAddress(cellarID)] = true
+	idStrings := make([]string, len(cellarIDs))
+	for i, cid := range cellarIDs {
+		idStrings[i] = cid.String()
 	}
 
-	var outputCellarIDs types.CellarIDSet
-	for key := range IDMap {
-		outputCellarIDs.Ids = append(outputCellarIDs.Ids, key.Hex())
-	}
-	k.SetCellarIDs(ctx, outputCellarIDs)
+	sort.Strings(idStrings)
+	k.SetCellarIDs(ctx, types.CellarIDSet{Ids: idStrings})
 
 	return nil
 }
 
 // HandleRemoveManagedCellarsProposal is a handler for executing a passed community cellar removal proposal
-func HandleRemoveManagedCellarsProposal(ctx sdk.Context, k Keeper, p types.RemoveManagedCellarsProposal) error {
+func HandleRemoveManagedCellarsProposal(ctx sdk.Context, k Keeper, p types.RemoveManagedCellarIDsProposal) error {
 	var outputCellarIDs types.CellarIDSet
 
 	for _, existingID := range k.GetCellarIDs(ctx) {

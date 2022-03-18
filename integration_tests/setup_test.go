@@ -5,7 +5,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	corktypes "github.com/peggyjv/sommelier/v3/x/cork/types"
 	"math/big"
 	"os"
 	"path"
@@ -14,6 +13,9 @@ import (
 	"strings"
 	"testing"
 	"time"
+
+	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
+	corktypes "github.com/peggyjv/sommelier/v3/x/cork/types"
 
 	gravitytypes "github.com/peggyjv/gravity-bridge/module/x/gravity/types"
 
@@ -43,10 +45,21 @@ import (
 
 const (
 	testDenom           = "testsomm"
-	initBalanceStr      = "110000000000utestsomm,100000000000testsomm"
+	initBalanceStr      = "110000000000testsomm"
 	minGasPrice         = "2"
 	ethChainID     uint = 15
-	bondDenom           = "utestsomm"
+)
+
+var (
+	stakeAmount, _  = sdk.NewIntFromString("100000000000")
+	stakeAmountCoin = sdk.NewCoin(testDenom, stakeAmount)
+
+	// todo(mvid): split these out into their respective tests
+	hardhatCellar         = common.HexToAddress("0x4C4a2f8c81640e47606d3fd77B353E87Ba015584")
+	gravityContract       = common.HexToAddress("0x04C89607413713Ec9775E14b954286519d836FEf")
+	counterContract       = common.HexToAddress("0x0000000000000000000000000000000000000000")
+	unusedGenesisContract = common.HexToAddress("0x0000000000000000000000000000000000000001")
+	unusedAddedContract   = common.HexToAddress("0x0000000000000000000000000000000000000002")
 )
 
 func MNEMONICS() []string {
@@ -57,16 +70,6 @@ func MNEMONICS() []string {
 		"say monitor orient heart super local purse cricket caution primary bring insane road expect rather help two extend own execute throw nation plunge subject",
 	}
 }
-
-var (
-	stakeAmount, _  = sdk.NewIntFromString("100000000000")
-	stakeAmountCoin = sdk.NewCoin(bondDenom, stakeAmount)
-
-	// todo(mvid): split these out into their respective tests
-	hardhatCellar   = common.HexToAddress("0x4C4a2f8c81640e47606d3fd77B353E87Ba015584")
-	gravityContract = common.HexToAddress("0x04C89607413713Ec9775E14b954286519d836FEf")
-	counterContract = common.HexToAddress("0x0000000000000000000000000000000000000000")
-)
 
 type IntegrationTestSuite struct {
 	suite.Suite
@@ -266,26 +269,9 @@ func (s *IntegrationTestSuite) initGenesis() {
 
 	bankGenState.DenomMetadata = append(bankGenState.DenomMetadata, banktypes.Metadata{
 		Description: "The native staking token of the test somm network",
-		Display:     "testsomm",
-		Base:        bondDenom,
-		DenomUnits: []*banktypes.DenomUnit{
-			{
-				Denom:    bondDenom,
-				Exponent: 0,
-				Aliases: []string{
-					"tsomm",
-				},
-			},
-			{
-				Denom:    "testsomm",
-				Exponent: 6,
-			},
-		},
-	})
-	bankGenState.DenomMetadata = append(bankGenState.DenomMetadata, banktypes.Metadata{
-		Description: "An example stable token",
 		Display:     testDenom,
 		Base:        testDenom,
+		Name:        testDenom,
 		DenomUnits: []*banktypes.DenomUnit{
 			{
 				Denom:    testDenom,
@@ -298,10 +284,20 @@ func (s *IntegrationTestSuite) initGenesis() {
 	s.Require().NoError(err)
 	appGenState[banktypes.ModuleName] = bz
 
+	var govGenState govtypes.GenesisState
+	s.Require().NoError(cdc.UnmarshalJSON(appGenState[govtypes.ModuleName], &govGenState))
+
+	// set short voting period to allow gov proposals in tests
+	govGenState.VotingParams.VotingPeriod = time.Second * 20
+	govGenState.DepositParams.MinDeposit = sdk.Coins{{Denom: testDenom, Amount: sdk.OneInt()}}
+	bz, err = cdc.MarshalJSON(&govGenState)
+	s.Require().NoError(err)
+	appGenState[govtypes.ModuleName] = bz
+
 	// set crisis denom
 	var crisisGenState crisistypes.GenesisState
 	s.Require().NoError(cdc.UnmarshalJSON(appGenState[crisistypes.ModuleName], &crisisGenState))
-	crisisGenState.ConstantFee.Denom = bondDenom
+	crisisGenState.ConstantFee.Denom = testDenom
 	bz, err = cdc.MarshalJSON(&crisisGenState)
 	s.Require().NoError(err)
 	appGenState[crisistypes.ModuleName] = bz
@@ -309,7 +305,7 @@ func (s *IntegrationTestSuite) initGenesis() {
 	// set staking bond denom
 	var stakingGenState stakingtypes.GenesisState
 	s.Require().NoError(cdc.UnmarshalJSON(appGenState[stakingtypes.ModuleName], &stakingGenState))
-	stakingGenState.Params.BondDenom = bondDenom
+	stakingGenState.Params.BondDenom = testDenom
 	bz, err = cdc.MarshalJSON(&stakingGenState)
 	s.Require().NoError(err)
 	appGenState[stakingtypes.ModuleName] = bz
@@ -317,7 +313,7 @@ func (s *IntegrationTestSuite) initGenesis() {
 	// set mint denom
 	var mintGenState minttypes.GenesisState
 	s.Require().NoError(cdc.UnmarshalJSON(appGenState[minttypes.ModuleName], &mintGenState))
-	mintGenState.Params.MintDenom = bondDenom
+	mintGenState.Params.MintDenom = testDenom
 	bz, err = cdc.MarshalJSON(&mintGenState)
 	s.Require().NoError(err)
 	appGenState[minttypes.ModuleName] = bz
@@ -367,9 +363,7 @@ func (s *IntegrationTestSuite) initGenesis() {
 
 	var corkGenState corktypes.GenesisState
 	s.Require().NoError(cdc.UnmarshalJSON(appGenState[corktypes.ModuleName], &corkGenState))
-	corkGenState.CellarIds = &corktypes.CellarIDSet{
-		Ids: []string{counterContract.Hex()},
-	}
+	corkGenState.CellarIds = &corktypes.CellarIDSet{Ids: []string{unusedGenesisContract.String()}}
 	bz, err = cdc.MarshalJSON(&corkGenState)
 	s.Require().NoError(err)
 	appGenState[corktypes.ModuleName] = bz
