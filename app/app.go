@@ -90,6 +90,9 @@ import (
 	"github.com/peggyjv/sommelier/v3/x/allocation"
 	allocationkeeper "github.com/peggyjv/sommelier/v3/x/allocation/keeper"
 	allocationtypes "github.com/peggyjv/sommelier/v3/x/allocation/types"
+	"github.com/peggyjv/sommelier/v3/x/cellarfees"
+	cellarfeeskeeper "github.com/peggyjv/sommelier/v3/x/cellarfees/keeper"
+	cellarfeestypes "github.com/peggyjv/sommelier/v3/x/cellarfees/types"
 	"github.com/peggyjv/sommelier/v3/x/cork"
 	corkkeeper "github.com/peggyjv/sommelier/v3/x/cork/keeper"
 	corktypes "github.com/peggyjv/sommelier/v3/x/cork/types"
@@ -146,6 +149,7 @@ var (
 		gravity.AppModuleBasic{},
 		allocation.AppModuleBasic{},
 		cork.AppModuleBasic{},
+		cellarfees.AppModuleBasic{},
 	)
 
 	// module account permissions
@@ -158,6 +162,7 @@ var (
 		govtypes.ModuleName:            {authtypes.Burner},
 		ibctransfertypes.ModuleName:    {authtypes.Minter, authtypes.Burner},
 		gravitytypes.ModuleName:        {authtypes.Minter, authtypes.Burner},
+		cellarfeestypes.ModuleName:     nil,
 	}
 
 	// module accounts that are allowed to receive tokens
@@ -207,6 +212,7 @@ type SommelierApp struct {
 	// Sommelier keepers
 	AllocationKeeper allocationkeeper.Keeper
 	CorkKeeper       corkkeeper.Keeper
+	CellarFeesKeeper cellarfeeskeeper.Keeper
 
 	// make capability scoped keepers public for test purposes (IBC only)
 	ScopedIBCKeeper      capabilitykeeper.ScopedKeeper
@@ -364,6 +370,10 @@ func NewSommelierApp(
 		app.StakingKeeper, app.GravityKeeper,
 	)
 
+	app.CellarFeesKeeper = cellarfeeskeeper.NewKeeper(
+		appCodec, keys[cellarfeestypes.StoreKey], app.GetSubspace(cellarfeestypes.ModuleName),
+	)
+
 	app.GravityKeeper = *app.GravityKeeper.SetHooks(
 		gravitytypes.NewMultiGravityHooks(
 			app.AllocationKeeper.Hooks(),
@@ -421,6 +431,7 @@ func NewSommelierApp(
 		authzmodule.NewAppModule(appCodec, app.AuthzKeeper, app.AccountKeeper, app.BankKeeper, app.interfaceRegistry),
 		allocation.NewAppModule(app.AllocationKeeper, appCodec),
 		cork.NewAppModule(app.CorkKeeper, appCodec),
+		cellarfees.NewAppModule(app.CellarFeesKeeper, appCodec),
 	)
 
 	// During begin block slashing happens after distr.BeginBlocker so that
@@ -432,13 +443,13 @@ func NewSommelierApp(
 		upgradetypes.ModuleName, capabilitytypes.ModuleName, minttypes.ModuleName, distrtypes.ModuleName, slashingtypes.ModuleName,
 		evidencetypes.ModuleName, stakingtypes.ModuleName, ibchost.ModuleName, ibctransfertypes.ModuleName, authtypes.ModuleName,
 		banktypes.ModuleName, govtypes.ModuleName, crisistypes.ModuleName, genutiltypes.ModuleName, authz.ModuleName, feegrant.ModuleName,
-		paramstypes.ModuleName, gravitytypes.ModuleName, allocationtypes.ModuleName, corktypes.ModuleName,
+		paramstypes.ModuleName, gravitytypes.ModuleName, allocationtypes.ModuleName, corktypes.ModuleName, cellarfeestypes.ModuleName,
 	)
 	app.mm.SetOrderEndBlockers(
 		crisistypes.ModuleName, govtypes.ModuleName, stakingtypes.ModuleName, ibchost.ModuleName, ibctransfertypes.ModuleName,
 		capabilitytypes.ModuleName, authtypes.ModuleName, banktypes.ModuleName, distrtypes.ModuleName, slashingtypes.ModuleName,
 		minttypes.ModuleName, genutiltypes.ModuleName, evidencetypes.ModuleName, authz.ModuleName, feegrant.ModuleName, paramstypes.ModuleName,
-		upgradetypes.ModuleName, gravitytypes.ModuleName, allocationtypes.ModuleName, corktypes.ModuleName,
+		upgradetypes.ModuleName, gravitytypes.ModuleName, allocationtypes.ModuleName, corktypes.ModuleName, cellarfeestypes.ModuleName,
 	)
 
 	// NOTE: The genutils module must occur after staking so that pools are
@@ -451,7 +462,7 @@ func NewSommelierApp(
 		stakingtypes.ModuleName, slashingtypes.ModuleName, govtypes.ModuleName, minttypes.ModuleName,
 		crisistypes.ModuleName, ibchost.ModuleName, genutiltypes.ModuleName, evidencetypes.ModuleName,
 		ibctransfertypes.ModuleName, gravitytypes.ModuleName, authz.ModuleName,
-		feegrant.ModuleName, allocationtypes.ModuleName, corktypes.ModuleName,
+		feegrant.ModuleName, allocationtypes.ModuleName, corktypes.ModuleName, cellarfeestypes.ModuleName,
 	)
 
 	app.mm.RegisterInvariants(&app.CrisisKeeper)
@@ -479,6 +490,7 @@ func NewSommelierApp(
 		authzmodule.NewAppModule(appCodec, app.AuthzKeeper, app.AccountKeeper, app.BankKeeper, app.interfaceRegistry),
 		allocation.NewAppModule(app.AllocationKeeper, appCodec),
 		cork.NewAppModule(app.CorkKeeper, appCodec),
+		cellarfees.NewAppModule(app.CellarFeesKeeper, appCodec),
 	)
 
 	app.sm.RegisterStoreDecoders()
@@ -703,6 +715,7 @@ func initParamsKeeper(appCodec codec.BinaryCodec, legacyAmino *codec.LegacyAmino
 	paramsKeeper.Subspace(gravitytypes.ModuleName)
 	paramsKeeper.Subspace(allocationtypes.ModuleName)
 	paramsKeeper.Subspace(corktypes.ModuleName)
+	paramsKeeper.Subspace(cellarfeestypes.ModuleName)
 
 	return paramsKeeper
 }
