@@ -4,7 +4,6 @@ import (
 	"context"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	"github.com/peggyjv/sommelier/v3/x/cellarfees/types"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -28,6 +27,6 @@ func (k Keeper) ModuleAccounts(c context.Context, req *types.QueryModuleAccounts
 	}
 
 	return &types.QueryModuleAccountsResponse{
-		FeesAddress: authtypes.NewModuleAddress(types.ModuleName).String(),
+		FeesAddress: k.GetFeesAccount(sdk.UnwrapSDKContext(c)).String(),
 	}, nil
 }
