@@ -78,6 +78,69 @@ func (m *Cork) GetTargetContractAddress() string {
 	return ""
 }
 
+type ScheduledCork struct {
+	// the cork call to be scheduled
+	Cork *Cork `protobuf:"bytes,1,opt,name=cork,proto3" json:"cork,omitempty"`
+	// the cosmos block height that must be reached before the cork is executed
+	BlockHeight uint64 `protobuf:"varint,2,opt,name=block_height,json=blockHeight,proto3" json:"block_height,omitempty"`
+	// the validator address that submitted the scheduled cork
+	Signer string `protobuf:"bytes,3,opt,name=signer,proto3" json:"signer,omitempty"`
+}
+
+func (m *ScheduledCork) Reset()         { *m = ScheduledCork{} }
+func (m *ScheduledCork) String() string { return proto.CompactTextString(m) }
+func (*ScheduledCork) ProtoMessage()    {}
+func (*ScheduledCork) Descriptor() ([]byte, []int) {
+	return fileDescriptor_79882ab39b78d896, []int{1}
+}
+func (m *ScheduledCork) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *ScheduledCork) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_ScheduledCork.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *ScheduledCork) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_ScheduledCork.Merge(m, src)
+}
+func (m *ScheduledCork) XXX_Size() int {
+	return m.Size()
+}
+func (m *ScheduledCork) XXX_DiscardUnknown() {
+	xxx_messageInfo_ScheduledCork.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_ScheduledCork proto.InternalMessageInfo
+
+func (m *ScheduledCork) GetCork() *Cork {
+	if m != nil {
+		return m.Cork
+	}
+	return nil
+}
+
+func (m *ScheduledCork) GetBlockHeight() uint64 {
+	if m != nil {
+		return m.BlockHeight
+	}
+	return 0
+}
+
+func (m *ScheduledCork) GetSigner() string {
+	if m != nil {
+		return m.Signer
+	}
+	return ""
+}
+
 type CellarIDSet struct {
 	Ids []string `protobuf:"bytes,1,rep,name=ids,proto3" json:"ids,omitempty"`
 }
@@ -86,7 +149,7 @@ func (m *CellarIDSet) Reset()         { *m = CellarIDSet{} }
 func (m *CellarIDSet) String() string { return proto.CompactTextString(m) }
 func (*CellarIDSet) ProtoMessage()    {}
 func (*CellarIDSet) Descriptor() ([]byte, []int) {
-	return fileDescriptor_79882ab39b78d896, []int{1}
+	return fileDescriptor_79882ab39b78d896, []int{2}
 }
 func (m *CellarIDSet) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -132,14 +195,14 @@ func (m *AddManagedCellarIDsProposal) Reset()         { *m = AddManagedCellarIDs
 func (m *AddManagedCellarIDsProposal) String() string { return proto.CompactTextString(m) }
 func (*AddManagedCellarIDsProposal) ProtoMessage()    {}
 func (*AddManagedCellarIDsProposal) Descriptor() ([]byte, []int) {
-	return fileDescriptor_79882ab39b78d896, []int{2}
+	return fileDescriptor_79882ab39b78d896, []int{3}
 }
 func (m *AddManagedCellarIDsProposal) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
 func (m *AddManagedCellarIDsProposal) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_AddManagedCellarsProposal.Marshal(b, m, deterministic)
+		return xxx_messageInfo_AddManagedCellarIDsProposal.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -150,16 +213,16 @@ func (m *AddManagedCellarIDsProposal) XXX_Marshal(b []byte, deterministic bool) 
 	}
 }
 func (m *AddManagedCellarIDsProposal) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_AddManagedCellarsProposal.Merge(m, src)
+	xxx_messageInfo_AddManagedCellarIDsProposal.Merge(m, src)
 }
 func (m *AddManagedCellarIDsProposal) XXX_Size() int {
 	return m.Size()
 }
 func (m *AddManagedCellarIDsProposal) XXX_DiscardUnknown() {
-	xxx_messageInfo_AddManagedCellarsProposal.DiscardUnknown(m)
+	xxx_messageInfo_AddManagedCellarIDsProposal.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_AddManagedCellarsProposal proto.InternalMessageInfo
+var xxx_messageInfo_AddManagedCellarIDsProposal proto.InternalMessageInfo
 
 func (m *AddManagedCellarIDsProposal) GetTitle() string {
 	if m != nil {
@@ -192,14 +255,14 @@ func (m *RemoveManagedCellarIDsProposal) Reset()         { *m = RemoveManagedCel
 func (m *RemoveManagedCellarIDsProposal) String() string { return proto.CompactTextString(m) }
 func (*RemoveManagedCellarIDsProposal) ProtoMessage()    {}
 func (*RemoveManagedCellarIDsProposal) Descriptor() ([]byte, []int) {
-	return fileDescriptor_79882ab39b78d896, []int{3}
+	return fileDescriptor_79882ab39b78d896, []int{4}
 }
 func (m *RemoveManagedCellarIDsProposal) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
 func (m *RemoveManagedCellarIDsProposal) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_RemoveManagedCellarsProposal.Marshal(b, m, deterministic)
+		return xxx_messageInfo_RemoveManagedCellarIDsProposal.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -210,16 +273,16 @@ func (m *RemoveManagedCellarIDsProposal) XXX_Marshal(b []byte, deterministic boo
 	}
 }
 func (m *RemoveManagedCellarIDsProposal) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_RemoveManagedCellarsProposal.Merge(m, src)
+	xxx_messageInfo_RemoveManagedCellarIDsProposal.Merge(m, src)
 }
 func (m *RemoveManagedCellarIDsProposal) XXX_Size() int {
 	return m.Size()
 }
 func (m *RemoveManagedCellarIDsProposal) XXX_DiscardUnknown() {
-	xxx_messageInfo_RemoveManagedCellarsProposal.DiscardUnknown(m)
+	xxx_messageInfo_RemoveManagedCellarIDsProposal.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_RemoveManagedCellarsProposal proto.InternalMessageInfo
+var xxx_messageInfo_RemoveManagedCellarIDsProposal proto.InternalMessageInfo
 
 func (m *RemoveManagedCellarIDsProposal) GetTitle() string {
 	if m != nil {
@@ -244,6 +307,7 @@ func (m *RemoveManagedCellarIDsProposal) GetCellarIds() *CellarIDSet {
 
 func init() {
 	proto.RegisterType((*Cork)(nil), "cork.v1.Cork")
+	proto.RegisterType((*ScheduledCork)(nil), "cork.v1.ScheduledCork")
 	proto.RegisterType((*CellarIDSet)(nil), "cork.v1.CellarIDSet")
 	proto.RegisterType((*AddManagedCellarIDsProposal)(nil), "cork.v1.AddManagedCellarIDsProposal")
 	proto.RegisterType((*RemoveManagedCellarIDsProposal)(nil), "cork.v1.RemoveManagedCellarIDsProposal")
@@ -252,29 +316,33 @@ func init() {
 func init() { proto.RegisterFile("cork/v1/cork.proto", fileDescriptor_79882ab39b78d896) }
 
 var fileDescriptor_79882ab39b78d896 = []byte{
-	// 341 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xcc, 0x92, 0xb1, 0x4e, 0xeb, 0x30,
-	0x14, 0x86, 0xeb, 0xdb, 0x7b, 0x2f, 0x8a, 0xcb, 0x80, 0x4c, 0x2b, 0x5a, 0x84, 0x42, 0x94, 0x29,
-	0x2c, 0x89, 0xda, 0x4a, 0xec, 0x25, 0x2c, 0x1d, 0x90, 0x50, 0xd8, 0x58, 0x22, 0xd7, 0x3e, 0x0a,
-	0xa1, 0x4e, 0x1c, 0xd9, 0x26, 0xa2, 0x6f, 0x80, 0xc4, 0xc2, 0x63, 0x31, 0x76, 0x64, 0x44, 0xed,
-	0x8b, 0xa0, 0xc6, 0x41, 0xf4, 0x11, 0x98, 0x7c, 0xce, 0xf9, 0xff, 0xdf, 0xfe, 0x64, 0x1b, 0x13,
-	0x26, 0xd5, 0x32, 0xaa, 0xc7, 0xd1, 0x6e, 0x0d, 0x2b, 0x25, 0x8d, 0x24, 0x07, 0x4d, 0x5d, 0x8f,
-	0x4f, 0x47, 0x4c, 0xea, 0x42, 0xea, 0xb4, 0x19, 0x47, 0xb6, 0xb1, 0x1e, 0x5f, 0xe1, 0xbf, 0xb1,
-	0x54, 0x4b, 0x32, 0xc1, 0x03, 0x28, 0x99, 0xe4, 0xc0, 0x53, 0x26, 0x4b, 0xa3, 0x28, 0x33, 0x29,
-	0xa3, 0x42, 0x0c, 0x91, 0x87, 0x82, 0xc3, 0xe4, 0xb8, 0x15, 0xe3, 0x56, 0x8b, 0xa9, 0x10, 0xe4,
-	0x12, 0x9f, 0x18, 0xaa, 0x32, 0x30, 0x3f, 0x11, 0xca, 0xb9, 0x02, 0xad, 0x87, 0x7f, 0x3c, 0x14,
-	0x38, 0xc9, 0xc0, 0xca, 0xdf, 0xa1, 0x99, 0x15, 0xfd, 0x73, 0xdc, 0x8b, 0x41, 0x08, 0xaa, 0xe6,
-	0xd7, 0x77, 0x60, 0xc8, 0x11, 0xee, 0xe6, 0x5c, 0x0f, 0x91, 0xd7, 0x0d, 0x9c, 0x64, 0x57, 0xfa,
-	0x2f, 0x08, 0x8f, 0x66, 0x9c, 0xdf, 0xd0, 0x92, 0x66, 0xc0, 0xad, 0x57, 0xdf, 0x2a, 0x59, 0x49,
-	0x4d, 0x05, 0xe9, 0xe3, 0x7f, 0x26, 0x37, 0x02, 0x1a, 0x34, 0x27, 0xb1, 0x0d, 0xf1, 0x70, 0x8f,
-	0x83, 0x66, 0x2a, 0xaf, 0x4c, 0x2e, 0xcb, 0x16, 0x60, 0x7f, 0x44, 0xa6, 0x18, 0xb3, 0x66, 0xab,
-	0x74, 0x77, 0x5c, 0xd7, 0x43, 0x41, 0x6f, 0xd2, 0x0f, 0xdb, 0x3b, 0x0a, 0xf7, 0x88, 0x12, 0xc7,
-	0xfa, 0xe6, 0x5c, 0xfb, 0xaf, 0x08, 0x9f, 0x25, 0x50, 0xc8, 0x1a, 0x7e, 0x01, 0xcd, 0x55, 0xfc,
-	0xbe, 0x71, 0xd1, 0x7a, 0xe3, 0xa2, 0xcf, 0x8d, 0x8b, 0xde, 0xb6, 0x6e, 0x67, 0xbd, 0x75, 0x3b,
-	0x1f, 0x5b, 0xb7, 0x73, 0x7f, 0x91, 0xe5, 0xe6, 0xe1, 0x69, 0x11, 0x32, 0x59, 0x44, 0x15, 0x64,
-	0xd9, 0xea, 0xb1, 0x8e, 0xb4, 0x2c, 0x0a, 0x10, 0x39, 0xa8, 0xe8, 0xb9, 0xf9, 0x16, 0x91, 0x59,
-	0x55, 0xa0, 0x17, 0xff, 0x9b, 0x97, 0x9f, 0x7e, 0x05, 0x00, 0x00, 0xff, 0xff, 0x38, 0x3c, 0x78,
-	0xe7, 0x33, 0x02, 0x00, 0x00,
+	// 404 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xcc, 0x52, 0xc1, 0x6e, 0x13, 0x31,
+	0x10, 0x8d, 0x49, 0x28, 0xca, 0xa4, 0x95, 0x90, 0x69, 0x21, 0x80, 0xb4, 0xa4, 0x7b, 0xca, 0x01,
+	0xc5, 0x6a, 0x23, 0x71, 0x2f, 0x41, 0x88, 0x1e, 0x90, 0x90, 0x7b, 0xe3, 0xb2, 0x72, 0xec, 0xd1,
+	0xc6, 0xac, 0x77, 0xbd, 0xb2, 0xdd, 0x15, 0xfd, 0x05, 0x24, 0x24, 0x3e, 0x8b, 0x63, 0x8f, 0x1c,
+	0x51, 0xf2, 0x23, 0x68, 0xbd, 0x1b, 0x85, 0x4f, 0xe8, 0xc9, 0x9e, 0xf7, 0x66, 0xe6, 0xbd, 0x27,
+	0x0d, 0x50, 0x69, 0x5d, 0xc1, 0x9a, 0x0b, 0xd6, 0xbe, 0x8b, 0xda, 0xd9, 0x60, 0xe9, 0x93, 0xf8,
+	0x6f, 0x2e, 0x5e, 0xbd, 0x94, 0xd6, 0x97, 0xd6, 0x67, 0x11, 0x66, 0x5d, 0xd1, 0xf5, 0xa4, 0x0e,
+	0x46, 0x2b, 0xeb, 0x0a, 0x7a, 0x09, 0x67, 0x58, 0x49, 0xab, 0x50, 0x65, 0xd2, 0x56, 0xc1, 0x09,
+	0x19, 0x32, 0x29, 0x8c, 0x99, 0x92, 0x19, 0x99, 0x1f, 0xf3, 0x67, 0x3d, 0xb9, 0xea, 0xb9, 0x95,
+	0x30, 0x86, 0xbe, 0x83, 0x17, 0x41, 0xb8, 0x1c, 0xc3, 0x61, 0x44, 0x28, 0xe5, 0xd0, 0xfb, 0xe9,
+	0xa3, 0x19, 0x99, 0x8f, 0xf9, 0x59, 0x47, 0xef, 0x87, 0xae, 0x3a, 0x32, 0x2d, 0xe1, 0xe4, 0x46,
+	0x6e, 0x50, 0xdd, 0x9a, 0x76, 0xa1, 0x2b, 0xe8, 0x39, 0x8c, 0x5a, 0xab, 0x51, 0x6b, 0x72, 0x79,
+	0xb2, 0xe8, 0x7d, 0x2f, 0x5a, 0x92, 0x47, 0x8a, 0x9e, 0xc3, 0xf1, 0xda, 0x58, 0x59, 0x64, 0x1b,
+	0xd4, 0xf9, 0x26, 0x44, 0x81, 0x11, 0x9f, 0x44, 0xec, 0x53, 0x84, 0xe8, 0x73, 0x38, 0xf2, 0x3a,
+	0xaf, 0xd0, 0x4d, 0x87, 0x51, 0xbd, 0xaf, 0xd2, 0x37, 0x30, 0x59, 0xa1, 0x31, 0xc2, 0x5d, 0x7f,
+	0xb8, 0xc1, 0x40, 0x9f, 0xc2, 0x50, 0x2b, 0x3f, 0x25, 0xb3, 0xe1, 0x7c, 0xcc, 0xdb, 0x6f, 0xfa,
+	0x83, 0xc0, 0xeb, 0x2b, 0xa5, 0x3e, 0x8b, 0x4a, 0xe4, 0xa8, 0xf6, 0xbd, 0xfe, 0x8b, 0xb3, 0xb5,
+	0xf5, 0xc2, 0xd0, 0x53, 0x78, 0x1c, 0x74, 0x30, 0x18, 0xfd, 0x8d, 0x79, 0x57, 0xd0, 0x19, 0x4c,
+	0x14, 0x7a, 0xe9, 0x74, 0x1d, 0xb4, 0xad, 0xfa, 0xc4, 0xff, 0x43, 0x74, 0x09, 0x20, 0xe3, 0xb2,
+	0xac, 0x15, 0x1c, 0xc6, 0x70, 0xa7, 0x87, 0x70, 0x07, 0x4f, 0x7c, 0xdc, 0xf5, 0x5d, 0x2b, 0x9f,
+	0xfe, 0x24, 0x90, 0x70, 0x2c, 0x6d, 0x83, 0x0f, 0xc2, 0xcf, 0xfb, 0x8f, 0xbf, 0xb7, 0x09, 0xb9,
+	0xdf, 0x26, 0xe4, 0xef, 0x36, 0x21, 0xbf, 0x76, 0xc9, 0xe0, 0x7e, 0x97, 0x0c, 0xfe, 0xec, 0x92,
+	0xc1, 0xd7, 0xb7, 0xb9, 0x0e, 0x9b, 0xdb, 0xf5, 0x42, 0xda, 0x92, 0xd5, 0x98, 0xe7, 0x77, 0xdf,
+	0x1a, 0xe6, 0x6d, 0x59, 0xa2, 0xd1, 0xe8, 0x58, 0xb3, 0x64, 0xdf, 0xe3, 0x31, 0xb2, 0x70, 0x57,
+	0xa3, 0x5f, 0x1f, 0xc5, 0x7b, 0x5b, 0xfe, 0x0b, 0x00, 0x00, 0xff, 0xff, 0x0d, 0xef, 0x5a, 0x77,
+	0xa9, 0x02, 0x00, 0x00,
 }
 
 func (m *Cork) Marshal() (dAtA []byte, err error) {
@@ -308,6 +376,53 @@ func (m *Cork) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 		i -= len(m.EncodedContractCall)
 		copy(dAtA[i:], m.EncodedContractCall)
 		i = encodeVarintCork(dAtA, i, uint64(len(m.EncodedContractCall)))
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *ScheduledCork) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *ScheduledCork) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *ScheduledCork) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.Signer) > 0 {
+		i -= len(m.Signer)
+		copy(dAtA[i:], m.Signer)
+		i = encodeVarintCork(dAtA, i, uint64(len(m.Signer)))
+		i--
+		dAtA[i] = 0x1a
+	}
+	if m.BlockHeight != 0 {
+		i = encodeVarintCork(dAtA, i, uint64(m.BlockHeight))
+		i--
+		dAtA[i] = 0x10
+	}
+	if m.Cork != nil {
+		{
+			size, err := m.Cork.MarshalToSizedBuffer(dAtA[:i])
+			if err != nil {
+				return 0, err
+			}
+			i -= size
+			i = encodeVarintCork(dAtA, i, uint64(size))
+		}
 		i--
 		dAtA[i] = 0xa
 	}
@@ -472,6 +587,26 @@ func (m *Cork) Size() (n int) {
 	return n
 }
 
+func (m *ScheduledCork) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if m.Cork != nil {
+		l = m.Cork.Size()
+		n += 1 + l + sovCork(uint64(l))
+	}
+	if m.BlockHeight != 0 {
+		n += 1 + sovCork(uint64(m.BlockHeight))
+	}
+	l = len(m.Signer)
+	if l > 0 {
+		n += 1 + l + sovCork(uint64(l))
+	}
+	return n
+}
+
 func (m *CellarIDSet) Size() (n int) {
 	if m == nil {
 		return 0
@@ -629,6 +764,143 @@ func (m *Cork) Unmarshal(dAtA []byte) error {
 				return io.ErrUnexpectedEOF
 			}
 			m.TargetContractAddress = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipCork(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthCork
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *ScheduledCork) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowCork
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: ScheduledCork: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: ScheduledCork: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Cork", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowCork
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthCork
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthCork
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Cork == nil {
+				m.Cork = &Cork{}
+			}
+			if err := m.Cork.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 2:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field BlockHeight", wireType)
+			}
+			m.BlockHeight = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowCork
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.BlockHeight |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 3:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Signer", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowCork
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthCork
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthCork
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Signer = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		default:
 			iNdEx = preIndex

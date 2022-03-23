@@ -28,6 +28,8 @@ service Query {
   rpc QueryCellarIDs(QueryCellarIDsRequest) returns (QueryCellarIDsResponse) {
     option (google.api.http).get = "/sommelier/cork/v1/cellar_ids";
   }
+  // QueryScheduledCorks returns all scheduled corks
+//  rpc QueryScheduledCorks
 }
 
 // QueryParamsRequest is the request type for the Query/Params gRPC method.
