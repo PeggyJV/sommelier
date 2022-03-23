@@ -182,7 +182,7 @@ func (k Keeper) ScheduledBlockHeights(ctx sdk.Context) []uint64 {
 
 	var blockHeights []uint64
 
-	for k, _ := range blockHeightsMap {
+	for k := range blockHeightsMap {
 		blockHeights = append(blockHeights, k)
 	}
 
@@ -191,28 +191,6 @@ func (k Keeper) ScheduledBlockHeights(ctx sdk.Context) []uint64 {
 	})
 	return blockHeights
 }
-
-func (k Keeper) IterateScheduledCorksForBlockHeight(ctx sdk.Context, blockHeight uint64, cb func(val sdk.ValAddress, address common.Address, cork types.Cork) (stop bool) {
-	store := ctx.KVStore(k.storeKey)
-	iter := sdk.KVStorePrefixIterator(store, []byte{types.ScheduledCorkForAddressKey})
-	defer iter.Close()
-
-	for ; iter.Valid(); iter.Next() {
-		var cork types.Cork
-		keyPair := bytes.NewBuffer(bytes.TrimPrefix(iter.Key(), []byte{types.ScheduledCorkForAddressKey}))
-		val := sdk.ValAddress(keyPair.Next(20))
-		receivedBlockHeight := binary.BigEndian.Uint64(keyPair.Next(8))
-		if receivedBlockHeight != blockHeight {
-			continue
-		}
-		cel := common.BytesToAddress(keyPair.Bytes())
-
-		k.cdc.MustUnmarshal(iter.Value(), &cork)
-		if cb(val, cel, cork) {
-			break
-		}
-	}
-})
 
 //////////////////
 // CommitPeriod //
