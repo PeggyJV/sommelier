@@ -80,16 +80,18 @@ func (b AppModuleBasic) RegisterInterfaces(registry codectypes.InterfaceRegistry
 // AppModule implements an application module for the cellarfees module.
 type AppModule struct {
 	AppModuleBasic
-	keeper keeper.Keeper
-	cdc    codec.Codec
+	keeper        keeper.Keeper
+	cdc           codec.Codec
+	accountKeeper types.AccountKeeper
 }
 
 // NewAppModule creates a new AppModule object
-func NewAppModule(keeper keeper.Keeper, cdc codec.Codec) AppModule {
+func NewAppModule(keeper keeper.Keeper, cdc codec.Codec, accountKeeper types.AccountKeeper) AppModule {
 	return AppModule{
 		AppModuleBasic: AppModuleBasic{},
 		keeper:         keeper,
 		cdc:            cdc,
+		accountKeeper:  accountKeeper,
 	}
 }
 

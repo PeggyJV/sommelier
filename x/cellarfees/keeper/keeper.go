@@ -12,24 +12,27 @@ import (
 )
 
 type Keeper struct {
-	cdc        codec.BinaryCodec
-	storeKey   sdk.StoreKey
-	paramSpace paramtypes.Subspace
+	cdc           codec.BinaryCodec
+	storeKey      sdk.StoreKey
+	paramSpace    paramtypes.Subspace
+	accountKeeper types.AccountKeeper
 }
 
 func NewKeeper(
 	cdc codec.BinaryCodec,
 	storeKey sdk.StoreKey,
 	paramSpace paramtypes.Subspace,
+	accountKeeper types.AccountKeeper,
 ) Keeper {
 	if !paramSpace.HasKeyTable() {
 		paramSpace = paramSpace.WithKeyTable(types.ParamKeyTable())
 	}
 
 	return Keeper{
-		cdc:        cdc,
-		storeKey:   storeKey,
-		paramSpace: paramSpace,
+		cdc:           cdc,
+		storeKey:      storeKey,
+		paramSpace:    paramSpace,
+		accountKeeper: accountKeeper,
 	}
 }
 

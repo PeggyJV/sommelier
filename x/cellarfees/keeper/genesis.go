@@ -9,6 +9,8 @@ import (
 // state.
 func InitGenesis(ctx sdk.Context, k Keeper, gs types.GenesisState) {
 	k.SetParams(ctx, gs.Params)
+
+	k.accountKeeper.GetModuleAccount(ctx, types.ModuleName)
 }
 
 // ExportGenesis returns the module's exported genesis.
