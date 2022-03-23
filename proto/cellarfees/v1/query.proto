@@ -12,10 +12,20 @@ service Query {
   rpc Params(QueryParamsRequest) returns (QueryParamsResponse) {
     option (google.api.http).get = "/sommelier/cellarfees/v1/params";
   }
+
+  rpc ModuleAccounts(QueryModuleAccountsRequest) returns (QueryModuleAccountsResponse) {
+    option (google.api.http).get = "/sommeliers/cellarfees/v1/module_accounts";
+  }
 }
 
 message QueryParamsRequest {}
 
 message QueryParamsResponse {
   Params params = 1 [(gogoproto.nullable) = false];
+}
+
+message QueryModuleAccountsRequest {}
+
+message QueryModuleAccountsResponse {
+  string fees_address = 1;
 }
