@@ -67,7 +67,7 @@ func (k Keeper) EndBlocker(ctx sdk.Context) {
 	k.Logger(ctx).Info("tallying scheduled cork votes", "height", fmt.Sprintf("%d", ctx.BlockHeight()))
 	winningScheduledVotes := k.GetApprovedScheduledCorks(ctx, uint64(ctx.BlockHeight()), params.VoteThreshold)
 
-	// combine all of the corks to be sent
+	// combine all the corks to be sent
 	winningVotes := append(winningCurrentVotes, winningScheduledVotes...)
 
 	k.Logger(ctx).Info("packaging all winning cork votes into contract calls",

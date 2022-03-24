@@ -305,13 +305,13 @@ func (k Keeper) GetApprovedCorks(ctx sdk.Context, threshold sdk.Dec) (approvedCo
 
 func (k Keeper) GetApprovedScheduledCorks(ctx sdk.Context, currentBlockHeight uint64, threshold sdk.Dec) (approvedCorks []types.Cork) {
 
-	var corks []types.Cork
-	var corkPowers []int64
+	corksForBlockHeight := make(map[uint64][]types.Cork)
+	var corkPowersForBlockHeight map[uint64][]int64
 
 	totalPower := k.stakingKeeper.GetLastTotalPower(ctx)
 
 	k.IterateScheduledCorks(ctx, func(val sdk.ValAddress, scheduledBlockHeight uint64, addr common.Address, cork types.Cork) (stop bool) {
-		// only operate on scheduled corks that are valid
+		// only operate on scheduled corksForBlockHeight that are valid
 		if currentBlockHeight < scheduledBlockHeight {
 			return false
 		}
@@ -320,9 +320,9 @@ func (k Keeper) GetApprovedScheduledCorks(ctx sdk.Context, currentBlockHeight ui
 		validatorPower := validator.GetConsensusPower(k.stakingKeeper.PowerReduction(ctx))
 
 		found := false
-		for i, c := range corks {
+		for i, c := range corksForBlockHeight[scheduledBlockHeight] {
 			if c.Equals(cork) {
-				corkPowers[i] += validatorPower
+				corkPowersForBlockHeight[scheduledBlockHeight][i] += validatorPower
 
 				found = true
 				break
@@ -330,21 +330,23 @@ func (k Keeper) GetApprovedScheduledCorks(ctx sdk.Context, currentBlockHeight ui
 		}
 
 		if !found {
-			corks = append(corks, cork)
-			corkPowers = append(corkPowers, validatorPower)
+			corksForBlockHeight[scheduledBlockHeight] = append(corksForBlockHeight[scheduledBlockHeight], cork)
+			corkPowersForBlockHeight[scheduledBlockHeight] = append(corkPowersForBlockHeight[scheduledBlockHeight], validatorPower)
 		}
 
-		k.DeleteCork(ctx, val, addr)
+		k.DeleteScheduledCork(ctx, val, scheduledBlockHeight, addr)
 
 		return false
 	})
 
 	var winningCorks []types.Cork
 
-	for i, power := range corkPowers {
-		quorumReached := sdk.NewDec(power).Quo(totalPower.ToDec()).GT(threshold)
-		if quorumReached {
-			winningCorks = append(winningCorks, corks[i])
+	for blockHeight := range corkPowersForBlockHeight {
+		for i, power := range corkPowersForBlockHeight[blockHeight] {
+			quorumReached := sdk.NewDec(power).Quo(totalPower.ToDec()).GT(threshold)
+			if quorumReached {
+				winningCorks = append(winningCorks, corksForBlockHeight[blockHeight][i])
+			}
 		}
 	}
 
