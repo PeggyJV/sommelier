@@ -13,7 +13,9 @@ message GenesisState {
     Params                          params             = 1 [
         (gogoproto.nullable) = false
     ];
-    CellarIDSet cellar_ids = 2;
+    CellarIDSet cellar_ids = 2 [
+        (gogoproto.nullable) = false
+    ];
 }
 
 // Params cork parameters
@@ -24,7 +26,7 @@ message Params {
     // VoteThreshold defines the percentage of bonded stake required to vote each period
     string vote_threshold       = 2 [
         (gogoproto.moretags)   = "yaml:\"vote_threshold\"",
-        (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec", 
+        (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
         (gogoproto.nullable)   = false
     ];
 }
