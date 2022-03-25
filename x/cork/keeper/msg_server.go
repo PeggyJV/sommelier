@@ -77,7 +77,7 @@ func (k Keeper) ScheduleCork(c context.Context, msg *types.MsgScheduleCorkReques
 		return nil, err
 	}
 
-	k.SetCork(ctx, validatorAddr, *msg.Cork)
+	k.SetScheduledCork(ctx, validatorAddr, msg.BlockHeight, *msg.Cork)
 
 	ctx.EventManager().EmitEvents(
 		sdk.Events{

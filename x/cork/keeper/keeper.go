@@ -306,7 +306,7 @@ func (k Keeper) GetApprovedCorks(ctx sdk.Context, threshold sdk.Dec) (approvedCo
 func (k Keeper) GetApprovedScheduledCorks(ctx sdk.Context, currentBlockHeight uint64, threshold sdk.Dec) (approvedCorks []types.Cork) {
 
 	corksForBlockHeight := make(map[uint64][]types.Cork)
-	var corkPowersForBlockHeight map[uint64][]int64
+	var corkPowersForBlockHeight map[uint64][]uint64
 
 	totalPower := k.stakingKeeper.GetLastTotalPower(ctx)
 
@@ -317,7 +317,7 @@ func (k Keeper) GetApprovedScheduledCorks(ctx sdk.Context, currentBlockHeight ui
 		}
 
 		validator := k.stakingKeeper.Validator(ctx, val)
-		validatorPower := validator.GetConsensusPower(k.stakingKeeper.PowerReduction(ctx))
+		validatorPower := uint64(validator.GetConsensusPower(k.stakingKeeper.PowerReduction(ctx)))
 
 		found := false
 		for i, c := range corksForBlockHeight[scheduledBlockHeight] {
@@ -343,7 +343,7 @@ func (k Keeper) GetApprovedScheduledCorks(ctx sdk.Context, currentBlockHeight ui
 
 	for blockHeight := range corkPowersForBlockHeight {
 		for i, power := range corkPowersForBlockHeight[blockHeight] {
-			quorumReached := sdk.NewDec(power).Quo(totalPower.ToDec()).GT(threshold)
+			quorumReached := sdk.NewIntFromUint64(power).ToDec().Quo(totalPower.ToDec()).GT(threshold)
 			if quorumReached {
 				winningCorks = append(winningCorks, corksForBlockHeight[blockHeight][i])
 			}

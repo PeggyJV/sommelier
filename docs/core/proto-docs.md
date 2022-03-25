@@ -49,7 +49,6 @@
     - [CellarIDSet](#cork.v1.CellarIDSet)
     - [Cork](#cork.v1.Cork)
     - [RemoveManagedCellarIDsProposal](#cork.v1.RemoveManagedCellarIDsProposal)
-    - [ScheduledCork](#cork.v1.ScheduledCork)
   
 - [cork/v1/tx.proto](#cork/v1/tx.proto)
     - [MsgScheduleCorkRequest](#cork.v1.MsgScheduleCorkRequest)
@@ -643,23 +642,6 @@ MsgSubmitCorkRequest - sdk.Msg for submitting calls to Ethereum through the grav
 | `title` | [string](#string) |  |  |
 | `description` | [string](#string) |  |  |
 | `cellar_ids` | [CellarIDSet](#cork.v1.CellarIDSet) |  |  |
-
-
-
-
-
-
-<a name="cork.v1.ScheduledCork"></a>
-
-### ScheduledCork
-
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| `cork` | [Cork](#cork.v1.Cork) |  | the cork call to be scheduled |
-| `block_height` | [uint64](#uint64) |  | the cosmos block height that must be reached before the cork is executed |
-| `signer` | [string](#string) |  | the validator address that submitted the scheduled cork |
 
 
 

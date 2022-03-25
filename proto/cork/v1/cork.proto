@@ -13,15 +13,6 @@ message Cork {
   string target_contract_address = 2;
 }
 
-message ScheduledCork {
-  // the cork call to be scheduled
-  Cork cork = 1;
-  // the cosmos block height that must be reached before the cork is executed
-  uint64 block_height = 2;
-  // the validator address that submitted the scheduled cork
-  string signer = 3;
-}
-
 message CellarIDSet {
   repeated string ids = 1;
 }

@@ -13,7 +13,7 @@ var (
 
 const (
 	TypeMsgSubmitCorkRequest   = "cork_submit"
-	TypeMsgScheduleCorkRequest = "cork_submit"
+	TypeMsgScheduleCorkRequest = "cork_schedule"
 )
 
 //////////////////////////
