@@ -306,7 +306,7 @@ func (k Keeper) GetApprovedCorks(ctx sdk.Context, threshold sdk.Dec) (approvedCo
 func (k Keeper) GetApprovedScheduledCorks(ctx sdk.Context, currentBlockHeight uint64, threshold sdk.Dec) (approvedCorks []types.Cork) {
 
 	corksForBlockHeight := make(map[uint64][]types.Cork)
-	var corkPowersForBlockHeight map[uint64][]uint64
+	corkPowersForBlockHeight := make(map[uint64][]uint64)
 
 	totalPower := k.stakingKeeper.GetLastTotalPower(ctx)
 

@@ -18,20 +18,9 @@ func (s *IntegrationTestSuite) TestScheduledCork() {
 		s.Require().NoError(err)
 		s.Require().Equal(int64(0), count.Int64())
 
-		s.T().Log("verify that there is one allowed addresses on the new chain")
-		val := s.chain.validators[0]
-		kb, err := val.keyring()
-		s.Require().NoError(err)
-		clientCtx, err := s.chain.clientContext("tcp://localhost:26657", &kb, "val", val.keyInfo.GetAddress())
-		s.Require().NoError(err)
-		queryClient := types.NewQueryClient(clientCtx)
-		res, err := queryClient.QueryCellarIDs(context.Background(), &types.QueryCellarIDsRequest{})
-		s.Require().NoError(err)
-		s.Require().Len(res.CellarIds, 1)
-
 		s.T().Logf("create governance proposal to add counter contract")
 		orch := s.chain.orchestrators[0]
-		clientCtx, err = s.chain.clientContext("tcp://localhost:26657", orch.keyring, "orch", orch.keyInfo.GetAddress())
+		clientCtx, err := s.chain.clientContext("tcp://localhost:26657", orch.keyring, "orch", orch.keyInfo.GetAddress())
 		s.Require().NoError(err)
 
 		proposal := types.AddManagedCellarIDsProposal{
@@ -87,7 +76,7 @@ func (s *IntegrationTestSuite) TestScheduledCork() {
 		}, time.Second*30, time.Second*5, "proposal was never accepted")
 
 		s.T().Log("verify that contract exists in allowed addresses")
-		val = s.chain.validators[0]
+		val := s.chain.validators[0]
 		s.Require().Eventuallyf(func() bool {
 			kb, err := val.keyring()
 			s.Require().NoError(err)
@@ -128,7 +117,11 @@ func (s *IntegrationTestSuite) TestScheduledCork() {
 				clientCtx, err := s.chain.clientContext("tcp://localhost:26657", orch.keyring, "orch", orch.keyInfo.GetAddress())
 				s.Require().NoError(err)
 
-				corkMsg, err := types.NewMsgScheduleCorkRequest(ABIEncodedInc(), counterContract, uint64(currentBlockHeight+5), orch.keyInfo.GetAddress())
+				corkMsg, err := types.NewMsgScheduleCorkRequest(
+					ABIEncodedInc(),
+					counterContract,
+					uint64(currentBlockHeight+5),
+					orch.keyInfo.GetAddress())
 				s.Require().NoError(err, "unable to create cork schedule msg")
 
 				response, err := s.chain.sendMsgs(*clientCtx, corkMsg)
