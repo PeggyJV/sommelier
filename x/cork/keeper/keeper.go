@@ -180,10 +180,12 @@ func (k Keeper) ScheduledBlockHeights(ctx sdk.Context) []uint64 {
 		return false
 	})
 
-	var blockHeights []uint64
+	index := 0
+	blockHeights := make([]uint64, len(blockHeightsMap))
 
 	for k := range blockHeightsMap {
-		blockHeights = append(blockHeights, k)
+		blockHeights[index] = k
+		index++
 	}
 
 	sort.Slice(blockHeights, func(i, j int) bool {
