@@ -44,6 +44,20 @@
   
     - [Query](#allocation.v1.Query)
   
+- [cellarfees/v1/params.proto](#cellarfees/v1/params.proto)
+    - [Params](#cellarfees.v1.Params)
+  
+- [cellarfees/v1/genesis.proto](#cellarfees/v1/genesis.proto)
+    - [GenesisState](#cellarfees.v1.GenesisState)
+  
+- [cellarfees/v1/query.proto](#cellarfees/v1/query.proto)
+    - [QueryModuleAccountsRequest](#cellarfees.v1.QueryModuleAccountsRequest)
+    - [QueryModuleAccountsResponse](#cellarfees.v1.QueryModuleAccountsResponse)
+    - [QueryParamsRequest](#cellarfees.v1.QueryParamsRequest)
+    - [QueryParamsResponse](#cellarfees.v1.QueryParamsResponse)
+  
+    - [Query](#cellarfees.v1.Query)
+  
 - [cork/v1/cork.proto](#cork/v1/cork.proto)
     - [AddManagedCellarIDsProposal](#cork.v1.AddManagedCellarIDsProposal)
     - [CellarIDSet](#cork.v1.CellarIDSet)
@@ -571,6 +585,140 @@ Query defines the gRPC querier service for the allocation module.
 | `QueryAllocationCommits` | [QueryAllocationCommitsRequest](#allocation.v1.QueryAllocationCommitsRequest) | [QueryAllocationCommitsResponse](#allocation.v1.QueryAllocationCommitsResponse) | QueryAllocationCommits queries all validator allocation commits | GET|/sommelier/allocation/v1/commits|
 | `QueryCommitPeriod` | [QueryCommitPeriodRequest](#allocation.v1.QueryCommitPeriodRequest) | [QueryCommitPeriodResponse](#allocation.v1.QueryCommitPeriodResponse) | QueryVotePeriod queries the heights for the current voting period (current, start and end) | GET|/sommelier/allocation/v1/commit_period|
 | `QueryCellars` | [QueryCellarsRequest](#allocation.v1.QueryCellarsRequest) | [QueryCellarsResponse](#allocation.v1.QueryCellarsResponse) | QueryCellars returns all cellars and current tick ranges | GET|/sommelier/allocation/v1/cellars|
+
+ <!-- end services -->
+
+
+
+<a name="cellarfees/v1/params.proto"></a>
+<p align="right"><a href="#top">Top</a></p>
+
+## cellarfees/v1/params.proto
+
+
+
+<a name="cellarfees.v1.Params"></a>
+
+### Params
+Params defines the parameters for the module.
+
+
+
+
+
+ <!-- end messages -->
+
+ <!-- end enums -->
+
+ <!-- end HasExtensions -->
+
+ <!-- end services -->
+
+
+
+<a name="cellarfees/v1/genesis.proto"></a>
+<p align="right"><a href="#top">Top</a></p>
+
+## cellarfees/v1/genesis.proto
+
+
+
+<a name="cellarfees.v1.GenesisState"></a>
+
+### GenesisState
+GenesisState defines the cellarfees module's genesis state.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `params` | [Params](#cellarfees.v1.Params) |  |  |
+
+
+
+
+
+ <!-- end messages -->
+
+ <!-- end enums -->
+
+ <!-- end HasExtensions -->
+
+ <!-- end services -->
+
+
+
+<a name="cellarfees/v1/query.proto"></a>
+<p align="right"><a href="#top">Top</a></p>
+
+## cellarfees/v1/query.proto
+
+
+
+<a name="cellarfees.v1.QueryModuleAccountsRequest"></a>
+
+### QueryModuleAccountsRequest
+
+
+
+
+
+
+
+<a name="cellarfees.v1.QueryModuleAccountsResponse"></a>
+
+### QueryModuleAccountsResponse
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `fees_address` | [string](#string) |  |  |
+
+
+
+
+
+
+<a name="cellarfees.v1.QueryParamsRequest"></a>
+
+### QueryParamsRequest
+
+
+
+
+
+
+
+<a name="cellarfees.v1.QueryParamsResponse"></a>
+
+### QueryParamsResponse
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `params` | [Params](#cellarfees.v1.Params) |  |  |
+
+
+
+
+
+ <!-- end messages -->
+
+ <!-- end enums -->
+
+ <!-- end HasExtensions -->
+
+
+<a name="cellarfees.v1.Query"></a>
+
+### Query
+
+
+| Method Name | Request Type | Response Type | Description | HTTP Verb | Endpoint |
+| ----------- | ------------ | ------------- | ------------| ------- | -------- |
+| `Params` | [QueryParamsRequest](#cellarfees.v1.QueryParamsRequest) | [QueryParamsResponse](#cellarfees.v1.QueryParamsResponse) |  | GET|/sommelier/cellarfees/v1/params|
+| `ModuleAccounts` | [QueryModuleAccountsRequest](#cellarfees.v1.QueryModuleAccountsRequest) | [QueryModuleAccountsResponse](#cellarfees.v1.QueryModuleAccountsResponse) |  | GET|/sommeliers/cellarfees/v1/module_accounts|
 
  <!-- end services -->
 

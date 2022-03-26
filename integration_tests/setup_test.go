@@ -363,7 +363,7 @@ func (s *IntegrationTestSuite) initGenesis() {
 
 	var corkGenState corktypes.GenesisState
 	s.Require().NoError(cdc.UnmarshalJSON(appGenState[corktypes.ModuleName], &corkGenState))
-	corkGenState.CellarIds = &corktypes.CellarIDSet{Ids: []string{unusedGenesisContract.String()}}
+	corkGenState.CellarIds = corktypes.CellarIDSet{Ids: []string{unusedGenesisContract.String()}}
 	bz, err = cdc.MarshalJSON(&corkGenState)
 	s.Require().NoError(err)
 	appGenState[corktypes.ModuleName] = bz

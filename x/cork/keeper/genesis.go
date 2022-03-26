@@ -11,7 +11,7 @@ func InitGenesis(ctx sdk.Context, k Keeper, gs types.GenesisState) {
 	k.setParams(ctx, gs.Params)
 	// Set the vote period at initialization
 	k.SetCommitPeriodStart(ctx, ctx.BlockHeight())
-	k.SetCellarIDs(ctx, *gs.CellarIds)
+	k.SetCellarIDs(ctx, gs.CellarIds)
 }
 
 // ExportGenesis writes the current store values
@@ -25,6 +25,6 @@ func ExportGenesis(ctx sdk.Context, k Keeper) types.GenesisState {
 
 	return types.GenesisState{
 		Params:    k.GetParamSet(ctx),
-		CellarIds: &ids,
+		CellarIds: ids,
 	}
 }

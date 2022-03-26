@@ -1,0 +1,31 @@
+syntax = "proto3";
+package cellarfees.v1;
+
+import "gogoproto/gogo.proto";
+import "google/api/annotations.proto";
+import "cosmos/base/query/v1beta1/pagination.proto";
+import "cellarfees/v1/params.proto";
+
+option go_package = "github.com/peggyjv/sommelier/v3/x/cellarfees/types";
+
+service Query {
+  rpc Params(QueryParamsRequest) returns (QueryParamsResponse) {
+    option (google.api.http).get = "/sommelier/cellarfees/v1/params";
+  }
+
+  rpc ModuleAccounts(QueryModuleAccountsRequest) returns (QueryModuleAccountsResponse) {
+    option (google.api.http).get = "/sommeliers/cellarfees/v1/module_accounts";
+  }
+}
+
+message QueryParamsRequest {}
+
+message QueryParamsResponse {
+  Params params = 1 [(gogoproto.nullable) = false];
+}
+
+message QueryModuleAccountsRequest {}
+
+message QueryModuleAccountsResponse {
+  string fees_address = 1;
+}
