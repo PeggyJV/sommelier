@@ -380,6 +380,230 @@ func (m *QueryCellarIDsResponse) GetCellarIds() []string {
 	return nil
 }
 
+// QueryScheduledCorksRequest
+type QueryScheduledCorksRequest struct {
+}
+
+func (m *QueryScheduledCorksRequest) Reset()         { *m = QueryScheduledCorksRequest{} }
+func (m *QueryScheduledCorksRequest) String() string { return proto.CompactTextString(m) }
+func (*QueryScheduledCorksRequest) ProtoMessage()    {}
+func (*QueryScheduledCorksRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_4ee46790c91f0468, []int{8}
+}
+func (m *QueryScheduledCorksRequest) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *QueryScheduledCorksRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_QueryScheduledCorksRequest.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *QueryScheduledCorksRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryScheduledCorksRequest.Merge(m, src)
+}
+func (m *QueryScheduledCorksRequest) XXX_Size() int {
+	return m.Size()
+}
+func (m *QueryScheduledCorksRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryScheduledCorksRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QueryScheduledCorksRequest proto.InternalMessageInfo
+
+type ScheduledCork struct {
+	Cork        *Cork  `protobuf:"bytes,1,opt,name=cork,proto3" json:"cork,omitempty"`
+	BlockHeight uint64 `protobuf:"varint,2,opt,name=block_height,json=blockHeight,proto3" json:"block_height,omitempty"`
+	Validator   string `protobuf:"bytes,3,opt,name=validator,proto3" json:"validator,omitempty"`
+}
+
+func (m *ScheduledCork) Reset()         { *m = ScheduledCork{} }
+func (m *ScheduledCork) String() string { return proto.CompactTextString(m) }
+func (*ScheduledCork) ProtoMessage()    {}
+func (*ScheduledCork) Descriptor() ([]byte, []int) {
+	return fileDescriptor_4ee46790c91f0468, []int{9}
+}
+func (m *ScheduledCork) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *ScheduledCork) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_ScheduledCork.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *ScheduledCork) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_ScheduledCork.Merge(m, src)
+}
+func (m *ScheduledCork) XXX_Size() int {
+	return m.Size()
+}
+func (m *ScheduledCork) XXX_DiscardUnknown() {
+	xxx_messageInfo_ScheduledCork.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_ScheduledCork proto.InternalMessageInfo
+
+func (m *ScheduledCork) GetCork() *Cork {
+	if m != nil {
+		return m.Cork
+	}
+	return nil
+}
+
+func (m *ScheduledCork) GetBlockHeight() uint64 {
+	if m != nil {
+		return m.BlockHeight
+	}
+	return 0
+}
+
+func (m *ScheduledCork) GetValidator() string {
+	if m != nil {
+		return m.Validator
+	}
+	return ""
+}
+
+// QueryScheduledCorksResponse
+type QueryScheduledCorksResponse struct {
+	Corks []*ScheduledCork `protobuf:"bytes,1,rep,name=corks,proto3" json:"corks,omitempty"`
+}
+
+func (m *QueryScheduledCorksResponse) Reset()         { *m = QueryScheduledCorksResponse{} }
+func (m *QueryScheduledCorksResponse) String() string { return proto.CompactTextString(m) }
+func (*QueryScheduledCorksResponse) ProtoMessage()    {}
+func (*QueryScheduledCorksResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_4ee46790c91f0468, []int{10}
+}
+func (m *QueryScheduledCorksResponse) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *QueryScheduledCorksResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_QueryScheduledCorksResponse.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *QueryScheduledCorksResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryScheduledCorksResponse.Merge(m, src)
+}
+func (m *QueryScheduledCorksResponse) XXX_Size() int {
+	return m.Size()
+}
+func (m *QueryScheduledCorksResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryScheduledCorksResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QueryScheduledCorksResponse proto.InternalMessageInfo
+
+func (m *QueryScheduledCorksResponse) GetCorks() []*ScheduledCork {
+	if m != nil {
+		return m.Corks
+	}
+	return nil
+}
+
+// QueryScheduledBlockHeightsRequest
+type QueryScheduledBlockHeightsRequest struct {
+}
+
+func (m *QueryScheduledBlockHeightsRequest) Reset()         { *m = QueryScheduledBlockHeightsRequest{} }
+func (m *QueryScheduledBlockHeightsRequest) String() string { return proto.CompactTextString(m) }
+func (*QueryScheduledBlockHeightsRequest) ProtoMessage()    {}
+func (*QueryScheduledBlockHeightsRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_4ee46790c91f0468, []int{11}
+}
+func (m *QueryScheduledBlockHeightsRequest) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *QueryScheduledBlockHeightsRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_QueryScheduledBlockHeightsRequest.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *QueryScheduledBlockHeightsRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryScheduledBlockHeightsRequest.Merge(m, src)
+}
+func (m *QueryScheduledBlockHeightsRequest) XXX_Size() int {
+	return m.Size()
+}
+func (m *QueryScheduledBlockHeightsRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryScheduledBlockHeightsRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QueryScheduledBlockHeightsRequest proto.InternalMessageInfo
+
+// QueryScheduledBlockHeightsResponse
+type QueryScheduledBlockHeightsResponse struct {
+	BlockHeights []uint64 `protobuf:"varint,1,rep,packed,name=blockHeights,proto3" json:"blockHeights,omitempty"`
+}
+
+func (m *QueryScheduledBlockHeightsResponse) Reset()         { *m = QueryScheduledBlockHeightsResponse{} }
+func (m *QueryScheduledBlockHeightsResponse) String() string { return proto.CompactTextString(m) }
+func (*QueryScheduledBlockHeightsResponse) ProtoMessage()    {}
+func (*QueryScheduledBlockHeightsResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_4ee46790c91f0468, []int{12}
+}
+func (m *QueryScheduledBlockHeightsResponse) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *QueryScheduledBlockHeightsResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_QueryScheduledBlockHeightsResponse.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *QueryScheduledBlockHeightsResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryScheduledBlockHeightsResponse.Merge(m, src)
+}
+func (m *QueryScheduledBlockHeightsResponse) XXX_Size() int {
+	return m.Size()
+}
+func (m *QueryScheduledBlockHeightsResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryScheduledBlockHeightsResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QueryScheduledBlockHeightsResponse proto.InternalMessageInfo
+
+func (m *QueryScheduledBlockHeightsResponse) GetBlockHeights() []uint64 {
+	if m != nil {
+		return m.BlockHeights
+	}
+	return nil
+}
+
 func init() {
 	proto.RegisterType((*QueryParamsRequest)(nil), "cork.v1.QueryParamsRequest")
 	proto.RegisterType((*QueryParamsResponse)(nil), "cork.v1.QueryParamsResponse")
@@ -389,49 +613,64 @@ func init() {
 	proto.RegisterType((*QueryCommitPeriodResponse)(nil), "cork.v1.QueryCommitPeriodResponse")
 	proto.RegisterType((*QueryCellarIDsRequest)(nil), "cork.v1.QueryCellarIDsRequest")
 	proto.RegisterType((*QueryCellarIDsResponse)(nil), "cork.v1.QueryCellarIDsResponse")
+	proto.RegisterType((*QueryScheduledCorksRequest)(nil), "cork.v1.QueryScheduledCorksRequest")
+	proto.RegisterType((*ScheduledCork)(nil), "cork.v1.ScheduledCork")
+	proto.RegisterType((*QueryScheduledCorksResponse)(nil), "cork.v1.QueryScheduledCorksResponse")
+	proto.RegisterType((*QueryScheduledBlockHeightsRequest)(nil), "cork.v1.QueryScheduledBlockHeightsRequest")
+	proto.RegisterType((*QueryScheduledBlockHeightsResponse)(nil), "cork.v1.QueryScheduledBlockHeightsResponse")
 }
 
 func init() { proto.RegisterFile("cork/v1/query.proto", fileDescriptor_4ee46790c91f0468) }
 
 var fileDescriptor_4ee46790c91f0468 = []byte{
-	// 582 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x7c, 0x54, 0xc1, 0x4e, 0xdb, 0x30,
-	0x00, 0x6d, 0xe8, 0x60, 0xc2, 0x15, 0x54, 0x18, 0xd8, 0xda, 0xb4, 0xa4, 0x10, 0x60, 0xaa, 0xd0,
-	0x56, 0xab, 0xe5, 0xb0, 0x7b, 0x61, 0xd3, 0xb8, 0xb1, 0x72, 0xdb, 0xa5, 0x4a, 0x13, 0x2b, 0xf5,
-	0xda, 0xc4, 0xc1, 0x76, 0x23, 0x7a, 0x9d, 0xa6, 0x9d, 0x27, 0x4d, 0xda, 0x37, 0x71, 0x44, 0xda,
-	0x65, 0xa7, 0x69, 0x6a, 0xf7, 0x1d, 0xd3, 0x14, 0xdb, 0xe9, 0xda, 0x12, 0xb8, 0x35, 0xef, 0x3d,
-	0xbf, 0xf7, 0x92, 0x67, 0x15, 0x6c, 0xbb, 0x94, 0x0d, 0x50, 0xdc, 0x44, 0xd7, 0x23, 0xcc, 0xc6,
-	0x8d, 0x88, 0x51, 0x41, 0xe1, 0xd3, 0x04, 0x6c, 0xc4, 0x4d, 0x73, 0xc7, 0xa7, 0x3e, 0x95, 0x18,
-	0x4a, 0x7e, 0x29, 0xda, 0xac, 0xfa, 0x94, 0xfa, 0x43, 0x8c, 0x9c, 0x88, 0x20, 0x27, 0x0c, 0xa9,
-	0x70, 0x04, 0xa1, 0x21, 0xd7, 0xec, 0x6e, 0xea, 0xe8, 0xe3, 0x10, 0x73, 0x92, 0xc2, 0x30, 0x85,
-	0xa5, 0xb7, 0xc2, 0xca, 0x2e, 0xe5, 0x01, 0xe5, 0x5d, 0x95, 0xa0, 0x1e, 0x34, 0x75, 0xa2, 0x9e,
-	0x50, 0xcf, 0xe1, 0x58, 0x75, 0x43, 0x71, 0xb3, 0x87, 0x85, 0xd3, 0x44, 0x91, 0xe3, 0x93, 0x50,
-	0x46, 0x2a, 0xad, 0xbd, 0x03, 0xe0, 0xfb, 0x44, 0x71, 0xe9, 0x30, 0x27, 0xe0, 0x1d, 0x7c, 0x3d,
-	0xc2, 0x5c, 0xd8, 0xe7, 0x60, 0x7b, 0x01, 0xe5, 0x11, 0x0d, 0x39, 0x86, 0xaf, 0xc0, 0x5a, 0x24,
-	0x91, 0x92, 0xb1, 0x6f, 0xd4, 0x0b, 0xad, 0x62, 0x43, 0xbf, 0x6c, 0x43, 0x09, 0xdb, 0x4f, 0x6e,
-	0x7f, 0xd5, 0x72, 0x1d, 0x2d, 0xb2, 0xab, 0xc0, 0x94, 0x2e, 0x57, 0xa3, 0x5e, 0x40, 0x84, 0xc0,
-	0xde, 0x19, 0x65, 0x83, 0x59, 0x46, 0x1b, 0x54, 0x32, 0x59, 0x9d, 0x75, 0x08, 0x56, 0x13, 0xf3,
-	0x24, 0x2a, 0x5f, 0x2f, 0xb4, 0x36, 0x66, 0x51, 0x89, 0xac, 0xa3, 0x38, 0xdb, 0x04, 0x25, 0xe9,
-	0x71, 0x46, 0x83, 0x80, 0x88, 0x4b, 0xcc, 0x08, 0xf5, 0x52, 0xff, 0xef, 0x06, 0x28, 0x67, 0x90,
-	0xda, 0xfe, 0x18, 0x6c, 0xba, 0x23, 0xc6, 0x70, 0x28, 0xba, 0x7d, 0x4c, 0xfc, 0xbe, 0x90, 0xaf,
-	0x94, 0xef, 0x6c, 0x68, 0xf4, 0x9d, 0x04, 0xe1, 0x09, 0xd8, 0x8a, 0xa9, 0xc0, 0xdd, 0x48, 0x9e,
-	0xee, 0x72, 0xe1, 0x30, 0x51, 0x5a, 0x91, 0xca, 0x62, 0x42, 0x28, 0xd7, 0xab, 0x04, 0x86, 0x2f,
-	0x40, 0x71, 0x5e, 0x8b, 0x43, 0xaf, 0x94, 0x57, 0x9e, 0xff, 0x95, 0x6f, 0x42, 0xcf, 0x7e, 0x0e,
-	0x76, 0x55, 0x2f, 0x3c, 0x1c, 0x3a, 0xec, 0xe2, 0x7c, 0xf6, 0x45, 0x5e, 0x83, 0x67, 0xcb, 0x84,
-	0x6e, 0xbb, 0x07, 0x80, 0x2b, 0xc1, 0x2e, 0xf1, 0xd4, 0x17, 0x59, 0xef, 0xac, 0x2b, 0xe4, 0xc2,
-	0xe3, 0xad, 0xbf, 0x79, 0xb0, 0x2a, 0x4f, 0xc2, 0x01, 0x28, 0xcc, 0x0d, 0x07, 0x2b, 0xb3, 0xaf,
-	0x76, 0x7f, 0x64, 0xb3, 0x9a, 0x4d, 0xaa, 0x48, 0xfb, 0xe0, 0xd3, 0x8f, 0x3f, 0xdf, 0x56, 0x2a,
-	0xb0, 0x8c, 0x38, 0x0d, 0x02, 0x3c, 0x24, 0x98, 0xa1, 0xf4, 0x1a, 0xaa, 0x7d, 0xe1, 0x17, 0x43,
-	0x5f, 0x93, 0xc5, 0x09, 0xe1, 0xe1, 0xa2, 0x71, 0xe6, 0xfc, 0xe6, 0xd1, 0xe3, 0x22, 0xdd, 0xe2,
-	0x48, 0xb6, 0xb0, 0x60, 0x35, 0xa3, 0x05, 0x4f, 0x8f, 0xc0, 0xcf, 0x06, 0xd8, 0xba, 0x37, 0x35,
-	0x3c, 0x58, 0x4c, 0xc8, 0xb8, 0x23, 0xa6, 0xfd, 0x98, 0x44, 0x57, 0xa8, 0xcb, 0x0a, 0x36, 0xdc,
-	0xcf, 0xa8, 0xe0, 0xca, 0x03, 0x7a, 0x71, 0x78, 0x03, 0x36, 0x17, 0xf7, 0x83, 0xd6, 0x92, 0xff,
-	0xd2, 0xe2, 0x66, 0xed, 0x41, 0x5e, 0x87, 0x1f, 0xcb, 0xf0, 0x1a, 0xdc, 0xcb, 0x0a, 0x9f, 0xdd,
-	0x88, 0xf6, 0xdb, 0xdb, 0x89, 0x65, 0xdc, 0x4d, 0x2c, 0xe3, 0xf7, 0xc4, 0x32, 0xbe, 0x4e, 0xad,
-	0xdc, 0xdd, 0xd4, 0xca, 0xfd, 0x9c, 0x5a, 0xb9, 0x0f, 0x2f, 0x7d, 0x22, 0xfa, 0xa3, 0x5e, 0xc3,
-	0xa5, 0x01, 0x8a, 0xb0, 0xef, 0x8f, 0x3f, 0xc6, 0x73, 0x56, 0xf1, 0x29, 0xba, 0x51, 0x7e, 0x62,
-	0x1c, 0x61, 0xde, 0x5b, 0x93, 0x7f, 0x0a, 0xa7, 0xff, 0x02, 0x00, 0x00, 0xff, 0xff, 0xf6, 0x04,
-	0x56, 0xb1, 0xda, 0x04, 0x00, 0x00,
+	// 752 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x8c, 0x55, 0xcd, 0x4e, 0xdb, 0x4c,
+	0x14, 0x8d, 0x21, 0xf0, 0x29, 0x93, 0x0f, 0x10, 0xc3, 0x4f, 0x83, 0x09, 0x86, 0x18, 0xa8, 0x50,
+	0x4a, 0x63, 0x25, 0x2c, 0xba, 0x0f, 0xb4, 0x02, 0x75, 0x43, 0xcd, 0xae, 0x9b, 0xc8, 0xb1, 0x47,
+	0x8e, 0x1b, 0xdb, 0x63, 0x3c, 0x13, 0x0b, 0xb6, 0x55, 0xd5, 0x55, 0x17, 0x95, 0x2a, 0xf5, 0x1d,
+	0xfa, 0x08, 0x7d, 0x03, 0x96, 0x48, 0xdd, 0x74, 0x55, 0x55, 0xd0, 0x07, 0xa9, 0x3c, 0x33, 0x36,
+	0xb1, 0x63, 0xa2, 0xee, 0xf0, 0xb9, 0xd7, 0xe7, 0x9c, 0x7b, 0xaf, 0x0f, 0x01, 0x2b, 0x26, 0x0e,
+	0x87, 0x5a, 0xd4, 0xd6, 0x2e, 0x47, 0x28, 0xbc, 0x6e, 0x05, 0x21, 0xa6, 0x18, 0xfe, 0x17, 0x83,
+	0xad, 0xa8, 0x2d, 0xaf, 0xda, 0xd8, 0xc6, 0x0c, 0xd3, 0xe2, 0xbf, 0x78, 0x59, 0xae, 0xdb, 0x18,
+	0xdb, 0x2e, 0xd2, 0x8c, 0xc0, 0xd1, 0x0c, 0xdf, 0xc7, 0xd4, 0xa0, 0x0e, 0xf6, 0x89, 0xa8, 0xae,
+	0x25, 0x8c, 0x36, 0xf2, 0x11, 0x71, 0x12, 0x18, 0x26, 0x30, 0xe3, 0xe6, 0xd8, 0x86, 0x89, 0x89,
+	0x87, 0x49, 0x8f, 0x2b, 0xf0, 0x07, 0x51, 0x6a, 0xf2, 0x27, 0xad, 0x6f, 0x10, 0xc4, 0xbd, 0x69,
+	0x51, 0xbb, 0x8f, 0xa8, 0xd1, 0xd6, 0x02, 0xc3, 0x76, 0x7c, 0x26, 0xc9, 0x7b, 0xd5, 0x55, 0x00,
+	0xdf, 0xc4, 0x1d, 0xe7, 0x46, 0x68, 0x78, 0x44, 0x47, 0x97, 0x23, 0x44, 0xa8, 0x7a, 0x02, 0x56,
+	0x32, 0x28, 0x09, 0xb0, 0x4f, 0x10, 0x7c, 0x0e, 0xe6, 0x03, 0x86, 0xd4, 0xa4, 0x1d, 0xe9, 0xa0,
+	0xda, 0x59, 0x6a, 0x89, 0x61, 0x5b, 0xbc, 0xb1, 0x5b, 0xbe, 0xf9, 0xb5, 0x5d, 0xd2, 0x45, 0x93,
+	0x5a, 0x07, 0x32, 0x63, 0xb9, 0x18, 0xf5, 0x3d, 0x87, 0x52, 0x64, 0x1d, 0xe3, 0x70, 0x98, 0x6a,
+	0x74, 0xc1, 0x66, 0x61, 0x55, 0x68, 0xed, 0x82, 0xb9, 0x98, 0x3c, 0x96, 0x9a, 0x3d, 0xa8, 0x76,
+	0x16, 0x52, 0xa9, 0xb8, 0x4d, 0xe7, 0x35, 0x55, 0x06, 0x35, 0xc6, 0x71, 0x8c, 0x3d, 0xcf, 0xa1,
+	0xe7, 0x28, 0x74, 0xb0, 0x95, 0xf0, 0x7f, 0x95, 0xc0, 0x46, 0x41, 0x51, 0xd0, 0xef, 0x83, 0x45,
+	0x73, 0x14, 0x86, 0xc8, 0xa7, 0xbd, 0x01, 0x72, 0xec, 0x01, 0x65, 0x23, 0xcd, 0xea, 0x0b, 0x02,
+	0x3d, 0x65, 0x20, 0x6c, 0x82, 0xe5, 0x08, 0x53, 0xd4, 0x0b, 0xd8, 0xdb, 0x3d, 0x42, 0x8d, 0x90,
+	0xd6, 0x66, 0x58, 0xe7, 0x52, 0x5c, 0xe0, 0xac, 0x17, 0x31, 0x0c, 0x9f, 0x82, 0xa5, 0xf1, 0x5e,
+	0xe4, 0x5b, 0xb5, 0x59, 0xce, 0xf9, 0xd0, 0xf9, 0xd2, 0xb7, 0xd4, 0x27, 0x60, 0x8d, 0xfb, 0x42,
+	0xae, 0x6b, 0x84, 0x67, 0x27, 0xe9, 0x46, 0x5e, 0x80, 0xf5, 0x7c, 0x41, 0xb8, 0xdd, 0x02, 0xc0,
+	0x64, 0x60, 0xcf, 0xb1, 0xf8, 0x46, 0x2a, 0x7a, 0x85, 0x23, 0x67, 0xd6, 0xd8, 0xa2, 0xcd, 0x01,
+	0xb2, 0x46, 0x6e, 0x6e, 0xd1, 0x04, 0x2c, 0x64, 0x0a, 0xb0, 0x01, 0xca, 0xf1, 0xfa, 0xc4, 0x11,
+	0x73, 0x9b, 0x65, 0x25, 0xd8, 0x00, 0xff, 0xf7, 0x5d, 0x6c, 0x0e, 0x93, 0xe5, 0xc4, 0x23, 0x97,
+	0xf5, 0x2a, 0xc3, 0xc4, 0x6a, 0xea, 0xa0, 0x12, 0x19, 0xae, 0x63, 0x19, 0x14, 0x87, 0x6c, 0xd0,
+	0x8a, 0xfe, 0x00, 0xa8, 0xaf, 0x93, 0xeb, 0xe6, 0x2c, 0x89, 0x81, 0x0e, 0xb3, 0xd7, 0x5d, 0x4f,
+	0x3d, 0x64, 0xfa, 0x93, 0x33, 0xef, 0x82, 0x46, 0x96, 0xac, 0xfb, 0xe0, 0x23, 0x1d, 0xf3, 0x14,
+	0xa8, 0xd3, 0x9a, 0x84, 0xb0, 0x2a, 0x06, 0x13, 0x38, 0xd3, 0x2f, 0xeb, 0x19, 0xac, 0xf3, 0x7d,
+	0x1e, 0xcc, 0x31, 0x2a, 0x38, 0x04, 0xd5, 0xb1, 0x1c, 0xc0, 0xcd, 0xd4, 0xe6, 0x64, 0x66, 0xe4,
+	0x7a, 0x71, 0x91, 0xeb, 0xaa, 0x8d, 0xf7, 0x3f, 0xfe, 0x7c, 0x99, 0xd9, 0x84, 0x1b, 0x1a, 0xc1,
+	0x9e, 0x87, 0x5c, 0x07, 0x85, 0x5a, 0x92, 0x6a, 0x1e, 0x17, 0xf8, 0x51, 0x12, 0xa9, 0xcb, 0x26,
+	0x02, 0xee, 0x66, 0x89, 0x0b, 0xd3, 0x24, 0xef, 0x4d, 0x6f, 0x12, 0x2e, 0xf6, 0x98, 0x0b, 0x05,
+	0xd6, 0x0b, 0x5c, 0x90, 0xe4, 0x15, 0xf8, 0x41, 0x02, 0xcb, 0x13, 0xc9, 0x81, 0x8d, 0xac, 0x42,
+	0x41, 0xe4, 0x64, 0x75, 0x5a, 0x8b, 0xb0, 0x70, 0xc0, 0x2c, 0xa8, 0x70, 0xa7, 0xc0, 0x82, 0xc9,
+	0x5e, 0x10, 0x01, 0x82, 0x57, 0x60, 0x31, 0x1b, 0x07, 0xa8, 0xe4, 0xf8, 0x73, 0x01, 0x92, 0xb7,
+	0x1f, 0xad, 0x0b, 0xf1, 0x7d, 0x26, 0xbe, 0x0d, 0xb7, 0x8a, 0xc4, 0xd3, 0x80, 0xc1, 0x4f, 0xe9,
+	0x25, 0x32, 0x5f, 0xef, 0xc4, 0x25, 0x8a, 0xe2, 0x36, 0x71, 0x89, 0xc2, 0x00, 0xa8, 0x4d, 0xe6,
+	0x64, 0x0f, 0xaa, 0x45, 0x97, 0x48, 0x5e, 0xe9, 0xb1, 0xcf, 0x1f, 0x7e, 0x93, 0xf2, 0xf9, 0x1e,
+	0xff, 0xb4, 0x61, 0xf3, 0x11, 0xc1, 0x82, 0x90, 0xc8, 0xcf, 0xfe, 0xa9, 0x57, 0x78, 0xec, 0x30,
+	0x8f, 0x87, 0xb0, 0x39, 0xd5, 0xe3, 0xf8, 0xff, 0x09, 0xd2, 0x7d, 0x75, 0x73, 0xa7, 0x48, 0xb7,
+	0x77, 0x8a, 0xf4, 0xfb, 0x4e, 0x91, 0x3e, 0xdf, 0x2b, 0xa5, 0xdb, 0x7b, 0xa5, 0xf4, 0xf3, 0x5e,
+	0x29, 0xbd, 0x3d, 0xb4, 0x1d, 0x3a, 0x18, 0xf5, 0x5b, 0x26, 0xf6, 0xb4, 0x00, 0xd9, 0xf6, 0xf5,
+	0xbb, 0x68, 0x8c, 0x37, 0x3a, 0xd2, 0xae, 0x38, 0x39, 0xbd, 0x0e, 0x10, 0xe9, 0xcf, 0xb3, 0x9f,
+	0xa7, 0xa3, 0xbf, 0x01, 0x00, 0x00, 0xff, 0xff, 0xaa, 0x34, 0x3a, 0x6b, 0x64, 0x07, 0x00, 0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -454,6 +693,10 @@ type QueryClient interface {
 	QueryCommitPeriod(ctx context.Context, in *QueryCommitPeriodRequest, opts ...grpc.CallOption) (*QueryCommitPeriodResponse, error)
 	// QueryCellarIDs returns all cellars and current tick ranges
 	QueryCellarIDs(ctx context.Context, in *QueryCellarIDsRequest, opts ...grpc.CallOption) (*QueryCellarIDsResponse, error)
+	// QueryScheduledCorks returns all scheduled corks
+	QueryScheduledCorks(ctx context.Context, in *QueryScheduledCorksRequest, opts ...grpc.CallOption) (*QueryScheduledCorksResponse, error)
+	// QueryScheduledBlockHeights returns all scheduled block heights
+	QueryScheduledBlockHeights(ctx context.Context, in *QueryScheduledBlockHeightsRequest, opts ...grpc.CallOption) (*QueryScheduledBlockHeightsResponse, error)
 }
 
 type queryClient struct {
@@ -500,6 +743,24 @@ func (c *queryClient) QueryCellarIDs(ctx context.Context, in *QueryCellarIDsRequ
 	return out, nil
 }
 
+func (c *queryClient) QueryScheduledCorks(ctx context.Context, in *QueryScheduledCorksRequest, opts ...grpc.CallOption) (*QueryScheduledCorksResponse, error) {
+	out := new(QueryScheduledCorksResponse)
+	err := c.cc.Invoke(ctx, "/cork.v1.Query/QueryScheduledCorks", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *queryClient) QueryScheduledBlockHeights(ctx context.Context, in *QueryScheduledBlockHeightsRequest, opts ...grpc.CallOption) (*QueryScheduledBlockHeightsResponse, error) {
+	out := new(QueryScheduledBlockHeightsResponse)
+	err := c.cc.Invoke(ctx, "/cork.v1.Query/QueryScheduledBlockHeights", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // QueryServer is the server API for Query service.
 type QueryServer interface {
 	// QueryParams queries the allocation module parameters.
@@ -510,6 +771,10 @@ type QueryServer interface {
 	QueryCommitPeriod(context.Context, *QueryCommitPeriodRequest) (*QueryCommitPeriodResponse, error)
 	// QueryCellarIDs returns all cellars and current tick ranges
 	QueryCellarIDs(context.Context, *QueryCellarIDsRequest) (*QueryCellarIDsResponse, error)
+	// QueryScheduledCorks returns all scheduled corks
+	QueryScheduledCorks(context.Context, *QueryScheduledCorksRequest) (*QueryScheduledCorksResponse, error)
+	// QueryScheduledBlockHeights returns all scheduled block heights
+	QueryScheduledBlockHeights(context.Context, *QueryScheduledBlockHeightsRequest) (*QueryScheduledBlockHeightsResponse, error)
 }
 
 // UnimplementedQueryServer can be embedded to have forward compatible implementations.
@@ -527,6 +792,12 @@ func (*UnimplementedQueryServer) QueryCommitPeriod(ctx context.Context, req *Que
 }
 func (*UnimplementedQueryServer) QueryCellarIDs(ctx context.Context, req *QueryCellarIDsRequest) (*QueryCellarIDsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method QueryCellarIDs not implemented")
+}
+func (*UnimplementedQueryServer) QueryScheduledCorks(ctx context.Context, req *QueryScheduledCorksRequest) (*QueryScheduledCorksResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method QueryScheduledCorks not implemented")
+}
+func (*UnimplementedQueryServer) QueryScheduledBlockHeights(ctx context.Context, req *QueryScheduledBlockHeightsRequest) (*QueryScheduledBlockHeightsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method QueryScheduledBlockHeights not implemented")
 }
 
 func RegisterQueryServer(s grpc1.Server, srv QueryServer) {
@@ -605,6 +876,42 @@ func _Query_QueryCellarIDs_Handler(srv interface{}, ctx context.Context, dec fun
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Query_QueryScheduledCorks_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryScheduledCorksRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QueryServer).QueryScheduledCorks(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/cork.v1.Query/QueryScheduledCorks",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServer).QueryScheduledCorks(ctx, req.(*QueryScheduledCorksRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Query_QueryScheduledBlockHeights_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryScheduledBlockHeightsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QueryServer).QueryScheduledBlockHeights(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/cork.v1.Query/QueryScheduledBlockHeights",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServer).QueryScheduledBlockHeights(ctx, req.(*QueryScheduledBlockHeightsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 var _Query_serviceDesc = grpc.ServiceDesc{
 	ServiceName: "cork.v1.Query",
 	HandlerType: (*QueryServer)(nil),
@@ -624,6 +931,14 @@ var _Query_serviceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "QueryCellarIDs",
 			Handler:    _Query_QueryCellarIDs_Handler,
+		},
+		{
+			MethodName: "QueryScheduledCorks",
+			Handler:    _Query_QueryScheduledCorks_Handler,
+		},
+		{
+			MethodName: "QueryScheduledBlockHeights",
+			Handler:    _Query_QueryScheduledBlockHeights_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
@@ -862,6 +1177,177 @@ func (m *QueryCellarIDsResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) 
 	return len(dAtA) - i, nil
 }
 
+func (m *QueryScheduledCorksRequest) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *QueryScheduledCorksRequest) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *QueryScheduledCorksRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	return len(dAtA) - i, nil
+}
+
+func (m *ScheduledCork) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *ScheduledCork) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *ScheduledCork) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.Validator) > 0 {
+		i -= len(m.Validator)
+		copy(dAtA[i:], m.Validator)
+		i = encodeVarintQuery(dAtA, i, uint64(len(m.Validator)))
+		i--
+		dAtA[i] = 0x1a
+	}
+	if m.BlockHeight != 0 {
+		i = encodeVarintQuery(dAtA, i, uint64(m.BlockHeight))
+		i--
+		dAtA[i] = 0x10
+	}
+	if m.Cork != nil {
+		{
+			size, err := m.Cork.MarshalToSizedBuffer(dAtA[:i])
+			if err != nil {
+				return 0, err
+			}
+			i -= size
+			i = encodeVarintQuery(dAtA, i, uint64(size))
+		}
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *QueryScheduledCorksResponse) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *QueryScheduledCorksResponse) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *QueryScheduledCorksResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.Corks) > 0 {
+		for iNdEx := len(m.Corks) - 1; iNdEx >= 0; iNdEx-- {
+			{
+				size, err := m.Corks[iNdEx].MarshalToSizedBuffer(dAtA[:i])
+				if err != nil {
+					return 0, err
+				}
+				i -= size
+				i = encodeVarintQuery(dAtA, i, uint64(size))
+			}
+			i--
+			dAtA[i] = 0xa
+		}
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *QueryScheduledBlockHeightsRequest) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *QueryScheduledBlockHeightsRequest) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *QueryScheduledBlockHeightsRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	return len(dAtA) - i, nil
+}
+
+func (m *QueryScheduledBlockHeightsResponse) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *QueryScheduledBlockHeightsResponse) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *QueryScheduledBlockHeightsResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.BlockHeights) > 0 {
+		dAtA4 := make([]byte, len(m.BlockHeights)*10)
+		var j3 int
+		for _, num := range m.BlockHeights {
+			for num >= 1<<7 {
+				dAtA4[j3] = uint8(uint64(num)&0x7f | 0x80)
+				num >>= 7
+				j3++
+			}
+			dAtA4[j3] = uint8(num)
+			j3++
+		}
+		i -= j3
+		copy(dAtA[i:], dAtA4[:j3])
+		i = encodeVarintQuery(dAtA, i, uint64(j3))
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
 func encodeVarintQuery(dAtA []byte, offset int, v uint64) int {
 	offset -= sovQuery(v)
 	base := offset
@@ -964,6 +1450,75 @@ func (m *QueryCellarIDsResponse) Size() (n int) {
 			l = len(s)
 			n += 1 + l + sovQuery(uint64(l))
 		}
+	}
+	return n
+}
+
+func (m *QueryScheduledCorksRequest) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	return n
+}
+
+func (m *ScheduledCork) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if m.Cork != nil {
+		l = m.Cork.Size()
+		n += 1 + l + sovQuery(uint64(l))
+	}
+	if m.BlockHeight != 0 {
+		n += 1 + sovQuery(uint64(m.BlockHeight))
+	}
+	l = len(m.Validator)
+	if l > 0 {
+		n += 1 + l + sovQuery(uint64(l))
+	}
+	return n
+}
+
+func (m *QueryScheduledCorksResponse) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if len(m.Corks) > 0 {
+		for _, e := range m.Corks {
+			l = e.Size()
+			n += 1 + l + sovQuery(uint64(l))
+		}
+	}
+	return n
+}
+
+func (m *QueryScheduledBlockHeightsRequest) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	return n
+}
+
+func (m *QueryScheduledBlockHeightsResponse) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if len(m.BlockHeights) > 0 {
+		l = 0
+		for _, e := range m.BlockHeights {
+			l += sovQuery(uint64(e))
+		}
+		n += 1 + sovQuery(uint64(l)) + l
 	}
 	return n
 }
@@ -1509,6 +2064,453 @@ func (m *QueryCellarIDsResponse) Unmarshal(dAtA []byte) error {
 			}
 			m.CellarIds = append(m.CellarIds, string(dAtA[iNdEx:postIndex]))
 			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuery(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *QueryScheduledCorksRequest) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuery
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: QueryScheduledCorksRequest: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: QueryScheduledCorksRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuery(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *ScheduledCork) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuery
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: ScheduledCork: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: ScheduledCork: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Cork", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Cork == nil {
+				m.Cork = &Cork{}
+			}
+			if err := m.Cork.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 2:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field BlockHeight", wireType)
+			}
+			m.BlockHeight = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.BlockHeight |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 3:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Validator", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Validator = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuery(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *QueryScheduledCorksResponse) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuery
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: QueryScheduledCorksResponse: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: QueryScheduledCorksResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Corks", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Corks = append(m.Corks, &ScheduledCork{})
+			if err := m.Corks[len(m.Corks)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuery(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *QueryScheduledBlockHeightsRequest) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuery
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: QueryScheduledBlockHeightsRequest: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: QueryScheduledBlockHeightsRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuery(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *QueryScheduledBlockHeightsResponse) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuery
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: QueryScheduledBlockHeightsResponse: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: QueryScheduledBlockHeightsResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType == 0 {
+				var v uint64
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return ErrIntOverflowQuery
+					}
+					if iNdEx >= l {
+						return io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					v |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				m.BlockHeights = append(m.BlockHeights, v)
+			} else if wireType == 2 {
+				var packedLen int
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return ErrIntOverflowQuery
+					}
+					if iNdEx >= l {
+						return io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					packedLen |= int(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				if packedLen < 0 {
+					return ErrInvalidLengthQuery
+				}
+				postIndex := iNdEx + packedLen
+				if postIndex < 0 {
+					return ErrInvalidLengthQuery
+				}
+				if postIndex > l {
+					return io.ErrUnexpectedEOF
+				}
+				var elementCount int
+				var count int
+				for _, integer := range dAtA[iNdEx:postIndex] {
+					if integer < 128 {
+						count++
+					}
+				}
+				elementCount = count
+				if elementCount != 0 && len(m.BlockHeights) == 0 {
+					m.BlockHeights = make([]uint64, 0, elementCount)
+				}
+				for iNdEx < postIndex {
+					var v uint64
+					for shift := uint(0); ; shift += 7 {
+						if shift >= 64 {
+							return ErrIntOverflowQuery
+						}
+						if iNdEx >= l {
+							return io.ErrUnexpectedEOF
+						}
+						b := dAtA[iNdEx]
+						iNdEx++
+						v |= uint64(b&0x7F) << shift
+						if b < 0x80 {
+							break
+						}
+					}
+					m.BlockHeights = append(m.BlockHeights, v)
+				}
+			} else {
+				return fmt.Errorf("proto: wrong wireType = %d for field BlockHeights", wireType)
+			}
 		default:
 			iNdEx = preIndex
 			skippy, err := skipQuery(dAtA[iNdEx:])

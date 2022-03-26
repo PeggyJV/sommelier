@@ -63,6 +63,7 @@
     - [CellarIDSet](#cork.v1.CellarIDSet)
     - [Cork](#cork.v1.Cork)
     - [RemoveManagedCellarIDsProposal](#cork.v1.RemoveManagedCellarIDsProposal)
+    - [ScheduledBlockHeights](#cork.v1.ScheduledBlockHeights)
   
 - [cork/v1/tx.proto](#cork/v1/tx.proto)
     - [MsgScheduleCorkRequest](#cork.v1.MsgScheduleCorkRequest)
@@ -83,8 +84,13 @@
     - [QueryCommitPeriodResponse](#cork.v1.QueryCommitPeriodResponse)
     - [QueryParamsRequest](#cork.v1.QueryParamsRequest)
     - [QueryParamsResponse](#cork.v1.QueryParamsResponse)
+    - [QueryScheduledBlockHeightsRequest](#cork.v1.QueryScheduledBlockHeightsRequest)
+    - [QueryScheduledBlockHeightsResponse](#cork.v1.QueryScheduledBlockHeightsResponse)
+    - [QueryScheduledCorksRequest](#cork.v1.QueryScheduledCorksRequest)
+    - [QueryScheduledCorksResponse](#cork.v1.QueryScheduledCorksResponse)
     - [QuerySubmittedCorksRequest](#cork.v1.QuerySubmittedCorksRequest)
     - [QuerySubmittedCorksResponse](#cork.v1.QuerySubmittedCorksResponse)
+    - [ScheduledCork](#cork.v1.ScheduledCork)
   
     - [Query](#cork.v1.Query)
   
@@ -795,6 +801,21 @@ MsgSubmitCorkRequest - sdk.Msg for submitting calls to Ethereum through the grav
 
 
 
+
+<a name="cork.v1.ScheduledBlockHeights"></a>
+
+### ScheduledBlockHeights
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `heights` | [uint64](#uint64) | repeated |  |
+
+
+
+
+
  <!-- end messages -->
 
  <!-- end enums -->
@@ -1017,6 +1038,56 @@ QueryParamsRequest is the response type for the Query/Params gRPC method.
 
 
 
+<a name="cork.v1.QueryScheduledBlockHeightsRequest"></a>
+
+### QueryScheduledBlockHeightsRequest
+QueryScheduledBlockHeightsRequest
+
+
+
+
+
+
+<a name="cork.v1.QueryScheduledBlockHeightsResponse"></a>
+
+### QueryScheduledBlockHeightsResponse
+QueryScheduledBlockHeightsResponse
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `blockHeights` | [uint64](#uint64) | repeated |  |
+
+
+
+
+
+
+<a name="cork.v1.QueryScheduledCorksRequest"></a>
+
+### QueryScheduledCorksRequest
+QueryScheduledCorksRequest
+
+
+
+
+
+
+<a name="cork.v1.QueryScheduledCorksResponse"></a>
+
+### QueryScheduledCorksResponse
+QueryScheduledCorksResponse
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `corks` | [ScheduledCork](#cork.v1.ScheduledCork) | repeated |  |
+
+
+
+
+
+
 <a name="cork.v1.QuerySubmittedCorksRequest"></a>
 
 ### QuerySubmittedCorksRequest
@@ -1041,6 +1112,23 @@ QuerySubmittedCorksResponse is the response type for the Query/QuerySubmittedCor
 
 
 
+
+<a name="cork.v1.ScheduledCork"></a>
+
+### ScheduledCork
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `cork` | [Cork](#cork.v1.Cork) |  |  |
+| `block_height` | [uint64](#uint64) |  |  |
+| `validator` | [string](#string) |  |  |
+
+
+
+
+
  <!-- end messages -->
 
  <!-- end enums -->
@@ -1058,9 +1146,9 @@ Query defines the gRPC query service for the cork module.
 | `QueryParams` | [QueryParamsRequest](#cork.v1.QueryParamsRequest) | [QueryParamsResponse](#cork.v1.QueryParamsResponse) | QueryParams queries the allocation module parameters. | GET|/sommelier/cork/v1/params|
 | `QuerySubmittedCorks` | [QuerySubmittedCorksRequest](#cork.v1.QuerySubmittedCorksRequest) | [QuerySubmittedCorksResponse](#cork.v1.QuerySubmittedCorksResponse) | QuerySubmittedCorks queries the submitted corks awaiting vote | GET|/sommelier/cork/v1/submitted|
 | `QueryCommitPeriod` | [QueryCommitPeriodRequest](#cork.v1.QueryCommitPeriodRequest) | [QueryCommitPeriodResponse](#cork.v1.QueryCommitPeriodResponse) | QueryVotePeriod queries the heights for the current voting period (current, start and end) | GET|/sommelier/cork/v1/commit_period|
-| `QueryCellarIDs` | [QueryCellarIDsRequest](#cork.v1.QueryCellarIDsRequest) | [QueryCellarIDsResponse](#cork.v1.QueryCellarIDsResponse) | QueryCellarIDs returns all cellars and current tick ranges
-
-QueryScheduledCorks returns all scheduled corks rpc QueryScheduledCorks | GET|/sommelier/cork/v1/cellar_ids|
+| `QueryCellarIDs` | [QueryCellarIDsRequest](#cork.v1.QueryCellarIDsRequest) | [QueryCellarIDsResponse](#cork.v1.QueryCellarIDsResponse) | QueryCellarIDs returns all cellars and current tick ranges | GET|/sommelier/cork/v1/cellar_ids|
+| `QueryScheduledCorks` | [QueryScheduledCorksRequest](#cork.v1.QueryScheduledCorksRequest) | [QueryScheduledCorksResponse](#cork.v1.QueryScheduledCorksResponse) | QueryScheduledCorks returns all scheduled corks | GET|/sommelier/cork/v1/scheduled_corks|
+| `QueryScheduledBlockHeights` | [QueryScheduledBlockHeightsRequest](#cork.v1.QueryScheduledBlockHeightsRequest) | [QueryScheduledBlockHeightsResponse](#cork.v1.QueryScheduledBlockHeightsResponse) | QueryScheduledBlockHeights returns all scheduled block heights | GET|/sommelier/cork/v1/scheduled_block_heights|
 
  <!-- end services -->
 

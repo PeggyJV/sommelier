@@ -63,7 +63,7 @@ func (k Keeper) SubmitCork(c context.Context, msg *types.MsgSubmitCorkRequest) (
 	return &types.MsgSubmitCorkResponse{}, nil
 }
 
-// ScheduleCork
+// ScheduleCork implements types.MsgServer
 func (k Keeper) ScheduleCork(c context.Context, msg *types.MsgScheduleCorkRequest) (*types.MsgScheduleCorkResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
 
@@ -78,6 +78,7 @@ func (k Keeper) ScheduleCork(c context.Context, msg *types.MsgScheduleCorkReques
 	}
 
 	k.SetScheduledCork(ctx, validatorAddr, msg.BlockHeight, *msg.Cork)
+	k.AddScheduledBlockHeight(ctx, msg.BlockHeight)
 
 	ctx.EventManager().EmitEvents(
 		sdk.Events{

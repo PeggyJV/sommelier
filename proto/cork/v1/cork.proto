@@ -17,6 +17,10 @@ message CellarIDSet {
   repeated string ids = 1;
 }
 
+message ScheduledBlockHeights {
+  repeated uint64 heights = 1;
+}
+
 message AddManagedCellarIDsProposal {
   string title = 1;
   string description = 2;
@@ -28,3 +32,4 @@ message RemoveManagedCellarIDsProposal {
   string description = 2;
   CellarIDSet cellar_ids = 3;
 }
+

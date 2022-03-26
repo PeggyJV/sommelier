@@ -143,16 +143,6 @@ func (k Keeper) DeleteScheduledCork(ctx sdk.Context, val sdk.ValAddress, blockHe
 	ctx.KVStore(k.storeKey).Delete(types.GetScheduledCorkKey(val, blockHeight, contract))
 }
 
-// HasScheduledCork gets the existence of any scheduled commit for a given validator
-// CONTRACT: must provide the validator address here not the delegate address
-func (k Keeper) HasScheduledCork(ctx sdk.Context, val sdk.ValAddress) bool {
-	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.GetScheduledCorkValidatorKeyPrefix(val))
-	iter := store.Iterator(nil, nil)
-	defer iter.Close()
-
-	return iter.Valid()
-}
-
 // IterateScheduledCorks iterates over all scheduled corks in the store
 func (k Keeper) IterateScheduledCorks(ctx sdk.Context, cb func(val sdk.ValAddress, blockHeight uint64, cel common.Address, cork types.Cork) (stop bool)) {
 	store := ctx.KVStore(k.storeKey)
@@ -162,8 +152,8 @@ func (k Keeper) IterateScheduledCorks(ctx sdk.Context, cb func(val sdk.ValAddres
 	for ; iter.Valid(); iter.Next() {
 		var cork types.Cork
 		keyPair := bytes.NewBuffer(bytes.TrimPrefix(iter.Key(), []byte{types.ScheduledCorkForAddressKey}))
-		val := sdk.ValAddress(keyPair.Next(20))
 		blockHeight := binary.BigEndian.Uint64(keyPair.Next(8))
+		val := sdk.ValAddress(keyPair.Next(20))
 		cel := common.BytesToAddress(keyPair.Bytes())
 
 		k.cdc.MustUnmarshal(iter.Value(), &cork)
@@ -173,25 +163,89 @@ func (k Keeper) IterateScheduledCorks(ctx sdk.Context, cb func(val sdk.ValAddres
 	}
 }
 
-func (k Keeper) ScheduledBlockHeights(ctx sdk.Context) []uint64 {
-	blockHeightsMap := make(map[uint64]bool)
-	k.IterateScheduledCorks(ctx, func(_ sdk.ValAddress, blockHeight uint64, _ common.Address, _ types.Cork) (stop bool) {
-		blockHeightsMap[blockHeight] = true
-		return false
-	})
+///////////////////////////
+// ScheduledBlockHeights //
+///////////////////////////
 
-	index := 0
-	blockHeights := make([]uint64, len(blockHeightsMap))
+func (k Keeper) AddScheduledBlockHeight(ctx sdk.Context, height uint64) []uint64 {
+	bz := ctx.KVStore(k.storeKey).Get(types.GetScheduledBlockHeightsKey())
 
-	for k := range blockHeightsMap {
-		blockHeights[index] = k
-		index++
+	var heights types.ScheduledBlockHeights
+	if len(bz) != 0 {
+		k.cdc.MustUnmarshal(bz, &heights)
 	}
 
-	sort.Slice(blockHeights, func(i, j int) bool {
+	for _, h := range heights.Heights {
+		if h == height {
+			return heights.Heights
+		}
+	}
+
+	heights.Heights = append(heights.Heights, height)
+	sort.Slice(heights.Heights, func(i, j int) bool {
 		return i < j
 	})
-	return blockHeights
+
+	bz = k.cdc.MustMarshal(&heights)
+	ctx.KVStore(k.storeKey).Set(types.GetScheduledBlockHeightsKey(), bz)
+	return heights.Heights
+}
+
+func (k Keeper) RemoveScheduledBlockHeight(ctx sdk.Context, height uint64) []uint64 {
+	bz := ctx.KVStore(k.storeKey).Get(types.GetScheduledBlockHeightsKey())
+
+	var heights types.ScheduledBlockHeights
+	if len(bz) == 0 {
+		return []uint64{}
+	}
+	k.cdc.MustUnmarshal(bz, &heights)
+
+	var index int
+	for i, h := range heights.Heights {
+		if h == height {
+			index = i
+		}
+	}
+	heights.Heights = append(heights.Heights[:index], heights.Heights[index+1:]...)
+
+	heights.Heights = append(heights.Heights, height)
+	sort.Slice(heights.Heights, func(i, j int) bool {
+		return i < j
+	})
+
+	bz = k.cdc.MustMarshal(&heights)
+	ctx.KVStore(k.storeKey).Set(types.GetScheduledBlockHeightsKey(), bz)
+	return heights.Heights
+}
+
+func (k Keeper) GetScheduledBlockHeights(ctx sdk.Context) []uint64 {
+	bz := ctx.KVStore(k.storeKey).Get(types.GetScheduledBlockHeightsKey())
+
+	var heights types.ScheduledBlockHeights
+	if len(bz) == 0 {
+		return []uint64{}
+	}
+	k.cdc.MustUnmarshal(bz, &heights)
+
+	return heights.Heights
+}
+
+func (k Keeper) HasScheduledBlockHeight(ctx sdk.Context, height uint64) bool {
+	bz := ctx.KVStore(k.storeKey).Get(types.GetScheduledBlockHeightsKey())
+
+	var heights types.ScheduledBlockHeights
+	if len(bz) == 0 {
+		return false
+	}
+	k.cdc.MustUnmarshal(bz, &heights)
+
+	for _, h := range heights.Heights {
+		if h == height {
+			return true
+		}
+	}
+
+	return false
 }
 
 //////////////////

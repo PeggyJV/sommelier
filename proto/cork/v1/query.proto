@@ -29,7 +29,13 @@ service Query {
     option (google.api.http).get = "/sommelier/cork/v1/cellar_ids";
   }
   // QueryScheduledCorks returns all scheduled corks
-//  rpc QueryScheduledCorks
+  rpc QueryScheduledCorks(QueryScheduledCorksRequest) returns (QueryScheduledCorksResponse) {
+    option (google.api.http).get = "/sommelier/cork/v1/scheduled_corks";
+  }
+  // QueryScheduledBlockHeights returns all scheduled block heights
+  rpc QueryScheduledBlockHeights(QueryScheduledBlockHeightsRequest) returns (QueryScheduledBlockHeightsResponse) {
+    option (google.api.http).get = "/sommelier/cork/v1/scheduled_block_heights";
+  }
 }
 
 // QueryParamsRequest is the request type for the Query/Params gRPC method.
@@ -71,4 +77,26 @@ message QueryCellarIDsRequest {}
 // QueryCellarIDsResponse is the response type for Query/QueryCellars gRPC method.
 message QueryCellarIDsResponse {
   repeated string cellar_ids = 1;
+}
+
+// QueryScheduledCorksRequest
+message QueryScheduledCorksRequest {}
+
+message ScheduledCork {
+  Cork cork = 1;
+  uint64 block_height = 2;
+  string validator = 3;
+}
+
+// QueryScheduledCorksResponse
+message QueryScheduledCorksResponse {
+  repeated ScheduledCork corks = 1;
+}
+
+// QueryScheduledBlockHeightsRequest
+message QueryScheduledBlockHeightsRequest {}
+
+// QueryScheduledBlockHeightsResponse
+message QueryScheduledBlockHeightsResponse {
+  repeated uint64 blockHeights = 1;
 }
