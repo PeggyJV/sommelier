@@ -2,6 +2,7 @@ package keeper
 
 import (
 	"context"
+	"fmt"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
@@ -77,7 +78,7 @@ func (k Keeper) ScheduleCork(c context.Context, msg *types.MsgScheduleCorkReques
 		return nil, err
 	}
 
-	k.SetScheduledCork(ctx, validatorAddr, msg.BlockHeight, *msg.Cork)
+	k.SetScheduledCork(ctx, msg.BlockHeight, validatorAddr, *msg.Cork)
 	k.AddScheduledBlockHeight(ctx, msg.BlockHeight)
 
 	ctx.EventManager().EmitEvents(
@@ -91,6 +92,7 @@ func (k Keeper) ScheduleCork(c context.Context, msg *types.MsgScheduleCorkReques
 				sdk.NewAttribute(types.AttributeKeySigner, signer.String()),
 				sdk.NewAttribute(types.AttributeKeyValidator, validatorAddr.String()),
 				sdk.NewAttribute(types.AttributeKeyCork, msg.Cork.String()),
+				sdk.NewAttribute(types.AttributeKeyBlockHeight, fmt.Sprintf("%d", msg.BlockHeight)),
 			),
 		},
 	)

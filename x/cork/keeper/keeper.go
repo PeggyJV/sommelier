@@ -117,9 +117,9 @@ func (k Keeper) IterateCorks(ctx sdk.Context, handler func(val sdk.ValAddress, c
 // Scheduled Corks //
 /////////////////////
 
-func (k Keeper) SetScheduledCork(ctx sdk.Context, val sdk.ValAddress, blockHeight uint64, cork types.Cork) {
+func (k Keeper) SetScheduledCork(ctx sdk.Context, blockHeight uint64, val sdk.ValAddress, cork types.Cork) {
 	bz := k.cdc.MustMarshal(&cork)
-	ctx.KVStore(k.storeKey).Set(types.GetScheduledCorkKey(val, blockHeight, common.HexToAddress(cork.TargetContractAddress)), bz)
+	ctx.KVStore(k.storeKey).Set(types.GetScheduledCorkKey(blockHeight, val, common.HexToAddress(cork.TargetContractAddress)), bz)
 }
 
 // GetScheduledCork gets the scheduled cork for a given validator
@@ -127,7 +127,7 @@ func (k Keeper) SetScheduledCork(ctx sdk.Context, val sdk.ValAddress, blockHeigh
 func (k Keeper) GetScheduledCork(ctx sdk.Context, val sdk.ValAddress, blockHeight uint64, contract common.Address) (types.Cork, bool) {
 	store := ctx.KVStore(k.storeKey)
 
-	bz := store.Get(types.GetScheduledCorkKey(val, blockHeight, contract))
+	bz := store.Get(types.GetScheduledCorkKey(blockHeight, val, contract))
 	if len(bz) == 0 {
 		return types.Cork{}, false
 	}
@@ -140,7 +140,7 @@ func (k Keeper) GetScheduledCork(ctx sdk.Context, val sdk.ValAddress, blockHeigh
 // DeleteScheduledCork deletes the scheduled cork for a given validator
 // CONTRACT: must provide the validator address here not the delegate address
 func (k Keeper) DeleteScheduledCork(ctx sdk.Context, val sdk.ValAddress, blockHeight uint64, contract common.Address) {
-	ctx.KVStore(k.storeKey).Delete(types.GetScheduledCorkKey(val, blockHeight, contract))
+	ctx.KVStore(k.storeKey).Delete(types.GetScheduledCorkKey(blockHeight, val, contract))
 }
 
 // IterateScheduledCorks iterates over all scheduled corks in the store
