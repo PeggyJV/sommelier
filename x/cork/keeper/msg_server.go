@@ -3,7 +3,6 @@ package keeper
 import (
 	"context"
 	"fmt"
-
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
@@ -72,6 +71,10 @@ func (k Keeper) ScheduleCork(c context.Context, msg *types.MsgScheduleCorkReques
 		return nil, types.ErrUnmanagedCellarAddress
 	}
 
+	if msg.BlockHeight < uint64(ctx.BlockHeight()) {
+		return nil, types.ErrSchedulingInThePast
+	}
+
 	signer := msg.MustGetSigner()
 	validatorAddr, err := k.signerToValAddr(ctx, signer)
 	if err != nil {
@@ -79,7 +82,6 @@ func (k Keeper) ScheduleCork(c context.Context, msg *types.MsgScheduleCorkReques
 	}
 
 	k.SetScheduledCork(ctx, msg.BlockHeight, validatorAddr, *msg.Cork)
-	k.AddScheduledBlockHeight(ctx, msg.BlockHeight)
 
 	ctx.EventManager().EmitEvents(
 		sdk.Events{

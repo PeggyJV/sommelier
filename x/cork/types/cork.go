@@ -2,7 +2,6 @@ package types
 
 import (
 	"bytes"
-
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/crypto"
 	tmbytes "github.com/tendermint/tendermint/libs/bytes"
@@ -25,4 +24,16 @@ func (c *Cork) Equals(other Cork) bool {
 	}
 
 	return true
+}
+
+func (c *Cork) ValidateBasic() error {
+	if len(c.EncodedContractCall) == 0 {
+		return ErrEmptyContractCall
+	}
+
+	if !common.IsHexAddress(c.TargetContractAddress) {
+		return ErrInvalidAddress
+	}
+
+	return nil
 }

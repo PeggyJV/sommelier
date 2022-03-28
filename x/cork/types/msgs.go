@@ -93,7 +93,7 @@ func (m *MsgScheduleCorkRequest) ValidateBasic() error {
 		return sdkerrors.Wrap(sdkerrors.ErrInvalidAddress, err.Error())
 	}
 
-	return nil
+	return m.Cork.ValidateBasic()
 }
 
 // GetSignBytes implements sdk.Msg

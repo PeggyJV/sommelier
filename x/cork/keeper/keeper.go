@@ -3,8 +3,6 @@ package keeper
 import (
 	"bytes"
 	"encoding/binary"
-	"sort"
-
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -167,85 +165,19 @@ func (k Keeper) IterateScheduledCorks(ctx sdk.Context, cb func(val sdk.ValAddres
 // ScheduledBlockHeights //
 ///////////////////////////
 
-func (k Keeper) AddScheduledBlockHeight(ctx sdk.Context, height uint64) []uint64 {
-	bz := ctx.KVStore(k.storeKey).Get(types.GetScheduledBlockHeightsKey())
-
-	var heights types.ScheduledBlockHeights
-	if len(bz) != 0 {
-		k.cdc.MustUnmarshal(bz, &heights)
-	}
-
-	for _, h := range heights.Heights {
-		if h == height {
-			return heights.Heights
-		}
-	}
-
-	heights.Heights = append(heights.Heights, height)
-	sort.Slice(heights.Heights, func(i, j int) bool {
-		return i < j
-	})
-
-	bz = k.cdc.MustMarshal(&heights)
-	ctx.KVStore(k.storeKey).Set(types.GetScheduledBlockHeightsKey(), bz)
-	return heights.Heights
-}
-
-func (k Keeper) RemoveScheduledBlockHeight(ctx sdk.Context, height uint64) []uint64 {
-	bz := ctx.KVStore(k.storeKey).Get(types.GetScheduledBlockHeightsKey())
-
-	var heights types.ScheduledBlockHeights
-	if len(bz) == 0 {
-		return []uint64{}
-	}
-	k.cdc.MustUnmarshal(bz, &heights)
-
-	var index int
-	for i, h := range heights.Heights {
-		if h == height {
-			index = i
-		}
-	}
-	heights.Heights = append(heights.Heights[:index], heights.Heights[index+1:]...)
-
-	heights.Heights = append(heights.Heights, height)
-	sort.Slice(heights.Heights, func(i, j int) bool {
-		return i < j
-	})
-
-	bz = k.cdc.MustMarshal(&heights)
-	ctx.KVStore(k.storeKey).Set(types.GetScheduledBlockHeightsKey(), bz)
-	return heights.Heights
-}
-
 func (k Keeper) GetScheduledBlockHeights(ctx sdk.Context) []uint64 {
-	bz := ctx.KVStore(k.storeKey).Get(types.GetScheduledBlockHeightsKey())
+	var heights []uint64
 
-	var heights types.ScheduledBlockHeights
-	if len(bz) == 0 {
-		return []uint64{}
-	}
-	k.cdc.MustUnmarshal(bz, &heights)
-
-	return heights.Heights
-}
-
-func (k Keeper) HasScheduledBlockHeight(ctx sdk.Context, height uint64) bool {
-	bz := ctx.KVStore(k.storeKey).Get(types.GetScheduledBlockHeightsKey())
-
-	var heights types.ScheduledBlockHeights
-	if len(bz) == 0 {
-		return false
-	}
-	k.cdc.MustUnmarshal(bz, &heights)
-
-	for _, h := range heights.Heights {
-		if h == height {
-			return true
+	latestHeight := uint64(0)
+	k.IterateScheduledCorks(ctx, func(_ sdk.ValAddress, blockHeight uint64, _ common.Address, _ types.Cork) (stop bool) {
+		if blockHeight > latestHeight {
+			heights = append(heights, blockHeight)
 		}
-	}
+		latestHeight = blockHeight
+		return false
+	})
 
-	return false
+	return heights
 }
 
 //////////////////
@@ -367,9 +299,9 @@ func (k Keeper) GetApprovedScheduledCorks(ctx sdk.Context, currentBlockHeight ui
 	totalPower := k.stakingKeeper.GetLastTotalPower(ctx)
 
 	k.IterateScheduledCorks(ctx, func(val sdk.ValAddress, scheduledBlockHeight uint64, addr common.Address, cork types.Cork) (stop bool) {
-		// only operate on scheduled corksForBlockHeight that are valid
-		if currentBlockHeight < scheduledBlockHeight {
-			return false
+		if currentBlockHeight != scheduledBlockHeight {
+			// only operate on scheduled corksForBlockHeight that are valid, quit early when a further one is found
+			return true
 		}
 
 		validator := k.stakingKeeper.Validator(ctx, val)

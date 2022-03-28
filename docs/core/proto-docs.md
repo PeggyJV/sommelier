@@ -63,7 +63,6 @@
     - [CellarIDSet](#cork.v1.CellarIDSet)
     - [Cork](#cork.v1.Cork)
     - [RemoveManagedCellarIDsProposal](#cork.v1.RemoveManagedCellarIDsProposal)
-    - [ScheduledBlockHeights](#cork.v1.ScheduledBlockHeights)
   
 - [cork/v1/tx.proto](#cork/v1/tx.proto)
     - [MsgScheduleCorkRequest](#cork.v1.MsgScheduleCorkRequest)
@@ -796,21 +795,6 @@ MsgSubmitCorkRequest - sdk.Msg for submitting calls to Ethereum through the grav
 | `title` | [string](#string) |  |  |
 | `description` | [string](#string) |  |  |
 | `cellar_ids` | [CellarIDSet](#cork.v1.CellarIDSet) |  |  |
-
-
-
-
-
-
-<a name="cork.v1.ScheduledBlockHeights"></a>
-
-### ScheduledBlockHeights
-
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| `heights` | [uint64](#uint64) | repeated |  |
 
 
 

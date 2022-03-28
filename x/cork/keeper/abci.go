@@ -55,22 +55,18 @@ func (k Keeper) EndBlocker(ctx sdk.Context) {
 		panic("vote period start not set")
 	}
 
-	if k.HasScheduledBlockHeight(ctx, uint64(ctx.BlockHeight())) {
-		k.Logger(ctx).Info("tallying scheduled cork votes", "height", fmt.Sprintf("%d", ctx.BlockHeight()))
-		winningScheduledVotes := k.GetApprovedScheduledCorks(ctx, uint64(ctx.BlockHeight()), params.VoteThreshold)
-
+	k.Logger(ctx).Info("tallying scheduled cork votes", "height", fmt.Sprintf("%d", ctx.BlockHeight()))
+	winningScheduledVotes := k.GetApprovedScheduledCorks(ctx, uint64(ctx.BlockHeight()), params.VoteThreshold)
+	if len(winningScheduledVotes) > 0 {
 		k.Logger(ctx).Info("packaging all winning scheduled cork votes into contract calls",
 			"winning votes", winningScheduledVotes)
 		// todo: implement batch sends to save on gas
 		for _, wv := range winningScheduledVotes {
 			k.Logger(ctx).Info("setting outgoing tx for contract call",
 				"address", wv.TargetContractAddress,
-				"encoded contract call", wv.EncodedContractCall,
-			)
-
+				"encoded contract call", wv.EncodedContractCall)
 			// increment invalidation nonce
 			invalidationNonce := k.IncrementInvalidationNonce(ctx)
-
 			// submit contract call to bridge
 			contractCall := k.gravityKeeper.CreateContractCallTx(
 				ctx,
@@ -82,7 +78,6 @@ func (k Keeper) EndBlocker(ctx sdk.Context) {
 				[]gravitytypes.ERC20Token{})
 			k.gravityKeeper.SetOutgoingTx(ctx, contractCall)
 		}
-		k.RemoveScheduledBlockHeight(ctx, uint64(ctx.BlockHeight()))
 	}
 
 	// if the vote period has ended, tally the votes
