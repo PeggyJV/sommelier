@@ -108,6 +108,7 @@ func (s *IntegrationTestSuite) TestScheduledCork() {
 		status, err := node.Status(context.Background())
 		s.Require().NoError(err)
 		currentBlockHeight := status.SyncInfo.LatestBlockHeight
+		targetBlockHeight := currentBlockHeight + 5
 
 		s.T().Log("scheduling cork calls")
 		for i, orch := range s.chain.orchestrators {
@@ -120,7 +121,7 @@ func (s *IntegrationTestSuite) TestScheduledCork() {
 				corkMsg, err := types.NewMsgScheduleCorkRequest(
 					ABIEncodedInc(),
 					counterContract,
-					uint64(currentBlockHeight+5),
+					uint64(targetBlockHeight),
 					orch.keyInfo.GetAddress())
 				s.Require().NoError(err, "unable to create cork schedule msg")
 
@@ -140,6 +141,33 @@ func (s *IntegrationTestSuite) TestScheduledCork() {
 				return true
 			}, 10*time.Second, 500*time.Millisecond, "unable to deploy cork schedule msg for node %d", i)
 		}
+
+		s.T().Logf("verify cork exists at block after it was submitted")
+
+		s.T().Log("verify that contract exists in allowed addresses")
+		s.Require().Eventuallyf(func() bool {
+			kb, err := val.keyring()
+			s.Require().NoError(err)
+			clientCtx, err := s.chain.clientContext("tcp://localhost:26657", &kb, "val", val.keyInfo.GetAddress())
+			s.Require().NoError(err)
+
+			queryClient := types.NewQueryClient(clientCtx)
+			res, err := queryClient.QueryScheduledCorks(context.Background(), &types.QueryScheduledCorksRequest{})
+			if err != nil {
+				s.T().Logf("error: %s", err)
+				return false
+			}
+
+			node, err := clientCtx.GetNode()
+			s.Require().NoError(err)
+			status, err := node.Status(context.Background())
+			s.Require().NoError(err)
+			if status.SyncInfo.LatestBlockHeight <= currentBlockHeight {
+				return false
+			}
+
+			return len(res.Corks) > 0
+		}, 20*time.Second, 1*time.Second, "did not find scheduled cork after it was submitted")
 
 		s.T().Logf("checking for updated count in contract")
 		s.Require().Eventuallyf(func() bool {
