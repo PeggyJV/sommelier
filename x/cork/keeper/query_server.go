@@ -62,9 +62,13 @@ func (k Keeper) QueryCellarIDs(c context.Context, _ *types.QueryCellarIDsRequest
 	return response, nil
 }
 
-func (k Keeper) QueryScheduledCorks(c context.Context, _ *types.QueryScheduledCorksRequest) (response *types.QueryScheduledCorksResponse, err error) {
+func (k Keeper) QueryScheduledCorks(c context.Context, _ *types.QueryScheduledCorksRequest) (*types.QueryScheduledCorksResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
 	var corks []types.ScheduledCork
+
+	res := types.QueryScheduledCorksResponse{}
+
+	k.Logger(ctx).Info("querying scheduled corks")
 
 	k.IterateScheduledCorks(ctx, func(val sdk.ValAddress, blockHeight uint64, cel common.Address, cork types.Cork) (stop bool) {
 		corks = append(corks, types.ScheduledCork{
@@ -75,11 +79,15 @@ func (k Keeper) QueryScheduledCorks(c context.Context, _ *types.QueryScheduledCo
 		return false
 	})
 
-	for _, cork := range corks {
-		response.Corks = append(response.Corks, &cork)
+	k.Logger(ctx).Info("received %d corks", len(corks))
+
+	for i := range corks {
+		res.Corks = append(res.Corks, &corks[i])
 	}
 
-	return response, nil
+	k.Logger(ctx).Info("sending re-packaged corks")
+
+	return &res, nil
 }
 
 func (k Keeper) QueryScheduledBlockHeights(c context.Context, _ *types.QueryScheduledBlockHeightsRequest) (response *types.QueryScheduledBlockHeightsResponse, err error) {

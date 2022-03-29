@@ -18,6 +18,24 @@ func (s *IntegrationTestSuite) TestScheduledCork() {
 		s.Require().NoError(err)
 		s.Require().Equal(int64(0), count.Int64())
 
+		s.T().Logf("verify no corks are scheduled")
+		val := s.chain.validators[0]
+		s.Require().Eventuallyf(func() bool {
+			kb, err := val.keyring()
+			s.Require().NoError(err)
+			clientCtx, err := s.chain.clientContext("tcp://localhost:26657", &kb, "val", val.keyInfo.GetAddress())
+			s.Require().NoError(err)
+
+			queryClient := types.NewQueryClient(clientCtx)
+			res, err := queryClient.QueryScheduledCorks(context.Background(), &types.QueryScheduledCorksRequest{})
+			if err != nil {
+				s.T().Logf("error: %s", err)
+				return false
+			}
+
+			return len(res.Corks) == 0
+		}, 20*time.Second, 1*time.Second, "got a non-empty result for scheduled corks")
+
 		s.T().Logf("create governance proposal to add counter contract")
 		orch := s.chain.orchestrators[0]
 		clientCtx, err := s.chain.clientContext("tcp://localhost:26657", orch.keyring, "orch", orch.keyInfo.GetAddress())
@@ -76,7 +94,7 @@ func (s *IntegrationTestSuite) TestScheduledCork() {
 		}, time.Second*30, time.Second*5, "proposal was never accepted")
 
 		s.T().Log("verify that contract exists in allowed addresses")
-		val := s.chain.validators[0]
+		val = s.chain.validators[0]
 		s.Require().Eventuallyf(func() bool {
 			kb, err := val.keyring()
 			s.Require().NoError(err)
@@ -108,7 +126,7 @@ func (s *IntegrationTestSuite) TestScheduledCork() {
 		status, err := node.Status(context.Background())
 		s.Require().NoError(err)
 		currentBlockHeight := status.SyncInfo.LatestBlockHeight
-		targetBlockHeight := currentBlockHeight + 5
+		targetBlockHeight := currentBlockHeight + 15
 
 		s.T().Log("scheduling cork calls")
 		for i, orch := range s.chain.orchestrators {
@@ -143,8 +161,6 @@ func (s *IntegrationTestSuite) TestScheduledCork() {
 		}
 
 		s.T().Logf("verify cork exists at block after it was submitted")
-
-		s.T().Log("verify that contract exists in allowed addresses")
 		s.Require().Eventuallyf(func() bool {
 			kb, err := val.keyring()
 			s.Require().NoError(err)
