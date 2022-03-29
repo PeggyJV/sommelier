@@ -38,11 +38,8 @@ const (
 	// CellarIDsKey - <prefix> -> []string
 	CellarIDsKey
 
-	// ScheduledCorkForAddressKey - <prefix><block_height><val_address><address> -> <cork>
-	ScheduledCorkForAddressKey
-
-	// ScheduledBlockHeightsKey - <prefix> -> []uint64
-	ScheduledBlockHeightsKey
+	// ScheduledCorkKeyPrefix - <prefix><block_height><val_address><address> -> <cork>
+	ScheduledCorkKeyPrefix
 )
 
 // GetCorkForValidatorAddressKey returns the key for a validators vote for a given address
@@ -62,9 +59,5 @@ func MakeCellarIDsKey() []byte {
 func GetScheduledCorkKey(blockHeight uint64, val sdk.ValAddress, contract common.Address) []byte {
 	b := make([]byte, 8)
 	binary.BigEndian.PutUint64(b, blockHeight)
-	return bytes.Join([][]byte{{ScheduledCorkForAddressKey}, b, val.Bytes(), contract.Bytes()}, []byte{})
-}
-
-func GetScheduledBlockHeightsKey() []byte {
-	return []byte{ScheduledBlockHeightsKey}
+	return bytes.Join([][]byte{{ScheduledCorkKeyPrefix}, b, val.Bytes(), contract.Bytes()}, []byte{})
 }

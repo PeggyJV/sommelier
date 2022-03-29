@@ -145,12 +145,12 @@ func (k Keeper) DeleteScheduledCork(ctx sdk.Context, val sdk.ValAddress, blockHe
 // IterateScheduledCorks iterates over all scheduled corks in the store
 func (k Keeper) IterateScheduledCorks(ctx sdk.Context, cb func(val sdk.ValAddress, blockHeight uint64, cel common.Address, cork types.Cork) (stop bool)) {
 	store := ctx.KVStore(k.storeKey)
-	iter := sdk.KVStorePrefixIterator(store, []byte{types.ScheduledCorkForAddressKey})
+	iter := sdk.KVStorePrefixIterator(store, []byte{types.ScheduledCorkKeyPrefix})
 	defer iter.Close()
 
 	for ; iter.Valid(); iter.Next() {
 		var cork types.Cork
-		keyPair := bytes.NewBuffer(bytes.TrimPrefix(iter.Key(), []byte{types.ScheduledCorkForAddressKey}))
+		keyPair := bytes.NewBuffer(bytes.TrimPrefix(iter.Key(), []byte{types.ScheduledCorkKeyPrefix}))
 		blockHeight := binary.BigEndian.Uint64(keyPair.Next(8))
 		val := sdk.ValAddress(keyPair.Next(20))
 		cel := common.BytesToAddress(keyPair.Bytes())
