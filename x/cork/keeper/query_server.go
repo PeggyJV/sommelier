@@ -64,10 +64,10 @@ func (k Keeper) QueryCellarIDs(c context.Context, _ *types.QueryCellarIDsRequest
 
 func (k Keeper) QueryScheduledCorks(c context.Context, _ *types.QueryScheduledCorksRequest) (response *types.QueryScheduledCorksResponse, err error) {
 	ctx := sdk.UnwrapSDKContext(c)
-	var corks []*types.ScheduledCork
+	var corks []types.ScheduledCork
 
 	k.IterateScheduledCorks(ctx, func(val sdk.ValAddress, blockHeight uint64, cel common.Address, cork types.Cork) (stop bool) {
-		corks = append(corks, &types.ScheduledCork{
+		corks = append(corks, types.ScheduledCork{
 			Cork:        &cork,
 			BlockHeight: blockHeight,
 			Validator:   val.String(),
@@ -75,7 +75,10 @@ func (k Keeper) QueryScheduledCorks(c context.Context, _ *types.QueryScheduledCo
 		return false
 	})
 
-	response.Corks = corks
+	for _, cork := range corks {
+		response.Corks = append(response.Corks, &cork)
+	}
+
 	return response, nil
 }
 

@@ -328,18 +328,16 @@ func (k Keeper) GetApprovedScheduledCorks(ctx sdk.Context, currentBlockHeight ui
 		return false
 	})
 
-	var winningCorks []types.Cork
-
 	for blockHeight := range corkPowersForBlockHeight {
 		for i, power := range corkPowersForBlockHeight[blockHeight] {
 			quorumReached := sdk.NewIntFromUint64(power).ToDec().Quo(totalPower.ToDec()).GT(threshold)
 			if quorumReached {
-				winningCorks = append(winningCorks, corksForBlockHeight[blockHeight][i])
+				approvedCorks = append(approvedCorks, corksForBlockHeight[blockHeight][i])
 			}
 		}
 	}
 
-	return winningCorks
+	return approvedCorks
 }
 
 /////////////
