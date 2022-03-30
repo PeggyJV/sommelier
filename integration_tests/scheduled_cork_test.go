@@ -182,7 +182,7 @@ func (s *IntegrationTestSuite) TestScheduledCork() {
 				return false
 			}
 
-			return len(res.Corks) > 0
+			return common.HexToAddress(res.Corks[0].Cork.TargetContractAddress) == counterContract
 		}, 20*time.Second, 1*time.Second, "did not find scheduled cork after it was submitted")
 
 		s.T().Logf("checking for updated count in contract")

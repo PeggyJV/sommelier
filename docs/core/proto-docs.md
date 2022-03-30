@@ -1040,7 +1040,7 @@ QueryScheduledBlockHeightsResponse
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| `blockHeights` | [uint64](#uint64) | repeated |  |
+| `block_heights` | [uint64](#uint64) | repeated |  |
 
 
 
