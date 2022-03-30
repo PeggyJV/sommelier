@@ -63,6 +63,8 @@
     - [CellarIDSet](#cork.v1.CellarIDSet)
     - [Cork](#cork.v1.Cork)
     - [RemoveManagedCellarIDsProposal](#cork.v1.RemoveManagedCellarIDsProposal)
+    - [ScheduledCork](#cork.v1.ScheduledCork)
+    - [ValidatorCork](#cork.v1.ValidatorCork)
   
 - [cork/v1/tx.proto](#cork/v1/tx.proto)
     - [MsgScheduleCorkRequest](#cork.v1.MsgScheduleCorkRequest)
@@ -89,7 +91,6 @@
     - [QueryScheduledCorksResponse](#cork.v1.QueryScheduledCorksResponse)
     - [QuerySubmittedCorksRequest](#cork.v1.QuerySubmittedCorksRequest)
     - [QuerySubmittedCorksResponse](#cork.v1.QuerySubmittedCorksResponse)
-    - [ScheduledCork](#cork.v1.ScheduledCork)
   
     - [Query](#cork.v1.Query)
   
@@ -771,7 +772,7 @@ GenesisState defines the cellarfees module's genesis state.
 <a name="cork.v1.Cork"></a>
 
 ### Cork
-MsgSubmitCorkRequest - sdk.Msg for submitting calls to Ethereum through the gravity bridge contract
+
 
 
 | Field | Type | Label | Description |
@@ -795,6 +796,39 @@ MsgSubmitCorkRequest - sdk.Msg for submitting calls to Ethereum through the grav
 | `title` | [string](#string) |  |  |
 | `description` | [string](#string) |  |  |
 | `cellar_ids` | [CellarIDSet](#cork.v1.CellarIDSet) |  |  |
+
+
+
+
+
+
+<a name="cork.v1.ScheduledCork"></a>
+
+### ScheduledCork
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `cork` | [Cork](#cork.v1.Cork) |  |  |
+| `block_height` | [uint64](#uint64) |  |  |
+| `validator` | [string](#string) |  |  |
+
+
+
+
+
+
+<a name="cork.v1.ValidatorCork"></a>
+
+### ValidatorCork
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `cork` | [Cork](#cork.v1.Cork) |  |  |
+| `validator` | [string](#string) |  |  |
 
 
 
@@ -907,6 +941,9 @@ GenesisState - all cork state that must be provided at genesis
 | ----- | ---- | ----- | ----------- |
 | `params` | [Params](#cork.v1.Params) |  |  |
 | `cellar_ids` | [CellarIDSet](#cork.v1.CellarIDSet) |  |  |
+| `invalidation_nonce` | [uint64](#uint64) |  |  |
+| `corks` | [ValidatorCork](#cork.v1.ValidatorCork) | repeated |  |
+| `scheduled_corks` | [ScheduledCork](#cork.v1.ScheduledCork) | repeated |  |
 
 
 
@@ -1091,23 +1128,6 @@ QuerySubmittedCorksResponse is the response type for the Query/QuerySubmittedCor
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | `corks` | [Cork](#cork.v1.Cork) | repeated | corks in keeper awaiting vote |
-
-
-
-
-
-
-<a name="cork.v1.ScheduledCork"></a>
-
-### ScheduledCork
-
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| `cork` | [Cork](#cork.v1.Cork) |  |  |
-| `block_height` | [uint64](#uint64) |  |  |
-| `validator` | [string](#string) |  |  |
 
 
 

@@ -112,6 +112,19 @@ func (k Keeper) IterateCorks(ctx sdk.Context, handler func(val sdk.ValAddress, c
 	}
 }
 
+func (k Keeper) GetValidatorCorks(ctx sdk.Context) []*types.ValidatorCork {
+	var validatorCorks []*types.ValidatorCork
+	k.IterateCorks(ctx, func(val sdk.ValAddress, _ common.Address, cork types.Cork) (stop bool) {
+		validatorCorks = append(validatorCorks, &types.ValidatorCork{
+			Validator: val.String(),
+			Cork:      &cork,
+		})
+		return false
+	})
+
+	return validatorCorks
+}
+
 /////////////////////
 // Scheduled Corks //
 /////////////////////
@@ -160,6 +173,20 @@ func (k Keeper) IterateScheduledCorks(ctx sdk.Context, cb func(val sdk.ValAddres
 			break
 		}
 	}
+}
+
+func (k Keeper) GetScheduledCorks(ctx sdk.Context) []*types.ScheduledCork {
+	var scheduledCorks []*types.ScheduledCork
+	k.IterateScheduledCorks(ctx, func(val sdk.ValAddress, blockHeight uint64, _ common.Address, cork types.Cork) (stop bool) {
+		scheduledCorks = append(scheduledCorks, &types.ScheduledCork{
+			Validator:   val.String(),
+			Cork:        &cork,
+			BlockHeight: blockHeight,
+		})
+		return false
+	})
+
+	return scheduledCorks
 }
 
 ///////////////////////////

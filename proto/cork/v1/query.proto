@@ -82,12 +82,6 @@ message QueryCellarIDsResponse {
 // QueryScheduledCorksRequest
 message QueryScheduledCorksRequest {}
 
-message ScheduledCork {
-  Cork cork = 1;
-  uint64 block_height = 2;
-  string validator = 3;
-}
-
 // QueryScheduledCorksResponse
 message QueryScheduledCorksResponse {
   repeated ScheduledCork corks = 1;
