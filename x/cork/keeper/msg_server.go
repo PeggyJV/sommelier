@@ -72,7 +72,7 @@ func (k Keeper) ScheduleCork(c context.Context, msg *types.MsgScheduleCorkReques
 		return nil, types.ErrUnmanagedCellarAddress
 	}
 
-	if msg.BlockHeight < uint64(ctx.BlockHeight()) {
+	if msg.BlockHeight <= uint64(ctx.BlockHeight()) {
 		return nil, types.ErrSchedulingInThePast
 	}
 
