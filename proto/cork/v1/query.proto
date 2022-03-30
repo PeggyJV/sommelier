@@ -98,5 +98,5 @@ message QueryScheduledBlockHeightsRequest {}
 
 // QueryScheduledBlockHeightsResponse
 message QueryScheduledBlockHeightsResponse {
-  repeated uint64 blockHeights = 1;
+  repeated uint64 block_heights = 1;
 }
