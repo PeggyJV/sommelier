@@ -84,3 +84,11 @@ func (k Keeper) QueryScheduledBlockHeights(c context.Context, _ *types.QuerySche
 	response.BlockHeights = k.GetScheduledBlockHeights(ctx)
 	return &response, nil
 }
+
+func (k Keeper) QueryScheduledCorksByBlockHeight(c context.Context, req *types.QueryScheduledCorksByBlockHeightRequest) (*types.QueryScheduledCorksByBlockHeightResponse, error) {
+	ctx := sdk.UnwrapSDKContext(c)
+
+	response := types.QueryScheduledCorksByBlockHeightResponse{}
+	response.Corks = k.GetScheduledCorksByBlockHeight(ctx, req.BlockHeight)
+	return &response, nil
+}

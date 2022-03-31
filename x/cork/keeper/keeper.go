@@ -189,6 +189,25 @@ func (k Keeper) GetScheduledCorks(ctx sdk.Context) []*types.ScheduledCork {
 	return scheduledCorks
 }
 
+func (k Keeper) GetScheduledCorksByBlockHeight(ctx sdk.Context, height uint64) []*types.ScheduledCork {
+	var scheduledCorks []*types.ScheduledCork
+	k.IterateScheduledCorks(ctx, func(val sdk.ValAddress, blockHeight uint64, _ common.Address, cork types.Cork) (stop bool) {
+		if blockHeight == height {
+			scheduledCorks = append(scheduledCorks, &types.ScheduledCork{
+				Validator:   val.String(),
+				Cork:        &cork,
+				BlockHeight: blockHeight,
+			})
+		}
+		if blockHeight > height {
+			return true
+		}
+		return false
+	})
+
+	return scheduledCorks
+}
+
 ///////////////////////////
 // ScheduledBlockHeights //
 ///////////////////////////
