@@ -1,20 +1,145 @@
 package cli
 
 import (
+	"fmt"
 	"github.com/cosmos/cosmos-sdk/client"
+	"github.com/cosmos/cosmos-sdk/client/tx"
+	sdk "github.com/cosmos/cosmos-sdk/types"
+	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
+	types "github.com/peggyjv/sommelier/v3/x/cork/types"
 	"github.com/spf13/cobra"
+	"io/ioutil"
+	"strings"
 )
 
-// GetTxCmd returns the transaction commands for this module
-func GetTxCmd() *cobra.Command {
-	oracleTxCmd := &cobra.Command{
-		Use:                        "cork",
-		Short:                      "Cork transaction subcommands",
-		DisableFlagParsing:         true,
-		SuggestionsMinimumDistance: 2,
-		RunE:                       client.ValidateCmd,
+// GetCmdSubmitAddProposal implements the command to submit a cellar id addition proposal
+func GetCmdSubmitAddProposal() *cobra.Command {
+	bech32PrefixAccAddr := sdk.GetConfig().GetBech32AccountAddrPrefix()
+
+	cmd := &cobra.Command{
+		Use:   "add-cellar-id [proposal-file]",
+		Args:  cobra.ExactArgs(1),
+		Short: "Submit a cellar id addition proposal",
+		Long: strings.TrimSpace(
+			fmt.Sprintf(`Submit a cellar addition proposal along with an initial deposit.
+The proposal details must be supplied via a JSON file.
+
+Example:
+$ %s tx gov submit-proposal add-cellar-id <path/to/proposal.json> --from=<key_or_address>
+
+Where proposal.json contains:
+
+{
+  "title": "Dollary-doos LP Cellar Proposal",
+  "description": "I have a hunch",
+  "cellar_ids": ["0x123", "0x456"],
+  "deposit": "1000stake"
+}
+`,
+				bech32PrefixAccAddr,
+			),
+		),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			clientCtx, err := client.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			proposal := types.AddManagedCellarIDsProposalWithDeposit{}
+			contents, err := ioutil.ReadFile(args[0])
+			if err != nil {
+				return err
+			}
+
+			if err = clientCtx.Codec.UnmarshalJSON(contents, &proposal); err != nil {
+				return err
+			}
+
+			deposit, err := sdk.ParseCoinsNormalized(proposal.Deposit)
+			if err != nil {
+				return err
+			}
+
+			if err != nil {
+				return err
+			}
+			content := types.NewAddManagedCellarIDsProposal(proposal.Title, proposal.Description, proposal.CellarIds)
+
+			from := clientCtx.GetFromAddress()
+			msg, err := govtypes.NewMsgSubmitProposal(content, deposit, from)
+			if err != nil {
+				return err
+			}
+
+			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), msg)
+		},
 	}
 
-	// todo(mvid): figure out what is useful, implement
-	return oracleTxCmd
+	return cmd
+}
+
+// GetCmdSubmitRemoveProposal implements the command to submit a cellar id removal proposal
+func GetCmdSubmitRemoveProposal() *cobra.Command {
+	bech32PrefixAccAddr := sdk.GetConfig().GetBech32AccountAddrPrefix()
+
+	cmd := &cobra.Command{
+		Use:   "remove-cellar-id [proposal-file]",
+		Args:  cobra.ExactArgs(1),
+		Short: "Submit a cellar id removal proposal",
+		Long: strings.TrimSpace(
+			fmt.Sprintf(`Submit a cellar removal proposal along with an initial deposit.
+The proposal details must be supplied via a JSON file.
+
+Example:
+$ %s tx gov submit-proposal remove-cellar-id <path/to/proposal.json> --from=<key_or_address>
+
+Where proposal.json contains:
+
+{
+  "title": "Dollary-doos LP Cellar Removal Proposal",
+  "description": "I don't trust them",
+  "cellar_ids": ["0x123", "0x456"],
+  "deposit": "1000stake"
+}
+`,
+				bech32PrefixAccAddr,
+			),
+		),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			clientCtx, err := client.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			proposal := types.RemoveManagedCellarIDsProposalWithDeposit{}
+			contents, err := ioutil.ReadFile(args[0])
+			if err != nil {
+				return err
+			}
+
+			if err = clientCtx.Codec.UnmarshalJSON(contents, &proposal); err != nil {
+				return err
+			}
+
+			deposit, err := sdk.ParseCoinsNormalized(proposal.Deposit)
+			if err != nil {
+				return err
+			}
+
+			if err != nil {
+				return err
+			}
+			content := types.NewRemoveManagedCellarIDsProposal(proposal.Title, proposal.Description, proposal.CellarIds)
+
+			from := clientCtx.GetFromAddress()
+			msg, err := govtypes.NewMsgSubmitProposal(content, deposit, from)
+			if err != nil {
+				return err
+			}
+
+			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), msg)
+		},
+	}
+
+	return cmd
 }

@@ -1,0 +1,33 @@
+syntax = "proto3";
+package cork.v1;
+
+import "cosmos_proto/cosmos.proto";
+import "cork/v1/cork.proto";
+
+option go_package = "github.com/peggyjv/sommelier/v3/x/cork/types";
+
+message AddManagedCellarIDsProposal {
+  string title = 1;
+  string description = 2;
+  CellarIDSet cellar_ids = 3;
+}
+
+message AddManagedCellarIDsProposalWithDeposit {
+  string title = 1;
+  string description = 2;
+  CellarIDSet cellar_ids = 3;
+  string deposit = 4;
+}
+
+message RemoveManagedCellarIDsProposal {
+  string title = 1;
+  string description = 2;
+  CellarIDSet cellar_ids = 3;
+}
+
+message RemoveManagedCellarIDsProposalWithDeposit {
+  string title = 1;
+  string description = 2;
+  CellarIDSet cellar_ids = 3;
+  string deposit = 4;
+}

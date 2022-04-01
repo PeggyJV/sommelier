@@ -26,16 +26,3 @@ message ScheduledCork {
 message CellarIDSet {
   repeated string ids = 1;
 }
-
-message AddManagedCellarIDsProposal {
-  string title = 1;
-  string description = 2;
-  CellarIDSet cellar_ids = 3;
-}
-
-message RemoveManagedCellarIDsProposal {
-  string title = 1;
-  string description = 2;
-  CellarIDSet cellar_ids = 3;
-}
-

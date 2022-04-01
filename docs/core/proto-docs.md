@@ -59,10 +59,8 @@
     - [Query](#cellarfees.v1.Query)
   
 - [cork/v1/cork.proto](#cork/v1/cork.proto)
-    - [AddManagedCellarIDsProposal](#cork.v1.AddManagedCellarIDsProposal)
     - [CellarIDSet](#cork.v1.CellarIDSet)
     - [Cork](#cork.v1.Cork)
-    - [RemoveManagedCellarIDsProposal](#cork.v1.RemoveManagedCellarIDsProposal)
     - [ScheduledCork](#cork.v1.ScheduledCork)
     - [ValidatorCork](#cork.v1.ValidatorCork)
   
@@ -77,6 +75,12 @@
 - [cork/v1/genesis.proto](#cork/v1/genesis.proto)
     - [GenesisState](#cork.v1.GenesisState)
     - [Params](#cork.v1.Params)
+  
+- [cork/v1/proposal.proto](#cork/v1/proposal.proto)
+    - [AddManagedCellarIDsProposal](#cork.v1.AddManagedCellarIDsProposal)
+    - [AddManagedCellarIDsProposalWithDeposit](#cork.v1.AddManagedCellarIDsProposalWithDeposit)
+    - [RemoveManagedCellarIDsProposal](#cork.v1.RemoveManagedCellarIDsProposal)
+    - [RemoveManagedCellarIDsProposalWithDeposit](#cork.v1.RemoveManagedCellarIDsProposalWithDeposit)
   
 - [cork/v1/query.proto](#cork/v1/query.proto)
     - [QueryCellarIDsRequest](#cork.v1.QueryCellarIDsRequest)
@@ -739,23 +743,6 @@ GenesisState defines the cellarfees module's genesis state.
 
 
 
-<a name="cork.v1.AddManagedCellarIDsProposal"></a>
-
-### AddManagedCellarIDsProposal
-
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| `title` | [string](#string) |  |  |
-| `description` | [string](#string) |  |  |
-| `cellar_ids` | [CellarIDSet](#cork.v1.CellarIDSet) |  |  |
-
-
-
-
-
-
 <a name="cork.v1.CellarIDSet"></a>
 
 ### CellarIDSet
@@ -781,23 +768,6 @@ GenesisState defines the cellarfees module's genesis state.
 | ----- | ---- | ----- | ----------- |
 | `encoded_contract_call` | [bytes](#bytes) |  | call body containing the ABI encoded bytes to send to the contract |
 | `target_contract_address` | [string](#string) |  | address of the contract to send the call |
-
-
-
-
-
-
-<a name="cork.v1.RemoveManagedCellarIDsProposal"></a>
-
-### RemoveManagedCellarIDsProposal
-
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| `title` | [string](#string) |  |  |
-| `description` | [string](#string) |  |  |
-| `cellar_ids` | [CellarIDSet](#cork.v1.CellarIDSet) |  |  |
 
 
 
@@ -962,6 +932,92 @@ Params cork parameters
 | ----- | ---- | ----- | ----------- |
 | `vote_period` | [int64](#int64) |  | VotePeriod defines the number of blocks to wait for votes before attempting to tally |
 | `vote_threshold` | [string](#string) |  | VoteThreshold defines the percentage of bonded stake required to vote each period |
+
+
+
+
+
+ <!-- end messages -->
+
+ <!-- end enums -->
+
+ <!-- end HasExtensions -->
+
+ <!-- end services -->
+
+
+
+<a name="cork/v1/proposal.proto"></a>
+<p align="right"><a href="#top">Top</a></p>
+
+## cork/v1/proposal.proto
+
+
+
+<a name="cork.v1.AddManagedCellarIDsProposal"></a>
+
+### AddManagedCellarIDsProposal
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `title` | [string](#string) |  |  |
+| `description` | [string](#string) |  |  |
+| `cellar_ids` | [CellarIDSet](#cork.v1.CellarIDSet) |  |  |
+
+
+
+
+
+
+<a name="cork.v1.AddManagedCellarIDsProposalWithDeposit"></a>
+
+### AddManagedCellarIDsProposalWithDeposit
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `title` | [string](#string) |  |  |
+| `description` | [string](#string) |  |  |
+| `cellar_ids` | [CellarIDSet](#cork.v1.CellarIDSet) |  |  |
+| `deposit` | [string](#string) |  |  |
+
+
+
+
+
+
+<a name="cork.v1.RemoveManagedCellarIDsProposal"></a>
+
+### RemoveManagedCellarIDsProposal
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `title` | [string](#string) |  |  |
+| `description` | [string](#string) |  |  |
+| `cellar_ids` | [CellarIDSet](#cork.v1.CellarIDSet) |  |  |
+
+
+
+
+
+
+<a name="cork.v1.RemoveManagedCellarIDsProposalWithDeposit"></a>
+
+### RemoveManagedCellarIDsProposalWithDeposit
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `title` | [string](#string) |  |  |
+| `description` | [string](#string) |  |  |
+| `cellar_ids` | [CellarIDSet](#cork.v1.CellarIDSet) |  |  |
+| `deposit` | [string](#string) |  |  |
 
 
 
