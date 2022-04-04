@@ -12,6 +12,20 @@ import (
 	"strings"
 )
 
+// GetTxCmd returns the transaction commands for this module
+func GetTxCmd() *cobra.Command {
+	corkTxCmd := &cobra.Command{
+		Use:                        "cork",
+		Short:                      "Cork transaction subcommands",
+		DisableFlagParsing:         true,
+		SuggestionsMinimumDistance: 2,
+		RunE:                       client.ValidateCmd,
+	}
+
+	// todo(mvid): figure out what is useful, implement
+	return corkTxCmd
+}
+
 // GetCmdSubmitAddProposal implements the command to submit a cellar id addition proposal
 func GetCmdSubmitAddProposal() *cobra.Command {
 	bech32PrefixAccAddr := sdk.GetConfig().GetBech32AccountAddrPrefix()
