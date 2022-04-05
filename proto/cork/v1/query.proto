@@ -39,7 +39,7 @@ service Query {
 
   // QueryScheduledCorks returns all scheduled corks at a block height
   rpc QueryScheduledCorksByBlockHeight(QueryScheduledCorksByBlockHeightRequest) returns (QueryScheduledCorksByBlockHeightResponse) {
-    option (google.api.http).get = "/sommelier/cork/v1/scheduled_corks_by_block_height";
+    option (google.api.http).get = "/sommelier/cork/v1/scheduled_corks_by_block_height/{block_height}";
   }
 }
 

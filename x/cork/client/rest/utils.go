@@ -13,7 +13,6 @@ type (
 		Title       string         `json:"title" yaml:"title"`
 		Description string         `json:"description" yaml:"description"`
 		CellarIDs   []string       `json:"cellar_ids" yaml:"cellar_ids"`
-		BridgeFee   sdk.Coin       `json:"bridge_fee" yaml:"bridge_fee"`
 		Proposer    sdk.AccAddress `json:"proposer" yaml:"proposer"`
 		Deposit     sdk.Coins      `json:"deposit" yaml:"deposit"`
 	}
@@ -24,7 +23,6 @@ type (
 		Title       string         `json:"title" yaml:"title"`
 		Description string         `json:"description" yaml:"description"`
 		CellarIDs   []string       `json:"cellar_ids" yaml:"cellar_ids"`
-		BridgeFee   sdk.Coin       `json:"bridge_fee" yaml:"bridge_fee"`
 		Proposer    sdk.AccAddress `json:"proposer" yaml:"proposer"`
 		Deposit     sdk.Coins      `json:"deposit" yaml:"deposit"`
 	}

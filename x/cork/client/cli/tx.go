@@ -5,6 +5,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/tx"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/cosmos/cosmos-sdk/version"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 	types "github.com/peggyjv/sommelier/v3/x/cork/types"
 	"github.com/spf13/cobra"
@@ -28,7 +29,6 @@ func GetTxCmd() *cobra.Command {
 
 // GetCmdSubmitAddProposal implements the command to submit a cellar id addition proposal
 func GetCmdSubmitAddProposal() *cobra.Command {
-	bech32PrefixAccAddr := sdk.GetConfig().GetBech32AccountAddrPrefix()
 
 	cmd := &cobra.Command{
 		Use:   "add-cellar-id [proposal-file]",
@@ -46,11 +46,11 @@ Where proposal.json contains:
 {
   "title": "Dollary-doos LP Cellar Proposal",
   "description": "I have a hunch",
-  "cellar_ids": ["0x123", "0x456"],
+  "cellar_ids": ["0x123801a7D398351b8bE11C439e05C5B3259aeC9B", "0x456801a7D398351b8bE11C439e05C5B3259aeC9B"],
   "deposit": "1000stake"
 }
 `,
-				bech32PrefixAccAddr,
+				version.AppName,
 			),
 		),
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -74,9 +74,6 @@ Where proposal.json contains:
 				return err
 			}
 
-			if err != nil {
-				return err
-			}
 			content := types.NewAddManagedCellarIDsProposal(proposal.Title, proposal.Description, proposal.CellarIds)
 
 			from := clientCtx.GetFromAddress()
@@ -94,8 +91,6 @@ Where proposal.json contains:
 
 // GetCmdSubmitRemoveProposal implements the command to submit a cellar id removal proposal
 func GetCmdSubmitRemoveProposal() *cobra.Command {
-	bech32PrefixAccAddr := sdk.GetConfig().GetBech32AccountAddrPrefix()
-
 	cmd := &cobra.Command{
 		Use:   "remove-cellar-id [proposal-file]",
 		Args:  cobra.ExactArgs(1),
@@ -112,11 +107,11 @@ Where proposal.json contains:
 {
   "title": "Dollary-doos LP Cellar Removal Proposal",
   "description": "I don't trust them",
-  "cellar_ids": ["0x123", "0x456"],
+  "cellar_ids": ["0x123801a7D398351b8bE11C439e05C5B3259aeC9B", "0x456801a7D398351b8bE11C439e05C5B3259aeC9B"],
   "deposit": "1000stake"
 }
 `,
-				bech32PrefixAccAddr,
+				version.AppName,
 			),
 		),
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -140,9 +135,6 @@ Where proposal.json contains:
 				return err
 			}
 
-			if err != nil {
-				return err
-			}
 			content := types.NewRemoveManagedCellarIDsProposal(proposal.Title, proposal.Description, proposal.CellarIds)
 
 			from := clientCtx.GetFromAddress()
