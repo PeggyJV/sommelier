@@ -748,6 +748,7 @@ func (app *SommelierApp) setupUpgradeHandlers() {
 		v4.UpgradeName,
 		v4.CreateUpgradeHandler(
 			app.mm,
+			app.configurator,
 		),
 	)
 }
