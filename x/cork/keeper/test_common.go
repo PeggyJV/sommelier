@@ -314,6 +314,12 @@ func CreateTestEnv(t *testing.T) TestInput {
 		accountKeeper.SetModuleAccount(ctx, mod)
 	}
 
+	// receiver/sender module account maps for the bridge
+	receiverModuleAccounts := map[string]string{
+		authtypes.NewModuleAddress(distrtypes.ModuleName).String(): distrtypes.ModuleName,
+	}
+	senderModuleAccounts := receiverModuleAccounts
+
 	stakeAddr := authtypes.NewModuleAddress(stakingtypes.BondedPoolName)
 	moduleAcct := accountKeeper.GetAccount(ctx, stakeAddr)
 	require.NotNil(t, moduleAcct)
@@ -353,7 +359,10 @@ func CreateTestEnv(t *testing.T) TestInput {
 		stakingKeeper,
 		bankKeeper,
 		slashingKeeper,
+		distKeeper,
 		sdk.DefaultPowerReduction,
+		receiverModuleAccounts,
+		senderModuleAccounts,
 	)
 
 	stakingKeeper = *stakingKeeper.SetHooks(

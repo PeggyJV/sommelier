@@ -345,7 +345,10 @@ func NewSommelierApp(
 	// todo: check if default power reduction is appropriate
 	app.GravityKeeper = gravitykeeper.NewKeeper(
 		appCodec, keys[gravitytypes.StoreKey], app.GetSubspace(gravitytypes.ModuleName),
-		app.AccountKeeper, app.StakingKeeper, app.BankKeeper, app.SlashingKeeper, sdk.DefaultPowerReduction,
+		app.AccountKeeper, app.StakingKeeper, app.BankKeeper, app.SlashingKeeper,
+		app.DistrKeeper, sdk.DefaultPowerReduction,
+		app.ModuleAccountAddressesToNames([]string{cellarfeestypes.ModuleName}),
+		app.ModuleAccountAddressesToNames([]string{distrtypes.ModuleName}),
 	)
 
 	app.AllocationKeeper = allocationkeeper.NewKeeper(
@@ -583,6 +586,16 @@ func (app *SommelierApp) ModuleAccountAddrs() map[string]bool {
 	return modAccAddrs
 }
 
+// ModuleAccountNames returns a map of module account address to module name
+func (app *SommelierApp) ModuleAccountAddressesToNames(moduleAccounts []string) map[string]string {
+	modAccNames := make(map[string]string)
+	for _, acc := range moduleAccounts {
+		modAccNames[authtypes.NewModuleAddress(acc).String()] = acc
+	}
+
+	return modAccNames
+}
+
 // BlockedAddrs returns all the app's module account addresses that are not
 // allowed to receive external tokens.
 func (app *SommelierApp) BlockedAddrs() map[string]bool {
@@ -741,6 +754,7 @@ func (app *SommelierApp) setupUpgradeHandlers() {
 		v4.CreateUpgradeHandler(
 			app.mm,
 			app.configurator,
+			app.BankKeeper,
 		),
 	)
 }
