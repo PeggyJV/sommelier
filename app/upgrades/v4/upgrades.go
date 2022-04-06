@@ -8,6 +8,8 @@ import (
 	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
 	gravitytypes "github.com/peggyjv/gravity-bridge/module/x/gravity/types"
+	cellarfeestypes "github.com/peggyjv/sommelier/v3/x/cellarfees/types"
+	corktypes "github.com/peggyjv/sommelier/v3/x/cork/types"
 )
 
 func CreateUpgradeHandler(
@@ -21,7 +23,11 @@ func CreateUpgradeHandler(
 		// time, we must initialize the VM map ourselves.
 		fromVM := make(map[string]uint64)
 		for moduleName, module := range mm.Modules {
-			fromVM[moduleName] = module.ConsensusVersion()
+			// we skip setting the consensus version for the new modules so that
+			// RunMigrations will call InitGenesis on them
+			if moduleName != cellarfeestypes.ModuleName && moduleName != corktypes.ModuleName {
+				fromVM[moduleName] = module.ConsensusVersion()
+			}
 		}
 
 		// Overwrite the gravity module's version back to 1 so the migration will run to v2
