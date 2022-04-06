@@ -400,7 +400,8 @@ func NewSommelierApp(
 	)
 	// If evidence needs to be handled for the app, set routes in router here and seal
 	app.EvidenceKeeper = *evidenceKeeper
-	/****  Module Options ****/
+
+	app.setupUpgradeStoreLoaders()
 
 	/****  Module Options ****/
 	var skipGenesisInvariants = false
