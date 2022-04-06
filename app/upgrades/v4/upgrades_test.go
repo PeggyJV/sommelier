@@ -11,7 +11,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestV2UpgradeDenomNormalization(t *testing.T) {
+func TestV4UpgradeDenomNormalization(t *testing.T) {
 	input := keeper.CreateTestEnv(t)
 	ctx := input.Context
 
