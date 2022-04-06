@@ -20,7 +20,7 @@ service Query {
   rpc QuerySubmittedCorks(QuerySubmittedCorksRequest) returns (QuerySubmittedCorksResponse) {
     option (google.api.http).get = "/sommelier/cork/v1/submitted";
   }
-  // QueryVotePeriod queries the heights for the current voting period (current, start and end)
+  // QueryCommitPeriod queries the heights for the current voting period (current, start and end)
   rpc QueryCommitPeriod(QueryCommitPeriodRequest) returns (QueryCommitPeriodResponse) {
     option (google.api.http).get = "/sommelier/cork/v1/commit_period";
   }
