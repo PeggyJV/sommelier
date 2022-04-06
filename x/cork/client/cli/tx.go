@@ -74,7 +74,10 @@ Where proposal.json contains:
 				return err
 			}
 
-			content := types.NewAddManagedCellarIDsProposal(proposal.Title, proposal.Description, proposal.CellarIds)
+			content := types.NewAddManagedCellarIDsProposal(
+				proposal.Title,
+				proposal.Description,
+				&types.CellarIDSet{Ids: proposal.CellarIds})
 
 			from := clientCtx.GetFromAddress()
 			msg, err := govtypes.NewMsgSubmitProposal(content, deposit, from)
@@ -135,7 +138,10 @@ Where proposal.json contains:
 				return err
 			}
 
-			content := types.NewRemoveManagedCellarIDsProposal(proposal.Title, proposal.Description, proposal.CellarIds)
+			content := types.NewRemoveManagedCellarIDsProposal(
+				proposal.Title,
+				proposal.Description,
+				&types.CellarIDSet{Ids: proposal.CellarIds})
 
 			from := clientCtx.GetFromAddress()
 			msg, err := govtypes.NewMsgSubmitProposal(content, deposit, from)

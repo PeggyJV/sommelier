@@ -974,14 +974,14 @@ Params cork parameters
 <a name="cork.v1.AddManagedCellarIDsProposalWithDeposit"></a>
 
 ### AddManagedCellarIDsProposalWithDeposit
-
+AddManagedCellarIDsProposalWithDeposit is a specific definition for CLI commands
 
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | `title` | [string](#string) |  |  |
 | `description` | [string](#string) |  |  |
-| `cellar_ids` | [CellarIDSet](#cork.v1.CellarIDSet) |  |  |
+| `cellar_ids` | [string](#string) | repeated |  |
 | `deposit` | [string](#string) |  |  |
 
 
@@ -1009,14 +1009,14 @@ Params cork parameters
 <a name="cork.v1.RemoveManagedCellarIDsProposalWithDeposit"></a>
 
 ### RemoveManagedCellarIDsProposalWithDeposit
-
+RemoveManagedCellarIDsProposalWithDeposit is a specific definition for CLI commands
 
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | `title` | [string](#string) |  |  |
 | `description` | [string](#string) |  |  |
-| `cellar_ids` | [CellarIDSet](#cork.v1.CellarIDSet) |  |  |
+| `cellar_ids` | [string](#string) | repeated |  |
 | `deposit` | [string](#string) |  |  |
 
 
@@ -1241,7 +1241,7 @@ Query defines the gRPC query service for the cork module.
 | `QueryCellarIDs` | [QueryCellarIDsRequest](#cork.v1.QueryCellarIDsRequest) | [QueryCellarIDsResponse](#cork.v1.QueryCellarIDsResponse) | QueryCellarIDs returns all cellars and current tick ranges | GET|/sommelier/cork/v1/cellar_ids|
 | `QueryScheduledCorks` | [QueryScheduledCorksRequest](#cork.v1.QueryScheduledCorksRequest) | [QueryScheduledCorksResponse](#cork.v1.QueryScheduledCorksResponse) | QueryScheduledCorks returns all scheduled corks | GET|/sommelier/cork/v1/scheduled_corks|
 | `QueryScheduledBlockHeights` | [QueryScheduledBlockHeightsRequest](#cork.v1.QueryScheduledBlockHeightsRequest) | [QueryScheduledBlockHeightsResponse](#cork.v1.QueryScheduledBlockHeightsResponse) | QueryScheduledBlockHeights returns all scheduled block heights | GET|/sommelier/cork/v1/scheduled_block_heights|
-| `QueryScheduledCorksByBlockHeight` | [QueryScheduledCorksByBlockHeightRequest](#cork.v1.QueryScheduledCorksByBlockHeightRequest) | [QueryScheduledCorksByBlockHeightResponse](#cork.v1.QueryScheduledCorksByBlockHeightResponse) | QueryScheduledCorks returns all scheduled corks at a block height | GET|/sommelier/cork/v1/scheduled_corks_by_block_height|
+| `QueryScheduledCorksByBlockHeight` | [QueryScheduledCorksByBlockHeightRequest](#cork.v1.QueryScheduledCorksByBlockHeightRequest) | [QueryScheduledCorksByBlockHeightResponse](#cork.v1.QueryScheduledCorksByBlockHeightResponse) | QueryScheduledCorks returns all scheduled corks at a block height | GET|/sommelier/cork/v1/scheduled_corks_by_block_height/{block_height}|
 
  <!-- end services -->
 

@@ -16,7 +16,7 @@ message AddManagedCellarIDsProposal {
 message AddManagedCellarIDsProposalWithDeposit {
   string title = 1;
   string description = 2;
-  CellarIDSet cellar_ids = 3;
+  repeated string cellar_ids = 3;
   string deposit = 4;
 }
 
@@ -30,6 +30,6 @@ message RemoveManagedCellarIDsProposal {
 message RemoveManagedCellarIDsProposalWithDeposit {
   string title = 1;
   string description = 2;
-  CellarIDSet cellar_ids = 3;
+  repeated string cellar_ids = 3;
   string deposit = 4;
 }
