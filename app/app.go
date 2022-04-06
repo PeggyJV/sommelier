@@ -17,6 +17,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/server/config"
 	servertypes "github.com/cosmos/cosmos-sdk/server/types"
 	"github.com/cosmos/cosmos-sdk/simapp"
+	store "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	"github.com/cosmos/cosmos-sdk/version"
@@ -87,6 +88,7 @@ import (
 	gravitykeeper "github.com/peggyjv/gravity-bridge/module/x/gravity/keeper"
 	gravitytypes "github.com/peggyjv/gravity-bridge/module/x/gravity/types"
 	appParams "github.com/peggyjv/sommelier/v3/app/params"
+	v4 "github.com/peggyjv/sommelier/v3/app/upgrades/v4"
 	"github.com/peggyjv/sommelier/v3/x/allocation"
 	allocationkeeper "github.com/peggyjv/sommelier/v3/x/allocation/keeper"
 	allocationtypes "github.com/peggyjv/sommelier/v3/x/allocation/types"
@@ -722,4 +724,19 @@ func initParamsKeeper(appCodec codec.BinaryCodec, legacyAmino *codec.LegacyAmino
 	paramsKeeper.Subspace(cellarfeestypes.ModuleName)
 
 	return paramsKeeper
+}
+
+func (app *SommelierApp) setupUpgradeStoreLoaders() {
+	upgradeInfo, err := app.UpgradeKeeper.ReadUpgradeInfoFromDisk()
+	if err != nil {
+		panic(fmt.Sprintf("failed to read upgrade info from disk %s", err))
+	}
+
+	if upgradeInfo.Name == v4.UpgradeName && !app.UpgradeKeeper.IsSkipHeight(upgradeInfo.Height) {
+		storeUpgrades := store.StoreUpgrades{
+			Added: []string{corktypes.ModuleName, cellarfeestypes.ModuleName},
+		}
+
+		app.SetStoreLoader(upgradetypes.UpgradeStoreLoader(upgradeInfo.Height, &storeUpgrades))
+	}
 }
