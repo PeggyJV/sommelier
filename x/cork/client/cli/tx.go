@@ -7,6 +7,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/version"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
+	"github.com/ethereum/go-ethereum/common"
 	types "github.com/peggyjv/sommelier/v3/x/cork/types"
 	"github.com/spf13/cobra"
 	"io/ioutil"
@@ -74,6 +75,12 @@ Where proposal.json contains:
 				return err
 			}
 
+			for _, id := range proposal.CellarIds {
+				if !common.IsHexAddress(id) {
+					return fmt.Errorf("%s is not a valid ethereum address", id)
+				}
+			}
+
 			content := types.NewAddManagedCellarIDsProposal(
 				proposal.Title,
 				proposal.Description,
@@ -136,6 +143,12 @@ Where proposal.json contains:
 			deposit, err := sdk.ParseCoinsNormalized(proposal.Deposit)
 			if err != nil {
 				return err
+			}
+			
+			for _, id := range proposal.CellarIds {
+				if !common.IsHexAddress(id) {
+					return fmt.Errorf("%s is not a valid ethereum address", id)
+				}
 			}
 
 			content := types.NewRemoveManagedCellarIDsProposal(
