@@ -524,14 +524,6 @@ func NewSommelierApp(
 	app.SetAnteHandler(anteHandler)
 	app.SetEndBlocker(app.EndBlocker)
 
-	// Setup an upgrade handler if doing an upgrade module upgrade. Validate any upgrade hander against https://github.com/cosmos/cosmos-sdk/blob/master/docs/core/upgrade.md
-	// app.UpgradeKeeper.SetUpgradeHandler(
-	// 	upgradeName,
-	// 	func(ctx sdk.Context, _ upgradetypes.Plan, vm module.VersionMap) (module.VersionMap, error) {
-	// 		return vm, nil
-	// 	},
-	// )
-
 	if loadLatest {
 		if err := app.LoadLatestVersion(); err != nil {
 			tmos.Exit(err.Error())
