@@ -160,7 +160,7 @@ func (s *IntegrationTestSuite) TestScheduledCork() {
 			}, 10*time.Second, 500*time.Millisecond, "unable to deploy cork schedule msg for node %d", i)
 		}
 
-		s.T().Logf("verify cork exists at block after it was submitted")
+		s.T().Logf("wait for the block to pass, monitoring it as it goes")
 		s.Require().Eventuallyf(func() bool {
 			kb, err := val.keyring()
 			s.Require().NoError(err)
@@ -178,26 +178,28 @@ func (s *IntegrationTestSuite) TestScheduledCork() {
 			s.Require().NoError(err)
 			status, err := node.Status(context.Background())
 			s.Require().NoError(err)
-			if status.SyncInfo.LatestBlockHeight <= currentBlockHeight {
-				return false
-			}
+			blockHeight := status.SyncInfo.LatestBlockHeight
 
-			return common.HexToAddress(res.Corks[0].Cork.TargetContractAddress) == counterContract
-		}, 20*time.Second, 1*time.Second, "did not find scheduled cork after it was submitted")
-
-		s.T().Logf("checking for updated count in contract")
-		s.Require().Eventuallyf(func() bool {
 			count, err = s.getCurrentCount()
 			if err != nil {
-				s.T().Logf("got error %e querying count", err)
-				return false
-			}
-			if count.Int64() != int64(1) {
-				s.T().Logf("wrong count %s", count.String())
 				return false
 			}
 
-			return true
-		}, 3*time.Minute, 10*time.Second, "count never updated")
+			if blockHeight < (targetBlockHeight - 2) {
+				// verify that tbe scheduled cork has not yet been consumed, and that the counter has not been incremented
+				s.Require().Len(res.Corks, 1)
+				s.Require().Equal(counterContract, common.HexToAddress(res.Corks[0].Cork.TargetContractAddress))
+				s.Require().Equal(int64(0), count.Int64())
+			} else if blockHeight > (targetBlockHeight + 1) {
+				// verify that block height has been passed, cork consumed and counter is incremented
+				s.Require().Len(res.Corks, 0)
+				s.Require().Equal(int64(1), count.Int64())
+
+				// this is the only situation where this loop will complete
+				return true
+			}
+
+			return false
+		}, 3*time.Minute, 1*time.Second, "count was never updated")
 	})
 }
