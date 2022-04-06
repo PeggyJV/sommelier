@@ -187,7 +187,7 @@ func (s *IntegrationTestSuite) TestScheduledCork() {
 
 			if blockHeight < (targetBlockHeight - 2) {
 				// verify that tbe scheduled cork has not yet been consumed, and that the counter has not been incremented
-				s.Require().Len(res.Corks, 1)
+				s.Require().Len(res.Corks, len(s.chain.validators))
 				s.Require().Equal(counterContract, common.HexToAddress(res.Corks[0].Cork.TargetContractAddress))
 				s.Require().Equal(int64(0), count.Int64())
 			} else if blockHeight > (targetBlockHeight + 1) {
