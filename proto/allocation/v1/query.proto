@@ -8,7 +8,7 @@ import "allocation/v1/allocation.proto";
 import "cosmos_proto/cosmos.proto";
 import "cosmos/base/query/v1beta1/pagination.proto";
 
-option go_package = "github.com/peggyjv/sommelier/v3/x/allocation/types";
+option go_package = "github.com/peggyjv/sommelier/v4/x/allocation/types";
 
 // Query defines the gRPC querier service for the allocation module.
 service Query {
@@ -108,7 +108,7 @@ message QueryCommitPeriodResponse {
     // latest vote period start block height
     int64 vote_period_start = 2;
     // block height at which the current voting period ends
-    int64 vote_period_end   = 3; 
+    int64 vote_period_end   = 3;
 }
 
 // QueryCellarsRequest is the request type for Query/QueryCellars gRPC method.

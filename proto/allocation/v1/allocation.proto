@@ -3,7 +3,7 @@ package allocation.v1;
 
 import "gogoproto/gogo.proto";
 
-option go_package = "github.com/peggyjv/sommelier/v3/x/allocation/types";
+option go_package = "github.com/peggyjv/sommelier/v4/x/allocation/types";
 
 // AllocationPrecommit defines an array of hashed data to be used for the precommit phase
 // of allocation

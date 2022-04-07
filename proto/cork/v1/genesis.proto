@@ -5,7 +5,7 @@ import "cork/v1/tx.proto";
 import "cork/v1/cork.proto";
 import "gogoproto/gogo.proto";
 
-option go_package = "github.com/peggyjv/sommelier/v3/x/cork/types";
+option go_package = "github.com/peggyjv/sommelier/v4/x/cork/types";
 
 
 // GenesisState - all cork state that must be provided at genesis
