@@ -23,12 +23,13 @@ func CreateUpgradeHandler(
 		// time, we must initialize the VM map ourselves.
 		fromVM := make(map[string]uint64)
 		for moduleName, module := range mm.Modules {
-			// we skip setting the consensus version for the new modules so that
-			// RunMigrations will call InitGenesis on them
-			if moduleName != cellarfeestypes.ModuleName && moduleName != corktypes.ModuleName {
-				fromVM[moduleName] = module.ConsensusVersion()
-			}
+			fromVM[moduleName] = module.ConsensusVersion()
 		}
+
+		// we skip setting the consensus version for the new modules so that
+		// RunMigrations will call InitGenesis on them
+		delete(fromVM, corktypes.ModuleName)
+		delete(fromVM, cellarfeestypes.ModuleName)
 
 		// Overwrite the gravity module's version back to 1 so the migration will run to v2
 		fromVM[gravitytypes.ModuleName] = 1
