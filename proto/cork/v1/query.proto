@@ -20,13 +20,26 @@ service Query {
   rpc QuerySubmittedCorks(QuerySubmittedCorksRequest) returns (QuerySubmittedCorksResponse) {
     option (google.api.http).get = "/sommelier/cork/v1/submitted";
   }
-  // QueryVotePeriod queries the heights for the current voting period (current, start and end)
+  // QueryCommitPeriod queries the heights for the current voting period (current, start and end)
   rpc QueryCommitPeriod(QueryCommitPeriodRequest) returns (QueryCommitPeriodResponse) {
     option (google.api.http).get = "/sommelier/cork/v1/commit_period";
   }
   // QueryCellarIDs returns all cellars and current tick ranges
   rpc QueryCellarIDs(QueryCellarIDsRequest) returns (QueryCellarIDsResponse) {
     option (google.api.http).get = "/sommelier/cork/v1/cellar_ids";
+  }
+  // QueryScheduledCorks returns all scheduled corks
+  rpc QueryScheduledCorks(QueryScheduledCorksRequest) returns (QueryScheduledCorksResponse) {
+    option (google.api.http).get = "/sommelier/cork/v1/scheduled_corks";
+  }
+  // QueryScheduledBlockHeights returns all scheduled block heights
+  rpc QueryScheduledBlockHeights(QueryScheduledBlockHeightsRequest) returns (QueryScheduledBlockHeightsResponse) {
+    option (google.api.http).get = "/sommelier/cork/v1/scheduled_block_heights";
+  }
+
+  // QueryScheduledCorks returns all scheduled corks at a block height
+  rpc QueryScheduledCorksByBlockHeight(QueryScheduledCorksByBlockHeightRequest) returns (QueryScheduledCorksByBlockHeightResponse) {
+    option (google.api.http).get = "/sommelier/cork/v1/scheduled_corks_by_block_height/{block_height}";
   }
 }
 
@@ -69,4 +82,30 @@ message QueryCellarIDsRequest {}
 // QueryCellarIDsResponse is the response type for Query/QueryCellars gRPC method.
 message QueryCellarIDsResponse {
   repeated string cellar_ids = 1;
+}
+
+// QueryScheduledCorksRequest
+message QueryScheduledCorksRequest {}
+
+// QueryScheduledCorksResponse
+message QueryScheduledCorksResponse {
+  repeated ScheduledCork corks = 1;
+}
+
+// QueryScheduledBlockHeightsRequest
+message QueryScheduledBlockHeightsRequest {}
+
+// QueryScheduledBlockHeightsResponse
+message QueryScheduledBlockHeightsResponse {
+  repeated uint64 block_heights = 1;
+}
+
+// QueryScheduledCorksByBlockHeightRequest
+message QueryScheduledCorksByBlockHeightRequest {
+  uint64 block_height = 1;
+}
+
+// QueryScheduledCorksByBlockHeightResponse
+message QueryScheduledCorksByBlockHeightResponse {
+  repeated ScheduledCork corks = 1;
 }

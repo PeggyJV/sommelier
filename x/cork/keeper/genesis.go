@@ -12,6 +12,22 @@ func InitGenesis(ctx sdk.Context, k Keeper, gs types.GenesisState) {
 	// Set the vote period at initialization
 	k.SetCommitPeriodStart(ctx, ctx.BlockHeight())
 	k.SetCellarIDs(ctx, gs.CellarIds)
+	k.SetLatestInvalidationNonce(ctx, gs.InvalidationNonce)
+	for _, validatorCork := range gs.Corks {
+		valAddr, err := sdk.ValAddressFromHex(validatorCork.Validator)
+		if err != nil {
+			panic(err)
+		}
+		k.SetCork(ctx, valAddr, *validatorCork.Cork)
+	}
+	for _, scheduledCork := range gs.ScheduledCorks {
+		valAddr, err := sdk.ValAddressFromHex(scheduledCork.Validator)
+		if err != nil {
+			panic(err)
+		}
+
+		k.SetScheduledCork(ctx, scheduledCork.BlockHeight, valAddr, *scheduledCork.Cork)
+	}
 }
 
 // ExportGenesis writes the current store values
@@ -24,7 +40,10 @@ func ExportGenesis(ctx sdk.Context, k Keeper) types.GenesisState {
 	}
 
 	return types.GenesisState{
-		Params:    k.GetParamSet(ctx),
-		CellarIds: ids,
+		Params:            k.GetParamSet(ctx),
+		CellarIds:         ids,
+		InvalidationNonce: k.GetLatestInvalidationNonce(ctx),
+		Corks:             k.GetValidatorCorks(ctx),
+		ScheduledCorks:    k.GetScheduledCorks(ctx),
 	}
 }

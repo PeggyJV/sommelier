@@ -94,6 +94,7 @@ import (
 	cellarfeeskeeper "github.com/peggyjv/sommelier/v4/x/cellarfees/keeper"
 	cellarfeestypes "github.com/peggyjv/sommelier/v4/x/cellarfees/types"
 	"github.com/peggyjv/sommelier/v4/x/cork"
+	corkclient "github.com/peggyjv/sommelier/v4/x/cork/client"
 	corkkeeper "github.com/peggyjv/sommelier/v4/x/cork/keeper"
 	corktypes "github.com/peggyjv/sommelier/v4/x/cork/types"
 	"github.com/rakyll/statik/fs"
@@ -136,6 +137,8 @@ var (
 			upgradeclient.ProposalHandler,
 			upgradeclient.CancelProposalHandler,
 			gravityclient.ProposalHandler,
+			corkclient.AddProposalHandler,
+			corkclient.RemoveProposalHandler,
 		),
 		params.AppModuleBasic{},
 		crisis.AppModuleBasic{},
