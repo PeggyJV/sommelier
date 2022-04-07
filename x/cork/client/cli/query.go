@@ -9,7 +9,7 @@ import (
 
 // GetQueryCmd returns the cli query commands for this module
 func GetQueryCmd() *cobra.Command {
-	allocationQueryCmd := &cobra.Command{
+	corkQueryCmd := &cobra.Command{
 		Use:                        "cork",
 		Short:                      "Querying commands for the cork module",
 		DisableFlagParsing:         true,
@@ -17,8 +17,9 @@ func GetQueryCmd() *cobra.Command {
 		RunE:                       client.ValidateCmd,
 	}
 
-	allocationQueryCmd.AddCommand([]*cobra.Command{
+	corkQueryCmd.AddCommand([]*cobra.Command{
 		queryParams(),
+		querySubmittedCorks(),
 		queryCommitPeriod(),
 		queryScheduledCorks(),
 		queryCellarIDs(),
@@ -26,7 +27,7 @@ func GetQueryCmd() *cobra.Command {
 		queryScheduledCorksByBlockHeight(),
 	}...)
 
-	return allocationQueryCmd
+	return corkQueryCmd
 
 }
 
@@ -46,6 +47,31 @@ func queryParams() *cobra.Command {
 			req := &types.QueryParamsRequest{}
 
 			res, err := queryClient.QueryParams(cmd.Context(), req)
+			if err != nil {
+				return err
+			}
+
+			return ctx.PrintProto(res)
+		},
+	}
+}
+
+func querySubmittedCorks() *cobra.Command {
+	return &cobra.Command{
+		Use:     "corks",
+		Aliases: []string{"cs"},
+		Args:    cobra.NoArgs,
+		Short:   "query submitted corks from the chain",
+		RunE: func(cmd *cobra.Command, _ []string) error {
+			ctx, err := client.GetClientQueryContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			queryClient := types.NewQueryClient(ctx)
+			req := &types.QuerySubmittedCorksRequest{}
+
+			res, err := queryClient.QuerySubmittedCorks(cmd.Context(), req)
 			if err != nil {
 				return err
 			}
