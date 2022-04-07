@@ -7,6 +7,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 	"github.com/ethereum/go-ethereum/common"
+	gbtypes "github.com/peggyjv/gravity-bridge/module/x/gravity/types"
 	"github.com/peggyjv/sommelier/v3/x/cork/types"
 )
 
@@ -180,20 +181,20 @@ func (s *IntegrationTestSuite) TestScheduledCork() {
 			s.Require().NoError(err)
 			blockHeight := status.SyncInfo.LatestBlockHeight
 
-			count, err = s.getCurrentCount()
-			if err != nil {
-				return false
-			}
+			gbClient := gbtypes.NewQueryClient(clientCtx)
+			gbRes, err := gbClient.ContractCallTxs(context.Background(), &gbtypes.ContractCallTxsRequest{
+				Pagination: nil,
+			})
 
 			if blockHeight < (targetBlockHeight - 2) {
 				// verify that tbe scheduled cork has not yet been consumed, and that the counter has not been incremented
 				s.Require().Len(res.Corks, len(s.chain.validators))
 				s.Require().Equal(counterContract, common.HexToAddress(res.Corks[0].Cork.TargetContractAddress))
-				s.Require().Equal(int64(0), count.Int64())
+				s.Require().Len(gbRes.Calls, 0)
 			} else if blockHeight > (targetBlockHeight + 1) {
-				// verify that block height has been passed, cork consumed and counter is incremented
+				// verify that block height has been passed, cork consumed, contractcalltx created
 				s.Require().Len(res.Corks, 0)
-				s.Require().Equal(int64(1), count.Int64())
+				s.Require().Len(gbRes.Calls, 1)
 
 				// this is the only situation where this loop will complete
 				return true
@@ -201,5 +202,14 @@ func (s *IntegrationTestSuite) TestScheduledCork() {
 
 			return false
 		}, 3*time.Minute, 1*time.Second, "count was never updated")
+
+		s.T().Logf("verify count was updated")
+		s.Require().Eventuallyf(func() bool {
+			count, err = s.getCurrentCount()
+			if err != nil {
+				return false
+			}
+			return int64(1) == count.Int64()
+		}, time.Minute, 10*time.Second, "count was never updated")
 	})
 }
