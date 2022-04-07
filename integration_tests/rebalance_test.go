@@ -5,7 +5,7 @@ import (
 	"time"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/peggyjv/sommelier/v3/x/allocation/types"
+	"github.com/peggyjv/sommelier/v4/x/allocation/types"
 )
 
 func (s *IntegrationTestSuite) TestRebalance() {

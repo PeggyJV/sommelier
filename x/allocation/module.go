@@ -13,9 +13,9 @@ import (
 	sim "github.com/cosmos/cosmos-sdk/types/simulation"
 	"github.com/gorilla/mux"
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
-	"github.com/peggyjv/sommelier/v3/x/allocation/client/cli"
-	"github.com/peggyjv/sommelier/v3/x/allocation/keeper"
-	"github.com/peggyjv/sommelier/v3/x/allocation/types"
+	"github.com/peggyjv/sommelier/v4/x/allocation/client/cli"
+	"github.com/peggyjv/sommelier/v4/x/allocation/keeper"
+	"github.com/peggyjv/sommelier/v4/x/allocation/types"
 	"github.com/spf13/cobra"
 	abci "github.com/tendermint/tendermint/abci/types"
 )

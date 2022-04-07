@@ -52,7 +52,7 @@ import (
 	"github.com/peggyjv/gravity-bridge/module/x/gravity"
 	gravitykeeper "github.com/peggyjv/gravity-bridge/module/x/gravity/keeper"
 	gravitytypes "github.com/peggyjv/gravity-bridge/module/x/gravity/types"
-	"github.com/peggyjv/sommelier/v3/x/cork/types"
+	"github.com/peggyjv/sommelier/v4/x/cork/types"
 	"github.com/stretchr/testify/require"
 	"github.com/tendermint/tendermint/libs/log"
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"

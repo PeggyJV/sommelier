@@ -8,7 +8,7 @@ import (
 	"google.golang.org/grpc/status"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/peggyjv/sommelier/v3/x/cork/types"
+	"github.com/peggyjv/sommelier/v4/x/cork/types"
 )
 
 var _ types.QueryServer = Keeper{}

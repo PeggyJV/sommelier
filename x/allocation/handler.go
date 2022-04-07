@@ -6,8 +6,8 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
-	"github.com/peggyjv/sommelier/v3/x/allocation/keeper"
-	"github.com/peggyjv/sommelier/v3/x/allocation/types"
+	"github.com/peggyjv/sommelier/v4/x/allocation/keeper"
+	"github.com/peggyjv/sommelier/v4/x/allocation/types"
 )
 
 // NewHandler returns a handler for "oracle" type messages.

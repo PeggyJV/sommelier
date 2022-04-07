@@ -8,7 +8,7 @@ import (
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 	"github.com/ethereum/go-ethereum/common"
 
-	"github.com/peggyjv/sommelier/v3/x/cork/types"
+	"github.com/peggyjv/sommelier/v4/x/cork/types"
 )
 
 var _ types.MsgServer = Keeper{}
