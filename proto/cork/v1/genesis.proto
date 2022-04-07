@@ -16,6 +16,9 @@ message GenesisState {
     CellarIDSet cellar_ids = 2 [
         (gogoproto.nullable) = false
     ];
+    uint64 invalidation_nonce = 3;
+    repeated ValidatorCork corks = 4;
+    repeated ScheduledCork scheduled_corks = 5;
 }
 
 // Params cork parameters

@@ -59,12 +59,14 @@
     - [Query](#cellarfees.v1.Query)
   
 - [cork/v1/cork.proto](#cork/v1/cork.proto)
-    - [AddManagedCellarIDsProposal](#cork.v1.AddManagedCellarIDsProposal)
     - [CellarIDSet](#cork.v1.CellarIDSet)
     - [Cork](#cork.v1.Cork)
-    - [RemoveManagedCellarIDsProposal](#cork.v1.RemoveManagedCellarIDsProposal)
+    - [ScheduledCork](#cork.v1.ScheduledCork)
+    - [ValidatorCork](#cork.v1.ValidatorCork)
   
 - [cork/v1/tx.proto](#cork/v1/tx.proto)
+    - [MsgScheduleCorkRequest](#cork.v1.MsgScheduleCorkRequest)
+    - [MsgScheduleCorkResponse](#cork.v1.MsgScheduleCorkResponse)
     - [MsgSubmitCorkRequest](#cork.v1.MsgSubmitCorkRequest)
     - [MsgSubmitCorkResponse](#cork.v1.MsgSubmitCorkResponse)
   
@@ -74,6 +76,12 @@
     - [GenesisState](#cork.v1.GenesisState)
     - [Params](#cork.v1.Params)
   
+- [cork/v1/proposal.proto](#cork/v1/proposal.proto)
+    - [AddManagedCellarIDsProposal](#cork.v1.AddManagedCellarIDsProposal)
+    - [AddManagedCellarIDsProposalWithDeposit](#cork.v1.AddManagedCellarIDsProposalWithDeposit)
+    - [RemoveManagedCellarIDsProposal](#cork.v1.RemoveManagedCellarIDsProposal)
+    - [RemoveManagedCellarIDsProposalWithDeposit](#cork.v1.RemoveManagedCellarIDsProposalWithDeposit)
+  
 - [cork/v1/query.proto](#cork/v1/query.proto)
     - [QueryCellarIDsRequest](#cork.v1.QueryCellarIDsRequest)
     - [QueryCellarIDsResponse](#cork.v1.QueryCellarIDsResponse)
@@ -81,6 +89,12 @@
     - [QueryCommitPeriodResponse](#cork.v1.QueryCommitPeriodResponse)
     - [QueryParamsRequest](#cork.v1.QueryParamsRequest)
     - [QueryParamsResponse](#cork.v1.QueryParamsResponse)
+    - [QueryScheduledBlockHeightsRequest](#cork.v1.QueryScheduledBlockHeightsRequest)
+    - [QueryScheduledBlockHeightsResponse](#cork.v1.QueryScheduledBlockHeightsResponse)
+    - [QueryScheduledCorksByBlockHeightRequest](#cork.v1.QueryScheduledCorksByBlockHeightRequest)
+    - [QueryScheduledCorksByBlockHeightResponse](#cork.v1.QueryScheduledCorksByBlockHeightResponse)
+    - [QueryScheduledCorksRequest](#cork.v1.QueryScheduledCorksRequest)
+    - [QueryScheduledCorksResponse](#cork.v1.QueryScheduledCorksResponse)
     - [QuerySubmittedCorksRequest](#cork.v1.QuerySubmittedCorksRequest)
     - [QuerySubmittedCorksResponse](#cork.v1.QuerySubmittedCorksResponse)
   
@@ -729,23 +743,6 @@ GenesisState defines the cellarfees module's genesis state.
 
 
 
-<a name="cork.v1.AddManagedCellarIDsProposal"></a>
-
-### AddManagedCellarIDsProposal
-
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| `title` | [string](#string) |  |  |
-| `description` | [string](#string) |  |  |
-| `cellar_ids` | [CellarIDSet](#cork.v1.CellarIDSet) |  |  |
-
-
-
-
-
-
 <a name="cork.v1.CellarIDSet"></a>
 
 ### CellarIDSet
@@ -764,7 +761,7 @@ GenesisState defines the cellarfees module's genesis state.
 <a name="cork.v1.Cork"></a>
 
 ### Cork
-MsgSubmitCorkRequest - sdk.Msg for submitting calls to Ethereum through the gravity bridge contract
+
 
 
 | Field | Type | Label | Description |
@@ -777,17 +774,33 @@ MsgSubmitCorkRequest - sdk.Msg for submitting calls to Ethereum through the grav
 
 
 
-<a name="cork.v1.RemoveManagedCellarIDsProposal"></a>
+<a name="cork.v1.ScheduledCork"></a>
 
-### RemoveManagedCellarIDsProposal
+### ScheduledCork
 
 
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| `title` | [string](#string) |  |  |
-| `description` | [string](#string) |  |  |
-| `cellar_ids` | [CellarIDSet](#cork.v1.CellarIDSet) |  |  |
+| `cork` | [Cork](#cork.v1.Cork) |  |  |
+| `block_height` | [uint64](#uint64) |  |  |
+| `validator` | [string](#string) |  |  |
+
+
+
+
+
+
+<a name="cork.v1.ValidatorCork"></a>
+
+### ValidatorCork
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `cork` | [Cork](#cork.v1.Cork) |  |  |
+| `validator` | [string](#string) |  |  |
 
 
 
@@ -807,6 +820,33 @@ MsgSubmitCorkRequest - sdk.Msg for submitting calls to Ethereum through the grav
 <p align="right"><a href="#top">Top</a></p>
 
 ## cork/v1/tx.proto
+
+
+
+<a name="cork.v1.MsgScheduleCorkRequest"></a>
+
+### MsgScheduleCorkRequest
+MsgScheduleCorkRequest - sdk.Msg for scheduling a cork request for on or after a specific block height
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `cork` | [Cork](#cork.v1.Cork) |  | the scheduled cork |
+| `block_height` | [uint64](#uint64) |  | the block height that must be reached |
+| `signer` | [string](#string) |  | signer account address |
+
+
+
+
+
+
+<a name="cork.v1.MsgScheduleCorkResponse"></a>
+
+### MsgScheduleCorkResponse
+
+
+
+
 
 
 
@@ -849,7 +889,8 @@ MsgService defines the msgs that the cork module handles
 
 | Method Name | Request Type | Response Type | Description | HTTP Verb | Endpoint |
 | ----------- | ------------ | ------------- | ------------| ------- | -------- |
-| `SubmitCork` | [MsgSubmitCorkRequest](#cork.v1.MsgSubmitCorkRequest) | [MsgSubmitCorkResponse](#cork.v1.MsgSubmitCorkResponse) | CorkSubmission defines a message | |
+| `SubmitCork` | [MsgSubmitCorkRequest](#cork.v1.MsgSubmitCorkRequest) | [MsgSubmitCorkResponse](#cork.v1.MsgSubmitCorkResponse) |  | |
+| `ScheduleCork` | [MsgScheduleCorkRequest](#cork.v1.MsgScheduleCorkRequest) | [MsgScheduleCorkResponse](#cork.v1.MsgScheduleCorkResponse) |  | |
 
  <!-- end services -->
 
@@ -872,6 +913,9 @@ GenesisState - all cork state that must be provided at genesis
 | ----- | ---- | ----- | ----------- |
 | `params` | [Params](#cork.v1.Params) |  |  |
 | `cellar_ids` | [CellarIDSet](#cork.v1.CellarIDSet) |  |  |
+| `invalidation_nonce` | [uint64](#uint64) |  |  |
+| `corks` | [ValidatorCork](#cork.v1.ValidatorCork) | repeated |  |
+| `scheduled_corks` | [ScheduledCork](#cork.v1.ScheduledCork) | repeated |  |
 
 
 
@@ -888,6 +932,92 @@ Params cork parameters
 | ----- | ---- | ----- | ----------- |
 | `vote_period` | [int64](#int64) |  | VotePeriod defines the number of blocks to wait for votes before attempting to tally |
 | `vote_threshold` | [string](#string) |  | VoteThreshold defines the percentage of bonded stake required to vote each period |
+
+
+
+
+
+ <!-- end messages -->
+
+ <!-- end enums -->
+
+ <!-- end HasExtensions -->
+
+ <!-- end services -->
+
+
+
+<a name="cork/v1/proposal.proto"></a>
+<p align="right"><a href="#top">Top</a></p>
+
+## cork/v1/proposal.proto
+
+
+
+<a name="cork.v1.AddManagedCellarIDsProposal"></a>
+
+### AddManagedCellarIDsProposal
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `title` | [string](#string) |  |  |
+| `description` | [string](#string) |  |  |
+| `cellar_ids` | [CellarIDSet](#cork.v1.CellarIDSet) |  |  |
+
+
+
+
+
+
+<a name="cork.v1.AddManagedCellarIDsProposalWithDeposit"></a>
+
+### AddManagedCellarIDsProposalWithDeposit
+AddManagedCellarIDsProposalWithDeposit is a specific definition for CLI commands
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `title` | [string](#string) |  |  |
+| `description` | [string](#string) |  |  |
+| `cellar_ids` | [string](#string) | repeated |  |
+| `deposit` | [string](#string) |  |  |
+
+
+
+
+
+
+<a name="cork.v1.RemoveManagedCellarIDsProposal"></a>
+
+### RemoveManagedCellarIDsProposal
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `title` | [string](#string) |  |  |
+| `description` | [string](#string) |  |  |
+| `cellar_ids` | [CellarIDSet](#cork.v1.CellarIDSet) |  |  |
+
+
+
+
+
+
+<a name="cork.v1.RemoveManagedCellarIDsProposalWithDeposit"></a>
+
+### RemoveManagedCellarIDsProposalWithDeposit
+RemoveManagedCellarIDsProposalWithDeposit is a specific definition for CLI commands
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `title` | [string](#string) |  |  |
+| `description` | [string](#string) |  |  |
+| `cellar_ids` | [string](#string) | repeated |  |
+| `deposit` | [string](#string) |  |  |
 
 
 
@@ -987,6 +1117,86 @@ QueryParamsRequest is the response type for the Query/Params gRPC method.
 
 
 
+<a name="cork.v1.QueryScheduledBlockHeightsRequest"></a>
+
+### QueryScheduledBlockHeightsRequest
+QueryScheduledBlockHeightsRequest
+
+
+
+
+
+
+<a name="cork.v1.QueryScheduledBlockHeightsResponse"></a>
+
+### QueryScheduledBlockHeightsResponse
+QueryScheduledBlockHeightsResponse
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `block_heights` | [uint64](#uint64) | repeated |  |
+
+
+
+
+
+
+<a name="cork.v1.QueryScheduledCorksByBlockHeightRequest"></a>
+
+### QueryScheduledCorksByBlockHeightRequest
+QueryScheduledCorksByBlockHeightRequest
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `block_height` | [uint64](#uint64) |  |  |
+
+
+
+
+
+
+<a name="cork.v1.QueryScheduledCorksByBlockHeightResponse"></a>
+
+### QueryScheduledCorksByBlockHeightResponse
+QueryScheduledCorksByBlockHeightResponse
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `corks` | [ScheduledCork](#cork.v1.ScheduledCork) | repeated |  |
+
+
+
+
+
+
+<a name="cork.v1.QueryScheduledCorksRequest"></a>
+
+### QueryScheduledCorksRequest
+QueryScheduledCorksRequest
+
+
+
+
+
+
+<a name="cork.v1.QueryScheduledCorksResponse"></a>
+
+### QueryScheduledCorksResponse
+QueryScheduledCorksResponse
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `corks` | [ScheduledCork](#cork.v1.ScheduledCork) | repeated |  |
+
+
+
+
+
+
 <a name="cork.v1.QuerySubmittedCorksRequest"></a>
 
 ### QuerySubmittedCorksRequest
@@ -1029,6 +1239,9 @@ Query defines the gRPC query service for the cork module.
 | `QuerySubmittedCorks` | [QuerySubmittedCorksRequest](#cork.v1.QuerySubmittedCorksRequest) | [QuerySubmittedCorksResponse](#cork.v1.QuerySubmittedCorksResponse) | QuerySubmittedCorks queries the submitted corks awaiting vote | GET|/sommelier/cork/v1/submitted|
 | `QueryCommitPeriod` | [QueryCommitPeriodRequest](#cork.v1.QueryCommitPeriodRequest) | [QueryCommitPeriodResponse](#cork.v1.QueryCommitPeriodResponse) | QueryVotePeriod queries the heights for the current voting period (current, start and end) | GET|/sommelier/cork/v1/commit_period|
 | `QueryCellarIDs` | [QueryCellarIDsRequest](#cork.v1.QueryCellarIDsRequest) | [QueryCellarIDsResponse](#cork.v1.QueryCellarIDsResponse) | QueryCellarIDs returns all cellars and current tick ranges | GET|/sommelier/cork/v1/cellar_ids|
+| `QueryScheduledCorks` | [QueryScheduledCorksRequest](#cork.v1.QueryScheduledCorksRequest) | [QueryScheduledCorksResponse](#cork.v1.QueryScheduledCorksResponse) | QueryScheduledCorks returns all scheduled corks | GET|/sommelier/cork/v1/scheduled_corks|
+| `QueryScheduledBlockHeights` | [QueryScheduledBlockHeightsRequest](#cork.v1.QueryScheduledBlockHeightsRequest) | [QueryScheduledBlockHeightsResponse](#cork.v1.QueryScheduledBlockHeightsResponse) | QueryScheduledBlockHeights returns all scheduled block heights | GET|/sommelier/cork/v1/scheduled_block_heights|
+| `QueryScheduledCorksByBlockHeight` | [QueryScheduledCorksByBlockHeightRequest](#cork.v1.QueryScheduledCorksByBlockHeightRequest) | [QueryScheduledCorksByBlockHeightResponse](#cork.v1.QueryScheduledCorksByBlockHeightResponse) | QueryScheduledCorks returns all scheduled corks at a block height | GET|/sommelier/cork/v1/scheduled_corks_by_block_height/{block_height}|
 
  <!-- end services -->
 

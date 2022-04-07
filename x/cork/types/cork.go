@@ -26,3 +26,15 @@ func (c *Cork) Equals(other Cork) bool {
 
 	return true
 }
+
+func (c *Cork) ValidateBasic() error {
+	if len(c.EncodedContractCall) == 0 {
+		return ErrEmptyContractCall
+	}
+
+	if !common.IsHexAddress(c.TargetContractAddress) {
+		return ErrInvalidAddress
+	}
+
+	return nil
+}

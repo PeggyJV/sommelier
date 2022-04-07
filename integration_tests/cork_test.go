@@ -333,9 +333,19 @@ func (s *IntegrationTestSuite) TestCork() {
 		s.Require().NoError(err, "unable to create removal governance proposal")
 
 		s.T().Log("submit proposal removing cellar ID")
-		submitRemoveProposalResponse, err := s.chain.sendMsgs(*clientCtx, removeProposalMsg)
-		s.Require().NoError(err)
-		s.Require().Zero(submitRemoveProposalResponse.Code, "raw log: %s", submitProposalResponse.RawLog)
+		s.Require().Eventuallyf(func() bool {
+			submitRemoveProposalResponse, err := s.chain.sendMsgs(*clientCtx, removeProposalMsg)
+			if err != nil {
+				return false
+			}
+			if submitRemoveProposalResponse.Code != 0 {
+				if submitRemoveProposalResponse.Code == 32 {
+					s.T().Logf("response: %s", submitRemoveProposalResponse.RawLog)
+				}
+				return false
+			}
+			return true
+		}, 20*time.Second, 5*time.Second, "proposal never submitted successfully")
 
 		s.T().Log("vote for proposal removing contract")
 		for _, val := range s.chain.validators {

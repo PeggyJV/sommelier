@@ -2,6 +2,7 @@ package keeper
 
 import (
 	"context"
+	"fmt"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
@@ -61,4 +62,43 @@ func (k Keeper) SubmitCork(c context.Context, msg *types.MsgSubmitCorkRequest) (
 	)
 
 	return &types.MsgSubmitCorkResponse{}, nil
+}
+
+// ScheduleCork implements types.MsgServer
+func (k Keeper) ScheduleCork(c context.Context, msg *types.MsgScheduleCorkRequest) (*types.MsgScheduleCorkResponse, error) {
+	ctx := sdk.UnwrapSDKContext(c)
+
+	if !k.HasCellarID(ctx, common.HexToAddress(msg.Cork.TargetContractAddress)) {
+		return nil, types.ErrUnmanagedCellarAddress
+	}
+
+	if msg.BlockHeight <= uint64(ctx.BlockHeight()) {
+		return nil, types.ErrSchedulingInThePast
+	}
+
+	signer := msg.MustGetSigner()
+	validatorAddr, err := k.signerToValAddr(ctx, signer)
+	if err != nil {
+		return nil, err
+	}
+
+	k.SetScheduledCork(ctx, msg.BlockHeight, validatorAddr, *msg.Cork)
+
+	ctx.EventManager().EmitEvents(
+		sdk.Events{
+			sdk.NewEvent(
+				sdk.EventTypeMessage,
+				sdk.NewAttribute(sdk.AttributeKeyModule, types.AttributeValueCategory),
+			),
+			sdk.NewEvent(
+				types.EventTypeCork,
+				sdk.NewAttribute(types.AttributeKeySigner, signer.String()),
+				sdk.NewAttribute(types.AttributeKeyValidator, validatorAddr.String()),
+				sdk.NewAttribute(types.AttributeKeyCork, msg.Cork.String()),
+				sdk.NewAttribute(types.AttributeKeyBlockHeight, fmt.Sprintf("%d", msg.BlockHeight)),
+			),
+		},
+	)
+
+	return &types.MsgScheduleCorkResponse{}, nil
 }

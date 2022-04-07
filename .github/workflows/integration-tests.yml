@@ -115,6 +115,7 @@ jobs:
       matrix:
         test_type: [
           "Cork",
+          "ScheduledCork",
         ]
     steps:
 # Not needed on self hosted test runner that already has go installed
