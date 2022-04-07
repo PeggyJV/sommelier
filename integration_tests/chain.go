@@ -27,7 +27,6 @@ import (
 	gravitytypes "github.com/peggyjv/gravity-bridge/module/x/gravity/types"
 	"github.com/peggyjv/sommelier/v4/app"
 	"github.com/peggyjv/sommelier/v4/app/params"
-	"github.com/peggyjv/sommelier/v4/x/allocation/types"
 	tmrand "github.com/tendermint/tendermint/libs/rand"
 	rpchttp "github.com/tendermint/tendermint/rpc/client/http"
 )
@@ -201,8 +200,6 @@ func (c *chain) clientContext(nodeURI string, kb *keyring.Keyring, fromName stri
 	interfaceRegistry.RegisterImplementations((*sdk.Msg)(nil),
 		&stakingtypes.MsgCreateValidator{},
 		&gravitytypes.MsgDelegateKeys{},
-		&types.MsgAllocationCommit{},
-		&types.MsgAllocationPrecommit{},
 	)
 	interfaceRegistry.RegisterImplementations((*govtypes.Content)(nil),
 		&corktypes.AddManagedCellarIDsProposal{},

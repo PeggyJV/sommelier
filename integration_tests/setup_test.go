@@ -19,10 +19,6 @@ import (
 
 	gravitytypes "github.com/peggyjv/gravity-bridge/module/x/gravity/types"
 
-	"github.com/ethereum/go-ethereum"
-
-	"github.com/peggyjv/sommelier/v4/x/allocation/types"
-
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/ethclient"
 
@@ -344,22 +340,6 @@ func (s *IntegrationTestSuite) initGenesis() {
 	bz, err = cdc.MarshalJSON(&genUtilGenState)
 	s.Require().NoError(err)
 	appGenState[genutiltypes.ModuleName] = bz
-
-	var allocationGenState types.GenesisState
-	s.Require().NoError(cdc.UnmarshalJSON(appGenState[types.ModuleName], &allocationGenState))
-
-	allocationGenState.Cellars = []*types.Cellar{
-		{
-			Id: hardhatCellar.String(),
-			TickRanges: []*types.TickRange{
-				{Upper: 600, Lower: 300, Weight: 900},
-			},
-		},
-	}
-	allocationGenState.Params.VotePeriod = 30
-	bz, err = cdc.MarshalJSON(&allocationGenState)
-	s.Require().NoError(err)
-	appGenState[types.ModuleName] = bz
 
 	var corkGenState corktypes.GenesisState
 	s.Require().NoError(cdc.UnmarshalJSON(appGenState[corktypes.ModuleName], &corkGenState))
@@ -735,29 +715,6 @@ func (s *IntegrationTestSuite) logsByContainerID(id string) string {
 	))
 
 	return containerLogsBuf.String()
-}
-
-func (s *IntegrationTestSuite) getFirstTickRange() (*types.TickRange, error) {
-	ethClient, err := ethclient.Dial(fmt.Sprintf("http://%s", s.ethResource.GetHostPort("8545/tcp")))
-	if err != nil {
-		return nil, err
-	}
-
-	bz, err := ethClient.CallContract(context.Background(), ethereum.CallMsg{
-		From: common.HexToAddress(s.chain.validators[0].ethereumKey.address),
-		To:   &hardhatCellar,
-		Gas:  0,
-		Data: types.ABIEncodedCellarTickInfoBytes(uint(0)),
-	}, nil)
-	if err != nil {
-		return nil, err
-	}
-	tr, err := types.BytesToABIEncodedTickRange(bz)
-	if err != nil {
-		return nil, err
-	}
-
-	return tr, nil
 }
 
 func (s *IntegrationTestSuite) TestBasicChain() {

@@ -90,7 +90,6 @@ import (
 	gravitytypes "github.com/peggyjv/gravity-bridge/module/x/gravity/types"
 	appParams "github.com/peggyjv/sommelier/v4/app/params"
 	v4 "github.com/peggyjv/sommelier/v4/app/upgrades/v4"
-	allocationtypes "github.com/peggyjv/sommelier/v4/x/allocation/types"
 	"github.com/peggyjv/sommelier/v4/x/cellarfees"
 	cellarfeeskeeper "github.com/peggyjv/sommelier/v4/x/cellarfees/keeper"
 	cellarfeestypes "github.com/peggyjv/sommelier/v4/x/cellarfees/types"
@@ -731,7 +730,7 @@ func (app *SommelierApp) setupUpgradeStoreLoaders() {
 	if upgradeInfo.Name == v4.UpgradeName && !app.UpgradeKeeper.IsSkipHeight(upgradeInfo.Height) {
 		storeUpgrades := store.StoreUpgrades{
 			Added:   []string{corktypes.ModuleName, cellarfeestypes.ModuleName},
-			Deleted: []string{allocationtypes.ModuleName},
+			Deleted: []string{"allocation"},
 		}
 
 		app.SetStoreLoader(upgradetypes.UpgradeStoreLoader(upgradeInfo.Height, &storeUpgrades))
