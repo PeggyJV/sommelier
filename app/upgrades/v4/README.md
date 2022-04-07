@@ -5,6 +5,7 @@ This upgrade moves Sommelier to major version 4.
 ## Summary of changes
 
 * Switch to use of the upgrade module
+* Delete the allocation module, which was unused
 * Add the cork module for receiving arbitrary logic calls
 * Add the cellarfees module to provide a module account for cellar fees to be bridged to
 * Support sending to specified module accounts over the bridge
