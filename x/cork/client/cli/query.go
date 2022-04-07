@@ -1,10 +1,11 @@
 package cli
 
 import (
+	"strconv"
+
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/peggyjv/sommelier/v3/x/cork/types"
 	"github.com/spf13/cobra"
-	"strconv"
 )
 
 // GetQueryCmd returns the cli query commands for this module

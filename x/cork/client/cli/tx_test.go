@@ -1,10 +1,11 @@
 package cli
 
 import (
-	"github.com/cosmos/cosmos-sdk/simapp/params"
-	"github.com/peggyjv/sommelier/v3/x/cork/types"
 	"io/ioutil"
 	"testing"
+
+	"github.com/cosmos/cosmos-sdk/simapp/params"
+	"github.com/peggyjv/sommelier/v3/x/cork/types"
 
 	"github.com/cosmos/cosmos-sdk/testutil"
 	"github.com/stretchr/testify/require"

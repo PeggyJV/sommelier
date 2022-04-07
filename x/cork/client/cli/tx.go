@@ -2,6 +2,9 @@ package cli
 
 import (
 	"fmt"
+	"io/ioutil"
+	"strings"
+
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/tx"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -10,8 +13,6 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	types "github.com/peggyjv/sommelier/v3/x/cork/types"
 	"github.com/spf13/cobra"
-	"io/ioutil"
-	"strings"
 )
 
 // GetTxCmd returns the transaction commands for this module
@@ -144,7 +145,7 @@ Where proposal.json contains:
 			if err != nil {
 				return err
 			}
-			
+
 			for _, id := range proposal.CellarIds {
 				if !common.IsHexAddress(id) {
 					return fmt.Errorf("%s is not a valid ethereum address", id)

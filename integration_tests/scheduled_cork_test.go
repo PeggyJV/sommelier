@@ -185,6 +185,7 @@ func (s *IntegrationTestSuite) TestScheduledCork() {
 			gbRes, err := gbClient.ContractCallTxs(context.Background(), &gbtypes.ContractCallTxsRequest{
 				Pagination: nil,
 			})
+			s.Require().NoError(err)
 
 			if blockHeight < (targetBlockHeight - 2) {
 				// verify that tbe scheduled cork has not yet been consumed, and that the counter has not been incremented
