@@ -70,7 +70,7 @@ func postRemoveProposalHandlerFn(clientCtx client.Context) http.HandlerFunc {
 			return
 		}
 
-		content := types.NewAddManagedCellarIDsProposal(
+		content := types.NewRemoveManagedCellarIDsProposal(
 			req.Title,
 			req.Description,
 			&types.CellarIDSet{
