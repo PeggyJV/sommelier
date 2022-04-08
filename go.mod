@@ -1,4 +1,4 @@
-module github.com/peggyjv/sommelier/v3
+module github.com/peggyjv/sommelier/v4
 
 go 1.15
 
@@ -18,7 +18,7 @@ require (
 	github.com/miguelmota/go-ethereum-hdwallet v0.1.1
 	github.com/moby/term v0.0.0-20210619224110-3f7ff695adc6 // indirect
 	github.com/ory/dockertest/v3 v3.8.1
-	github.com/peggyjv/gravity-bridge/module v0.3.9
+	github.com/peggyjv/gravity-bridge/module/v2 v2.0.0-20220408050446-0990f54669f9 // indirect
 	github.com/rakyll/statik v0.1.7
 	github.com/regen-network/cosmos-proto v0.3.1
 	github.com/spf13/cast v1.4.1

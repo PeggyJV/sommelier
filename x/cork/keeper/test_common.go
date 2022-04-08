@@ -49,10 +49,10 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/upgrade"
 	upgradeclient "github.com/cosmos/cosmos-sdk/x/upgrade/client"
 	gethcommon "github.com/ethereum/go-ethereum/common"
-	"github.com/peggyjv/gravity-bridge/module/x/gravity"
-	gravitykeeper "github.com/peggyjv/gravity-bridge/module/x/gravity/keeper"
-	gravitytypes "github.com/peggyjv/gravity-bridge/module/x/gravity/types"
-	"github.com/peggyjv/sommelier/v3/x/cork/types"
+	"github.com/peggyjv/gravity-bridge/module/v2/x/gravity"
+	gravitykeeper "github.com/peggyjv/gravity-bridge/module/v2/x/gravity/keeper"
+	gravitytypes "github.com/peggyjv/gravity-bridge/module/v2/x/gravity/types"
+	"github.com/peggyjv/sommelier/v4/x/cork/types"
 	"github.com/stretchr/testify/require"
 	"github.com/tendermint/tendermint/libs/log"
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
@@ -314,6 +314,12 @@ func CreateTestEnv(t *testing.T) TestInput {
 		accountKeeper.SetModuleAccount(ctx, mod)
 	}
 
+	// receiver/sender module account maps for the bridge
+	receiverModuleAccounts := map[string]string{
+		authtypes.NewModuleAddress(distrtypes.ModuleName).String(): distrtypes.ModuleName,
+	}
+	senderModuleAccounts := receiverModuleAccounts
+
 	stakeAddr := authtypes.NewModuleAddress(stakingtypes.BondedPoolName)
 	moduleAcct := accountKeeper.GetAccount(ctx, stakeAddr)
 	require.NotNil(t, moduleAcct)
@@ -353,7 +359,10 @@ func CreateTestEnv(t *testing.T) TestInput {
 		stakingKeeper,
 		bankKeeper,
 		slashingKeeper,
+		distKeeper,
 		sdk.DefaultPowerReduction,
+		receiverModuleAccounts,
+		senderModuleAccounts,
 	)
 
 	stakingKeeper = *stakingKeeper.SetHooks(

@@ -30,9 +30,9 @@ import (
 	"github.com/tendermint/tendermint/libs/log"
 	dbm "github.com/tendermint/tm-db"
 
-	bridgecmd "github.com/peggyjv/gravity-bridge/module/cmd/gravity/cmd"
-	"github.com/peggyjv/sommelier/v3/app"
-	"github.com/peggyjv/sommelier/v3/app/params"
+	bridgecmd "github.com/peggyjv/gravity-bridge/module/v2/cmd/gravity/cmd"
+	"github.com/peggyjv/sommelier/v4/app"
+	"github.com/peggyjv/sommelier/v4/app/params"
 )
 
 // NewRootCmd creates a new root command for simd. It is called once in the

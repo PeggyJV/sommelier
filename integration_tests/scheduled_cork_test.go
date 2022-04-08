@@ -7,8 +7,8 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 	"github.com/ethereum/go-ethereum/common"
-	gbtypes "github.com/peggyjv/gravity-bridge/module/x/gravity/types"
-	"github.com/peggyjv/sommelier/v3/x/cork/types"
+	gbtypes "github.com/peggyjv/gravity-bridge/module/v2/x/gravity/types"
+	"github.com/peggyjv/sommelier/v4/x/cork/types"
 )
 
 func (s *IntegrationTestSuite) TestScheduledCork() {

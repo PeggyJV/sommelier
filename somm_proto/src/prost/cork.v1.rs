@@ -14,7 +14,7 @@ pub struct CellarIdSet {
     pub ids: ::prost::alloc::vec::Vec<::prost::alloc::string::String>,
 }
 #[derive(Clone, PartialEq, ::prost::Message)]
-pub struct AddManagedCellarsProposal {
+pub struct AddManagedCellarIDsProposal {
     #[prost(string, tag = "1")]
     pub title: ::prost::alloc::string::String,
     #[prost(string, tag = "2")]
@@ -23,7 +23,7 @@ pub struct AddManagedCellarsProposal {
     pub cellar_ids: ::core::option::Option<CellarIdSet>,
 }
 #[derive(Clone, PartialEq, ::prost::Message)]
-pub struct RemoveManagedCellarsProposal {
+pub struct RemoveManagedCellarIDsProposal {
     #[prost(string, tag = "1")]
     pub title: ::prost::alloc::string::String,
     #[prost(string, tag = "2")]

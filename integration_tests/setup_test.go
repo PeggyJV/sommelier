@@ -15,13 +15,9 @@ import (
 	"time"
 
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
-	corktypes "github.com/peggyjv/sommelier/v3/x/cork/types"
+	corktypes "github.com/peggyjv/sommelier/v4/x/cork/types"
 
-	gravitytypes "github.com/peggyjv/gravity-bridge/module/x/gravity/types"
-
-	"github.com/ethereum/go-ethereum"
-
-	"github.com/peggyjv/sommelier/v3/x/allocation/types"
+	gravitytypes "github.com/peggyjv/gravity-bridge/module/v2/x/gravity/types"
 
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/ethclient"
@@ -55,7 +51,6 @@ var (
 	stakeAmountCoin = sdk.NewCoin(testDenom, stakeAmount)
 
 	// todo(mvid): split these out into their respective tests
-	hardhatCellar         = common.HexToAddress("0x4C4a2f8c81640e47606d3fd77B353E87Ba015584")
 	gravityContract       = common.HexToAddress("0x04C89607413713Ec9775E14b954286519d836FEf")
 	counterContract       = common.HexToAddress("0x0000000000000000000000000000000000000000")
 	unusedGenesisContract = common.HexToAddress("0x0000000000000000000000000000000000000001")
@@ -344,22 +339,6 @@ func (s *IntegrationTestSuite) initGenesis() {
 	bz, err = cdc.MarshalJSON(&genUtilGenState)
 	s.Require().NoError(err)
 	appGenState[genutiltypes.ModuleName] = bz
-
-	var allocationGenState types.GenesisState
-	s.Require().NoError(cdc.UnmarshalJSON(appGenState[types.ModuleName], &allocationGenState))
-
-	allocationGenState.Cellars = []*types.Cellar{
-		{
-			Id: hardhatCellar.String(),
-			TickRanges: []*types.TickRange{
-				{Upper: 600, Lower: 300, Weight: 900},
-			},
-		},
-	}
-	allocationGenState.Params.VotePeriod = 30
-	bz, err = cdc.MarshalJSON(&allocationGenState)
-	s.Require().NoError(err)
-	appGenState[types.ModuleName] = bz
 
 	var corkGenState corktypes.GenesisState
 	s.Require().NoError(cdc.UnmarshalJSON(appGenState[corktypes.ModuleName], &corkGenState))
@@ -735,29 +714,6 @@ func (s *IntegrationTestSuite) logsByContainerID(id string) string {
 	))
 
 	return containerLogsBuf.String()
-}
-
-func (s *IntegrationTestSuite) getFirstTickRange() (*types.TickRange, error) {
-	ethClient, err := ethclient.Dial(fmt.Sprintf("http://%s", s.ethResource.GetHostPort("8545/tcp")))
-	if err != nil {
-		return nil, err
-	}
-
-	bz, err := ethClient.CallContract(context.Background(), ethereum.CallMsg{
-		From: common.HexToAddress(s.chain.validators[0].ethereumKey.address),
-		To:   &hardhatCellar,
-		Gas:  0,
-		Data: types.ABIEncodedCellarTickInfoBytes(uint(0)),
-	}, nil)
-	if err != nil {
-		return nil, err
-	}
-	tr, err := types.BytesToABIEncodedTickRange(bz)
-	if err != nil {
-		return nil, err
-	}
-
-	return tr, nil
 }
 
 func (s *IntegrationTestSuite) TestBasicChain() {

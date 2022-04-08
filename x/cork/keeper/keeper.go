@@ -9,7 +9,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
 	"github.com/ethereum/go-ethereum/common"
-	"github.com/peggyjv/sommelier/v3/x/cork/types"
+	"github.com/peggyjv/sommelier/v4/x/cork/types"
 	"github.com/tendermint/tendermint/libs/log"
 )
 

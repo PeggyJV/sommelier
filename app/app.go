@@ -17,6 +17,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/server/config"
 	servertypes "github.com/cosmos/cosmos-sdk/server/types"
 	"github.com/cosmos/cosmos-sdk/simapp"
+	store "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	"github.com/cosmos/cosmos-sdk/version"
@@ -83,20 +84,19 @@ import (
 	ibchost "github.com/cosmos/ibc-go/v2/modules/core/24-host"
 	ibckeeper "github.com/cosmos/ibc-go/v2/modules/core/keeper"
 	"github.com/gorilla/mux"
-	"github.com/peggyjv/gravity-bridge/module/x/gravity"
-	gravitykeeper "github.com/peggyjv/gravity-bridge/module/x/gravity/keeper"
-	gravitytypes "github.com/peggyjv/gravity-bridge/module/x/gravity/types"
-	appParams "github.com/peggyjv/sommelier/v3/app/params"
-	"github.com/peggyjv/sommelier/v3/x/allocation"
-	allocationkeeper "github.com/peggyjv/sommelier/v3/x/allocation/keeper"
-	allocationtypes "github.com/peggyjv/sommelier/v3/x/allocation/types"
-	"github.com/peggyjv/sommelier/v3/x/cellarfees"
-	cellarfeeskeeper "github.com/peggyjv/sommelier/v3/x/cellarfees/keeper"
-	cellarfeestypes "github.com/peggyjv/sommelier/v3/x/cellarfees/types"
-	"github.com/peggyjv/sommelier/v3/x/cork"
-	corkclient "github.com/peggyjv/sommelier/v3/x/cork/client"
-	corkkeeper "github.com/peggyjv/sommelier/v3/x/cork/keeper"
-	corktypes "github.com/peggyjv/sommelier/v3/x/cork/types"
+	"github.com/peggyjv/gravity-bridge/module/v2/x/gravity"
+	gravityclient "github.com/peggyjv/gravity-bridge/module/v2/x/gravity/client"
+	gravitykeeper "github.com/peggyjv/gravity-bridge/module/v2/x/gravity/keeper"
+	gravitytypes "github.com/peggyjv/gravity-bridge/module/v2/x/gravity/types"
+	appParams "github.com/peggyjv/sommelier/v4/app/params"
+	v4 "github.com/peggyjv/sommelier/v4/app/upgrades/v4"
+	"github.com/peggyjv/sommelier/v4/x/cellarfees"
+	cellarfeeskeeper "github.com/peggyjv/sommelier/v4/x/cellarfees/keeper"
+	cellarfeestypes "github.com/peggyjv/sommelier/v4/x/cellarfees/types"
+	"github.com/peggyjv/sommelier/v4/x/cork"
+	corkclient "github.com/peggyjv/sommelier/v4/x/cork/client"
+	corkkeeper "github.com/peggyjv/sommelier/v4/x/cork/keeper"
+	corktypes "github.com/peggyjv/sommelier/v4/x/cork/types"
 	"github.com/rakyll/statik/fs"
 	abci "github.com/tendermint/tendermint/abci/types"
 	tmjson "github.com/tendermint/tendermint/libs/json"
@@ -136,6 +136,7 @@ var (
 			distrclient.ProposalHandler,
 			upgradeclient.ProposalHandler,
 			upgradeclient.CancelProposalHandler,
+			gravityclient.ProposalHandler,
 			corkclient.AddProposalHandler,
 			corkclient.RemoveProposalHandler,
 		),
@@ -150,7 +151,6 @@ var (
 		vesting.AppModuleBasic{},
 		authzmodule.AppModuleBasic{},
 		gravity.AppModuleBasic{},
-		allocation.AppModuleBasic{},
 		cork.AppModuleBasic{},
 		cellarfees.AppModuleBasic{},
 	)
@@ -213,7 +213,6 @@ type SommelierApp struct {
 	FeeGrantKeeper   feegrantkeeper.Keeper
 
 	// Sommelier keepers
-	AllocationKeeper allocationkeeper.Keeper
 	CorkKeeper       corkkeeper.Keeper
 	CellarFeesKeeper cellarfeeskeeper.Keeper
 
@@ -259,8 +258,7 @@ func NewSommelierApp(
 		minttypes.StoreKey, distrtypes.StoreKey, slashingtypes.StoreKey,
 		govtypes.StoreKey, paramstypes.StoreKey, ibchost.StoreKey, upgradetypes.StoreKey,
 		evidencetypes.StoreKey, ibctransfertypes.StoreKey, capabilitytypes.StoreKey,
-		gravitytypes.StoreKey, feegrant.StoreKey, authzkeeper.StoreKey, allocationtypes.StoreKey,
-		corktypes.StoreKey,
+		gravitytypes.StoreKey, feegrant.StoreKey, authzkeeper.StoreKey, corktypes.StoreKey,
 	)
 	tkeys := sdk.NewTransientStoreKeys(paramstypes.TStoreKey)
 	memKeys := sdk.NewMemoryStoreKeys(capabilitytypes.MemStoreKey)
@@ -346,12 +344,10 @@ func NewSommelierApp(
 	// todo: check if default power reduction is appropriate
 	app.GravityKeeper = gravitykeeper.NewKeeper(
 		appCodec, keys[gravitytypes.StoreKey], app.GetSubspace(gravitytypes.ModuleName),
-		app.AccountKeeper, app.StakingKeeper, app.BankKeeper, app.SlashingKeeper, sdk.DefaultPowerReduction,
-	)
-
-	app.AllocationKeeper = allocationkeeper.NewKeeper(
-		appCodec, keys[allocationtypes.StoreKey], app.GetSubspace(allocationtypes.ModuleName),
-		app.StakingKeeper, app.GravityKeeper,
+		app.AccountKeeper, app.StakingKeeper, app.BankKeeper, app.SlashingKeeper,
+		app.DistrKeeper, sdk.DefaultPowerReduction,
+		app.ModuleAccountAddressesToNames([]string{cellarfeestypes.ModuleName}),
+		app.ModuleAccountAddressesToNames([]string{distrtypes.ModuleName}),
 	)
 
 	app.CorkKeeper = corkkeeper.NewKeeper(
@@ -366,7 +362,6 @@ func NewSommelierApp(
 
 	app.GravityKeeper = *app.GravityKeeper.SetHooks(
 		gravitytypes.NewMultiGravityHooks(
-			app.AllocationKeeper.Hooks(),
 			app.CorkKeeper.Hooks(),
 		))
 
@@ -377,8 +372,8 @@ func NewSommelierApp(
 		AddRoute(distrtypes.RouterKey, distr.NewCommunityPoolSpendProposalHandler(app.DistrKeeper)).
 		AddRoute(upgradetypes.RouterKey, upgrade.NewSoftwareUpgradeProposalHandler(app.UpgradeKeeper)).
 		AddRoute(ibcclienttypes.RouterKey, ibcclient.NewClientProposalHandler(app.IBCKeeper.ClientKeeper)).
-		AddRoute(allocationtypes.RouterKey, allocation.NewUpdateManagedCellarsProposalHandler(app.AllocationKeeper)).
-		AddRoute(corktypes.RouterKey, cork.NewUpdateCellarIDsProposalHandler(app.CorkKeeper))
+		AddRoute(corktypes.RouterKey, cork.NewUpdateCellarIDsProposalHandler(app.CorkKeeper)).
+		AddRoute(gravitytypes.RouterKey, gravity.NewCommunityPoolEthereumSpendProposalHandler(app.GravityKeeper))
 	app.GovKeeper = govkeeper.NewKeeper(
 		appCodec, keys[govtypes.StoreKey], app.GetSubspace(govtypes.ModuleName), app.AccountKeeper, app.BankKeeper,
 		&stakingKeeper, govRouter,
@@ -395,7 +390,8 @@ func NewSommelierApp(
 	)
 	// If evidence needs to be handled for the app, set routes in router here and seal
 	app.EvidenceKeeper = *evidenceKeeper
-	/****  Module Options ****/
+
+	app.setupUpgradeStoreLoaders()
 
 	/****  Module Options ****/
 	var skipGenesisInvariants = false
@@ -433,7 +429,6 @@ func NewSommelierApp(
 		transferModule,
 		gravity.NewAppModule(app.GravityKeeper, app.BankKeeper),
 		authzmodule.NewAppModule(appCodec, app.AuthzKeeper, app.AccountKeeper, app.BankKeeper, app.interfaceRegistry),
-		allocation.NewAppModule(app.AllocationKeeper, appCodec),
 		cork.NewAppModule(app.CorkKeeper, appCodec),
 		cellarfees.NewAppModule(app.CellarFeesKeeper, appCodec, app.AccountKeeper, app.BankKeeper),
 	)
@@ -447,13 +442,13 @@ func NewSommelierApp(
 		upgradetypes.ModuleName, capabilitytypes.ModuleName, minttypes.ModuleName, distrtypes.ModuleName, slashingtypes.ModuleName,
 		evidencetypes.ModuleName, stakingtypes.ModuleName, ibchost.ModuleName, ibctransfertypes.ModuleName, authtypes.ModuleName,
 		banktypes.ModuleName, govtypes.ModuleName, crisistypes.ModuleName, genutiltypes.ModuleName, authz.ModuleName, feegrant.ModuleName,
-		paramstypes.ModuleName, gravitytypes.ModuleName, allocationtypes.ModuleName, corktypes.ModuleName, cellarfeestypes.ModuleName,
+		paramstypes.ModuleName, gravitytypes.ModuleName, corktypes.ModuleName, cellarfeestypes.ModuleName,
 	)
 	app.mm.SetOrderEndBlockers(
 		crisistypes.ModuleName, govtypes.ModuleName, stakingtypes.ModuleName, ibchost.ModuleName, ibctransfertypes.ModuleName,
 		capabilitytypes.ModuleName, authtypes.ModuleName, banktypes.ModuleName, distrtypes.ModuleName, slashingtypes.ModuleName,
 		minttypes.ModuleName, genutiltypes.ModuleName, evidencetypes.ModuleName, authz.ModuleName, feegrant.ModuleName, paramstypes.ModuleName,
-		upgradetypes.ModuleName, gravitytypes.ModuleName, allocationtypes.ModuleName, corktypes.ModuleName, cellarfeestypes.ModuleName,
+		upgradetypes.ModuleName, gravitytypes.ModuleName, corktypes.ModuleName, cellarfeestypes.ModuleName,
 	)
 
 	// NOTE: The genutils module must occur after staking so that pools are
@@ -466,14 +461,16 @@ func NewSommelierApp(
 		stakingtypes.ModuleName, slashingtypes.ModuleName, govtypes.ModuleName, minttypes.ModuleName,
 		crisistypes.ModuleName, ibchost.ModuleName, genutiltypes.ModuleName, evidencetypes.ModuleName,
 		ibctransfertypes.ModuleName, gravitytypes.ModuleName, authz.ModuleName,
-		feegrant.ModuleName, allocationtypes.ModuleName, corktypes.ModuleName, cellarfeestypes.ModuleName,
+		feegrant.ModuleName, corktypes.ModuleName, cellarfeestypes.ModuleName,
 	)
 
 	app.mm.RegisterInvariants(&app.CrisisKeeper)
 	app.mm.RegisterRoutes(app.Router(), app.QueryRouter(), encodingConfig.Amino)
-	// app.mm.RegisterServices(module.NewConfigurator(app.appCodec, app.MsgServiceRouter(), app.GRPCQueryRouter()))
 	app.configurator = module.NewConfigurator(app.appCodec, app.MsgServiceRouter(), app.GRPCQueryRouter())
 	app.mm.RegisterServices(app.configurator)
+
+	app.setupUpgradeHandlers()
+
 	// create the simulation manager and define the order of the modules for deterministic simulations
 	//
 	// NOTE: this is not required apps that don't use the simulator for fuzz testing
@@ -492,7 +489,6 @@ func NewSommelierApp(
 		evidence.NewAppModule(app.EvidenceKeeper),
 		ibc.NewAppModule(app.IBCKeeper),
 		authzmodule.NewAppModule(appCodec, app.AuthzKeeper, app.AccountKeeper, app.BankKeeper, app.interfaceRegistry),
-		allocation.NewAppModule(app.AllocationKeeper, appCodec),
 		cork.NewAppModule(app.CorkKeeper, appCodec),
 		cellarfees.NewAppModule(app.CellarFeesKeeper, appCodec, app.AccountKeeper, app.BankKeeper),
 	)
@@ -522,14 +518,6 @@ func NewSommelierApp(
 
 	app.SetAnteHandler(anteHandler)
 	app.SetEndBlocker(app.EndBlocker)
-
-	// Setup an upgrade handler if doing an upgrade module upgrade. Validate any upgrade hander against https://github.com/cosmos/cosmos-sdk/blob/master/docs/core/upgrade.md
-	// app.UpgradeKeeper.SetUpgradeHandler(
-	// 	upgradeName,
-	// 	func(ctx sdk.Context, _ upgradetypes.Plan, vm module.VersionMap) (module.VersionMap, error) {
-	// 		return vm, nil
-	// 	},
-	// )
 
 	if loadLatest {
 		if err := app.LoadLatestVersion(); err != nil {
@@ -569,6 +557,9 @@ func (app *SommelierApp) InitChainer(ctx sdk.Context, req abci.RequestInitChain)
 	if err := tmjson.Unmarshal(req.AppStateBytes, &genesisState); err != nil {
 		panic(err)
 	}
+
+	app.UpgradeKeeper.SetModuleVersionMap(ctx, app.mm.GetVersionMap())
+
 	return app.mm.InitGenesis(ctx, app.appCodec, genesisState)
 }
 
@@ -585,6 +576,16 @@ func (app *SommelierApp) ModuleAccountAddrs() map[string]bool {
 	}
 
 	return modAccAddrs
+}
+
+// ModuleAccountNames returns a map of module account address to module name
+func (app *SommelierApp) ModuleAccountAddressesToNames(moduleAccounts []string) map[string]string {
+	modAccNames := make(map[string]string)
+	for _, acc := range moduleAccounts {
+		modAccNames[authtypes.NewModuleAddress(acc).String()] = acc
+	}
+
+	return modAccNames
 }
 
 // BlockedAddrs returns all the app's module account addresses that are not
@@ -717,9 +718,35 @@ func initParamsKeeper(appCodec codec.BinaryCodec, legacyAmino *codec.LegacyAmino
 	paramsKeeper.Subspace(ibctransfertypes.ModuleName)
 	paramsKeeper.Subspace(ibchost.ModuleName)
 	paramsKeeper.Subspace(gravitytypes.ModuleName)
-	paramsKeeper.Subspace(allocationtypes.ModuleName)
 	paramsKeeper.Subspace(corktypes.ModuleName)
 	paramsKeeper.Subspace(cellarfeestypes.ModuleName)
 
 	return paramsKeeper
+}
+
+func (app *SommelierApp) setupUpgradeStoreLoaders() {
+	upgradeInfo, err := app.UpgradeKeeper.ReadUpgradeInfoFromDisk()
+	if err != nil {
+		panic(fmt.Sprintf("failed to read upgrade info from disk %s", err))
+	}
+
+	if upgradeInfo.Name == v4.UpgradeName && !app.UpgradeKeeper.IsSkipHeight(upgradeInfo.Height) {
+		storeUpgrades := store.StoreUpgrades{
+			Added:   []string{corktypes.ModuleName, cellarfeestypes.ModuleName},
+			Deleted: []string{"allocation"},
+		}
+
+		app.SetStoreLoader(upgradetypes.UpgradeStoreLoader(upgradeInfo.Height, &storeUpgrades))
+	}
+}
+
+func (app *SommelierApp) setupUpgradeHandlers() {
+	app.UpgradeKeeper.SetUpgradeHandler(
+		v4.UpgradeName,
+		v4.CreateUpgradeHandler(
+			app.mm,
+			app.configurator,
+			app.BankKeeper,
+		),
+	)
 }

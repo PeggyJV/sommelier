@@ -6,7 +6,7 @@ import (
 	"os"
 	"testing"
 
-	sommelier "github.com/peggyjv/sommelier/v3/app"
+	sommelier "github.com/peggyjv/sommelier/v4/app"
 
 	"github.com/stretchr/testify/require"
 	"github.com/tendermint/tendermint/libs/log"

@@ -6,7 +6,7 @@ import (
 	"os"
 
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
-	corktypes "github.com/peggyjv/sommelier/v3/x/cork/types"
+	corktypes "github.com/peggyjv/sommelier/v4/x/cork/types"
 
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
@@ -24,10 +24,9 @@ import (
 	sdkTx "github.com/cosmos/cosmos-sdk/x/auth/tx"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
-	gravitytypes "github.com/peggyjv/gravity-bridge/module/x/gravity/types"
-	"github.com/peggyjv/sommelier/v3/app"
-	"github.com/peggyjv/sommelier/v3/app/params"
-	"github.com/peggyjv/sommelier/v3/x/allocation/types"
+	gravitytypes "github.com/peggyjv/gravity-bridge/module/v2/x/gravity/types"
+	"github.com/peggyjv/sommelier/v4/app"
+	"github.com/peggyjv/sommelier/v4/app/params"
 	tmrand "github.com/tendermint/tendermint/libs/rand"
 	rpchttp "github.com/tendermint/tendermint/rpc/client/http"
 )
@@ -201,8 +200,6 @@ func (c *chain) clientContext(nodeURI string, kb *keyring.Keyring, fromName stri
 	interfaceRegistry.RegisterImplementations((*sdk.Msg)(nil),
 		&stakingtypes.MsgCreateValidator{},
 		&gravitytypes.MsgDelegateKeys{},
-		&types.MsgAllocationCommit{},
-		&types.MsgAllocationPrecommit{},
 	)
 	interfaceRegistry.RegisterImplementations((*govtypes.Content)(nil),
 		&corktypes.AddManagedCellarIDsProposal{},
