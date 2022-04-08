@@ -1,8 +1,6 @@
 package v4
 
 import (
-	"fmt"
-
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
@@ -17,8 +15,9 @@ func CreateUpgradeHandler(
 	configurator module.Configurator,
 	bankKeeper bankkeeper.Keeper,
 ) upgradetypes.UpgradeHandler {
-	fmt.Println("v4 upgrade: entering handler")
 	return func(ctx sdk.Context, plan upgradetypes.Plan, vm module.VersionMap) (module.VersionMap, error) {
+		ctx.Logger().Info("v4 upgrade: entering handler")
+
 		// Since this is the first in-place upgrade and InitChainer was not set up for this at genesis
 		// time, we must initialize the VM map ourselves.
 		fromVM := make(map[string]uint64)
