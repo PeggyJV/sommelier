@@ -187,6 +187,8 @@ func (s *IntegrationTestSuite) TestScheduledCork() {
 			})
 			s.Require().NoError(err)
 
+			s.T().Logf("observed cctxs: %v", gbRes.Calls)
+
 			if blockHeight < (targetBlockHeight - 2) {
 				// verify that tbe scheduled cork has not yet been consumed, and that the counter has not been incremented
 				s.Require().Len(res.Corks, len(s.chain.validators))
