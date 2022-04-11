@@ -9,7 +9,12 @@ import (
 )
 
 func (c *Cork) InvalidationScope() tmbytes.HexBytes {
-	return crypto.Keccak256Hash(c.EncodedContractCall).Bytes()
+	addr := common.HexToAddress(c.TargetContractAddress)
+	return crypto.Keccak256Hash(
+		bytes.Join(
+			[][]byte{addr.Bytes(), c.EncodedContractCall},
+			[]byte{},
+		)).Bytes()
 }
 
 func (c *Cork) Equals(other Cork) bool {
