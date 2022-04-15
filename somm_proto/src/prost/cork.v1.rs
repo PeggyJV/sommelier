@@ -1,4 +1,3 @@
-/// MsgSubmitCorkRequest - sdk.Msg for submitting calls to Ethereum through the gravity bridge contract
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct Cork {
     /// call body containing the ABI encoded bytes to send to the contract
@@ -9,27 +8,25 @@ pub struct Cork {
     pub target_contract_address: ::prost::alloc::string::String,
 }
 #[derive(Clone, PartialEq, ::prost::Message)]
+pub struct ValidatorCork {
+    #[prost(message, optional, tag = "1")]
+    pub cork: ::core::option::Option<Cork>,
+    #[prost(string, tag = "2")]
+    pub validator: ::prost::alloc::string::String,
+}
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct ScheduledCork {
+    #[prost(message, optional, tag = "1")]
+    pub cork: ::core::option::Option<Cork>,
+    #[prost(uint64, tag = "2")]
+    pub block_height: u64,
+    #[prost(string, tag = "3")]
+    pub validator: ::prost::alloc::string::String,
+}
+#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct CellarIdSet {
     #[prost(string, repeated, tag = "1")]
     pub ids: ::prost::alloc::vec::Vec<::prost::alloc::string::String>,
-}
-#[derive(Clone, PartialEq, ::prost::Message)]
-pub struct AddManagedCellarIDsProposal {
-    #[prost(string, tag = "1")]
-    pub title: ::prost::alloc::string::String,
-    #[prost(string, tag = "2")]
-    pub description: ::prost::alloc::string::String,
-    #[prost(message, optional, tag = "3")]
-    pub cellar_ids: ::core::option::Option<CellarIdSet>,
-}
-#[derive(Clone, PartialEq, ::prost::Message)]
-pub struct RemoveManagedCellarIDsProposal {
-    #[prost(string, tag = "1")]
-    pub title: ::prost::alloc::string::String,
-    #[prost(string, tag = "2")]
-    pub description: ::prost::alloc::string::String,
-    #[prost(message, optional, tag = "3")]
-    pub cellar_ids: ::core::option::Option<CellarIdSet>,
 }
 /// MsgSubmitCorkRequest - sdk.Msg for submitting calls to Ethereum through the gravity bridge contract
 #[derive(Clone, PartialEq, ::prost::Message)]
@@ -43,6 +40,21 @@ pub struct MsgSubmitCorkRequest {
 }
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct MsgSubmitCorkResponse {}
+/// MsgScheduleCorkRequest - sdk.Msg for scheduling a cork request for on or after a specific block height
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct MsgScheduleCorkRequest {
+    /// the scheduled cork
+    #[prost(message, optional, tag = "1")]
+    pub cork: ::core::option::Option<Cork>,
+    /// the block height that must be reached
+    #[prost(uint64, tag = "2")]
+    pub block_height: u64,
+    /// signer account address
+    #[prost(string, tag = "3")]
+    pub signer: ::prost::alloc::string::String,
+}
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct MsgScheduleCorkResponse {}
 #[doc = r" Generated client implementations."]
 pub mod msg_client {
     #![allow(unused_variables, dead_code, missing_docs)]
@@ -77,7 +89,6 @@ pub mod msg_client {
             let inner = tonic::client::Grpc::with_interceptor(inner, interceptor);
             Self { inner }
         }
-        #[doc = " CorkSubmission defines a message"]
         pub async fn submit_cork(
             &mut self,
             request: impl tonic::IntoRequest<super::MsgSubmitCorkRequest>,
@@ -90,6 +101,20 @@ pub mod msg_client {
             })?;
             let codec = tonic::codec::ProstCodec::default();
             let path = http::uri::PathAndQuery::from_static("/cork.v1.Msg/SubmitCork");
+            self.inner.unary(request.into_request(), path, codec).await
+        }
+        pub async fn schedule_cork(
+            &mut self,
+            request: impl tonic::IntoRequest<super::MsgScheduleCorkRequest>,
+        ) -> Result<tonic::Response<super::MsgScheduleCorkResponse>, tonic::Status> {
+            self.inner.ready().await.map_err(|e| {
+                tonic::Status::new(
+                    tonic::Code::Unknown,
+                    format!("Service was not ready: {}", e.into()),
+                )
+            })?;
+            let codec = tonic::codec::ProstCodec::default();
+            let path = http::uri::PathAndQuery::from_static("/cork.v1.Msg/ScheduleCork");
             self.inner.unary(request.into_request(), path, codec).await
         }
     }
@@ -113,6 +138,12 @@ pub struct GenesisState {
     pub params: ::core::option::Option<Params>,
     #[prost(message, optional, tag = "2")]
     pub cellar_ids: ::core::option::Option<CellarIdSet>,
+    #[prost(uint64, tag = "3")]
+    pub invalidation_nonce: u64,
+    #[prost(message, repeated, tag = "4")]
+    pub corks: ::prost::alloc::vec::Vec<ValidatorCork>,
+    #[prost(message, repeated, tag = "5")]
+    pub scheduled_corks: ::prost::alloc::vec::Vec<ScheduledCork>,
 }
 /// Params cork parameters
 #[derive(Clone, PartialEq, ::prost::Message)]
@@ -168,6 +199,36 @@ pub struct QueryCellarIDsRequest {}
 pub struct QueryCellarIDsResponse {
     #[prost(string, repeated, tag = "1")]
     pub cellar_ids: ::prost::alloc::vec::Vec<::prost::alloc::string::String>,
+}
+/// QueryScheduledCorksRequest
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct QueryScheduledCorksRequest {}
+/// QueryScheduledCorksResponse
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct QueryScheduledCorksResponse {
+    #[prost(message, repeated, tag = "1")]
+    pub corks: ::prost::alloc::vec::Vec<ScheduledCork>,
+}
+/// QueryScheduledBlockHeightsRequest
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct QueryScheduledBlockHeightsRequest {}
+/// QueryScheduledBlockHeightsResponse
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct QueryScheduledBlockHeightsResponse {
+    #[prost(uint64, repeated, tag = "1")]
+    pub block_heights: ::prost::alloc::vec::Vec<u64>,
+}
+/// QueryScheduledCorksByBlockHeightRequest
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct QueryScheduledCorksByBlockHeightRequest {
+    #[prost(uint64, tag = "1")]
+    pub block_height: u64,
+}
+/// QueryScheduledCorksByBlockHeightResponse
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct QueryScheduledCorksByBlockHeightResponse {
+    #[prost(message, repeated, tag = "1")]
+    pub corks: ::prost::alloc::vec::Vec<ScheduledCork>,
 }
 #[doc = r" Generated client implementations."]
 pub mod query_client {
@@ -233,7 +294,7 @@ pub mod query_client {
             let path = http::uri::PathAndQuery::from_static("/cork.v1.Query/QuerySubmittedCorks");
             self.inner.unary(request.into_request(), path, codec).await
         }
-        #[doc = " QueryVotePeriod queries the heights for the current voting period (current, start and end)"]
+        #[doc = " QueryCommitPeriod queries the heights for the current voting period (current, start and end)"]
         pub async fn query_commit_period(
             &mut self,
             request: impl tonic::IntoRequest<super::QueryCommitPeriodRequest>,
@@ -263,6 +324,56 @@ pub mod query_client {
             let path = http::uri::PathAndQuery::from_static("/cork.v1.Query/QueryCellarIDs");
             self.inner.unary(request.into_request(), path, codec).await
         }
+        #[doc = " QueryScheduledCorks returns all scheduled corks"]
+        pub async fn query_scheduled_corks(
+            &mut self,
+            request: impl tonic::IntoRequest<super::QueryScheduledCorksRequest>,
+        ) -> Result<tonic::Response<super::QueryScheduledCorksResponse>, tonic::Status> {
+            self.inner.ready().await.map_err(|e| {
+                tonic::Status::new(
+                    tonic::Code::Unknown,
+                    format!("Service was not ready: {}", e.into()),
+                )
+            })?;
+            let codec = tonic::codec::ProstCodec::default();
+            let path = http::uri::PathAndQuery::from_static("/cork.v1.Query/QueryScheduledCorks");
+            self.inner.unary(request.into_request(), path, codec).await
+        }
+        #[doc = " QueryScheduledBlockHeights returns all scheduled block heights"]
+        pub async fn query_scheduled_block_heights(
+            &mut self,
+            request: impl tonic::IntoRequest<super::QueryScheduledBlockHeightsRequest>,
+        ) -> Result<tonic::Response<super::QueryScheduledBlockHeightsResponse>, tonic::Status>
+        {
+            self.inner.ready().await.map_err(|e| {
+                tonic::Status::new(
+                    tonic::Code::Unknown,
+                    format!("Service was not ready: {}", e.into()),
+                )
+            })?;
+            let codec = tonic::codec::ProstCodec::default();
+            let path =
+                http::uri::PathAndQuery::from_static("/cork.v1.Query/QueryScheduledBlockHeights");
+            self.inner.unary(request.into_request(), path, codec).await
+        }
+        #[doc = " QueryScheduledCorks returns all scheduled corks at a block height"]
+        pub async fn query_scheduled_corks_by_block_height(
+            &mut self,
+            request: impl tonic::IntoRequest<super::QueryScheduledCorksByBlockHeightRequest>,
+        ) -> Result<tonic::Response<super::QueryScheduledCorksByBlockHeightResponse>, tonic::Status>
+        {
+            self.inner.ready().await.map_err(|e| {
+                tonic::Status::new(
+                    tonic::Code::Unknown,
+                    format!("Service was not ready: {}", e.into()),
+                )
+            })?;
+            let codec = tonic::codec::ProstCodec::default();
+            let path = http::uri::PathAndQuery::from_static(
+                "/cork.v1.Query/QueryScheduledCorksByBlockHeight",
+            );
+            self.inner.unary(request.into_request(), path, codec).await
+        }
     }
     impl<T: Clone> Clone for QueryClient<T> {
         fn clone(&self) -> Self {
@@ -276,4 +387,46 @@ pub mod query_client {
             write!(f, "QueryClient {{ ... }}")
         }
     }
+}
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct AddManagedCellarIDsProposal {
+    #[prost(string, tag = "1")]
+    pub title: ::prost::alloc::string::String,
+    #[prost(string, tag = "2")]
+    pub description: ::prost::alloc::string::String,
+    #[prost(message, optional, tag = "3")]
+    pub cellar_ids: ::core::option::Option<CellarIdSet>,
+}
+/// AddManagedCellarIDsProposalWithDeposit is a specific definition for CLI commands
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct AddManagedCellarIDsProposalWithDeposit {
+    #[prost(string, tag = "1")]
+    pub title: ::prost::alloc::string::String,
+    #[prost(string, tag = "2")]
+    pub description: ::prost::alloc::string::String,
+    #[prost(string, repeated, tag = "3")]
+    pub cellar_ids: ::prost::alloc::vec::Vec<::prost::alloc::string::String>,
+    #[prost(string, tag = "4")]
+    pub deposit: ::prost::alloc::string::String,
+}
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct RemoveManagedCellarIDsProposal {
+    #[prost(string, tag = "1")]
+    pub title: ::prost::alloc::string::String,
+    #[prost(string, tag = "2")]
+    pub description: ::prost::alloc::string::String,
+    #[prost(message, optional, tag = "3")]
+    pub cellar_ids: ::core::option::Option<CellarIdSet>,
+}
+/// RemoveManagedCellarIDsProposalWithDeposit is a specific definition for CLI commands
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct RemoveManagedCellarIDsProposalWithDeposit {
+    #[prost(string, tag = "1")]
+    pub title: ::prost::alloc::string::String,
+    #[prost(string, tag = "2")]
+    pub description: ::prost::alloc::string::String,
+    #[prost(string, repeated, tag = "3")]
+    pub cellar_ids: ::prost::alloc::vec::Vec<::prost::alloc::string::String>,
+    #[prost(string, tag = "4")]
+    pub deposit: ::prost::alloc::string::String,
 }
