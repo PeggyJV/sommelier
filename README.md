@@ -129,7 +129,7 @@ sommelier tx gravity set-delegate-keys \
     $(sommelier keys show validator --bech val -a) \ # validator address
     $(gorc --config $HOME/gorc/config.toml keys cosmos show orchestrator) \ # orchestrator address (this must be run manually and address extracted)
     $(gorc --config $HOME/gorc/config.toml keys eth show signer) \ # eth signer address
-    $(gorc --config $HOME/gorc/config.toml sign-delegate-keys signer $(sommelier keys show validator --bech val -a)) \ 
+    $(gorc --config $HOME/gorc/config.toml sign-delegate-keys -a signer -a $(sommelier keys show validator --bech val -a)) \ 
     --chain-id sommelier-3 \ 
     --from validator \ 
     -y
