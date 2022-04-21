@@ -5,6 +5,7 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
+	authkeeper "github.com/cosmos/cosmos-sdk/x/auth/keeper"
 	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
 	gravitytypes "github.com/peggyjv/gravity-bridge/module/v2/x/gravity/types"
@@ -15,6 +16,7 @@ import (
 func CreateUpgradeHandler(
 	mm *module.Manager,
 	configurator module.Configurator,
+	accountKeeper authkeeper.AccountKeeper,
 	bankKeeper bankkeeper.Keeper,
 ) upgradetypes.UpgradeHandler {
 	fmt.Println("v4 upgrade: entering handler")
@@ -36,6 +38,9 @@ func CreateUpgradeHandler(
 
 		ctx.Logger().Info("v4 upgrade: normalizing gravity denoms in bank balances")
 		normalizeGravityDenoms(ctx, bankKeeper)
+
+		ctx.Logger().Info("v4 upgrade: removing existing account with module address overlap")
+		removeModuleAccountOverlap(ctx, accountKeeper, bankKeeper)
 
 		ctx.Logger().Info("v4 upgrade: running migrations and exiting handler")
 		return mm.RunMigrations(ctx, configurator, fromVM)
@@ -83,4 +88,27 @@ func normalizeGravityDenoms(ctx sdk.Context, bankKeeper bankkeeper.Keeper) {
 
 		return false
 	})
+}
+
+func removeModuleAccountOverlap(ctx sdk.Context, accountKeeper authkeeper.AccountKeeper, bankKeeper bankkeeper.Keeper) {
+	address, err := sdk.AccAddressFromBech32("somm1hqf42j6zxfnth4xpdse05wpnjjrgc864vwujxx") // what the cellarfees module account should be
+	if err != nil {
+		panic(err)
+	}
+
+	bankKeeper.IterateAccountBalances(ctx, address, func(coin sdk.Coin) (stop bool) {
+		coinsToBurn := sdk.NewCoins(coin)
+		// in order to burn coins they have to be in a module account, so we store them in gravity temporarily
+		if err := bankKeeper.SendCoinsFromAccountToModule(ctx, address, gravitytypes.ModuleName, coinsToBurn); err != nil {
+			panic(err)
+		}
+		if err := bankKeeper.BurnCoins(ctx, gravitytypes.ModuleName, coinsToBurn); err != nil {
+			panic(err)
+		}
+
+		return false
+	})
+
+	existingAccount := accountKeeper.GetAccount(ctx, address)
+	accountKeeper.RemoveAccount(ctx, existingAccount)
 }
