@@ -169,10 +169,7 @@ var (
 	}
 
 	// module accounts that are allowed to receive tokens
-	allowedReceivingModAcc = map[string]bool{
-		distrtypes.ModuleName:      true,
-		cellarfeestypes.ModuleName: true,
-	}
+	allowedReceivingModAcc = map[string]bool{}
 
 	_ simapp.App              = (*SommelierApp)(nil)
 	_ servertypes.Application = (*SommelierApp)(nil)
