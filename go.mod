@@ -7,7 +7,6 @@ require (
 	github.com/cosmos/cosmos-sdk v0.44.5
 	github.com/cosmos/go-bip39 v1.0.0
 	github.com/cosmos/ibc-go/v2 v2.0.0
-	github.com/deckarep/golang-set v0.0.0-20180603214616-504e848d77ea
 	github.com/ethereum/go-ethereum v1.10.11
 	github.com/gogo/protobuf v1.3.3
 	github.com/golang/protobuf v1.5.2
@@ -18,7 +17,7 @@ require (
 	github.com/miguelmota/go-ethereum-hdwallet v0.1.1
 	github.com/moby/term v0.0.0-20210619224110-3f7ff695adc6 // indirect
 	github.com/ory/dockertest/v3 v3.8.1
-	github.com/peggyjv/gravity-bridge/module/v2 v2.0.0 // indirect
+	github.com/peggyjv/gravity-bridge/module/v2 v2.0.0
 	github.com/rakyll/statik v0.1.7
 	github.com/regen-network/cosmos-proto v0.3.1
 	github.com/spf13/cast v1.4.1
