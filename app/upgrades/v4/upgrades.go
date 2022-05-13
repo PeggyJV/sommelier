@@ -35,11 +35,11 @@ func CreateUpgradeHandler(
 		// Overwrite the gravity module's version back to 1 so the migration will run to v2
 		fromVM[gravitytypes.ModuleName] = 1
 
-		ctx.Logger().Info("v4 upgrade: normalizing gravity denoms in bank balances")
-		normalizeGravityDenoms(ctx, bankKeeper)
-
 		ctx.Logger().Info("v4 upgrade: removing existing account with module address overlap")
 		removeModuleAccountOverlap(ctx, accountKeeper, bankKeeper)
+
+		ctx.Logger().Info("v4 upgrade: normalizing gravity denoms in bank balances")
+		normalizeGravityDenoms(ctx, bankKeeper)
 
 		ctx.Logger().Info("v4 upgrade: running migrations and exiting handler")
 		return mm.RunMigrations(ctx, configurator, fromVM)
