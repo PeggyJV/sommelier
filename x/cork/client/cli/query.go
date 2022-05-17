@@ -4,6 +4,7 @@ import (
 	"strconv"
 
 	"github.com/cosmos/cosmos-sdk/client"
+	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/peggyjv/sommelier/v4/x/cork/types"
 	"github.com/spf13/cobra"
 )
@@ -33,7 +34,7 @@ func GetQueryCmd() *cobra.Command {
 }
 
 func queryParams() *cobra.Command {
-	return &cobra.Command{
+	cmd := &cobra.Command{
 		Use:     "parameters",
 		Aliases: []string{"params"},
 		Args:    cobra.NoArgs,
@@ -55,10 +56,14 @@ func queryParams() *cobra.Command {
 			return ctx.PrintProto(res)
 		},
 	}
+
+	flags.AddQueryFlagsToCmd(cmd)
+
+	return cmd
 }
 
 func querySubmittedCorks() *cobra.Command {
-	return &cobra.Command{
+	cmd := &cobra.Command{
 		Use:     "corks",
 		Aliases: []string{"cs"},
 		Args:    cobra.NoArgs,
@@ -80,10 +85,14 @@ func querySubmittedCorks() *cobra.Command {
 			return ctx.PrintProto(res)
 		},
 	}
+
+	flags.AddQueryFlagsToCmd(cmd)
+
+	return cmd
 }
 
 func queryCommitPeriod() *cobra.Command {
-	return &cobra.Command{
+	cmd := &cobra.Command{
 		Use:     "commit-period",
 		Aliases: []string{"cp"},
 		Args:    cobra.NoArgs,
@@ -105,10 +114,14 @@ func queryCommitPeriod() *cobra.Command {
 			return ctx.PrintProto(res)
 		},
 	}
+
+	flags.AddQueryFlagsToCmd(cmd)
+
+	return cmd
 }
 
 func queryCellarIDs() *cobra.Command {
-	return &cobra.Command{
+	cmd := &cobra.Command{
 		Use:     "cellar-ids",
 		Aliases: []string{"cids"},
 		Args:    cobra.NoArgs,
@@ -130,10 +143,14 @@ func queryCellarIDs() *cobra.Command {
 			return ctx.PrintProto(res)
 		},
 	}
+
+	flags.AddQueryFlagsToCmd(cmd)
+
+	return cmd
 }
 
 func queryScheduledCorks() *cobra.Command {
-	return &cobra.Command{
+	cmd := &cobra.Command{
 		Use:     "scheduled-corks",
 		Aliases: []string{"scs"},
 		Args:    cobra.NoArgs,
@@ -155,10 +172,14 @@ func queryScheduledCorks() *cobra.Command {
 			return ctx.PrintProto(res)
 		},
 	}
+
+	flags.AddQueryFlagsToCmd(cmd)
+
+	return cmd
 }
 
 func queryScheduledCorksByBlockHeight() *cobra.Command {
-	return &cobra.Command{
+	cmd := &cobra.Command{
 		Use:     "scheduled-corks-by-block-height",
 		Aliases: []string{"scbbh"},
 		Args:    cobra.ExactArgs(1),
@@ -187,10 +208,14 @@ func queryScheduledCorksByBlockHeight() *cobra.Command {
 			return ctx.PrintProto(res)
 		},
 	}
+
+	flags.AddQueryFlagsToCmd(cmd)
+
+	return cmd
 }
 
 func queryScheduledBlockHeights() *cobra.Command {
-	return &cobra.Command{
+	cmd := &cobra.Command{
 		Use:     "scheduled-block-heights",
 		Aliases: []string{"scbhs"},
 		Args:    cobra.NoArgs,
@@ -212,4 +237,8 @@ func queryScheduledBlockHeights() *cobra.Command {
 			return ctx.PrintProto(res)
 		},
 	}
+
+	flags.AddQueryFlagsToCmd(cmd)
+
+	return cmd
 }
