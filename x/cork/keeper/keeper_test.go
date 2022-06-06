@@ -88,3 +88,50 @@ func TestSetGetCellarIDs(t *testing.T) {
 	})
 }
 
+func TestSetCorkGetCork_Unit(t *testing.T) {
+	testCases := []struct {
+		name string
+		test func()
+	}{
+		{
+			name: "todo",
+			test: func() {
+				t.Log("Declare test case parameters")
+				cellarID := exampleAddrA
+				valCellar := ValCellar{
+					Val: vallAddrA,
+					Cork: types.Cork{
+						TargetContractAddress: cellarID.String(),
+						EncodedContractCall:   []byte{33},
+					},
+				}
+
+				k, _, ctx := setupCorkKeeper(t)
+
+				t.Log("Set corks")
+				vc := valCellar
+				commit := types.Cork{
+					TargetContractAddress: exampleAddrA.String(),
+					EncodedContractCall:   []byte{33},
+				}
+
+				k.SetCork(
+					ctx,
+					/* val */ vc.Val,
+					/* cork */ commit,
+				)
+
+				// TODO: test getter after k.SetCork
+				// contract :=
+				// k.GetCork(ctx, vc.Val, contract)
+			},
+		},
+	}
+
+	for _, tc := range testCases {
+		tc := tc
+		t.Run(tc.name, func(t *testing.T) {
+			tc.test()
+		})
+	}
+}
