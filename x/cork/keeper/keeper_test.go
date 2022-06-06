@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"testing"
 
-	sdktypes "github.com/cosmos/cosmos-sdk/types"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/peggyjv/sommelier/v4/x/cork/types"
 	"github.com/stretchr/testify/assert"
@@ -12,7 +12,7 @@ import (
 )
 
 type ValCellar struct {
-	Val  sdktypes.ValAddress
+	Val  sdk.ValAddress
 	Cork types.Cork
 }
 
@@ -25,7 +25,7 @@ type VoteCalculatorTestCase struct {
 }
 
 var (
-	vallAddrA, _ = sdktypes.ValAddressFromHex("24ep6yqkhpwnfdrrapu6fzmjp3xrpsgca11ab1e")
+	vallAddrA, _ = sdk.ValAddressFromHex("24ep6yqkhpwnfdrrapu6fzmjp3xrpsgca11ab1e")
 
 	exampleAddrA = common.HexToAddress("0xc0ffee254729296a45a3885639AC7E10F9d54979")
 )
@@ -66,14 +66,14 @@ func TestGetWinningVotes(t *testing.T) {
 			input.corkKeeper.SetCork(ctx, vc.Val, commit)
 		}
 
-		winningVotes := input.corkKeeper.GetApprovedCorks(ctx, sdktypes.MustNewDecFromStr("0.66"))
+		winningVotes := input.corkKeeper.GetApprovedCorks(ctx, sdk.MustNewDecFromStr("0.66"))
 		require.Lenf(t, winningVotes, 1, test.description)
 	}
 }
 
 func TestSetGetCellarIDs(t *testing.T) {
 	t.Run("happy path", func(t *testing.T) {
-		k, _, ctx := setupCorkKeeper(t)
+		k, ctx, _, _ := setupCorkKeeper(t)
 
 		cellarID := exampleAddrA
 		cellars := k.GetCellarIDs(ctx)
@@ -106,7 +106,7 @@ func TestSetCorkGetCork_Unit(t *testing.T) {
 					},
 				}
 
-				k, _, ctx := setupCorkKeeper(t)
+				k, ctx, _, _ := setupCorkKeeper(t)
 
 				t.Log("Set corks")
 				vc := valCellar
@@ -124,6 +124,73 @@ func TestSetCorkGetCork_Unit(t *testing.T) {
 				// TODO: test getter after k.SetCork
 				// contract :=
 				// k.GetCork(ctx, vc.Val, contract)
+			},
+		},
+	}
+
+	for _, tc := range testCases {
+		tc := tc
+		t.Run(tc.name, func(t *testing.T) {
+			tc.test()
+		})
+	}
+}
+
+func TestGetWinningVotes_Unit(t *testing.T) {
+	testCases := []struct {
+		name string
+		test func()
+	}{
+		{
+			name: "single voter",
+			test: func() {
+				t.Log("Declare test case parameters")
+				testParams := VoteCalculatorTestCase{
+					description: "Check that a single voter returns it's vote",
+					CellarID:    exampleAddrA,
+					ValCellars: []ValCellar{
+						{Val: vallAddrA,
+							Cork: types.Cork{
+								TargetContractAddress: exampleAddrA.String(),
+								EncodedContractCall:   []byte{33},
+							},
+						},
+					},
+					WinningVotes: []types.Cork{
+						{
+							TargetContractAddress: exampleAddrA.String(),
+							EncodedContractCall:   []byte{33},
+						},
+					},
+				}
+
+				fmt.Println(testParams)
+				k, ctx, mocks, _ := setupCorkKeeper(t)
+				fmt.Println(mocks)
+
+				for _, vc := range testParams.ValCellars {
+					commit := types.Cork{
+						TargetContractAddress: exampleAddrA.String(),
+						EncodedContractCall:   []byte{33},
+					}
+
+					k.SetCork(ctx, vc.Val, commit)
+				}
+
+				totalPower := sdk.NewInt(100)
+				mocks.mockStakingKeeper.
+					EXPECT().GetLastTotalPower(ctx).
+					Return(totalPower)
+
+				mockValidator := mocks.mockValidator
+				mocks.mockStakingKeeper.
+					EXPECT().Validator(
+					ctx,
+					/* val */ testParams.ValCellars[0].Val).
+					Return(mockValidator)
+				winningVotes := k.GetApprovedCorks(
+					ctx, sdk.MustNewDecFromStr("0.66"))
+				require.Lenf(t, winningVotes, 1, testParams.description)
 			},
 		},
 	}
