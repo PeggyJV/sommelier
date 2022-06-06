@@ -13,6 +13,7 @@ import (
 
 	"github.com/golang/mock/gomock"
 
+	"github.com/peggyjv/sommelier/v4/x/cork/mock"
 	"github.com/peggyjv/sommelier/v4/x/cork/types"
 	"github.com/stretchr/testify/require"
 
@@ -22,8 +23,8 @@ import (
 )
 
 type mockKeepers struct {
-	mockStakingKeeper *MockStakingKeeper
-	mockGravityKeeper *MockGravityKeeper
+	mockStakingKeeper *mock.MockStakingKeeper
+	mockGravityKeeper *mock.MockGravityKeeper
 }
 
 func setupCorkKeeper(t *testing.T) (Keeper, mockKeepers, sdk.Context) {
@@ -51,8 +52,8 @@ func setupCorkKeeper(t *testing.T) (Keeper, mockKeepers, sdk.Context) {
 	require.True(t, found)
 
 	ctrl := gomock.NewController(t)
-	mockStakingKeeper := NewMockStakingKeeper(ctrl)
-	mockGravityKeeper := NewMockGravityKeeper(ctrl)
+	mockStakingKeeper := mock.NewMockStakingKeeper(ctrl)
+	mockGravityKeeper := mock.NewMockGravityKeeper(ctrl)
 
 	k := NewKeeper(
 		protoCodec,
