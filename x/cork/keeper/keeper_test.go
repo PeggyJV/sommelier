@@ -1,11 +1,13 @@
 package keeper
 
 import (
+	"fmt"
 	"testing"
 
 	sdktypes "github.com/cosmos/cosmos-sdk/types"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/peggyjv/sommelier/v4/x/cork/types"
+	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
@@ -68,3 +70,21 @@ func TestGetWinningVotes(t *testing.T) {
 		require.Lenf(t, winningVotes, 1, test.description)
 	}
 }
+
+func TestSetGetCellarIDs(t *testing.T) {
+	t.Run("happy path", func(t *testing.T) {
+		k, _, ctx := setupCorkKeeper(t)
+
+		cellarID := exampleAddrA
+		cellars := k.GetCellarIDs(ctx)
+		require.True(t, len(cellars) == 0)
+
+		k.SetCellarIDs(ctx, types.CellarIDSet{
+			Ids: []string{cellarID.String()},
+		})
+		cellars = k.GetCellarIDs(ctx)
+		assert.True(t, len(cellars) > 0)
+		assert.Contains(t, cellars[0].String(), cellarID.String())
+	})
+}
+
