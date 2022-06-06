@@ -22,12 +22,15 @@ import (
 	tmdb "github.com/tendermint/tm-db"
 )
 
-type mockKeepers struct {
+type mocksForCork struct {
 	mockStakingKeeper *mock.MockStakingKeeper
 	mockGravityKeeper *mock.MockGravityKeeper
+	mockValidator     *mock.MockValidatorI
 }
 
-func setupCorkKeeper(t *testing.T) (Keeper, mockKeepers, sdk.Context) {
+func setupCorkKeeper(t *testing.T) (
+	Keeper, sdk.Context, mocksForCork, *gomock.Controller,
+) {
 	db := tmdb.NewMemDB()
 	commitMultiStore := store.NewCommitMultiStore(db)
 
@@ -65,10 +68,11 @@ func setupCorkKeeper(t *testing.T) (Keeper, mockKeepers, sdk.Context) {
 
 	ctx := sdk.NewContext(commitMultiStore, tmproto.Header{}, false, log.NewNopLogger())
 
-	return k, mockKeepers{
+	return k, ctx, mocksForCork{
 		mockStakingKeeper: mockStakingKeeper,
 		mockGravityKeeper: mockGravityKeeper,
-	}, ctx
+		mockValidator:     mock.NewMockValidatorI(ctrl),
+	}, ctrl
 }
 
 func initParamsKeeper(
@@ -88,8 +92,8 @@ func TestSetupCorkKeepers(t *testing.T) {
 	}{{
 		name: "happy path",
 		test: func() {
-			k, mocks, ctx := setupCorkKeeper(t)
-			fmt.Println(k, mocks, ctx)
+			k, mocks, ctx, ctrl := setupCorkKeeper(t)
+			fmt.Println(k, mocks, ctx, ctrl)
 		},
 	},
 	}
