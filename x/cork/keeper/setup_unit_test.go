@@ -1,7 +1,7 @@
 package keeper
 
 import (
-	"fmt"
+	"reflect"
 	"testing"
 
 	"github.com/cosmos/cosmos-sdk/codec"
@@ -15,8 +15,10 @@ import (
 
 	"github.com/peggyjv/sommelier/v4/x/cork/mock"
 	"github.com/peggyjv/sommelier/v4/x/cork/types"
+	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
+	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 	"github.com/tendermint/tendermint/libs/log"
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
 	tmdb "github.com/tendermint/tm-db"
@@ -90,10 +92,38 @@ func TestSetupCorkKeepers(t *testing.T) {
 		name string
 		test func()
 	}{{
-		name: "happy path",
+		name: "make sure that mocks implement expected keepers interfaces",
 		test: func() {
-			k, mocks, ctx, ctrl := setupCorkKeeper(t)
-			fmt.Println(k, mocks, ctx, ctrl)
+			k, ctx, mocks, _ := setupCorkKeeper(t)
+			require.PanicsWithError(t, "UnmarshalJSON cannot decode empty bytes",
+				func() {
+					params := k.GetParamSet(ctx)
+					require.NoError(t, params.ValidateBasic())
+				},
+			)
+
+			for _, keeperPair := range []struct {
+				expected interface{}
+				mock     interface{}
+			}{
+				{
+					expected: (*types.StakingKeeper)(nil),
+					mock:     mocks.mockStakingKeeper,
+				},
+				{
+					expected: (*types.GravityKeeper)(nil),
+					mock:     mocks.mockGravityKeeper,
+				},
+				{
+					expected: (*stakingtypes.ValidatorI)(nil),
+					mock:     mocks.mockValidator,
+				},
+			} {
+				_interface := reflect.TypeOf(keeperPair.expected).Elem()
+				isImplementingExpectedMethods := reflect.
+					TypeOf(keeperPair.mock).Implements(_interface)
+				assert.True(t, isImplementingExpectedMethods)
+			}
 		},
 	},
 	}
