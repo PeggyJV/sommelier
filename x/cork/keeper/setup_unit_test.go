@@ -94,7 +94,7 @@ func TestSetupCorkKeepers(t *testing.T) {
 	}{{
 		name: "make sure that mocks implement expected keepers interfaces",
 		test: func() {
-			k, ctx, mocks, _ := setupCorkKeeper(t)
+			k, ctx, mocks, ctrl := setupCorkKeeper(t)
 			require.PanicsWithError(t, "UnmarshalJSON cannot decode empty bytes",
 				func() {
 					params := k.GetParamSet(ctx)
@@ -124,6 +124,8 @@ func TestSetupCorkKeepers(t *testing.T) {
 					TypeOf(keeperPair.mock).Implements(_interface)
 				assert.True(t, isImplementingExpectedMethods)
 			}
+
+			defer ctrl.Finish()
 		},
 	},
 	}
