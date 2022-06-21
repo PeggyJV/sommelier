@@ -105,7 +105,7 @@ func TestGetWinningVotes_Unit(t *testing.T) {
 
 	tc := TestCase{
 		name:        "single vote - happy",
-		description: "Check that a single voter returns it's vote",
+		description: "Check that a single voter has the only approved cork",
 		CellarID:    sampleCellarAddr,
 		ValCorkPairs: []types.ValidatorCork{
 			{
