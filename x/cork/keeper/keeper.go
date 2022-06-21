@@ -3,7 +3,6 @@ package keeper
 import (
 	"bytes"
 	"encoding/binary"
-	"fmt"
 
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/store/prefix"
@@ -304,7 +303,6 @@ func (k Keeper) GetApprovedCorks(ctx sdk.Context, threshold sdk.Dec) (approvedCo
 	totalPower := k.stakingKeeper.GetLastTotalPower(ctx)
 
 	k.IterateCorks(ctx, func(val sdk.ValAddress, addr common.Address, cork types.Cork) (stop bool) {
-		fmt.Printf("DEBUG: val = %v", val.String())
 		validator := k.stakingKeeper.Validator(ctx, val)
 		validatorPower := validator.GetConsensusPower(k.stakingKeeper.PowerReduction(ctx))
 
