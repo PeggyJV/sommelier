@@ -10,12 +10,6 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-// A validator-cork tuple for the cellar at address, Cork.TargetContractAddress
-type ValCellar struct {
-	Val  sdk.ValAddress
-	Cork types.Cork
-}
-
 var (
 	sampleValHex     = "24ep6yqkhpwnfdrrapu6fzmjp3xrpsgca11ab1e"
 	sampleValAddr, _ = sdk.ValAddressFromHex(sampleValHex)
