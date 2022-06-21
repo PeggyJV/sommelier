@@ -49,9 +49,8 @@ func TestSetCorkGetCork_Unit(t *testing.T) {
 		test func()
 	}{
 		{
-			name: "todo",
+			name: "set cork and get cork - happy",
 			test: func() {
-				t.Log("Declare test case parameters")
 				cellarID := sampleCellarAddr
 				valCork := types.ValidatorCork{
 					Validator: sampleValAddr.String(),
@@ -63,12 +62,21 @@ func TestSetCorkGetCork_Unit(t *testing.T) {
 
 				k, ctx, _, _ := setupCorkKeeper(t)
 
+				valAddr, err := sdk.ValAddressFromBech32(valCork.Validator)
+				require.NoError(t, err)
+
+				t.Log("Verify no cork exists for the validator")
+				cork, found := k.GetCork(ctx, valAddr, sampleCellarAddr)
+				assert.Equal(t, false, found)
+				assert.Error(t, cork.ValidateBasic())
+				assert.Contains(t, cork.ValidateBasic().Error(),
+					"cork has an empty contract call body")
+
 				t.Log("Set corks")
 				commit := types.Cork{
 					TargetContractAddress: sampleCellarAddr.String(),
 					EncodedContractCall:   []byte{33},
 				}
-				valAddr, err := sdk.ValAddressFromBech32(valCork.Validator)
 				require.NoError(t, err)
 				k.SetCork(
 					ctx,
@@ -76,9 +84,10 @@ func TestSetCorkGetCork_Unit(t *testing.T) {
 					/* cork */ commit,
 				)
 
-				// TODO: test getter after k.SetCork
-				// contract :=
-				// k.GetCork(ctx, vc.Val, contract)
+				t.Log("test getter after k.SetCork")
+				cork, found = k.GetCork(ctx, valAddr, sampleCellarAddr)
+				assert.NoError(t, cork.ValidateBasic())
+				assert.Equal(t, true, found)
 			},
 		},
 	}
