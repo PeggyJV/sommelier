@@ -65,3 +65,24 @@ func (k Keeper) SetParams(ctx sdk.Context, params types.Params) {
 func (k Keeper) GetFeesAccount(ctx sdk.Context) authtypes.ModuleAccountI {
 	return k.accountKeeper.GetModuleAccount(ctx, types.ModuleName)
 }
+
+/////////////////////
+// Cellar Fee Pool //
+/////////////////////
+
+func (k Keeper) GetCellarFeePool(ctx sdk.Context) (cellarFeePool types.CellarFeePool) {
+	store := ctx.KVStore(k.storeKey)
+	b := store.Get(types.CellarFeePoolKey)
+	if b == nil {
+		panic("Stored cellar fee pool should not have been nil")
+	}
+	k.cdc.MustUnmarshal(b, &cellarFeePool)
+	return
+}
+
+func (k Keeper) SetCellarFeePool(ctx sdk.Context, cellarFeePool types.CellarFeePool) {
+	store := ctx.KVStore(k.storeKey)
+	b := k.cdc.MustMarshal(&cellarFeePool)
+	store.Set(types.CellarFeePoolKey, b)
+}
+

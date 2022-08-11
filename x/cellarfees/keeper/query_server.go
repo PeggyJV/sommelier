@@ -30,3 +30,11 @@ func (k Keeper) ModuleAccounts(c context.Context, req *types.QueryModuleAccounts
 		FeesAddress: k.GetFeesAccount(sdk.UnwrapSDKContext(c)).String(),
 	}, nil
 }
+
+// CommunityPool queries the community pool coins
+func (k Keeper) CellarFeePool(c context.Context, req *types.QueryCellarFeePoolRequest) (*types.QueryCellarFeePoolResponse, error) {
+	ctx := sdk.UnwrapSDKContext(c)
+	pool := k.GetCellarFeePool(ctx).Pool
+
+	return &types.QueryCellarFeePoolResponse{Pool: pool}, nil
+}

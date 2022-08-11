@@ -13,3 +13,7 @@ const (
 	// QuerierRoute is the querier route for cellarfees
 	QuerierRoute = ModuleName
 )
+
+var (
+	CellarFeePoolKey = []byte{0x00} // key for global cellar fee pool state
+)
