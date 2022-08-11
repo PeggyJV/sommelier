@@ -94,14 +94,16 @@ func (k Keeper) AddCoinToPool(ctx sdk.Context, coin sdk.Coin) {
 	if coin.Denom == params.BaseCoinUnit || coin.Denom == params.HumanCoinUnit {
 		panic("Cannot add SOMM to cellar fee pool")
 	}
+	if coin.IsZero() {
+		return
+	}
 
 	pool := k.GetCellarFeePool(ctx)
-
 	i, balance := k.FindBalanceInPool(ctx, coin.Denom, pool.Pool)
 	if i == -1 {
-		pool.Pool = append(pool.Pool, balance)
+		pool.Pool = append(pool.Pool, coin)
 	} else {
-		balance.Add(coin)
+		balance = balance.Add(coin)
 		pool.Pool[i] = balance
 	}
 
@@ -110,6 +112,10 @@ func (k Keeper) AddCoinToPool(ctx sdk.Context, coin sdk.Coin) {
 
 func (k Keeper) AddCoinsToPool(ctx sdk.Context, coins sdk.Coins) {
 	pool := k.GetCellarFeePool(ctx)
+	if len(coins) == 0 {
+		return
+	}
+
 	for _, coin := range coins {
 		if coin.Denom == params.BaseCoinUnit || coin.Denom == params.HumanCoinUnit {
 			panic("Cannot add SOMM to cellar fee pool")
@@ -117,9 +123,9 @@ func (k Keeper) AddCoinsToPool(ctx sdk.Context, coins sdk.Coins) {
 
 		i, balance := k.FindBalanceInPool(ctx, coin.Denom, pool.Pool)
 		if i == -1 {
-			pool.Pool = append(pool.Pool, balance)
+			pool.Pool = append(pool.Pool, coin)
 		} else {
-			balance.Add(coin)
+			balance = balance.Add(coin)
 			pool.Pool[i] = balance
 		}
 	}
