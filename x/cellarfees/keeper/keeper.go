@@ -2,7 +2,6 @@ package keeper
 
 import (
 	"fmt"
-	"sort"
 
 	"github.com/tendermint/tendermint/libs/log"
 
@@ -91,70 +90,31 @@ func (k Keeper) SetCellarFeePool(ctx sdk.Context, cellarFeePool types.CellarFeeP
 // Appends the coin to the pool coins if denom isn't already present, otherwise add the amount to the
 // existing balance
 func (k Keeper) AddCoinToPool(ctx sdk.Context, coin sdk.Coin) {
-	if coin.Denom == params.BaseCoinUnit || coin.Denom == params.HumanCoinUnit {
-		panic("Cannot add SOMM to cellar fee pool")
-	}
-	if coin.IsZero() {
+	if (coin == sdk.Coin{}) {
 		return
 	}
 
-	pool := k.GetCellarFeePool(ctx)
-	i, balance := k.FindBalanceInPool(ctx, coin.Denom, pool.Pool)
-	if i == -1 {
-		pool.Pool = append(pool.Pool, coin)
-	} else {
-		balance = balance.Add(coin)
-		pool.Pool[i] = balance
+	if coin.Denom == params.BaseCoinUnit || coin.Denom == params.HumanCoinUnit {
+		panic("Cannot add SOMM to cellar fee pool")
 	}
 
+	pool := k.GetCellarFeePool(ctx)
+	pool.Pool = pool.Pool.Add(coin)
 	k.SetCellarFeePool(ctx, pool)
 }
 
 func (k Keeper) AddCoinsToPool(ctx sdk.Context, coins sdk.Coins) {
-	pool := k.GetCellarFeePool(ctx)
 	if len(coins) == 0 {
 		return
 	}
 
-	for _, coin := range coins {
-		if coin.Denom == params.BaseCoinUnit || coin.Denom == params.HumanCoinUnit {
-			panic("Cannot add SOMM to cellar fee pool")
-		}
-
-		i, balance := k.FindBalanceInPool(ctx, coin.Denom, pool.Pool)
-		if i == -1 {
-			pool.Pool = append(pool.Pool, coin)
-		} else {
-			balance = balance.Add(coin)
-			pool.Pool[i] = balance
-		}
+	if !coins.AmountOfNoDenomValidation(params.BaseCoinUnit).IsZero() {
+		panic("Cannot add SOMM to cellar fee pool")
 	}
 
+	pool := k.GetCellarFeePool(ctx)
+	pool.Pool = pool.Pool.Add(coins.Sort()...)
 	k.SetCellarFeePool(ctx, pool)
-}
-
-func (k Keeper) IteratePoolBalances(ctx sdk.Context, handler func(coin sdk.Coin) (stop bool)) {
-	pool := k.GetCellarFeePool(ctx).Pool
-	for _, coin := range pool {
-		if handler(coin) {
-			return
-		}
-	}
-}
-
-// Retrieve an Coin and its index from the provided pool if it is present, otherwise return
-// and empty Coin and an index of -1. This approach helps avoid accidentally reading the same
-// pool from the store over and over in cases like AddCoinsToPool.
-func (k Keeper) FindBalanceInPool(ctx sdk.Context, denom string, pool sdk.Coins) (int, sdk.Coin) {
-	i := sort.Search(len(pool), func(i int) bool {
-		return pool[i].Denom == denom
-	})
-
-	if i == len(pool) {
-		return -1, sdk.Coin{}
-	}
-
-	return i, pool[i]
 }
 
 func (k Keeper) SendPoolToAuction(ctx sdk.Context) {
