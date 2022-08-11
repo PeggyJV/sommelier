@@ -100,7 +100,7 @@ func TestAddingCoinsToPool(t *testing.T) {
 	require.Equal(t, expectedPool, pool.Pool)
 }
 
-func TestTransferringFeesToAuction(t *testing.T) {
+func TestSendFeesToAuction(t *testing.T) {
 	env := CreateTestEnv(t)
 	ctx := env.Context
 

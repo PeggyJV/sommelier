@@ -254,6 +254,8 @@ func CreateTestEnv(t *testing.T) TestInput {
 		stakingtypes.NotBondedPoolName: {authtypes.Burner, authtypes.Staking},
 		govtypes.ModuleName:            {authtypes.Burner},
 		types.ModuleName:               {authtypes.Minter, authtypes.Burner},
+		// placeholder
+		"auction": nil,
 	}
 
 	accountKeeper := authkeeper.NewAccountKeeper(

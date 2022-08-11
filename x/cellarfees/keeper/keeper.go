@@ -119,13 +119,16 @@ func (k Keeper) AddCoinsToPool(ctx sdk.Context, coins sdk.Coins) {
 
 func (k Keeper) SendPoolToAuction(ctx sdk.Context) {
 	pool := k.GetCellarFeePool(ctx).Pool
+	if pool.Empty() {
+		return
+	}
 
-	// TO-DO: Update when auction module exists
+	// TO-DO: Update when auction module exists. Test setup creates this mock auction module account.
 	err := k.bankKeeper.SendCoinsFromModuleToModule(ctx, types.ModuleName, "auction", pool)
 	if err != nil {
 		panic(err)
 	}
 
 	// reset pool
-	k.SetCellarFeePool(ctx, types.CellarFeePool{})
+	k.SetCellarFeePool(ctx, types.NewEmptyPool())
 }
