@@ -1,8 +1,10 @@
 syntax = "proto3";
 package auction.v1;
 
-import "cosmos_proto/cosmos.proto";
 import "auction/v1/auction.proto";
+import "cosmos/base/v1beta1/coin.proto";
+import "cosmos_proto/cosmos.proto";
+import "gogoproto/gogo.proto";
 
 option go_package = "github.com/peggyjv/sommelier/v4/x/auction/types";
 
@@ -11,8 +13,11 @@ service Msg {
 }
 
 message MsgSubmitBidRequest {
-  Bid bid = 1;
-  string signer = 2;
+  uint32 auction_id = 1;
+  string bidder = 2;
+  cosmos.base.v1beta1.Coin max_bid = 3 [ (gogoproto.nullable) = false ];
+  cosmos.base.v1beta1.Coin minimum_amount = 4 [ (gogoproto.nullable) = false ];
+  string signer = 5;
 }
 
 message MsgSubmitBidResponse {
