@@ -1,0 +1,20 @@
+syntax = "proto3";
+package auction.v1;
+
+import "cosmos_proto/cosmos.proto";
+import "auction/v1/auction.proto";
+
+option go_package = "github.com/peggyjv/sommelier/v4/x/auction/types";
+
+message SetTokenPricesProposal {
+  string title = 1;
+  string description = 2;
+  repeated TokenPrice = 3;
+}
+
+message SetTokenPricesProposalWithDeposit {
+  string title = 1;
+  string description = 2;
+  repeated TokenPrice = 3;
+  string deposit = 4;
+}
