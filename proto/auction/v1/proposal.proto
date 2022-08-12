@@ -9,12 +9,12 @@ option go_package = "github.com/peggyjv/sommelier/v4/x/auction/types";
 message SetTokenPricesProposal {
   string title = 1;
   string description = 2;
-  repeated TokenPrice = 3;
+  repeated TokenPrice token_prices = 3;
 }
 
 message SetTokenPricesProposalWithDeposit {
   string title = 1;
   string description = 2;
-  repeated TokenPrice = 3;
+  repeated TokenPrice token_prices = 3;
   string deposit = 4;
 }

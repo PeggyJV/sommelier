@@ -16,23 +16,23 @@ service Query {
   }
 
   rpc QueryAuction(QueryAuctionRequest) returns (QueryAuctionResponse) {
-    option (google.api.http).get = "/sommelier/auction/v1/auction/{auction_id}"
+    option (google.api.http).get = "/sommelier/auction/v1/auction/{auction_id}";
   }
 
   rpc QueryCurrentAuctions(QueryCurrentAuctionsRequest) returns (QueryCurrentAuctionsResponse) {
-    option (google.api.http).get = "/sommelier/auction/v1/current_auctions"
+    option (google.api.http).get = "/sommelier/auction/v1/current_auctions";
   }
 
   rpc QueryEndedAuctions(QueryEndedAuctionsRequest) returns (QueryEndedAuctionsResponse) {
-    option (google.api.http).get = "/sommelier/auction/v1/ended_auctions"
+    option (google.api.http).get = "/sommelier/auction/v1/ended_auctions";
   }
 
   rpc QueryBid(QueryBidRequest) returns (QueryBidResponse) {
-    option (google.api.http).get = "/sommelier/auction/v1/bid/{bid_id}"
+    option (google.api.http).get = "/sommelier/auction/v1/bid/{bid_id}";
   }
 
   rpc QueryBidsByAuction(QueryBidsByAuctionRequest) returns (QueryBidsByAuctionResponse) {
-    option (google.api.http).get = "/sommelier/auction/v1/bids/{auction_id}"
+    option (google.api.http).get = "/sommelier/auction/v1/bids/{auction_id}";
   }
 }
 
