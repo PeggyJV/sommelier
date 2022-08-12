@@ -1,0 +1,20 @@
+syntax = "proto3";
+package auction.v1;
+
+import "cosmos_proto/cosmos.proto";
+import "auction/v1/auction.proto";
+
+option go_package = "github.com/peggyjv/sommelier/v4/x/auction/types";
+
+service Msg {
+  rpc SubmitBid (MsgSubmitBidRequest) returns (MsgSubmitBidResponse);
+}
+
+message MsgSubmitBidRequest {
+  Bid bid = 1;
+  string signer = 2;
+}
+
+message MsgSubmitBidResponse {
+  FulfilledBid fulfilled_bid = 1;
+}

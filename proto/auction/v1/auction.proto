@@ -1,0 +1,40 @@
+syntax = "proto3";
+package auction.v1;
+
+import "cosmos_proto/cosmos.proto";
+
+option go_package = "github.com/peggyjv/sommelier/v4/x/auction/types";
+
+message Auction {
+  uint32 id = 1;
+  cosmos.base.v1beta1.Coin starting_amount = 2 [ (gogoproto.nullable) = false ];
+  uint64 start_block = 3;
+  uint64 end_block = 4;
+  float initial_decrease_rate = 5;
+  float current_decrease_rate = 6;
+  uint32 block_decrease_interval = 7;
+  cosmos.base.v1beta1.Coin current_price = 8 [ (gogoproto.nullable) = false ];
+  cosmos.base.v1beta1.Coin amount_remaining = 9 [ (gogoproto.nullable) = false ];
+}
+
+message Bid {
+  uint64 id = 1;
+  uint32 auction_id = 2;
+  string bidder = 3;
+  cosmos.base.v1beta1.Coin max_bid = 4 [ (gogoproto.nullable) = false ];
+  cosmos.base.v1beta1.Coin minimum_amount = 5 [ (gogoproto.nullable) = false ];
+}
+
+message FulfilledBid {
+  Bid bid = 1;
+  cosmos.base.v1beta1.Coin fulfilled_amount = 2 [ (gogoproto.nullable) = false ];
+  cosmos.base.v1beta1.Coin fulfillment_price = 3 [ (gogoproto.nullable) = false ];
+}
+
+message TokenPrice {
+  string denom = 1;
+  string usd_price = 2 [
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+    (gogoproto.nullable) = false
+  ];
+}
