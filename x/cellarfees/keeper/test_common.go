@@ -53,6 +53,8 @@ import (
 	gravitykeeper "github.com/peggyjv/gravity-bridge/module/v2/x/gravity/keeper"
 	gravitytypes "github.com/peggyjv/gravity-bridge/module/v2/x/gravity/types"
 	"github.com/peggyjv/sommelier/v4/x/cellarfees/types"
+	corkkeeper "github.com/peggyjv/sommelier/v4/x/cork/keeper"
+	corktypes "github.com/peggyjv/sommelier/v4/x/cork/types"
 	"github.com/stretchr/testify/require"
 	"github.com/tendermint/tendermint/libs/log"
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
@@ -183,6 +185,7 @@ var (
 // TestInput stores the various keepers required to test gravity
 type TestInput struct {
 	cellarFeesKeeper Keeper
+	CorkKeeper       corkkeeper.Keeper
 	GravityKeeper    gravitykeeper.Keeper
 	AccountKeeper    authkeeper.AccountKeeper
 	StakingKeeper    stakingkeeper.Keeper
@@ -200,6 +203,7 @@ func CreateTestEnv(t *testing.T) TestInput {
 	t.Helper()
 
 	// Initialize store keys
+	keyCork := sdk.NewKVStoreKey(corktypes.StoreKey)
 	keyGravity := sdk.NewKVStoreKey(gravitytypes.StoreKey)
 	keyAcc := sdk.NewKVStoreKey(authtypes.StoreKey)
 	keyStaking := sdk.NewKVStoreKey(stakingtypes.StoreKey)
@@ -279,8 +283,6 @@ func CreateTestEnv(t *testing.T) TestInput {
 		blockedAddr,
 	)
 	bankKeeper.SetParams(ctx, banktypes.Params{DefaultSendEnabled: true})
-
-	cellarFeesKeeper := NewKeeper(marshaler, keyCellarFees, getSubspace(paramsKeeper, banktypes.ModuleName), accountKeeper, bankKeeper)
 
 	stakingKeeper := stakingkeeper.NewKeeper(marshaler, keyStaking, accountKeeper, bankKeeper, getSubspace(paramsKeeper, stakingtypes.ModuleName))
 	stakingKeeper.SetParams(ctx, TestingStakeParams)
@@ -367,8 +369,27 @@ func CreateTestEnv(t *testing.T) TestInput {
 		),
 	)
 
+	corkKeeper := corkkeeper.NewKeeper(
+		marshaler,
+		keyCork,
+		getSubspace(paramsKeeper, types.DefaultParamspace),
+		stakingKeeper,
+		gravityKeeper,
+	)
+
+	cellarFeesKeeper := NewKeeper(
+		marshaler,
+		keyCellarFees,
+		getSubspace(paramsKeeper, banktypes.ModuleName),
+		accountKeeper,
+		bankKeeper,
+		corkKeeper,
+		gravityKeeper,
+	)
+
 	return TestInput{
 		cellarFeesKeeper: cellarFeesKeeper,
+		CorkKeeper:       corkKeeper,
 		GravityKeeper:    gravityKeeper,
 		AccountKeeper:    accountKeeper,
 		BankKeeper:       bankKeeper,

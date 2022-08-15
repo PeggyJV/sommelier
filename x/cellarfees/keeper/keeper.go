@@ -19,6 +19,8 @@ type Keeper struct {
 	paramSpace    paramtypes.Subspace
 	accountKeeper types.AccountKeeper
 	bankKeeper    types.BankKeeper
+	corkKeeper    types.CorkKeeper
+	gravityKeeper types.GravityKeeper
 }
 
 func NewKeeper(
@@ -27,6 +29,8 @@ func NewKeeper(
 	paramSpace paramtypes.Subspace,
 	accountKeeper types.AccountKeeper,
 	bankKeeper types.BankKeeper,
+	corkKeeper types.CorkKeeper,
+	gravityKeeper types.GravityKeeper,
 ) Keeper {
 	if !paramSpace.HasKeyTable() {
 		paramSpace = paramSpace.WithKeyTable(types.ParamKeyTable())
@@ -38,6 +42,8 @@ func NewKeeper(
 		paramSpace:    paramSpace,
 		accountKeeper: accountKeeper,
 		bankKeeper:    bankKeeper,
+		corkKeeper:    corkKeeper,
+		gravityKeeper: gravityKeeper,
 	}
 }
 
@@ -130,5 +136,5 @@ func (k Keeper) SendPoolToAuction(ctx sdk.Context) {
 	}
 
 	// reset pool
-	k.SetCellarFeePool(ctx, types.NewEmptyPool())
+	k.SetCellarFeePool(ctx, types.DefaultCellarFeePool())
 }

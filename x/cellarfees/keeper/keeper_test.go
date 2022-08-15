@@ -13,7 +13,7 @@ func TestInitializingPool(t *testing.T) {
 	ctx := env.Context
 
 	// initialize pool
-	env.cellarFeesKeeper.SetCellarFeePool(ctx, types.NewEmptyPool())
+	env.cellarFeesKeeper.SetCellarFeePool(ctx, types.DefaultCellarFeePool())
 	pool := env.cellarFeesKeeper.GetCellarFeePool(ctx).Pool
 	require.Equal(t, len(pool), 0)
 }
@@ -23,7 +23,7 @@ func TestGettingSettingCellarFeePool(t *testing.T) {
 	ctx := env.Context
 
 	// initialize pool
-	env.cellarFeesKeeper.SetCellarFeePool(ctx, types.NewEmptyPool())
+	env.cellarFeesKeeper.SetCellarFeePool(ctx, types.DefaultCellarFeePool())
 
 	denom := "gravity-0x0000000000000000000000000000000000000000"
 	expectedPool := types.CellarFeePool{
@@ -48,7 +48,7 @@ func TestAddingCoinsToPool(t *testing.T) {
 	ctx := env.Context
 
 	// initialize pool
-	env.cellarFeesKeeper.SetCellarFeePool(ctx, types.NewEmptyPool())
+	env.cellarFeesKeeper.SetCellarFeePool(ctx, types.DefaultCellarFeePool())
 
 	denom0 := "gravity-0x0000000000000000000000000000000000000000"
 	single := sdk.Coin{
@@ -105,7 +105,7 @@ func TestSendFeesToAuction(t *testing.T) {
 	ctx := env.Context
 
 	// initialize pool
-	env.cellarFeesKeeper.SetCellarFeePool(ctx, types.NewEmptyPool())
+	env.cellarFeesKeeper.SetCellarFeePool(ctx, types.DefaultCellarFeePool())
 
 	denom0 := "gravity-0x0000000000000000000000000000000000000000"
 	denom1 := "gravity-0x1111111111111111111111111111111111111111"

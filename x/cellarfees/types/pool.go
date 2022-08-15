@@ -1,5 +1,5 @@
 package types
 
-func NewEmptyPool() CellarFeePool {
+func DefaultCellarFeePool() CellarFeePool {
 	return CellarFeePool{}
 }

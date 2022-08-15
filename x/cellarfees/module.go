@@ -84,16 +84,21 @@ type AppModule struct {
 	cdc           codec.Codec
 	accountKeeper types.AccountKeeper
 	bankKeeper    types.BankKeeper
+	corkKeeper    types.CorkKeeper
+	gravityKeeper types.GravityKeeper
 }
 
 // NewAppModule creates a new AppModule object
-func NewAppModule(keeper keeper.Keeper, cdc codec.Codec, accountKeeper types.AccountKeeper, bankKeeper types.BankKeeper) AppModule {
+func NewAppModule(keeper keeper.Keeper, cdc codec.Codec, accountKeeper types.AccountKeeper, bankKeeper types.BankKeeper,
+	corkKeeper types.CorkKeeper, gravityKeeper types.GravityKeeper) AppModule {
 	return AppModule{
 		AppModuleBasic: AppModuleBasic{},
 		keeper:         keeper,
 		cdc:            cdc,
 		accountKeeper:  accountKeeper,
 		bankKeeper:     bankKeeper,
+		corkKeeper:     corkKeeper,
+		gravityKeeper:  gravityKeeper,
 	}
 }
 
@@ -101,7 +106,9 @@ func NewAppModule(keeper keeper.Keeper, cdc codec.Codec, accountKeeper types.Acc
 func (AppModule) Name() string { return types.ModuleName }
 
 // RegisterInvariants performs a no-op.
-func (AppModule) RegisterInvariants(_ sdk.InvariantRegistry) {}
+func (am AppModule) RegisterInvariants(ir sdk.InvariantRegistry) {
+	ir.RegisterRoute(types.ModuleName, "pool-balances", keeper.PoolBalanceInvariants(am.keeper))
+}
 
 // Route returns the message routing key for the cellarfees module.
 func (am AppModule) Route() sdk.Route { return sdk.NewRoute(types.RouterKey, NewHandler(am.keeper)) }
@@ -133,7 +140,7 @@ func (am AppModule) RegisterServices(cfg module.Configurator) {
 func (am AppModule) InitGenesis(ctx sdk.Context, cdc codec.JSONCodec, data json.RawMessage) []abci.ValidatorUpdate {
 	var genesisState types.GenesisState
 	cdc.MustUnmarshalJSON(data, &genesisState)
-	keeper.InitGenesis(ctx, am.keeper, genesisState)
+	am.keeper.InitGenesis(ctx, genesisState)
 
 	return []abci.ValidatorUpdate{}
 }
@@ -141,7 +148,7 @@ func (am AppModule) InitGenesis(ctx sdk.Context, cdc codec.JSONCodec, data json.
 // ExportGenesis returns the exported genesis state as raw bytes for the cellarfees
 // module.
 func (am AppModule) ExportGenesis(ctx sdk.Context, cdc codec.JSONCodec) json.RawMessage {
-	genesisState := keeper.ExportGenesis(ctx, am.keeper)
+	genesisState := am.keeper.ExportGenesis(ctx)
 	return cdc.MustMarshalJSON(&genesisState)
 }
 

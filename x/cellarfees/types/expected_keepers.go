@@ -3,6 +3,7 @@ package types
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/auth/types"
+	"github.com/ethereum/go-ethereum/common"
 )
 
 // AccountKeeper defines the expected account keeper.
@@ -27,4 +28,15 @@ type BankKeeper interface {
 	SendCoinsFromAccountToModule(ctx sdk.Context, senderAddr sdk.AccAddress, recipientModule string, amt sdk.Coins) error
 
 	BlockedAddr(addr sdk.AccAddress) bool
+}
+
+// CorkKeeper defines the minimum interface needed to check registered Cellars
+type CorkKeeper interface {
+	GetCellarIDs(ctx sdk.Context) (cellars []common.Address)
+	HasCellarID(ctx sdk.Context, address common.Address) (found bool)
+}
+
+// GravityKeeper defines the expected gravity keeper methods
+type GravityKeeper interface {
+	ERC20ToDenomLookup(ctx sdk.Context, tokenContract common.Address) (bool, string)
 }
