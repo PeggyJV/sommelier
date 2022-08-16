@@ -81,15 +81,17 @@ func (b AppModuleBasic) RegisterInterfaces(registry codectypes.InterfaceRegistry
 // AppModule implements an application module for the oracle module.
 type AppModule struct {
 	AppModuleBasic
-	keeper keeper.Keeper
-	cdc    codec.Codec
+	keeper     keeper.Keeper
+	bankKeeper types.BankKeeper
+	cdc        codec.Codec
 }
 
 // NewAppModule creates a new AppModule object
-func NewAppModule(keeper keeper.Keeper, cdc codec.Codec) AppModule {
+func NewAppModule(keeper keeper.Keeper, bankKeeper types.BankKeeper, cdc codec.Codec) AppModule {
 	return AppModule{
 		AppModuleBasic: AppModuleBasic{},
 		keeper:         keeper,
+		bankKeeper:     bankKeeper,
 		cdc:            cdc,
 	}
 }
