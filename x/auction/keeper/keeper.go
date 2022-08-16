@@ -38,3 +38,21 @@ func NewKeeper(
 func (k Keeper) Logger(ctx sdk.Context) log.Logger {
 	return ctx.Logger().With("module", "x/"+types.ModuleName)
 }
+
+////////////
+// Params //
+////////////
+
+// GetParamSet returns the vote period from the parameters
+func (k Keeper) GetParamSet(ctx sdk.Context) types.Params {
+	var p types.Params
+	k.paramSpace.GetParamSet(ctx, &p)
+	return p
+}
+
+// setParams sets the parameters in the store
+func (k Keeper) setParams(ctx sdk.Context, params types.Params) {
+	k.paramSpace.SetParamSet(ctx, &params)
+}
+
+// TODO: implement the keeper functions!
