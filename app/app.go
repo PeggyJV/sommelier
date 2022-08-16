@@ -90,6 +90,9 @@ import (
 	gravitytypes "github.com/peggyjv/gravity-bridge/module/v2/x/gravity/types"
 	appParams "github.com/peggyjv/sommelier/v4/app/params"
 	v4 "github.com/peggyjv/sommelier/v4/app/upgrades/v4"
+	"github.com/peggyjv/sommelier/v4/x/auction"
+	auctionkeeper "github.com/peggyjv/sommelier/v4/x/auction/keeper"
+	auctiontypes "github.com/peggyjv/sommelier/v4/x/auction/types"
 	"github.com/peggyjv/sommelier/v4/x/cellarfees"
 	cellarfeeskeeper "github.com/peggyjv/sommelier/v4/x/cellarfees/keeper"
 	cellarfeestypes "github.com/peggyjv/sommelier/v4/x/cellarfees/types"
@@ -153,6 +156,7 @@ var (
 		gravity.AppModuleBasic{},
 		cork.AppModuleBasic{},
 		cellarfees.AppModuleBasic{},
+		auction.AppModuleBasic{},
 	)
 
 	// module account permissions
@@ -166,6 +170,7 @@ var (
 		ibctransfertypes.ModuleName:    {authtypes.Minter, authtypes.Burner},
 		gravitytypes.ModuleName:        {authtypes.Minter, authtypes.Burner},
 		cellarfeestypes.ModuleName:     nil,
+		auctiontypes.ModuleName:        nil,
 	}
 
 	// module accounts that are allowed to receive tokens
@@ -213,6 +218,7 @@ type SommelierApp struct {
 	// Sommelier keepers
 	CorkKeeper       corkkeeper.Keeper
 	CellarFeesKeeper cellarfeeskeeper.Keeper
+	AuctionKeeper    auctionkeeper.Keeper
 
 	// make capability scoped keepers public for test purposes (IBC only)
 	ScopedIBCKeeper      capabilitykeeper.ScopedKeeper
@@ -257,6 +263,7 @@ func NewSommelierApp(
 		govtypes.StoreKey, paramstypes.StoreKey, ibchost.StoreKey, upgradetypes.StoreKey,
 		evidencetypes.StoreKey, ibctransfertypes.StoreKey, capabilitytypes.StoreKey,
 		gravitytypes.StoreKey, feegrant.StoreKey, authzkeeper.StoreKey, corktypes.StoreKey,
+		auctiontypes.StoreKey,
 	)
 	tkeys := sdk.NewTransientStoreKeys(paramstypes.TStoreKey)
 	memKeys := sdk.NewMemoryStoreKeys(capabilitytypes.MemStoreKey)
@@ -358,6 +365,11 @@ func NewSommelierApp(
 		app.AccountKeeper, app.BankKeeper,
 	)
 
+	app.AuctionKeeper = auctionkeeper.NewKeeper(
+		appCodec, keys[auctiontypes.StoreKey], app.GetSubspace(auctiontypes.ModuleName),
+		app.BankKeeper,
+	)
+
 	app.GravityKeeper = *app.GravityKeeper.SetHooks(
 		gravitytypes.NewMultiGravityHooks(
 			app.CorkKeeper.Hooks(),
@@ -372,6 +384,7 @@ func NewSommelierApp(
 		AddRoute(ibcclienttypes.RouterKey, ibcclient.NewClientProposalHandler(app.IBCKeeper.ClientKeeper)).
 		AddRoute(corktypes.RouterKey, cork.NewUpdateCellarIDsProposalHandler(app.CorkKeeper)).
 		AddRoute(gravitytypes.RouterKey, gravity.NewCommunityPoolEthereumSpendProposalHandler(app.GravityKeeper))
+		// TODO: add auction proposal handler
 	app.GovKeeper = govkeeper.NewKeeper(
 		appCodec, keys[govtypes.StoreKey], app.GetSubspace(govtypes.ModuleName), app.AccountKeeper, app.BankKeeper,
 		&stakingKeeper, govRouter,
@@ -429,6 +442,7 @@ func NewSommelierApp(
 		authzmodule.NewAppModule(appCodec, app.AuthzKeeper, app.AccountKeeper, app.BankKeeper, app.interfaceRegistry),
 		cork.NewAppModule(app.CorkKeeper, appCodec),
 		cellarfees.NewAppModule(app.CellarFeesKeeper, appCodec, app.AccountKeeper, app.BankKeeper),
+		auction.NewAppModule(app.AuctionKeeper, app.BankKeeper, appCodec),
 	)
 
 	// During begin block slashing happens after distr.BeginBlocker so that
@@ -440,13 +454,13 @@ func NewSommelierApp(
 		upgradetypes.ModuleName, capabilitytypes.ModuleName, minttypes.ModuleName, distrtypes.ModuleName, slashingtypes.ModuleName,
 		evidencetypes.ModuleName, stakingtypes.ModuleName, ibchost.ModuleName, ibctransfertypes.ModuleName, authtypes.ModuleName,
 		banktypes.ModuleName, govtypes.ModuleName, crisistypes.ModuleName, genutiltypes.ModuleName, authz.ModuleName, feegrant.ModuleName,
-		paramstypes.ModuleName, gravitytypes.ModuleName, corktypes.ModuleName, cellarfeestypes.ModuleName,
+		paramstypes.ModuleName, gravitytypes.ModuleName, corktypes.ModuleName, cellarfeestypes.ModuleName, auctiontypes.ModuleName,
 	)
 	app.mm.SetOrderEndBlockers(
 		crisistypes.ModuleName, govtypes.ModuleName, stakingtypes.ModuleName, ibchost.ModuleName, ibctransfertypes.ModuleName,
 		capabilitytypes.ModuleName, authtypes.ModuleName, banktypes.ModuleName, distrtypes.ModuleName, slashingtypes.ModuleName,
 		minttypes.ModuleName, genutiltypes.ModuleName, evidencetypes.ModuleName, authz.ModuleName, feegrant.ModuleName, paramstypes.ModuleName,
-		upgradetypes.ModuleName, gravitytypes.ModuleName, corktypes.ModuleName, cellarfeestypes.ModuleName,
+		upgradetypes.ModuleName, gravitytypes.ModuleName, corktypes.ModuleName, cellarfeestypes.ModuleName, auctiontypes.ModuleName,
 	)
 
 	// NOTE: The genutils module must occur after staking so that pools are
@@ -459,7 +473,7 @@ func NewSommelierApp(
 		stakingtypes.ModuleName, slashingtypes.ModuleName, govtypes.ModuleName, minttypes.ModuleName,
 		crisistypes.ModuleName, ibchost.ModuleName, genutiltypes.ModuleName, evidencetypes.ModuleName,
 		ibctransfertypes.ModuleName, gravitytypes.ModuleName, authz.ModuleName,
-		feegrant.ModuleName, corktypes.ModuleName, cellarfeestypes.ModuleName,
+		feegrant.ModuleName, corktypes.ModuleName, cellarfeestypes.ModuleName, auctiontypes.ModuleName,
 	)
 
 	app.mm.RegisterInvariants(&app.CrisisKeeper)
@@ -489,6 +503,7 @@ func NewSommelierApp(
 		authzmodule.NewAppModule(appCodec, app.AuthzKeeper, app.AccountKeeper, app.BankKeeper, app.interfaceRegistry),
 		cork.NewAppModule(app.CorkKeeper, appCodec),
 		cellarfees.NewAppModule(app.CellarFeesKeeper, appCodec, app.AccountKeeper, app.BankKeeper),
+		auction.NewAppModule(app.AuctionKeeper, app.BankKeeper, appCodec),
 	)
 
 	app.sm.RegisterStoreDecoders()
@@ -718,6 +733,7 @@ func initParamsKeeper(appCodec codec.BinaryCodec, legacyAmino *codec.LegacyAmino
 	paramsKeeper.Subspace(gravitytypes.ModuleName)
 	paramsKeeper.Subspace(corktypes.ModuleName)
 	paramsKeeper.Subspace(cellarfeestypes.ModuleName)
+	paramsKeeper.Subspace(auctiontypes.ModuleName)
 
 	return paramsKeeper
 }
