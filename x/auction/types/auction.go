@@ -7,6 +7,16 @@ import (
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
+func (a *Auction) Equals(other Auction) bool {
+	// TODO: fill in
+	return false
+}
+
+func (a *Auction) ValidateBasic() error {
+	// TODO: fill in
+	return nil
+}
+
 func (b *Bid) Equals(other Bid) bool {
 	if b.Id != other.Id {
 		return false
@@ -54,5 +64,25 @@ func (b *Bid) ValidateBasic() error {
 		return sdkerrors.Wrap(sdkerrors.ErrInvalidAddress, err.Error())
 	}
 
+	return nil
+}
+
+func (f *FulfilledBid) Equals(other FulfilledBid) bool {
+	// TODO: fill in
+	return false
+}
+
+func (f *FulfilledBid) ValidateBasic() error {
+	// TODO: fill in
+	return nil
+}
+
+func (t *TokenPrice) Equals(other TokenPrice) bool {
+	// TODO: fill in
+	return false
+}
+
+func (t *TokenPrice) ValidateBasic() error {
+	// TODO: fill in
 	return nil
 }
