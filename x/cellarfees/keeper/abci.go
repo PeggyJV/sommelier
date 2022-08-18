@@ -7,9 +7,6 @@ import (
 	"github.com/peggyjv/sommelier/v4/x/cellarfees/types"
 )
 
-// approximate number of blocks per two weeks
-const emissionPeriod = 172800
-
 // BeginBlocker calculates a reward emission based on a constant proportion of the latest peak reward supply.
 // This results in a constant emission rate between top-ups that will exhaust the reward supply after a number
 // of blocks equal to `emissionPeriod`
@@ -22,6 +19,7 @@ func (k Keeper) BeginBlocker(ctx sdk.Context) {
 	}
 
 	previousSupplyPeak := k.GetLastRewardSupplyPeak(ctx)
+	p := k.GetParams(ctx)
 
 	var emissionAmount sdk.Int
 
@@ -29,9 +27,9 @@ func (k Keeper) BeginBlocker(ctx sdk.Context) {
 	// the previous peak because it's zeroed out in the store, so we use the current reward supply.
 	if previousSupplyPeak.IsZero() {
 		k.SetLastRewardSupplyPeak(ctx, remainingRewardsSupply)
-		emissionAmount = remainingRewardsSupply.Quo(sdk.NewInt(emissionPeriod))
+		emissionAmount = remainingRewardsSupply.Quo(sdk.NewInt(int64(p.RewardEmissionPeriod)))
 	} else {
-		emissionAmount = previousSupplyPeak.Quo(sdk.NewInt(emissionPeriod))
+		emissionAmount = previousSupplyPeak.Quo(sdk.NewInt(int64(p.RewardEmissionPeriod)))
 	}
 
 	// Emission should be at least 1usomm and at most the remaining supply

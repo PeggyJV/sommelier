@@ -8,4 +8,6 @@ option go_package = "github.com/peggyjv/sommelier/v4/x/cellarfees/types";
 // Params defines the parameters for the module.
 message Params {
   option (gogoproto.goproto_stringer) = false;
+
+  uint64 reward_emission_period = 1;
 }
