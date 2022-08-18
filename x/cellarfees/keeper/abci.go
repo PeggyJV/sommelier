@@ -9,7 +9,7 @@ import (
 
 // BeginBlocker calculates a reward emission based on a constant proportion of the latest peak reward supply.
 // This results in a constant emission rate between top-ups that will exhaust the reward supply after a number
-// of blocks equal to `emissionPeriod`
+// of blocks equal to the RewardEmissionPeriod param.
 func (k Keeper) BeginBlocker(ctx sdk.Context) {
 	moduleAccount := k.accountKeeper.GetModuleAccount(ctx, types.ModuleName)
 	remainingRewardsSupply := k.bankKeeper.GetBalance(ctx, moduleAccount.GetAddress(), params.BaseCoinUnit).Amount
@@ -23,8 +23,7 @@ func (k Keeper) BeginBlocker(ctx sdk.Context) {
 
 	var emissionAmount sdk.Int
 
-	// If this is the first emission after a resupply from zero, we can't calculate the emission from
-	// the previous peak because it's zeroed out in the store, so we use the current reward supply.
+	// If this is the first emission after a resupply from zero, the current reward supply is the new peak.
 	if previousSupplyPeak.IsZero() {
 		k.SetLastRewardSupplyPeak(ctx, remainingRewardsSupply)
 		emissionAmount = remainingRewardsSupply.Quo(sdk.NewInt(int64(p.RewardEmissionPeriod)))
@@ -32,7 +31,7 @@ func (k Keeper) BeginBlocker(ctx sdk.Context) {
 		emissionAmount = previousSupplyPeak.Quo(sdk.NewInt(int64(p.RewardEmissionPeriod)))
 	}
 
-	// Emission should be at least 1usomm and at most the remaining supply
+	// Emission should be at least 1usomm and at most the remaining reward supply
 	if emissionAmount.IsZero() {
 		emissionAmount = sdk.OneInt()
 	} else if emissionAmount.GTE(remainingRewardsSupply) {
