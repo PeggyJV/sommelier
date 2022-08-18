@@ -15,5 +15,8 @@ const (
 )
 
 var (
-	CellarFeePoolKey = []byte{0x00} // key for global cellar fee pool state
+	// key for global cellar fee pool state
+	CellarFeePoolKey = []byte{0x00}
+	// key for storing the reward supply after the latest increase
+	LastHighestRewardSupply = []byte{0x01}
 )

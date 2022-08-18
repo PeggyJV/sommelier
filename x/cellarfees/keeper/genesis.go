@@ -11,6 +11,7 @@ import (
 // state.
 func (k Keeper) InitGenesis(ctx sdk.Context, gs types.GenesisState) {
 	k.SetCellarFeePool(ctx, gs.CellarFeePool)
+	k.SetLastRewardSupplyPeak(ctx, sdk.NewInt(0))
 	k.SetParams(ctx, gs.Params)
 
 	feesAccount := k.GetFeesAccount(ctx)

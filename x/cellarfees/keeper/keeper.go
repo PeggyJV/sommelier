@@ -2,6 +2,7 @@ package keeper
 
 import (
 	"fmt"
+	"math/big"
 
 	"github.com/tendermint/tendermint/libs/log"
 
@@ -137,4 +138,24 @@ func (k Keeper) SendPoolToAuction(ctx sdk.Context) {
 
 	// reset pool
 	k.SetCellarFeePool(ctx, types.DefaultCellarFeePool())
+}
+
+////////////////////////////////
+// Last highest reward supply //
+////////////////////////////////
+
+func (k Keeper) GetLastRewardSupplyPeak(ctx sdk.Context) sdk.Int {
+	store := ctx.KVStore(k.storeKey)
+	b := store.Get(types.LastHighestRewardSupply)
+	if b == nil {
+		panic("Last highest reward supply should not have been nil")
+	}
+	var amount big.Int
+	return sdk.NewIntFromBigInt((&amount).SetBytes(b))
+}
+
+func (k Keeper) SetLastRewardSupplyPeak(ctx sdk.Context, amount sdk.Int) {
+	store := ctx.KVStore(k.storeKey)
+	b := amount.BigInt().Bytes()
+	store.Set(types.LastHighestRewardSupply, b)
 }
