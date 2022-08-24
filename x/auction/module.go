@@ -26,10 +26,10 @@ var (
 	_ module.AppModuleSimulation = AppModule{}
 )
 
-// AppModuleBasic defines the basic application module used by the oracle module.
+// AppModuleBasic defines the basic application module used by the auction module.
 type AppModuleBasic struct{}
 
-// Name returns the oracle module's name
+// Name returns the auction module's name
 func (AppModuleBasic) Name() string {
 	return types.ModuleName
 }
@@ -37,14 +37,14 @@ func (AppModuleBasic) Name() string {
 // RegisterLegacyAminoCodec doesn't support amino
 func (AppModuleBasic) RegisterLegacyAminoCodec(cdc *codec.LegacyAmino) {}
 
-// DefaultGenesis returns default genesis state as raw bytes for the oracle
+// DefaultGenesis returns default genesis state as raw bytes for the auction
 // module.
 func (AppModuleBasic) DefaultGenesis(cdc codec.JSONCodec) json.RawMessage {
 	gs := types.DefaultGenesisState()
 	return cdc.MustMarshalJSON(&gs)
 }
 
-// ValidateGenesis performs genesis state validation for the oracle module.
+// ValidateGenesis performs genesis state validation for the auction module.
 func (AppModuleBasic) ValidateGenesis(cdc codec.JSONCodec, _ client.TxEncodingConfig, bz json.RawMessage) error {
 	var gs types.GenesisState
 	if err := cdc.UnmarshalJSON(bz, &gs); err != nil {
@@ -57,12 +57,12 @@ func (AppModuleBasic) ValidateGenesis(cdc codec.JSONCodec, _ client.TxEncodingCo
 // We don't want to support the legacy rest server here
 func (AppModuleBasic) RegisterRESTRoutes(_ client.Context, _ *mux.Router) {}
 
-// GetTxCmd returns the root tx command for the oracle module.
+// GetTxCmd returns the root tx command for the auction module.
 func (AppModuleBasic) GetTxCmd() *cobra.Command {
 	return cli.GetTxCmd()
 }
 
-// GetQueryCmd returns the root query command for the oracle module.
+// GetQueryCmd returns the root query command for the auction module.
 func (AppModuleBasic) GetQueryCmd() *cobra.Command {
 	return cli.GetQueryCmd()
 }
@@ -78,7 +78,7 @@ func (b AppModuleBasic) RegisterInterfaces(registry codectypes.InterfaceRegistry
 	types.RegisterInterfaces(registry)
 }
 
-// AppModule implements an application module for the oracle module.
+// AppModule implements an application module for the auction module.
 type AppModule struct {
 	AppModuleBasic
 	keeper     keeper.Keeper
@@ -96,16 +96,16 @@ func NewAppModule(keeper keeper.Keeper, bankKeeper types.BankKeeper, cdc codec.C
 	}
 }
 
-// Name returns the oracle module's name.
+// Name returns the auction module's name.
 func (AppModule) Name() string { return types.ModuleName }
 
 // RegisterInvariants performs a no-op.
 func (AppModule) RegisterInvariants(_ sdk.InvariantRegistry) {}
 
-// Route returns the message routing key for the oracle module.
+// Route returns the message routing key for the auction module.
 func (am AppModule) Route() sdk.Route { return sdk.NewRoute(types.RouterKey, NewHandler(am.keeper)) }
 
-// QuerierRoute returns the oracle module's querier route name.
+// QuerierRoute returns the auction module's querier route name.
 func (AppModule) QuerierRoute() string { return types.QuerierRoute }
 
 // LegacyQuerierHandler returns a nil Querier.
@@ -128,7 +128,7 @@ func (am AppModule) RegisterServices(cfg module.Configurator) {
 	types.RegisterQueryServer(cfg.QueryServer(), am.keeper)
 }
 
-// InitGenesis performs genesis initialization for the oracle module.
+// InitGenesis performs genesis initialization for the auction module.
 func (am AppModule) InitGenesis(ctx sdk.Context, cdc codec.JSONCodec, data json.RawMessage) []abci.ValidatorUpdate {
 	var genesisState types.GenesisState
 	cdc.MustUnmarshalJSON(data, &genesisState)
@@ -137,19 +137,19 @@ func (am AppModule) InitGenesis(ctx sdk.Context, cdc codec.JSONCodec, data json.
 	return []abci.ValidatorUpdate{}
 }
 
-// ExportGenesis returns the exported genesis state as raw bytes for the oracle
+// ExportGenesis returns the exported genesis state as raw bytes for the auction
 // module.
 func (am AppModule) ExportGenesis(ctx sdk.Context, cdc codec.JSONCodec) json.RawMessage {
 	genesisState := keeper.ExportGenesis(ctx, am.keeper)
 	return cdc.MustMarshalJSON(&genesisState)
 }
 
-// BeginBlock returns the begin blocker for the oracle module.
+// BeginBlock returns the begin blocker for the auction module.
 func (am AppModule) BeginBlock(ctx sdk.Context, _ abci.RequestBeginBlock) {
 	am.keeper.BeginBlocker(ctx)
 }
 
-// EndBlock returns the end blocker for the oracle module.
+// EndBlock returns the end blocker for the auction module.
 func (am AppModule) EndBlock(ctx sdk.Context, _ abci.RequestEndBlock) []abci.ValidatorUpdate {
 	am.keeper.EndBlocker(ctx)
 	return []abci.ValidatorUpdate{}
