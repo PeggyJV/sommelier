@@ -17,9 +17,9 @@ func InitGenesis(ctx sdk.Context, k Keeper, gs types.GenesisState) {
 // ExportGenesis returns the module's exported genesis.
 func ExportGenesis(ctx sdk.Context, k Keeper) types.GenesisState {
 	return types.GenesisState{
-		Params: k.GetParamSet(ctx),
-		Auctions: k.GetAuctions(ctx),
-		Bids: k.GetBids(ctx),
+		Params:      k.GetParamSet(ctx),
+		Auctions:    k.GetAllAuctions(ctx),
+		Bids:        k.GetBids(ctx),
 		TokenPrices: k.GetTokenPrices(ctx),
 	}
 }

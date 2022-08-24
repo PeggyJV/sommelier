@@ -17,7 +17,7 @@ func init() {
 	govtypes.RegisterProposalTypeCodec(&SetTokenPricesProposal{}, "sommelier/SetTokenPricesProposal")
 }
 
-func NewAddManagedCellarIDsProposal(title string, description string, tokenPrices []*TokenPrice) *SetTokenPricesProposal {
+func NewAddSetTokenPricesProposal(title string, description string, tokenPrices []*TokenPrice) *SetTokenPricesProposal {
 	return &SetTokenPricesProposal{
 		Title:       title,
 		Description: description,
