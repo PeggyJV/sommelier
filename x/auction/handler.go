@@ -10,7 +10,7 @@ import (
 	"github.com/peggyjv/sommelier/v4/x/auction/types"
 )
 
-// NewHandler returns a handler for "oracle" type messages.
+// NewHandler returns a handler for "auction" type messages.
 func NewHandler(k keeper.Keeper) sdk.Handler {
 	// TODO: fill in
 	return nil
