@@ -44,7 +44,7 @@ func GetActiveAuctionsPrefix() []byte {
 func GetActiveAuctionKey(id uint32) []byte {
 	b := make([]byte, 4)
 	binary.BigEndian.PutUint32(b, id)
-	return append([]byte{ActiveAuctionsPrefix}, b...)
+	return append(GetActiveAuctionsPrefix(), b...)
 }
 
 // GetEndedAuctionsPrefix returns the key prefix for ended auctions
@@ -56,7 +56,7 @@ func GetEndedAuctionsPrefix() []byte {
 func GetEndedAuctionKey(id uint32) []byte {
 	b := make([]byte, 4)
 	binary.BigEndian.PutUint32(b, id)
-	return append([]byte{EndedAuctionsPrefix}, b...)
+	return append(GetEndedAuctionsPrefix(), b...)
 }
 
 // GetBidsByAuctionPrefix returns the key prefix for bids
@@ -64,3 +64,19 @@ func GetBidsByAuctionPrefix() []byte {
 	return []byte{BidsByAuctionPrefix}
 }
 
+// GetBidsByAuctionIdPrefix returns the bids for an auction id
+func GetBidsByAuctionIdPrefix(auction_id uint32) []byte{
+	b := make([]byte, 4)
+	binary.BigEndian.PutUint32(b, auction_id)
+	return append(GetBidsByAuctionPrefix(), b...)
+}
+
+// GetBidKey returns the bid for an auction and bid id
+func GetBidKey(auction_id uint32, bid_id uint64) []byte{
+	b := make([]byte, 8)
+	binary.BigEndian.PutUint64(b, bid_id)
+	return append(GetBidsByAuctionIdPrefix(auction_id), b...)
+}
+
+
+// TODO: token price prefix
