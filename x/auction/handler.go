@@ -17,8 +17,13 @@ func NewHandler(k keeper.Keeper) sdk.Handler {
 }
 
 func NewSetTokenPricesProposalHandler(k keeper.Keeper) govtypes.Handler {
-	// TODO: fill in
-	return nil
-}
+	return func(ctx sdk.Context, content govtypes.Content) error {
+		switch c := content.(type) {
+		case *types.SetTokenPricesProposal:
+			return keeper.HandleSetTokenPricesProposal(ctx, k, *c)
 
-// TODO: Fill our remaining handler functions
+		default:
+			return sdkerrors.Wrapf(sdkerrors.ErrUnknownRequest, "unrecognized proposal content type: %T", c)
+		}
+	}
+}
