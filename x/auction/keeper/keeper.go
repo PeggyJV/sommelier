@@ -51,8 +51,41 @@ func (k Keeper) GetParamSet(ctx sdk.Context) types.Params {
 }
 
 // setParams sets the parameters in the store
-func (k Keeper) setParams(ctx sdk.Context, params types.Params) {
+func (k Keeper) SetParams(ctx sdk.Context, params types.Params) {
 	k.paramSpace.SetParamSet(ctx, &params)
+}
+
+// GetAuctions returns all stored auctions
+func (k Keeper) GetAuctions(ctx sdk.Context) []*types.Auction  {
+	// TODO: Fill in
+	return nil
+}
+
+// SetAuctions sets the auctions specified 
+func (k Keeper) SetAuctions(ctx sdk.Context, auctions[] *types.Auction) {
+	// TODO: Fill in
+}
+
+// GetBids returns all stored bids
+func (k Keeper) GetBids(ctx sdk.Context) []*types.Bid  {
+	// TODO: Fill in
+	return nil
+}
+
+// SetBids sets the bids specified 
+func (k Keeper) SetBids(ctx sdk.Context, bids[] *types.Bid) {
+	// TODO: Fill in
+}
+
+// GetTokenPrices returns all stored token prices
+func (k Keeper) GetTokenPrices(ctx sdk.Context) []*types.TokenPrice  {
+	// TODO: Fill in
+	return nil
+}
+
+// SetTokenPrices sets the token prices specified 
+func (k Keeper) SetTokenPrices(ctx sdk.Context, tokenPrices[] *types.TokenPrice) {
+	// TODO: Fill in
 }
 
 // TODO: implement the keeper functions!
