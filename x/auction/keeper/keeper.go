@@ -1,12 +1,15 @@
 package keeper
 
 import (
+	"bytes"
+
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
 	"github.com/peggyjv/sommelier/v4/x/auction/types"
 	"github.com/tendermint/tendermint/libs/log"
+	"encoding/binary"
 )
 
 // Keeper of the auction store
@@ -60,35 +63,95 @@ func (k Keeper) SetParams(ctx sdk.Context, params types.Params) {
 // Auctions //
 //////////////
 
-// GetAllAuctions returns all stored auctions
-func (k Keeper) GetAllAuctions(ctx sdk.Context) []*types.Auction {
-	// TODO: Fill in
-	return nil
+// GetActiveAuctionById returns a specific active auction
+func (k Keeper) GetActiveAuctionById(ctx sdk.Context, id uint32) (types.Auction, bool) {
+	store := ctx.KVStore(k.storeKey)
+
+	bz := store.Get(types.GetActiveAuctionKey(id))
+	if len(bz) != 0 {
+		return types.Auction{}, false
+	}
+
+	var auction types.Auction
+	k.cdc.MustUnmarshal(bz, &auction)
+	return auction, true
 }
 
-// GetAuctionById returns a specific auction
-func (k Keeper) GetAuctionsById(ctx sdk.Context, id uint32) *types.Auction {
-	// TODO: Fill in
-	return nil
+// DeleteActiveAuction deletes the active auction
+func (k Keeper) DeleteActiveAuction(ctx sdk.Context, id uint32) {
+	ctx.KVStore(k.storeKey).Delete(types.GetActiveAuctionKey(id))
 }
 
-// GetAllActiveAuctions returns all active auctions
-func (k Keeper) GetAllActiveAuctions(ctx sdk.Context) []*types.Auction {
-	// TODO: Fill in
-	return nil
+// DeleteEndedAuction deletes the ended auction
+func (k Keeper) DeleteEndedAuction(ctx sdk.Context, id uint32) {
+	ctx.KVStore(k.storeKey).Delete(types.GetEndedAuctionKey(id))
 }
 
+// GetEndedAuctionById returns a specific active auction
+func (k Keeper) GetEndedAuctionById(ctx sdk.Context, id uint32) (types.Auction, bool) {
+	store := ctx.KVStore(k.storeKey)
 
-// GetAllInactiveAuctions returns all inactive auctions (that have not been pruned)
-func (k Keeper) GetAllInactiveAuctions(ctx sdk.Context, id uint32) []*types.Auction {
-	// TODO: Fill in
-	return nil
+	bz := store.Get(types.GetEndedAuctionKey(id))
+	if len(bz) != 0 {
+		return types.Auction{}, false
+	}
+
+	var auction types.Auction
+	k.cdc.MustUnmarshal(bz, &auction)
+	return auction, true
 }
 
+// IterateAuctions iterates over all auctions in the store for a given prefix
+func (k Keeper) IterateAuctions(ctx sdk.Context, auctionTypePrefix []byte, handler func(auctionId uint32, auction types.Auction) (stop bool)) {
+	store := ctx.KVStore(k.storeKey)
+	iter := sdk.KVStorePrefixIterator(store, auctionTypePrefix)
+	defer iter.Close()
+	for ; iter.Valid(); iter.Next() {
+		key := bytes.NewBuffer(iter.Key())
+		key.Next(1) // trim prefix byte
 
-// SetAuctions sets the auctions specified
-func (k Keeper) SetAuctions(ctx sdk.Context, auctions []*types.Auction) {
-	// TODO: Fill in
+		auctionId := binary.BigEndian.Uint32(key.Bytes())
+
+		var auction types.Auction
+		k.cdc.MustUnmarshal(iter.Value(), &auction)
+		if handler(auctionId, auction) {
+			break
+		}
+	}
+}
+
+// GetActiveAuctions returns all active auctions
+func (k Keeper) GetActiveAuctions(ctx sdk.Context) []*types.Auction {
+	var auctions []*types.Auction
+	k.IterateAuctions(ctx, types.GetActiveAuctionsPrefix(), func(auctionId uint32, auction types.Auction) (stop bool) {
+		auctions = append(auctions, &auction)
+		return false
+	})
+
+	return auctions
+}
+
+// GetEndedAuctions returns all inactive auctions (that have not been pruned)
+func (k Keeper) GetEndedAuctions(ctx sdk.Context, id uint32) []*types.Auction {
+	var auctions []*types.Auction
+	k.IterateAuctions(ctx, types.GetEndedAuctionsPrefix(), func(auctionId uint32, auction types.Auction) (stop bool) {
+		auctions = append(auctions, &auction)
+		return false
+	})
+
+	return auctions
+}
+
+// SetActiveAuction sets the auction specified
+func (k Keeper) SetActiveAuction(ctx sdk.Context, auction types.Auction) {
+	bz := k.cdc.MustMarshal(&auction)
+	ctx.KVStore(k.storeKey).Set(types.GetActiveAuctionKey(auction.Id), bz)
+}
+
+// SetEndedAuction sets the auction specified
+func (k Keeper) SetEndedAuction(ctx sdk.Context, auction types.Auction) {
+	bz := k.cdc.MustMarshal(&auction)
+	ctx.KVStore(k.storeKey).Set(types.GetEndedAuctionKey(auction.Id), bz)
 }
 
 // BeginAuction starts a new auction for a single denomination
@@ -97,8 +160,10 @@ func (k Keeper) BeginAuction(ctx sdk.Context,
 	initialDecreaseRate float32,
 	blockDecreaseInterval uint16,
 	fundingModuleAccount authtypes.ModuleAccountI,
-	proceeedsModuleAccount authtypes.AccountI) error {
+	proceeedsModuleAccount authtypes.ModuleAccountI) error {
 	// TODO: Verify inputs as first step, return error if problematic
+	// Verify proceeds module account
+	// Verify no ongoing auction for denom
 
 	// TODO: Fill in
 
@@ -111,9 +176,6 @@ func (k Keeper) BeginAuction(ctx sdk.Context,
 
 // GetBids returns all stored bids (that have not been pruned)
 func (k Keeper) GetBids(ctx sdk.Context) []*types.Bid {
-	store := ctx.KVStore(k.storeKey)
-
-	
 	// TODO: Fill in
 	return nil
 }

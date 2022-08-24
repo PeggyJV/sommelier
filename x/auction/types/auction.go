@@ -100,6 +100,14 @@ func (b *Bid) Equals(other Bid) bool {
 		return false
 	}
 
+	if !b.FulfilledAmount.IsEqual(other.FulfilledAmount) {
+		return false
+	}
+
+	if !b.FulfillmentPrice.IsEqual(other.FulfillmentPrice) {
+		return false
+	}
+
 	return true
 }
 
@@ -120,32 +128,14 @@ func (b *Bid) ValidateBasic() error {
 		return fmt.Errorf("minimum amount must be a positive amount of auctioned coins")
 	}
 
+	// TODO: fulfilled bid updates
+
 	// TODO(bolten): is it possible to check the denom correctly here?
 
 	if _, err := sdk.AccAddressFromBech32(b.Bidder); err != nil {
 		return sdkerrors.Wrap(sdkerrors.ErrInvalidAddress, err.Error())
 	}
 
-	return nil
-}
-
-func (f *FulfilledBid) Equals(other FulfilledBid) bool {
-	if !f.Bid.Equals(*other.Bid) {
-		return false
-	}
-
-	if !f.FulfilledAmount.IsEqual(other.FulfilledAmount) {
-		return false
-	}
-
-	if !f.FulfillmentPrice.IsEqual(other.FulfillmentPrice) {
-		return false
-	}
-
-	return true
-}
-
-func (f *FulfilledBid) ValidateBasic() error {
 	return nil
 }
 

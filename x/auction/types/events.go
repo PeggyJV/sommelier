@@ -6,15 +6,11 @@ const (
 	
 	EventTypeBid                  = "bid"
 
-	AttributeKeyBidId         = "bid_id"
+	AttributeKeyBidId             = "bid_id"
 	AttributeKeyAuctionId         = "auction_id"
 	AttributeKeyBidder			  = "max_bid"
 	AttributeKeyMinimumAmount     = "minimum_amount"
 	AttributeKeySigner            = "signer"
-	
-
-	EventTypeFulfilledBid         = "fulfilled_bid"
-
 	AttributeKeyFulfilledPrice    = "fulfilled_price"
 	AttributeKeyFulfilledAmount   = "fulfilled_amount"
 
