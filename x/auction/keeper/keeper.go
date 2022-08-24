@@ -111,12 +111,20 @@ func (k Keeper) BeginAuction(ctx sdk.Context,
 
 // GetBids returns all stored bids (that have not been pruned)
 func (k Keeper) GetBids(ctx sdk.Context) []*types.Bid {
+	store := ctx.KVStore(k.storeKey)
+
+	
 	// TODO: Fill in
 	return nil
 }
 
 // SetBids sets the bids specified
 func (k Keeper) SetBids(ctx sdk.Context, bids []*types.Bid) {
+	// TODO: Fill in
+}
+
+// SetBid sets the bid specified
+func (k Keeper) SetBid(ctx sdk.Context, bids types.Bid) {
 	// TODO: Fill in
 }
 

@@ -19,14 +19,14 @@ const (
 	_ = byte(iota)
 
 	// CorkForAddressKeyPrefix - <prefix><val_address><address> -> <cork>
-	CurrentAuctionsPrefix // key for corks
+	CurrentAuctionsPrefix 
 
-	//
+	// 
 	EndedAuctionsPrefix
 
 	// <prefix><denom>
 	BidsPrefix
 
-	//
+	// <prefix><denom>
 	TokenPricesPrefix
 )
