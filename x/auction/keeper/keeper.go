@@ -6,6 +6,7 @@ import (
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
 	"github.com/peggyjv/sommelier/v4/x/auction/types"
 	"github.com/tendermint/tendermint/libs/log"
+	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 )
 
 // Keeper of the auction store
@@ -55,6 +56,10 @@ func (k Keeper) SetParams(ctx sdk.Context, params types.Params) {
 	k.paramSpace.SetParamSet(ctx, &params)
 }
 
+//////////////
+// Auctions //
+//////////////
+
 // GetAuctions returns all stored auctions
 func (k Keeper) GetAuctions(ctx sdk.Context) []*types.Auction  {
 	// TODO: Fill in
@@ -65,6 +70,24 @@ func (k Keeper) GetAuctions(ctx sdk.Context) []*types.Auction  {
 func (k Keeper) SetAuctions(ctx sdk.Context, auctions[] *types.Auction) {
 	// TODO: Fill in
 }
+
+// BeginAuction starts a new auction for a single denomination
+func (k Keeper) BeginAuction(ctx sdk.Context, 
+	startingAmount sdk.Coin, 
+	initialDecreaseRate float32, 
+	blockDecreaseInterval uint16, 
+	fundingModuleAccount authtypes.ModuleAccountI, 
+	proceeedsModuleAccount authtypes.AccountI) error {
+	// TODO: Verify inputs as first step, return error if problematic
+
+	// TODO: Fill in
+
+	return nil
+}
+
+//////////////
+//   Bids   //
+//////////////
 
 // GetBids returns all stored bids
 func (k Keeper) GetBids(ctx sdk.Context) []*types.Bid  {
@@ -77,6 +100,10 @@ func (k Keeper) SetBids(ctx sdk.Context, bids[] *types.Bid) {
 	// TODO: Fill in
 }
 
+/////////////////
+// TokenPrices //
+/////////////////
+
 // GetTokenPrices returns all stored token prices
 func (k Keeper) GetTokenPrices(ctx sdk.Context) []*types.TokenPrice  {
 	// TODO: Fill in
@@ -87,5 +114,6 @@ func (k Keeper) GetTokenPrices(ctx sdk.Context) []*types.TokenPrice  {
 func (k Keeper) SetTokenPrices(ctx sdk.Context, tokenPrices[] *types.TokenPrice) {
 	// TODO: Fill in
 }
+
 
 // TODO: implement the keeper functions!
