@@ -17,6 +17,7 @@ message Auction {
   uint32 block_decrease_interval = 7;
   cosmos.base.v1beta1.Coin current_price = 8 [ (gogoproto.nullable) = false ];
   cosmos.base.v1beta1.Coin amount_remaining = 9 [ (gogoproto.nullable) = false ];
+  string proceeds_module_account = 10;
 }
 
 message Bid {
@@ -25,12 +26,8 @@ message Bid {
   string bidder = 3;
   cosmos.base.v1beta1.Coin max_bid = 4 [ (gogoproto.nullable) = false ];
   cosmos.base.v1beta1.Coin minimum_amount = 5 [ (gogoproto.nullable) = false ];
-}
-
-message FulfilledBid {
-  Bid bid = 1;
-  cosmos.base.v1beta1.Coin fulfilled_amount = 2 [ (gogoproto.nullable) = false ];
-  cosmos.base.v1beta1.Coin fulfillment_price = 3 [ (gogoproto.nullable) = false ];
+  cosmos.base.v1beta1.Coin fulfilled_amount = 6 [ (gogoproto.nullable) = false ];
+  cosmos.base.v1beta1.Coin fulfillment_price = 7 [ (gogoproto.nullable) = false ];
 }
 
 message TokenPrice {

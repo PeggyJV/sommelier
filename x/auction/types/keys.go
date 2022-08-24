@@ -1,5 +1,9 @@
 package types
 
+import (
+	"encoding/binary"
+)
+
 const (
 	// ModuleName is the module name constant used in many places
 	ModuleName = "auction"
@@ -18,15 +22,45 @@ const (
 const (
 	_ = byte(iota)
 
-	// CorkForAddressKeyPrefix - <prefix><val_address><address> -> <cork>
-	CurrentAuctionsPrefix 
+	// <prefix><auction_id> 
+	ActiveAuctionsPrefix 
 
-	// 
+	// <prefix><auction_id>
 	EndedAuctionsPrefix
 
-	// <prefix><denom>
-	BidsPrefix
+	// <prefix><auction_id><bid_id>
+	BidsByAuctionPrefix
 
 	// <prefix><denom>
 	TokenPricesPrefix
 )
+
+// GetActiveAuctionsPrefix returns the key prefix for active auctions
+func GetActiveAuctionsPrefix() []byte {
+	return []byte{ActiveAuctionsPrefix}
+}
+
+// GetActiveAuctionKey returns the key for an active auction
+func GetActiveAuctionKey(id uint32) []byte {
+	b := make([]byte, 4)
+	binary.BigEndian.PutUint32(b, id)
+	return append([]byte{ActiveAuctionsPrefix}, b...)
+}
+
+// GetEndedAuctionsPrefix returns the key prefix for ended auctions
+func GetEndedAuctionsPrefix() []byte {
+	return []byte{EndedAuctionsPrefix}
+}
+
+// GetEndedAuctionsKey returns the key for an ended auction
+func GetEndedAuctionKey(id uint32) []byte {
+	b := make([]byte, 4)
+	binary.BigEndian.PutUint32(b, id)
+	return append([]byte{EndedAuctionsPrefix}, b...)
+}
+
+// GetBidsByAuctionPrefix returns the key prefix for bids
+func GetBidsByAuctionPrefix() []byte {
+	return []byte{BidsByAuctionPrefix}
+}
+
