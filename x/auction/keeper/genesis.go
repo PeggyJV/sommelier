@@ -24,6 +24,10 @@ func InitGenesis(ctx sdk.Context, k Keeper, gs types.GenesisState) {
 	for _, tokenPrice := range gs.TokenPrices {
 		k.setTokenPrice(ctx, *tokenPrice)
 	}
+
+	k.setLastAuctionId(gs.LastAuctionId)
+	k.setLastBidId(gs.LastBidId)
+	k.setLastTokenPriceUpdateBlock(gs.LastTokenPriceUpdateBlock)
 }
 
 // ExportGenesis returns the module's exported genesis.
@@ -32,10 +36,14 @@ func ExportGenesis(ctx sdk.Context, k Keeper) types.GenesisState {
 	auctions = append(auctions, k.GetActiveAuctions(ctx)...)
 	auctions = append(auctions, k.GetEndedAuctions(ctx)...)
 
+	// TODO: Recompile proto 
 	return types.GenesisState{
-		Params:      k.GetParamSet(ctx),
-		Auctions:    auctions,
-		Bids:        k.GetBids(ctx),
-		TokenPrices: k.GetTokenPrices(ctx),
+		Params:      				k.GetParamSet(ctx),
+		Auctions:    				auctions,
+		Bids:        				k.GetBids(ctx),
+		TokenPrices: 				k.GetTokenPrices(ctx),
+		LastAuctionId:  			k.GetLastAuctionId(),
+		LastBidId:      			k.GetLastBidId(),
+		LastTokenPriceUpdateBlock:  k.GetLastTokenPriceUpdateBlock(),
 	}
 }
