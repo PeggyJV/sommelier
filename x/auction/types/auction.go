@@ -44,6 +44,10 @@ func (a *Auction) Equals(other Auction) bool {
 		return false
 	}
 
+	if a.ProceedsModuleAccount != other.ProceedsModuleAccount {
+		return false
+	}
+
 	return true
 }
 
@@ -56,24 +60,20 @@ func (a *Auction) ValidateBasic() error {
 		return fmt.Errorf("minimum amount must be a positive amount of coins")
 	}
 
-	if a.StartBlock <= 0 {
-		return fmt.Errorf("start block must be a positive")
-	}
-
-	if a.EndBlock <= 0 {
-		return fmt.Errorf("end block must be a positive")
-	}
-
-	if a.StartBlock > a.EndBlock {
-		return fmt.Errorf("start block must be smaller or equal to end block")
+	if a.StartBlock == 0 {
+		return fmt.Errorf("start block must be non zero")
 	}
 
 	if a.InitialDecreaseRate <= 0 || a.InitialDecreaseRate >= 1 {
 		return fmt.Errorf("initial decrease rate must be a float less than one and greater than zero")
 	}
 
-	if a.CurrentDecreaseRate < 0 || a.CurrentDecreaseRate > 1 {
+	if a.CurrentDecreaseRate <= 0 || a.CurrentDecreaseRate >= 1 {
 		return fmt.Errorf("current decrease rate must be a float less than or equal to one and greater than or equal to zero")
+	}
+
+	if a.ProceedsModuleAccount == "" {
+		return fmt.Errorf("proceeds module account cannot be empty")
 	}
 
 	return nil
@@ -128,8 +128,14 @@ func (b *Bid) ValidateBasic() error {
 		return fmt.Errorf("minimum amount must be a positive amount of auctioned coins")
 	}
 
-	// TODO: fulfilled bid updates
+	if b.FulfilledAmount.Amount.IsNegative() {
+		return fmt.Errorf("fulfillment amount must be non negative")
+	}
 
+	if !b.FulfillmentPrice.Amount.IsPositive() {
+		return fmt.Errorf("fulfillment price must be positive")
+	}
+	
 	// TODO(bolten): is it possible to check the denom correctly here?
 
 	if _, err := sdk.AccAddressFromBech32(b.Bidder); err != nil {
@@ -156,8 +162,8 @@ func (t *TokenPrice) ValidateBasic() error {
 		return fmt.Errorf("denom must be a non empty string")
 	}
 
-	if t.UsdPrice.IsNegative() {
-		return fmt.Errorf("price must be greater than or equal to 0")
+	if !t.UsdPrice.IsPositive() {
+		return fmt.Errorf("price must be greater than 0")
 	}
 
 	return nil
