@@ -33,6 +33,15 @@ const (
 
 	// <prefix><denom>
 	TokenPricesPrefix
+
+	// <prefix>
+	LastAuctionIdPrefix
+
+	// <prefix>
+	LastBidIdPrefix
+
+	// <prefix>
+	LastTokenPriceUpdateBlock
 )
 
 // GetActiveAuctionsPrefix returns the key prefix for active auctions
@@ -86,4 +95,19 @@ func GetTokenPricesPrefix() []byte {
 // GetTokenPriceKey returns the key for a token price
 func GetTokenPriceKey(denom string) []byte {
 	return append(GetTokenPricesPrefix(), []byte(denom)...)
+}
+
+// GetLastAuctionIdKey returns the key prefix for the last stored auction id
+func GetLastAuctionIdKey() []byte {
+	return []byte{LastAuctionIdPrefix}
+}
+
+// GetLastBidIdKey returns the key prefix for the last stored bid id
+func GetLastBidIdKey() []byte {
+	return []byte{LastBidIdPrefix}
+}
+
+// GetLastTokenPriceBlock returns the key prefix for the last time the token prices were updated
+func GetLastTokenPriceBlock() []byte {
+	return []byte{LastTokenPriceUpdateBlock}
 }

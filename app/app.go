@@ -367,7 +367,8 @@ func NewSommelierApp(
 
 	app.AuctionKeeper = auctionkeeper.NewKeeper(
 		appCodec, keys[auctiontypes.StoreKey], app.GetSubspace(auctiontypes.ModuleName),
-		app.BankKeeper,
+		app.BankKeeper, app.ModuleAccountAddressesToNames([]string{cellarfeestypes.ModuleName}), 
+		app.ModuleAccountAddressesToNames([]string{cellarfeestypes.ModuleName}),
 	)
 
 	app.GravityKeeper = *app.GravityKeeper.SetHooks(

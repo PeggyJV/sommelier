@@ -72,6 +72,22 @@ func (a *Auction) ValidateBasic() error {
 		return fmt.Errorf("current decrease rate must be a float less than or equal to one and greater than or equal to zero")
 	}
 
+	if a.BlockDecreaseInterval == 0 {
+		return fmt.Errorf("block decrease interval cannot be 0")
+	}
+
+	if a.CurrentPrice.Denom == "" {
+		return fmt.Errorf("current price denom must be a non empty string")
+	}
+
+	if !a.CurrentPrice.IsPositive() {
+		return fmt.Errorf("current price must be greater than 0")
+	}
+
+	if a.AmountRemaining.Denom == "" {
+		return fmt.Errorf("amount remaining denom must be a non empty string")
+	}
+
 	if a.ProceedsModuleAccount == "" {
 		return fmt.Errorf("proceeds module account cannot be empty")
 	}
