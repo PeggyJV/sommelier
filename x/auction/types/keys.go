@@ -72,11 +72,18 @@ func GetBidsByAuctionIdPrefix(auction_id uint32) []byte{
 }
 
 // GetBidKey returns the bid for an auction and bid id
-func GetBidKey(auction_id uint32, bid_id uint64) []byte{
+func GetBidKey(auctionId uint32, bidId uint64) []byte{
 	b := make([]byte, 8)
-	binary.BigEndian.PutUint64(b, bid_id)
-	return append(GetBidsByAuctionIdPrefix(auction_id), b...)
+	binary.BigEndian.PutUint64(b, bidId)
+	return append(GetBidsByAuctionIdPrefix(auctionId), b...)
 }
 
+// GetTokenPricesPrefix returns the key prefix for token prices
+func GetTokenPricesPrefix() []byte {
+	return []byte{TokenPricesPrefix}
+}
 
-// TODO: token price prefix
+// GetTokenPriceKey returns the key for a token price
+func GetTokenPriceKey(denom string) []byte {
+	return append(GetTokenPricesPrefix(), []byte(denom)...)
+}

@@ -55,7 +55,7 @@ func (k Keeper) GetParamSet(ctx sdk.Context) types.Params {
 }
 
 // setParams sets the parameters in the store
-func (k Keeper) SetParams(ctx sdk.Context, params types.Params) {
+func (k Keeper) setParams(ctx sdk.Context, params types.Params) {
 	k.paramSpace.SetParamSet(ctx, &params)
 }
 
@@ -78,12 +78,12 @@ func (k Keeper) GetActiveAuctionById(ctx sdk.Context, id uint32) (types.Auction,
 }
 
 // DeleteActiveAuction deletes the active auction
-func (k Keeper) DeleteActiveAuction(ctx sdk.Context, id uint32) {
+func (k Keeper) deleteActiveAuction(ctx sdk.Context, id uint32) {
 	ctx.KVStore(k.storeKey).Delete(types.GetActiveAuctionKey(id))
 }
 
 // DeleteEndedAuction deletes the ended auction
-func (k Keeper) DeleteEndedAuction(ctx sdk.Context, id uint32) {
+func (k Keeper) deleteEndedAuction(ctx sdk.Context, id uint32) {
 	ctx.KVStore(k.storeKey).Delete(types.GetEndedAuctionKey(id))
 }
 
@@ -101,7 +101,7 @@ func (k Keeper) GetEndedAuctionById(ctx sdk.Context, id uint32) (types.Auction, 
 	return auction, true
 }
 
-// IterateAuctions iterates over all auctions in the store for a given prefix
+// iterateAuctions iterates over all auctions in the store for a given prefix
 func (k Keeper) IterateAuctions(ctx sdk.Context, auctionTypePrefix []byte, handler func(auctionId uint32, auction types.Auction) (stop bool)) {
 	store := ctx.KVStore(k.storeKey)
 	iter := sdk.KVStorePrefixIterator(store, auctionTypePrefix)
@@ -132,7 +132,7 @@ func (k Keeper) GetActiveAuctions(ctx sdk.Context) []*types.Auction {
 }
 
 // GetEndedAuctions returns all inactive auctions (that have not been pruned)
-func (k Keeper) GetEndedAuctions(ctx sdk.Context, id uint32) []*types.Auction {
+func (k Keeper) GetEndedAuctions(ctx sdk.Context) []*types.Auction {
 	var auctions []*types.Auction
 	k.IterateAuctions(ctx, types.GetEndedAuctionsPrefix(), func(auctionId uint32, auction types.Auction) (stop bool) {
 		auctions = append(auctions, &auction)
@@ -143,13 +143,13 @@ func (k Keeper) GetEndedAuctions(ctx sdk.Context, id uint32) []*types.Auction {
 }
 
 // SetActiveAuction sets the auction specified
-func (k Keeper) SetActiveAuction(ctx sdk.Context, auction types.Auction) {
+func (k Keeper) setActiveAuction(ctx sdk.Context, auction types.Auction) {
 	bz := k.cdc.MustMarshal(&auction)
 	ctx.KVStore(k.storeKey).Set(types.GetActiveAuctionKey(auction.Id), bz)
 }
 
 // SetEndedAuction sets the auction specified
-func (k Keeper) SetEndedAuction(ctx sdk.Context, auction types.Auction) {
+func (k Keeper) setEndedAuction(ctx sdk.Context, auction types.Auction) {
 	bz := k.cdc.MustMarshal(&auction)
 	ctx.KVStore(k.storeKey).Set(types.GetEndedAuctionKey(auction.Id), bz)
 }
@@ -174,39 +174,138 @@ func (k Keeper) BeginAuction(ctx sdk.Context,
 //   Bids   //
 //////////////
 
+// IterateBids iterates over all bids in the store 
+func (k Keeper) IterateBids(ctx sdk.Context, handler func(bidId uint64, bid types.Bid) (stop bool)) {
+	store := ctx.KVStore(k.storeKey)
+	iter := sdk.KVStorePrefixIterator(store, types.GetBidsByAuctionPrefix())
+	defer iter.Close()
+	for ; iter.Valid(); iter.Next() {
+		key := bytes.NewBuffer(iter.Key())
+		key.Next(1) // trim prefix byte
+		key.Next(4) // trim auction bytes
+
+		bidId := binary.BigEndian.Uint64(key.Bytes())
+
+		var bid types.Bid
+		k.cdc.MustUnmarshal(iter.Value(), &bid)
+		if handler(bidId, bid) {
+			break
+		}
+	}
+}
+
+// IterateBidsByAuction iterates over all bids in the store for a given auction
+func (k Keeper) IterateBidsByAuction(ctx sdk.Context, auctionId uint32, handler func(bidId uint64, bid types.Bid) (stop bool)) {
+	store := ctx.KVStore(k.storeKey)
+	iter := sdk.KVStorePrefixIterator(store, types.GetBidsByAuctionIdPrefix(auctionId))
+	defer iter.Close()
+	for ; iter.Valid(); iter.Next() {
+		key := bytes.NewBuffer(iter.Key())
+		key.Next(1) // trim prefix byte
+		key.Next(4) // trim auction bytes
+
+		bidId := binary.BigEndian.Uint64(key.Bytes())
+
+		var bid types.Bid
+		k.cdc.MustUnmarshal(iter.Value(), &bid)
+		if handler(bidId, bid) {
+			break
+		}
+	}
+}
+
 // GetBids returns all stored bids (that have not been pruned)
 func (k Keeper) GetBids(ctx sdk.Context) []*types.Bid {
-	// TODO: Fill in
-	return nil
+	var bids []*types.Bid
+	k.IterateBids(ctx, func(bidId uint64, bid types.Bid) (stop bool) {
+		bids = append(bids, &bid)
+		return false
+	})
+
+	return bids
 }
 
-// SetBids sets the bids specified
-func (k Keeper) SetBids(ctx sdk.Context, bids []*types.Bid) {
-	// TODO: Fill in
-}
+// GetBidsByAuctionId returns all stored bids for an auction id (that have not been pruned)
+func (k Keeper) GetBidsByAuctionId(ctx sdk.Context, auctionId uint32) []*types.Bid {
+	var bids []*types.Bid
+	k.IterateBidsByAuction(ctx, auctionId, func(bidId uint64, bid types.Bid) (stop bool) {
+		bids = append(bids, &bid)
+		return false
+	})
 
-// SetBid sets the bid specified
-func (k Keeper) SetBid(ctx sdk.Context, bids types.Bid) {
-	// TODO: Fill in
+	return bids
 }
 
 // GetBid returns a specified bid by its id (if it has not been pruned)
-func (k Keeper) GetBid(ctx sdk.Context, id uint64) *types.Bid {
-	// TODO: Fill in
-	return nil
+func (k Keeper) GetBid(ctx sdk.Context, auctionId uint32, bidId uint64) (types.Bid, bool) {
+	store := ctx.KVStore(k.storeKey)
+
+	bz := store.Get(types.GetBidKey(auctionId, bidId))
+	if len(bz) != 0 {
+		return types.Bid{}, false
+	}
+
+	var bid types.Bid
+	k.cdc.MustUnmarshal(bz, &bid)
+	return bid, true
+}
+
+// SetBid sets the bid specified
+func (k Keeper) setBid(ctx sdk.Context, bid types.Bid) {
+	bz := k.cdc.MustMarshal(&bid)
+	ctx.KVStore(k.storeKey).Set(types.GetBidKey(bid.GetAuctionId(), bid.GetId()), bz)
 }
 
 /////////////////
 // TokenPrices //
 /////////////////
 
-// GetTokenPrices returns all stored token prices
-func (k Keeper) GetTokenPrices(ctx sdk.Context) []*types.TokenPrice {
-	// TODO: Fill in
-	return nil
+// IterateTokenPrices iterates over all token prices in the store 
+func (k Keeper) IterateTokenPrices(ctx sdk.Context, handler func(denom string, tokenPrice types.TokenPrice) (stop bool)) {
+	store := ctx.KVStore(k.storeKey)
+	iter := sdk.KVStorePrefixIterator(store, types.GetTokenPricesPrefix())
+	defer iter.Close()
+	for ; iter.Valid(); iter.Next() {
+		key := bytes.NewBuffer(iter.Key())
+		key.Next(1) // trim prefix byte
+
+		denom := string(key.Bytes())
+
+		var tokenPrice types.TokenPrice
+		k.cdc.MustUnmarshal(iter.Value(), &tokenPrice)
+		if handler(denom, tokenPrice) {
+			break
+		}
+	}
 }
 
-// SetTokenPrices sets the token prices specified
-func (k Keeper) SetTokenPrices(ctx sdk.Context, tokenPrices []*types.TokenPrice) {
-	// TODO: Fill in
+// GetTokenPrices returns all stored token prices
+func (k Keeper) GetTokenPrices(ctx sdk.Context) []*types.TokenPrice {
+	var tokenPrices []*types.TokenPrice
+	k.IterateTokenPrices(ctx, func(denom string, tokenPrice types.TokenPrice) (stop bool) {
+		tokenPrices = append(tokenPrices, &tokenPrice)
+		return false
+	})
+
+	return tokenPrices
+}
+
+// GetTokenPrice returns the stored token price
+func (k Keeper) GetTokenPrice(ctx sdk.Context, denom string) (types.TokenPrice, bool) {
+	store := ctx.KVStore(k.storeKey)
+
+	bz := store.Get(types.GetTokenPriceKey(denom))
+	if len(bz) != 0 {
+		return types.TokenPrice{}, false
+	}
+
+	var tokenPrice types.TokenPrice
+	k.cdc.MustUnmarshal(bz, &tokenPrice)
+	return tokenPrice, true
+}
+
+// SetTokenPrice sets the token price specified
+func (k Keeper) setTokenPrice(ctx sdk.Context, tokenPrice types.TokenPrice) {
+	bz := k.cdc.MustMarshal(&tokenPrice)
+	ctx.KVStore(k.storeKey).Set(types.GetTokenPriceKey(tokenPrice.GetDenom()), bz)
 }
