@@ -21,6 +21,7 @@ func ParamKeyTable() paramtypes.KeyTable {
 // DefaultParams returns default auction parameters
 func DefaultParams() Params {
 	return Params{
+		// TODO: discuss if 2 weeks to too short
 		PriceMaxBlockAge: 201600, // roughly two weeks based on 6 second blocks
 	}
 }
