@@ -8,10 +8,12 @@ import (
 
 // BeginBlocker is called at the beginning of every block
 func (k Keeper) BeginBlocker(ctx sdk.Context) {
-	// Step function for auction price updates
+	// TODO Step function for auction price updates
+
+	// TODO: do we need to do anything with proposal voting here?
 }
 
 // EndBlocker is called at the end of every block
 func (k Keeper) EndBlocker(ctx sdk.Context) {
-	// End Auction that have no funds left
+	// TODO End Auction that have no funds left
 }
