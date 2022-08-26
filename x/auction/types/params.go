@@ -18,7 +18,7 @@ func ParamKeyTable() paramtypes.KeyTable {
 	return paramtypes.NewKeyTable().RegisterParamSet(&Params{})
 }
 
-// DefaultParams returns default oracle parameters
+// DefaultParams returns default auction parameters
 func DefaultParams() Params {
 	return Params{
 		PriceMaxBlockAge: 201600, // roughly two weeks based on 6 second blocks
@@ -32,7 +32,7 @@ func (p *Params) ParamSetPairs() paramtypes.ParamSetPairs {
 	}
 }
 
-// ValidateBasic performs basic validation on oracle parameters.
+// ValidateBasic performs basic validation on auction parameters.
 func (p *Params) ValidateBasic() error {
 	if err := validatePriceMaxBlockAge(p.PriceMaxBlockAge); err != nil {
 		return err
