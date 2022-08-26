@@ -11,7 +11,7 @@ import (
 
 // GetQueryCmd returns the cli query commands for this module
 func GetQueryCmd() *cobra.Command {
-	corkQueryCmd := &cobra.Command{
+	auctionQueryCmd := &cobra.Command{
 		Use:                        "auction",
 		Short:                      "Querying commands for the auction module",
 		DisableFlagParsing:         true,
@@ -19,7 +19,7 @@ func GetQueryCmd() *cobra.Command {
 		RunE:                       client.ValidateCmd,
 	}
 
-	corkQueryCmd.AddCommand([]*cobra.Command{
+	auctionQueryCmd.AddCommand([]*cobra.Command{
 		queryParams(),
 		queryAuction(),
 		queryCurrentAuctions(),
@@ -28,7 +28,7 @@ func GetQueryCmd() *cobra.Command {
 		queryBidsByAuction(),
 	}...)
 
-	return corkQueryCmd
+	return auctionQueryCmd
 
 }
 

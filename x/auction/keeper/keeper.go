@@ -107,7 +107,7 @@ func (k Keeper) GetEndedAuctionById(ctx sdk.Context, id uint32) (types.Auction, 
 	return auction, true
 }
 
-// iterateAuctions iterates over all auctions in the store for a given prefix
+// IterateAuctions iterates over all auctions in the store for a given prefix
 func (k Keeper) IterateAuctions(ctx sdk.Context, auctionTypePrefix []byte, handler func(auctionId uint32, auction types.Auction) (stop bool)) {
 	store := ctx.KVStore(k.storeKey)
 	iter := sdk.KVStorePrefixIterator(store, auctionTypePrefix)
