@@ -8,9 +8,23 @@ import (
 // BeginBlocker is called at the beginning of every block
 func (k Keeper) BeginBlocker(ctx sdk.Context) {
 	for _, auction := range k.GetActiveAuctions(ctx) {
-		// TODO Step function for auction price updates
-		auction.Id = uint32(0)
+		if ((ctx.BlockHeight() - int64(auction.StartBlock) ) % int64(auction.BlockDecreaseInterval)) == 0 {
+			// TODO Step function for auction price updates
 
+			if auction.CurrentDecreaseRate == auction.InitialDecreaseRate {
+				auction.CurrentPrice.Amount = sdk.NewInt(int64(float32(auction.CurrentPrice.Amount.ToDec().MustFloat64()) * auction.CurrentDecreaseRate))
+
+				if auction.CurrentPrice.Amount.IsZero(){
+					auction.CurrentPrice.Amount = sdk.NewInt(1)
+				}
+			} else {
+				// TODO: Fancy price update part, do we need bids to have block height or can we use ratio of currentprice : initialprice (consideration of total bids) as proxy?
+
+			}
+
+			// Update stored auction
+			k.setActiveAuction(ctx, *auction)
+		}
 	}
 
 
