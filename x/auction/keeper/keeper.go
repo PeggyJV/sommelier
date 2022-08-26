@@ -232,10 +232,10 @@ func (k Keeper) BeginAuction(ctx sdk.Context,
 	}
 
 	// Starting price is amount of usomm required for 1 of starting denom
-	salePriceFloat, _ := currentSaleTokenPrice.UsdPrice.Float64()
-	sommPriceFloat, _ :=  sommPrice.UsdPrice.Float64()
+	salePriceFloat := currentSaleTokenPrice.UsdPrice.MustFloat64()
+	sommPriceFloat := sommPrice.UsdPrice.MustFloat64()
 
-	saleTokenPriceInUsomm := salePriceFloat / sommPriceFloat
+	saleTokenPriceInUsomm := int64(salePriceFloat / sommPriceFloat)
 
 	if saleTokenPriceInUsomm < 1 {
 		saleTokenPriceInUsomm = 1
@@ -250,7 +250,7 @@ func (k Keeper) BeginAuction(ctx sdk.Context,
 		InitialDecreaseRate: initialDecreaseRate,
 		CurrentDecreaseRate: initialDecreaseRate,
 		BlockDecreaseInterval: blockDecreaseInterval,
-		CurrentPrice: sdk.NewCoin(currentSaleTokenPrice.Denom, sdk.NewInt(int64(saleTokenPriceInUsomm))), 
+		CurrentPrice: sdk.NewCoin(currentSaleTokenPrice.Denom, sdk.NewInt(saleTokenPriceInUsomm)), 
 		AmountRemaining: startingAmount,
 		ProceedsModuleAccount: proceedsModule,
 	})
@@ -273,7 +273,7 @@ func (k Keeper) BeginAuction(ctx sdk.Context,
 				sdk.NewAttribute(types.AttributeKeyBlockDecreaseInterval, string(blockDecreaseInterval)),
 				sdk.NewAttribute(types.AttributeKeyStartingDenom, startingAmount.Denom),
 				sdk.NewAttribute(types.AttributeKeyStartingAmount,startingAmount.Amount.String()),
-				sdk.NewAttribute(types.AttributeKeyStartingUsommPrice, strconv.FormatFloat(saleTokenPriceInUsomm, 'E', -1, 64)),
+				sdk.NewAttribute(types.AttributeKeyStartingUsommPrice, string(saleTokenPriceInUsomm)),
 			),
 		},
 	)

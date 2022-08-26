@@ -12,8 +12,16 @@ import (
 
 // NewHandler returns a handler for "auction" type messages.
 func NewHandler(k keeper.Keeper) sdk.Handler {
-	// TODO: fill in
-	return nil
+	return func(ctx sdk.Context, msg sdk.Msg) (*sdk.Result, error) {
+		ctx = ctx.WithEventManager(sdk.NewEventManager())
+		switch msg := msg.(type) {
+		case *types.MsgSubmitBidRequest:
+			res, err := k.SubmitBid(sdk.WrapSDKContext(ctx), msg)
+			return sdk.WrapServiceResult(ctx, res, err)
+		default:
+			return nil, sdkerrors.Wrapf(sdkerrors.ErrUnknownRequest, "unrecognized auction message type: %T", msg)
+		}
+	}
 }
 
 func NewSetTokenPricesProposalHandler(k keeper.Keeper) govtypes.Handler {
