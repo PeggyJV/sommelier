@@ -46,7 +46,6 @@ func (k Keeper) SubmitBid(c context.Context, msg *types.MsgSubmitBidRequest) (*t
 	maxBid := msg.MaxBid.Amount.ToDec().MustFloat64()
 	minimumPurchasePrice := int64(salePriceFloat / minimumPurchase)
 
-
 	// Verify minimum price is <= bid
 	if minimumPurchasePrice > msg.GetMaxBid().Amount.Int64() {
 		return &types.MsgSubmitBidResponse{}, fmt.Errorf("minimum purchase is larger than allocated bid amount")
@@ -82,7 +81,12 @@ func (k Keeper) SubmitBid(c context.Context, msg *types.MsgSubmitBidRequest) (*t
 		// TODO: is it worth panicing here? We basically took a users funds and didnt give them anything in return, seems like a really bad regression
 		return &types.MsgSubmitBidResponse{}, err
 	}
+
+	// Update amount remaining in auction
+	auction.AmountRemaining.Amount = supply.Amount.Sub(fulfilledAmt.Amount)
+	k.setActiveAuction(ctx, auction)
 	
+	// Create bid in store
 	k.setBid(ctx, types.Bid{
 		Id: k.GetLastBidId(ctx) + 1,
 		AuctionId: msg.GetAuctionId(),
@@ -93,7 +97,7 @@ func (k Keeper) SubmitBid(c context.Context, msg *types.MsgSubmitBidRequest) (*t
 		FulfillmentPrice: fulfilledPrice,
 	})
 
-	// Update bid id
+	// Update latest bid id
 	k.setLastBidId(ctx, k.GetLastBidId(ctx) + 1)
 
 	// Emit Event to signal bid was made
