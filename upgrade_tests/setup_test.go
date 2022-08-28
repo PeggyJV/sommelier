@@ -1,5 +1,8 @@
 package upgrade_test
 
+// We need a way to breakdown our SetupSuite. First, SetupSuite should take a version argument.
+// Next we should compare the input version with our version and build the respective images.
+
 import (
 	"bytes"
 	"context"
@@ -66,7 +69,7 @@ func MNEMONICS() []string {
 	}
 }
 
-type IntegrationTestSuite struct {
+type UpgradeTestSuite struct {
 	suite.Suite
 
 	chain         *chain
@@ -77,12 +80,12 @@ type IntegrationTestSuite struct {
 	orchResources []*dockertest.Resource
 }
 
-func TestIntegrationTestSuite(t *testing.T) {
-	suite.Run(t, new(IntegrationTestSuite))
+func TestUpgradeTestSuite(t *testing.T) {
+	suite.Run(t, new(UpgradeTestSuite))
 }
 
-func (s *IntegrationTestSuite) SetupSuite() {
-	s.T().Log("setting up e2e integration test suite...")
+func (s *UpgradeTestSuite) SetupSuite() {
+	s.T().Log("setting up e2e Upgrade test suite...")
 
 	var err error
 	s.chain, err = newChain()
@@ -111,7 +114,7 @@ func (s *IntegrationTestSuite) SetupSuite() {
 	s.runOrchestrators()
 }
 
-func (s *IntegrationTestSuite) TearDownSuite() {
+func (s *UpgradeTestSuite) TearDownSuite() {
 	if str := os.Getenv("E2E_SKIP_CLEANUP"); len(str) > 0 {
 		skipCleanup, err := strconv.ParseBool(str)
 		s.Require().NoError(err)
@@ -122,7 +125,7 @@ func (s *IntegrationTestSuite) TearDownSuite() {
 		}
 	}
 
-	s.T().Log("tearing down e2e integration test suite...")
+	s.T().Log("tearing down e2e upgrade test suite...")
 
 	s.Require().NoError(os.RemoveAll(s.chain.dataDir))
 	s.Require().NoError(s.dockerPool.Purge(s.ethResource))
@@ -138,7 +141,7 @@ func (s *IntegrationTestSuite) TearDownSuite() {
 	s.Require().NoError(s.dockerPool.RemoveNetwork(s.dockerNetwork))
 }
 
-func (s *IntegrationTestSuite) initNodesWithMnemonics(mnemonics ...string) {
+func (s *UpgradeTestSuite) initNodesWithMnemonics(mnemonics ...string) {
 	s.Require().NoError(s.chain.createAndInitValidatorsWithMnemonics(mnemonics))
 	s.Require().NoError(s.chain.createAndInitOrchestratorsWithMnemonics(mnemonics))
 
@@ -167,7 +170,7 @@ func (s *IntegrationTestSuite) initNodesWithMnemonics(mnemonics ...string) {
 	}
 }
 
-func (s *IntegrationTestSuite) initEthereumFromMnemonics(mnemonics []string) {
+func (s *UpgradeTestSuite) initEthereumFromMnemonics(mnemonics []string) {
 	// generate ethereum keys for validators add them to the ethereum genesis
 	ethGenesis := EthereumGenesis{
 		Difficulty: "0x400",
@@ -193,7 +196,7 @@ func (s *IntegrationTestSuite) initEthereumFromMnemonics(mnemonics []string) {
 	s.Require().NoError(writeFile(filepath.Join(s.chain.configDir(), "eth_genesis.json"), ethGenBz))
 }
 
-func (s *IntegrationTestSuite) runEthContainer() {
+func (s *UpgradeTestSuite) runEthContainer() {
 	s.T().Log("starting Ethereum container...")
 	var err error
 
@@ -286,7 +289,7 @@ func noRestart(config *docker.HostConfig) {
 	}
 }
 
-func (s *IntegrationTestSuite) initGenesis() {
+func (s *UpgradeTestSuite) initGenesis() {
 	serverCtx := server.NewDefaultContext()
 	config := serverCtx.Config
 
@@ -409,7 +412,7 @@ func (s *IntegrationTestSuite) initGenesis() {
 	}
 }
 
-func (s *IntegrationTestSuite) initValidatorConfigs() {
+func (s *UpgradeTestSuite) initValidatorConfigs() {
 	for i, val := range s.chain.validators {
 		tmCfgPath := filepath.Join(val.configDir(), "config", "config.toml")
 
@@ -459,7 +462,7 @@ func (s *IntegrationTestSuite) initValidatorConfigs() {
 	}
 }
 
-func (s *IntegrationTestSuite) runValidators() {
+func (s *UpgradeTestSuite) runValidators() {
 	s.T().Log("starting validator containers...")
 
 	s.valResources = make([]*dockertest.Resource, len(s.chain.validators))
@@ -531,7 +534,7 @@ func (s *IntegrationTestSuite) runValidators() {
 	)
 }
 
-func (s *IntegrationTestSuite) runOrchestrators() {
+func (s *UpgradeTestSuite) runOrchestrators() {
 	s.T().Log("starting orchestrator containers...")
 
 	s.orchResources = make([]*dockertest.Resource, len(s.chain.orchestrators))
@@ -580,7 +583,7 @@ msg_batch_size = 5
 		// NOTE: If the Docker build changes, the script might have to be modified
 		// as it relies on busybox.
 		err := copyFile(
-			filepath.Join("integration_tests", "gorc_bootstrap.sh"),
+			filepath.Join("upgrade_tests", "gorc_bootstrap.sh"),
 			filepath.Join(gorcCfgPath, "gorc_bootstrap.sh"),
 		)
 		s.Require().NoError(err)
@@ -644,7 +647,7 @@ msg_batch_size = 5
 	}
 }
 
-func (s *IntegrationTestSuite) logsByContainerID(id string) string {
+func (s *UpgradeTestSuite) logsByContainerID(id string) string {
 	var containerLogsBuf bytes.Buffer
 	s.Require().NoError(s.dockerPool.Client.Logs(
 		docker.LogsOptions{
@@ -658,7 +661,7 @@ func (s *IntegrationTestSuite) logsByContainerID(id string) string {
 	return containerLogsBuf.String()
 }
 
-func (s *IntegrationTestSuite) TestBasicChain() {
+func (s *UpgradeTestSuite) TestChain() {
 	// this test verifies that the setup functions all operate as expected
 	s.Run("bring up basic chain", func() {
 	})

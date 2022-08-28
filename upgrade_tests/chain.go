@@ -7,6 +7,7 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
+	"github.com/cosmos/cosmos-sdk/client/tx"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdkTypes "github.com/cosmos/cosmos-sdk/codec/types"
 	"github.com/cosmos/cosmos-sdk/crypto/hd"
@@ -16,11 +17,13 @@ import (
 	cryptotypes "github.com/cosmos/cosmos-sdk/crypto/types"
 	"github.com/cosmos/cosmos-sdk/simapp"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/cosmos/cosmos-sdk/types/tx/signing"
 	sdkTx "github.com/cosmos/cosmos-sdk/x/auth/tx"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 	gravitytypes "github.com/peggyjv/gravity-bridge/module/v2/x/gravity/types"
+	"github.com/peggyjv/sommelier/v4/app"
 	"github.com/peggyjv/sommelier/v4/app/params"
 	corktypes "github.com/peggyjv/sommelier/v4/x/cork/types"
 	tmrand "github.com/tendermint/tendermint/libs/rand"
@@ -42,6 +45,24 @@ type chain struct {
 	id            string
 	validators    []*validator
 	orchestrators []*orchestrator
+}
+
+func init() {
+	encodingConfig = app.MakeEncodingConfig()
+
+	encodingConfig.InterfaceRegistry.RegisterImplementations(
+		(*sdk.Msg)(nil),
+		&stakingtypes.MsgCreateValidator{},
+		&stakingtypes.MsgBeginRedelegate{},
+		&gravitytypes.MsgDelegateKeys{},
+	)
+	encodingConfig.InterfaceRegistry.RegisterImplementations(
+		(*cryptotypes.PubKey)(nil),
+		&secp256k1.PubKey{},
+		&ed25519.PubKey{},
+	)
+
+	cdc = encodingConfig.Marshaler
 }
 
 func (c *chain) configDir() string {
@@ -221,4 +242,64 @@ func (c *chain) clientContext(nodeURI string, kb *keyring.Keyring, fromName stri
 		WithSkipConfirmation(true)
 
 	return &clientContext, nil
+}
+
+func (c *chain) sendMsgs(clientCtx client.Context, msgs ...sdk.Msg) (*sdk.TxResponse, error) {
+	txf := tx.Factory{}.
+		WithAccountRetriever(clientCtx.AccountRetriever).
+		WithChainID(c.id).
+		WithTxConfig(clientCtx.TxConfig).
+		WithGasAdjustment(1.2).
+		WithKeybase(clientCtx.Keyring).
+		WithGas(12345678).
+		WithSignMode(signing.SignMode_SIGN_MODE_DIRECT)
+
+	fromAddr := clientCtx.GetFromAddress()
+	fromName := clientCtx.GetFromName()
+
+	if err := txf.AccountRetriever().EnsureExists(clientCtx, fromAddr); err != nil {
+		return nil, err
+	}
+
+	initNum, initSeq := txf.AccountNumber(), txf.Sequence()
+	if initNum == 0 || initSeq == 0 {
+		num, seq, err := txf.AccountRetriever().GetAccountNumberSequence(clientCtx, fromAddr)
+		if err != nil {
+			return nil, err
+		}
+
+		if initNum == 0 {
+			txf = txf.WithAccountNumber(num)
+		}
+
+		if initSeq == 0 {
+			txf = txf.WithSequence(seq)
+		}
+	}
+
+	txf.WithFees("246913560testsomm")
+
+	txb, err := tx.BuildUnsignedTx(txf, msgs...)
+	if err != nil {
+		return nil, err
+	}
+
+	txb.SetFeeAmount(sdk.Coins{{Denom: "testsomm", Amount: sdk.NewInt(246913560)}})
+
+	err = tx.Sign(txf, fromName, txb, false)
+	if err != nil {
+		return nil, err
+	}
+
+	txBytes, err := clientCtx.TxConfig.TxEncoder()(txb.GetTx())
+	if err != nil {
+		return nil, err
+	}
+
+	res, err := clientCtx.BroadcastTx(txBytes)
+	if err != nil {
+		return nil, err
+	}
+
+	return res, nil
 }
