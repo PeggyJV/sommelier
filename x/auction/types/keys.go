@@ -22,8 +22,8 @@ const (
 const (
 	_ = byte(iota)
 
-	// <prefix><auction_id> 
-	ActiveAuctionsPrefix 
+	// <prefix><auction_id>
+	ActiveAuctionsPrefix
 
 	// <prefix><auction_id>
 	EndedAuctionsPrefix
@@ -71,14 +71,14 @@ func GetBidsByAuctionPrefix() []byte {
 }
 
 // GetBidsByAuctionIdPrefix returns the bids for an auction id
-func GetBidsByAuctionIdPrefix(auction_id uint32) []byte{
+func GetBidsByAuctionIdPrefix(auction_id uint32) []byte {
 	b := make([]byte, 4)
 	binary.BigEndian.PutUint32(b, auction_id)
 	return append(GetBidsByAuctionPrefix(), b...)
 }
 
 // GetBidKey returns the bid for an auction and bid id
-func GetBidKey(auctionId uint32, bidId uint64) []byte{
+func GetBidKey(auctionId uint32, bidId uint64) []byte {
 	b := make([]byte, 8)
 	binary.BigEndian.PutUint64(b, bidId)
 	return append(GetBidsByAuctionIdPrefix(auctionId), b...)
