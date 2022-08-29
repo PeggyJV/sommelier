@@ -14,7 +14,6 @@ message GenesisState {
   repeated TokenPrice token_prices = 4;
   uint32 last_auction_id = 5;
   uint64 last_bid_id = 6;
-  uint64 last_token_price_update_block = 7;
 }
 
 message Params {
