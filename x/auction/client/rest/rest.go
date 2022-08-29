@@ -21,7 +21,7 @@ func SetProposalRESTHandler(clientCtx client.Context) govrest.ProposalRESTHandle
 
 func postSetProposalHandlerFn(clientCtx client.Context) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		var req SetTokenPricesProposalReq 
+		var req SetTokenPricesProposalReq
 		if !rest.ReadRESTReq(w, r, clientCtx.LegacyAmino, &req) {
 			return
 		}
@@ -35,7 +35,7 @@ func postSetProposalHandlerFn(clientCtx client.Context) http.HandlerFunc {
 			req.Title,
 			req.Description,
 			req.TokenPrices,
-			)
+		)
 
 		msg, err := govtypes.NewMsgSubmitProposal(content, req.Deposit, req.Proposer)
 		if rest.CheckBadRequestError(w, err) {
@@ -48,4 +48,3 @@ func postSetProposalHandlerFn(clientCtx client.Context) http.HandlerFunc {
 		tx.WriteGeneratedTxResponse(clientCtx, w, req.BaseReq, msg)
 	}
 }
-
