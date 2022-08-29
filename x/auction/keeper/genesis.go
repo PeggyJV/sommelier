@@ -35,13 +35,12 @@ func ExportGenesis(ctx sdk.Context, k Keeper) types.GenesisState {
 	auctions = append(auctions, k.GetActiveAuctions(ctx)...)
 	auctions = append(auctions, k.GetEndedAuctions(ctx)...)
 
-	// TODO: Recompile proto 
 	return types.GenesisState{
-		Params:      				k.GetParamSet(ctx),
-		Auctions:    				auctions,
-		Bids:        				k.GetBids(ctx),
-		TokenPrices: 				k.GetTokenPrices(ctx),
-		LastAuctionId:  			k.GetLastAuctionId(ctx),
-		LastBidId:      			k.GetLastBidId(ctx),
+		Params:        k.GetParamSet(ctx),
+		Auctions:      auctions,
+		Bids:          k.GetBids(ctx),
+		TokenPrices:   k.GetTokenPrices(ctx),
+		LastAuctionId: k.GetLastAuctionId(ctx),
+		LastBidId:     k.GetLastBidId(ctx),
 	}
 }
