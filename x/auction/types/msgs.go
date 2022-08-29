@@ -20,13 +20,13 @@ const (
 /////////////////////////
 
 // NewMsgSubmitBidRequest return a new MsgSubmitBidRequest
-func NewMsgSubmitBidRequest(body []byte, auctionId uint32, maxBid sdk.Coin, minimumAmount sdk.Coin, signer sdk.AccAddress) (*MsgSubmitBidRequest, error) {
+func NewMsgSubmitBidRequest(body []byte, auctionId uint32, maxBidInUsomm sdk.Coin, minimumSaleTokenPurchaseAmount sdk.Coin, signer sdk.AccAddress) (*MsgSubmitBidRequest, error) {
 	return &MsgSubmitBidRequest{
-		AuctionId:     auctionId,
-		MaxBid:        maxBid,
-		MinimumAmount: minimumAmount,
-		Bidder:        signer.String(),
-		Signer:        signer.String(),
+		AuctionId:                      auctionId,
+		MaxBidInUsomm:                  maxBidInUsomm,
+		MinimumSaleTokenPurchaseAmount: minimumSaleTokenPurchaseAmount,
+		Bidder:                         signer.String(),
+		Signer:                         signer.String(),
 	}, nil
 }
 
@@ -42,11 +42,11 @@ func (m *MsgSubmitBidRequest) ValidateBasic() error {
 		return fmt.Errorf("auction IDs must be non-zero")
 	}
 
-	if !m.MaxBid.IsPositive() {
+	if !m.MaxBidInUsomm.IsPositive() {
 		return fmt.Errorf("bids must be a positive amount of SOMM")
 	}
 
-	if !m.MinimumAmount.IsPositive() {
+	if !m.MinimumSaleTokenPurchaseAmount.IsPositive() {
 		return fmt.Errorf("minimum amount must be a positive amount of auctioned coins")
 	}
 
