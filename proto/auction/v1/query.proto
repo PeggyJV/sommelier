@@ -15,8 +15,12 @@ service Query {
     option (google.api.http).get = "/sommelier/auction/v1/params";
   }
 
-  rpc QueryAuction(QueryAuctionRequest) returns (QueryAuctionResponse) {
-    option (google.api.http).get = "/sommelier/auction/v1/auction/{auction_id}";
+  rpc QueryCurrentAuction(QueryCurrentAuctionRequest) returns (QueryCurrentAuctionResponse) {
+    option (google.api.http).get = "/sommelier/auction/v1/current_auction/{auction_id}";
+  }
+
+  rpc QueryEndedAuction(QueryEndedAuctionRequest) returns (QueryEndedAuctionResponse) {
+    option (google.api.http).get = "/sommelier/auction/v1/ended_auction/{auction_id}";
   }
 
   rpc QueryCurrentAuctions(QueryCurrentAuctionsRequest) returns (QueryCurrentAuctionsResponse) {
@@ -42,11 +46,19 @@ message QueryParamsResponse {
   Params params = 1 [(gogoproto.nullable) = false];
 }
 
-message QueryAuctionRequest {
+message QueryCurrentAuctionRequest {
   uint32 auction_id = 1;
 }
 
-message QueryAuctionResponse {
+message QueryCurrentAuctionResponse {
+  Auction auction = 1;
+}
+
+message QueryEndedAuctionRequest {
+  uint32 auction_id = 1;
+}
+
+message QueryEndedAuctionResponse {
   Auction auction = 1;
 }
 
