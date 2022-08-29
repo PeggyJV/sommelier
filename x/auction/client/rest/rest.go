@@ -11,17 +11,17 @@ import (
 	"github.com/peggyjv/sommelier/v4/x/auction/types"
 )
 
-// AddProposalRESTHandler returns a ProposalRESTHandler that exposes the add token price update REST handler with a given sub-route.
-func AddProposalRESTHandler(clientCtx client.Context) govrest.ProposalRESTHandler {
+// SetProposalRESTHandler returns a ProposalRESTHandler that exposes the set token price update REST handler with a given sub-route.
+func SetProposalRESTHandler(clientCtx client.Context) govrest.ProposalRESTHandler {
 	return govrest.ProposalRESTHandler{
-		SubRoute: "add_update_token_prices",
-		Handler:  postAddProposalHandlerFn(clientCtx),
+		SubRoute: "set_token_prices",
+		Handler:  postSetProposalHandlerFn(clientCtx),
 	}
 }
 
-func postAddProposalHandlerFn(clientCtx client.Context) http.HandlerFunc {
+func postSetProposalHandlerFn(clientCtx client.Context) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		var req UpdateTokenPricesProposalReq 
+		var req SetTokenPricesProposalReq 
 		if !rest.ReadRESTReq(w, r, clientCtx.LegacyAmino, &req) {
 			return
 		}
@@ -31,7 +31,7 @@ func postAddProposalHandlerFn(clientCtx client.Context) http.HandlerFunc {
 			return
 		}
 
-		content := types.NewAddSetTokenPricesProposal(
+		content := types.NewSetTokenPricesProposal(
 			req.Title,
 			req.Description,
 			req.TokenPrices,

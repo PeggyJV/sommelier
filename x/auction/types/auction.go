@@ -36,11 +36,15 @@ func (a *Auction) Equals(other Auction) bool {
 		return false
 	}
 
-	if !a.CurrentPrice.IsEqual(other.CurrentPrice) {
+	if !a.CurrentUnitPriceInUsomm.Equal(other.CurrentUnitPriceInUsomm) {
 		return false
 	}
 
 	if !a.AmountRemaining.IsEqual(other.AmountRemaining) {
+		return false
+	}
+
+	if a.FundingModuleAccount != other.FundingModuleAccount {
 		return false
 	}
 
@@ -76,16 +80,16 @@ func (a *Auction) ValidateBasic() error {
 		return fmt.Errorf("block decrease interval cannot be 0")
 	}
 
-	if a.CurrentPrice.Denom == "" {
-		return fmt.Errorf("current price denom must be a non empty string")
-	}
-
-	if !a.CurrentPrice.IsPositive() {
-		return fmt.Errorf("current price must be greater than 0")
+	if !a.CurrentUnitPriceInUsomm.IsPositive() {
+		return fmt.Errorf("current price must be positive")
 	}
 
 	if a.AmountRemaining.Denom == "" {
 		return fmt.Errorf("amount remaining denom must be a non empty string")
+	}
+
+	if a.FundingModuleAccount == "" {
+		return fmt.Errorf("funding module account cannot be empty")
 	}
 
 	if a.ProceedsModuleAccount == "" {
@@ -116,11 +120,11 @@ func (b *Bid) Equals(other Bid) bool {
 		return false
 	}
 
-	if !b.FulfilledAmount.IsEqual(other.FulfilledAmount) {
+	if !b.TotalFulfilledSaleTokenAmount.IsEqual(other.TotalFulfilledSaleTokenAmount) {
 		return false
 	}
 
-	if !b.FulfillmentPrice.IsEqual(other.FulfillmentPrice) {
+	if !b.UnitPriceOfSaleTokenInUsomm.IsEqual(other.UnitPriceOfSaleTokenInUsomm) {
 		return false
 	}
 
@@ -144,12 +148,12 @@ func (b *Bid) ValidateBasic() error {
 		return fmt.Errorf("minimum amount must be a positive amount of auctioned coins")
 	}
 
-	if b.FulfilledAmount.Amount.IsNegative() {
-		return fmt.Errorf("fulfillment amount must be non negative")
+	if b.TotalFulfilledSaleTokenAmount.Amount.IsNegative() {
+		return fmt.Errorf("total sale token fulfillment amount must be non negative")
 	}
 
-	if !b.FulfillmentPrice.Amount.IsPositive() {
-		return fmt.Errorf("fulfillment price must be positive")
+	if !b.UnitPriceOfSaleTokenInUsomm.Amount.IsPositive() {
+		return fmt.Errorf("unit price of sale tokens in usomm must be positive")
 	}
 	
 	// TODO(bolten): is it possible to check the denom correctly here?
@@ -170,10 +174,42 @@ func (t *TokenPrice) Equals(other TokenPrice) bool {
 		return false
 	}
 
+	if t.LastUpdatedBlock != other.LastUpdatedBlock {
+		return false
+	}
+
 	return true
 }
 
 func (t *TokenPrice) ValidateBasic() error {
+	if t.Denom == "" {
+		return fmt.Errorf("denom must be a non empty string")
+	}
+
+	if !t.UsdPrice.IsPositive() {
+		return fmt.Errorf("price must be greater than 0")
+	}
+
+	if t.LastUpdatedBlock == 0 {
+		return fmt.Errorf("last updated block must be greater than 0")
+	}
+
+	return nil
+}
+
+func (t *ProposedTokenPrice) Equals(other ProposedTokenPrice) bool {
+	if t.Denom != other.Denom {
+		return false
+	}
+
+	if t.UsdPrice != other.UsdPrice {
+		return false
+	}
+
+	return true
+}
+
+func (t *ProposedTokenPrice) ValidateBasic() error {
 	if t.Denom == "" {
 		return fmt.Errorf("denom must be a non empty string")
 	}

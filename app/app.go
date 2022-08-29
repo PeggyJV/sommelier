@@ -106,6 +106,7 @@ import (
 	"github.com/tendermint/tendermint/libs/log"
 	tmos "github.com/tendermint/tendermint/libs/os"
 	dbm "github.com/tendermint/tm-db"
+	auctionclient "github.com/peggyjv/sommelier/v4/x/auction/client"
 
 	// unnamed import of statik for swagger UI support
 	_ "github.com/cosmos/cosmos-sdk/client/docs/statik"
@@ -142,6 +143,7 @@ var (
 			gravityclient.ProposalHandler,
 			corkclient.AddProposalHandler,
 			corkclient.RemoveProposalHandler,
+			auctionclient.SetProposalHandler,
 		),
 		params.AppModuleBasic{},
 		crisis.AppModuleBasic{},
