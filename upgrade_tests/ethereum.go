@@ -1,4 +1,4 @@
-package upgrade_test
+package upgrade_tests
 
 type EthereumConfig struct {
 	ChainID             uint `json:"chainId"`

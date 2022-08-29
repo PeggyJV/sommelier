@@ -1,4 +1,4 @@
-package upgrade_test
+package upgrade_tests
 
 import (
 	"github.com/cosmos/cosmos-sdk/crypto/hd"
