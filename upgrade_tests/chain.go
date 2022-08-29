@@ -90,7 +90,7 @@ func newChain() (*chain, error) {
 	}, nil
 }
 
-func (c *chain) createAndInitValidators(count int) error { // nolint:unused
+func (c *chain) createAndInitValidators(count int) error { //nolint:unused
 	for i := 0; i < count; i++ {
 		node := c.createValidator(i)
 
@@ -143,7 +143,7 @@ func (c *chain) createAndInitValidatorsWithMnemonics(mnemonics []string) error {
 	return nil
 }
 
-func (c *chain) createAndInitOrchestrators(count int) error { // nolint:unused
+func (c *chain) createAndInitOrchestrators(count int) error { //nolint:unused
 	mnemonics := make([]string, count)
 	for i := 0; i < count; i++ {
 		mnemonic, err := createMnemonic()

@@ -433,6 +433,9 @@ e2e_clean_upgrade_slate:
 e2e_test_chain: e2e_clean_upgrade_slate
 	@upgrade_tests/upgrade_tests.test -test.run TestChain -test.failfast -test.v || make -s fail
 
+e2e_upgrade: e2e_clean_upgrade_slate
+	@E2E_SKIP_CLEANUP=true upgrade_tests/upgrade_tests.test -test.failfast -test.v -test.run UpgradeTestSuite -testify.m TestSommChainUpgrade || make -s fail
+
 fail:
 	@echo 'test failed; dumping container logs into ./testlogs for review'
 	@docker logs ethereum > testlogs/ethereum.log 2>&1 || true

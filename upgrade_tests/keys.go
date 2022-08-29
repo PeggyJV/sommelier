@@ -17,7 +17,7 @@ type ethereumKey struct {
 	address    string
 }
 
-func createMnemonic() (string, error) { // nolint:unused
+func createMnemonic() (string, error) { //nolint:unused
 	entropySeed, err := bip39.NewEntropy(256)
 	if err != nil {
 		return "", err

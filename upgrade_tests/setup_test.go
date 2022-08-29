@@ -1,8 +1,5 @@
 package upgrade_test
 
-// We need a way to breakdown our SetupSuite. First, SetupSuite should take a version argument.
-// Next we should compare the input version with our version and build the respective images.
-
 import (
 	"bytes"
 	"context"
@@ -57,7 +54,6 @@ var (
 	gravityContract       = common.HexToAddress("0x04C89607413713Ec9775E14b954286519d836FEf")
 	counterContract       = common.HexToAddress("0x0000000000000000000000000000000000000000")
 	unusedGenesisContract = common.HexToAddress("0x0000000000000000000000000000000000000001")
-	unusedAddedContract   = common.HexToAddress("0x0000000000000000000000000000000000000002")
 )
 
 func MNEMONICS() []string {
@@ -85,7 +81,7 @@ func TestUpgradeTestSuite(t *testing.T) {
 }
 
 func (s *UpgradeTestSuite) SetupSuite() {
-	s.T().Log("setting up e2e Upgrade test suite...")
+	s.T().Log("setting up e2e integration test suite...")
 
 	var err error
 	s.chain, err = newChain()
@@ -103,15 +99,29 @@ func (s *UpgradeTestSuite) SetupSuite() {
 	s.initEthereumFromMnemonics(mnemonics)
 
 	// run the eth container so that the contract addresses are available
-	s.runEthContainer()
+	s.runEthContainer("prebuilt")
 
 	// continue generating node genesis
 	s.initGenesis()
 	s.initValidatorConfigs()
 
 	// container infrastructure
-	s.runValidators()
-	s.runOrchestrators()
+	s.runValidators("prebuilt")
+	s.runOrchestrators("prebuilt")
+}
+
+func (s *UpgradeTestSuite) StopAllNodes() {
+	s.T().Log("stopping all nodes for upgrade...")
+
+	s.Require().NoError(s.dockerPool.Purge(s.ethResource))
+
+	for _, vc := range s.valResources {
+		s.Require().NoError(s.dockerPool.Purge(vc))
+	}
+
+	for _, oc := range s.orchResources {
+		s.Require().NoError(s.dockerPool.Purge(oc))
+	}
 }
 
 func (s *UpgradeTestSuite) TearDownSuite() {
@@ -139,6 +149,35 @@ func (s *UpgradeTestSuite) TearDownSuite() {
 	}
 
 	s.Require().NoError(s.dockerPool.RemoveNetwork(s.dockerNetwork))
+}
+
+func (s *UpgradeTestSuite) initNodes(nodeCount int) { //nolint:unused
+	s.Require().NoError(s.chain.createAndInitValidators(nodeCount))
+	s.Require().NoError(s.chain.createAndInitOrchestrators(nodeCount))
+
+	// initialize a genesis file for the first validator
+	val0ConfigDir := s.chain.validators[0].configDir()
+	for _, val := range s.chain.validators {
+		s.Require().NoError(
+			addGenesisAccount(val0ConfigDir, "", initBalanceStr, val.keyInfo.GetAddress()),
+		)
+	}
+
+	// add orchestrator accounts to genesis file
+	for _, orch := range s.chain.orchestrators {
+		s.Require().NoError(
+			addGenesisAccount(val0ConfigDir, "", initBalanceStr, orch.keyInfo.GetAddress()),
+		)
+	}
+
+	// copy the genesis file to the remaining validators
+	for _, val := range s.chain.validators[1:] {
+		err := copyFile(
+			filepath.Join(val0ConfigDir, "config", "genesis.json"),
+			filepath.Join(val.configDir(), "config", "genesis.json"),
+		)
+		s.Require().NoError(err)
+	}
 }
 
 func (s *UpgradeTestSuite) initNodesWithMnemonics(mnemonics ...string) {
@@ -170,6 +209,32 @@ func (s *UpgradeTestSuite) initNodesWithMnemonics(mnemonics ...string) {
 	}
 }
 
+func (s *UpgradeTestSuite) initEthereum() { //nolint:unused
+	// generate ethereum keys for validators add them to the ethereum genesis
+	ethGenesis := EthereumGenesis{
+		Difficulty: "0x400",
+		GasLimit:   "0xB71B00",
+		Config:     EthereumConfig{ChainID: ethChainID},
+		Alloc:      make(map[string]Allocation, len(s.chain.validators)+1),
+	}
+
+	alloc := Allocation{
+		Balance: "0x1337000000000000000000",
+	}
+
+	ethGenesis.Alloc["0xBf660843528035a5A4921534E156a27e64B231fE"] = alloc
+	for _, val := range s.chain.validators {
+		s.Require().NoError(val.generateEthereumKey())
+		ethGenesis.Alloc[val.ethereumKey.address] = alloc
+	}
+
+	ethGenBz, err := json.MarshalIndent(ethGenesis, "", "  ")
+	s.Require().NoError(err)
+
+	// write out the genesis file
+	s.Require().NoError(writeFile(filepath.Join(s.chain.configDir(), "eth_genesis.json"), ethGenBz))
+}
+
 func (s *UpgradeTestSuite) initEthereumFromMnemonics(mnemonics []string) {
 	// generate ethereum keys for validators add them to the ethereum genesis
 	ethGenesis := EthereumGenesis{
@@ -194,99 +259,6 @@ func (s *UpgradeTestSuite) initEthereumFromMnemonics(mnemonics []string) {
 
 	// write out the genesis file
 	s.Require().NoError(writeFile(filepath.Join(s.chain.configDir(), "eth_genesis.json"), ethGenBz))
-}
-
-func (s *UpgradeTestSuite) runEthContainer() {
-	s.T().Log("starting Ethereum container...")
-	var err error
-
-	nodeURL := os.Getenv("ARCHIVE_NODE_URL")
-	s.Require().NotEmptyf(nodeURL, "ARCHIVE_NODE_URL env variable must be set")
-
-	runOpts := dockertest.RunOptions{
-		Name:       "ethereum",
-		Repository: "ethereum",
-		Tag:        "prebuilt",
-		NetworkID:  s.dockerNetwork.Network.ID,
-		PortBindings: map[docker.Port][]docker.PortBinding{
-			"8545/tcp": {{HostIP: "", HostPort: "8545"}},
-		},
-		ExposedPorts: []string{"8545/tcp"},
-		Env:          []string{fmt.Sprintf("ARCHIVE_NODE_URL=%s", nodeURL)},
-	}
-
-	s.ethResource, err = s.dockerPool.RunWithOptions(
-		&runOpts,
-		noRestart,
-	)
-	s.Require().NoError(err)
-
-	ethClient, err := ethclient.Dial(fmt.Sprintf("http://%s", s.ethResource.GetHostPort("8545/tcp")))
-	s.Require().NoError(err)
-
-	// Wait for the Ethereum node to respond to a request
-	s.Require().Eventually(
-		func() bool {
-			ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
-			defer cancel()
-
-			balance, err := ethClient.BalanceAt(ctx, common.HexToAddress(s.chain.validators[0].ethereumKey.address), nil)
-			if err != nil {
-				s.T().Logf("error querying balance: %e", err)
-				return false
-			}
-
-			if balance == nil {
-				s.T().Logf("balance for first validator is nil")
-			}
-
-			if balance.Cmp(big.NewInt(0)) == 0 {
-				s.T().Logf("balance for first validator is %s", balance.String())
-				return false
-			}
-
-			return true
-		},
-		5*time.Minute,
-		10*time.Second,
-		"ethereum node failed to respond",
-	)
-
-	s.T().Logf("waiting for contract to deploy")
-	ethereumLogOutput := bytes.Buffer{}
-	err = s.dockerPool.Client.Logs(docker.LogsOptions{
-		Container:    s.ethResource.Container.ID,
-		OutputStream: &ethereumLogOutput,
-		Stdout:       true,
-	})
-	s.Require().NoError(err, "error getting contract deployer logs")
-
-	s.Require().Eventuallyf(func() bool {
-
-		for _, s := range strings.Split(ethereumLogOutput.String(), "\n") {
-			if strings.HasPrefix(s, "gravity contract deployed at") {
-				strSpl := strings.Split(s, "-")
-				gravityContract = common.HexToAddress(strings.ReplaceAll(strSpl[1], " ", ""))
-				// continue, this is not the last contract deployed
-			}
-			if strings.HasPrefix(s, "counter contract deployed at") {
-				strSpl := strings.Split(s, "-")
-				counterContract = common.HexToAddress(strings.ReplaceAll(strSpl[1], " ", ""))
-				return true
-			}
-		}
-		return false
-	}, time.Minute*5, time.Second*10, "unable to retrieve gravity address from logs")
-	s.T().Logf("gravity contrained deployed at %s", gravityContract.String())
-
-	s.T().Logf("started Ethereum container: %s", s.ethResource.Container.ID)
-}
-
-func noRestart(config *docker.HostConfig) {
-	// in this case we don't want the nodes to restart on failure
-	config.RestartPolicy = docker.RestartPolicy{
-		Name: "no",
-	}
 }
 
 func (s *UpgradeTestSuite) initGenesis() {
@@ -462,7 +434,93 @@ func (s *UpgradeTestSuite) initValidatorConfigs() {
 	}
 }
 
-func (s *UpgradeTestSuite) runValidators() {
+func (s *UpgradeTestSuite) runEthContainer(version string) {
+	s.T().Log("starting Ethereum container...")
+	var err error
+
+	nodeURL := os.Getenv("ARCHIVE_NODE_URL")
+	s.Require().NotEmptyf(nodeURL, "ARCHIVE_NODE_URL env variable must be set")
+
+	runOpts := dockertest.RunOptions{
+		Name:       "ethereum",
+		Repository: "ethereum",
+		Tag:        version,
+		NetworkID:  s.dockerNetwork.Network.ID,
+		PortBindings: map[docker.Port][]docker.PortBinding{
+			"8545/tcp": {{HostIP: "", HostPort: "8545"}},
+		},
+		ExposedPorts: []string{"8545/tcp"},
+		Env:          []string{fmt.Sprintf("ARCHIVE_NODE_URL=%s", nodeURL)},
+	}
+
+	s.ethResource, err = s.dockerPool.RunWithOptions(
+		&runOpts,
+		noRestart,
+	)
+	s.Require().NoError(err)
+
+	ethClient, err := ethclient.Dial(fmt.Sprintf("http://%s", s.ethResource.GetHostPort("8545/tcp")))
+	s.Require().NoError(err)
+
+	// Wait for the Ethereum node to respond to a request
+	s.Require().Eventually(
+		func() bool {
+			ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
+			defer cancel()
+
+			balance, err := ethClient.BalanceAt(ctx, common.HexToAddress(s.chain.validators[0].ethereumKey.address), nil)
+			if err != nil {
+				s.T().Logf("error querying balance: %e", err)
+				return false
+			}
+
+			if balance == nil {
+				s.T().Logf("balance for first validator is nil")
+			}
+
+			if balance.Cmp(big.NewInt(0)) == 0 {
+				s.T().Logf("balance for first validator is %s", balance.String())
+				return false
+			}
+
+			return true
+		},
+		5*time.Minute,
+		10*time.Second,
+		"ethereum node failed to respond",
+	)
+
+	s.T().Logf("waiting for contract to deploy")
+	ethereumLogOutput := bytes.Buffer{}
+	err = s.dockerPool.Client.Logs(docker.LogsOptions{
+		Container:    s.ethResource.Container.ID,
+		OutputStream: &ethereumLogOutput,
+		Stdout:       true,
+	})
+	s.Require().NoError(err, "error getting contract deployer logs")
+
+	s.Require().Eventuallyf(func() bool {
+
+		for _, s := range strings.Split(ethereumLogOutput.String(), "\n") {
+			if strings.HasPrefix(s, "gravity contract deployed at") {
+				strSpl := strings.Split(s, "-")
+				gravityContract = common.HexToAddress(strings.ReplaceAll(strSpl[1], " ", ""))
+				// continue, this is not the last contract deployed
+			}
+			if strings.HasPrefix(s, "counter contract deployed at") {
+				strSpl := strings.Split(s, "-")
+				counterContract = common.HexToAddress(strings.ReplaceAll(strSpl[1], " ", ""))
+				return true
+			}
+		}
+		return false
+	}, time.Minute*5, time.Second*10, "unable to retrieve gravity address from logs")
+	s.T().Logf("gravity contrained deployed at %s", gravityContract.String())
+
+	s.T().Logf("started Ethereum container: %s", s.ethResource.Container.ID)
+}
+
+func (s *UpgradeTestSuite) runValidators(version string) {
 	s.T().Log("starting validator containers...")
 
 	s.valResources = make([]*dockertest.Resource, len(s.chain.validators))
@@ -470,8 +528,11 @@ func (s *UpgradeTestSuite) runValidators() {
 		runOpts := &dockertest.RunOptions{
 			Name:       val.instanceName(),
 			NetworkID:  s.dockerNetwork.Network.ID,
-			Repository: "ghcr.io/strangelove-ventures/heighliner/sommelier",
-			Tag:        "v4.0.1",
+			Repository: "sommelier",
+			Tag:        version,
+			Mounts: []string{
+				fmt.Sprintf("%s/:/root/.sommelier", val.configDir()),
+			},
 			Entrypoint: []string{"sommelier", "start", "--trace=true"},
 		}
 
@@ -534,7 +595,7 @@ func (s *UpgradeTestSuite) runValidators() {
 	)
 }
 
-func (s *UpgradeTestSuite) runOrchestrators() {
+func (s *UpgradeTestSuite) runOrchestrators(version string) {
 	s.T().Log("starting orchestrator containers...")
 
 	s.orchResources = make([]*dockertest.Resource, len(s.chain.orchestrators))
@@ -583,7 +644,7 @@ msg_batch_size = 5
 		// NOTE: If the Docker build changes, the script might have to be modified
 		// as it relies on busybox.
 		err := copyFile(
-			filepath.Join("upgrade_tests", "gorc_bootstrap.sh"),
+			filepath.Join("integration_tests", "gorc_bootstrap.sh"),
 			filepath.Join(gorcCfgPath, "gorc_bootstrap.sh"),
 		)
 		s.Require().NoError(err)
@@ -593,7 +654,7 @@ msg_batch_size = 5
 				Name:       orch.instanceName(),
 				NetworkID:  s.dockerNetwork.Network.ID,
 				Repository: "orchestrator",
-				Tag:        "prebuilt",
+				Tag:        version,
 				Mounts: []string{
 					fmt.Sprintf("%s/:/root/gorc", gorcCfgPath),
 				},
@@ -644,6 +705,13 @@ msg_batch_size = 5
 			"orchestrator %s not healthy",
 			resource.Container.ID,
 		)
+	}
+}
+
+func noRestart(config *docker.HostConfig) {
+	// in this case we don't want the nodes to restart on failure
+	config.RestartPolicy = docker.RestartPolicy{
+		Name: "no",
 	}
 }
 
