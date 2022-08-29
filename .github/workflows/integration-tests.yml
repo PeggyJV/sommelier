@@ -5,7 +5,7 @@ on:
     branches:
       - main
     tags:
-      - 'v*.*.*'
+      - "v*.*.*"
   pull_request:
 
 env:
@@ -109,20 +109,17 @@ jobs:
   integration-tests:
     environment: CI
     runs-on: [self-hosted, linux]
-    needs: [ sommelier-build, hardhat-build ]
+    needs: [sommelier-build, hardhat-build]
     strategy:
       fail-fast: false
       matrix:
-        test_type: [
-          "Cork",
-          "ScheduledCork",
-        ]
+        test_type: ["Cork", "ScheduledCork"]
     steps:
-# Not needed on self hosted test runner that already has go installed
-#       - name: Set up Go 1.16
-#         uses: actions/setup-go@v2
-#         with:
-#           go-version: ^1.16
+      # Not needed on self hosted test runner that already has go installed
+      #       - name: Set up Go 1.16
+      #         uses: actions/setup-go@v2
+      #         with:
+      #           go-version: ^1.16
       - name: checkout
         uses: actions/checkout@v2
       - name: go-cache
@@ -168,5 +165,67 @@ jobs:
         run: cd integration_tests && go test -c
       - name: Run end to end test
         run: ./integration_tests/integration_tests.test -test.failfast -test.v -test.run IntegrationTestSuite -testify.m Test${{ matrix.test_type }}
+        env:
+          ARCHIVE_NODE_URL: ${{ secrets.ARCHIVE_NODE_URL }}
+
+  upgrade-tests:
+    environment: CI
+    runs-on: [self-hosted, linux]
+    needs: [sommelier-build, hardhat-build]
+    strategy:
+      fail-fast: false
+      matrix:
+        test_type: ["SommChainUpgrade"]
+    steps:
+      # Not needed on self hosted test runner that already has go installed
+      #       - name: Set up Go 1.16
+      #         uses: actions/setup-go@v2
+      #         with:
+      #           go-version: ^1.16
+      - name: checkout
+        uses: actions/checkout@v2
+      - name: go-cache
+        uses: actions/cache@v2
+        with:
+          path: |
+            ~/.cache/go-build
+            ~/go/pkg/mod
+          key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
+          restore-keys: |
+            ${{ runner.os }}-go-
+      - name: container-login
+        uses: docker/login-action@v1
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: docker sommelier metadata
+        id: meta-sommelier
+        uses: docker/metadata-action@v3
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-sommelier
+      - name: docker hardhat metadata
+        id: meta-hardhat
+        uses: docker/metadata-action@v3
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-hardhat
+      - name: pull sommelier image
+        run: docker pull ${{ steps.meta-sommelier.outputs.tags }}
+      - name: rename sommelier image
+        run: docker tag ${{ steps.meta-sommelier.outputs.tags }} sommelier:prebuilt
+      - name: pull hardhat image
+        run: docker pull ${{ steps.meta-hardhat.outputs.tags }}
+      - name: rename hardhat image
+        run: docker tag ${{ steps.meta-hardhat.outputs.tags }} ethereum:prebuilt
+      - name: pull orchestrator image
+        run: docker pull ${{ env.ORCHESTRATOR_IMAGE_NAME }}
+      - name: rename orchestrator image
+        run: docker tag ${{ env.ORCHESTRATOR_IMAGE_NAME }} orchestrator:prebuilt
+      - name: clean the slate
+        run: make e2e_clean_upgrade_slate
+      - name: build go test binary
+        run: cd upgrade_tests && go test -c
+      - name: Run end to end test
+        run: ./upgrade_tests/upgrade_tests.test -test.failfast -test.v -test.run UpgradeTestSuite -testify.m Test${{ matrix.test_type }}
         env:
           ARCHIVE_NODE_URL: ${{ secrets.ARCHIVE_NODE_URL }}
