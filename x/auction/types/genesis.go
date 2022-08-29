@@ -20,7 +20,7 @@ func (gs GenesisState) Validate() error {
 			return err
 		}
 	}
-	
+
 	for _, bid := range gs.Bids {
 		if err := bid.ValidateBasic(); err != nil {
 			return err

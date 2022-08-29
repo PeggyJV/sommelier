@@ -15,7 +15,7 @@ func (a *Auction) Equals(other Auction) bool {
 	if !a.StartingAmount.IsEqual(other.StartingAmount) {
 		return false
 	}
-	
+
 	if a.StartBlock != other.StartBlock {
 		return false
 	}
@@ -155,7 +155,7 @@ func (b *Bid) ValidateBasic() error {
 	if !b.UnitPriceOfSaleTokenInUsomm.Amount.IsPositive() {
 		return fmt.Errorf("unit price of sale tokens in usomm must be positive")
 	}
-	
+
 	// TODO(bolten): is it possible to check the denom correctly here?
 
 	if _, err := sdk.AccAddressFromBech32(b.Bidder); err != nil {
