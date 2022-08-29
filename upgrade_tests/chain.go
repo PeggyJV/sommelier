@@ -193,7 +193,7 @@ func (c *chain) createOrchestrator(index int) *orchestrator {
 	}
 }
 
-func (c *chain) clientContext(nodeURI string, kb *keyring.Keyring, fromName string, fromAddr sdk.AccAddress) (*client.Context, error) { // nolint:unparam
+func (c *chain) clientContext(nodeURI string, kb *keyring.Keyring, fromName string, fromAddr sdk.AccAddress) (*client.Context, error) {
 	amino := codec.NewLegacyAmino()
 	interfaceRegistry := sdkTypes.NewInterfaceRegistry()
 	interfaceRegistry.RegisterImplementations((*sdk.Msg)(nil),
