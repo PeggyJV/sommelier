@@ -8,8 +8,12 @@ import (
 // HandleSetTokenPricesProposal is a handler for executing a passed community token price update proposal
 func HandleSetTokenPricesProposal(ctx sdk.Context, k Keeper, p types.SetTokenPricesProposal) error {
 	for _, tokenPrice := range p.TokenPrices {
-		k.setTokenPrice(ctx, *tokenPrice)
+		k.setTokenPrice(ctx, types.TokenPrice{
+			tokenPrice.Denom,
+			tokenPrice.UsdPrice,
+			uint64(ctx.BlockHeight()),
+		})
 	}
-	
+
 	return nil
 }
