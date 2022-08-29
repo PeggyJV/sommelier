@@ -21,7 +21,8 @@ func GetQueryCmd() *cobra.Command {
 
 	auctionQueryCmd.AddCommand([]*cobra.Command{
 		queryParams(),
-		queryAuction(),
+		queryCurrentAuction(),
+		queryEndedAuction(),
 		queryCurrentAuctions(),
 		queryEndedAuctions(),
 		queryBid(),
@@ -61,12 +62,12 @@ func queryParams() *cobra.Command {
 	return cmd
 }
 
-func queryAuction() *cobra.Command {
+func queryCurrentAuction() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:     "auction-by-id",
-		Aliases: []string{"abi"},
+		Use:     "current-auction",
+		Aliases: []string{"ca"},
 		Args:    cobra.ExactArgs(1),
-		Short:   "query an auction from the chain",
+		Short:   "query an ongoing auction from the chain",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx, err := client.GetClientQueryContext(cmd)
 			if err != nil {
@@ -79,11 +80,47 @@ func queryAuction() *cobra.Command {
 			}
 
 			queryClient := types.NewQueryClient(ctx)
-			req := &types.QueryAuctionRequest{
+			req := &types.QueryCurrentAuctionRequest{
 				AuctionId: uint32(auction_id),
 			}
 
-			res, err := queryClient.QueryAuction(cmd.Context(), req)
+			res, err := queryClient.QueryCurrentAuction(cmd.Context(), req)
+			if err != nil {
+				return err
+			}
+
+			return ctx.PrintProto(res)
+		},
+	}
+
+	flags.AddQueryFlagsToCmd(cmd)
+
+	return cmd
+}
+
+func queryEndedAuction() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:     "ended-auction",
+		Aliases: []string{"ea"},
+		Args:    cobra.ExactArgs(1),
+		Short:   "query an ended auction from the chain",
+		RunE: func(cmd *cobra.Command, args []string) error {
+			ctx, err := client.GetClientQueryContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			auction_id, err := strconv.Atoi(args[0])
+			if err != nil {
+				return err
+			}
+
+			queryClient := types.NewQueryClient(ctx)
+			req := &types.QueryEndedAuctionRequest{
+				AuctionId: uint32(auction_id),
+			}
+
+			res, err := queryClient.QueryEndedAuction(cmd.Context(), req)
 			if err != nil {
 				return err
 			}
@@ -100,7 +137,7 @@ func queryAuction() *cobra.Command {
 func queryCurrentAuctions() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:     "current-auctions",
-		Aliases: []string{"ca"},
+		Aliases: []string{"cas"},
 		Args:    cobra.NoArgs,
 		Short:   "query current auctions from the chain",
 		RunE: func(cmd *cobra.Command, _ []string) error {
@@ -130,7 +167,7 @@ func queryCurrentAuctions() *cobra.Command {
 func queryEndedAuctions() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:     "ended-auctions",
-		Aliases: []string{"ea"},
+		Aliases: []string{"eas"},
 		Args:    cobra.NoArgs,
 		Short:   "query ended auctions from the chain",
 		RunE: func(cmd *cobra.Command, _ []string) error {
@@ -158,8 +195,8 @@ func queryEndedAuctions() *cobra.Command {
 
 func queryBid() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:     "bid-by-ids",
-		Aliases: []string{"bbi"},
+		Use:     "bid",
+		Aliases: []string{"b"},
 		Args:    cobra.ExactArgs(2),
 		Short:   "query bid from the chain by its auction id and its bid id",
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -200,8 +237,8 @@ func queryBid() *cobra.Command {
 
 func queryBidsByAuction() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:     "bids-by-auction-i",
-		Aliases: []string{"bbai"},
+		Use:     "bids-for-auction",
+		Aliases: []string{"ba"},
 		Args:    cobra.ExactArgs(1),
 		Short:   "query the bids for an auction on the chain",
 		RunE: func(cmd *cobra.Command, args []string) error {
