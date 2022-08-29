@@ -163,7 +163,6 @@ func queryCurrentAuctions() *cobra.Command {
 	return cmd
 }
 
-
 func queryEndedAuctions() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:     "ended-auctions",
@@ -218,7 +217,7 @@ func queryBid() *cobra.Command {
 			queryClient := types.NewQueryClient(ctx)
 			req := &types.QueryBidRequest{
 				AuctionId: uint32(auction_id),
-				BidId: uint64(bid_id),
+				BidId:     uint64(bid_id),
 			}
 
 			res, err := queryClient.QueryBid(cmd.Context(), req)

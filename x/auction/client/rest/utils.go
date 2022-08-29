@@ -7,14 +7,14 @@ import (
 )
 
 type (
-	// UpdateTokenPricesProposalReq defines a token price update proposal request body.
-	UpdateTokenPricesProposalReq struct {
-		BaseReq rest.BaseReq 				`json:"base_req" yaml:"base_req"`
+	// SetTokenPricesProposalReq defines a token price set proposal request body.
+	SetTokenPricesProposalReq struct {
+		BaseReq rest.BaseReq `json:"base_req" yaml:"base_req"`
 
-		Title         string         		`json:"title" yaml:"title"`
-		Description   string         		`json:"description" yaml:"description"`
-		TokenPrices   []*types.TokenPrice   `json:"token_prices" yaml:"token_prices"`
-		Proposer      sdk.AccAddress 		`json:"proposer" yaml:"proposer"`
-		Deposit       sdk.Coins     		`json:"deposit" yaml:"deposit"`
+		Title       string                      `json:"title" yaml:"title"`
+		Description string                      `json:"description" yaml:"description"`
+		TokenPrices []*types.ProposedTokenPrice `json:"token_prices" yaml:"token_prices"`
+		Proposer    sdk.AccAddress              `json:"proposer" yaml:"proposer"`
+		Deposit     sdk.Coins                   `json:"deposit" yaml:"deposit"`
 	}
 )

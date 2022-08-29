@@ -17,11 +17,11 @@ func init() {
 	govtypes.RegisterProposalTypeCodec(&SetTokenPricesProposal{}, "sommelier/SetTokenPricesProposal")
 }
 
-func NewAddSetTokenPricesProposal(title string, description string, tokenPrices []*TokenPrice) *SetTokenPricesProposal {
+func NewSetTokenPricesProposal(title string, description string, proposedTokenPrices []*ProposedTokenPrice) *SetTokenPricesProposal {
 	return &SetTokenPricesProposal{
 		Title:       title,
 		Description: description,
-		TokenPrices: tokenPrices,
+		TokenPrices: proposedTokenPrices,
 	}
 }
 

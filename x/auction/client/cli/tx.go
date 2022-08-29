@@ -27,27 +27,27 @@ func GetTxCmd() *cobra.Command {
 	return auctionTxCmd
 }
 
-// GetCmdSubmitAddProposal implements the command to submit a token update proposal
-func GetCmdSubmitAddProposal() *cobra.Command {
+// GetCmdSubmitUpdateProposal implements the command to submit a token price set proposal
+func GetCmdSubmitUpdateProposal() *cobra.Command {
 
 	cmd := &cobra.Command{
-		Use:   "update-token-prices [proposal-file]",
+		Use:   "set-token-prices [proposal-file]",
 		Args:  cobra.ExactArgs(1),
 		Short: "Submit a token update proposal",
 		Long: strings.TrimSpace(
-			fmt.Sprintf(`Submit a token update proposal along with an initial deposit.
+			fmt.Sprintf(`Submit a token price set proposal along with an initial deposit.
 The proposal details must be supplied via a JSON file.
 
 Example:
-$ %s tx gov submit-proposal update-token-prices <path/to/proposal.json> --from=<key_or_address>
+$ %s tx gov submit-proposal set-token-prices <path/to/proposal.json> --from=<key_or_address>
 
 Where proposal.json contains:
 
 {
   "title": "Best token price proposal evar",
   "description": "Add the guac",
-  "token_prices": [ { denom: "usomm", usd_price: 1000000 }, {denom: "gwei", usd_price: 0.12501 }],
-  "deposit": "1000stake"
+  "token_prices": [ { denom: "usomm", usd_price: 1000000 }, {denom: "gravity0x177807000200098012302890454066981033554", usd_price: 0.12501 }],
+  "deposit": "10000usommm"
 }
 `,
 				version.AppName,
@@ -81,7 +81,7 @@ Where proposal.json contains:
 				}
 			}
 
-			content := types.NewAddSetTokenPricesProposal(
+			content := types.NewSetTokenPricesProposal(
 				proposal.Title,
 				proposal.Description,
 				proposal.TokenPrices,
