@@ -78,7 +78,6 @@ func (k Keeper) SubmitBid(c context.Context, msg *types.MsgSubmitBidRequest) (*t
 
 	// Transfer purchase to bidder
 	if err := k.bankKeeper.SendCoinsFromModuleToAccount(ctx, types.ModuleName, sdk.AccAddress(msg.GetBidder()), sdk.NewCoins(fulfilledAmt)); err != nil {
-		// TODO: is it worth panicing here? We basically took a users funds and didnt give them anything in return, seems like a really bad regression
 		return &types.MsgSubmitBidResponse{}, err
 	}
 
