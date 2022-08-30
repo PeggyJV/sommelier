@@ -26,10 +26,10 @@ func (k Keeper) QueryCurrentAuction(c context.Context, request *types.QueryCurre
 	activeAuction, found := k.GetActiveAuctionById(ctx, request.GetAuctionId())
 
 	if found {
-		return &types.QueryCurrentAuctionResponse{&activeAuction}, nil
-	} 
+		return &types.QueryCurrentAuctionResponse{Auction: &activeAuction}, nil
+	}
 
-	return &types.QueryCurrentAuctionResponse{},  status.Error(codes.NotFound, "No ongoing auction found for given id")
+	return &types.QueryCurrentAuctionResponse{}, status.Error(codes.NotFound, "No ongoing auction found for given id")
 }
 
 // QueryEndedAuction implements QueryServer
@@ -40,60 +40,60 @@ func (k Keeper) QueryEndedAuction(c context.Context, request *types.QueryEndedAu
 	endedAuction, found := k.GetEndedAuctionById(ctx, request.GetAuctionId())
 
 	if found {
-		return &types.QueryEndedAuctionResponse{&endedAuction}, nil
-	} 
+		return &types.QueryEndedAuctionResponse{Auction: &endedAuction}, nil
+	}
 
-	return &types.QueryEndedAuctionResponse{},  status.Error(codes.NotFound, "No completed auction found for given id")
+	return &types.QueryEndedAuctionResponse{}, status.Error(codes.NotFound, "No completed auction found for given id")
 }
 
 // QueryCurrentAuctions implements QueryServer
 func (k Keeper) QueryCurrentAuctions(c context.Context, _ *types.QueryCurrentAuctionsRequest) (*types.QueryCurrentAuctionsResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
-	
+
 	auctions := k.GetActiveAuctions(ctx)
 
 	if len(auctions) == 0 {
 		return &types.QueryCurrentAuctionsResponse{}, status.Error(codes.NotFound, "No active auctions found")
 	}
 
-	return &types.QueryCurrentAuctionsResponse{auctions}, nil
+	return &types.QueryCurrentAuctionsResponse{Auctions: auctions}, nil
 }
 
 // QueryEndedAuctions implements QueryServer
 func (k Keeper) QueryEndedAuctions(c context.Context, _ *types.QueryEndedAuctionsRequest) (*types.QueryEndedAuctionsResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
-	
+
 	auctions := k.GetEndedAuctions(ctx)
 
 	if len(auctions) == 0 {
 		return &types.QueryEndedAuctionsResponse{}, status.Error(codes.NotFound, "No ended auctions found")
 	}
 
-	return &types.QueryEndedAuctionsResponse{auctions}, nil
+	return &types.QueryEndedAuctionsResponse{Auctions: auctions}, nil
 }
 
 // QueryBid implements QueryServer
 func (k Keeper) QueryBid(c context.Context, request *types.QueryBidRequest) (*types.QueryBidResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
 
-	bid, found := k.GetBid(ctx, request.GetAuctionId() ,request.GetBidId())
-	
+	bid, found := k.GetBid(ctx, request.GetAuctionId(), request.GetBidId())
+
 	if !found {
 		return &types.QueryBidResponse{}, status.Error(codes.NotFound, "No bid found for specified bid id and auction id")
 	}
 
-	return &types.QueryBidResponse{&bid}, nil
+	return &types.QueryBidResponse{Bid: &bid}, nil
 }
 
 // QueryBidsByAuction implements QueryServer
 func (k Keeper) QueryBidsByAuction(c context.Context, request *types.QueryBidsByAuctionRequest) (*types.QueryBidsByAuctionResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
-	
+
 	bids := k.GetBidsByAuctionId(ctx, request.GetAuctionId())
 
 	if len(bids) == 0 {
 		return &types.QueryBidsByAuctionResponse{}, status.Error(codes.NotFound, "No bids found for given auction id")
 	}
 
-	return &types.QueryBidsByAuctionResponse{bids}, nil
+	return &types.QueryBidsByAuctionResponse{Bids: bids}, nil
 }
