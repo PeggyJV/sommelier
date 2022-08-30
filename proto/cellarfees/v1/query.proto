@@ -20,6 +20,10 @@ service Query {
   rpc CellarFeePool(QueryCellarFeePoolRequest) returns (QueryCellarFeePoolResponse) {
     option (google.api.http).get = "/sommelier/cellarfees/v1/cellar_fee_pool";
   }
+
+  rpc ScheduledAuctionHeight(QueryScheduledAuctionHeightRequest) returns (QueryScheduledAuctionHeightResponse) {
+    option (google.api.http).get = "/sommelier/cellarfees/v1/scheduled_auction_height";
+  }
 }
 
 message QueryParamsRequest {}
@@ -39,4 +43,10 @@ message QueryCellarFeePoolRequest {}
 message QueryCellarFeePoolResponse {
   repeated cosmos.base.v1beta1.Coin pool = 1
       [(gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins", (gogoproto.nullable) = false];
+}
+
+message QueryScheduledAuctionHeightRequest {}
+
+message QueryScheduledAuctionHeightResponse {
+  uint64 height = 1;
 }

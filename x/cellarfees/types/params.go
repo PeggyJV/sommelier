@@ -9,6 +9,7 @@ import (
 
 // Parameter keys
 var (
+	KeyAuctionBlockDelay    = []byte("auctionblockdelay")
 	KeyRewardEmissionPeriod = []byte("rewardemissionperiod")
 )
 
@@ -22,6 +23,8 @@ func ParamKeyTable() paramtypes.KeyTable {
 // DefaultParams returns default cellarfees parameters
 func DefaultParams() Params {
 	return Params{
+		// Rough number of blocks in 2 weeks, or ~2 fee accrual cycles for one cellar
+		AuctionBlockDelay: 201600,
 		// Rough number of blocks in 28 days, the time it takes to unbond
 		RewardEmissionPeriod: 403200,
 	}
@@ -30,15 +33,34 @@ func DefaultParams() Params {
 // ParamSetPairs returns the parameter set pairs.
 func (p *Params) ParamSetPairs() paramtypes.ParamSetPairs {
 	return paramtypes.ParamSetPairs{
+		paramtypes.NewParamSetPair(KeyAuctionBlockDelay, &p.AuctionBlockDelay, validateAuctionBlockDelay),
 		paramtypes.NewParamSetPair(KeyRewardEmissionPeriod, &p.RewardEmissionPeriod, validateRewardEmissionPeriod),
 	}
 }
 
 // ValidateBasic performs basic validation on cellarfees parameters.
 func (p *Params) ValidateBasic() error {
+	if err := validateAuctionBlockDelay(p.AuctionBlockDelay); err != nil {
+		return err
+	}
 	if err := validateRewardEmissionPeriod(p.RewardEmissionPeriod); err != nil {
 		return err
 	}
+	return nil
+}
+
+func validateAuctionBlockDelay(i interface{}) error {
+	blockDelay, ok := i.(uint64)
+	if !ok {
+		return fmt.Errorf("invalid parameter type: %T", i)
+	}
+
+	if blockDelay == 0 {
+		return fmt.Errorf(
+			"blockDelay should be greater than 0: %d", blockDelay,
+		)
+	}
+
 	return nil
 }
 

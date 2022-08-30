@@ -7,10 +7,16 @@ import (
 	"github.com/peggyjv/sommelier/v4/x/cellarfees/types"
 )
 
-// BeginBlocker calculates a reward emission based on a constant proportion of the latest peak reward supply.
-// This results in a constant emission rate between top-ups that will exhaust the reward supply after a number
-// of blocks equal to the RewardEmissionPeriod param.
+// BeginBlocker starts auctions when their scheduled block occurs and emits rewards each block they are available by sending
+// them to the distribution module's fee collector account. Emissions are a constant value based on the last peak supply of
+// distributable fees so that the reward supply will decrease linearly until exhausted.
 func (k Keeper) BeginBlocker(ctx sdk.Context) {
+	// Handle auctions
+	if sdk.NewInt(ctx.BlockHeight()).Equal(k.GetScheduledAuctionHeight(ctx)) {
+		k.HandleAuctions(ctx)
+	}
+
+	// Handle reward emissions
 	moduleAccount := k.accountKeeper.GetModuleAccount(ctx, types.ModuleName)
 	remainingRewardsSupply := k.bankKeeper.GetBalance(ctx, moduleAccount.GetAddress(), params.BaseCoinUnit).Amount
 
@@ -35,10 +41,9 @@ func (k Keeper) BeginBlocker(ctx sdk.Context) {
 	if emissionAmount.IsZero() {
 		emissionAmount = sdk.OneInt()
 	} else if emissionAmount.GTE(remainingRewardsSupply) {
-		// We zero out the previous peak value early to avoid doing it every block when the remaining supply's
-		// zero check occurs. We set the final emission to the remaining supply here even though it's potentially
-		// redundant because it's less code than having another check where we would also have to zero out the
-		// prevoius peak supply.
+		// We zero out the previous peak value here to avoid doing it every block. We set the final emission
+		// to the remaining supply here even though it's potentially redundant because it's less code than
+		// having another check where we would also have to zero out the prevoius peak supply.
 		k.SetLastRewardSupplyPeak(ctx, sdk.ZeroInt())
 		emissionAmount = remainingRewardsSupply
 	}

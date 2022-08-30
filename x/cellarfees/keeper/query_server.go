@@ -38,3 +38,11 @@ func (k Keeper) CellarFeePool(c context.Context, req *types.QueryCellarFeePoolRe
 
 	return &types.QueryCellarFeePoolResponse{Pool: pool}, nil
 }
+
+// ScheduledAuctionHeight gets the block height of the next set of auctions
+func (k Keeper) ScheduledAuctionHeight(c context.Context, req *types.QueryScheduledAuctionHeightRequest) (*types.QueryScheduledAuctionHeightResponse, error) {
+	ctx := sdk.UnwrapSDKContext(c)
+	height := k.GetScheduledAuctionHeight(ctx).Uint64()
+
+	return &types.QueryScheduledAuctionHeightResponse{Height: height}, nil
+}

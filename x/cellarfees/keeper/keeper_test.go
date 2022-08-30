@@ -100,43 +100,6 @@ func TestAddingCoinsToPool(t *testing.T) {
 	require.Equal(t, expectedPool, pool.Pool)
 }
 
-func TestSendFeesToAuction(t *testing.T) {
-	env := CreateTestEnv(t)
-	ctx := env.Context
-
-	// initialize pool
-	env.cellarFeesKeeper.SetCellarFeePool(ctx, types.DefaultCellarFeePool())
-
-	denom0 := "gravity-0x0000000000000000000000000000000000000000"
-	denom1 := "gravity-0x1111111111111111111111111111111111111111"
-	multi := sdk.Coins{
-		{
-			Amount: sdk.NewIntFromUint64(100),
-			Denom:  denom0,
-		},
-		{
-
-			Amount: sdk.NewIntFromUint64(100),
-			Denom:  denom1,
-		},
-	}
-
-	// simulate coins being added to module account
-	env.BankKeeper.MintCoins(ctx, types.ModuleName, multi)
-
-	// nothing should happen because pool is empty
-	env.cellarFeesKeeper.SendPoolToAuction(ctx)
-
-	// update pool with moduel account balance
-	env.cellarFeesKeeper.AddCoinsToPool(ctx, multi)
-	env.cellarFeesKeeper.SendPoolToAuction(ctx)
-
-	pool := env.cellarFeesKeeper.GetCellarFeePool(ctx)
-	balances := env.BankKeeper.GetAllBalances(ctx, env.AccountKeeper.GetModuleAddress("auction"))
-	require.Equal(t, multi, balances)
-	require.Equal(t, 0, len(pool.Pool))
-}
-
 func TestGettingSettingLastRewardSupplyPeak(t *testing.T) {
 	env := CreateTestEnv(t)
 	ctx := env.Context
@@ -145,4 +108,14 @@ func TestGettingSettingLastRewardSupplyPeak(t *testing.T) {
 	env.cellarFeesKeeper.SetLastRewardSupplyPeak(ctx, expected)
 
 	require.Equal(t, expected, env.cellarFeesKeeper.GetLastRewardSupplyPeak(ctx))
+}
+
+func TestGettingSettingScheduledAuctionHeight(t *testing.T) {
+	env := CreateTestEnv(t)
+	ctx := env.Context
+
+	expected := sdk.NewInt(10000)
+	env.cellarFeesKeeper.SetScheduledAuctionHeight(ctx, expected)
+
+	require.Equal(t, expected, env.cellarFeesKeeper.GetScheduledAuctionHeight(ctx))
 }

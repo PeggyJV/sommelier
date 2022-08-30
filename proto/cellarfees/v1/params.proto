@@ -9,5 +9,6 @@ option go_package = "github.com/peggyjv/sommelier/v4/x/cellarfees/types";
 message Params {
   option (gogoproto.goproto_stringer) = false;
 
-  uint64 reward_emission_period = 1;
+  uint64 auction_block_delay = 1;
+  uint64 reward_emission_period = 2;
 }

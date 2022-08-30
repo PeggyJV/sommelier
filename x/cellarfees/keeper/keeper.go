@@ -124,20 +124,21 @@ func (k Keeper) AddCoinsToPool(ctx sdk.Context, coins sdk.Coins) {
 	k.SetCellarFeePool(ctx, pool)
 }
 
-func (k Keeper) SendPoolToAuction(ctx sdk.Context) {
+func (k Keeper) HandleAuctions(ctx sdk.Context) {
 	pool := k.GetCellarFeePool(ctx).Pool
 	if pool.Empty() {
+		// Schedule next auction a short delay away until an auction occurs
+		k.SetScheduledAuctionHeight(ctx, k.GetScheduledAuctionHeight(ctx).Add(sdk.NewInt(100)))
 		return
 	}
 
-	// TO-DO: Update when auction module exists. Test setup creates this mock auction module account.
-	err := k.bankKeeper.SendCoinsFromModuleToModule(ctx, types.ModuleName, "auction", pool)
-	if err != nil {
-		panic(err)
-	}
+	// Get any active auctions
 
-	// reset pool
-	k.SetCellarFeePool(ctx, types.DefaultCellarFeePool())
+	// For each denom in pool, start an auction if there isn't an active one
+
+	// Remove denoms from pool that auctions were started for
+
+	k.ScheduleNextAuction(ctx)
 }
 
 ////////////////////////////////
@@ -158,4 +159,31 @@ func (k Keeper) SetLastRewardSupplyPeak(ctx sdk.Context, amount sdk.Int) {
 	store := ctx.KVStore(k.storeKey)
 	b := amount.BigInt().Bytes()
 	store.Set(types.LastHighestRewardSupply, b)
+}
+
+////////////////////////
+// Auction scheduling //
+////////////////////////
+
+func (k Keeper) GetScheduledAuctionHeight(ctx sdk.Context) sdk.Int {
+	store := ctx.KVStore(k.storeKey)
+	b := store.Get(types.NextAuctionHeight)
+	if b == nil {
+		panic("Auction height should not have been nil")
+	}
+	var amount big.Int
+	return sdk.NewIntFromBigInt((&amount).SetBytes(b))
+}
+
+func (k Keeper) SetScheduledAuctionHeight(ctx sdk.Context, amount sdk.Int) {
+	store := ctx.KVStore(k.storeKey)
+	b := amount.BigInt().Bytes()
+	store.Set(types.NextAuctionHeight, b)
+}
+
+func (k Keeper) ScheduleNextAuction(ctx sdk.Context) {
+	lastAuctionHeight := k.GetScheduledAuctionHeight(ctx)
+	// next = last + delay param
+	nextAuctionHeight := lastAuctionHeight.Add(sdk.NewInt(int64(k.GetParams(ctx).AuctionBlockDelay)))
+	k.SetScheduledAuctionHeight(ctx, nextAuctionHeight)
 }
