@@ -23,7 +23,7 @@ func (k Keeper) QueryCurrentAuction(c context.Context, request *types.QueryCurre
 	ctx := sdk.UnwrapSDKContext(c)
 
 	// Check active auctions
-	activeAuction, found := k.GetActiveAuctionById(ctx, request.GetAuctionId())
+	activeAuction, found := k.GetActiveAuctionByID(ctx, request.GetAuctionId())
 
 	if found {
 		return &types.QueryCurrentAuctionResponse{Auction: &activeAuction}, nil
@@ -37,7 +37,7 @@ func (k Keeper) QueryEndedAuction(c context.Context, request *types.QueryEndedAu
 	ctx := sdk.UnwrapSDKContext(c)
 
 	// Check ended auctions first
-	endedAuction, found := k.GetEndedAuctionById(ctx, request.GetAuctionId())
+	endedAuction, found := k.GetEndedAuctionByID(ctx, request.GetAuctionId())
 
 	if found {
 		return &types.QueryEndedAuctionResponse{Auction: &endedAuction}, nil
@@ -89,7 +89,7 @@ func (k Keeper) QueryBid(c context.Context, request *types.QueryBidRequest) (*ty
 func (k Keeper) QueryBidsByAuction(c context.Context, request *types.QueryBidsByAuctionRequest) (*types.QueryBidsByAuctionResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
 
-	bids := k.GetBidsByAuctionId(ctx, request.GetAuctionId())
+	bids := k.GetBidsByAuctionID(ctx, request.GetAuctionId())
 
 	if len(bids) == 0 {
 		return &types.QueryBidsByAuctionResponse{}, status.Error(codes.NotFound, "No bids found for given auction id")

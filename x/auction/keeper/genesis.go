@@ -25,8 +25,8 @@ func InitGenesis(ctx sdk.Context, k Keeper, gs types.GenesisState) {
 		k.setTokenPrice(ctx, *tokenPrice)
 	}
 
-	k.setLastAuctionId(ctx, gs.LastAuctionId)
-	k.setLastBidId(ctx, gs.LastBidId)
+	k.setLastAuctionID(ctx, gs.LastAuctionId)
+	k.setLastBidID(ctx, gs.LastBidId)
 }
 
 // ExportGenesis returns the module's exported genesis.
@@ -40,7 +40,7 @@ func ExportGenesis(ctx sdk.Context, k Keeper) types.GenesisState {
 		Auctions:      auctions,
 		Bids:          k.GetBids(ctx),
 		TokenPrices:   k.GetTokenPrices(ctx),
-		LastAuctionId: k.GetLastAuctionId(ctx),
-		LastBidId:     k.GetLastBidId(ctx),
+		LastAuctionId: k.GetLastAuctionID(ctx),
+		LastBidId:     k.GetLastBidID(ctx),
 	}
 }
