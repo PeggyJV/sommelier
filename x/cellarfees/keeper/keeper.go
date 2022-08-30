@@ -167,7 +167,7 @@ func (k Keeper) SetLastRewardSupplyPeak(ctx sdk.Context, amount sdk.Int) {
 
 func (k Keeper) GetScheduledAuctionHeight(ctx sdk.Context) sdk.Int {
 	store := ctx.KVStore(k.storeKey)
-	b := store.Get(types.NextAuctionHeight)
+	b := store.Get(types.ScheduledAuctionHeight)
 	if b == nil {
 		panic("Auction height should not have been nil")
 	}
@@ -178,7 +178,7 @@ func (k Keeper) GetScheduledAuctionHeight(ctx sdk.Context) sdk.Int {
 func (k Keeper) SetScheduledAuctionHeight(ctx sdk.Context, amount sdk.Int) {
 	store := ctx.KVStore(k.storeKey)
 	b := amount.BigInt().Bytes()
-	store.Set(types.NextAuctionHeight, b)
+	store.Set(types.ScheduledAuctionHeight, b)
 }
 
 func (k Keeper) ScheduleNextAuction(ctx sdk.Context) {
