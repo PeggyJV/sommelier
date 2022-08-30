@@ -1,6 +1,8 @@
 package cli
 
 import (
+	"fmt"
+	"math"
 	"strconv"
 
 	"github.com/cosmos/cosmos-sdk/client"
@@ -77,6 +79,8 @@ func queryCurrentAuction() *cobra.Command {
 			auctionID, err := strconv.Atoi(args[0])
 			if err != nil {
 				return err
+			} else if auctionID > math.MaxInt32 {
+				return fmt.Errorf("auctionID larger than max supported int32")
 			}
 
 			queryClient := types.NewQueryClient(ctx)
@@ -113,6 +117,8 @@ func queryEndedAuction() *cobra.Command {
 			auctionID, err := strconv.Atoi(args[0])
 			if err != nil {
 				return err
+			} else if auctionID > math.MaxInt32 {
+				return fmt.Errorf("auctionID larger than max supported int32")
 			}
 
 			queryClient := types.NewQueryClient(ctx)
@@ -207,6 +213,8 @@ func queryBid() *cobra.Command {
 			auctionID, err := strconv.Atoi(args[0])
 			if err != nil {
 				return err
+			} else if auctionID > math.MaxInt32 {
+				return fmt.Errorf("auctionID larger than max supported int32")
 			}
 
 			bidID, err := strconv.Atoi(args[1])
@@ -249,6 +257,8 @@ func queryBidsByAuction() *cobra.Command {
 			auctionID, err := strconv.Atoi(args[0])
 			if err != nil {
 				return err
+			} else if auctionID > math.MaxInt32 {
+				return fmt.Errorf("auctionID larger than max supported int32")
 			}
 
 			queryClient := types.NewQueryClient(ctx)

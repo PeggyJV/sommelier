@@ -111,11 +111,11 @@ func (k Keeper) IterateAuctions(ctx sdk.Context, auctionTypePrefix []byte, handl
 		key := bytes.NewBuffer(iter.Key())
 		key.Next(1) // trim prefix byte
 
-		auctionId := binary.BigEndian.Uint32(key.Bytes())
+		auctionID := binary.BigEndian.Uint32(key.Bytes())
 
 		var auction types.Auction
 		k.cdc.MustUnmarshal(iter.Value(), &auction)
-		if handler(auctionId, auction) {
+		if handler(auctionID, auction) {
 			break
 		}
 	}
@@ -354,13 +354,13 @@ func (k Keeper) IterateBids(ctx sdk.Context, handler func(auctionID uint32, bidI
 	for ; iter.Valid(); iter.Next() {
 		key := bytes.NewBuffer(iter.Key())
 		key.Next(1)                                       // trim prefix byte
-		auctionId := binary.BigEndian.Uint32(key.Next(4)) // trim auction bytes
+		auctionID := binary.BigEndian.Uint32(key.Next(4)) // trim auction bytes
 
 		bidID := binary.BigEndian.Uint64(key.Bytes())
 
 		var bid types.Bid
 		k.cdc.MustUnmarshal(iter.Value(), &bid)
-		if handler(auctionId, bidID, bid) {
+		if handler(auctionID, bidID, bid) {
 			break
 		}
 	}
@@ -374,13 +374,13 @@ func (k Keeper) IterateBidsByAuction(ctx sdk.Context, auctionID uint32, handler 
 	for ; iter.Valid(); iter.Next() {
 		key := bytes.NewBuffer(iter.Key())
 		key.Next(1)                                       // trim prefix byte
-		auctionId := binary.BigEndian.Uint32(key.Next(4)) // trim auction bytes
+		auctionID := binary.BigEndian.Uint32(key.Next(4)) // trim auction bytes
 
 		bidID := binary.BigEndian.Uint64(key.Bytes())
 
 		var bid types.Bid
 		k.cdc.MustUnmarshal(iter.Value(), &bid)
-		if handler(auctionId, bidID, bid) {
+		if handler(auctionID, bidID, bid) {
 			break
 		}
 	}
