@@ -74,14 +74,14 @@ func queryCurrentAuction() *cobra.Command {
 				return err
 			}
 
-			auction_id, err := strconv.Atoi(args[0])
+			auctionID, err := strconv.Atoi(args[0])
 			if err != nil {
 				return err
 			}
 
 			queryClient := types.NewQueryClient(ctx)
 			req := &types.QueryCurrentAuctionRequest{
-				AuctionId: uint32(auction_id),
+				AuctionId: uint32(auctionID),
 			}
 
 			res, err := queryClient.QueryCurrentAuction(cmd.Context(), req)
@@ -110,14 +110,14 @@ func queryEndedAuction() *cobra.Command {
 				return err
 			}
 
-			auction_id, err := strconv.Atoi(args[0])
+			auctionID, err := strconv.Atoi(args[0])
 			if err != nil {
 				return err
 			}
 
 			queryClient := types.NewQueryClient(ctx)
 			req := &types.QueryEndedAuctionRequest{
-				AuctionId: uint32(auction_id),
+				AuctionId: uint32(auctionID),
 			}
 
 			res, err := queryClient.QueryEndedAuction(cmd.Context(), req)
@@ -204,20 +204,20 @@ func queryBid() *cobra.Command {
 				return err
 			}
 
-			auction_id, err := strconv.Atoi(args[0])
+			auctionID, err := strconv.Atoi(args[0])
 			if err != nil {
 				return err
 			}
 
-			bid_id, err := strconv.Atoi(args[1])
+			bidID, err := strconv.Atoi(args[1])
 			if err != nil {
 				return err
 			}
 
 			queryClient := types.NewQueryClient(ctx)
 			req := &types.QueryBidRequest{
-				AuctionId: uint32(auction_id),
-				BidId:     uint64(bid_id),
+				AuctionId: uint32(auctionID),
+				BidId:     uint64(bidID),
 			}
 
 			res, err := queryClient.QueryBid(cmd.Context(), req)
@@ -246,14 +246,14 @@ func queryBidsByAuction() *cobra.Command {
 				return err
 			}
 
-			auction_id, err := strconv.Atoi(args[0])
+			auctionID, err := strconv.Atoi(args[0])
 			if err != nil {
 				return err
 			}
 
 			queryClient := types.NewQueryClient(ctx)
 			req := &types.QueryBidsByAuctionRequest{
-				AuctionId: uint32(auction_id),
+				AuctionId: uint32(auctionID),
 			}
 
 			res, err := queryClient.QueryBidsByAuction(cmd.Context(), req)

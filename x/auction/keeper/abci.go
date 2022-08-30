@@ -69,7 +69,7 @@ func (k Keeper) EndBlocker(ctx sdk.Context) {
 						),
 						sdk.NewEvent(
 							types.EventTypeAuctionUpdated,
-							sdk.NewAttribute(types.AttributeKeyAuctionId, fmt.Sprint(auction.Id)),
+							sdk.NewAttribute(types.AttributeKeyAuctionID, fmt.Sprint(auction.Id)),
 							sdk.NewAttribute(types.AttributeKeyStartBlock, fmt.Sprint(auction.StartBlock)),
 							sdk.NewAttribute(types.AttributeKeyEndBlock, fmt.Sprint(auction.EndBlock)),
 							sdk.NewAttribute(types.AttributeKeyInitialDecreaseRate, fmt.Sprintf("%f", auction.InitialDecreaseRate)),

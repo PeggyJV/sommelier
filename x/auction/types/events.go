@@ -4,8 +4,8 @@ package types
 const (
 	EventTypeBid = "bid"
 
-	AttributeKeyBidId           = "bid_id"
-	AttributeKeyAuctionId       = "auction_id"
+	AttributeKeyBidID           = "bid_id"
+	AttributeKeyAuctionID       = "auction_id"
 	AttributeKeyBidder          = "max_bid"
 	AttributeKeyMinimumAmount   = "minimum_amount"
 	AttributeKeySigner          = "signer"
@@ -21,13 +21,13 @@ const (
 	AttributeKeyStartingDenom         = "starting_denom"
 	AttributeKeyStartingUsommPrice    = "starting_price_in_usomm"
 
-	EventTypeAuctionFinished        = "auction_finished"
+	EventTypeAuctionFinished = "auction_finished"
 
 	AttributeKeyEndBlock            = "end_block"
 	AttributeKeyCurrentDecreaseRate = "current_decrease_rate"
 	AttributeKeyAmountRemaining     = "amount_remaining"
 
-	EventTypeAuctionUpdated        = "auction_updated"
+	EventTypeAuctionUpdated = "auction_updated"
 
 	AttributeValueCategory = ModuleName
 )

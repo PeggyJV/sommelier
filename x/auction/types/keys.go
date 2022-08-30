@@ -35,10 +35,10 @@ const (
 	TokenPricesPrefix
 
 	// <prefix>
-	LastAuctionIdKey
+	LastAuctionIDKey
 
 	// <prefix>
-	LastBidIdKey
+	LastBidIDKey
 )
 
 // GetActiveAuctionsPrefix returns the key prefix for active auctions
@@ -70,18 +70,18 @@ func GetBidsByAuctionPrefix() []byte {
 	return []byte{BidsByAuctionPrefix}
 }
 
-// GetBidsByAuctionIdPrefix returns the bids for an auction id
-func GetBidsByAuctionIdPrefix(auction_id uint32) []byte {
+// GetBidsByAuctionIDPrefix returns the bids for an auction id
+func GetBidsByAuctionIDPrefix(auctionID uint32) []byte {
 	b := make([]byte, 4)
-	binary.BigEndian.PutUint32(b, auction_id)
+	binary.BigEndian.PutUint32(b, auctionID)
 	return append(GetBidsByAuctionPrefix(), b...)
 }
 
 // GetBidKey returns the bid for an auction and bid id
-func GetBidKey(auctionId uint32, bidId uint64) []byte {
+func GetBidKey(auctionID uint32, bidID uint64) []byte {
 	b := make([]byte, 8)
-	binary.BigEndian.PutUint64(b, bidId)
-	return append(GetBidsByAuctionIdPrefix(auctionId), b...)
+	binary.BigEndian.PutUint64(b, bidID)
+	return append(GetBidsByAuctionIDPrefix(auctionID), b...)
 }
 
 // GetTokenPricesPrefix returns the key prefix for token prices
@@ -94,12 +94,12 @@ func GetTokenPriceKey(denom string) []byte {
 	return append(GetTokenPricesPrefix(), []byte(denom)...)
 }
 
-// GetLastAuctionIdKey returns the key prefix for the last stored auction id
-func GetLastAuctionIdKey() []byte {
-	return []byte{LastAuctionIdKey}
+// GetLastAuctionIDKey returns the key prefix for the last stored auction id
+func GetLastAuctionIDKey() []byte {
+	return []byte{LastAuctionIDKey}
 }
 
-// GetLastBidIdKey returns the key prefix for the last stored bid id
-func GetLastBidIdKey() []byte {
-	return []byte{LastBidIdKey}
+// GetLastBidIDKey returns the key prefix for the last stored bid id
+func GetLastBidIDKey() []byte {
+	return []byte{LastBidIDKey}
 }

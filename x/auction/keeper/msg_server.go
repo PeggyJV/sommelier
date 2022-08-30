@@ -24,7 +24,7 @@ func (k Keeper) SubmitBid(c context.Context, msg *types.MsgSubmitBidRequest) (*t
 	}
 
 	// Verify auction
-	auction, found := k.GetActiveAuctionById(ctx, msg.GetAuctionId())
+	auction, found := k.GetActiveAuctionByID(ctx, msg.GetAuctionId())
 	if !found {
 		return &types.MsgSubmitBidResponse{}, types.ErrAuctionNotFound
 	}
@@ -112,9 +112,9 @@ func (k Keeper) SubmitBid(c context.Context, msg *types.MsgSubmitBidRequest) (*t
 	auction.AmountRemaining.Amount = totalSaleTokenBalanceForSale.Amount.Sub(totalFulfilledSaleTokenAmount.Amount)
 	k.setActiveAuction(ctx, auction)
 
-	newBidId := k.GetLastBidId(ctx) + 1
+	newBidID := k.GetLastBidID(ctx) + 1
 	bid := types.Bid{
-		Id:                            newBidId,
+		Id:                            newBidID,
 		AuctionId:                     msg.GetAuctionId(),
 		Bidder:                        msg.GetBidder(),
 		MaxBid:                        msg.GetMaxBidInUsomm(),
@@ -127,7 +127,7 @@ func (k Keeper) SubmitBid(c context.Context, msg *types.MsgSubmitBidRequest) (*t
 	k.setBid(ctx, bid)
 
 	// Update latest bid id
-	k.setLastBidId(ctx, newBidId)
+	k.setLastBidID(ctx, newBidID)
 
 	// Verify auction still has supply to see if we need to finish it
 	if totalSaleTokenBalanceForSale.Amount.IsZero() {
@@ -144,8 +144,8 @@ func (k Keeper) SubmitBid(c context.Context, msg *types.MsgSubmitBidRequest) (*t
 			),
 			sdk.NewEvent(
 				types.EventTypeBid,
-				sdk.NewAttribute(types.AttributeKeyAuctionId, fmt.Sprint(msg.GetAuctionId())),
-				sdk.NewAttribute(types.AttributeKeyBidId, fmt.Sprint(newBidId)),
+				sdk.NewAttribute(types.AttributeKeyAuctionID, fmt.Sprint(msg.GetAuctionId())),
+				sdk.NewAttribute(types.AttributeKeyBidID, fmt.Sprint(newBidID)),
 				sdk.NewAttribute(types.AttributeKeyBidder, fmt.Sprint(msg.GetBidder())),
 				sdk.NewAttribute(types.AttributeKeyMinimumAmount, msg.GetMinimumSaleTokenPurchaseAmount().String()),
 				sdk.NewAttribute(types.AttributeKeySigner, msg.GetSigner()),

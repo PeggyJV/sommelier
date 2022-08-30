@@ -20,9 +20,9 @@ const (
 /////////////////////////
 
 // NewMsgSubmitBidRequest return a new MsgSubmitBidRequest
-func NewMsgSubmitBidRequest(body []byte, auctionId uint32, maxBidInUsomm sdk.Coin, minimumSaleTokenPurchaseAmount sdk.Coin, signer sdk.AccAddress) (*MsgSubmitBidRequest, error) {
+func NewMsgSubmitBidRequest(body []byte, auctionID uint32, maxBidInUsomm sdk.Coin, minimumSaleTokenPurchaseAmount sdk.Coin, signer sdk.AccAddress) (*MsgSubmitBidRequest, error) {
 	return &MsgSubmitBidRequest{
-		AuctionId:                      auctionId,
+		AuctionId:                      auctionID,
 		MaxBidInUsomm:                  maxBidInUsomm,
 		MinimumSaleTokenPurchaseAmount: minimumSaleTokenPurchaseAmount,
 		Bidder:                         signer.String(),
