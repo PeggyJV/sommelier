@@ -1,27 +1,28 @@
 package keeper
 
 import (
-	"fmt"
 	"bytes"
+	"fmt"
 	"strconv"
 
-	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
+	"encoding/binary"
+
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
 	"github.com/peggyjv/sommelier/v4/x/auction/types"
 	"github.com/tendermint/tendermint/libs/log"
-	"encoding/binary"
 )
 
 // Keeper of the auction store
 type Keeper struct {
-	storeKey                 sdk.StoreKey
-	cdc                      codec.BinaryCodec
-	paramSpace               paramtypes.Subspace
-	bankKeeper               types.BankKeeper
-	fundingModuleAccounts    map[string]string
-	proceedsModuleAccounts   map[string]string
+	storeKey               sdk.StoreKey
+	cdc                    codec.BinaryCodec
+	paramSpace             paramtypes.Subspace
+	bankKeeper             types.BankKeeper
+	fundingModuleAccounts  map[string]string
+	proceedsModuleAccounts map[string]string
 }
 
 // NewKeeper creates a new auction Keeper instance
@@ -35,11 +36,11 @@ func NewKeeper(
 	}
 
 	return Keeper{
-		storeKey:   key,
-		cdc:        cdc,
-		paramSpace: paramSpace,
-		bankKeeper: bankKeeper,
-		fundingModuleAccounts: fundingModuleAccounts,
+		storeKey:               key,
+		cdc:                    cdc,
+		paramSpace:             paramSpace,
+		bankKeeper:             bankKeeper,
+		fundingModuleAccounts:  fundingModuleAccounts,
 		proceedsModuleAccounts: proceedsModuleAccounts,
 	}
 }
@@ -169,7 +170,7 @@ func (k Keeper) BeginAuction(ctx sdk.Context,
 	proceedsModule string) error {
 	// Verify token price freshness is acceptable
 	lastUpdate := k.GetLastTokenPriceUpdateBlock(ctx)
-	if lastUpdate == 0 || (uint64(ctx.BlockHeight()) - lastUpdate) > k.GetParamSet(ctx).PriceMaxBlockAge {
+	if lastUpdate == 0 || (uint64(ctx.BlockHeight())-lastUpdate) > k.GetParamSet(ctx).PriceMaxBlockAge {
 		return fmt.Errorf("cannot perform action, last price update was too long ago, submit new prices and try again")
 	}
 
@@ -201,7 +202,7 @@ func (k Keeper) BeginAuction(ctx sdk.Context,
 		return fmt.Errorf("unauthorized funding module")
 	}
 
-	// Validate proceeds module 
+	// Validate proceeds module
 	if _, ok := k.proceedsModuleAccounts[authtypes.NewModuleAddress(proceedsModule).String()]; !ok {
 		return fmt.Errorf("unauthorized proceeds module")
 	}
@@ -223,7 +224,7 @@ func (k Keeper) BeginAuction(ctx sdk.Context,
 	if !found {
 		return fmt.Errorf("no price data found for starting amount denom")
 	}
-	
+
 	// Calculate starting price
 	sommPrice, found := k.GetTokenPrice(ctx, "usomm")
 
@@ -243,20 +244,20 @@ func (k Keeper) BeginAuction(ctx sdk.Context,
 
 	// Add auction to active auctions
 	k.setActiveAuction(ctx, types.Auction{
-		Id: k.GetLastAuctionId(ctx) + 1, 
-		StartingAmount: startingAmount,
-		StartBlock: uint64(ctx.BlockHeight()),
-		EndBlock: 0,
-		InitialDecreaseRate: initialDecreaseRate,
-		CurrentDecreaseRate: initialDecreaseRate,
-		BlockDecreaseInterval: blockDecreaseInterval,
-		CurrentPrice: sdk.NewCoin(currentSaleTokenPrice.Denom, sdk.NewInt(saleTokenPriceInUsomm)), 
-		AmountRemaining: startingAmount,
-		ProceedsModuleAccount: proceedsModule,
+		Id:                      k.GetLastAuctionId(ctx) + 1,
+		StartingAmount:          startingAmount,
+		StartBlock:              uint64(ctx.BlockHeight()),
+		EndBlock:                0,
+		InitialDecreaseRate:     initialDecreaseRate,
+		CurrentDecreaseRate:     initialDecreaseRate,
+		BlockDecreaseInterval:   blockDecreaseInterval,
+		CurrentUnitPriceInUsomm: sdk.NewCoin(currentSaleTokenPrice.Denom, sdk.NewInt(saleTokenPriceInUsomm)),
+		AmountRemaining:         startingAmount,
+		ProceedsModuleAccount:   proceedsModule,
 	})
 
 	// Update last auction id
-	k.setLastAuctionId(ctx, k.GetLastAuctionId(ctx) + 1)
+	k.setLastAuctionId(ctx, k.GetLastAuctionId(ctx)+1)
 
 	// Emit event that auction has started
 	ctx.EventManager().EmitEvents(
@@ -272,7 +273,7 @@ func (k Keeper) BeginAuction(ctx sdk.Context,
 				sdk.NewAttribute(types.AttributeKeyInitialDecreaseRate, strconv.FormatFloat(float64(initialDecreaseRate), 'E', -1, 32)),
 				sdk.NewAttribute(types.AttributeKeyBlockDecreaseInterval, string(blockDecreaseInterval)),
 				sdk.NewAttribute(types.AttributeKeyStartingDenom, startingAmount.Denom),
-				sdk.NewAttribute(types.AttributeKeyStartingAmount,startingAmount.Amount.String()),
+				sdk.NewAttribute(types.AttributeKeyStartingAmount, startingAmount.Amount.String()),
 				sdk.NewAttribute(types.AttributeKeyStartingUsommPrice, string(saleTokenPriceInUsomm)),
 			),
 		},
@@ -281,11 +282,46 @@ func (k Keeper) BeginAuction(ctx sdk.Context,
 	return nil
 }
 
+// FinishAuction completes an auction by sending relevant funds to destination addresses and updates state
+func (k Keeper) FinishAuction(ctx sdk.Context, auction *types.Auction) error {
+	// Figure out how many funds we have left over, if any, to send
+	saleTokenBalance := k.bankKeeper.GetBalance(ctx, authtypes.NewModuleAddress(types.ModuleName), auction.StartingAmount.Denom)
+
+	if saleTokenBalance.Amount.IsPositive() {
+		// Send remaining funds to their appropriate destination module
+		if err := k.bankKeeper.SendCoinsFromModuleToModule(ctx, types.ModuleName, auction.FundingModuleAccount, sdk.Coins{saleTokenBalance}); err != nil {
+			return err
+		}
+	}
+
+	// Calculate amount of usomm proceeds to send back from total bids for auction
+	bids := k.GetBidsByAuctionId(ctx, auction.Id)
+	var usommProceeds sdk.Int
+
+	for _, bid := range bids {
+		usommProceeds.Add(bid.TotalFulfilledSaleTokenAmount.Amount.Mul(bid.UnitPriceOfSaleTokenInUsomm.Amount))
+	}
+
+	// Send proceeds to their appropriate destination module
+	if err := k.bankKeeper.SendCoinsFromModuleToModule(ctx, types.ModuleName, auction.ProceedsModuleAccount, sdk.Coins{sdk.NewCoin("usomm", usommProceeds)}); err != nil {
+		return err
+	}
+
+	// Remove auction from active list
+	k.deleteActiveAuction(ctx, auction.Id)
+
+	// Move auction to ended auctions list with updated fields
+	auction.EndBlock = uint64(ctx.BlockHeight())
+	k.setEndedAuction(ctx, *auction)
+
+	return nil
+}
+
 //////////////
 //   Bids   //
 //////////////
 
-// IterateBids iterates over all bids in the store 
+// IterateBids iterates over all bids in the store
 func (k Keeper) IterateBids(ctx sdk.Context, handler func(bidId uint64, bid types.Bid) (stop bool)) {
 	store := ctx.KVStore(k.storeKey)
 	iter := sdk.KVStorePrefixIterator(store, types.GetBidsByAuctionPrefix())
@@ -371,7 +407,7 @@ func (k Keeper) setBid(ctx sdk.Context, bid types.Bid) {
 // TokenPrices //
 /////////////////
 
-// IterateTokenPrices iterates over all token prices in the store 
+// IterateTokenPrices iterates over all token prices in the store
 func (k Keeper) IterateTokenPrices(ctx sdk.Context, handler func(denom string, tokenPrice types.TokenPrice) (stop bool)) {
 	store := ctx.KVStore(k.storeKey)
 	iter := sdk.KVStorePrefixIterator(store, types.GetTokenPricesPrefix())
@@ -419,7 +455,6 @@ func (k Keeper) GetTokenPrice(ctx sdk.Context, denom string) (types.TokenPrice, 
 func (k Keeper) setTokenPrice(ctx sdk.Context, tokenPrice types.TokenPrice) {
 	bz := k.cdc.MustMarshal(&tokenPrice)
 	ctx.KVStore(k.storeKey).Set(types.GetTokenPriceKey(tokenPrice.GetDenom()), bz)
-	k.setLastTokenPriceUpdateBlock(ctx, uint64(ctx.BlockHeight()))
 }
 
 //////////////////
@@ -442,15 +477,6 @@ func (k Keeper) setLastBidId(ctx sdk.Context, id uint64) {
 	ctx.KVStore(k.storeKey).Set(types.GetLastBidIdKey(), b)
 }
 
-// setLastTokenPriceUpdateBlock sets the last block a token price update was performed
-func (k Keeper) setLastTokenPriceUpdateBlock(ctx sdk.Context, block uint64) {
-	b := make([]byte, 8)
-	binary.BigEndian.PutUint64(b, block)
-
-	ctx.KVStore(k.storeKey).Set(types.GetLastBidIdKey(), b)
-}
-
-
 // GetLastAuctionId gets the last auction id
 func (k Keeper) GetLastAuctionId(ctx sdk.Context) uint32 {
 	store := ctx.KVStore(k.storeKey)
@@ -468,18 +494,6 @@ func (k Keeper) GetLastBidId(ctx sdk.Context) uint64 {
 	store := ctx.KVStore(k.storeKey)
 
 	bz := store.Get(types.GetLastBidIdKey())
-	if len(bz) != 0 {
-		return 0
-	}
-
-	return binary.BigEndian.Uint64(bz)
-}
-
-// GetLastTokenPriceUpdateBlock gets the last bid id
-func (k Keeper) GetLastTokenPriceUpdateBlock(ctx sdk.Context) uint64 {
-	store := ctx.KVStore(k.storeKey)
-
-	bz := store.Get(types.GetLastTokenPriceBlock())
 	if len(bz) != 0 {
 		return 0
 	}

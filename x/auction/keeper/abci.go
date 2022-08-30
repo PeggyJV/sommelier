@@ -2,67 +2,50 @@ package keeper
 
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/peggyjv/sommelier/v4/x/auction/types"
 )
 
 // BeginBlocker is called at the beginning of every block
-func (k Keeper) BeginBlocker(ctx sdk.Context) {
-	for _, auction := range k.GetActiveAuctions(ctx) {
-		if ((ctx.BlockHeight() - int64(auction.StartBlock) ) % int64(auction.BlockDecreaseInterval)) == 0 {
-			// TODO Step function for auction price updates
-
-			if auction.CurrentDecreaseRate == auction.InitialDecreaseRate {
-				auction.CurrentPrice.Amount = sdk.NewInt(int64(float32(auction.CurrentPrice.Amount.ToDec().MustFloat64()) * auction.CurrentDecreaseRate))
-
-				if auction.CurrentPrice.Amount.IsZero(){
-					auction.CurrentPrice.Amount = sdk.NewInt(1)
-				}
-			} else {
-				// TODO: Fancy price update part, do we need bids to have block height or can we use ratio of currentprice : initialprice (consideration of total bids) as proxy?
-
-			}
-
-			// Update stored auction
-			k.setActiveAuction(ctx, *auction)
-		}
-	}
-
-
-	// TODO: do we need to do anything with proposal voting periods here?
-}
+func (k Keeper) BeginBlocker(ctx sdk.Context) {}
 
 // EndBlocker is called at the end of every block
 func (k Keeper) EndBlocker(ctx sdk.Context) {
 	// End Auctions that have no funds left
 	for _, auction := range k.GetActiveAuctions(ctx) {
 		if auction.AmountRemaining.Amount.IsZero() {
-			// Figure out how many funds we have to send
-			supply := k.bankKeeper.GetSupply(ctx, auction.StartingAmount.Denom)
+			err := k.FinishAuction(ctx, auction)
 
-			// Send proceeds to their appropriate destination module
-			if err := k.bankKeeper.SendCoinsFromModuleToModule(ctx, types.ModuleName, auction.ProceedsModuleAccount, sdk.Coins{supply}); err != nil {
-				// TODO: Panic here or no?
+			if err != nil {
 				panic(err)
 			}
-
-			// Move auction to ended auctions list with updated fields
-			k.setEndedAuction(ctx, types.Auction{
-				Id: auction.Id,
-				StartingAmount: auction.StartingAmount,
-				StartBlock: auction.StartBlock,
-				EndBlock: uint64(ctx.BlockHeight()),
-				InitialDecreaseRate: auction.InitialDecreaseRate,
-				CurrentDecreaseRate: auction.CurrentDecreaseRate,
-				BlockDecreaseInterval: auction.BlockDecreaseInterval,
-				CurrentPrice: auction.CurrentPrice,
-				AmountRemaining: auction.AmountRemaining,
-				ProceedsModuleAccount: auction.ProceedsModuleAccount,
-			})
-
-			// Remove auction from active list
-			k.deleteActiveAuction(ctx, auction.Id)
 		}
 	}
 
-	// TODO: anything else? Trim down old auctions and bids maybe?
+	for _, auction := range k.GetActiveAuctions(ctx) {
+		if ((ctx.BlockHeight() - int64(auction.StartBlock)) % int64(auction.BlockDecreaseInterval)) == 0 {
+			// TODO post MVP (pbal) Make a more intricate & responsive step function for auction price updates
+
+			// Simple constant decrease rate meant for MVP
+			decreaseMultiplier := float64(1 - auction.CurrentDecreaseRate)
+			//grossPriceDecrease :=
+
+			//newUnitPriceInUsomm :=
+
+			// If the new price would be <= 0, finish the auction
+			if !newUnitPriceInUsomm.IsPositive() {
+				err := k.FinishAuction(ctx, auction)
+
+				if err != nil {
+					panic(err)
+				}
+			} else { // Otherwise update the auction with the newest price
+				// Note we are not truncating the unit price (if usomm is stronger than the fee token, users will have to bid for a minimum number of fee tokens to make a purchase)
+				auction.CurrentUnitPriceInUsomm = newUnitPriceInUsomm
+
+				// Update stored auction
+				k.setActiveAuction(ctx, *auction)
+			}
+		}
+	}
+
+	// TODO post MVP (pbal): prune bids and auctions
 }
