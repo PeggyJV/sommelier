@@ -124,7 +124,7 @@ func (b *Bid) Equals(other Bid) bool {
 		return false
 	}
 
-	if !b.UnitPriceOfSaleTokenInUsomm.IsEqual(other.UnitPriceOfSaleTokenInUsomm) {
+	if !b.UnitPriceOfSaleTokenInUsomm.Equal(other.UnitPriceOfSaleTokenInUsomm) {
 		return false
 	}
 
@@ -152,7 +152,7 @@ func (b *Bid) ValidateBasic() error {
 		return fmt.Errorf("total sale token fulfillment amount must be non negative")
 	}
 
-	if !b.UnitPriceOfSaleTokenInUsomm.Amount.IsPositive() {
+	if !b.UnitPriceOfSaleTokenInUsomm.IsPositive() {
 		return fmt.Errorf("unit price of sale tokens in usomm must be positive")
 	}
 

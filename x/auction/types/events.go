@@ -12,7 +12,7 @@ const (
 	AttributeKeyFulfilledPrice  = "fulfilled_price_of_sale_token_in_usomm"
 	AttributeKeyFulfilledAmount = "total_sale_token_fulfilled_amount"
 
-	EventTypeAuction = "auction"
+	EventTypeNewAuction = "new_auction"
 
 	AttributeKeyStartBlock            = "start_block"
 	AttributeKeyInitialDecreaseRate   = "initial_decrease_rate"
@@ -20,6 +20,14 @@ const (
 	AttributeKeyStartingAmount        = "starting_amount_of_sale_token"
 	AttributeKeyStartingDenom         = "starting_denom"
 	AttributeKeyStartingUsommPrice    = "starting_price_in_usomm"
+
+	EventTypeAuctionFinished        = "auction_finished"
+
+	AttributeKeyEndBlock            = "end_block"
+	AttributeKeyCurrentDecreaseRate = "current_decrease_rate"
+	AttributeKeyAmountRemaining     = "amount_remaining"
+
+	EventTypeAuctionUpdated        = "auction_updated"
 
 	AttributeValueCategory = ModuleName
 )
