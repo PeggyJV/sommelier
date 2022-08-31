@@ -18,7 +18,6 @@ func (k Keeper) SubmitBid(c context.Context, msg *types.MsgSubmitBidRequest) (*t
 
 	// Verify signer is the same as the bidder
 	signer := msg.MustGetSigner()
-
 	if !signer.Equals(sdk.AccAddress(msg.Bidder)) {
 		return &types.MsgSubmitBidResponse{}, types.ErrSignerDifferentFromBidder
 	}
@@ -42,7 +41,7 @@ func (k Keeper) SubmitBid(c context.Context, msg *types.MsgSubmitBidRequest) (*t
 	// Query our module address for funds
 	totalSaleTokenBalanceForSale := k.bankKeeper.GetBalance(ctx, authtypes.NewModuleAddress(types.ModuleName), auction.StartingAmount.Denom)
 
-	// Calculate minimum purchase price
+	// Convert & standardize types for use below
 	currentSaleUnitPriceInUsomm, err := auction.CurrentUnitPriceInUsomm.Float64()
 	if err != nil {
 		return &types.MsgSubmitBidResponse{}, types.ErrConvertingTokenPriceToFloat
@@ -58,16 +57,12 @@ func (k Keeper) SubmitBid(c context.Context, msg *types.MsgSubmitBidRequest) (*t
 		return &types.MsgSubmitBidResponse{}, types.ErrConvertingTokenPriceToFloat
 	}
 
+	// Calculate minimum purchase price
 	minimumPurchasePriceInUsomm := currentSaleUnitPriceInUsomm * minimumSaleTokenPurchaseAmount
 
 	// Verify minimum price is <= bid
 	if minimumPurchasePriceInUsomm > maxBidInUsomm {
 		return &types.MsgSubmitBidResponse{}, types.ErrMinimumPurchaseLargerThanBid
-	}
-
-	// Verify bid is >= auction base denom price (aka minimum purchase price); note in theory this can be < 1
-	if msg.MaxBidInUsomm.Amount.ToDec().LT(auction.CurrentUnitPriceInUsomm) {
-		return &types.MsgSubmitBidResponse{}, types.ErrBidSmallerThanMinimumPurchasePrice
 	}
 
 	// Start off fulfilled sale token amount at 0
@@ -76,7 +71,7 @@ func (k Keeper) SubmitBid(c context.Context, msg *types.MsgSubmitBidRequest) (*t
 	// Note this is the quotient of the divison operation so fractions are truncated appropriately
 	largestSaleTokenAmountPossibleToPurchaseForBid := msg.MaxBidInUsomm.Amount.Quo(sdk.Int(auction.CurrentUnitPriceInUsomm))
 
-	// Verify you can actually purchase at least 1 sale token denom with this amount; note this is important as sale token unit price can be < 1
+	// Verify you can actually purchase at least 1 sale token denom with this amount
 	if !largestSaleTokenAmountPossibleToPurchaseForBid.IsPositive() {
 		return &types.MsgSubmitBidResponse{}, types.ErrInsufficientBid
 	}
@@ -87,6 +82,7 @@ func (k Keeper) SubmitBid(c context.Context, msg *types.MsgSubmitBidRequest) (*t
 
 	} else if totalSaleTokenBalanceForSale.Amount.GTE(msg.MinimumSaleTokenPurchaseAmount.Amount) {
 		totalFulfilledSaleTokenAmount.Amount = totalSaleTokenBalanceForSale.Amount
+		
 	} else {
 		return &types.MsgSubmitBidResponse{}, types.ErrMinimumPurchaseAmountLargerThanTokensRemaining
 	}

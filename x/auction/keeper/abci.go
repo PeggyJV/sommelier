@@ -27,20 +27,19 @@ func (k Keeper) EndBlocker(ctx sdk.Context) {
 		if ((ctx.BlockHeight() - int64(auction.StartBlock)) % int64(auction.BlockDecreaseInterval)) == 0 {
 			// TODO post MVP (pbal) Make a more intricate & responsive step function for auction price updates
 
-			initialUSDPrice, found := k.GetTokenPrice(ctx, auction.StartingAmount.Denom)
+			// Note, if token prices change in state due to governance, they will be reflected below as well
+			// Also note we do not check price freshness below, freshness is only checked at auction start time
+			initialSaleTokenUSDPrice, found := k.GetTokenPrice(ctx, auction.StartingAmount.Denom)
 			if !found {
 				panic("no price data found for starting amount denom")
 			}
 
-			usommPrice, found := k.GetTokenPrice(ctx, "usomm")
-
+			usommUSDPrice, found := k.GetTokenPrice(ctx, "usomm")
 			if !found {
 				panic("no price data found for usomm")
 			}
 
-			// Note we do not check price freshness above, freshness is only checked at auction start time
-
-			initialSaleTokenUnitPriceInUsomm := usommPrice.UsdPrice.MustFloat64() / initialUSDPrice.UsdPrice.MustFloat64()
+			initialSaleTokenUnitPriceInUsomm := initialSaleTokenUSDPrice.UsdPrice.MustFloat64() / usommUSDPrice.UsdPrice.MustFloat64()
 
 			// Simple constant decrease rate meant for MVP
 			priceDecreaseAmountInUsomm := initialSaleTokenUnitPriceInUsomm * float64(auction.CurrentDecreaseRate)
@@ -60,7 +59,7 @@ func (k Keeper) EndBlocker(ctx sdk.Context) {
 				// Update stored auction
 				k.setActiveAuction(ctx, *auction)
 
-				// Emit event that auction has finished
+				// Emit event that auction has updated
 				ctx.EventManager().EmitEvents(
 					sdk.Events{
 						sdk.NewEvent(

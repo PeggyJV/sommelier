@@ -181,27 +181,27 @@ func (k Keeper) BeginAuction(ctx sdk.Context,
 	// Calculate somm per sale token price
 
 	// Starting price is amount of usomm required for 1 of starting denom
-	salePriceFloat, err := lastSaleTokenPrice.UsdPrice.Float64()
+	saleTokenUSDPriceFloat, err := lastSaleTokenPrice.UsdPrice.Float64()
 
 	if err != nil {
 		return types.ErrConvertingTokenPriceToFloat
 	}
 
-	sommPriceFloat, err := lastSommTokenPrice.UsdPrice.Float64()
+	usommTokenUSDPriceFloat, err := lastSommTokenPrice.UsdPrice.Float64()
 
 	if err != nil {
 		return types.ErrConvertingTokenPriceToFloat
 	}
 
-	saleTokenPriceInUsomm := sommPriceFloat / salePriceFloat
-	saleTokenPriceDec, err := sdk.NewDecFromStr(fmt.Sprintf("%f", saleTokenPriceInUsomm))
+	saleTokenPriceInUsomm := saleTokenUSDPriceFloat / usommTokenUSDPriceFloat
+	saleTokenPriceInUsommDec, err := sdk.NewDecFromStr(fmt.Sprintf("%f", saleTokenPriceInUsomm))
 	if err != nil {
 		return types.ErrConvertingStringToDec
 	}
 
 	// Validate starting amount
 	if !startingAmount.Amount.IsPositive() {
-		return types.ErrAuctionStartinAmountMustBePositve
+		return types.ErrAuctionStartingAmountMustBePositve
 	}
 
 	if startingAmount.Denom == "" {
@@ -244,23 +244,25 @@ func (k Keeper) BeginAuction(ctx sdk.Context,
 		return err
 	}
 
+	auctionID := k.GetLastAuctionID(ctx) + 1
+
 	// Add auction to active auctions
 	k.setActiveAuction(ctx, types.Auction{
-		Id:                      k.GetLastAuctionID(ctx) + 1,
+		Id:                      auctionID,
 		StartingAmount:          startingAmount,
 		StartBlock:              uint64(ctx.BlockHeight()),
 		EndBlock:                0,
 		InitialDecreaseRate:     initialDecreaseRate,
 		CurrentDecreaseRate:     initialDecreaseRate,
 		BlockDecreaseInterval:   blockDecreaseInterval,
-		CurrentUnitPriceInUsomm: saleTokenPriceDec,
+		CurrentUnitPriceInUsomm: saleTokenPriceInUsommDec,
 		AmountRemaining:         startingAmount,
 		FundingModuleAccount:    fundingModuleAccount,
 		ProceedsModuleAccount:   proceedsModuleAccount,
 	})
 
 	// Update last auction id
-	k.setLastAuctionID(ctx, k.GetLastAuctionID(ctx)+1)
+	k.setLastAuctionID(ctx, auctionID)
 
 	// Emit event that auction has started
 	ctx.EventManager().EmitEvents(
@@ -288,6 +290,7 @@ func (k Keeper) BeginAuction(ctx sdk.Context,
 // FinishAuction completes an auction by sending relevant funds to destination addresses and updates state
 func (k Keeper) FinishAuction(ctx sdk.Context, auction *types.Auction) error {
 	// Figure out how many funds we have left over, if any, to send
+	// Since we can only have 1 auction per denom active at a time, we can just query the balance
 	saleTokenBalance := k.bankKeeper.GetBalance(ctx, authtypes.NewModuleAddress(types.ModuleName), auction.StartingAmount.Denom)
 
 	if saleTokenBalance.Amount.IsPositive() {
@@ -299,7 +302,7 @@ func (k Keeper) FinishAuction(ctx sdk.Context, auction *types.Auction) error {
 
 	// Calculate amount of usomm proceeds to send back from total bids for auction
 	bids := k.GetBidsByAuctionID(ctx, auction.Id)
-	var usommProceeds sdk.Dec
+	usommProceeds := sdk.NewDec(int64(0))
 
 	for _, bid := range bids {
 		usommProceeds.Add(bid.TotalFulfilledSaleTokenAmount.Amount.ToDec().Mul(bid.UnitPriceOfSaleTokenInUsomm))
