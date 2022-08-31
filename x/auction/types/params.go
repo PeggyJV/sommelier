@@ -8,7 +8,7 @@ import (
 
 // Parameter keys
 var (
-	KeyPriceMaxBlockAge = []byte("pricemaxblockage")
+	KeyPriceMaxBlockAge = []byte("PriceMaxBlockAge")
 )
 
 var _ paramtypes.ParamSet = &Params{}
@@ -43,7 +43,7 @@ func (p *Params) ValidateBasic() error {
 func validatePriceMaxBlockAge(i interface{}) error {
 	priceMaxBlockAge, ok := i.(uint64)
 	if !ok {
-		return fmt.Errorf("invalid parameter type: %T", i)
+		return fmt.Errorf("invalid price max block age parameter type: %T", i)
 	}
 
 	if priceMaxBlockAge == 0 {
