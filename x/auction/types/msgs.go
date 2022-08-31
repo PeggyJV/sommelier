@@ -2,6 +2,7 @@ package types
 
 import (
 	"fmt"
+	"strings"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
@@ -12,7 +13,7 @@ var (
 )
 
 const (
-	TypeMsgSubmitBidRequest = "bid_submit"
+	TypeMsgSubmitBidRequest = "submit_bid"
 )
 
 /////////////////////////
@@ -20,7 +21,7 @@ const (
 /////////////////////////
 
 // NewMsgSubmitBidRequest return a new MsgSubmitBidRequest
-func NewMsgSubmitBidRequest(body []byte, auctionID uint32, maxBidInUsomm sdk.Coin, minimumSaleTokenPurchaseAmount sdk.Coin, signer sdk.AccAddress) (*MsgSubmitBidRequest, error) {
+func NewMsgSubmitBidRequest(auctionID uint32, maxBidInUsomm sdk.Coin, minimumSaleTokenPurchaseAmount sdk.Coin, signer sdk.AccAddress) (*MsgSubmitBidRequest, error) {
 	return &MsgSubmitBidRequest{
 		AuctionId:                      auctionID,
 		MaxBidInUsomm:                  maxBidInUsomm,
@@ -42,22 +43,28 @@ func (m *MsgSubmitBidRequest) ValidateBasic() error {
 		return fmt.Errorf("auction IDs must be non-zero")
 	}
 
+	if m.MaxBidInUsomm.Denom != "usomm" {
+		return fmt.Errorf("max bids must be in usomm")
+	}
+
 	if !m.MaxBidInUsomm.IsPositive() {
-		return fmt.Errorf("bids must be a positive amount of SOMM")
+		return fmt.Errorf("bids must be a positive amount of usomm")
+	}
+
+	if !strings.HasPrefix(m.MinimumSaleTokenPurchaseAmount.Denom, "gravity0x") {
+		return fmt.Errorf("bids may only be placed for gravity tokens")
 	}
 
 	if !m.MinimumSaleTokenPurchaseAmount.IsPositive() {
 		return fmt.Errorf("minimum amount must be a positive amount of auctioned coins")
 	}
 
-	// TODO(bolten): is it possible to check the denom correctly here?
-
 	if _, err := sdk.AccAddressFromBech32(m.Bidder); err != nil {
 		return sdkerrors.Wrap(sdkerrors.ErrInvalidAddress, err.Error())
 	}
 
-	if _, err := sdk.AccAddressFromBech32(m.Signer); err != nil {
-		return sdkerrors.Wrap(sdkerrors.ErrInvalidAddress, err.Error())
+	if m.Signer != m.Bidder {
+		return sdkerrors.Wrapf(ErrSignerDifferentFromBidder, "signer: %s, bidder: %s", m.Signer, m.Bidder)
 	}
 
 	return nil
