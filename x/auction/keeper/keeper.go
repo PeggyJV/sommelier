@@ -8,6 +8,7 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
 	"github.com/peggyjv/sommelier/v4/x/auction/types"
@@ -20,14 +21,14 @@ type Keeper struct {
 	cdc                    codec.BinaryCodec
 	paramSpace             paramtypes.Subspace
 	bankKeeper             types.BankKeeper
-	fundingModuleAccounts  map[string]string
-	proceedsModuleAccounts map[string]string
+	fundingModuleAccounts  map[string]bool
+	proceedsModuleAccounts map[string]bool
 }
 
 // NewKeeper creates a new auction Keeper instance
 func NewKeeper(
 	cdc codec.BinaryCodec, key sdk.StoreKey, paramSpace paramtypes.Subspace,
-	bankKeeper types.BankKeeper, fundingModuleAccounts map[string]string, proceedsModuleAccounts map[string]string,
+	bankKeeper types.BankKeeper, fundingModuleAccounts map[string]bool, proceedsModuleAccounts map[string]bool,
 ) Keeper {
 	// set KeyTable if it has not already been set
 	if !paramSpace.HasKeyTable() {
@@ -103,6 +104,7 @@ func (k Keeper) GetEndedAuctionByID(ctx sdk.Context, id uint32) (types.Auction, 
 }
 
 // IterateAuctions iterates over all auctions in the store for a given prefix
+// auctionTypePrefix for specifying whether we are iterating over active or ended auctions
 func (k Keeper) IterateAuctions(ctx sdk.Context, auctionTypePrefix []byte, handler func(auctionID uint32, auction types.Auction) (stop bool)) {
 	store := ctx.KVStore(k.storeKey)
 	iter := sdk.KVStorePrefixIterator(store, auctionTypePrefix)
@@ -165,17 +167,17 @@ func (k Keeper) BeginAuction(ctx sdk.Context,
 	// Verify sale token price freshness is acceptable
 	lastSaleTokenPrice, found := k.GetTokenPrice(ctx, startingAmount.Denom)
 	if !found {
-		return types.ErrCouldNotFindSaleTokenPrice
-	} else if lastSaleTokenPrice.LastUpdatedBlock == 0 || (uint64(ctx.BlockHeight())-lastSaleTokenPrice.LastUpdatedBlock) > k.GetParamSet(ctx).PriceMaxBlockAge {
-		return types.ErrLastSaleTokenPriceUpdateTooLongAgo
+		return sdkerrors.Wrapf(types.ErrCouldNotFindSaleTokenPrice, "starting amount denom: %s", startingAmount.Denom)
+	} else if k.tokenPriceTooOld(ctx, &lastSaleTokenPrice) {
+		return sdkerrors.Wrapf(types.ErrLastSaleTokenPriceTooOld, "starting amount denom: %s", startingAmount.Denom)
 	}
 
-	// Verify somm token price freshness is acceptable
-	lastSommTokenPrice, found := k.GetTokenPrice(ctx, "usomm")
+	// Verify usomm token price freshness is acceptable
+	lastSommTokenPrice, found := k.GetTokenPrice(ctx, types.UsommDenom)
 	if !found {
-		return types.ErrCouldNotFindSommTokenPrice
-	} else if lastSommTokenPrice.LastUpdatedBlock == 0 || (uint64(ctx.BlockHeight())-lastSommTokenPrice.LastUpdatedBlock) > k.GetParamSet(ctx).PriceMaxBlockAge {
-		return types.ErrLastSommTokenPriceUpdateTooLongAgo
+		return sdkerrors.Wrap(types.ErrCouldNotFindSommTokenPrice, types.UsommDenom)
+	} else if k.tokenPriceTooOld(ctx, &lastSommTokenPrice) {
+		return sdkerrors.Wrap(types.ErrLastSommTokenPriceTooOld, types.UsommDenom)
 	}
 
 	// Calculate somm per sale token price
@@ -223,12 +225,12 @@ func (k Keeper) BeginAuction(ctx sdk.Context,
 	}
 
 	// Validate funding module
-	if _, ok := k.fundingModuleAccounts[authtypes.NewModuleAddress(fundingModuleAccount).String()]; !ok {
+	if _, ok := k.fundingModuleAccounts[fundingModuleAccount]; !ok {
 		return types.ErrUnauthorizedFundingModule
 	}
 
 	// Validate proceeds module
-	if _, ok := k.proceedsModuleAccounts[authtypes.NewModuleAddress(proceedsModuleAccount).String()]; !ok {
+	if _, ok := k.proceedsModuleAccounts[proceedsModuleAccount]; !ok {
 		return types.ErrUnauthorizedFundingModule
 	}
 
@@ -285,6 +287,10 @@ func (k Keeper) BeginAuction(ctx sdk.Context,
 	)
 
 	return nil
+}
+
+func (k Keeper) tokenPriceTooOld(ctx sdk.Context, tokenPrice *types.TokenPrice) bool {
+	return uint64(ctx.BlockHeight())-tokenPrice.LastUpdatedBlock > k.GetParamSet(ctx).PriceMaxBlockAge
 }
 
 // FinishAuction completes an auction by sending relevant funds to destination addresses and updates state
