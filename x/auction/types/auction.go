@@ -7,54 +7,6 @@ import (
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
-func (a *Auction) Equals(other Auction) bool {
-	if a.Id != other.Id {
-		return false
-	}
-
-	if !a.StartingAmount.IsEqual(other.StartingAmount) {
-		return false
-	}
-
-	if a.StartBlock != other.StartBlock {
-		return false
-	}
-
-	if a.EndBlock != other.EndBlock {
-		return false
-	}
-
-	if a.InitialDecreaseRate != other.InitialDecreaseRate {
-		return false
-	}
-
-	if a.CurrentDecreaseRate != other.CurrentDecreaseRate {
-		return false
-	}
-
-	if a.BlockDecreaseInterval != other.BlockDecreaseInterval {
-		return false
-	}
-
-	if !a.CurrentUnitPriceInUsomm.Equal(other.CurrentUnitPriceInUsomm) {
-		return false
-	}
-
-	if !a.AmountRemaining.IsEqual(other.AmountRemaining) {
-		return false
-	}
-
-	if a.FundingModuleAccount != other.FundingModuleAccount {
-		return false
-	}
-
-	if a.ProceedsModuleAccount != other.ProceedsModuleAccount {
-		return false
-	}
-
-	return true
-}
-
 func (a *Auction) ValidateBasic() error {
 	if a.Id == 0 {
 		return fmt.Errorf("auction IDs must be non-zero")
@@ -99,38 +51,6 @@ func (a *Auction) ValidateBasic() error {
 	return nil
 }
 
-func (b *Bid) Equals(other Bid) bool {
-	if b.Id != other.Id {
-		return false
-	}
-
-	if b.AuctionId != other.AuctionId {
-		return false
-	}
-
-	if !b.MaxBid.IsEqual(other.MaxBid) {
-		return false
-	}
-
-	if !b.MinimumAmount.IsEqual(other.MinimumAmount) {
-		return false
-	}
-
-	if b.Bidder != other.Bidder {
-		return false
-	}
-
-	if !b.TotalFulfilledSaleTokenAmount.IsEqual(other.TotalFulfilledSaleTokenAmount) {
-		return false
-	}
-
-	if !b.UnitPriceOfSaleTokenInUsomm.Equal(other.UnitPriceOfSaleTokenInUsomm) {
-		return false
-	}
-
-	return true
-}
-
 func (b *Bid) ValidateBasic() error {
 	if b.Id == 0 {
 		return fmt.Errorf("bid IDs must be non-zero")
@@ -165,22 +85,6 @@ func (b *Bid) ValidateBasic() error {
 	return nil
 }
 
-func (t *TokenPrice) Equals(other TokenPrice) bool {
-	if t.Denom != other.Denom {
-		return false
-	}
-
-	if t.UsdPrice != other.UsdPrice {
-		return false
-	}
-
-	if t.LastUpdatedBlock != other.LastUpdatedBlock {
-		return false
-	}
-
-	return true
-}
-
 func (t *TokenPrice) ValidateBasic() error {
 	if t.Denom == "" {
 		return fmt.Errorf("denom must be a non empty string")
@@ -195,18 +99,6 @@ func (t *TokenPrice) ValidateBasic() error {
 	}
 
 	return nil
-}
-
-func (t *ProposedTokenPrice) Equals(other ProposedTokenPrice) bool {
-	if t.Denom != other.Denom {
-		return false
-	}
-
-	if t.UsdPrice != other.UsdPrice {
-		return false
-	}
-
-	return true
 }
 
 func (t *ProposedTokenPrice) ValidateBasic() error {
