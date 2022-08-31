@@ -65,7 +65,7 @@ func (m *MsgSubmitBidRequest) ValidateBasic() error {
 
 // GetSignBytes implements sdk.Msg
 func (m *MsgSubmitBidRequest) GetSignBytes() []byte {
-	panic("amino support disabled")
+	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(m))
 }
 
 // GetSigners implements sdk.Msg
