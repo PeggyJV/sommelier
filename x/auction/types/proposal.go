@@ -39,7 +39,7 @@ func (m *SetTokenPricesProposal) ValidateBasic() error {
 	}
 
 	if len(m.TokenPrices) == 0 {
-		return fmt.Errorf("list of token prices must be non-zero")
+		return fmt.Errorf("list of proposed token prices must be non-zero")
 	}
 
 	for _, tokenPrice := range m.TokenPrices {
