@@ -11,7 +11,7 @@ var (
 	ErrCouldNotFindSommTokenPrice                       = sdkerrors.Register(ModuleName, 4, "could not find somm token price, need to resubmit token prices and try again")
 	ErrLastSaleTokenPriceUpdateTooLongAgo               = sdkerrors.Register(ModuleName, 5, "last sale token price update too long ago, need to resubmit token prices and try again")
 	ErrLastSommTokenPriceUpdateTooLongAgo               = sdkerrors.Register(ModuleName, 6, "last somm token price update too long ago, need to resubmit token prices and try again")
-	ErrAuctionStartinAmountMustBePositve                = sdkerrors.Register(ModuleName, 7, "minimum auction amount must be a positive amount of coins")
+	ErrAuctionStartingAmountMustBePositve               = sdkerrors.Register(ModuleName, 7, "minimum auction amount must be a positive amount of coins")
 	ErrAuctionDenomInvalid                              = sdkerrors.Register(ModuleName, 8, "action denom must be non empty")
 	ErrCannotAuctionUsomm                               = sdkerrors.Register(ModuleName, 9, "auctioning usomm for usomm is pointless")
 	ErrInvalidInitialDecreaseRate                       = sdkerrors.Register(ModuleName, 10, "initial decrease rate must be a float less than one and greater than zero")
