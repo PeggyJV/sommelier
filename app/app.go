@@ -91,6 +91,7 @@ import (
 	appParams "github.com/peggyjv/sommelier/v4/app/params"
 	v4 "github.com/peggyjv/sommelier/v4/app/upgrades/v4"
 	"github.com/peggyjv/sommelier/v4/x/auction"
+	auctionclient "github.com/peggyjv/sommelier/v4/x/auction/client"
 	auctionkeeper "github.com/peggyjv/sommelier/v4/x/auction/keeper"
 	auctiontypes "github.com/peggyjv/sommelier/v4/x/auction/types"
 	"github.com/peggyjv/sommelier/v4/x/cellarfees"
@@ -106,7 +107,6 @@ import (
 	"github.com/tendermint/tendermint/libs/log"
 	tmos "github.com/tendermint/tendermint/libs/os"
 	dbm "github.com/tendermint/tm-db"
-	auctionclient "github.com/peggyjv/sommelier/v4/x/auction/client"
 
 	// unnamed import of statik for swagger UI support
 	_ "github.com/cosmos/cosmos-sdk/client/docs/statik"
@@ -369,8 +369,8 @@ func NewSommelierApp(
 
 	app.AuctionKeeper = auctionkeeper.NewKeeper(
 		appCodec, keys[auctiontypes.StoreKey], app.GetSubspace(auctiontypes.ModuleName),
-		app.BankKeeper, app.ModuleAccountAddressesToNames([]string{cellarfeestypes.ModuleName}), 
-		app.ModuleAccountAddressesToNames([]string{cellarfeestypes.ModuleName}),
+		app.BankKeeper, map[string]bool{cellarfeestypes.ModuleName: true},
+		map[string]bool{cellarfeestypes.ModuleName: true},
 	)
 
 	app.GravityKeeper = *app.GravityKeeper.SetHooks(

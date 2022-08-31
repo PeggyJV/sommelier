@@ -6,7 +6,10 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	gravitytypes "github.com/peggyjv/gravity-bridge/module/v2/x/gravity/types"
 )
+
+const UsommDenom = "usomm"
 
 func (a *Auction) ValidateBasic() error {
 	if a.Id == 0 {
@@ -70,10 +73,10 @@ func (b *Bid) ValidateBasic() error {
 	}
 
 	if !b.MaxBid.IsPositive() {
-		return fmt.Errorf("bids must be a positive amount of usomm")
+		return fmt.Errorf("bids must be a positive amount of %s", UsommDenom)
 	}
 
-	if !strings.HasPrefix(b.MinimumAmount.Denom, "gravity0x") {
+	if !strings.HasPrefix(b.MinimumAmount.Denom, gravitytypes.GravityDenomPrefix) {
 		return fmt.Errorf("bids may only be placed for gravity tokens")
 	}
 
