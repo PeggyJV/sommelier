@@ -82,7 +82,7 @@ func (k Keeper) SubmitBid(c context.Context, msg *types.MsgSubmitBidRequest) (*t
 
 	} else if totalSaleTokenBalanceForSale.Amount.GTE(msg.MinimumSaleTokenPurchaseAmount.Amount) {
 		totalFulfilledSaleTokenAmount.Amount = totalSaleTokenBalanceForSale.Amount
-		
+
 	} else {
 		return &types.MsgSubmitBidResponse{}, types.ErrMinimumPurchaseAmountLargerThanTokensRemaining
 	}
