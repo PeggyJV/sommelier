@@ -2,6 +2,7 @@ package types
 
 import (
 	fmt "fmt"
+	"strings"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
@@ -13,15 +14,15 @@ func (a *Auction) ValidateBasic() error {
 	}
 
 	if !a.StartingAmount.IsPositive() {
-		return fmt.Errorf("minimum amount must be a positive amount of coins")
+		return fmt.Errorf("starting amount must be a positive amount of coins")
 	}
 
 	if a.StartBlock == 0 {
-		return fmt.Errorf("start block must be non zero")
+		return fmt.Errorf("start block must be non-zero")
 	}
 
 	if a.InitialDecreaseRate <= 0 || a.InitialDecreaseRate >= 1 {
-		return fmt.Errorf("initial decrease rate must be a float less than one and greater than zero")
+		return fmt.Errorf("initial decrease rate must be a float less than or equal to one and greater than or equal to zero")
 	}
 
 	if a.CurrentDecreaseRate <= 0 || a.CurrentDecreaseRate >= 1 {
@@ -37,7 +38,7 @@ func (a *Auction) ValidateBasic() error {
 	}
 
 	if a.AmountRemaining.Denom == "" {
-		return fmt.Errorf("amount remaining denom must be a non empty string")
+		return fmt.Errorf("amount remaining denom cannot be empty")
 	}
 
 	if a.FundingModuleAccount == "" {
@@ -60,8 +61,20 @@ func (b *Bid) ValidateBasic() error {
 		return fmt.Errorf("auction IDs must be non-zero")
 	}
 
+	if b.Bidder == "" {
+		return fmt.Errorf("bidder cannot be empty")
+	}
+
+	if _, err := sdk.AccAddressFromBech32(b.Bidder); err != nil {
+		return sdkerrors.Wrap(sdkerrors.ErrInvalidAddress, err.Error())
+	}
+
 	if !b.MaxBid.IsPositive() {
-		return fmt.Errorf("bids must be a positive amount of SOMM")
+		return fmt.Errorf("bids must be a positive amount of usomm")
+	}
+
+	if !strings.HasPrefix(b.MinimumAmount.Denom, "gravity0x") {
+		return fmt.Errorf("bids may only be placed for gravity tokens")
 	}
 
 	if !b.MinimumAmount.IsPositive() {
@@ -69,17 +82,11 @@ func (b *Bid) ValidateBasic() error {
 	}
 
 	if b.TotalFulfilledSaleTokenAmount.Amount.IsNegative() {
-		return fmt.Errorf("total sale token fulfillment amount must be non negative")
+		return fmt.Errorf("total sale token fulfillment amount must be non-negative")
 	}
 
 	if !b.UnitPriceOfSaleTokenInUsomm.IsPositive() {
 		return fmt.Errorf("unit price of sale tokens in usomm must be positive")
-	}
-
-	// TODO(bolten): is it possible to check the denom correctly here?
-
-	if _, err := sdk.AccAddressFromBech32(b.Bidder); err != nil {
-		return sdkerrors.Wrap(sdkerrors.ErrInvalidAddress, err.Error())
 	}
 
 	return nil
@@ -87,7 +94,7 @@ func (b *Bid) ValidateBasic() error {
 
 func (t *TokenPrice) ValidateBasic() error {
 	if t.Denom == "" {
-		return fmt.Errorf("denom must be a non empty string")
+		return fmt.Errorf("denom cannot be empty")
 	}
 
 	if !t.UsdPrice.IsPositive() {
@@ -103,7 +110,7 @@ func (t *TokenPrice) ValidateBasic() error {
 
 func (t *ProposedTokenPrice) ValidateBasic() error {
 	if t.Denom == "" {
-		return fmt.Errorf("denom must be a non empty string")
+		return fmt.Errorf("denom cannot be empty")
 	}
 
 	if !t.UsdPrice.IsPositive() {
