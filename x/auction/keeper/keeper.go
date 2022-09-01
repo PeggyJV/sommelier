@@ -164,6 +164,16 @@ func (k Keeper) BeginAuction(ctx sdk.Context,
 	blockDecreaseInterval uint32,
 	fundingModuleAccount string,
 	proceedsModuleAccount string) error {
+	// Validate funding module
+	if _, ok := k.fundingModuleAccounts[fundingModuleAccount]; !ok {
+		return sdkerrors.Wrapf(types.ErrUnauthorizedFundingModule, "Account: %s", fundingModuleAccount)
+	}
+
+	// Validate proceeds module
+	if _, ok := k.proceedsModuleAccounts[proceedsModuleAccount]; !ok {
+		return sdkerrors.Wrapf(types.ErrUnauthorizedProceedsModule, "Account: %s", proceedsModuleAccount)
+	}
+
 	// Verify sale token price freshness is acceptable
 	lastSaleTokenPrice, found := k.GetTokenPrice(ctx, startingAmount.Denom)
 	if !found {
@@ -173,83 +183,19 @@ func (k Keeper) BeginAuction(ctx sdk.Context,
 	}
 
 	// Verify usomm token price freshness is acceptable
-	lastSommTokenPrice, found := k.GetTokenPrice(ctx, types.UsommDenom)
+	lastUsommTokenPrice, found := k.GetTokenPrice(ctx, types.UsommDenom)
 	if !found {
 		return sdkerrors.Wrap(types.ErrCouldNotFindSommTokenPrice, types.UsommDenom)
-	} else if k.tokenPriceTooOld(ctx, &lastSommTokenPrice) {
+	} else if k.tokenPriceTooOld(ctx, &lastUsommTokenPrice) {
 		return sdkerrors.Wrap(types.ErrLastSommTokenPriceTooOld, types.UsommDenom)
 	}
 
 	// Calculate somm per sale token price
-
 	// Starting price is amount of usomm required for 1 of starting denom
-	saleTokenUSDPriceFloat, err := lastSaleTokenPrice.UsdPrice.Float64()
-
-	if err != nil {
-		return types.ErrConvertingTokenPriceToFloat
-	}
-
-	usommTokenUSDPriceFloat, err := lastSommTokenPrice.UsdPrice.Float64()
-
-	if err != nil {
-		return types.ErrConvertingTokenPriceToFloat
-	}
-
-	saleTokenPriceInUsomm := saleTokenUSDPriceFloat / usommTokenUSDPriceFloat
-	saleTokenPriceInUsommDec, err := sdk.NewDecFromStr(fmt.Sprintf("%f", saleTokenPriceInUsomm))
-	if err != nil {
-		return types.ErrConvertingStringToDec
-	}
-
-	// Validate starting amount
-	if !startingAmount.Amount.IsPositive() {
-		return types.ErrAuctionStartingAmountMustBePositve
-	}
-
-	if startingAmount.Denom == "" {
-		return types.ErrAuctionDenomInvalid
-	}
-
-	if startingAmount.Denom == "usomm" {
-		return types.ErrCannotAuctionUsomm
-	}
-
-	// Validate initial decrease rate
-	if initialDecreaseRate <= 0 || initialDecreaseRate >= 1 {
-		return types.ErrInvalidInitialDecreaseRate
-	}
-
-	// Validate block decrease interval
-	if blockDecreaseInterval == 0 {
-		return types.ErrInvalidBlockDecreaeInterval
-	}
-
-	// Validate funding module
-	if _, ok := k.fundingModuleAccounts[fundingModuleAccount]; !ok {
-		return types.ErrUnauthorizedFundingModule
-	}
-
-	// Validate proceeds module
-	if _, ok := k.proceedsModuleAccounts[proceedsModuleAccount]; !ok {
-		return types.ErrUnauthorizedFundingModule
-	}
-
-	// Validate no ongoing auction for denom
-	for _, auction := range k.GetActiveAuctions(ctx) {
-		if auction.AmountRemaining.Denom == startingAmount.Denom {
-			return types.ErrCannotStartTwoAuctionsForSameDenomSimultaneously
-		}
-	}
-
-	// Transfer the coins
-	if err := k.bankKeeper.SendCoinsFromModuleToModule(ctx, fundingModuleAccount, types.ModuleName, sdk.Coins{startingAmount}); err != nil {
-		return err
-	}
+	saleTokenPriceInUsomm := lastSaleTokenPrice.UsdPrice.Quo(lastUsommTokenPrice.UsdPrice)
 
 	auctionID := k.GetLastAuctionID(ctx) + 1
-
-	// Add auction to active auctions
-	k.setActiveAuction(ctx, types.Auction{
+	auction := types.Auction{
 		Id:                      auctionID,
 		StartingAmount:          startingAmount,
 		StartBlock:              uint64(ctx.BlockHeight()),
@@ -257,11 +203,37 @@ func (k Keeper) BeginAuction(ctx sdk.Context,
 		InitialDecreaseRate:     initialDecreaseRate,
 		CurrentDecreaseRate:     initialDecreaseRate,
 		BlockDecreaseInterval:   blockDecreaseInterval,
-		CurrentUnitPriceInUsomm: saleTokenPriceInUsommDec,
+		CurrentUnitPriceInUsomm: saleTokenPriceInUsomm,
 		AmountRemaining:         startingAmount,
 		FundingModuleAccount:    fundingModuleAccount,
 		ProceedsModuleAccount:   proceedsModuleAccount,
+	}
+
+	if err := auction.ValidateBasic(); err != nil {
+		return err
+	}
+
+	// Validate no ongoing auction for denom
+	var err error = nil
+	k.IterateAuctions(ctx, types.GetActiveAuctionsPrefix(), func(auctionID uint32, auction types.Auction) (stop bool) {
+		if auction.AmountRemaining.Denom == startingAmount.Denom {
+			err = sdkerrors.Wrapf(types.ErrCannotStartTwoAuctionsForSameDenomSimultaneously, "Denom: %s", auction.AmountRemaining.Denom)
+			return true
+		}
+		return false
 	})
+
+	if err != nil {
+		return err
+	}
+
+	// Transfer the coins
+	if err := k.bankKeeper.SendCoinsFromModuleToModule(ctx, fundingModuleAccount, types.ModuleName, sdk.Coins{startingAmount}); err != nil {
+		return err
+	}
+
+	// Add auction to active auctions
+	k.setActiveAuction(ctx, auction)
 
 	// Update last auction id
 	k.setLastAuctionID(ctx, auctionID)
@@ -270,10 +242,6 @@ func (k Keeper) BeginAuction(ctx sdk.Context,
 	ctx.EventManager().EmitEvents(
 		sdk.Events{
 			sdk.NewEvent(
-				sdk.EventTypeMessage,
-				sdk.NewAttribute(sdk.AttributeKeyModule, types.AttributeValueCategory),
-			),
-			sdk.NewEvent(
 				types.EventTypeNewAuction,
 				sdk.NewAttribute(types.AttributeKeyAuctionID, fmt.Sprint(k.GetLastAuctionID(ctx))),
 				sdk.NewAttribute(types.AttributeKeyStartBlock, fmt.Sprint(ctx.BlockHeight())),
@@ -281,7 +249,7 @@ func (k Keeper) BeginAuction(ctx sdk.Context,
 				sdk.NewAttribute(types.AttributeKeyBlockDecreaseInterval, fmt.Sprint(blockDecreaseInterval)),
 				sdk.NewAttribute(types.AttributeKeyStartingDenom, startingAmount.Denom),
 				sdk.NewAttribute(types.AttributeKeyStartingAmount, startingAmount.Amount.String()),
-				sdk.NewAttribute(types.AttributeKeyStartingUsommPrice, fmt.Sprintf("%f", saleTokenPriceInUsomm)),
+				sdk.NewAttribute(types.AttributeKeyStartingUsommPrice, saleTokenPriceInUsomm.String()),
 			),
 		},
 	)
@@ -314,8 +282,10 @@ func (k Keeper) FinishAuction(ctx sdk.Context, auction *types.Auction) error {
 		usommProceeds.Add(bid.TotalFulfilledSaleTokenAmount.Amount.ToDec().Mul(bid.UnitPriceOfSaleTokenInUsomm))
 	}
 
+	usommProceedsCoin := sdk.NewCoin("usomm", sdk.NewInt(usommProceeds.TruncateInt64()))
+
 	// Send proceeds to their appropriate destination module
-	if err := k.bankKeeper.SendCoinsFromModuleToModule(ctx, types.ModuleName, auction.ProceedsModuleAccount, sdk.Coins{sdk.NewCoin("usomm", sdk.NewInt(usommProceeds.TruncateInt64()))}); err != nil {
+	if err := k.bankKeeper.SendCoinsFromModuleToModule(ctx, types.ModuleName, auction.ProceedsModuleAccount, sdk.Coins{usommProceedsCoin}); err != nil {
 		return err
 	}
 

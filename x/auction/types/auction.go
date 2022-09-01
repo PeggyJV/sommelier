@@ -17,7 +17,15 @@ func (a *Auction) ValidateBasic() error {
 	}
 
 	if !a.StartingAmount.IsPositive() {
-		return fmt.Errorf("starting amount must be a positive amount of coins")
+		return sdkerrors.Wrapf(ErrAuctionStartingAmountMustBePositve, "Starting amount: %s", a.StartingAmount.String())
+	}
+
+	if a.StartingAmount.Denom == "" {
+		return sdkerrors.Wrapf(ErrAuctionDenomInvalid, "Starting denom: %s", a.StartingAmount.String())
+	}
+
+	if a.StartingAmount.Denom == UsommDenom {
+		return sdkerrors.Wrapf(ErrCannotAuctionUsomm,"Starting denom is: %s", UsommDenom)
 	}
 
 	if a.StartBlock == 0 {
@@ -25,7 +33,7 @@ func (a *Auction) ValidateBasic() error {
 	}
 
 	if a.InitialDecreaseRate <= 0 || a.InitialDecreaseRate >= 1 {
-		return fmt.Errorf("initial decrease rate must be a float less than or equal to one and greater than or equal to zero")
+		return sdkerrors.Wrapf(ErrInvalidInitialDecreaseRate, "Inital decrease rate %f", a.InitialDecreaseRate)
 	}
 
 	if a.CurrentDecreaseRate <= 0 || a.CurrentDecreaseRate >= 1 {
@@ -33,7 +41,7 @@ func (a *Auction) ValidateBasic() error {
 	}
 
 	if a.BlockDecreaseInterval == 0 {
-		return fmt.Errorf("block decrease interval cannot be 0")
+		return sdkerrors.Wrapf(ErrInvalidBlockDecreaeInterval, "Block Decrease interval: %d", a.BlockDecreaseInterval)
 	}
 
 	if !a.CurrentUnitPriceInUsomm.IsPositive() {
@@ -45,11 +53,11 @@ func (a *Auction) ValidateBasic() error {
 	}
 
 	if a.FundingModuleAccount == "" {
-		return fmt.Errorf("funding module account cannot be empty")
+		return sdkerrors.Wrapf(ErrUnauthorizedFundingModule, "Account: %s", a.FundingModuleAccount)
 	}
 
 	if a.ProceedsModuleAccount == "" {
-		return fmt.Errorf("proceeds module account cannot be empty")
+		return sdkerrors.Wrapf(ErrUnauthorizedFundingModule, "Account: %s", a.ProceedsModuleAccount)
 	}
 
 	return nil
