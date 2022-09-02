@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 
 	"github.com/peggyjv/sommelier/v4/x/auction/types"
@@ -19,61 +20,49 @@ func (k Keeper) SubmitBid(c context.Context, msg *types.MsgSubmitBidRequest) (*t
 	// Verify signer is the same as the bidder
 	signer := msg.MustGetSigner()
 	if !signer.Equals(sdk.AccAddress(msg.Bidder)) {
-		return &types.MsgSubmitBidResponse{}, types.ErrSignerDifferentFromBidder
+		return &types.MsgSubmitBidResponse{}, sdkerrors.Wrapf(types.ErrSignerDifferentFromBidder, "Signer: %s, Bidder: %s", signer, msg.GetBidder())
 	}
 
 	// Verify auction
 	auction, found := k.GetActiveAuctionByID(ctx, msg.GetAuctionId())
 	if !found {
-		return &types.MsgSubmitBidResponse{}, types.ErrAuctionNotFound
+		return &types.MsgSubmitBidResponse{}, sdkerrors.Wrapf(types.ErrAuctionNotFound, "Auction id: %d", msg.GetAuctionId())
 	}
 
 	// Verify bidder address
 	if _, err := sdk.AccAddressFromBech32(msg.GetBidder()); err != nil {
-		return &types.MsgSubmitBidResponse{}, types.ErrInvalidAddress
+		return &types.MsgSubmitBidResponse{}, sdkerrors.Wrapf(types.ErrInvalidAddress, "Address: %s", msg.GetBidder())
 	}
 
 	// Verify auction coin type and bidder coin type are equal
-	if auction.StartingAmount.Denom != msg.MinimumSaleTokenPurchaseAmount.GetDenom() {
-		return &types.MsgSubmitBidResponse{}, types.ErrBidAuctionDenomMismatch
+	if auction.GetStartingAmount().Denom != msg.GetMinimumSaleTokenPurchaseAmount().Denom {
+		return &types.MsgSubmitBidResponse{}, sdkerrors.Wrapf(types.ErrBidAuctionDenomMismatch, "Bid denom: %s, Auction denom: %s", msg.GetMinimumSaleTokenPurchaseAmount(), auction.GetStartingAmount().Denom)
 	}
 
 	// Query our module address for funds
 	totalSaleTokenBalanceForSale := k.bankKeeper.GetBalance(ctx, authtypes.NewModuleAddress(types.ModuleName), auction.StartingAmount.Denom)
 
 	// Convert & standardize types for use below
-	currentSaleUnitPriceInUsomm, err := auction.CurrentUnitPriceInUsomm.Float64()
-	if err != nil {
-		return &types.MsgSubmitBidResponse{}, types.ErrConvertingTokenPriceToFloat
-	}
-
-	minimumSaleTokenPurchaseAmount, err := msg.MinimumSaleTokenPurchaseAmount.Amount.ToDec().Float64()
-	if err != nil {
-		return &types.MsgSubmitBidResponse{}, types.ErrConvertingTokenPriceToFloat
-	}
-
-	maxBidInUsomm, err := msg.MaxBidInUsomm.Amount.ToDec().Float64()
-	if err != nil {
-		return &types.MsgSubmitBidResponse{}, types.ErrConvertingTokenPriceToFloat
-	}
+	minimumSaleTokenPurchaseAmount := msg.MinimumSaleTokenPurchaseAmount.Amount.ToDec()
+	maxBidInUsomm := msg.MaxBidInUsomm.Amount.ToDec()
 
 	// Calculate minimum purchase price
-	minimumPurchasePriceInUsomm := currentSaleUnitPriceInUsomm * minimumSaleTokenPurchaseAmount
+	minimumPurchasePriceInUsomm := auction.CurrentUnitPriceInUsomm.Mul(minimumSaleTokenPurchaseAmount)
 
 	// Verify minimum price is <= bid
-	if minimumPurchasePriceInUsomm > maxBidInUsomm {
-		return &types.MsgSubmitBidResponse{}, types.ErrMinimumPurchaseLargerThanBid
+	if minimumPurchasePriceInUsomm.GT(maxBidInUsomm) {
+		return &types.MsgSubmitBidResponse{}, sdkerrors.Wrapf(types.ErrMinimumPurchaseLargerThanBid, "minimum: %s, max bid: %s", minimumPurchasePriceInUsomm.String(), maxBidInUsomm.String())
 	}
 
 	// Start off fulfilled sale token amount at 0
 	totalFulfilledSaleTokenAmount := sdk.NewCoin(auction.StartingAmount.GetDenom(), sdk.NewInt(0))
 
-	// Note this is the quotient of the divison operation so fractions are truncated appropriately
-	largestSaleTokenAmountPossibleToPurchaseForBid := msg.MaxBidInUsomm.Amount.Quo(sdk.Int(auction.CurrentUnitPriceInUsomm))
+	// See how many whole tokens of base denom can be purchased
+	largestSaleTokenAmountPossibleToPurchaseForBid := msg.MaxBidInUsomm.Amount.ToDec().Quo(auction.CurrentUnitPriceInUsomm).TruncateInt()
 
 	// Verify you can actually purchase at least 1 sale token denom with this amount
 	if !largestSaleTokenAmountPossibleToPurchaseForBid.IsPositive() {
-		return &types.MsgSubmitBidResponse{}, types.ErrInsufficientBid
+		return &types.MsgSubmitBidResponse{}, sdkerrors.Wrapf(types.ErrInsufficientBid, "Price: %s, Bid: %s", auction.CurrentUnitPriceInUsomm.String(), msg.MaxBidInUsomm.String())
 	}
 
 	// Figure out how much of bid we can fulfill
@@ -84,18 +73,31 @@ func (k Keeper) SubmitBid(c context.Context, msg *types.MsgSubmitBidRequest) (*t
 		totalFulfilledSaleTokenAmount.Amount = totalSaleTokenBalanceForSale.Amount
 
 	} else {
-		return &types.MsgSubmitBidResponse{}, types.ErrMinimumPurchaseAmountLargerThanTokensRemaining
+		return &types.MsgSubmitBidResponse{}, sdkerrors.Wrapf(types.ErrMinimumPurchaseAmountLargerThanTokensRemaining, "Minimum purchase: %s, amount remaining: %s", msg.MinimumSaleTokenPurchaseAmount.String(), auction.AmountRemaining.String())
 	}
 
-	totalFulfilledSaleTokenAmountFloat, err := totalFulfilledSaleTokenAmount.Amount.ToDec().Float64()
-	if err != nil {
-		return &types.MsgSubmitBidResponse{}, types.ErrConvertingTokenPriceToFloat
+	uSommToBePaid := totalFulfilledSaleTokenAmount.Amount.ToDec().Mul(auction.CurrentUnitPriceInUsomm).TruncateDec()
+
+	newBidID := k.GetLastBidID(ctx) + 1
+	bid := types.Bid{
+		Id:                            newBidID,
+		AuctionId:                     msg.GetAuctionId(),
+		Bidder:                        msg.GetBidder(),
+		MaxBid:                        msg.GetMaxBidInUsomm(),
+		MinimumAmount:                 msg.GetMinimumSaleTokenPurchaseAmount(),
+		TotalFulfilledSaleTokenAmount: totalFulfilledSaleTokenAmount,
+		UnitPriceOfSaleTokenInUsomm:   auction.CurrentUnitPriceInUsomm,
+		TotalAmountPaidInUsomm:        uSommToBePaid,
 	}
 
-	uSommToBePaid := int64(totalFulfilledSaleTokenAmountFloat * currentSaleUnitPriceInUsomm)
+	bidErr := bid.ValidateBasic()
+	if bidErr != nil {
+		return &types.MsgSubmitBidResponse{}, bidErr
+	}
 
 	// Transfer payment first
-	if err := k.bankKeeper.SendCoinsFromAccountToModule(ctx, sdk.AccAddress(msg.GetBidder()), types.ModuleName, sdk.NewCoins(sdk.NewCoin("usomm", sdk.NewInt(uSommToBePaid)))); err != nil {
+	payment := sdk.NewCoin(types.UsommDenom, uSommToBePaid.TruncateInt())
+	if err := k.bankKeeper.SendCoinsFromAccountToModule(ctx, sdk.AccAddress(msg.GetBidder()), types.ModuleName, sdk.NewCoins(payment)); err != nil {
 		return &types.MsgSubmitBidResponse{}, err
 	}
 
@@ -107,17 +109,6 @@ func (k Keeper) SubmitBid(c context.Context, msg *types.MsgSubmitBidRequest) (*t
 	// Update amount remaining in auction
 	auction.AmountRemaining.Amount = totalSaleTokenBalanceForSale.Amount.Sub(totalFulfilledSaleTokenAmount.Amount)
 	k.setActiveAuction(ctx, auction)
-
-	newBidID := k.GetLastBidID(ctx) + 1
-	bid := types.Bid{
-		Id:                            newBidID,
-		AuctionId:                     msg.GetAuctionId(),
-		Bidder:                        msg.GetBidder(),
-		MaxBid:                        msg.GetMaxBidInUsomm(),
-		MinimumAmount:                 msg.GetMinimumSaleTokenPurchaseAmount(),
-		TotalFulfilledSaleTokenAmount: totalFulfilledSaleTokenAmount,
-		UnitPriceOfSaleTokenInUsomm:   auction.CurrentUnitPriceInUsomm,
-	}
 
 	// Create bid in store
 	k.setBid(ctx, bid)
@@ -145,7 +136,8 @@ func (k Keeper) SubmitBid(c context.Context, msg *types.MsgSubmitBidRequest) (*t
 				sdk.NewAttribute(types.AttributeKeyBidder, fmt.Sprint(msg.GetBidder())),
 				sdk.NewAttribute(types.AttributeKeyMinimumAmount, msg.GetMinimumSaleTokenPurchaseAmount().String()),
 				sdk.NewAttribute(types.AttributeKeySigner, msg.GetSigner()),
-				sdk.NewAttribute(types.AttributeKeyFulfilledPrice, fmt.Sprintf("%f", currentSaleUnitPriceInUsomm)),
+				sdk.NewAttribute(types.AttributeKeyFulfilledPrice, auction.CurrentUnitPriceInUsomm.String()),
+				sdk.NewAttribute(types.AttributeKeyTotalPayment, payment.String()),
 				sdk.NewAttribute(types.AttributeKeyFulfilledAmount, totalFulfilledSaleTokenAmount.String()),
 			),
 		},

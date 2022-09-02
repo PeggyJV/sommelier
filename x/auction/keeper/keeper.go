@@ -279,10 +279,10 @@ func (k Keeper) FinishAuction(ctx sdk.Context, auction *types.Auction) error {
 	usommProceeds := sdk.NewDec(int64(0))
 
 	for _, bid := range bids {
-		usommProceeds.Add(bid.TotalFulfilledSaleTokenAmount.Amount.ToDec().Mul(bid.UnitPriceOfSaleTokenInUsomm))
+		usommProceeds.Add(bid.TotalAmountPaidInUsomm)
 	}
 
-	usommProceedsCoin := sdk.NewCoin("usomm", sdk.NewInt(usommProceeds.TruncateInt64()))
+	usommProceedsCoin := sdk.NewCoin(types.UsommDenom, sdk.NewInt(usommProceeds.TruncateInt64()))
 
 	// Send proceeds to their appropriate destination module
 	if err := k.bankKeeper.SendCoinsFromModuleToModule(ctx, types.ModuleName, auction.ProceedsModuleAccount, sdk.Coins{usommProceedsCoin}); err != nil {
