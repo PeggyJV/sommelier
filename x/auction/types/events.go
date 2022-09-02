@@ -10,6 +10,7 @@ const (
 	AttributeKeyMinimumAmount   = "minimum_amount"
 	AttributeKeySigner          = "signer"
 	AttributeKeyFulfilledPrice  = "fulfilled_price_of_sale_token_in_usomm"
+	AttributeKeyTotalPayment    = "total_payment_in_usomm"
 	AttributeKeyFulfilledAmount = "total_sale_token_fulfilled_amount"
 
 	EventTypeNewAuction = "new_auction"

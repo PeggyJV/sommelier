@@ -34,19 +34,19 @@ func (k Keeper) EndBlocker(ctx sdk.Context) {
 				panic("no price data found for starting amount denom")
 			}
 
-			usommUSDPrice, found := k.GetTokenPrice(ctx, "usomm")
+			usommUSDPrice, found := k.GetTokenPrice(ctx, types.UsommDenom)
 			if !found {
 				panic("no price data found for usomm")
 			}
 
-			initialSaleTokenUnitPriceInUsomm := initialSaleTokenUSDPrice.UsdPrice.MustFloat64() / usommUSDPrice.UsdPrice.MustFloat64()
+			initialSaleTokenUnitPriceInUsomm := initialSaleTokenUSDPrice.UsdPrice.Quo(usommUSDPrice.UsdPrice)
 
 			// Simple constant decrease rate meant for MVP
-			priceDecreaseAmountInUsomm := initialSaleTokenUnitPriceInUsomm * float64(auction.CurrentDecreaseRate)
-			newUnitPriceInUsomm := auction.CurrentUnitPriceInUsomm.MustFloat64() - priceDecreaseAmountInUsomm
+			priceDecreaseAmountInUsomm := initialSaleTokenUnitPriceInUsomm.Mul(sdk.MustNewDecFromStr(fmt.Sprintf("%f",auction.CurrentDecreaseRate)))
+			newUnitPriceInUsomm := auction.CurrentUnitPriceInUsomm.Sub(priceDecreaseAmountInUsomm)
 
 			// If the new price would be non positive, finish the auction
-			if newUnitPriceInUsomm <= 0 {
+			if newUnitPriceInUsomm.LTE(sdk.NewDec(0)) {
 				err := k.FinishAuction(ctx, auction)
 
 				if err != nil {
@@ -54,7 +54,7 @@ func (k Keeper) EndBlocker(ctx sdk.Context) {
 				}
 			} else { // Otherwise update the auction with the newest price
 				// Note we are not truncating the unit price (if usomm is stronger than the fee token, users will have to bid for a minimum number of fee tokens to make a purchase)
-				auction.CurrentUnitPriceInUsomm = sdk.MustNewDecFromStr(fmt.Sprintf("%f", newUnitPriceInUsomm))
+				auction.CurrentUnitPriceInUsomm = newUnitPriceInUsomm
 
 				// Update stored auction
 				k.setActiveAuction(ctx, *auction)

@@ -100,6 +100,10 @@ func (b *Bid) ValidateBasic() error {
 		return fmt.Errorf("unit price of sale tokens in usomm must be positive")
 	}
 
+	if b.TotalAmountPaidInUsomm.IsNegative() {
+		return fmt.Errorf("total amount paid in usomm cannot be negative")
+	}
+
 	return nil
 }
 
