@@ -1,7 +1,6 @@
 package types
 
 import (
-	fmt "fmt"
 	"strings"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -13,7 +12,7 @@ const UsommDenom = "usomm"
 
 func (a *Auction) ValidateBasic() error {
 	if a.Id == 0 {
-		return fmt.Errorf("auction IDs must be non-zero")
+		return sdkerrors.Wrapf(ErrAuctionIdMustBeNonZero, "id: %d", a.Id)
 	}
 
 	if !a.StartingAmount.IsPositive() {
@@ -25,11 +24,11 @@ func (a *Auction) ValidateBasic() error {
 	}
 
 	if a.StartingAmount.Denom == UsommDenom {
-		return sdkerrors.Wrapf(ErrCannotAuctionUsomm,"Starting denom is: %s", UsommDenom)
+		return sdkerrors.Wrapf(ErrCannotAuctionUsomm, "Starting denom is: %s", UsommDenom)
 	}
 
 	if a.StartBlock == 0 {
-		return fmt.Errorf("start block must be non-zero")
+		return sdkerrors.Wrapf(ErrInvalidStartBlock, "block: %d", a.StartBlock)
 	}
 
 	if a.InitialDecreaseRate <= 0 || a.InitialDecreaseRate >= 1 {
@@ -37,7 +36,7 @@ func (a *Auction) ValidateBasic() error {
 	}
 
 	if a.CurrentDecreaseRate <= 0 || a.CurrentDecreaseRate >= 1 {
-		return fmt.Errorf("current decrease rate must be a float less than or equal to one and greater than or equal to zero")
+		return sdkerrors.Wrapf(ErrInvalidCurrentDecreaseRate, "Current decrease rate %f", a.CurrentDecreaseRate)
 	}
 
 	if a.BlockDecreaseInterval == 0 {
@@ -45,11 +44,11 @@ func (a *Auction) ValidateBasic() error {
 	}
 
 	if !a.CurrentUnitPriceInUsomm.IsPositive() {
-		return fmt.Errorf("current price must be positive")
+		return sdkerrors.Wrapf(ErrPriceMustBePositive, "current unit price: %s", a.CurrentUnitPriceInUsomm.String())
 	}
 
 	if a.AmountRemaining.Denom == "" {
-		return fmt.Errorf("amount remaining denom cannot be empty")
+		return sdkerrors.Wrapf(ErrDenomCannotBeEmpty, "amount remaining denom: %s", a.AmountRemaining.String())
 	}
 
 	if a.FundingModuleAccount == "" {
@@ -65,15 +64,15 @@ func (a *Auction) ValidateBasic() error {
 
 func (b *Bid) ValidateBasic() error {
 	if b.Id == 0 {
-		return fmt.Errorf("bid IDs must be non-zero")
+		return sdkerrors.Wrapf(ErrBidIdMustBeNonZero, "id: %d", b.Id)
 	}
 
 	if b.AuctionId == 0 {
-		return fmt.Errorf("auction IDs must be non-zero")
+		return sdkerrors.Wrapf(ErrAuctionIdMustBeNonZero, "id: %d", b.AuctionId)
 	}
 
 	if b.Bidder == "" {
-		return fmt.Errorf("bidder cannot be empty")
+		return sdkerrors.Wrapf(ErrAddressExpected, "bidder: %s", b.Bidder)
 	}
 
 	if _, err := sdk.AccAddressFromBech32(b.Bidder); err != nil {
@@ -81,27 +80,31 @@ func (b *Bid) ValidateBasic() error {
 	}
 
 	if !b.MaxBid.IsPositive() {
-		return fmt.Errorf("bids must be a positive amount of %s", UsommDenom)
+		return sdkerrors.Wrapf(ErrBidIdAmountMustBePositive, "bid amount: %s", b.MaxBid.String())
+	}
+
+	if b.MaxBid.Denom != UsommDenom {
+		return sdkerrors.Wrapf(ErrBidMustBeInUsomm, "bid: %s", b.MaxBid.String())
 	}
 
 	if !strings.HasPrefix(b.MinimumAmount.Denom, gravitytypes.GravityDenomPrefix) {
-		return fmt.Errorf("bids may only be placed for gravity tokens")
+		return sdkerrors.Wrapf(ErrInvalidTokenBeingBidOn, "token: %s", b.MinimumAmount)
 	}
 
 	if !b.MinimumAmount.IsPositive() {
-		return fmt.Errorf("minimum amount must be a positive amount of auctioned coins")
+		return sdkerrors.Wrapf(ErrMinimumAmountMustBePositive, "amount: %s", b.MinimumAmount.String())
 	}
 
 	if b.TotalFulfilledSaleTokenAmount.Amount.IsNegative() {
-		return fmt.Errorf("total sale token fulfillment amount must be non-negative")
+		return sdkerrors.Wrapf(ErrBidFulfilledSaleTokenAmountMustBeNonNegative, "amount: %s", b.TotalFulfilledSaleTokenAmount.String())
 	}
 
 	if !b.UnitPriceOfSaleTokenInUsomm.IsPositive() {
-		return fmt.Errorf("unit price of sale tokens in usomm must be positive")
+		return sdkerrors.Wrapf(ErrBidUnitPriceInUsommMustBePositive, "unit price: %s", b.UnitPriceOfSaleTokenInUsomm.String())
 	}
 
 	if b.TotalAmountPaidInUsomm.IsNegative() {
-		return fmt.Errorf("total amount paid in usomm cannot be negative")
+		return sdkerrors.Wrapf(ErrBidPaymentCannotBeNegative, "payment: %s", b.TotalAmountPaidInUsomm.String())
 	}
 
 	return nil
@@ -109,15 +112,15 @@ func (b *Bid) ValidateBasic() error {
 
 func (t *TokenPrice) ValidateBasic() error {
 	if t.Denom == "" {
-		return fmt.Errorf("denom cannot be empty")
+		return sdkerrors.Wrapf(ErrDenomCannotBeEmpty, "price denom: %s", t.Denom)
 	}
 
 	if !t.UsdPrice.IsPositive() {
-		return fmt.Errorf("price must be greater than 0")
+		return sdkerrors.Wrapf(ErrPriceMustBePositive, "usd price: %s", t.UsdPrice.String())
 	}
 
 	if t.LastUpdatedBlock == 0 {
-		return fmt.Errorf("last updated block must be greater than 0")
+		return sdkerrors.Wrapf(ErrInvalidLastUpdatedBlock, "block: %d", t.LastUpdatedBlock)
 	}
 
 	return nil
@@ -125,11 +128,11 @@ func (t *TokenPrice) ValidateBasic() error {
 
 func (t *ProposedTokenPrice) ValidateBasic() error {
 	if t.Denom == "" {
-		return fmt.Errorf("denom cannot be empty")
+		return sdkerrors.Wrapf(ErrDenomCannotBeEmpty, "price denom: %s", t.Denom)
 	}
 
 	if !t.UsdPrice.IsPositive() {
-		return fmt.Errorf("price must be greater than 0")
+		return sdkerrors.Wrapf(ErrPriceMustBePositive, "usd price: %s", t.UsdPrice.String())
 	}
 
 	return nil
