@@ -9,34 +9,43 @@ option go_package = "github.com/peggyjv/sommelier/v4/x/auction/types";
 
 message Auction {
   uint32 id = 1;
-  cosmos.base.v1beta1.Coin starting_amount = 2 [ (gogoproto.nullable) = false ];
+  cosmos.base.v1beta1.Coin starting_tokens_for_sale = 2 [ (gogoproto.nullable) = false ];
   uint64 start_block = 3;
   uint64 end_block = 4;
-  float initial_decrease_rate = 5;
-  float current_decrease_rate = 6;
-  uint32 block_decrease_interval = 7;
-  string current_unit_price_in_usomm = 8 [
+  string initial_price_decrease_rate = 5 [
     (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
     (gogoproto.nullable) = false
   ];
-  cosmos.base.v1beta1.Coin amount_remaining = 9 [ (gogoproto.nullable) = false ];
-  string funding_module_account = 10;
-  string proceeds_module_account = 11;
+  string current_price_decrease_rate = 6 [
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+    (gogoproto.nullable) = false
+  ];
+  uint64 price_decrease_block_interval = 7;
+  string initial_unit_price_in_usomm = 8 [
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+    (gogoproto.nullable) = false
+  ];
+  string current_unit_price_in_usomm = 9 [
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+    (gogoproto.nullable) = false
+  ];
+  cosmos.base.v1beta1.Coin remaining_tokens_for_sale = 10 [ (gogoproto.nullable) = false ];
+  string funding_module_account = 11;
+  string proceeds_module_account = 12;
 }
 
 message Bid {
   uint64 id = 1;
   uint32 auction_id = 2;
   string bidder = 3;
-  cosmos.base.v1beta1.Coin max_bid = 4 [ (gogoproto.nullable) = false ];
-  cosmos.base.v1beta1.Coin minimum_amount = 5 [ (gogoproto.nullable) = false ];
-  cosmos.base.v1beta1.Coin total_fulfilled_sale_token_amount = 6 [ (gogoproto.nullable) = false ];
-  string unit_price_of_sale_token_in_usomm = 7 [
+  cosmos.base.v1beta1.Coin max_bid_in_usomm = 4 [ (gogoproto.nullable) = false ];
+  cosmos.base.v1beta1.Coin sale_token_minimum_amount = 5 [ (gogoproto.nullable) = false ];
+  cosmos.base.v1beta1.Coin total_fulfilled_sale_tokens = 6 [ (gogoproto.nullable) = false ];
+  string sale_token_unit_price_in_usomm = 7 [
     (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
     (gogoproto.nullable) = false
   ];
-  string total_amount_paid_in_usomm = 8 [
-    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+  cosmos.base.v1beta1.Coin total_usomm_paid = 8 [
     (gogoproto.nullable) = false
   ];
 }
