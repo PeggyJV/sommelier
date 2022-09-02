@@ -12,7 +12,7 @@ const UsommDenom = "usomm"
 
 func (a *Auction) ValidateBasic() error {
 	if a.Id == 0 {
-		return sdkerrors.Wrapf(ErrAuctionIdMustBeNonZero, "id: %d", a.Id)
+		return sdkerrors.Wrapf(ErrAuctionIDMustBeNonZero, "id: %d", a.Id)
 	}
 
 	if !a.StartingAmount.IsPositive() {
@@ -64,11 +64,11 @@ func (a *Auction) ValidateBasic() error {
 
 func (b *Bid) ValidateBasic() error {
 	if b.Id == 0 {
-		return sdkerrors.Wrapf(ErrBidIdMustBeNonZero, "id: %d", b.Id)
+		return sdkerrors.Wrapf(ErrBidIDMustBeNonZero, "id: %d", b.Id)
 	}
 
 	if b.AuctionId == 0 {
-		return sdkerrors.Wrapf(ErrAuctionIdMustBeNonZero, "id: %d", b.AuctionId)
+		return sdkerrors.Wrapf(ErrAuctionIDMustBeNonZero, "id: %d", b.AuctionId)
 	}
 
 	if b.Bidder == "" {
@@ -80,7 +80,7 @@ func (b *Bid) ValidateBasic() error {
 	}
 
 	if !b.MaxBid.IsPositive() {
-		return sdkerrors.Wrapf(ErrBidIdAmountMustBePositive, "bid amount: %s", b.MaxBid.String())
+		return sdkerrors.Wrapf(ErrBidIDAmountMustBePositive, "bid amount: %s", b.MaxBid.String())
 	}
 
 	if b.MaxBid.Denom != UsommDenom {
