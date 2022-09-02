@@ -21,13 +21,13 @@ const (
 /////////////////////////
 
 // NewMsgSubmitBidRequest return a new MsgSubmitBidRequest
-func NewMsgSubmitBidRequest(auctionID uint32, maxBidInUsomm sdk.Coin, minimumSaleTokenPurchaseAmount sdk.Coin, signer sdk.AccAddress) (*MsgSubmitBidRequest, error) {
+func NewMsgSubmitBidRequest(auctionID uint32, maxBidInUsomm sdk.Coin, saleTokenMinimumAmount sdk.Coin, signer sdk.AccAddress) (*MsgSubmitBidRequest, error) {
 	return &MsgSubmitBidRequest{
-		AuctionId:                      auctionID,
-		MaxBidInUsomm:                  maxBidInUsomm,
-		MinimumSaleTokenPurchaseAmount: minimumSaleTokenPurchaseAmount,
-		Bidder:                         signer.String(),
-		Signer:                         signer.String(),
+		AuctionId:              auctionID,
+		MaxBidInUsomm:          maxBidInUsomm,
+		SaleTokenMinimumAmount: saleTokenMinimumAmount,
+		Bidder:                 signer.String(),
+		Signer:                 signer.String(),
 	}, nil
 }
 
@@ -51,11 +51,11 @@ func (m *MsgSubmitBidRequest) ValidateBasic() error {
 		return fmt.Errorf("bids must be a positive amount of usomm")
 	}
 
-	if !strings.HasPrefix(m.MinimumSaleTokenPurchaseAmount.Denom, "gravity0x") {
+	if !strings.HasPrefix(m.SaleTokenMinimumAmount.Denom, "gravity0x") {
 		return fmt.Errorf("bids may only be placed for gravity tokens")
 	}
 
-	if !m.MinimumSaleTokenPurchaseAmount.IsPositive() {
+	if !m.SaleTokenMinimumAmount.IsPositive() {
 		return fmt.Errorf("minimum amount must be a positive amount of auctioned coins")
 	}
 

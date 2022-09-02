@@ -29,6 +29,8 @@ const (
 	AttributeKeyAmountRemaining     = "amount_remaining"
 
 	EventTypeAuctionUpdated = "auction_updated"
+	AttributeKeyLastPrice   = "last_price"
+	AttributeKeyNewPrice    = "new_price"
 
 	AttributeValueCategory = ModuleName
 )

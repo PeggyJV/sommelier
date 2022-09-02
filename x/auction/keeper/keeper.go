@@ -159,27 +159,27 @@ func (k Keeper) setEndedAuction(ctx sdk.Context, auction types.Auction) {
 
 // BeginAuction starts a new auction for a single denomination
 func (k Keeper) BeginAuction(ctx sdk.Context,
-	startingAmount sdk.Coin,
-	initialDecreaseRate float32,
-	blockDecreaseInterval uint32,
+	startingTokensForSale sdk.Coin,
+	initialPriceDecreaseRate sdk.Dec,
+	priceDecreaseBlockInterval uint64,
 	fundingModuleAccount string,
 	proceedsModuleAccount string) error {
 	// Validate funding module
 	if _, ok := k.fundingModuleAccounts[fundingModuleAccount]; !ok {
-		return sdkerrors.Wrapf(types.ErrUnauthorizedFundingModule, "Account: %s", fundingModuleAccount)
+		return sdkerrors.Wrapf(types.ErrUnauthorizedFundingModule, "Module Account: %s", fundingModuleAccount)
 	}
 
 	// Validate proceeds module
 	if _, ok := k.proceedsModuleAccounts[proceedsModuleAccount]; !ok {
-		return sdkerrors.Wrapf(types.ErrUnauthorizedProceedsModule, "Account: %s", proceedsModuleAccount)
+		return sdkerrors.Wrapf(types.ErrUnauthorizedProceedsModule, "Module Account: %s", proceedsModuleAccount)
 	}
 
 	// Verify sale token price freshness is acceptable
-	lastSaleTokenPrice, found := k.GetTokenPrice(ctx, startingAmount.Denom)
+	lastSaleTokenPrice, found := k.GetTokenPrice(ctx, startingTokensForSale.Denom)
 	if !found {
-		return sdkerrors.Wrapf(types.ErrCouldNotFindSaleTokenPrice, "starting amount denom: %s", startingAmount.Denom)
+		return sdkerrors.Wrapf(types.ErrCouldNotFindSaleTokenPrice, "starting amount denom: %s", startingTokensForSale.Denom)
 	} else if k.tokenPriceTooOld(ctx, &lastSaleTokenPrice) {
-		return sdkerrors.Wrapf(types.ErrLastSaleTokenPriceTooOld, "starting amount denom: %s", startingAmount.Denom)
+		return sdkerrors.Wrapf(types.ErrLastSaleTokenPriceTooOld, "starting amount denom: %s", startingTokensForSale.Denom)
 	}
 
 	// Verify usomm token price freshness is acceptable
@@ -196,17 +196,18 @@ func (k Keeper) BeginAuction(ctx sdk.Context,
 
 	auctionID := k.GetLastAuctionID(ctx) + 1
 	auction := types.Auction{
-		Id:                      auctionID,
-		StartingAmount:          startingAmount,
-		StartBlock:              uint64(ctx.BlockHeight()),
-		EndBlock:                0,
-		InitialDecreaseRate:     initialDecreaseRate,
-		CurrentDecreaseRate:     initialDecreaseRate,
-		BlockDecreaseInterval:   blockDecreaseInterval,
-		CurrentUnitPriceInUsomm: saleTokenPriceInUsomm,
-		AmountRemaining:         startingAmount,
-		FundingModuleAccount:    fundingModuleAccount,
-		ProceedsModuleAccount:   proceedsModuleAccount,
+		Id:                         auctionID,
+		StartingTokensForSale:      startingTokensForSale,
+		StartBlock:                 uint64(ctx.BlockHeight()),
+		EndBlock:                   0,
+		InitialPriceDecreaseRate:   initialPriceDecreaseRate,
+		CurrentPriceDecreaseRate:   initialPriceDecreaseRate,
+		PriceDecreaseBlockInterval: priceDecreaseBlockInterval,
+		InitialUnitPriceInUsomm:    saleTokenPriceInUsomm,
+		CurrentUnitPriceInUsomm:    saleTokenPriceInUsomm,
+		RemainingTokensForSale:     startingTokensForSale,
+		FundingModuleAccount:       fundingModuleAccount,
+		ProceedsModuleAccount:      proceedsModuleAccount,
 	}
 
 	if err := auction.ValidateBasic(); err != nil {
@@ -216,8 +217,8 @@ func (k Keeper) BeginAuction(ctx sdk.Context,
 	// Validate no ongoing auction for denom
 	var err error = nil
 	k.IterateAuctions(ctx, types.GetActiveAuctionsPrefix(), func(auctionID uint32, auction types.Auction) (stop bool) {
-		if auction.AmountRemaining.Denom == startingAmount.Denom {
-			err = sdkerrors.Wrapf(types.ErrCannotStartTwoAuctionsForSameDenomSimultaneously, "Denom: %s", auction.AmountRemaining.Denom)
+		if auction.StartingTokensForSale.Denom == startingTokensForSale.Denom {
+			err = sdkerrors.Wrapf(types.ErrCannotStartTwoAuctionsForSameDenomSimultaneously, "Denom: %s", auction.StartingTokensForSale.Denom)
 			return true
 		}
 		return false
@@ -228,7 +229,7 @@ func (k Keeper) BeginAuction(ctx sdk.Context,
 	}
 
 	// Transfer the coins
-	if err := k.bankKeeper.SendCoinsFromModuleToModule(ctx, fundingModuleAccount, types.ModuleName, sdk.Coins{startingAmount}); err != nil {
+	if err := k.bankKeeper.SendCoinsFromModuleToModule(ctx, fundingModuleAccount, types.ModuleName, sdk.Coins{startingTokensForSale}); err != nil {
 		return err
 	}
 
@@ -239,19 +240,17 @@ func (k Keeper) BeginAuction(ctx sdk.Context,
 	k.setLastAuctionID(ctx, auctionID)
 
 	// Emit event that auction has started
-	ctx.EventManager().EmitEvents(
-		sdk.Events{
-			sdk.NewEvent(
-				types.EventTypeNewAuction,
-				sdk.NewAttribute(types.AttributeKeyAuctionID, fmt.Sprint(k.GetLastAuctionID(ctx))),
-				sdk.NewAttribute(types.AttributeKeyStartBlock, fmt.Sprint(ctx.BlockHeight())),
-				sdk.NewAttribute(types.AttributeKeyInitialDecreaseRate, fmt.Sprintf("%f", initialDecreaseRate)),
-				sdk.NewAttribute(types.AttributeKeyBlockDecreaseInterval, fmt.Sprint(blockDecreaseInterval)),
-				sdk.NewAttribute(types.AttributeKeyStartingDenom, startingAmount.Denom),
-				sdk.NewAttribute(types.AttributeKeyStartingAmount, startingAmount.Amount.String()),
-				sdk.NewAttribute(types.AttributeKeyStartingUsommPrice, saleTokenPriceInUsomm.String()),
-			),
-		},
+	ctx.EventManager().EmitEvent(
+		sdk.NewEvent(
+			types.EventTypeNewAuction,
+			sdk.NewAttribute(types.AttributeKeyAuctionID, fmt.Sprint(k.GetLastAuctionID(ctx))),
+			sdk.NewAttribute(types.AttributeKeyStartBlock, fmt.Sprint(ctx.BlockHeight())),
+			sdk.NewAttribute(types.AttributeKeyInitialDecreaseRate, fmt.Sprintf("%f", initialPriceDecreaseRate)),
+			sdk.NewAttribute(types.AttributeKeyBlockDecreaseInterval, fmt.Sprint(priceDecreaseBlockInterval)),
+			sdk.NewAttribute(types.AttributeKeyStartingDenom, startingTokensForSale.Denom),
+			sdk.NewAttribute(types.AttributeKeyStartingAmount, startingTokensForSale.Amount.String()),
+			sdk.NewAttribute(types.AttributeKeyStartingUsommPrice, saleTokenPriceInUsomm.String()),
+		),
 	)
 
 	return nil
@@ -265,7 +264,7 @@ func (k Keeper) tokenPriceTooOld(ctx sdk.Context, tokenPrice *types.TokenPrice) 
 func (k Keeper) FinishAuction(ctx sdk.Context, auction *types.Auction) error {
 	// Figure out how many funds we have left over, if any, to send
 	// Since we can only have 1 auction per denom active at a time, we can just query the balance
-	saleTokenBalance := k.bankKeeper.GetBalance(ctx, authtypes.NewModuleAddress(types.ModuleName), auction.StartingAmount.Denom)
+	saleTokenBalance := k.bankKeeper.GetBalance(ctx, authtypes.NewModuleAddress(types.ModuleName), auction.StartingTokensForSale.Denom)
 
 	if saleTokenBalance.Amount.IsPositive() {
 		// Send remaining funds to their appropriate destination module
@@ -276,13 +275,13 @@ func (k Keeper) FinishAuction(ctx sdk.Context, auction *types.Auction) error {
 
 	// Calculate amount of usomm proceeds to send back from total bids for auction
 	bids := k.GetBidsByAuctionID(ctx, auction.Id)
-	usommProceeds := sdk.NewDec(int64(0))
+	usommProceeds := sdk.NewInt(0)
 
 	for _, bid := range bids {
-		usommProceeds.Add(bid.TotalAmountPaidInUsomm)
+		usommProceeds.Add(bid.TotalUsommPaid.Amount)
 	}
 
-	usommProceedsCoin := sdk.NewCoin(types.UsommDenom, sdk.NewInt(usommProceeds.TruncateInt64()))
+	usommProceedsCoin := sdk.NewCoin(types.UsommDenom, usommProceeds)
 
 	// Send proceeds to their appropriate destination module
 	if err := k.bankKeeper.SendCoinsFromModuleToModule(ctx, types.ModuleName, auction.ProceedsModuleAccount, sdk.Coins{usommProceedsCoin}); err != nil {
@@ -297,25 +296,19 @@ func (k Keeper) FinishAuction(ctx sdk.Context, auction *types.Auction) error {
 	k.setEndedAuction(ctx, *auction)
 
 	// Emit event that auction has finished
-	ctx.EventManager().EmitEvents(
-		sdk.Events{
-			sdk.NewEvent(
-				sdk.EventTypeMessage,
-				sdk.NewAttribute(sdk.AttributeKeyModule, types.AttributeValueCategory),
-			),
-			sdk.NewEvent(
-				types.EventTypeAuctionFinished,
-				sdk.NewAttribute(types.AttributeKeyAuctionID, fmt.Sprint(auction.Id)),
-				sdk.NewAttribute(types.AttributeKeyStartBlock, fmt.Sprint(auction.StartBlock)),
-				sdk.NewAttribute(types.AttributeKeyEndBlock, fmt.Sprint(auction.EndBlock)),
-				sdk.NewAttribute(types.AttributeKeyInitialDecreaseRate, fmt.Sprintf("%f", auction.InitialDecreaseRate)),
-				sdk.NewAttribute(types.AttributeKeyCurrentDecreaseRate, fmt.Sprintf("%f", auction.CurrentDecreaseRate)),
-				sdk.NewAttribute(types.AttributeKeyBlockDecreaseInterval, fmt.Sprint(auction.BlockDecreaseInterval)),
-				sdk.NewAttribute(types.AttributeKeyStartingDenom, auction.StartingAmount.Denom),
-				sdk.NewAttribute(types.AttributeKeyStartingAmount, auction.StartingAmount.Amount.String()),
-				sdk.NewAttribute(types.AttributeKeyAmountRemaining, auction.AmountRemaining.String()),
-			),
-		},
+	ctx.EventManager().EmitEvent(
+		sdk.NewEvent(
+			types.EventTypeAuctionFinished,
+			sdk.NewAttribute(types.AttributeKeyAuctionID, fmt.Sprint(auction.Id)),
+			sdk.NewAttribute(types.AttributeKeyStartBlock, fmt.Sprint(auction.StartBlock)),
+			sdk.NewAttribute(types.AttributeKeyEndBlock, fmt.Sprint(auction.EndBlock)),
+			sdk.NewAttribute(types.AttributeKeyInitialDecreaseRate, auction.InitialPriceDecreaseRate.String()),
+			sdk.NewAttribute(types.AttributeKeyCurrentDecreaseRate, auction.CurrentPriceDecreaseRate.String()),
+			sdk.NewAttribute(types.AttributeKeyBlockDecreaseInterval, fmt.Sprint(auction.PriceDecreaseBlockInterval)),
+			sdk.NewAttribute(types.AttributeKeyStartingDenom, auction.StartingTokensForSale.Denom),
+			sdk.NewAttribute(types.AttributeKeyStartingAmount, auction.StartingTokensForSale.Amount.String()),
+			sdk.NewAttribute(types.AttributeKeyAmountRemaining, auction.RemainingTokensForSale.String()),
+		),
 	)
 
 	return nil
@@ -332,9 +325,8 @@ func (k Keeper) IterateBids(ctx sdk.Context, handler func(auctionID uint32, bidI
 	defer iter.Close()
 	for ; iter.Valid(); iter.Next() {
 		key := bytes.NewBuffer(iter.Key())
-		key.Next(1)                                       // trim prefix byte
-		auctionID := binary.BigEndian.Uint32(key.Next(4)) // trim auction bytes
-
+		key.Next(1) // trim prefix byte
+		auctionID := binary.BigEndian.Uint32(key.Next(4))
 		bidID := binary.BigEndian.Uint64(key.Bytes())
 
 		var bid types.Bid
@@ -352,9 +344,8 @@ func (k Keeper) IterateBidsByAuction(ctx sdk.Context, auctionID uint32, handler 
 	defer iter.Close()
 	for ; iter.Valid(); iter.Next() {
 		key := bytes.NewBuffer(iter.Key())
-		key.Next(1)                                       // trim prefix byte
-		auctionID := binary.BigEndian.Uint32(key.Next(4)) // trim auction bytes
-
+		key.Next(1) // trim prefix byte
+		auctionID := binary.BigEndian.Uint32(key.Next(4))
 		bidID := binary.BigEndian.Uint64(key.Bytes())
 
 		var bid types.Bid
