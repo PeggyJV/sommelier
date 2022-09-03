@@ -99,7 +99,7 @@ func (s *UpgradeTestSuite) SetupSuite() {
 	s.initEthereumFromMnemonics(mnemonics)
 
 	// run the eth container so that the contract addresses are available
-	s.runEthContainer("prebuilt")
+	s.runEthContainer("v3.1.1")
 
 	// continue generating node genesis
 	s.initGenesis()
@@ -112,8 +112,6 @@ func (s *UpgradeTestSuite) SetupSuite() {
 
 func (s *UpgradeTestSuite) StopAllNodes() {
 	s.T().Log("stopping all nodes for upgrade...")
-
-	s.Require().NoError(s.dockerPool.Purge(s.ethResource))
 
 	for _, vc := range s.valResources {
 		s.Require().NoError(s.dockerPool.Purge(vc))
@@ -505,11 +503,6 @@ func (s *UpgradeTestSuite) runEthContainer(version string) {
 			if strings.HasPrefix(s, "gravity contract deployed at") {
 				strSpl := strings.Split(s, "-")
 				gravityContract = common.HexToAddress(strings.ReplaceAll(strSpl[1], " ", ""))
-				// continue, this is not the last contract deployed
-			}
-			if strings.HasPrefix(s, "counter contract deployed at") {
-				strSpl := strings.Split(s, "-")
-				counterContract = common.HexToAddress(strings.ReplaceAll(strSpl[1], " ", ""))
 				return true
 			}
 		}

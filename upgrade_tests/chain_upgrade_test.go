@@ -19,7 +19,7 @@ func (s *UpgradeTestSuite) TestSommChainUpgrade() {
 		proposal := upgradetypes.SoftwareUpgradeProposal{
 			Title:       "Chain Upgrade 1",
 			Description: "First chain software upgrade",
-			Plan:        upgradetypes.Plan{Name: "chain-upgrade", Height: 100}}
+			Plan:        upgradetypes.Plan{Name: "v4", Height: 100}}
 
 		proposalMsg, err := govtypes.NewMsgSubmitProposal(
 			&proposal,
@@ -80,25 +80,26 @@ func (s *UpgradeTestSuite) TestSommChainUpgrade() {
 			s.Require().NoError(err)
 			currentBlockHeight := status.SyncInfo.LatestBlockHeight
 			s.T().Logf("Current block height:%d", currentBlockHeight)
+			if currentBlockHeight == 100 {
+				// Stop all nodes
+				s.StopAllNodes()
+				return true
+			}
+			return false
+		}, time.Minute*10, time.Second*1, "An error occurred when querying block height before upgrade")
+		s.Require().Eventuallyf(func() bool {
+			// Start all nodes
+			// initialization
+
+			// continue generating node genesis
+			s.initGenesis()
+			s.initValidatorConfigs()
+
+			// container infrastructure
+			s.runValidators("prebuilt")
+			s.runOrchestrators("prebuilt")
 			return true
-		}, time.Second*30, time.Second*5, "An error occurred when querying block height before upgrade")
-
-		// Stop all nodes
-		s.StopAllNodes()
-
-		// Start all nodes
-		// initialization
-
-		// run the eth container so that the contract addresses are available
-		s.runEthContainer("prebuilt")
-
-		// continue generating node genesis
-		s.initGenesis()
-		s.initValidatorConfigs()
-
-		// container infrastructure
-		s.runValidators("prebuilt")
-		s.runOrchestrators("prebuilt")
+		}, time.Minute*10, time.Second*30, "An error occurred when querying block height before upgrade")
 
 		// Query block height to ensure chain successfully updated
 		s.T().Log("Query block height to ensure chain successfully updated")
