@@ -404,14 +404,18 @@ fail:
 # Upgrade test #
 #####################
 
-ORCHESTRATOR_IMAGE := "ghcr.io/peggyjv/gravity-bridge-orchestrator:main"
+ORCHESTRATOR_IMAGE := "ghcr.io/peggyjv/gravity-bridge-orchestrator:v0.3.8"
+SOMMELIER_IMAGE := "ghcr.io/peggyjv/sommelier-sommelier:v3.1.0"
+ETHEREUM_IMAGE := "ghcr.io/peggyjv/sommelier-hardhat:v3.1.0"
 
-e2e_build_images: e2e_clean_slate
+e2e_build_upgrade_images: e2e_clean_slate
 	@docker pull $(ORCHESTRATOR_IMAGE)
-	@docker tag $(ORCHESTRATOR_IMAGE) orchestrator:prebuilt
+	@docker tag $(ORCHESTRATOR_IMAGE) orchestrator:3.1.0
 	@docker build -t sommelier:prebuilt -f Dockerfile .
-	@docker build -t ethereum:prebuilt -f integration_tests/ethereum/Dockerfile integration_tests/ethereum/
-
+	@docker pull $(ETHEREUM_IMAGE)
+	@docker tag $(ETHEREUM_IMAGE) ethereum:3.1.0
+	@docker pull $(SOMMELIER_IMAGE)
+	@docker tag $(SOMMELIER_IMAGE) sommelier:3.1.0
 e2e_clean_upgrade_slate:
 	@docker rm --force \
 		$(shell docker ps -qa --filter="name=ethereum") \

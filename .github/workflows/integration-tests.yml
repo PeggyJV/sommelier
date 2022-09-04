@@ -219,15 +219,15 @@ jobs:
       - name: pull hardhat image
         run: docker pull ${{ env.ETHEREUM_IMAGE }}
       - name: rename hardhat image
-        run: docker tag ${{ env.ETHEREUM_IMAGE }} ethereum:3.0.1
+        run: docker tag ${{ env.ETHEREUM_IMAGE }} ethereum:3.1.0
       - name: pull orchestrator image
         run: docker pull ${{ env.ORCHESTRATOR_IMAGE }}
       - name: rename orchestrator image
-        run: docker tag ${{ env.ORCHESTRATOR_IMAGE }} orchestrator:3.0.1
-      - name: pull sommelier 3.0.1 image
+        run: docker tag ${{ env.ORCHESTRATOR_IMAGE }} orchestrator:3.1.0
+      - name: pull sommelier 3.1.0 image
         run: docker pull ${{ env.SOMMELIER_IMAGE }}
-      - name: rename sommelier 3.0.1 image
-        run: docker tag ${{ env.SOMMELIER_IMAGE }} sommelier:3.0.1
+      - name: rename sommelier 3.1.0 image
+        run: docker tag ${{ env.SOMMELIER_IMAGE }} sommelier:3.1.0
       - name: clean the slate
         run: make e2e_clean_upgrade_slate
       - name: build go test binary
