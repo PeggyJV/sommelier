@@ -97,8 +97,8 @@ func (s *UpgradeTestSuite) TestSommChainUpgrade() {
 			s.initValidatorConfigs()
 
 			// container infrastructure
-			s.runValidators("prebuilt")
-			s.runOrchestrators("v3.1.1")
+			s.runValidators("4.0.1")
+			s.runOrchestrators("3.1.0")
 			return true
 		}, time.Minute*10, time.Second*30, "An error occurred when querying block height before upgrade")
 
@@ -115,6 +115,49 @@ func (s *UpgradeTestSuite) TestSommChainUpgrade() {
 		}, time.Minute*5, time.Minute*1, "An error occurred when querying block height after upgrade")
 
 		// Test upgrade by making sure allocation module was removed
-		// Run a cork test or something
+		s.T().Log("Checkout chain upgrade")
+		tickRange, err := s.getFirstTickRange()
+		s.Require().NoError(err)
+		s.Require().Equal(int32(600), tickRange.Upper)
+		s.Require().Equal(int32(300), tickRange.Lower)
+		s.Require().Equal(uint32(900), tickRange.Weight)
+
+		commit := types.Allocation{
+			Vote: &types.RebalanceVote{
+				Cellar: &types.Cellar{
+					Id: hardhatCellar.String(),
+					TickRanges: []*types.TickRange{
+						{Upper: 198840, Lower: 192180, Weight: 100},
+					},
+				},
+				CurrentPrice: 100,
+			},
+			Salt: "testsalt",
+		}
+
+		s.T().Logf("checking that test cellar exists in the chain")
+		val := s.chain.validators[0]
+		s.Require().Eventuallyf(func() bool {
+			kb, err := val.keyring()
+			s.Require().NoError(err)
+			clientCtx, err := s.chain.clientContext("tcp://localhost:26657", &kb, "val", val.keyInfo.GetAddress())
+			s.Require().NoError(err)
+			// 	This query should return an error, since allocation module has been removed"
+			queryClient := types.NewQueryClient(clientCtx)
+			res, err := queryClient.QueryCellars(context.Background(), &types.QueryCellarsRequest{})
+			s.Require().EqualError(err, "rpc error: code = Unknown desc = unknown query path: unknown request")
+			if err != nil {
+				return true
+			}
+			if res == nil {
+				return true
+			}
+			for _, c := range res.Cellars {
+				if c.Id == commit.Vote.Cellar.Id {
+					return true
+				}
+			}
+			return true
+		}, 30*time.Second, 2*time.Second, "hardhat cellar not found in chain")
 	})
 }

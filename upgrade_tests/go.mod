@@ -10,6 +10,7 @@ require (
 	github.com/ory/dockertest/v3 v3.9.1
 	github.com/peggyjv/gravity-bridge/module v0.3.9
 	github.com/peggyjv/sommelier v0.3.0
+	github.com/peggyjv/sommelier/v4 v4.0.0
 	github.com/spf13/viper v1.8.1
 	github.com/stretchr/testify v1.7.1
 	github.com/tendermint/tendermint v0.34.14

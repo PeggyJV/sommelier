@@ -103,9 +103,9 @@ func (s *UpgradeTestSuite) SetupSuite() {
 	s.Require().NoError(err)
 
 	// container infrastructure
-	s.runEthContainer("v3.1.1")
-	s.runValidators("v3.1.1")
-	s.runOrchestrators("v3.1.1")
+	s.runEthContainer("3.1.0")
+	s.runValidators("3.1.0")
+	s.runOrchestrators("3.1.0")
 }
 
 func (s *UpgradeTestSuite) TearDownSuite() {
