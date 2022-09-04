@@ -8,7 +8,9 @@ import (
 	"path"
 	"path/filepath"
 
+	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/codec/unknownproto"
+
 	sdkcrypto "github.com/cosmos/cosmos-sdk/crypto"
 	cryptocodec "github.com/cosmos/cosmos-sdk/crypto/codec"
 	"github.com/cosmos/cosmos-sdk/crypto/hd"
@@ -23,26 +25,31 @@ import (
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/crypto"
-	gravitytypes "github.com/peggyjv/gravity-bridge/module/v2/x/gravity/types"
-	"github.com/peggyjv/sommelier/v4/app"
+	gravitytypes "github.com/peggyjv/gravity-bridge/module/x/gravity/types"
+	"github.com/peggyjv/sommelier/app"
 	tmcfg "github.com/tendermint/tendermint/config"
 	tmos "github.com/tendermint/tendermint/libs/os"
 	"github.com/tendermint/tendermint/p2p"
 	"github.com/tendermint/tendermint/privval"
 )
 
-// instead of mounts in the integration test example, use `ghcr.io/strangelove-ventures/heighliner/sommelier` as repository and `v4.0.1` or other version as tag.
-
 type validator struct {
-	chain        *chain
-	index        int
-	moniker      string
-	mnemonic     string
-	keyInfo      keyring.Info
-	privateKey   cryptotypes.PrivKey
-	consensusKey privval.FilePVKey
-	nodeKey      p2p.NodeKey
-	ethereumKey  ethereumKey
+	chain            *chain
+	index            int
+	moniker          string
+	mnemonic         string
+	keyInfo          keyring.Info
+	privateKey       cryptotypes.PrivKey
+	consensusKey     privval.FilePVKey
+	consensusPrivKey cryptotypes.PrivKey
+	nodeKey          p2p.NodeKey
+	ethereumKey      ethereumKey
+}
+
+type ethereumKey struct {
+	publicKey  string
+	privateKey string
+	address    string
 }
 
 func (v *validator) instanceName() string {
@@ -164,7 +171,7 @@ func (v *validator) createKeyFromMnemonic(name, mnemonic string, passphrase stri
 	return nil
 }
 
-func (v *validator) createKey(name string) error { //nolint:unused
+func (v *validator) createKey(name string) error {
 	mnemonic, err := createMnemonic()
 	if err != nil {
 		return err
@@ -173,7 +180,7 @@ func (v *validator) createKey(name string) error { //nolint:unused
 	return v.createKeyFromMnemonic(name, mnemonic, "")
 }
 
-func (v *validator) generateEthereumKey() error { //nolint:unused
+func (v *validator) generateEthereumKey() error {
 	privateKey, err := crypto.GenerateKey()
 	if err != nil {
 		return err
@@ -338,6 +345,14 @@ func (v *validator) signMsg(msgs ...sdk.Msg) (*sdktx.Tx, error) {
 
 func (v *validator) keyring() (keyring.Keyring, error) {
 	return keyring.New(keyringAppName, keyring.BackendTest, v.configDir(), nil)
+}
+
+func (v *validator) clientContext(nodeURI string) (*client.Context, error) {
+	kb, err := v.keyring()
+	if err != nil {
+		return nil, err
+	}
+	return v.chain.clientContext(nodeURI, &kb, "val", v.keyInfo.GetAddress())
 }
 
 func decodeTx(txBytes []byte) (*sdktx.Tx, error) {

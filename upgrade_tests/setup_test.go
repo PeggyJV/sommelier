@@ -14,10 +14,11 @@ import (
 	"testing"
 	"time"
 
-	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
-	corktypes "github.com/peggyjv/sommelier/v4/x/cork/types"
+	gravitytypes "github.com/peggyjv/gravity-bridge/module/x/gravity/types"
 
-	gravitytypes "github.com/peggyjv/gravity-bridge/module/v2/x/gravity/types"
+	"github.com/ethereum/go-ethereum"
+
+	"github.com/peggyjv/sommelier/x/allocation/types"
 
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/ethclient"
@@ -28,6 +29,7 @@ import (
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	crisistypes "github.com/cosmos/cosmos-sdk/x/crisis/types"
 	genutiltypes "github.com/cosmos/cosmos-sdk/x/genutil/types"
+	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 	minttypes "github.com/cosmos/cosmos-sdk/x/mint/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 	"github.com/ory/dockertest/v3"
@@ -41,19 +43,10 @@ import (
 
 const (
 	testDenom           = "testsomm"
-	initBalanceStr      = "110000000000testsomm"
+	initBalanceStr      = "110000000000utestsomm,100000000000testsomm"
 	minGasPrice         = "2"
 	ethChainID     uint = 15
-)
-
-var (
-	stakeAmount, _  = sdk.NewIntFromString("100000000000")
-	stakeAmountCoin = sdk.NewCoin(testDenom, stakeAmount)
-
-	// todo(mvid): split these out into their respective tests
-	gravityContract       = common.HexToAddress("0x04C89607413713Ec9775E14b954286519d836FEf")
-	counterContract       = common.HexToAddress("0x0000000000000000000000000000000000000000")
-	unusedGenesisContract = common.HexToAddress("0x0000000000000000000000000000000000000001")
+	bondDenom           = "utestsomm"
 )
 
 func MNEMONICS() []string {
@@ -64,6 +57,13 @@ func MNEMONICS() []string {
 		"say monitor orient heart super local purse cricket caution primary bring insane road expect rather help two extend own execute throw nation plunge subject",
 	}
 }
+
+var (
+	stakeAmount, _  = sdk.NewIntFromString("100000000000")
+	stakeAmountCoin = sdk.NewCoin(bondDenom, stakeAmount)
+	hardhatCellar   = common.HexToAddress("0x4C4a2f8c81640e47606d3fd77B353E87Ba015584")
+	gravityContract = common.HexToAddress("0x04C89607413713Ec9775E14b954286519d836FEf")
+)
 
 type UpgradeTestSuite struct {
 	suite.Suite
@@ -81,14 +81,10 @@ func TestUpgradeTestSuite(t *testing.T) {
 }
 
 func (s *UpgradeTestSuite) SetupSuite() {
-	s.T().Log("setting up e2e integration test suite...")
+	s.T().Log("setting up e2e upgrade test suite...")
 
 	var err error
 	s.chain, err = newChain()
-	s.Require().NoError(err)
-	s.dockerPool, err = dockertest.NewPool("")
-	s.Require().NoError(err)
-	s.dockerNetwork, err = s.dockerPool.CreateNetwork(fmt.Sprintf("%s-testnet", s.chain.id))
 	s.Require().NoError(err)
 
 	s.T().Logf("starting e2e infrastructure; chain-id: %s; datadir: %s", s.chain.id, s.chain.dataDir)
@@ -97,29 +93,19 @@ func (s *UpgradeTestSuite) SetupSuite() {
 	mnemonics := MNEMONICS()
 	s.initNodesWithMnemonics(mnemonics...)
 	s.initEthereumFromMnemonics(mnemonics)
-
-	// run the eth container so that the contract addresses are available
-	s.runEthContainer("v3.1.1")
-
-	// continue generating node genesis
 	s.initGenesis()
 	s.initValidatorConfigs()
 
+	s.dockerPool, err = dockertest.NewPool("")
+	s.Require().NoError(err)
+
+	s.dockerNetwork, err = s.dockerPool.CreateNetwork(fmt.Sprintf("%s-testnet", s.chain.id))
+	s.Require().NoError(err)
+
 	// container infrastructure
-	s.runValidators("prebuilt")
-	s.runOrchestrators("prebuilt")
-}
-
-func (s *UpgradeTestSuite) StopAllNodes() {
-	s.T().Log("stopping all nodes for upgrade...")
-
-	for _, vc := range s.valResources {
-		s.Require().NoError(s.dockerPool.Purge(vc))
-	}
-
-	for _, oc := range s.orchResources {
-		s.Require().NoError(s.dockerPool.Purge(oc))
-	}
+	s.runEthContainer("v3.1.1")
+	s.runValidators("v3.1.1")
+	s.runOrchestrators("v3.1.1")
 }
 
 func (s *UpgradeTestSuite) TearDownSuite() {
@@ -149,7 +135,7 @@ func (s *UpgradeTestSuite) TearDownSuite() {
 	s.Require().NoError(s.dockerPool.RemoveNetwork(s.dockerNetwork))
 }
 
-func (s *UpgradeTestSuite) initNodes(nodeCount int) { //nolint:unused
+func (s *UpgradeTestSuite) initNodes(nodeCount int) {
 	s.Require().NoError(s.chain.createAndInitValidators(nodeCount))
 	s.Require().NoError(s.chain.createAndInitOrchestrators(nodeCount))
 
@@ -207,7 +193,7 @@ func (s *UpgradeTestSuite) initNodesWithMnemonics(mnemonics ...string) {
 	}
 }
 
-func (s *UpgradeTestSuite) initEthereum() { //nolint:unused
+func (s *UpgradeTestSuite) initEthereum() {
 	// generate ethereum keys for validators add them to the ethereum genesis
 	ethGenesis := EthereumGenesis{
 		Difficulty: "0x400",
@@ -275,9 +261,26 @@ func (s *UpgradeTestSuite) initGenesis() {
 
 	bankGenState.DenomMetadata = append(bankGenState.DenomMetadata, banktypes.Metadata{
 		Description: "The native staking token of the test somm network",
+		Display:     "testsomm",
+		Base:        bondDenom,
+		DenomUnits: []*banktypes.DenomUnit{
+			{
+				Denom:    bondDenom,
+				Exponent: 0,
+				Aliases: []string{
+					"tsomm",
+				},
+			},
+			{
+				Denom:    "testsomm",
+				Exponent: 6,
+			},
+		},
+	})
+	bankGenState.DenomMetadata = append(bankGenState.DenomMetadata, banktypes.Metadata{
+		Description: "An example stable token",
 		Display:     testDenom,
 		Base:        testDenom,
-		Name:        testDenom,
 		DenomUnits: []*banktypes.DenomUnit{
 			{
 				Denom:    testDenom,
@@ -303,7 +306,7 @@ func (s *UpgradeTestSuite) initGenesis() {
 	// set crisis denom
 	var crisisGenState crisistypes.GenesisState
 	s.Require().NoError(cdc.UnmarshalJSON(appGenState[crisistypes.ModuleName], &crisisGenState))
-	crisisGenState.ConstantFee.Denom = testDenom
+	crisisGenState.ConstantFee.Denom = bondDenom
 	bz, err = cdc.MarshalJSON(&crisisGenState)
 	s.Require().NoError(err)
 	appGenState[crisistypes.ModuleName] = bz
@@ -311,7 +314,7 @@ func (s *UpgradeTestSuite) initGenesis() {
 	// set staking bond denom
 	var stakingGenState stakingtypes.GenesisState
 	s.Require().NoError(cdc.UnmarshalJSON(appGenState[stakingtypes.ModuleName], &stakingGenState))
-	stakingGenState.Params.BondDenom = testDenom
+	stakingGenState.Params.BondDenom = bondDenom
 	bz, err = cdc.MarshalJSON(&stakingGenState)
 	s.Require().NoError(err)
 	appGenState[stakingtypes.ModuleName] = bz
@@ -319,7 +322,7 @@ func (s *UpgradeTestSuite) initGenesis() {
 	// set mint denom
 	var mintGenState minttypes.GenesisState
 	s.Require().NoError(cdc.UnmarshalJSON(appGenState[minttypes.ModuleName], &mintGenState))
-	mintGenState.Params.MintDenom = testDenom
+	mintGenState.Params.MintDenom = bondDenom
 	bz, err = cdc.MarshalJSON(&mintGenState)
 	s.Require().NoError(err)
 	appGenState[minttypes.ModuleName] = bz
@@ -351,12 +354,21 @@ func (s *UpgradeTestSuite) initGenesis() {
 	s.Require().NoError(err)
 	appGenState[genutiltypes.ModuleName] = bz
 
-	var corkGenState corktypes.GenesisState
-	s.Require().NoError(cdc.UnmarshalJSON(appGenState[corktypes.ModuleName], &corkGenState))
-	corkGenState.CellarIds = corktypes.CellarIDSet{Ids: []string{unusedGenesisContract.String()}}
-	bz, err = cdc.MarshalJSON(&corkGenState)
+	var allocationGenState types.GenesisState
+	s.Require().NoError(cdc.UnmarshalJSON(appGenState[types.ModuleName], &allocationGenState))
+
+	allocationGenState.Cellars = []*types.Cellar{
+		{
+			Id: hardhatCellar.String(),
+			TickRanges: []*types.TickRange{
+				{Upper: 600, Lower: 300, Weight: 900},
+			},
+		},
+	}
+	allocationGenState.Params.VotePeriod = 30
+	bz, err = cdc.MarshalJSON(&allocationGenState)
 	s.Require().NoError(err)
-	appGenState[corktypes.ModuleName] = bz
+	appGenState[types.ModuleName] = bz
 
 	// set contract addr
 	var gravityGenState gravitytypes.GenesisState
@@ -430,6 +442,11 @@ func (s *UpgradeTestSuite) initValidatorConfigs() {
 
 		srvconfig.WriteConfigFile(appCfgPath, appConfig)
 	}
+}
+
+func (s *UpgradeTestSuite) runHardhatContainer() {
+	s.T().Log("starting Ethereum Hardhat container...")
+
 }
 
 func (s *UpgradeTestSuite) runEthContainer(version string) {
@@ -674,7 +691,7 @@ msg_batch_size = 5
 	// TODO(mvid) Determine if there is a way to check the health or status of
 	// the gorc orchestrator processes. For now, we search the logs to determine
 	// when each orchestrator resource has synced all batches
-	match := "No unsigned batches! Everything good!"
+	match := "orchestrator::main_loop: No unsigned batches! Everything good!"
 	for _, resource := range s.orchResources {
 		resource := resource
 		s.T().Logf("waiting for orchestrator to be healthy: %s", resource.Container.ID)
@@ -722,8 +739,43 @@ func (s *UpgradeTestSuite) logsByContainerID(id string) string {
 	return containerLogsBuf.String()
 }
 
-func (s *UpgradeTestSuite) TestChain() {
+func (s *UpgradeTestSuite) getFirstTickRange() (*types.TickRange, error) {
+	ethClient, err := ethclient.Dial(fmt.Sprintf("http://%s", s.ethResource.GetHostPort("8545/tcp")))
+	if err != nil {
+		return nil, err
+	}
+
+	bz, err := ethClient.CallContract(context.Background(), ethereum.CallMsg{
+		From: common.HexToAddress(s.chain.validators[0].ethereumKey.address),
+		To:   &hardhatCellar,
+		Gas:  0,
+		Data: types.ABIEncodedCellarTickInfoBytes(uint(0)),
+	}, nil)
+	if err != nil {
+		return nil, err
+	}
+	tr, err := types.BytesToABIEncodedTickRange(bz)
+	if err != nil {
+		return nil, err
+	}
+
+	return tr, nil
+}
+
+func (s *UpgradeTestSuite) TestBasicChain() {
 	// this test verifies that the setup functions all operate as expected
 	s.Run("bring up basic chain", func() {
 	})
+}
+
+func (s *UpgradeTestSuite) StopAllNodes() {
+	s.T().Log("stopping all nodes for upgrade...")
+
+	for _, vc := range s.valResources {
+		s.Require().NoError(s.dockerPool.Purge(vc))
+	}
+
+	for _, oc := range s.orchResources {
+		s.Require().NoError(s.dockerPool.Purge(oc))
+	}
 }

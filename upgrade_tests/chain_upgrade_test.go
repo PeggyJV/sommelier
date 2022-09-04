@@ -7,6 +7,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
+	"github.com/peggyjv/sommelier/x/allocation/types"
 )
 
 func (s *UpgradeTestSuite) TestSommChainUpgrade() {
@@ -97,7 +98,7 @@ func (s *UpgradeTestSuite) TestSommChainUpgrade() {
 
 			// container infrastructure
 			s.runValidators("prebuilt")
-			s.runOrchestrators("prebuilt")
+			s.runOrchestrators("v3.1.1")
 			return true
 		}, time.Minute*10, time.Second*30, "An error occurred when querying block height before upgrade")
 
@@ -112,5 +113,8 @@ func (s *UpgradeTestSuite) TestSommChainUpgrade() {
 			s.T().Logf("Current block height:%d", currentBlockHeight)
 			return true
 		}, time.Minute*5, time.Minute*1, "An error occurred when querying block height after upgrade")
+
+		// Test upgrade by making sure allocation module was removed
+		// Run a cork test or something
 	})
 }

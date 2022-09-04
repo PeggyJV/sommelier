@@ -11,13 +11,7 @@ import (
 
 const DerivationPath = "m/44'/60'/0'/0/0"
 
-type ethereumKey struct {
-	publicKey  string
-	privateKey string
-	address    string
-}
-
-func createMnemonic() (string, error) { //nolint:unused
+func createMnemonic() (string, error) {
 	entropySeed, err := bip39.NewEntropy(256)
 	if err != nil {
 		return "", err

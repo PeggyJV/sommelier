@@ -20,12 +20,11 @@ import (
 	"github.com/cosmos/cosmos-sdk/types/tx/signing"
 	sdkTx "github.com/cosmos/cosmos-sdk/x/auth/tx"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
-	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
-	gravitytypes "github.com/peggyjv/gravity-bridge/module/v2/x/gravity/types"
-	"github.com/peggyjv/sommelier/v4/app"
-	"github.com/peggyjv/sommelier/v4/app/params"
-	corktypes "github.com/peggyjv/sommelier/v4/x/cork/types"
+	gravitytypes "github.com/peggyjv/gravity-bridge/module/x/gravity/types"
+	"github.com/peggyjv/sommelier/app"
+	"github.com/peggyjv/sommelier/app/params"
+	"github.com/peggyjv/sommelier/x/allocation/types"
 	tmrand "github.com/tendermint/tendermint/libs/rand"
 	rpchttp "github.com/tendermint/tendermint/rpc/client/http"
 )
@@ -39,13 +38,6 @@ var (
 	encodingConfig params.EncodingConfig
 	cdc            codec.Codec
 )
-
-type chain struct {
-	dataDir       string
-	id            string
-	validators    []*validator
-	orchestrators []*orchestrator
-}
 
 func init() {
 	encodingConfig = app.MakeEncodingConfig()
@@ -65,8 +57,11 @@ func init() {
 	cdc = encodingConfig.Marshaler
 }
 
-func (c *chain) configDir() string {
-	return fmt.Sprintf("%s/%s", c.dataDir, c.id)
+type chain struct {
+	dataDir       string
+	id            string
+	validators    []*validator
+	orchestrators []*orchestrator
 }
 
 func newChain() (*chain, error) {
@@ -90,7 +85,11 @@ func newChain() (*chain, error) {
 	}, nil
 }
 
-func (c *chain) createAndInitValidators(count int) error { //nolint:unused
+func (c *chain) configDir() string {
+	return fmt.Sprintf("%s/%s", c.dataDir, c.id)
+}
+
+func (c *chain) createAndInitValidators(count int) error {
 	for i := 0; i < count; i++ {
 		node := c.createValidator(i)
 
@@ -143,7 +142,7 @@ func (c *chain) createAndInitValidatorsWithMnemonics(mnemonics []string) error {
 	return nil
 }
 
-func (c *chain) createAndInitOrchestrators(count int) error { //nolint:unused
+func (c *chain) createAndInitOrchestrators(count int) error {
 	mnemonics := make([]string, count)
 	for i := 0; i < count; i++ {
 		mnemonic, err := createMnemonic()
@@ -199,10 +198,8 @@ func (c *chain) clientContext(nodeURI string, kb *keyring.Keyring, fromName stri
 	interfaceRegistry.RegisterImplementations((*sdk.Msg)(nil),
 		&stakingtypes.MsgCreateValidator{},
 		&gravitytypes.MsgDelegateKeys{},
-	)
-	interfaceRegistry.RegisterImplementations((*govtypes.Content)(nil),
-		&corktypes.AddManagedCellarIDsProposal{},
-		&corktypes.RemoveManagedCellarIDsProposal{},
+		&types.MsgAllocationCommit{},
+		&types.MsgAllocationPrecommit{},
 	)
 	interfaceRegistry.RegisterImplementations((*cryptotypes.PubKey)(nil), &secp256k1.PubKey{}, &ed25519.PubKey{})
 
