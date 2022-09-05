@@ -216,7 +216,7 @@ jobs:
       - name: pull sommelier upgrade binary image
         run: docker pull ${{ env.SOMM_IMAGE }}
       - name: rename sommelier image
-        run: docker tag ${{ env.SOMM_IMAGE }} sommelier:4.0.1
+        run: docker tag ${{ env.SOMM_IMAGE }} sommelier:upgrade
       - name: pull hardhat image
         run: docker pull ${{ env.ETHEREUM_IMAGE }}
       - name: rename hardhat image

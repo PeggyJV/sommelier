@@ -97,7 +97,7 @@ func (s *UpgradeTestSuite) TestSommChainUpgrade() {
 			s.initValidatorConfigs()
 
 			// container infrastructure
-			s.runValidators("4.0.1")
+			s.runValidators("upgrade")
 			s.runOrchestrators("3.1.0")
 			return true
 		}, time.Minute*5, time.Second*30, "An error occurred when querying block height before upgrade")
