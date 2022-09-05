@@ -407,11 +407,13 @@ fail:
 ORCHESTRATOR_IMAGE := "ghcr.io/peggyjv/gravity-bridge-orchestrator:v0.3.8"
 SOMMELIER_IMAGE := "ghcr.io/peggyjv/sommelier-sommelier:v3.1.0"
 ETHEREUM_IMAGE := "ghcr.io/peggyjv/sommelier-hardhat:v3.1.0"
+SOMM_IMAGE := hannydevelop/sommelier:4.0.1
 
 e2e_build_upgrade_images: e2e_clean_slate
 	@docker pull $(ORCHESTRATOR_IMAGE)
 	@docker tag $(ORCHESTRATOR_IMAGE) orchestrator:3.1.0
-	@docker build -t sommelier:prebuilt -f Dockerfile .
+	@docker pull $(SOMM_IMAGE)
+	@docker tag $(SOMM_IMAGE) sommelier:4.0.1	
 	@docker pull $(ETHEREUM_IMAGE)
 	@docker tag $(ETHEREUM_IMAGE) ethereum:3.1.0
 	@docker pull $(SOMMELIER_IMAGE)
