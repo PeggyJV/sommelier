@@ -100,7 +100,7 @@ func (s *UpgradeTestSuite) TestSommChainUpgrade() {
 			s.runValidators("4.0.1")
 			s.runOrchestrators("3.1.0")
 			return true
-		}, time.Minute*10, time.Second*30, "An error occurred when querying block height before upgrade")
+		}, time.Minute*5, time.Second*30, "An error occurred when querying block height before upgrade")
 
 		// Query block height to ensure chain successfully updated
 		s.T().Log("Query block height to ensure chain successfully updated")
