@@ -362,15 +362,15 @@ func NewSommelierApp(
 		app.StakingKeeper, app.GravityKeeper,
 	)
 
-	app.CellarFeesKeeper = cellarfeeskeeper.NewKeeper(
-		appCodec, keys[cellarfeestypes.StoreKey], app.GetSubspace(cellarfeestypes.ModuleName),
-		app.AccountKeeper, app.BankKeeper,
-	)
-
 	app.AuctionKeeper = auctionkeeper.NewKeeper(
 		appCodec, keys[auctiontypes.StoreKey], app.GetSubspace(auctiontypes.ModuleName),
 		app.BankKeeper, map[string]bool{cellarfeestypes.ModuleName: true},
 		map[string]bool{cellarfeestypes.ModuleName: true},
+	)
+
+	app.CellarFeesKeeper = cellarfeeskeeper.NewKeeper(
+		appCodec, keys[cellarfeestypes.StoreKey], app.GetSubspace(cellarfeestypes.ModuleName),
+		app.AccountKeeper, app.BankKeeper,
 	)
 
 	app.GravityKeeper = *app.GravityKeeper.SetHooks(
@@ -457,13 +457,13 @@ func NewSommelierApp(
 		upgradetypes.ModuleName, capabilitytypes.ModuleName, minttypes.ModuleName, distrtypes.ModuleName, slashingtypes.ModuleName,
 		evidencetypes.ModuleName, stakingtypes.ModuleName, ibchost.ModuleName, ibctransfertypes.ModuleName, authtypes.ModuleName,
 		banktypes.ModuleName, govtypes.ModuleName, crisistypes.ModuleName, genutiltypes.ModuleName, authz.ModuleName, feegrant.ModuleName,
-		paramstypes.ModuleName, gravitytypes.ModuleName, corktypes.ModuleName, cellarfeestypes.ModuleName, auctiontypes.ModuleName,
+		paramstypes.ModuleName, gravitytypes.ModuleName, corktypes.ModuleName, auctiontypes.ModuleName, cellarfeestypes.ModuleName,
 	)
 	app.mm.SetOrderEndBlockers(
 		crisistypes.ModuleName, govtypes.ModuleName, stakingtypes.ModuleName, ibchost.ModuleName, ibctransfertypes.ModuleName,
 		capabilitytypes.ModuleName, authtypes.ModuleName, banktypes.ModuleName, distrtypes.ModuleName, slashingtypes.ModuleName,
 		minttypes.ModuleName, genutiltypes.ModuleName, evidencetypes.ModuleName, authz.ModuleName, feegrant.ModuleName, paramstypes.ModuleName,
-		upgradetypes.ModuleName, gravitytypes.ModuleName, corktypes.ModuleName, cellarfeestypes.ModuleName, auctiontypes.ModuleName,
+		upgradetypes.ModuleName, gravitytypes.ModuleName, corktypes.ModuleName, auctiontypes.ModuleName, cellarfeestypes.ModuleName,
 	)
 
 	// NOTE: The genutils module must occur after staking so that pools are
@@ -476,7 +476,7 @@ func NewSommelierApp(
 		stakingtypes.ModuleName, slashingtypes.ModuleName, govtypes.ModuleName, minttypes.ModuleName,
 		crisistypes.ModuleName, ibchost.ModuleName, genutiltypes.ModuleName, evidencetypes.ModuleName,
 		ibctransfertypes.ModuleName, gravitytypes.ModuleName, authz.ModuleName,
-		feegrant.ModuleName, corktypes.ModuleName, cellarfeestypes.ModuleName, auctiontypes.ModuleName,
+		feegrant.ModuleName, corktypes.ModuleName, auctiontypes.ModuleName, cellarfeestypes.ModuleName,
 	)
 
 	app.mm.RegisterInvariants(&app.CrisisKeeper)
