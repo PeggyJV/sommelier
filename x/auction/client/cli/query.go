@@ -262,9 +262,9 @@ func queryEndedAuctionsByDenom() *cobra.Command {
 
 			if len(endedAuctions) == 0 {
 				return fmt.Errorf("no ended auction for denom: %s", denom)
-			} else {
-				return ctx.PrintProto(&types.QueryEndedAuctionsResponse{Auctions: endedAuctions})
 			}
+
+			return ctx.PrintProto(&types.QueryEndedAuctionsResponse{Auctions: endedAuctions})
 		},
 	}
 
