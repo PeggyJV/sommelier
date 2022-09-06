@@ -29,7 +29,7 @@ func (k Keeper) QueryActiveAuction(c context.Context, request *types.QueryActive
 		return &types.QueryActiveAuctionResponse{Auction: &activeAuction}, nil
 	}
 
-	return &types.QueryActiveAuctionResponse{}, status.Errorf(codes.NotFound, "No active auction found for id: %s", request.GetAuctionId())
+	return &types.QueryActiveAuctionResponse{}, status.Errorf(codes.NotFound, "No active auction found for id: %d", request.GetAuctionId())
 }
 
 // QueryEndedAuction implements QueryServer
@@ -43,7 +43,7 @@ func (k Keeper) QueryEndedAuction(c context.Context, request *types.QueryEndedAu
 		return &types.QueryEndedAuctionResponse{Auction: &endedAuction}, nil
 	}
 
-	return &types.QueryEndedAuctionResponse{}, status.Errorf(codes.NotFound, "No ended auction found for id: %s", request.GetAuctionId())
+	return &types.QueryEndedAuctionResponse{}, status.Errorf(codes.NotFound, "No ended auction found for id: %d", request.GetAuctionId())
 }
 
 // QueryActiveAuctions implements QueryServer
@@ -80,7 +80,7 @@ func (k Keeper) QueryBid(c context.Context, request *types.QueryBidRequest) (*ty
 	bid, found := k.GetBid(ctx, request.GetAuctionId(), request.GetBidId())
 
 	if !found {
-		return &types.QueryBidResponse{}, status.Errorf(codes.NotFound, "No bid found for specified bid id: %s, and auction id: %s", request.GetBidId(), request.GetAuctionId())
+		return &types.QueryBidResponse{}, status.Errorf(codes.NotFound, "No bid found for specified bid id: %d, and auction id: %d", request.GetBidId(), request.GetAuctionId())
 	}
 
 	return &types.QueryBidResponse{Bid: &bid}, nil
@@ -93,7 +93,7 @@ func (k Keeper) QueryBidsByAuction(c context.Context, request *types.QueryBidsBy
 	bids := k.GetBidsByAuctionID(ctx, request.GetAuctionId())
 
 	if len(bids) == 0 {
-		return &types.QueryBidsByAuctionResponse{}, status.Errorf(codes.NotFound, "No bids found for auction id: %s", request.GetAuctionId())
+		return &types.QueryBidsByAuctionResponse{}, status.Errorf(codes.NotFound, "No bids found for auction id: %d", request.GetAuctionId())
 	}
 
 	return &types.QueryBidsByAuctionResponse{Bids: bids}, nil
