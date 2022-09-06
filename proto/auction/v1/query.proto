@@ -15,16 +15,16 @@ service Query {
     option (google.api.http).get = "/sommelier/auction/v1/params";
   }
 
-  rpc QueryCurrentAuction(QueryCurrentAuctionRequest) returns (QueryCurrentAuctionResponse) {
-    option (google.api.http).get = "/sommelier/auction/v1/current_auction/{auction_id}";
+  rpc QueryActiveAuction(QueryActiveAuctionRequest) returns (QueryActiveAuctionResponse) {
+    option (google.api.http).get = "/sommelier/auction/v1/active_auctions/{auction_id}";
   }
 
   rpc QueryEndedAuction(QueryEndedAuctionRequest) returns (QueryEndedAuctionResponse) {
-    option (google.api.http).get = "/sommelier/auction/v1/ended_auction/{auction_id}";
+    option (google.api.http).get = "/sommelier/auction/v1/ended_auctions/{auction_id}";
   }
 
-  rpc QueryCurrentAuctions(QueryCurrentAuctionsRequest) returns (QueryCurrentAuctionsResponse) {
-    option (google.api.http).get = "/sommelier/auction/v1/current_auctions";
+  rpc QueryActiveAuctions(QueryActiveAuctionsRequest) returns (QueryActiveAuctionsResponse) {
+    option (google.api.http).get = "/sommelier/auction/v1/active_auctions";
   }
 
   rpc QueryEndedAuctions(QueryEndedAuctionsRequest) returns (QueryEndedAuctionsResponse) {
@@ -32,11 +32,11 @@ service Query {
   }
 
   rpc QueryBid(QueryBidRequest) returns (QueryBidResponse) {
-    option (google.api.http).get = "/sommelier/auction/v1/bid/{bid_id}";
+    option (google.api.http).get = "/sommelier/auction/v1/auctions/{auction_id}/bids/{bid_id}";
   }
 
   rpc QueryBidsByAuction(QueryBidsByAuctionRequest) returns (QueryBidsByAuctionResponse) {
-    option (google.api.http).get = "/sommelier/auction/v1/bids/{auction_id}";
+    option (google.api.http).get = "/sommelier/auction/v1/auctions/{auction_id}/bids";
   }
 }
 
@@ -46,11 +46,11 @@ message QueryParamsResponse {
   Params params = 1 [(gogoproto.nullable) = false];
 }
 
-message QueryCurrentAuctionRequest {
+message QueryActiveAuctionRequest {
   uint32 auction_id = 1;
 }
 
-message QueryCurrentAuctionResponse {
+message QueryActiveAuctionResponse {
   Auction auction = 1;
 }
 
@@ -62,9 +62,9 @@ message QueryEndedAuctionResponse {
   Auction auction = 1;
 }
 
-message QueryCurrentAuctionsRequest {}
+message QueryActiveAuctionsRequest {}
 
-message QueryCurrentAuctionsResponse {
+message QueryActiveAuctionsResponse {
   repeated Auction auctions = 1;
 }
 

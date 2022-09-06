@@ -3,9 +3,11 @@ package cli
 import (
 	"fmt"
 	"io/ioutil"
+	"strconv"
 	"strings"
 
 	"github.com/cosmos/cosmos-sdk/client"
+	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/client/tx"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/version"
@@ -27,15 +29,14 @@ func GetTxCmd() *cobra.Command {
 	return auctionTxCmd
 }
 
-// GetCmdSubmitUpdateProposal implements the command to submit a token price set proposal
-func GetCmdSubmitUpdateProposal() *cobra.Command {
-
+// GetCmdSubmitSetTokenPricesProposal implements the command to submit a token price set proposal
+func GetCmdSubmitSetTokenPricesProposal() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "set-token-prices [proposal-file]",
 		Args:  cobra.ExactArgs(1),
-		Short: "Submit a token update proposal",
+		Short: "Submit a set token prices proposal",
 		Long: strings.TrimSpace(
-			fmt.Sprintf(`Submit a token price set proposal along with an initial deposit.
+			fmt.Sprintf(`Submit a set token prices proposal along with an initial deposit.
 The proposal details must be supplied via a JSON file.
 
 Example:
@@ -46,7 +47,7 @@ Where proposal.json contains:
 {
   "title": "Best token price proposal evar",
   "description": "Add the guac",
-  "token_prices": [ { denom: "usomm", usd_price: 1000000 }, {denom: "gravity0x177807000200098012302890454066981033554", usd_price: 0.12501 }],
+  "token_prices": [ { denom: "usomm", usd_price: 1000000 }, { denom: "gravity0xdac17f958d2ee523a2206206994597c13d831ec7", usd_price: 0.12501 } ],
   "deposit": "10000usommm"
 }
 `,
@@ -97,5 +98,56 @@ Where proposal.json contains:
 		},
 	}
 
+	return cmd
+}
+
+// GetCmdSubmitBid implements the command to submit a bid
+func GetCmdSubmitBid() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:     "submit-bid [auction-id] [max-bid-in-usomm] [sale-token-minimum-amount]",
+		Aliases: []string{"b", "bid"},
+		Args:    cobra.ExactArgs(3),
+		Short:   "Submit a bid for an auction",
+		Long: strings.TrimSpace(
+			fmt.Sprintf(`Example:
+$ %s tx auction submit-bid 1 10000usomm 50000gravity0xdac17f958d2ee523a2206206994597c13d831ec7 --from=<key_or_address>
+`, version.AppName),
+		),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			clientCtx, err := client.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			auctionID, err := strconv.ParseUint(args[0], 10, 32)
+			if err != nil {
+				return err
+			}
+
+			maxBidInUsomm, err := sdk.ParseCoinNormalized(args[1])
+			if err != nil {
+				return err
+			}
+
+			saleTokenMinimumAmount, err := sdk.ParseCoinNormalized(args[2])
+			if err != nil {
+				return err
+			}
+
+			bidder := clientCtx.GetFromAddress()
+			if bidder == nil {
+				return fmt.Errorf("must include `--from` flag")
+			}
+
+			msg, err := types.NewMsgSubmitBidRequest(uint32(auctionID), maxBidInUsomm, saleTokenMinimumAmount, bidder)
+			if err != nil {
+				return err
+			}
+
+			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), msg)
+		},
+	}
+
+	flags.AddTxFlagsToCmd(cmd)
 	return cmd
 }

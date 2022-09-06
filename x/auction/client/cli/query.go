@@ -2,7 +2,6 @@ package cli
 
 import (
 	"fmt"
-	"math"
 	"strconv"
 
 	"github.com/cosmos/cosmos-sdk/client"
@@ -23,10 +22,12 @@ func GetQueryCmd() *cobra.Command {
 
 	auctionQueryCmd.AddCommand([]*cobra.Command{
 		queryParams(),
-		queryCurrentAuction(),
+		queryActiveAuction(),
 		queryEndedAuction(),
-		queryCurrentAuctions(),
+		queryActiveAuctions(),
+		queryActiveAuctionsByDenom(),
 		queryEndedAuctions(),
+		queryEndedAuctionsByDenom(),
 		queryBid(),
 		queryBidsByAuction(),
 	}...)
@@ -40,7 +41,7 @@ func queryParams() *cobra.Command {
 		Use:     "parameters",
 		Aliases: []string{"params"},
 		Args:    cobra.NoArgs,
-		Short:   "query auction params from the chain",
+		Short:   "query auction params",
 		RunE: func(cmd *cobra.Command, _ []string) error {
 			ctx, err := client.GetClientQueryContext(cmd)
 			if err != nil {
@@ -64,31 +65,29 @@ func queryParams() *cobra.Command {
 	return cmd
 }
 
-func queryCurrentAuction() *cobra.Command {
+func queryActiveAuction() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:     "current-auction",
-		Aliases: []string{"ca"},
+		Use:     "active-auction",
+		Aliases: []string{"aa"},
 		Args:    cobra.ExactArgs(1),
-		Short:   "query an ongoing auction from the chain",
+		Short:   "query an active auction",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx, err := client.GetClientQueryContext(cmd)
 			if err != nil {
 				return err
 			}
 
-			auctionID, err := strconv.Atoi(args[0])
+			auctionID, err := strconv.ParseUint(args[0], 10, 32)
 			if err != nil {
 				return err
-			} else if auctionID > math.MaxInt32 {
-				return fmt.Errorf("auctionID larger than max supported int32")
 			}
 
 			queryClient := types.NewQueryClient(ctx)
-			req := &types.QueryCurrentAuctionRequest{
+			req := &types.QueryActiveAuctionRequest{
 				AuctionId: uint32(auctionID),
 			}
 
-			res, err := queryClient.QueryCurrentAuction(cmd.Context(), req)
+			res, err := queryClient.QueryActiveAuction(cmd.Context(), req)
 			if err != nil {
 				return err
 			}
@@ -107,18 +106,16 @@ func queryEndedAuction() *cobra.Command {
 		Use:     "ended-auction",
 		Aliases: []string{"ea"},
 		Args:    cobra.ExactArgs(1),
-		Short:   "query an ended auction from the chain",
+		Short:   "query an ended auction",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx, err := client.GetClientQueryContext(cmd)
 			if err != nil {
 				return err
 			}
 
-			auctionID, err := strconv.Atoi(args[0])
+			auctionID, err := strconv.ParseUint(args[0], 10, 32)
 			if err != nil {
 				return err
-			} else if auctionID > math.MaxInt32 {
-				return fmt.Errorf("auctionID larger than max supported int32")
 			}
 
 			queryClient := types.NewQueryClient(ctx)
@@ -140,12 +137,12 @@ func queryEndedAuction() *cobra.Command {
 	return cmd
 }
 
-func queryCurrentAuctions() *cobra.Command {
+func queryActiveAuctions() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:     "current-auctions",
-		Aliases: []string{"cas"},
+		Use:     "active-auctions",
+		Aliases: []string{"aas"},
 		Args:    cobra.NoArgs,
-		Short:   "query current auctions from the chain",
+		Short:   "query active auctions",
 		RunE: func(cmd *cobra.Command, _ []string) error {
 			ctx, err := client.GetClientQueryContext(cmd)
 			if err != nil {
@@ -153,9 +150,9 @@ func queryCurrentAuctions() *cobra.Command {
 			}
 
 			queryClient := types.NewQueryClient(ctx)
-			req := &types.QueryCurrentAuctionsRequest{}
+			req := &types.QueryActiveAuctionsRequest{}
 
-			res, err := queryClient.QueryCurrentAuctions(cmd.Context(), req)
+			res, err := queryClient.QueryActiveAuctions(cmd.Context(), req)
 			if err != nil {
 				return err
 			}
@@ -169,12 +166,48 @@ func queryCurrentAuctions() *cobra.Command {
 	return cmd
 }
 
+func queryActiveAuctionsByDenom() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:     "active-auctions-by-denom",
+		Aliases: []string{"aad"},
+		Args:    cobra.ExactArgs(1),
+		Short:   "query the active auctions by a denom",
+		RunE: func(cmd *cobra.Command, args []string) error {
+			ctx, err := client.GetClientQueryContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			queryClient := types.NewQueryClient(ctx)
+			req := &types.QueryActiveAuctionsRequest{}
+
+			res, err := queryClient.QueryActiveAuctions(cmd.Context(), req)
+			if err != nil {
+				return err
+			}
+
+			denom := args[0]
+			for _, auction := range res.GetAuctions() {
+				if auction.StartingTokensForSale.Denom == denom {
+					return ctx.PrintProto(auction)
+				}
+			}
+
+			return fmt.Errorf("no active auction for denom: %s", denom)
+		},
+	}
+
+	flags.AddQueryFlagsToCmd(cmd)
+
+	return cmd
+}
+
 func queryEndedAuctions() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:     "ended-auctions",
 		Aliases: []string{"eas"},
 		Args:    cobra.NoArgs,
-		Short:   "query ended auctions from the chain",
+		Short:   "query ended auctions",
 		RunE: func(cmd *cobra.Command, _ []string) error {
 			ctx, err := client.GetClientQueryContext(cmd)
 			if err != nil {
@@ -198,26 +231,66 @@ func queryEndedAuctions() *cobra.Command {
 	return cmd
 }
 
-func queryBid() *cobra.Command {
+func queryEndedAuctionsByDenom() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:     "bid",
-		Aliases: []string{"b"},
-		Args:    cobra.ExactArgs(2),
-		Short:   "query bid from the chain by its auction id and its bid id",
+		Use:     "ended-auctions-by-denom",
+		Aliases: []string{"ead"},
+		Args:    cobra.ExactArgs(1),
+		Short:   "query the ended auctions by a denom",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx, err := client.GetClientQueryContext(cmd)
 			if err != nil {
 				return err
 			}
 
-			auctionID, err := strconv.Atoi(args[0])
+			queryClient := types.NewQueryClient(ctx)
+			req := &types.QueryEndedAuctionsRequest{}
+
+			res, err := queryClient.QueryEndedAuctions(cmd.Context(), req)
 			if err != nil {
 				return err
-			} else if auctionID > math.MaxInt32 {
-				return fmt.Errorf("auctionID larger than max supported int32")
 			}
 
-			bidID, err := strconv.Atoi(args[1])
+			denom := args[0]
+			endedAuctions := make([]*types.Auction, 0, len(res.GetAuctions()))
+
+			for _, auction := range res.GetAuctions() {
+				if auction.StartingTokensForSale.Denom == denom {
+					endedAuctions = append(endedAuctions, auction)
+				}
+			}
+
+			if len(endedAuctions) == 0 {
+				return fmt.Errorf("no ended auction for denom: %s", denom)
+			} else {
+				return ctx.PrintProto(&types.QueryEndedAuctionsResponse{Auctions: endedAuctions})
+			}
+		},
+	}
+
+	flags.AddQueryFlagsToCmd(cmd)
+
+	return cmd
+}
+
+func queryBid() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:     "bid",
+		Aliases: []string{"b"},
+		Args:    cobra.ExactArgs(2),
+		Short:   "query bid by its auction id and its bid id",
+		RunE: func(cmd *cobra.Command, args []string) error {
+			ctx, err := client.GetClientQueryContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			auctionID, err := strconv.ParseUint(args[0], 10, 32)
+			if err != nil {
+				return err
+			}
+
+			bidID, err := strconv.ParseUint(args[1], 10, 64)
 			if err != nil {
 				return err
 			}
@@ -225,7 +298,7 @@ func queryBid() *cobra.Command {
 			queryClient := types.NewQueryClient(ctx)
 			req := &types.QueryBidRequest{
 				AuctionId: uint32(auctionID),
-				BidId:     uint64(bidID),
+				BidId:     bidID,
 			}
 
 			res, err := queryClient.QueryBid(cmd.Context(), req)
@@ -244,21 +317,19 @@ func queryBid() *cobra.Command {
 
 func queryBidsByAuction() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:     "bids-for-auction",
+		Use:     "bids-by-auction",
 		Aliases: []string{"ba"},
 		Args:    cobra.ExactArgs(1),
-		Short:   "query the bids for an auction on the chain",
+		Short:   "query the bids by an auction",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx, err := client.GetClientQueryContext(cmd)
 			if err != nil {
 				return err
 			}
 
-			auctionID, err := strconv.Atoi(args[0])
+			auctionID, err := strconv.ParseUint(args[0], 10, 32)
 			if err != nil {
 				return err
-			} else if auctionID > math.MaxInt32 {
-				return fmt.Errorf("auctionID larger than max supported int32")
 			}
 
 			queryClient := types.NewQueryClient(ctx)
