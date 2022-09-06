@@ -7,5 +7,5 @@ import (
 )
 
 var (
-	SetProposalHandler = govclient.NewProposalHandler(cli.GetCmdSubmitUpdateProposal, rest.SetProposalRESTHandler)
+	SetProposalHandler = govclient.NewProposalHandler(cli.GetCmdSubmitSetTokenPricesProposal, rest.SetProposalRESTHandler)
 )
