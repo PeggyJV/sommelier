@@ -13,7 +13,7 @@ import (
 
 func (s *UpgradeTestSuite) TestSommChainUpgrade() {
 	s.Run("Bring up chain, and test Sommelier chain upgrade", func() {
-		s.T().Logf("create governance proposal for chain upgrade")
+		s.T().Logf("Send testsomm to cellar fee address")
 		// Send to Cosmos
 		s.Require().Eventuallyf(func() bool {
 			orch := s.chain.orchestrators[1]
@@ -33,12 +33,13 @@ func (s *UpgradeTestSuite) TestSommChainUpgrade() {
 			return true
 		}, time.Minute*5, time.Second*5, "Send to Cosmos failed")
 
+		s.T().Logf("Create governance proposal for upgrade")
 		orch := s.chain.orchestrators[0]
 		clientCtx, err := s.chain.clientContext("tcp://localhost:26657", orch.keyring, "orch", orch.keyInfo.GetAddress())
 		s.Require().NoError(err)
 
 		proposal := upgradetypes.SoftwareUpgradeProposal{
-			Title:       "Chain Upgrade 1",
+			Title:       "Sommelier v4 upgrade",
 			Description: "First chain software upgrade",
 			Plan:        upgradetypes.Plan{Name: "v4", Height: 100}}
 
@@ -107,10 +108,9 @@ func (s *UpgradeTestSuite) TestSommChainUpgrade() {
 				return true
 			}
 			return false
-		}, time.Minute*10, time.Second*1, "An error occurred when querying block height before upgrade")
+		}, time.Minute*5, time.Second*1, "An error occurred when querying block height before upgrade")
 		s.Require().Eventuallyf(func() bool {
 			// Start all nodes
-			// initialization
 
 			// continue generating node genesis
 			s.initGenesis()
@@ -135,7 +135,7 @@ func (s *UpgradeTestSuite) TestSommChainUpgrade() {
 		}, time.Minute*5, time.Minute*1, "An error occurred when querying block height after upgrade")
 
 		// Test upgrade by making sure allocation module was removed
-		s.T().Log("Checkout chain upgrade")
+		s.T().Log("Checkout chain upgrade was successful")
 		tickRange, err := s.getFirstTickRange()
 		s.Require().NoError(err)
 		s.Require().Equal(int32(600), tickRange.Upper)
@@ -155,7 +155,7 @@ func (s *UpgradeTestSuite) TestSommChainUpgrade() {
 			Salt: "testsalt",
 		}
 
-		s.T().Logf("checking that test cellar exists in the chain")
+		s.T().Logf("checking that test cellar for allocation module doesn't exists in the chain")
 		val := s.chain.validators[0]
 		s.Require().Eventuallyf(func() bool {
 			kb, err := val.keyring()
