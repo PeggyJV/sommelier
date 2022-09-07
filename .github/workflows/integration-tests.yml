@@ -15,7 +15,6 @@ env:
   ETHEREUM_IMAGE: ghcr.io/peggyjv/sommelier-hardhat:v3.1.0
   SOMMELIER_IMAGE: ghcr.io/peggyjv/sommelier-sommelier:v3.1.0
   ORCHESTRATOR_IMAGE: ghcr.io/peggyjv/gravity-bridge-orchestrator:v0.3.8
-  SOMM_IMAGE: hannydevelop/sommelier:4.0.1
 
 jobs:
   sommelier-build:
@@ -213,10 +212,10 @@ jobs:
         uses: docker/metadata-action@v3
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-hardhat
-      - name: pull sommelier upgrade binary image
-        run: docker pull ${{ env.SOMM_IMAGE }}
+      - name: pull sommelier upgrade image
+        run: docker pull ${{ steps.meta-sommelier.outputs.tags }}
       - name: rename sommelier image
-        run: docker tag ${{ env.SOMM_IMAGE }} sommelier:4.0.1
+        run: docker tag ${{ steps.meta-sommelier.outputs.tags }} sommelier:4.0.1
       - name: pull hardhat image
         run: docker pull ${{ env.ETHEREUM_IMAGE }}
       - name: rename hardhat image

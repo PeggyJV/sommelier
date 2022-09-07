@@ -412,8 +412,7 @@ SOMM_IMAGE := hannydevelop/sommelier:4.0.1
 e2e_build_upgrade_images: e2e_clean_slate
 	@docker pull $(ORCHESTRATOR_IMAGE)
 	@docker tag $(ORCHESTRATOR_IMAGE) orchestrator:3.1.0
-	@docker pull $(SOMM_IMAGE)
-	@docker tag $(SOMM_IMAGE) sommelier:4.0.1	
+	@docker build -t sommelier:4.0.1 -f Dockerfile .
 	@docker pull $(ETHEREUM_IMAGE)
 	@docker tag $(ETHEREUM_IMAGE) ethereum:3.1.0
 	@docker pull $(SOMMELIER_IMAGE)

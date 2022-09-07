@@ -5,6 +5,7 @@ import (
 	"time"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	bank "github.com/cosmos/cosmos-sdk/x/bank/types"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
 	"github.com/peggyjv/sommelier/x/allocation/types"
@@ -13,6 +14,25 @@ import (
 func (s *UpgradeTestSuite) TestSommChainUpgrade() {
 	s.Run("Bring up chain, and test Sommelier chain upgrade", func() {
 		s.T().Logf("create governance proposal for chain upgrade")
+		// Send to Cosmos
+		s.Require().Eventuallyf(func() bool {
+			orch := s.chain.orchestrators[1]
+			sender := orch.keyInfo.GetAddress()
+			clientCtxs, err := s.chain.clientContext("tcp://localhost:26657", orch.keyring, "orch", orch.keyInfo.GetAddress())
+			reciever, err := sdk.AccAddressFromBech32("somm1hqf42j6zxfnth4xpdse05wpnjjrgc864vwujxx")
+			s.Require().NoError(err)
+			sendCoin := bank.NewMsgSend(sender, reciever, sdk.Coins{
+				{
+					Denom:  testDenom,
+					Amount: sdk.NewInt(100),
+				},
+			})
+			res, err := s.chain.sendMsgs(*clientCtxs, sendCoin)
+			s.T().Logf("Send coin response:%s", res)
+			s.Require().NoError(err)
+			return true
+		}, time.Minute*5, time.Second*5, "Send to Cosmos failed")
+
 		orch := s.chain.orchestrators[0]
 		clientCtx, err := s.chain.clientContext("tcp://localhost:26657", orch.keyring, "orch", orch.keyInfo.GetAddress())
 		s.Require().NoError(err)
