@@ -1,7 +1,7 @@
-keystore = "/home/ubuntu/gorc/keystore/" #edit this value for what it is your sommelier v2 gorc
+keystore = "/home/ubuntu/steward/keystore/" #edit this value for what it is for your sommelier v3 steward or gorc keystore.
 
 [gravity]
-contract = "0x69592e6f9d21989a043646fE8225da2600e5A0f7" 
+contract = "0x69592e6f9d21989a043646fE8225da2600e5A0f7"
 fees_denom = "usomm"
 
 [ethereum]
@@ -23,3 +23,13 @@ denom = "usomm"
 
 [metrics]
 listen_addr = "127.0.0.1:3000"
+
+[keys]
+delegate_key = "orchestrator" # Edit if your orchestrator's Cosmos key name is different
+
+# Please leave the client_ca_cert_path field unset for now
+[server]
+address = "0.0.0.0"
+port = 5734
+server_cert_path = "/server/cert/path" # Edit this value after completing the Steward setup process
+server_key_path = "/server/key/path"   # Edit this value after completing the Steward setup process
