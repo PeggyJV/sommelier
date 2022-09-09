@@ -61,7 +61,7 @@ wget https://gethstore.blob.core.windows.net/builds/geth-linux-amd64-1.10.23-d90
 wget https://github.com/PeggyJV/sommelier/releases/download/v4.0.1/sommelier_4.0.1_linux_amd64.tar.gz && tar -xf sommelier_4.0.1_linux_amd64.tar.gz && sudo mv sommelier /usr/bin && rm -rf sommelier_4.0.1_linux_amd64* LICENSE README.md
 
 # Fetch systemd unit file examples
-wget https://raw.githubusercontent.com/PeggyJV/sommelier/main/contrib/systemd/geth.service https://raw.githubusercontent.com/PeggyJV/steward/main/contrib/systemd/sommelier.service https://raw.githubusercontent.com/PeggyJV/sommelier/main/contrib/systemd/orchestrator.service https://raw.githubusercontent.com/PeggyJV/sommelier/main/contrib/systemd/steward.service
+wget https://raw.githubusercontent.com/PeggyJV/sommelier/main/contrib/systemd/geth.service https://raw.githubusercontent.com/PeggyJV/sommelier/main/contrib/systemd/sommelier.service https://raw.githubusercontent.com/PeggyJV/sommelier/main/contrib/systemd/orchestrator.service https://raw.githubusercontent.com/PeggyJV/sommelier/main/contrib/systemd/steward.service
 
 # Modify the unit files to fit your environment
 nano geth.service
