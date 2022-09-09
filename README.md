@@ -29,7 +29,7 @@ The Gravity Bridge requires some additional pieces to be deployed to support it:
 
 ### Steward
 
-[Steward](https://github.com/peggyjv/steward) a middleware between the Strategy Provider and the protocol that facilitates Cellar function calls. It's also a CLI that subsumes the functionality of `gorc`, and is used in this document to configure and run the orchestrator.
+[Steward](https://github.com/peggyjv/steward) is a middleware between the Strategy Provider and the protocol that facilitates Cellar function calls. It's also a CLI that subsumes the functionality of `gorc`, and is used in this document to configure and run the orchestrator.
 
 ## Join the mainnet!
 
@@ -39,7 +39,7 @@ Running a validator node on the Sommelier mainnet requires three processes:
 2. The Gravity Bridge Orchestrator
 3. [Steward](https://github.com/peggyjv/steward)
 
-We also recommend running a local `geth` process. Though a public Ethereum API service is can work, you may run into request limits because of the frequent requests made by the `orchestrator` process.
+We also recommend running a local `geth` process. Though a public Ethereum API service can work, you may run into request limits because of the frequent requests made by the `orchestrator` process.
 
 The Steward CLI now supports all of the same commands as `gorc` and is the recommended way to configure delegate keys for new validators and to run the Orchestrator. __The Steward CLI is used to run *both* the `steward` and `orchestrator` processes__. There are post-installation steps for the `steward` process outlined at the end of the installation steps below. These are required for your Steward to participate in the protocol. For more information on these setup steps for Steward, see [Validators Instructions for Setting Up Steward](https://github.com/PeggyJV/steward/blob/main/docs/02-StewardForValidators.md) in the Steward repository.
 
@@ -79,13 +79,14 @@ sudo mv geth.service /etc/systemd/system/geth.service \
 # Start geth
 sudo systemctl start geth && sudo journalctl -u geth -f
 
-# Init steward/orchestrator configuration. Note that the steward and orchestrator processes share much of the same configuration
-# fields, so we share the config.toml for convenience.
+# Init steward/orchestrator configuration. Note that the steward and orchestrator processes share
+# much of the same configuration fields, so we share the config.toml for convenience.
 mkdir -p $HOME/steward && cd $HOME/steward
 wget https://raw.githubusercontent.com/PeggyJV/sommelier/main/contrib/mainnet/sommelier-3/config.toml
 
 # modify steward/orchestrator config for your environment
-# You can use alchemy, infura endpoint as RPC and not necessarily need to sync the blockchain eth with geth
+# You can use alchemy or infura endpoints as your RPC and don't necessarily need to sync the
+# blockchain eth with geth
 nano config.toml
 
 # Initialize the validator files
@@ -154,7 +155,9 @@ At this point you should have a server CA and server certificate for Steward, an
 sudo systemctl start steward && sudo journalctl -u steward -f
 ```
 
-Once your Steward is running, ensure that its server endpoint is reachable over the internet. Then, if you haven't already, follows the steps outlined in the [Steward Registry repository](https://github.com/PeggyJV/steward-registry) to register your steward instance.
+Once your Steward is running, ensure that its server endpoint is reachable over the internet. Then, if you haven't already, follow the steps outlined in the [Steward Registry repository](https://github.com/PeggyJV/steward-registry) to register your steward instance.
+
+Your installation is complete! If you have any problems, please reach out in the validator lobby channels in Discord or Telegram.
 
 ### Actions
 
