@@ -11,4 +11,7 @@ message Params {
 
   uint64 auction_block_delay = 1;
   uint64 reward_emission_period = 2;
+  string initial_price_decrease_rate = 3
+    [(gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec", (gogoproto.nullable) = false];
+  uint64 price_decrease_block_interval = 4;
 }

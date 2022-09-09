@@ -3,14 +3,17 @@ package types
 import (
 	fmt "fmt"
 
+	sdk "github.com/cosmos/cosmos-sdk/types"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
 	"gopkg.in/yaml.v2"
 )
 
 // Parameter keys
 var (
-	KeyAuctionBlockDelay    = []byte("auctionblockdelay")
-	KeyRewardEmissionPeriod = []byte("rewardemissionperiod")
+	KeyAuctionBlockDelay          = []byte("auctionblockdelay")
+	KeyRewardEmissionPeriod       = []byte("rewardemissionperiod")
+	KeyInitialPriceDecreaseRate   = []byte("initialpricedecreaserate")
+	KeyPriceDecreaseBlockInterval = []byte("pricedecreaseblockinterval")
 )
 
 var _ paramtypes.ParamSet = &Params{}
@@ -22,11 +25,16 @@ func ParamKeyTable() paramtypes.KeyTable {
 
 // DefaultParams returns default cellarfees parameters
 func DefaultParams() Params {
+
 	return Params{
 		// Rough number of blocks in 2 weeks, or ~2 fee accrual cycles for one cellar
 		AuctionBlockDelay: 201600,
 		// Rough number of blocks in 28 days, the time it takes to unbond
 		RewardEmissionPeriod: 403200,
+		// Initial rate at which an auction should decrease the price of the relevant coin from it's starting price
+		InitialPriceDecreaseRate: sdk.NewDec(347000000000000),
+		// Blocks between each auction price decrease
+		PriceDecreaseBlockInterval: 10,
 	}
 }
 
@@ -35,6 +43,8 @@ func (p *Params) ParamSetPairs() paramtypes.ParamSetPairs {
 	return paramtypes.ParamSetPairs{
 		paramtypes.NewParamSetPair(KeyAuctionBlockDelay, &p.AuctionBlockDelay, validateAuctionBlockDelay),
 		paramtypes.NewParamSetPair(KeyRewardEmissionPeriod, &p.RewardEmissionPeriod, validateRewardEmissionPeriod),
+		paramtypes.NewParamSetPair(KeyInitialPriceDecreaseRate, &p.InitialPriceDecreaseRate, validateInitialPriceDecreaseRate),
+		paramtypes.NewParamSetPair(KeyPriceDecreaseBlockInterval, &p.PriceDecreaseBlockInterval, validatePriceDecreaseBlockInterval),
 	}
 }
 
@@ -44,6 +54,12 @@ func (p *Params) ValidateBasic() error {
 		return err
 	}
 	if err := validateRewardEmissionPeriod(p.RewardEmissionPeriod); err != nil {
+		return err
+	}
+	if err := validateInitialPriceDecreaseRate(p.InitialPriceDecreaseRate); err != nil {
+		return err
+	}
+	if err := validatePriceDecreaseBlockInterval(p.PriceDecreaseBlockInterval); err != nil {
 		return err
 	}
 	return nil
@@ -73,6 +89,42 @@ func validateRewardEmissionPeriod(i interface{}) error {
 	if emissionPeriod == 0 {
 		return fmt.Errorf(
 			"emission period should be greater than 0: %d", emissionPeriod,
+		)
+	}
+
+	return nil
+}
+
+func validateInitialPriceDecreaseRate(i interface{}) error {
+	rate, ok := i.(sdk.Dec)
+	if !ok {
+		return fmt.Errorf("invalid parameter type: %T", i)
+	}
+
+	if rate == sdk.ZeroDec() {
+		return fmt.Errorf(
+			"initial price decrease rate should be greater than 0: %d", rate,
+		)
+	}
+
+	if rate == sdk.OneDec() {
+		return fmt.Errorf(
+			"initial price decrease rate should be less than 1: %d", rate,
+		)
+	}
+
+	return nil
+}
+
+func validatePriceDecreaseBlockInterval(i interface{}) error {
+	interval, ok := i.(uint64)
+	if !ok {
+		return fmt.Errorf("invalid parameter type: %T", i)
+	}
+
+	if interval == 0 {
+		return fmt.Errorf(
+			"price decrease block interval should be greater than 0: %d", interval,
 		)
 	}
 
