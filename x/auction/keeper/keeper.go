@@ -61,8 +61,8 @@ func (k Keeper) GetParamSet(ctx sdk.Context) types.Params {
 	return p
 }
 
-// SetParams sets the parameters in the store
-func (k Keeper) SetParams(ctx sdk.Context, params types.Params) {
+// setParams sets the parameters in the store
+func (k Keeper) setParams(ctx sdk.Context, params types.Params) {
 	k.paramSpace.SetParamSet(ctx, &params)
 }
 
@@ -278,7 +278,7 @@ func (k Keeper) FinishAuction(ctx sdk.Context, auction *types.Auction) error {
 	usommProceeds := sdk.NewInt(0)
 
 	for _, bid := range bids {
-		usommProceeds.Add(bid.TotalUsommPaid.Amount)
+		usommProceeds = usommProceeds.Add(bid.TotalUsommPaid.Amount)
 	}
 
 	usommProceedsCoin := sdk.NewCoin(types.UsommDenom, usommProceeds)
@@ -446,8 +446,8 @@ func (k Keeper) GetTokenPrice(ctx sdk.Context, denom string) (types.TokenPrice, 
 	return tokenPrice, true
 }
 
-// SetTokenPrice sets the token price specified
-func (k Keeper) SetTokenPrice(ctx sdk.Context, tokenPrice types.TokenPrice) {
+// setTokenPrice sets the token price specified
+func (k Keeper) setTokenPrice(ctx sdk.Context, tokenPrice types.TokenPrice) {
 	bz := k.cdc.MustMarshal(&tokenPrice)
 	ctx.KVStore(k.storeKey).Set(types.GetTokenPriceKey(tokenPrice.GetDenom()), bz)
 }

@@ -8,7 +8,7 @@ import (
 // InitGenesis initializes the module's state from a provided genesis
 // state.
 func InitGenesis(ctx sdk.Context, k Keeper, gs types.GenesisState) {
-	k.SetParams(ctx, gs.Params)
+	k.setParams(ctx, gs.Params)
 
 	for _, auction := range gs.Auctions {
 		if auction.EndBlock > 0 {
@@ -22,7 +22,7 @@ func InitGenesis(ctx sdk.Context, k Keeper, gs types.GenesisState) {
 	}
 
 	for _, tokenPrice := range gs.TokenPrices {
-		k.SetTokenPrice(ctx, *tokenPrice)
+		k.setTokenPrice(ctx, *tokenPrice)
 	}
 
 	k.setLastAuctionID(ctx, gs.LastAuctionId)
