@@ -44,7 +44,7 @@ func (k Keeper) SubmitBid(c context.Context, msg *types.MsgSubmitBidRequest) (*t
 	// Calculate minimum purchase price
 	// Note we round up, thus making the price more expensive to prevent this rounding from being exploited
 	// TODO(pbal): consider adding minimum amount of usomm being bid as a global param
-	minimumPurchasePriceInUsomm := sdk.NewIntFromBigInt(auction.CurrentUnitPriceInUsomm.Mul(minimumSaleTokenPurchaseAmount.ToDec()).Ceil().BigInt())
+	minimumPurchasePriceInUsomm := sdk.NewInt(auction.CurrentUnitPriceInUsomm.Mul(minimumSaleTokenPurchaseAmount.ToDec()).Ceil().TruncateInt64())
 
 	// Verify minimum price is <= bid, note this also checks the max bid is enough to purchase at least one sale token
 	if minimumPurchasePriceInUsomm.GT(maxBidInUsomm) {
@@ -70,7 +70,7 @@ func (k Keeper) SubmitBid(c context.Context, msg *types.MsgSubmitBidRequest) (*t
 	}
 
 	// Round up to prevent exploitability; ensure you can't get more than you pay for
-	usommAmount := sdk.NewIntFromBigInt(totalFulfilledSaleTokens.Amount.ToDec().Mul(auction.CurrentUnitPriceInUsomm).Ceil().BigInt())
+	usommAmount := sdk.NewInt(totalFulfilledSaleTokens.Amount.ToDec().Mul(auction.CurrentUnitPriceInUsomm).Ceil().TruncateInt64())
 	totalUsommPaid := sdk.NewCoin(types.UsommDenom, usommAmount)
 
 	newBidID := k.GetLastBidID(ctx) + 1
