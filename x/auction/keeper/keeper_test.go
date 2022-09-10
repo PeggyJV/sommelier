@@ -237,5 +237,4 @@ func (suite *KeeperTestSuite) TestHappyPathFinishAuctionWithFundsRemaining() {
 
 	// Make sure no active auctions exist anymore
 	require.Zero(len(auctionKeeper.GetActiveAuctions(ctx)))
-	require.True(false)
 }
