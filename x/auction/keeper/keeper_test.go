@@ -42,7 +42,7 @@ func (suite *KeeperTestSuite) SetupTest() {
 	key := sdk.NewKVStoreKey(auctionTypes.StoreKey)
 	tkey := sdk.NewTransientStoreKey("transient_test")
 	testCtx := testutil.DefaultContext(key, tkey)
-	ctx := testCtx.WithBlockHeader(tmproto.Header{Time: tmtime.Now()})
+	ctx := testCtx.WithBlockHeader(tmproto.Header{Height: 5, Time: tmtime.Now()})
 	encCfg := moduletestutil.MakeTestEncodingConfig()
 
 	// gomock initializations
@@ -57,6 +57,7 @@ func (suite *KeeperTestSuite) SetupTest() {
 		tkey,
 	)
 
+	params.Subspace(auctionTypes.ModuleName)
 	subSpace, found := params.GetSubspace(auctionTypes.ModuleName)
 	suite.Assertions.True(found)
 
@@ -81,4 +82,57 @@ func (suite *KeeperTestSuite) SetupTest() {
 
 func TestKeeperTestSuite(t *testing.T) {
 	suite.Run(t, new(KeeperTestSuite))
+}
+
+func (suite *KeeperTestSuite) mockSendCoinsFromModuleToModule(ctx sdk.Context, sender string, receiver string, amt sdk.Coins) {
+	suite.bankKeeper.EXPECT().SendCoinsFromModuleToModule(ctx, sender, receiver, amt).Return(nil)
+}
+
+// Happy path for BeginAuction call
+func (suite *KeeperTestSuite) TestValidBeginAuction() {
+	ctx, auctionKeeper := suite.ctx, suite.auctionKeeper
+	require := suite.Require()
+
+	params := auctionTypes.Params{PriceMaxBlockAge: 10}
+	auctionKeeper.SetParams(ctx, params)
+
+	sommPrice := auctionTypes.TokenPrice{Denom: "usomm", UsdPrice: sdk.MustNewDecFromStr("0.01"), LastUpdatedBlock: 5}
+
+	saleToken := "gravity0xdac17f958d2ee523a2206206994597c13d831ec7"
+	saleTokenPrice := auctionTypes.TokenPrice{Denom: saleToken, UsdPrice: sdk.MustNewDecFromStr("0.02"), LastUpdatedBlock: 5}
+	auctionedSaleTokens := sdk.NewCoin(saleToken, sdk.NewInt(10000))
+
+	auctionKeeper.SetTokenPrice(ctx, sommPrice)
+	auctionKeeper.SetTokenPrice(ctx, saleTokenPrice)
+
+	// Mock bank keeper fund transfer
+	suite.mockSendCoinsFromModuleToModule(ctx, permissionedFunder.GetName(), auctionTypes.ModuleName, sdk.NewCoins(auctionedSaleTokens))
+
+	// Start auction
+	decreaseRate := sdk.MustNewDecFromStr("0.05")
+	blockDecreaseInterval := uint64(5)
+	err := auctionKeeper.BeginAuction(ctx, auctionedSaleTokens, decreaseRate, blockDecreaseInterval, permissionedFunder.GetName(), permissionedReciever.GetName())
+	require.Nil(err)
+
+	// Verify auction got added to active auction store
+	auctionId := uint32(1)
+	createdAuction, found := auctionKeeper.GetActiveAuctionByID(ctx, auctionId)
+	require.True(found)
+
+	expectedAuction := auctionTypes.Auction{
+		Id:                         auctionId,
+		StartingTokensForSale:      auctionedSaleTokens,
+		StartBlock:                 uint64(ctx.BlockHeight()),
+		EndBlock:                   0,
+		InitialPriceDecreaseRate:   decreaseRate,
+		CurrentPriceDecreaseRate:   decreaseRate,
+		PriceDecreaseBlockInterval: blockDecreaseInterval,
+		InitialUnitPriceInUsomm:    sdk.NewDec(2),
+		CurrentUnitPriceInUsomm:    sdk.NewDec(2),
+		RemainingTokensForSale:     auctionedSaleTokens,
+		FundingModuleAccount:       permissionedFunder.GetName(),
+		ProceedsModuleAccount:      permissionedReciever.GetName(),
+	}
+
+	require.Equal(expectedAuction, createdAuction)
 }
