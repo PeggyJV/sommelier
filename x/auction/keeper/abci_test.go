@@ -2,11 +2,11 @@ package keeper
 
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
-
+	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	auctionTypes "github.com/peggyjv/sommelier/v4/x/auction/types"
 )
 
-// Happy path test for abci, 
+// Happy path test for abci
 func (suite *KeeperTestSuite) TestAbci() {
 	ctx, auctionKeeper := suite.ctx, suite.auctionKeeper
 	require := suite.Require()
@@ -23,8 +23,8 @@ func (suite *KeeperTestSuite) TestAbci() {
 	sommPrice := auctionTypes.TokenPrice{Denom: "usomm", UsdPrice: sdk.MustNewDecFromStr("0.01"), LastUpdatedBlock: 5}
 
 	/* #nosec */
-	saleToken := "gravity0xdac17f958d2ee523a2206206994597c13d831ec7"
-	saleTokenPrice := auctionTypes.TokenPrice{Denom: saleToken, UsdPrice: sdk.MustNewDecFromStr("0.02"), LastUpdatedBlock: 5}
+	saleToken := "gravity0x95aD61b0a150d79219dCF64E1E6Cc01f0B64C4cE"
+	saleTokenPrice := auctionTypes.TokenPrice{Denom: saleToken, UsdPrice: sdk.MustNewDecFromStr("0.01"), LastUpdatedBlock: 5}
 	auctionedSaleTokens := sdk.NewCoin(saleToken, sdk.NewInt(10000))
 
 	auctionKeeper.setTokenPrice(ctx, sommPrice)
@@ -49,14 +49,14 @@ func (suite *KeeperTestSuite) TestAbci() {
 		InitialPriceDecreaseRate:   decreaseRate,
 		CurrentPriceDecreaseRate:   decreaseRate,
 		PriceDecreaseBlockInterval: blockDecreaseInterval,
-		InitialUnitPriceInUsomm:    sdk.NewDec(2),
-		CurrentUnitPriceInUsomm:    sdk.NewDec(2),
+		InitialUnitPriceInUsomm:    sdk.NewDec(1),
+		CurrentUnitPriceInUsomm:    sdk.NewDec(1),
 		RemainingTokensForSale:     auctionedSaleTokens,
 		FundingModuleAccount:       permissionedFunder.GetName(),
 		ProceedsModuleAccount:      permissionedReciever.GetName(),
 	}
 
-	// Run EndBlocker as base case with insufficient block change to induce price decrease
+	// Run EndBlocker as base case with NO block change
 	// Assure expected auction prices have not changed
 	require.NotPanics(func() { auctionKeeper.EndBlocker(ctx) })
 
@@ -64,11 +64,54 @@ func (suite *KeeperTestSuite) TestAbci() {
 	require.True(found)
 	require.Equal(expectedAuction, foundAuction)
 
-	
+	// Run EndBlocker again with ~insufficient~ block change to induce price decrease
+	require.NotPanics(func() {
+		auctionKeeper.EndBlocker(ctx.WithBlockHeight(ctx.BlockHeight() + int64(blockDecreaseInterval) - 1))
+	})
 
-	// Run EndBlocker with block interval sufficient to induce decrease 
+	foundAuction, found = auctionKeeper.GetActiveAuctionByID(ctx, auctionID)
+	require.True(found)
+	require.Equal(expectedAuction, foundAuction)
 
-	// Run EndBlocker with block interval sufficient to induce decrease again
+	// Run EndBlocker with block interval ~sufficient~ to induce decrease
+	require.NotPanics(func() {
+		auctionKeeper.EndBlocker(ctx.WithBlockHeight(ctx.BlockHeight() + int64(blockDecreaseInterval)))
+	})
 
-	// Run EndBlocker with block interval sufficient to induce decrease to a ~negative~ price, and thus the auction must finish
+	foundAuction, found = auctionKeeper.GetActiveAuctionByID(ctx, auctionID)
+	require.True(found)
+	expectedAuction.CurrentUnitPriceInUsomm = sdk.MustNewDecFromStr("0.6")
+	require.Equal(expectedAuction, foundAuction)
+
+	// Run EndBlocker with block interval ~sufficient~ to induce decrease again
+	require.NotPanics(func() {
+		auctionKeeper.EndBlocker(ctx.WithBlockHeight(ctx.BlockHeight() + int64(blockDecreaseInterval)))
+	})
+
+	foundAuction, found = auctionKeeper.GetActiveAuctionByID(ctx, auctionID)
+	require.True(found)
+	expectedAuction.CurrentUnitPriceInUsomm = sdk.MustNewDecFromStr("0.2")
+	require.Equal(expectedAuction, foundAuction)
+
+	// Run EndBlocker with block interval ~sufficient~ to induce decrease to a ~negative~ price, and thus the auction must finish
+	// Since we expect auction to end here without ever transfering any funds to bidders, we need to mock bank balance checks & transfers
+	// back to funding module
+	finalCtx := ctx.WithBlockHeight(ctx.BlockHeight() + int64(blockDecreaseInterval))
+	suite.mockGetBalance(finalCtx, authtypes.NewModuleAddress(auctionTypes.ModuleName), saleToken, auctionedSaleTokens)
+	suite.mockSendCoinsFromModuleToModule(finalCtx, auctionTypes.ModuleName, permissionedFunder.GetName(), sdk.NewCoins(auctionedSaleTokens))
+
+	require.NotPanics(func() {
+		auctionKeeper.EndBlocker(finalCtx)
+	})
+
+	_, found = auctionKeeper.GetActiveAuctionByID(finalCtx, auctionID)
+	require.False(found)
+
+	expectedAuction.EndBlock = uint64(finalCtx.BlockHeight())
+
+	// Check expected auction wound up in ended auctions
+	foundAuction, found = auctionKeeper.GetEndedAuctionByID(finalCtx, auctionID)
+	require.True(found)
+
+	require.Equal(expectedAuction, foundAuction)
 }

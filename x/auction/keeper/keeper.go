@@ -264,6 +264,7 @@ func (k Keeper) tokenPriceTooOld(ctx sdk.Context, tokenPrice *types.TokenPrice) 
 func (k Keeper) FinishAuction(ctx sdk.Context, auction *types.Auction) error {
 	// Figure out how many funds we have left over, if any, to send
 	// Since we can only have 1 auction per denom active at a time, we can just query the balance
+
 	saleTokenBalance := k.bankKeeper.GetBalance(ctx, authtypes.NewModuleAddress(types.ModuleName), auction.StartingTokensForSale.Denom)
 
 	if saleTokenBalance.Amount.IsPositive() {
@@ -284,8 +285,10 @@ func (k Keeper) FinishAuction(ctx sdk.Context, auction *types.Auction) error {
 	usommProceedsCoin := sdk.NewCoin(types.UsommDenom, usommProceeds)
 
 	// Send proceeds to their appropriate destination module
-	if err := k.bankKeeper.SendCoinsFromModuleToModule(ctx, types.ModuleName, auction.ProceedsModuleAccount, sdk.Coins{usommProceedsCoin}); err != nil {
-		return err
+	if !usommProceeds.Equal(sdk.NewInt(0)) {
+		if err := k.bankKeeper.SendCoinsFromModuleToModule(ctx, types.ModuleName, auction.ProceedsModuleAccount, sdk.Coins{usommProceedsCoin}); err != nil {
+			return err
+		}
 	}
 
 	// Remove auction from active list
