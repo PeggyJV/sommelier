@@ -15,7 +15,7 @@ func (suite *KeeperTestSuite) mockSendCoinsFromModuleToAccount(ctx sdk.Context, 
 	suite.bankKeeper.EXPECT().SendCoinsFromModuleToAccount(ctx, senderModule, receiverAcct, amt).Return(nil)
 }
 
-// Happy path test for submitting a bid ~fully~
+// Happy path test for submitting a bid and ~fully~ fulfilling
 func (suite *KeeperTestSuite) TestHappyPathSubmitBidAndFulfillFully() {
 	ctx, auctionKeeper := suite.ctx, suite.auctionKeeper
 	require := suite.Require()
