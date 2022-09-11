@@ -14,7 +14,7 @@ func (k Keeper) BeginBlocker(ctx sdk.Context) {}
 func (k Keeper) EndBlocker(ctx sdk.Context) {
 	// Auction price updates
 	for _, auction := range k.GetActiveAuctions(ctx) {
-		if ((ctx.BlockHeight() - int64(auction.StartBlock)) % int64(auction.PriceDecreaseBlockInterval)) == 0 {
+		if ctx.BlockHeight() != int64(auction.StartBlock) && ((ctx.BlockHeight()-int64(auction.StartBlock))%int64(auction.PriceDecreaseBlockInterval)) == 0 {
 			// TODO post MVP (pbal) Make a more intricate & responsive step function for auction price updates
 
 			// Simple constant decrease rate meant for MVP
