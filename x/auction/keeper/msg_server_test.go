@@ -8,7 +8,6 @@ import (
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 
-	"github.com/peggyjv/sommelier/v4/x/auction/types"
 	auctionTypes "github.com/peggyjv/sommelier/v4/x/auction/types"
 )
 
@@ -270,7 +269,7 @@ func (suite *KeeperTestSuite) TestUnhappyPathsForSubmitBid() {
 				SaleTokenMinimumAmount: sdk.NewCoin(saleToken, sdk.NewInt(10001)),
 				Signer:                 sdk.AccAddress("cosmos16zrkzad482haunrn25ywvwy6fclh3vh7r0hcny").String(),
 			},
-			expectedError: sdkerrors.Wrapf(types.ErrMinimumPurchaseAmountLargerThanTokensRemaining, "Minimum purchase: %s, amount remaining: %s", sdk.NewCoin(saleToken, sdk.NewInt(10001)).String(), originalAuction.RemainingTokensForSale.String()),
+			expectedError: sdkerrors.Wrapf(auctionTypes.ErrMinimumPurchaseAmountLargerThanTokensRemaining, "Minimum purchase: %s, amount remaining: %s", sdk.NewCoin(saleToken, sdk.NewInt(10001)).String(), originalAuction.RemainingTokensForSale.String()),
 			bankKeeperFunctions: func() {
 				suite.mockGetBalance(ctx, authtypes.NewModuleAddress(auctionTypes.ModuleName), saleToken, originalAuction.RemainingTokensForSale)
 			},
@@ -309,9 +308,9 @@ func (suite *KeeperTestSuite) TestUnhappyPathsForSubmitBid() {
 	}
 
 	for _, tc := range tests {
+		tc := tc // Redefine variable here due to passing it to function literal below (scopelint)
 		suite.T().Run(fmt.Sprint(tc.name), func(t *testing.T) {
 			// Run expected bank keeper functions, if any
-			tc := tc // Redefine variable here due to scopelint
 			tc.bankKeeperFunctions()
 			response, err := auctionKeeper.SubmitBid(sdk.WrapSDKContext(ctx), &tc.bid)
 
