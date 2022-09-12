@@ -8,10 +8,11 @@ import (
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 
+	"github.com/peggyjv/sommelier/v4/x/auction/types"
 	auctionTypes "github.com/peggyjv/sommelier/v4/x/auction/types"
 )
 
-type bankKeeperFunctionsWrapper func() error
+type bankKeeperFunctionsWrapper func()
 
 func (suite *KeeperTestSuite) mockSendCoinsFromAccountToModule(ctx sdk.Context, senderAcct sdk.AccAddress, receiverModule string, amt sdk.Coins) {
 	suite.bankKeeper.EXPECT().SendCoinsFromAccountToModule(ctx, senderAcct, receiverModule, amt).Return(nil)
@@ -179,7 +180,7 @@ func (suite *KeeperTestSuite) TestUnhappyPathsForSubmitBid() {
 
 	/* #nosec */
 	saleToken := "gravity0x853d955acef822db058eb8505911ed77f175b99e"
-	saleTokenPrice := auctionTypes.TokenPrice{Denom: saleToken, UsdPrice: sdk.MustNewDecFromStr("0.01"), LastUpdatedBlock: 5}
+	saleTokenPrice := auctionTypes.TokenPrice{Denom: saleToken, UsdPrice: sdk.MustNewDecFromStr("0.02"), LastUpdatedBlock: 5}
 	auctionedSaleTokens := sdk.NewCoin(saleToken, sdk.NewInt(10000))
 
 	auctionKeeper.setTokenPrice(ctx, sommPrice)
@@ -212,12 +213,96 @@ func (suite *KeeperTestSuite) TestUnhappyPathsForSubmitBid() {
 				AuctionId:              auctionID,
 				Bidder:                 "cosmos16zrkzad482haunrn25ywvwy6fclh3vh7r0hcny",
 				MaxBidInUsomm:          sdk.NewCoin("usomm", sdk.NewInt(100)),
-				SaleTokenMinimumAmount: sdk.NewCoin(saleToken, sdk.NewInt(100)),
+				SaleTokenMinimumAmount: sdk.NewCoin(saleToken, sdk.NewInt(1)),
 				Signer:                 sdk.AccAddress("cosmos18ld4633yswcyjdklej3att6aw93nhlf7ce4v8u").String(),
 			},
-			expectedError: sdkerrors.Wrapf(auctionTypes.ErrSignerDifferentFromBidder, "Signer: %s, Bidder: %s", sdk.AccAddress("cosmos18ld4633yswcyjdklej3att6aw93nhlf7ce4v8u").String(), "cosmos16zrkzad482haunrn25ywvwy6fclh3vh7r0hcny"),
-			bankKeeperFunctions: func() error {
-				return nil
+			expectedError:       sdkerrors.Wrapf(auctionTypes.ErrSignerDifferentFromBidder, "Signer: %s, Bidder: %s", sdk.AccAddress("cosmos18ld4633yswcyjdklej3att6aw93nhlf7ce4v8u").String(), "cosmos16zrkzad482haunrn25ywvwy6fclh3vh7r0hcny"),
+			bankKeeperFunctions: func() {},
+			submitBidResponse:   &auctionTypes.MsgSubmitBidResponse{},
+		},
+		{
+			name: "Auction ID not found",
+			bid: auctionTypes.MsgSubmitBidRequest{
+				AuctionId:              uint32(420),
+				Bidder:                 "cosmos16zrkzad482haunrn25ywvwy6fclh3vh7r0hcny",
+				MaxBidInUsomm:          sdk.NewCoin("usomm", sdk.NewInt(100)),
+				SaleTokenMinimumAmount: sdk.NewCoin(saleToken, sdk.NewInt(1)),
+				Signer:                 sdk.AccAddress("cosmos16zrkzad482haunrn25ywvwy6fclh3vh7r0hcny").String(),
+			},
+			expectedError:       sdkerrors.Wrapf(auctionTypes.ErrAuctionNotFound, "Auction id: %d", uint32(420)),
+			bankKeeperFunctions: func() {},
+			submitBidResponse:   &auctionTypes.MsgSubmitBidResponse{},
+		},
+		{
+			name: "Denom mismatch",
+			bid: auctionTypes.MsgSubmitBidRequest{
+				AuctionId:              auctionID,
+				Bidder:                 "cosmos16zrkzad482haunrn25ywvwy6fclh3vh7r0hcny",
+				MaxBidInUsomm:          sdk.NewCoin("usomm", sdk.NewInt(100)),
+				SaleTokenMinimumAmount: sdk.NewCoin("blemflarcks", sdk.NewInt(1)),
+				Signer:                 sdk.AccAddress("cosmos16zrkzad482haunrn25ywvwy6fclh3vh7r0hcny").String(),
+			},
+			expectedError:       sdkerrors.Wrapf(auctionTypes.ErrBidAuctionDenomMismatch, "Bid denom: blemflarcks, Auction denom: %s", saleToken),
+			bankKeeperFunctions: func() {},
+			submitBidResponse:   &auctionTypes.MsgSubmitBidResponse{},
+		},
+		{
+			name: "Minimum amount to purchase larger than bid can obtain",
+			bid: auctionTypes.MsgSubmitBidRequest{
+				AuctionId:              auctionID,
+				Bidder:                 "cosmos16zrkzad482haunrn25ywvwy6fclh3vh7r0hcny",
+				MaxBidInUsomm:          sdk.NewCoin("usomm", sdk.NewInt(1)),
+				SaleTokenMinimumAmount: sdk.NewCoin(saleToken, sdk.NewInt(1)),
+				Signer:                 sdk.AccAddress("cosmos16zrkzad482haunrn25ywvwy6fclh3vh7r0hcny").String(),
+			},
+			expectedError: sdkerrors.Wrapf(auctionTypes.ErrInsufficientBid, "minimum purchase price: 2, max bid: 1"),
+			bankKeeperFunctions: func() {
+				suite.mockGetBalance(ctx, authtypes.NewModuleAddress(auctionTypes.ModuleName), saleToken, originalAuction.RemainingTokensForSale)
+			},
+			submitBidResponse: &auctionTypes.MsgSubmitBidResponse{},
+		},
+		{
+			name: "Minimum amount larger than remaining tokens in auction",
+			bid: auctionTypes.MsgSubmitBidRequest{
+				AuctionId:              auctionID,
+				Bidder:                 "cosmos16zrkzad482haunrn25ywvwy6fclh3vh7r0hcny",
+				MaxBidInUsomm:          sdk.NewCoin("usomm", sdk.NewInt(40000)),
+				SaleTokenMinimumAmount: sdk.NewCoin(saleToken, sdk.NewInt(10001)),
+				Signer:                 sdk.AccAddress("cosmos16zrkzad482haunrn25ywvwy6fclh3vh7r0hcny").String(),
+			},
+			expectedError: sdkerrors.Wrapf(types.ErrMinimumPurchaseAmountLargerThanTokensRemaining, "Minimum purchase: %s, amount remaining: %s", sdk.NewCoin(saleToken, sdk.NewInt(10001)).String(), originalAuction.RemainingTokensForSale.String()),
+			bankKeeperFunctions: func() {
+				suite.mockGetBalance(ctx, authtypes.NewModuleAddress(auctionTypes.ModuleName), saleToken, originalAuction.RemainingTokensForSale)
+			},
+			submitBidResponse: &auctionTypes.MsgSubmitBidResponse{},
+		},
+		{
+			name: "Validate Basic canary 1 -- bid denom must be in usomm",
+			bid: auctionTypes.MsgSubmitBidRequest{
+				AuctionId:              auctionID,
+				Bidder:                 "cosmos16zrkzad482haunrn25ywvwy6fclh3vh7r0hcny",
+				MaxBidInUsomm:          sdk.NewCoin("cinnamonRollCoin", sdk.NewInt(200)),
+				SaleTokenMinimumAmount: sdk.NewCoin(saleToken, sdk.NewInt(100)),
+				Signer:                 sdk.AccAddress("cosmos16zrkzad482haunrn25ywvwy6fclh3vh7r0hcny").String(),
+			},
+			expectedError: sdkerrors.Wrapf(auctionTypes.ErrBidMustBeInUsomm, "bid: %s", sdk.NewCoin("cinnamonRollCoin", sdk.NewInt(200)).String()),
+			bankKeeperFunctions: func() {
+				suite.mockGetBalance(ctx, authtypes.NewModuleAddress(auctionTypes.ModuleName), saleToken, originalAuction.RemainingTokensForSale)
+			},
+			submitBidResponse: &auctionTypes.MsgSubmitBidResponse{},
+		},
+		{
+			name: "Validate Basic canary 2 -- minimum amount of sale tokens cannot be 0",
+			bid: auctionTypes.MsgSubmitBidRequest{
+				AuctionId:              auctionID,
+				Bidder:                 "cosmos16zrkzad482haunrn25ywvwy6fclh3vh7r0hcny",
+				MaxBidInUsomm:          sdk.NewCoin("usomm", sdk.NewInt(200)),
+				SaleTokenMinimumAmount: sdk.NewCoin(saleToken, sdk.NewInt(0)),
+				Signer:                 sdk.AccAddress("cosmos16zrkzad482haunrn25ywvwy6fclh3vh7r0hcny").String(),
+			},
+			expectedError: sdkerrors.Wrapf(auctionTypes.ErrMinimumAmountMustBePositive, "sale token amount: %s", sdk.NewCoin(saleToken, sdk.NewInt(0)).String()),
+			bankKeeperFunctions: func() {
+				suite.mockGetBalance(ctx, authtypes.NewModuleAddress(auctionTypes.ModuleName), saleToken, originalAuction.RemainingTokensForSale)
 			},
 			submitBidResponse: &auctionTypes.MsgSubmitBidResponse{},
 		},
@@ -226,7 +311,8 @@ func (suite *KeeperTestSuite) TestUnhappyPathsForSubmitBid() {
 	for _, tc := range tests {
 		suite.T().Run(fmt.Sprint(tc.name), func(t *testing.T) {
 			// Run expected bank keeper functions, if any
-			require.Nil(tc.bankKeeperFunctions())
+			tc := tc // Redefine variable here due to scopelint
+			tc.bankKeeperFunctions()
 			response, err := auctionKeeper.SubmitBid(sdk.WrapSDKContext(ctx), &tc.bid)
 
 			// Verify bid errors are as expected
