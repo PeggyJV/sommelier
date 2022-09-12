@@ -141,8 +141,8 @@ func (suite *KeeperTestSuite) TestHappyPathBeginAuction() {
 	require.Equal(expectedActiveAuction, createdAuction)
 }
 
-// Happy path for FinishAuction
-func (suite *KeeperTestSuite) TestHappyPathFinishAuctionWithFundsRemaining() {
+// Happy path for FinishAuction (with some remaining funds)
+func (suite *KeeperTestSuite) TestHappyPathFinishAuction() {
 	ctx, auctionKeeper := suite.ctx, suite.auctionKeeper
 	require := suite.Require()
 

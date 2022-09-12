@@ -15,7 +15,7 @@ func (suite *KeeperTestSuite) mockSendCoinsFromModuleToAccount(ctx sdk.Context, 
 	suite.bankKeeper.EXPECT().SendCoinsFromModuleToAccount(ctx, senderModule, receiverAcct, amt).Return(nil)
 }
 
-// Happy path test for submitting a bid and ~fully~ fulfilling
+// Happy path test for submitting a bid both fully and partially
 func (suite *KeeperTestSuite) TestHappyPathSubmitBidAndFulfillFully() {
 	ctx, auctionKeeper := suite.ctx, suite.auctionKeeper
 	require := suite.Require()
@@ -104,4 +104,58 @@ func (suite *KeeperTestSuite) TestHappyPathSubmitBidAndFulfillFully() {
 	activeAuction, found := auctionKeeper.GetActiveAuctionByID(ctx, auctionID)
 	require.True(found)
 	require.Equal(expectedUpdatedAuction, activeAuction)
+
+	// Now check flow of a bid that can only be partially fulfilled, and verify it finishes the auction
+	newBidder := "cosmos18ld4633yswcyjdklej3att6aw93nhlf7ce4v8u"
+	newBid := sdk.NewCoin("usomm", sdk.NewInt(50000))
+	newFulfilledAmt := sdk.NewCoin(saleToken, sdk.NewInt(7500))
+	paidAmt := sdk.NewCoin("usomm", sdk.NewInt(15000))
+
+	// Mock out necessary bank keeper calls for bid completion
+	suite.mockGetBalance(ctx, authtypes.NewModuleAddress(auctionTypes.ModuleName), saleToken, expectedUpdatedAuction.RemainingTokensForSale)
+	suite.mockSendCoinsFromAccountToModule(ctx, sdk.AccAddress(newBidder), auctionTypes.ModuleName, sdk.NewCoins(paidAmt))
+	suite.mockSendCoinsFromModuleToAccount(ctx, auctionTypes.ModuleName, sdk.AccAddress(newBidder), sdk.NewCoins(newFulfilledAmt))
+
+	// Mock out final keeper calls necessary to finish the auction due to bid draining the availible supply
+	suite.mockGetBalance(ctx, authtypes.NewModuleAddress(auctionTypes.ModuleName), saleToken, sdk.NewCoin(saleToken, sdk.NewInt(0)))
+	totalUsommExpected := sdk.NewCoin("usomm", sdk.NewInt(20000))
+	suite.mockSendCoinsFromModuleToModule(ctx, auctionTypes.ModuleName, permissionedReciever.GetName(), sdk.NewCoins(totalUsommExpected))
+
+	// Submit the partially fulfillable bid now
+	response, err = auctionKeeper.SubmitBid(sdk.WrapSDKContext(ctx), &auctionTypes.MsgSubmitBidRequest{
+		AuctionId:              auctionID,
+		Bidder:                 newBidder,
+		MaxBidInUsomm:          newBid,
+		SaleTokenMinimumAmount: minAmount,
+		Signer:                 sdk.AccAddress(newBidder).String(),
+	})
+	require.Nil(err)
+
+	// Assert bid store and response bids are both equal to the new expected bid
+	newExpectedBid := auctionTypes.Bid{
+		Id:                        uint64(2),
+		AuctionId:                 uint32(1),
+		Bidder:                    newBidder,
+		MaxBidInUsomm:             newBid,
+		SaleTokenMinimumAmount:    minAmount,
+		TotalFulfilledSaleTokens:  newFulfilledAmt,
+		SaleTokenUnitPriceInUsomm: sdk.NewDec(2),
+		TotalUsommPaid:            paidAmt,
+	}
+	require.Equal(&newExpectedBid, response.Bid)
+
+	storedBid, found = auctionKeeper.GetBid(ctx, uint32(1), uint64(2))
+	require.True(found)
+	require.Equal(newExpectedBid, storedBid)
+
+	// Verify bid caused auction to finish
+	expectedUpdatedAuction.RemainingTokensForSale.Amount = sdk.NewInt(0)
+	expectedUpdatedAuction.EndBlock = uint64(ctx.BlockHeight())
+
+	_, found = auctionKeeper.GetActiveAuctionByID(ctx, auctionID)
+	require.False(found)
+
+	endedAuction, found := auctionKeeper.GetEndedAuctionByID(ctx, auctionID)
+	require.True(found)
+	require.Equal(expectedUpdatedAuction, endedAuction)
 }
