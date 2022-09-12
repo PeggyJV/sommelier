@@ -1,11 +1,17 @@
 package keeper
 
 import (
+	"fmt"
+	"testing"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 
 	auctionTypes "github.com/peggyjv/sommelier/v4/x/auction/types"
 )
+
+type bankKeeperFunctionsWrapper func() error
 
 func (suite *KeeperTestSuite) mockSendCoinsFromAccountToModule(ctx sdk.Context, senderAcct sdk.AccAddress, receiverModule string, amt sdk.Coins) {
 	suite.bankKeeper.EXPECT().SendCoinsFromAccountToModule(ctx, senderAcct, receiverModule, amt).Return(nil)
@@ -158,4 +164,79 @@ func (suite *KeeperTestSuite) TestHappyPathSubmitBidAndFulfillFully() {
 	endedAuction, found := auctionKeeper.GetEndedAuctionByID(ctx, auctionID)
 	require.True(found)
 	require.Equal(expectedUpdatedAuction, endedAuction)
+}
+
+// Unhappy path tests for all failure modes of SubmitBid
+func (suite *KeeperTestSuite) TestUnhappyPathsForSubmitBid() {
+	ctx, auctionKeeper := suite.ctx, suite.auctionKeeper
+	require := suite.Require()
+
+	// Create an active auction for bids to test against
+	params := auctionTypes.Params{PriceMaxBlockAge: 10}
+	auctionKeeper.setParams(ctx, params)
+
+	sommPrice := auctionTypes.TokenPrice{Denom: "usomm", UsdPrice: sdk.MustNewDecFromStr("0.01"), LastUpdatedBlock: 5}
+
+	/* #nosec */
+	saleToken := "gravity0x853d955acef822db058eb8505911ed77f175b99e"
+	saleTokenPrice := auctionTypes.TokenPrice{Denom: saleToken, UsdPrice: sdk.MustNewDecFromStr("0.01"), LastUpdatedBlock: 5}
+	auctionedSaleTokens := sdk.NewCoin(saleToken, sdk.NewInt(10000))
+
+	auctionKeeper.setTokenPrice(ctx, sommPrice)
+	auctionKeeper.setTokenPrice(ctx, saleTokenPrice)
+
+	// Mock bank keeper fund transfer
+	suite.mockSendCoinsFromModuleToModule(ctx, permissionedFunder.GetName(), auctionTypes.ModuleName, sdk.NewCoins(auctionedSaleTokens))
+
+	// Start auction
+	decreaseRate := sdk.MustNewDecFromStr("0.05")
+	blockDecreaseInterval := uint64(5)
+	err := auctionKeeper.BeginAuction(ctx, auctionedSaleTokens, decreaseRate, blockDecreaseInterval, permissionedFunder.GetName(), permissionedReciever.GetName())
+	require.Nil(err)
+
+	// Verify auction got added to active auction store
+	auctionID := uint32(1)
+	originalAuction, found := auctionKeeper.GetActiveAuctionByID(ctx, auctionID)
+	require.True(found)
+
+	tests := []struct {
+		name                string
+		bid                 auctionTypes.MsgSubmitBidRequest
+		expectedError       error
+		bankKeeperFunctions bankKeeperFunctionsWrapper
+		submitBidResponse   *auctionTypes.MsgSubmitBidResponse
+	}{
+		{
+			name: "Mismatched signer & bidder",
+			bid: auctionTypes.MsgSubmitBidRequest{
+				AuctionId:              auctionID,
+				Bidder:                 "cosmos16zrkzad482haunrn25ywvwy6fclh3vh7r0hcny",
+				MaxBidInUsomm:          sdk.NewCoin("usomm", sdk.NewInt(100)),
+				SaleTokenMinimumAmount: sdk.NewCoin(saleToken, sdk.NewInt(100)),
+				Signer:                 sdk.AccAddress("cosmos18ld4633yswcyjdklej3att6aw93nhlf7ce4v8u").String(),
+			},
+			expectedError: sdkerrors.Wrapf(auctionTypes.ErrSignerDifferentFromBidder, "Signer: %s, Bidder: %s", sdk.AccAddress("cosmos18ld4633yswcyjdklej3att6aw93nhlf7ce4v8u").String(), "cosmos16zrkzad482haunrn25ywvwy6fclh3vh7r0hcny"),
+			bankKeeperFunctions: func() error {
+				return nil
+			},
+			submitBidResponse: &auctionTypes.MsgSubmitBidResponse{},
+		},
+	}
+
+	for _, tc := range tests {
+		suite.T().Run(fmt.Sprint(tc.name), func(t *testing.T) {
+			// Run expected bank keeper functions, if any
+			require.Nil(tc.bankKeeperFunctions())
+			response, err := auctionKeeper.SubmitBid(sdk.WrapSDKContext(ctx), &tc.bid)
+
+			// Verify bid errors are as expected
+			require.Equal(tc.expectedError.Error(), err.Error())
+			require.Equal(tc.submitBidResponse, response)
+
+			// Verify original auction not changed
+			foundAuction, found := auctionKeeper.GetActiveAuctionByID(ctx, auctionID)
+			require.True(found)
+			require.Equal(originalAuction, foundAuction)
+		})
+	}
 }
