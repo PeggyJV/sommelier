@@ -1,13 +1,17 @@
 package keeper
 
 import (
+	"fmt"
 	"testing"
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/testutil"
-	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/golang/mock/gomock"
+	"github.com/stretchr/testify/suite"
+
+	sdk "github.com/cosmos/cosmos-sdk/types"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
 	moduletestutil "github.com/peggyjv/sommelier/v4/testutil"
 	auctionTypes "github.com/peggyjv/sommelier/v4/x/auction/types"
@@ -15,7 +19,6 @@ import (
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	paramskeeper "github.com/cosmos/cosmos-sdk/x/params/keeper"
 	auctiontestutil "github.com/peggyjv/sommelier/v4/x/auction/testutil"
-	"github.com/stretchr/testify/suite"
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
 	tmtime "github.com/tendermint/tendermint/types/time"
 )
@@ -24,6 +27,15 @@ var (
 	permissionedFunder   = authtypes.NewEmptyModuleAccount("permissionedFunder")
 	permissionedReciever = authtypes.NewEmptyModuleAccount("permissionedReciever")
 )
+
+type BeginAuctionRequest struct {
+	ctx                        sdk.Context
+	startingTokensForSale      sdk.Coin
+	initialPriceDecreaseRate   sdk.Dec
+	priceDecreaseBlockInterval uint64
+	fundingModuleAccount       string
+	proceedsModuleAccount      string
+}
 
 type KeeperTestSuite struct {
 	suite.Suite
@@ -99,7 +111,7 @@ func (suite *KeeperTestSuite) TestHappyPathBeginAuction() {
 	params := auctionTypes.Params{PriceMaxBlockAge: 10}
 	auctionKeeper.setParams(ctx, params)
 
-	sommPrice := auctionTypes.TokenPrice{Denom: "usomm", UsdPrice: sdk.MustNewDecFromStr("0.01"), LastUpdatedBlock: 5}
+	sommPrice := auctionTypes.TokenPrice{Denom: auctionTypes.UsommDenom, UsdPrice: sdk.MustNewDecFromStr("0.01"), LastUpdatedBlock: 5}
 
 	/* #nosec */
 	saleToken := "gravity0xdac17f958d2ee523a2206206994597c13d831ec7"
@@ -150,7 +162,7 @@ func (suite *KeeperTestSuite) TestHappyPathFinishAuction() {
 	params := auctionTypes.Params{PriceMaxBlockAge: 10}
 	auctionKeeper.setParams(ctx, params)
 
-	sommPrice := auctionTypes.TokenPrice{Denom: "usomm", UsdPrice: sdk.MustNewDecFromStr("0.02"), LastUpdatedBlock: 2}
+	sommPrice := auctionTypes.TokenPrice{Denom: auctionTypes.UsommDenom, UsdPrice: sdk.MustNewDecFromStr("0.02"), LastUpdatedBlock: 2}
 
 	/* #nosec */
 	saleToken := "gravity0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48"
@@ -182,30 +194,30 @@ func (suite *KeeperTestSuite) TestHappyPathFinishAuction() {
 	suite.mockSendCoinsFromModuleToModule(ctx, auctionTypes.ModuleName, permissionedFunder.GetName(), sdk.NewCoins(remainingSaleTokens))
 
 	// Add a couple of fake bids into store (note none of these fields matter for this test aside from TotalUsommPaid)
-	amountPaid1 := sdk.NewCoin("usomm", sdk.NewInt(2500))
+	amountPaid1 := sdk.NewCoin(auctionTypes.UsommDenom, sdk.NewInt(2500))
 	auctionKeeper.setBid(ctx, auctionTypes.Bid{
 		Id:                       1,
 		AuctionId:                1,
 		Bidder:                   "bidder1",
-		MaxBidInUsomm:            sdk.NewCoin("usomm", sdk.NewInt(2500)),
+		MaxBidInUsomm:            sdk.NewCoin(auctionTypes.UsommDenom, sdk.NewInt(2500)),
 		SaleTokenMinimumAmount:   sdk.NewCoin(saleToken, sdk.NewInt(0)),
 		TotalFulfilledSaleTokens: sdk.NewCoin(saleToken, sdk.NewInt(5000)),
 		TotalUsommPaid:           amountPaid1,
 	})
 
-	amountPaid2 := sdk.NewCoin("usomm", sdk.NewInt(1250))
+	amountPaid2 := sdk.NewCoin(auctionTypes.UsommDenom, sdk.NewInt(1250))
 	auctionKeeper.setBid(ctx, auctionTypes.Bid{
 		Id:                       2,
 		AuctionId:                1,
 		Bidder:                   "bidder2",
-		MaxBidInUsomm:            sdk.NewCoin("usomm", sdk.NewInt(1250)),
+		MaxBidInUsomm:            sdk.NewCoin(auctionTypes.UsommDenom, sdk.NewInt(1250)),
 		SaleTokenMinimumAmount:   sdk.NewCoin(saleToken, sdk.NewInt(0)),
 		TotalFulfilledSaleTokens: sdk.NewCoin(saleToken, sdk.NewInt(2500)),
 		TotalUsommPaid:           amountPaid2,
 	})
 
 	// Second transfer to return proceeds from bids
-	totalUsommExpected := sdk.NewCoin("usomm", amountPaid1.Amount.Add(amountPaid2.Amount))
+	totalUsommExpected := sdk.NewCoin(auctionTypes.UsommDenom, amountPaid1.Amount.Add(amountPaid2.Amount))
 	suite.mockSendCoinsFromModuleToModule(ctx, auctionTypes.ModuleName, permissionedReciever.GetName(), sdk.NewCoins(totalUsommExpected))
 
 	// Change active auction tokens remaining before finishing auction to pretend tokens were sold
@@ -237,4 +249,208 @@ func (suite *KeeperTestSuite) TestHappyPathFinishAuction() {
 
 	// Make sure no active auctions exist anymore
 	require.Zero(len(auctionKeeper.GetActiveAuctions(ctx)))
+}
+
+// Unhappy path tests for BeginAuction
+func (suite *KeeperTestSuite) TestUnhappyPathsForBeginAuction() {
+	ctx, auctionKeeper := suite.ctx, suite.auctionKeeper
+	require := suite.Require()
+
+	// Define basic param(s)
+	params := auctionTypes.Params{PriceMaxBlockAge: 10}
+	auctionKeeper.setParams(ctx, params)
+
+	// Setup some token prices
+	sommPrice := auctionTypes.TokenPrice{Denom: auctionTypes.UsommDenom, UsdPrice: sdk.MustNewDecFromStr("0.01"), LastUpdatedBlock: 2}
+
+	/* #nosec */
+	saleToken := "gravity0xaaaebe6fe48e54f431b0c390cfaf0b017d09d42d"
+	saleTokenPrice := auctionTypes.TokenPrice{Denom: saleToken, UsdPrice: sdk.MustNewDecFromStr("0.01"), LastUpdatedBlock: 5}
+	auctionedSaleTokens := sdk.NewCoin(saleToken, sdk.NewInt(10000))
+
+	// Create an ongoing auction to be used in later testing
+
+	// Mock initial bank keeper fund transfer
+	suite.mockSendCoinsFromModuleToModule(ctx, permissionedFunder.GetName(), auctionTypes.ModuleName, sdk.NewCoins(auctionedSaleTokens))
+
+	// Start auction
+	decreaseRate := sdk.MustNewDecFromStr("0.05")
+	blockDecreaseInterval := uint64(5)
+	err := auctionKeeper.BeginAuction(ctx, auctionedSaleTokens, decreaseRate, blockDecreaseInterval, permissionedFunder.GetName(), permissionedReciever.GetName())
+	require.Nil(err)
+
+	// Verify auction got added to active auction store
+	auctionID := uint32(1)
+	createdAuction, found := auctionKeeper.GetActiveAuctionByID(ctx, auctionID)
+	require.True(found)
+
+	expectedActiveAuction := auctionTypes.Auction{
+		Id:                         auctionID,
+		StartingTokensForSale:      auctionedSaleTokens,
+		StartBlock:                 uint64(ctx.BlockHeight()),
+		EndBlock:                   0,
+		InitialPriceDecreaseRate:   decreaseRate,
+		CurrentPriceDecreaseRate:   decreaseRate,
+		PriceDecreaseBlockInterval: blockDecreaseInterval,
+		InitialUnitPriceInUsomm:    sdk.NewDec(1),
+		CurrentUnitPriceInUsomm:    sdk.NewDec(1),
+		RemainingTokensForSale:     auctionedSaleTokens,
+		FundingModuleAccount:       permissionedFunder.GetName(),
+		ProceedsModuleAccount:      permissionedReciever.GetName(),
+	}
+	require.Equal(expectedActiveAuction, createdAuction)
+
+	tests := []struct {
+		name                string
+		beginAuctionRequest BeginAuctionRequest
+		expectedError       error
+		utilityFunctions    utilityFunctionsWrapper
+	}{
+		{
+			name: "Unpermissioned funder module account",
+			beginAuctionRequest: BeginAuctionRequest{
+				ctx:                        ctx,
+				startingTokensForSale:      auctionedSaleTokens,
+				initialPriceDecreaseRate:   sdk.MustNewDecFromStr("0.05"),
+				priceDecreaseBlockInterval: uint64(10),
+				fundingModuleAccount:       "cork",
+				proceedsModuleAccount:      permissionedReciever.GetName(),
+			},
+			expectedError:    sdkerrors.Wrapf(auctionTypes.ErrUnauthorizedFundingModule, "Module Account: cork"),
+			utilityFunctions: func() {},
+		},
+		{
+			name: "Unpermissioned proceeds module account",
+			beginAuctionRequest: BeginAuctionRequest{
+				ctx:                        ctx,
+				startingTokensForSale:      auctionedSaleTokens,
+				initialPriceDecreaseRate:   sdk.MustNewDecFromStr("0.05"),
+				priceDecreaseBlockInterval: uint64(10),
+				fundingModuleAccount:       permissionedFunder.GetName(),
+				proceedsModuleAccount:      "gravity",
+			},
+			expectedError:    sdkerrors.Wrapf(auctionTypes.ErrUnauthorizedProceedsModule, "Module Account: gravity"),
+			utilityFunctions: func() {},
+		},
+		{
+			name: "Starting denom price not found",
+			beginAuctionRequest: BeginAuctionRequest{
+				ctx:                        ctx,
+				startingTokensForSale:      sdk.NewCoin("anvil", sdk.NewInt(7)),
+				initialPriceDecreaseRate:   sdk.MustNewDecFromStr("0.05"),
+				priceDecreaseBlockInterval: uint64(10),
+				fundingModuleAccount:       permissionedFunder.GetName(),
+				proceedsModuleAccount:      permissionedReciever.GetName(),
+			},
+			expectedError:    sdkerrors.Wrapf(auctionTypes.ErrCouldNotFindSaleTokenPrice, "starting amount denom: anvil"),
+			utilityFunctions: func() {},
+		},
+		{
+			name: "Starting denom price update too old",
+			beginAuctionRequest: BeginAuctionRequest{
+				ctx:                        ctx.WithBlockHeight(int64(saleTokenPrice.LastUpdatedBlock) + int64(params.PriceMaxBlockAge) + 1),
+				startingTokensForSale:      auctionedSaleTokens,
+				initialPriceDecreaseRate:   sdk.MustNewDecFromStr("0.05"),
+				priceDecreaseBlockInterval: uint64(10),
+				fundingModuleAccount:       permissionedFunder.GetName(),
+				proceedsModuleAccount:      permissionedReciever.GetName(),
+			},
+			expectedError: sdkerrors.Wrapf(auctionTypes.ErrLastSaleTokenPriceTooOld, "starting amount denom: %s", saleToken),
+			utilityFunctions: func() {
+				auctionKeeper.setTokenPrice(ctx, saleTokenPrice)
+			},
+		},
+		{
+			name: "Usomm price not found",
+			beginAuctionRequest: BeginAuctionRequest{
+				ctx:                        ctx,
+				startingTokensForSale:      auctionedSaleTokens,
+				initialPriceDecreaseRate:   sdk.MustNewDecFromStr("0.05"),
+				priceDecreaseBlockInterval: uint64(10),
+				fundingModuleAccount:       permissionedFunder.GetName(),
+				proceedsModuleAccount:      permissionedReciever.GetName(),
+			},
+			expectedError:    sdkerrors.Wrap(auctionTypes.ErrCouldNotFindSommTokenPrice, auctionTypes.UsommDenom),
+			utilityFunctions: func() {},
+		},
+		{
+			name: "Usomm price update too old",
+			beginAuctionRequest: BeginAuctionRequest{
+				ctx:                        ctx.WithBlockHeight(int64(sommPrice.LastUpdatedBlock) + int64(params.PriceMaxBlockAge) + 1),
+				startingTokensForSale:      auctionedSaleTokens,
+				initialPriceDecreaseRate:   sdk.MustNewDecFromStr("0.05"),
+				priceDecreaseBlockInterval: uint64(10),
+				fundingModuleAccount:       permissionedFunder.GetName(),
+				proceedsModuleAccount:      permissionedReciever.GetName(),
+			},
+			expectedError: sdkerrors.Wrap(auctionTypes.ErrLastSommTokenPriceTooOld, auctionTypes.UsommDenom),
+			utilityFunctions: func() {
+				auctionKeeper.setTokenPrice(ctx, sommPrice)
+			},
+		},
+		{
+			name: "Validate basic canary 1 -- invalid initialPriceDecreaseRate lower bound",
+			beginAuctionRequest: BeginAuctionRequest{
+				ctx:                        ctx,
+				startingTokensForSale:      auctionedSaleTokens,
+				initialPriceDecreaseRate:   sdk.MustNewDecFromStr("0.0"),
+				priceDecreaseBlockInterval: uint64(10),
+				fundingModuleAccount:       permissionedFunder.GetName(),
+				proceedsModuleAccount:      permissionedReciever.GetName(),
+			},
+			expectedError:    sdkerrors.Wrapf(auctionTypes.ErrInvalidInitialDecreaseRate, "Inital price decrease rate 0.000000000000000000"),
+			utilityFunctions: func() {},
+		},
+		{
+			name: "Validate basic canary 2 -- invalid initialPriceDecreaseRate upper bound",
+			beginAuctionRequest: BeginAuctionRequest{
+				ctx:                        ctx,
+				startingTokensForSale:      auctionedSaleTokens,
+				initialPriceDecreaseRate:   sdk.MustNewDecFromStr("1.0"),
+				priceDecreaseBlockInterval: uint64(10),
+				fundingModuleAccount:       permissionedFunder.GetName(),
+				proceedsModuleAccount:      permissionedReciever.GetName(),
+			},
+			expectedError:    sdkerrors.Wrapf(auctionTypes.ErrInvalidInitialDecreaseRate, "Inital price decrease rate 1.000000000000000000"),
+			utilityFunctions: func() {},
+		},
+		{
+			name: "Cannot have 2 ongoing auctions for the same denom",
+			beginAuctionRequest: BeginAuctionRequest{
+				ctx:                        ctx,
+				startingTokensForSale:      auctionedSaleTokens,
+				initialPriceDecreaseRate:   sdk.MustNewDecFromStr("0.05"),
+				priceDecreaseBlockInterval: uint64(10),
+				fundingModuleAccount:       permissionedFunder.GetName(),
+				proceedsModuleAccount:      permissionedReciever.GetName(),
+			},
+			expectedError:    sdkerrors.Wrapf(auctionTypes.ErrCannotStartTwoAuctionsForSameDenomSimultaneously, "Denom: %s", auctionedSaleTokens.Denom),
+			utilityFunctions: func() {},
+		},
+	}
+
+	for _, tc := range tests {
+		tc := tc // Redefine variable here due to passing it to function literal below (scopelint)
+		suite.T().Run(fmt.Sprint(tc.name), func(t *testing.T) {
+			// Run expected bank keeper functions, if any
+			tc.utilityFunctions()
+
+			err := auctionKeeper.BeginAuction(
+				tc.beginAuctionRequest.ctx,
+				tc.beginAuctionRequest.startingTokensForSale,
+				tc.beginAuctionRequest.initialPriceDecreaseRate,
+				tc.beginAuctionRequest.priceDecreaseBlockInterval,
+				tc.beginAuctionRequest.fundingModuleAccount,
+				tc.beginAuctionRequest.proceedsModuleAccount,
+			)
+
+			// Verify errors are as expected
+			require.Equal(tc.expectedError.Error(), err.Error())
+
+			// Verify only auction found is the one we created for testing
+			auctions := auctionKeeper.GetActiveAuctions(ctx)
+			require.Len(auctions, 1)
+			require.Equal(auctions[0], createdAuction)
+		})
+	}
 }

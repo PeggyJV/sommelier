@@ -20,7 +20,7 @@ func (suite *KeeperTestSuite) TestAbci() {
 	params := auctionTypes.Params{PriceMaxBlockAge: 10}
 	auctionKeeper.setParams(ctx, params)
 
-	sommPrice := auctionTypes.TokenPrice{Denom: "usomm", UsdPrice: sdk.MustNewDecFromStr("0.01"), LastUpdatedBlock: 5}
+	sommPrice := auctionTypes.TokenPrice{Denom: auctionTypes.UsommDenom, UsdPrice: sdk.MustNewDecFromStr("0.01"), LastUpdatedBlock: 5}
 
 	/* #nosec */
 	saleToken := "gravity0x95aD61b0a150d79219dCF64E1E6Cc01f0B64C4cE"
@@ -115,3 +115,6 @@ func (suite *KeeperTestSuite) TestAbci() {
 
 	require.Equal(expectedAuction, foundAuction)
 }
+
+// Note no inclusion of an unhappy path test since the only possibility for a panic here is a failure of a module to module transfer
+// which is more appropriate to verify in an intergration test due to cross module interactions
