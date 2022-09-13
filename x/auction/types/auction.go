@@ -131,6 +131,10 @@ func (t *TokenPrice) ValidateBasic() error {
 		return sdkerrors.Wrapf(ErrInvalidLastUpdatedBlock, "block: %d", t.LastUpdatedBlock)
 	}
 
+	if !strings.HasPrefix(t.Denom, gravitytypes.GravityDenomPrefix) && t.Denom != UsommDenom {
+		return sdkerrors.Wrapf(ErrInvalidTokenPriceDenom, "denom: %s", t.Denom)
+	}
+
 	return nil
 }
 
@@ -141,6 +145,10 @@ func (t *ProposedTokenPrice) ValidateBasic() error {
 
 	if !t.UsdPrice.IsPositive() {
 		return sdkerrors.Wrapf(ErrPriceMustBePositive, "usd price: %s", t.UsdPrice.String())
+	}
+
+	if !strings.HasPrefix(t.Denom, gravitytypes.GravityDenomPrefix) && t.Denom != UsommDenom {
+		return sdkerrors.Wrapf(ErrInvalidTokenPriceDenom, "denom: %s", t.Denom)
 	}
 
 	return nil
