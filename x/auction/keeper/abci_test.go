@@ -6,7 +6,7 @@ import (
 	auctionTypes "github.com/peggyjv/sommelier/v4/x/auction/types"
 )
 
-// Happy path test for abci
+// Tests abci
 func (suite *KeeperTestSuite) TestAbci() {
 	ctx, auctionKeeper := suite.ctx, suite.auctionKeeper
 	require := suite.Require()
@@ -115,6 +115,3 @@ func (suite *KeeperTestSuite) TestAbci() {
 
 	require.Equal(expectedAuction, foundAuction)
 }
-
-// Note no inclusion of an unhappy path test since the only possibility for a panic here is a failure of a module to module transfer
-// which is more appropriate to verify in an intergration test due to cross module interactions

@@ -53,7 +53,7 @@ func (suite *KeeperTestSuite) TestHappPathForProposalHandler() {
 
 }
 
-// Unhappy path test for proposal handler (essentially just a validate basic canary)
+// Unhappy path test for proposal handler
 func (suite *KeeperTestSuite) TestUnhappPathForProposalHandler() {
 	ctx, auctionKeeper := suite.ctx, suite.auctionKeeper
 	require := suite.Require()
