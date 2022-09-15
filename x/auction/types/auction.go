@@ -19,10 +19,6 @@ func (a *Auction) ValidateBasic() error {
 		return sdkerrors.Wrapf(ErrAuctionStartingAmountMustBePositve, "Starting tokens for sale: %s", a.StartingTokensForSale.String())
 	}
 
-	if a.StartingTokensForSale.Denom == "" {
-		return sdkerrors.Wrapf(ErrAuctionDenomInvalid, "Starting denom tokens for sale: %s", a.StartingTokensForSale.String())
-	}
-
 	if a.StartingTokensForSale.Denom == UsommDenom {
 		return sdkerrors.Wrapf(ErrCannotAuctionUsomm, "Starting denom tokens for sale: %s", UsommDenom)
 	}
@@ -40,7 +36,7 @@ func (a *Auction) ValidateBasic() error {
 	}
 
 	if a.PriceDecreaseBlockInterval == 0 {
-		return sdkerrors.Wrapf(ErrInvalidBlockDecreaeInterval, "price decrease block interval: %d", a.PriceDecreaseBlockInterval)
+		return sdkerrors.Wrapf(ErrInvalidBlockDecreaseInterval, "price decrease block interval: %d", a.PriceDecreaseBlockInterval)
 	}
 
 	if !a.InitialUnitPriceInUsomm.IsPositive() {
@@ -49,10 +45,6 @@ func (a *Auction) ValidateBasic() error {
 
 	if !a.CurrentUnitPriceInUsomm.IsPositive() {
 		return sdkerrors.Wrapf(ErrPriceMustBePositive, "current unit price in usomm: %s", a.CurrentUnitPriceInUsomm.String())
-	}
-
-	if a.RemainingTokensForSale.Denom == "" {
-		return sdkerrors.Wrapf(ErrDenomCannotBeEmpty, "token for sale remaining: %s", a.RemainingTokensForSale.String())
 	}
 
 	if a.FundingModuleAccount == "" {
@@ -92,23 +84,15 @@ func (b *Bid) ValidateBasic() error {
 	}
 
 	if !strings.HasPrefix(b.SaleTokenMinimumAmount.Denom, gravitytypes.GravityDenomPrefix) {
-		return sdkerrors.Wrapf(ErrInvalidTokenBeingBidOn, "sale token: %s", b.SaleTokenMinimumAmount)
+		return sdkerrors.Wrapf(ErrInvalidTokenBeingBidOn, "sale token: %s", b.SaleTokenMinimumAmount.String())
 	}
 
 	if !b.SaleTokenMinimumAmount.IsPositive() {
 		return sdkerrors.Wrapf(ErrMinimumAmountMustBePositive, "sale token amount: %s", b.SaleTokenMinimumAmount.String())
 	}
 
-	if b.TotalFulfilledSaleTokens.Amount.IsNegative() {
-		return sdkerrors.Wrapf(ErrBidFulfilledSaleTokenAmountMustBeNonNegative, "fulfilled sale token amount: %s", b.TotalFulfilledSaleTokens.String())
-	}
-
 	if !b.SaleTokenUnitPriceInUsomm.IsPositive() {
 		return sdkerrors.Wrapf(ErrBidUnitPriceInUsommMustBePositive, "sale token unit price: %s", b.SaleTokenUnitPriceInUsomm.String())
-	}
-
-	if b.TotalUsommPaid.IsNegative() {
-		return sdkerrors.Wrapf(ErrBidPaymentCannotBeNegative, "payment in usomm: %s", b.TotalUsommPaid.String())
 	}
 
 	if b.TotalUsommPaid.Denom != UsommDenom {
