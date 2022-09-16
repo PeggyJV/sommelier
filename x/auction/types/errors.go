@@ -42,4 +42,5 @@ var (
 	ErrTokenPriceProposalAttemptsToUpdateTokenPriceMoreThanOnce = sdkerrors.Register(ModuleName, 35, "token price proposals should not attempt to update the same denom's price more than once per proposal")
 	ErrTokenPriceMaxBlockAgeMustBePositive                      = sdkerrors.Register(ModuleName, 36, "price max block age must be positive")
 	ErrInvalidPriceMaxBlockAgeParameterType                     = sdkerrors.Register(ModuleName, 37, "price max block age type must be uint64")
+	ErrTokenPriceProposalMustHaveAtLeastOnePrice                = sdkerrors.Register(ModuleName, 38, "list of proposed token prices must be non-zero")
 )
