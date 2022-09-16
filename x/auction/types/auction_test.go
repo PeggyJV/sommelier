@@ -391,7 +391,7 @@ func TestBidValidate(t *testing.T) {
 				TotalUsommPaid:            sdk.NewCoin("usomm", sdk.NewInt(100)),
 			},
 			expPass: false,
-			err:     sdkerrors.Wrapf(ErrBidIDAmountMustBePositive, "bid amount in usomm: %s", sdk.NewCoin("usomm", sdk.NewInt(0)).String()),
+			err:     sdkerrors.Wrapf(ErrBidAmountMustBePositive, "bid amount in usomm: %s", sdk.NewCoin("usomm", sdk.NewInt(0)).String()),
 		},
 		{
 			name: "Bid must be in usomm",

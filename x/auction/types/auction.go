@@ -76,7 +76,7 @@ func (b *Bid) ValidateBasic() error {
 	}
 
 	if !b.MaxBidInUsomm.IsPositive() {
-		return sdkerrors.Wrapf(ErrBidIDAmountMustBePositive, "bid amount in usomm: %s", b.MaxBidInUsomm.String())
+		return sdkerrors.Wrapf(ErrBidAmountMustBePositive, "bid amount in usomm: %s", b.MaxBidInUsomm.String())
 	}
 
 	if b.MaxBidInUsomm.Denom != UsommDenom {

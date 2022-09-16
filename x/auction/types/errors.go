@@ -32,7 +32,7 @@ var (
 	ErrDenomCannotBeEmpty                                       = sdkerrors.Register(ModuleName, 25, "denom cannot be empty")
 	ErrInvalidLastUpdatedBlock                                  = sdkerrors.Register(ModuleName, 26, "last updated block cannot be 0")
 	ErrBidIDMustBeNonZero                                       = sdkerrors.Register(ModuleName, 27, "bid ID must be non-zero")
-	ErrBidIDAmountMustBePositive                                = sdkerrors.Register(ModuleName, 28, "bid amount must be positive")
+	ErrBidAmountMustBePositive                                  = sdkerrors.Register(ModuleName, 28, "bid amount must be positive")
 	ErrBidMustBeInUsomm                                         = sdkerrors.Register(ModuleName, 29, "bid must be in usomm")
 	ErrInvalidTokenBeingBidOn                                   = sdkerrors.Register(ModuleName, 30, "tokens being bid on must have the gravity prefix")
 	ErrMinimumAmountMustBePositive                              = sdkerrors.Register(ModuleName, 31, "minimum amount to purchase with bid must be positive")
