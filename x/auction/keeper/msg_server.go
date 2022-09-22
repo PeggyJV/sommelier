@@ -115,7 +115,13 @@ func (k Keeper) SubmitBid(c context.Context, msg *types.MsgSubmitBidRequest) (*t
 	// Verify auction still has supply to see if we need to finish it
 	if auction.RemainingTokensForSale.IsZero() {
 		// Finish auction if so
-		k.FinishAuction(ctx, &auction)
+		err := k.FinishAuction(ctx, &auction)
+
+		// Since we use FinishAuction in EndBlocker, and the user can't & shouldn't do anything with this error, we panic
+		// This will only occur if a module to module token transfer fails while finishing the auction
+		if err != nil {
+			panic(err)
+		}
 	}
 
 	// Emit Event to signal bid was made
