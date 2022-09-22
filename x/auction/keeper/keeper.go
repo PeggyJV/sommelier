@@ -75,7 +75,7 @@ func (k Keeper) GetActiveAuctionByID(ctx sdk.Context, id uint32) (types.Auction,
 	store := ctx.KVStore(k.storeKey)
 
 	bz := store.Get(types.GetActiveAuctionKey(id))
-	if len(bz) != 0 {
+	if len(bz) == 0 {
 		return types.Auction{}, false
 	}
 
@@ -94,7 +94,7 @@ func (k Keeper) GetEndedAuctionByID(ctx sdk.Context, id uint32) (types.Auction, 
 	store := ctx.KVStore(k.storeKey)
 
 	bz := store.Get(types.GetEndedAuctionKey(id))
-	if len(bz) != 0 {
+	if len(bz) == 0 {
 		return types.Auction{}, false
 	}
 
@@ -278,14 +278,16 @@ func (k Keeper) FinishAuction(ctx sdk.Context, auction *types.Auction) error {
 	usommProceeds := sdk.NewInt(0)
 
 	for _, bid := range bids {
-		usommProceeds.Add(bid.TotalUsommPaid.Amount)
+		usommProceeds = usommProceeds.Add(bid.TotalUsommPaid.Amount)
 	}
 
 	usommProceedsCoin := sdk.NewCoin(types.UsommDenom, usommProceeds)
 
 	// Send proceeds to their appropriate destination module
-	if err := k.bankKeeper.SendCoinsFromModuleToModule(ctx, types.ModuleName, auction.ProceedsModuleAccount, sdk.Coins{usommProceedsCoin}); err != nil {
-		return err
+	if usommProceeds.IsPositive() {
+		if err := k.bankKeeper.SendCoinsFromModuleToModule(ctx, types.ModuleName, auction.ProceedsModuleAccount, sdk.Coins{usommProceedsCoin}); err != nil {
+			return err
+		}
 	}
 
 	// Remove auction from active list
@@ -383,7 +385,7 @@ func (k Keeper) GetBid(ctx sdk.Context, auctionID uint32, bidID uint64) (types.B
 	store := ctx.KVStore(k.storeKey)
 
 	bz := store.Get(types.GetBidKey(auctionID, bidID))
-	if len(bz) != 0 {
+	if len(bz) == 0 {
 		return types.Bid{}, false
 	}
 
@@ -437,7 +439,7 @@ func (k Keeper) GetTokenPrice(ctx sdk.Context, denom string) (types.TokenPrice, 
 	store := ctx.KVStore(k.storeKey)
 
 	bz := store.Get(types.GetTokenPriceKey(denom))
-	if len(bz) != 0 {
+	if len(bz) == 0 {
 		return types.TokenPrice{}, false
 	}
 
@@ -446,7 +448,7 @@ func (k Keeper) GetTokenPrice(ctx sdk.Context, denom string) (types.TokenPrice, 
 	return tokenPrice, true
 }
 
-// SetTokenPrice sets the token price specified
+// setTokenPrice sets the token price specified
 func (k Keeper) setTokenPrice(ctx sdk.Context, tokenPrice types.TokenPrice) {
 	bz := k.cdc.MustMarshal(&tokenPrice)
 	ctx.KVStore(k.storeKey).Set(types.GetTokenPriceKey(tokenPrice.GetDenom()), bz)
@@ -477,7 +479,7 @@ func (k Keeper) GetLastAuctionID(ctx sdk.Context) uint32 {
 	store := ctx.KVStore(k.storeKey)
 
 	bz := store.Get(types.GetLastAuctionIDKey())
-	if len(bz) != 0 {
+	if len(bz) == 0 {
 		return 0
 	}
 
@@ -489,7 +491,7 @@ func (k Keeper) GetLastBidID(ctx sdk.Context) uint64 {
 	store := ctx.KVStore(k.storeKey)
 
 	bz := store.Get(types.GetLastBidIDKey())
-	if len(bz) != 0 {
+	if len(bz) == 0 {
 		return 0
 	}
 

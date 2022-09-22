@@ -12,9 +12,9 @@ func InitGenesis(ctx sdk.Context, k Keeper, gs types.GenesisState) {
 
 	for _, auction := range gs.Auctions {
 		if auction.EndBlock > 0 {
-			k.setActiveAuction(ctx, *auction)
-		} else {
 			k.setEndedAuction(ctx, *auction)
+		} else {
+			k.setActiveAuction(ctx, *auction)
 		}
 	}
 	for _, bid := range gs.Bids {
