@@ -284,7 +284,7 @@ func (k Keeper) FinishAuction(ctx sdk.Context, auction *types.Auction) error {
 	usommProceedsCoin := sdk.NewCoin(types.UsommDenom, usommProceeds)
 
 	// Send proceeds to their appropriate destination module
-	if !usommProceeds.Equal(sdk.NewInt(0)) {
+	if usommProceeds.IsPositive() {
 		if err := k.bankKeeper.SendCoinsFromModuleToModule(ctx, types.ModuleName, auction.ProceedsModuleAccount, sdk.Coins{usommProceedsCoin}); err != nil {
 			return err
 		}
