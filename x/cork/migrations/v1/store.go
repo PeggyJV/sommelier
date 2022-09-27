@@ -12,13 +12,15 @@ func MigrateStore(ctx sdk.Context, storeKey storetypes.StoreKey, cdc codec.Binar
 
 	store := ctx.KVStore(storeKey)
 
-	removeCommitPeriod(store)
+	removeCommitPeriod(ctx, store)
 
 	ctx.Logger().Info("Cork v1 to v2: Store migration complete")
 
 	return nil
 }
 
-func removeCommitPeriod(store storetypes.KVStore) {
+func removeCommitPeriod(ctx sdk.Context, store storetypes.KVStore) {
 	store.Delete([]byte{types.CommitPeriodStartKey})
+
+	// TODO(bolten): remove commit period param from old state
 }

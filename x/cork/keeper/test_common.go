@@ -186,7 +186,6 @@ var (
 	threshold, _      = sdk.NewDecFromStr("0.66")
 	TestingcorkParams = types.Params{
 		VoteThreshold: threshold,
-		VotePeriod:    10,
 	}
 )
 
