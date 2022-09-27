@@ -5,7 +5,6 @@ import (
 	"encoding/binary"
 
 	"github.com/cosmos/cosmos-sdk/codec"
-	"github.com/cosmos/cosmos-sdk/store/prefix"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
 	"github.com/ethereum/go-ethereum/common"
@@ -44,85 +43,6 @@ func NewKeeper(
 // Logger returns a module-specific logger.
 func (k Keeper) Logger(ctx sdk.Context) log.Logger {
 	return ctx.Logger().With("module", "x/"+types.ModuleName)
-}
-
-///////////////////////
-// MsgSubmitCork //
-///////////////////////
-
-// SetCork sets the prevote for a given validator
-// CONTRACT: must provide the validator address here not the delegate address
-func (k Keeper) SetCork(ctx sdk.Context, val sdk.ValAddress, cork types.Cork) {
-	bz := k.cdc.MustMarshal(&cork)
-	ctx.KVStore(k.storeKey).Set(types.GetCorkForValidatorAddressKey(val, common.HexToAddress(cork.TargetContractAddress)), bz)
-}
-
-// GetCork gets the prevote for a given validator
-// CONTRACT: must provide the validator address here not the delegate address
-func (k Keeper) GetCork(ctx sdk.Context, val sdk.ValAddress, contract common.Address) (types.Cork, bool) {
-	store := ctx.KVStore(k.storeKey)
-
-	bz := store.Get(types.GetCorkForValidatorAddressKey(val, contract))
-	if len(bz) == 0 {
-		return types.Cork{}, false
-	}
-
-	var cork types.Cork
-	k.cdc.MustUnmarshal(bz, &cork)
-	return cork, true
-}
-
-// DeleteCork deletes the prevote for a given validator
-// CONTRACT: must provide the validator address here not the delegate address
-func (k Keeper) DeleteCork(ctx sdk.Context, val sdk.ValAddress, contract common.Address) {
-	ctx.KVStore(k.storeKey).Delete(types.GetCorkForValidatorAddressKey(val, contract))
-}
-
-// HasCorkForContract gets the prevote for a given validator
-// CONTRACT: must provide the validator address here not the delegate address
-func (k Keeper) HasCorkForContract(ctx sdk.Context, val sdk.ValAddress, contract common.Address) bool {
-	return ctx.KVStore(k.storeKey).Has(types.GetCorkForValidatorAddressKey(val, contract))
-}
-
-// HasCork gets the existence of any commit for a given validator
-// CONTRACT: must provide the validator address here not the delegate address
-func (k Keeper) HasCork(ctx sdk.Context, val sdk.ValAddress) bool {
-	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.GetCorkValidatorKeyPrefix(val))
-	iter := store.Iterator(nil, nil)
-	defer iter.Close()
-
-	return iter.Valid()
-}
-
-// IterateCorks iterates over all votes in the store
-func (k Keeper) IterateCorks(ctx sdk.Context, handler func(val sdk.ValAddress, contract common.Address, cork types.Cork) (stop bool)) {
-	store := ctx.KVStore(k.storeKey)
-	iter := sdk.KVStorePrefixIterator(store, []byte{types.CorkForAddressKeyPrefix})
-	defer iter.Close()
-	for ; iter.Valid(); iter.Next() {
-		keyPair := bytes.NewBuffer(bytes.TrimPrefix(iter.Key(), []byte{types.CorkForAddressKeyPrefix}))
-		val := sdk.ValAddress(keyPair.Next(20))
-		contract := common.BytesToAddress(keyPair.Bytes())
-
-		var cork types.Cork
-		k.cdc.MustUnmarshal(iter.Value(), &cork)
-		if handler(val, contract, cork) {
-			break
-		}
-	}
-}
-
-func (k Keeper) GetValidatorCorks(ctx sdk.Context) []*types.ValidatorCork {
-	var validatorCorks []*types.ValidatorCork
-	k.IterateCorks(ctx, func(val sdk.ValAddress, _ common.Address, cork types.Cork) (stop bool) {
-		validatorCorks = append(validatorCorks, &types.ValidatorCork{
-			Validator: val.String(),
-			Cork:      &cork,
-		})
-		return false
-	})
-
-	return validatorCorks
 }
 
 /////////////////////
@@ -268,49 +188,6 @@ func (k Keeper) IncrementInvalidationNonce(ctx sdk.Context) uint64 {
 ///////////
 // Votes //
 ///////////
-
-func (k Keeper) GetApprovedCorks(ctx sdk.Context, threshold sdk.Dec) (approvedCorks []types.Cork) {
-
-	var corks []types.Cork
-	var corkPowers []int64
-
-	totalPower := k.stakingKeeper.GetLastTotalPower(ctx)
-
-	k.IterateCorks(ctx, func(val sdk.ValAddress, addr common.Address, cork types.Cork) (stop bool) {
-		validator := k.stakingKeeper.Validator(ctx, val)
-		validatorPower := validator.GetConsensusPower(k.stakingKeeper.PowerReduction(ctx))
-
-		found := false
-		for i, c := range corks {
-			if c.Equals(cork) {
-				corkPowers[i] += validatorPower
-
-				found = true
-				break
-			}
-		}
-
-		if !found {
-			corks = append(corks, cork)
-			corkPowers = append(corkPowers, validatorPower)
-		}
-
-		k.DeleteCork(ctx, val, addr)
-
-		return false
-	})
-
-	var winningCorks []types.Cork
-
-	for i, power := range corkPowers {
-		quorumReached := sdk.NewDec(power).Quo(totalPower.ToDec()).GT(threshold)
-		if quorumReached {
-			winningCorks = append(winningCorks, corks[i])
-		}
-	}
-
-	return winningCorks
-}
 
 func (k Keeper) GetApprovedScheduledCorks(ctx sdk.Context, currentBlockHeight uint64, threshold sdk.Dec) (approvedCorks []types.Cork) {
 

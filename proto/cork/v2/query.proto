@@ -16,10 +16,6 @@ service Query {
   rpc QueryParams(QueryParamsRequest) returns (QueryParamsResponse) {
     option (google.api.http).get = "/sommelier/cork/v1/params";
   }
-  // QuerySubmittedCorks queries the submitted corks awaiting vote
-  rpc QuerySubmittedCorks(QuerySubmittedCorksRequest) returns (QuerySubmittedCorksResponse) {
-    option (google.api.http).get = "/sommelier/cork/v1/submitted";
-  }
   // QueryCellarIDs returns all cellars and current tick ranges
   rpc QueryCellarIDs(QueryCellarIDsRequest) returns (QueryCellarIDsResponse) {
     option (google.api.http).get = "/sommelier/cork/v1/cellar_ids";
@@ -46,15 +42,6 @@ message QueryParamsRequest {}
 message QueryParamsResponse {
   // allocation parameters
   Params params = 1 [(gogoproto.nullable) = false];
-}
-
-// QuerySubmittedCorksRequest is the request type for the Query/QuerySubmittedCorks gRPC query method.
-message QuerySubmittedCorksRequest {}
-
-// QuerySubmittedCorksResponse is the response type for the Query/QuerySubmittedCorks gRPC query method.
-message QuerySubmittedCorksResponse {
-  // corks in keeper awaiting vote
-  repeated Cork corks = 1;
 }
 
 // QueryCellarIDsRequest is the request type for Query/QueryCellarIDs gRPC method.

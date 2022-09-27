@@ -10,16 +10,16 @@ import (
 	"github.com/peggyjv/sommelier/v4/x/cork/types"
 )
 
-// NewHandler returns a handler for "oracle" type messages.
+// NewHandler returns a handler for "cork" type messages.
 func NewHandler(k keeper.Keeper) sdk.Handler {
 	return func(ctx sdk.Context, msg sdk.Msg) (*sdk.Result, error) {
 		ctx = ctx.WithEventManager(sdk.NewEventManager())
 		switch msg := msg.(type) {
-		case *types.MsgSubmitCorkRequest:
-			res, err := k.SubmitCork(sdk.WrapSDKContext(ctx), msg)
+		case *types.MsgScheduleCorkRequest:
+			res, err := k.ScheduleCork(sdk.WrapSDKContext(ctx), msg)
 			return sdk.WrapServiceResult(ctx, res, err)
 		default:
-			return nil, sdkerrors.Wrapf(sdkerrors.ErrUnknownRequest, "unrecognized oracle message type: %T", msg)
+			return nil, sdkerrors.Wrapf(sdkerrors.ErrUnknownRequest, "unrecognized cork message type: %T", msg)
 		}
 	}
 }
@@ -33,7 +33,7 @@ func NewUpdateCellarIDsProposalHandler(k keeper.Keeper) govtypes.Handler {
 			return keeper.HandleRemoveManagedCellarsProposal(ctx, k, *c)
 
 		default:
-			return sdkerrors.Wrapf(sdkerrors.ErrUnknownRequest, "unrecognized allocation proposal content type: %T", c)
+			return sdkerrors.Wrapf(sdkerrors.ErrUnknownRequest, "unrecognized cork proposal content type: %T", c)
 		}
 	}
 }

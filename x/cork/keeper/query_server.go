@@ -11,22 +11,6 @@ import (
 
 var _ types.QueryServer = Keeper{}
 
-// QuerySubmittedCorks implements QueryServer
-func (k Keeper) QuerySubmittedCorks(c context.Context, _ *types.QuerySubmittedCorksRequest) (*types.QuerySubmittedCorksResponse, error) {
-	ctx := sdk.UnwrapSDKContext(c)
-
-	// get corks
-	var corks []*types.Cork
-	k.IterateCorks(ctx, func(_ sdk.ValAddress, _ common.Address, cork types.Cork) (stop bool) {
-		corks = append(corks, &cork)
-		return false
-	})
-
-	return &types.QuerySubmittedCorksResponse{
-		Corks: corks,
-	}, nil
-}
-
 // QueryParams implements QueryServer
 func (k Keeper) QueryParams(c context.Context, _ *types.QueryParamsRequest) (*types.QueryParamsResponse, error) {
 	return &types.QueryParamsResponse{

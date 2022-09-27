@@ -30,40 +30,6 @@ func (k Keeper) signerToValAddr(ctx sdk.Context, signer sdk.AccAddress) (sdk.Val
 	return validatorAddr, nil
 }
 
-// SubmitCork implements types.MsgServer
-func (k Keeper) SubmitCork(c context.Context, msg *types.MsgSubmitCorkRequest) (*types.MsgSubmitCorkResponse, error) {
-	ctx := sdk.UnwrapSDKContext(c)
-
-	if !k.HasCellarID(ctx, common.HexToAddress(msg.Cork.TargetContractAddress)) {
-		return nil, types.ErrUnmanagedCellarAddress
-	}
-
-	signer := msg.MustGetSigner()
-	validatorAddr, err := k.signerToValAddr(ctx, signer)
-	if err != nil {
-		return nil, err
-	}
-
-	k.SetCork(ctx, validatorAddr, *msg.Cork)
-
-	ctx.EventManager().EmitEvents(
-		sdk.Events{
-			sdk.NewEvent(
-				sdk.EventTypeMessage,
-				sdk.NewAttribute(sdk.AttributeKeyModule, types.AttributeValueCategory),
-			),
-			sdk.NewEvent(
-				types.EventTypeCork,
-				sdk.NewAttribute(types.AttributeKeySigner, signer.String()),
-				sdk.NewAttribute(types.AttributeKeyValidator, validatorAddr.String()),
-				sdk.NewAttribute(types.AttributeKeyCork, msg.Cork.String()),
-			),
-		},
-	)
-
-	return &types.MsgSubmitCorkResponse{}, nil
-}
-
 // ScheduleCork implements types.MsgServer
 func (k Keeper) ScheduleCork(c context.Context, msg *types.MsgScheduleCorkRequest) (*types.MsgScheduleCorkResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)

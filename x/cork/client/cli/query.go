@@ -21,7 +21,6 @@ func GetQueryCmd() *cobra.Command {
 
 	corkQueryCmd.AddCommand([]*cobra.Command{
 		queryParams(),
-		querySubmittedCorks(),
 		queryScheduledCorks(),
 		queryCellarIDs(),
 		queryScheduledBlockHeights(),
@@ -48,35 +47,6 @@ func queryParams() *cobra.Command {
 			req := &types.QueryParamsRequest{}
 
 			res, err := queryClient.QueryParams(cmd.Context(), req)
-			if err != nil {
-				return err
-			}
-
-			return ctx.PrintProto(res)
-		},
-	}
-
-	flags.AddQueryFlagsToCmd(cmd)
-
-	return cmd
-}
-
-func querySubmittedCorks() *cobra.Command {
-	cmd := &cobra.Command{
-		Use:     "corks",
-		Aliases: []string{"cs"},
-		Args:    cobra.NoArgs,
-		Short:   "query submitted corks from the chain",
-		RunE: func(cmd *cobra.Command, _ []string) error {
-			ctx, err := client.GetClientQueryContext(cmd)
-			if err != nil {
-				return err
-			}
-
-			queryClient := types.NewQueryClient(ctx)
-			req := &types.QuerySubmittedCorksRequest{}
-
-			res, err := queryClient.QuerySubmittedCorks(cmd.Context(), req)
 			if err != nil {
 				return err
 			}
