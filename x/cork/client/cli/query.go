@@ -22,7 +22,6 @@ func GetQueryCmd() *cobra.Command {
 	corkQueryCmd.AddCommand([]*cobra.Command{
 		queryParams(),
 		querySubmittedCorks(),
-		queryCommitPeriod(),
 		queryScheduledCorks(),
 		queryCellarIDs(),
 		queryScheduledBlockHeights(),
@@ -78,35 +77,6 @@ func querySubmittedCorks() *cobra.Command {
 			req := &types.QuerySubmittedCorksRequest{}
 
 			res, err := queryClient.QuerySubmittedCorks(cmd.Context(), req)
-			if err != nil {
-				return err
-			}
-
-			return ctx.PrintProto(res)
-		},
-	}
-
-	flags.AddQueryFlagsToCmd(cmd)
-
-	return cmd
-}
-
-func queryCommitPeriod() *cobra.Command {
-	cmd := &cobra.Command{
-		Use:     "commit-period",
-		Aliases: []string{"cp"},
-		Args:    cobra.NoArgs,
-		Short:   "query commit period data from the chain",
-		RunE: func(cmd *cobra.Command, _ []string) error {
-			ctx, err := client.GetClientQueryContext(cmd)
-			if err != nil {
-				return err
-			}
-
-			queryClient := types.NewQueryClient(ctx)
-			req := &types.QueryCommitPeriodRequest{}
-
-			res, err := queryClient.QueryCommitPeriod(cmd.Context(), req)
 			if err != nil {
 				return err
 			}

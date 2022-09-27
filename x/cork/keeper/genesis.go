@@ -10,7 +10,6 @@ import (
 func InitGenesis(ctx sdk.Context, k Keeper, gs types.GenesisState) {
 	k.setParams(ctx, gs.Params)
 	// Set the vote period at initialization
-	k.SetCommitPeriodStart(ctx, ctx.BlockHeight())
 	k.SetCellarIDs(ctx, gs.CellarIds)
 	k.SetLatestInvalidationNonce(ctx, gs.InvalidationNonce)
 	for _, validatorCork := range gs.Corks {

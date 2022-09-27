@@ -227,32 +227,6 @@ func (k Keeper) GetScheduledBlockHeights(ctx sdk.Context) []uint64 {
 	return heights
 }
 
-//////////////////
-// CommitPeriod //
-//////////////////
-
-// SetCommitPeriodStart sets the current vote period start height
-func (k Keeper) SetCommitPeriodStart(ctx sdk.Context, height int64) {
-	store := ctx.KVStore(k.storeKey)
-	store.Set([]byte{types.CommitPeriodStartKey}, sdk.Uint64ToBigEndian(uint64(height)))
-}
-
-// GetCommitPeriodStart returns the vote period start height
-func (k Keeper) GetCommitPeriodStart(ctx sdk.Context) (int64, bool) {
-	store := ctx.KVStore(k.storeKey)
-	bz := store.Get([]byte{types.CommitPeriodStartKey})
-	if len(bz) == 0 {
-		return 0, false
-	}
-
-	return int64(sdk.BigEndianToUint64(bz)), true
-}
-
-// HasCommitPeriodStart returns true if the vote period start has been set
-func (k Keeper) HasCommitPeriodStart(ctx sdk.Context) bool {
-	return ctx.KVStore(k.storeKey).Has([]byte{types.CommitPeriodStartKey})
-}
-
 ////////////
 // Params //
 ////////////
