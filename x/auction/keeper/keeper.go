@@ -29,7 +29,7 @@ type Keeper struct {
 // NewKeeper creates a new auction Keeper instance
 func NewKeeper(
 	cdc codec.BinaryCodec, key sdk.StoreKey, paramSpace paramtypes.Subspace,
-	bankKeeper types.BankKeeper, fundingModuleAccounts map[string]bool, proceedsModuleAccounts map[string]bool,
+	bankKeeper types.BankKeeper, accountKeeper types.AccountKeeper, fundingModuleAccounts map[string]bool, proceedsModuleAccounts map[string]bool,
 ) Keeper {
 	// set KeyTable if it has not already been set
 	if !paramSpace.HasKeyTable() {
@@ -41,6 +41,7 @@ func NewKeeper(
 		cdc:                    cdc,
 		paramSpace:             paramSpace,
 		bankKeeper:             bankKeeper,
+		accountKeeper:          accountKeeper,
 		fundingModuleAccounts:  fundingModuleAccounts,
 		proceedsModuleAccounts: proceedsModuleAccounts,
 	}
