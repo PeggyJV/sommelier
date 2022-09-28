@@ -21,6 +21,7 @@ type Keeper struct {
 	cdc                    codec.BinaryCodec
 	paramSpace             paramtypes.Subspace
 	bankKeeper             types.BankKeeper
+	accountKeeper          types.AccountKeeper
 	fundingModuleAccounts  map[string]bool
 	proceedsModuleAccounts map[string]bool
 }
@@ -497,4 +498,13 @@ func (k Keeper) GetLastBidID(ctx sdk.Context) uint64 {
 	}
 
 	return binary.BigEndian.Uint64(bz)
+}
+
+// ///////////////////
+// Module Accounts //
+// ///////////////////
+
+// Get the auction module account
+func (k Keeper) GetAuctionAccount(ctx sdk.Context) authtypes.ModuleAccountI {
+	return k.accountKeeper.GetModuleAccount(ctx, types.ModuleName)
 }

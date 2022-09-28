@@ -6,7 +6,6 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 
 	"github.com/peggyjv/sommelier/v4/x/auction/types"
 )
@@ -35,7 +34,7 @@ func (k Keeper) SubmitBid(c context.Context, msg *types.MsgSubmitBidRequest) (*t
 	}
 
 	// Query our module address for funds
-	totalSaleTokenBalance := k.bankKeeper.GetBalance(ctx, authtypes.NewModuleAddress(types.ModuleName), auction.StartingTokensForSale.Denom)
+	totalSaleTokenBalance := k.bankKeeper.GetBalance(ctx, k.GetAuctionAccount(ctx).GetAddress(), auction.StartingTokensForSale.Denom)
 
 	// Convert & standardize types for use below
 	minimumSaleTokenPurchaseAmount := msg.SaleTokenMinimumAmount.Amount

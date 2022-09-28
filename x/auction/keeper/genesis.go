@@ -1,6 +1,8 @@
 package keeper
 
 import (
+	"fmt"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/peggyjv/sommelier/v4/x/auction/types"
 )
@@ -9,6 +11,12 @@ import (
 // state.
 func InitGenesis(ctx sdk.Context, k Keeper, gs types.GenesisState) {
 	k.setParams(ctx, gs.Params)
+
+	auctionAccount := k.GetAuctionAccount(ctx)
+	if auctionAccount == nil {
+		panic(fmt.Sprintf("%s module account has not been set", types.ModuleName))
+	}
+	k.accountKeeper.SetModuleAccount(ctx, auctionAccount)
 
 	for _, auction := range gs.Auctions {
 		if auction.EndBlock > 0 {
