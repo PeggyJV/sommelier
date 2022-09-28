@@ -34,43 +34,45 @@ func (h Hooks) AfterBatchExecutedEvent(ctx sdk.Context, event gravitytypes.Batch
 // met, we account for the coins as fees in the pool.
 func (h Hooks) AfterSendToCosmosEvent(ctx sdk.Context, event gravitytypes.SendToCosmosEvent) {
 	// Check if recipient is the cellarfees module account
-	moduleAccountAddress := h.k.accountKeeper.GetModuleAddress(types.ModuleName)
+	moduleAccountAddress := h.k.GetFeesAccount(ctx).GetAddress()
 	if event.CosmosReceiver != moduleAccountAddress.String() {
 		return
 	}
 
-	// Check if the sender is an approved Cellar contract
-	if h.k.corkKeeper.HasCellarID(ctx, common.HexToAddress(event.EthereumSender)) {
-		_, denom := h.k.gravityKeeper.ERC20ToDenomLookup(ctx, common.HexToAddress(event.TokenContract))
-
-		// don't include SOMM in the pool
-		if denom == params.BaseCoinUnit {
-			return
-		}
-
-		balance := h.k.bankKeeper.GetBalance(ctx, moduleAccountAddress, denom)
-
-		// sanity check
-		if balance.Amount.LT(event.Amount) {
-			panic("Coin balance in module account cannot be less than was sent from Ethereum!")
-		}
-
-		fee := sdk.Coin{
-			Amount: event.Amount,
-			Denom:  denom,
-		}
-		h.k.AddCoinToPool(ctx, fee)
-
-		ctx.EventManager().EmitEvents(
-			sdk.Events{
-				sdk.NewEvent(
-					types.EventTypeFeeAccrual,
-					sdk.NewAttribute(types.AttributeKeyCellar, event.EthereumSender),
-					sdk.NewAttribute(types.AttributeKeyTokenContract, event.TokenContract),
-					sdk.NewAttribute(types.AttributeKeyDenom, denom),
-					sdk.NewAttribute(types.AttributeKeyAmount, event.Amount.String()),
-				),
-			},
-		)
+	// Check if the sender is an approved Cellar contract. We don't want to include any coins
+	// sent to the account in the pool.
+	if !h.k.corkKeeper.HasCellarID(ctx, common.HexToAddress(event.EthereumSender)) {
+		return
 	}
+
+	_, denom := h.k.gravityKeeper.ERC20ToDenomLookup(ctx, common.HexToAddress(event.TokenContract))
+
+	if denom == params.BaseCoinUnit {
+		return
+	}
+
+	balance := h.k.bankKeeper.GetBalance(ctx, moduleAccountAddress, denom)
+
+	// sanity check
+	if balance.Amount.LT(event.Amount) {
+		panic("Coin balance in module account cannot be less than was sent from Ethereum!")
+	}
+
+	fee := sdk.Coin{
+		Amount: event.Amount,
+		Denom:  denom,
+	}
+	h.k.addCoinToPool(ctx, fee)
+
+	ctx.EventManager().EmitEvents(
+		sdk.Events{
+			sdk.NewEvent(
+				types.EventTypeFeeAccrual,
+				sdk.NewAttribute(types.AttributeKeyCellar, event.EthereumSender),
+				sdk.NewAttribute(types.AttributeKeyTokenContract, event.TokenContract),
+				sdk.NewAttribute(types.AttributeKeyDenom, denom),
+				sdk.NewAttribute(types.AttributeKeyAmount, event.Amount.String()),
+			),
+		},
+	)
 }
