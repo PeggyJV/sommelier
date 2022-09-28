@@ -19,8 +19,14 @@ func (k Keeper) SubmitBid(c context.Context, msg *types.MsgSubmitBidRequest) (*t
 
 	// Verify signer is the same as the bidder (this validates both the bidder and signer addresses)
 	signer := msg.MustGetSigner()
-	if !signer.Equals(sdk.AccAddress(msg.Bidder)) {
-		return &types.MsgSubmitBidResponse{}, sdkerrors.Wrapf(types.ErrSignerDifferentFromBidder, "Signer: %s, Bidder: %s", msg.GetSigner(), msg.GetBidder())
+	bidder, err := sdk.AccAddressFromBech32(msg.Bidder)
+
+	if err != nil {
+		return &types.MsgSubmitBidResponse{}, sdkerrors.Wrapf(types.ErrProcessingBidderBech32Addr, "Bidder: %s", msg.GetBidder())
+	}
+
+	if !signer.Equals(bidder) {
+		return &types.MsgSubmitBidResponse{}, sdkerrors.Wrapf(types.ErrSignerDifferentFromBidder, "Signer: %s, Bidder: %s", signer.String(), bidder.String())
 	}
 
 	// Verify auction
@@ -66,7 +72,7 @@ func (k Keeper) SubmitBid(c context.Context, msg *types.MsgSubmitBidRequest) (*t
 		totalFulfilledSaleTokens.Amount = totalSaleTokenBalance.Amount
 
 	} else {
-		return &types.MsgSubmitBidResponse{}, sdkerrors.Wrapf(types.ErrMinimumPurchaseAmountLargerThanTokensRemaining, "Minimum purchase: %s, amount remaining: %s", msg.SaleTokenMinimumAmount.String(), auction.RemainingTokensForSale.String())
+		return &types.MsgSubmitBidResponse{}, sdkerrors.Wrapf(types.ErrMinimumPurchaseAmountLargerThanTokensRemaining, "Minimum purchase: %s, amount remaining: %s", totalSaleTokenBalance.String(), auction.RemainingTokensForSale.String())
 	}
 
 	// Round up to prevent exploitability; ensure you can't get more than you pay for
@@ -85,18 +91,18 @@ func (k Keeper) SubmitBid(c context.Context, msg *types.MsgSubmitBidRequest) (*t
 		TotalUsommPaid:            totalUsommPaid,
 	}
 
-	err := bid.ValidateBasic()
+	err = bid.ValidateBasic()
 	if err != nil {
 		return &types.MsgSubmitBidResponse{}, err
 	}
 
 	// Transfer payment first
-	if err := k.bankKeeper.SendCoinsFromAccountToModule(ctx, sdk.AccAddress(msg.GetBidder()), types.ModuleName, sdk.NewCoins(totalUsommPaid)); err != nil {
+	if err := k.bankKeeper.SendCoinsFromAccountToModule(ctx, bidder, types.ModuleName, sdk.NewCoins(totalUsommPaid)); err != nil {
 		return &types.MsgSubmitBidResponse{}, err
 	}
 
 	// Transfer purchase to bidder
-	if err := k.bankKeeper.SendCoinsFromModuleToAccount(ctx, types.ModuleName, sdk.AccAddress(msg.GetBidder()), sdk.NewCoins(totalFulfilledSaleTokens)); err != nil {
+	if err := k.bankKeeper.SendCoinsFromModuleToAccount(ctx, types.ModuleName, bidder, sdk.NewCoins(totalFulfilledSaleTokens)); err != nil {
 		// TODO(pbal): Audit if we should panic here
 		return &types.MsgSubmitBidResponse{}, err
 	}
