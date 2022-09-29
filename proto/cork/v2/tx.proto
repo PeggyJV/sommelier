@@ -20,6 +20,8 @@ message MsgScheduleCorkRequest {
   uint64 block_height = 2;
   // signer account address
   string signer = 3;
+  // cork ID
+  uint64 id = 4;
 }
 
 message MsgScheduleCorkResponse {}

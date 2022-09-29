@@ -16,6 +16,7 @@ message ScheduledCork {
   Cork cork = 1;
   uint64 block_height = 2;
   string validator = 3;
+  uint64 id = 4;
 }
 
 message CellarIDSet {
