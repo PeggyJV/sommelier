@@ -265,8 +265,7 @@ func NewSommelierApp(
 		govtypes.StoreKey, paramstypes.StoreKey, ibchost.StoreKey, upgradetypes.StoreKey,
 		evidencetypes.StoreKey, ibctransfertypes.StoreKey, capabilitytypes.StoreKey,
 		gravitytypes.StoreKey, feegrant.StoreKey, authzkeeper.StoreKey, corktypes.StoreKey,
-		cellarfeestypes.StoreKey,
-		auctiontypes.StoreKey,
+		cellarfeestypes.StoreKey, auctiontypes.StoreKey,
 	)
 	tkeys := sdk.NewTransientStoreKeys(paramstypes.TStoreKey)
 	memKeys := sdk.NewMemoryStoreKeys(capabilitytypes.MemStoreKey)
