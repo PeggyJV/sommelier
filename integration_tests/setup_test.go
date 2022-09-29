@@ -183,6 +183,7 @@ func (s *IntegrationTestSuite) initNodesWithMnemonics(mnemonics ...string) {
 	}
 
 	// Fund auction module with some funds to be used by auction module integration tests
+	// TODO: remove -- bad, creates existing account can't initialize, transfer funds in test
 	s.Require().NoError(
 		addGenesisAccount(val0ConfigDir, "", "110000000000gravity0x3506424f91fd33084466f402d5d97f05f8e3b4af", authtypes.NewModuleAddress(auctiontypes.ModuleName)),
 	)
