@@ -52,8 +52,7 @@ func (k Keeper) BeginBlocker(ctx sdk.Context) {
 	emission := sdk.NewCoins(coin)
 
 	// Send to fee collector for distribution
-	distributionFeeCollectorAddress := k.accountKeeper.GetModuleAccount(ctx, authtypes.FeeCollectorName).GetAddress().String()
-	k.bankKeeper.SendCoinsFromModuleToModule(ctx, moduleAccount.GetAddress().String(), distributionFeeCollectorAddress, emission)
+	k.bankKeeper.SendCoinsFromModuleToModule(ctx, moduleAccount.GetName(), authtypes.FeeCollectorName, emission)
 }
 
 // EndBlocker is called at the end of every block
