@@ -15,7 +15,8 @@ func (k Keeper) EndBlocker(ctx sdk.Context) {
 	// Auction price updates
 	for _, auction := range k.GetActiveAuctions(ctx) {
 		if ctx.BlockHeight() != int64(auction.StartBlock) && ((ctx.BlockHeight()-int64(auction.StartBlock))%int64(auction.PriceDecreaseBlockInterval)) == 0 {
-			// TODO post MVP (pbal) Make a more intricate & responsive step function for auction price updates
+			// TODO post MVP (pbal) Make a more intricate & responsive step function for auction price updates -- come back to this after other todos
+			// Need accelerationFactor param, reset to initialDecreaseRate after some time/criteria, handler for 0 factor case, just incase
 
 			// Simple constant decrease rate meant for MVP
 			priceDecreaseAmountInUsomm := auction.InitialUnitPriceInUsomm.Mul(auction.CurrentPriceDecreaseRate)
@@ -50,5 +51,5 @@ func (k Keeper) EndBlocker(ctx sdk.Context) {
 			}
 		}
 	}
-	// TODO post MVP (pbal): prune bids and auctions
+	// TODO post MVP (pbal): prune bids and auctions -- keep last inactive auction per denom (+ bids) at minimum -- PLUS param 30-90 day window at 6 seconds per block
 }

@@ -43,7 +43,7 @@ func (k Keeper) SubmitBid(c context.Context, msg *types.MsgSubmitBidRequest) (*t
 
 	// Calculate minimum purchase price
 	// Note we round up, thus making the price more expensive to prevent this rounding from being exploited
-	// TODO(pbal): consider adding minimum amount of usomm being bid as a global param
+	// TODO(pbal): consider adding minimum amount of usomm being bid as a global param -- 1 million usomm param (1 somm), unless amount remaining in auction is less than this
 	minimumPurchasePriceInUsomm := sdk.NewInt(auction.CurrentUnitPriceInUsomm.Mul(minimumSaleTokenPurchaseAmount.ToDec()).Ceil().TruncateInt64())
 
 	// Verify minimum price is <= bid, note this also checks the max bid is enough to purchase at least one sale token
@@ -97,7 +97,7 @@ func (k Keeper) SubmitBid(c context.Context, msg *types.MsgSubmitBidRequest) (*t
 
 	// Transfer purchase to bidder
 	if err := k.bankKeeper.SendCoinsFromModuleToAccount(ctx, types.ModuleName, sdk.AccAddress(msg.GetBidder()), sdk.NewCoins(totalFulfilledSaleTokens)); err != nil {
-		// TODO(pbal): Audit if we should panic here
+		// TODO(pbal): Audit if we should panic here -- why not!
 		return &types.MsgSubmitBidResponse{}, err
 	}
 

@@ -66,7 +66,7 @@ func (k Keeper) QueryEndedAuctions(c context.Context, _ *types.QueryEndedAuction
 	auctions := k.GetEndedAuctions(ctx)
 
 	if len(auctions) == 0 {
-		// TODO (pbal): consider pagination
+		// TODO (pbal): consider pagination -- yes, groups of <= 100 -- look at some examples and pick
 		return &types.QueryEndedAuctionsResponse{}, status.Error(codes.NotFound, "No ended auctions found")
 	}
 
@@ -93,6 +93,7 @@ func (k Keeper) QueryBidsByAuction(c context.Context, request *types.QueryBidsBy
 	bids := k.GetBidsByAuctionID(ctx, request.GetAuctionId())
 
 	if len(bids) == 0 {
+		// TODO (pbal): consider pagination -- yes, groups of <= 100 -- look at some examples and pick
 		return &types.QueryBidsByAuctionResponse{}, status.Errorf(codes.NotFound, "No bids found for auction id: %d", request.GetAuctionId())
 	}
 
