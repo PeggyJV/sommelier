@@ -1,9 +1,8 @@
 package types
 
 import (
-	fmt "fmt"
-
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
 	"gopkg.in/yaml.v2"
 )
@@ -75,13 +74,11 @@ func (p *Params) ValidateBasic() error {
 func validateAuctionBlockDelay(i interface{}) error {
 	blockDelay, ok := i.(uint64)
 	if !ok {
-		return fmt.Errorf("invalid parameter type: %T", i)
+		return sdkerrors.Wrapf(ErrInvalidAuctionBlockDelay, "auction block delay: %T", i)
 	}
 
 	if blockDelay == 0 {
-		return fmt.Errorf(
-			"blockDelay should be greater than 0: %d", blockDelay,
-		)
+		return sdkerrors.Wrapf(ErrInvalidAuctionBlockDelay, "auction block delay cannot be zero")
 	}
 
 	return nil
@@ -90,13 +87,11 @@ func validateAuctionBlockDelay(i interface{}) error {
 func validateRewardEmissionPeriod(i interface{}) error {
 	emissionPeriod, ok := i.(uint64)
 	if !ok {
-		return fmt.Errorf("invalid parameter type: %T", i)
+		return sdkerrors.Wrapf(ErrInvalidRewardEmissionPeriod, "reward emission period: %T", i)
 	}
 
 	if emissionPeriod == 0 {
-		return fmt.Errorf(
-			"emission period should be greater than 0: %d", emissionPeriod,
-		)
+		return sdkerrors.Wrapf(ErrInvalidRewardEmissionPeriod, "reward emission period cannot be zero")
 	}
 
 	return nil
@@ -105,19 +100,15 @@ func validateRewardEmissionPeriod(i interface{}) error {
 func validateInitialPriceDecreaseRate(i interface{}) error {
 	rate, ok := i.(sdk.Dec)
 	if !ok {
-		return fmt.Errorf("invalid parameter type: %T", i)
+		return sdkerrors.Wrapf(ErrInvalidInitialPriceDecreaseRate, "initial price decrease rate: %T", i)
 	}
 
 	if rate == sdk.ZeroDec() {
-		return fmt.Errorf(
-			"initial price decrease rate should be greater than 0: %d", rate,
-		)
+		return sdkerrors.Wrapf(ErrInvalidInitialPriceDecreaseRate, "initial price decrease rate cannot be zero, must be 0 < x < 1")
 	}
 
 	if rate == sdk.OneDec() {
-		return fmt.Errorf(
-			"initial price decrease rate should be less than 1: %d", rate,
-		)
+		return sdkerrors.Wrapf(ErrInvalidInitialPriceDecreaseRate, "initial price decrease rate cannot be one, must be 0 < x < 1")
 	}
 
 	return nil
@@ -126,13 +117,11 @@ func validateInitialPriceDecreaseRate(i interface{}) error {
 func validatePriceDecreaseBlockInterval(i interface{}) error {
 	interval, ok := i.(uint64)
 	if !ok {
-		return fmt.Errorf("invalid parameter type: %T", i)
+		return sdkerrors.Wrapf(ErrInvalidPriceDecreaseBlockInterval, "price decrease block interval: %T", i)
 	}
 
 	if interval == 0 {
-		return fmt.Errorf(
-			"price decrease block interval should be greater than 0: %d", interval,
-		)
+		return sdkerrors.Wrapf(ErrInvalidPriceDecreaseBlockInterval, "price decrease block interval cannot be zero")
 	}
 
 	return nil

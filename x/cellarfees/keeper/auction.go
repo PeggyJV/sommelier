@@ -43,6 +43,7 @@ func (k Keeper) HandleAuctions(ctx sdk.Context) {
 	params := k.GetParams(ctx)
 	cellarfeesAccount := string(k.accountKeeper.GetModuleAddress(types.ModuleName))
 	for _, coin := range eligibleCoins {
+		// TO-DO (Collin): handle this error
 		k.auctionKeeper.BeginAuction(
 			ctx,
 			coin,

@@ -52,6 +52,7 @@ func (k Keeper) BeginBlocker(ctx sdk.Context) {
 	emission := sdk.NewCoins(coin)
 
 	// Send to fee collector for distribution
+	// TO-DO (Collin): handle this error
 	k.bankKeeper.SendCoinsFromModuleToModule(ctx, moduleAccount.GetName(), authtypes.FeeCollectorName, emission)
 }
 
