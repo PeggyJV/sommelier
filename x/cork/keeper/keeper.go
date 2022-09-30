@@ -50,11 +50,11 @@ func (k Keeper) Logger(ctx sdk.Context) log.Logger {
 // ///////////////////
 // Should Scheduled Corks contain the cork ID since it's in the response?
 func (k Keeper) SetScheduledCork(ctx sdk.Context, blockHeight uint64, val sdk.ValAddress, cork types.Cork) {
+	bz := k.cdc.MustMarshal(&cork)
 	// Logic for generating blockheight should go here.
 	// TODO(Ugochi): Comeback to this.
 	k.SetLatestScheduledCorkID(ctx, k.GetLatestScheduledCorkID(ctx))
 	Id := k.IncrementScheduledCorkID(ctx)
-	bz := k.cdc.MustMarshal(&cork)
 	ctx.KVStore(k.storeKey).Set(types.GetScheduledCorkKey(blockHeight, Id, val, common.HexToAddress(cork.TargetContractAddress)), bz)
 }
 
@@ -108,6 +108,7 @@ func (k Keeper) GetScheduledCorks(ctx sdk.Context) []*types.ScheduledCork {
 			Validator:   val.String(),
 			Cork:        &cork,
 			BlockHeight: blockHeight,
+			Id:          Id,
 		})
 		return false
 	})
@@ -123,6 +124,7 @@ func (k Keeper) GetScheduledCorksByBlockHeight(ctx sdk.Context, height uint64) [
 				Validator:   val.String(),
 				Cork:        &cork,
 				BlockHeight: blockHeight,
+				Id:          Id,
 			})
 		}
 		if blockHeight > height {
@@ -134,9 +136,23 @@ func (k Keeper) GetScheduledCorksByBlockHeight(ctx sdk.Context, height uint64) [
 	return scheduledCorks
 }
 
-// Todo (Ugochi): Let GetScheduledCorksByID follow Last Invalidation Nonce (Scheduled Cork ID).
+// Todo (Ugochi): Let Eric look at this
 func (k Keeper) GetScheduledCorksByID(ctx sdk.Context, Id uint64) []*types.ScheduledCork {
 	var scheduledCorks []*types.ScheduledCork
+	k.IterateScheduledCorks(ctx, func(val sdk.ValAddress, blockHeight uint64, ScheduledCorkId uint64, _ common.Address, cork types.Cork) (stop bool) {
+		if ScheduledCorkId == Id {
+			scheduledCorks = append(scheduledCorks, &types.ScheduledCork{
+				Validator:   val.String(),
+				Cork:        &cork,
+				BlockHeight: blockHeight,
+				Id:          Id,
+			})
+		}
+		if ScheduledCorkId > Id {
+			return true
+		}
+		return false
+	})
 	return scheduledCorks
 }
 
