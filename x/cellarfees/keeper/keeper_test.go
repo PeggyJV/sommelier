@@ -58,46 +58,20 @@ func TestAddingCoinsToPool(t *testing.T) {
 
 	// adding zeroed coin
 	poolBefore := env.cellarFeesKeeper.GetCellarFeePool(ctx)
-	env.cellarFeesKeeper.AddCoinToPool(ctx, sdk.Coin{})
+	env.cellarFeesKeeper.addCoinToPool(ctx, sdk.Coin{})
 	poolAfter := env.cellarFeesKeeper.GetCellarFeePool(ctx)
 	require.Equal(t, poolBefore, poolAfter)
 
 	// appending new coin
-	env.cellarFeesKeeper.AddCoinToPool(ctx, single)
+	env.cellarFeesKeeper.addCoinToPool(ctx, single)
 	pool := env.cellarFeesKeeper.GetCellarFeePool(ctx)
 	require.Equal(t, sdk.Coins{single}, pool.Pool)
 
 	// adding to existing coin
-	env.cellarFeesKeeper.AddCoinToPool(ctx, single)
+	env.cellarFeesKeeper.addCoinToPool(ctx, single)
 	pool = env.cellarFeesKeeper.GetCellarFeePool(ctx)
 	expected := single.Add(single)
 	require.Equal(t, expected, pool.Pool[0])
-
-	// adding zeroed coins
-	poolBefore = env.cellarFeesKeeper.GetCellarFeePool(ctx)
-	env.cellarFeesKeeper.AddCoinsToPool(ctx, sdk.Coins{})
-	poolAfter = env.cellarFeesKeeper.GetCellarFeePool(ctx)
-	require.Equal(t, poolBefore, poolAfter)
-
-	denom1 := "gravity-0x1111111111111111111111111111111111111111"
-	multi := sdk.Coins{
-		{
-
-			Amount: sdk.NewIntFromUint64(100),
-			Denom:  denom1,
-		},
-		{
-			Amount: sdk.NewIntFromUint64(100),
-			Denom:  denom0,
-		},
-	}
-
-	// appends one and adds to existing
-	env.cellarFeesKeeper.AddCoinsToPool(ctx, multi)
-	pool = env.cellarFeesKeeper.GetCellarFeePool(ctx)
-	expectedPool := multi.Sort()
-	expectedPool[0] = expectedPool[0].Add(single).Add(single)
-	require.Equal(t, expectedPool, pool.Pool)
 }
 
 func TestGettingSettingLastRewardSupplyPeak(t *testing.T) {

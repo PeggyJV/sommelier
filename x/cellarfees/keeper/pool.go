@@ -9,7 +9,7 @@ import (
 
 // Appends the coin to the pool coins if denom isn't already present, otherwise add the amount to the
 // existing balance
-func (k Keeper) AddCoinToPool(ctx sdk.Context, coin sdk.Coin) {
+func (k Keeper) addCoinToPool(ctx sdk.Context, coin sdk.Coin) {
 	// (Collin) should an empty coin error?
 	if (coin == sdk.Coin{} || coin.IsZero()) {
 		return
@@ -21,32 +21,6 @@ func (k Keeper) AddCoinToPool(ctx sdk.Context, coin sdk.Coin) {
 
 	pool := k.GetCellarFeePool(ctx)
 	pool.Pool = pool.Pool.Add(coin)
-	k.SetCellarFeePool(ctx, pool)
-}
-
-// Appends the coin to the pool coins if denom isn't already present, otherwise add the amount to the
-// existing balance
-func (k Keeper) AddCoinsToPool(ctx sdk.Context, coins sdk.Coins) {
-	// (Collin) should this error?
-	if len(coins) == 0 {
-		return
-	}
-
-	// don't add usomm to the pool
-	if !coins.AmountOfNoDenomValidation(params.BaseCoinUnit).IsZero() {
-		panic("Cannot add SOMM to cellar fee pool")
-	}
-
-	// don't add zero values to the pool
-	eligibleCoins := sdk.Coins{}
-	for _, coin := range coins {
-		if !coin.IsZero() {
-			eligibleCoins.Add(coin)
-		}
-	}
-
-	pool := k.GetCellarFeePool(ctx)
-	pool.Pool = pool.Pool.Add(eligibleCoins.Sort()...)
 	k.SetCellarFeePool(ctx, pool)
 }
 
