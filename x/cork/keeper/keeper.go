@@ -129,6 +129,10 @@ func (k Keeper) GetScheduledCorksByBlockHeight(ctx sdk.Context, height uint64) [
 }
 
 // Todo (Ugochi): Let GetScheduledCorksByID follow Last Invalidation Nonce (Scheduled Cork ID).
+func (k Keeper) GetScheduledCorksByID(ctx sdk.Context, Id uint64) []*types.ScheduledCork {
+	var scheduledCorks []*types.ScheduledCork
+	return scheduledCorks
+}
 
 ///////////////////////////
 // ScheduledBlockHeights //
