@@ -12,13 +12,31 @@ const (
 
 	// QuerierRoute is the querier route for cellarfees
 	QuerierRoute = ModuleName
+
+	// Store keys
+	_ = byte(iota)
+
+	// key for global cellar fee pool state
+	CellarFeePoolKey
+
+	// key for storing the reward supply after the latest increase
+	LastHighestRewardSupplyKey
+
+	// key for storing the next scheduled auction height
+	ScheduledAuctionHeightKey
 )
 
-var (
-	// key for global cellar fee pool state
-	CellarFeePoolKey = []byte{0x00}
-	// key for storing the reward supply after the latest increase
-	LastHighestRewardSupply = []byte{0x01}
-	// key for storing the next scheduled auction height
-	ScheduledAuctionHeight = []byte{0x02}
-)
+// GetCellarFeePoolKey returns the key prefix
+func GetCellarFeePoolKey() []byte {
+	return []byte{CellarFeePoolKey}
+}
+
+// GetLastHighestRewardSupplyKey returns the key prefix
+func GetLastHighestRewardSupplyKey() []byte {
+	return []byte{LastHighestRewardSupplyKey}
+}
+
+// GetScheduledAuctionHeightKey returns the key prefix
+func GetScheduledAuctionHeightKey() []byte {
+	return []byte{ScheduledAuctionHeightKey}
+}

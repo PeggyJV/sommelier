@@ -71,7 +71,7 @@ func (k Keeper) SetParams(ctx sdk.Context, params types.Params) {
 
 func (k Keeper) GetCellarFeePool(ctx sdk.Context) (cellarFeePool types.CellarFeePool) {
 	store := ctx.KVStore(k.storeKey)
-	b := store.Get(types.CellarFeePoolKey)
+	b := store.Get(types.GetCellarFeePoolKey())
 	if b == nil {
 		panic("Stored cellar fee pool should not have been nil")
 	}
@@ -82,7 +82,7 @@ func (k Keeper) GetCellarFeePool(ctx sdk.Context) (cellarFeePool types.CellarFee
 func (k Keeper) SetCellarFeePool(ctx sdk.Context, cellarFeePool types.CellarFeePool) {
 	store := ctx.KVStore(k.storeKey)
 	b := k.cdc.MustMarshal(&cellarFeePool)
-	store.Set(types.CellarFeePoolKey, b)
+	store.Set(types.GetCellarFeePoolKey(), b)
 }
 
 ////////////////////////////////
@@ -91,7 +91,7 @@ func (k Keeper) SetCellarFeePool(ctx sdk.Context, cellarFeePool types.CellarFeeP
 
 func (k Keeper) GetLastRewardSupplyPeak(ctx sdk.Context) sdk.Int {
 	store := ctx.KVStore(k.storeKey)
-	b := store.Get(types.LastHighestRewardSupply)
+	b := store.Get(types.GetLastHighestRewardSupplyKey())
 	if b == nil {
 		panic("Last highest reward supply should not have been nil")
 	}
@@ -102,7 +102,7 @@ func (k Keeper) GetLastRewardSupplyPeak(ctx sdk.Context) sdk.Int {
 func (k Keeper) SetLastRewardSupplyPeak(ctx sdk.Context, amount sdk.Int) {
 	store := ctx.KVStore(k.storeKey)
 	b := amount.BigInt().Bytes()
-	store.Set(types.LastHighestRewardSupply, b)
+	store.Set(types.GetLastHighestRewardSupplyKey(), b)
 }
 
 ////////////////////////
@@ -111,7 +111,7 @@ func (k Keeper) SetLastRewardSupplyPeak(ctx sdk.Context, amount sdk.Int) {
 
 func (k Keeper) GetScheduledAuctionHeight(ctx sdk.Context) sdk.Int {
 	store := ctx.KVStore(k.storeKey)
-	b := store.Get(types.ScheduledAuctionHeight)
+	b := store.Get(types.GetScheduledAuctionHeightKey())
 	if b == nil {
 		panic("Auction height should not have been nil")
 	}
@@ -122,5 +122,5 @@ func (k Keeper) GetScheduledAuctionHeight(ctx sdk.Context) sdk.Int {
 func (k Keeper) SetScheduledAuctionHeight(ctx sdk.Context, amount sdk.Int) {
 	store := ctx.KVStore(k.storeKey)
 	b := amount.BigInt().Bytes()
-	store.Set(types.ScheduledAuctionHeight, b)
+	store.Set(types.GetScheduledAuctionHeightKey(), b)
 }
