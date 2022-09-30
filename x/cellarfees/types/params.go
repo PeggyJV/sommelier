@@ -8,12 +8,23 @@ import (
 	"gopkg.in/yaml.v2"
 )
 
+const (
+	DefaultAuctionBlockDelay          uint64 = 201600
+	DefaultRewardEmissionPeriod       uint64 = 403200
+	DefaultInitialPriceDecreaseRate   uint64 = 347000000000000
+	DefaultPriceDecreaseBlockInterval uint64 = 10
+)
+
 // Parameter keys
 var (
-	KeyAuctionBlockDelay          = []byte("auctionblockdelay")
-	KeyRewardEmissionPeriod       = []byte("rewardemissionperiod")
-	KeyInitialPriceDecreaseRate   = []byte("initialpricedecreaserate")
-	KeyPriceDecreaseBlockInterval = []byte("pricedecreaseblockinterval")
+	// Rough number of blocks in 2 weeks, or ~2 fee accrual cycles for one cellar
+	KeyAuctionBlockDelay = []byte("AuctionBlockDelay")
+	// Rough number of blocks in 28 days, the time it takes to unbond
+	KeyRewardEmissionPeriod = []byte("RewardEmissionPeriod")
+	// Initial rate at which an auction should decrease the price of the relevant coin from it's starting price
+	KeyInitialPriceDecreaseRate = []byte("InitialPriceDecreaseRate")
+	// Blocks between each auction price decrease
+	KeyPriceDecreaseBlockInterval = []byte("PriceDecreaseBlockInterval")
 )
 
 var _ paramtypes.ParamSet = &Params{}
@@ -27,14 +38,10 @@ func ParamKeyTable() paramtypes.KeyTable {
 func DefaultParams() Params {
 
 	return Params{
-		// Rough number of blocks in 2 weeks, or ~2 fee accrual cycles for one cellar
-		AuctionBlockDelay: 201600,
-		// Rough number of blocks in 28 days, the time it takes to unbond
-		RewardEmissionPeriod: 403200,
-		// Initial rate at which an auction should decrease the price of the relevant coin from it's starting price
-		InitialPriceDecreaseRate: sdk.NewDec(347000000000000),
-		// Blocks between each auction price decrease
-		PriceDecreaseBlockInterval: 10,
+		AuctionBlockDelay:          DefaultAuctionBlockDelay,
+		RewardEmissionPeriod:       DefaultRewardEmissionPeriod,
+		InitialPriceDecreaseRate:   sdk.NewDec(int64(DefaultInitialPriceDecreaseRate)),
+		PriceDecreaseBlockInterval: DefaultPriceDecreaseBlockInterval,
 	}
 }
 
