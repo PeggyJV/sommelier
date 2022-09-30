@@ -91,7 +91,7 @@ func (k Keeper) SetCellarFeePool(ctx sdk.Context, cellarFeePool types.CellarFeeP
 
 func (k Keeper) GetLastRewardSupplyPeak(ctx sdk.Context) sdk.Int {
 	store := ctx.KVStore(k.storeKey)
-	b := store.Get(types.GetLastHighestRewardSupplyKey())
+	b := store.Get(types.GetLastRewardSupplyPeakKey())
 	if b == nil {
 		panic("Last highest reward supply should not have been nil")
 	}
@@ -102,7 +102,7 @@ func (k Keeper) GetLastRewardSupplyPeak(ctx sdk.Context) sdk.Int {
 func (k Keeper) SetLastRewardSupplyPeak(ctx sdk.Context, amount sdk.Int) {
 	store := ctx.KVStore(k.storeKey)
 	b := amount.BigInt().Bytes()
-	store.Set(types.GetLastHighestRewardSupplyKey(), b)
+	store.Set(types.GetLastRewardSupplyPeakKey(), b)
 }
 
 ////////////////////////
