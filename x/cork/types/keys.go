@@ -59,8 +59,10 @@ func MakeCellarIDsKey() []byte {
 	return []byte{CellarIDsKey}
 }
 
-func GetScheduledCorkKey(blockHeight uint64, val sdk.ValAddress, contract common.Address) []byte {
+func GetScheduledCorkKey(blockHeight uint64, Id uint64, val sdk.ValAddress, contract common.Address) []byte {
 	b := make([]byte, 8)
+	bz := make([]byte, 8)
 	binary.BigEndian.PutUint64(b, blockHeight)
-	return bytes.Join([][]byte{{ScheduledCorkKeyPrefix}, b, val.Bytes(), contract.Bytes()}, []byte{})
+	binary.BigEndian.PutUint64(bz, Id)
+	return bytes.Join([][]byte{{ScheduledCorkKeyPrefix}, b, bz, val.Bytes(), contract.Bytes()}, []byte{})
 }
