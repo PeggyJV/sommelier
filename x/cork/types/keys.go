@@ -40,6 +40,9 @@ const (
 
 	// ScheduledCorkKeyPrefix - <prefix><block_height><val_address><address> -> <cork>
 	ScheduledCorkKeyPrefix
+
+	// LatestCorkIDKeyPrefix - - <prefix> -> uint64(latestCorkID)
+	LatestCorkIDKey
 )
 
 // GetCorkForValidatorAddressKey returns the key for a validators vote for a given address

@@ -128,6 +128,8 @@ func (k Keeper) GetScheduledCorksByBlockHeight(ctx sdk.Context, height uint64) [
 	return scheduledCorks
 }
 
+// Todo (Ugochi): Let GetScheduledCorksByID follow Last Invalidation Nonce (Scheduled Cork ID).
+
 ///////////////////////////
 // ScheduledBlockHeights //
 ///////////////////////////
@@ -183,6 +185,23 @@ func (k Keeper) IncrementInvalidationNonce(ctx sdk.Context) uint64 {
 	nextNonce := k.GetLatestInvalidationNonce(ctx) + 1
 	store.Set([]byte{types.LatestInvalidationNonceKey}, sdk.Uint64ToBigEndian(nextNonce))
 	return nextNonce
+}
+
+/////////////////////////
+// Scheduled Cork ID //
+/////////////////////////
+
+func (k Keeper) GetLatestCorkID(ctx sdk.Context) uint64 {
+	store := ctx.KVStore(k.storeKey)
+	bz := store.Get([]byte{types.LatestCorkIDKey})
+	return sdk.BigEndianToUint64(bz)
+}
+
+func (k Keeper) IncrementCorkID(ctx sdk.Context) uint64 {
+	store := ctx.KVStore(k.storeKey)
+	nextID := k.GetLatestCorkID(ctx) + 1
+	store.Set([]byte{types.LatestCorkIDKey}, sdk.Uint64ToBigEndian(nextID))
+	return nextID
 }
 
 ///////////
