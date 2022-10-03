@@ -211,7 +211,7 @@ func (k Keeper) BeginAuction(ctx sdk.Context,
 	}
 
 	if err := auction.ValidateBasic(); err != nil {
-		return err
+		panic(err)
 	}
 
 	// Validate no ongoing auction for denom
