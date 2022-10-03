@@ -2,6 +2,7 @@ package keeper
 
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	auctiontypes "github.com/peggyjv/sommelier/v4/x/auction/types"
 )
 
 func (k Keeper) HandleAuctions(ctx sdk.Context) {
@@ -42,7 +43,7 @@ func (k Keeper) HandleAuctions(ctx sdk.Context) {
 	cellarfeesAccount := string(k.GetFeesAccount(ctx).GetAddress())
 	for _, coin := range eligibleCoins {
 		// TO-DO (Collin): handle this error
-		k.auctionKeeper.BeginAuction(
+		err := k.auctionKeeper.BeginAuction(
 			ctx,
 			coin,
 			params.InitialPriceDecreaseRate,
@@ -50,6 +51,9 @@ func (k Keeper) HandleAuctions(ctx sdk.Context) {
 			cellarfeesAccount,
 			cellarfeesAccount,
 		)
+		if err != nil {
+			k.handleBeginAuctionError(ctx, err)
+		}
 	}
 
 	// Update the pool to zero out coins sent to auction and schedule the next auction.
@@ -62,4 +66,15 @@ func (k Keeper) ScheduleNextAuction(ctx sdk.Context) {
 	// next = last + delay param
 	nextAuctionHeight := lastAuctionHeight + k.GetParams(ctx).AuctionBlockDelay
 	k.SetScheduledAuctionHeight(ctx, nextAuctionHeight)
+}
+
+func (k Keeper) handleBeginAuctionError(ctx sdk.Context, err error) {
+	switch err {
+	case auctiontypes.ErrUnauthorizedFundingModule:
+		panic("Attempted to start an auction with an unauthorized funding module")
+	case auctiontypes.ErrUnauthorizedProceedsModule:
+		panic("Attempted to start an auction with an unauthorized proceeds module")
+	default:
+		k.Logger(ctx).Error(err.Error())
+	}
 }
