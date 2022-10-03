@@ -34,11 +34,12 @@ func (k Keeper) QueryScheduledCorks(c context.Context, _ *types.QueryScheduledCo
 
 	response := types.QueryScheduledCorksResponse{}
 
-	k.IterateScheduledCorks(ctx, func(val sdk.ValAddress, blockHeight uint64, Id uint64, cel common.Address, cork types.Cork) (stop bool) {
+	k.IterateScheduledCorks(ctx, func(val sdk.ValAddress, blockHeight uint64, id uint64, cel common.Address, cork types.Cork) (stop bool) {
 		response.Corks = append(response.Corks, &types.ScheduledCork{
 			Cork:        &cork,
 			BlockHeight: blockHeight,
 			Validator:   val.String(),
+			Id:          id,
 		})
 		return false
 	})
