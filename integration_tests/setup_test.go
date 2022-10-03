@@ -176,17 +176,16 @@ func (s *IntegrationTestSuite) initNodesWithMnemonics(mnemonics ...string) {
 
 	//initialize a genesis file for the first validator
 	val0ConfigDir := s.chain.validators[0].configDir()
-	for _, val := range s.chain.validators {
+	for i, val := range s.chain.validators {
+		// Fund the first validator with some funds to be used by auction module integration tests
+		balanceStr := initBalanceStr
+		if i == 0 {
+			balanceStr += ",110000000000gravity0x3506424f91fd33084466f402d5d97f05f8e3b4af"
+		}
 		s.Require().NoError(
-			addGenesisAccount(val0ConfigDir, "", initBalanceStr, val.keyInfo.GetAddress()),
+			addGenesisAccount(val0ConfigDir, "", balanceStr, val.keyInfo.GetAddress()),
 		)
 	}
-
-	// Fund auction module with some funds to be used by auction module integration tests
-	// TODO: remove -- bad, creates existing account can't initialize, transfer funds in test
-	s.Require().NoError(
-		addGenesisAccount(val0ConfigDir, "", "110000000000gravity0x3506424f91fd33084466f402d5d97f05f8e3b4af", authtypes.NewModuleAddress(auctiontypes.ModuleName)),
-	)
 
 	// add orchestrator accounts to genesis file
 	for i, orch := range s.chain.orchestrators {
@@ -289,6 +288,13 @@ func (s *IntegrationTestSuite) initGenesis() {
 		},
 	})
 
+	// Set up auction module with some coins to auction off
+	balance := banktypes.Balance{
+		Address: authtypes.NewModuleAddress(auctiontypes.ModuleName).String(),
+		Coins:   sdk.NewCoins(sdk.NewCoin("gravity0x3506424f91fd33084466f402d5d97f05f8e3b4af", sdk.NewInt(5000))),
+	}
+	bankGenState.Balances = append(bankGenState.Balances, balance)
+
 	bz, err := cdc.MarshalJSON(&bankGenState)
 	s.Require().NoError(err)
 	appGenState[banktypes.ModuleName] = bz
@@ -341,7 +347,7 @@ func (s *IntegrationTestSuite) initGenesis() {
 		EndBlock:                   uint64(0),
 		InitialPriceDecreaseRate:   sdk.MustNewDecFromStr("0.05"),
 		CurrentPriceDecreaseRate:   sdk.MustNewDecFromStr("0.05"),
-		PriceDecreaseBlockInterval: uint64(100),
+		PriceDecreaseBlockInterval: uint64(1000),
 		InitialUnitPriceInUsomm:    sdk.MustNewDecFromStr("2"),
 		CurrentUnitPriceInUsomm:    sdk.MustNewDecFromStr("2"),
 		RemainingTokensForSale:     sdk.NewCoin("gravity0x3506424f91fd33084466f402d5d97f05f8e3b4af", sdk.NewInt(5000)),

@@ -9,6 +9,7 @@ import (
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 	"github.com/peggyjv/sommelier/v4/x/auction/types"
+	cellarfees "github.com/peggyjv/sommelier/v4/x/cellarfees/types"
 )
 
 func (s *IntegrationTestSuite) TestAuctionModule() {
@@ -16,13 +17,13 @@ func (s *IntegrationTestSuite) TestAuctionModule() {
 		val := s.chain.validators[0]
 		kb, err := val.keyring()
 		s.Require().NoError(err)
-		clientCtx, err := s.chain.clientContext("tcp://localhost:26657", &kb, "val", val.keyInfo.GetAddress())
+		val0ClientCtx, err := s.chain.clientContext("tcp://localhost:26657", &kb, "val", val.keyInfo.GetAddress())
 		s.Require().NoError(err)
-		auctionQueryClient := types.NewQueryClient(clientCtx)
+		auctionQueryClient := types.NewQueryClient(val0ClientCtx)
 
 		s.T().Logf("create governance proposal to update some token prices")
 		orch := s.chain.orchestrators[0]
-		clientCtx, err = s.chain.clientContext("tcp://localhost:26657", orch.keyring, "orch", orch.keyInfo.GetAddress())
+		orchClientCtx, err := s.chain.clientContext("tcp://localhost:26657", orch.keyring, "orch", orch.keyInfo.GetAddress())
 		s.Require().NoError(err)
 
 		proposal := types.SetTokenPricesProposal{
@@ -57,27 +58,27 @@ func (s *IntegrationTestSuite) TestAuctionModule() {
 		s.Require().NoError(err, "unable to create governance proposal")
 
 		s.T().Log("submit proposal")
-		submitProposalResponse, err := s.chain.sendMsgs(*clientCtx, proposalMsg)
+		submitProposalResponse, err := s.chain.sendMsgs(*orchClientCtx, proposalMsg)
 		s.Require().NoError(err)
 		s.Require().Zero(submitProposalResponse.Code, "raw log: %s", submitProposalResponse.RawLog)
 
 		s.T().Log("check proposal was submitted correctly")
-		govQueryClient := govtypes.NewQueryClient(clientCtx)
+		govQueryClient := govtypes.NewQueryClient(orchClientCtx)
 		proposalsQueryResponse, err := govQueryClient.Proposals(context.Background(), &govtypes.QueryProposalsRequest{})
 		s.Require().NoError(err)
 		s.Require().NotEmpty(proposalsQueryResponse.Proposals)
 		s.Require().Equal(uint64(1), proposalsQueryResponse.Proposals[0].ProposalId, "not proposal id 1")
 		s.Require().Equal(govtypes.StatusVotingPeriod, proposalsQueryResponse.Proposals[0].Status, "proposal not in voting period")
 
-		s.T().Log("vote for proposal allowing contract")
+		s.T().Log("vote for proposal")
 		for _, val := range s.chain.validators {
 			kr, err := val.keyring()
 			s.Require().NoError(err)
-			clientCtx, err := s.chain.clientContext("tcp://localhost:26657", &kr, "val", val.keyInfo.GetAddress())
+			localClientCtx, err := s.chain.clientContext("tcp://localhost:26657", &kr, "val", val.keyInfo.GetAddress())
 			s.Require().NoError(err)
 
 			voteMsg := govtypes.NewMsgVote(val.keyInfo.GetAddress(), 1, govtypes.OptionYes)
-			voteResponse, err := s.chain.sendMsgs(*clientCtx, voteMsg)
+			voteResponse, err := s.chain.sendMsgs(*localClientCtx, voteMsg)
 			s.Require().NoError(err)
 			s.Require().Zero(voteResponse.Code, "vote error: %s", voteResponse.RawLog)
 		}
@@ -98,7 +99,7 @@ func (s *IntegrationTestSuite) TestAuctionModule() {
 		s.Require().Equal(auctionResponse.Auction.Id, uint32(1))
 		s.T().Log(auctionResponse.Auction)
 
-		bankQueryClient := banktypes.NewQueryClient(clientCtx)
+		bankQueryClient := banktypes.NewQueryClient(val0ClientCtx)
 		balanceRes, err := bankQueryClient.AllBalances(context.Background(), &banktypes.QueryAllBalancesRequest{Address: authtypes.NewModuleAddress(types.ModuleName).String()})
 		s.Require().NoError(err)
 		s.T().Log(balanceRes)
@@ -115,16 +116,82 @@ func (s *IntegrationTestSuite) TestAuctionModule() {
 			Signer:                 s.chain.orchestrators[0].keyInfo.GetAddress().String(),
 		}
 
-		submitBid, err := s.chain.sendMsgs(*clientCtx, &bidRequest1)
+		submitBid, err := s.chain.sendMsgs(*orchClientCtx, &bidRequest1)
 		s.Require().NoError(err)
 		s.T().Log(submitBid)
-
 
 		auctionResponse, err = auctionQueryClient.QueryActiveAuction(context.Background(), &auctionQuery)
 		s.Require().NoError(err)
 		s.T().Log(auctionResponse.Auction)
 
-		//s.Require().Zero(submitProposalResponse.Code, "raw log: %s", submitProposalResponse.RawLog)
+		// Verify auction updated as expected
+		expectedAuction := types.Auction{
+			Id:                         uint32(1),
+			StartingTokensForSale:      sdk.NewCoin("gravity0x3506424f91fd33084466f402d5d97f05f8e3b4af", sdk.NewInt(5000)),
+			StartBlock:                 uint64(0),
+			EndBlock:                   uint64(0),
+			InitialPriceDecreaseRate:   sdk.MustNewDecFromStr("0.05"),
+			CurrentPriceDecreaseRate:   sdk.MustNewDecFromStr("0.05"),
+			PriceDecreaseBlockInterval: uint64(1000),
+			InitialUnitPriceInUsomm:    sdk.MustNewDecFromStr("2"),
+			CurrentUnitPriceInUsomm:    sdk.MustNewDecFromStr("2"),
+			RemainingTokensForSale:     sdk.NewCoin("gravity0x3506424f91fd33084466f402d5d97f05f8e3b4af", sdk.NewInt(2500)),
+			FundingModuleAccount:       cellarfees.ModuleName,
+			ProceedsModuleAccount:      cellarfees.ModuleName,
+		}
+		s.Require().Equal(expectedAuction, &auctionResponse.Auction)
+
+		// Verify user has funds debited and purchase credited
+
+
+
+
+
+		// Verify bid is stored as expected
+
+
+
+		// Submit another bid to be partially fulfilled
+
+
+
+
+
+		// Verify auction updated as expected
+
+
+
+
+		
+		// Verify user has funds debited and purchase credited
+
+
+
+
+
+		// Verify active auction list is empty
+
+
+
+
+
+		// Verify ended auction 
+
+
+		node, err := orchClientCtx.GetNode()
+		s.Require().NoError(err)
+		status, err := node.Status(context.Background())
+		s.Require().NoError(err)
+		currentBlockHeight := status.SyncInfo.LatestBlockHeight
+		s.T().Log(currentBlockHeight)
+
+
+		
+		// Verify bid is stored as expected
+
+
+
+
 
 	})
 }
