@@ -287,38 +287,207 @@ func (m *RemoveManagedCellarIDsProposalWithDeposit) GetDeposit() string {
 	return ""
 }
 
+type ScheduledCorkProposal struct {
+	Title                 string `protobuf:"bytes,1,opt,name=title,proto3" json:"title,omitempty"`
+	Description           string `protobuf:"bytes,2,opt,name=description,proto3" json:"description,omitempty"`
+	BlockHeight           uint64 `protobuf:"varint,3,opt,name=block_height,json=blockHeight,proto3" json:"block_height,omitempty"`
+	TargetContractAddress string `protobuf:"bytes,4,opt,name=target_contract_address,json=targetContractAddress,proto3" json:"target_contract_address,omitempty"`
+	ContractCallProtoJson string `protobuf:"bytes,5,opt,name=contract_call_proto_json,json=contractCallProtoJson,proto3" json:"contract_call_proto_json,omitempty"`
+}
+
+func (m *ScheduledCorkProposal) Reset()         { *m = ScheduledCorkProposal{} }
+func (m *ScheduledCorkProposal) String() string { return proto.CompactTextString(m) }
+func (*ScheduledCorkProposal) ProtoMessage()    {}
+func (*ScheduledCorkProposal) Descriptor() ([]byte, []int) {
+	return fileDescriptor_e01dea5e2496e85f, []int{4}
+}
+func (m *ScheduledCorkProposal) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *ScheduledCorkProposal) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_ScheduledCorkProposal.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *ScheduledCorkProposal) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_ScheduledCorkProposal.Merge(m, src)
+}
+func (m *ScheduledCorkProposal) XXX_Size() int {
+	return m.Size()
+}
+func (m *ScheduledCorkProposal) XXX_DiscardUnknown() {
+	xxx_messageInfo_ScheduledCorkProposal.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_ScheduledCorkProposal proto.InternalMessageInfo
+
+func (m *ScheduledCorkProposal) GetTitle() string {
+	if m != nil {
+		return m.Title
+	}
+	return ""
+}
+
+func (m *ScheduledCorkProposal) GetDescription() string {
+	if m != nil {
+		return m.Description
+	}
+	return ""
+}
+
+func (m *ScheduledCorkProposal) GetBlockHeight() uint64 {
+	if m != nil {
+		return m.BlockHeight
+	}
+	return 0
+}
+
+func (m *ScheduledCorkProposal) GetTargetContractAddress() string {
+	if m != nil {
+		return m.TargetContractAddress
+	}
+	return ""
+}
+
+func (m *ScheduledCorkProposal) GetContractCallProtoJson() string {
+	if m != nil {
+		return m.ContractCallProtoJson
+	}
+	return ""
+}
+
+type ScheduledCorkProposalWithDeposit struct {
+	Title                 string `protobuf:"bytes,1,opt,name=title,proto3" json:"title,omitempty"`
+	Description           string `protobuf:"bytes,2,opt,name=description,proto3" json:"description,omitempty"`
+	BlockHeight           uint64 `protobuf:"varint,3,opt,name=block_height,json=blockHeight,proto3" json:"block_height,omitempty"`
+	TargetContractAddress string `protobuf:"bytes,4,opt,name=target_contract_address,json=targetContractAddress,proto3" json:"target_contract_address,omitempty"`
+	ContractCallProtoJson string `protobuf:"bytes,5,opt,name=contract_call_proto_json,json=contractCallProtoJson,proto3" json:"contract_call_proto_json,omitempty"`
+	Deposit               string `protobuf:"bytes,6,opt,name=deposit,proto3" json:"deposit,omitempty"`
+}
+
+func (m *ScheduledCorkProposalWithDeposit) Reset()         { *m = ScheduledCorkProposalWithDeposit{} }
+func (m *ScheduledCorkProposalWithDeposit) String() string { return proto.CompactTextString(m) }
+func (*ScheduledCorkProposalWithDeposit) ProtoMessage()    {}
+func (*ScheduledCorkProposalWithDeposit) Descriptor() ([]byte, []int) {
+	return fileDescriptor_e01dea5e2496e85f, []int{5}
+}
+func (m *ScheduledCorkProposalWithDeposit) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *ScheduledCorkProposalWithDeposit) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_ScheduledCorkProposalWithDeposit.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *ScheduledCorkProposalWithDeposit) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_ScheduledCorkProposalWithDeposit.Merge(m, src)
+}
+func (m *ScheduledCorkProposalWithDeposit) XXX_Size() int {
+	return m.Size()
+}
+func (m *ScheduledCorkProposalWithDeposit) XXX_DiscardUnknown() {
+	xxx_messageInfo_ScheduledCorkProposalWithDeposit.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_ScheduledCorkProposalWithDeposit proto.InternalMessageInfo
+
+func (m *ScheduledCorkProposalWithDeposit) GetTitle() string {
+	if m != nil {
+		return m.Title
+	}
+	return ""
+}
+
+func (m *ScheduledCorkProposalWithDeposit) GetDescription() string {
+	if m != nil {
+		return m.Description
+	}
+	return ""
+}
+
+func (m *ScheduledCorkProposalWithDeposit) GetBlockHeight() uint64 {
+	if m != nil {
+		return m.BlockHeight
+	}
+	return 0
+}
+
+func (m *ScheduledCorkProposalWithDeposit) GetTargetContractAddress() string {
+	if m != nil {
+		return m.TargetContractAddress
+	}
+	return ""
+}
+
+func (m *ScheduledCorkProposalWithDeposit) GetContractCallProtoJson() string {
+	if m != nil {
+		return m.ContractCallProtoJson
+	}
+	return ""
+}
+
+func (m *ScheduledCorkProposalWithDeposit) GetDeposit() string {
+	if m != nil {
+		return m.Deposit
+	}
+	return ""
+}
+
 func init() {
 	proto.RegisterType((*AddManagedCellarIDsProposal)(nil), "cork.v2.AddManagedCellarIDsProposal")
 	proto.RegisterType((*AddManagedCellarIDsProposalWithDeposit)(nil), "cork.v2.AddManagedCellarIDsProposalWithDeposit")
 	proto.RegisterType((*RemoveManagedCellarIDsProposal)(nil), "cork.v2.RemoveManagedCellarIDsProposal")
 	proto.RegisterType((*RemoveManagedCellarIDsProposalWithDeposit)(nil), "cork.v2.RemoveManagedCellarIDsProposalWithDeposit")
+	proto.RegisterType((*ScheduledCorkProposal)(nil), "cork.v2.ScheduledCorkProposal")
+	proto.RegisterType((*ScheduledCorkProposalWithDeposit)(nil), "cork.v2.ScheduledCorkProposalWithDeposit")
 }
 
 func init() { proto.RegisterFile("cork/v2/proposal.proto", fileDescriptor_e01dea5e2496e85f) }
 
 var fileDescriptor_e01dea5e2496e85f = []byte{
-	// 323 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xe2, 0x12, 0x4b, 0xce, 0x2f, 0xca,
-	0xd6, 0x2f, 0x33, 0xd2, 0x2f, 0x28, 0xca, 0x2f, 0xc8, 0x2f, 0x4e, 0xcc, 0xd1, 0x2b, 0x28, 0xca,
-	0x2f, 0xc9, 0x17, 0x62, 0x07, 0x89, 0xeb, 0x95, 0x19, 0x49, 0x49, 0x26, 0xe7, 0x17, 0xe7, 0xe6,
-	0x17, 0xc7, 0x83, 0x85, 0xf5, 0x21, 0x1c, 0x88, 0x1a, 0x29, 0x21, 0x98, 0x5e, 0xb0, 0x5a, 0xb0,
-	0x98, 0x52, 0x17, 0x23, 0x97, 0xb4, 0x63, 0x4a, 0x8a, 0x6f, 0x62, 0x5e, 0x62, 0x7a, 0x6a, 0x8a,
-	0x73, 0x6a, 0x4e, 0x4e, 0x62, 0x91, 0xa7, 0x4b, 0x71, 0x00, 0xd4, 0x74, 0x21, 0x11, 0x2e, 0xd6,
-	0x92, 0xcc, 0x92, 0x9c, 0x54, 0x09, 0x46, 0x05, 0x46, 0x0d, 0xce, 0x20, 0x08, 0x47, 0x48, 0x81,
-	0x8b, 0x3b, 0x25, 0xb5, 0x38, 0xb9, 0x28, 0xb3, 0xa0, 0x24, 0x33, 0x3f, 0x4f, 0x82, 0x09, 0x2c,
-	0x87, 0x2c, 0x24, 0x64, 0xcc, 0xc5, 0x95, 0x0c, 0x36, 0x2c, 0x3e, 0x33, 0xa5, 0x58, 0x82, 0x59,
-	0x81, 0x51, 0x83, 0xdb, 0x48, 0x44, 0x0f, 0xea, 0x48, 0x3d, 0x98, 0x3d, 0xc1, 0xa9, 0x25, 0x41,
-	0x9c, 0x10, 0x75, 0x9e, 0x29, 0xc5, 0x4a, 0x33, 0x19, 0xb9, 0xd4, 0xf0, 0x38, 0x26, 0x3c, 0xb3,
-	0x24, 0xc3, 0x25, 0xb5, 0x20, 0xbf, 0x38, 0xb3, 0x84, 0x6c, 0x77, 0xc9, 0xa2, 0xb9, 0x8b, 0x59,
-	0x83, 0x13, 0xc9, 0x05, 0x42, 0x12, 0x5c, 0xec, 0x29, 0x10, 0x1b, 0x24, 0x58, 0xc0, 0x9a, 0x61,
-	0x5c, 0xa5, 0x5e, 0x46, 0x2e, 0xb9, 0xa0, 0xd4, 0xdc, 0xfc, 0xb2, 0xd4, 0xc1, 0x11, 0x56, 0x73,
-	0x18, 0xb9, 0x34, 0xf1, 0xbb, 0x67, 0x20, 0x83, 0xcb, 0xc9, 0xed, 0xc4, 0x23, 0x39, 0xc6, 0x0b,
-	0x8f, 0xe4, 0x18, 0x1f, 0x3c, 0x92, 0x63, 0x9c, 0xf0, 0x58, 0x8e, 0xe1, 0xc2, 0x63, 0x39, 0x86,
-	0x1b, 0x8f, 0xe5, 0x18, 0xa2, 0x74, 0xd2, 0x33, 0x4b, 0x32, 0x4a, 0x93, 0xf4, 0x92, 0xf3, 0x73,
-	0xf5, 0x0b, 0x52, 0xd3, 0xd3, 0x2b, 0xb3, 0xca, 0xf4, 0x8b, 0xf3, 0x73, 0x73, 0x53, 0x73, 0x32,
-	0x53, 0x8b, 0xf4, 0xcb, 0x4c, 0xf4, 0x2b, 0xc0, 0xe9, 0x53, 0xbf, 0xa4, 0xb2, 0x20, 0xb5, 0x38,
-	0x89, 0x0d, 0x9c, 0x4c, 0x8d, 0x01, 0x01, 0x00, 0x00, 0xff, 0xff, 0xfb, 0xea, 0x65, 0xe0, 0xf8,
-	0x02, 0x00, 0x00,
+	// 442 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xcc, 0x94, 0xcf, 0x6b, 0x14, 0x31,
+	0x14, 0xc7, 0x37, 0xfd, 0xc9, 0x66, 0x3d, 0x0d, 0xad, 0x8e, 0x15, 0x87, 0x75, 0x0f, 0xb2, 0x82,
+	0x4c, 0x60, 0x2b, 0x7a, 0xae, 0x5b, 0xc4, 0x0a, 0x42, 0xd9, 0x1e, 0x04, 0x2f, 0x43, 0x36, 0x79,
+	0xcc, 0xa4, 0x9b, 0x99, 0x37, 0x24, 0xe9, 0x60, 0xff, 0x03, 0x11, 0x04, 0xaf, 0x82, 0x7f, 0x90,
+	0xc7, 0x1e, 0x3d, 0xca, 0xee, 0x3f, 0x22, 0x4d, 0x76, 0x64, 0x15, 0xe9, 0x41, 0x85, 0xf6, 0xf8,
+	0xbe, 0xdf, 0xf7, 0x92, 0x4f, 0xbe, 0x8f, 0x19, 0x7a, 0x5b, 0xa0, 0x99, 0xb1, 0x66, 0xc4, 0x6a,
+	0x83, 0x35, 0x5a, 0xae, 0xd3, 0xda, 0xa0, 0xc3, 0x68, 0xfb, 0x52, 0x4f, 0x9b, 0xd1, 0xde, 0x5d,
+	0x81, 0xb6, 0x44, 0x9b, 0x79, 0x99, 0x85, 0x22, 0xf4, 0xec, 0x45, 0xed, 0xac, 0xef, 0xf5, 0xda,
+	0xe0, 0x03, 0xa1, 0xf7, 0x0e, 0xa4, 0x7c, 0xcd, 0x2b, 0x9e, 0x83, 0x1c, 0x83, 0xd6, 0xdc, 0x1c,
+	0x1d, 0xda, 0xe3, 0xe5, 0xe9, 0xd1, 0x0e, 0xdd, 0x74, 0xca, 0x69, 0x88, 0x49, 0x9f, 0x0c, 0xbb,
+	0x93, 0x50, 0x44, 0x7d, 0xda, 0x93, 0x60, 0x85, 0x51, 0xb5, 0x53, 0x58, 0xc5, 0x6b, 0xde, 0x5b,
+	0x95, 0xa2, 0x7d, 0x4a, 0x85, 0x3f, 0x2c, 0x53, 0xd2, 0xc6, 0xeb, 0x7d, 0x32, 0xec, 0x8d, 0x76,
+	0xd2, 0x25, 0x64, 0xda, 0xde, 0x73, 0x02, 0x6e, 0xd2, 0x0d, 0x7d, 0x47, 0xd2, 0x0e, 0x3e, 0x13,
+	0xfa, 0xf0, 0x0a, 0x98, 0x37, 0xca, 0x15, 0x87, 0x50, 0xa3, 0x55, 0xee, 0xaf, 0xb9, 0xee, 0xff,
+	0xc6, 0xb5, 0x3e, 0xec, 0xae, 0x10, 0x44, 0x31, 0xdd, 0x96, 0xe1, 0x86, 0x78, 0xc3, 0x0f, 0xb7,
+	0xe5, 0xe0, 0x23, 0xa1, 0xc9, 0x04, 0x4a, 0x6c, 0xe0, 0x66, 0x64, 0xf5, 0x85, 0xd0, 0x47, 0x57,
+	0xf3, 0x5c, 0x6b, 0x5c, 0x0b, 0x42, 0x77, 0x4f, 0x44, 0x01, 0xf2, 0x4c, 0x83, 0x1c, 0xa3, 0x99,
+	0xfd, 0x73, 0x4a, 0x0f, 0xe8, 0xad, 0xa9, 0x46, 0x31, 0xcb, 0x0a, 0x50, 0x79, 0xe1, 0x7c, 0x4e,
+	0x1b, 0x93, 0x9e, 0xd7, 0x5e, 0x7a, 0x29, 0x7a, 0x4a, 0xef, 0x38, 0x6e, 0x72, 0x70, 0x99, 0xc0,
+	0xca, 0x19, 0x2e, 0x5c, 0xc6, 0xa5, 0x34, 0x60, 0xed, 0x12, 0x6f, 0x37, 0xd8, 0xe3, 0xa5, 0x7b,
+	0x10, 0xcc, 0xe8, 0x19, 0x8d, 0x7f, 0x0e, 0x08, 0xae, 0x75, 0xf8, 0x78, 0xb2, 0x53, 0x8b, 0x55,
+	0xbc, 0x19, 0x06, 0x5b, 0x7f, 0xcc, 0xb5, 0x3e, 0xbe, 0x74, 0x5f, 0x59, 0xac, 0x06, 0xef, 0xd7,
+	0x68, 0xff, 0x8f, 0xaf, 0xfc, 0x1f, 0xd9, 0xdf, 0xc0, 0x07, 0xaf, 0x2e, 0x7c, 0xeb, 0x97, 0x85,
+	0x3f, 0x7f, 0xf1, 0x75, 0x9e, 0x90, 0x8b, 0x79, 0x42, 0xbe, 0xcf, 0x13, 0xf2, 0x69, 0x91, 0x74,
+	0x2e, 0x16, 0x49, 0xe7, 0xdb, 0x22, 0xe9, 0xbc, 0x7d, 0x9c, 0x2b, 0x57, 0x9c, 0x4d, 0x53, 0x81,
+	0x25, 0xab, 0x21, 0xcf, 0xcf, 0x4f, 0x1b, 0x66, 0xb1, 0x2c, 0x41, 0x2b, 0x30, 0xac, 0x79, 0xc2,
+	0xde, 0xf9, 0x1f, 0x12, 0x73, 0xe7, 0x35, 0xd8, 0xe9, 0x96, 0x47, 0xd9, 0xff, 0x11, 0x00, 0x00,
+	0xff, 0xff, 0x8d, 0xa5, 0x75, 0x54, 0xe9, 0x04, 0x00, 0x00,
 }
 
 func (m *AddManagedCellarIDsProposal) Marshal() (dAtA []byte, err error) {
@@ -525,6 +694,125 @@ func (m *RemoveManagedCellarIDsProposalWithDeposit) MarshalToSizedBuffer(dAtA []
 	return len(dAtA) - i, nil
 }
 
+func (m *ScheduledCorkProposal) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *ScheduledCorkProposal) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *ScheduledCorkProposal) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.ContractCallProtoJson) > 0 {
+		i -= len(m.ContractCallProtoJson)
+		copy(dAtA[i:], m.ContractCallProtoJson)
+		i = encodeVarintProposal(dAtA, i, uint64(len(m.ContractCallProtoJson)))
+		i--
+		dAtA[i] = 0x2a
+	}
+	if len(m.TargetContractAddress) > 0 {
+		i -= len(m.TargetContractAddress)
+		copy(dAtA[i:], m.TargetContractAddress)
+		i = encodeVarintProposal(dAtA, i, uint64(len(m.TargetContractAddress)))
+		i--
+		dAtA[i] = 0x22
+	}
+	if m.BlockHeight != 0 {
+		i = encodeVarintProposal(dAtA, i, uint64(m.BlockHeight))
+		i--
+		dAtA[i] = 0x18
+	}
+	if len(m.Description) > 0 {
+		i -= len(m.Description)
+		copy(dAtA[i:], m.Description)
+		i = encodeVarintProposal(dAtA, i, uint64(len(m.Description)))
+		i--
+		dAtA[i] = 0x12
+	}
+	if len(m.Title) > 0 {
+		i -= len(m.Title)
+		copy(dAtA[i:], m.Title)
+		i = encodeVarintProposal(dAtA, i, uint64(len(m.Title)))
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *ScheduledCorkProposalWithDeposit) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *ScheduledCorkProposalWithDeposit) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *ScheduledCorkProposalWithDeposit) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.Deposit) > 0 {
+		i -= len(m.Deposit)
+		copy(dAtA[i:], m.Deposit)
+		i = encodeVarintProposal(dAtA, i, uint64(len(m.Deposit)))
+		i--
+		dAtA[i] = 0x32
+	}
+	if len(m.ContractCallProtoJson) > 0 {
+		i -= len(m.ContractCallProtoJson)
+		copy(dAtA[i:], m.ContractCallProtoJson)
+		i = encodeVarintProposal(dAtA, i, uint64(len(m.ContractCallProtoJson)))
+		i--
+		dAtA[i] = 0x2a
+	}
+	if len(m.TargetContractAddress) > 0 {
+		i -= len(m.TargetContractAddress)
+		copy(dAtA[i:], m.TargetContractAddress)
+		i = encodeVarintProposal(dAtA, i, uint64(len(m.TargetContractAddress)))
+		i--
+		dAtA[i] = 0x22
+	}
+	if m.BlockHeight != 0 {
+		i = encodeVarintProposal(dAtA, i, uint64(m.BlockHeight))
+		i--
+		dAtA[i] = 0x18
+	}
+	if len(m.Description) > 0 {
+		i -= len(m.Description)
+		copy(dAtA[i:], m.Description)
+		i = encodeVarintProposal(dAtA, i, uint64(len(m.Description)))
+		i--
+		dAtA[i] = 0x12
+	}
+	if len(m.Title) > 0 {
+		i -= len(m.Title)
+		copy(dAtA[i:], m.Title)
+		i = encodeVarintProposal(dAtA, i, uint64(len(m.Title)))
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
 func encodeVarintProposal(dAtA []byte, offset int, v uint64) int {
 	offset -= sovProposal(v)
 	base := offset
@@ -624,6 +912,66 @@ func (m *RemoveManagedCellarIDsProposalWithDeposit) Size() (n int) {
 			l = len(s)
 			n += 1 + l + sovProposal(uint64(l))
 		}
+	}
+	l = len(m.Deposit)
+	if l > 0 {
+		n += 1 + l + sovProposal(uint64(l))
+	}
+	return n
+}
+
+func (m *ScheduledCorkProposal) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.Title)
+	if l > 0 {
+		n += 1 + l + sovProposal(uint64(l))
+	}
+	l = len(m.Description)
+	if l > 0 {
+		n += 1 + l + sovProposal(uint64(l))
+	}
+	if m.BlockHeight != 0 {
+		n += 1 + sovProposal(uint64(m.BlockHeight))
+	}
+	l = len(m.TargetContractAddress)
+	if l > 0 {
+		n += 1 + l + sovProposal(uint64(l))
+	}
+	l = len(m.ContractCallProtoJson)
+	if l > 0 {
+		n += 1 + l + sovProposal(uint64(l))
+	}
+	return n
+}
+
+func (m *ScheduledCorkProposalWithDeposit) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.Title)
+	if l > 0 {
+		n += 1 + l + sovProposal(uint64(l))
+	}
+	l = len(m.Description)
+	if l > 0 {
+		n += 1 + l + sovProposal(uint64(l))
+	}
+	if m.BlockHeight != 0 {
+		n += 1 + sovProposal(uint64(m.BlockHeight))
+	}
+	l = len(m.TargetContractAddress)
+	if l > 0 {
+		n += 1 + l + sovProposal(uint64(l))
+	}
+	l = len(m.ContractCallProtoJson)
+	if l > 0 {
+		n += 1 + l + sovProposal(uint64(l))
 	}
 	l = len(m.Deposit)
 	if l > 0 {
@@ -1242,6 +1590,432 @@ func (m *RemoveManagedCellarIDsProposalWithDeposit) Unmarshal(dAtA []byte) error
 			m.CellarIds = append(m.CellarIds, string(dAtA[iNdEx:postIndex]))
 			iNdEx = postIndex
 		case 4:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Deposit", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowProposal
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthProposal
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthProposal
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Deposit = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipProposal(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthProposal
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *ScheduledCorkProposal) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowProposal
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: ScheduledCorkProposal: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: ScheduledCorkProposal: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Title", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowProposal
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthProposal
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthProposal
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Title = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Description", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowProposal
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthProposal
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthProposal
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Description = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 3:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field BlockHeight", wireType)
+			}
+			m.BlockHeight = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowProposal
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.BlockHeight |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 4:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field TargetContractAddress", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowProposal
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthProposal
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthProposal
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.TargetContractAddress = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 5:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field ContractCallProtoJson", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowProposal
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthProposal
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthProposal
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.ContractCallProtoJson = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipProposal(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthProposal
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *ScheduledCorkProposalWithDeposit) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowProposal
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: ScheduledCorkProposalWithDeposit: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: ScheduledCorkProposalWithDeposit: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Title", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowProposal
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthProposal
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthProposal
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Title = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Description", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowProposal
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthProposal
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthProposal
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Description = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 3:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field BlockHeight", wireType)
+			}
+			m.BlockHeight = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowProposal
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.BlockHeight |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 4:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field TargetContractAddress", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowProposal
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthProposal
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthProposal
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.TargetContractAddress = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 5:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field ContractCallProtoJson", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowProposal
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthProposal
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthProposal
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.ContractCallProtoJson = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 6:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Deposit", wireType)
 			}

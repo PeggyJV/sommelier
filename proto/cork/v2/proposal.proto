@@ -33,3 +33,20 @@ message RemoveManagedCellarIDsProposalWithDeposit {
   repeated string cellar_ids = 3;
   string deposit = 4;
 }
+
+message ScheduledCorkProposal {
+  string title = 1;
+  string description = 2;
+  uint64 block_height = 3;
+  string target_contract_address = 4;
+  string contract_call_proto_json = 5;
+}
+
+message ScheduledCorkProposalWithDeposit {
+  string title = 1;
+  string description = 2;
+  uint64 block_height = 3;
+  string target_contract_address = 4;
+  string contract_call_proto_json = 5;
+  string deposit = 6;
+}
