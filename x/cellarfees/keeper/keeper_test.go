@@ -88,7 +88,7 @@ func TestGettingSettingScheduledAuctionHeight(t *testing.T) {
 	env := CreateTestEnv(t)
 	ctx := env.Context
 
-	expected := sdk.NewInt(10000)
+	expected := uint64(10000)
 	env.cellarFeesKeeper.SetScheduledAuctionHeight(ctx, expected)
 
 	require.Equal(t, expected, env.cellarFeesKeeper.GetScheduledAuctionHeight(ctx))

@@ -9,7 +9,7 @@ func (k Keeper) HandleAuctions(ctx sdk.Context) {
 	pool := k.GetCellarFeePool(ctx).Pool
 	if pool.Empty() {
 		// Schedule next auction a short delay away until fees are found to auction
-		k.SetScheduledAuctionHeight(ctx, k.GetScheduledAuctionHeight(ctx).Add(sdk.NewInt(100)))
+		k.SetScheduledAuctionHeight(ctx, k.GetScheduledAuctionHeight(ctx)+100)
 		return
 	}
 

@@ -12,7 +12,7 @@ import (
 // distributable fees so that the reward supply will decrease linearly until exhausted.
 func (k Keeper) BeginBlocker(ctx sdk.Context) {
 	// Handle auctions
-	if sdk.NewInt(ctx.BlockHeight()).Equal(k.GetScheduledAuctionHeight(ctx)) {
+	if ctx.BlockHeight() == int64(k.GetScheduledAuctionHeight(ctx)) {
 		k.HandleAuctions(ctx)
 	}
 

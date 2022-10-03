@@ -12,7 +12,7 @@ import (
 func (k Keeper) InitGenesis(ctx sdk.Context, gs types.GenesisState) {
 	k.SetCellarFeePool(ctx, gs.CellarFeePool)
 	k.SetLastRewardSupplyPeak(ctx, sdk.ZeroInt())
-	k.SetScheduledAuctionHeight(ctx, sdk.ZeroInt())
+	k.SetScheduledAuctionHeight(ctx, 0)
 	k.SetParams(ctx, gs.Params)
 
 	feesAccount := k.GetFeesAccount(ctx)
