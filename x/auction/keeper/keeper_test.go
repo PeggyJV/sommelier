@@ -43,6 +43,7 @@ type KeeperTestSuite struct {
 	ctx           sdk.Context
 	auctionKeeper Keeper
 	bankKeeper    *auctiontestutil.MockBankKeeper
+	accountKeeper *auctiontestutil.MockAccountKeeper
 
 	queryClient auctionTypes.QueryClient
 
@@ -59,6 +60,7 @@ func (suite *KeeperTestSuite) SetupTest() {
 	// gomock initializations
 	ctrl := gomock.NewController(suite.T())
 	suite.bankKeeper = auctiontestutil.NewMockBankKeeper(ctrl)
+	suite.accountKeeper = auctiontestutil.NewMockAccountKeeper(ctrl)
 	suite.ctx = ctx
 
 	params := paramskeeper.NewKeeper(
@@ -77,6 +79,7 @@ func (suite *KeeperTestSuite) SetupTest() {
 		key,
 		subSpace,
 		suite.bankKeeper,
+		suite.accountKeeper,
 		map[string]bool{permissionedFunder.GetName(): true},
 		map[string]bool{permissionedReciever.GetName(): true},
 	)

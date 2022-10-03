@@ -3,8 +3,19 @@ package keeper
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
+	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	auctionTypes "github.com/peggyjv/sommelier/v4/x/auction/types"
+
+	"github.com/golang/mock/gomock"
 )
+
+func (suite *KeeperTestSuite) mockGetModuleAccount(ctx sdk.Context, moduleName string) {
+	suite.accountKeeper.EXPECT().GetModuleAccount(ctx, moduleName).Return(authtypes.NewEmptyModuleAccount("mock"))
+}
+
+func (suite *KeeperTestSuite) mockSetModuleAccount(ctx sdk.Context) {
+	suite.accountKeeper.EXPECT().SetModuleAccount(ctx, gomock.Any())
+}
 
 // Tests Importing of as empty a genesis as possible
 func (suite *KeeperTestSuite) TestImportingEmtpyGenesis() {
@@ -17,7 +28,11 @@ func (suite *KeeperTestSuite) TestImportingEmtpyGenesis() {
 	require.Panics(func() { InitGenesis(ctx, auctionKeeper, testGenesis) })
 
 	testGenesis.Params.PriceMaxBlockAge = uint64(10)
-	require.NotPanics(func() { InitGenesis(ctx, auctionKeeper, testGenesis) })
+	require.NotPanics(func() {
+		suite.mockGetModuleAccount(ctx, auctionTypes.ModuleName)
+		suite.mockSetModuleAccount(ctx)
+		InitGenesis(ctx, auctionKeeper, testGenesis)
+	})
 
 	activeAuctions := auctionKeeper.GetActiveAuctions(ctx)
 	endedAuctions := auctionKeeper.GetEndedAuctions(ctx)

@@ -43,4 +43,5 @@ var (
 	ErrTokenPriceMaxBlockAgeMustBePositive                      = sdkerrors.Register(ModuleName, 36, "price max block age must be positive")
 	ErrInvalidPriceMaxBlockAgeParameterType                     = sdkerrors.Register(ModuleName, 37, "price max block age type must be uint64")
 	ErrTokenPriceProposalMustHaveAtLeastOnePrice                = sdkerrors.Register(ModuleName, 38, "list of proposed token prices must be non-zero")
+	ErrProcessingBidderBech32Addr                               = sdkerrors.Register(ModuleName, 39, "signer is different from bidder")
 )
