@@ -273,12 +273,17 @@ func (k Keeper) IncrementScheduledCorkID(ctx sdk.Context) uint64 {
 	return nextID
 }
 
+//////////////////
+// Cork Results //
+//////////////////
+
+// TOOD(bolten): keeper functions for cork results here
+
 ///////////
 // Votes //
 ///////////
 
 func (k Keeper) GetApprovedScheduledCorks(ctx sdk.Context, currentBlockHeight uint64, threshold sdk.Dec) (approvedCorks []types.Cork) {
-
 	corksForBlockHeight := make(map[uint64][]types.Cork)
 	corkPowersForBlockHeight := make(map[uint64][]uint64)
 
@@ -315,7 +320,9 @@ func (k Keeper) GetApprovedScheduledCorks(ctx sdk.Context, currentBlockHeight ui
 
 	for blockHeight := range corkPowersForBlockHeight {
 		for i, power := range corkPowersForBlockHeight[blockHeight] {
-			quorumReached := sdk.NewIntFromUint64(power).ToDec().Quo(totalPower.ToDec()).GT(threshold)
+			approvalPercentage := sdk.NewIntFromUint64(power).ToDec().Quo(totalPower.ToDec())
+			quorumReached := approvalPercentage.GT(threshold)
+			// TODO(bolten): record CorkResult here
 			if quorumReached {
 				approvedCorks = append(approvedCorks, corksForBlockHeight[blockHeight][i])
 			}
