@@ -41,8 +41,11 @@ const (
 	// ScheduledCorkKeyPrefix - <prefix><block_height><val_address><address> -> <cork>
 	ScheduledCorkKeyPrefix
 
-	// LatestCorkIDKeyPrefix - - <prefix> -> uint64(latestCorkID)
+	// LatestCorkIDKey - <key> -> uint64(latestCorkID)
 	LatestCorkIDKey
+
+	// CorkIdHashPrefix - <prefix><hash> -> uint64(id)
+	ScheduledCorkIdHashPrefix
 )
 
 // GetCorkForValidatorAddressKey returns the key for a validators vote for a given address
@@ -59,10 +62,28 @@ func MakeCellarIDsKey() []byte {
 	return []byte{CellarIDsKey}
 }
 
-func GetScheduledCorkKey(blockHeight uint64, Id uint64, val sdk.ValAddress, contract common.Address) []byte {
-	b := make([]byte, 8)
-	bz := make([]byte, 8)
-	binary.BigEndian.PutUint64(b, blockHeight)
-	binary.BigEndian.PutUint64(bz, Id)
-	return bytes.Join([][]byte{{ScheduledCorkKeyPrefix}, b, bz, val.Bytes(), contract.Bytes()}, []byte{})
+func GetScheduledCorkKeyPrefix() []byte {
+	return []byte{ScheduledCorkKeyPrefix}
+}
+
+func GetScheduledCorkKeyByBlockHeightPrefix(blockHeight uint64) []byte {
+	blockHeightBytes := make([]byte, 8)
+	binary.BigEndian.PutUint64(blockHeightBytes, blockHeight)
+	return append(GetScheduledCorkKeyPrefix(), blockHeightBytes...)
+}
+
+func GetScheduledCorkKey(blockHeight uint64, id uint64, val sdk.ValAddress, contract common.Address) []byte {
+	blockHeightBytes := make([]byte, 8)
+	idBytes := make([]byte, 8)
+	binary.BigEndian.PutUint64(blockHeightBytes, blockHeight)
+	binary.BigEndian.PutUint64(idBytes, id)
+	return bytes.Join([][]byte{{ScheduledCorkKeyPrefix}, blockHeightBytes, idBytes, val.Bytes(), contract.Bytes()}, []byte{})
+}
+
+func GetScheduledCorkIdHashPrefix() []byte {
+	return []byte{ScheduledCorkIdHashPrefix}
+}
+
+func GetScheduledCorkIdHashKey(hash []byte) []byte {
+	return append(GetScheduledCorkIdHashPrefix(), hash...)
 }
