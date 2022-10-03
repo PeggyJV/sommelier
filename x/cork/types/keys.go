@@ -46,6 +46,9 @@ const (
 
 	// CorkIdHashPrefix - <prefix><hash> -> uint64(id)
 	ScheduledCorkIdHashPrefix
+
+	// CorkResultPrefix - <prefix><id> -> CorkResult
+	CorkResultPrefix
 )
 
 // GetCorkForValidatorAddressKey returns the key for a validators vote for a given address

@@ -19,6 +19,13 @@ message ScheduledCork {
   uint64 id = 4;
 }
 
+message CorkResult {
+  Cork cork = 1;
+  uint64 block_height = 2;
+  bool approved = 3;
+  string approval_percentage = 4;
+}
+
 message CellarIDSet {
   repeated string ids = 1;
 }
