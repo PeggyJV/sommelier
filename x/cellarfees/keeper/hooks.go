@@ -31,7 +31,7 @@ func (h Hooks) AfterBatchExecutedEvent(ctx sdk.Context, event gravitytypes.Batch
 
 // In order to update the CellarFeePool, we check gravity module SendToCosmos transactions to see if the recipient is
 // the cellarfees module account, and if the sender is a Cellar contract approved by governance. If these criteria are
-// met, we account for the coins as fees in the pool.
+// met, we account for the coins as fees in the pool by setting it to the total balance of that denom in the account.
 func (h Hooks) AfterSendToCosmosEvent(ctx sdk.Context, event gravitytypes.SendToCosmosEvent) {
 	// Check if recipient is the cellarfees module account
 	moduleAccountAddress := h.k.GetFeesAccount(ctx).GetAddress()
@@ -58,11 +58,9 @@ func (h Hooks) AfterSendToCosmosEvent(ctx sdk.Context, event gravitytypes.SendTo
 		panic("Coin balance in module account cannot be less than was sent from Ethereum!")
 	}
 
-	fee := sdk.Coin{
-		Amount: event.Amount,
-		Denom:  denom,
-	}
-	h.k.addCoinToPool(ctx, fee)
+	// By updating the balance this way, we account for coins that were sent to the module account by some other means
+	// than cellar fee accrual, just in case someone feels like generously bridging a donation to stakers.
+	h.k.setPoolCoins(ctx, sdk.Coins{balance})
 
 	ctx.EventManager().EmitEvents(
 		sdk.Events{

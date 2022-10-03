@@ -2,7 +2,6 @@ package keeper
 
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/peggyjv/sommelier/v4/x/cellarfees/types"
 )
 
 func (k Keeper) HandleAuctions(ctx sdk.Context) {
@@ -16,7 +15,7 @@ func (k Keeper) HandleAuctions(ctx sdk.Context) {
 	// Get coin denominations that don't have an active auction
 	activeAuctions := k.auctionKeeper.GetActiveAuctions(ctx)
 	eligibleCoins := sdk.Coins{}
-	newPool := sdk.Coins{}
+	coinsToZero := sdk.Coins{}
 	for _, coin := range pool {
 		found := false
 
@@ -27,10 +26,9 @@ func (k Keeper) HandleAuctions(ctx sdk.Context) {
 			}
 		}
 
-		if !found {
+		if !found && !coin.IsZero() {
 			eligibleCoins = append(eligibleCoins, coin)
-		} else {
-			newPool = append(newPool, coin)
+			coinsToZero = append(coinsToZero, sdk.Coin{Amount: sdk.ZeroInt(), Denom: coin.Denom})
 		}
 	}
 
@@ -41,7 +39,7 @@ func (k Keeper) HandleAuctions(ctx sdk.Context) {
 
 	// Start auctions
 	params := k.GetParams(ctx)
-	cellarfeesAccount := string(k.accountKeeper.GetModuleAddress(types.ModuleName))
+	cellarfeesAccount := string(k.GetFeesAccount(ctx).GetAddress())
 	for _, coin := range eligibleCoins {
 		// TO-DO (Collin): handle this error
 		k.auctionKeeper.BeginAuction(
@@ -54,8 +52,8 @@ func (k Keeper) HandleAuctions(ctx sdk.Context) {
 		)
 	}
 
-	// Update the pool to remove coins sent to auction and schedule the next auction.
-	k.SetCellarFeePool(ctx, types.CellarFeePool{Pool: newPool})
+	// Update the pool to zero out coins sent to auction and schedule the next auction.
+	k.setPoolCoins(ctx, coinsToZero)
 	k.ScheduleNextAuction(ctx)
 }
 

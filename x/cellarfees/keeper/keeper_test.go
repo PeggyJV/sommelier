@@ -56,21 +56,15 @@ func TestAddingCoinsToPool(t *testing.T) {
 		Denom:  denom0,
 	}
 
-	// adding zeroed coin
-	poolBefore := env.cellarFeesKeeper.GetCellarFeePool(ctx)
-	env.cellarFeesKeeper.addCoinToPool(ctx, sdk.Coin{})
-	poolAfter := env.cellarFeesKeeper.GetCellarFeePool(ctx)
-	require.Equal(t, poolBefore, poolAfter)
-
 	// appending new coin
-	env.cellarFeesKeeper.addCoinToPool(ctx, single)
+	env.cellarFeesKeeper.setPoolCoins(ctx, sdk.Coins{single})
 	pool := env.cellarFeesKeeper.GetCellarFeePool(ctx)
 	require.Equal(t, sdk.Coins{single}, pool.Pool)
 
 	// adding to existing coin
-	env.cellarFeesKeeper.addCoinToPool(ctx, single)
+	env.cellarFeesKeeper.setPoolCoins(ctx, sdk.Coins{single.Add(sdk.Coin{Amount: sdk.NewInt(1), Denom: single.Denom})})
 	pool = env.cellarFeesKeeper.GetCellarFeePool(ctx)
-	expected := single.Add(single)
+	expected := single.Add(sdk.Coin{Amount: sdk.NewInt(1), Denom: single.Denom})
 	require.Equal(t, expected, pool.Pool[0])
 }
 
