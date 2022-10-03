@@ -53,7 +53,10 @@ func (k Keeper) BeginBlocker(ctx sdk.Context) {
 
 	// Send to fee collector for distribution
 	// TO-DO (Collin): handle this error
-	k.bankKeeper.SendCoinsFromModuleToModule(ctx, moduleAccount.GetName(), authtypes.FeeCollectorName, emission)
+	err := k.bankKeeper.SendCoinsFromModuleToModule(ctx, moduleAccount.GetName(), authtypes.FeeCollectorName, emission)
+	if err != nil {
+		panic(err)
+	}
 }
 
 // EndBlocker is called at the end of every block

@@ -62,6 +62,6 @@ func (k Keeper) HandleAuctions(ctx sdk.Context) {
 func (k Keeper) ScheduleNextAuction(ctx sdk.Context) {
 	lastAuctionHeight := k.GetScheduledAuctionHeight(ctx)
 	// next = last + delay param
-	nextAuctionHeight := lastAuctionHeight.Add(sdk.NewInt(int64(k.GetParams(ctx).AuctionBlockDelay)))
+	nextAuctionHeight := lastAuctionHeight + k.GetParams(ctx).AuctionBlockDelay
 	k.SetScheduledAuctionHeight(ctx, nextAuctionHeight)
 }

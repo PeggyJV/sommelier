@@ -1,6 +1,7 @@
 package keeper
 
 import (
+	"encoding/binary"
 	"fmt"
 	"math/big"
 
@@ -73,7 +74,7 @@ func (k Keeper) GetCellarFeePool(ctx sdk.Context) (cellarFeePool types.CellarFee
 	store := ctx.KVStore(k.storeKey)
 	b := store.Get(types.GetCellarFeePoolKey())
 	if b == nil {
-		panic("Stored cellar fee pool should not have been nil")
+		panic("Stored cellar fee pool is nil, it should have been set by genesis")
 	}
 	k.cdc.MustUnmarshal(b, &cellarFeePool)
 	return
@@ -109,18 +110,17 @@ func (k Keeper) SetLastRewardSupplyPeak(ctx sdk.Context, amount sdk.Int) {
 // Auction scheduling //
 ////////////////////////
 
-func (k Keeper) GetScheduledAuctionHeight(ctx sdk.Context) sdk.Int {
+func (k Keeper) GetScheduledAuctionHeight(ctx sdk.Context) uint64 {
 	store := ctx.KVStore(k.storeKey)
-	b := store.Get(types.GetScheduledAuctionHeightKey())
-	if b == nil {
-		panic("Auction height should not have been nil")
+	bz := store.Get(types.GetScheduledAuctionHeightKey())
+	if len(bz) == 0 {
+		return 0
 	}
-	var amount big.Int
-	return sdk.NewIntFromBigInt((&amount).SetBytes(b))
+
+	return binary.BigEndian.Uint64(bz)
 }
 
-func (k Keeper) SetScheduledAuctionHeight(ctx sdk.Context, amount sdk.Int) {
+func (k Keeper) SetScheduledAuctionHeight(ctx sdk.Context, amount uint64) {
 	store := ctx.KVStore(k.storeKey)
-	b := amount.BigInt().Bytes()
-	store.Set(types.GetScheduledAuctionHeightKey(), b)
+	store.Set([]byte{types.ScheduledAuctionHeightKey}, sdk.Uint64ToBigEndian(uint64(amount)))
 }

@@ -43,7 +43,7 @@ func (k Keeper) CellarFeePool(c context.Context, req *types.QueryCellarFeePoolRe
 // (Collin) Kind of a misnomer. It's the next height that the pool will be evaluated for auction.
 func (k Keeper) ScheduledAuctionHeight(c context.Context, req *types.QueryScheduledAuctionHeightRequest) (*types.QueryScheduledAuctionHeightResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
-	height := k.GetScheduledAuctionHeight(ctx).Uint64()
+	height := k.GetScheduledAuctionHeight(ctx)
 
 	return &types.QueryScheduledAuctionHeightResponse{Height: height}, nil
 }
