@@ -25,6 +25,7 @@ func (k Keeper) setPoolCoins(ctx sdk.Context, coins sdk.Coins) {
 		}
 
 		balance := pool.Pool.AmountOf(coin.Denom)
+		// If a balance is present, zero it out so it can be replaced by adding the new balance
 		if !balance.IsZero() {
 			pool.Pool.Sub(sdk.Coins{{Amount: balance, Denom: coin.Denom}})
 		}
