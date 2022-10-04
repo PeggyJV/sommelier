@@ -93,7 +93,7 @@ func (k Keeper) GetFeeAccrualCounters(ctx sdk.Context) (counters types.FeeAccrua
 	store := ctx.KVStore(k.storeKey)
 	b := store.Get(types.GetFeeAccrualCountersKey())
 	if b == nil {
-		panic("Fee accrual counters should not have been nil")
+		panic("Fee accrual counters is nil, it should have been set by InitGenesis")
 	}
 
 	k.cdc.MustUnmarshal(b, &counters)
