@@ -52,6 +52,7 @@ import (
 	"github.com/peggyjv/gravity-bridge/module/v2/x/gravity"
 	gravitykeeper "github.com/peggyjv/gravity-bridge/module/v2/x/gravity/keeper"
 	gravitytypes "github.com/peggyjv/gravity-bridge/module/v2/x/gravity/types"
+	auctiontypes "github.com/peggyjv/sommelier/v4/x/auction/types"
 	"github.com/peggyjv/sommelier/v4/x/cellarfees/types"
 	corkkeeper "github.com/peggyjv/sommelier/v4/x/cork/keeper"
 	corktypes "github.com/peggyjv/sommelier/v4/x/cork/types"
@@ -258,8 +259,7 @@ func CreateTestEnv(t *testing.T) TestInput {
 		stakingtypes.NotBondedPoolName: {authtypes.Burner, authtypes.Staking},
 		govtypes.ModuleName:            {authtypes.Burner},
 		types.ModuleName:               {authtypes.Minter, authtypes.Burner},
-		// placeholder
-		"auction": nil,
+		auctiontypes.ModuleName:        nil,
 	}
 
 	accountKeeper := authkeeper.NewAccountKeeper(
