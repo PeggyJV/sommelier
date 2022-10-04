@@ -271,38 +271,6 @@ func (suite *KeeperTestSuite) TestUnhappyPathsForBeginAuction() {
 	saleTokenPrice := auctionTypes.TokenPrice{Denom: saleToken, UsdPrice: sdk.MustNewDecFromStr("0.01"), LastUpdatedBlock: 5}
 	auctionedSaleTokens := sdk.NewCoin(saleToken, sdk.NewInt(10000))
 
-	// Create an ongoing auction to be used in later testing
-
-	// Mock initial bank keeper fund transfer
-	suite.mockSendCoinsFromModuleToModule(ctx, permissionedFunder.GetName(), auctionTypes.ModuleName, sdk.NewCoins(auctionedSaleTokens))
-
-	// Start auction
-	decreaseRate := sdk.MustNewDecFromStr("0.05")
-	blockDecreaseInterval := uint64(5)
-	err := auctionKeeper.BeginAuction(ctx, auctionedSaleTokens, decreaseRate, blockDecreaseInterval, permissionedFunder.GetName(), permissionedReciever.GetName())
-	require.Nil(err)
-
-	// Verify auction got added to active auction store
-	auctionID := uint32(1)
-	createdAuction, found := auctionKeeper.GetActiveAuctionByID(ctx, auctionID)
-	require.True(found)
-
-	expectedActiveAuction := auctionTypes.Auction{
-		Id:                         auctionID,
-		StartingTokensForSale:      auctionedSaleTokens,
-		StartBlock:                 uint64(ctx.BlockHeight()),
-		EndBlock:                   0,
-		InitialPriceDecreaseRate:   decreaseRate,
-		CurrentPriceDecreaseRate:   decreaseRate,
-		PriceDecreaseBlockInterval: blockDecreaseInterval,
-		InitialUnitPriceInUsomm:    sdk.NewDec(1),
-		CurrentUnitPriceInUsomm:    sdk.NewDec(1),
-		RemainingTokensForSale:     auctionedSaleTokens,
-		FundingModuleAccount:       permissionedFunder.GetName(),
-		ProceedsModuleAccount:      permissionedReciever.GetName(),
-	}
-	require.Equal(expectedActiveAuction, createdAuction)
-
 	tests := []struct {
 		name                string
 		beginAuctionRequest BeginAuctionRequest
@@ -427,8 +395,38 @@ func (suite *KeeperTestSuite) TestUnhappyPathsForBeginAuction() {
 				fundingModuleAccount:       permissionedFunder.GetName(),
 				proceedsModuleAccount:      permissionedReciever.GetName(),
 			},
-			expectedError:    sdkerrors.Wrapf(auctionTypes.ErrCannotStartTwoAuctionsForSameDenomSimultaneously, "Denom: %s", auctionedSaleTokens.Denom),
-			utilityFunctions: func() {},
+			expectedError: sdkerrors.Wrapf(auctionTypes.ErrCannotStartTwoAuctionsForSameDenomSimultaneously, "Denom: %s", auctionedSaleTokens.Denom),
+			utilityFunctions: func() {
+				// Mock initial bank keeper fund transfer
+				suite.mockSendCoinsFromModuleToModule(ctx, permissionedFunder.GetName(), auctionTypes.ModuleName, sdk.NewCoins(auctionedSaleTokens))
+
+				// Start auction
+				decreaseRate := sdk.MustNewDecFromStr("0.05")
+				blockDecreaseInterval := uint64(5)
+				err := auctionKeeper.BeginAuction(ctx, auctionedSaleTokens, decreaseRate, blockDecreaseInterval, permissionedFunder.GetName(), permissionedReciever.GetName())
+				require.Nil(err)
+
+				// Verify auction got added to active auction store
+				auctionID := uint32(1)
+				createdAuction, found := auctionKeeper.GetActiveAuctionByID(ctx, auctionID)
+				require.True(found)
+
+				expectedActiveAuction := auctionTypes.Auction{
+					Id:                         auctionID,
+					StartingTokensForSale:      auctionedSaleTokens,
+					StartBlock:                 uint64(ctx.BlockHeight()),
+					EndBlock:                   0,
+					InitialPriceDecreaseRate:   decreaseRate,
+					CurrentPriceDecreaseRate:   decreaseRate,
+					PriceDecreaseBlockInterval: blockDecreaseInterval,
+					InitialUnitPriceInUsomm:    sdk.NewDec(1),
+					CurrentUnitPriceInUsomm:    sdk.NewDec(1),
+					RemainingTokensForSale:     auctionedSaleTokens,
+					FundingModuleAccount:       permissionedFunder.GetName(),
+					ProceedsModuleAccount:      permissionedReciever.GetName(),
+				}
+				require.Equal(expectedActiveAuction, createdAuction)
+			},
 		},
 	}
 
@@ -449,11 +447,6 @@ func (suite *KeeperTestSuite) TestUnhappyPathsForBeginAuction() {
 
 			// Verify errors are as expected
 			require.Equal(tc.expectedError.Error(), err.Error())
-
-			// Verify only auction found is the one we created for testing
-			auctions := auctionKeeper.GetActiveAuctions(ctx)
-			require.Len(auctions, 1)
-			require.Equal(auctions[0], createdAuction)
 		})
 	}
 }

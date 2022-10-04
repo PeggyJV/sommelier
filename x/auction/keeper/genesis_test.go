@@ -162,7 +162,11 @@ func (suite *KeeperTestSuite) TestImportingPopulatedGenesis() {
 		LastBidId:     uint64(2),
 	}
 
-	require.NotPanics(func() { InitGenesis(ctx, auctionKeeper, testGenesis) })
+	require.NotPanics(func() { 
+		suite.mockGetModuleAccount(ctx, auctionTypes.ModuleName)
+		suite.mockSetModuleAccount(ctx)
+		InitGenesis(ctx, auctionKeeper, testGenesis) 
+	})
 
 	// Verify value sets
 	foundActiveAuctions := auctionKeeper.GetActiveAuctions(ctx)

@@ -71,7 +71,7 @@ func (k Keeper) SubmitBid(c context.Context, msg *types.MsgSubmitBidRequest) (*t
 		totalFulfilledSaleTokens.Amount = totalSaleTokenBalance.Amount
 
 	} else {
-		return &types.MsgSubmitBidResponse{}, sdkerrors.Wrapf(types.ErrMinimumPurchaseAmountLargerThanTokensRemaining, "Minimum purchase: %s, amount remaining: %s", totalSaleTokenBalance.String(), auction.RemainingTokensForSale.String())
+		return &types.MsgSubmitBidResponse{}, sdkerrors.Wrapf(types.ErrMinimumPurchaseAmountLargerThanTokensRemaining, "Minimum purchase: %s, amount remaining: %s", minimumSaleTokenPurchaseAmount.String(), auction.RemainingTokensForSale.String())
 	}
 
 	// Round up to prevent exploitability; ensure you can't get more than you pay for
