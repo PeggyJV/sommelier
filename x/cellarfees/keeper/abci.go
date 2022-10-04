@@ -7,9 +7,9 @@ import (
 	"github.com/peggyjv/sommelier/v4/x/cellarfees/types"
 )
 
-// BeginBlocker starts auctions when their scheduled block occurs and emits rewards each block they are available by sending
-// them to the distribution module's fee collector account. Emissions are a constant value based on the last peak supply of
-// distributable fees so that the reward supply will decrease linearly until exhausted.
+// BeginBlocker emits rewards each block they are available by sending them to the distribution module's fee collector
+// account. Emissions are a constant value based on the last peak supply of distributable fees so that the reward supply
+// will decrease linearly until exhausted.
 func (k Keeper) BeginBlocker(ctx sdk.Context) {
 	// Handle reward emissions
 	moduleAccount := k.accountKeeper.GetModuleAccount(ctx, types.ModuleName)

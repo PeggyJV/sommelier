@@ -29,13 +29,18 @@ func (h Hooks) AfterSignerSetExecutedEvent(ctx sdk.Context, event gravitytypes.S
 
 func (h Hooks) AfterBatchExecutedEvent(ctx sdk.Context, event gravitytypes.BatchExecutedEvent) {}
 
-// In order to update the CellarFeePool, we check gravity module SendToCosmos transactions to see if the recipient is
-// the cellarfees module account, and if the sender is a Cellar contract approved by governance. If these criteria are
-// met, we account for the coins as fees in the pool by setting it to the total balance of that denom in the account.
+// Each time we receive a fee accrual from a cellar, we increment a counter for the respective denom. If a counter
+// reaches a threshold defined in the cellarfees params, we attempt to start an auction. If the auction is started
+// successfully we reset the count for that denom.
 func (h Hooks) AfterSendToCosmosEvent(ctx sdk.Context, event gravitytypes.SendToCosmosEvent) {
 	// Check if recipient is the cellarfees module account
 	moduleAccountAddress := h.k.GetFeesAccount(ctx).GetAddress()
 	if event.CosmosReceiver != moduleAccountAddress.String() {
+		return
+	}
+
+	// Just in case. Calling beginAuction() for a zeroed balance will halt the chain.
+	if event.Amount.IsZero() {
 		return
 	}
 
@@ -45,12 +50,23 @@ func (h Hooks) AfterSendToCosmosEvent(ctx sdk.Context, event gravitytypes.SendTo
 		return
 	}
 
+	// Denom cannot be SOMM
 	_, denom := h.k.gravityKeeper.ERC20ToDenomLookup(ctx, common.HexToAddress(event.TokenContract))
 	if denom == params.BaseCoinUnit {
 		return
 	}
 
-	// counters := h.k.GetFeeAccrualCounters(ctx)
+	params := h.k.GetParams(ctx)
+	counters := h.k.GetFeeAccrualCounters(ctx)
+	count := counters.IncrementCounter(denom)
+	if count >= params.FeeAccrualAuctionThreshold {
+		started := h.k.beginAuction(ctx, denom)
+		if started {
+			counters.ResetCounter(denom)
+		}
+	}
+
+	h.k.SetFeeAccrualCounters(ctx, counters)
 
 	ctx.EventManager().EmitEvents(
 		sdk.Events{

@@ -7,26 +7,28 @@ import (
 	auctiontypes "github.com/peggyjv/sommelier/v4/x/auction/types"
 )
 
-func (k Keeper) beginAuction(ctx sdk.Context, denom string) {
+// Attempts to start an auction for the provided denom
+func (k Keeper) beginAuction(ctx sdk.Context, denom string) (started bool) {
 	activeAuctions := k.auctionKeeper.GetActiveAuctions(ctx)
 
 	// Don't start an auction if the denom has an active one
 	for _, auction := range activeAuctions {
 		if denom == auction.StartingTokensForSale.Denom {
-			return
+			return false
 		}
 	}
 
+	// We auction the entire balance in the cellarfees module account
 	params := k.GetParams(ctx)
 	cellarfeesAccountAddr := k.GetFeesAccount(ctx).GetAddress()
-	coin := k.bankKeeper.GetBalance(ctx, cellarfeesAccountAddr, denom)
-	if coin.IsZero() {
+	balance := k.bankKeeper.GetBalance(ctx, cellarfeesAccountAddr, denom)
+	if balance.IsZero() {
 		panic(fmt.Sprintf("Attempted to begin auction for denom %s with a zero balance.", denom))
 	}
 
 	err := k.auctionKeeper.BeginAuction(
 		ctx,
-		coin,
+		balance,
 		params.InitialPriceDecreaseRate,
 		params.PriceDecreaseBlockInterval,
 		string(cellarfeesAccountAddr),
@@ -34,7 +36,10 @@ func (k Keeper) beginAuction(ctx sdk.Context, denom string) {
 	)
 	if err != nil {
 		k.handleBeginAuctionError(ctx, err)
+		return false
 	}
+
+	return true
 }
 
 func (k Keeper) handleBeginAuctionError(ctx sdk.Context, err error) {
