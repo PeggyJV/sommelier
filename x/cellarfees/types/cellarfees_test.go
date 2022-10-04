@@ -24,9 +24,7 @@ func TestFeeAccrualCounters(t *testing.T) {
 		},
 	}
 
-	actual := FeeAccrualCounters{
-		Counters: make([]FeeAccrualCounter, 0),
-	}
+	actual := DefaultFeeAccrualCounters()
 
 	require.Equal(t, 0, len(actual.Counters))
 

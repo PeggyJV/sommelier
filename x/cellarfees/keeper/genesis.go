@@ -10,8 +10,9 @@ import (
 // InitGenesis initializes the module's state from a provided genesis
 // state.
 func (k Keeper) InitGenesis(ctx sdk.Context, gs types.GenesisState) {
-	k.SetLastRewardSupplyPeak(ctx, sdk.ZeroInt())
 	k.SetParams(ctx, gs.Params)
+	k.SetFeeAccrualCounters(ctx, gs.FeeAccrualCounters)
+	k.SetLastRewardSupplyPeak(ctx, gs.LastRewardSupplyPeak)
 
 	feesAccount := k.GetFeesAccount(ctx)
 	if feesAccount == nil {
@@ -24,6 +25,8 @@ func (k Keeper) InitGenesis(ctx sdk.Context, gs types.GenesisState) {
 // ExportGenesis returns the module's exported genesis.
 func (k Keeper) ExportGenesis(ctx sdk.Context) types.GenesisState {
 	return types.GenesisState{
-		Params: k.GetParams(ctx),
+		Params:               k.GetParams(ctx),
+		FeeAccrualCounters:   k.GetFeeAccrualCounters(ctx),
+		LastRewardSupplyPeak: k.GetLastRewardSupplyPeak(ctx),
 	}
 }

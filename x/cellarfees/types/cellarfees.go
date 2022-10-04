@@ -5,6 +5,12 @@ import (
 	"strings"
 )
 
+func DefaultFeeAccrualCounters() FeeAccrualCounters {
+	return FeeAccrualCounters{
+		Counters: []FeeAccrualCounter{},
+	}
+}
+
 // Implementing sort.Interface (see https://pkg.go.dev/sort#Interface)
 func (f FeeAccrualCounters) Len() int {
 	return len(f.Counters)
