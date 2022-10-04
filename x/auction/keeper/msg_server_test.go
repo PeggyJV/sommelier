@@ -61,7 +61,7 @@ func (suite *KeeperTestSuite) TestHappyPathSubmitBidAndFulfillFully() {
 
 	// Mock out bank keeper calls
 	bidderAcc, _ := sdk.AccAddressFromBech32(bidder)
-	suite.mockGetModuleAccount(ctx, auctionTypes.ModuleName)
+	suite.mockGetModuleAccount(ctx)
 	suite.mockGetBalance(ctx, authtypes.NewEmptyModuleAccount("mock").GetAddress(), saleToken, auctionedSaleTokens)
 	suite.mockSendCoinsFromAccountToModule(ctx, bidderAcc, auctionTypes.ModuleName, sdk.NewCoins(bid))
 	suite.mockSendCoinsFromModuleToAccount(ctx, auctionTypes.ModuleName, bidderAcc, sdk.NewCoins(fulfilledBid))
@@ -121,7 +121,7 @@ func (suite *KeeperTestSuite) TestHappyPathSubmitBidAndFulfillFully() {
 
 	// Mock out necessary bank keeper calls for bid completion
 	newBidderAcc, _ := sdk.AccAddressFromBech32(newBidder)
-	suite.mockGetModuleAccount(ctx, auctionTypes.ModuleName)
+	suite.mockGetModuleAccount(ctx)
 	suite.mockGetBalance(ctx, authtypes.NewEmptyModuleAccount("mock").GetAddress(), saleToken, expectedUpdatedAuction.RemainingTokensForSale)
 	suite.mockSendCoinsFromAccountToModule(ctx, newBidderAcc, auctionTypes.ModuleName, sdk.NewCoins(paidAmt))
 	suite.mockSendCoinsFromModuleToAccount(ctx, auctionTypes.ModuleName, newBidderAcc, sdk.NewCoins(newFulfilledAmt))
@@ -260,7 +260,7 @@ func (suite *KeeperTestSuite) TestUnhappyPathsForSubmitBid() {
 			},
 			expectedError: sdkerrors.Wrapf(auctionTypes.ErrInsufficientBid, "minimum purchase price: 2, max bid: 1"),
 			utilityFunctions: func() {
-				suite.mockGetModuleAccount(ctx, auctionTypes.ModuleName)
+				suite.mockGetModuleAccount(ctx)
 				suite.mockGetBalance(ctx, authtypes.NewEmptyModuleAccount("mock").GetAddress(), saleToken, originalAuction.RemainingTokensForSale)
 			},
 			submitBidResponse: &auctionTypes.MsgSubmitBidResponse{},
@@ -276,7 +276,7 @@ func (suite *KeeperTestSuite) TestUnhappyPathsForSubmitBid() {
 			},
 			expectedError: sdkerrors.Wrapf(auctionTypes.ErrMinimumPurchaseAmountLargerThanTokensRemaining, "Minimum purchase: %s, amount remaining: %s", sdk.NewInt(10002), originalAuction.RemainingTokensForSale.String()),
 			utilityFunctions: func() {
-				suite.mockGetModuleAccount(ctx, auctionTypes.ModuleName)
+				suite.mockGetModuleAccount(ctx)
 				suite.mockGetBalance(ctx, authtypes.NewEmptyModuleAccount("mock").GetAddress(), saleToken, originalAuction.RemainingTokensForSale)
 			},
 			submitBidResponse: &auctionTypes.MsgSubmitBidResponse{},
@@ -292,7 +292,7 @@ func (suite *KeeperTestSuite) TestUnhappyPathsForSubmitBid() {
 			},
 			expectedError: sdkerrors.Wrapf(auctionTypes.ErrBidMustBeInUsomm, "bid: %s", sdk.NewCoin("cinnamonRollCoin", sdk.NewInt(200)).String()),
 			utilityFunctions: func() {
-				suite.mockGetModuleAccount(ctx, auctionTypes.ModuleName)
+				suite.mockGetModuleAccount(ctx)
 				suite.mockGetBalance(ctx, authtypes.NewEmptyModuleAccount("mock").GetAddress(), saleToken, originalAuction.RemainingTokensForSale)
 			},
 			submitBidResponse: &auctionTypes.MsgSubmitBidResponse{},
@@ -308,7 +308,7 @@ func (suite *KeeperTestSuite) TestUnhappyPathsForSubmitBid() {
 			},
 			expectedError: sdkerrors.Wrapf(auctionTypes.ErrMinimumAmountMustBePositive, "sale token amount: %s", sdk.NewCoin(saleToken, sdk.NewInt(0)).String()),
 			utilityFunctions: func() {
-				suite.mockGetModuleAccount(ctx, auctionTypes.ModuleName)
+				suite.mockGetModuleAccount(ctx)
 				suite.mockGetBalance(ctx, authtypes.NewEmptyModuleAccount("mock").GetAddress(), saleToken, originalAuction.RemainingTokensForSale)
 			},
 			submitBidResponse: &auctionTypes.MsgSubmitBidResponse{},

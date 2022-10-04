@@ -9,8 +9,8 @@ import (
 	"github.com/golang/mock/gomock"
 )
 
-func (suite *KeeperTestSuite) mockGetModuleAccount(ctx sdk.Context, moduleName string) {
-	suite.accountKeeper.EXPECT().GetModuleAccount(ctx, moduleName).Return(authtypes.NewEmptyModuleAccount("mock"))
+func (suite *KeeperTestSuite) mockGetModuleAccount(ctx sdk.Context) {
+	suite.accountKeeper.EXPECT().GetModuleAccount(ctx, auctionTypes.ModuleName).Return(authtypes.NewEmptyModuleAccount("mock"))
 }
 
 func (suite *KeeperTestSuite) mockSetModuleAccount(ctx sdk.Context) {
@@ -29,7 +29,7 @@ func (suite *KeeperTestSuite) TestImportingEmtpyGenesis() {
 
 	testGenesis.Params.PriceMaxBlockAge = uint64(10)
 	require.NotPanics(func() {
-		suite.mockGetModuleAccount(ctx, auctionTypes.ModuleName)
+		suite.mockGetModuleAccount(ctx)
 		suite.mockSetModuleAccount(ctx)
 		InitGenesis(ctx, auctionKeeper, testGenesis)
 	})
@@ -162,10 +162,10 @@ func (suite *KeeperTestSuite) TestImportingPopulatedGenesis() {
 		LastBidId:     uint64(2),
 	}
 
-	require.NotPanics(func() { 
-		suite.mockGetModuleAccount(ctx, auctionTypes.ModuleName)
+	require.NotPanics(func() {
+		suite.mockGetModuleAccount(ctx)
 		suite.mockSetModuleAccount(ctx)
-		InitGenesis(ctx, auctionKeeper, testGenesis) 
+		InitGenesis(ctx, auctionKeeper, testGenesis)
 	})
 
 	// Verify value sets
