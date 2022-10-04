@@ -11,4 +11,7 @@ option go_package = "github.com/peggyjv/sommelier/v4/x/cellarfees/types";
 message GenesisState {
   Params params = 1 [(gogoproto.nullable) = false];
   CellarFeePool cellar_fee_pool = 2 [(gogoproto.nullable) = false];
+  FeeAccrualCounters fee_accrual_counters = 3 [(gogoproto.nullable) = false];
+  string last_reward_supply_peak = 4
+    [(gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int", (gogoproto.nullable) = false];
 }
