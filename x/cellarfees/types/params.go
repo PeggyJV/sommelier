@@ -8,21 +8,20 @@ import (
 )
 
 const (
-	DefaultAuctionBlockDelay          uint64 = 201600
-	DefaultRewardEmissionPeriod       uint64 = 403200
-	DefaultInitialPriceDecreaseRate   uint64 = 347000000000000
+	DefaultFeeAccrualAuctionThreshold uint64 = 2
+	// Rough number of blocks in 28 days, the time it takes to unbond
+	DefaultRewardEmissionPeriod uint64 = 403200
+	// Initial rate at which an auction should decrease the price of the relevant coin from it's starting price
+	DefaultInitialPriceDecreaseRate uint64 = 347000000000000
+	// Blocks between each auction price decrease
 	DefaultPriceDecreaseBlockInterval uint64 = 10
 )
 
 // Parameter keys
 var (
-	// Rough number of blocks in 2 weeks, or ~2 fee accrual cycles for one cellar
-	KeyAuctionBlockDelay = []byte("AuctionBlockDelay")
-	// Rough number of blocks in 28 days, the time it takes to unbond
-	KeyRewardEmissionPeriod = []byte("RewardEmissionPeriod")
-	// Initial rate at which an auction should decrease the price of the relevant coin from it's starting price
-	KeyInitialPriceDecreaseRate = []byte("InitialPriceDecreaseRate")
-	// Blocks between each auction price decrease
+	KeyFeeAccrualAuctionThreshold = []byte("FeeAccrualAuctionThreshold")
+	KeyRewardEmissionPeriod       = []byte("RewardEmissionPeriod")
+	KeyInitialPriceDecreaseRate   = []byte("InitialPriceDecreaseRate")
 	KeyPriceDecreaseBlockInterval = []byte("PriceDecreaseBlockInterval")
 )
 
@@ -37,7 +36,7 @@ func ParamKeyTable() paramtypes.KeyTable {
 func DefaultParams() Params {
 
 	return Params{
-		AuctionBlockDelay:          DefaultAuctionBlockDelay,
+		FeeAccrualAuctionThreshold: DefaultFeeAccrualAuctionThreshold,
 		RewardEmissionPeriod:       DefaultRewardEmissionPeriod,
 		InitialPriceDecreaseRate:   sdk.NewDec(int64(DefaultInitialPriceDecreaseRate)),
 		PriceDecreaseBlockInterval: DefaultPriceDecreaseBlockInterval,
@@ -47,7 +46,7 @@ func DefaultParams() Params {
 // ParamSetPairs returns the parameter set pairs.
 func (p *Params) ParamSetPairs() paramtypes.ParamSetPairs {
 	return paramtypes.ParamSetPairs{
-		paramtypes.NewParamSetPair(KeyAuctionBlockDelay, &p.AuctionBlockDelay, validateAuctionBlockDelay),
+		paramtypes.NewParamSetPair(KeyFeeAccrualAuctionThreshold, &p.FeeAccrualAuctionThreshold, validateFeeAccrualAuctionThreshold),
 		paramtypes.NewParamSetPair(KeyRewardEmissionPeriod, &p.RewardEmissionPeriod, validateRewardEmissionPeriod),
 		paramtypes.NewParamSetPair(KeyInitialPriceDecreaseRate, &p.InitialPriceDecreaseRate, validateInitialPriceDecreaseRate),
 		paramtypes.NewParamSetPair(KeyPriceDecreaseBlockInterval, &p.PriceDecreaseBlockInterval, validatePriceDecreaseBlockInterval),
@@ -56,7 +55,7 @@ func (p *Params) ParamSetPairs() paramtypes.ParamSetPairs {
 
 // ValidateBasic performs basic validation on cellarfees parameters.
 func (p *Params) ValidateBasic() error {
-	if err := validateAuctionBlockDelay(p.AuctionBlockDelay); err != nil {
+	if err := validateFeeAccrualAuctionThreshold(p.FeeAccrualAuctionThreshold); err != nil {
 		return err
 	}
 	if err := validateRewardEmissionPeriod(p.RewardEmissionPeriod); err != nil {
@@ -71,14 +70,14 @@ func (p *Params) ValidateBasic() error {
 	return nil
 }
 
-func validateAuctionBlockDelay(i interface{}) error {
-	blockDelay, ok := i.(uint64)
+func validateFeeAccrualAuctionThreshold(i interface{}) error {
+	threshold, ok := i.(uint64)
 	if !ok {
-		return sdkerrors.Wrapf(ErrInvalidAuctionBlockDelay, "auction block delay: %T", i)
+		return sdkerrors.Wrapf(ErrInvalidFeeAccrualAuctionThreshold, "fee accrual auction threshold: %T", i)
 	}
 
-	if blockDelay == 0 {
-		return sdkerrors.Wrapf(ErrInvalidAuctionBlockDelay, "auction block delay cannot be zero")
+	if threshold == 0 {
+		return sdkerrors.Wrapf(ErrInvalidFeeAccrualAuctionThreshold, "fee accrual auction threshold cannot be zero")
 	}
 
 	return nil

@@ -30,20 +30,3 @@ func (k Keeper) ModuleAccounts(c context.Context, req *types.QueryModuleAccounts
 		FeesAddress: k.GetFeesAccount(sdk.UnwrapSDKContext(c)).String(),
 	}, nil
 }
-
-// CellarFeePool queries the cellar fee pool coins
-func (k Keeper) CellarFeePool(c context.Context, req *types.QueryCellarFeePoolRequest) (*types.QueryCellarFeePoolResponse, error) {
-	ctx := sdk.UnwrapSDKContext(c)
-	pool := k.GetCellarFeePool(ctx).Pool
-
-	return &types.QueryCellarFeePoolResponse{Pool: pool}, nil
-}
-
-// ScheduledAuctionHeight gets the block height of the
-// (Collin) Kind of a misnomer. It's the next height that the pool will be evaluated for auction.
-func (k Keeper) ScheduledAuctionHeight(c context.Context, req *types.QueryScheduledAuctionHeightRequest) (*types.QueryScheduledAuctionHeightResponse, error) {
-	ctx := sdk.UnwrapSDKContext(c)
-	height := k.GetScheduledAuctionHeight(ctx)
-
-	return &types.QueryScheduledAuctionHeightResponse{Height: height}, nil
-}

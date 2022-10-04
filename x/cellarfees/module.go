@@ -106,9 +106,7 @@ func NewAppModule(keeper keeper.Keeper, cdc codec.Codec, accountKeeper types.Acc
 func (AppModule) Name() string { return types.ModuleName }
 
 // RegisterInvariants performs a no-op.
-func (am AppModule) RegisterInvariants(ir sdk.InvariantRegistry) {
-	ir.RegisterRoute(types.ModuleName, "pool-balances", keeper.PoolBalanceInvariants(am.keeper))
-}
+func (am AppModule) RegisterInvariants(ir sdk.InvariantRegistry) {}
 
 // Route returns the message routing key for the cellarfees module.
 func (am AppModule) Route() sdk.Route { return sdk.NewRoute(types.RouterKey, NewHandler(am.keeper)) }

@@ -1,71 +1,40 @@
 package keeper
 
 import (
+	"fmt"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	auctiontypes "github.com/peggyjv/sommelier/v4/x/auction/types"
 )
 
-func (k Keeper) HandleAuctions(ctx sdk.Context) {
-	pool := k.GetCellarFeePool(ctx).Pool
-	if pool.Empty() {
-		// Schedule next auction a short delay away until fees are found to auction
-		k.SetScheduledAuctionHeight(ctx, k.GetScheduledAuctionHeight(ctx)+100)
-		return
-	}
-
-	// Get coin denominations that don't have an active auction
+func (k Keeper) beginAuction(ctx sdk.Context, denom string) {
 	activeAuctions := k.auctionKeeper.GetActiveAuctions(ctx)
-	eligibleCoins := sdk.Coins{}
-	coinsToZero := sdk.Coins{}
-	for _, coin := range pool {
-		found := false
 
-		for _, auction := range activeAuctions {
-			if coin.Denom == auction.StartingTokensForSale.Denom {
-				found = true
-				break
-			}
-		}
-
-		if !found && !coin.IsZero() {
-			eligibleCoins = append(eligibleCoins, coin)
-			coinsToZero = append(coinsToZero, sdk.Coin{Amount: sdk.ZeroInt(), Denom: coin.Denom})
+	// Don't start an auction if the denom has an active one
+	for _, auction := range activeAuctions {
+		if denom == auction.StartingTokensForSale.Denom {
+			return
 		}
 	}
 
-	if eligibleCoins.Empty() {
-		k.ScheduleNextAuction(ctx)
-		return
-	}
-
-	// Start auctions
 	params := k.GetParams(ctx)
-	cellarfeesAccount := string(k.GetFeesAccount(ctx).GetAddress())
-	for _, coin := range eligibleCoins {
-		// TO-DO (Collin): handle this error
-		err := k.auctionKeeper.BeginAuction(
-			ctx,
-			coin,
-			params.InitialPriceDecreaseRate,
-			params.PriceDecreaseBlockInterval,
-			cellarfeesAccount,
-			cellarfeesAccount,
-		)
-		if err != nil {
-			k.handleBeginAuctionError(ctx, err)
-		}
+	cellarfeesAccountAddr := k.GetFeesAccount(ctx).GetAddress()
+	coin := k.bankKeeper.GetBalance(ctx, cellarfeesAccountAddr, denom)
+	if coin.IsZero() {
+		panic(fmt.Sprintf("Attempted to begin auction for denom %s with a zero balance.", denom))
 	}
 
-	// Update the pool to zero out coins sent to auction and schedule the next auction.
-	k.setPoolCoins(ctx, coinsToZero)
-	k.ScheduleNextAuction(ctx)
-}
-
-func (k Keeper) ScheduleNextAuction(ctx sdk.Context) {
-	lastAuctionHeight := k.GetScheduledAuctionHeight(ctx)
-	// next = last + delay param
-	nextAuctionHeight := lastAuctionHeight + k.GetParams(ctx).AuctionBlockDelay
-	k.SetScheduledAuctionHeight(ctx, nextAuctionHeight)
+	err := k.auctionKeeper.BeginAuction(
+		ctx,
+		coin,
+		params.InitialPriceDecreaseRate,
+		params.PriceDecreaseBlockInterval,
+		string(cellarfeesAccountAddr),
+		string(cellarfeesAccountAddr),
+	)
+	if err != nil {
+		k.handleBeginAuctionError(ctx, err)
+	}
 }
 
 func (k Keeper) handleBeginAuctionError(ctx sdk.Context, err error) {

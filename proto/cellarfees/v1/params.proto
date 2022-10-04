@@ -9,8 +9,8 @@ option go_package = "github.com/peggyjv/sommelier/v4/x/cellarfees/types";
 message Params {
   option (gogoproto.goproto_stringer) = false;
 
-  // The minimum number of blocks between each round of auctions
-  uint64 auction_block_delay = 1;
+  // The number of fee accruals after which an auction should be started
+  uint64 fee_accrual_auction_threshold = 1;
   // Emission rate factor. Specifically, the number of blocks over which to distribute
   // some amount of staking rewards.
   uint64 reward_emission_period = 2;
@@ -20,3 +20,5 @@ message Params {
   // Number of blocks between auction price decreases
   uint64 price_decrease_block_interval = 4;
 }
+
+

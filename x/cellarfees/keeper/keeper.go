@@ -1,7 +1,6 @@
 package keeper
 
 import (
-	"encoding/binary"
 	"fmt"
 	"math/big"
 
@@ -66,26 +65,6 @@ func (k Keeper) SetParams(ctx sdk.Context, params types.Params) {
 	k.paramSpace.SetParamSet(ctx, &params)
 }
 
-/////////////////////
-// Cellar Fee Pool //
-/////////////////////
-
-func (k Keeper) GetCellarFeePool(ctx sdk.Context) (cellarFeePool types.CellarFeePool) {
-	store := ctx.KVStore(k.storeKey)
-	b := store.Get(types.GetCellarFeePoolKey())
-	if b == nil {
-		panic("Stored cellar fee pool is nil, it should have been set by genesis")
-	}
-	k.cdc.MustUnmarshal(b, &cellarFeePool)
-	return
-}
-
-func (k Keeper) SetCellarFeePool(ctx sdk.Context, cellarFeePool types.CellarFeePool) {
-	store := ctx.KVStore(k.storeKey)
-	b := k.cdc.MustMarshal(&cellarFeePool)
-	store.Set(types.GetCellarFeePoolKey(), b)
-}
-
 ////////////////////////////////
 // Last highest reward supply //
 ////////////////////////////////
@@ -106,21 +85,23 @@ func (k Keeper) SetLastRewardSupplyPeak(ctx sdk.Context, amount sdk.Int) {
 	store.Set(types.GetLastRewardSupplyPeakKey(), b)
 }
 
-////////////////////////
-// Auction scheduling //
-////////////////////////
+//////////////////////////
+// Fee accrual counters //
+//////////////////////////
 
-func (k Keeper) GetScheduledAuctionHeight(ctx sdk.Context) uint64 {
+func (k Keeper) GetFeeAccrualCounters(ctx sdk.Context) (counters types.FeeAccrualCounters) {
 	store := ctx.KVStore(k.storeKey)
-	bz := store.Get(types.GetScheduledAuctionHeightKey())
-	if len(bz) == 0 {
-		return 0
+	b := store.Get(types.GetFeeAccrualCountersKey())
+	if b == nil {
+		panic("Fee accrual counters should not have been nil")
 	}
 
-	return binary.BigEndian.Uint64(bz)
+	k.cdc.MustUnmarshal(b, &counters)
+	return
 }
 
-func (k Keeper) SetScheduledAuctionHeight(ctx sdk.Context, amount uint64) {
+func (k Keeper) SetFeeAccrualCounters(ctx sdk.Context, counters types.FeeAccrualCounters) {
 	store := ctx.KVStore(k.storeKey)
-	store.Set([]byte{types.ScheduledAuctionHeightKey}, sdk.Uint64ToBigEndian(uint64(amount)))
+	b := k.cdc.MustMarshal(&counters)
+	store.Set(types.GetFeeAccrualCountersKey(), b)
 }

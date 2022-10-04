@@ -39,28 +39,18 @@ func (h Hooks) AfterSendToCosmosEvent(ctx sdk.Context, event gravitytypes.SendTo
 		return
 	}
 
-	// Check if the sender is an approved Cellar contract. We don't want to include any coins
-	// sent to the account in the pool.
+	// Check if the sender is an approved Cellar contract. We don't want to count coins sent from any address
+	// as fee accruals.
 	if !h.k.corkKeeper.HasCellarID(ctx, common.HexToAddress(event.EthereumSender)) {
 		return
 	}
 
 	_, denom := h.k.gravityKeeper.ERC20ToDenomLookup(ctx, common.HexToAddress(event.TokenContract))
-
 	if denom == params.BaseCoinUnit {
 		return
 	}
 
-	balance := h.k.bankKeeper.GetBalance(ctx, moduleAccountAddress, denom)
-
-	// sanity check
-	if balance.Amount.LT(event.Amount) {
-		panic("Coin balance in module account cannot be less than was sent from Ethereum!")
-	}
-
-	// By updating the balance this way, we account for coins that were sent to the module account by some other means
-	// than cellar fee accrual, just in case someone feels like generously bridging a donation to stakers.
-	h.k.setPoolCoins(ctx, sdk.Coins{balance})
+	// counters := h.k.GetFeeAccrualCounters(ctx)
 
 	ctx.EventManager().EmitEvents(
 		sdk.Events{

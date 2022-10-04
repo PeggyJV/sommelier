@@ -10,9 +10,7 @@ import (
 // InitGenesis initializes the module's state from a provided genesis
 // state.
 func (k Keeper) InitGenesis(ctx sdk.Context, gs types.GenesisState) {
-	k.SetCellarFeePool(ctx, gs.CellarFeePool)
 	k.SetLastRewardSupplyPeak(ctx, sdk.ZeroInt())
-	k.SetScheduledAuctionHeight(ctx, 0)
 	k.SetParams(ctx, gs.Params)
 
 	feesAccount := k.GetFeesAccount(ctx)
@@ -26,7 +24,6 @@ func (k Keeper) InitGenesis(ctx sdk.Context, gs types.GenesisState) {
 // ExportGenesis returns the module's exported genesis.
 func (k Keeper) ExportGenesis(ctx sdk.Context) types.GenesisState {
 	return types.GenesisState{
-		Params:        k.GetParams(ctx),
-		CellarFeePool: k.GetCellarFeePool(ctx),
+		Params: k.GetParams(ctx),
 	}
 }

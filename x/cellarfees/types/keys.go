@@ -22,8 +22,8 @@ const (
 	// key for storing the reward supply after the latest increase
 	LastRewardSupplyPeakKey
 
-	// key for storing the next scheduled auction height
-	ScheduledAuctionHeightKey
+	// key for storing fee accrual counts
+	FeeAccrualCountersKey
 )
 
 // GetCellarFeePoolKey returns the key prefix
@@ -36,7 +36,7 @@ func GetLastRewardSupplyPeakKey() []byte {
 	return []byte{LastRewardSupplyPeakKey}
 }
 
-// GetScheduledAuctionHeightKey returns the key prefix
-func GetScheduledAuctionHeightKey() []byte {
-	return []byte{ScheduledAuctionHeightKey}
+// GetFeeAccrualCountersKey returns the key prefix
+func GetFeeAccrualCountersKey() []byte {
+	return []byte{FeeAccrualCountersKey}
 }

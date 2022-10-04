@@ -11,11 +11,6 @@ import (
 // them to the distribution module's fee collector account. Emissions are a constant value based on the last peak supply of
 // distributable fees so that the reward supply will decrease linearly until exhausted.
 func (k Keeper) BeginBlocker(ctx sdk.Context) {
-	// Handle auctions
-	if ctx.BlockHeight() == int64(k.GetScheduledAuctionHeight(ctx)) {
-		k.HandleAuctions(ctx)
-	}
-
 	// Handle reward emissions
 	moduleAccount := k.accountKeeper.GetModuleAccount(ctx, types.ModuleName)
 	remainingRewardsSupply := k.bankKeeper.GetBalance(ctx, moduleAccount.GetAddress(), appParams.BaseCoinUnit).Amount

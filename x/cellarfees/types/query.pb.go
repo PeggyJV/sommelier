@@ -6,8 +6,6 @@ package types
 import (
 	context "context"
 	fmt "fmt"
-	github_com_cosmos_cosmos_sdk_types "github.com/cosmos/cosmos-sdk/types"
-	types "github.com/cosmos/cosmos-sdk/types"
 	_ "github.com/gogo/protobuf/gogoproto"
 	grpc1 "github.com/gogo/protobuf/grpc"
 	proto "github.com/gogo/protobuf/proto"
@@ -191,218 +189,40 @@ func (m *QueryModuleAccountsResponse) GetFeesAddress() string {
 	return ""
 }
 
-type QueryCellarFeePoolRequest struct {
-}
-
-func (m *QueryCellarFeePoolRequest) Reset()         { *m = QueryCellarFeePoolRequest{} }
-func (m *QueryCellarFeePoolRequest) String() string { return proto.CompactTextString(m) }
-func (*QueryCellarFeePoolRequest) ProtoMessage()    {}
-func (*QueryCellarFeePoolRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_6f4742d3026cf20c, []int{4}
-}
-func (m *QueryCellarFeePoolRequest) XXX_Unmarshal(b []byte) error {
-	return m.Unmarshal(b)
-}
-func (m *QueryCellarFeePoolRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	if deterministic {
-		return xxx_messageInfo_QueryCellarFeePoolRequest.Marshal(b, m, deterministic)
-	} else {
-		b = b[:cap(b)]
-		n, err := m.MarshalToSizedBuffer(b)
-		if err != nil {
-			return nil, err
-		}
-		return b[:n], nil
-	}
-}
-func (m *QueryCellarFeePoolRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_QueryCellarFeePoolRequest.Merge(m, src)
-}
-func (m *QueryCellarFeePoolRequest) XXX_Size() int {
-	return m.Size()
-}
-func (m *QueryCellarFeePoolRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_QueryCellarFeePoolRequest.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_QueryCellarFeePoolRequest proto.InternalMessageInfo
-
-type QueryCellarFeePoolResponse struct {
-	Pool github_com_cosmos_cosmos_sdk_types.Coins `protobuf:"bytes,1,rep,name=pool,proto3,castrepeated=github.com/cosmos/cosmos-sdk/types.Coins" json:"pool"`
-}
-
-func (m *QueryCellarFeePoolResponse) Reset()         { *m = QueryCellarFeePoolResponse{} }
-func (m *QueryCellarFeePoolResponse) String() string { return proto.CompactTextString(m) }
-func (*QueryCellarFeePoolResponse) ProtoMessage()    {}
-func (*QueryCellarFeePoolResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_6f4742d3026cf20c, []int{5}
-}
-func (m *QueryCellarFeePoolResponse) XXX_Unmarshal(b []byte) error {
-	return m.Unmarshal(b)
-}
-func (m *QueryCellarFeePoolResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	if deterministic {
-		return xxx_messageInfo_QueryCellarFeePoolResponse.Marshal(b, m, deterministic)
-	} else {
-		b = b[:cap(b)]
-		n, err := m.MarshalToSizedBuffer(b)
-		if err != nil {
-			return nil, err
-		}
-		return b[:n], nil
-	}
-}
-func (m *QueryCellarFeePoolResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_QueryCellarFeePoolResponse.Merge(m, src)
-}
-func (m *QueryCellarFeePoolResponse) XXX_Size() int {
-	return m.Size()
-}
-func (m *QueryCellarFeePoolResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_QueryCellarFeePoolResponse.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_QueryCellarFeePoolResponse proto.InternalMessageInfo
-
-func (m *QueryCellarFeePoolResponse) GetPool() github_com_cosmos_cosmos_sdk_types.Coins {
-	if m != nil {
-		return m.Pool
-	}
-	return nil
-}
-
-type QueryScheduledAuctionHeightRequest struct {
-}
-
-func (m *QueryScheduledAuctionHeightRequest) Reset()         { *m = QueryScheduledAuctionHeightRequest{} }
-func (m *QueryScheduledAuctionHeightRequest) String() string { return proto.CompactTextString(m) }
-func (*QueryScheduledAuctionHeightRequest) ProtoMessage()    {}
-func (*QueryScheduledAuctionHeightRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_6f4742d3026cf20c, []int{6}
-}
-func (m *QueryScheduledAuctionHeightRequest) XXX_Unmarshal(b []byte) error {
-	return m.Unmarshal(b)
-}
-func (m *QueryScheduledAuctionHeightRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	if deterministic {
-		return xxx_messageInfo_QueryScheduledAuctionHeightRequest.Marshal(b, m, deterministic)
-	} else {
-		b = b[:cap(b)]
-		n, err := m.MarshalToSizedBuffer(b)
-		if err != nil {
-			return nil, err
-		}
-		return b[:n], nil
-	}
-}
-func (m *QueryScheduledAuctionHeightRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_QueryScheduledAuctionHeightRequest.Merge(m, src)
-}
-func (m *QueryScheduledAuctionHeightRequest) XXX_Size() int {
-	return m.Size()
-}
-func (m *QueryScheduledAuctionHeightRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_QueryScheduledAuctionHeightRequest.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_QueryScheduledAuctionHeightRequest proto.InternalMessageInfo
-
-type QueryScheduledAuctionHeightResponse struct {
-	Height uint64 `protobuf:"varint,1,opt,name=height,proto3" json:"height,omitempty"`
-}
-
-func (m *QueryScheduledAuctionHeightResponse) Reset()         { *m = QueryScheduledAuctionHeightResponse{} }
-func (m *QueryScheduledAuctionHeightResponse) String() string { return proto.CompactTextString(m) }
-func (*QueryScheduledAuctionHeightResponse) ProtoMessage()    {}
-func (*QueryScheduledAuctionHeightResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_6f4742d3026cf20c, []int{7}
-}
-func (m *QueryScheduledAuctionHeightResponse) XXX_Unmarshal(b []byte) error {
-	return m.Unmarshal(b)
-}
-func (m *QueryScheduledAuctionHeightResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	if deterministic {
-		return xxx_messageInfo_QueryScheduledAuctionHeightResponse.Marshal(b, m, deterministic)
-	} else {
-		b = b[:cap(b)]
-		n, err := m.MarshalToSizedBuffer(b)
-		if err != nil {
-			return nil, err
-		}
-		return b[:n], nil
-	}
-}
-func (m *QueryScheduledAuctionHeightResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_QueryScheduledAuctionHeightResponse.Merge(m, src)
-}
-func (m *QueryScheduledAuctionHeightResponse) XXX_Size() int {
-	return m.Size()
-}
-func (m *QueryScheduledAuctionHeightResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_QueryScheduledAuctionHeightResponse.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_QueryScheduledAuctionHeightResponse proto.InternalMessageInfo
-
-func (m *QueryScheduledAuctionHeightResponse) GetHeight() uint64 {
-	if m != nil {
-		return m.Height
-	}
-	return 0
-}
-
 func init() {
 	proto.RegisterType((*QueryParamsRequest)(nil), "cellarfees.v1.QueryParamsRequest")
 	proto.RegisterType((*QueryParamsResponse)(nil), "cellarfees.v1.QueryParamsResponse")
 	proto.RegisterType((*QueryModuleAccountsRequest)(nil), "cellarfees.v1.QueryModuleAccountsRequest")
 	proto.RegisterType((*QueryModuleAccountsResponse)(nil), "cellarfees.v1.QueryModuleAccountsResponse")
-	proto.RegisterType((*QueryCellarFeePoolRequest)(nil), "cellarfees.v1.QueryCellarFeePoolRequest")
-	proto.RegisterType((*QueryCellarFeePoolResponse)(nil), "cellarfees.v1.QueryCellarFeePoolResponse")
-	proto.RegisterType((*QueryScheduledAuctionHeightRequest)(nil), "cellarfees.v1.QueryScheduledAuctionHeightRequest")
-	proto.RegisterType((*QueryScheduledAuctionHeightResponse)(nil), "cellarfees.v1.QueryScheduledAuctionHeightResponse")
 }
 
 func init() { proto.RegisterFile("cellarfees/v1/query.proto", fileDescriptor_6f4742d3026cf20c) }
 
 var fileDescriptor_6f4742d3026cf20c = []byte{
-	// 589 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x94, 0x94, 0xc1, 0x6e, 0xd3, 0x40,
-	0x10, 0x86, 0x63, 0x08, 0x91, 0xd8, 0x52, 0x0e, 0x4b, 0xa9, 0x5a, 0xb7, 0x72, 0x1a, 0x83, 0x44,
-	0x52, 0x84, 0xb7, 0x4e, 0xb8, 0x70, 0x40, 0x22, 0xa9, 0x84, 0x10, 0x02, 0xa9, 0x84, 0x1b, 0x17,
-	0x6b, 0xe3, 0x4c, 0x1d, 0x83, 0xed, 0x75, 0xbd, 0x76, 0xd4, 0x1c, 0xb8, 0xf0, 0x04, 0x48, 0x48,
-	0x1c, 0x78, 0x04, 0x1e, 0x81, 0x27, 0xe8, 0xb1, 0x12, 0x17, 0x4e, 0x80, 0x12, 0x1e, 0x81, 0x07,
-	0x40, 0xde, 0xdd, 0xd0, 0x24, 0xb8, 0x51, 0x39, 0x25, 0xde, 0x99, 0xf9, 0xff, 0xcf, 0x33, 0xb3,
-	0x46, 0x9b, 0x2e, 0x04, 0x01, 0x4d, 0x0e, 0x01, 0x38, 0x19, 0xda, 0xe4, 0x28, 0x83, 0x64, 0x64,
-	0xc5, 0x09, 0x4b, 0x19, 0x5e, 0x3d, 0x0b, 0x59, 0x43, 0x5b, 0x5f, 0xf3, 0x98, 0xc7, 0x44, 0x84,
-	0xe4, 0xff, 0x64, 0x92, 0xbe, 0xed, 0x31, 0xe6, 0x05, 0x40, 0x68, 0xec, 0x13, 0x1a, 0x45, 0x2c,
-	0xa5, 0xa9, 0xcf, 0x22, 0xae, 0xa2, 0xfa, 0xbc, 0x7a, 0x4c, 0x13, 0x1a, 0x4e, 0x63, 0x86, 0xcb,
-	0x78, 0xc8, 0x38, 0xe9, 0x51, 0x0e, 0x64, 0x68, 0xf7, 0x20, 0xa5, 0x36, 0x71, 0x99, 0x1f, 0xc9,
-	0xb8, 0xb9, 0x86, 0xf0, 0x8b, 0x9c, 0xe6, 0x40, 0x14, 0x75, 0xe1, 0x28, 0x03, 0x9e, 0x9a, 0x4f,
-	0xd1, 0x8d, 0xb9, 0x53, 0x1e, 0xb3, 0x88, 0x03, 0x6e, 0xa1, 0x8a, 0x14, 0xdf, 0xd0, 0x76, 0xb4,
-	0xfa, 0x4a, 0xf3, 0xa6, 0x35, 0x07, 0x6f, 0xc9, 0xf4, 0x4e, 0xf9, 0xe4, 0x7b, 0xb5, 0xd4, 0x55,
-	0xa9, 0xe6, 0x36, 0xd2, 0x85, 0xd6, 0x73, 0xd6, 0xcf, 0x02, 0x68, 0xbb, 0x2e, 0xcb, 0xa2, 0xf4,
-	0xaf, 0xd3, 0x23, 0xb4, 0x55, 0x18, 0x55, 0x8e, 0x35, 0x74, 0x2d, 0x17, 0x77, 0x68, 0xbf, 0x9f,
-	0x00, 0x97, 0xbe, 0x57, 0xbb, 0x2b, 0xf9, 0x59, 0x5b, 0x1e, 0x99, 0x5b, 0x68, 0x53, 0x28, 0xec,
-	0x0b, 0x94, 0xc7, 0x00, 0x07, 0x8c, 0x05, 0x53, 0xf9, 0xb7, 0xca, 0x7c, 0x21, 0xa8, 0xd4, 0x1d,
-	0x54, 0x8e, 0x19, 0x0b, 0x36, 0xb4, 0x9d, 0xcb, 0xf5, 0x95, 0xe6, 0xa6, 0x25, 0x7b, 0x65, 0xe5,
-	0xbd, 0xb2, 0x54, 0xaf, 0xac, 0x7d, 0xe6, 0x47, 0x9d, 0xbd, 0xfc, 0x8d, 0x3e, 0xff, 0xa8, 0xd6,
-	0x3d, 0x3f, 0x1d, 0x64, 0x3d, 0xcb, 0x65, 0x21, 0x51, 0x8d, 0x95, 0x3f, 0xf7, 0x78, 0xff, 0x0d,
-	0x49, 0x47, 0x31, 0x70, 0x51, 0xc0, 0xbb, 0x42, 0xd8, 0xbc, 0x8d, 0x4c, 0x61, 0xff, 0xd2, 0x1d,
-	0x40, 0xfe, 0x7e, 0xfd, 0x76, 0xe6, 0xe6, 0x93, 0x7b, 0x02, 0xbe, 0x37, 0x48, 0xa7, 0x90, 0x0f,
-	0xd1, 0xad, 0xa5, 0x59, 0x8a, 0x76, 0x1d, 0x55, 0x06, 0xe2, 0x44, 0x74, 0xa1, 0xdc, 0x55, 0x4f,
-	0xcd, 0xdf, 0x65, 0x74, 0x45, 0xd4, 0xe3, 0x63, 0x54, 0x91, 0x23, 0xc0, 0xb5, 0x85, 0xc9, 0xfc,
-	0x3b, 0x63, 0xdd, 0x5c, 0x96, 0x22, 0x2d, 0xcd, 0x3b, 0xef, 0xbe, 0xfe, 0xfa, 0x70, 0xa9, 0x86,
-	0xab, 0x84, 0xb3, 0x30, 0x84, 0xc0, 0x87, 0x84, 0x14, 0x2d, 0x1b, 0xfe, 0xa4, 0xa1, 0xeb, 0xf3,
-	0x23, 0xc4, 0x8d, 0x22, 0xfd, 0xc2, 0x25, 0xd0, 0x77, 0x2f, 0x92, 0xaa, 0x90, 0x6c, 0x81, 0x74,
-	0x17, 0x37, 0xce, 0x90, 0xf8, 0x02, 0x53, 0x28, 0x2a, 0x1d, 0x3a, 0x25, 0xf9, 0xa8, 0xa1, 0xd5,
-	0xb9, 0x05, 0xc0, 0xf5, 0x22, 0xc3, 0xa2, 0x05, 0xd2, 0x1b, 0x17, 0xc8, 0x54, 0x64, 0x7b, 0x82,
-	0x6c, 0x17, 0xd7, 0xcf, 0x6d, 0x96, 0x7c, 0x72, 0x0e, 0x01, 0x9c, 0x7c, 0x3d, 0xf0, 0x17, 0x0d,
-	0xad, 0x17, 0x0f, 0x1d, 0xdb, 0x45, 0xbe, 0x4b, 0xd7, 0x48, 0x6f, 0xfe, 0x4f, 0x89, 0x62, 0x7e,
-	0x20, 0x98, 0x5b, 0xd8, 0x3e, 0x97, 0x99, 0x4f, 0x05, 0x1c, 0x2a, 0x15, 0x1c, 0xb9, 0x76, 0x9d,
-	0x67, 0x27, 0x63, 0x43, 0x3b, 0x1d, 0x1b, 0xda, 0xcf, 0xb1, 0xa1, 0xbd, 0x9f, 0x18, 0xa5, 0xd3,
-	0x89, 0x51, 0xfa, 0x36, 0x31, 0x4a, 0xaf, 0x9a, 0x33, 0xb7, 0x24, 0x06, 0xcf, 0x1b, 0xbd, 0x1e,
-	0xce, 0xc8, 0x0f, 0xef, 0x93, 0xe3, 0x59, 0x0f, 0x71, 0x6b, 0x7a, 0x15, 0xf1, 0x39, 0x6a, 0xfd,
-	0x09, 0x00, 0x00, 0xff, 0xff, 0x33, 0x77, 0x48, 0xa5, 0x2a, 0x05, 0x00, 0x00,
+	// 368 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x8c, 0x52, 0xc1, 0x4e, 0xc2, 0x40,
+	0x14, 0x6c, 0x89, 0x92, 0xb8, 0xa8, 0x87, 0x15, 0x13, 0xad, 0xa4, 0x48, 0x2f, 0x8a, 0x26, 0xdd,
+	0x00, 0x7e, 0x80, 0x70, 0x34, 0x9a, 0x28, 0x47, 0x2f, 0x64, 0x29, 0xcf, 0x5a, 0xd3, 0x76, 0x4b,
+	0xb7, 0x6d, 0xe0, 0xea, 0x17, 0x98, 0x78, 0xf3, 0xe0, 0xf7, 0x70, 0x24, 0xf1, 0xe2, 0xc9, 0x18,
+	0xf0, 0x43, 0x4c, 0xbb, 0x8d, 0x50, 0x6c, 0x8c, 0xb7, 0xcd, 0xcc, 0xbc, 0x99, 0x79, 0x2f, 0x8b,
+	0xf6, 0x0d, 0xb0, 0x6d, 0xea, 0xdf, 0x01, 0x70, 0x12, 0x35, 0xc8, 0x30, 0x04, 0x7f, 0xac, 0x7b,
+	0x3e, 0x0b, 0x18, 0xde, 0x5a, 0x50, 0x7a, 0xd4, 0x50, 0xca, 0x26, 0x33, 0x59, 0xc2, 0x90, 0xf8,
+	0x25, 0x44, 0x4a, 0xc5, 0x64, 0xcc, 0xb4, 0x81, 0x50, 0xcf, 0x22, 0xd4, 0x75, 0x59, 0x40, 0x03,
+	0x8b, 0xb9, 0x3c, 0x65, 0x95, 0xac, 0xbb, 0x47, 0x7d, 0xea, 0xa4, 0x9c, 0x56, 0x46, 0xf8, 0x26,
+	0x4e, 0xbb, 0x4e, 0xc0, 0x2e, 0x0c, 0x43, 0xe0, 0x81, 0x76, 0x81, 0x76, 0x32, 0x28, 0xf7, 0x98,
+	0xcb, 0x01, 0xb7, 0x50, 0x51, 0x0c, 0xef, 0xc9, 0x87, 0xf2, 0x71, 0xa9, 0xb9, 0xab, 0x67, 0xca,
+	0xe9, 0x42, 0xde, 0x59, 0x9b, 0x7c, 0x54, 0xa5, 0x6e, 0x2a, 0xd5, 0x2a, 0x48, 0x49, 0xbc, 0xae,
+	0xd8, 0x20, 0xb4, 0xa1, 0x6d, 0x18, 0x2c, 0x74, 0x83, 0x9f, 0xa4, 0x73, 0x74, 0x90, 0xcb, 0xa6,
+	0x89, 0x35, 0xb4, 0x19, 0x9b, 0xf7, 0xe8, 0x60, 0xe0, 0x03, 0x17, 0xb9, 0x1b, 0xdd, 0x52, 0x8c,
+	0xb5, 0x05, 0xd4, 0x7c, 0x2d, 0xa0, 0xf5, 0xc4, 0x02, 0x8f, 0x50, 0x51, 0x34, 0xc0, 0xb5, 0x95,
+	0x62, 0xbf, 0x57, 0x54, 0xb4, 0xbf, 0x24, 0x22, 0x5d, 0x3b, 0x7a, 0x7c, 0xfb, 0x7a, 0x2e, 0xd4,
+	0x70, 0x95, 0x70, 0xe6, 0x38, 0x60, 0x5b, 0xe0, 0x93, 0xbc, 0x5b, 0xe2, 0x17, 0x19, 0x6d, 0x67,
+	0x37, 0xc0, 0xf5, 0x3c, 0xff, 0xdc, 0x1b, 0x28, 0x27, 0xff, 0x91, 0xa6, 0x95, 0x1a, 0x49, 0xa5,
+	0x53, 0x5c, 0x5f, 0x54, 0xe2, 0x2b, 0x9d, 0x9c, 0x64, 0xb2, 0x47, 0xd3, 0xd1, 0xce, 0xe5, 0x64,
+	0xa6, 0xca, 0xd3, 0x99, 0x2a, 0x7f, 0xce, 0x54, 0xf9, 0x69, 0xae, 0x4a, 0xd3, 0xb9, 0x2a, 0xbd,
+	0xcf, 0x55, 0xe9, 0xb6, 0x69, 0x5a, 0xc1, 0x7d, 0xd8, 0xd7, 0x0d, 0xe6, 0x10, 0x0f, 0x4c, 0x73,
+	0xfc, 0x10, 0x2d, 0x6d, 0x1a, 0x9d, 0x91, 0xd1, 0xb2, 0x75, 0x30, 0xf6, 0x80, 0xf7, 0x8b, 0xc9,
+	0xbf, 0x69, 0x7d, 0x07, 0x00, 0x00, 0xff, 0xff, 0x08, 0xc7, 0x65, 0x0e, 0xb3, 0x02, 0x00, 0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -419,8 +239,6 @@ const _ = grpc.SupportPackageIsVersion4
 type QueryClient interface {
 	Params(ctx context.Context, in *QueryParamsRequest, opts ...grpc.CallOption) (*QueryParamsResponse, error)
 	ModuleAccounts(ctx context.Context, in *QueryModuleAccountsRequest, opts ...grpc.CallOption) (*QueryModuleAccountsResponse, error)
-	CellarFeePool(ctx context.Context, in *QueryCellarFeePoolRequest, opts ...grpc.CallOption) (*QueryCellarFeePoolResponse, error)
-	ScheduledAuctionHeight(ctx context.Context, in *QueryScheduledAuctionHeightRequest, opts ...grpc.CallOption) (*QueryScheduledAuctionHeightResponse, error)
 }
 
 type queryClient struct {
@@ -449,30 +267,10 @@ func (c *queryClient) ModuleAccounts(ctx context.Context, in *QueryModuleAccount
 	return out, nil
 }
 
-func (c *queryClient) CellarFeePool(ctx context.Context, in *QueryCellarFeePoolRequest, opts ...grpc.CallOption) (*QueryCellarFeePoolResponse, error) {
-	out := new(QueryCellarFeePoolResponse)
-	err := c.cc.Invoke(ctx, "/cellarfees.v1.Query/CellarFeePool", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *queryClient) ScheduledAuctionHeight(ctx context.Context, in *QueryScheduledAuctionHeightRequest, opts ...grpc.CallOption) (*QueryScheduledAuctionHeightResponse, error) {
-	out := new(QueryScheduledAuctionHeightResponse)
-	err := c.cc.Invoke(ctx, "/cellarfees.v1.Query/ScheduledAuctionHeight", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
 // QueryServer is the server API for Query service.
 type QueryServer interface {
 	Params(context.Context, *QueryParamsRequest) (*QueryParamsResponse, error)
 	ModuleAccounts(context.Context, *QueryModuleAccountsRequest) (*QueryModuleAccountsResponse, error)
-	CellarFeePool(context.Context, *QueryCellarFeePoolRequest) (*QueryCellarFeePoolResponse, error)
-	ScheduledAuctionHeight(context.Context, *QueryScheduledAuctionHeightRequest) (*QueryScheduledAuctionHeightResponse, error)
 }
 
 // UnimplementedQueryServer can be embedded to have forward compatible implementations.
@@ -484,12 +282,6 @@ func (*UnimplementedQueryServer) Params(ctx context.Context, req *QueryParamsReq
 }
 func (*UnimplementedQueryServer) ModuleAccounts(ctx context.Context, req *QueryModuleAccountsRequest) (*QueryModuleAccountsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ModuleAccounts not implemented")
-}
-func (*UnimplementedQueryServer) CellarFeePool(ctx context.Context, req *QueryCellarFeePoolRequest) (*QueryCellarFeePoolResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method CellarFeePool not implemented")
-}
-func (*UnimplementedQueryServer) ScheduledAuctionHeight(ctx context.Context, req *QueryScheduledAuctionHeightRequest) (*QueryScheduledAuctionHeightResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method ScheduledAuctionHeight not implemented")
 }
 
 func RegisterQueryServer(s grpc1.Server, srv QueryServer) {
@@ -532,42 +324,6 @@ func _Query_ModuleAccounts_Handler(srv interface{}, ctx context.Context, dec fun
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Query_CellarFeePool_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(QueryCellarFeePoolRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(QueryServer).CellarFeePool(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/cellarfees.v1.Query/CellarFeePool",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(QueryServer).CellarFeePool(ctx, req.(*QueryCellarFeePoolRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _Query_ScheduledAuctionHeight_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(QueryScheduledAuctionHeightRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(QueryServer).ScheduledAuctionHeight(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/cellarfees.v1.Query/ScheduledAuctionHeight",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(QueryServer).ScheduledAuctionHeight(ctx, req.(*QueryScheduledAuctionHeightRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
 var _Query_serviceDesc = grpc.ServiceDesc{
 	ServiceName: "cellarfees.v1.Query",
 	HandlerType: (*QueryServer)(nil),
@@ -579,14 +335,6 @@ var _Query_serviceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "ModuleAccounts",
 			Handler:    _Query_ModuleAccounts_Handler,
-		},
-		{
-			MethodName: "CellarFeePool",
-			Handler:    _Query_CellarFeePool_Handler,
-		},
-		{
-			MethodName: "ScheduledAuctionHeight",
-			Handler:    _Query_ScheduledAuctionHeight_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
@@ -702,117 +450,6 @@ func (m *QueryModuleAccountsResponse) MarshalToSizedBuffer(dAtA []byte) (int, er
 	return len(dAtA) - i, nil
 }
 
-func (m *QueryCellarFeePoolRequest) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
-	dAtA = make([]byte, size)
-	n, err := m.MarshalToSizedBuffer(dAtA[:size])
-	if err != nil {
-		return nil, err
-	}
-	return dAtA[:n], nil
-}
-
-func (m *QueryCellarFeePoolRequest) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
-	return m.MarshalToSizedBuffer(dAtA[:size])
-}
-
-func (m *QueryCellarFeePoolRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
-	i := len(dAtA)
-	_ = i
-	var l int
-	_ = l
-	return len(dAtA) - i, nil
-}
-
-func (m *QueryCellarFeePoolResponse) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
-	dAtA = make([]byte, size)
-	n, err := m.MarshalToSizedBuffer(dAtA[:size])
-	if err != nil {
-		return nil, err
-	}
-	return dAtA[:n], nil
-}
-
-func (m *QueryCellarFeePoolResponse) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
-	return m.MarshalToSizedBuffer(dAtA[:size])
-}
-
-func (m *QueryCellarFeePoolResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
-	i := len(dAtA)
-	_ = i
-	var l int
-	_ = l
-	if len(m.Pool) > 0 {
-		for iNdEx := len(m.Pool) - 1; iNdEx >= 0; iNdEx-- {
-			{
-				size, err := m.Pool[iNdEx].MarshalToSizedBuffer(dAtA[:i])
-				if err != nil {
-					return 0, err
-				}
-				i -= size
-				i = encodeVarintQuery(dAtA, i, uint64(size))
-			}
-			i--
-			dAtA[i] = 0xa
-		}
-	}
-	return len(dAtA) - i, nil
-}
-
-func (m *QueryScheduledAuctionHeightRequest) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
-	dAtA = make([]byte, size)
-	n, err := m.MarshalToSizedBuffer(dAtA[:size])
-	if err != nil {
-		return nil, err
-	}
-	return dAtA[:n], nil
-}
-
-func (m *QueryScheduledAuctionHeightRequest) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
-	return m.MarshalToSizedBuffer(dAtA[:size])
-}
-
-func (m *QueryScheduledAuctionHeightRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
-	i := len(dAtA)
-	_ = i
-	var l int
-	_ = l
-	return len(dAtA) - i, nil
-}
-
-func (m *QueryScheduledAuctionHeightResponse) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
-	dAtA = make([]byte, size)
-	n, err := m.MarshalToSizedBuffer(dAtA[:size])
-	if err != nil {
-		return nil, err
-	}
-	return dAtA[:n], nil
-}
-
-func (m *QueryScheduledAuctionHeightResponse) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
-	return m.MarshalToSizedBuffer(dAtA[:size])
-}
-
-func (m *QueryScheduledAuctionHeightResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
-	i := len(dAtA)
-	_ = i
-	var l int
-	_ = l
-	if m.Height != 0 {
-		i = encodeVarintQuery(dAtA, i, uint64(m.Height))
-		i--
-		dAtA[i] = 0x8
-	}
-	return len(dAtA) - i, nil
-}
-
 func encodeVarintQuery(dAtA []byte, offset int, v uint64) int {
 	offset -= sovQuery(v)
 	base := offset
@@ -862,51 +499,6 @@ func (m *QueryModuleAccountsResponse) Size() (n int) {
 	l = len(m.FeesAddress)
 	if l > 0 {
 		n += 1 + l + sovQuery(uint64(l))
-	}
-	return n
-}
-
-func (m *QueryCellarFeePoolRequest) Size() (n int) {
-	if m == nil {
-		return 0
-	}
-	var l int
-	_ = l
-	return n
-}
-
-func (m *QueryCellarFeePoolResponse) Size() (n int) {
-	if m == nil {
-		return 0
-	}
-	var l int
-	_ = l
-	if len(m.Pool) > 0 {
-		for _, e := range m.Pool {
-			l = e.Size()
-			n += 1 + l + sovQuery(uint64(l))
-		}
-	}
-	return n
-}
-
-func (m *QueryScheduledAuctionHeightRequest) Size() (n int) {
-	if m == nil {
-		return 0
-	}
-	var l int
-	_ = l
-	return n
-}
-
-func (m *QueryScheduledAuctionHeightResponse) Size() (n int) {
-	if m == nil {
-		return 0
-	}
-	var l int
-	_ = l
-	if m.Height != 0 {
-		n += 1 + sovQuery(uint64(m.Height))
 	}
 	return n
 }
@@ -1161,259 +753,6 @@ func (m *QueryModuleAccountsResponse) Unmarshal(dAtA []byte) error {
 			}
 			m.FeesAddress = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
-		default:
-			iNdEx = preIndex
-			skippy, err := skipQuery(dAtA[iNdEx:])
-			if err != nil {
-				return err
-			}
-			if (skippy < 0) || (iNdEx+skippy) < 0 {
-				return ErrInvalidLengthQuery
-			}
-			if (iNdEx + skippy) > l {
-				return io.ErrUnexpectedEOF
-			}
-			iNdEx += skippy
-		}
-	}
-
-	if iNdEx > l {
-		return io.ErrUnexpectedEOF
-	}
-	return nil
-}
-func (m *QueryCellarFeePoolRequest) Unmarshal(dAtA []byte) error {
-	l := len(dAtA)
-	iNdEx := 0
-	for iNdEx < l {
-		preIndex := iNdEx
-		var wire uint64
-		for shift := uint(0); ; shift += 7 {
-			if shift >= 64 {
-				return ErrIntOverflowQuery
-			}
-			if iNdEx >= l {
-				return io.ErrUnexpectedEOF
-			}
-			b := dAtA[iNdEx]
-			iNdEx++
-			wire |= uint64(b&0x7F) << shift
-			if b < 0x80 {
-				break
-			}
-		}
-		fieldNum := int32(wire >> 3)
-		wireType := int(wire & 0x7)
-		if wireType == 4 {
-			return fmt.Errorf("proto: QueryCellarFeePoolRequest: wiretype end group for non-group")
-		}
-		if fieldNum <= 0 {
-			return fmt.Errorf("proto: QueryCellarFeePoolRequest: illegal tag %d (wire type %d)", fieldNum, wire)
-		}
-		switch fieldNum {
-		default:
-			iNdEx = preIndex
-			skippy, err := skipQuery(dAtA[iNdEx:])
-			if err != nil {
-				return err
-			}
-			if (skippy < 0) || (iNdEx+skippy) < 0 {
-				return ErrInvalidLengthQuery
-			}
-			if (iNdEx + skippy) > l {
-				return io.ErrUnexpectedEOF
-			}
-			iNdEx += skippy
-		}
-	}
-
-	if iNdEx > l {
-		return io.ErrUnexpectedEOF
-	}
-	return nil
-}
-func (m *QueryCellarFeePoolResponse) Unmarshal(dAtA []byte) error {
-	l := len(dAtA)
-	iNdEx := 0
-	for iNdEx < l {
-		preIndex := iNdEx
-		var wire uint64
-		for shift := uint(0); ; shift += 7 {
-			if shift >= 64 {
-				return ErrIntOverflowQuery
-			}
-			if iNdEx >= l {
-				return io.ErrUnexpectedEOF
-			}
-			b := dAtA[iNdEx]
-			iNdEx++
-			wire |= uint64(b&0x7F) << shift
-			if b < 0x80 {
-				break
-			}
-		}
-		fieldNum := int32(wire >> 3)
-		wireType := int(wire & 0x7)
-		if wireType == 4 {
-			return fmt.Errorf("proto: QueryCellarFeePoolResponse: wiretype end group for non-group")
-		}
-		if fieldNum <= 0 {
-			return fmt.Errorf("proto: QueryCellarFeePoolResponse: illegal tag %d (wire type %d)", fieldNum, wire)
-		}
-		switch fieldNum {
-		case 1:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Pool", wireType)
-			}
-			var msglen int
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowQuery
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				msglen |= int(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			if msglen < 0 {
-				return ErrInvalidLengthQuery
-			}
-			postIndex := iNdEx + msglen
-			if postIndex < 0 {
-				return ErrInvalidLengthQuery
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.Pool = append(m.Pool, types.Coin{})
-			if err := m.Pool[len(m.Pool)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
-				return err
-			}
-			iNdEx = postIndex
-		default:
-			iNdEx = preIndex
-			skippy, err := skipQuery(dAtA[iNdEx:])
-			if err != nil {
-				return err
-			}
-			if (skippy < 0) || (iNdEx+skippy) < 0 {
-				return ErrInvalidLengthQuery
-			}
-			if (iNdEx + skippy) > l {
-				return io.ErrUnexpectedEOF
-			}
-			iNdEx += skippy
-		}
-	}
-
-	if iNdEx > l {
-		return io.ErrUnexpectedEOF
-	}
-	return nil
-}
-func (m *QueryScheduledAuctionHeightRequest) Unmarshal(dAtA []byte) error {
-	l := len(dAtA)
-	iNdEx := 0
-	for iNdEx < l {
-		preIndex := iNdEx
-		var wire uint64
-		for shift := uint(0); ; shift += 7 {
-			if shift >= 64 {
-				return ErrIntOverflowQuery
-			}
-			if iNdEx >= l {
-				return io.ErrUnexpectedEOF
-			}
-			b := dAtA[iNdEx]
-			iNdEx++
-			wire |= uint64(b&0x7F) << shift
-			if b < 0x80 {
-				break
-			}
-		}
-		fieldNum := int32(wire >> 3)
-		wireType := int(wire & 0x7)
-		if wireType == 4 {
-			return fmt.Errorf("proto: QueryScheduledAuctionHeightRequest: wiretype end group for non-group")
-		}
-		if fieldNum <= 0 {
-			return fmt.Errorf("proto: QueryScheduledAuctionHeightRequest: illegal tag %d (wire type %d)", fieldNum, wire)
-		}
-		switch fieldNum {
-		default:
-			iNdEx = preIndex
-			skippy, err := skipQuery(dAtA[iNdEx:])
-			if err != nil {
-				return err
-			}
-			if (skippy < 0) || (iNdEx+skippy) < 0 {
-				return ErrInvalidLengthQuery
-			}
-			if (iNdEx + skippy) > l {
-				return io.ErrUnexpectedEOF
-			}
-			iNdEx += skippy
-		}
-	}
-
-	if iNdEx > l {
-		return io.ErrUnexpectedEOF
-	}
-	return nil
-}
-func (m *QueryScheduledAuctionHeightResponse) Unmarshal(dAtA []byte) error {
-	l := len(dAtA)
-	iNdEx := 0
-	for iNdEx < l {
-		preIndex := iNdEx
-		var wire uint64
-		for shift := uint(0); ; shift += 7 {
-			if shift >= 64 {
-				return ErrIntOverflowQuery
-			}
-			if iNdEx >= l {
-				return io.ErrUnexpectedEOF
-			}
-			b := dAtA[iNdEx]
-			iNdEx++
-			wire |= uint64(b&0x7F) << shift
-			if b < 0x80 {
-				break
-			}
-		}
-		fieldNum := int32(wire >> 3)
-		wireType := int(wire & 0x7)
-		if wireType == 4 {
-			return fmt.Errorf("proto: QueryScheduledAuctionHeightResponse: wiretype end group for non-group")
-		}
-		if fieldNum <= 0 {
-			return fmt.Errorf("proto: QueryScheduledAuctionHeightResponse: illegal tag %d (wire type %d)", fieldNum, wire)
-		}
-		switch fieldNum {
-		case 1:
-			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Height", wireType)
-			}
-			m.Height = 0
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowQuery
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				m.Height |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
 		default:
 			iNdEx = preIndex
 			skippy, err := skipQuery(dAtA[iNdEx:])

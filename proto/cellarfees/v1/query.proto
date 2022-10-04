@@ -4,7 +4,6 @@ package cellarfees.v1;
 import "gogoproto/gogo.proto";
 import "google/api/annotations.proto";
 import "cellarfees/v1/params.proto";
-import "cosmos/base/v1beta1/coin.proto";
 
 option go_package = "github.com/peggyjv/sommelier/v4/x/cellarfees/types";
 
@@ -15,14 +14,6 @@ service Query {
 
   rpc ModuleAccounts(QueryModuleAccountsRequest) returns (QueryModuleAccountsResponse) {
     option (google.api.http).get = "/sommeliers/cellarfees/v1/module_accounts";
-  }
-
-  rpc CellarFeePool(QueryCellarFeePoolRequest) returns (QueryCellarFeePoolResponse) {
-    option (google.api.http).get = "/sommelier/cellarfees/v1/cellar_fee_pool";
-  }
-
-  rpc ScheduledAuctionHeight(QueryScheduledAuctionHeightRequest) returns (QueryScheduledAuctionHeightResponse) {
-    option (google.api.http).get = "/sommelier/cellarfees/v1/scheduled_auction_height";
   }
 }
 
@@ -36,17 +27,4 @@ message QueryModuleAccountsRequest {}
 
 message QueryModuleAccountsResponse {
   string fees_address = 1;
-}
-
-message QueryCellarFeePoolRequest {}
-
-message QueryCellarFeePoolResponse {
-  repeated cosmos.base.v1beta1.Coin pool = 1
-      [(gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins", (gogoproto.nullable) = false];
-}
-
-message QueryScheduledAuctionHeightRequest {}
-
-message QueryScheduledAuctionHeightResponse {
-  uint64 height = 1;
 }
