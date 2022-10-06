@@ -308,7 +308,7 @@ func (k Keeper) IterateCorkResults(ctx sdk.Context, cb func(approved bool, block
 	k.IterateScheduledCorksResultByPrefix(ctx, types.GetCorkResultPrefix(), cb)
 }
 
-// ...
+// GetCorkResults returns CorkResults
 func (k Keeper) GetCorkResults(ctx sdk.Context) []*types.CorkResult {
 	var corkResults []*types.CorkResult
 	k.IterateCorkResults(ctx, func(approved bool, blockHeight uint64, approval_percentage string, _ common.Address, cork types.Cork) (stop bool) {
@@ -368,10 +368,7 @@ func (k Keeper) GetApprovedScheduledCorks(ctx sdk.Context, currentBlockHeight ui
 			approvalPercentage := sdk.NewIntFromUint64(power).ToDec().Quo(totalPower.ToDec())
 			quorumReached := approvalPercentage.GT(threshold)
 			// TODO(bolten): record CorkResult here
-			// We're Implementing something like this:
-			// func (k Keeper) IterateScheduledCorksByBlockHeight(ctx sdk.Context, blockHeight uint64, cb func(val sdk.ValAddress, blockHeight uint64, id uint64, cel common.Address, cork types.Cork) (stop bool)) {
-			//k.IterateScheduledCorksByPrefix(ctx, types.GetScheduledCorkKeyByBlockHeightPrefix(blockHeight), cb)
-			//}
+			k.GetCorkResults(ctx)
 			if quorumReached {
 				approvedCorks = append(approvedCorks, corksForBlockHeight[blockHeight][i])
 			}
