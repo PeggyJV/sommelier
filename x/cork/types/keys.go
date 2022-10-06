@@ -90,3 +90,7 @@ func GetScheduledCorkIdHashPrefix() []byte {
 func GetScheduledCorkIdHashKey(hash []byte) []byte {
 	return append(GetScheduledCorkIdHashPrefix(), hash...)
 }
+
+func GetCorkResultPrefix() []byte {
+	return []byte{CorkResultPrefix}
+}

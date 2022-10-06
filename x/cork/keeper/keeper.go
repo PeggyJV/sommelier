@@ -4,6 +4,8 @@ import (
 	"bytes"
 	"encoding/binary"
 
+	"strconv"
+
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
@@ -277,7 +279,50 @@ func (k Keeper) IncrementScheduledCorkID(ctx sdk.Context) uint64 {
 // Cork Results //
 //////////////////
 
-// TOOD(bolten): keeper functions for cork results here
+func (k Keeper) IterateScheduledCorksResultByPrefix(ctx sdk.Context, prefix []byte, cb func(approved bool, blockHeight uint64, approval_percentage string, cel common.Address, cork types.Cork) (stop bool)) {
+	store := ctx.KVStore(k.storeKey)
+	iter := sdk.KVStorePrefixIterator(store, prefix)
+	defer iter.Close()
+
+	for ; iter.Valid(); iter.Next() {
+		var cork types.Cork
+		keyPair := bytes.NewBuffer(iter.Key())
+		keyPair.Next(1) // trim prefix byte
+		blockHeight := binary.BigEndian.Uint64(keyPair.Next(8))
+		approved, err := strconv.ParseBool(string(keyPair.Next(1)))
+		if err != nil {
+			panic(err)
+		}
+		approval_percentage := string(keyPair.Next(8))
+		contract := common.BytesToAddress(keyPair.Bytes())
+
+		k.cdc.MustUnmarshal(iter.Value(), &cork)
+		if cb(approved, blockHeight, approval_percentage, contract, cork) {
+			break
+		}
+	}
+}
+
+// IterateCorksResult iterates over all scheduled corks results in the store
+func (k Keeper) IterateCorkResults(ctx sdk.Context, cb func(approved bool, blockHeight uint64, approval_percentage string, cel common.Address, cork types.Cork) (stop bool)) {
+	k.IterateScheduledCorksResultByPrefix(ctx, types.GetCorkResultPrefix(), cb)
+}
+
+// ...
+func (k Keeper) GetCorkResults(ctx sdk.Context) []*types.CorkResult {
+	var corkResults []*types.CorkResult
+	k.IterateCorkResults(ctx, func(approved bool, blockHeight uint64, approval_percentage string, _ common.Address, cork types.Cork) (stop bool) {
+		corkResults = append(corkResults, &types.CorkResult{
+			Cork:               &cork,
+			BlockHeight:        blockHeight,
+			Approved:           approved,
+			ApprovalPercentage: approval_percentage,
+		})
+		return false
+	})
+
+	return corkResults
+}
 
 ///////////
 // Votes //
@@ -323,6 +368,10 @@ func (k Keeper) GetApprovedScheduledCorks(ctx sdk.Context, currentBlockHeight ui
 			approvalPercentage := sdk.NewIntFromUint64(power).ToDec().Quo(totalPower.ToDec())
 			quorumReached := approvalPercentage.GT(threshold)
 			// TODO(bolten): record CorkResult here
+			// We're Implementing something like this:
+			// func (k Keeper) IterateScheduledCorksByBlockHeight(ctx sdk.Context, blockHeight uint64, cb func(val sdk.ValAddress, blockHeight uint64, id uint64, cel common.Address, cork types.Cork) (stop bool)) {
+			//k.IterateScheduledCorksByPrefix(ctx, types.GetScheduledCorkKeyByBlockHeightPrefix(blockHeight), cb)
+			//}
 			if quorumReached {
 				approvedCorks = append(approvedCorks, corksForBlockHeight[blockHeight][i])
 			}
