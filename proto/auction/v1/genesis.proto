@@ -18,4 +18,5 @@ message GenesisState {
 
 message Params {
   uint64 price_max_block_age = 1;
+  uint64 minimum_bid_in_usomm = 2;
 }
