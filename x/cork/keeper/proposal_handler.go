@@ -57,6 +57,7 @@ func HandleRemoveManagedCellarsProposal(ctx sdk.Context, k Keeper, p types.Remov
 	return nil
 }
 
+// HandleScheduledCorkProposal is a handler for executing a passed scheduled cork proposal
 func HandleScheduledCorkProposal(ctx sdk.Context, k Keeper, p types.ScheduledCorkProposal) error {
 	cork := types.Cork{
 		EncodedContractCall:   []byte(p.ContractCallProtoJson),
