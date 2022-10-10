@@ -10,6 +10,7 @@ import (
 var (
 	KeyPriceMaxBlockAge = []byte("PriceMaxBlockAge")
 	MinimumBidInUsomm   = []byte("MinimumBidInUsomm")
+	BlocksToNotPrune    = []byte("BlocksToNotPrune")
 )
 
 var _ paramtypes.ParamSet = &Params{}
@@ -24,6 +25,7 @@ func DefaultParams() Params {
 	return Params{
 		PriceMaxBlockAge:  403200,  // roughly four weeks based on 6 second blocks
 		MinimumBidInUsomm: 1000000, // 1 somm
+		BlocksToNotPrune:  864000,  // roughly 60 days based on 6 second blocks
 	}
 }
 
@@ -32,6 +34,7 @@ func (p *Params) ParamSetPairs() paramtypes.ParamSetPairs {
 	return paramtypes.ParamSetPairs{
 		paramtypes.NewParamSetPair(KeyPriceMaxBlockAge, &p.PriceMaxBlockAge, validatePriceMaxBlockAge),
 		paramtypes.NewParamSetPair(MinimumBidInUsomm, &p.MinimumBidInUsomm, validateMinimumBidInUsomm),
+		paramtypes.NewParamSetPair(BlocksToNotPrune, &p.BlocksToNotPrune, validateBlocksToNotPrune),
 	}
 }
 
@@ -42,6 +45,10 @@ func (p *Params) ValidateBasic() error {
 	}
 
 	if err := validateMinimumBidInUsomm(p.MinimumBidInUsomm); err != nil {
+		return err
+	}
+
+	if err := validateBlocksToNotPrune(p.BlocksToNotPrune); err != nil {
 		return err
 	}
 
@@ -67,6 +74,21 @@ func validateMinimumBidInUsomm(i interface{}) error {
 	_, ok := i.(uint64)
 	if !ok {
 		return fmt.Errorf("invalid minimum bid in usomm parameter type: %T", i)
+	}
+
+	return nil
+}
+
+func validateBlocksToNotPrune(i interface{}) error {
+	blocksToNotPrune, ok := i.(uint64)
+	if !ok {
+		return fmt.Errorf("invalid blocks to not prune parameter type: %T", i)
+	}
+
+	if blocksToNotPrune == 0 {
+		return fmt.Errorf(
+			"blocks to not prune must be non-zero",
+		)
 	}
 
 	return nil

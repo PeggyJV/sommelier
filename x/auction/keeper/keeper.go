@@ -89,6 +89,16 @@ func (k Keeper) deleteActiveAuction(ctx sdk.Context, id uint32) {
 	ctx.KVStore(k.storeKey).Delete(types.GetActiveAuctionKey(id))
 }
 
+// DeleteEndedAuction deletes the ended auction
+func (k Keeper) deleteEndedAuction(ctx sdk.Context, id uint32) {
+	ctx.KVStore(k.storeKey).Delete(types.GetEndedAuctionKey(id))
+}
+
+// DeleteBid deletes the bid
+func (k Keeper) deleteBid(ctx sdk.Context, auctionID uint32, bidID uint64) {
+	ctx.KVStore(k.storeKey).Delete(types.GetBidKey(auctionID, bidID))
+}
+
 // GetEndedAuctionByID returns a specific active auction
 func (k Keeper) GetEndedAuctionByID(ctx sdk.Context, id uint32) (types.Auction, bool) {
 	store := ctx.KVStore(k.storeKey)

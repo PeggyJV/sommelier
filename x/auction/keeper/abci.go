@@ -51,5 +51,34 @@ func (k Keeper) EndBlocker(ctx sdk.Context) {
 			}
 		}
 	}
-	// TODO post MVP (pbal): prune bids and auctions -- keep last inactive auction per denom (+ bids) at minimum -- PLUS param 30-90 day window at 6 seconds per block
+
+	//  Prune bids and auctions -- keep last inactive auction per denom (+ bids) at minimum -- PLUS auctions still in the param freshness window
+	denomsFound := make(map[string]bool)
+	blocksToNotPrune := k.GetParamSet(ctx).BlocksToNotPrune
+	auctionsToDelete := make(map[uint32]bool)
+
+	// Iterate in reverse to guarantee we keep at least the most recent denom auction
+	endedAuctions := k.GetEndedAuctions(ctx)
+	for i := 0; i < len(endedAuctions); i++ {
+		auction := endedAuctions[len(endedAuctions)-1-i]
+		denom := auction.StartingTokensForSale.Denom
+
+		// Check if denom already exists, if so and is prune-able, slate for deletion
+		if _, ok := denomsFound[denom]; ok && auction.EndBlock < uint64(ctx.BlockHeight())-blocksToNotPrune {
+			auctionsToDelete[k.GetLastAuctionID(ctx)] = true
+		} else { // If it doesnt exist/is fresh enough note and skip deletion (since we're iterating in reverse this includes at least the most recent auction for a denom)
+			denomsFound[denom] = true
+		}
+	}
+
+	// Delete selected auctions and their associated bids
+	for auctionID, _ := range auctionsToDelete {
+		bids := k.GetBidsByAuctionID(ctx, auctionID)
+
+		for _, bid := range bids {
+			k.deleteBid(ctx, auctionID, bid.Id)
+		}
+
+		k.deleteEndedAuction(ctx, auctionID)
+	}
 }
