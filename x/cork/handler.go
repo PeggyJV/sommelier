@@ -37,3 +37,15 @@ func NewUpdateCellarIDsProposalHandler(k keeper.Keeper) govtypes.Handler {
 		}
 	}
 }
+
+func NewScheduledCorkProposalHandler(k keeper.Keeper) govtypes.Handler {
+	return func(ctx sdk.Context, content govtypes.Content) error {
+		switch c := content.(type) {
+		case *types.ScheduledCorkProposal:
+			return keeper.HandleScheduledCorkProposal(ctx, k, *c)
+
+		default:
+			return sdkerrors.Wrapf(sdkerrors.ErrUnknownRequest, "unrecognized scheduledcork proposal content type: %T", c)
+		}
+	}
+}
