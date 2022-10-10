@@ -42,6 +42,7 @@ message ScheduledCorkProposal {
   string contract_call_proto_json = 5;
 }
 
+// ScheduledCorkProposalWithDeposit is a specific definition for CLI commands
 message ScheduledCorkProposalWithDeposit {
   string title = 1;
   string description = 2;

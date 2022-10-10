@@ -4,6 +4,7 @@ import (
 	"sort"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/peggyjv/sommelier/v4/x/cork/types"
 )
@@ -52,6 +53,19 @@ func HandleRemoveManagedCellarsProposal(ctx sdk.Context, k Keeper, p types.Remov
 		}
 	}
 	k.SetCellarIDs(ctx, outputCellarIDs)
+
+	return nil
+}
+
+func HandleScheduledCorkProposal(ctx sdk.Context, k Keeper, p types.ScheduledCorkProposal) error {
+	cork := types.Cork{
+		EncodedContractCall:   []byte(p.ContractCallProtoJson),
+		TargetContractAddress: p.TargetContractAddress,
+	}
+	k.stakingKeeper.IterateLastValidators(ctx, func(index int64, validator stakingtypes.ValidatorI) (stop bool) {
+		k.SetScheduledCork(ctx, p.BlockHeight, validator.GetOperator(), cork)
+		return false
+	})
 
 	return nil
 }
