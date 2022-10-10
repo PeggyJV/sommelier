@@ -11,7 +11,7 @@ import (
 
 var _ types.QueryServer = Keeper{}
 
-const DEFAULT_PAGE_SIZE = 100
+const defaultPageSize = 100
 
 // QueryParams implements QueryServer
 func (k Keeper) QueryParams(c context.Context, _ *types.QueryParamsRequest) (*types.QueryParamsResponse, error) {
@@ -71,8 +71,8 @@ func (k Keeper) QueryEndedAuctions(c context.Context, request *types.QueryEndedA
 		return &types.QueryEndedAuctionsResponse{}, status.Error(codes.NotFound, "No ended auctions found")
 	}
 
-	startIndex := DEFAULT_PAGE_SIZE * int(request.Pagination.Offset)
-	endIndex := startIndex + DEFAULT_PAGE_SIZE
+	startIndex := defaultPageSize * int(request.Pagination.Offset)
+	endIndex := startIndex + defaultPageSize
 
 	if endIndex > len(auctions) {
 		endIndex = len(auctions)
@@ -106,8 +106,8 @@ func (k Keeper) QueryBidsByAuction(c context.Context, request *types.QueryBidsBy
 		return &types.QueryBidsByAuctionResponse{}, status.Errorf(codes.NotFound, "No bids found for auction id: %d", request.GetAuctionId())
 	}
 
-	startIndex := DEFAULT_PAGE_SIZE * int(request.Pagination.Offset)
-	endIndex := startIndex + DEFAULT_PAGE_SIZE
+	startIndex := defaultPageSize * int(request.Pagination.Offset)
+	endIndex := startIndex + defaultPageSize
 
 	if endIndex > len(bids) {
 		endIndex = len(bids)
