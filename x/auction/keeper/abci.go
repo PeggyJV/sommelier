@@ -72,7 +72,7 @@ func (k Keeper) EndBlocker(ctx sdk.Context) {
 	}
 
 	// Delete selected auctions and their associated bids
-	for auctionID, _ := range auctionsToDelete {
+	for auctionID := range auctionsToDelete {
 		bids := k.GetBidsByAuctionID(ctx, auctionID)
 
 		for _, bid := range bids {
