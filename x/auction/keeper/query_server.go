@@ -11,6 +11,8 @@ import (
 
 var _ types.QueryServer = Keeper{}
 
+const DEFAULT_PAGE_SIZE = 100
+
 // QueryParams implements QueryServer
 func (k Keeper) QueryParams(c context.Context, _ *types.QueryParamsRequest) (*types.QueryParamsResponse, error) {
 	return &types.QueryParamsResponse{
@@ -60,17 +62,25 @@ func (k Keeper) QueryActiveAuctions(c context.Context, _ *types.QueryActiveAucti
 }
 
 // QueryEndedAuctions implements QueryServer
-func (k Keeper) QueryEndedAuctions(c context.Context, _ *types.QueryEndedAuctionsRequest) (*types.QueryEndedAuctionsResponse, error) {
+func (k Keeper) QueryEndedAuctions(c context.Context, request *types.QueryEndedAuctionsRequest) (*types.QueryEndedAuctionsResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
 
 	auctions := k.GetEndedAuctions(ctx)
 
 	if len(auctions) == 0 {
-		// TODO (pbal): consider pagination -- yes, groups of <= 100 -- look at some examples and pick
 		return &types.QueryEndedAuctionsResponse{}, status.Error(codes.NotFound, "No ended auctions found")
 	}
 
-	return &types.QueryEndedAuctionsResponse{Auctions: auctions}, nil
+	startIndex := DEFAULT_PAGE_SIZE * int(request.Pagination.Offset)
+	endIndex := startIndex + DEFAULT_PAGE_SIZE
+
+	if endIndex > len(auctions) {
+		endIndex = len(auctions)
+	}
+
+	auctions = auctions[startIndex:endIndex]
+
+	return &types.QueryEndedAuctionsResponse{Auctions: auctions, NextPage: request.Pagination.Offset + 1}, nil
 }
 
 // QueryBid implements QueryServer
@@ -93,9 +103,17 @@ func (k Keeper) QueryBidsByAuction(c context.Context, request *types.QueryBidsBy
 	bids := k.GetBidsByAuctionID(ctx, request.GetAuctionId())
 
 	if len(bids) == 0 {
-		// TODO (pbal): consider pagination -- yes, groups of <= 100 -- look at some examples and pick
 		return &types.QueryBidsByAuctionResponse{}, status.Errorf(codes.NotFound, "No bids found for auction id: %d", request.GetAuctionId())
 	}
 
-	return &types.QueryBidsByAuctionResponse{Bids: bids}, nil
+	startIndex := DEFAULT_PAGE_SIZE * int(request.Pagination.Offset)
+	endIndex := startIndex + DEFAULT_PAGE_SIZE
+
+	if endIndex > len(bids) {
+		endIndex = len(bids)
+	}
+
+	bids = bids[startIndex:endIndex]
+
+	return &types.QueryBidsByAuctionResponse{Bids: bids, NextPage: request.Pagination.Offset + 1}, nil
 }

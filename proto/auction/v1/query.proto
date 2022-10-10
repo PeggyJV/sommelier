@@ -68,10 +68,13 @@ message QueryActiveAuctionsResponse {
   repeated Auction auctions = 1;
 }
 
-message QueryEndedAuctionsRequest {}
+message QueryEndedAuctionsRequest {
+    Pagination pagination = 2;
+}
 
 message QueryEndedAuctionsResponse {
   repeated Auction auctions = 1;
+  uint64 next_page = 2;
 }
 
 message QueryBidRequest {
@@ -85,8 +88,14 @@ message QueryBidResponse {
 
 message QueryBidsByAuctionRequest {
   uint32 auction_id = 1;
+  Pagination pagination = 2;
 }
 
 message QueryBidsByAuctionResponse {
   repeated Bid bids = 1;
+  uint64 next_page = 2;
+}
+
+message Pagination {
+  uint64 offset = 1;
 }
