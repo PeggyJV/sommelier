@@ -47,7 +47,7 @@ fn compile_protos(out_dir: &Path, tmp_dir: &Path) {
     let mut allocation_proto_dir = root.clone();
     allocation_proto_dir.push("proto/allocation/v1");
     let mut cork_proto_dir = root.clone();
-    cork_proto_dir.push("proto/cork/v1");
+    cork_proto_dir.push("proto/cork/v2");
     let mut somm_proto_include_dir = root.clone();
     somm_proto_include_dir.push("proto");
     let mut third_party_proto_include_dir = root;
