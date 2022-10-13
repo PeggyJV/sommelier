@@ -385,7 +385,7 @@ func NewSommelierApp(
 		AddRoute(distrtypes.RouterKey, distr.NewCommunityPoolSpendProposalHandler(app.DistrKeeper)).
 		AddRoute(upgradetypes.RouterKey, upgrade.NewSoftwareUpgradeProposalHandler(app.UpgradeKeeper)).
 		AddRoute(ibcclienttypes.RouterKey, ibcclient.NewClientProposalHandler(app.IBCKeeper.ClientKeeper)).
-		AddRoute(corktypes.RouterKey, cork.NewUpdateCellarIDsProposalHandler(app.CorkKeeper)).
+		AddRoute(corktypes.RouterKey, cork.NewProposalHandler(app.CorkKeeper)).
 		AddRoute(gravitytypes.RouterKey, gravity.NewCommunityPoolEthereumSpendProposalHandler(app.GravityKeeper)).
 		AddRoute(auctiontypes.RouterKey, auction.NewSetTokenPricesProposalHandler(app.AuctionKeeper))
 	app.GovKeeper = govkeeper.NewKeeper(
