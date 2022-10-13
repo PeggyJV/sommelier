@@ -24,7 +24,7 @@ func init() {
 	govtypes.RegisterProposalTypeCodec(&RemoveManagedCellarIDsProposal{}, "sommelier/RemoveManagedCellarIDsProposal")
 
 	govtypes.RegisterProposalType(ProposalTypeScheduledCork)
-	govtypes.RegisterProposalTypeCodec(&ScheduledCorkProposal{}, "sommelier/cheduledCorkProposal")
+	govtypes.RegisterProposalTypeCodec(&ScheduledCorkProposal{}, "sommelier/ScheduledCorkProposal")
 }
 
 func NewAddManagedCellarIDsProposal(title string, description string, cellarIds *CellarIDSet) *AddManagedCellarIDsProposal {
