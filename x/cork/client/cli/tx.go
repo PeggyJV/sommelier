@@ -169,3 +169,5 @@ Where proposal.json contains:
 
 	return cmd
 }
+
+// TODO(bolten): add GetCmdSubmitScheduledCorkProposal
