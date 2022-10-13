@@ -384,6 +384,7 @@ func CreateTestEnv(t *testing.T) TestInput {
 		keyAuction,
 		getSubspace(paramsKeeper, types.DefaultParamspace),
 		bankKeeper,
+		accountKeeper,
 		make(map[string]bool),
 		make(map[string]bool),
 	)

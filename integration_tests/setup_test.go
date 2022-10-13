@@ -14,7 +14,9 @@ import (
 	"testing"
 	"time"
 
+	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
+	auctiontypes "github.com/peggyjv/sommelier/v4/x/auction/types"
 	corktypes "github.com/peggyjv/sommelier/v4/x/cork/types"
 
 	gravitytypes "github.com/peggyjv/gravity-bridge/module/v2/x/gravity/types"
@@ -32,7 +34,6 @@ import (
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 	"github.com/ory/dockertest/v3"
 	"github.com/ory/dockertest/v3/docker"
-	auctiontypes "github.com/peggyjv/sommelier/v4/x/auction/types"
 	cellarfeestypes "github.com/peggyjv/sommelier/v4/x/cellarfees/types"
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/suite"
@@ -176,16 +177,26 @@ func (s *IntegrationTestSuite) initNodesWithMnemonics(mnemonics ...string) {
 
 	//initialize a genesis file for the first validator
 	val0ConfigDir := s.chain.validators[0].configDir()
-	for _, val := range s.chain.validators {
+	for i, val := range s.chain.validators {
+		// Fund the first validator with some funds to be used by auction module integration tests
+		balanceStr := initBalanceStr
+		if i == 0 {
+			balanceStr += ",100000000000gravity0x3506424f91fd33084466f402d5d97f05f8e3b4af"
+		}
 		s.Require().NoError(
-			addGenesisAccount(val0ConfigDir, "", initBalanceStr, val.keyInfo.GetAddress()),
+			addGenesisAccount(val0ConfigDir, "", balanceStr, val.keyInfo.GetAddress()),
 		)
 	}
 
 	// add orchestrator accounts to genesis file
-	for _, orch := range s.chain.orchestrators {
+	for i, orch := range s.chain.orchestrators {
+		// Fund the first orchestrator with some funds to be used by auction module integration tests
+		balanceStr := initBalanceStr
+		if i == 0 {
+			balanceStr += ",100000000000usomm"
+		}
 		s.Require().NoError(
-			addGenesisAccount(val0ConfigDir, "", initBalanceStr, orch.keyInfo.GetAddress()),
+			addGenesisAccount(val0ConfigDir, "", balanceStr, orch.keyInfo.GetAddress()),
 		)
 	}
 
@@ -278,6 +289,13 @@ func (s *IntegrationTestSuite) initGenesis() {
 		},
 	})
 
+	// Set up auction module with some coins to auction off
+	balance := banktypes.Balance{
+		Address: authtypes.NewModuleAddress(auctiontypes.ModuleName).String(),
+		Coins:   sdk.NewCoins(sdk.NewCoin("gravity0x3506424f91fd33084466f402d5d97f05f8e3b4af", sdk.NewInt(5000))),
+	}
+	bankGenState.Balances = append(bankGenState.Balances, balance)
+
 	bz, err := cdc.MarshalJSON(&bankGenState)
 	s.Require().NoError(err)
 	appGenState[banktypes.ModuleName] = bz
@@ -321,6 +339,7 @@ func (s *IntegrationTestSuite) initGenesis() {
 
 	// set auction token prices
 	auctionGenState := auctiontypes.DefaultGenesisState()
+	s.Require().NoError(cdc.UnmarshalJSON(appGenState[auctiontypes.ModuleName], &auctionGenState))
 	auctionGenState.TokenPrices = append(auctionGenState.TokenPrices, &auctiontypes.TokenPrice{
 		Denom:            CELLAR_FEE_DENOM,
 		UsdPrice:         sdk.MustNewDecFromStr("1.0"),
@@ -331,6 +350,21 @@ func (s *IntegrationTestSuite) initGenesis() {
 		UsdPrice:         sdk.MustNewDecFromStr("0.5"),
 		LastUpdatedBlock: 0,
 	})
+	auctionGenState.Auctions = append(auctionGenState.Auctions, &auctiontypes.Auction{
+		Id:                         uint32(1),
+		StartingTokensForSale:      sdk.NewCoin("gravity0x3506424f91fd33084466f402d5d97f05f8e3b4af", sdk.NewInt(5000)),
+		StartBlock:                 uint64(0),
+		EndBlock:                   uint64(0),
+		InitialPriceDecreaseRate:   sdk.MustNewDecFromStr("0.05"),
+		CurrentPriceDecreaseRate:   sdk.MustNewDecFromStr("0.05"),
+		PriceDecreaseBlockInterval: uint64(1000),
+		InitialUnitPriceInUsomm:    sdk.MustNewDecFromStr("2"),
+		CurrentUnitPriceInUsomm:    sdk.MustNewDecFromStr("2"),
+		RemainingTokensForSale:     sdk.NewCoin("gravity0x3506424f91fd33084466f402d5d97f05f8e3b4af", sdk.NewInt(5000)),
+		FundingModuleAccount:       cellarfeestypes.ModuleName,
+		ProceedsModuleAccount:      cellarfeestypes.ModuleName,
+	})
+
 	bz, err = cdc.MarshalJSON(&auctionGenState)
 	s.Require().NoError(err)
 	appGenState[auctiontypes.ModuleName] = bz
