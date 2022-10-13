@@ -2,7 +2,6 @@ package types
 
 import (
 	"bytes"
-	"encoding/binary"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/ethereum/go-ethereum/common"
@@ -70,16 +69,12 @@ func GetScheduledCorkKeyPrefix() []byte {
 }
 
 func GetScheduledCorkKeyByBlockHeightPrefix(blockHeight uint64) []byte {
-	blockHeightBytes := make([]byte, 8)
-	binary.BigEndian.PutUint64(blockHeightBytes, blockHeight)
-	return append(GetScheduledCorkKeyPrefix(), blockHeightBytes...)
+	return append(GetScheduledCorkKeyPrefix(), sdk.Uint64ToBigEndian(blockHeight)...)
 }
 
 func GetScheduledCorkKey(blockHeight uint64, id uint64, val sdk.ValAddress, contract common.Address) []byte {
-	blockHeightBytes := make([]byte, 8)
-	idBytes := make([]byte, 8)
-	binary.BigEndian.PutUint64(blockHeightBytes, blockHeight)
-	binary.BigEndian.PutUint64(idBytes, id)
+	blockHeightBytes := sdk.Uint64ToBigEndian(blockHeight)
+	idBytes := sdk.Uint64ToBigEndian(id)
 	return bytes.Join([][]byte{{ScheduledCorkKeyPrefix}, blockHeightBytes, idBytes, val.Bytes(), contract.Bytes()}, []byte{})
 }
 
@@ -93,4 +88,8 @@ func GetScheduledCorkIdHashKey(hash []byte) []byte {
 
 func GetCorkResultPrefix() []byte {
 	return []byte{CorkResultPrefix}
+}
+
+func GetCorkResultKey(id uint64) []byte {
+	return append(GetCorkResultPrefix(), sdk.Uint64ToBigEndian(id)...)
 }

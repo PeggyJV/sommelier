@@ -3,6 +3,7 @@ package types
 import (
 	"bytes"
 
+	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/crypto"
 	tmbytes "github.com/tendermint/tendermint/libs/bytes"
@@ -13,6 +14,16 @@ func (c *Cork) InvalidationScope() tmbytes.HexBytes {
 	return crypto.Keccak256Hash(
 		bytes.Join(
 			[][]byte{addr.Bytes(), c.EncodedContractCall},
+			[]byte{},
+		)).Bytes()
+}
+
+func (c *Cork) IdHash(blockHeight uint64) []byte {
+	blockHeightBytes := sdk.Uint64ToBigEndian(blockHeight)
+
+	return crypto.Keccak256Hash(
+		bytes.Join(
+			[][]byte{blockHeightBytes, []byte(c.TargetContractAddress), c.EncodedContractCall},
 			[]byte{},
 		)).Bytes()
 }
