@@ -68,3 +68,5 @@ func (k Keeper) QueryScheduledCorksByID(c context.Context, req *types.QuerySched
 	response.Corks = k.GetScheduledCorksByID(ctx, req.Id)
 	return &response, nil
 }
+
+// TODO(bolten): implement QueryCorkResult and QueryCorkResults

@@ -182,3 +182,5 @@ func queryScheduledBlockHeights() *cobra.Command {
 
 	return cmd
 }
+
+// TODO(bolten): add queryCorkResult and queryCorkResults
