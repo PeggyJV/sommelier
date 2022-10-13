@@ -3,7 +3,6 @@ package integration_tests
 import (
 	"context"
 	"fmt"
-	"math/big"
 	"strings"
 	"time"
 
@@ -90,13 +89,6 @@ func ABIEncodedInc() []byte {
 	return abiEncodedCall
 }
 
-func UnpackEthUInt(bz []byte) sdk.Int {
-	output := big.NewInt(0)
-	output.SetBytes(bz)
-
-	return sdk.NewIntFromBigInt(output)
-}
-
 func (s *IntegrationTestSuite) getCurrentCount() (*sdk.Int, error) {
 	ethClient, err := ethclient.Dial(fmt.Sprintf("http://%s", s.ethResource.GetHostPort("8545/tcp")))
 	if err != nil {
@@ -126,7 +118,7 @@ func (s *IntegrationTestSuite) TestCork() {
 		s.Require().NoError(err)
 		s.Require().Equal(int64(0), count.Int64())
 
-		s.T().Log("verify that there is one allowed addresses on the new chain")
+		s.T().Log("verify that there is at least one allowed address on the new chain")
 		val := s.chain.validators[0]
 		kb, err := val.keyring()
 		s.Require().NoError(err)
@@ -135,7 +127,7 @@ func (s *IntegrationTestSuite) TestCork() {
 		queryClient := types.NewQueryClient(clientCtx)
 		res, err := queryClient.QueryCellarIDs(context.Background(), &types.QueryCellarIDsRequest{})
 		s.Require().NoError(err)
-		s.Require().Len(res.CellarIds, 1)
+		s.Require().Greater(res.CellarIds, 0)
 
 		s.T().Logf("create governance proposal to add counter contract")
 		orch := s.chain.orchestrators[0]

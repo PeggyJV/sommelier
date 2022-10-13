@@ -38,6 +38,14 @@ task(
         await gravity.deployed();
         console.log(`gravity contract deployed at - ${gravity.address}`)
 
+        // The constructor for this contract funds a validator's ETH address
+        // with the test ERC20
+        const TestERC20 = await hre.ethers.getContractFactory("TestERC20");
+        const testERC20 = (await TestERC20.deploy());
+
+        await testERC20.deployed();
+        console.log(`testERC20 contract deployed at - ${testERC20.address}`)
+
         const Cellar = await hre.ethers.getContractFactory("CellarPoolShare");
         const cellar = (await Cellar.deploy(
             "mock cellar",

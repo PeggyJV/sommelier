@@ -5,6 +5,7 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	auctiontypes "github.com/peggyjv/sommelier/v4/x/auction/types"
+	"github.com/peggyjv/sommelier/v4/x/cellarfees/types"
 )
 
 // Attempts to start an auction for the provided denom
@@ -12,9 +13,11 @@ func (k Keeper) beginAuction(ctx sdk.Context, denom string) (started bool) {
 	activeAuctions := k.auctionKeeper.GetActiveAuctions(ctx)
 
 	// Don't start an auction if the denom has an active one
-	for _, auction := range activeAuctions {
-		if denom == auction.StartingTokensForSale.Denom {
-			return false
+	if len(activeAuctions) > 0 {
+		for _, auction := range activeAuctions {
+			if denom == auction.StartingTokensForSale.Denom {
+				return false
+			}
 		}
 	}
 
@@ -31,8 +34,8 @@ func (k Keeper) beginAuction(ctx sdk.Context, denom string) (started bool) {
 		balance,
 		params.InitialPriceDecreaseRate,
 		params.PriceDecreaseBlockInterval,
-		string(cellarfeesAccountAddr),
-		string(cellarfeesAccountAddr),
+		types.ModuleName,
+		types.ModuleName,
 	)
 	if err != nil {
 		k.handleBeginAuctionError(ctx, err)

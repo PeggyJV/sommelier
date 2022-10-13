@@ -32,6 +32,8 @@ import (
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 	"github.com/ory/dockertest/v3"
 	"github.com/ory/dockertest/v3/docker"
+	auctiontypes "github.com/peggyjv/sommelier/v4/x/auction/types"
+	cellarfeestypes "github.com/peggyjv/sommelier/v4/x/cellarfees/types"
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/suite"
 	tmconfig "github.com/tendermint/tendermint/config"
@@ -40,8 +42,8 @@ import (
 )
 
 const (
-	testDenom           = "testsomm"
-	initBalanceStr      = "110000000000testsomm"
+	testDenom           = "usomm"
+	initBalanceStr      = "110000000000usomm"
 	minGasPrice         = "2"
 	ethChainID     uint = 15
 )
@@ -53,6 +55,7 @@ var (
 	// todo(mvid): split these out into their respective tests
 	gravityContract       = common.HexToAddress("0x04C89607413713Ec9775E14b954286519d836FEf")
 	counterContract       = common.HexToAddress("0x0000000000000000000000000000000000000000")
+	testERC20Contract     = common.HexToAddress("0x0000000000000000000000000000000000000000")
 	unusedGenesisContract = common.HexToAddress("0x0000000000000000000000000000000000000001")
 	unusedAddedContract   = common.HexToAddress("0x0000000000000000000000000000000000000002")
 )
@@ -316,6 +319,35 @@ func (s *IntegrationTestSuite) initGenesis() {
 	var genUtilGenState genutiltypes.GenesisState
 	s.Require().NoError(cdc.UnmarshalJSON(appGenState[genutiltypes.ModuleName], &genUtilGenState))
 
+	// set auction token prices
+	auctionGenState := auctiontypes.DefaultGenesisState()
+	auctionGenState.TokenPrices = append(auctionGenState.TokenPrices, &auctiontypes.TokenPrice{
+		Denom:            CELLAR_FEE_DENOM,
+		UsdPrice:         sdk.MustNewDecFromStr("1.0"),
+		LastUpdatedBlock: 0,
+	})
+	auctionGenState.TokenPrices = append(auctionGenState.TokenPrices, &auctiontypes.TokenPrice{
+		Denom:            testDenom,
+		UsdPrice:         sdk.MustNewDecFromStr("0.5"),
+		LastUpdatedBlock: 0,
+	})
+	bz, err = cdc.MarshalJSON(&auctionGenState)
+	s.Require().NoError(err)
+	appGenState[auctiontypes.ModuleName] = bz
+
+	// set cellarfees gen state
+	cellarfeesGenState := cellarfeestypes.DefaultGenesisState()
+	s.Require().NoError(cdc.UnmarshalJSON(appGenState[cellarfeestypes.ModuleName], &cellarfeesGenState))
+	cellarfeesGenState.Params = cellarfeestypes.Params{
+		FeeAccrualAuctionThreshold: 2,
+		RewardEmissionPeriod:       100,
+		InitialPriceDecreaseRate:   sdk.MustNewDecFromStr("0.05"),
+		PriceDecreaseBlockInterval: uint64(1000),
+	}
+	bz, err = cdc.MarshalJSON(&cellarfeesGenState)
+	s.Require().NoError(err)
+	appGenState[cellarfeestypes.ModuleName] = bz
+
 	// generate genesis txs
 	genTxs := make([]json.RawMessage, len(s.chain.validators))
 	for i, val := range s.chain.validators {
@@ -342,7 +374,10 @@ func (s *IntegrationTestSuite) initGenesis() {
 
 	var corkGenState corktypes.GenesisState
 	s.Require().NoError(cdc.UnmarshalJSON(appGenState[corktypes.ModuleName], &corkGenState))
-	corkGenState.CellarIds = corktypes.CellarIDSet{Ids: []string{unusedGenesisContract.String()}}
+
+	// we add the first validator address as a cellar so that it will trigger the cellarfees hook
+	// when we send test fees
+	corkGenState.CellarIds = corktypes.CellarIDSet{Ids: []string{unusedGenesisContract.String(), s.chain.validators[0].ethereumKey.address}}
 	bz, err = cdc.MarshalJSON(&corkGenState)
 	s.Require().NoError(err)
 	appGenState[corktypes.ModuleName] = bz
@@ -492,11 +527,18 @@ func (s *IntegrationTestSuite) runEthContainer() {
 			if strings.HasPrefix(s, "gravity contract deployed at") {
 				strSpl := strings.Split(s, "-")
 				gravityContract = common.HexToAddress(strings.ReplaceAll(strSpl[1], " ", ""))
-				// continue, this is not the last contract deployed
+				// this is not the last contract deployed
+				continue
 			}
 			if strings.HasPrefix(s, "counter contract deployed at") {
 				strSpl := strings.Split(s, "-")
 				counterContract = common.HexToAddress(strings.ReplaceAll(strSpl[1], " ", ""))
+				// this is not the last contract deployed
+				continue
+			}
+			if strings.HasPrefix(s, "testERC20 contract deployed at") {
+				strSpl := strings.Split(s, "-")
+				testERC20Contract = common.HexToAddress(strings.ReplaceAll(strSpl[1], " ", ""))
 				return true
 			}
 		}

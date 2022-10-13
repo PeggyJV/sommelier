@@ -31,6 +31,7 @@ func NewKeeper(
 	bankKeeper types.BankKeeper,
 	corkKeeper types.CorkKeeper,
 	gravityKeeper types.GravityKeeper,
+	auctionKeeper types.AuctionKeeper,
 ) Keeper {
 	if !paramSpace.HasKeyTable() {
 		paramSpace = paramSpace.WithKeyTable(types.ParamKeyTable())
@@ -44,6 +45,7 @@ func NewKeeper(
 		bankKeeper:    bankKeeper,
 		corkKeeper:    corkKeeper,
 		gravityKeeper: gravityKeeper,
+		auctionKeeper: auctionKeeper,
 	}
 }
 

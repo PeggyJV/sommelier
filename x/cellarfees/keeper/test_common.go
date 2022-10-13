@@ -52,6 +52,7 @@ import (
 	"github.com/peggyjv/gravity-bridge/module/v2/x/gravity"
 	gravitykeeper "github.com/peggyjv/gravity-bridge/module/v2/x/gravity/keeper"
 	gravitytypes "github.com/peggyjv/gravity-bridge/module/v2/x/gravity/types"
+	auctionkeeper "github.com/peggyjv/sommelier/v4/x/auction/keeper"
 	auctiontypes "github.com/peggyjv/sommelier/v4/x/auction/types"
 	"github.com/peggyjv/sommelier/v4/x/cellarfees/types"
 	corkkeeper "github.com/peggyjv/sommelier/v4/x/cork/keeper"
@@ -214,6 +215,7 @@ func CreateTestEnv(t *testing.T) TestInput {
 	tkeyParams := sdk.NewTransientStoreKey(paramstypes.TStoreKey)
 	keyGov := sdk.NewKVStoreKey(govtypes.StoreKey)
 	keySlashing := sdk.NewKVStoreKey(slashingtypes.StoreKey)
+	keyAuction := sdk.NewKVStoreKey(auctiontypes.StoreKey)
 	keyCellarFees := sdk.NewKVStoreKey(types.StoreKey)
 
 	// Initialize memory database and mount stores on it
@@ -377,6 +379,15 @@ func CreateTestEnv(t *testing.T) TestInput {
 		gravityKeeper,
 	)
 
+	auctionKeeper := auctionkeeper.NewKeeper(
+		marshaler,
+		keyAuction,
+		getSubspace(paramsKeeper, types.DefaultParamspace),
+		bankKeeper,
+		make(map[string]bool),
+		make(map[string]bool),
+	)
+
 	cellarFeesKeeper := NewKeeper(
 		marshaler,
 		keyCellarFees,
@@ -385,6 +396,7 @@ func CreateTestEnv(t *testing.T) TestInput {
 		bankKeeper,
 		corkKeeper,
 		gravityKeeper,
+		auctionKeeper,
 	)
 
 	return TestInput{
