@@ -363,6 +363,7 @@ func (m *ScheduledCorkProposal) GetContractCallProtoJson() string {
 	return ""
 }
 
+// ScheduledCorkProposalWithDeposit is a specific definition for CLI commands
 type ScheduledCorkProposalWithDeposit struct {
 	Title                 string `protobuf:"bytes,1,opt,name=title,proto3" json:"title,omitempty"`
 	Description           string `protobuf:"bytes,2,opt,name=description,proto3" json:"description,omitempty"`

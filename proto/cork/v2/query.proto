@@ -14,29 +14,37 @@ option go_package = "github.com/peggyjv/sommelier/v4/x/cork/types";
 service Query {
   // QueryParams queries the allocation module parameters.
   rpc QueryParams(QueryParamsRequest) returns (QueryParamsResponse) {
-    option (google.api.http).get = "/sommelier/cork/v1/params";
+    option (google.api.http).get = "/sommelier/cork/v2/params";
   }
   // QueryCellarIDs returns all cellars and current tick ranges
   rpc QueryCellarIDs(QueryCellarIDsRequest) returns (QueryCellarIDsResponse) {
-    option (google.api.http).get = "/sommelier/cork/v1/cellar_ids";
+    option (google.api.http).get = "/sommelier/cork/v2/cellar_ids";
   }
   // QueryScheduledCorks returns all scheduled corks
   rpc QueryScheduledCorks(QueryScheduledCorksRequest) returns (QueryScheduledCorksResponse) {
-    option (google.api.http).get = "/sommelier/cork/v1/scheduled_corks";
+    option (google.api.http).get = "/sommelier/cork/v2/scheduled_corks";
   }
   // QueryScheduledBlockHeights returns all scheduled block heights
   rpc QueryScheduledBlockHeights(QueryScheduledBlockHeightsRequest) returns (QueryScheduledBlockHeightsResponse) {
-    option (google.api.http).get = "/sommelier/cork/v1/scheduled_block_heights";
+    option (google.api.http).get = "/sommelier/cork/v2/scheduled_block_heights";
   }
 
   // QueryScheduledCorks returns all scheduled corks at a block height
   rpc QueryScheduledCorksByBlockHeight(QueryScheduledCorksByBlockHeightRequest) returns (QueryScheduledCorksByBlockHeightResponse) {
-    option (google.api.http).get = "/sommelier/cork/v1/scheduled_corks_by_block_height/{block_height}";
+    option (google.api.http).get = "/sommelier/cork/v2/scheduled_corks_by_block_height/{block_height}";
   }
 
   // QueryScheduledCorks returns all scheduled corks with the specified ID
   rpc QueryScheduledCorksByID(QueryScheduledCorksByIDRequest) returns (QueryScheduledCorksByIDResponse) {
-    option (google.api.http).get = "/sommelier/cork/v1/scheduled_corks_by_id/{id}";
+    option (google.api.http).get = "/sommelier/cork/v2/scheduled_corks_by_id/{id}";
+  }
+
+  rpc QueryCorkResult(QueryCorkResultRequest) returns (QueryCorkResultResponse) {
+    option (google.api.http).get = "/sommelier/cork/v2/cork_results/{id}";
+  }
+
+  rpc QueryCorkResults(QueryCorkResultsRequest) returns (QueryCorkResultsResponse) {
+    option (google.api.http).get = "/sommelier/cork/v2/cork_results";
   }
 }
 
@@ -91,4 +99,18 @@ message QueryScheduledCorksByIDRequest {
 // QueryScheduledCorksByIDResponse
 message QueryScheduledCorksByIDResponse {
   repeated ScheduledCork corks = 1;
+}
+
+message QueryCorkResultRequest {
+  uint64 id = 1;
+}
+
+message QueryCorkResultResponse {
+  CorkResult corkResult = 1;
+}
+
+message QueryCorkResultsRequest {}
+
+message QueryCorkResultsResponse {
+  repeated CorkResult corkResults = 1;
 }
