@@ -3,14 +3,16 @@ package types
 import (
 	"fmt"
 
+	sdk "github.com/cosmos/cosmos-sdk/types"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
 )
 
 // Parameter keys
 var (
-	KeyPriceMaxBlockAge = []byte("PriceMaxBlockAge")
-	MinimumBidInUsomm   = []byte("MinimumBidInUsomm")
-	BlocksToNotPrune    = []byte("BlocksToNotPrune")
+	KeyPriceMaxBlockAge                  = []byte("PriceMaxBlockAge")
+	MinimumBidInUsomm                    = []byte("MinimumBidInUsomm")
+	BlocksToNotPrune                     = []byte("BlocksToNotPrune")
+	AuctionPriceDecreaseAccelerationRate = []byte("AuctionPriceDecreaseAccelerationRate")
 )
 
 var _ paramtypes.ParamSet = &Params{}
@@ -23,9 +25,10 @@ func ParamKeyTable() paramtypes.KeyTable {
 // DefaultParams returns default auction parameters
 func DefaultParams() Params {
 	return Params{
-		PriceMaxBlockAge:  403200,  // roughly four weeks based on 6 second blocks
-		MinimumBidInUsomm: 1000000, // 1 somm
-		BlocksToNotPrune:  864000,  // roughly 60 days based on 6 second blocks
+		PriceMaxBlockAge:                     403200,                       // roughly four weeks based on 6 second blocks
+		MinimumBidInUsomm:                    1000000,                      // 1 somm
+		BlocksToNotPrune:                     864000,                       // roughly 60 days based on 6 second blocks
+		AuctionPriceDecreaseAccelerationRate: sdk.MustNewDecFromStr("0.1"), // 10%
 	}
 }
 
@@ -35,6 +38,7 @@ func (p *Params) ParamSetPairs() paramtypes.ParamSetPairs {
 		paramtypes.NewParamSetPair(KeyPriceMaxBlockAge, &p.PriceMaxBlockAge, validatePriceMaxBlockAge),
 		paramtypes.NewParamSetPair(MinimumBidInUsomm, &p.MinimumBidInUsomm, validateMinimumBidInUsomm),
 		paramtypes.NewParamSetPair(BlocksToNotPrune, &p.BlocksToNotPrune, validateBlocksToNotPrune),
+		paramtypes.NewParamSetPair(AuctionPriceDecreaseAccelerationRate, &p.AuctionPriceDecreaseAccelerationRate, validateAuctionPriceDecreaseAccelerationRate),
 	}
 }
 
@@ -49,6 +53,10 @@ func (p *Params) ValidateBasic() error {
 	}
 
 	if err := validateBlocksToNotPrune(p.BlocksToNotPrune); err != nil {
+		return err
+	}
+
+	if err := validateAuctionPriceDecreaseAccelerationRate(p.AuctionPriceDecreaseAccelerationRate); err != nil {
 		return err
 	}
 
@@ -86,9 +94,21 @@ func validateBlocksToNotPrune(i interface{}) error {
 	}
 
 	if blocksToNotPrune == 0 {
-		return fmt.Errorf(
-			"blocks to not prune must be non-zero",
-		)
+		return fmt.Errorf("blocks to not prune must be non-zero")
+	}
+
+	return nil
+}
+
+func validateAuctionPriceDecreaseAccelerationRate(i interface{}) error {
+	auctionPriceDecreaseAccelerationRate, ok := i.(sdk.Dec)
+	if !ok {
+		return fmt.Errorf("invalid auction price dececrease acceleration rate parameter type: %T", i)
+	}
+
+	if auctionPriceDecreaseAccelerationRate.LT(sdk.MustNewDecFromStr("0")) || auctionPriceDecreaseAccelerationRate.GT(sdk.MustNewDecFromStr("1.0")) {
+		// Acceleration rates could in theory be more than 100% if need be, but we are establishing this as a bound for now
+		return fmt.Errorf("auction price dececrease acceleration rate must be betwen 0 and 1 inclusive (0%% to 100%%)")
 	}
 
 	return nil

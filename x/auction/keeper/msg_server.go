@@ -89,6 +89,7 @@ func (k Keeper) SubmitBid(c context.Context, msg *types.MsgSubmitBidRequest) (*t
 		TotalFulfilledSaleTokens:  totalFulfilledSaleTokens,
 		SaleTokenUnitPriceInUsomm: auction.CurrentUnitPriceInUsomm,
 		TotalUsommPaid:            totalUsommPaid,
+		BlockHeight:               uint64(ctx.BlockHeight()),
 	}
 
 	err := bid.ValidateBasic()
