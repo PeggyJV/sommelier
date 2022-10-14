@@ -24,12 +24,7 @@ import (
 const ALPHA_FEE_DENOM string = "gravity0x4C4a2f8c81640e47606d3fd77B353E87Ba015584"
 const BETA_FEE_DENOM string = "gravity0x21dF544947ba3E8b3c32561399E88B52Dc8b2823"
 
-func (s *IntegrationTestSuite) SendEthTransaction(ethereumKey *ethereumKey, toAddress common.Address, data []byte) error {
-	ethClient, err := ethclient.Dial(fmt.Sprintf("http://%s", s.ethResource.GetHostPort("8545/tcp")))
-	if err != nil {
-		return err
-	}
-
+func (s *IntegrationTestSuite) sendEthTransaction(ethClient *ethclient.Client, ethereumKey *ethereumKey, toAddress common.Address, data []byte) error {
 	privateKey, err := crypto.HexToECDSA(ethereumKey.privateKey[2:])
 	if err != nil {
 		return err
@@ -76,17 +71,25 @@ func (s *IntegrationTestSuite) SendEthTransaction(ethereumKey *ethereumKey, toAd
 
 func (s *IntegrationTestSuite) TestCellarFees() {
 	s.Run("Bring up chain, send fees from ethereum, observe auction and fee distribution", func() {
-		s.T().Log("Verify that the first validator address is an approved cellar ID")
 		val := s.chain.validators[0]
 		ethereumSender := val.ethereumKey.address
 		kb, err := val.keyring()
 		s.Require().NoError(err)
 
+		ethClient, err := ethclient.Dial(fmt.Sprintf("http://%s", s.ethResource.GetHostPort("8545/tcp")))
+		s.Require().NoError(err)
+
 		clientCtx, err := s.chain.clientContext("tcp://localhost:26657", &kb, "val", val.keyInfo.GetAddress())
 		s.Require().NoError(err)
 
-		queryClient := corktypes.NewQueryClient(clientCtx)
-		idsRes, err := queryClient.QueryCellarIDs(context.Background(), &corktypes.QueryCellarIDsRequest{})
+		auctionQueryClient := auctiontypes.NewQueryClient(clientCtx)
+		bankQueryClient := banktypes.NewQueryClient(clientCtx)
+		cellarfeesQueryClient := cellarfeestypes.NewQueryClient(clientCtx)
+		corkQueryClient := corktypes.NewQueryClient(clientCtx)
+		distQueryClient := disttypes.NewQueryClient(clientCtx)
+
+		s.T().Log("Verify that the first validator address is an approved cellar ID")
+		idsRes, err := corkQueryClient.QueryCellarIDs(context.Background(), &corktypes.QueryCellarIDsRequest{})
 		s.Require().NoError(err)
 
 		var found bool
@@ -99,7 +102,6 @@ func (s *IntegrationTestSuite) TestCellarFees() {
 		s.Require().True(found, "validator ethereum address %s is not an approved cellar ID", ethereumSender)
 
 		s.T().Logf("Verify that the module account's fee balances are zero")
-		cellarfeesQueryClient := cellarfeestypes.NewQueryClient(clientCtx)
 		ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
 		defer cancel()
 
@@ -108,8 +110,6 @@ func (s *IntegrationTestSuite) TestCellarFees() {
 
 		feesAddress := acctsRes.FeesAddress
 		s.T().Logf("Fees address: %s", feesAddress)
-		bankQueryClient := banktypes.NewQueryClient(clientCtx)
-		auctionQueryClient := auctiontypes.NewQueryClient(clientCtx)
 		balanceRes, err := bankQueryClient.Balance(ctx, &banktypes.QueryBalanceRequest{
 			Address: feesAddress,
 			Denom:   fmt.Sprintf("gravity%s", alphaERC20Contract.Hex()),
@@ -124,7 +124,6 @@ func (s *IntegrationTestSuite) TestCellarFees() {
 		s.Require().Zero(balanceRes.Balance.Amount.Uint64())
 
 		s.T().Log("Getting baseline rewards increase rate")
-		distQueryClient := disttypes.NewQueryClient(clientCtx)
 		rewardsRes, err := distQueryClient.DelegationRewards(ctx, &disttypes.QueryDelegationRewardsRequest{
 			DelegatorAddress: val.keyInfo.GetAddress().String(),
 			ValidatorAddress: "sommvaloper199sjfhaw3hempwzljw0lgwsm9kk6r8e5ef3hmp",
@@ -142,21 +141,16 @@ func (s *IntegrationTestSuite) TestCellarFees() {
 
 		s.T().Logf("Approving Gravity to spend Alpha ERC20")
 		approveData := PackApproveERC20(gravityContract)
-		err = s.SendEthTransaction(&val.ethereumKey, alphaERC20Contract, approveData)
+		err = s.sendEthTransaction(ethClient, &val.ethereumKey, alphaERC20Contract, approveData)
 		s.Require().NoError(err, "Error approving spending ALPHA balance for the gravity contract on behalf of the first validator")
 
 		s.T().Logf("Approving Gravity to spend Beta ERC20")
 		approveData = PackApproveERC20(gravityContract)
-		err = s.SendEthTransaction(&val.ethereumKey, betaERC20Contract, approveData)
+		err = s.sendEthTransaction(ethClient, &val.ethereumKey, betaERC20Contract, approveData)
 		s.Require().NoError(err, "Error approving spending BETA balance for the gravity contract on behalf of the first validator")
 
 		s.T().Logf("Waiting for allowance confirmations..")
 		s.Require().Eventually(func() bool {
-			ethClient, err := ethclient.Dial(fmt.Sprintf("http://%s", s.ethResource.GetHostPort("8545/tcp")))
-			if err != nil {
-				return false
-			}
-
 			data := PackAllowance(common.HexToAddress(ethereumSender), gravityContract)
 
 			res, _ := ethClient.CallContract(context.Background(), ethereum.CallMsg{
@@ -173,11 +167,6 @@ func (s *IntegrationTestSuite) TestCellarFees() {
 		}, time.Second*10, time.Second, "AlphaERC20 allowance not found")
 
 		s.Require().Eventually(func() bool {
-			ethClient, err := ethclient.Dial(fmt.Sprintf("http://%s", s.ethResource.GetHostPort("8545/tcp")))
-			if err != nil {
-				return false
-			}
-
 			data := PackAllowance(common.HexToAddress(ethereumSender), gravityContract)
 
 			res, _ := ethClient.CallContract(context.Background(), ethereum.CallMsg{
@@ -197,18 +186,17 @@ func (s *IntegrationTestSuite) TestCellarFees() {
 		acc, err := sdk.AccAddressFromBech32(feesAddress)
 		s.Require().NoError(err, "Failed to derive fees account address from bech32 string: %s", feesAddress)
 		sendData := PackSendToCosmos(alphaERC20Contract, acc, sdk.NewInt(50000))
-		err = s.SendEthTransaction(&val.ethereumKey, gravityContract, sendData)
+		err = s.sendEthTransaction(ethClient, &val.ethereumKey, gravityContract, sendData)
 		s.Require().NoError(err, "Failed to send fees transaction to Cosmos")
 
 		s.T().Log("Sending BETA fees to cellarfees module account")
 		acc, err = sdk.AccAddressFromBech32(feesAddress)
 		s.Require().NoError(err, "Failed to derive fees account address from bech32 string: %s", feesAddress)
 		sendData = PackSendToCosmos(betaERC20Contract, acc, sdk.NewInt(20000))
-		err = s.SendEthTransaction(&val.ethereumKey, gravityContract, sendData)
+		err = s.sendEthTransaction(ethClient, &val.ethereumKey, gravityContract, sendData)
 		s.Require().NoError(err, "Failed to send fees transaction to Cosmos")
 
 		s.T().Log("Waiting for fees to be received...")
-		// var balance sdk.Int
 		s.Require().Eventually(func() bool {
 			res, err := bankQueryClient.Balance(context.Background(),
 				&banktypes.QueryBalanceRequest{
@@ -250,11 +238,11 @@ func (s *IntegrationTestSuite) TestCellarFees() {
 
 		s.T().Log("Sending ERC20 fees a second time")
 		sendData = PackSendToCosmos(alphaERC20Contract, acc, sdk.NewInt(100000))
-		err = s.SendEthTransaction(&val.ethereumKey, gravityContract, sendData)
+		err = s.sendEthTransaction(ethClient, &val.ethereumKey, gravityContract, sendData)
 		s.Require().NoError(err, "Failed to send fees transaction to Cosmos")
 
 		sendData = PackSendToCosmos(betaERC20Contract, acc, sdk.NewInt(120000))
-		err = s.SendEthTransaction(&val.ethereumKey, gravityContract, sendData)
+		err = s.sendEthTransaction(ethClient, &val.ethereumKey, gravityContract, sendData)
 		s.Require().NoError(err, "Failed to send fees transaction to Cosmos")
 
 		s.T().Log("Waiting for auctions to start")
@@ -291,7 +279,7 @@ func (s *IntegrationTestSuite) TestCellarFees() {
 			SaleTokenMinimumAmount: sdk.NewCoin(ALPHA_FEE_DENOM, sdk.NewIntFromUint64(150000)),
 			Signer:                 orch.keyInfo.GetAddress().String(),
 		}
-		s.T().Logf("Bid: %v", bidRequest1)
+
 		orchClientCtx, err := s.chain.clientContext("tcp://localhost:26657", orch.keyring, "orch", orch.keyInfo.GetAddress())
 		s.Require().NoError(err, "Failed to create client for orchestrator")
 		_, err = s.chain.sendMsgs(*orchClientCtx, &bidRequest1)
@@ -346,7 +334,7 @@ func (s *IntegrationTestSuite) TestCellarFees() {
 			SaleTokenMinimumAmount: sdk.NewCoin(BETA_FEE_DENOM, sdk.NewIntFromUint64(140000)),
 			Signer:                 orch.keyInfo.GetAddress().String(),
 		}
-		s.T().Logf("Bid: %v", bidRequest2)
+
 		_, err = s.chain.sendMsgs(*orchClientCtx, &bidRequest2)
 		s.Require().NoError(err, "Failed to submit bid")
 
@@ -378,8 +366,12 @@ func (s *IntegrationTestSuite) TestCellarFees() {
 			ValidatorAddress: "sommvaloper199sjfhaw3hempwzljw0lgwsm9kk6r8e5ef3hmp",
 		})
 		s.Require().NoError(err)
+
 		startAmount = rewardsRes.Rewards.AmountOf(testDenom)
+
+		// let some time elapse so we can calculate an average rate
 		time.Sleep(time.Second * 12)
+
 		rewardsRes, err = distQueryClient.DelegationRewards(ctx, &disttypes.QueryDelegationRewardsRequest{
 			DelegatorAddress: val.keyInfo.GetAddress().String(),
 			ValidatorAddress: "sommvaloper199sjfhaw3hempwzljw0lgwsm9kk6r8e5ef3hmp",
@@ -403,6 +395,26 @@ func (s *IntegrationTestSuite) TestCellarFees() {
 
 			return res == nil || res.Balance.Amount.Equal(sdk.ZeroInt())
 		}, time.Second*300, time.Second*10, "Reward supply did not exhaust in the provided amount of time")
+
+		s.T().Log("Verify that the accrual counter reset by sending more ALPHA")
+		sendData = PackSendToCosmos(alphaERC20Contract, acc, sdk.NewInt(25000))
+		err = s.sendEthTransaction(ethClient, &val.ethereumKey, gravityContract, sendData)
+		s.Require().NoError(err, "Failed to send fees transaction to Cosmos")
+
+		s.T().Log("Confirming no auction is started...")
+		for i := 0; i < 20; i++ {
+			res, _ := auctionQueryClient.QueryActiveAuctions(ctx, &auctiontypes.QueryActiveAuctionsRequest{})
+			if res == nil {
+				continue
+			}
+
+			for _, auction := range res.Auctions {
+				s.Require().NotEqual(auction.StartingTokensForSale.Denom, ALPHA_FEE_DENOM)
+			}
+
+			time.Sleep(time.Second)
+		}
+
 		s.T().Log("Done!")
 	})
 }
