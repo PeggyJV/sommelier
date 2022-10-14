@@ -15,34 +15,25 @@ func (k Keeper) EndBlocker(ctx sdk.Context) {
 	// Auction price updates
 	for _, auction := range k.GetActiveAuctions(ctx) {
 		if ctx.BlockHeight() != int64(auction.StartBlock) && ((ctx.BlockHeight()-int64(auction.StartBlock))%int64(auction.PriceDecreaseBlockInterval)) == 0 {
-			// TODO post MVP (pbal) Make a more intricate & responsive step function for auction price updates -- come back to this after other todos
-			// Need accelerationFactor param, reset to initialDecreaseRate after some time/criteria, handler for 0 factor case, just incase
 			decreaseAccelerationFactor := k.GetParamSet(ctx).AuctionPriceDecreaseAccelerationRate
-			newUnitPriceInUsomm := sdk.MustNewDecFromStr("0.0")
-
 			// Constant decrease rate if acceleration factor is 0
-			if decreaseAccelerationFactor.Equal(sdk.MustNewDecFromStr("0.0")) {
-				priceDecreaseAmountInUsomm := auction.InitialUnitPriceInUsomm.Mul(auction.CurrentPriceDecreaseRate)
-				newUnitPriceInUsomm= auction.CurrentUnitPriceInUsomm.Sub(priceDecreaseAmountInUsomm)
-			} else { // Decrease rate with acceleration factor that accelerates the decrease amount until a bid is seen
-				// Cycle through bids first to see if one was found in the last decrease interval
-				bids := k.GetBidsByAuctionID(ctx, auction.Id)
+			// Otherwise decrease rate with acceleration factor that accelerates the decrease amount until a bid is seen
+			
+			// Cycle through bids first to see if one was found in the last decrease interval
+			bids := k.GetBidsByAuctionID(ctx, auction.Id)
 
-				// Only look at the most recent bid, with the highest ID we can see if we had any bids in the last block decrease period or not
-				bid := bids[len(bids)-1]
-				
-				if bid
+			// Only look at the most recent bid, with the highest ID we can see if we had any bids in the last block decrease period or not
+			bid := bids[len(bids)-1]
 
-
-
-
-
+			// Reset decrease rate if we've seen at least 1 bid in the last interval
+			if bid.BlockHeight >= uint64(ctx.BlockHeight())-auction.PriceDecreaseBlockInterval {
+				auction.CurrentPriceDecreaseRate = auction.InitialPriceDecreaseRate
+			} else { // Otherwise add in the acceleration factor
+				auction.CurrentPriceDecreaseRate = auction.CurrentPriceDecreaseRate.Mul(sdk.MustNewDecFromStr("1.0").Add(decreaseAccelerationFactor))
 			}
 
-
-
-
-
+			priceDecreaseAmountInUsomm := auction.InitialUnitPriceInUsomm.Mul(auction.CurrentPriceDecreaseRate)
+			newUnitPriceInUsomm := auction.CurrentUnitPriceInUsomm.Sub(priceDecreaseAmountInUsomm)
 
 			// If the new price would be non positive, finish the auction
 			if newUnitPriceInUsomm.LTE(sdk.NewDec(0)) {
