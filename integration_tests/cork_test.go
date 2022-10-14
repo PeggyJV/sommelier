@@ -118,7 +118,7 @@ func (s *IntegrationTestSuite) TestCork() {
 		s.Require().NoError(err)
 		s.Require().Equal(int64(0), count.Int64())
 
-		s.T().Log("verify that there is at least one allowed address on the new chain")
+		s.T().Log("verify that counter contract is not an approved cellar yet")
 		val := s.chain.validators[0]
 		kb, err := val.keyring()
 		s.Require().NoError(err)
@@ -127,9 +127,16 @@ func (s *IntegrationTestSuite) TestCork() {
 		queryClient := types.NewQueryClient(clientCtx)
 		res, err := queryClient.QueryCellarIDs(context.Background(), &types.QueryCellarIDsRequest{})
 		s.Require().NoError(err)
-		s.Require().Greater(res.CellarIds, 0)
 
-		s.T().Logf("create governance proposal to add counter contract")
+		found := false
+		for _, id := range res.CellarIds {
+			if id == counterContract.Hex() {
+				found = true
+			}
+		}
+		s.Require().False(found)
+
+		s.T().Logf("create governance proposal to add counter contract %s", counterContract.Hex())
 		orch := s.chain.orchestrators[0]
 		clientCtx, err = s.chain.clientContext("tcp://localhost:26657", orch.keyring, "orch", orch.keyInfo.GetAddress())
 		s.Require().NoError(err)

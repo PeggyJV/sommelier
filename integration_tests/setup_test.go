@@ -320,11 +320,6 @@ func (s *IntegrationTestSuite) initGenesis() {
 	var stakingGenState stakingtypes.GenesisState
 	s.Require().NoError(cdc.UnmarshalJSON(appGenState[stakingtypes.ModuleName], &stakingGenState))
 	stakingGenState.Params.BondDenom = testDenom
-	// stakingGenState.Delegations = append(stakingGenState.Delegations, stakingtypes.Delegation{
-	// 	DelegatorAddress: "",
-	// 	ValidatorAddress: "",
-	// 	Shares:           sdk.MustNewDecFromStr("10000"),
-	// })
 	bz, err = cdc.MarshalJSON(&stakingGenState)
 	s.Require().NoError(err)
 	appGenState[stakingtypes.ModuleName] = bz
@@ -572,12 +567,6 @@ func (s *IntegrationTestSuite) runEthContainer() {
 				// this is not the last contract deployed
 				continue
 			}
-			if strings.HasPrefix(s, "counter contract deployed at") {
-				strSpl := strings.Split(s, "-")
-				counterContract = common.HexToAddress(strings.ReplaceAll(strSpl[1], " ", ""))
-				// this is not the last contract deployed
-				continue
-			}
 			if strings.HasPrefix(s, "alphaERC20 contract deployed at") {
 				strSpl := strings.Split(s, "-")
 				alphaERC20Contract = common.HexToAddress(strings.ReplaceAll(strSpl[1], " ", ""))
@@ -587,12 +576,21 @@ func (s *IntegrationTestSuite) runEthContainer() {
 			if strings.HasPrefix(s, "betaERC20 contract deployed at") {
 				strSpl := strings.Split(s, "-")
 				betaERC20Contract = common.HexToAddress(strings.ReplaceAll(strSpl[1], " ", ""))
+				// this is not the last contract deployed
+				continue
+			}
+			if strings.HasPrefix(s, "counter contract deployed at") {
+				strSpl := strings.Split(s, "-")
+				counterContract = common.HexToAddress(strings.ReplaceAll(strSpl[1], " ", ""))
 				return true
 			}
 		}
 		return false
 	}, time.Minute*5, time.Second*10, "unable to retrieve gravity address from logs")
 	s.T().Logf("gravity contract deployed at %s", gravityContract.String())
+	s.T().Logf("alphaERC20 contract deployed at %s", alphaERC20Contract.String())
+	s.T().Logf("betaERC20 contract deployed at %s", betaERC20Contract.String())
+	s.T().Logf("counter contract deployed at %s", counterContract.String())
 
 	s.T().Logf("started Ethereum container: %s", s.ethResource.Container.ID)
 }
