@@ -56,7 +56,8 @@ var (
 	// todo(mvid): split these out into their respective tests
 	gravityContract       = common.HexToAddress("0x04C89607413713Ec9775E14b954286519d836FEf")
 	counterContract       = common.HexToAddress("0x0000000000000000000000000000000000000000")
-	testERC20Contract     = common.HexToAddress("0x0000000000000000000000000000000000000000")
+	alphaERC20Contract    = common.HexToAddress("0x0000000000000000000000000000000000000000")
+	betaERC20Contract     = common.HexToAddress("0x0000000000000000000000000000000000000000")
 	unusedGenesisContract = common.HexToAddress("0x0000000000000000000000000000000000000001")
 	unusedAddedContract   = common.HexToAddress("0x0000000000000000000000000000000000000002")
 )
@@ -189,12 +190,9 @@ func (s *IntegrationTestSuite) initNodesWithMnemonics(mnemonics ...string) {
 	}
 
 	// add orchestrator accounts to genesis file
-	for i, orch := range s.chain.orchestrators {
+	for _, orch := range s.chain.orchestrators {
 		// Fund the first orchestrator with some funds to be used by auction module integration tests
 		balanceStr := initBalanceStr
-		if i == 0 {
-			balanceStr += ",100000000000usomm"
-		}
 		s.Require().NoError(
 			addGenesisAccount(val0ConfigDir, "", balanceStr, orch.keyInfo.GetAddress()),
 		)
@@ -322,6 +320,11 @@ func (s *IntegrationTestSuite) initGenesis() {
 	var stakingGenState stakingtypes.GenesisState
 	s.Require().NoError(cdc.UnmarshalJSON(appGenState[stakingtypes.ModuleName], &stakingGenState))
 	stakingGenState.Params.BondDenom = testDenom
+	// stakingGenState.Delegations = append(stakingGenState.Delegations, stakingtypes.Delegation{
+	// 	DelegatorAddress: "",
+	// 	ValidatorAddress: "",
+	// 	Shares:           sdk.MustNewDecFromStr("10000"),
+	// })
 	bz, err = cdc.MarshalJSON(&stakingGenState)
 	s.Require().NoError(err)
 	appGenState[stakingtypes.ModuleName] = bz
@@ -341,8 +344,13 @@ func (s *IntegrationTestSuite) initGenesis() {
 	auctionGenState := auctiontypes.DefaultGenesisState()
 	s.Require().NoError(cdc.UnmarshalJSON(appGenState[auctiontypes.ModuleName], &auctionGenState))
 	auctionGenState.TokenPrices = append(auctionGenState.TokenPrices, &auctiontypes.TokenPrice{
-		Denom:            CELLAR_FEE_DENOM,
+		Denom:            ALPHA_FEE_DENOM,
 		UsdPrice:         sdk.MustNewDecFromStr("1.0"),
+		LastUpdatedBlock: 0,
+	})
+	auctionGenState.TokenPrices = append(auctionGenState.TokenPrices, &auctiontypes.TokenPrice{
+		Denom:            BETA_FEE_DENOM,
+		UsdPrice:         sdk.MustNewDecFromStr("5.0"),
 		LastUpdatedBlock: 0,
 	})
 	auctionGenState.TokenPrices = append(auctionGenState.TokenPrices, &auctiontypes.TokenPrice{
@@ -570,15 +578,21 @@ func (s *IntegrationTestSuite) runEthContainer() {
 				// this is not the last contract deployed
 				continue
 			}
-			if strings.HasPrefix(s, "testERC20 contract deployed at") {
+			if strings.HasPrefix(s, "alphaERC20 contract deployed at") {
 				strSpl := strings.Split(s, "-")
-				testERC20Contract = common.HexToAddress(strings.ReplaceAll(strSpl[1], " ", ""))
+				alphaERC20Contract = common.HexToAddress(strings.ReplaceAll(strSpl[1], " ", ""))
+				// this is not the last contract deployed
+				continue
+			}
+			if strings.HasPrefix(s, "betaERC20 contract deployed at") {
+				strSpl := strings.Split(s, "-")
+				betaERC20Contract = common.HexToAddress(strings.ReplaceAll(strSpl[1], " ", ""))
 				return true
 			}
 		}
 		return false
 	}, time.Minute*5, time.Second*10, "unable to retrieve gravity address from logs")
-	s.T().Logf("gravity contrained deployed at %s", gravityContract.String())
+	s.T().Logf("gravity contract deployed at %s", gravityContract.String())
 
 	s.T().Logf("started Ethereum container: %s", s.ethResource.Container.ID)
 }

@@ -9,7 +9,8 @@ import (
 
 // BeginBlocker emits rewards each block they are available by sending them to the distribution module's fee collector
 // account. Emissions are a constant value based on the last peak supply of distributable fees so that the reward supply
-// will decrease linearly until exhausted.
+// will decrease linearly until exhausted. If the reward supply increases but is lower than the previous peak, it will
+// continue to distribute at the rate based on the previous peak.
 func (k Keeper) BeginBlocker(ctx sdk.Context) {
 	// Handle reward emissions
 	moduleAccount := k.accountKeeper.GetModuleAccount(ctx, types.ModuleName)
@@ -24,12 +25,14 @@ func (k Keeper) BeginBlocker(ctx sdk.Context) {
 
 	var emissionAmount sdk.Int
 
-	// If this is the first emission after a resupply from zero, the current reward supply is the new peak.
-	if previousSupplyPeak.IsZero() {
+	previousQuotient := previousSupplyPeak.Quo(sdk.NewInt(int64(params.RewardEmissionPeriod)))
+	remainingQuotient := remainingRewardsSupply.Quo(sdk.NewInt(int64(params.RewardEmissionPeriod)))
+
+	if remainingQuotient.GT(previousQuotient) {
+		emissionAmount = remainingQuotient
 		k.SetLastRewardSupplyPeak(ctx, remainingRewardsSupply)
-		emissionAmount = remainingRewardsSupply.Quo(sdk.NewInt(int64(params.RewardEmissionPeriod)))
 	} else {
-		emissionAmount = previousSupplyPeak.Quo(sdk.NewInt(int64(params.RewardEmissionPeriod)))
+		emissionAmount = previousQuotient
 	}
 
 	// Emission should be at least 1usomm and at most the remaining reward supply

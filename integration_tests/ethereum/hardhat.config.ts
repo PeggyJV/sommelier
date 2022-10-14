@@ -40,11 +40,15 @@ task(
 
         // The constructor for this contract funds a validator's ETH address
         // with the test ERC20
-        const TestERC20 = await hre.ethers.getContractFactory("TestERC20");
-        const testERC20 = (await TestERC20.deploy());
+        const AlphaERC20 = await hre.ethers.getContractFactory("AlphaERC20");
+        const alphaERC20 = (await AlphaERC20.deploy());
+        const BetaERC20 = await hre.ethers.getContractFactory("BetaERC20");
+        const betaERC20 = (await BetaERC20.deploy());
 
-        await testERC20.deployed();
-        console.log(`testERC20 contract deployed at - ${testERC20.address}`)
+        await alphaERC20.deployed();
+        console.log(`alphaERC20 contract deployed at - ${alphaERC20.address}`)
+        await betaERC20.deployed();
+        console.log(`betaERC20 contract deployed at - ${betaERC20.address}`)
 
         const Cellar = await hre.ethers.getContractFactory("CellarPoolShare");
         const cellar = (await Cellar.deploy(
