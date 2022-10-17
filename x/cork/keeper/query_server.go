@@ -7,6 +7,8 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/peggyjv/sommelier/v4/x/cork/types"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
 var _ types.QueryServer = Keeper{}
@@ -69,4 +71,22 @@ func (k Keeper) QueryScheduledCorksByID(c context.Context, req *types.QuerySched
 	return &response, nil
 }
 
-// TODO(bolten): implement QueryCorkResult and QueryCorkResults
+func (k Keeper) QueryCorkResult(c context.Context, req *types.QueryCorkResultRequest) (*types.QueryCorkResultResponse, error) {
+	ctx := sdk.UnwrapSDKContext(c)
+
+	response := types.QueryCorkResultResponse{}
+	var found bool
+	*response.CorkResult, found = k.GetCorkResult(ctx, req.Id)
+	if !found {
+		return &types.QueryCorkResultResponse{}, status.Errorf(codes.NotFound, "No cork result found for id: %d", req.GetId())
+	}
+	return &response, nil
+}
+
+func (k Keeper) QueryCorkResults(c context.Context, req *types.QueryCorkResultsRequest) (*types.QueryCorkResultsResponse, error) {
+	ctx := sdk.UnwrapSDKContext(c)
+
+	response := types.QueryCorkResultsResponse{}
+	response.CorkResults = k.GetCorkResults(ctx)
+	return &response, nil
+}
