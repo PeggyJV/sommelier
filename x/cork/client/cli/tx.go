@@ -170,4 +170,68 @@ Where proposal.json contains:
 	return cmd
 }
 
-// TODO(bolten): add GetCmdSubmitScheduledCorkProposal
+// GetCmdSubmitScheduledCorkProposal implements the command to submit scheduled cork proposal
+func GetCmdSubmitScheduledCorkProposal() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "schedule-cork [proposal-file]",
+		Args:  cobra.ExactArgs(1),
+		Short: "Submit a scheduled cork proposal",
+		Long: strings.TrimSpace(
+			fmt.Sprintf(`Submit a scheduled cork proposal along with an initial deposit.
+The proposal details must be supplied via a JSON file.
+
+Example:
+$ %s tx gov submit-proposal schedule-cork <path/to/proposal.json> --from=<key_or_address>
+
+Where proposal.json contains:
+
+{
+  "title": "Dollary-doos LP Scheduled Cork Proposal",
+  "description": "I trust them, approve cork",
+  "block_height": 100000,
+  "target_contract_address": "0x123801a7D398351b8bE11C439e05C5B3259aeC9B",
+  "contract_call_proto_json": "{\"function_name\":\"cork\",\"function_args\":[]}",
+  "deposit": "1000stake"
+}
+`,
+				version.AppName,
+			),
+		),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			clientCtx, err := client.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			proposal := types.ScheduledCorkProposalWithDeposit{}
+			contents, err := ioutil.ReadFile(args[0])
+			if err != nil {
+				return err
+			}
+
+			if err = clientCtx.Codec.UnmarshalJSON(contents, &proposal); err != nil {
+				return err
+			}
+
+			deposit, err := sdk.ParseCoinsNormalized(proposal.Deposit)
+			if err != nil {
+				return err
+			}
+
+			if !common.IsHexAddress(proposal.TargetContractAddress) {
+				return fmt.Errorf("%s is not a valid contract address", proposal.TargetContractAddress)
+			}
+
+			content := types.NewScheduledCorkProposal(proposal.Title, proposal.Description, proposal.BlockHeight, proposal.TargetContractAddress, proposal.ContractCallProtoJson)
+			from := clientCtx.GetFromAddress()
+			msg, err := govtypes.NewMsgSubmitProposal(content, deposit, from)
+			if err != nil {
+				return err
+			}
+
+			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), msg)
+		},
+	}
+
+	return cmd
+}
