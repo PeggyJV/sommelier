@@ -83,13 +83,13 @@ func (m *RemoveManagedCellarIDsProposal) ValidateBasic() error {
 	return nil
 }
 
-func NewScheduledCorkProposal(title string, description string, blockHeight uint64, target_contract_address string, contract_call_proto_json string) *ScheduledCorkProposal {
+func NewScheduledCorkProposal(title string, description string, blockHeight uint64, targetContractAddress string, contractCallProtoJson string) *ScheduledCorkProposal {
 	return &ScheduledCorkProposal{
 		Title:                 title,
 		Description:           description,
 		BlockHeight:           blockHeight,
-		TargetContractAddress: target_contract_address,
-		ContractCallProtoJson: contract_call_proto_json,
+		TargetContractAddress: targetContractAddress,
+		ContractCallProtoJson: contractCallProtoJson,
 	}
 }
 
