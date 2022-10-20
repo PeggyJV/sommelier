@@ -229,7 +229,7 @@ func (k Keeper) IncrementInvalidationNonce(ctx sdk.Context) uint64 {
 
 func (k Keeper) GetCorkIDByHash(ctx sdk.Context, hash []byte) (uint64, bool) {
 	store := ctx.KVStore(k.storeKey)
-	bz := store.Get(types.GetScheduledCorkIdHashKey(hash))
+	bz := store.Get(types.GetScheduledCorkIDHashKey(hash))
 	if len(bz) == 0 {
 		return 0, false
 	}
@@ -237,16 +237,16 @@ func (k Keeper) GetCorkIDByHash(ctx sdk.Context, hash []byte) (uint64, bool) {
 }
 
 func (k Keeper) GetCorkID(ctx sdk.Context, blockHeight uint64, cork types.Cork) (uint64, bool) {
-	return k.GetCorkIDByHash(ctx, cork.IdHash(blockHeight))
+	return k.GetCorkIDByHash(ctx, cork.IDHash(blockHeight))
 }
 
 func (k Keeper) SetCorkIDByHash(ctx sdk.Context, hash []byte, id uint64) {
 	store := ctx.KVStore(k.storeKey)
-	store.Set(types.GetScheduledCorkIdHashKey(hash), sdk.Uint64ToBigEndian(id))
+	store.Set(types.GetScheduledCorkIDHashKey(hash), sdk.Uint64ToBigEndian(id))
 }
 
 func (k Keeper) SetCorkID(ctx sdk.Context, blockHeight uint64, cork types.Cork, id uint64) {
-	k.SetCorkIDByHash(ctx, cork.IdHash(blockHeight), id)
+	k.SetCorkIDByHash(ctx, cork.IDHash(blockHeight), id)
 }
 
 func (k Keeper) GetLatestScheduledCorkID(ctx sdk.Context) uint64 {

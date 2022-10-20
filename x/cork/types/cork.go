@@ -18,7 +18,7 @@ func (c *Cork) InvalidationScope() tmbytes.HexBytes {
 		)).Bytes()
 }
 
-func (c *Cork) IdHash(blockHeight uint64) []byte {
+func (c *Cork) IDHash(blockHeight uint64) []byte {
 	blockHeightBytes := sdk.Uint64ToBigEndian(blockHeight)
 
 	return crypto.Keccak256Hash(

@@ -44,7 +44,7 @@ const (
 	LatestCorkIDKey
 
 	// CorkIdHashPrefix - <prefix><hash> -> uint64(id)
-	ScheduledCorkIdHashPrefix
+	ScheduledCorkIDHashPrefix
 
 	// CorkResultPrefix - <prefix><id> -> CorkResult
 	CorkResultPrefix
@@ -78,12 +78,12 @@ func GetScheduledCorkKey(blockHeight uint64, id uint64, val sdk.ValAddress, cont
 	return bytes.Join([][]byte{{ScheduledCorkKeyPrefix}, blockHeightBytes, idBytes, val.Bytes(), contract.Bytes()}, []byte{})
 }
 
-func GetScheduledCorkIdHashPrefix() []byte {
-	return []byte{ScheduledCorkIdHashPrefix}
+func GetScheduledCorkIDHashPrefix() []byte {
+	return []byte{ScheduledCorkIDHashPrefix}
 }
 
-func GetScheduledCorkIdHashKey(hash []byte) []byte {
-	return append(GetScheduledCorkIdHashPrefix(), hash...)
+func GetScheduledCorkIDHashKey(hash []byte) []byte {
+	return append(GetScheduledCorkIDHashPrefix(), hash...)
 }
 
 func GetCorkResultPrefix() []byte {
