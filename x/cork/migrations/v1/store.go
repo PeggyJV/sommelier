@@ -16,21 +16,22 @@ func MigrateStore(ctx sdk.Context, storeKey storetypes.StoreKey, cdc codec.Binar
 
 	store := ctx.KVStore(storeKey)
 
-	removeCommitPeriod(ctx, store)
+	removeCommitPeriod(store)
 	removeOldCorks(store, cdc)
-	// TODO(bolten): migrate scheduled corks to new key format
 
 	ctx.Logger().Info("Cork v1 to v2: Store migration complete")
 
 	return nil
 }
 
-func removeCommitPeriod(ctx sdk.Context, store storetypes.KVStore) {
+func removeCommitPeriod(store storetypes.KVStore) {
 	store.Delete([]byte{types.CommitPeriodStartKey})
 
 	// TODO(bolten): remove commit period param from old state -- in upgrade handler?
 }
 
+// wipe away all existing cork state during upgrade -- there shouldn't be in-transit corks
+// during the upgrade
 func removeOldCorks(store storetypes.KVStore, cdc codec.BinaryCodec) {
 	var validatorCorks []*types.ValidatorCork
 	iter := sdk.KVStorePrefixIterator(store, []byte{types.CorkForAddressKeyPrefix})
@@ -51,6 +52,32 @@ func removeOldCorks(store storetypes.KVStore, cdc codec.BinaryCodec) {
 		store.Delete(types.GetCorkForValidatorAddressKey(
 			sdk.ValAddress(validatorCork.Validator),
 			common.HexToAddress(validatorCork.Cork.TargetContractAddress),
+		))
+	}
+
+	var scheduledCorks []*types.ScheduledCork
+	iter = sdk.KVStorePrefixIterator(store, []byte{types.ScheduledCorkKeyPrefix})
+	defer iter.Close()
+	for ; iter.Valid(); iter.Next() {
+		var cork types.Cork
+		keyPair := bytes.NewBuffer(iter.Key())
+		keyPair.Next(1) // trim prefix byte
+		blockHeight := sdk.BigEndianToUint64(keyPair.Next(8))
+		val := sdk.ValAddress(keyPair.Next(20))
+
+		cdc.MustUnmarshal(iter.Value(), &cork)
+		scheduledCorks = append(scheduledCorks, &types.ScheduledCork{
+			Cork:        &cork,
+			BlockHeight: blockHeight,
+			Validator:   val.String(),
+		})
+	}
+
+	for _, scheduledCork := range scheduledCorks {
+		store.Delete(types.GetScheduledCorkKey(
+			scheduledCork.BlockHeight,
+			sdk.ValAddress(scheduledCork.Validator),
+			common.HexToAddress(scheduledCork.Cork.TargetContractAddress),
 		))
 	}
 }
