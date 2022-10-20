@@ -143,6 +143,7 @@ var (
 			gravityclient.ProposalHandler,
 			corkclient.AddProposalHandler,
 			corkclient.RemoveProposalHandler,
+			corkclient.ScheduledCorkProposalHandler,
 			auctionclient.SetProposalHandler,
 		),
 		params.AppModuleBasic{},

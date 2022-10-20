@@ -7,7 +7,7 @@ import (
 )
 
 var (
-	AddProposalHandler    = govclient.NewProposalHandler(cli.GetCmdSubmitAddProposal, rest.AddProposalRESTHandler)
-	RemoveProposalHandler = govclient.NewProposalHandler(cli.GetCmdSubmitRemoveProposal, rest.RemoveProposalRESTHandler)
-	// TODO(bolten): add scheduled cork proposal handler
+	AddProposalHandler           = govclient.NewProposalHandler(cli.GetCmdSubmitAddProposal, rest.AddProposalRESTHandler)
+	RemoveProposalHandler        = govclient.NewProposalHandler(cli.GetCmdSubmitRemoveProposal, rest.RemoveProposalRESTHandler)
+	ScheduledCorkProposalHandler = govclient.NewProposalHandler(cli.GetCmdSubmitScheduledCorkProposal, rest.ScheduledCorkProposalRESTHandler)
 )

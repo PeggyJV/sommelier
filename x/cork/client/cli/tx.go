@@ -49,7 +49,7 @@ Where proposal.json contains:
   "title": "Dollary-doos LP Cellar Proposal",
   "description": "I have a hunch",
   "cellar_ids": ["0x123801a7D398351b8bE11C439e05C5B3259aeC9B", "0x456801a7D398351b8bE11C439e05C5B3259aeC9B"],
-  "deposit": "1000stake"
+  "deposit": "10000usomm"
 }
 `,
 				version.AppName,
@@ -119,7 +119,7 @@ Where proposal.json contains:
   "title": "Dollary-doos LP Cellar Removal Proposal",
   "description": "I don't trust them",
   "cellar_ids": ["0x123801a7D398351b8bE11C439e05C5B3259aeC9B", "0x456801a7D398351b8bE11C439e05C5B3259aeC9B"],
-  "deposit": "1000stake"
+  "deposit": "10000usomm"
 }
 `,
 				version.AppName,
@@ -191,7 +191,7 @@ Where proposal.json contains:
   "block_height": 100000,
   "target_contract_address": "0x123801a7D398351b8bE11C439e05C5B3259aeC9B",
   "contract_call_proto_json": "{\"function_name\":\"cork\",\"function_args\":[]}",
-  "deposit": "1000stake"
+  "deposit": "10000usomm"
 }
 `,
 				version.AppName,
@@ -221,6 +221,8 @@ Where proposal.json contains:
 			if !common.IsHexAddress(proposal.TargetContractAddress) {
 				return fmt.Errorf("%s is not a valid contract address", proposal.TargetContractAddress)
 			}
+
+			// TODO(bolten): verify properly formatted JSON? maybe put it in the ValidateBasic?
 
 			content := types.NewScheduledCorkProposal(proposal.Title, proposal.Description, proposal.BlockHeight, proposal.TargetContractAddress, proposal.ContractCallProtoJson)
 			from := clientCtx.GetFromAddress()
