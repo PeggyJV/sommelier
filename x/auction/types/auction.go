@@ -32,7 +32,7 @@ func (a *Auction) ValidateBasic() error {
 	}
 
 	if a.InitialPriceDecreaseRate.LTE(sdk.NewDec(0)) || a.InitialPriceDecreaseRate.GTE(sdk.NewDec(1)) {
-		return sdkerrors.Wrapf(ErrInvalidInitialDecreaseRate, "Inital price decrease rate %s", a.InitialPriceDecreaseRate.String())
+		return sdkerrors.Wrapf(ErrInvalidInitialDecreaseRate, "Initial price decrease rate %s", a.InitialPriceDecreaseRate.String())
 	}
 
 	if a.CurrentPriceDecreaseRate.LTE(sdk.NewDec(0)) || a.CurrentPriceDecreaseRate.GTE(sdk.NewDec(1)) {

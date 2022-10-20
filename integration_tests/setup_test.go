@@ -137,7 +137,7 @@ func (s *IntegrationTestSuite) TearDownSuite() {
 	s.Require().NoError(s.dockerPool.RemoveNetwork(s.dockerNetwork))
 }
 
-func (s *IntegrationTestSuite) initNodes(nodeCount int) { // nolint:unused
+func (s *IntegrationTestSuite) initNodes(nodeCount int) { //nolint:unused
 	s.Require().NoError(s.chain.createAndInitValidators(nodeCount))
 	s.Require().NoError(s.chain.createAndInitOrchestrators(nodeCount))
 
@@ -195,7 +195,7 @@ func (s *IntegrationTestSuite) initNodesWithMnemonics(mnemonics ...string) {
 	}
 }
 
-func (s *IntegrationTestSuite) initEthereum() { // nolint:unused
+func (s *IntegrationTestSuite) initEthereum() { //nolint:unused
 	// generate ethereum keys for validators add them to the ethereum genesis
 	ethGenesis := EthereumGenesis{
 		Difficulty: "0x400",
