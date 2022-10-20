@@ -54,7 +54,6 @@ var (
 	gravityContract       = common.HexToAddress("0x04C89607413713Ec9775E14b954286519d836FEf")
 	counterContract       = common.HexToAddress("0x0000000000000000000000000000000000000000")
 	unusedGenesisContract = common.HexToAddress("0x0000000000000000000000000000000000000001")
-	unusedAddedContract   = common.HexToAddress("0x0000000000000000000000000000000000000002") // nolint:unused
 )
 
 func MNEMONICS() []string {

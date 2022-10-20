@@ -114,7 +114,7 @@ func postScheduledCorkProposalHandlerFn(clientCtx client.Context) http.HandlerFu
 			req.Description,
 			req.BlockHeight,
 			req.TargetContractAddress,
-			req.ContractCallProtoJson,
+			req.ContractCallProtoJSON,
 		)
 
 		msg, err := govtypes.NewMsgSubmitProposal(content, req.Deposit, req.Proposer)
