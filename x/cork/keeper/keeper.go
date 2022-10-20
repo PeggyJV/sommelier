@@ -50,11 +50,11 @@ func (k Keeper) Logger(ctx sdk.Context) log.Logger {
 /////////////////////
 
 func (k Keeper) SetScheduledCork(ctx sdk.Context, blockHeight uint64, val sdk.ValAddress, cork types.Cork) uint64 {
-	id, found := k.GetCorkId(ctx, blockHeight, cork)
+	id, found := k.GetCorkID(ctx, blockHeight, cork)
 
 	if !found {
 		id = k.IncrementScheduledCorkID(ctx)
-		k.SetCorkId(ctx, blockHeight, cork, id)
+		k.SetCorkID(ctx, blockHeight, cork, id)
 	}
 
 	bz := k.cdc.MustMarshal(&cork)
@@ -227,7 +227,7 @@ func (k Keeper) IncrementInvalidationNonce(ctx sdk.Context) uint64 {
 // Scheduled Cork ID //
 ///////////////////////
 
-func (k Keeper) GetCorkIdByHash(ctx sdk.Context, hash []byte) (uint64, bool) {
+func (k Keeper) GetCorkIDByHash(ctx sdk.Context, hash []byte) (uint64, bool) {
 	store := ctx.KVStore(k.storeKey)
 	bz := store.Get(types.GetScheduledCorkIdHashKey(hash))
 	if len(bz) == 0 {
@@ -236,17 +236,17 @@ func (k Keeper) GetCorkIdByHash(ctx sdk.Context, hash []byte) (uint64, bool) {
 	return sdk.BigEndianToUint64(bz), true
 }
 
-func (k Keeper) GetCorkId(ctx sdk.Context, blockHeight uint64, cork types.Cork) (uint64, bool) {
-	return k.GetCorkIdByHash(ctx, cork.IdHash(blockHeight))
+func (k Keeper) GetCorkID(ctx sdk.Context, blockHeight uint64, cork types.Cork) (uint64, bool) {
+	return k.GetCorkIDByHash(ctx, cork.IdHash(blockHeight))
 }
 
-func (k Keeper) SetCorkIdByHash(ctx sdk.Context, hash []byte, id uint64) {
+func (k Keeper) SetCorkIDByHash(ctx sdk.Context, hash []byte, id uint64) {
 	store := ctx.KVStore(k.storeKey)
 	store.Set(types.GetScheduledCorkIdHashKey(hash), sdk.Uint64ToBigEndian(id))
 }
 
-func (k Keeper) SetCorkId(ctx sdk.Context, blockHeight uint64, cork types.Cork, id uint64) {
-	k.SetCorkIdByHash(ctx, cork.IdHash(blockHeight), id)
+func (k Keeper) SetCorkID(ctx sdk.Context, blockHeight uint64, cork types.Cork, id uint64) {
+	k.SetCorkIDByHash(ctx, cork.IdHash(blockHeight), id)
 }
 
 func (k Keeper) GetLatestScheduledCorkID(ctx sdk.Context) uint64 {
@@ -373,12 +373,12 @@ func (k Keeper) GetApprovedScheduledCorks(ctx sdk.Context, currentBlockHeight ui
 				Approved:           quorumReached,
 				ApprovalPercentage: approvalPercentage.Mul(sdk.NewDec(100)).String(),
 			}
-			corkId, found := k.GetCorkId(ctx, blockHeight, cork)
+			corkID, found := k.GetCorkID(ctx, blockHeight, cork)
 			if !found {
 				// this should be impossible, corks are assigned an ID when written to the store
 				panic(fmt.Sprintf("trying to vote on cork with no cork ID at block height %d: %s", blockHeight, cork))
 			}
-			k.SetCorkResult(ctx, corkId, corkResult)
+			k.SetCorkResult(ctx, corkID, corkResult)
 			if quorumReached {
 				approvedCorks = append(approvedCorks, cork)
 			}
