@@ -69,7 +69,8 @@ func CmdQueryModuleAccounts() *cobra.Command {
 
 			queryClient := types.NewQueryClient(clientCtx)
 
-			res, err := queryClient.ModuleAccounts(context.Background(), &types.QueryModuleAccountsRequest{})
+			res, err := queryClient.ModuleAccounts(
+				context.Background(), &types.QueryModuleAccountsRequest{})
 			if err != nil {
 				return err
 			}
