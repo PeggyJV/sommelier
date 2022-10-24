@@ -191,6 +191,7 @@ var (
 )
 
 // TestInput stores the various keepers required to test gravity
+// TODO This file is mostly unused. Ask Eric/Collin about whether it's needed.
 type TestInput struct {
 	corkKeeper     Keeper
 	GravityKeeper  gravitykeeper.Keeper
