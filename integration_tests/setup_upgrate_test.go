@@ -14,7 +14,7 @@ import (
 	"testing"
 	"time"
 
-	gravitytypes "github.com/peggyjv/gravity-bridge/module/x/gravity/types"
+	gravitytypesv1 "github.com/peggyjv/gravity-bridge/module/v2/x/gravity/migrations/v1/types"
 
 	"github.com/ethereum/go-ethereum"
 
@@ -355,13 +355,13 @@ func (s *UpgradeTestSuite) initGenesis() {
 	appGenState[types.ModuleName] = bz
 
 	// set contract addr
-	var gravityGenState gravitytypes.GenesisState
-	s.Require().NoError(cdc.UnmarshalJSON(appGenState[gravitytypes.ModuleName], &gravityGenState))
+	var gravityGenState gravitytypesv1.GenesisState
+	s.Require().NoError(cdc.UnmarshalJSON(appGenState[gravitytypesv1.ModuleName], &gravityGenState))
 	gravityGenState.Params.GravityId = "gravitytest"
 	gravityGenState.Params.BridgeEthereumAddress = gravityContract.String()
 	bz, err = cdc.MarshalJSON(&gravityGenState)
 	s.Require().NoError(err)
-	appGenState[gravitytypes.ModuleName] = bz
+	appGenState[gravitytypesv1.ModuleName] = bz
 
 	// serialize genesis state
 	bz, err = json.MarshalIndent(appGenState, "", "  ")
