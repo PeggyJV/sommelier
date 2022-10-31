@@ -25,6 +25,8 @@ func GetQueryCmd() *cobra.Command {
 		queryCellarIDs(),
 		queryScheduledBlockHeights(),
 		queryScheduledCorksByBlockHeight(),
+		queryCorkResult(),
+		queryCorkResults(),
 	}...)
 
 	return corkQueryCmd
@@ -195,14 +197,14 @@ func queryCorkResult() *cobra.Command {
 				return err
 			}
 
-			corkId, err := strconv.Atoi(args[0])
+			corkID, err := strconv.Atoi(args[0])
 			if err != nil {
 				return err
 			}
 
 			queryClient := types.NewQueryClient(ctx)
 			req := &types.QueryCorkResultRequest{
-				Id: uint64(corkId),
+				Id: uint64(corkID),
 			}
 
 			res, err := queryClient.QueryCorkResult(cmd.Context(), req)
