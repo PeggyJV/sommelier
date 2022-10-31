@@ -183,4 +183,67 @@ func queryScheduledBlockHeights() *cobra.Command {
 	return cmd
 }
 
-// TODO(bolten): add queryCorkResult and queryCorkResults
+func queryCorkResult() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:     "cork-result",
+		Aliases: []string{"cr"},
+		Args:    cobra.ExactArgs(1)
+		Short:   "query cork result from the chain",
+		RunE: func(cmd *cobra.Command, args []string) error {
+			ctx, err := client.GetClientQueryContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			corkId, err := strconv.Atoi(args[0])
+			if err != nil {
+				return err
+			}
+
+			queryClient := types.NewQueryClient(ctx)
+			req := &types.QueryCorkResultRequest{
+				Id: uint64(corkId),
+			}
+
+			res, err := queryClient.QueryCorkResult(cmd.Context(), req)
+			if err != nil {
+				return err
+			}
+
+			return ctx.PrintProto(res)
+		},
+	}
+
+	flags.AddQueryFlagsToCmd(cmd)
+
+	return cmd
+}
+
+func queryCorkResults() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:     "cork-results",
+		Aliases: []string{"crs"},
+		Args:    cobra.NoArgs,
+		Short:   "query cork results from the chain",
+		RunE: func(cmd *cobra.Command, _ []string) error {
+			ctx, err := client.GetClientQueryContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			queryClient := types.NewQueryClient(ctx)
+			req := &types.QueryCorkResultsRequest{}
+
+			res, err := queryClient.QueryCorkResults(cmd.Context(), req)
+			if err != nil {
+				return err
+			}
+
+			return ctx.PrintProto(res)
+		},
+	}
+
+	flags.AddQueryFlagsToCmd(cmd)
+
+	return cmd
+}
