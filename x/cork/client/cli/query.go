@@ -187,7 +187,7 @@ func queryCorkResult() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:     "cork-result",
 		Aliases: []string{"cr"},
-		Args:    cobra.ExactArgs(1)
+		Args:    cobra.ExactArgs(1),
 		Short:   "query cork result from the chain",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx, err := client.GetClientQueryContext(cmd)
