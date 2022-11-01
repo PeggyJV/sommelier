@@ -26,8 +26,8 @@ import (
 var (
 	permissionedFunder          = authtypes.NewEmptyModuleAccount("permissionedFunder")
 	permissionedReciever        = authtypes.NewEmptyModuleAccount("permissionedReciever")
-	cosmos_address_1     string = "cosmos16zrkzad482haunrn25ywvwy6fclh3vh7r0hcny"
-	cosmos_address_2     string = "cosmos18ld4633yswcyjdklej3att6aw93nhlf7ce4v8u"
+	cosmosAddress1       string = "cosmos16zrkzad482haunrn25ywvwy6fclh3vh7r0hcny"
+	cosmosAddress2       string = "cosmos18ld4633yswcyjdklej3att6aw93nhlf7ce4v8u"
 )
 
 type BeginAuctionRequest struct {

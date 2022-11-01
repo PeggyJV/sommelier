@@ -101,7 +101,7 @@ func (suite *KeeperTestSuite) TestImportingPopulatedGenesis() {
 	bid1 := &auctionTypes.Bid{
 		Id:                        uint64(1),
 		AuctionId:                 uint32(1),
-		Bidder:                    cosmos_address_1,
+		Bidder:                    cosmosAddress1,
 		MaxBidInUsomm:             sdk.NewCoin(auctionTypes.UsommDenom, sdk.NewInt(2000)),
 		SaleTokenMinimumAmount:    sdk.NewCoin("weth", sdk.NewInt(20)),
 		TotalFulfilledSaleTokens:  sdk.NewCoin("weth", sdk.NewInt(100)),
@@ -111,7 +111,7 @@ func (suite *KeeperTestSuite) TestImportingPopulatedGenesis() {
 	bid2 := &auctionTypes.Bid{
 		Id:                        uint64(2),
 		AuctionId:                 uint32(2),
-		Bidder:                    cosmos_address_2,
+		Bidder:                    cosmosAddress2,
 		MaxBidInUsomm:             sdk.NewCoin(auctionTypes.UsommDenom, sdk.NewInt(1000)),
 		SaleTokenMinimumAmount:    sdk.NewCoin("usdc", sdk.NewInt(100)),
 		TotalFulfilledSaleTokens:  sdk.NewCoin("usdc", sdk.NewInt(1000)),
@@ -241,7 +241,7 @@ func (suite *KeeperTestSuite) TestExportingPopulatedGenesis() {
 	bid1 := &auctionTypes.Bid{
 		Id:                        uint64(1),
 		AuctionId:                 uint32(1),
-		Bidder:                    cosmos_address_1,
+		Bidder:                    cosmosAddress1,
 		MaxBidInUsomm:             sdk.NewCoin(auctionTypes.UsommDenom, sdk.NewInt(2000)),
 		SaleTokenMinimumAmount:    sdk.NewCoin("weth", sdk.NewInt(20)),
 		TotalFulfilledSaleTokens:  sdk.NewCoin("weth", sdk.NewInt(100)),

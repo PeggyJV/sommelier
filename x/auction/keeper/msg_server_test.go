@@ -43,7 +43,7 @@ func (suite *KeeperTestSuite) TestHappyPathSubmitBidAndFulfillFully() {
 
 	// Submit a bid
 	auctionID := uint32(1)
-	bidder := cosmos_address_1
+	bidder := cosmosAddress1
 	require.Nil(err)
 
 	bid := sdk.NewCoin(auctionTypes.UsommDenom, sdk.NewInt(5000))
@@ -105,7 +105,7 @@ func (suite *KeeperTestSuite) TestHappyPathSubmitBidAndFulfillFully() {
 	require.Equal(expectedUpdatedAuction, activeAuction)
 
 	// Now check flow of a bid that can only be partially fulfilled, and verify it finishes the auction
-	newBidder := cosmos_address_2
+	newBidder := cosmosAddress2
 	newBid := sdk.NewCoin(auctionTypes.UsommDenom, sdk.NewInt(50000))
 	newFulfilledAmt := sdk.NewCoin(saleToken, sdk.NewInt(7500))
 	paidAmt := sdk.NewCoin(auctionTypes.UsommDenom, sdk.NewInt(15000))
@@ -197,38 +197,38 @@ func (suite *KeeperTestSuite) TestUnhappyPathsForSubmitBid() {
 		name              string
 		bid               auctionTypes.MsgSubmitBidRequest
 		expectedError     error
-		runsBefore  runsBeforeWrapper
+		runsBefore        runsBeforeWrapper
 		submitBidResponse *auctionTypes.MsgSubmitBidResponse
 	}{
 		{
 			name: "Auction ID not found",
 			bid: auctionTypes.MsgSubmitBidRequest{
 				AuctionId:              uint32(420),
-				Bidder:                 cosmos_address_1,
+				Bidder:                 cosmosAddress1,
 				MaxBidInUsomm:          sdk.NewCoin(auctionTypes.UsommDenom, sdk.NewInt(100)),
 				SaleTokenMinimumAmount: sdk.NewCoin(saleToken, sdk.NewInt(1)),
 			},
 			expectedError:     sdkerrors.Wrapf(auctionTypes.ErrAuctionNotFound, "Auction id: %d", uint32(420)),
-			runsBefore:  func() {},
+			runsBefore:        func() {},
 			submitBidResponse: &auctionTypes.MsgSubmitBidResponse{},
 		},
 		{
 			name: "Denom mismatch",
 			bid: auctionTypes.MsgSubmitBidRequest{
 				AuctionId:              auctionID,
-				Bidder:                 cosmos_address_1,
+				Bidder:                 cosmosAddress1,
 				MaxBidInUsomm:          sdk.NewCoin(auctionTypes.UsommDenom, sdk.NewInt(100)),
 				SaleTokenMinimumAmount: sdk.NewCoin("blemflarcks", sdk.NewInt(1)),
 			},
 			expectedError:     sdkerrors.Wrapf(auctionTypes.ErrBidAuctionDenomMismatch, "Bid denom: blemflarcks, Auction denom: %s", saleToken),
-			runsBefore:  func() {},
+			runsBefore:        func() {},
 			submitBidResponse: &auctionTypes.MsgSubmitBidResponse{},
 		},
 		{
 			name: "Minimum amount to purchase larger than bid can obtain",
 			bid: auctionTypes.MsgSubmitBidRequest{
 				AuctionId:              auctionID,
-				Bidder:                 cosmos_address_1,
+				Bidder:                 cosmosAddress1,
 				MaxBidInUsomm:          sdk.NewCoin(auctionTypes.UsommDenom, sdk.NewInt(1)),
 				SaleTokenMinimumAmount: sdk.NewCoin(saleToken, sdk.NewInt(1)),
 			},
@@ -243,7 +243,7 @@ func (suite *KeeperTestSuite) TestUnhappyPathsForSubmitBid() {
 			name: "Minimum amount larger than remaining tokens in auction",
 			bid: auctionTypes.MsgSubmitBidRequest{
 				AuctionId:              auctionID,
-				Bidder:                 cosmos_address_1,
+				Bidder:                 cosmosAddress1,
 				MaxBidInUsomm:          sdk.NewCoin(auctionTypes.UsommDenom, sdk.NewInt(40000)),
 				SaleTokenMinimumAmount: sdk.NewCoin(saleToken, sdk.NewInt(10002)),
 			},
@@ -258,7 +258,7 @@ func (suite *KeeperTestSuite) TestUnhappyPathsForSubmitBid() {
 			name: "Validate Basic canary 1 -- bid denom must be in usomm",
 			bid: auctionTypes.MsgSubmitBidRequest{
 				AuctionId:              auctionID,
-				Bidder:                 cosmos_address_1,
+				Bidder:                 cosmosAddress1,
 				MaxBidInUsomm:          sdk.NewCoin("cinnamonRollCoin", sdk.NewInt(200)),
 				SaleTokenMinimumAmount: sdk.NewCoin(saleToken, sdk.NewInt(100)),
 			},
@@ -273,7 +273,7 @@ func (suite *KeeperTestSuite) TestUnhappyPathsForSubmitBid() {
 			name: "Validate Basic canary 2 -- minimum amount of sale tokens cannot be 0",
 			bid: auctionTypes.MsgSubmitBidRequest{
 				AuctionId:              auctionID,
-				Bidder:                 cosmos_address_1,
+				Bidder:                 cosmosAddress1,
 				MaxBidInUsomm:          sdk.NewCoin(auctionTypes.UsommDenom, sdk.NewInt(200)),
 				SaleTokenMinimumAmount: sdk.NewCoin(saleToken, sdk.NewInt(0)),
 			},
