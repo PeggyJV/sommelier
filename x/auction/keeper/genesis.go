@@ -16,7 +16,6 @@ func InitGenesis(ctx sdk.Context, k Keeper, gs types.GenesisState) {
 	if auctionAccount == nil {
 		panic(fmt.Sprintf("%s module account has not been set", types.ModuleName))
 	}
-	k.accountKeeper.SetModuleAccount(ctx, auctionAccount)
 
 	for _, auction := range gs.Auctions {
 		if auction.EndBlock > 0 {

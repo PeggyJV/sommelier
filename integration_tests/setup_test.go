@@ -176,14 +176,9 @@ func (s *IntegrationTestSuite) initNodesWithMnemonics(mnemonics ...string) {
 
 	//initialize a genesis file for the first validator
 	val0ConfigDir := s.chain.validators[0].configDir()
-	for i, val := range s.chain.validators {
-		// Fund the first validator with some funds to be used by auction module integration tests
-		balanceStr := initBalanceStr
-		if i == 0 {
-			balanceStr += ",100000000000gravity0x3506424f91fd33084466f402d5d97f05f8e3b4af"
-		}
+	for _, val := range s.chain.validators {
 		s.Require().NoError(
-			addGenesisAccount(val0ConfigDir, "", balanceStr, val.keyInfo.GetAddress()),
+			addGenesisAccount(val0ConfigDir, "", initBalanceStr, val.keyInfo.GetAddress()),
 		)
 	}
 
