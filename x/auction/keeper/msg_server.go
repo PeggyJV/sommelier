@@ -16,16 +16,9 @@ var _ types.MsgServer = Keeper{}
 func (k Keeper) SubmitBid(c context.Context, msg *types.MsgSubmitBidRequest) (*types.MsgSubmitBidResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
 
-	// Verify signer is the same as the bidder (this validates both the bidder and signer addresses)
-	signer := msg.MustGetSigner()
 	bidder, err := sdk.AccAddressFromBech32(msg.Bidder)
-
 	if err != nil {
 		return &types.MsgSubmitBidResponse{}, sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "Bidder: %s", msg.GetBidder())
-	}
-
-	if !signer.Equals(bidder) {
-		return &types.MsgSubmitBidResponse{}, sdkerrors.Wrapf(types.ErrSignerDifferentFromBidder, "Signer: %s, Bidder: %s", signer.String(), bidder.String())
 	}
 
 	// Verify auction
@@ -137,7 +130,6 @@ func (k Keeper) SubmitBid(c context.Context, msg *types.MsgSubmitBidRequest) (*t
 			sdk.NewAttribute(types.AttributeKeyBidID, fmt.Sprint(newBidID)),
 			sdk.NewAttribute(types.AttributeKeyBidder, msg.GetBidder()),
 			sdk.NewAttribute(types.AttributeKeyMinimumAmount, msg.GetSaleTokenMinimumAmount().String()),
-			sdk.NewAttribute(types.AttributeKeySigner, msg.GetSigner()),
 			sdk.NewAttribute(types.AttributeKeyFulfilledPrice, auction.CurrentUnitPriceInUsomm.String()),
 			sdk.NewAttribute(types.AttributeKeyTotalPayment, totalUsommPaid.String()),
 			sdk.NewAttribute(types.AttributeKeyFulfilledAmount, totalFulfilledSaleTokens.String()),

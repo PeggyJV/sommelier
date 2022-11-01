@@ -20,13 +20,12 @@ const (
 /////////////////////////
 
 // NewMsgSubmitBidRequest return a new MsgSubmitBidRequest
-func NewMsgSubmitBidRequest(auctionID uint32, maxBidInUsomm sdk.Coin, saleTokenMinimumAmount sdk.Coin, signer sdk.AccAddress) (*MsgSubmitBidRequest, error) {
+func NewMsgSubmitBidRequest(auctionID uint32, maxBidInUsomm sdk.Coin, saleTokenMinimumAmount sdk.Coin, bidder sdk.AccAddress) (*MsgSubmitBidRequest, error) {
 	return &MsgSubmitBidRequest{
 		AuctionId:              auctionID,
 		MaxBidInUsomm:          maxBidInUsomm,
 		SaleTokenMinimumAmount: saleTokenMinimumAmount,
-		Bidder:                 signer.String(),
-		Signer:                 signer.String(),
+		Bidder:                 bidder.String(),
 	}, nil
 }
 
@@ -62,10 +61,6 @@ func (m *MsgSubmitBidRequest) ValidateBasic() error {
 		return sdkerrors.Wrap(sdkerrors.ErrInvalidAddress, err.Error())
 	}
 
-	if m.Signer != m.Bidder {
-		return sdkerrors.Wrapf(ErrSignerDifferentFromBidder, "signer: %s, bidder: %s", m.Signer, m.Bidder)
-	}
-
 	return nil
 }
 
@@ -76,12 +71,12 @@ func (m *MsgSubmitBidRequest) GetSignBytes() []byte {
 
 // GetSigners implements sdk.Msg
 func (m *MsgSubmitBidRequest) GetSigners() []sdk.AccAddress {
-	return []sdk.AccAddress{m.MustGetSigner()}
+	return []sdk.AccAddress{m.MustGetBidder()}
 }
 
-// MustGetSigner returns the signer address
-func (m *MsgSubmitBidRequest) MustGetSigner() sdk.AccAddress {
-	addr, err := sdk.AccAddressFromBech32(m.Signer)
+// MustGetBidder returns the bidder address which is expected to be the same as that of the signer
+func (m *MsgSubmitBidRequest) MustGetBidder() sdk.AccAddress {
+	addr, err := sdk.AccAddressFromBech32(m.Bidder)
 	if err != nil {
 		panic(err)
 	}

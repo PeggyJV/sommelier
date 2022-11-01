@@ -64,7 +64,6 @@ func (suite *KeeperTestSuite) TestHappyPathSubmitBidAndFulfillFully() {
 		Bidder:                 bidder,
 		MaxBidInUsomm:          bid,
 		SaleTokenMinimumAmount: minAmount,
-		Signer:                 bidder,
 	})
 	require.Nil(err)
 
@@ -129,7 +128,6 @@ func (suite *KeeperTestSuite) TestHappyPathSubmitBidAndFulfillFully() {
 		Bidder:                 newBidder,
 		MaxBidInUsomm:          newBid,
 		SaleTokenMinimumAmount: minAmount,
-		Signer:                 newBidder,
 	})
 	require.Nil(err)
 
@@ -203,26 +201,12 @@ func (suite *KeeperTestSuite) TestUnhappyPathsForSubmitBid() {
 		submitBidResponse *auctionTypes.MsgSubmitBidResponse
 	}{
 		{
-			name: "Mismatched signer & bidder",
-			bid: auctionTypes.MsgSubmitBidRequest{
-				AuctionId:              auctionID,
-				Bidder:                 cosmos_address_1,
-				MaxBidInUsomm:          sdk.NewCoin(auctionTypes.UsommDenom, sdk.NewInt(100)),
-				SaleTokenMinimumAmount: sdk.NewCoin(saleToken, sdk.NewInt(1)),
-				Signer:                 cosmos_address_2,
-			},
-			expectedError:     sdkerrors.Wrapf(auctionTypes.ErrSignerDifferentFromBidder, "Signer: %s, Bidder: %s", cosmos_address_2, cosmos_address_1),
-			runsBefore:  func() {},
-			submitBidResponse: &auctionTypes.MsgSubmitBidResponse{},
-		},
-		{
 			name: "Auction ID not found",
 			bid: auctionTypes.MsgSubmitBidRequest{
 				AuctionId:              uint32(420),
 				Bidder:                 cosmos_address_1,
 				MaxBidInUsomm:          sdk.NewCoin(auctionTypes.UsommDenom, sdk.NewInt(100)),
 				SaleTokenMinimumAmount: sdk.NewCoin(saleToken, sdk.NewInt(1)),
-				Signer:                 cosmos_address_1,
 			},
 			expectedError:     sdkerrors.Wrapf(auctionTypes.ErrAuctionNotFound, "Auction id: %d", uint32(420)),
 			runsBefore:  func() {},
@@ -235,7 +219,6 @@ func (suite *KeeperTestSuite) TestUnhappyPathsForSubmitBid() {
 				Bidder:                 cosmos_address_1,
 				MaxBidInUsomm:          sdk.NewCoin(auctionTypes.UsommDenom, sdk.NewInt(100)),
 				SaleTokenMinimumAmount: sdk.NewCoin("blemflarcks", sdk.NewInt(1)),
-				Signer:                 cosmos_address_1,
 			},
 			expectedError:     sdkerrors.Wrapf(auctionTypes.ErrBidAuctionDenomMismatch, "Bid denom: blemflarcks, Auction denom: %s", saleToken),
 			runsBefore:  func() {},
@@ -248,7 +231,6 @@ func (suite *KeeperTestSuite) TestUnhappyPathsForSubmitBid() {
 				Bidder:                 cosmos_address_1,
 				MaxBidInUsomm:          sdk.NewCoin(auctionTypes.UsommDenom, sdk.NewInt(1)),
 				SaleTokenMinimumAmount: sdk.NewCoin(saleToken, sdk.NewInt(1)),
-				Signer:                 cosmos_address_1,
 			},
 			expectedError: sdkerrors.Wrapf(auctionTypes.ErrInsufficientBid, "minimum purchase price: 2, max bid: 1"),
 			runsBefore: func() {
@@ -264,7 +246,6 @@ func (suite *KeeperTestSuite) TestUnhappyPathsForSubmitBid() {
 				Bidder:                 cosmos_address_1,
 				MaxBidInUsomm:          sdk.NewCoin(auctionTypes.UsommDenom, sdk.NewInt(40000)),
 				SaleTokenMinimumAmount: sdk.NewCoin(saleToken, sdk.NewInt(10002)),
-				Signer:                 cosmos_address_1,
 			},
 			expectedError: sdkerrors.Wrapf(auctionTypes.ErrMinimumPurchaseAmountLargerThanTokensRemaining, "Minimum purchase: %s, amount remaining: %s", sdk.NewInt(10002), originalAuction.RemainingTokensForSale.String()),
 			runsBefore: func() {
@@ -280,7 +261,6 @@ func (suite *KeeperTestSuite) TestUnhappyPathsForSubmitBid() {
 				Bidder:                 cosmos_address_1,
 				MaxBidInUsomm:          sdk.NewCoin("cinnamonRollCoin", sdk.NewInt(200)),
 				SaleTokenMinimumAmount: sdk.NewCoin(saleToken, sdk.NewInt(100)),
-				Signer:                 cosmos_address_1,
 			},
 			expectedError: sdkerrors.Wrapf(auctionTypes.ErrBidMustBeInUsomm, "bid: %s", sdk.NewCoin("cinnamonRollCoin", sdk.NewInt(200)).String()),
 			runsBefore: func() {
@@ -296,7 +276,6 @@ func (suite *KeeperTestSuite) TestUnhappyPathsForSubmitBid() {
 				Bidder:                 cosmos_address_1,
 				MaxBidInUsomm:          sdk.NewCoin(auctionTypes.UsommDenom, sdk.NewInt(200)),
 				SaleTokenMinimumAmount: sdk.NewCoin(saleToken, sdk.NewInt(0)),
-				Signer:                 cosmos_address_1,
 			},
 			expectedError: sdkerrors.Wrapf(auctionTypes.ErrMinimumAmountMustBePositive, "sale token amount: %s", sdk.NewCoin(saleToken, sdk.NewInt(0)).String()),
 			runsBefore: func() {

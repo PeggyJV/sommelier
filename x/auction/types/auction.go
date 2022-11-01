@@ -91,8 +91,16 @@ func (b *Bid) ValidateBasic() error {
 		return sdkerrors.Wrapf(ErrMinimumAmountMustBePositive, "sale token amount: %s", b.SaleTokenMinimumAmount.String())
 	}
 
+	if b.TotalFulfilledSaleTokens.Amount.IsNegative() {
+		return sdkerrors.Wrapf(ErrBidFulfilledSaleTokenAmountMustBeNonNegative, "fulfilled sale token amount: %s", b.TotalFulfilledSaleTokens.String())
+	}
+
 	if !b.SaleTokenUnitPriceInUsomm.IsPositive() {
 		return sdkerrors.Wrapf(ErrBidUnitPriceInUsommMustBePositive, "sale token unit price: %s", b.SaleTokenUnitPriceInUsomm.String())
+	}
+
+	if b.TotalUsommPaid.IsNegative() {
+		return sdkerrors.Wrapf(ErrBidPaymentCannotBeNegative, "payment in usomm: %s", b.TotalUsommPaid.String())
 	}
 
 	if b.TotalUsommPaid.Denom != UsommDenom {

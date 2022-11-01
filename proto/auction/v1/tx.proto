@@ -17,7 +17,6 @@ message MsgSubmitBidRequest {
   string bidder = 2;
   cosmos.base.v1beta1.Coin max_bid_in_usomm = 3 [ (gogoproto.nullable) = false ];
   cosmos.base.v1beta1.Coin sale_token_minimum_amount = 4 [ (gogoproto.nullable) = false ];
-  string signer = 5;
 }
 
 message MsgSubmitBidResponse {
