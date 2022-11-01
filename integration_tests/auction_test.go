@@ -157,7 +157,7 @@ func (s *IntegrationTestSuite) TestAuctionModule() {
 		s.T().Log("User funds updated correctly!")
 
 		// Verify bid is stored as expected
-		expectedBid := types.Bid{
+		expectedBid1 := types.Bid{
 			Id:                        uint64(1),
 			AuctionId:                 uint32(1),
 			Bidder:                    orch0Address,
@@ -171,7 +171,7 @@ func (s *IntegrationTestSuite) TestAuctionModule() {
 		s.T().Log("Verifying bid stored as expected.")
 		actualBid, err := auctionQueryClient.QueryBid(context.Background(), &types.QueryBidRequest{BidId: uint64(1), AuctionId: uint32(1)})
 		s.Require().NoError(err)
-		s.Require().Equal(expectedBid, *actualBid.Bid)
+		s.Require().Equal(expectedBid1, *actualBid.Bid)
 		s.T().Log("Bid stored correctly!")
 
 		s.T().Log("Submitting another bid...")
@@ -188,21 +188,41 @@ func (s *IntegrationTestSuite) TestAuctionModule() {
 		s.Require().NoError(err)
 		s.T().Log("Bid submitted successfully!")
 
+		s.T().Log("Verifying expected bid stored correctly...")
+		// Verify bid is stored as expected
+		expectedBid2 := types.Bid{
+			Id:                        uint64(2),
+			AuctionId:                 uint32(1),
+			Bidder:                    orch0Address,
+			MaxBidInUsomm:             sdk.NewCoin("usomm", sdk.NewIntFromUint64(10000)),
+			SaleTokenMinimumAmount:    sdk.NewCoin("gravity0x3506424f91fd33084466f402d5d97f05f8e3b4af", sdk.NewIntFromUint64(50)),
+			TotalFulfilledSaleTokens:  sdk.NewCoin("gravity0x3506424f91fd33084466f402d5d97f05f8e3b4af", sdk.NewIntFromUint64(2500)),
+			SaleTokenUnitPriceInUsomm: sdk.MustNewDecFromStr("2"),
+			TotalUsommPaid:            sdk.NewCoin("usomm", sdk.NewIntFromUint64(5000)),
+		}
+
+		actualBid2, err := auctionQueryClient.QueryBid(context.Background(), &types.QueryBidRequest{BidId: uint64(2), AuctionId: uint32(1)})
+		s.Require().NoError(err)
+		s.Require().Equal(expectedBid2, *actualBid2.Bid)
+		s.T().Log("Bid stored correctly!")
+
 		s.T().Log("Verifying user funds debited and credited appropriately.")
 		// Verify user has funds debited and purchase credited
 		balanceRes, err = bankQueryClient.AllBalances(context.Background(), &banktypes.QueryAllBalancesRequest{Address: orch0Address})
 		s.Require().NoError(err)
 		s.T().Logf("Orchestrator 0 token balances after second bid %v", balanceRes.Balances)
 
-		s.Require().Equal(sdk.NewCoin("gravity0x3506424f91fd33084466f402d5d97f05f8e3b4af", sdk.NewInt(5000)), balanceRes.Balances[0])
-		s.Require().Equal(sdk.NewCoin("usomm", initialOrchBalanceRes.Balances[1].Amount.Sub(sdk.NewInt(10000))), balanceRes.Balances[2])
+		expectedSaleTokens := expectedBid1.TotalFulfilledSaleTokens.Amount.Add(expectedBid2.TotalFulfilledSaleTokens.Amount)
+		expectedUsommRemaining := initialOrchBalanceRes.Balances[1].Amount.Sub(expectedBid1.TotalUsommPaid.Amount.Add(expectedBid2.TotalUsommPaid.Amount))
+		s.Require().Equal(sdk.NewCoin("gravity0x3506424f91fd33084466f402d5d97f05f8e3b4af", expectedSaleTokens), balanceRes.Balances[0])
+		s.Require().Equal(sdk.NewCoin("usomm", expectedUsommRemaining), balanceRes.Balances[2])
 		s.T().Log("User funds updated correctly!")
 
 		s.T().Log("Verifying auction has completed...")
 		// Verify no active auctions
-		_, err = auctionQueryClient.QueryActiveAuctions(context.Background(), &types.QueryActiveAuctionsRequest{})
-		s.Require().Error(err)
-		s.Require().Equal("rpc error: code = NotFound desc = rpc error: code = NotFound desc = No active auctions found: key not found", err.Error())
+		auctions, err := auctionQueryClient.QueryActiveAuctions(context.Background(), &types.QueryActiveAuctionsRequest{})
+		s.Require().NoError(err)
+		s.Require().Zero(len(auctions.Auctions))
 		s.T().Log("Auction completed successfully!")
 
 		s.T().Log("Verifying ended auction stored correctly..")
@@ -232,24 +252,6 @@ func (s *IntegrationTestSuite) TestAuctionModule() {
 		}
 		s.Require().Equal(expectedEndedAuction, *endedAuctionResponse.Auction)
 		s.T().Log("Ended auction stored correctly!")
-
-		s.T().Log("Verifying expected bid stored correctly...")
-		// Verify bid is stored as expected
-		expectedBid2 := types.Bid{
-			Id:                        uint64(2),
-			AuctionId:                 uint32(1),
-			Bidder:                    orch0Address,
-			MaxBidInUsomm:             sdk.NewCoin("usomm", sdk.NewIntFromUint64(10000)),
-			SaleTokenMinimumAmount:    sdk.NewCoin("gravity0x3506424f91fd33084466f402d5d97f05f8e3b4af", sdk.NewIntFromUint64(50)),
-			TotalFulfilledSaleTokens:  sdk.NewCoin("gravity0x3506424f91fd33084466f402d5d97f05f8e3b4af", sdk.NewIntFromUint64(2500)),
-			SaleTokenUnitPriceInUsomm: sdk.MustNewDecFromStr("2"),
-			TotalUsommPaid:            sdk.NewCoin("usomm", sdk.NewIntFromUint64(5000)),
-		}
-
-		actualBid2, err := auctionQueryClient.QueryBid(context.Background(), &types.QueryBidRequest{BidId: uint64(2), AuctionId: uint32(1)})
-		s.Require().NoError(err)
-		s.Require().Equal(expectedBid2, *actualBid2.Bid)
-		s.T().Log("Bid stored correctly!")
 
 		s.T().Log("--Test completed successfully--")
 	})
