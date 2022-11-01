@@ -22,7 +22,7 @@ type Keeper struct {
 	gravityKeeper types.GravityKeeper
 }
 
-// NewKeeper creates a new distribution Keeper instance
+// NewKeeper creates a new x/cork Keeper instance
 func NewKeeper(
 	cdc codec.BinaryCodec, key sdk.StoreKey, paramSpace paramtypes.Subspace,
 	stakingKeeper types.StakingKeeper, gravityKeeper types.GravityKeeper,
