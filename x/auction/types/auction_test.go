@@ -9,9 +9,8 @@ import (
 )
 
 var (
-	cosmos_address_1 string = "cosmos16zrkzad482haunrn25ywvwy6fclh3vh7r0hcny"
-	cosmos_address_2 string = "cosmos18ld4633yswcyjdklej3att6aw93nhlf7ce4v8u"
-	cosmos_address_3 string = "cosmos12svsksqaakc6r0gyxasf5el84946mp0svdl603"
+	cosmosAddress1   string = "cosmos16zrkzad482haunrn25ywvwy6fclh3vh7r0hcny"
+	cosmosAddress2   string = "cosmos12svsksqaakc6r0gyxasf5el84946mp0svdl603"
 )
 
 func TestAuctionValidate(t *testing.T) {
@@ -314,7 +313,7 @@ func TestBidValidate(t *testing.T) {
 			bid: Bid{
 				Id:                        uint64(1),
 				AuctionId:                 uint32(1),
-				Bidder:                    cosmos_address_3,
+				Bidder:                    cosmosAddress2,
 				MaxBidInUsomm:             sdk.NewCoin("usomm", sdk.NewInt(100)),
 				SaleTokenMinimumAmount:    sdk.NewCoin("gravity0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48", sdk.NewInt(50)),
 				TotalFulfilledSaleTokens:  sdk.NewCoin("gravity0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48", sdk.NewInt(50)),
@@ -329,7 +328,7 @@ func TestBidValidate(t *testing.T) {
 			bid: Bid{
 				Id:                        uint64(0),
 				AuctionId:                 uint32(1),
-				Bidder:                    cosmos_address_3,
+				Bidder:                    cosmosAddress2,
 				MaxBidInUsomm:             sdk.NewCoin("usomm", sdk.NewInt(100)),
 				SaleTokenMinimumAmount:    sdk.NewCoin("gravity0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48", sdk.NewInt(50)),
 				TotalFulfilledSaleTokens:  sdk.NewCoin("gravity0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48", sdk.NewInt(50)),
@@ -344,7 +343,7 @@ func TestBidValidate(t *testing.T) {
 			bid: Bid{
 				Id:                        uint64(1),
 				AuctionId:                 uint32(0),
-				Bidder:                    cosmos_address_3,
+				Bidder:                    cosmosAddress2,
 				MaxBidInUsomm:             sdk.NewCoin("usomm", sdk.NewInt(100)),
 				SaleTokenMinimumAmount:    sdk.NewCoin("gravity0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48", sdk.NewInt(50)),
 				TotalFulfilledSaleTokens:  sdk.NewCoin("gravity0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48", sdk.NewInt(50)),
@@ -389,7 +388,7 @@ func TestBidValidate(t *testing.T) {
 			bid: Bid{
 				Id:                        uint64(1),
 				AuctionId:                 uint32(1),
-				Bidder:                    cosmos_address_3,
+				Bidder:                    cosmosAddress2,
 				MaxBidInUsomm:             sdk.NewCoin("usomm", sdk.NewInt(0)),
 				SaleTokenMinimumAmount:    sdk.NewCoin("gravity0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48", sdk.NewInt(50)),
 				TotalFulfilledSaleTokens:  sdk.NewCoin("gravity0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48", sdk.NewInt(50)),
@@ -404,7 +403,7 @@ func TestBidValidate(t *testing.T) {
 			bid: Bid{
 				Id:                        uint64(1),
 				AuctionId:                 uint32(1),
-				Bidder:                    cosmos_address_3,
+				Bidder:                    cosmosAddress2,
 				MaxBidInUsomm:             sdk.NewCoin("usdc", sdk.NewInt(100)),
 				SaleTokenMinimumAmount:    sdk.NewCoin("gravity0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48", sdk.NewInt(50)),
 				TotalFulfilledSaleTokens:  sdk.NewCoin("gravity0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48", sdk.NewInt(50)),
@@ -419,7 +418,7 @@ func TestBidValidate(t *testing.T) {
 			bid: Bid{
 				Id:                        uint64(1),
 				AuctionId:                 uint32(1),
-				Bidder:                    cosmos_address_3,
+				Bidder:                    cosmosAddress2,
 				MaxBidInUsomm:             sdk.NewCoin("usomm", sdk.NewInt(100)),
 				SaleTokenMinimumAmount:    sdk.NewCoin("usdc", sdk.NewInt(50)),
 				TotalFulfilledSaleTokens:  sdk.NewCoin("gravity0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48", sdk.NewInt(50)),
@@ -434,7 +433,7 @@ func TestBidValidate(t *testing.T) {
 			bid: Bid{
 				Id:                        uint64(1),
 				AuctionId:                 uint32(1),
-				Bidder:                    cosmos_address_3,
+				Bidder:                    cosmosAddress2,
 				MaxBidInUsomm:             sdk.NewCoin("usomm", sdk.NewInt(100)),
 				SaleTokenMinimumAmount:    sdk.NewCoin("gravity0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48", sdk.NewInt(0)),
 				TotalFulfilledSaleTokens:  sdk.NewCoin("gravity0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48", sdk.NewInt(50)),
@@ -449,7 +448,7 @@ func TestBidValidate(t *testing.T) {
 			bid: Bid{
 				Id:                        uint64(1),
 				AuctionId:                 uint32(1),
-				Bidder:                    cosmos_address_3,
+				Bidder:                    cosmosAddress2,
 				MaxBidInUsomm:             sdk.NewCoin("usomm", sdk.NewInt(100)),
 				SaleTokenMinimumAmount:    sdk.NewCoin("gravity0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48", sdk.NewInt(50)),
 				TotalFulfilledSaleTokens:  sdk.NewCoin("gravity0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48", sdk.NewInt(50)),
@@ -464,7 +463,7 @@ func TestBidValidate(t *testing.T) {
 			bid: Bid{
 				Id:                        uint64(1),
 				AuctionId:                 uint32(1),
-				Bidder:                    cosmos_address_3,
+				Bidder:                    cosmosAddress2,
 				MaxBidInUsomm:             sdk.NewCoin("usomm", sdk.NewInt(100)),
 				SaleTokenMinimumAmount:    sdk.NewCoin("gravity0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48", sdk.NewInt(50)),
 				TotalFulfilledSaleTokens:  sdk.NewCoin("gravity0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48", sdk.NewInt(50)),
