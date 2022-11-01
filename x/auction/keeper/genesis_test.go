@@ -3,22 +3,11 @@ package keeper
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	auctionTypes "github.com/peggyjv/sommelier/v4/x/auction/types"
-
-	"github.com/golang/mock/gomock"
 )
 
-func (suite *KeeperTestSuite) mockGetModuleAccount(ctx sdk.Context) {
-	suite.accountKeeper.EXPECT().GetModuleAccount(ctx, auctionTypes.ModuleName).Return(authtypes.NewEmptyModuleAccount("mock"))
-}
-
-func (suite *KeeperTestSuite) mockSetModuleAccount(ctx sdk.Context) {
-	suite.accountKeeper.EXPECT().SetModuleAccount(ctx, gomock.Any())
-}
-
 // Tests Importing of as empty a genesis as possible
-func (suite *KeeperTestSuite) TestImportingEmtpyGenesis() {
+func (suite *KeeperTestSuite) TestImportingEmptyGenesis() {
 	ctx, auctionKeeper := suite.ctx, suite.auctionKeeper
 	require := suite.Require()
 
@@ -30,7 +19,6 @@ func (suite *KeeperTestSuite) TestImportingEmtpyGenesis() {
 	testGenesis.Params.PriceMaxBlockAge = uint64(10)
 	require.NotPanics(func() {
 		suite.mockGetModuleAccount(ctx)
-		suite.mockSetModuleAccount(ctx)
 		InitGenesis(ctx, auctionKeeper, testGenesis)
 	})
 
@@ -113,7 +101,7 @@ func (suite *KeeperTestSuite) TestImportingPopulatedGenesis() {
 	bid1 := &auctionTypes.Bid{
 		Id:                        uint64(1),
 		AuctionId:                 uint32(1),
-		Bidder:                    "cosmos16zrkzad482haunrn25ywvwy6fclh3vh7r0hcny",
+		Bidder:                    cosmos_address_1,
 		MaxBidInUsomm:             sdk.NewCoin(auctionTypes.UsommDenom, sdk.NewInt(2000)),
 		SaleTokenMinimumAmount:    sdk.NewCoin("weth", sdk.NewInt(20)),
 		TotalFulfilledSaleTokens:  sdk.NewCoin("weth", sdk.NewInt(100)),
@@ -123,7 +111,7 @@ func (suite *KeeperTestSuite) TestImportingPopulatedGenesis() {
 	bid2 := &auctionTypes.Bid{
 		Id:                        uint64(2),
 		AuctionId:                 uint32(2),
-		Bidder:                    "cosmos18ld4633yswcyjdklej3att6aw93nhlf7ce4v8u",
+		Bidder:                    cosmos_address_2,
 		MaxBidInUsomm:             sdk.NewCoin(auctionTypes.UsommDenom, sdk.NewInt(1000)),
 		SaleTokenMinimumAmount:    sdk.NewCoin("usdc", sdk.NewInt(100)),
 		TotalFulfilledSaleTokens:  sdk.NewCoin("usdc", sdk.NewInt(1000)),
@@ -164,7 +152,6 @@ func (suite *KeeperTestSuite) TestImportingPopulatedGenesis() {
 
 	require.NotPanics(func() {
 		suite.mockGetModuleAccount(ctx)
-		suite.mockSetModuleAccount(ctx)
 		InitGenesis(ctx, auctionKeeper, testGenesis)
 	})
 
@@ -185,7 +172,7 @@ func (suite *KeeperTestSuite) TestImportingPopulatedGenesis() {
 }
 
 // Tests Exportng of an empty/default genesis
-func (suite *KeeperTestSuite) TestExportingEmtpyGenesis() {
+func (suite *KeeperTestSuite) TestExportingEmptyGenesis() {
 	ctx, auctionKeeper := suite.ctx, suite.auctionKeeper
 	require := suite.Require()
 
@@ -254,7 +241,7 @@ func (suite *KeeperTestSuite) TestExportingPopulatedGenesis() {
 	bid1 := &auctionTypes.Bid{
 		Id:                        uint64(1),
 		AuctionId:                 uint32(1),
-		Bidder:                    "cosmos16zrkzad482haunrn25ywvwy6fclh3vh7r0hcny",
+		Bidder:                    cosmos_address_1,
 		MaxBidInUsomm:             sdk.NewCoin(auctionTypes.UsommDenom, sdk.NewInt(2000)),
 		SaleTokenMinimumAmount:    sdk.NewCoin("weth", sdk.NewInt(20)),
 		TotalFulfilledSaleTokens:  sdk.NewCoin("weth", sdk.NewInt(100)),

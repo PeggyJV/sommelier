@@ -21,7 +21,7 @@ func (k Keeper) SubmitBid(c context.Context, msg *types.MsgSubmitBidRequest) (*t
 	bidder, err := sdk.AccAddressFromBech32(msg.Bidder)
 
 	if err != nil {
-		return &types.MsgSubmitBidResponse{}, sdkerrors.Wrapf(types.ErrProcessingBidderBech32Addr, "Bidder: %s", msg.GetBidder())
+		return &types.MsgSubmitBidResponse{}, sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "Bidder: %s", msg.GetBidder())
 	}
 
 	if !signer.Equals(bidder) {

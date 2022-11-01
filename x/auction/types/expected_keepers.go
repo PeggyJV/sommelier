@@ -10,7 +10,6 @@ import (
 // mockgen -source={ABS_REPO_PATH}/peggyJV/sommelier/x/auction/types/expected_keepers.go -destination={ABS_REPO_PATH}/peggyJV/sommelier/x/auction/testutil/expected_keepers_mocks.go
 type AccountKeeper interface {
 	GetModuleAccount(ctx sdk.Context, name string) authtypes.ModuleAccountI
-	SetModuleAccount(sdk.Context, authtypes.ModuleAccountI)
 }
 
 type BankKeeper interface {

@@ -24,8 +24,10 @@ import (
 )
 
 var (
-	permissionedFunder   = authtypes.NewEmptyModuleAccount("permissionedFunder")
-	permissionedReciever = authtypes.NewEmptyModuleAccount("permissionedReciever")
+	permissionedFunder          = authtypes.NewEmptyModuleAccount("permissionedFunder")
+	permissionedReciever        = authtypes.NewEmptyModuleAccount("permissionedReciever")
+	cosmos_address_1     string = "cosmos16zrkzad482haunrn25ywvwy6fclh3vh7r0hcny"
+	cosmos_address_2     string = "cosmos18ld4633yswcyjdklej3att6aw93nhlf7ce4v8u"
 )
 
 type BeginAuctionRequest struct {
@@ -96,14 +98,6 @@ func (suite *KeeperTestSuite) SetupTest() {
 
 func TestKeeperTestSuite(t *testing.T) {
 	suite.Run(t, new(KeeperTestSuite))
-}
-
-func (suite *KeeperTestSuite) mockSendCoinsFromModuleToModule(ctx sdk.Context, sender string, receiver string, amt sdk.Coins) {
-	suite.bankKeeper.EXPECT().SendCoinsFromModuleToModule(ctx, sender, receiver, amt).Return(nil)
-}
-
-func (suite *KeeperTestSuite) mockGetBalance(ctx sdk.Context, addr sdk.AccAddress, denom string, expectedOutput sdk.Coin) {
-	suite.bankKeeper.EXPECT().GetBalance(ctx, addr, denom).Return(expectedOutput)
 }
 
 // Happy path for BeginAuction call
@@ -225,7 +219,6 @@ func (suite *KeeperTestSuite) TestHappyPathFinishAuction() {
 
 	// Change active auction tokens remaining before finishing auction to pretend tokens were sold
 	createdAuction.RemainingTokensForSale = remainingSaleTokens
-	auctionKeeper.setEndedAuction(ctx, createdAuction)
 
 	// Finally actually finish the auction
 	auctionKeeper.FinishAuction(ctx, &createdAuction)
@@ -275,7 +268,7 @@ func (suite *KeeperTestSuite) TestUnhappyPathsForBeginAuction() {
 		name                string
 		beginAuctionRequest BeginAuctionRequest
 		expectedError       error
-		utilityFunctions    utilityFunctionsWrapper
+		runsBefore          runsBeforeWrapper
 	}{
 		{
 			name: "Unpermissioned funder module account",
@@ -287,8 +280,8 @@ func (suite *KeeperTestSuite) TestUnhappyPathsForBeginAuction() {
 				fundingModuleAccount:       "cork",
 				proceedsModuleAccount:      permissionedReciever.GetName(),
 			},
-			expectedError:    sdkerrors.Wrapf(auctionTypes.ErrUnauthorizedFundingModule, "Module Account: cork"),
-			utilityFunctions: func() {},
+			expectedError: sdkerrors.Wrapf(auctionTypes.ErrUnauthorizedFundingModule, "Module Account: cork"),
+			runsBefore:    func() {},
 		},
 		{
 			name: "Unpermissioned proceeds module account",
@@ -300,8 +293,8 @@ func (suite *KeeperTestSuite) TestUnhappyPathsForBeginAuction() {
 				fundingModuleAccount:       permissionedFunder.GetName(),
 				proceedsModuleAccount:      "gravity",
 			},
-			expectedError:    sdkerrors.Wrapf(auctionTypes.ErrUnauthorizedProceedsModule, "Module Account: gravity"),
-			utilityFunctions: func() {},
+			expectedError: sdkerrors.Wrapf(auctionTypes.ErrUnauthorizedProceedsModule, "Module Account: gravity"),
+			runsBefore:    func() {},
 		},
 		{
 			name: "Starting denom price not found",
@@ -313,8 +306,8 @@ func (suite *KeeperTestSuite) TestUnhappyPathsForBeginAuction() {
 				fundingModuleAccount:       permissionedFunder.GetName(),
 				proceedsModuleAccount:      permissionedReciever.GetName(),
 			},
-			expectedError:    sdkerrors.Wrapf(auctionTypes.ErrCouldNotFindSaleTokenPrice, "starting amount denom: anvil"),
-			utilityFunctions: func() {},
+			expectedError: sdkerrors.Wrapf(auctionTypes.ErrCouldNotFindSaleTokenPrice, "starting amount denom: anvil"),
+			runsBefore:    func() {},
 		},
 		{
 			name: "Starting denom price update too old",
@@ -327,7 +320,7 @@ func (suite *KeeperTestSuite) TestUnhappyPathsForBeginAuction() {
 				proceedsModuleAccount:      permissionedReciever.GetName(),
 			},
 			expectedError: sdkerrors.Wrapf(auctionTypes.ErrLastSaleTokenPriceTooOld, "starting amount denom: %s", saleToken),
-			utilityFunctions: func() {
+			runsBefore: func() {
 				auctionKeeper.setTokenPrice(ctx, saleTokenPrice)
 			},
 		},
@@ -341,8 +334,8 @@ func (suite *KeeperTestSuite) TestUnhappyPathsForBeginAuction() {
 				fundingModuleAccount:       permissionedFunder.GetName(),
 				proceedsModuleAccount:      permissionedReciever.GetName(),
 			},
-			expectedError:    sdkerrors.Wrap(auctionTypes.ErrCouldNotFindSommTokenPrice, auctionTypes.UsommDenom),
-			utilityFunctions: func() {},
+			expectedError: sdkerrors.Wrap(auctionTypes.ErrCouldNotFindSommTokenPrice, auctionTypes.UsommDenom),
+			runsBefore:    func() {},
 		},
 		{
 			name: "Usomm price update too old",
@@ -355,7 +348,7 @@ func (suite *KeeperTestSuite) TestUnhappyPathsForBeginAuction() {
 				proceedsModuleAccount:      permissionedReciever.GetName(),
 			},
 			expectedError: sdkerrors.Wrap(auctionTypes.ErrLastSommTokenPriceTooOld, auctionTypes.UsommDenom),
-			utilityFunctions: func() {
+			runsBefore: func() {
 				auctionKeeper.setTokenPrice(ctx, sommPrice)
 			},
 		},
@@ -369,8 +362,8 @@ func (suite *KeeperTestSuite) TestUnhappyPathsForBeginAuction() {
 				fundingModuleAccount:       permissionedFunder.GetName(),
 				proceedsModuleAccount:      permissionedReciever.GetName(),
 			},
-			expectedError:    sdkerrors.Wrapf(auctionTypes.ErrInvalidInitialDecreaseRate, "Inital price decrease rate 0.000000000000000000"),
-			utilityFunctions: func() {},
+			expectedError: sdkerrors.Wrapf(auctionTypes.ErrInvalidInitialDecreaseRate, "Inital price decrease rate 0.000000000000000000"),
+			runsBefore:    func() {},
 		},
 		{
 			name: "Validate basic canary 2 -- invalid initialPriceDecreaseRate upper bound",
@@ -382,8 +375,8 @@ func (suite *KeeperTestSuite) TestUnhappyPathsForBeginAuction() {
 				fundingModuleAccount:       permissionedFunder.GetName(),
 				proceedsModuleAccount:      permissionedReciever.GetName(),
 			},
-			expectedError:    sdkerrors.Wrapf(auctionTypes.ErrInvalidInitialDecreaseRate, "Inital price decrease rate 1.000000000000000000"),
-			utilityFunctions: func() {},
+			expectedError: sdkerrors.Wrapf(auctionTypes.ErrInvalidInitialDecreaseRate, "Inital price decrease rate 1.000000000000000000"),
+			runsBefore:    func() {},
 		},
 		{
 			name: "Cannot have 2 ongoing auctions for the same denom",
@@ -396,7 +389,7 @@ func (suite *KeeperTestSuite) TestUnhappyPathsForBeginAuction() {
 				proceedsModuleAccount:      permissionedReciever.GetName(),
 			},
 			expectedError: sdkerrors.Wrapf(auctionTypes.ErrCannotStartTwoAuctionsForSameDenomSimultaneously, "Denom: %s", auctionedSaleTokens.Denom),
-			utilityFunctions: func() {
+			runsBefore: func() {
 				// Mock initial bank keeper fund transfer
 				suite.mockSendCoinsFromModuleToModule(ctx, permissionedFunder.GetName(), auctionTypes.ModuleName, sdk.NewCoins(auctionedSaleTokens))
 
@@ -434,7 +427,7 @@ func (suite *KeeperTestSuite) TestUnhappyPathsForBeginAuction() {
 		tc := tc // Redefine variable here due to passing it to function literal below (scopelint)
 		suite.T().Run(fmt.Sprint(tc.name), func(t *testing.T) {
 			// Run expected bank keeper functions, if any
-			tc.utilityFunctions()
+			tc.runsBefore()
 
 			err := auctionKeeper.BeginAuction(
 				tc.beginAuctionRequest.ctx,

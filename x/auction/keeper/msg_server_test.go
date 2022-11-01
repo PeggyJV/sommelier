@@ -11,15 +11,7 @@ import (
 	auctionTypes "github.com/peggyjv/sommelier/v4/x/auction/types"
 )
 
-type utilityFunctionsWrapper func()
-
-func (suite *KeeperTestSuite) mockSendCoinsFromAccountToModule(ctx sdk.Context, senderAcct sdk.AccAddress, receiverModule string, amt sdk.Coins) {
-	suite.bankKeeper.EXPECT().SendCoinsFromAccountToModule(ctx, senderAcct, receiverModule, amt).Return(nil)
-}
-
-func (suite *KeeperTestSuite) mockSendCoinsFromModuleToAccount(ctx sdk.Context, senderModule string, receiverAcct sdk.AccAddress, amt sdk.Coins) {
-	suite.bankKeeper.EXPECT().SendCoinsFromModuleToAccount(ctx, senderModule, receiverAcct, amt).Return(nil)
-}
+type runsBeforeWrapper func()
 
 // Happy path test for submitting a bid both fully and partially
 func (suite *KeeperTestSuite) TestHappyPathSubmitBidAndFulfillFully() {
@@ -51,7 +43,7 @@ func (suite *KeeperTestSuite) TestHappyPathSubmitBidAndFulfillFully() {
 
 	// Submit a bid
 	auctionID := uint32(1)
-	bidder := "cosmos16zrkzad482haunrn25ywvwy6fclh3vh7r0hcny"
+	bidder := cosmos_address_1
 	require.Nil(err)
 
 	bid := sdk.NewCoin(auctionTypes.UsommDenom, sdk.NewInt(5000))
@@ -114,7 +106,7 @@ func (suite *KeeperTestSuite) TestHappyPathSubmitBidAndFulfillFully() {
 	require.Equal(expectedUpdatedAuction, activeAuction)
 
 	// Now check flow of a bid that can only be partially fulfilled, and verify it finishes the auction
-	newBidder := "cosmos18ld4633yswcyjdklej3att6aw93nhlf7ce4v8u"
+	newBidder := cosmos_address_2
 	newBid := sdk.NewCoin(auctionTypes.UsommDenom, sdk.NewInt(50000))
 	newFulfilledAmt := sdk.NewCoin(saleToken, sdk.NewInt(7500))
 	paidAmt := sdk.NewCoin(auctionTypes.UsommDenom, sdk.NewInt(15000))
@@ -207,59 +199,59 @@ func (suite *KeeperTestSuite) TestUnhappyPathsForSubmitBid() {
 		name              string
 		bid               auctionTypes.MsgSubmitBidRequest
 		expectedError     error
-		utilityFunctions  utilityFunctionsWrapper
+		runsBefore  runsBeforeWrapper
 		submitBidResponse *auctionTypes.MsgSubmitBidResponse
 	}{
 		{
 			name: "Mismatched signer & bidder",
 			bid: auctionTypes.MsgSubmitBidRequest{
 				AuctionId:              auctionID,
-				Bidder:                 "cosmos16zrkzad482haunrn25ywvwy6fclh3vh7r0hcny",
+				Bidder:                 cosmos_address_1,
 				MaxBidInUsomm:          sdk.NewCoin(auctionTypes.UsommDenom, sdk.NewInt(100)),
 				SaleTokenMinimumAmount: sdk.NewCoin(saleToken, sdk.NewInt(1)),
-				Signer:                 "cosmos18ld4633yswcyjdklej3att6aw93nhlf7ce4v8u",
+				Signer:                 cosmos_address_2,
 			},
-			expectedError:     sdkerrors.Wrapf(auctionTypes.ErrSignerDifferentFromBidder, "Signer: %s, Bidder: %s", "cosmos18ld4633yswcyjdklej3att6aw93nhlf7ce4v8u", "cosmos16zrkzad482haunrn25ywvwy6fclh3vh7r0hcny"),
-			utilityFunctions:  func() {},
+			expectedError:     sdkerrors.Wrapf(auctionTypes.ErrSignerDifferentFromBidder, "Signer: %s, Bidder: %s", cosmos_address_2, cosmos_address_1),
+			runsBefore:  func() {},
 			submitBidResponse: &auctionTypes.MsgSubmitBidResponse{},
 		},
 		{
 			name: "Auction ID not found",
 			bid: auctionTypes.MsgSubmitBidRequest{
 				AuctionId:              uint32(420),
-				Bidder:                 "cosmos16zrkzad482haunrn25ywvwy6fclh3vh7r0hcny",
+				Bidder:                 cosmos_address_1,
 				MaxBidInUsomm:          sdk.NewCoin(auctionTypes.UsommDenom, sdk.NewInt(100)),
 				SaleTokenMinimumAmount: sdk.NewCoin(saleToken, sdk.NewInt(1)),
-				Signer:                 "cosmos16zrkzad482haunrn25ywvwy6fclh3vh7r0hcny",
+				Signer:                 cosmos_address_1,
 			},
 			expectedError:     sdkerrors.Wrapf(auctionTypes.ErrAuctionNotFound, "Auction id: %d", uint32(420)),
-			utilityFunctions:  func() {},
+			runsBefore:  func() {},
 			submitBidResponse: &auctionTypes.MsgSubmitBidResponse{},
 		},
 		{
 			name: "Denom mismatch",
 			bid: auctionTypes.MsgSubmitBidRequest{
 				AuctionId:              auctionID,
-				Bidder:                 "cosmos16zrkzad482haunrn25ywvwy6fclh3vh7r0hcny",
+				Bidder:                 cosmos_address_1,
 				MaxBidInUsomm:          sdk.NewCoin(auctionTypes.UsommDenom, sdk.NewInt(100)),
 				SaleTokenMinimumAmount: sdk.NewCoin("blemflarcks", sdk.NewInt(1)),
-				Signer:                 "cosmos16zrkzad482haunrn25ywvwy6fclh3vh7r0hcny",
+				Signer:                 cosmos_address_1,
 			},
 			expectedError:     sdkerrors.Wrapf(auctionTypes.ErrBidAuctionDenomMismatch, "Bid denom: blemflarcks, Auction denom: %s", saleToken),
-			utilityFunctions:  func() {},
+			runsBefore:  func() {},
 			submitBidResponse: &auctionTypes.MsgSubmitBidResponse{},
 		},
 		{
 			name: "Minimum amount to purchase larger than bid can obtain",
 			bid: auctionTypes.MsgSubmitBidRequest{
 				AuctionId:              auctionID,
-				Bidder:                 "cosmos16zrkzad482haunrn25ywvwy6fclh3vh7r0hcny",
+				Bidder:                 cosmos_address_1,
 				MaxBidInUsomm:          sdk.NewCoin(auctionTypes.UsommDenom, sdk.NewInt(1)),
 				SaleTokenMinimumAmount: sdk.NewCoin(saleToken, sdk.NewInt(1)),
-				Signer:                 "cosmos16zrkzad482haunrn25ywvwy6fclh3vh7r0hcny",
+				Signer:                 cosmos_address_1,
 			},
 			expectedError: sdkerrors.Wrapf(auctionTypes.ErrInsufficientBid, "minimum purchase price: 2, max bid: 1"),
-			utilityFunctions: func() {
+			runsBefore: func() {
 				suite.mockGetModuleAccount(ctx)
 				suite.mockGetBalance(ctx, authtypes.NewEmptyModuleAccount("mock").GetAddress(), saleToken, originalAuction.RemainingTokensForSale)
 			},
@@ -269,13 +261,13 @@ func (suite *KeeperTestSuite) TestUnhappyPathsForSubmitBid() {
 			name: "Minimum amount larger than remaining tokens in auction",
 			bid: auctionTypes.MsgSubmitBidRequest{
 				AuctionId:              auctionID,
-				Bidder:                 "cosmos16zrkzad482haunrn25ywvwy6fclh3vh7r0hcny",
+				Bidder:                 cosmos_address_1,
 				MaxBidInUsomm:          sdk.NewCoin(auctionTypes.UsommDenom, sdk.NewInt(40000)),
 				SaleTokenMinimumAmount: sdk.NewCoin(saleToken, sdk.NewInt(10002)),
-				Signer:                 "cosmos16zrkzad482haunrn25ywvwy6fclh3vh7r0hcny",
+				Signer:                 cosmos_address_1,
 			},
 			expectedError: sdkerrors.Wrapf(auctionTypes.ErrMinimumPurchaseAmountLargerThanTokensRemaining, "Minimum purchase: %s, amount remaining: %s", sdk.NewInt(10002), originalAuction.RemainingTokensForSale.String()),
-			utilityFunctions: func() {
+			runsBefore: func() {
 				suite.mockGetModuleAccount(ctx)
 				suite.mockGetBalance(ctx, authtypes.NewEmptyModuleAccount("mock").GetAddress(), saleToken, originalAuction.RemainingTokensForSale)
 			},
@@ -285,13 +277,13 @@ func (suite *KeeperTestSuite) TestUnhappyPathsForSubmitBid() {
 			name: "Validate Basic canary 1 -- bid denom must be in usomm",
 			bid: auctionTypes.MsgSubmitBidRequest{
 				AuctionId:              auctionID,
-				Bidder:                 "cosmos16zrkzad482haunrn25ywvwy6fclh3vh7r0hcny",
+				Bidder:                 cosmos_address_1,
 				MaxBidInUsomm:          sdk.NewCoin("cinnamonRollCoin", sdk.NewInt(200)),
 				SaleTokenMinimumAmount: sdk.NewCoin(saleToken, sdk.NewInt(100)),
-				Signer:                 "cosmos16zrkzad482haunrn25ywvwy6fclh3vh7r0hcny",
+				Signer:                 cosmos_address_1,
 			},
 			expectedError: sdkerrors.Wrapf(auctionTypes.ErrBidMustBeInUsomm, "bid: %s", sdk.NewCoin("cinnamonRollCoin", sdk.NewInt(200)).String()),
-			utilityFunctions: func() {
+			runsBefore: func() {
 				suite.mockGetModuleAccount(ctx)
 				suite.mockGetBalance(ctx, authtypes.NewEmptyModuleAccount("mock").GetAddress(), saleToken, originalAuction.RemainingTokensForSale)
 			},
@@ -301,13 +293,13 @@ func (suite *KeeperTestSuite) TestUnhappyPathsForSubmitBid() {
 			name: "Validate Basic canary 2 -- minimum amount of sale tokens cannot be 0",
 			bid: auctionTypes.MsgSubmitBidRequest{
 				AuctionId:              auctionID,
-				Bidder:                 "cosmos16zrkzad482haunrn25ywvwy6fclh3vh7r0hcny",
+				Bidder:                 cosmos_address_1,
 				MaxBidInUsomm:          sdk.NewCoin(auctionTypes.UsommDenom, sdk.NewInt(200)),
 				SaleTokenMinimumAmount: sdk.NewCoin(saleToken, sdk.NewInt(0)),
-				Signer:                 "cosmos16zrkzad482haunrn25ywvwy6fclh3vh7r0hcny",
+				Signer:                 cosmos_address_1,
 			},
 			expectedError: sdkerrors.Wrapf(auctionTypes.ErrMinimumAmountMustBePositive, "sale token amount: %s", sdk.NewCoin(saleToken, sdk.NewInt(0)).String()),
-			utilityFunctions: func() {
+			runsBefore: func() {
 				suite.mockGetModuleAccount(ctx)
 				suite.mockGetBalance(ctx, authtypes.NewEmptyModuleAccount("mock").GetAddress(), saleToken, originalAuction.RemainingTokensForSale)
 			},
@@ -319,7 +311,7 @@ func (suite *KeeperTestSuite) TestUnhappyPathsForSubmitBid() {
 		tc := tc // Redefine variable here due to passing it to function literal below (scopelint)
 		suite.T().Run(fmt.Sprint(tc.name), func(t *testing.T) {
 			// Run expected bank keeper functions, if any
-			tc.utilityFunctions()
+			tc.runsBefore()
 			response, err := auctionKeeper.SubmitBid(sdk.WrapSDKContext(ctx), &tc.bid)
 
 			// Verify bid errors are as expected
