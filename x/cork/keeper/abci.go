@@ -33,13 +33,9 @@ func (k Keeper) submitContractCall(ctx sdk.Context, cork types.Cork) {
 
 // EndBlocker defines the oracle logic that executes at the end of every block:
 //
-// 0) Checks if the voting period is over and performs a no-op if it's not.
-//
 // 1) Collects all winning votes
 //
 // 2) Submits all winning votes as contract calls via the gravity bridge
-//
-// 3) Sets the new voting period to the next block
 
 func (k Keeper) EndBlocker(ctx sdk.Context) {
 	params := k.GetParamSet(ctx)
