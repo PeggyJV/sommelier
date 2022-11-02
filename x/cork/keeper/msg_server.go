@@ -66,5 +66,5 @@ func (k Keeper) ScheduleCork(c context.Context, msg *types.MsgScheduleCorkReques
 		},
 	)
 
-	return &types.MsgScheduleCorkResponse{}, nil
+	return &types.MsgScheduleCorkResponse{Id: k.IncrementScheduledCorkID(ctx)}, nil
 }
