@@ -48,7 +48,7 @@ func (k Keeper) ScheduleCork(c context.Context, msg *types.MsgScheduleCorkReques
 		return nil, err
 	}
 
-	k.SetScheduledCork(ctx, msg.BlockHeight, validatorAddr, *msg.Cork)
+	corkID := k.SetScheduledCork(ctx, msg.BlockHeight, validatorAddr, *msg.Cork)
 
 	ctx.EventManager().EmitEvents(
 		sdk.Events{
@@ -66,5 +66,5 @@ func (k Keeper) ScheduleCork(c context.Context, msg *types.MsgScheduleCorkReques
 		},
 	)
 
-	return &types.MsgScheduleCorkResponse{Id: k.IncrementScheduledCorkID(ctx)}, nil
+	return &types.MsgScheduleCorkResponse{Id: corkID}, nil
 }
