@@ -166,7 +166,7 @@ func (suite *KeeperTestSuite) TestHappyPathsForQueryServer() {
 }
 
 // Unhappy path test for query server functions
-func (suite *KeeperTestSuite) TestUnhappPathsForQueryServer() {
+func (suite *KeeperTestSuite) TestUnhappyPathsForQueryServer() {
 	ctx, auctionKeeper := suite.ctx, suite.auctionKeeper
 	require := suite.Require()
 
@@ -182,24 +182,23 @@ func (suite *KeeperTestSuite) TestUnhappPathsForQueryServer() {
 	require.Equal(status.Errorf(codes.NotFound, "No ended auction found for id: 1"), err)
 	require.Equal(&auctionTypes.QueryEndedAuctionResponse{}, endedAuctionResponse)
 
-	// QueryActiveAuctions
+	// QueryActiveAuctions -- empty check
 	activeAuctionsResponse, err := auctionKeeper.QueryActiveAuctions(sdk.WrapSDKContext(ctx), &auctionTypes.QueryActiveAuctionsRequest{})
-	require.Equal(status.Error(codes.NotFound, "No active auctions found"), err)
-	require.Equal(&auctionTypes.QueryActiveAuctionsResponse{}, activeAuctionsResponse)
+	require.NoError(err)
+	require.Zero(len(activeAuctionsResponse.Auctions))
 
-	// QueryEndedAuctions
+	// QueryEndedAuctions -- empty check
 	endedAuctionsResponse, err := auctionKeeper.QueryEndedAuctions(sdk.WrapSDKContext(ctx), &auctionTypes.QueryEndedAuctionsRequest{})
-	require.Equal(status.Error(codes.NotFound, "No ended auctions found"), err)
-	require.Equal(&auctionTypes.QueryEndedAuctionsResponse{}, endedAuctionsResponse)
+	require.NoError(err)
+	require.Zero(len(endedAuctionsResponse.Auctions))
 
 	// QueryBid
 	bidResponse, err := auctionKeeper.QueryBid(sdk.WrapSDKContext(ctx), &auctionTypes.QueryBidRequest{BidId: uint64(4), AuctionId: uint32(3)})
 	require.Equal(status.Errorf(codes.NotFound, "No bid found for specified bid id: 4, and auction id: 3"), err)
 	require.Equal(&auctionTypes.QueryBidResponse{}, bidResponse)
 
-	// QueryBidsByAuction
+	// QueryBidsByAuction -- empty check
 	bidsResponse, err := auctionKeeper.QueryBidsByAuction(sdk.WrapSDKContext(ctx), &auctionTypes.QueryBidsByAuctionRequest{AuctionId: uint32(1)})
-	require.Equal(status.Errorf(codes.NotFound, "No bids found for auction id: 1"), err)
-	require.Equal(&auctionTypes.QueryBidsByAuctionResponse{}, bidsResponse)
-
+	require.NoError(err)
+	require.Zero(len(bidsResponse.Bids))
 }

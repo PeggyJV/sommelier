@@ -52,10 +52,6 @@ func (k Keeper) QueryActiveAuctions(c context.Context, _ *types.QueryActiveAucti
 
 	auctions := k.GetActiveAuctions(ctx)
 
-	if len(auctions) == 0 {
-		return &types.QueryActiveAuctionsResponse{}, status.Error(codes.NotFound, "No active auctions found")
-	}
-
 	return &types.QueryActiveAuctionsResponse{Auctions: auctions}, nil
 }
 
@@ -64,11 +60,6 @@ func (k Keeper) QueryEndedAuctions(c context.Context, _ *types.QueryEndedAuction
 	ctx := sdk.UnwrapSDKContext(c)
 
 	auctions := k.GetEndedAuctions(ctx)
-
-	if len(auctions) == 0 {
-		// TODO (pbal): consider pagination
-		return &types.QueryEndedAuctionsResponse{}, status.Error(codes.NotFound, "No ended auctions found")
-	}
 
 	return &types.QueryEndedAuctionsResponse{Auctions: auctions}, nil
 }
@@ -91,10 +82,6 @@ func (k Keeper) QueryBidsByAuction(c context.Context, request *types.QueryBidsBy
 	ctx := sdk.UnwrapSDKContext(c)
 
 	bids := k.GetBidsByAuctionID(ctx, request.GetAuctionId())
-
-	if len(bids) == 0 {
-		return &types.QueryBidsByAuctionResponse{}, status.Errorf(codes.NotFound, "No bids found for auction id: %d", request.GetAuctionId())
-	}
 
 	return &types.QueryBidsByAuctionResponse{Bids: bids}, nil
 }
