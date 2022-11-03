@@ -44,4 +44,7 @@ var (
 	ErrBidFulfilledSaleTokenAmountMustBeNonNegative             = sdkerrors.Register(ModuleName, 37, "total sale token fulfilled amount must be non-negative")
 	ErrBidPaymentCannotBeNegative                               = sdkerrors.Register(ModuleName, 38, "total amount paid in usomm cannot be negative")
 	ErrBidAmountIsTooSmall                                      = sdkerrors.Register(ModuleName, 39, "bid is below minimum amount")
+	ErrMinimumBidParam                                          = sdkerrors.Register(ModuleName, 40, "invalid minimum bid param")
+	ErrInvalidAuctionMaxBlockAgeParam                           = sdkerrors.Register(ModuleName, 41, "invalid auction max block age param")
+	ErrInvalidAuctionPriceDecreaseAccelerationRateParam         = sdkerrors.Register(ModuleName, 42, "invalid auction price decrease acceleration rate param")
 )

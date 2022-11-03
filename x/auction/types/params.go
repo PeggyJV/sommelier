@@ -1,8 +1,6 @@
 package types
 
 import (
-	"fmt"
-
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
@@ -80,7 +78,7 @@ func validatePriceMaxBlockAge(i interface{}) error {
 func validateMinimumBidInUsomm(i interface{}) error {
 	_, ok := i.(uint64)
 	if !ok {
-		return fmt.Errorf("invalid minimum bid in usomm parameter type: %T", i)
+		return sdkerrors.Wrapf(ErrMinimumBidParam, "invalid minimum bid in usomm parameter type: %T", i)
 	}
 
 	return nil
@@ -89,11 +87,11 @@ func validateMinimumBidInUsomm(i interface{}) error {
 func validateAuctionMaxBlockAge(i interface{}) error {
 	auctionMaxBlockAge, ok := i.(uint64)
 	if !ok {
-		return fmt.Errorf("invalid auction max block age parameter type: %T", i)
+		return sdkerrors.Wrapf(ErrInvalidAuctionMaxBlockAgeParam, "invalid auction max block age parameter type: %T", i)
 	}
 
 	if auctionMaxBlockAge == 0 {
-		return fmt.Errorf("blocks to not prune must be non-zero")
+		return sdkerrors.Wrapf(ErrInvalidAuctionMaxBlockAgeParam, "blocks to not prune must be non-zero")
 	}
 
 	return nil
@@ -102,12 +100,12 @@ func validateAuctionMaxBlockAge(i interface{}) error {
 func validateAuctionPriceDecreaseAccelerationRate(i interface{}) error {
 	auctionPriceDecreaseAccelerationRate, ok := i.(sdk.Dec)
 	if !ok {
-		return fmt.Errorf("invalid auction price decrease acceleration rate parameter type: %T", i)
+		return sdkerrors.Wrapf(ErrInvalidAuctionPriceDecreaseAccelerationRateParam, "invalid auction price decrease acceleration rate parameter type: %T", i)
 	}
 
 	if auctionPriceDecreaseAccelerationRate.LT(sdk.MustNewDecFromStr("0")) || auctionPriceDecreaseAccelerationRate.GT(sdk.MustNewDecFromStr("1.0")) {
 		// Acceleration rates could in theory be more than 100% if need be, but we are establishing this as a bound for now
-		return fmt.Errorf("auction price decrease acceleration rate must be betwen 0 and 1 inclusive (0%% to 100%%)")
+		return sdkerrors.Wrapf(ErrInvalidAuctionPriceDecreaseAccelerationRateParam, "auction price decrease acceleration rate must be betwen 0 and 1 inclusive (0%% to 100%%)")
 	}
 
 	return nil
