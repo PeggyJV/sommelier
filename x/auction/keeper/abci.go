@@ -18,7 +18,7 @@ func (k Keeper) EndBlocker(ctx sdk.Context) {
 			decreaseAccelerationFactor := k.GetParamSet(ctx).AuctionPriceDecreaseAccelerationRate
 			// Constant decrease rate if acceleration factor is 0
 			// Otherwise decrease rate with acceleration factor that accelerates the decrease amount until a bid is seen
-			
+
 			// Cycle through bids first to see if one was found in the last decrease interval
 			bids := k.GetBidsByAuctionID(ctx, auction.Id)
 
@@ -68,7 +68,6 @@ func (k Keeper) EndBlocker(ctx sdk.Context) {
 	//  Prune bids and auctions -- keep last inactive auction per denom (+ bids) at minimum -- PLUS auctions still in the param freshness window
 	denomsFound := make(map[string]bool)
 	auctionMaxBlockAge := k.GetParamSet(ctx).AuctionMaxBlockAge
-	auctionsToDelete := make(map[uint32]bool)
 
 	// Iterate in reverse to guarantee we keep at least the most recent denom auction
 	endedAuctions := k.GetEndedAuctions(ctx)
@@ -76,22 +75,17 @@ func (k Keeper) EndBlocker(ctx sdk.Context) {
 		auction := endedAuctions[len(endedAuctions)-1-i]
 		denom := auction.StartingTokensForSale.Denom
 
-		// Check if denom already exists, if so and is prune-able, slate for deletion
+		// Check if denom already exists, if so and is prune-able delete both it and it's bids
 		if _, ok := denomsFound[denom]; ok && auction.EndBlock < uint64(ctx.BlockHeight())-auctionMaxBlockAge {
-			auctionsToDelete[k.GetLastAuctionID(ctx)] = true
+			bids := k.GetBidsByAuctionID(ctx, auction.GetId())
+
+			for _, bid := range bids {
+				k.deleteBid(ctx, auction.GetId(), bid.GetId())
+			}
+
+			k.deleteEndedAuction(ctx, auction.GetId())
 		} else { // If it doesnt exist/is fresh enough note and skip deletion (since we're iterating in reverse this includes at least the most recent auction for a denom)
 			denomsFound[denom] = true
 		}
-	}
-
-	// Delete selected auctions and their associated bids
-	for auctionID := range auctionsToDelete {
-		bids := k.GetBidsByAuctionID(ctx, auctionID)
-
-		for _, bid := range bids {
-			k.deleteBid(ctx, auctionID, bid.Id)
-		}
-
-		k.deleteEndedAuction(ctx, auctionID)
 	}
 }

@@ -9,10 +9,10 @@ import (
 
 // Parameter keys
 var (
-	KeyPriceMaxBlockAge                  = []byte("PriceMaxBlockAge")
-	MinimumBidInUsomm                    = []byte("MinimumBidInUsomm")
-	AuctionMaxBlockAge                   = []byte("AuctionMaxBlockAge")
-	AuctionPriceDecreaseAccelerationRate = []byte("AuctionPriceDecreaseAccelerationRate")
+	KeyPriceMaxBlockAge                     = []byte("PriceMaxBlockAge")
+	KeyMinimumBidInUsomm                    = []byte("MinimumBidInUsomm")
+	KeyAuctionMaxBlockAge                   = []byte("AuctionMaxBlockAge")
+	KeyAuctionPriceDecreaseAccelerationRate = []byte("AuctionPriceDecreaseAccelerationRate")
 )
 
 var _ paramtypes.ParamSet = &Params{}
@@ -36,9 +36,9 @@ func DefaultParams() Params {
 func (p *Params) ParamSetPairs() paramtypes.ParamSetPairs {
 	return paramtypes.ParamSetPairs{
 		paramtypes.NewParamSetPair(KeyPriceMaxBlockAge, &p.PriceMaxBlockAge, validatePriceMaxBlockAge),
-		paramtypes.NewParamSetPair(MinimumBidInUsomm, &p.MinimumBidInUsomm, validateMinimumBidInUsomm),
-		paramtypes.NewParamSetPair(AuctionMaxBlockAge, &p.AuctionMaxBlockAge, validateAuctionMaxBlockAge),
-		paramtypes.NewParamSetPair(AuctionPriceDecreaseAccelerationRate, &p.AuctionPriceDecreaseAccelerationRate, validateAuctionPriceDecreaseAccelerationRate),
+		paramtypes.NewParamSetPair(KeyMinimumBidInUsomm, &p.MinimumBidInUsomm, validateMinimumBidInUsomm),
+		paramtypes.NewParamSetPair(KeyAuctionMaxBlockAge, &p.AuctionMaxBlockAge, validateAuctionMaxBlockAge),
+		paramtypes.NewParamSetPair(KeyAuctionPriceDecreaseAccelerationRate, &p.AuctionPriceDecreaseAccelerationRate, validateAuctionPriceDecreaseAccelerationRate),
 	}
 }
 
@@ -103,12 +103,12 @@ func validateAuctionMaxBlockAge(i interface{}) error {
 func validateAuctionPriceDecreaseAccelerationRate(i interface{}) error {
 	auctionPriceDecreaseAccelerationRate, ok := i.(sdk.Dec)
 	if !ok {
-		return fmt.Errorf("invalid auction price dececrease acceleration rate parameter type: %T", i)
+		return fmt.Errorf("invalid auction price decrease acceleration rate parameter type: %T", i)
 	}
 
 	if auctionPriceDecreaseAccelerationRate.LT(sdk.MustNewDecFromStr("0")) || auctionPriceDecreaseAccelerationRate.GT(sdk.MustNewDecFromStr("1.0")) {
 		// Acceleration rates could in theory be more than 100% if need be, but we are establishing this as a bound for now
-		return fmt.Errorf("auction price dececrease acceleration rate must be betwen 0 and 1 inclusive (0%% to 100%%)")
+		return fmt.Errorf("auction price decrease acceleration rate must be betwen 0 and 1 inclusive (0%% to 100%%)")
 	}
 
 	return nil

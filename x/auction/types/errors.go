@@ -41,5 +41,5 @@ var (
 	ErrBidFulfilledSaleTokenAmountMustBeNonNegative     = sdkerrors.Register(ModuleName, 34, "total sale token fulfilled amount must be non-negative")
 	ErrBidUnitPriceInUsommMustBePositive                = sdkerrors.Register(ModuleName, 35, "unit price of sale tokens in usomm must be positive")
 	ErrBidPaymentCannotBeNegative                       = sdkerrors.Register(ModuleName, 36, "total amount paid in usomm cannot be negative")
-	ErrBidAmountIsTooSmall                              = sdkerrors.Register(ModuleName, 37, "bid is below minimum  amount")
+	ErrBidAmountIsTooSmall                              = sdkerrors.Register(ModuleName, 37, "bid is below minimum amount")
 )

@@ -41,12 +41,18 @@ func (k Keeper) SubmitBid(c context.Context, msg *types.MsgSubmitBidRequest) (*t
 	minimumSaleTokenPurchaseAmount := msg.SaleTokenMinimumAmount.Amount
 	maxBidInUsomm := msg.MaxBidInUsomm.Amount
 
-	// To prevent spamming of many small bids, check that minimum bid amount is satisfied (unless amount left in auction is < minimum bid req)
+	// To prevent spamming of many small bids, check that minimum bid amount is satisfied (unless amount left in auction is < minimum bid req)**
 	minUsommBid := sdk.NewIntFromUint64(k.GetParamSet(ctx).MinimumBidInUsomm)
+	saleTokenBalanceValueInUsommRemaining := totalSaleTokenBalance.Amount.ToDec().Mul(auction.CurrentUnitPriceInUsomm)
 
-	if maxBidInUsomm.LT(minUsommBid) && totalSaleTokenBalance.Amount.ToDec().Mul(auction.CurrentUnitPriceInUsomm).GTE(minUsommBid.ToDec()) {
-		return &types.MsgSubmitBidResponse{}, sdkerrors.Wrapf(types.ErrBidAmountIsTooSmall, "bid amount: %s, minimum amount in usomm: %s", maxBidInUsomm.String(), minUsommBid.String())
+	// **If remaining amount in auction is LT minUsommBid param, update minUsommBid to smallest possible value left in auction to prevent spamming in this edge case
+	if saleTokenBalanceValueInUsommRemaining.LT(minUsommBid.ToDec()) {
+		minUsommBid = sdk.NewInt(saleTokenBalanceValueInUsommRemaining.TruncateInt64())
 	}
+
+	if maxBidInUsomm.LT(minUsommBid) {
+		return &types.MsgSubmitBidResponse{}, sdkerrors.Wrapf(types.ErrBidAmountIsTooSmall, "bid amount: %s, minimum amount in usomm: %s", maxBidInUsomm.String(), minUsommBid.String())
+	} 
 
 	// Calculate minimum purchase price
 	// Note we round up, thus making the price more expensive to prevent this rounding from being exploited
