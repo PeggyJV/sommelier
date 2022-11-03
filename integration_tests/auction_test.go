@@ -123,10 +123,9 @@ func (s *IntegrationTestSuite) TestAuctionModule() {
 		s.T().Log("Submitting first bid for auction")
 		bidRequest1 := types.MsgSubmitBidRequest{
 			AuctionId:              uint32(1),
-			Bidder:                 orch0Address,
+			Signer:                 orch0Address,
 			MaxBidInUsomm:          sdk.NewCoin("usomm", sdk.NewIntFromUint64(5000)),
 			SaleTokenMinimumAmount: sdk.NewCoin("gravity0x3506424f91fd33084466f402d5d97f05f8e3b4af", sdk.NewIntFromUint64(1)),
-			Signer:                 orch0Address,
 		}
 
 		_, err = s.chain.sendMsgs(*orchClientCtx, &bidRequest1)
@@ -187,10 +186,9 @@ func (s *IntegrationTestSuite) TestAuctionModule() {
 		// Submit another bid to be partially fulfilled
 		bidRequest2 := types.MsgSubmitBidRequest{
 			AuctionId:              uint32(1),
-			Bidder:                 orch0Address,
+			Signer:                 orch0Address,
 			MaxBidInUsomm:          sdk.NewCoin("usomm", sdk.NewIntFromUint64(10000)),
 			SaleTokenMinimumAmount: sdk.NewCoin("gravity0x3506424f91fd33084466f402d5d97f05f8e3b4af", sdk.NewIntFromUint64(50)),
-			Signer:                 orch0Address,
 		}
 
 		_, err = s.chain.sendMsgs(*orchClientCtx, &bidRequest2)
