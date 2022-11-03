@@ -23,10 +23,10 @@ func (k Keeper) EndBlocker(ctx sdk.Context) {
 			bids := k.GetBidsByAuctionID(ctx, auction.Id)
 
 			// Only look at the most recent bid, with the highest ID we can see if we had any bids in the last block decrease period or not
-			bid := bids[len(bids)-1]
+			totalBids := len(bids)
 
 			// Reset decrease rate if we've seen at least 1 bid in the last interval
-			if bid.BlockHeight >= uint64(ctx.BlockHeight())-auction.PriceDecreaseBlockInterval {
+			if totalBids > 0 && bids[totalBids-1].BlockHeight >= uint64(ctx.BlockHeight())-auction.PriceDecreaseBlockInterval {
 				auction.CurrentPriceDecreaseRate = auction.InitialPriceDecreaseRate
 			} else { // Otherwise add in the acceleration factor
 				auction.CurrentPriceDecreaseRate = auction.CurrentPriceDecreaseRate.Mul(sdk.MustNewDecFromStr("1.0").Add(decreaseAccelerationFactor))

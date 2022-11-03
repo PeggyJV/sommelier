@@ -24,9 +24,7 @@ func TestGenesisValidate(t *testing.T) {
 		{
 			name: "Happy path -- empty genesis",
 			genesisState: GenesisState{
-				Params: Params{
-					PriceMaxBlockAge: uint64(20),
-				},
+				Params:      DefaultParams(),
 				Auctions:    []*Auction{},
 				Bids:        []*Bid{},
 				TokenPrices: []*TokenPrice{},
@@ -37,9 +35,7 @@ func TestGenesisValidate(t *testing.T) {
 		{
 			name: "Happy path -- custom populated genesis",
 			genesisState: GenesisState{
-				Params: Params{
-					PriceMaxBlockAge: uint64(20),
-				},
+				Params: DefaultParams(),
 				Auctions: []*Auction{
 					{
 						Id:                         uint32(1),
@@ -89,9 +85,7 @@ func TestGenesisValidate(t *testing.T) {
 		{
 			name: "Validate basic canary -- Invalid auction",
 			genesisState: GenesisState{
-				Params: Params{
-					PriceMaxBlockAge: uint64(20),
-				},
+				Params: DefaultParams(),
 				Auctions: []*Auction{
 					{
 						Id:                         uint32(0),
@@ -141,9 +135,7 @@ func TestGenesisValidate(t *testing.T) {
 		{
 			name: "Validate basic canary -- Invalid bid",
 			genesisState: GenesisState{
-				Params: Params{
-					PriceMaxBlockAge: uint64(20),
-				},
+				Params: DefaultParams(),
 				Auctions: []*Auction{
 					{
 						Id:                         uint32(1),
@@ -193,9 +185,7 @@ func TestGenesisValidate(t *testing.T) {
 		{
 			name: "Validate basic canary -- Invalid token price",
 			genesisState: GenesisState{
-				Params: Params{
-					PriceMaxBlockAge: uint64(20),
-				},
+				Params: DefaultParams(),
 				Auctions: []*Auction{
 					{
 						Id:                         uint32(1),

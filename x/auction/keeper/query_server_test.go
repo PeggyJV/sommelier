@@ -2,6 +2,7 @@ package keeper
 
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/cosmos/cosmos-sdk/types/query"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
@@ -142,7 +143,7 @@ func (suite *KeeperTestSuite) TestHappyPathsForQueryServer() {
 	// QueryEndedAuctions
 	endedAuctionsResponse, err := auctionKeeper.QueryEndedAuctions(sdk.WrapSDKContext(ctx), &auctionTypes.QueryEndedAuctionsRequest{})
 	require.Nil(err)
-	require.Equal(&auctionTypes.QueryEndedAuctionsResponse{Auctions: []*auctionTypes.Auction{endedAuction}}, endedAuctionsResponse)
+	require.Equal(&auctionTypes.QueryEndedAuctionsResponse{Auctions: []*auctionTypes.Auction{endedAuction}, Pagination: query.PageResponse{Total: 1}}, endedAuctionsResponse)
 
 	// QueryBid -- active auction
 	activeBidResponse, err := auctionKeeper.QueryBid(sdk.WrapSDKContext(ctx), &auctionTypes.QueryBidRequest{BidId: uint64(4), AuctionId: uint32(3)})
@@ -157,12 +158,12 @@ func (suite *KeeperTestSuite) TestHappyPathsForQueryServer() {
 	// QueryBidsByAuction -- active auction
 	activeBidsResponse, err := auctionKeeper.QueryBidsByAuction(sdk.WrapSDKContext(ctx), &auctionTypes.QueryBidsByAuctionRequest{AuctionId: uint32(2)})
 	require.Nil(err)
-	require.Equal(&auctionTypes.QueryBidsByAuctionResponse{Bids: []*auctionTypes.Bid{bid1, bid2}}, activeBidsResponse)
+	require.Equal(&auctionTypes.QueryBidsByAuctionResponse{Bids: []*auctionTypes.Bid{bid1, bid2}, Pagination: query.PageResponse{Total: 2}}, activeBidsResponse)
 
 	// QueryBidsByAuction -- ended auction
 	endedBidsResponse, err := auctionKeeper.QueryBidsByAuction(sdk.WrapSDKContext(ctx), &auctionTypes.QueryBidsByAuctionRequest{AuctionId: uint32(1)})
 	require.Nil(err)
-	require.Equal(&auctionTypes.QueryBidsByAuctionResponse{Bids: []*auctionTypes.Bid{bid0}}, endedBidsResponse)
+	require.Equal(&auctionTypes.QueryBidsByAuctionResponse{Bids: []*auctionTypes.Bid{bid0}, Pagination: query.PageResponse{Total: 1}}, endedBidsResponse)
 }
 
 // Unhappy path test for query server functions

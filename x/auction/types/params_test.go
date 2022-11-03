@@ -3,6 +3,7 @@ package types
 import (
 	"testing"
 
+	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/stretchr/testify/require"
 )
@@ -23,18 +24,57 @@ func TestParamsValidate(t *testing.T) {
 		{
 			name: "Happy path -- custom params",
 			params: Params{
-				PriceMaxBlockAge: uint64(1000),
+				PriceMaxBlockAge:                     uint64(1000),
+				MinimumBidInUsomm:                    uint64(500),
+				AuctionMaxBlockAge:                   uint64(100),
+				AuctionPriceDecreaseAccelerationRate: sdk.MustNewDecFromStr("0.1"),
 			},
 			expPass: true,
 			err:     nil,
 		},
 		{
-			name: "Max block age cannot be 0",
+			name: "Token price max block age cannot be 0",
 			params: Params{
-				PriceMaxBlockAge: uint64(0),
+				PriceMaxBlockAge:                     uint64(0),
+				MinimumBidInUsomm:                    uint64(500),
+				AuctionMaxBlockAge:                   uint64(100),
+				AuctionPriceDecreaseAccelerationRate: sdk.MustNewDecFromStr("0.1"),
 			},
 			expPass: false,
 			err:     sdkerrors.Wrapf(ErrTokenPriceMaxBlockAgeMustBePositive, "value: 0"),
+		},
+		{
+			name: "Auction max block age",
+			params: Params{
+				PriceMaxBlockAge:                     uint64(1000),
+				MinimumBidInUsomm:                    uint64(500),
+				AuctionMaxBlockAge:                   uint64(0),
+				AuctionPriceDecreaseAccelerationRate: sdk.MustNewDecFromStr("0.1"),
+			},
+			expPass: false,
+			err:     sdkerrors.Wrapf(ErrInvalidAuctionMaxBlockAgeParam, "blocks to not prune must be non-zero"),
+		},
+		{
+			name: "Auction price decrease acceleration rate bounds check lower end",
+			params: Params{
+				PriceMaxBlockAge:                     uint64(1000),
+				MinimumBidInUsomm:                    uint64(500),
+				AuctionMaxBlockAge:                   uint64(100),
+				AuctionPriceDecreaseAccelerationRate: sdk.MustNewDecFromStr("-0.01"),
+			},
+			expPass: false,
+			err:     sdkerrors.Wrapf(ErrInvalidAuctionPriceDecreaseAccelerationRateParam, "auction price decrease acceleration rate must be betwen 0 and 1 inclusive (0%% to 100%%)"),
+		},
+		{
+			name: "Auction price decrease acceleration rate bounds check upper end",
+			params: Params{
+				PriceMaxBlockAge:                     uint64(1000),
+				MinimumBidInUsomm:                    uint64(500),
+				AuctionMaxBlockAge:                   uint64(100),
+				AuctionPriceDecreaseAccelerationRate: sdk.MustNewDecFromStr("1.1"),
+			},
+			expPass: false,
+			err:     sdkerrors.Wrapf(ErrInvalidAuctionPriceDecreaseAccelerationRateParam, "auction price decrease acceleration rate must be betwen 0 and 1 inclusive (0%% to 100%%)"),
 		},
 	}
 
