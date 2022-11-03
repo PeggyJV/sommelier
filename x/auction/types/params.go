@@ -11,7 +11,7 @@ import (
 var (
 	KeyPriceMaxBlockAge                  = []byte("PriceMaxBlockAge")
 	MinimumBidInUsomm                    = []byte("MinimumBidInUsomm")
-	BlocksToNotPrune                     = []byte("BlocksToNotPrune")
+	AuctionMaxBlockAge                   = []byte("AuctionMaxBlockAge")
 	AuctionPriceDecreaseAccelerationRate = []byte("AuctionPriceDecreaseAccelerationRate")
 )
 
@@ -27,7 +27,7 @@ func DefaultParams() Params {
 	return Params{
 		PriceMaxBlockAge:                     403200,                       // roughly four weeks based on 6 second blocks
 		MinimumBidInUsomm:                    1000000,                      // 1 somm
-		BlocksToNotPrune:                     864000,                       // roughly 60 days based on 6 second blocks
+		AuctionMaxBlockAge:                   864000,                       // roughly 60 days based on 6 second blocks
 		AuctionPriceDecreaseAccelerationRate: sdk.MustNewDecFromStr("0.1"), // 10%
 	}
 }
@@ -37,7 +37,7 @@ func (p *Params) ParamSetPairs() paramtypes.ParamSetPairs {
 	return paramtypes.ParamSetPairs{
 		paramtypes.NewParamSetPair(KeyPriceMaxBlockAge, &p.PriceMaxBlockAge, validatePriceMaxBlockAge),
 		paramtypes.NewParamSetPair(MinimumBidInUsomm, &p.MinimumBidInUsomm, validateMinimumBidInUsomm),
-		paramtypes.NewParamSetPair(BlocksToNotPrune, &p.BlocksToNotPrune, validateBlocksToNotPrune),
+		paramtypes.NewParamSetPair(AuctionMaxBlockAge, &p.AuctionMaxBlockAge, validateAuctionMaxBlockAge),
 		paramtypes.NewParamSetPair(AuctionPriceDecreaseAccelerationRate, &p.AuctionPriceDecreaseAccelerationRate, validateAuctionPriceDecreaseAccelerationRate),
 	}
 }
@@ -52,7 +52,7 @@ func (p *Params) ValidateBasic() error {
 		return err
 	}
 
-	if err := validateBlocksToNotPrune(p.BlocksToNotPrune); err != nil {
+	if err := validateAuctionMaxBlockAge(p.AuctionMaxBlockAge); err != nil {
 		return err
 	}
 
@@ -87,13 +87,13 @@ func validateMinimumBidInUsomm(i interface{}) error {
 	return nil
 }
 
-func validateBlocksToNotPrune(i interface{}) error {
-	blocksToNotPrune, ok := i.(uint64)
+func validateAuctionMaxBlockAge(i interface{}) error {
+	auctionMaxBlockAge, ok := i.(uint64)
 	if !ok {
 		return fmt.Errorf("invalid blocks to not prune parameter type: %T", i)
 	}
 
-	if blocksToNotPrune == 0 {
+	if auctionMaxBlockAge == 0 {
 		return fmt.Errorf("blocks to not prune must be non-zero")
 	}
 

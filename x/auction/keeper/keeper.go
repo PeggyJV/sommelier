@@ -7,6 +7,7 @@ import (
 	"encoding/binary"
 
 	"github.com/cosmos/cosmos-sdk/codec"
+	"github.com/cosmos/cosmos-sdk/store/prefix"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
@@ -153,6 +154,11 @@ func (k Keeper) GetEndedAuctions(ctx sdk.Context) []*types.Auction {
 	})
 
 	return auctions
+}
+
+// getEndedAuctionsPrefixStore gets a prefix store for the EndedAuctions entries.
+func (k Keeper) getEndedAuctionsPrefixStore(ctx sdk.Context) sdk.KVStore {
+	return prefix.NewStore(ctx.KVStore(k.storeKey), types.GetEndedAuctionsPrefix())
 }
 
 // SetActiveAuction sets the auction specified
@@ -388,6 +394,11 @@ func (k Keeper) GetBidsByAuctionID(ctx sdk.Context, auctionID uint32) []*types.B
 	})
 
 	return bids
+}
+
+// getBidsByAuctionPrefixStore gets a prefix store for the bid entries of an auction
+func (k Keeper) getBidsByAuctionPrefixStore(ctx sdk.Context, auctionID uint32) sdk.KVStore {
+	return prefix.NewStore(ctx.KVStore(k.storeKey), types.GetBidsByAuctionIDPrefix(auctionID))
 }
 
 // GetBid returns a specified bid by its id (if it has not been pruned)
