@@ -61,7 +61,7 @@ func (suite *KeeperTestSuite) TestHappyPathSubmitBidAndFulfillFully() {
 	// ~Actually~ submit the bid now
 	response, err := auctionKeeper.SubmitBid(sdk.WrapSDKContext(ctx), &auctionTypes.MsgSubmitBidRequest{
 		AuctionId:              auctionID,
-		Bidder:                 bidder,
+		Signer:                 bidder,
 		MaxBidInUsomm:          bid,
 		SaleTokenMinimumAmount: minAmount,
 	})
@@ -125,7 +125,7 @@ func (suite *KeeperTestSuite) TestHappyPathSubmitBidAndFulfillFully() {
 	// Submit the partially fulfillable bid now
 	response, err = auctionKeeper.SubmitBid(sdk.WrapSDKContext(ctx), &auctionTypes.MsgSubmitBidRequest{
 		AuctionId:              auctionID,
-		Bidder:                 newBidder,
+		Signer:                 newBidder,
 		MaxBidInUsomm:          newBid,
 		SaleTokenMinimumAmount: minAmount,
 	})
@@ -204,7 +204,7 @@ func (suite *KeeperTestSuite) TestUnhappyPathsForSubmitBid() {
 			name: "Auction ID not found",
 			bid: auctionTypes.MsgSubmitBidRequest{
 				AuctionId:              uint32(420),
-				Bidder:                 cosmosAddress1,
+				Signer:                 cosmosAddress1,
 				MaxBidInUsomm:          sdk.NewCoin(auctionTypes.UsommDenom, sdk.NewInt(100)),
 				SaleTokenMinimumAmount: sdk.NewCoin(saleToken, sdk.NewInt(1)),
 			},
@@ -216,7 +216,7 @@ func (suite *KeeperTestSuite) TestUnhappyPathsForSubmitBid() {
 			name: "Denom mismatch",
 			bid: auctionTypes.MsgSubmitBidRequest{
 				AuctionId:              auctionID,
-				Bidder:                 cosmosAddress1,
+				Signer:                 cosmosAddress1,
 				MaxBidInUsomm:          sdk.NewCoin(auctionTypes.UsommDenom, sdk.NewInt(100)),
 				SaleTokenMinimumAmount: sdk.NewCoin("blemflarcks", sdk.NewInt(1)),
 			},
@@ -228,7 +228,7 @@ func (suite *KeeperTestSuite) TestUnhappyPathsForSubmitBid() {
 			name: "Minimum amount to purchase larger than bid can obtain",
 			bid: auctionTypes.MsgSubmitBidRequest{
 				AuctionId:              auctionID,
-				Bidder:                 cosmosAddress1,
+				Signer:                 cosmosAddress1,
 				MaxBidInUsomm:          sdk.NewCoin(auctionTypes.UsommDenom, sdk.NewInt(1)),
 				SaleTokenMinimumAmount: sdk.NewCoin(saleToken, sdk.NewInt(1)),
 			},
@@ -243,7 +243,7 @@ func (suite *KeeperTestSuite) TestUnhappyPathsForSubmitBid() {
 			name: "Minimum amount larger than remaining tokens in auction",
 			bid: auctionTypes.MsgSubmitBidRequest{
 				AuctionId:              auctionID,
-				Bidder:                 cosmosAddress1,
+				Signer:                 cosmosAddress1,
 				MaxBidInUsomm:          sdk.NewCoin(auctionTypes.UsommDenom, sdk.NewInt(40000)),
 				SaleTokenMinimumAmount: sdk.NewCoin(saleToken, sdk.NewInt(10002)),
 			},
@@ -258,7 +258,7 @@ func (suite *KeeperTestSuite) TestUnhappyPathsForSubmitBid() {
 			name: "Validate Basic canary 1 -- bid denom must be in usomm",
 			bid: auctionTypes.MsgSubmitBidRequest{
 				AuctionId:              auctionID,
-				Bidder:                 cosmosAddress1,
+				Signer:                 cosmosAddress1,
 				MaxBidInUsomm:          sdk.NewCoin("cinnamonRollCoin", sdk.NewInt(200)),
 				SaleTokenMinimumAmount: sdk.NewCoin(saleToken, sdk.NewInt(100)),
 			},
@@ -273,7 +273,7 @@ func (suite *KeeperTestSuite) TestUnhappyPathsForSubmitBid() {
 			name: "Validate Basic canary 2 -- minimum amount of sale tokens cannot be 0",
 			bid: auctionTypes.MsgSubmitBidRequest{
 				AuctionId:              auctionID,
-				Bidder:                 cosmosAddress1,
+				Signer:                 cosmosAddress1,
 				MaxBidInUsomm:          sdk.NewCoin(auctionTypes.UsommDenom, sdk.NewInt(200)),
 				SaleTokenMinimumAmount: sdk.NewCoin(saleToken, sdk.NewInt(0)),
 			},

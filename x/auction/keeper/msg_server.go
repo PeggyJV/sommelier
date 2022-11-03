@@ -16,10 +16,7 @@ var _ types.MsgServer = Keeper{}
 func (k Keeper) SubmitBid(c context.Context, msg *types.MsgSubmitBidRequest) (*types.MsgSubmitBidResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
 
-	bidder, err := sdk.AccAddressFromBech32(msg.Bidder)
-	if err != nil {
-		return &types.MsgSubmitBidResponse{}, sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "Bidder: %s", msg.GetBidder())
-	}
+	signer := msg.MustGetSigner()
 
 	// Verify auction
 	auction, found := k.GetActiveAuctionByID(ctx, msg.GetAuctionId())
@@ -75,7 +72,7 @@ func (k Keeper) SubmitBid(c context.Context, msg *types.MsgSubmitBidRequest) (*t
 	bid := types.Bid{
 		Id:                        newBidID,
 		AuctionId:                 msg.GetAuctionId(),
-		Bidder:                    msg.GetBidder(),
+		Bidder:                    signer.String(),
 		MaxBidInUsomm:             msg.GetMaxBidInUsomm(),
 		SaleTokenMinimumAmount:    msg.GetSaleTokenMinimumAmount(),
 		TotalFulfilledSaleTokens:  totalFulfilledSaleTokens,
@@ -83,18 +80,18 @@ func (k Keeper) SubmitBid(c context.Context, msg *types.MsgSubmitBidRequest) (*t
 		TotalUsommPaid:            totalUsommPaid,
 	}
 
-	err = bid.ValidateBasic()
+	err := bid.ValidateBasic()
 	if err != nil {
 		return &types.MsgSubmitBidResponse{}, err
 	}
 
 	// Transfer payment first
-	if err := k.bankKeeper.SendCoinsFromAccountToModule(ctx, bidder, types.ModuleName, sdk.NewCoins(totalUsommPaid)); err != nil {
+	if err := k.bankKeeper.SendCoinsFromAccountToModule(ctx, signer, types.ModuleName, sdk.NewCoins(totalUsommPaid)); err != nil {
 		return &types.MsgSubmitBidResponse{}, err
 	}
 
 	// Transfer purchase to bidder
-	if err := k.bankKeeper.SendCoinsFromModuleToAccount(ctx, types.ModuleName, bidder, sdk.NewCoins(totalFulfilledSaleTokens)); err != nil {
+	if err := k.bankKeeper.SendCoinsFromModuleToAccount(ctx, types.ModuleName, signer, sdk.NewCoins(totalFulfilledSaleTokens)); err != nil {
 		// TODO(pbal): Audit if we should panic here
 		return &types.MsgSubmitBidResponse{}, err
 	}
@@ -128,7 +125,7 @@ func (k Keeper) SubmitBid(c context.Context, msg *types.MsgSubmitBidRequest) (*t
 			types.EventTypeBid,
 			sdk.NewAttribute(types.AttributeKeyAuctionID, fmt.Sprint(msg.GetAuctionId())),
 			sdk.NewAttribute(types.AttributeKeyBidID, fmt.Sprint(newBidID)),
-			sdk.NewAttribute(types.AttributeKeyBidder, msg.GetBidder()),
+			sdk.NewAttribute(types.AttributeKeyBidder, signer.String()),
 			sdk.NewAttribute(types.AttributeKeyMinimumAmount, msg.GetSaleTokenMinimumAmount().String()),
 			sdk.NewAttribute(types.AttributeKeyFulfilledPrice, auction.CurrentUnitPriceInUsomm.String()),
 			sdk.NewAttribute(types.AttributeKeyTotalPayment, totalUsommPaid.String()),
