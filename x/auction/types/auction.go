@@ -19,10 +19,6 @@ func (a *Auction) ValidateBasic() error {
 		return sdkerrors.Wrapf(ErrAuctionStartingAmountMustBePositve, "Starting tokens for sale: %s", a.StartingTokensForSale.String())
 	}
 
-	if a.StartingTokensForSale.Denom == "" {
-		return sdkerrors.Wrapf(ErrAuctionDenomInvalid, "Starting denom tokens for sale: %s", a.StartingTokensForSale.String())
-	}
-
 	if a.StartingTokensForSale.Denom == UsommDenom {
 		return sdkerrors.Wrapf(ErrCannotAuctionUsomm, "Starting denom tokens for sale: %s", UsommDenom)
 	}
@@ -40,7 +36,7 @@ func (a *Auction) ValidateBasic() error {
 	}
 
 	if a.PriceDecreaseBlockInterval == 0 {
-		return sdkerrors.Wrapf(ErrInvalidBlockDecreaeInterval, "price decrease block interval: %d", a.PriceDecreaseBlockInterval)
+		return sdkerrors.Wrapf(ErrInvalidBlockDecreaseInterval, "price decrease block interval: %d", a.PriceDecreaseBlockInterval)
 	}
 
 	if !a.InitialUnitPriceInUsomm.IsPositive() {
@@ -49,10 +45,6 @@ func (a *Auction) ValidateBasic() error {
 
 	if !a.CurrentUnitPriceInUsomm.IsPositive() {
 		return sdkerrors.Wrapf(ErrPriceMustBePositive, "current unit price in usomm: %s", a.CurrentUnitPriceInUsomm.String())
-	}
-
-	if a.RemainingTokensForSale.Denom == "" {
-		return sdkerrors.Wrapf(ErrDenomCannotBeEmpty, "token for sale remaining: %s", a.RemainingTokensForSale.String())
 	}
 
 	if a.FundingModuleAccount == "" {
@@ -84,7 +76,7 @@ func (b *Bid) ValidateBasic() error {
 	}
 
 	if !b.MaxBidInUsomm.IsPositive() {
-		return sdkerrors.Wrapf(ErrBidIDAmountMustBePositive, "bid amount in usomm: %s", b.MaxBidInUsomm.String())
+		return sdkerrors.Wrapf(ErrBidAmountMustBePositive, "bid amount in usomm: %s", b.MaxBidInUsomm.String())
 	}
 
 	if b.MaxBidInUsomm.Denom != UsommDenom {
@@ -92,7 +84,7 @@ func (b *Bid) ValidateBasic() error {
 	}
 
 	if !strings.HasPrefix(b.SaleTokenMinimumAmount.Denom, gravitytypes.GravityDenomPrefix) {
-		return sdkerrors.Wrapf(ErrInvalidTokenBeingBidOn, "sale token: %s", b.SaleTokenMinimumAmount)
+		return sdkerrors.Wrapf(ErrInvalidTokenBeingBidOn, "sale token: %s", b.SaleTokenMinimumAmount.String())
 	}
 
 	if !b.SaleTokenMinimumAmount.IsPositive() {
@@ -131,6 +123,10 @@ func (t *TokenPrice) ValidateBasic() error {
 		return sdkerrors.Wrapf(ErrInvalidLastUpdatedBlock, "block: %d", t.LastUpdatedBlock)
 	}
 
+	if !strings.HasPrefix(t.Denom, gravitytypes.GravityDenomPrefix) && t.Denom != UsommDenom {
+		return sdkerrors.Wrapf(ErrInvalidTokenPriceDenom, "denom: %s", t.Denom)
+	}
+
 	return nil
 }
 
@@ -141,6 +137,10 @@ func (t *ProposedTokenPrice) ValidateBasic() error {
 
 	if !t.UsdPrice.IsPositive() {
 		return sdkerrors.Wrapf(ErrPriceMustBePositive, "usd price: %s", t.UsdPrice.String())
+	}
+
+	if !strings.HasPrefix(t.Denom, gravitytypes.GravityDenomPrefix) && t.Denom != UsommDenom {
+		return sdkerrors.Wrapf(ErrInvalidTokenPriceDenom, "denom: %s", t.Denom)
 	}
 
 	return nil

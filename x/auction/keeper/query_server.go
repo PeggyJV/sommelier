@@ -53,10 +53,6 @@ func (k Keeper) QueryActiveAuctions(c context.Context, _ *types.QueryActiveAucti
 
 	auctions := k.GetActiveAuctions(ctx)
 
-	if len(auctions) == 0 {
-		return &types.QueryActiveAuctionsResponse{}, status.Error(codes.NotFound, "No active auctions found")
-	}
-
 	return &types.QueryActiveAuctionsResponse{Auctions: auctions}, nil
 }
 
