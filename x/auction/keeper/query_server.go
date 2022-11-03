@@ -12,8 +12,6 @@ import (
 
 var _ types.QueryServer = Keeper{}
 
-const defaultPageSize = 100
-
 // QueryParams implements QueryServer
 func (k Keeper) QueryParams(c context.Context, _ *types.QueryParamsRequest) (*types.QueryParamsResponse, error) {
 	return &types.QueryParamsResponse{
