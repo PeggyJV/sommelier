@@ -21,6 +21,7 @@ type Keeper struct {
 	cdc                    codec.BinaryCodec
 	paramSpace             paramtypes.Subspace
 	bankKeeper             types.BankKeeper
+	accountKeeper          types.AccountKeeper
 	fundingModuleAccounts  map[string]bool
 	proceedsModuleAccounts map[string]bool
 }
@@ -28,7 +29,7 @@ type Keeper struct {
 // NewKeeper creates a new auction Keeper instance
 func NewKeeper(
 	cdc codec.BinaryCodec, key sdk.StoreKey, paramSpace paramtypes.Subspace,
-	bankKeeper types.BankKeeper, fundingModuleAccounts map[string]bool, proceedsModuleAccounts map[string]bool,
+	bankKeeper types.BankKeeper, accountKeeper types.AccountKeeper, fundingModuleAccounts map[string]bool, proceedsModuleAccounts map[string]bool,
 ) Keeper {
 	// set KeyTable if it has not already been set
 	if !paramSpace.HasKeyTable() {
@@ -40,6 +41,7 @@ func NewKeeper(
 		cdc:                    cdc,
 		paramSpace:             paramSpace,
 		bankKeeper:             bankKeeper,
+		accountKeeper:          accountKeeper,
 		fundingModuleAccounts:  fundingModuleAccounts,
 		proceedsModuleAccounts: proceedsModuleAccounts,
 	}
@@ -264,6 +266,7 @@ func (k Keeper) tokenPriceTooOld(ctx sdk.Context, tokenPrice *types.TokenPrice) 
 func (k Keeper) FinishAuction(ctx sdk.Context, auction *types.Auction) error {
 	// Figure out how many funds we have left over, if any, to send
 	// Since we can only have 1 auction per denom active at a time, we can just query the balance
+
 	saleTokenBalance := k.bankKeeper.GetBalance(ctx, authtypes.NewModuleAddress(types.ModuleName), auction.StartingTokensForSale.Denom)
 
 	if saleTokenBalance.Amount.IsPositive() {
@@ -496,4 +499,13 @@ func (k Keeper) GetLastBidID(ctx sdk.Context) uint64 {
 	}
 
 	return binary.BigEndian.Uint64(bz)
+}
+
+// ///////////////////
+// Module Accounts //
+// ///////////////////
+
+// Get the auction module account
+func (k Keeper) GetAuctionAccount(ctx sdk.Context) authtypes.ModuleAccountI {
+	return k.accountKeeper.GetModuleAccount(ctx, types.ModuleName)
 }

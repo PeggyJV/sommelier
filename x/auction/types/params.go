@@ -1,8 +1,7 @@
 package types
 
 import (
-	"fmt"
-
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
 )
 
@@ -43,13 +42,11 @@ func (p *Params) ValidateBasic() error {
 func validatePriceMaxBlockAge(i interface{}) error {
 	priceMaxBlockAge, ok := i.(uint64)
 	if !ok {
-		return fmt.Errorf("invalid price max block age parameter type: %T", i)
+		return sdkerrors.Wrapf(ErrInvalidPriceMaxBlockAgeParameterType, "type: %T", i)
 	}
 
 	if priceMaxBlockAge == 0 {
-		return fmt.Errorf(
-			"price max block age must be non-zero",
-		)
+		return sdkerrors.Wrapf(ErrTokenPriceMaxBlockAgeMustBePositive, "value: %d", priceMaxBlockAge)
 	}
 
 	return nil

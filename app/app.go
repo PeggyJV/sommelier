@@ -364,7 +364,7 @@ func NewSommelierApp(
 
 	app.AuctionKeeper = auctionkeeper.NewKeeper(
 		appCodec, keys[auctiontypes.StoreKey], app.GetSubspace(auctiontypes.ModuleName),
-		app.BankKeeper, map[string]bool{cellarfeestypes.ModuleName: true},
+		app.BankKeeper, app.AccountKeeper, map[string]bool{cellarfeestypes.ModuleName: true},
 		map[string]bool{cellarfeestypes.ModuleName: true},
 	)
 
@@ -445,7 +445,7 @@ func NewSommelierApp(
 		authzmodule.NewAppModule(appCodec, app.AuthzKeeper, app.AccountKeeper, app.BankKeeper, app.interfaceRegistry),
 		cork.NewAppModule(app.CorkKeeper, appCodec),
 		cellarfees.NewAppModule(app.CellarFeesKeeper, appCodec, app.AccountKeeper, app.BankKeeper),
-		auction.NewAppModule(app.AuctionKeeper, app.BankKeeper, appCodec),
+		auction.NewAppModule(app.AuctionKeeper, app.BankKeeper, app.AccountKeeper, appCodec),
 	)
 
 	// During begin block slashing happens after distr.BeginBlocker so that
@@ -506,7 +506,7 @@ func NewSommelierApp(
 		authzmodule.NewAppModule(appCodec, app.AuthzKeeper, app.AccountKeeper, app.BankKeeper, app.interfaceRegistry),
 		cork.NewAppModule(app.CorkKeeper, appCodec),
 		cellarfees.NewAppModule(app.CellarFeesKeeper, appCodec, app.AccountKeeper, app.BankKeeper),
-		auction.NewAppModule(app.AuctionKeeper, app.BankKeeper, appCodec),
+		auction.NewAppModule(app.AuctionKeeper, app.BankKeeper, app.AccountKeeper, appCodec),
 	)
 
 	app.sm.RegisterStoreDecoders()

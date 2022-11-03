@@ -1,7 +1,6 @@
 package types
 
 import (
-	"fmt"
 	"strings"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -26,7 +25,6 @@ func NewMsgSubmitBidRequest(auctionID uint32, maxBidInUsomm sdk.Coin, saleTokenM
 		AuctionId:              auctionID,
 		MaxBidInUsomm:          maxBidInUsomm,
 		SaleTokenMinimumAmount: saleTokenMinimumAmount,
-		Bidder:                 signer.String(),
 		Signer:                 signer.String(),
 	}, nil
 }
@@ -40,31 +38,27 @@ func (m *MsgSubmitBidRequest) Type() string { return TypeMsgSubmitBidRequest }
 // ValidateBasic implements sdk.Msg
 func (m *MsgSubmitBidRequest) ValidateBasic() error {
 	if m.AuctionId == 0 {
-		return fmt.Errorf("auction IDs must be non-zero")
+		return sdkerrors.Wrapf(ErrAuctionIDMustBeNonZero, "id: %d", m.AuctionId)
 	}
 
-	if m.MaxBidInUsomm.Denom != "usomm" {
-		return fmt.Errorf("max bids must be in usomm")
+	if m.MaxBidInUsomm.Denom != UsommDenom {
+		return sdkerrors.Wrapf(ErrBidMustBeInUsomm, "bid: %s", m.MaxBidInUsomm.String())
 	}
 
 	if !m.MaxBidInUsomm.IsPositive() {
-		return fmt.Errorf("bids must be a positive amount of usomm")
+		return sdkerrors.Wrapf(ErrBidAmountMustBePositive, "bid amount in usomm: %s", m.MaxBidInUsomm.String())
 	}
 
 	if !strings.HasPrefix(m.SaleTokenMinimumAmount.Denom, "gravity0x") {
-		return fmt.Errorf("bids may only be placed for gravity tokens")
+		return sdkerrors.Wrapf(ErrInvalidTokenBeingBidOn, "sale token: %s", m.SaleTokenMinimumAmount.String())
 	}
 
 	if !m.SaleTokenMinimumAmount.IsPositive() {
-		return fmt.Errorf("minimum amount must be a positive amount of auctioned coins")
+		return sdkerrors.Wrapf(ErrMinimumAmountMustBePositive, "sale token amount: %s", m.SaleTokenMinimumAmount.String())
 	}
 
-	if _, err := sdk.AccAddressFromBech32(m.Bidder); err != nil {
+	if _, err := sdk.AccAddressFromBech32(m.Signer); err != nil {
 		return sdkerrors.Wrap(sdkerrors.ErrInvalidAddress, err.Error())
-	}
-
-	if m.Signer != m.Bidder {
-		return sdkerrors.Wrapf(ErrSignerDifferentFromBidder, "signer: %s, bidder: %s", m.Signer, m.Bidder)
 	}
 
 	return nil
@@ -80,7 +74,7 @@ func (m *MsgSubmitBidRequest) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{m.MustGetSigner()}
 }
 
-// MustGetSigner returns the signer address
+// MustGetSigner returns the signer address (which is also the bidder)
 func (m *MsgSubmitBidRequest) MustGetSigner() sdk.AccAddress {
 	addr, err := sdk.AccAddressFromBech32(m.Signer)
 	if err != nil {
