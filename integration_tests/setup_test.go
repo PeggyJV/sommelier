@@ -338,7 +338,7 @@ func (s *IntegrationTestSuite) initGenesis() {
 	auctionGenState.Auctions = append(auctionGenState.Auctions, &auctiontypes.Auction{
 		Id:                         uint32(1),
 		StartingTokensForSale:      sdk.NewCoin("gravity0x3506424f91fd33084466f402d5d97f05f8e3b4af", sdk.NewInt(5000)),
-		StartBlock:                 uint64(0),
+		StartBlock:                 uint64(1),
 		EndBlock:                   uint64(0),
 		InitialPriceDecreaseRate:   sdk.MustNewDecFromStr("0.05"),
 		CurrentPriceDecreaseRate:   sdk.MustNewDecFromStr("0.05"),

@@ -75,11 +75,20 @@ func (s *IntegrationTestSuite) TestAuctionModule() {
 
 		s.T().Log("Check proposal was submitted correctly")
 		govQueryClient := govtypes.NewQueryClient(orchClientCtx)
-		proposalsQueryResponse, err := govQueryClient.Proposals(context.Background(), &govtypes.QueryProposalsRequest{})
-		s.Require().NoError(err)
-		s.Require().NotEmpty(proposalsQueryResponse.Proposals)
-		s.Require().Equal(uint64(1), proposalsQueryResponse.Proposals[0].ProposalId, "not proposal id 1")
-		s.Require().Equal(govtypes.StatusVotingPeriod, proposalsQueryResponse.Proposals[0].Status, "proposal not in voting period")
+
+		s.Require().Eventually(func() bool {
+			proposalsQueryResponse, err := govQueryClient.Proposals(context.Background(), &govtypes.QueryProposalsRequest{})
+			if err != nil {
+				s.T().Logf("error querying proposals: %e", err)
+				return false
+			}
+
+			s.Require().NotEmpty(proposalsQueryResponse.Proposals)
+			s.Require().Equal(uint64(1), proposalsQueryResponse.Proposals[0].ProposalId, "not proposal id 1")
+			s.Require().Equal(govtypes.StatusVotingPeriod, proposalsQueryResponse.Proposals[0].Status, "proposal not in voting period")
+
+			return true
+		}, time.Second*30, time.Second*5, "proposal submission was never found")
 
 		s.T().Log("Vote for proposal")
 		for _, val := range s.chain.validators {
@@ -132,7 +141,7 @@ func (s *IntegrationTestSuite) TestAuctionModule() {
 		expectedAuction := types.Auction{
 			Id:                         uint32(1),
 			StartingTokensForSale:      sdk.NewCoin("gravity0x3506424f91fd33084466f402d5d97f05f8e3b4af", sdk.NewInt(5000)),
-			StartBlock:                 uint64(0),
+			StartBlock:                 uint64(1),
 			EndBlock:                   uint64(0),
 			InitialPriceDecreaseRate:   sdk.MustNewDecFromStr("0.05"),
 			CurrentPriceDecreaseRate:   sdk.MustNewDecFromStr("0.05"),
@@ -239,7 +248,7 @@ func (s *IntegrationTestSuite) TestAuctionModule() {
 		expectedEndedAuction := types.Auction{
 			Id:                         uint32(1),
 			StartingTokensForSale:      sdk.NewCoin("gravity0x3506424f91fd33084466f402d5d97f05f8e3b4af", sdk.NewInt(5000)),
-			StartBlock:                 uint64(0),
+			StartBlock:                 uint64(1),
 			EndBlock:                   uint64(currentBlockHeight),
 			InitialPriceDecreaseRate:   sdk.MustNewDecFromStr("0.05"),
 			CurrentPriceDecreaseRate:   sdk.MustNewDecFromStr("0.05"),
