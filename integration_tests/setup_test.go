@@ -286,7 +286,7 @@ func (s *IntegrationTestSuite) initGenesis() {
 	// Set up auction module with some coins to auction off
 	balance := banktypes.Balance{
 		Address: authtypes.NewModuleAddress(auctiontypes.ModuleName).String(),
-		Coins:   sdk.NewCoins(sdk.NewCoin("gravity0x3506424f91fd33084466f402d5d97f05f8e3b4af", sdk.NewInt(5000))),
+		Coins:   sdk.NewCoins(sdk.NewCoin("gravity0x3506424f91fd33084466f402d5d97f05f8e3b4af", sdk.NewInt(5000000000))),
 	}
 	bankGenState.Balances = append(bankGenState.Balances, balance)
 
@@ -337,7 +337,7 @@ func (s *IntegrationTestSuite) initGenesis() {
 
 	auctionGenState.Auctions = append(auctionGenState.Auctions, &auctiontypes.Auction{
 		Id:                         uint32(1),
-		StartingTokensForSale:      sdk.NewCoin("gravity0x3506424f91fd33084466f402d5d97f05f8e3b4af", sdk.NewInt(5000)),
+		StartingTokensForSale:      sdk.NewCoin("gravity0x3506424f91fd33084466f402d5d97f05f8e3b4af", sdk.NewInt(5000000000)),
 		StartBlock:                 uint64(1),
 		EndBlock:                   uint64(0),
 		InitialPriceDecreaseRate:   sdk.MustNewDecFromStr("0.05"),
@@ -345,7 +345,7 @@ func (s *IntegrationTestSuite) initGenesis() {
 		PriceDecreaseBlockInterval: uint64(1000),
 		InitialUnitPriceInUsomm:    sdk.MustNewDecFromStr("2"),
 		CurrentUnitPriceInUsomm:    sdk.MustNewDecFromStr("2"),
-		RemainingTokensForSale:     sdk.NewCoin("gravity0x3506424f91fd33084466f402d5d97f05f8e3b4af", sdk.NewInt(5000)),
+		RemainingTokensForSale:     sdk.NewCoin("gravity0x3506424f91fd33084466f402d5d97f05f8e3b4af", sdk.NewInt(5000000000)),
 		FundingModuleAccount:       cellarfees.ModuleName,
 		ProceedsModuleAccount:      cellarfees.ModuleName,
 	})

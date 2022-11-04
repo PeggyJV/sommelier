@@ -48,6 +48,7 @@ message Bid {
   cosmos.base.v1beta1.Coin total_usomm_paid = 8 [
     (gogoproto.nullable) = false
   ];
+  uint64 block_height = 9;
 }
 
 message TokenPrice {

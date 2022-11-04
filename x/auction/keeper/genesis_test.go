@@ -16,7 +16,7 @@ func (suite *KeeperTestSuite) TestImportingEmptyGenesis() {
 	// Canary to make sure validate basic is being run
 	require.Panics(func() { InitGenesis(ctx, auctionKeeper, testGenesis) })
 
-	testGenesis.Params.PriceMaxBlockAge = uint64(10)
+	testGenesis.Params = auctionTypes.DefaultParams()
 	require.NotPanics(func() {
 		suite.mockGetModuleAccount(ctx)
 		InitGenesis(ctx, auctionKeeper, testGenesis)
