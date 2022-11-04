@@ -44,17 +44,6 @@ func TestParamsValidate(t *testing.T) {
 			err:     sdkerrors.Wrapf(ErrTokenPriceMaxBlockAgeMustBePositive, "value: 0"),
 		},
 		{
-			name: "Auction max block age",
-			params: Params{
-				PriceMaxBlockAge:                     uint64(1000),
-				MinimumBidInUsomm:                    uint64(500),
-				AuctionMaxBlockAge:                   uint64(0),
-				AuctionPriceDecreaseAccelerationRate: sdk.MustNewDecFromStr("0.1"),
-			},
-			expPass: false,
-			err:     sdkerrors.Wrapf(ErrInvalidAuctionMaxBlockAgeParam, "blocks to not prune must be non-zero"),
-		},
-		{
 			name: "Auction price decrease acceleration rate bounds check lower end",
 			params: Params{
 				PriceMaxBlockAge:                     uint64(1000),

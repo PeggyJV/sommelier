@@ -66,26 +66,30 @@ func (k Keeper) EndBlocker(ctx sdk.Context) {
 	}
 
 	//  Prune bids and auctions -- keep last inactive auction per denom (+ bids) at minimum -- PLUS auctions still in the param freshness window
-	denomsFound := make(map[string]bool)
 	auctionMaxBlockAge := k.GetParamSet(ctx).AuctionMaxBlockAge
 
-	// Iterate in reverse to guarantee we keep at least the most recent denom auction
-	endedAuctions := k.GetEndedAuctions(ctx)
-	for i := 0; i < len(endedAuctions); i++ {
-		auction := endedAuctions[len(endedAuctions)-1-i]
-		denom := auction.StartingTokensForSale.Denom
+	// Don't prune if 0
+	if auctionMaxBlockAge != 0 {
+		denomsFound := make(map[string]bool)
+		endedAuctions := k.GetEndedAuctions(ctx)
 
-		// Check if denom already exists, if so and is prune-able delete both it and it's bids
-		if _, ok := denomsFound[denom]; ok && auction.EndBlock < uint64(ctx.BlockHeight())-auctionMaxBlockAge {
-			bids := k.GetBidsByAuctionID(ctx, auction.GetId())
+		for i := 0; i < len(endedAuctions); i++ {
+			// Iterate in reverse to guarantee we keep at least the most recent denom auction
+			auction := endedAuctions[len(endedAuctions)-1-i]
+			denom := auction.StartingTokensForSale.Denom
 
-			for _, bid := range bids {
-				k.deleteBid(ctx, auction.GetId(), bid.GetId())
+			// Check if denom already exists, if so and is prune-able delete both it and it's bids
+			if _, ok := denomsFound[denom]; ok && auction.EndBlock < uint64(ctx.BlockHeight())-auctionMaxBlockAge {
+				bids := k.GetBidsByAuctionID(ctx, auction.GetId())
+
+				for _, bid := range bids {
+					k.deleteBid(ctx, auction.GetId(), bid.GetId())
+				}
+
+				k.deleteEndedAuction(ctx, auction.GetId())
+			} else { // If it doesnt exist/is fresh enough note and skip deletion (since we're iterating in reverse this includes at least the most recent auction for a denom)
+				denomsFound[denom] = true
 			}
-
-			k.deleteEndedAuction(ctx, auction.GetId())
-		} else { // If it doesnt exist/is fresh enough note and skip deletion (since we're iterating in reverse this includes at least the most recent auction for a denom)
-			denomsFound[denom] = true
 		}
 	}
 }

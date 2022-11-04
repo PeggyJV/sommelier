@@ -85,13 +85,9 @@ func validateMinimumBidInUsomm(i interface{}) error {
 }
 
 func validateAuctionMaxBlockAge(i interface{}) error {
-	auctionMaxBlockAge, ok := i.(uint64)
+	_, ok := i.(uint64)
 	if !ok {
 		return sdkerrors.Wrapf(ErrInvalidAuctionMaxBlockAgeParam, "invalid auction max block age parameter type: %T", i)
-	}
-
-	if auctionMaxBlockAge == 0 {
-		return sdkerrors.Wrapf(ErrInvalidAuctionMaxBlockAgeParam, "blocks to not prune must be non-zero")
 	}
 
 	return nil
