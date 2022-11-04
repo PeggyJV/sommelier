@@ -18,8 +18,6 @@ func (k Keeper) InitGenesis(ctx sdk.Context, gs types.GenesisState) {
 	if feesAccount == nil {
 		panic(fmt.Sprintf("%s module account has not been set", types.ModuleName))
 	}
-
-	k.accountKeeper.SetModuleAccount(ctx, feesAccount)
 }
 
 // ExportGenesis returns the module's exported genesis.

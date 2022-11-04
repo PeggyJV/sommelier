@@ -15,9 +15,23 @@ func (k Keeper) EndBlocker(ctx sdk.Context) {
 	// Auction price updates
 	for _, auction := range k.GetActiveAuctions(ctx) {
 		if ctx.BlockHeight() != int64(auction.StartBlock) && ((ctx.BlockHeight()-int64(auction.StartBlock))%int64(auction.PriceDecreaseBlockInterval)) == 0 {
-			// TODO post MVP (pbal) Make a more intricate & responsive step function for auction price updates
+			decreaseAccelerationFactor := k.GetParamSet(ctx).AuctionPriceDecreaseAccelerationRate
+			// Constant decrease rate if acceleration factor is 0
+			// Otherwise decrease rate with acceleration factor that accelerates the decrease amount until a bid is seen
 
-			// Simple constant decrease rate meant for MVP
+			// Cycle through bids first to see if one was found in the last decrease interval
+			bids := k.GetBidsByAuctionID(ctx, auction.Id)
+
+			// Only look at the most recent bid, with the highest ID we can see if we had any bids in the last block decrease period or not
+			totalBids := len(bids)
+
+			// Reset decrease rate if we've seen at least 1 bid in the last interval
+			if totalBids > 0 && bids[totalBids-1].BlockHeight >= uint64(ctx.BlockHeight())-auction.PriceDecreaseBlockInterval {
+				auction.CurrentPriceDecreaseRate = auction.InitialPriceDecreaseRate
+			} else { // Otherwise add in the acceleration factor
+				auction.CurrentPriceDecreaseRate = auction.CurrentPriceDecreaseRate.Mul(sdk.MustNewDecFromStr("1.0").Add(decreaseAccelerationFactor))
+			}
+
 			priceDecreaseAmountInUsomm := auction.InitialUnitPriceInUsomm.Mul(auction.CurrentPriceDecreaseRate)
 			newUnitPriceInUsomm := auction.CurrentUnitPriceInUsomm.Sub(priceDecreaseAmountInUsomm)
 
@@ -50,5 +64,32 @@ func (k Keeper) EndBlocker(ctx sdk.Context) {
 			}
 		}
 	}
-	// TODO post MVP (pbal): prune bids and auctions
+
+	//  Prune bids and auctions -- keep last inactive auction per denom (+ bids) at minimum -- PLUS auctions still in the param freshness window
+	auctionMaxBlockAge := k.GetParamSet(ctx).AuctionMaxBlockAge
+
+	// Don't prune if 0
+	if auctionMaxBlockAge != 0 {
+		denomsFound := make(map[string]bool)
+		endedAuctions := k.GetEndedAuctions(ctx)
+
+		for i := 0; i < len(endedAuctions); i++ {
+			// Iterate in reverse to guarantee we keep at least the most recent denom auction
+			auction := endedAuctions[len(endedAuctions)-1-i]
+			denom := auction.StartingTokensForSale.Denom
+
+			// Check if denom already exists, if so and is prune-able delete both it and it's bids
+			if _, ok := denomsFound[denom]; ok && auction.EndBlock < uint64(ctx.BlockHeight())-auctionMaxBlockAge {
+				bids := k.GetBidsByAuctionID(ctx, auction.GetId())
+
+				for _, bid := range bids {
+					k.deleteBid(ctx, auction.GetId(), bid.GetId())
+				}
+
+				k.deleteEndedAuction(ctx, auction.GetId())
+			} else { // If it doesnt exist/is fresh enough note and skip deletion (since we're iterating in reverse this includes at least the most recent auction for a denom)
+				denomsFound[denom] = true
+			}
+		}
+	}
 }
