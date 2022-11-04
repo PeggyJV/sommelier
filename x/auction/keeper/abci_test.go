@@ -11,15 +11,15 @@ func (suite *KeeperTestSuite) TestAbci() {
 	ctx, auctionKeeper := suite.ctx, suite.auctionKeeper
 	require := suite.Require()
 
+	params := auctionTypes.DefaultParams()
+	auctionKeeper.setParams(ctx, params)
+
 	// Test base case of no auctions
 	// Note BeginBlocker is only run once for completeness, since it has no code in it
 	require.NotPanics(func() { auctionKeeper.BeginBlocker(ctx) })
 	require.NotPanics(func() { auctionKeeper.EndBlocker(ctx) })
 
 	// Create an auction
-	params := auctionTypes.Params{PriceMaxBlockAge: 10}
-	auctionKeeper.setParams(ctx, params)
-
 	sommPrice := auctionTypes.TokenPrice{Denom: auctionTypes.UsommDenom, UsdPrice: sdk.MustNewDecFromStr("0.01"), LastUpdatedBlock: 5}
 
 	/* #nosec */
@@ -80,7 +80,8 @@ func (suite *KeeperTestSuite) TestAbci() {
 
 	foundAuction, found = auctionKeeper.GetActiveAuctionByID(ctx, auctionID)
 	require.True(found)
-	expectedAuction.CurrentUnitPriceInUsomm = sdk.MustNewDecFromStr("0.6")
+	expectedAuction.CurrentUnitPriceInUsomm = sdk.MustNewDecFromStr("0.56")
+	expectedAuction.CurrentPriceDecreaseRate = sdk.MustNewDecFromStr("0.44")
 	require.Equal(expectedAuction, foundAuction)
 
 	// Run EndBlocker with block interval ~sufficient~ to induce decrease again
@@ -90,7 +91,8 @@ func (suite *KeeperTestSuite) TestAbci() {
 
 	foundAuction, found = auctionKeeper.GetActiveAuctionByID(ctx, auctionID)
 	require.True(found)
-	expectedAuction.CurrentUnitPriceInUsomm = sdk.MustNewDecFromStr("0.2")
+	expectedAuction.CurrentUnitPriceInUsomm = sdk.MustNewDecFromStr("0.076")
+	expectedAuction.CurrentPriceDecreaseRate = sdk.MustNewDecFromStr("0.484")
 	require.Equal(expectedAuction, foundAuction)
 
 	// Run EndBlocker with block interval ~sufficient~ to induce decrease to a ~negative~ price, and thus the auction must finish
@@ -113,5 +115,6 @@ func (suite *KeeperTestSuite) TestAbci() {
 	foundAuction, found = auctionKeeper.GetEndedAuctionByID(finalCtx, auctionID)
 	require.True(found)
 
+	expectedAuction.CurrentPriceDecreaseRate = sdk.MustNewDecFromStr("0.5324")
 	require.Equal(expectedAuction, foundAuction)
 }

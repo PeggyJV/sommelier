@@ -124,7 +124,7 @@ func (s *IntegrationTestSuite) TestAuctionModule() {
 		bidRequest1 := types.MsgSubmitBidRequest{
 			AuctionId:              uint32(1),
 			Signer:                 orch0Address,
-			MaxBidInUsomm:          sdk.NewCoin("usomm", sdk.NewIntFromUint64(5000)),
+			MaxBidInUsomm:          sdk.NewCoin("usomm", sdk.NewIntFromUint64(5000000000)),
 			SaleTokenMinimumAmount: sdk.NewCoin("gravity0x3506424f91fd33084466f402d5d97f05f8e3b4af", sdk.NewIntFromUint64(1)),
 		}
 
@@ -139,7 +139,7 @@ func (s *IntegrationTestSuite) TestAuctionModule() {
 		// Verify auction updated as expected
 		expectedAuction := types.Auction{
 			Id:                         uint32(1),
-			StartingTokensForSale:      sdk.NewCoin("gravity0x3506424f91fd33084466f402d5d97f05f8e3b4af", sdk.NewInt(5000)),
+			StartingTokensForSale:      sdk.NewCoin("gravity0x3506424f91fd33084466f402d5d97f05f8e3b4af", sdk.NewInt(5000000000)),
 			StartBlock:                 uint64(1),
 			EndBlock:                   uint64(0),
 			InitialPriceDecreaseRate:   sdk.MustNewDecFromStr("0.05"),
@@ -147,7 +147,7 @@ func (s *IntegrationTestSuite) TestAuctionModule() {
 			PriceDecreaseBlockInterval: uint64(1000),
 			InitialUnitPriceInUsomm:    sdk.MustNewDecFromStr("2"),
 			CurrentUnitPriceInUsomm:    sdk.MustNewDecFromStr("2"),
-			RemainingTokensForSale:     sdk.NewCoin("gravity0x3506424f91fd33084466f402d5d97f05f8e3b4af", sdk.NewInt(2500)),
+			RemainingTokensForSale:     sdk.NewCoin("gravity0x3506424f91fd33084466f402d5d97f05f8e3b4af", sdk.NewInt(2500000000)),
 			FundingModuleAccount:       cellarfees.ModuleName,
 			ProceedsModuleAccount:      cellarfees.ModuleName,
 		}
@@ -160,20 +160,27 @@ func (s *IntegrationTestSuite) TestAuctionModule() {
 		s.Require().NoError(err)
 		s.T().Logf("Orchestrator 0 token balances after first bid %v", balanceRes.Balances)
 
-		s.Require().Equal(sdk.NewCoin("gravity0x3506424f91fd33084466f402d5d97f05f8e3b4af", sdk.NewInt(2500)), balanceRes.Balances[0])
-		s.Require().Equal(sdk.NewCoin("usomm", initialOrchBalanceRes.Balances[1].Amount.Sub(sdk.NewInt(5000))), balanceRes.Balances[2])
+		s.Require().Equal(sdk.NewCoin("gravity0x3506424f91fd33084466f402d5d97f05f8e3b4af", sdk.NewInt(2500000000)), balanceRes.Balances[0])
+		s.Require().Equal(sdk.NewCoin("usomm", initialOrchBalanceRes.Balances[1].Amount.Sub(sdk.NewInt(5000000000))), balanceRes.Balances[2])
 		s.T().Log("User funds updated correctly!")
+
+		node, err := orchClientCtx.GetNode()
+		s.Require().NoError(err)
+		status, err := node.Status(context.Background())
+		s.Require().NoError(err)
+		currentBlockHeight := status.SyncInfo.LatestBlockHeight
 
 		// Verify bid is stored as expected
 		expectedBid1 := types.Bid{
 			Id:                        uint64(1),
 			AuctionId:                 uint32(1),
 			Bidder:                    orch0Address,
-			MaxBidInUsomm:             sdk.NewCoin("usomm", sdk.NewIntFromUint64(5000)),
+			MaxBidInUsomm:             sdk.NewCoin("usomm", sdk.NewIntFromUint64(5000000000)),
 			SaleTokenMinimumAmount:    sdk.NewCoin("gravity0x3506424f91fd33084466f402d5d97f05f8e3b4af", sdk.NewIntFromUint64(1)),
-			TotalFulfilledSaleTokens:  sdk.NewCoin("gravity0x3506424f91fd33084466f402d5d97f05f8e3b4af", sdk.NewIntFromUint64(2500)),
+			TotalFulfilledSaleTokens:  sdk.NewCoin("gravity0x3506424f91fd33084466f402d5d97f05f8e3b4af", sdk.NewIntFromUint64(2500000000)),
 			SaleTokenUnitPriceInUsomm: sdk.MustNewDecFromStr("2"),
-			TotalUsommPaid:            sdk.NewCoin("usomm", sdk.NewIntFromUint64(5000)),
+			TotalUsommPaid:            sdk.NewCoin("usomm", sdk.NewIntFromUint64(5000000000)),
+			BlockHeight:               uint64(currentBlockHeight),
 		}
 
 		s.T().Log("Verifying bid stored as expected.")
@@ -187,8 +194,8 @@ func (s *IntegrationTestSuite) TestAuctionModule() {
 		bidRequest2 := types.MsgSubmitBidRequest{
 			AuctionId:              uint32(1),
 			Signer:                 orch0Address,
-			MaxBidInUsomm:          sdk.NewCoin("usomm", sdk.NewIntFromUint64(10000)),
-			SaleTokenMinimumAmount: sdk.NewCoin("gravity0x3506424f91fd33084466f402d5d97f05f8e3b4af", sdk.NewIntFromUint64(50)),
+			MaxBidInUsomm:          sdk.NewCoin("usomm", sdk.NewIntFromUint64(10000000000)),
+			SaleTokenMinimumAmount: sdk.NewCoin("gravity0x3506424f91fd33084466f402d5d97f05f8e3b4af", sdk.NewIntFromUint64(50000000)),
 		}
 
 		_, err = s.chain.sendMsgs(*orchClientCtx, &bidRequest2)
@@ -196,16 +203,23 @@ func (s *IntegrationTestSuite) TestAuctionModule() {
 		s.T().Log("Bid submitted successfully!")
 
 		s.T().Log("Verifying expected bid stored correctly...")
+		node, err = orchClientCtx.GetNode()
+		s.Require().NoError(err)
+		status, err = node.Status(context.Background())
+		s.Require().NoError(err)
+		currentBlockHeight = status.SyncInfo.LatestBlockHeight
+
 		// Verify bid is stored as expected
 		expectedBid2 := types.Bid{
 			Id:                        uint64(2),
 			AuctionId:                 uint32(1),
 			Bidder:                    orch0Address,
-			MaxBidInUsomm:             sdk.NewCoin("usomm", sdk.NewIntFromUint64(10000)),
-			SaleTokenMinimumAmount:    sdk.NewCoin("gravity0x3506424f91fd33084466f402d5d97f05f8e3b4af", sdk.NewIntFromUint64(50)),
-			TotalFulfilledSaleTokens:  sdk.NewCoin("gravity0x3506424f91fd33084466f402d5d97f05f8e3b4af", sdk.NewIntFromUint64(2500)),
+			MaxBidInUsomm:             sdk.NewCoin("usomm", sdk.NewIntFromUint64(10000000000)),
+			SaleTokenMinimumAmount:    sdk.NewCoin("gravity0x3506424f91fd33084466f402d5d97f05f8e3b4af", sdk.NewIntFromUint64(50000000)),
+			TotalFulfilledSaleTokens:  sdk.NewCoin("gravity0x3506424f91fd33084466f402d5d97f05f8e3b4af", sdk.NewIntFromUint64(2500000000)),
 			SaleTokenUnitPriceInUsomm: sdk.MustNewDecFromStr("2"),
-			TotalUsommPaid:            sdk.NewCoin("usomm", sdk.NewIntFromUint64(5000)),
+			TotalUsommPaid:            sdk.NewCoin("usomm", sdk.NewIntFromUint64(5000000000)),
+			BlockHeight:               uint64(currentBlockHeight),
 		}
 
 		actualBid2, err := auctionQueryClient.QueryBid(context.Background(), &types.QueryBidRequest{BidId: uint64(2), AuctionId: uint32(1)})
@@ -237,15 +251,15 @@ func (s *IntegrationTestSuite) TestAuctionModule() {
 		endedAuctionResponse, err := auctionQueryClient.QueryEndedAuction(context.Background(), &types.QueryEndedAuctionRequest{AuctionId: uint32(1)})
 		s.Require().NoError(err)
 
-		node, err := orchClientCtx.GetNode()
+		node, err = orchClientCtx.GetNode()
 		s.Require().NoError(err)
-		status, err := node.Status(context.Background())
+		status, err = node.Status(context.Background())
 		s.Require().NoError(err)
-		currentBlockHeight := status.SyncInfo.LatestBlockHeight
+		currentBlockHeight = status.SyncInfo.LatestBlockHeight
 
 		expectedEndedAuction := types.Auction{
 			Id:                         uint32(1),
-			StartingTokensForSale:      sdk.NewCoin("gravity0x3506424f91fd33084466f402d5d97f05f8e3b4af", sdk.NewInt(5000)),
+			StartingTokensForSale:      sdk.NewCoin("gravity0x3506424f91fd33084466f402d5d97f05f8e3b4af", sdk.NewInt(5000000000)),
 			StartBlock:                 uint64(1),
 			EndBlock:                   uint64(currentBlockHeight),
 			InitialPriceDecreaseRate:   sdk.MustNewDecFromStr("0.05"),

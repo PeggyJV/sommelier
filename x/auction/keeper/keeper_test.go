@@ -105,7 +105,7 @@ func (suite *KeeperTestSuite) TestHappyPathBeginAuction() {
 	ctx, auctionKeeper := suite.ctx, suite.auctionKeeper
 	require := suite.Require()
 
-	params := auctionTypes.Params{PriceMaxBlockAge: 10}
+	params := auctionTypes.DefaultParams()
 	auctionKeeper.setParams(ctx, params)
 
 	sommPrice := auctionTypes.TokenPrice{Denom: auctionTypes.UsommDenom, UsdPrice: sdk.MustNewDecFromStr("0.01"), LastUpdatedBlock: 5}
@@ -156,7 +156,7 @@ func (suite *KeeperTestSuite) TestHappyPathFinishAuction() {
 	require := suite.Require()
 
 	// 1. --------> Create an auction first so we can finish it
-	params := auctionTypes.Params{PriceMaxBlockAge: 10}
+	params := auctionTypes.DefaultParams()
 	auctionKeeper.setParams(ctx, params)
 
 	sommPrice := auctionTypes.TokenPrice{Denom: auctionTypes.UsommDenom, UsdPrice: sdk.MustNewDecFromStr("0.02"), LastUpdatedBlock: 2}
@@ -253,7 +253,7 @@ func (suite *KeeperTestSuite) TestUnhappyPathsForBeginAuction() {
 	require := suite.Require()
 
 	// Define basic param(s)
-	params := auctionTypes.Params{PriceMaxBlockAge: 10}
+	params := auctionTypes.DefaultParams()
 	auctionKeeper.setParams(ctx, params)
 
 	// Setup some token prices

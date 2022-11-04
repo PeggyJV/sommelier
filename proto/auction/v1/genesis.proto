@@ -18,4 +18,10 @@ message GenesisState {
 
 message Params {
   uint64 price_max_block_age = 1;
+  uint64 minimum_bid_in_usomm = 2;
+  uint64 auction_max_block_age = 3;
+  string auction_price_decrease_acceleration_rate = 4 [
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+    (gogoproto.nullable) = false
+  ];
 }

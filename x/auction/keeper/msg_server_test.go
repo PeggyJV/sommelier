@@ -19,7 +19,7 @@ func (suite *KeeperTestSuite) TestHappyPathSubmitBidAndFulfillFully() {
 	require := suite.Require()
 
 	// -----> Create an auction we can bid on first
-	params := auctionTypes.Params{PriceMaxBlockAge: 10}
+	params := auctionTypes.DefaultParams()
 	auctionKeeper.setParams(ctx, params)
 
 	sommPrice := auctionTypes.TokenPrice{Denom: auctionTypes.UsommDenom, UsdPrice: sdk.MustNewDecFromStr("0.01"), LastUpdatedBlock: 5}
@@ -27,7 +27,7 @@ func (suite *KeeperTestSuite) TestHappyPathSubmitBidAndFulfillFully() {
 	/* #nosec */
 	saleToken := "gravity0xdac17f958d2ee523a2206206994597c13d831ec7"
 	saleTokenPrice := auctionTypes.TokenPrice{Denom: saleToken, UsdPrice: sdk.MustNewDecFromStr("0.02"), LastUpdatedBlock: 5}
-	auctionedSaleTokens := sdk.NewCoin(saleToken, sdk.NewInt(10000))
+	auctionedSaleTokens := sdk.NewCoin(saleToken, sdk.NewInt(10000000000))
 
 	auctionKeeper.setTokenPrice(ctx, sommPrice)
 	auctionKeeper.setTokenPrice(ctx, saleTokenPrice)
@@ -46,10 +46,10 @@ func (suite *KeeperTestSuite) TestHappyPathSubmitBidAndFulfillFully() {
 	bidder := cosmosAddress1
 	require.Nil(err)
 
-	bid := sdk.NewCoin(auctionTypes.UsommDenom, sdk.NewInt(5000))
+	bid := sdk.NewCoin(auctionTypes.UsommDenom, sdk.NewInt(5000000000))
 	minAmount := sdk.NewCoin(saleToken, sdk.NewInt(1))
 
-	fulfilledBid := sdk.NewCoin(saleToken, sdk.NewInt(2500))
+	fulfilledBid := sdk.NewCoin(saleToken, sdk.NewInt(2500000000))
 
 	// Mock out bank keeper calls
 	bidderAcc, _ := sdk.AccAddressFromBech32(bidder)
@@ -77,6 +77,7 @@ func (suite *KeeperTestSuite) TestHappyPathSubmitBidAndFulfillFully() {
 		TotalFulfilledSaleTokens:  fulfilledBid,
 		SaleTokenUnitPriceInUsomm: sdk.NewDec(2),
 		TotalUsommPaid:            bid,
+		BlockHeight:               uint64(ctx.BlockHeight()),
 	}
 	require.Equal(&expectedBid, response.Bid)
 
@@ -95,7 +96,7 @@ func (suite *KeeperTestSuite) TestHappyPathSubmitBidAndFulfillFully() {
 		PriceDecreaseBlockInterval: blockDecreaseInterval,
 		InitialUnitPriceInUsomm:    sdk.NewDec(2),
 		CurrentUnitPriceInUsomm:    sdk.NewDec(2),
-		RemainingTokensForSale:     sdk.NewCoin(saleToken, sdk.NewInt(7500)), // this is the important part, need to make sure it decremented
+		RemainingTokensForSale:     sdk.NewCoin(saleToken, sdk.NewInt(7500000000)), // this is the important part, need to make sure it decremented
 		FundingModuleAccount:       permissionedFunder.GetName(),
 		ProceedsModuleAccount:      permissionedReciever.GetName(),
 	}
@@ -106,9 +107,9 @@ func (suite *KeeperTestSuite) TestHappyPathSubmitBidAndFulfillFully() {
 
 	// Now check flow of a bid that can only be partially fulfilled, and verify it finishes the auction
 	newBidder := cosmosAddress2
-	newBid := sdk.NewCoin(auctionTypes.UsommDenom, sdk.NewInt(50000))
-	newFulfilledAmt := sdk.NewCoin(saleToken, sdk.NewInt(7500))
-	paidAmt := sdk.NewCoin(auctionTypes.UsommDenom, sdk.NewInt(15000))
+	newBid := sdk.NewCoin(auctionTypes.UsommDenom, sdk.NewInt(50000000000))
+	newFulfilledAmt := sdk.NewCoin(saleToken, sdk.NewInt(7500000000))
+	paidAmt := sdk.NewCoin(auctionTypes.UsommDenom, sdk.NewInt(15000000000))
 
 	// Mock out necessary bank keeper calls for bid completion
 	newBidderAcc, _ := sdk.AccAddressFromBech32(newBidder)
@@ -119,7 +120,7 @@ func (suite *KeeperTestSuite) TestHappyPathSubmitBidAndFulfillFully() {
 
 	// Mock out final keeper calls necessary to finish the auction due to bid draining the availible supply
 	suite.mockGetBalance(ctx, authtypes.NewModuleAddress(auctionTypes.ModuleName), saleToken, sdk.NewCoin(saleToken, sdk.NewInt(0)))
-	totalUsommExpected := sdk.NewCoin(auctionTypes.UsommDenom, sdk.NewInt(20000))
+	totalUsommExpected := sdk.NewCoin(auctionTypes.UsommDenom, sdk.NewInt(20000000000))
 	suite.mockSendCoinsFromModuleToModule(ctx, auctionTypes.ModuleName, permissionedReciever.GetName(), sdk.NewCoins(totalUsommExpected))
 
 	// Submit the partially fulfillable bid now
@@ -141,6 +142,7 @@ func (suite *KeeperTestSuite) TestHappyPathSubmitBidAndFulfillFully() {
 		TotalFulfilledSaleTokens:  newFulfilledAmt,
 		SaleTokenUnitPriceInUsomm: sdk.NewDec(2),
 		TotalUsommPaid:            paidAmt,
+		BlockHeight:               uint64(ctx.BlockHeight()),
 	}
 	require.Equal(&newExpectedBid, response.Bid)
 
@@ -166,7 +168,7 @@ func (suite *KeeperTestSuite) TestUnhappyPathsForSubmitBid() {
 	require := suite.Require()
 
 	// Create an active auction for bids to test against
-	params := auctionTypes.Params{PriceMaxBlockAge: 10}
+	params := auctionTypes.DefaultParams()
 	auctionKeeper.setParams(ctx, params)
 
 	sommPrice := auctionTypes.TokenPrice{Denom: auctionTypes.UsommDenom, UsdPrice: sdk.MustNewDecFromStr("0.01"), LastUpdatedBlock: 5}
@@ -174,7 +176,7 @@ func (suite *KeeperTestSuite) TestUnhappyPathsForSubmitBid() {
 	/* #nosec */
 	saleToken := "gravity0x853d955acef822db058eb8505911ed77f175b99e"
 	saleTokenPrice := auctionTypes.TokenPrice{Denom: saleToken, UsdPrice: sdk.MustNewDecFromStr("0.02"), LastUpdatedBlock: 5}
-	auctionedSaleTokens := sdk.NewCoin(saleToken, sdk.NewInt(10000))
+	auctionedSaleTokens := sdk.NewCoin(saleToken, sdk.NewInt(1000000))
 
 	auctionKeeper.setTokenPrice(ctx, sommPrice)
 	auctionKeeper.setTokenPrice(ctx, saleTokenPrice)
@@ -229,10 +231,25 @@ func (suite *KeeperTestSuite) TestUnhappyPathsForSubmitBid() {
 			bid: auctionTypes.MsgSubmitBidRequest{
 				AuctionId:              auctionID,
 				Signer:                 cosmosAddress1,
-				MaxBidInUsomm:          sdk.NewCoin(auctionTypes.UsommDenom, sdk.NewInt(1)),
+				MaxBidInUsomm:          sdk.NewCoin(auctionTypes.UsommDenom, sdk.NewInt(1000000)),
+				SaleTokenMinimumAmount: sdk.NewCoin(saleToken, sdk.NewInt(1000000)),
+			},
+			expectedError: sdkerrors.Wrapf(auctionTypes.ErrInsufficientBid, "minimum purchase price: 2000000, max bid: 1000000"),
+			runsBefore: func() {
+				suite.mockGetModuleAccount(ctx)
+				suite.mockGetBalance(ctx, authtypes.NewEmptyModuleAccount("mock").GetAddress(), saleToken, originalAuction.RemainingTokensForSale)
+			},
+			submitBidResponse: &auctionTypes.MsgSubmitBidResponse{},
+		},
+		{
+			name: "Minimum usomm bid unsatisfied",
+			bid: auctionTypes.MsgSubmitBidRequest{
+				AuctionId:              auctionID,
+				Signer:                 cosmosAddress1,
+				MaxBidInUsomm:          sdk.NewCoin(auctionTypes.UsommDenom, sdk.NewInt(2)),
 				SaleTokenMinimumAmount: sdk.NewCoin(saleToken, sdk.NewInt(1)),
 			},
-			expectedError: sdkerrors.Wrapf(auctionTypes.ErrInsufficientBid, "minimum purchase price: 2, max bid: 1"),
+			expectedError: sdkerrors.Wrapf(auctionTypes.ErrBidAmountIsTooSmall, "bid amount: 2, minimum amount in usomm: %s", fmt.Sprint(auctionTypes.DefaultParams().MinimumBidInUsomm)),
 			runsBefore: func() {
 				suite.mockGetModuleAccount(ctx)
 				suite.mockGetBalance(ctx, authtypes.NewEmptyModuleAccount("mock").GetAddress(), saleToken, originalAuction.RemainingTokensForSale)
@@ -244,10 +261,10 @@ func (suite *KeeperTestSuite) TestUnhappyPathsForSubmitBid() {
 			bid: auctionTypes.MsgSubmitBidRequest{
 				AuctionId:              auctionID,
 				Signer:                 cosmosAddress1,
-				MaxBidInUsomm:          sdk.NewCoin(auctionTypes.UsommDenom, sdk.NewInt(40000)),
-				SaleTokenMinimumAmount: sdk.NewCoin(saleToken, sdk.NewInt(10002)),
+				MaxBidInUsomm:          sdk.NewCoin(auctionTypes.UsommDenom, sdk.NewInt(4000000)),
+				SaleTokenMinimumAmount: sdk.NewCoin(saleToken, sdk.NewInt(1000002)),
 			},
-			expectedError: sdkerrors.Wrapf(auctionTypes.ErrMinimumPurchaseAmountLargerThanTokensRemaining, "Minimum purchase: %s, amount remaining: %s", sdk.NewInt(10002), originalAuction.RemainingTokensForSale.String()),
+			expectedError: sdkerrors.Wrapf(auctionTypes.ErrMinimumPurchaseAmountLargerThanTokensRemaining, "Minimum purchase: %s, amount remaining: %s", sdk.NewInt(1000002), originalAuction.RemainingTokensForSale.String()),
 			runsBefore: func() {
 				suite.mockGetModuleAccount(ctx)
 				suite.mockGetBalance(ctx, authtypes.NewEmptyModuleAccount("mock").GetAddress(), saleToken, originalAuction.RemainingTokensForSale)
@@ -259,10 +276,10 @@ func (suite *KeeperTestSuite) TestUnhappyPathsForSubmitBid() {
 			bid: auctionTypes.MsgSubmitBidRequest{
 				AuctionId:              auctionID,
 				Signer:                 cosmosAddress1,
-				MaxBidInUsomm:          sdk.NewCoin("cinnamonRollCoin", sdk.NewInt(200)),
-				SaleTokenMinimumAmount: sdk.NewCoin(saleToken, sdk.NewInt(100)),
+				MaxBidInUsomm:          sdk.NewCoin("cinnamonRollCoin", sdk.NewInt(2000000)),
+				SaleTokenMinimumAmount: sdk.NewCoin(saleToken, sdk.NewInt(1000000)),
 			},
-			expectedError: sdkerrors.Wrapf(auctionTypes.ErrBidMustBeInUsomm, "bid: %s", sdk.NewCoin("cinnamonRollCoin", sdk.NewInt(200)).String()),
+			expectedError: sdkerrors.Wrapf(auctionTypes.ErrBidMustBeInUsomm, "bid: %s", sdk.NewCoin("cinnamonRollCoin", sdk.NewInt(2000000)).String()),
 			runsBefore: func() {
 				suite.mockGetModuleAccount(ctx)
 				suite.mockGetBalance(ctx, authtypes.NewEmptyModuleAccount("mock").GetAddress(), saleToken, originalAuction.RemainingTokensForSale)
@@ -274,7 +291,7 @@ func (suite *KeeperTestSuite) TestUnhappyPathsForSubmitBid() {
 			bid: auctionTypes.MsgSubmitBidRequest{
 				AuctionId:              auctionID,
 				Signer:                 cosmosAddress1,
-				MaxBidInUsomm:          sdk.NewCoin(auctionTypes.UsommDenom, sdk.NewInt(200)),
+				MaxBidInUsomm:          sdk.NewCoin(auctionTypes.UsommDenom, sdk.NewInt(2000000)),
 				SaleTokenMinimumAmount: sdk.NewCoin(saleToken, sdk.NewInt(0)),
 			},
 			expectedError: sdkerrors.Wrapf(auctionTypes.ErrMinimumAmountMustBePositive, "sale token amount: %s", sdk.NewCoin(saleToken, sdk.NewInt(0)).String()),

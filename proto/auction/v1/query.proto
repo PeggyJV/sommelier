@@ -68,10 +68,13 @@ message QueryActiveAuctionsResponse {
   repeated Auction auctions = 1;
 }
 
-message QueryEndedAuctionsRequest {}
+message QueryEndedAuctionsRequest {
+  cosmos.base.query.v1beta1.PageRequest pagination = 1 [ (gogoproto.nullable) = false ];
+}
 
 message QueryEndedAuctionsResponse {
   repeated Auction auctions = 1;
+  cosmos.base.query.v1beta1.PageResponse pagination = 2 [ (gogoproto.nullable) = false ];
 }
 
 message QueryBidRequest {
@@ -85,8 +88,10 @@ message QueryBidResponse {
 
 message QueryBidsByAuctionRequest {
   uint32 auction_id = 1;
+  cosmos.base.query.v1beta1.PageRequest pagination = 2 [ (gogoproto.nullable) = false ];
 }
 
 message QueryBidsByAuctionResponse {
   repeated Bid bids = 1;
+  cosmos.base.query.v1beta1.PageResponse pagination = 2 [ (gogoproto.nullable) = false ];
 }
