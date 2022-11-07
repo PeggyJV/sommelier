@@ -39,7 +39,7 @@ func (f *FeeAccrualCounters) IncrementCounter(denom string) uint64 {
 	for i, k := range f.Counters {
 		if k.Denom == denom {
 			found = true
-			f.Counters[i].Count += 1
+			f.Counters[i].Count++
 			count = f.Counters[i].Count
 			break
 		}
