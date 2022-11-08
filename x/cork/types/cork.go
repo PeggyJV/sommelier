@@ -21,9 +21,11 @@ func (c *Cork) InvalidationScope() tmbytes.HexBytes {
 func (c *Cork) IDHash(blockHeight uint64) []byte {
 	blockHeightBytes := sdk.Uint64ToBigEndian(blockHeight)
 
+	address := common.HexToAddress(c.TargetContractAddress)
+
 	return crypto.Keccak256Hash(
 		bytes.Join(
-			[][]byte{blockHeightBytes, []byte(c.TargetContractAddress), c.EncodedContractCall},
+			[][]byte{blockHeightBytes, address.Bytes(), c.EncodedContractCall},
 			[]byte{},
 		)).Bytes()
 }

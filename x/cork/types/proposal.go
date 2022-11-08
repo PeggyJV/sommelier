@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
+	"github.com/ethereum/go-ethereum/common"
 )
 
 const (
@@ -110,7 +111,7 @@ func (m *ScheduledCorkProposal) ValidateBasic() error {
 		return fmt.Errorf("can't have an empty command")
 	}
 
-	if len(m.TargetContractAddress) == 0 {
+	if len(common.HexToAddress(m.TargetContractAddress)) == 0 {
 		return fmt.Errorf("can't have an empty contract address")
 	}
 
