@@ -5,7 +5,7 @@ on:
     branches:
       - main
     tags:
-      - 'v*.*.*'
+      - "v*.*.*"
   pull_request:
 
 env:
@@ -109,19 +109,17 @@ jobs:
   integration-tests:
     environment: CI
     runs-on: [self-hosted, linux]
-    needs: [ sommelier-build, hardhat-build ]
+    needs: [sommelier-build, hardhat-build]
     strategy:
       fail-fast: false
       matrix:
-        test_type: [
-          "ScheduledCork"
-        ]
+        test_type: ["ScheduledCork", "AuctionModule"]
     steps:
-# Not needed on self hosted test runner that already has go installed
-#       - name: Set up Go 1.16
-#         uses: actions/setup-go@v2
-#         with:
-#           go-version: ^1.16
+      # Not needed on self hosted test runner that already has go installed
+      #       - name: Set up Go 1.16
+      #         uses: actions/setup-go@v2
+      #         with:
+      #           go-version: ^1.16
       - name: checkout
         uses: actions/checkout@v2
       - name: go-cache

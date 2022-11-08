@@ -7,6 +7,7 @@ import (
 	"encoding/binary"
 
 	"github.com/cosmos/cosmos-sdk/codec"
+	"github.com/cosmos/cosmos-sdk/store/prefix"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
@@ -21,6 +22,7 @@ type Keeper struct {
 	cdc                    codec.BinaryCodec
 	paramSpace             paramtypes.Subspace
 	bankKeeper             types.BankKeeper
+	accountKeeper          types.AccountKeeper
 	fundingModuleAccounts  map[string]bool
 	proceedsModuleAccounts map[string]bool
 }
@@ -28,7 +30,7 @@ type Keeper struct {
 // NewKeeper creates a new auction Keeper instance
 func NewKeeper(
 	cdc codec.BinaryCodec, key sdk.StoreKey, paramSpace paramtypes.Subspace,
-	bankKeeper types.BankKeeper, fundingModuleAccounts map[string]bool, proceedsModuleAccounts map[string]bool,
+	bankKeeper types.BankKeeper, accountKeeper types.AccountKeeper, fundingModuleAccounts map[string]bool, proceedsModuleAccounts map[string]bool,
 ) Keeper {
 	// set KeyTable if it has not already been set
 	if !paramSpace.HasKeyTable() {
@@ -40,6 +42,7 @@ func NewKeeper(
 		cdc:                    cdc,
 		paramSpace:             paramSpace,
 		bankKeeper:             bankKeeper,
+		accountKeeper:          accountKeeper,
 		fundingModuleAccounts:  fundingModuleAccounts,
 		proceedsModuleAccounts: proceedsModuleAccounts,
 	}
@@ -87,6 +90,16 @@ func (k Keeper) GetActiveAuctionByID(ctx sdk.Context, id uint32) (types.Auction,
 // DeleteActiveAuction deletes the active auction
 func (k Keeper) deleteActiveAuction(ctx sdk.Context, id uint32) {
 	ctx.KVStore(k.storeKey).Delete(types.GetActiveAuctionKey(id))
+}
+
+// DeleteEndedAuction deletes the ended auction
+func (k Keeper) deleteEndedAuction(ctx sdk.Context, id uint32) {
+	ctx.KVStore(k.storeKey).Delete(types.GetEndedAuctionKey(id))
+}
+
+// DeleteBid deletes the bid
+func (k Keeper) deleteBid(ctx sdk.Context, auctionID uint32, bidID uint64) {
+	ctx.KVStore(k.storeKey).Delete(types.GetBidKey(auctionID, bidID))
 }
 
 // GetEndedAuctionByID returns a specific active auction
@@ -143,6 +156,11 @@ func (k Keeper) GetEndedAuctions(ctx sdk.Context) []*types.Auction {
 	})
 
 	return auctions
+}
+
+// getEndedAuctionsPrefixStore gets a prefix store for the EndedAuctions entries.
+func (k Keeper) getEndedAuctionsPrefixStore(ctx sdk.Context) sdk.KVStore {
+	return prefix.NewStore(ctx.KVStore(k.storeKey), types.GetEndedAuctionsPrefix())
 }
 
 // SetActiveAuction sets the auction specified
@@ -264,6 +282,7 @@ func (k Keeper) tokenPriceTooOld(ctx sdk.Context, tokenPrice *types.TokenPrice) 
 func (k Keeper) FinishAuction(ctx sdk.Context, auction *types.Auction) error {
 	// Figure out how many funds we have left over, if any, to send
 	// Since we can only have 1 auction per denom active at a time, we can just query the balance
+
 	saleTokenBalance := k.bankKeeper.GetBalance(ctx, authtypes.NewModuleAddress(types.ModuleName), auction.StartingTokensForSale.Denom)
 
 	if saleTokenBalance.Amount.IsPositive() {
@@ -378,6 +397,11 @@ func (k Keeper) GetBidsByAuctionID(ctx sdk.Context, auctionID uint32) []*types.B
 	})
 
 	return bids
+}
+
+// getBidsByAuctionPrefixStore gets a prefix store for the bid entries of an auction
+func (k Keeper) getBidsByAuctionPrefixStore(ctx sdk.Context, auctionID uint32) sdk.KVStore {
+	return prefix.NewStore(ctx.KVStore(k.storeKey), types.GetBidsByAuctionIDPrefix(auctionID))
 }
 
 // GetBid returns a specified bid by its id (if it has not been pruned)
@@ -496,4 +520,13 @@ func (k Keeper) GetLastBidID(ctx sdk.Context) uint64 {
 	}
 
 	return binary.BigEndian.Uint64(bz)
+}
+
+// ///////////////////
+// Module Accounts //
+// ///////////////////
+
+// Get the auction module account
+func (k Keeper) GetAuctionAccount(ctx sdk.Context) authtypes.ModuleAccountI {
+	return k.accountKeeper.GetModuleAccount(ctx, types.ModuleName)
 }

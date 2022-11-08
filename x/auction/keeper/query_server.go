@@ -4,6 +4,7 @@ import (
 	"context"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/cosmos/cosmos-sdk/types/query"
 	"github.com/peggyjv/sommelier/v4/x/auction/types"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -52,25 +53,39 @@ func (k Keeper) QueryActiveAuctions(c context.Context, _ *types.QueryActiveAucti
 
 	auctions := k.GetActiveAuctions(ctx)
 
-	if len(auctions) == 0 {
-		return &types.QueryActiveAuctionsResponse{}, status.Error(codes.NotFound, "No active auctions found")
-	}
-
 	return &types.QueryActiveAuctionsResponse{Auctions: auctions}, nil
 }
 
 // QueryEndedAuctions implements QueryServer
-func (k Keeper) QueryEndedAuctions(c context.Context, _ *types.QueryEndedAuctionsRequest) (*types.QueryEndedAuctionsResponse, error) {
+func (k Keeper) QueryEndedAuctions(c context.Context, request *types.QueryEndedAuctionsRequest) (*types.QueryEndedAuctionsResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
 
-	auctions := k.GetEndedAuctions(ctx)
+	var auctions []*types.Auction
+	store := k.getEndedAuctionsPrefixStore(ctx)
+	var err error
 
-	if len(auctions) == 0 {
-		// TODO (pbal): consider pagination
-		return &types.QueryEndedAuctionsResponse{}, status.Error(codes.NotFound, "No ended auctions found")
+	pageRes, err := query.FilteredPaginate(
+		store,
+		&request.Pagination,
+		func(key []byte, value []byte, accumulate bool) (bool, error) {
+			var auction types.Auction
+			err := auction.Unmarshal(value)
+			if err != nil {
+				return false, err
+			}
+
+			if accumulate {
+				auctions = append(auctions, &auction)
+			}
+			return true, nil
+		},
+	)
+
+	if err != nil {
+		return nil, status.Error(codes.Internal, err.Error())
 	}
 
-	return &types.QueryEndedAuctionsResponse{Auctions: auctions}, nil
+	return &types.QueryEndedAuctionsResponse{Auctions: auctions, Pagination: *pageRes}, nil
 }
 
 // QueryBid implements QueryServer
@@ -90,11 +105,30 @@ func (k Keeper) QueryBid(c context.Context, request *types.QueryBidRequest) (*ty
 func (k Keeper) QueryBidsByAuction(c context.Context, request *types.QueryBidsByAuctionRequest) (*types.QueryBidsByAuctionResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
 
-	bids := k.GetBidsByAuctionID(ctx, request.GetAuctionId())
+	var bids []*types.Bid
+	store := k.getBidsByAuctionPrefixStore(ctx, request.GetAuctionId())
+	var err error
 
-	if len(bids) == 0 {
-		return &types.QueryBidsByAuctionResponse{}, status.Errorf(codes.NotFound, "No bids found for auction id: %d", request.GetAuctionId())
+	pageRes, err := query.FilteredPaginate(
+		store,
+		&request.Pagination,
+		func(key []byte, value []byte, accumulate bool) (bool, error) {
+			var bid types.Bid
+			err := bid.Unmarshal(value)
+			if err != nil {
+				return false, err
+			}
+
+			if accumulate {
+				bids = append(bids, &bid)
+			}
+			return true, nil
+		},
+	)
+
+	if err != nil {
+		return nil, status.Error(codes.Internal, err.Error())
 	}
 
-	return &types.QueryBidsByAuctionResponse{Bids: bids}, nil
+	return &types.QueryBidsByAuctionResponse{Bids: bids, Pagination: *pageRes}, nil
 }

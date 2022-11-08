@@ -14,7 +14,10 @@ import (
 	"testing"
 	"time"
 
+	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
+	auctiontypes "github.com/peggyjv/sommelier/v4/x/auction/types"
+	cellarfees "github.com/peggyjv/sommelier/v4/x/cellarfees/types"
 	corktypes "github.com/peggyjv/sommelier/v4/x/cork/types"
 
 	gravitytypes "github.com/peggyjv/gravity-bridge/module/v2/x/gravity/types"
@@ -179,9 +182,14 @@ func (s *IntegrationTestSuite) initNodesWithMnemonics(mnemonics ...string) {
 	}
 
 	// add orchestrator accounts to genesis file
-	for _, orch := range s.chain.orchestrators {
+	for i, orch := range s.chain.orchestrators {
+		// Fund the first orchestrator with some funds to be used by auction module integration tests
+		balanceStr := initBalanceStr
+		if i == 0 {
+			balanceStr += ",100000000000usomm"
+		}
 		s.Require().NoError(
-			addGenesisAccount(val0ConfigDir, "", initBalanceStr, orch.keyInfo.GetAddress()),
+			addGenesisAccount(val0ConfigDir, "", balanceStr, orch.keyInfo.GetAddress()),
 		)
 	}
 
@@ -274,6 +282,13 @@ func (s *IntegrationTestSuite) initGenesis() {
 		},
 	})
 
+	// Set up auction module with some coins to auction off
+	balance := banktypes.Balance{
+		Address: authtypes.NewModuleAddress(auctiontypes.ModuleName).String(),
+		Coins:   sdk.NewCoins(sdk.NewCoin("gravity0x3506424f91fd33084466f402d5d97f05f8e3b4af", sdk.NewInt(5000000000))),
+	}
+	bankGenState.Balances = append(bankGenState.Balances, balance)
+
 	bz, err := cdc.MarshalJSON(&bankGenState)
 	s.Require().NoError(err)
 	appGenState[banktypes.ModuleName] = bz
@@ -314,6 +329,29 @@ func (s *IntegrationTestSuite) initGenesis() {
 
 	var genUtilGenState genutiltypes.GenesisState
 	s.Require().NoError(cdc.UnmarshalJSON(appGenState[genutiltypes.ModuleName], &genUtilGenState))
+
+	// Add an auction for integration testing of the auction module
+	var auctionGenState auctiontypes.GenesisState
+	s.Require().NoError(cdc.UnmarshalJSON(appGenState[auctiontypes.ModuleName], &auctionGenState))
+
+	auctionGenState.Auctions = append(auctionGenState.Auctions, &auctiontypes.Auction{
+		Id:                         uint32(1),
+		StartingTokensForSale:      sdk.NewCoin("gravity0x3506424f91fd33084466f402d5d97f05f8e3b4af", sdk.NewInt(5000000000)),
+		StartBlock:                 uint64(1),
+		EndBlock:                   uint64(0),
+		InitialPriceDecreaseRate:   sdk.MustNewDecFromStr("0.05"),
+		CurrentPriceDecreaseRate:   sdk.MustNewDecFromStr("0.05"),
+		PriceDecreaseBlockInterval: uint64(1000),
+		InitialUnitPriceInUsomm:    sdk.MustNewDecFromStr("2"),
+		CurrentUnitPriceInUsomm:    sdk.MustNewDecFromStr("2"),
+		RemainingTokensForSale:     sdk.NewCoin("gravity0x3506424f91fd33084466f402d5d97f05f8e3b4af", sdk.NewInt(5000000000)),
+		FundingModuleAccount:       cellarfees.ModuleName,
+		ProceedsModuleAccount:      cellarfees.ModuleName,
+	})
+
+	bz, err = cdc.MarshalJSON(&auctionGenState)
+	s.Require().NoError(err)
+	appGenState[auctiontypes.ModuleName] = bz
 
 	// generate genesis txs
 	genTxs := make([]json.RawMessage, len(s.chain.validators))
@@ -587,15 +625,12 @@ func (s *IntegrationTestSuite) runOrchestrators() {
 	s.orchResources = make([]*dockertest.Resource, len(s.chain.orchestrators))
 	for i, orch := range s.chain.orchestrators {
 		gorcCfg := fmt.Sprintf(`keystore = "/root/gorc/keystore/"
-
 [gravity]
 contract = "%s"
 fees_denom = "%s"
-
 [ethereum]
 key_derivation_path = "m/44'/60'/0'/0/0"
 rpc = "http://%s:8545"
-
 [cosmos]
 key_derivation_path = "m/44'/118'/1'/0/0"
 grpc = "http://%s:9090"
