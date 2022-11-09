@@ -29,3 +29,8 @@ message CorkResult {
 message CellarIDSet {
   repeated string ids = 1;
 }
+
+message CorkIDHash {
+  uint64 id = 1;
+  bytes hash = 2;
+}
