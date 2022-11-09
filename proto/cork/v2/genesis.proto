@@ -17,7 +17,7 @@ message GenesisState {
         (gogoproto.nullable) = false
     ];
     uint64 invalidation_nonce = 3;
-    uint64 cork_id = 4;
+    uint64 latest_cork_id = 4;
     repeated ScheduledCork scheduled_corks = 5;
     repeated CorkIDHash cork_id_hashes = 6;
     repeated CorkResult cork_results = 7;
