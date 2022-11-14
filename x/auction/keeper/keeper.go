@@ -12,6 +12,7 @@ import (
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
+	"github.com/peggyjv/sommelier/v4/app/params"
 	"github.com/peggyjv/sommelier/v4/x/auction/types"
 	"github.com/tendermint/tendermint/libs/log"
 )
@@ -201,11 +202,11 @@ func (k Keeper) BeginAuction(ctx sdk.Context,
 	}
 
 	// Verify usomm token price freshness is acceptable
-	lastUsommTokenPrice, found := k.GetTokenPrice(ctx, types.UsommDenom)
+	lastUsommTokenPrice, found := k.GetTokenPrice(ctx, params.BaseCoinUnit)
 	if !found {
-		return sdkerrors.Wrap(types.ErrCouldNotFindSommTokenPrice, types.UsommDenom)
+		return sdkerrors.Wrap(types.ErrCouldNotFindSommTokenPrice, params.BaseCoinUnit)
 	} else if k.tokenPriceTooOld(ctx, &lastUsommTokenPrice) {
-		return sdkerrors.Wrap(types.ErrLastSommTokenPriceTooOld, types.UsommDenom)
+		return sdkerrors.Wrap(types.ErrLastSommTokenPriceTooOld, params.BaseCoinUnit)
 	}
 
 	// Calculate somm per sale token price
@@ -300,7 +301,7 @@ func (k Keeper) FinishAuction(ctx sdk.Context, auction *types.Auction) error {
 		usommProceeds = usommProceeds.Add(bid.TotalUsommPaid.Amount)
 	}
 
-	usommProceedsCoin := sdk.NewCoin(types.UsommDenom, usommProceeds)
+	usommProceedsCoin := sdk.NewCoin(params.BaseCoinUnit, usommProceeds)
 
 	// Send proceeds to their appropriate destination module
 	if usommProceeds.IsPositive() {

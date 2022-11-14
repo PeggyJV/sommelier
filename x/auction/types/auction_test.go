@@ -5,6 +5,7 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	"github.com/peggyjv/sommelier/v4/app/params"
 	"github.com/stretchr/testify/require"
 )
 
@@ -94,7 +95,7 @@ func TestAuctionValidate(t *testing.T) {
 				ProceedsModuleAccount:      "someModule",
 			},
 			expPass: false,
-			err:     sdkerrors.Wrapf(ErrCannotAuctionUsomm, "Starting denom tokens for sale: %s", UsommDenom),
+			err:     sdkerrors.Wrapf(ErrCannotAuctionUsomm, "Starting denom tokens for sale: %s", params.BaseCoinUnit),
 		},
 		{
 			name: "Start block must be positive",

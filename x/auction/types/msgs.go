@@ -5,6 +5,7 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	"github.com/peggyjv/sommelier/v4/app/params"
 )
 
 var (
@@ -41,7 +42,7 @@ func (m *MsgSubmitBidRequest) ValidateBasic() error {
 		return sdkerrors.Wrapf(ErrAuctionIDMustBeNonZero, "id: %d", m.AuctionId)
 	}
 
-	if m.MaxBidInUsomm.Denom != UsommDenom {
+	if m.MaxBidInUsomm.Denom != params.BaseCoinUnit {
 		return sdkerrors.Wrapf(ErrBidMustBeInUsomm, "bid: %s", m.MaxBidInUsomm.String())
 	}
 

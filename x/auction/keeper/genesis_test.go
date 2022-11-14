@@ -3,6 +3,7 @@ package keeper
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
+	"github.com/peggyjv/sommelier/v4/app/params"
 	auctionTypes "github.com/peggyjv/sommelier/v4/x/auction/types"
 )
 
@@ -102,21 +103,21 @@ func (suite *KeeperTestSuite) TestImportingPopulatedGenesis() {
 		Id:                        uint64(1),
 		AuctionId:                 uint32(1),
 		Bidder:                    cosmosAddress1,
-		MaxBidInUsomm:             sdk.NewCoin(auctionTypes.UsommDenom, sdk.NewInt(2000)),
+		MaxBidInUsomm:             sdk.NewCoin(params.BaseCoinUnit, sdk.NewInt(2000)),
 		SaleTokenMinimumAmount:    sdk.NewCoin("weth", sdk.NewInt(20)),
 		TotalFulfilledSaleTokens:  sdk.NewCoin("weth", sdk.NewInt(100)),
 		SaleTokenUnitPriceInUsomm: sdk.MustNewDecFromStr("20.0"),
-		TotalUsommPaid:            sdk.NewCoin(auctionTypes.UsommDenom, sdk.NewInt(2000)),
+		TotalUsommPaid:            sdk.NewCoin(params.BaseCoinUnit, sdk.NewInt(2000)),
 	}
 	bid2 := &auctionTypes.Bid{
 		Id:                        uint64(2),
 		AuctionId:                 uint32(2),
 		Bidder:                    cosmosAddress2,
-		MaxBidInUsomm:             sdk.NewCoin(auctionTypes.UsommDenom, sdk.NewInt(1000)),
+		MaxBidInUsomm:             sdk.NewCoin(params.BaseCoinUnit, sdk.NewInt(1000)),
 		SaleTokenMinimumAmount:    sdk.NewCoin("usdc", sdk.NewInt(100)),
 		TotalFulfilledSaleTokens:  sdk.NewCoin("usdc", sdk.NewInt(1000)),
 		SaleTokenUnitPriceInUsomm: sdk.MustNewDecFromStr("1.0"),
-		TotalUsommPaid:            sdk.NewCoin(auctionTypes.UsommDenom, sdk.NewInt(2000)),
+		TotalUsommPaid:            sdk.NewCoin(params.BaseCoinUnit, sdk.NewInt(2000)),
 	}
 	expectedBids[0] = bid1
 	expectedBids[1] = bid2
@@ -242,11 +243,11 @@ func (suite *KeeperTestSuite) TestExportingPopulatedGenesis() {
 		Id:                        uint64(1),
 		AuctionId:                 uint32(1),
 		Bidder:                    cosmosAddress1,
-		MaxBidInUsomm:             sdk.NewCoin(auctionTypes.UsommDenom, sdk.NewInt(2000)),
+		MaxBidInUsomm:             sdk.NewCoin(params.BaseCoinUnit, sdk.NewInt(2000)),
 		SaleTokenMinimumAmount:    sdk.NewCoin("weth", sdk.NewInt(20)),
 		TotalFulfilledSaleTokens:  sdk.NewCoin("weth", sdk.NewInt(100)),
 		SaleTokenUnitPriceInUsomm: sdk.MustNewDecFromStr("20.0"),
-		TotalUsommPaid:            sdk.NewCoin(auctionTypes.UsommDenom, sdk.NewInt(2000)),
+		TotalUsommPaid:            sdk.NewCoin(params.BaseCoinUnit, sdk.NewInt(2000)),
 	}
 	expectedBids[0] = bid1
 	auctionKeeper.setBid(ctx, *bid1)

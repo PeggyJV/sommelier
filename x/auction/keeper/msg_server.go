@@ -7,6 +7,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
+	"github.com/peggyjv/sommelier/v4/app/params"
 	"github.com/peggyjv/sommelier/v4/x/auction/types"
 )
 
@@ -78,7 +79,7 @@ func (k Keeper) SubmitBid(c context.Context, msg *types.MsgSubmitBidRequest) (*t
 
 	// Round up to prevent exploitability; ensure you can't get more than you pay for
 	usommAmount := sdk.NewInt(totalFulfilledSaleTokens.Amount.ToDec().Mul(auction.CurrentUnitPriceInUsomm).Ceil().TruncateInt64())
-	totalUsommPaid := sdk.NewCoin(types.UsommDenom, usommAmount)
+	totalUsommPaid := sdk.NewCoin(params.BaseCoinUnit, usommAmount)
 
 	newBidID := k.GetLastBidID(ctx) + 1
 	bid := types.Bid{

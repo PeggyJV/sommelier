@@ -13,6 +13,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
+	"github.com/peggyjv/sommelier/v4/app/params"
 	moduletestutil "github.com/peggyjv/sommelier/v4/testutil"
 	auctionTypes "github.com/peggyjv/sommelier/v4/x/auction/types"
 
@@ -105,10 +106,10 @@ func (suite *KeeperTestSuite) TestHappyPathBeginAuction() {
 	ctx, auctionKeeper := suite.ctx, suite.auctionKeeper
 	require := suite.Require()
 
-	params := auctionTypes.DefaultParams()
-	auctionKeeper.setParams(ctx, params)
+	auctionParams := auctionTypes.DefaultParams()
+	auctionKeeper.setParams(ctx, auctionParams)
 
-	sommPrice := auctionTypes.TokenPrice{Denom: auctionTypes.UsommDenom, UsdPrice: sdk.MustNewDecFromStr("0.01"), LastUpdatedBlock: 5}
+	sommPrice := auctionTypes.TokenPrice{Denom: params.BaseCoinUnit, UsdPrice: sdk.MustNewDecFromStr("0.01"), LastUpdatedBlock: 5}
 
 	/* #nosec */
 	saleToken := "gravity0xdac17f958d2ee523a2206206994597c13d831ec7"
@@ -156,10 +157,10 @@ func (suite *KeeperTestSuite) TestHappyPathFinishAuction() {
 	require := suite.Require()
 
 	// 1. --------> Create an auction first so we can finish it
-	params := auctionTypes.DefaultParams()
-	auctionKeeper.setParams(ctx, params)
+	auctionParams := auctionTypes.DefaultParams()
+	auctionKeeper.setParams(ctx, auctionParams)
 
-	sommPrice := auctionTypes.TokenPrice{Denom: auctionTypes.UsommDenom, UsdPrice: sdk.MustNewDecFromStr("0.02"), LastUpdatedBlock: 2}
+	sommPrice := auctionTypes.TokenPrice{Denom: params.BaseCoinUnit, UsdPrice: sdk.MustNewDecFromStr("0.02"), LastUpdatedBlock: 2}
 
 	/* #nosec */
 	saleToken := "gravity0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48"
@@ -191,30 +192,30 @@ func (suite *KeeperTestSuite) TestHappyPathFinishAuction() {
 	suite.mockSendCoinsFromModuleToModule(ctx, auctionTypes.ModuleName, permissionedFunder.GetName(), sdk.NewCoins(remainingSaleTokens))
 
 	// Add a couple of fake bids into store (note none of these fields matter for this test aside from TotalUsommPaid)
-	amountPaid1 := sdk.NewCoin(auctionTypes.UsommDenom, sdk.NewInt(2500))
+	amountPaid1 := sdk.NewCoin(params.BaseCoinUnit, sdk.NewInt(2500))
 	auctionKeeper.setBid(ctx, auctionTypes.Bid{
 		Id:                       1,
 		AuctionId:                1,
 		Bidder:                   "bidder1",
-		MaxBidInUsomm:            sdk.NewCoin(auctionTypes.UsommDenom, sdk.NewInt(2500)),
+		MaxBidInUsomm:            sdk.NewCoin(params.BaseCoinUnit, sdk.NewInt(2500)),
 		SaleTokenMinimumAmount:   sdk.NewCoin(saleToken, sdk.NewInt(0)),
 		TotalFulfilledSaleTokens: sdk.NewCoin(saleToken, sdk.NewInt(5000)),
 		TotalUsommPaid:           amountPaid1,
 	})
 
-	amountPaid2 := sdk.NewCoin(auctionTypes.UsommDenom, sdk.NewInt(1250))
+	amountPaid2 := sdk.NewCoin(params.BaseCoinUnit, sdk.NewInt(1250))
 	auctionKeeper.setBid(ctx, auctionTypes.Bid{
 		Id:                       2,
 		AuctionId:                1,
 		Bidder:                   "bidder2",
-		MaxBidInUsomm:            sdk.NewCoin(auctionTypes.UsommDenom, sdk.NewInt(1250)),
+		MaxBidInUsomm:            sdk.NewCoin(params.BaseCoinUnit, sdk.NewInt(1250)),
 		SaleTokenMinimumAmount:   sdk.NewCoin(saleToken, sdk.NewInt(0)),
 		TotalFulfilledSaleTokens: sdk.NewCoin(saleToken, sdk.NewInt(2500)),
 		TotalUsommPaid:           amountPaid2,
 	})
 
 	// Second transfer to return proceeds from bids
-	totalUsommExpected := sdk.NewCoin(auctionTypes.UsommDenom, amountPaid1.Amount.Add(amountPaid2.Amount))
+	totalUsommExpected := sdk.NewCoin(params.BaseCoinUnit, amountPaid1.Amount.Add(amountPaid2.Amount))
 	suite.mockSendCoinsFromModuleToModule(ctx, auctionTypes.ModuleName, permissionedReciever.GetName(), sdk.NewCoins(totalUsommExpected))
 
 	// Change active auction tokens remaining before finishing auction to pretend tokens were sold
@@ -253,11 +254,11 @@ func (suite *KeeperTestSuite) TestUnhappyPathsForBeginAuction() {
 	require := suite.Require()
 
 	// Define basic param(s)
-	params := auctionTypes.DefaultParams()
-	auctionKeeper.setParams(ctx, params)
+	auctionParams := auctionTypes.DefaultParams()
+	auctionKeeper.setParams(ctx, auctionParams)
 
 	// Setup some token prices
-	sommPrice := auctionTypes.TokenPrice{Denom: auctionTypes.UsommDenom, UsdPrice: sdk.MustNewDecFromStr("0.01"), LastUpdatedBlock: 2}
+	sommPrice := auctionTypes.TokenPrice{Denom: params.BaseCoinUnit, UsdPrice: sdk.MustNewDecFromStr("0.01"), LastUpdatedBlock: 2}
 
 	/* #nosec */
 	saleToken := "gravity0xaaaebe6fe48e54f431b0c390cfaf0b017d09d42d"
@@ -312,7 +313,7 @@ func (suite *KeeperTestSuite) TestUnhappyPathsForBeginAuction() {
 		{
 			name: "Starting denom price update too old",
 			beginAuctionRequest: BeginAuctionRequest{
-				ctx:                        ctx.WithBlockHeight(int64(saleTokenPrice.LastUpdatedBlock) + int64(params.PriceMaxBlockAge) + 1),
+				ctx:                        ctx.WithBlockHeight(int64(saleTokenPrice.LastUpdatedBlock) + int64(auctionParams.PriceMaxBlockAge) + 1),
 				startingTokensForSale:      auctionedSaleTokens,
 				initialPriceDecreaseRate:   sdk.MustNewDecFromStr("0.05"),
 				priceDecreaseBlockInterval: uint64(10),
@@ -334,20 +335,20 @@ func (suite *KeeperTestSuite) TestUnhappyPathsForBeginAuction() {
 				fundingModuleAccount:       permissionedFunder.GetName(),
 				proceedsModuleAccount:      permissionedReciever.GetName(),
 			},
-			expectedError: sdkerrors.Wrap(auctionTypes.ErrCouldNotFindSommTokenPrice, auctionTypes.UsommDenom),
+			expectedError: sdkerrors.Wrap(auctionTypes.ErrCouldNotFindSommTokenPrice, params.BaseCoinUnit),
 			runsBefore:    func() {},
 		},
 		{
 			name: "Usomm price update too old",
 			beginAuctionRequest: BeginAuctionRequest{
-				ctx:                        ctx.WithBlockHeight(int64(sommPrice.LastUpdatedBlock) + int64(params.PriceMaxBlockAge) + 1),
+				ctx:                        ctx.WithBlockHeight(int64(sommPrice.LastUpdatedBlock) + int64(auctionParams.PriceMaxBlockAge) + 1),
 				startingTokensForSale:      auctionedSaleTokens,
 				initialPriceDecreaseRate:   sdk.MustNewDecFromStr("0.05"),
 				priceDecreaseBlockInterval: uint64(10),
 				fundingModuleAccount:       permissionedFunder.GetName(),
 				proceedsModuleAccount:      permissionedReciever.GetName(),
 			},
-			expectedError: sdkerrors.Wrap(auctionTypes.ErrLastSommTokenPriceTooOld, auctionTypes.UsommDenom),
+			expectedError: sdkerrors.Wrap(auctionTypes.ErrLastSommTokenPriceTooOld, params.BaseCoinUnit),
 			runsBefore: func() {
 				auctionKeeper.setTokenPrice(ctx, sommPrice)
 			},

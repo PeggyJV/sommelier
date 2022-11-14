@@ -8,6 +8,7 @@ import (
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
+	"github.com/peggyjv/sommelier/v4/app/params"
 	"github.com/peggyjv/sommelier/v4/x/auction/types"
 	cellarfees "github.com/peggyjv/sommelier/v4/x/cellarfees/types"
 )
@@ -50,7 +51,7 @@ func (s *IntegrationTestSuite) TestAuctionModule() {
 					UsdPrice: sdk.MustNewDecFromStr("0.25"),
 				},
 				{
-					Denom:    types.UsommDenom,
+					Denom:    params.BaseCoinUnit,
 					UsdPrice: sdk.MustNewDecFromStr("0.5"),
 				},
 			},
