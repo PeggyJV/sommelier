@@ -27,6 +27,6 @@ func (k Keeper) ModuleAccounts(c context.Context, req *types.QueryModuleAccounts
 	}
 
 	return &types.QueryModuleAccountsResponse{
-		FeesAddress: k.GetFeesAccount(sdk.UnwrapSDKContext(c)).String(),
+		FeesAddress: k.GetFeesAccount(sdk.UnwrapSDKContext(c)).GetAddress().String(),
 	}, nil
 }

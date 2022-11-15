@@ -370,7 +370,7 @@ func NewSommelierApp(
 
 	app.CellarFeesKeeper = cellarfeeskeeper.NewKeeper(
 		appCodec, keys[cellarfeestypes.StoreKey], app.GetSubspace(cellarfeestypes.ModuleName),
-		app.AccountKeeper, app.BankKeeper, app.CorkKeeper, app.GravityKeeper,
+		app.AccountKeeper, app.BankKeeper, app.CorkKeeper, app.GravityKeeper, app.AuctionKeeper,
 	)
 
 	app.GravityKeeper = *app.GravityKeeper.SetHooks(

@@ -107,7 +107,10 @@ func (s *IntegrationTestSuite) TestAuctionModule() {
 		s.T().Log("Waiting for proposal to be approved..")
 		s.Require().Eventually(func() bool {
 			proposalQueryResponse, err := govQueryClient.Proposal(context.Background(), &govtypes.QueryProposalRequest{ProposalId: 1})
-			s.Require().NoError(err)
+			if err != nil {
+				time.Sleep(3)
+				return false
+			}
 			return govtypes.StatusPassed == proposalQueryResponse.Proposal.Status
 		}, time.Second*30, time.Second*5, "proposal was never accepted")
 		s.T().Log("Proposal approved!")
@@ -118,6 +121,13 @@ func (s *IntegrationTestSuite) TestAuctionModule() {
 		s.T().Logf("Auction module token balances before bids %v", balanceRes.Balances)
 
 		initialOrchBalanceRes, err := bankQueryClient.AllBalances(context.Background(), &banktypes.QueryAllBalancesRequest{Address: orch0Address})
+		var initialOrchSomm sdk.Int
+		// initialOrchGravity := sdk.ZeroInt()
+		for _, balance := range initialOrchBalanceRes.Balances {
+			if balance.Denom == "usomm" {
+				initialOrchSomm = balance.Amount
+			}
+		}
 		s.Require().NoError(err)
 		s.T().Logf("Orchestrator 0 balances before bids %v", initialOrchBalanceRes.Balances)
 
@@ -161,8 +171,21 @@ func (s *IntegrationTestSuite) TestAuctionModule() {
 		s.Require().NoError(err)
 		s.T().Logf("Orchestrator 0 token balances after first bid %v", balanceRes.Balances)
 
-		s.Require().Equal(sdk.NewCoin("gravity0x3506424f91fd33084466f402d5d97f05f8e3b4af", sdk.NewInt(2500000000)), balanceRes.Balances[0])
-		s.Require().Equal(sdk.NewCoin("usomm", initialOrchBalanceRes.Balances[1].Amount.Sub(sdk.NewInt(5000000000))), balanceRes.Balances[2])
+		foundSomm, foundGravity := false, false
+		latestOrchSomm, latestOrchGravity := sdk.ZeroInt(), sdk.ZeroInt()
+		for _, balance := range balanceRes.Balances {
+			if balance.Denom == "gravity0x3506424f91fd33084466f402d5d97f05f8e3b4af" {
+				foundGravity = true
+				s.Require().Equal(int64(2500000000), balance.Amount.Int64())
+				latestOrchGravity = balance.Amount
+			}
+			if balance.Denom == "usomm" {
+				foundSomm = true
+				s.Require().Equal(initialOrchSomm.Sub(sdk.NewInt(5000000000)).Sub(sdk.NewInt(feeAmount)).Int64(), balance.Amount.Int64())
+				latestOrchSomm = balance.Amount
+			}
+		}
+		s.Require().True(foundSomm && foundGravity)
 		s.T().Log("User funds updated correctly!")
 
 		node, err := orchClientCtx.GetNode()
@@ -228,16 +251,26 @@ func (s *IntegrationTestSuite) TestAuctionModule() {
 		s.Require().Equal(expectedBid2, *actualBid2.Bid)
 		s.T().Log("Bid stored correctly!")
 
-		s.T().Log("Verifying user funds debited and credited appropriately.")
 		// Verify user has funds debited and purchase credited
+		s.T().Log("Verifying user funds debited and credited appropriately.")
 		balanceRes, err = bankQueryClient.AllBalances(context.Background(), &banktypes.QueryAllBalancesRequest{Address: orch0Address})
 		s.Require().NoError(err)
-		s.T().Logf("Orchestrator 0 token balances after second bid %v", balanceRes.Balances)
+		s.T().Logf("Orchestrator 0 token balances after first bid %v", balanceRes.Balances)
 
-		expectedSaleTokens := expectedBid1.TotalFulfilledSaleTokens.Amount.Add(expectedBid2.TotalFulfilledSaleTokens.Amount)
-		expectedUsommRemaining := initialOrchBalanceRes.Balances[1].Amount.Sub(expectedBid1.TotalUsommPaid.Amount.Add(expectedBid2.TotalUsommPaid.Amount))
-		s.Require().Equal(sdk.NewCoin("gravity0x3506424f91fd33084466f402d5d97f05f8e3b4af", expectedSaleTokens), balanceRes.Balances[0])
-		s.Require().Equal(sdk.NewCoin("usomm", expectedUsommRemaining), balanceRes.Balances[2])
+		// expectedSaleTokens := expectedBid1.TotalFulfilledSaleTokens.Amount.Add(expectedBid2.TotalFulfilledSaleTokens.Amount)
+		// expectedUsommRemaining := initialOrchSomm.Sub(expectedBid1.TotalUsommPaid.Amount.Add(expectedBid2.TotalUsommPaid.Amount))
+		foundSomm, foundGravity = false, false
+		for _, balance := range balanceRes.Balances {
+			if balance.Denom == "gravity0x3506424f91fd33084466f402d5d97f05f8e3b4af" {
+				foundGravity = true
+				s.Require().Equal(latestOrchGravity.Add(expectedBid2.TotalFulfilledSaleTokens.Amount).Int64(), balance.Amount.Int64())
+			}
+			if balance.Denom == "usomm" {
+				foundSomm = true
+				s.Require().Equal(latestOrchSomm.Sub(expectedBid1.TotalUsommPaid.Amount.Add(sdk.NewInt(feeAmount))).Int64(), balance.Amount.Int64())
+			}
+		}
+		s.Require().True(foundSomm && foundGravity)
 		s.T().Log("User funds updated correctly!")
 
 		s.T().Log("Verifying auction has completed...")

@@ -10,8 +10,8 @@ import (
 )
 
 var (
-	cosmosAddress1   string = "cosmos16zrkzad482haunrn25ywvwy6fclh3vh7r0hcny"
-	cosmosAddress2   string = "cosmos12svsksqaakc6r0gyxasf5el84946mp0svdl603"
+	cosmosAddress1 string = "cosmos16zrkzad482haunrn25ywvwy6fclh3vh7r0hcny"
+	cosmosAddress2 string = "cosmos12svsksqaakc6r0gyxasf5el84946mp0svdl603"
 )
 
 func TestAuctionValidate(t *testing.T) {

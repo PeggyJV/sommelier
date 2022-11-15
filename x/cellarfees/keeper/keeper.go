@@ -31,6 +31,7 @@ func NewKeeper(
 	bankKeeper types.BankKeeper,
 	corkKeeper types.CorkKeeper,
 	gravityKeeper types.GravityKeeper,
+	auctionKeeper types.AuctionKeeper,
 ) Keeper {
 	if !paramSpace.HasKeyTable() {
 		paramSpace = paramSpace.WithKeyTable(types.ParamKeyTable())
@@ -44,6 +45,7 @@ func NewKeeper(
 		bankKeeper:    bankKeeper,
 		corkKeeper:    corkKeeper,
 		gravityKeeper: gravityKeeper,
+		auctionKeeper: auctionKeeper,
 	}
 }
 
@@ -94,9 +96,6 @@ func (k Keeper) GetFeeAccrualCounters(ctx sdk.Context) (counters types.FeeAccrua
 	b := store.Get(types.GetFeeAccrualCountersKey())
 	if b == nil {
 		panic("Fee accrual counters is nil, it should have been set by InitGenesis")
-	}
-	if len(b) == 0 {
-		return types.DefaultFeeAccrualCounters()
 	}
 
 	k.cdc.MustUnmarshal(b, &counters)
