@@ -87,7 +87,7 @@ func (k Keeper) QueryCorkResult(c context.Context, req *types.QueryCorkResultReq
 	var found bool
 	result, found := k.GetCorkResult(ctx, id)
 	if !found {
-		return &types.QueryCorkResultResponse{}, status.Errorf(codes.NotFound, "No cork result found for id: %d", req.GetId())
+		return &types.QueryCorkResultResponse{}, status.Errorf(codes.NotFound, "No cork result found for id: %s", req.GetId())
 	}
 	response.CorkResult = &result
 

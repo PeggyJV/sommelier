@@ -133,12 +133,12 @@ func (s *IntegrationTestSuite) TestScheduledCork() {
 
 		s.T().Logf("scheduling cork calls for height %d", targetBlockHeight)
 		blockHeightBytes := sdk.Uint64ToBigEndian(uint64(targetBlockHeight))
-		corkId := hex.EncodeToString(crypto.Keccak256Hash(
+		corkID := hex.EncodeToString(crypto.Keccak256Hash(
 			bytes.Join(
 				[][]byte{blockHeightBytes, counterContract.Bytes(), ABIEncodedInc()},
 				[]byte{},
 			)).Bytes())
-		s.T().Logf("cork ID is %s", corkId)
+		s.T().Logf("cork ID is %s", corkID)
 		for i, orch := range s.chain.orchestrators {
 			i := i
 			orch := orch
@@ -195,7 +195,7 @@ func (s *IntegrationTestSuite) TestScheduledCork() {
 		}, 3*time.Minute, 1*time.Second, "never reached scheduled height")
 
 		s.T().Log("verify the cork was approved")
-		resultRes, err := corkQueryClient.QueryCorkResult(context.Background(), &types.QueryCorkResultRequest{Id: corkId})
+		resultRes, err := corkQueryClient.QueryCorkResult(context.Background(), &types.QueryCorkResultRequest{Id: corkID})
 		s.Require().NoError(err, "failed to query cork result")
 		s.Require().True(resultRes.CorkResult.Approved, "cork was not approved")
 		s.Require().Equal(counterContract, common.HexToAddress(resultRes.CorkResult.Cork.TargetContractAddress))

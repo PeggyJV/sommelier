@@ -137,10 +137,10 @@ func (k Keeper) GetScheduledCorksByBlockHeight(ctx sdk.Context, height uint64) [
 	return scheduledCorks
 }
 
-func (k Keeper) GetScheduledCorksByID(ctx sdk.Context, queriedId []byte) []*types.ScheduledCork {
+func (k Keeper) GetScheduledCorksByID(ctx sdk.Context, queriedID []byte) []*types.ScheduledCork {
 	var scheduledCorks []*types.ScheduledCork
 	k.IterateScheduledCorks(ctx, func(val sdk.ValAddress, blockHeight uint64, id []byte, _ common.Address, cork types.Cork) (stop bool) {
-		if bytes.Equal(id, queriedId) {
+		if bytes.Equal(id, queriedID) {
 			scheduledCorks = append(scheduledCorks, &types.ScheduledCork{
 				Validator:   val.String(),
 				Cork:        &cork,
