@@ -1,12 +1,15 @@
 package integration_tests
 
 import (
+	"bytes"
 	"context"
+	"encoding/hex"
 	"time"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/crypto"
 	gbtypes "github.com/peggyjv/gravity-bridge/module/v2/x/gravity/types"
 	"github.com/peggyjv/sommelier/v4/x/cork/types"
 )
@@ -111,7 +114,6 @@ func (s *IntegrationTestSuite) TestScheduledCork() {
 
 			found := false
 			for _, id := range res.CellarIds {
-				s.T().Logf("managed addresses: %v", res.CellarIds)
 				if common.HexToAddress(id) == counterContract {
 					found = true
 					break
@@ -129,82 +131,88 @@ func (s *IntegrationTestSuite) TestScheduledCork() {
 		currentBlockHeight := status.SyncInfo.LatestBlockHeight
 		targetBlockHeight := currentBlockHeight + 15
 
-		s.T().Log("scheduling cork calls")
+		s.T().Logf("scheduling cork calls for height %d", targetBlockHeight)
+		blockHeightBytes := sdk.Uint64ToBigEndian(uint64(targetBlockHeight))
+		corkId := hex.EncodeToString(crypto.Keccak256Hash(
+			bytes.Join(
+				[][]byte{blockHeightBytes, counterContract.Bytes(), ABIEncodedInc()},
+				[]byte{},
+			)).Bytes())
+		s.T().Logf("cork ID is %s", corkId)
 		for i, orch := range s.chain.orchestrators {
 			i := i
 			orch := orch
-			s.Require().Eventuallyf(func() bool {
-				clientCtx, err := s.chain.clientContext("tcp://localhost:26657", orch.keyring, "orch", orch.keyInfo.GetAddress())
-				s.Require().NoError(err)
-
-				corkMsg, err := types.NewMsgScheduleCorkRequest(
-					ABIEncodedInc(),
-					counterContract,
-					uint64(targetBlockHeight),
-					orch.keyInfo.GetAddress())
-				s.Require().NoError(err, "unable to create cork schedule msg")
-
-				response, err := s.chain.sendMsgs(*clientCtx, corkMsg)
-				if err != nil {
-					s.T().Logf("error: %s", err)
-					return false
+			clientCtx, err := s.chain.clientContext("tcp://localhost:26657", orch.keyring, "orch", orch.keyInfo.GetAddress())
+			s.Require().NoError(err)
+			corkMsg, err := types.NewMsgScheduleCorkRequest(
+				ABIEncodedInc(),
+				counterContract,
+				uint64(targetBlockHeight),
+				orch.keyInfo.GetAddress())
+			s.Require().NoError(err, "failed to construct cork")
+			response, err := s.chain.sendMsgs(*clientCtx, corkMsg)
+			s.Require().NoError(err, "failed to send cork to node %d", i)
+			if response.Code != 0 {
+				if response.Code != 32 {
+					s.T().Log(response)
 				}
-				if response.Code != 0 {
-					if response.Code != 32 {
-						s.T().Log(response)
-					}
-					return false
-				}
+			}
 
-				s.T().Logf("cork msg for %d node sent successfully", i)
-				return true
-			}, 10*time.Second, 500*time.Millisecond, "unable to deploy cork schedule msg for node %d", i)
+			s.T().Logf("cork msg for orch %d sent successfully", i)
 		}
 
-		s.T().Logf("wait for the block to pass, monitoring it as it goes")
+		s.T().Log("wait for scheduled height")
+		corkQueryClient := types.NewQueryClient(clientCtx)
+		gbClient := gbtypes.NewQueryClient(clientCtx)
+		var blockHeight uint64
 		s.Require().Eventuallyf(func() bool {
 			kb, err := val.keyring()
 			s.Require().NoError(err)
 			clientCtx, err := s.chain.clientContext("tcp://localhost:26657", &kb, "val", val.keyInfo.GetAddress())
 			s.Require().NoError(err)
 
-			queryClient := types.NewQueryClient(clientCtx)
-			res, err := queryClient.QueryScheduledCorks(context.Background(), &types.QueryScheduledCorksRequest{})
-			if err != nil {
-				s.T().Logf("error: %s", err)
-				return false
-			}
-
 			node, err := clientCtx.GetNode()
 			s.Require().NoError(err)
 			status, err := node.Status(context.Background())
 			s.Require().NoError(err)
-			blockHeight := status.SyncInfo.LatestBlockHeight
 
-			gbClient := gbtypes.NewQueryClient(clientCtx)
-			gbRes, err := gbClient.ContractCallTxs(context.Background(), &gbtypes.ContractCallTxsRequest{
-				Pagination: nil,
-			})
-			s.Require().NoError(err)
-
-			if blockHeight < (targetBlockHeight - 2) {
-				// verify that tbe scheduled cork has not yet been consumed, and that the counter has not been incremented
-				s.Require().Len(res.Corks, len(s.chain.validators))
-				s.Require().Equal(counterContract, common.HexToAddress(res.Corks[0].Cork.TargetContractAddress))
-				s.Require().Len(gbRes.Calls, 0)
-			} else if blockHeight > (targetBlockHeight + 1) {
-				// verify that block height has been passed, cork consumed, contractcalltx created
-				s.Require().Len(res.Corks, 0)
-				s.Require().Len(gbRes.Calls, 1)
-
-				// this is the only situation where this loop will complete
+			currentHeight := status.SyncInfo.LatestBlockHeight
+			if currentHeight > (targetBlockHeight + 1) {
+				blockHeight = uint64(status.SyncInfo.LatestBlockHeight)
 				return true
+			} else if currentHeight < targetBlockHeight {
+				res, err := corkQueryClient.QueryScheduledCorks(context.Background(), &types.QueryScheduledCorksRequest{})
+				if err != nil {
+					s.T().Logf("error: %s", err)
+					return false
+				}
+
+				// verify that the scheduled corks have not yet been consumed
+				s.Require().Len(res.Corks, len(s.chain.validators))
 			}
 
 			return false
-		}, 3*time.Minute, 1*time.Second, "count was never updated")
+		}, 3*time.Minute, 1*time.Second, "never reached scheduled height")
 
-		s.T().Logf("verify count was updated")
+		s.T().Log("verify the cork was approved")
+		resultRes, err := corkQueryClient.QueryCorkResult(context.Background(), &types.QueryCorkResultRequest{Id: corkId})
+		s.Require().NoError(err, "failed to query cork result")
+		s.Require().True(resultRes.CorkResult.Approved, "cork was not approved")
+		s.Require().Equal(counterContract, common.HexToAddress(resultRes.CorkResult.Cork.TargetContractAddress))
+
+		s.T().Log("verify scheduled corks were deleted")
+		res, err := corkQueryClient.QueryScheduledCorksByBlockHeight(context.Background(), &types.QueryScheduledCorksByBlockHeightRequest{BlockHeight: blockHeight})
+		s.Require().NoError(err, "failed to query scheduled corks by height")
+		s.Require().Len(res.Corks, 0)
+
+		s.T().Log("verify gravity contract call tx was created")
+		gbRes, err := gbClient.ContractCallTxs(context.Background(), &gbtypes.ContractCallTxsRequest{
+			Pagination: nil,
+		})
+		s.Require().NoError(err, "failed to query gravity contract call txs")
+		s.Require().Len(gbRes.Calls, 1)
+
+		s.T().Log("verify count was updated")
 		s.Require().Eventuallyf(func() bool {
 			count, err = s.getCurrentCount()
 			if err != nil {

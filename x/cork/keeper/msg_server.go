@@ -2,6 +2,7 @@ package keeper
 
 import (
 	"context"
+	"encoding/hex"
 	"fmt"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -66,5 +67,5 @@ func (k Keeper) ScheduleCork(c context.Context, msg *types.MsgScheduleCorkReques
 		},
 	)
 
-	return &types.MsgScheduleCorkResponse{Id: corkID}, nil
+	return &types.MsgScheduleCorkResponse{Id: hex.EncodeToString(corkID)}, nil
 }

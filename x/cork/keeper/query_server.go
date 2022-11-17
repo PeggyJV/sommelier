@@ -2,6 +2,7 @@ package keeper
 
 import (
 	"context"
+	"encoding/hex"
 
 	"github.com/ethereum/go-ethereum/common"
 
@@ -36,7 +37,7 @@ func (k Keeper) QueryScheduledCorks(c context.Context, _ *types.QueryScheduledCo
 
 	response := types.QueryScheduledCorksResponse{}
 
-	k.IterateScheduledCorks(ctx, func(val sdk.ValAddress, blockHeight uint64, id uint64, cel common.Address, cork types.Cork) (stop bool) {
+	k.IterateScheduledCorks(ctx, func(val sdk.ValAddress, blockHeight uint64, id []byte, cel common.Address, cork types.Cork) (stop bool) {
 		response.Corks = append(response.Corks, &types.ScheduledCork{
 			Cork:        &cork,
 			BlockHeight: blockHeight,
@@ -65,21 +66,31 @@ func (k Keeper) QueryScheduledCorksByBlockHeight(c context.Context, req *types.Q
 
 func (k Keeper) QueryScheduledCorksByID(c context.Context, req *types.QueryScheduledCorksByIDRequest) (*types.QueryScheduledCorksByIDResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
+	id, err := hex.DecodeString(req.Id)
+	if err != nil {
+		return nil, status.Errorf(codes.InvalidArgument, "Failed to decode %s from hexidecimal to bytes", req.Id)
+	}
 
 	response := types.QueryScheduledCorksByIDResponse{}
-	response.Corks = k.GetScheduledCorksByID(ctx, req.Id)
+	response.Corks = k.GetScheduledCorksByID(ctx, id)
 	return &response, nil
 }
 
 func (k Keeper) QueryCorkResult(c context.Context, req *types.QueryCorkResultRequest) (*types.QueryCorkResultResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
+	id, err := hex.DecodeString(req.Id)
+	if err != nil {
+		return nil, status.Errorf(codes.InvalidArgument, "Failed to decode %s from hexidecimal to bytes", req.Id)
+	}
 
 	response := types.QueryCorkResultResponse{}
 	var found bool
-	*response.CorkResult, found = k.GetCorkResult(ctx, req.Id)
+	result, found := k.GetCorkResult(ctx, id)
 	if !found {
 		return &types.QueryCorkResultResponse{}, status.Errorf(codes.NotFound, "No cork result found for id: %d", req.GetId())
 	}
+	response.CorkResult = &result
+
 	return &response, nil
 }
 

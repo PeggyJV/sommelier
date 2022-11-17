@@ -1,6 +1,7 @@
 package cli
 
 import (
+	"os"
 	"strconv"
 
 	"github.com/cosmos/cosmos-sdk/client"
@@ -111,6 +112,8 @@ func queryScheduledCorks() *cobra.Command {
 				return err
 			}
 
+			writer := os.Stdout
+			writer.Write([]byte(res.String()))
 			return ctx.PrintProto(res)
 		},
 	}
@@ -197,14 +200,11 @@ func queryCorkResult() *cobra.Command {
 				return err
 			}
 
-			corkID, err := strconv.Atoi(args[0])
-			if err != nil {
-				return err
-			}
+			corkID := args[0]
 
 			queryClient := types.NewQueryClient(ctx)
 			req := &types.QueryCorkResultRequest{
-				Id: uint64(corkID),
+				Id: corkID,
 			}
 
 			res, err := queryClient.QueryCorkResult(cmd.Context(), req)

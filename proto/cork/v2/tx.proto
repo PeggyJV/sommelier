@@ -1,8 +1,6 @@
 syntax = "proto3";
 package cork.v2;
 
-import "cosmos_proto/cosmos.proto";
-import "google/protobuf/any.proto";
 import "cork/v2/cork.proto";
 
 option go_package = "github.com/peggyjv/sommelier/v4/x/cork/types";
@@ -24,5 +22,5 @@ message MsgScheduleCorkRequest {
 
 message MsgScheduleCorkResponse {
   // cork ID
-  uint64 id = 1;
+  string id = 1;
 }

@@ -72,24 +72,15 @@ func GetScheduledCorkKeyByBlockHeightPrefix(blockHeight uint64) []byte {
 	return append(GetScheduledCorkKeyPrefix(), sdk.Uint64ToBigEndian(blockHeight)...)
 }
 
-func GetScheduledCorkKey(blockHeight uint64, id uint64, val sdk.ValAddress, contract common.Address) []byte {
+func GetScheduledCorkKey(blockHeight uint64, id []byte, val sdk.ValAddress, contract common.Address) []byte {
 	blockHeightBytes := sdk.Uint64ToBigEndian(blockHeight)
-	idBytes := sdk.Uint64ToBigEndian(id)
-	return bytes.Join([][]byte{{ScheduledCorkKeyPrefix}, blockHeightBytes, idBytes, val.Bytes(), contract.Bytes()}, []byte{})
-}
-
-func GetScheduledCorkIDHashPrefix() []byte {
-	return []byte{ScheduledCorkIDHashPrefix}
-}
-
-func GetScheduledCorkIDHashKey(hash []byte) []byte {
-	return append(GetScheduledCorkIDHashPrefix(), hash...)
+	return bytes.Join([][]byte{GetScheduledCorkKeyPrefix(), blockHeightBytes, id, val.Bytes(), contract.Bytes()}, []byte{})
 }
 
 func GetCorkResultPrefix() []byte {
 	return []byte{CorkResultPrefix}
 }
 
-func GetCorkResultKey(id uint64) []byte {
-	return append(GetCorkResultPrefix(), sdk.Uint64ToBigEndian(id)...)
+func GetCorkResultKey(id []byte) []byte {
+	return append(GetCorkResultPrefix(), id...)
 }

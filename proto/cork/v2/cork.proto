@@ -1,8 +1,6 @@
 syntax = "proto3";
 package cork.v2;
 
-import "cosmos_proto/cosmos.proto";
-
 option go_package = "github.com/peggyjv/sommelier/v4/x/cork/types";
 
 message Cork {
@@ -16,7 +14,7 @@ message ScheduledCork {
   Cork cork = 1;
   uint64 block_height = 2;
   string validator = 3;
-  uint64 id = 4;
+  bytes id = 4;
 }
 
 message CorkResult {
@@ -28,9 +26,4 @@ message CorkResult {
 
 message CellarIDSet {
   repeated string ids = 1;
-}
-
-message CorkIDHash {
-  uint64 id = 1;
-  bytes hash = 2;
 }

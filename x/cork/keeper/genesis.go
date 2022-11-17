@@ -12,10 +12,9 @@ func InitGenesis(ctx sdk.Context, k Keeper, gs types.GenesisState) {
 	// Set the vote period at initialization
 	k.SetCellarIDs(ctx, gs.CellarIds)
 	k.SetLatestInvalidationNonce(ctx, gs.InvalidationNonce)
-	k.SetLatestScheduledCorkID(ctx, gs.LatestCorkId)
 
-	for _, corkResults := range gs.CorkResults {
-		k.SetCorkResult(ctx, gs.LatestCorkId, *corkResults)
+	for _, corkResult := range gs.CorkResults {
+		k.SetCorkResult(ctx, corkResult.Cork.IDHash(corkResult.BlockHeight), *corkResult)
 	}
 
 	for _, scheduledCork := range gs.ScheduledCorks {
@@ -41,7 +40,6 @@ func ExportGenesis(ctx sdk.Context, k Keeper) types.GenesisState {
 		Params:            k.GetParamSet(ctx),
 		CellarIds:         ids,
 		InvalidationNonce: k.GetLatestInvalidationNonce(ctx),
-		LatestCorkId:      k.GetLatestScheduledCorkID(ctx),
 		ScheduledCorks:    k.GetScheduledCorks(ctx),
 		CorkResults:       k.GetCorkResults(ctx),
 	}

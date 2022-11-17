@@ -1,7 +1,6 @@
 syntax = "proto3";
 package cork.v2;
 
-import "cork/v2/tx.proto";
 import "cork/v2/cork.proto";
 import "gogoproto/gogo.proto";
 
@@ -17,10 +16,8 @@ message GenesisState {
         (gogoproto.nullable) = false
     ];
     uint64 invalidation_nonce = 3;
-    uint64 latest_cork_id = 4;
-    repeated ScheduledCork scheduled_corks = 5;
-    repeated CorkIDHash cork_id_hashes = 6;
-    repeated CorkResult cork_results = 7;
+    repeated ScheduledCork scheduled_corks = 4;
+    repeated CorkResult cork_results = 5;
 }
 
 // Params cork parameters
