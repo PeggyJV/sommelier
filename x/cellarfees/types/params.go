@@ -11,8 +11,10 @@ const (
 	DefaultFeeAccrualAuctionThreshold uint64 = 2
 	// Rough number of blocks in 28 days, the time it takes to unbond
 	DefaultRewardEmissionPeriod uint64 = 403200
-	// Initial rate at which an auction should decrease the price of the relevant coin from it's starting price
-	DefaultInitialPriceDecreaseRate uint64 = 347000000000000
+	// Initial rate at which an auction should decrease the price of the relevant coin from it's starting price.
+	// This value was determined experimentally. It is the initial rate at which it takes ~48 hours for the unit
+	// price to hit 0 usomm, assuming a decrease acceleration rate of 0.001.
+	DefaultInitialPriceDecreaseRate string = "0.0000648"
 	// Blocks between each auction price decrease
 	DefaultPriceDecreaseBlockInterval uint64 = 10
 )
@@ -38,7 +40,7 @@ func DefaultParams() Params {
 	return Params{
 		FeeAccrualAuctionThreshold: DefaultFeeAccrualAuctionThreshold,
 		RewardEmissionPeriod:       DefaultRewardEmissionPeriod,
-		InitialPriceDecreaseRate:   sdk.NewDec(int64(DefaultInitialPriceDecreaseRate)),
+		InitialPriceDecreaseRate:   sdk.MustNewDecFromStr(DefaultInitialPriceDecreaseRate),
 		PriceDecreaseBlockInterval: DefaultPriceDecreaseBlockInterval,
 	}
 }

@@ -4,7 +4,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/ethereum/go-ethereum/common"
 	gravitytypes "github.com/peggyjv/gravity-bridge/module/v2/x/gravity/types"
-	"github.com/peggyjv/sommelier/v4/app/params"
+	appParams "github.com/peggyjv/sommelier/v4/app/params"
 	"github.com/peggyjv/sommelier/v4/x/cellarfees/types"
 )
 
@@ -52,14 +52,14 @@ func (h Hooks) AfterSendToCosmosEvent(ctx sdk.Context, event gravitytypes.SendTo
 
 	// Denom cannot be SOMM
 	_, denom := h.k.gravityKeeper.ERC20ToDenomLookup(ctx, common.HexToAddress(event.TokenContract))
-	if denom == params.BaseCoinUnit {
+	if denom == appParams.BaseCoinUnit {
 		return
 	}
 
-	params := h.k.GetParams(ctx)
+	cellarfeesParams := h.k.GetParams(ctx)
 	counters := h.k.GetFeeAccrualCounters(ctx)
 	count := counters.IncrementCounter(denom)
-	if count >= params.FeeAccrualAuctionThreshold {
+	if count >= cellarfeesParams.FeeAccrualAuctionThreshold {
 		started := h.k.beginAuction(ctx, denom)
 		if started {
 			counters.ResetCounter(denom)
