@@ -4,7 +4,6 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	appParams "github.com/peggyjv/sommelier/v4/app/params"
-	"github.com/peggyjv/sommelier/v4/x/cellarfees/types"
 )
 
 // BeginBlocker emits rewards each block they are available by sending them to the distribution module's fee collector
@@ -12,7 +11,7 @@ import (
 // will decrease linearly until exhausted.
 func (k Keeper) BeginBlocker(ctx sdk.Context) {
 	// Handle reward emissions
-	moduleAccount := k.accountKeeper.GetModuleAccount(ctx, types.ModuleName)
+	moduleAccount := k.GetFeesAccount(ctx)
 	remainingRewardsSupply := k.bankKeeper.GetBalance(ctx, moduleAccount.GetAddress(), appParams.BaseCoinUnit).Amount
 
 	if remainingRewardsSupply.IsZero() {
@@ -23,9 +22,7 @@ func (k Keeper) BeginBlocker(ctx sdk.Context) {
 	params := k.GetParams(ctx)
 
 	var emissionAmount sdk.Int
-
-	// If this is the first emission after a resupply from zero, the current reward supply is the new peak.
-	if previousSupplyPeak.IsZero() {
+	if previousSupplyPeak.IsZero() || remainingRewardsSupply.GT(previousSupplyPeak) {
 		k.SetLastRewardSupplyPeak(ctx, remainingRewardsSupply)
 		emissionAmount = remainingRewardsSupply.Quo(sdk.NewInt(int64(params.RewardEmissionPeriod)))
 	} else {

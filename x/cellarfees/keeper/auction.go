@@ -35,20 +35,17 @@ func (k Keeper) beginAuction(ctx sdk.Context, denom string) (started bool) {
 		string(cellarfeesAccountAddr),
 	)
 	if err != nil {
-		k.handleBeginAuctionError(ctx, err)
+		switch err {
+		case auctiontypes.ErrUnauthorizedFundingModule:
+			panic("Attempted to start an auction with an unauthorized funding module")
+		case auctiontypes.ErrUnauthorizedProceedsModule:
+			panic("Attempted to start an auction with an unauthorized proceeds module")
+		default:
+			k.Logger(ctx).Error(err.Error())
+		}
+
 		return false
 	}
 
 	return true
-}
-
-func (k Keeper) handleBeginAuctionError(ctx sdk.Context, err error) {
-	switch err {
-	case auctiontypes.ErrUnauthorizedFundingModule:
-		panic("Attempted to start an auction with an unauthorized funding module")
-	case auctiontypes.ErrUnauthorizedProceedsModule:
-		panic("Attempted to start an auction with an unauthorized proceeds module")
-	default:
-		k.Logger(ctx).Error(err.Error())
-	}
 }

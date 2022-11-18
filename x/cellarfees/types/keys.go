@@ -12,7 +12,9 @@ const (
 
 	// QuerierRoute is the querier route for cellarfees
 	QuerierRoute = ModuleName
+)
 
+const (
 	// Store keys
 	_ = byte(iota)
 
