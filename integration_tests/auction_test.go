@@ -257,8 +257,6 @@ func (s *IntegrationTestSuite) TestAuctionModule() {
 		s.Require().NoError(err)
 		s.T().Logf("Orchestrator 0 token balances after first bid %v", balanceRes.Balances)
 
-		// expectedSaleTokens := expectedBid1.TotalFulfilledSaleTokens.Amount.Add(expectedBid2.TotalFulfilledSaleTokens.Amount)
-		// expectedUsommRemaining := initialOrchSomm.Sub(expectedBid1.TotalUsommPaid.Amount.Add(expectedBid2.TotalUsommPaid.Amount))
 		foundSomm, foundGravity = false, false
 		for _, balance := range balanceRes.Balances {
 			if balance.Denom == "gravity0x3506424f91fd33084466f402d5d97f05f8e3b4af" {
