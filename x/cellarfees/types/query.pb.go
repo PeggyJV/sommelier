@@ -6,6 +6,7 @@ package types
 import (
 	context "context"
 	fmt "fmt"
+	github_com_cosmos_cosmos_sdk_types "github.com/cosmos/cosmos-sdk/types"
 	_ "github.com/gogo/protobuf/gogoproto"
 	grpc1 "github.com/gogo/protobuf/grpc"
 	proto "github.com/gogo/protobuf/proto"
@@ -189,40 +190,210 @@ func (m *QueryModuleAccountsResponse) GetFeesAddress() string {
 	return ""
 }
 
+type QueryLastRewardSupplyPeakRequest struct {
+}
+
+func (m *QueryLastRewardSupplyPeakRequest) Reset()         { *m = QueryLastRewardSupplyPeakRequest{} }
+func (m *QueryLastRewardSupplyPeakRequest) String() string { return proto.CompactTextString(m) }
+func (*QueryLastRewardSupplyPeakRequest) ProtoMessage()    {}
+func (*QueryLastRewardSupplyPeakRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_6f4742d3026cf20c, []int{4}
+}
+func (m *QueryLastRewardSupplyPeakRequest) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *QueryLastRewardSupplyPeakRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_QueryLastRewardSupplyPeakRequest.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *QueryLastRewardSupplyPeakRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryLastRewardSupplyPeakRequest.Merge(m, src)
+}
+func (m *QueryLastRewardSupplyPeakRequest) XXX_Size() int {
+	return m.Size()
+}
+func (m *QueryLastRewardSupplyPeakRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryLastRewardSupplyPeakRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QueryLastRewardSupplyPeakRequest proto.InternalMessageInfo
+
+type QueryLastRewardSupplyPeakResponse struct {
+	LastRewardSupplyPeak github_com_cosmos_cosmos_sdk_types.Int `protobuf:"bytes,1,opt,name=last_reward_supply_peak,json=lastRewardSupplyPeak,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Int" json:"last_reward_supply_peak"`
+}
+
+func (m *QueryLastRewardSupplyPeakResponse) Reset()         { *m = QueryLastRewardSupplyPeakResponse{} }
+func (m *QueryLastRewardSupplyPeakResponse) String() string { return proto.CompactTextString(m) }
+func (*QueryLastRewardSupplyPeakResponse) ProtoMessage()    {}
+func (*QueryLastRewardSupplyPeakResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_6f4742d3026cf20c, []int{5}
+}
+func (m *QueryLastRewardSupplyPeakResponse) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *QueryLastRewardSupplyPeakResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_QueryLastRewardSupplyPeakResponse.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *QueryLastRewardSupplyPeakResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryLastRewardSupplyPeakResponse.Merge(m, src)
+}
+func (m *QueryLastRewardSupplyPeakResponse) XXX_Size() int {
+	return m.Size()
+}
+func (m *QueryLastRewardSupplyPeakResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryLastRewardSupplyPeakResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QueryLastRewardSupplyPeakResponse proto.InternalMessageInfo
+
+type QueryFeeAccrualCountersRequest struct {
+}
+
+func (m *QueryFeeAccrualCountersRequest) Reset()         { *m = QueryFeeAccrualCountersRequest{} }
+func (m *QueryFeeAccrualCountersRequest) String() string { return proto.CompactTextString(m) }
+func (*QueryFeeAccrualCountersRequest) ProtoMessage()    {}
+func (*QueryFeeAccrualCountersRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_6f4742d3026cf20c, []int{6}
+}
+func (m *QueryFeeAccrualCountersRequest) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *QueryFeeAccrualCountersRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_QueryFeeAccrualCountersRequest.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *QueryFeeAccrualCountersRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryFeeAccrualCountersRequest.Merge(m, src)
+}
+func (m *QueryFeeAccrualCountersRequest) XXX_Size() int {
+	return m.Size()
+}
+func (m *QueryFeeAccrualCountersRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryFeeAccrualCountersRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QueryFeeAccrualCountersRequest proto.InternalMessageInfo
+
+type QueryFeeAccrualCountersResponse struct {
+	FeeAccrualCounters FeeAccrualCounters `protobuf:"bytes,1,opt,name=fee_accrual_counters,json=feeAccrualCounters,proto3" json:"fee_accrual_counters"`
+}
+
+func (m *QueryFeeAccrualCountersResponse) Reset()         { *m = QueryFeeAccrualCountersResponse{} }
+func (m *QueryFeeAccrualCountersResponse) String() string { return proto.CompactTextString(m) }
+func (*QueryFeeAccrualCountersResponse) ProtoMessage()    {}
+func (*QueryFeeAccrualCountersResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_6f4742d3026cf20c, []int{7}
+}
+func (m *QueryFeeAccrualCountersResponse) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *QueryFeeAccrualCountersResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_QueryFeeAccrualCountersResponse.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *QueryFeeAccrualCountersResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryFeeAccrualCountersResponse.Merge(m, src)
+}
+func (m *QueryFeeAccrualCountersResponse) XXX_Size() int {
+	return m.Size()
+}
+func (m *QueryFeeAccrualCountersResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryFeeAccrualCountersResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QueryFeeAccrualCountersResponse proto.InternalMessageInfo
+
+func (m *QueryFeeAccrualCountersResponse) GetFeeAccrualCounters() FeeAccrualCounters {
+	if m != nil {
+		return m.FeeAccrualCounters
+	}
+	return FeeAccrualCounters{}
+}
+
 func init() {
 	proto.RegisterType((*QueryParamsRequest)(nil), "cellarfees.v1.QueryParamsRequest")
 	proto.RegisterType((*QueryParamsResponse)(nil), "cellarfees.v1.QueryParamsResponse")
 	proto.RegisterType((*QueryModuleAccountsRequest)(nil), "cellarfees.v1.QueryModuleAccountsRequest")
 	proto.RegisterType((*QueryModuleAccountsResponse)(nil), "cellarfees.v1.QueryModuleAccountsResponse")
+	proto.RegisterType((*QueryLastRewardSupplyPeakRequest)(nil), "cellarfees.v1.QueryLastRewardSupplyPeakRequest")
+	proto.RegisterType((*QueryLastRewardSupplyPeakResponse)(nil), "cellarfees.v1.QueryLastRewardSupplyPeakResponse")
+	proto.RegisterType((*QueryFeeAccrualCountersRequest)(nil), "cellarfees.v1.QueryFeeAccrualCountersRequest")
+	proto.RegisterType((*QueryFeeAccrualCountersResponse)(nil), "cellarfees.v1.QueryFeeAccrualCountersResponse")
 }
 
 func init() { proto.RegisterFile("cellarfees/v1/query.proto", fileDescriptor_6f4742d3026cf20c) }
 
 var fileDescriptor_6f4742d3026cf20c = []byte{
-	// 368 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x8c, 0x52, 0xc1, 0x4e, 0xc2, 0x40,
-	0x14, 0x6c, 0x89, 0x92, 0xb8, 0xa8, 0x87, 0x15, 0x13, 0xad, 0xa4, 0x48, 0x2f, 0x8a, 0x26, 0xdd,
-	0x00, 0x7e, 0x80, 0x70, 0x34, 0x9a, 0x28, 0x47, 0x2f, 0x64, 0x29, 0xcf, 0x5a, 0xd3, 0x76, 0x4b,
-	0xb7, 0x6d, 0xe0, 0xea, 0x17, 0x98, 0x78, 0xf3, 0xe0, 0xf7, 0x70, 0x24, 0xf1, 0xe2, 0xc9, 0x18,
-	0xf0, 0x43, 0x4c, 0xbb, 0x8d, 0x50, 0x6c, 0x8c, 0xb7, 0xcd, 0xcc, 0xbc, 0x99, 0x79, 0x2f, 0x8b,
-	0xf6, 0x0d, 0xb0, 0x6d, 0xea, 0xdf, 0x01, 0x70, 0x12, 0x35, 0xc8, 0x30, 0x04, 0x7f, 0xac, 0x7b,
-	0x3e, 0x0b, 0x18, 0xde, 0x5a, 0x50, 0x7a, 0xd4, 0x50, 0xca, 0x26, 0x33, 0x59, 0xc2, 0x90, 0xf8,
-	0x25, 0x44, 0x4a, 0xc5, 0x64, 0xcc, 0xb4, 0x81, 0x50, 0xcf, 0x22, 0xd4, 0x75, 0x59, 0x40, 0x03,
-	0x8b, 0xb9, 0x3c, 0x65, 0x95, 0xac, 0xbb, 0x47, 0x7d, 0xea, 0xa4, 0x9c, 0x56, 0x46, 0xf8, 0x26,
-	0x4e, 0xbb, 0x4e, 0xc0, 0x2e, 0x0c, 0x43, 0xe0, 0x81, 0x76, 0x81, 0x76, 0x32, 0x28, 0xf7, 0x98,
-	0xcb, 0x01, 0xb7, 0x50, 0x51, 0x0c, 0xef, 0xc9, 0x87, 0xf2, 0x71, 0xa9, 0xb9, 0xab, 0x67, 0xca,
-	0xe9, 0x42, 0xde, 0x59, 0x9b, 0x7c, 0x54, 0xa5, 0x6e, 0x2a, 0xd5, 0x2a, 0x48, 0x49, 0xbc, 0xae,
-	0xd8, 0x20, 0xb4, 0xa1, 0x6d, 0x18, 0x2c, 0x74, 0x83, 0x9f, 0xa4, 0x73, 0x74, 0x90, 0xcb, 0xa6,
-	0x89, 0x35, 0xb4, 0x19, 0x9b, 0xf7, 0xe8, 0x60, 0xe0, 0x03, 0x17, 0xb9, 0x1b, 0xdd, 0x52, 0x8c,
-	0xb5, 0x05, 0xd4, 0x7c, 0x2d, 0xa0, 0xf5, 0xc4, 0x02, 0x8f, 0x50, 0x51, 0x34, 0xc0, 0xb5, 0x95,
-	0x62, 0xbf, 0x57, 0x54, 0xb4, 0xbf, 0x24, 0x22, 0x5d, 0x3b, 0x7a, 0x7c, 0xfb, 0x7a, 0x2e, 0xd4,
-	0x70, 0x95, 0x70, 0xe6, 0x38, 0x60, 0x5b, 0xe0, 0x93, 0xbc, 0x5b, 0xe2, 0x17, 0x19, 0x6d, 0x67,
-	0x37, 0xc0, 0xf5, 0x3c, 0xff, 0xdc, 0x1b, 0x28, 0x27, 0xff, 0x91, 0xa6, 0x95, 0x1a, 0x49, 0xa5,
-	0x53, 0x5c, 0x5f, 0x54, 0xe2, 0x2b, 0x9d, 0x9c, 0x64, 0xb2, 0x47, 0xd3, 0xd1, 0xce, 0xe5, 0x64,
-	0xa6, 0xca, 0xd3, 0x99, 0x2a, 0x7f, 0xce, 0x54, 0xf9, 0x69, 0xae, 0x4a, 0xd3, 0xb9, 0x2a, 0xbd,
-	0xcf, 0x55, 0xe9, 0xb6, 0x69, 0x5a, 0xc1, 0x7d, 0xd8, 0xd7, 0x0d, 0xe6, 0x10, 0x0f, 0x4c, 0x73,
-	0xfc, 0x10, 0x2d, 0x6d, 0x1a, 0x9d, 0x91, 0xd1, 0xb2, 0x75, 0x30, 0xf6, 0x80, 0xf7, 0x8b, 0xc9,
-	0xbf, 0x69, 0x7d, 0x07, 0x00, 0x00, 0xff, 0xff, 0x08, 0xc7, 0x65, 0x0e, 0xb3, 0x02, 0x00, 0x00,
+	// 576 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x8c, 0x94, 0x3f, 0x6f, 0xd3, 0x4e,
+	0x1c, 0xc6, 0xe3, 0x9f, 0x7e, 0xad, 0xc4, 0x05, 0x96, 0x23, 0xa8, 0xd4, 0x54, 0x4e, 0xe2, 0x01,
+	0x28, 0xa8, 0xbe, 0x26, 0x41, 0x48, 0x6c, 0x34, 0x48, 0x48, 0xa0, 0x22, 0x95, 0x30, 0xc1, 0x62,
+	0x5d, 0x9d, 0x6f, 0x4c, 0x88, 0xed, 0x73, 0xef, 0xce, 0x81, 0x48, 0xb0, 0x30, 0x32, 0x21, 0x31,
+	0x30, 0xf2, 0x16, 0x58, 0x79, 0x07, 0x1d, 0x2b, 0xb1, 0x20, 0x86, 0x0a, 0x25, 0xbc, 0x10, 0xe4,
+	0xf3, 0xb5, 0xcd, 0x1f, 0x3b, 0xca, 0x94, 0xe8, 0x9e, 0xe7, 0xbe, 0xcf, 0xe7, 0x7c, 0x8f, 0x8d,
+	0x36, 0x3d, 0x08, 0x02, 0xca, 0x7b, 0x00, 0x82, 0x0c, 0x1b, 0xe4, 0x28, 0x01, 0x3e, 0x72, 0x62,
+	0xce, 0x24, 0xc3, 0x57, 0x2e, 0x24, 0x67, 0xd8, 0x30, 0x2b, 0x3e, 0xf3, 0x99, 0x52, 0x48, 0xfa,
+	0x2f, 0x33, 0x99, 0x5b, 0x3e, 0x63, 0x7e, 0x00, 0x84, 0xc6, 0x7d, 0x42, 0xa3, 0x88, 0x49, 0x2a,
+	0xfb, 0x2c, 0x12, 0x5a, 0x35, 0x67, 0xa7, 0xc7, 0x94, 0xd3, 0xf0, 0x4c, 0xb3, 0x66, 0xb5, 0xa9,
+	0x30, 0xa5, 0xdb, 0x15, 0x84, 0x9f, 0xa7, 0x34, 0x07, 0x6a, 0x53, 0x07, 0x8e, 0x12, 0x10, 0xd2,
+	0x7e, 0x8a, 0xae, 0xce, 0xac, 0x8a, 0x98, 0x45, 0x02, 0x70, 0x0b, 0xad, 0x67, 0xc3, 0xaf, 0x1b,
+	0x35, 0xe3, 0x76, 0xb9, 0x79, 0xcd, 0x99, 0x81, 0x77, 0x32, 0x7b, 0xfb, 0xff, 0xe3, 0xd3, 0x6a,
+	0xa9, 0xa3, 0xad, 0xf6, 0x16, 0x32, 0xd5, 0xac, 0x67, 0xac, 0x9b, 0x04, 0xb0, 0xe7, 0x79, 0x2c,
+	0x89, 0xe4, 0x79, 0xd2, 0x43, 0x74, 0x23, 0x57, 0xd5, 0x89, 0x75, 0x74, 0x39, 0x1d, 0xee, 0xd2,
+	0x6e, 0x97, 0x83, 0xc8, 0x72, 0x2f, 0x75, 0xca, 0xe9, 0xda, 0x5e, 0xb6, 0x64, 0xdb, 0xa8, 0xa6,
+	0x26, 0xec, 0x53, 0x21, 0x3b, 0xf0, 0x96, 0xf2, 0xee, 0x8b, 0x24, 0x8e, 0x83, 0xd1, 0x01, 0xd0,
+	0xc1, 0x59, 0xca, 0x27, 0x03, 0xd5, 0x97, 0x98, 0x74, 0x18, 0xa0, 0x8d, 0x80, 0x0a, 0xe9, 0x72,
+	0x65, 0x70, 0x85, 0x72, 0xb8, 0x31, 0xd0, 0x41, 0x96, 0xdb, 0x76, 0xd2, 0x83, 0xfd, 0x3e, 0xad,
+	0xde, 0xf4, 0xfb, 0xf2, 0x75, 0x72, 0xe8, 0x78, 0x2c, 0x24, 0x1e, 0x13, 0x21, 0x13, 0xfa, 0x67,
+	0x47, 0x74, 0x07, 0x44, 0x8e, 0x62, 0x10, 0xce, 0x93, 0x48, 0x76, 0x2a, 0x41, 0x4e, 0x9c, 0x5d,
+	0x43, 0x96, 0x62, 0x79, 0x0c, 0xe9, 0x79, 0x79, 0x42, 0x83, 0x47, 0xe9, 0xa1, 0x81, 0x9f, 0x3f,
+	0x94, 0xf7, 0xa8, 0x5a, 0xe8, 0xd0, 0xac, 0x2f, 0x51, 0xa5, 0x07, 0xe0, 0xd2, 0x4c, 0x76, 0x3d,
+	0xad, 0xeb, 0x8b, 0xa9, 0xcf, 0x5d, 0xcc, 0xe2, 0x20, 0x7d, 0x49, 0xb8, 0xb7, 0xa0, 0x34, 0xbf,
+	0xae, 0xa1, 0x35, 0x15, 0x8f, 0x3f, 0xa0, 0xf2, 0x54, 0x0d, 0xf0, 0xfc, 0xd4, 0xc5, 0xe2, 0x98,
+	0xf6, 0x32, 0x4b, 0x86, 0x6e, 0xdf, 0xfa, 0xf8, 0xf3, 0xef, 0x97, 0xff, 0xea, 0xb8, 0x4a, 0x04,
+	0x0b, 0x43, 0x08, 0xfa, 0xc0, 0x49, 0x5e, 0x83, 0xf1, 0x37, 0x43, 0xd7, 0x70, 0xb6, 0x1c, 0x78,
+	0x3b, 0x2f, 0x24, 0xb7, 0x5e, 0xe6, 0x9d, 0x55, 0xac, 0x9a, 0xab, 0xa1, 0xb8, 0xee, 0xe2, 0xed,
+	0x0b, 0x2e, 0x31, 0x07, 0x16, 0xaa, 0x9d, 0xe9, 0x53, 0xcf, 0x48, 0x7e, 0x18, 0x68, 0xb3, 0xb0,
+	0x57, 0x98, 0xe4, 0x85, 0x2f, 0xa9, 0xa9, 0xb9, 0xbb, 0xfa, 0x06, 0xcd, 0xfc, 0x40, 0x31, 0xb7,
+	0x70, 0xa3, 0x98, 0xb9, 0xa0, 0xd2, 0xf8, 0xbb, 0x81, 0x36, 0x0a, 0x5a, 0x86, 0x77, 0xf2, 0x40,
+	0x0a, 0xfb, 0x6a, 0x3a, 0xab, 0xda, 0x35, 0xf5, 0x7d, 0x45, 0xbd, 0x8b, 0x9d, 0x62, 0xea, 0xbc,
+	0x72, 0xb7, 0xf7, 0x8f, 0xc7, 0x96, 0x71, 0x32, 0xb6, 0x8c, 0x3f, 0x63, 0xcb, 0xf8, 0x3c, 0xb1,
+	0x4a, 0x27, 0x13, 0xab, 0xf4, 0x6b, 0x62, 0x95, 0x5e, 0x35, 0xa7, 0xde, 0xc8, 0x18, 0x7c, 0x7f,
+	0xf4, 0x66, 0x38, 0xd5, 0xae, 0xe1, 0x3d, 0xf2, 0x6e, 0x7a, 0xbe, 0x7a, 0x43, 0x0f, 0xd7, 0xd5,
+	0x17, 0xb0, 0xf5, 0x2f, 0x00, 0x00, 0xff, 0xff, 0xcd, 0x4a, 0xfa, 0x56, 0x9d, 0x05, 0x00, 0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -237,8 +408,10 @@ const _ = grpc.SupportPackageIsVersion4
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
 type QueryClient interface {
-	Params(ctx context.Context, in *QueryParamsRequest, opts ...grpc.CallOption) (*QueryParamsResponse, error)
-	ModuleAccounts(ctx context.Context, in *QueryModuleAccountsRequest, opts ...grpc.CallOption) (*QueryModuleAccountsResponse, error)
+	QueryParams(ctx context.Context, in *QueryParamsRequest, opts ...grpc.CallOption) (*QueryParamsResponse, error)
+	QueryModuleAccounts(ctx context.Context, in *QueryModuleAccountsRequest, opts ...grpc.CallOption) (*QueryModuleAccountsResponse, error)
+	QueryLastRewardSupplyPeak(ctx context.Context, in *QueryLastRewardSupplyPeakRequest, opts ...grpc.CallOption) (*QueryLastRewardSupplyPeakResponse, error)
+	QueryFeeAccrualCounters(ctx context.Context, in *QueryFeeAccrualCountersRequest, opts ...grpc.CallOption) (*QueryFeeAccrualCountersResponse, error)
 }
 
 type queryClient struct {
@@ -249,18 +422,36 @@ func NewQueryClient(cc grpc1.ClientConn) QueryClient {
 	return &queryClient{cc}
 }
 
-func (c *queryClient) Params(ctx context.Context, in *QueryParamsRequest, opts ...grpc.CallOption) (*QueryParamsResponse, error) {
+func (c *queryClient) QueryParams(ctx context.Context, in *QueryParamsRequest, opts ...grpc.CallOption) (*QueryParamsResponse, error) {
 	out := new(QueryParamsResponse)
-	err := c.cc.Invoke(ctx, "/cellarfees.v1.Query/Params", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/cellarfees.v1.Query/QueryParams", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *queryClient) ModuleAccounts(ctx context.Context, in *QueryModuleAccountsRequest, opts ...grpc.CallOption) (*QueryModuleAccountsResponse, error) {
+func (c *queryClient) QueryModuleAccounts(ctx context.Context, in *QueryModuleAccountsRequest, opts ...grpc.CallOption) (*QueryModuleAccountsResponse, error) {
 	out := new(QueryModuleAccountsResponse)
-	err := c.cc.Invoke(ctx, "/cellarfees.v1.Query/ModuleAccounts", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/cellarfees.v1.Query/QueryModuleAccounts", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *queryClient) QueryLastRewardSupplyPeak(ctx context.Context, in *QueryLastRewardSupplyPeakRequest, opts ...grpc.CallOption) (*QueryLastRewardSupplyPeakResponse, error) {
+	out := new(QueryLastRewardSupplyPeakResponse)
+	err := c.cc.Invoke(ctx, "/cellarfees.v1.Query/QueryLastRewardSupplyPeak", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *queryClient) QueryFeeAccrualCounters(ctx context.Context, in *QueryFeeAccrualCountersRequest, opts ...grpc.CallOption) (*QueryFeeAccrualCountersResponse, error) {
+	out := new(QueryFeeAccrualCountersResponse)
+	err := c.cc.Invoke(ctx, "/cellarfees.v1.Query/QueryFeeAccrualCounters", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -269,57 +460,101 @@ func (c *queryClient) ModuleAccounts(ctx context.Context, in *QueryModuleAccount
 
 // QueryServer is the server API for Query service.
 type QueryServer interface {
-	Params(context.Context, *QueryParamsRequest) (*QueryParamsResponse, error)
-	ModuleAccounts(context.Context, *QueryModuleAccountsRequest) (*QueryModuleAccountsResponse, error)
+	QueryParams(context.Context, *QueryParamsRequest) (*QueryParamsResponse, error)
+	QueryModuleAccounts(context.Context, *QueryModuleAccountsRequest) (*QueryModuleAccountsResponse, error)
+	QueryLastRewardSupplyPeak(context.Context, *QueryLastRewardSupplyPeakRequest) (*QueryLastRewardSupplyPeakResponse, error)
+	QueryFeeAccrualCounters(context.Context, *QueryFeeAccrualCountersRequest) (*QueryFeeAccrualCountersResponse, error)
 }
 
 // UnimplementedQueryServer can be embedded to have forward compatible implementations.
 type UnimplementedQueryServer struct {
 }
 
-func (*UnimplementedQueryServer) Params(ctx context.Context, req *QueryParamsRequest) (*QueryParamsResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Params not implemented")
+func (*UnimplementedQueryServer) QueryParams(ctx context.Context, req *QueryParamsRequest) (*QueryParamsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method QueryParams not implemented")
 }
-func (*UnimplementedQueryServer) ModuleAccounts(ctx context.Context, req *QueryModuleAccountsRequest) (*QueryModuleAccountsResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method ModuleAccounts not implemented")
+func (*UnimplementedQueryServer) QueryModuleAccounts(ctx context.Context, req *QueryModuleAccountsRequest) (*QueryModuleAccountsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method QueryModuleAccounts not implemented")
+}
+func (*UnimplementedQueryServer) QueryLastRewardSupplyPeak(ctx context.Context, req *QueryLastRewardSupplyPeakRequest) (*QueryLastRewardSupplyPeakResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method QueryLastRewardSupplyPeak not implemented")
+}
+func (*UnimplementedQueryServer) QueryFeeAccrualCounters(ctx context.Context, req *QueryFeeAccrualCountersRequest) (*QueryFeeAccrualCountersResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method QueryFeeAccrualCounters not implemented")
 }
 
 func RegisterQueryServer(s grpc1.Server, srv QueryServer) {
 	s.RegisterService(&_Query_serviceDesc, srv)
 }
 
-func _Query_Params_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _Query_QueryParams_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(QueryParamsRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(QueryServer).Params(ctx, in)
+		return srv.(QueryServer).QueryParams(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/cellarfees.v1.Query/Params",
+		FullMethod: "/cellarfees.v1.Query/QueryParams",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(QueryServer).Params(ctx, req.(*QueryParamsRequest))
+		return srv.(QueryServer).QueryParams(ctx, req.(*QueryParamsRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Query_ModuleAccounts_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _Query_QueryModuleAccounts_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(QueryModuleAccountsRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(QueryServer).ModuleAccounts(ctx, in)
+		return srv.(QueryServer).QueryModuleAccounts(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/cellarfees.v1.Query/ModuleAccounts",
+		FullMethod: "/cellarfees.v1.Query/QueryModuleAccounts",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(QueryServer).ModuleAccounts(ctx, req.(*QueryModuleAccountsRequest))
+		return srv.(QueryServer).QueryModuleAccounts(ctx, req.(*QueryModuleAccountsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Query_QueryLastRewardSupplyPeak_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryLastRewardSupplyPeakRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QueryServer).QueryLastRewardSupplyPeak(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/cellarfees.v1.Query/QueryLastRewardSupplyPeak",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServer).QueryLastRewardSupplyPeak(ctx, req.(*QueryLastRewardSupplyPeakRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Query_QueryFeeAccrualCounters_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryFeeAccrualCountersRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QueryServer).QueryFeeAccrualCounters(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/cellarfees.v1.Query/QueryFeeAccrualCounters",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServer).QueryFeeAccrualCounters(ctx, req.(*QueryFeeAccrualCountersRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -329,12 +564,20 @@ var _Query_serviceDesc = grpc.ServiceDesc{
 	HandlerType: (*QueryServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "Params",
-			Handler:    _Query_Params_Handler,
+			MethodName: "QueryParams",
+			Handler:    _Query_QueryParams_Handler,
 		},
 		{
-			MethodName: "ModuleAccounts",
-			Handler:    _Query_ModuleAccounts_Handler,
+			MethodName: "QueryModuleAccounts",
+			Handler:    _Query_QueryModuleAccounts_Handler,
+		},
+		{
+			MethodName: "QueryLastRewardSupplyPeak",
+			Handler:    _Query_QueryLastRewardSupplyPeak_Handler,
+		},
+		{
+			MethodName: "QueryFeeAccrualCounters",
+			Handler:    _Query_QueryFeeAccrualCounters_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
@@ -450,6 +693,118 @@ func (m *QueryModuleAccountsResponse) MarshalToSizedBuffer(dAtA []byte) (int, er
 	return len(dAtA) - i, nil
 }
 
+func (m *QueryLastRewardSupplyPeakRequest) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *QueryLastRewardSupplyPeakRequest) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *QueryLastRewardSupplyPeakRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	return len(dAtA) - i, nil
+}
+
+func (m *QueryLastRewardSupplyPeakResponse) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *QueryLastRewardSupplyPeakResponse) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *QueryLastRewardSupplyPeakResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	{
+		size := m.LastRewardSupplyPeak.Size()
+		i -= size
+		if _, err := m.LastRewardSupplyPeak.MarshalTo(dAtA[i:]); err != nil {
+			return 0, err
+		}
+		i = encodeVarintQuery(dAtA, i, uint64(size))
+	}
+	i--
+	dAtA[i] = 0xa
+	return len(dAtA) - i, nil
+}
+
+func (m *QueryFeeAccrualCountersRequest) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *QueryFeeAccrualCountersRequest) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *QueryFeeAccrualCountersRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	return len(dAtA) - i, nil
+}
+
+func (m *QueryFeeAccrualCountersResponse) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *QueryFeeAccrualCountersResponse) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *QueryFeeAccrualCountersResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	{
+		size, err := m.FeeAccrualCounters.MarshalToSizedBuffer(dAtA[:i])
+		if err != nil {
+			return 0, err
+		}
+		i -= size
+		i = encodeVarintQuery(dAtA, i, uint64(size))
+	}
+	i--
+	dAtA[i] = 0xa
+	return len(dAtA) - i, nil
+}
+
 func encodeVarintQuery(dAtA []byte, offset int, v uint64) int {
 	offset -= sovQuery(v)
 	base := offset
@@ -500,6 +855,46 @@ func (m *QueryModuleAccountsResponse) Size() (n int) {
 	if l > 0 {
 		n += 1 + l + sovQuery(uint64(l))
 	}
+	return n
+}
+
+func (m *QueryLastRewardSupplyPeakRequest) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	return n
+}
+
+func (m *QueryLastRewardSupplyPeakResponse) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = m.LastRewardSupplyPeak.Size()
+	n += 1 + l + sovQuery(uint64(l))
+	return n
+}
+
+func (m *QueryFeeAccrualCountersRequest) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	return n
+}
+
+func (m *QueryFeeAccrualCountersResponse) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = m.FeeAccrualCounters.Size()
+	n += 1 + l + sovQuery(uint64(l))
 	return n
 }
 
@@ -752,6 +1147,273 @@ func (m *QueryModuleAccountsResponse) Unmarshal(dAtA []byte) error {
 				return io.ErrUnexpectedEOF
 			}
 			m.FeesAddress = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuery(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *QueryLastRewardSupplyPeakRequest) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuery
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: QueryLastRewardSupplyPeakRequest: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: QueryLastRewardSupplyPeakRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuery(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *QueryLastRewardSupplyPeakResponse) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuery
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: QueryLastRewardSupplyPeakResponse: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: QueryLastRewardSupplyPeakResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field LastRewardSupplyPeak", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if err := m.LastRewardSupplyPeak.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuery(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *QueryFeeAccrualCountersRequest) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuery
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: QueryFeeAccrualCountersRequest: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: QueryFeeAccrualCountersRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuery(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *QueryFeeAccrualCountersResponse) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuery
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: QueryFeeAccrualCountersResponse: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: QueryFeeAccrualCountersResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field FeeAccrualCounters", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if err := m.FeeAccrualCounters.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
 			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
