@@ -5,7 +5,7 @@ import (
 	cellarfeesTypes "github.com/peggyjv/sommelier/v4/x/cellarfees/types"
 )
 
-func (suite KeeperTestSuite) TestQueriesHappyPath() {
+func (suite *KeeperTestSuite) TestQueriesHappyPath() {
 	ctx, cellarfeesKeeper := suite.ctx, suite.cellarfeesKeeper
 	require := suite.Require()
 
@@ -53,7 +53,7 @@ func (suite KeeperTestSuite) TestQueriesHappyPath() {
 	require.Equal(&cellarfeesTypes.QueryFeeAccrualCountersResponse{FeeAccrualCounters: expectedFeeAccrualCounters}, feeAccrualCountersResponse)
 }
 
-func (suite KeeperTestSuite) TestQueriesUnhappyPath() {
+func (suite *KeeperTestSuite) TestQueriesUnhappyPath() {
 	ctx, cellarfeesKeeper := suite.ctx, suite.cellarfeesKeeper
 	require := suite.Require()
 

@@ -9,7 +9,9 @@ import (
 	cellarfeesTypes "github.com/peggyjv/sommelier/v4/x/cellarfees/types"
 )
 
-func (suite KeeperTestSuite) SetupHooksTests(ctx sdk.Context, cellarfeesKeeper Keeper) {
+const gravityFeeDenom = "gravity0x1111111111111111111111111111111111111111"
+
+func (suite *KeeperTestSuite) SetupHooksTests(ctx sdk.Context, cellarfeesKeeper Keeper) {
 	cellarfeesKeeper.SetParams(ctx, cellarfeesTypes.DefaultParams())
 	cellarfeesKeeper.SetFeeAccrualCounters(ctx, cellarfeesTypes.DefaultFeeAccrualCounters())
 
@@ -17,7 +19,7 @@ func (suite KeeperTestSuite) SetupHooksTests(ctx sdk.Context, cellarfeesKeeper K
 	suite.accountKeeper.EXPECT().GetModuleAccount(ctx, feesAccount.GetName()).Return(feesAccount).Times(1)
 }
 
-func (suite KeeperTestSuite) TestHooksRecipientNotFeesAccountDoesNothing() {
+func (suite *KeeperTestSuite) TestHooksRecipientNotFeesAccountDoesNothing() {
 	ctx, cellarfeesKeeper, require := suite.ctx, suite.cellarfeesKeeper, suite.Require()
 	suite.SetupHooksTests(ctx, cellarfeesKeeper)
 
@@ -30,7 +32,7 @@ func (suite KeeperTestSuite) TestHooksRecipientNotFeesAccountDoesNothing() {
 	require.Equal(cellarfeesTypes.DefaultFeeAccrualCounters(), cellarfeesKeeper.GetFeeAccrualCounters(ctx))
 }
 
-func (suite KeeperTestSuite) TestHooksEventAmountZeroDoesNothing() {
+func (suite *KeeperTestSuite) TestHooksEventAmountZeroDoesNothing() {
 	ctx, cellarfeesKeeper, require := suite.ctx, suite.cellarfeesKeeper, suite.Require()
 	suite.SetupHooksTests(ctx, cellarfeesKeeper)
 
@@ -44,7 +46,7 @@ func (suite KeeperTestSuite) TestHooksEventAmountZeroDoesNothing() {
 	require.Equal(cellarfeesTypes.DefaultFeeAccrualCounters(), cellarfeesKeeper.GetFeeAccrualCounters(ctx))
 }
 
-func (suite KeeperTestSuite) TestHooksUnapprovedCellarDoesNothing() {
+func (suite *KeeperTestSuite) TestHooksUnapprovedCellarDoesNothing() {
 	ctx, cellarfeesKeeper, require := suite.ctx, suite.cellarfeesKeeper, suite.Require()
 	suite.SetupHooksTests(ctx, cellarfeesKeeper)
 
@@ -63,7 +65,7 @@ func (suite KeeperTestSuite) TestHooksUnapprovedCellarDoesNothing() {
 	require.Equal(cellarfeesTypes.DefaultFeeAccrualCounters(), cellarfeesKeeper.GetFeeAccrualCounters(ctx))
 }
 
-func (suite KeeperTestSuite) TestHooksDenomIsUsommDoesNothing() {
+func (suite *KeeperTestSuite) TestHooksDenomIsUsommDoesNothing() {
 	ctx, cellarfeesKeeper, require := suite.ctx, suite.cellarfeesKeeper, suite.Require()
 	suite.SetupHooksTests(ctx, cellarfeesKeeper)
 
@@ -84,7 +86,7 @@ func (suite KeeperTestSuite) TestHooksDenomIsUsommDoesNothing() {
 	require.Equal(cellarfeesTypes.DefaultFeeAccrualCounters(), cellarfeesKeeper.GetFeeAccrualCounters(ctx))
 }
 
-func (suite KeeperTestSuite) TestHooksCountAccruesNoAuction() {
+func (suite *KeeperTestSuite) TestHooksCountAccruesNoAuction() {
 	ctx, cellarfeesKeeper, require := suite.ctx, suite.cellarfeesKeeper, suite.Require()
 	suite.SetupHooksTests(ctx, cellarfeesKeeper)
 
@@ -96,11 +98,10 @@ func (suite KeeperTestSuite) TestHooksCountAccruesNoAuction() {
 		TokenContract:  "0x1111111111111111111111111111111111111111",
 	}
 	cellarID := common.HexToAddress(event.EthereumSender)
-	feeDenom := "gravity0x1111111111111111111111111111111111111111"
 	expectedCounters := cellarfeesTypes.FeeAccrualCounters{
 		Counters: []cellarfeesTypes.FeeAccrualCounter{
 			{
-				Denom: feeDenom,
+				Denom: gravityFeeDenom,
 				Count: 1,
 			},
 		},
@@ -108,14 +109,14 @@ func (suite KeeperTestSuite) TestHooksCountAccruesNoAuction() {
 
 	// mocks
 	suite.corkKeeper.EXPECT().HasCellarID(ctx, cellarID).Return(true)
-	suite.gravityKeeper.EXPECT().ERC20ToDenomLookup(ctx, common.HexToAddress(event.TokenContract)).Return(false, feeDenom).Times(1)
+	suite.gravityKeeper.EXPECT().ERC20ToDenomLookup(ctx, common.HexToAddress(event.TokenContract)).Return(false, gravityFeeDenom).Times(1)
 	suite.auctionKeeper.EXPECT().BeginAuction(ctx, gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).Times(0)
 
 	require.NotPanics(func() { hooks.AfterSendToCosmosEvent(ctx, event) })
 	require.Equal(expectedCounters, cellarfeesKeeper.GetFeeAccrualCounters(ctx))
 }
 
-func (suite KeeperTestSuite) TestHooksCountAccruesAuctionStarts() {
+func (suite *KeeperTestSuite) TestHooksCountAccruesAuctionStarts() {
 	ctx, cellarfeesKeeper, require := suite.ctx, suite.cellarfeesKeeper, suite.Require()
 	suite.SetupHooksTests(ctx, cellarfeesKeeper)
 
@@ -127,11 +128,10 @@ func (suite KeeperTestSuite) TestHooksCountAccruesAuctionStarts() {
 		TokenContract:  "0x1111111111111111111111111111111111111111",
 	}
 	cellarID := common.HexToAddress(event.EthereumSender)
-	feeDenom := "gravity0x1111111111111111111111111111111111111111"
 	cellarfeesKeeper.SetFeeAccrualCounters(ctx, cellarfeesTypes.FeeAccrualCounters{
 		Counters: []cellarfeesTypes.FeeAccrualCounter{
 			{
-				Denom: feeDenom,
+				Denom: gravityFeeDenom,
 				Count: 1,
 			},
 		},
@@ -139,7 +139,7 @@ func (suite KeeperTestSuite) TestHooksCountAccruesAuctionStarts() {
 	expectedCounters := cellarfeesTypes.FeeAccrualCounters{
 		Counters: []cellarfeesTypes.FeeAccrualCounter{
 			{
-				Denom: feeDenom,
+				Denom: gravityFeeDenom,
 				Count: 0,
 			},
 		},
@@ -147,17 +147,17 @@ func (suite KeeperTestSuite) TestHooksCountAccruesAuctionStarts() {
 
 	// mocks
 	suite.corkKeeper.EXPECT().HasCellarID(ctx, cellarID).Return(true)
-	suite.gravityKeeper.EXPECT().ERC20ToDenomLookup(ctx, common.HexToAddress(event.TokenContract)).Return(false, feeDenom)
+	suite.gravityKeeper.EXPECT().ERC20ToDenomLookup(ctx, common.HexToAddress(event.TokenContract)).Return(false, gravityFeeDenom)
 	suite.accountKeeper.EXPECT().GetModuleAccount(ctx, cellarfeesTypes.ModuleName).Return(feesAccount)
 	suite.auctionKeeper.EXPECT().GetActiveAuctions(ctx).Return([]*auctionTypes.Auction{})
-	suite.bankKeeper.EXPECT().GetBalance(ctx, feesAccount.GetAddress(), feeDenom).Return(sdk.NewCoin(feeDenom, event.Amount))
+	suite.bankKeeper.EXPECT().GetBalance(ctx, feesAccount.GetAddress(), gravityFeeDenom).Return(sdk.NewCoin(gravityFeeDenom, event.Amount))
 	suite.auctionKeeper.EXPECT().BeginAuction(ctx, gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).Return(nil).Times(1)
 
 	require.NotPanics(func() { hooks.AfterSendToCosmosEvent(ctx, event) })
 	require.Equal(expectedCounters, cellarfeesKeeper.GetFeeAccrualCounters(ctx))
 }
 
-func (suite KeeperTestSuite) TestHooksCountAccruesAuctionDoesNotStart() {
+func (suite *KeeperTestSuite) TestHooksCountAccruesAuctionDoesNotStart() {
 	ctx, cellarfeesKeeper, require := suite.ctx, suite.cellarfeesKeeper, suite.Require()
 	suite.SetupHooksTests(ctx, cellarfeesKeeper)
 
@@ -169,11 +169,10 @@ func (suite KeeperTestSuite) TestHooksCountAccruesAuctionDoesNotStart() {
 		TokenContract:  "0x1111111111111111111111111111111111111111",
 	}
 	cellarID := common.HexToAddress(event.EthereumSender)
-	feeDenom := "gravity0x1111111111111111111111111111111111111111"
 	cellarfeesKeeper.SetFeeAccrualCounters(ctx, cellarfeesTypes.FeeAccrualCounters{
 		Counters: []cellarfeesTypes.FeeAccrualCounter{
 			{
-				Denom: feeDenom,
+				Denom: gravityFeeDenom,
 				Count: 1,
 			},
 		},
@@ -181,7 +180,7 @@ func (suite KeeperTestSuite) TestHooksCountAccruesAuctionDoesNotStart() {
 	expectedCounters := cellarfeesTypes.FeeAccrualCounters{
 		Counters: []cellarfeesTypes.FeeAccrualCounter{
 			{
-				Denom: feeDenom,
+				Denom: gravityFeeDenom,
 				Count: 2,
 			},
 		},
@@ -189,10 +188,10 @@ func (suite KeeperTestSuite) TestHooksCountAccruesAuctionDoesNotStart() {
 
 	// mocks
 	suite.corkKeeper.EXPECT().HasCellarID(ctx, cellarID).Return(true)
-	suite.gravityKeeper.EXPECT().ERC20ToDenomLookup(ctx, common.HexToAddress(event.TokenContract)).Return(false, feeDenom)
+	suite.gravityKeeper.EXPECT().ERC20ToDenomLookup(ctx, common.HexToAddress(event.TokenContract)).Return(false, gravityFeeDenom)
 	suite.accountKeeper.EXPECT().GetModuleAccount(ctx, cellarfeesTypes.ModuleName).Return(feesAccount)
 	suite.auctionKeeper.EXPECT().GetActiveAuctions(ctx).Return([]*auctionTypes.Auction{})
-	suite.bankKeeper.EXPECT().GetBalance(ctx, feesAccount.GetAddress(), feeDenom).Return(sdk.NewCoin(feeDenom, event.Amount))
+	suite.bankKeeper.EXPECT().GetBalance(ctx, feesAccount.GetAddress(), gravityFeeDenom).Return(sdk.NewCoin(gravityFeeDenom, event.Amount))
 	suite.auctionKeeper.EXPECT().BeginAuction(ctx, gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).Return(auctionTypes.ErrDenomCannotBeEmpty).Times(1)
 
 	require.NotPanics(func() { hooks.AfterSendToCosmosEvent(ctx, event) })

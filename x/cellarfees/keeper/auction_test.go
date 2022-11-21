@@ -7,6 +7,8 @@ import (
 	cellarfeesTypes "github.com/peggyjv/sommelier/v4/x/cellarfees/types"
 )
 
+const feeDenom = "testdenom"
+
 func (suite *KeeperTestSuite) TestHappyPathBeginAuction() {
 	ctx, cellarfeesKeeper := suite.ctx, suite.cellarfeesKeeper
 	require := suite.Require()
@@ -14,7 +16,6 @@ func (suite *KeeperTestSuite) TestHappyPathBeginAuction() {
 	params := cellarfeesTypes.DefaultParams()
 	cellarfeesKeeper.SetParams(ctx, params)
 
-	feeDenom := "testdenom"
 	fees := sdk.NewCoin(feeDenom, sdk.NewInt(1000000))
 
 	// retreiving module account
@@ -39,7 +40,6 @@ func (suite *KeeperTestSuite) TestAuctionFeeBalanceZeroPanics() {
 	params := cellarfeesTypes.DefaultParams()
 	cellarfeesKeeper.SetParams(ctx, params)
 
-	feeDenom := "testdenom"
 	fees := sdk.NewCoin(feeDenom, sdk.NewInt(0))
 
 	// retreiving module account
@@ -61,7 +61,6 @@ func (suite *KeeperTestSuite) TestAuctionUnauthorizedFundingModule() {
 	params := cellarfeesTypes.DefaultParams()
 	cellarfeesKeeper.SetParams(ctx, params)
 
-	feeDenom := "testdenom"
 	fees := sdk.NewCoin(feeDenom, sdk.NewInt(1000000))
 
 	// retreiving module account
@@ -86,7 +85,6 @@ func (suite *KeeperTestSuite) TestAuctionUnauthorizedProceedsModule() {
 	params := cellarfeesTypes.DefaultParams()
 	cellarfeesKeeper.SetParams(ctx, params)
 
-	feeDenom := "testdenom"
 	fees := sdk.NewCoin(feeDenom, sdk.NewInt(1000000))
 
 	// retreiving module account
@@ -111,7 +109,6 @@ func (suite *KeeperTestSuite) TestAuctionNonPanicError() {
 	params := cellarfeesTypes.DefaultParams()
 	cellarfeesKeeper.SetParams(ctx, params)
 
-	feeDenom := "testdenom"
 	fees := sdk.NewCoin(feeDenom, sdk.NewInt(1000000))
 
 	// retreiving module account
@@ -136,7 +133,6 @@ func (suite *KeeperTestSuite) TestAuctionAlreadyActive() {
 	params := cellarfeesTypes.DefaultParams()
 	cellarfeesKeeper.SetParams(ctx, params)
 
-	feeDenom := "testdenom"
 	fees := sdk.NewCoin(feeDenom, sdk.NewInt(1000000))
 
 	// active auction for our denom
