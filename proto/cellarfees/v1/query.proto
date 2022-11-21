@@ -14,15 +14,15 @@ service Query {
   }
 
   rpc QueryModuleAccounts(QueryModuleAccountsRequest) returns (QueryModuleAccountsResponse) {
-    option (google.api.http).get = "/sommeliers/cellarfees/v1/module_accounts";
+    option (google.api.http).get = "/sommelier/cellarfees/v1/module_accounts";
   }
 
   rpc QueryLastRewardSupplyPeak(QueryLastRewardSupplyPeakRequest) returns (QueryLastRewardSupplyPeakResponse) {
-    option (google.api.http).get = "/sommeliers/cellarfees/v1/last_reward_supply_peak";
+    option (google.api.http).get = "/sommelier/cellarfees/v1/last_reward_supply_peak";
   }
 
   rpc QueryFeeAccrualCounters(QueryFeeAccrualCountersRequest) returns (QueryFeeAccrualCountersResponse) {
-    option (google.api.http).get = "/sommeliers/cellarfees/v1/fee_accrual_counters";
+    option (google.api.http).get = "/sommelier/cellarfees/v1/fee_accrual_counters";
   }
 }
 

@@ -330,11 +330,11 @@ func RegisterQueryHandlerClient(ctx context.Context, mux *runtime.ServeMux, clie
 var (
 	pattern_Query_QueryParams_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"sommelier", "cellarfees", "v1", "params"}, "", runtime.AssumeColonVerbOpt(false)))
 
-	pattern_Query_QueryModuleAccounts_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"sommeliers", "cellarfees", "v1", "module_accounts"}, "", runtime.AssumeColonVerbOpt(false)))
+	pattern_Query_QueryModuleAccounts_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"sommelier", "cellarfees", "v1", "module_accounts"}, "", runtime.AssumeColonVerbOpt(false)))
 
-	pattern_Query_QueryLastRewardSupplyPeak_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"sommeliers", "cellarfees", "v1", "last_reward_supply_peak"}, "", runtime.AssumeColonVerbOpt(false)))
+	pattern_Query_QueryLastRewardSupplyPeak_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"sommelier", "cellarfees", "v1", "last_reward_supply_peak"}, "", runtime.AssumeColonVerbOpt(false)))
 
-	pattern_Query_QueryFeeAccrualCounters_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"sommeliers", "cellarfees", "v1", "fee_accrual_counters"}, "", runtime.AssumeColonVerbOpt(false)))
+	pattern_Query_QueryFeeAccrualCounters_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"sommelier", "cellarfees", "v1", "fee_accrual_counters"}, "", runtime.AssumeColonVerbOpt(false)))
 )
 
 var (

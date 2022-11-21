@@ -48,6 +48,8 @@ func (suite *KeeperTestSuite) SetupTest() {
 
 	// gomock initializations
 	ctrl := gomock.NewController(suite.T())
+	defer ctrl.Finish()
+
 	suite.bankKeeper = cellarfeestestutil.NewMockBankKeeper(ctrl)
 	suite.accountKeeper = cellarfeestestutil.NewMockAccountKeeper(ctrl)
 	suite.corkKeeper = cellarfeestestutil.NewMockCorkKeeper(ctrl)

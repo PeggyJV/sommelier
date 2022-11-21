@@ -182,6 +182,11 @@ func (k Keeper) BeginAuction(ctx sdk.Context,
 	priceDecreaseBlockInterval uint64,
 	fundingModuleAccount string,
 	proceedsModuleAccount string) error {
+	// Validate starting token balance
+	if !startingTokensForSale.IsPositive() {
+		return sdkerrors.Wrapf(types.ErrAuctionStartingAmountMustBePositve, "Starting tokens for sale: %s", startingTokensForSale.String())
+	}
+
 	// Validate funding module
 	if _, ok := k.fundingModuleAccounts[fundingModuleAccount]; !ok {
 		return sdkerrors.Wrapf(types.ErrUnauthorizedFundingModule, "Module Account: %s", fundingModuleAccount)

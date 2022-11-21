@@ -61,6 +61,8 @@ func (suite *KeeperTestSuite) SetupTest() {
 
 	// gomock initializations
 	ctrl := gomock.NewController(suite.T())
+	defer ctrl.Finish()
+
 	suite.bankKeeper = auctiontestutil.NewMockBankKeeper(ctrl)
 	suite.accountKeeper = auctiontestutil.NewMockAccountKeeper(ctrl)
 	suite.ctx = ctx

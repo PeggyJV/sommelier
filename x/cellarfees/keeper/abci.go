@@ -22,7 +22,7 @@ func (k Keeper) BeginBlocker(ctx sdk.Context) {
 	params := k.GetParams(ctx)
 
 	var emissionAmount sdk.Int
-	if previousSupplyPeak.IsZero() || remainingRewardsSupply.GT(previousSupplyPeak) {
+	if remainingRewardsSupply.GT(previousSupplyPeak) {
 		k.SetLastRewardSupplyPeak(ctx, remainingRewardsSupply)
 		emissionAmount = remainingRewardsSupply.Quo(sdk.NewInt(int64(params.RewardEmissionPeriod)))
 	} else {
