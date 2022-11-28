@@ -41,7 +41,6 @@ func (h Hooks) AfterSendToCosmosEvent(ctx sdk.Context, event gravitytypes.SendTo
 		return
 	}
 
-	// Just in case. Calling beginAuction() for a zeroed balance will halt the chain.
 	if event.Amount.IsZero() {
 		return
 	}

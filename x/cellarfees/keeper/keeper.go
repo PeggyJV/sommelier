@@ -97,9 +97,9 @@ func (k Keeper) GetFeeAccrualCounters(ctx sdk.Context) (counters types.FeeAccrua
 	if b == nil {
 		panic("Fee accrual counters is nil, it should have been set by InitGenesis")
 	}
-	// if len(b) == 0 {
-	// 	return types.DefaultFeeAccrualCounters()
-	// }
+	if len(b) == 0 {
+		return types.DefaultFeeAccrualCounters()
+	}
 
 	k.cdc.MustUnmarshal(b, &counters)
 	return

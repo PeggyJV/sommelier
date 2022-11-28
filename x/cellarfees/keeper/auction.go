@@ -1,8 +1,6 @@
 package keeper
 
 import (
-	"fmt"
-
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	auctiontypes "github.com/peggyjv/sommelier/v4/x/auction/types"
 )
@@ -23,7 +21,8 @@ func (k Keeper) beginAuction(ctx sdk.Context, denom string) (started bool) {
 	cellarfeesAccountAddr := k.GetFeesAccount(ctx).GetAddress()
 	balance := k.bankKeeper.GetBalance(ctx, cellarfeesAccountAddr, denom)
 	if balance.IsZero() {
-		panic(fmt.Sprintf("Attempted to begin auction for denom %s with a zero balance.", denom))
+		k.Logger(ctx).Error("Attempted to begin auction for denom %s with a zero balance.", denom)
+		return false
 	}
 
 	err := k.auctionKeeper.BeginAuction(

@@ -15,6 +15,10 @@ func (a *Auction) ValidateBasic() error {
 		return sdkerrors.Wrapf(ErrAuctionIDMustBeNonZero, "id: %d", a.Id)
 	}
 
+	if !a.StartingTokensForSale.IsPositive() {
+		return sdkerrors.Wrapf(ErrAuctionStartingAmountMustBePositve, "Starting tokens for sale: %s", a.StartingTokensForSale.String())
+	}
+
 	if a.StartingTokensForSale.Denom == UsommDenom {
 		return sdkerrors.Wrapf(ErrCannotAuctionUsomm, "Starting denom tokens for sale: %s", UsommDenom)
 	}

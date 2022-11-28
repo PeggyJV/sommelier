@@ -33,7 +33,7 @@ func (suite *KeeperTestSuite) TestHappyPathBeginAuction() {
 	require.True(cellarfeesKeeper.beginAuction(ctx, feeDenom))
 }
 
-func (suite *KeeperTestSuite) TestAuctionFeeBalanceZeroPanics() {
+func (suite *KeeperTestSuite) TestAuctionFeeBalanceZeroDoesNotStartAuction() {
 	ctx, cellarfeesKeeper := suite.ctx, suite.cellarfeesKeeper
 	require := suite.Require()
 
@@ -51,7 +51,7 @@ func (suite *KeeperTestSuite) TestAuctionFeeBalanceZeroPanics() {
 	// zero fee balance
 	suite.bankKeeper.EXPECT().GetBalance(ctx, feesAccount.GetAddress(), feeDenom).Return(fees)
 
-	require.Panics(func() { cellarfeesKeeper.beginAuction(ctx, feeDenom) })
+	require.False(cellarfeesKeeper.beginAuction(ctx, feeDenom))
 }
 
 func (suite *KeeperTestSuite) TestAuctionUnauthorizedFundingModule() {
