@@ -1,7 +1,10 @@
 package integration_tests
 
 import (
+	"context"
+	"crypto/ecdsa"
 	"fmt"
+	"log"
 	"math/big"
 	"strings"
 
@@ -9,6 +12,9 @@ import (
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/ethereum/go-ethereum/accounts/abi"
 	"github.com/ethereum/go-ethereum/common"
+	ethereumtypes "github.com/ethereum/go-ethereum/core/types"
+	"github.com/ethereum/go-ethereum/crypto"
+	"github.com/ethereum/go-ethereum/ethclient"
 	gravitytypes "github.com/peggyjv/gravity-bridge/module/v2/x/gravity/types"
 )
 
@@ -206,4 +212,49 @@ func byteArrayToFixByteArray(b []byte) (out [32]byte, err error) {
 
 	copy(out[12:], b)
 	return out, nil
+}
+
+func (s *IntegrationTestSuite) SendEthTransaction(ethClient *ethclient.Client, ethereumKey *ethereumKey, toAddress common.Address, data []byte) error {
+	privateKey, err := crypto.HexToECDSA(ethereumKey.privateKey[2:])
+	if err != nil {
+		return err
+	}
+
+	publicKey := privateKey.Public()
+	publicKeyECDSA, ok := publicKey.(*ecdsa.PublicKey)
+	if !ok {
+		log.Fatal("error casting public key to ECDSA")
+	}
+
+	fromAddress := crypto.PubkeyToAddress(*publicKeyECDSA)
+	nonce, err := ethClient.PendingNonceAt(context.Background(), fromAddress)
+	if err != nil {
+		return err
+	}
+
+	value := big.NewInt(0)
+	gasLimit := uint64(1000000)
+	gasPrice, err := ethClient.SuggestGasPrice(context.Background())
+	if err != nil {
+		return err
+	}
+
+	tx := ethereumtypes.NewTransaction(nonce, toAddress, value, gasLimit, gasPrice, data)
+
+	chainID, err := ethClient.NetworkID(context.Background())
+	if err != nil {
+		return err
+	}
+
+	signedTx, err := ethereumtypes.SignTx(tx, ethereumtypes.NewEIP155Signer(chainID), privateKey)
+	if err != nil {
+		return err
+	}
+
+	err = ethClient.SendTransaction(context.Background(), signedTx)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

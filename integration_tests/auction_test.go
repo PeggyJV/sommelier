@@ -8,7 +8,6 @@ import (
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
-	"github.com/peggyjv/sommelier/v4/app/params"
 	"github.com/peggyjv/sommelier/v4/x/auction/types"
 	cellarfees "github.com/peggyjv/sommelier/v4/x/cellarfees/types"
 )
@@ -51,7 +50,7 @@ func (s *IntegrationTestSuite) TestAuctionModule() {
 					UsdPrice: sdk.MustNewDecFromStr("0.25"),
 				},
 				{
-					Denom:    params.BaseCoinUnit,
+					Denom:    testDenom,
 					UsdPrice: sdk.MustNewDecFromStr("0.5"),
 				},
 			},
@@ -106,11 +105,7 @@ func (s *IntegrationTestSuite) TestAuctionModule() {
 
 		s.T().Log("Waiting for proposal to be approved..")
 		s.Require().Eventually(func() bool {
-			proposalQueryResponse, err := govQueryClient.Proposal(context.Background(), &govtypes.QueryProposalRequest{ProposalId: 1})
-			if err != nil {
-				time.Sleep(3)
-				return false
-			}
+			proposalQueryResponse, _ := govQueryClient.Proposal(context.Background(), &govtypes.QueryProposalRequest{ProposalId: 1})
 			return govtypes.StatusPassed == proposalQueryResponse.Proposal.Status
 		}, time.Second*30, time.Second*5, "proposal was never accepted")
 		s.T().Log("Proposal approved!")
@@ -124,7 +119,7 @@ func (s *IntegrationTestSuite) TestAuctionModule() {
 		var initialOrchSomm sdk.Int
 		// initialOrchGravity := sdk.ZeroInt()
 		for _, balance := range initialOrchBalanceRes.Balances {
-			if balance.Denom == "usomm" {
+			if balance.Denom == testDenom {
 				initialOrchSomm = balance.Amount
 			}
 		}
@@ -179,7 +174,7 @@ func (s *IntegrationTestSuite) TestAuctionModule() {
 				s.Require().Equal(int64(2500000000), balance.Amount.Int64())
 				latestOrchGravity = balance.Amount
 			}
-			if balance.Denom == "usomm" {
+			if balance.Denom == testDenom {
 				foundSomm = true
 				s.Require().Equal(initialOrchSomm.Sub(sdk.NewInt(5000000000)).Sub(sdk.NewInt(feeAmount)).Int64(), balance.Amount.Int64())
 				latestOrchSomm = balance.Amount
@@ -199,11 +194,11 @@ func (s *IntegrationTestSuite) TestAuctionModule() {
 			Id:                        uint64(1),
 			AuctionId:                 uint32(1),
 			Bidder:                    orch0Address,
-			MaxBidInUsomm:             sdk.NewCoin("usomm", sdk.NewIntFromUint64(5000000000)),
+			MaxBidInUsomm:             sdk.NewCoin(testDenom, sdk.NewIntFromUint64(5000000000)),
 			SaleTokenMinimumAmount:    sdk.NewCoin("gravity0x3506424f91fd33084466f402d5d97f05f8e3b4af", sdk.NewIntFromUint64(1)),
 			TotalFulfilledSaleTokens:  sdk.NewCoin("gravity0x3506424f91fd33084466f402d5d97f05f8e3b4af", sdk.NewIntFromUint64(2500000000)),
 			SaleTokenUnitPriceInUsomm: sdk.MustNewDecFromStr("2"),
-			TotalUsommPaid:            sdk.NewCoin("usomm", sdk.NewIntFromUint64(5000000000)),
+			TotalUsommPaid:            sdk.NewCoin(testDenom, sdk.NewIntFromUint64(5000000000)),
 			BlockHeight:               uint64(currentBlockHeight),
 		}
 
@@ -218,7 +213,7 @@ func (s *IntegrationTestSuite) TestAuctionModule() {
 		bidRequest2 := types.MsgSubmitBidRequest{
 			AuctionId:              uint32(1),
 			Signer:                 orch0Address,
-			MaxBidInUsomm:          sdk.NewCoin("usomm", sdk.NewIntFromUint64(10000000000)),
+			MaxBidInUsomm:          sdk.NewCoin(testDenom, sdk.NewIntFromUint64(10000000000)),
 			SaleTokenMinimumAmount: sdk.NewCoin("gravity0x3506424f91fd33084466f402d5d97f05f8e3b4af", sdk.NewIntFromUint64(50000000)),
 		}
 
@@ -238,11 +233,11 @@ func (s *IntegrationTestSuite) TestAuctionModule() {
 			Id:                        uint64(2),
 			AuctionId:                 uint32(1),
 			Bidder:                    orch0Address,
-			MaxBidInUsomm:             sdk.NewCoin("usomm", sdk.NewIntFromUint64(10000000000)),
+			MaxBidInUsomm:             sdk.NewCoin(testDenom, sdk.NewIntFromUint64(10000000000)),
 			SaleTokenMinimumAmount:    sdk.NewCoin("gravity0x3506424f91fd33084466f402d5d97f05f8e3b4af", sdk.NewIntFromUint64(50000000)),
 			TotalFulfilledSaleTokens:  sdk.NewCoin("gravity0x3506424f91fd33084466f402d5d97f05f8e3b4af", sdk.NewIntFromUint64(2500000000)),
 			SaleTokenUnitPriceInUsomm: sdk.MustNewDecFromStr("2"),
-			TotalUsommPaid:            sdk.NewCoin("usomm", sdk.NewIntFromUint64(5000000000)),
+			TotalUsommPaid:            sdk.NewCoin(testDenom, sdk.NewIntFromUint64(5000000000)),
 			BlockHeight:               uint64(currentBlockHeight),
 		}
 
@@ -263,7 +258,7 @@ func (s *IntegrationTestSuite) TestAuctionModule() {
 				foundGravity = true
 				s.Require().Equal(latestOrchGravity.Add(expectedBid2.TotalFulfilledSaleTokens.Amount).Int64(), balance.Amount.Int64())
 			}
-			if balance.Denom == "usomm" {
+			if balance.Denom == testDenom {
 				foundSomm = true
 				s.Require().Equal(latestOrchSomm.Sub(expectedBid1.TotalUsommPaid.Amount.Add(sdk.NewInt(feeAmount))).Int64(), balance.Amount.Int64())
 			}

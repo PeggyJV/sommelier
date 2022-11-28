@@ -178,14 +178,10 @@ func (s *IntegrationTestSuite) initNodesWithMnemonics(mnemonics ...string) {
 
 	//initialize a genesis file for the first validator
 	val0ConfigDir := s.chain.validators[0].configDir()
-	for i, val := range s.chain.validators {
+	for _, val := range s.chain.validators {
 		// Fund the first validator with some funds to be used by auction module integration tests
-		balanceStr := initBalanceStr
-		if i == 0 {
-			balanceStr += ",100000000000gravity0x3506424f91fd33084466f402d5d97f05f8e3b4af"
-		}
 		s.Require().NoError(
-			addGenesisAccount(val0ConfigDir, "", balanceStr, val.keyInfo.GetAddress()),
+			addGenesisAccount(val0ConfigDir, "", initBalanceStr, val.keyInfo.GetAddress()),
 		)
 	}
 
@@ -327,6 +323,10 @@ func (s *IntegrationTestSuite) initGenesis() {
 	var mintGenState minttypes.GenesisState
 	s.Require().NoError(cdc.UnmarshalJSON(appGenState[minttypes.ModuleName], &mintGenState))
 	mintGenState.Params.MintDenom = testDenom
+	mintGenState.Params.InflationMax = sdk.ZeroDec()
+	mintGenState.Params.InflationMin = sdk.ZeroDec()
+	mintGenState.Params.InflationRateChange = sdk.ZeroDec()
+	mintGenState.Minter.Inflation = sdk.ZeroDec()
 	bz, err = cdc.MarshalJSON(&mintGenState)
 	s.Require().NoError(err)
 	appGenState[minttypes.ModuleName] = bz
@@ -338,12 +338,12 @@ func (s *IntegrationTestSuite) initGenesis() {
 	var auctionGenState auctiontypes.GenesisState
 	s.Require().NoError(cdc.UnmarshalJSON(appGenState[auctiontypes.ModuleName], &auctionGenState))
 	auctionGenState.TokenPrices = append(auctionGenState.TokenPrices, &auctiontypes.TokenPrice{
-		Denom:            ALPHA_FEE_DENOM,
+		Denom:            alphaFeeDenom,
 		UsdPrice:         sdk.MustNewDecFromStr("1.0"),
 		LastUpdatedBlock: 0,
 	})
 	auctionGenState.TokenPrices = append(auctionGenState.TokenPrices, &auctiontypes.TokenPrice{
-		Denom:            BETA_FEE_DENOM,
+		Denom:            betaFeeDenom,
 		UsdPrice:         sdk.MustNewDecFromStr("5.0"),
 		LastUpdatedBlock: 0,
 	})

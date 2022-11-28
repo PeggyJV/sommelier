@@ -13,16 +13,14 @@ func (k Keeper) beginAuction(ctx sdk.Context, denom string) (started bool) {
 	activeAuctions := k.auctionKeeper.GetActiveAuctions(ctx)
 
 	// Don't start an auction if the denom has an active one
-	if len(activeAuctions) > 0 {
-		for _, auction := range activeAuctions {
-			if denom == auction.StartingTokensForSale.Denom {
-				return false
-			}
+	for _, auction := range activeAuctions {
+		if denom == auction.StartingTokensForSale.Denom {
+			return false
 		}
 	}
 
 	// We auction the entire balance in the cellarfees module account
-	params := k.GetParams(ctx)
+	cellarfeesParams := k.GetParams(ctx)
 	cellarfeesAccountAddr := k.GetFeesAccount(ctx).GetAddress()
 	balance := k.bankKeeper.GetBalance(ctx, cellarfeesAccountAddr, denom)
 	if balance.IsZero() {
@@ -32,8 +30,8 @@ func (k Keeper) beginAuction(ctx sdk.Context, denom string) (started bool) {
 	err := k.auctionKeeper.BeginAuction(
 		ctx,
 		balance,
-		params.InitialPriceDecreaseRate,
-		params.PriceDecreaseBlockInterval,
+		cellarfeesParams.InitialPriceDecreaseRate,
+		cellarfeesParams.PriceDecreaseBlockInterval,
 		types.ModuleName,
 		types.ModuleName,
 	)
