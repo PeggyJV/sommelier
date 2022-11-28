@@ -15,8 +15,8 @@ pub struct ScheduledCork {
     pub block_height: u64,
     #[prost(string, tag = "3")]
     pub validator: ::prost::alloc::string::String,
-    #[prost(uint64, tag = "4")]
-    pub id: u64,
+    #[prost(bytes = "vec", tag = "4")]
+    pub id: ::prost::alloc::vec::Vec<u8>,
 }
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct CorkResult {
@@ -50,8 +50,8 @@ pub struct MsgScheduleCorkRequest {
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct MsgScheduleCorkResponse {
     /// cork ID
-    #[prost(uint64, tag = "1")]
-    pub id: u64,
+    #[prost(string, tag = "1")]
+    pub id: ::prost::alloc::string::String,
 }
 #[doc = r" Generated client implementations."]
 pub mod msg_client {
@@ -126,6 +126,8 @@ pub struct GenesisState {
     pub invalidation_nonce: u64,
     #[prost(message, repeated, tag = "4")]
     pub scheduled_corks: ::prost::alloc::vec::Vec<ScheduledCork>,
+    #[prost(message, repeated, tag = "5")]
+    pub cork_results: ::prost::alloc::vec::Vec<CorkResult>,
 }
 /// Params cork parameters
 #[derive(Clone, PartialEq, ::prost::Message)]
@@ -186,14 +188,31 @@ pub struct QueryScheduledCorksByBlockHeightResponse {
 /// QueryScheduledCorksByIDRequest
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct QueryScheduledCorksByIdRequest {
-    #[prost(uint64, tag = "1")]
-    pub id: u64,
+    #[prost(string, tag = "1")]
+    pub id: ::prost::alloc::string::String,
 }
 /// QueryScheduledCorksByIDResponse
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct QueryScheduledCorksByIdResponse {
     #[prost(message, repeated, tag = "1")]
     pub corks: ::prost::alloc::vec::Vec<ScheduledCork>,
+}
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct QueryCorkResultRequest {
+    #[prost(string, tag = "1")]
+    pub id: ::prost::alloc::string::String,
+}
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct QueryCorkResultResponse {
+    #[prost(message, optional, tag = "1")]
+    pub cork_result: ::core::option::Option<CorkResult>,
+}
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct QueryCorkResultsRequest {}
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct QueryCorkResultsResponse {
+    #[prost(message, repeated, tag = "1")]
+    pub cork_results: ::prost::alloc::vec::Vec<CorkResult>,
 }
 #[doc = r" Generated client implementations."]
 pub mod query_client {
@@ -324,6 +343,34 @@ pub mod query_client {
             let codec = tonic::codec::ProstCodec::default();
             let path =
                 http::uri::PathAndQuery::from_static("/cork.v2.Query/QueryScheduledCorksByID");
+            self.inner.unary(request.into_request(), path, codec).await
+        }
+        pub async fn query_cork_result(
+            &mut self,
+            request: impl tonic::IntoRequest<super::QueryCorkResultRequest>,
+        ) -> Result<tonic::Response<super::QueryCorkResultResponse>, tonic::Status> {
+            self.inner.ready().await.map_err(|e| {
+                tonic::Status::new(
+                    tonic::Code::Unknown,
+                    format!("Service was not ready: {}", e.into()),
+                )
+            })?;
+            let codec = tonic::codec::ProstCodec::default();
+            let path = http::uri::PathAndQuery::from_static("/cork.v2.Query/QueryCorkResult");
+            self.inner.unary(request.into_request(), path, codec).await
+        }
+        pub async fn query_cork_results(
+            &mut self,
+            request: impl tonic::IntoRequest<super::QueryCorkResultsRequest>,
+        ) -> Result<tonic::Response<super::QueryCorkResultsResponse>, tonic::Status> {
+            self.inner.ready().await.map_err(|e| {
+                tonic::Status::new(
+                    tonic::Code::Unknown,
+                    format!("Service was not ready: {}", e.into()),
+                )
+            })?;
+            let codec = tonic::codec::ProstCodec::default();
+            let path = http::uri::PathAndQuery::from_static("/cork.v2.Query/QueryCorkResults");
             self.inner.unary(request.into_request(), path, codec).await
         }
     }
