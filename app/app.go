@@ -265,7 +265,7 @@ func NewSommelierApp(
 		govtypes.StoreKey, paramstypes.StoreKey, ibchost.StoreKey, upgradetypes.StoreKey,
 		evidencetypes.StoreKey, ibctransfertypes.StoreKey, capabilitytypes.StoreKey,
 		gravitytypes.StoreKey, feegrant.StoreKey, authzkeeper.StoreKey, corktypes.StoreKey,
-		auctiontypes.StoreKey,
+		cellarfeestypes.StoreKey, auctiontypes.StoreKey,
 	)
 	tkeys := sdk.NewTransientStoreKeys(paramstypes.TStoreKey)
 	memKeys := sdk.NewMemoryStoreKeys(capabilitytypes.MemStoreKey)
@@ -370,12 +370,13 @@ func NewSommelierApp(
 
 	app.CellarFeesKeeper = cellarfeeskeeper.NewKeeper(
 		appCodec, keys[cellarfeestypes.StoreKey], app.GetSubspace(cellarfeestypes.ModuleName),
-		app.AccountKeeper, app.BankKeeper,
+		app.AccountKeeper, app.BankKeeper, app.CorkKeeper, app.GravityKeeper, app.AuctionKeeper,
 	)
 
 	app.GravityKeeper = *app.GravityKeeper.SetHooks(
 		gravitytypes.NewMultiGravityHooks(
 			app.CorkKeeper.Hooks(),
+			app.CellarFeesKeeper.Hooks(),
 		))
 
 	// register the proposal types
@@ -444,7 +445,7 @@ func NewSommelierApp(
 		gravity.NewAppModule(app.GravityKeeper, app.BankKeeper),
 		authzmodule.NewAppModule(appCodec, app.AuthzKeeper, app.AccountKeeper, app.BankKeeper, app.interfaceRegistry),
 		cork.NewAppModule(app.CorkKeeper, appCodec),
-		cellarfees.NewAppModule(app.CellarFeesKeeper, appCodec, app.AccountKeeper, app.BankKeeper),
+		cellarfees.NewAppModule(app.CellarFeesKeeper, appCodec, app.AccountKeeper, app.BankKeeper, app.CorkKeeper, app.GravityKeeper, app.AuctionKeeper),
 		auction.NewAppModule(app.AuctionKeeper, app.BankKeeper, app.AccountKeeper, appCodec),
 	)
 
@@ -471,12 +472,16 @@ func NewSommelierApp(
 	// NOTE: Capability module must occur first so that it can initialize any capabilities
 	// so that other modules that want to create or claim capabilities afterwards in InitChain
 	// can do so safely.
+	// NOTE: During cellarfees development, moved crisis to end of order because when its InitChain
+	// gets run, it enforces all registered invariants before moving on to other modules. This means
+	// if a module listed after crisis has invariants that depend on their own state being initialized,
+	// their keeper will panic when a nil state is returned.
 	app.mm.SetOrderInitGenesis(
 		capabilitytypes.ModuleName, authtypes.ModuleName, banktypes.ModuleName, distrtypes.ModuleName,
 		stakingtypes.ModuleName, slashingtypes.ModuleName, govtypes.ModuleName, minttypes.ModuleName,
-		crisistypes.ModuleName, ibchost.ModuleName, genutiltypes.ModuleName, evidencetypes.ModuleName,
-		ibctransfertypes.ModuleName, gravitytypes.ModuleName, authz.ModuleName,
-		feegrant.ModuleName, corktypes.ModuleName, auctiontypes.ModuleName, cellarfeestypes.ModuleName,
+		ibchost.ModuleName, genutiltypes.ModuleName, evidencetypes.ModuleName, ibctransfertypes.ModuleName,
+		gravitytypes.ModuleName, authz.ModuleName, feegrant.ModuleName, corktypes.ModuleName,
+		auctiontypes.ModuleName, cellarfeestypes.ModuleName, crisistypes.ModuleName,
 	)
 
 	app.mm.RegisterInvariants(&app.CrisisKeeper)
@@ -505,7 +510,7 @@ func NewSommelierApp(
 		ibc.NewAppModule(app.IBCKeeper),
 		authzmodule.NewAppModule(appCodec, app.AuthzKeeper, app.AccountKeeper, app.BankKeeper, app.interfaceRegistry),
 		cork.NewAppModule(app.CorkKeeper, appCodec),
-		cellarfees.NewAppModule(app.CellarFeesKeeper, appCodec, app.AccountKeeper, app.BankKeeper),
+		cellarfees.NewAppModule(app.CellarFeesKeeper, appCodec, app.AccountKeeper, app.BankKeeper, app.CorkKeeper, app.GravityKeeper, app.AuctionKeeper),
 		auction.NewAppModule(app.AuctionKeeper, app.BankKeeper, app.AccountKeeper, appCodec),
 	)
 

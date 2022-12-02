@@ -13,3 +13,24 @@ const (
 	// QuerierRoute is the querier route for cellarfees
 	QuerierRoute = ModuleName
 )
+
+const (
+	// Store keys
+	_ = byte(iota)
+
+	// key for storing the reward supply after the latest increase
+	LastRewardSupplyPeakKey
+
+	// key for storing fee accrual counts
+	FeeAccrualCountersKey
+)
+
+// GetLastRewardSupplyPeakKey returns the key prefix
+func GetLastRewardSupplyPeakKey() []byte {
+	return []byte{LastRewardSupplyPeakKey}
+}
+
+// GetFeeAccrualCountersKey returns the key prefix
+func GetFeeAccrualCountersKey() []byte {
+	return []byte{FeeAccrualCountersKey}
+}

@@ -11,7 +11,7 @@ import (
 
 var _ types.QueryServer = Keeper{}
 
-func (k Keeper) Params(c context.Context, req *types.QueryParamsRequest) (*types.QueryParamsResponse, error) {
+func (k Keeper) QueryParams(c context.Context, req *types.QueryParamsRequest) (*types.QueryParamsResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "empty request")
 	}
@@ -21,12 +21,28 @@ func (k Keeper) Params(c context.Context, req *types.QueryParamsRequest) (*types
 	}, nil
 }
 
-func (k Keeper) ModuleAccounts(c context.Context, req *types.QueryModuleAccountsRequest) (*types.QueryModuleAccountsResponse, error) {
+func (k Keeper) QueryModuleAccounts(c context.Context, req *types.QueryModuleAccountsRequest) (*types.QueryModuleAccountsResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "empty request")
 	}
 
 	return &types.QueryModuleAccountsResponse{
-		FeesAddress: k.GetFeesAccount(sdk.UnwrapSDKContext(c)).String(),
+		FeesAddress: k.GetFeesAccount(sdk.UnwrapSDKContext(c)).GetAddress().String(),
 	}, nil
+}
+
+func (k Keeper) QueryLastRewardSupplyPeak(c context.Context, req *types.QueryLastRewardSupplyPeakRequest) (*types.QueryLastRewardSupplyPeakResponse, error) {
+	if req == nil {
+		return nil, status.Error(codes.InvalidArgument, "empty request")
+	}
+
+	return &types.QueryLastRewardSupplyPeakResponse{LastRewardSupplyPeak: k.GetLastRewardSupplyPeak(sdk.UnwrapSDKContext(c))}, nil
+}
+
+func (k Keeper) QueryFeeAccrualCounters(c context.Context, req *types.QueryFeeAccrualCountersRequest) (*types.QueryFeeAccrualCountersResponse, error) {
+	if req == nil {
+		return nil, status.Error(codes.InvalidArgument, "empty request")
+	}
+
+	return &types.QueryFeeAccrualCountersResponse{FeeAccrualCounters: k.GetFeeAccrualCounters(sdk.UnwrapSDKContext(c))}, nil
 }
