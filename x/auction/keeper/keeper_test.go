@@ -61,6 +61,8 @@ func (suite *KeeperTestSuite) SetupTest() {
 
 	// gomock initializations
 	ctrl := gomock.NewController(suite.T())
+	defer ctrl.Finish()
+
 	suite.bankKeeper = auctiontestutil.NewMockBankKeeper(ctrl)
 	suite.accountKeeper = auctiontestutil.NewMockAccountKeeper(ctrl)
 	suite.ctx = ctx
@@ -429,14 +431,23 @@ func (suite *KeeperTestSuite) TestUnhappyPathsForBeginAuction() {
 			// Run expected bank keeper functions, if any
 			tc.runsBefore()
 
-			err := auctionKeeper.BeginAuction(
-				tc.beginAuctionRequest.ctx,
-				tc.beginAuctionRequest.startingTokensForSale,
-				tc.beginAuctionRequest.initialPriceDecreaseRate,
-				tc.beginAuctionRequest.priceDecreaseBlockInterval,
-				tc.beginAuctionRequest.fundingModuleAccount,
-				tc.beginAuctionRequest.proceedsModuleAccount,
-			)
+			call := func() error {
+				return auctionKeeper.BeginAuction(
+					tc.beginAuctionRequest.ctx,
+					tc.beginAuctionRequest.startingTokensForSale,
+					tc.beginAuctionRequest.initialPriceDecreaseRate,
+					tc.beginAuctionRequest.priceDecreaseBlockInterval,
+					tc.beginAuctionRequest.fundingModuleAccount,
+					tc.beginAuctionRequest.proceedsModuleAccount,
+				)
+			}
+
+			if tc.name[0:14] == "Validate basic" {
+				require.Panics(func() { call() })
+				return
+			}
+
+			err := call()
 
 			// Verify errors are as expected
 			require.Equal(tc.expectedError.Error(), err.Error())
