@@ -214,7 +214,7 @@ func byteArrayToFixByteArray(b []byte) (out [32]byte, err error) {
 	return out, nil
 }
 
-func (s *IntegrationTestSuite) SendEthTransaction(ethClient *ethclient.Client, ethereumKey *ethereumKey, toAddress common.Address, data []byte) error {
+func SendEthTransaction(ethClient *ethclient.Client, ethereumKey *ethereumKey, toAddress common.Address, data []byte) error {
 	privateKey, err := crypto.HexToECDSA(ethereumKey.privateKey[2:])
 	if err != nil {
 		return err

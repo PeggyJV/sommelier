@@ -91,12 +91,12 @@ func (s *IntegrationTestSuite) TestCellarFees() {
 
 		s.T().Logf("Approving Gravity to spend Alpha ERC20")
 		approveData := PackApproveERC20(gravityContract)
-		err = s.SendEthTransaction(ethClient, &val.ethereumKey, alphaERC20Contract, approveData)
+		err = SendEthTransaction(ethClient, &val.ethereumKey, alphaERC20Contract, approveData)
 		s.Require().NoError(err, "Error approving spending ALPHA balance for the gravity contract on behalf of the first validator")
 
 		s.T().Logf("Approving Gravity to spend Beta ERC20")
 		approveData = PackApproveERC20(gravityContract)
-		err = s.SendEthTransaction(ethClient, &val.ethereumKey, betaERC20Contract, approveData)
+		err = SendEthTransaction(ethClient, &val.ethereumKey, betaERC20Contract, approveData)
 		s.Require().NoError(err, "Error approving spending BETA balance for the gravity contract on behalf of the first validator")
 
 		s.T().Logf("Waiting for allowance confirmations..")
@@ -136,14 +136,14 @@ func (s *IntegrationTestSuite) TestCellarFees() {
 		acc, err := sdk.AccAddressFromBech32(feesAddress)
 		s.Require().NoError(err, "Failed to derive fees account address from bech32 string: %s", feesAddress)
 		sendData := PackSendToCosmos(alphaERC20Contract, acc, sdk.NewInt(50000))
-		err = s.SendEthTransaction(ethClient, &val.ethereumKey, gravityContract, sendData)
+		err = SendEthTransaction(ethClient, &val.ethereumKey, gravityContract, sendData)
 		s.Require().NoError(err, "Failed to send fees transaction to Cosmos")
 
 		s.T().Log("Sending BETA fees to cellarfees module account")
 		acc, err = sdk.AccAddressFromBech32(feesAddress)
 		s.Require().NoError(err, "Failed to derive fees account address from bech32 string: %s", feesAddress)
 		sendData = PackSendToCosmos(betaERC20Contract, acc, sdk.NewInt(20000))
-		err = s.SendEthTransaction(ethClient, &val.ethereumKey, gravityContract, sendData)
+		err = SendEthTransaction(ethClient, &val.ethereumKey, gravityContract, sendData)
 		s.Require().NoError(err, "Failed to send fees transaction to Cosmos")
 
 		s.T().Log("Waiting for fees to be received...")
@@ -188,11 +188,11 @@ func (s *IntegrationTestSuite) TestCellarFees() {
 
 		s.T().Log("Sending ERC20 fees a second time")
 		sendData = PackSendToCosmos(alphaERC20Contract, acc, sdk.NewInt(100000))
-		err = s.SendEthTransaction(ethClient, &val.ethereumKey, gravityContract, sendData)
+		err = SendEthTransaction(ethClient, &val.ethereumKey, gravityContract, sendData)
 		s.Require().NoError(err, "Failed to send fees transaction to Cosmos")
 
 		sendData = PackSendToCosmos(betaERC20Contract, acc, sdk.NewInt(120000))
-		err = s.SendEthTransaction(ethClient, &val.ethereumKey, gravityContract, sendData)
+		err = SendEthTransaction(ethClient, &val.ethereumKey, gravityContract, sendData)
 		s.Require().NoError(err, "Failed to send fees transaction to Cosmos")
 
 		s.T().Log("Waiting for auctions to start")
@@ -356,7 +356,7 @@ func (s *IntegrationTestSuite) TestCellarFees() {
 
 		s.T().Log("Verify that the accrual counter reset by sending more ALPHA")
 		sendData = PackSendToCosmos(alphaERC20Contract, acc, sdk.NewInt(25000))
-		err = s.SendEthTransaction(ethClient, &val.ethereumKey, gravityContract, sendData)
+		err = SendEthTransaction(ethClient, &val.ethereumKey, gravityContract, sendData)
 		s.Require().NoError(err, "Failed to send fees transaction to Cosmos")
 
 		s.T().Log("Confirming no auction is started...")
