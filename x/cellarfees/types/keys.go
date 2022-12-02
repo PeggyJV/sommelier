@@ -18,20 +18,12 @@ const (
 	// Store keys
 	_ = byte(iota)
 
-	// key for global cellar fee pool state
-	CellarFeePoolKey
-
 	// key for storing the reward supply after the latest increase
 	LastRewardSupplyPeakKey
 
 	// key for storing fee accrual counts
 	FeeAccrualCountersKey
 )
-
-// GetCellarFeePoolKey returns the key prefix
-func GetCellarFeePoolKey() []byte {
-	return []byte{CellarFeePoolKey}
-}
 
 // GetLastRewardSupplyPeakKey returns the key prefix
 func GetLastRewardSupplyPeakKey() []byte {

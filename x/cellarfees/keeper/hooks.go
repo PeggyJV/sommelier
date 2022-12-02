@@ -1,6 +1,8 @@
 package keeper
 
 import (
+	"fmt"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/ethereum/go-ethereum/common"
 	gravitytypes "github.com/peggyjv/gravity-bridge/module/v2/x/gravity/types"
@@ -39,7 +41,6 @@ func (h Hooks) AfterSendToCosmosEvent(ctx sdk.Context, event gravitytypes.SendTo
 		return
 	}
 
-	// Just in case. Calling beginAuction() for a zeroed balance will halt the chain.
 	if event.Amount.IsZero() {
 		return
 	}
@@ -76,6 +77,7 @@ func (h Hooks) AfterSendToCosmosEvent(ctx sdk.Context, event gravitytypes.SendTo
 				sdk.NewAttribute(types.AttributeKeyTokenContract, event.TokenContract),
 				sdk.NewAttribute(types.AttributeKeyDenom, denom),
 				sdk.NewAttribute(types.AttributeKeyAmount, event.Amount.String()),
+				sdk.NewAttribute(types.AttributeKeyCount, fmt.Sprint(count)),
 			),
 		},
 	)

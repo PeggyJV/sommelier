@@ -8,6 +8,7 @@ const (
 	AttributeKeyTokenContract = "token_contract"
 	AttributeKeyDenom         = "denom"
 	AttributeKeyAmount        = "amount"
+	AttributeKeyCount         = "count"
 
 	AttributeValueCategory = ModuleName
 )

@@ -55,7 +55,7 @@ func (s *IntegrationTestSuite) TestCellarFees() {
 		ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
 		defer cancel()
 
-		acctsRes, err := cellarfeesQueryClient.ModuleAccounts(ctx, &cellarfeestypes.QueryModuleAccountsRequest{})
+		acctsRes, err := cellarfeesQueryClient.QueryModuleAccounts(ctx, &cellarfeestypes.QueryModuleAccountsRequest{})
 		s.Require().NoError(err, "Failed to query module accounts")
 
 		feesAddress := acctsRes.FeesAddress
