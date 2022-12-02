@@ -24,10 +24,10 @@ func ParamKeyTable() paramtypes.KeyTable {
 // DefaultParams returns default auction parameters
 func DefaultParams() Params {
 	return Params{
-		PriceMaxBlockAge:                     403200,                       // roughly four weeks based on 6 second blocks
-		MinimumBidInUsomm:                    1000000,                      // 1 somm
-		AuctionMaxBlockAge:                   864000,                       // roughly 60 days based on 6 second blocks
-		AuctionPriceDecreaseAccelerationRate: sdk.MustNewDecFromStr("0.1"), // 10%
+		PriceMaxBlockAge:                     403200,                         // roughly four weeks based on 6 second blocks
+		MinimumBidInUsomm:                    1000000,                        // 1 somm
+		AuctionMaxBlockAge:                   864000,                         // roughly 60 days based on 6 second blocks
+		AuctionPriceDecreaseAccelerationRate: sdk.MustNewDecFromStr("0.001"), // 0.1%
 	}
 }
 

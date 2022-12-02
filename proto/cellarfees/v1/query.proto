@@ -3,18 +3,26 @@ package cellarfees.v1;
 
 import "gogoproto/gogo.proto";
 import "google/api/annotations.proto";
-import "cosmos/base/query/v1beta1/pagination.proto";
 import "cellarfees/v1/params.proto";
+import "cellarfees/v1/cellarfees.proto";
 
 option go_package = "github.com/peggyjv/sommelier/v4/x/cellarfees/types";
 
 service Query {
-  rpc Params(QueryParamsRequest) returns (QueryParamsResponse) {
+  rpc QueryParams(QueryParamsRequest) returns (QueryParamsResponse) {
     option (google.api.http).get = "/sommelier/cellarfees/v1/params";
   }
 
-  rpc ModuleAccounts(QueryModuleAccountsRequest) returns (QueryModuleAccountsResponse) {
-    option (google.api.http).get = "/sommeliers/cellarfees/v1/module_accounts";
+  rpc QueryModuleAccounts(QueryModuleAccountsRequest) returns (QueryModuleAccountsResponse) {
+    option (google.api.http).get = "/sommelier/cellarfees/v1/module_accounts";
+  }
+
+  rpc QueryLastRewardSupplyPeak(QueryLastRewardSupplyPeakRequest) returns (QueryLastRewardSupplyPeakResponse) {
+    option (google.api.http).get = "/sommelier/cellarfees/v1/last_reward_supply_peak";
+  }
+
+  rpc QueryFeeAccrualCounters(QueryFeeAccrualCountersRequest) returns (QueryFeeAccrualCountersResponse) {
+    option (google.api.http).get = "/sommelier/cellarfees/v1/fee_accrual_counters";
   }
 }
 
@@ -28,4 +36,17 @@ message QueryModuleAccountsRequest {}
 
 message QueryModuleAccountsResponse {
   string fees_address = 1;
+}
+
+message QueryLastRewardSupplyPeakRequest {}
+
+message QueryLastRewardSupplyPeakResponse {
+  string last_reward_supply_peak = 1
+    [(gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int", (gogoproto.nullable) = false];
+}
+
+message QueryFeeAccrualCountersRequest {}
+
+message QueryFeeAccrualCountersResponse {
+  FeeAccrualCounters fee_accrual_counters = 1 [(gogoproto.nullable) = false];
 }

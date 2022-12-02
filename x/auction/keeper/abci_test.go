@@ -80,8 +80,8 @@ func (suite *KeeperTestSuite) TestAbci() {
 
 	foundAuction, found = auctionKeeper.GetActiveAuctionByID(ctx, auctionID)
 	require.True(found)
-	expectedAuction.CurrentUnitPriceInUsomm = sdk.MustNewDecFromStr("0.56")
-	expectedAuction.CurrentPriceDecreaseRate = sdk.MustNewDecFromStr("0.44")
+	expectedAuction.CurrentUnitPriceInUsomm = sdk.MustNewDecFromStr("0.5996")
+	expectedAuction.CurrentPriceDecreaseRate = sdk.MustNewDecFromStr("0.4004")
 	require.Equal(expectedAuction, foundAuction)
 
 	// Run EndBlocker with block interval ~sufficient~ to induce decrease again
@@ -91,8 +91,8 @@ func (suite *KeeperTestSuite) TestAbci() {
 
 	foundAuction, found = auctionKeeper.GetActiveAuctionByID(ctx, auctionID)
 	require.True(found)
-	expectedAuction.CurrentUnitPriceInUsomm = sdk.MustNewDecFromStr("0.076")
-	expectedAuction.CurrentPriceDecreaseRate = sdk.MustNewDecFromStr("0.484")
+	expectedAuction.CurrentUnitPriceInUsomm = sdk.MustNewDecFromStr("0.1987996")
+	expectedAuction.CurrentPriceDecreaseRate = sdk.MustNewDecFromStr("0.4008004")
 	require.Equal(expectedAuction, foundAuction)
 
 	// Run EndBlocker with block interval ~sufficient~ to induce decrease to a ~negative~ price, and thus the auction must finish
@@ -115,6 +115,6 @@ func (suite *KeeperTestSuite) TestAbci() {
 	foundAuction, found = auctionKeeper.GetEndedAuctionByID(finalCtx, auctionID)
 	require.True(found)
 
-	expectedAuction.CurrentPriceDecreaseRate = sdk.MustNewDecFromStr("0.5324")
+	expectedAuction.CurrentPriceDecreaseRate = sdk.MustNewDecFromStr("0.4012012004")
 	require.Equal(expectedAuction, foundAuction)
 }
