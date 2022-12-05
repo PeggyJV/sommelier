@@ -116,16 +116,10 @@ func (s *IntegrationTestSuite) TestAuctionModule() {
 		s.T().Logf("Auction module token balances before bids %v", balanceRes.Balances)
 
 		initialOrchBalanceRes, err := bankQueryClient.AllBalances(context.Background(), &banktypes.QueryAllBalancesRequest{Address: orch0Address})
-		var initialOrchSomm sdk.Int
-		// initialOrchGravity := sdk.ZeroInt()
-		for _, balance := range initialOrchBalanceRes.Balances {
-			if balance.Denom == testDenom {
-				initialOrchSomm = balance.Amount
-			}
-		}
 		s.Require().NoError(err)
+		found, initialOrchSomm := balanceOfDenom(initialOrchBalanceRes.Balances, testDenom)
+		s.Require().True(found)
 		s.T().Logf("Orchestrator 0 balances before bids %v", initialOrchBalanceRes.Balances)
-
 		s.T().Log("Submitting first bid for auction")
 		bidRequest1 := types.MsgSubmitBidRequest{
 			AuctionId:              uint32(1),
@@ -166,21 +160,12 @@ func (s *IntegrationTestSuite) TestAuctionModule() {
 		s.Require().NoError(err)
 		s.T().Logf("Orchestrator 0 token balances after first bid %v", balanceRes.Balances)
 
-		foundSomm, foundGravity := false, false
-		latestOrchSomm, latestOrchGravity := sdk.ZeroInt(), sdk.ZeroInt()
-		for _, balance := range balanceRes.Balances {
-			if balance.Denom == "gravity0x3506424f91fd33084466f402d5d97f05f8e3b4af" {
-				foundGravity = true
-				s.Require().Equal(int64(2500000000), balance.Amount.Int64())
-				latestOrchGravity = balance.Amount
-			}
-			if balance.Denom == testDenom {
-				foundSomm = true
-				s.Require().Equal(initialOrchSomm.Sub(sdk.NewInt(5000000000)).Sub(sdk.NewInt(feeAmount)).Int64(), balance.Amount.Int64())
-				latestOrchSomm = balance.Amount
-			}
-		}
-		s.Require().True(foundSomm && foundGravity)
+		found, latestOrchGravity := balanceOfDenom(balanceRes.Balances, "gravity0x3506424f91fd33084466f402d5d97f05f8e3b4af")
+		s.Require().True(found, "gravity denom balance not present in orchestrator wallet")
+		s.Require().Equal(int64(2500000000), latestOrchGravity.Amount.Int64())
+		found, latestOrchSomm := balanceOfDenom(balanceRes.Balances, testDenom)
+		s.Require().True(found, "SOMM balance not present in orchestrator wallet")
+		s.Require().Equal(initialOrchSomm.Amount.Sub(sdk.NewInt(5000000000)).Sub(sdk.NewInt(feeAmount)).Int64(), latestOrchSomm.Amount.Int64())
 		s.T().Log("User funds updated correctly!")
 
 		node, err := orchClientCtx.GetNode()
@@ -252,18 +237,12 @@ func (s *IntegrationTestSuite) TestAuctionModule() {
 		s.Require().NoError(err)
 		s.T().Logf("Orchestrator 0 token balances after first bid %v", balanceRes.Balances)
 
-		foundSomm, foundGravity = false, false
-		for _, balance := range balanceRes.Balances {
-			if balance.Denom == "gravity0x3506424f91fd33084466f402d5d97f05f8e3b4af" {
-				foundGravity = true
-				s.Require().Equal(latestOrchGravity.Add(expectedBid2.TotalFulfilledSaleTokens.Amount).Int64(), balance.Amount.Int64())
-			}
-			if balance.Denom == testDenom {
-				foundSomm = true
-				s.Require().Equal(latestOrchSomm.Sub(expectedBid1.TotalUsommPaid.Amount.Add(sdk.NewInt(feeAmount))).Int64(), balance.Amount.Int64())
-			}
-		}
-		s.Require().True(foundSomm && foundGravity)
+		found, gravityBalance := balanceOfDenom(balanceRes.Balances, "gravity0x3506424f91fd33084466f402d5d97f05f8e3b4af")
+		s.Require().True(found, "gravity denom balance not present in orchestrator wallet")
+		s.Require().Equal(latestOrchGravity.Amount.Add(expectedBid2.TotalFulfilledSaleTokens.Amount).Int64(), gravityBalance.Amount.Int64())
+		found, orchSommBalance := balanceOfDenom(balanceRes.Balances, testDenom)
+		s.Require().True(found, "SOMM balance not present in orchestrator wallet")
+		s.Require().Equal(latestOrchSomm.Amount.Sub(expectedBid1.TotalUsommPaid.Amount.Add(sdk.NewInt(feeAmount))).Int64(), orchSommBalance.Amount.Int64())
 		s.T().Log("User funds updated correctly!")
 
 		s.T().Log("Verifying auction has completed...")
@@ -303,4 +282,14 @@ func (s *IntegrationTestSuite) TestAuctionModule() {
 
 		s.T().Log("--Test completed successfully--")
 	})
+}
+
+func balanceOfDenom(balances sdk.Coins, denom string) (found bool, balance sdk.Coin) {
+	for _, balance := range balances {
+		if balance.Denom == denom {
+			return true, balance
+		}
+	}
+
+	return false, sdk.NewCoin(denom, sdk.ZeroInt())
 }

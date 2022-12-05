@@ -73,22 +73,6 @@ func (s *IntegrationTestSuite) TestCellarFees() {
 		s.Require().NoError(err, "Failed to query fee balance of denom %s", betaERC20Contract.Hex())
 		s.Require().Zero(balanceRes.Balance.Amount.Uint64())
 
-		s.T().Log("Getting baseline rewards increase rate")
-		rewardsRes, err := distQueryClient.DelegationRewards(ctx, &disttypes.QueryDelegationRewardsRequest{
-			DelegatorAddress: val.keyInfo.GetAddress().String(),
-			ValidatorAddress: "sommvaloper199sjfhaw3hempwzljw0lgwsm9kk6r8e5ef3hmp",
-		})
-		s.Require().NoError(err)
-		startAmount := rewardsRes.Rewards.AmountOf(testDenom)
-		time.Sleep(time.Second * 12)
-		rewardsRes, err = distQueryClient.DelegationRewards(ctx, &disttypes.QueryDelegationRewardsRequest{
-			DelegatorAddress: val.keyInfo.GetAddress().String(),
-			ValidatorAddress: "sommvaloper199sjfhaw3hempwzljw0lgwsm9kk6r8e5ef3hmp",
-		})
-		s.Require().NoError(err)
-		endAmount := rewardsRes.Rewards.AmountOf(testDenom)
-		rewardRateBaseline := endAmount.Sub(startAmount).Quo(sdk.NewDec(12))
-
 		s.T().Logf("Approving Gravity to spend Alpha ERC20")
 		approveData := PackApproveERC20(gravityContract)
 		err = SendEthTransaction(ethClient, &val.ethereumKey, alphaERC20Contract, approveData)
@@ -100,9 +84,8 @@ func (s *IntegrationTestSuite) TestCellarFees() {
 		s.Require().NoError(err, "Error approving spending BETA balance for the gravity contract on behalf of the first validator")
 
 		s.T().Logf("Waiting for allowance confirmations..")
+		data := PackAllowance(common.HexToAddress(ethereumSender), gravityContract)
 		s.Require().Eventually(func() bool {
-			data := PackAllowance(common.HexToAddress(ethereumSender), gravityContract)
-
 			res, _ := ethClient.CallContract(context.Background(), ethereum.CallMsg{
 				From: common.HexToAddress(ethereumSender),
 				To:   &alphaERC20Contract,
@@ -116,9 +99,8 @@ func (s *IntegrationTestSuite) TestCellarFees() {
 			return sdk.NewIntFromBigInt(allowance).GT(sdk.ZeroInt())
 		}, time.Second*10, time.Second, "AlphaERC20 allowance not found")
 
+		data = PackAllowance(common.HexToAddress(ethereumSender), gravityContract)
 		s.Require().Eventually(func() bool {
-			data := PackAllowance(common.HexToAddress(ethereumSender), gravityContract)
-
 			res, _ := ethClient.CallContract(context.Background(), ethereum.CallMsg{
 				From: common.HexToAddress(ethereumSender),
 				To:   &betaERC20Contract,
@@ -319,13 +301,15 @@ func (s *IntegrationTestSuite) TestCellarFees() {
 		}, time.Second*30, time.Millisecond*400, "Distribution rate did not increase")
 
 		s.T().Log("Distribution rate increased with supply! Getting current reward rate per validator")
-		rewardsRes, err = distQueryClient.DelegationRewards(ctx, &disttypes.QueryDelegationRewardsRequest{
+
+		rewardRateBaseline := sdk.ZeroDec()
+		rewardsRes, err := distQueryClient.DelegationRewards(ctx, &disttypes.QueryDelegationRewardsRequest{
 			DelegatorAddress: val.keyInfo.GetAddress().String(),
 			ValidatorAddress: "sommvaloper199sjfhaw3hempwzljw0lgwsm9kk6r8e5ef3hmp",
 		})
 		s.Require().NoError(err)
 
-		startAmount = rewardsRes.Rewards.AmountOf(testDenom)
+		startAmount := rewardsRes.Rewards.AmountOf(testDenom)
 
 		// let some time elapse so we can calculate an average rate
 		time.Sleep(time.Second * 12)
@@ -335,7 +319,7 @@ func (s *IntegrationTestSuite) TestCellarFees() {
 			ValidatorAddress: "sommvaloper199sjfhaw3hempwzljw0lgwsm9kk6r8e5ef3hmp",
 		})
 		s.Require().NoError(err)
-		endAmount = rewardsRes.Rewards.AmountOf(testDenom)
+		endAmount := rewardsRes.Rewards.AmountOf(testDenom)
 		rewardRate := (endAmount.Sub(startAmount).Quo(sdk.NewDec(12)))
 		s.T().Logf("Baseline reward rate: %d, current validator reward rate: %d", rewardRateBaseline.RoundInt64(), rewardRate.RoundInt64())
 		s.Require().True(rewardRate.GT(rewardRateBaseline), "Rewards have not increased")
