@@ -13,10 +13,12 @@ func TestNewMsgSubmitBidRequestFormatting(t *testing.T) {
 		AuctionId:              uint32(1),
 		MaxBidInUsomm:          sdk.NewCoin("usomm", sdk.NewInt(200)),
 		SaleTokenMinimumAmount: sdk.NewCoin("gravity0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48", sdk.NewInt(1)),
-		Signer:                 sdk.AccAddress(cosmosAddress1).String(),
+		Signer:                 cosmosAddress1,
 	}
 
-	createdMsg, err := NewMsgSubmitBidRequest(uint32(1), sdk.NewCoin("usomm", sdk.NewInt(200)), sdk.NewCoin("gravity0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48", sdk.NewInt(1)), sdk.AccAddress(cosmosAddress1))
+	cosmosAccount1, err := sdk.AccAddressFromBech32(cosmosAddress1)
+	require.NoError(t, err)
+	createdMsg, err := NewMsgSubmitBidRequest(uint32(1), sdk.NewCoin("usomm", sdk.NewInt(200)), sdk.NewCoin("gravity0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48", sdk.NewInt(1)), cosmosAccount1)
 	require.Nil(t, err)
 	require.Equal(t, expectedMsg, createdMsg)
 }
@@ -34,7 +36,7 @@ func TestMsgValidate(t *testing.T) {
 				AuctionId:              uint32(1),
 				MaxBidInUsomm:          sdk.NewCoin("usomm", sdk.NewInt(200)),
 				SaleTokenMinimumAmount: sdk.NewCoin("gravity0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48", sdk.NewInt(1)),
-				Signer:                 sdk.AccAddress(cosmosAddress1).String(),
+				Signer:                 cosmosAddress1,
 			},
 			expPass: true,
 			err:     nil,
@@ -45,7 +47,7 @@ func TestMsgValidate(t *testing.T) {
 				AuctionId:              uint32(0),
 				MaxBidInUsomm:          sdk.NewCoin("usomm", sdk.NewInt(200)),
 				SaleTokenMinimumAmount: sdk.NewCoin("gravity0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48", sdk.NewInt(1)),
-				Signer:                 sdk.AccAddress(cosmosAddress1).String(),
+				Signer:                 cosmosAddress1,
 			},
 			expPass: false,
 			err:     sdkerrors.Wrapf(ErrAuctionIDMustBeNonZero, "id: 0"),
@@ -56,7 +58,7 @@ func TestMsgValidate(t *testing.T) {
 				AuctionId:              uint32(1),
 				MaxBidInUsomm:          sdk.NewCoin("usdc", sdk.NewInt(200)),
 				SaleTokenMinimumAmount: sdk.NewCoin("gravity0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48", sdk.NewInt(1)),
-				Signer:                 sdk.AccAddress(cosmosAddress1).String(),
+				Signer:                 cosmosAddress1,
 			},
 			expPass: false,
 			err:     sdkerrors.Wrapf(ErrBidMustBeInUsomm, "bid: %s", sdk.NewCoin("usdc", sdk.NewInt(200))),
@@ -67,7 +69,7 @@ func TestMsgValidate(t *testing.T) {
 				AuctionId:              uint32(1),
 				MaxBidInUsomm:          sdk.NewCoin("usomm", sdk.NewInt(0)),
 				SaleTokenMinimumAmount: sdk.NewCoin("gravity0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48", sdk.NewInt(1)),
-				Signer:                 sdk.AccAddress(cosmosAddress1).String(),
+				Signer:                 cosmosAddress1,
 			},
 			expPass: false,
 			err:     sdkerrors.Wrapf(ErrBidAmountMustBePositive, "bid amount in usomm: %s", sdk.NewCoin("usomm", sdk.NewInt(0))),
@@ -78,7 +80,7 @@ func TestMsgValidate(t *testing.T) {
 				AuctionId:              uint32(1),
 				MaxBidInUsomm:          sdk.NewCoin("usomm", sdk.NewInt(200)),
 				SaleTokenMinimumAmount: sdk.NewCoin("usdc", sdk.NewInt(1)),
-				Signer:                 sdk.AccAddress(cosmosAddress1).String(),
+				Signer:                 cosmosAddress1,
 			},
 			expPass: false,
 			err:     sdkerrors.Wrapf(ErrInvalidTokenBeingBidOn, "sale token: %s", sdk.NewCoin("usdc", sdk.NewInt(1))),
@@ -89,7 +91,7 @@ func TestMsgValidate(t *testing.T) {
 				AuctionId:              uint32(1),
 				MaxBidInUsomm:          sdk.NewCoin("usomm", sdk.NewInt(200)),
 				SaleTokenMinimumAmount: sdk.NewCoin("gravity0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48", sdk.NewInt(0)),
-				Signer:                 sdk.AccAddress(cosmosAddress1).String(),
+				Signer:                 cosmosAddress1,
 			},
 			expPass: false,
 			err:     sdkerrors.Wrapf(ErrMinimumAmountMustBePositive, "sale token amount: %s", sdk.NewCoin("gravity0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48", sdk.NewInt(0))),

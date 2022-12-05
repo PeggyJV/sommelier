@@ -56,7 +56,7 @@ func TestGenesisValidate(t *testing.T) {
 					{
 						Id:                        uint64(1),
 						AuctionId:                 uint32(1),
-						Bidder:                    "cosmos12svsksqaakc6r0gyxasf5el84946mp0svdl603",
+						Bidder:                    "somm1y6d5kasehecexf09ka6y0ggl0pxzt6dg6n8lw0",
 						MaxBidInUsomm:             sdk.NewCoin("usomm", sdk.NewInt(100)),
 						SaleTokenMinimumAmount:    sdk.NewCoin("gravity0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48", sdk.NewInt(50)),
 						TotalFulfilledSaleTokens:  sdk.NewCoin("gravity0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48", sdk.NewInt(50)),
@@ -106,7 +106,7 @@ func TestGenesisValidate(t *testing.T) {
 					{
 						Id:                        uint64(1),
 						AuctionId:                 uint32(1),
-						Bidder:                    "cosmos12svsksqaakc6r0gyxasf5el84946mp0svdl603",
+						Bidder:                    "somm1y6d5kasehecexf09ka6y0ggl0pxzt6dg6n8lw0",
 						MaxBidInUsomm:             sdk.NewCoin("usomm", sdk.NewInt(100)),
 						SaleTokenMinimumAmount:    sdk.NewCoin("gravity0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48", sdk.NewInt(50)),
 						TotalFulfilledSaleTokens:  sdk.NewCoin("gravity0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48", sdk.NewInt(50)),
@@ -156,7 +156,7 @@ func TestGenesisValidate(t *testing.T) {
 					{
 						Id:                        uint64(0),
 						AuctionId:                 uint32(1),
-						Bidder:                    "cosmos12svsksqaakc6r0gyxasf5el84946mp0svdl603",
+						Bidder:                    "somm1y6d5kasehecexf09ka6y0ggl0pxzt6dg6n8lw0",
 						MaxBidInUsomm:             sdk.NewCoin("usomm", sdk.NewInt(100)),
 						SaleTokenMinimumAmount:    sdk.NewCoin("gravity0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48", sdk.NewInt(50)),
 						TotalFulfilledSaleTokens:  sdk.NewCoin("gravity0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48", sdk.NewInt(50)),
@@ -206,7 +206,7 @@ func TestGenesisValidate(t *testing.T) {
 					{
 						Id:                        uint64(1),
 						AuctionId:                 uint32(1),
-						Bidder:                    "cosmos12svsksqaakc6r0gyxasf5el84946mp0svdl603",
+						Bidder:                    "somm1y6d5kasehecexf09ka6y0ggl0pxzt6dg6n8lw0",
 						MaxBidInUsomm:             sdk.NewCoin("usomm", sdk.NewInt(100)),
 						SaleTokenMinimumAmount:    sdk.NewCoin("gravity0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48", sdk.NewInt(50)),
 						TotalFulfilledSaleTokens:  sdk.NewCoin("gravity0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48", sdk.NewInt(50)),
