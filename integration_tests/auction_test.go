@@ -50,7 +50,7 @@ func (s *IntegrationTestSuite) TestAuctionModule() {
 					UsdPrice: sdk.MustNewDecFromStr("0.25"),
 				},
 				{
-					Denom:    types.UsommDenom,
+					Denom:    testDenom,
 					UsdPrice: sdk.MustNewDecFromStr("0.5"),
 				},
 			},
@@ -105,8 +105,7 @@ func (s *IntegrationTestSuite) TestAuctionModule() {
 
 		s.T().Log("Waiting for proposal to be approved..")
 		s.Require().Eventually(func() bool {
-			proposalQueryResponse, err := govQueryClient.Proposal(context.Background(), &govtypes.QueryProposalRequest{ProposalId: 1})
-			s.Require().NoError(err)
+			proposalQueryResponse, _ := govQueryClient.Proposal(context.Background(), &govtypes.QueryProposalRequest{ProposalId: 1})
 			return govtypes.StatusPassed == proposalQueryResponse.Proposal.Status
 		}, time.Second*30, time.Second*5, "proposal was never accepted")
 		s.T().Log("Proposal approved!")
@@ -118,8 +117,9 @@ func (s *IntegrationTestSuite) TestAuctionModule() {
 
 		initialOrchBalanceRes, err := bankQueryClient.AllBalances(context.Background(), &banktypes.QueryAllBalancesRequest{Address: orch0Address})
 		s.Require().NoError(err)
+		found, initialOrchSomm := balanceOfDenom(initialOrchBalanceRes.Balances, testDenom)
+		s.Require().True(found)
 		s.T().Logf("Orchestrator 0 balances before bids %v", initialOrchBalanceRes.Balances)
-
 		s.T().Log("Submitting first bid for auction")
 		bidRequest1 := types.MsgSubmitBidRequest{
 			AuctionId:              uint32(1),
@@ -160,8 +160,12 @@ func (s *IntegrationTestSuite) TestAuctionModule() {
 		s.Require().NoError(err)
 		s.T().Logf("Orchestrator 0 token balances after first bid %v", balanceRes.Balances)
 
-		s.Require().Equal(sdk.NewCoin("gravity0x3506424f91fd33084466f402d5d97f05f8e3b4af", sdk.NewInt(2500000000)), balanceRes.Balances[0])
-		s.Require().Equal(sdk.NewCoin("usomm", initialOrchBalanceRes.Balances[1].Amount.Sub(sdk.NewInt(5000000000))), balanceRes.Balances[2])
+		found, latestOrchGravity := balanceOfDenom(balanceRes.Balances, "gravity0x3506424f91fd33084466f402d5d97f05f8e3b4af")
+		s.Require().True(found, "gravity denom balance not present in orchestrator wallet")
+		s.Require().Equal(int64(2500000000), latestOrchGravity.Amount.Int64())
+		found, latestOrchSomm := balanceOfDenom(balanceRes.Balances, testDenom)
+		s.Require().True(found, "SOMM balance not present in orchestrator wallet")
+		s.Require().Equal(initialOrchSomm.Amount.Sub(sdk.NewInt(5000000000)).Sub(sdk.NewInt(feeAmount)).Int64(), latestOrchSomm.Amount.Int64())
 		s.T().Log("User funds updated correctly!")
 
 		node, err := orchClientCtx.GetNode()
@@ -175,11 +179,11 @@ func (s *IntegrationTestSuite) TestAuctionModule() {
 			Id:                        uint64(1),
 			AuctionId:                 uint32(1),
 			Bidder:                    orch0Address,
-			MaxBidInUsomm:             sdk.NewCoin("usomm", sdk.NewIntFromUint64(5000000000)),
+			MaxBidInUsomm:             sdk.NewCoin(testDenom, sdk.NewIntFromUint64(5000000000)),
 			SaleTokenMinimumAmount:    sdk.NewCoin("gravity0x3506424f91fd33084466f402d5d97f05f8e3b4af", sdk.NewIntFromUint64(1)),
 			TotalFulfilledSaleTokens:  sdk.NewCoin("gravity0x3506424f91fd33084466f402d5d97f05f8e3b4af", sdk.NewIntFromUint64(2500000000)),
 			SaleTokenUnitPriceInUsomm: sdk.MustNewDecFromStr("2"),
-			TotalUsommPaid:            sdk.NewCoin("usomm", sdk.NewIntFromUint64(5000000000)),
+			TotalUsommPaid:            sdk.NewCoin(testDenom, sdk.NewIntFromUint64(5000000000)),
 			BlockHeight:               uint64(currentBlockHeight),
 		}
 
@@ -194,7 +198,7 @@ func (s *IntegrationTestSuite) TestAuctionModule() {
 		bidRequest2 := types.MsgSubmitBidRequest{
 			AuctionId:              uint32(1),
 			Signer:                 orch0Address,
-			MaxBidInUsomm:          sdk.NewCoin("usomm", sdk.NewIntFromUint64(10000000000)),
+			MaxBidInUsomm:          sdk.NewCoin(testDenom, sdk.NewIntFromUint64(10000000000)),
 			SaleTokenMinimumAmount: sdk.NewCoin("gravity0x3506424f91fd33084466f402d5d97f05f8e3b4af", sdk.NewIntFromUint64(50000000)),
 		}
 
@@ -214,11 +218,11 @@ func (s *IntegrationTestSuite) TestAuctionModule() {
 			Id:                        uint64(2),
 			AuctionId:                 uint32(1),
 			Bidder:                    orch0Address,
-			MaxBidInUsomm:             sdk.NewCoin("usomm", sdk.NewIntFromUint64(10000000000)),
+			MaxBidInUsomm:             sdk.NewCoin(testDenom, sdk.NewIntFromUint64(10000000000)),
 			SaleTokenMinimumAmount:    sdk.NewCoin("gravity0x3506424f91fd33084466f402d5d97f05f8e3b4af", sdk.NewIntFromUint64(50000000)),
 			TotalFulfilledSaleTokens:  sdk.NewCoin("gravity0x3506424f91fd33084466f402d5d97f05f8e3b4af", sdk.NewIntFromUint64(2500000000)),
 			SaleTokenUnitPriceInUsomm: sdk.MustNewDecFromStr("2"),
-			TotalUsommPaid:            sdk.NewCoin("usomm", sdk.NewIntFromUint64(5000000000)),
+			TotalUsommPaid:            sdk.NewCoin(testDenom, sdk.NewIntFromUint64(5000000000)),
 			BlockHeight:               uint64(currentBlockHeight),
 		}
 
@@ -227,16 +231,18 @@ func (s *IntegrationTestSuite) TestAuctionModule() {
 		s.Require().Equal(expectedBid2, *actualBid2.Bid)
 		s.T().Log("Bid stored correctly!")
 
-		s.T().Log("Verifying user funds debited and credited appropriately.")
 		// Verify user has funds debited and purchase credited
+		s.T().Log("Verifying user funds debited and credited appropriately.")
 		balanceRes, err = bankQueryClient.AllBalances(context.Background(), &banktypes.QueryAllBalancesRequest{Address: orch0Address})
 		s.Require().NoError(err)
-		s.T().Logf("Orchestrator 0 token balances after second bid %v", balanceRes.Balances)
+		s.T().Logf("Orchestrator 0 token balances after first bid %v", balanceRes.Balances)
 
-		expectedSaleTokens := expectedBid1.TotalFulfilledSaleTokens.Amount.Add(expectedBid2.TotalFulfilledSaleTokens.Amount)
-		expectedUsommRemaining := initialOrchBalanceRes.Balances[1].Amount.Sub(expectedBid1.TotalUsommPaid.Amount.Add(expectedBid2.TotalUsommPaid.Amount))
-		s.Require().Equal(sdk.NewCoin("gravity0x3506424f91fd33084466f402d5d97f05f8e3b4af", expectedSaleTokens), balanceRes.Balances[0])
-		s.Require().Equal(sdk.NewCoin("usomm", expectedUsommRemaining), balanceRes.Balances[2])
+		found, gravityBalance := balanceOfDenom(balanceRes.Balances, "gravity0x3506424f91fd33084466f402d5d97f05f8e3b4af")
+		s.Require().True(found, "gravity denom balance not present in orchestrator wallet")
+		s.Require().Equal(latestOrchGravity.Amount.Add(expectedBid2.TotalFulfilledSaleTokens.Amount).Int64(), gravityBalance.Amount.Int64())
+		found, orchSommBalance := balanceOfDenom(balanceRes.Balances, testDenom)
+		s.Require().True(found, "SOMM balance not present in orchestrator wallet")
+		s.Require().Equal(latestOrchSomm.Amount.Sub(expectedBid1.TotalUsommPaid.Amount.Add(sdk.NewInt(feeAmount))).Int64(), orchSommBalance.Amount.Int64())
 		s.T().Log("User funds updated correctly!")
 
 		s.T().Log("Verifying auction has completed...")
@@ -276,4 +282,14 @@ func (s *IntegrationTestSuite) TestAuctionModule() {
 
 		s.T().Log("--Test completed successfully--")
 	})
+}
+
+func balanceOfDenom(balances sdk.Coins, denom string) (found bool, balance sdk.Coin) {
+	for _, balance := range balances {
+		if balance.Denom == denom {
+			return true, balance
+		}
+	}
+
+	return false, sdk.NewCoin(denom, sdk.ZeroInt())
 }

@@ -6,6 +6,7 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
+	"github.com/peggyjv/sommelier/v4/app/params"
 	auctionTypes "github.com/peggyjv/sommelier/v4/x/auction/types"
 )
 
@@ -14,8 +15,8 @@ func (suite *KeeperTestSuite) TestHappyPathsForQueryServer() {
 	ctx, auctionKeeper := suite.ctx, suite.auctionKeeper
 	require := suite.Require()
 
-	params := auctionTypes.DefaultParams()
-	auctionKeeper.setParams(ctx, params)
+	auctionParams := auctionTypes.DefaultParams()
+	auctionKeeper.setParams(ctx, auctionParams)
 
 	// Create some active auctions
 	activeAuction1 := &auctionTypes.Auction{
@@ -71,31 +72,31 @@ func (suite *KeeperTestSuite) TestHappyPathsForQueryServer() {
 		Id:                        uint64(2),
 		AuctionId:                 uint32(2),
 		Bidder:                    cosmosAddress1,
-		MaxBidInUsomm:             sdk.NewCoin(auctionTypes.UsommDenom, sdk.NewInt(2000)),
+		MaxBidInUsomm:             sdk.NewCoin(params.BaseCoinUnit, sdk.NewInt(2000)),
 		SaleTokenMinimumAmount:    sdk.NewCoin("weth", sdk.NewInt(20)),
 		TotalFulfilledSaleTokens:  sdk.NewCoin("weth", sdk.NewInt(100)),
 		SaleTokenUnitPriceInUsomm: sdk.MustNewDecFromStr("20.0"),
-		TotalUsommPaid:            sdk.NewCoin(auctionTypes.UsommDenom, sdk.NewInt(2000)),
+		TotalUsommPaid:            sdk.NewCoin(params.BaseCoinUnit, sdk.NewInt(2000)),
 	}
 	bid2 := &auctionTypes.Bid{
 		Id:                        uint64(3),
 		AuctionId:                 uint32(2),
 		Bidder:                    cosmosAddress2,
-		MaxBidInUsomm:             sdk.NewCoin(auctionTypes.UsommDenom, sdk.NewInt(1500)),
+		MaxBidInUsomm:             sdk.NewCoin(params.BaseCoinUnit, sdk.NewInt(1500)),
 		SaleTokenMinimumAmount:    sdk.NewCoin("weth", sdk.NewInt(10)),
 		TotalFulfilledSaleTokens:  sdk.NewCoin("weth", sdk.NewInt(500)),
 		SaleTokenUnitPriceInUsomm: sdk.MustNewDecFromStr("10.07"),
-		TotalUsommPaid:            sdk.NewCoin(auctionTypes.UsommDenom, sdk.NewInt(1370)),
+		TotalUsommPaid:            sdk.NewCoin(params.BaseCoinUnit, sdk.NewInt(1370)),
 	}
 	bid3 := &auctionTypes.Bid{
 		Id:                        uint64(4),
 		AuctionId:                 uint32(3),
 		Bidder:                    cosmosAddress2,
-		MaxBidInUsomm:             sdk.NewCoin(auctionTypes.UsommDenom, sdk.NewInt(500)),
+		MaxBidInUsomm:             sdk.NewCoin(params.BaseCoinUnit, sdk.NewInt(500)),
 		SaleTokenMinimumAmount:    sdk.NewCoin("usdc", sdk.NewInt(1)),
 		TotalFulfilledSaleTokens:  sdk.NewCoin("usdc", sdk.NewInt(20)),
 		SaleTokenUnitPriceInUsomm: sdk.MustNewDecFromStr("20.0"),
-		TotalUsommPaid:            sdk.NewCoin(auctionTypes.UsommDenom, sdk.NewInt(20)),
+		TotalUsommPaid:            sdk.NewCoin(params.BaseCoinUnit, sdk.NewInt(20)),
 	}
 
 	auctionKeeper.setBid(ctx, *bid1)
@@ -107,11 +108,11 @@ func (suite *KeeperTestSuite) TestHappyPathsForQueryServer() {
 		Id:                        uint64(1),
 		AuctionId:                 uint32(1),
 		Bidder:                    cosmosAddress1,
-		MaxBidInUsomm:             sdk.NewCoin(auctionTypes.UsommDenom, sdk.NewInt(1500)),
+		MaxBidInUsomm:             sdk.NewCoin(params.BaseCoinUnit, sdk.NewInt(1500)),
 		SaleTokenMinimumAmount:    sdk.NewCoin("matic", sdk.NewInt(100)),
 		TotalFulfilledSaleTokens:  sdk.NewCoin("matic", sdk.NewInt(1500)),
 		SaleTokenUnitPriceInUsomm: sdk.MustNewDecFromStr("1.0"),
-		TotalUsommPaid:            sdk.NewCoin(auctionTypes.UsommDenom, sdk.NewInt(1500)),
+		TotalUsommPaid:            sdk.NewCoin(params.BaseCoinUnit, sdk.NewInt(1500)),
 	}
 	auctionKeeper.setBid(ctx, *bid0)
 

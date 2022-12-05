@@ -3,7 +3,7 @@ package keeper
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
-	appParams "github.com/peggyjv/sommelier/v4/app/params"
+	"github.com/peggyjv/sommelier/v4/app/params"
 )
 
 // BeginBlocker emits rewards each block they are available by sending them to the distribution module's fee collector
@@ -12,21 +12,21 @@ import (
 func (k Keeper) BeginBlocker(ctx sdk.Context) {
 	// Handle reward emissions
 	moduleAccount := k.GetFeesAccount(ctx)
-	remainingRewardsSupply := k.bankKeeper.GetBalance(ctx, moduleAccount.GetAddress(), appParams.BaseCoinUnit).Amount
+	remainingRewardsSupply := k.bankKeeper.GetBalance(ctx, moduleAccount.GetAddress(), params.BaseCoinUnit).Amount
 
 	if remainingRewardsSupply.IsZero() {
 		return
 	}
 
 	previousSupplyPeak := k.GetLastRewardSupplyPeak(ctx)
-	params := k.GetParams(ctx)
+	cellarfeesParams := k.GetParams(ctx)
 
 	var emissionAmount sdk.Int
 	if remainingRewardsSupply.GT(previousSupplyPeak) {
 		k.SetLastRewardSupplyPeak(ctx, remainingRewardsSupply)
-		emissionAmount = remainingRewardsSupply.Quo(sdk.NewInt(int64(params.RewardEmissionPeriod)))
+		emissionAmount = remainingRewardsSupply.Quo(sdk.NewInt(int64(cellarfeesParams.RewardEmissionPeriod)))
 	} else {
-		emissionAmount = previousSupplyPeak.Quo(sdk.NewInt(int64(params.RewardEmissionPeriod)))
+		emissionAmount = previousSupplyPeak.Quo(sdk.NewInt(int64(cellarfeesParams.RewardEmissionPeriod)))
 	}
 
 	// Emission should be at least 1usomm and at most the remaining reward supply
@@ -40,7 +40,7 @@ func (k Keeper) BeginBlocker(ctx sdk.Context) {
 		emissionAmount = remainingRewardsSupply
 	}
 
-	coin := sdk.NewCoin(appParams.BaseCoinUnit, emissionAmount)
+	coin := sdk.NewCoin(params.BaseCoinUnit, emissionAmount)
 	emission := sdk.NewCoins(coin)
 
 	// Send to fee collector for distribution
