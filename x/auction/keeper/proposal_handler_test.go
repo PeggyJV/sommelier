@@ -7,6 +7,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	govTypes "github.com/cosmos/cosmos-sdk/x/gov/types"
+	"github.com/peggyjv/sommelier/v4/app/params"
 	auctionTypes "github.com/peggyjv/sommelier/v4/x/auction/types"
 )
 
@@ -25,7 +26,7 @@ func (suite *KeeperTestSuite) TestHappPathForProposalHandler() {
 		UsdPrice: sdk.MustNewDecFromStr("1.7"),
 	}
 	tokenPrices[2] = &auctionTypes.ProposedTokenPrice{
-		Denom:    auctionTypes.UsommDenom,
+		Denom:    params.BaseCoinUnit,
 		UsdPrice: sdk.MustNewDecFromStr("1000.0"),
 	}
 

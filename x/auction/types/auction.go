@@ -6,9 +6,8 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	gravitytypes "github.com/peggyjv/gravity-bridge/module/v2/x/gravity/types"
+	"github.com/peggyjv/sommelier/v4/app/params"
 )
-
-const UsommDenom = "usomm"
 
 func (a *Auction) ValidateBasic() error {
 	if a.Id == 0 {
@@ -19,8 +18,8 @@ func (a *Auction) ValidateBasic() error {
 		return sdkerrors.Wrapf(ErrAuctionStartingAmountMustBePositve, "Starting tokens for sale: %s", a.StartingTokensForSale.String())
 	}
 
-	if a.StartingTokensForSale.Denom == UsommDenom {
-		return sdkerrors.Wrapf(ErrCannotAuctionUsomm, "Starting denom tokens for sale: %s", UsommDenom)
+	if a.StartingTokensForSale.Denom == params.BaseCoinUnit {
+		return sdkerrors.Wrapf(ErrCannotAuctionUsomm, "Starting denom tokens for sale: %s", params.BaseCoinUnit)
 	}
 
 	if a.StartBlock == 0 {
@@ -79,7 +78,7 @@ func (b *Bid) ValidateBasic() error {
 		return sdkerrors.Wrapf(ErrBidAmountMustBePositive, "bid amount in usomm: %s", b.MaxBidInUsomm.String())
 	}
 
-	if b.MaxBidInUsomm.Denom != UsommDenom {
+	if b.MaxBidInUsomm.Denom != params.BaseCoinUnit {
 		return sdkerrors.Wrapf(ErrBidMustBeInUsomm, "bid: %s", b.MaxBidInUsomm.String())
 	}
 
@@ -103,7 +102,7 @@ func (b *Bid) ValidateBasic() error {
 		return sdkerrors.Wrapf(ErrBidPaymentCannotBeNegative, "payment in usomm: %s", b.TotalUsommPaid.String())
 	}
 
-	if b.TotalUsommPaid.Denom != UsommDenom {
+	if b.TotalUsommPaid.Denom != params.BaseCoinUnit {
 		return sdkerrors.Wrapf(ErrBidMustBeInUsomm, "payment denom: %s", b.TotalUsommPaid.Denom)
 	}
 
@@ -123,7 +122,7 @@ func (t *TokenPrice) ValidateBasic() error {
 		return sdkerrors.Wrapf(ErrInvalidLastUpdatedBlock, "block: %d", t.LastUpdatedBlock)
 	}
 
-	if !strings.HasPrefix(t.Denom, gravitytypes.GravityDenomPrefix) && t.Denom != UsommDenom {
+	if !strings.HasPrefix(t.Denom, gravitytypes.GravityDenomPrefix) && t.Denom != params.BaseCoinUnit {
 		return sdkerrors.Wrapf(ErrInvalidTokenPriceDenom, "denom: %s", t.Denom)
 	}
 
@@ -139,7 +138,7 @@ func (t *ProposedTokenPrice) ValidateBasic() error {
 		return sdkerrors.Wrapf(ErrPriceMustBePositive, "usd price: %s", t.UsdPrice.String())
 	}
 
-	if !strings.HasPrefix(t.Denom, gravitytypes.GravityDenomPrefix) && t.Denom != UsommDenom {
+	if !strings.HasPrefix(t.Denom, gravitytypes.GravityDenomPrefix) && t.Denom != params.BaseCoinUnit {
 		return sdkerrors.Wrapf(ErrInvalidTokenPriceDenom, "denom: %s", t.Denom)
 	}
 

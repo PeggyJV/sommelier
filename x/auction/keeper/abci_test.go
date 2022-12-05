@@ -3,6 +3,7 @@ package keeper
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
+	"github.com/peggyjv/sommelier/v4/app/params"
 	auctionTypes "github.com/peggyjv/sommelier/v4/x/auction/types"
 )
 
@@ -11,8 +12,8 @@ func (suite *KeeperTestSuite) TestAbci() {
 	ctx, auctionKeeper := suite.ctx, suite.auctionKeeper
 	require := suite.Require()
 
-	params := auctionTypes.DefaultParams()
-	auctionKeeper.setParams(ctx, params)
+	auctionParams := auctionTypes.DefaultParams()
+	auctionKeeper.setParams(ctx, auctionParams)
 
 	// Test base case of no auctions
 	// Note BeginBlocker is only run once for completeness, since it has no code in it
@@ -20,7 +21,7 @@ func (suite *KeeperTestSuite) TestAbci() {
 	require.NotPanics(func() { auctionKeeper.EndBlocker(ctx) })
 
 	// Create an auction
-	sommPrice := auctionTypes.TokenPrice{Denom: auctionTypes.UsommDenom, UsdPrice: sdk.MustNewDecFromStr("0.01"), LastUpdatedBlock: 5}
+	sommPrice := auctionTypes.TokenPrice{Denom: params.BaseCoinUnit, UsdPrice: sdk.MustNewDecFromStr("0.01"), LastUpdatedBlock: 5}
 
 	/* #nosec */
 	saleToken := "gravity0x95aD61b0a150d79219dCF64E1E6Cc01f0B64C4cE"

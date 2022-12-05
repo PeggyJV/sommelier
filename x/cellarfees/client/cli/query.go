@@ -30,6 +30,8 @@ func GetQueryCmd(queryRoute string) *cobra.Command {
 
 	cmd.AddCommand(CmdQueryParams())
 	cmd.AddCommand(CmdQueryModuleAccounts())
+	cmd.AddCommand(CmdQueryFeeAccrualCounters())
+	cmd.AddCommand(CmdQueryLastRewardSupplyPeak())
 
 	return cmd
 }
