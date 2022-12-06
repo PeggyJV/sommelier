@@ -43,9 +43,6 @@ const (
 	// LatestCorkIDKey - <key> -> uint64(latestCorkID)
 	LatestCorkIDKey
 
-	// CorkIdHashPrefix - <prefix><hash> -> uint64(id)
-	ScheduledCorkIDHashPrefix
-
 	// CorkResultPrefix - <prefix><id> -> CorkResult
 	CorkResultPrefix
 )

@@ -57,6 +57,9 @@ var (
 	gravityContract       = common.HexToAddress("0x04C89607413713Ec9775E14b954286519d836FEf")
 	counterContract       = common.HexToAddress("0x0000000000000000000000000000000000000000")
 	unusedGenesisContract = common.HexToAddress("0x0000000000000000000000000000000000000001")
+
+	// 67%
+	corkVoteThreshold = sdk.NewDecWithPrec(67, 2)
 )
 
 func MNEMONICS() []string {
@@ -380,6 +383,7 @@ func (s *IntegrationTestSuite) initGenesis() {
 	var corkGenState corktypes.GenesisState
 	s.Require().NoError(cdc.UnmarshalJSON(appGenState[corktypes.ModuleName], &corkGenState))
 	corkGenState.CellarIds = corktypes.CellarIDSet{Ids: []string{unusedGenesisContract.String()}}
+	corkGenState.Params.VoteThreshold = corkVoteThreshold
 	bz, err = cdc.MarshalJSON(&corkGenState)
 	s.Require().NoError(err)
 	appGenState[corktypes.ModuleName] = bz

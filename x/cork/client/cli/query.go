@@ -1,7 +1,6 @@
 package cli
 
 import (
-	"os"
 	"strconv"
 
 	"github.com/cosmos/cosmos-sdk/client"
@@ -26,6 +25,7 @@ func GetQueryCmd() *cobra.Command {
 		queryCellarIDs(),
 		queryScheduledBlockHeights(),
 		queryScheduledCorksByBlockHeight(),
+		queryScheduledCorksByID(),
 		queryCorkResult(),
 		queryCorkResults(),
 	}...)
@@ -112,8 +112,6 @@ func queryScheduledCorks() *cobra.Command {
 				return err
 			}
 
-			writer := os.Stdout
-			writer.Write([]byte(res.String()))
 			return ctx.PrintProto(res)
 		},
 	}
@@ -175,6 +173,40 @@ func queryScheduledBlockHeights() *cobra.Command {
 			req := &types.QueryScheduledBlockHeightsRequest{}
 
 			res, err := queryClient.QueryScheduledBlockHeights(cmd.Context(), req)
+			if err != nil {
+				return err
+			}
+
+			return ctx.PrintProto(res)
+		},
+	}
+
+	flags.AddQueryFlagsToCmd(cmd)
+
+	return cmd
+}
+
+func queryScheduledCorksByID() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:     "scheduled-corks-by-id",
+		Aliases: []string{"scbi"},
+		Args:    cobra.ExactArgs(1),
+		Short:   "query scheduled corks by their cork ID",
+		Long:    "query scheduled corks by their cork ID, which is the keccak256 hash of the block height, target contract address, and encoded contract call concatenated",
+		RunE: func(cmd *cobra.Command, args []string) error {
+			ctx, err := client.GetClientQueryContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			id := args[0]
+
+			queryClient := types.NewQueryClient(ctx)
+			req := &types.QueryScheduledCorksByIDRequest{
+				Id: id,
+			}
+
+			res, err := queryClient.QueryScheduledCorksByID(cmd.Context(), req)
 			if err != nil {
 				return err
 			}

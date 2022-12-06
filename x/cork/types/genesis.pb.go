@@ -103,7 +103,7 @@ func (m *GenesisState) GetCorkResults() []*CorkResult {
 
 // Params cork parameters
 type Params struct {
-	// VoteThreshold defines the percentage of bonded stake required to vote each period
+	// VoteThreshold defines the percentage of bonded stake required to vote for a scheduled cork to be approved
 	VoteThreshold github_com_cosmos_cosmos_sdk_types.Dec `protobuf:"bytes,1,opt,name=vote_threshold,json=voteThreshold,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Dec" json:"vote_threshold" yaml:"vote_threshold"`
 }
 

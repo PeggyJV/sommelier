@@ -1,6 +1,7 @@
 package types
 
 import (
+	"encoding/json"
 	"fmt"
 
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
@@ -84,14 +85,20 @@ func (m *RemoveManagedCellarIDsProposal) ValidateBasic() error {
 	return nil
 }
 
-func NewScheduledCorkProposal(title string, description string, blockHeight uint64, targetContractAddress string, contractCallProtoJSON string) *ScheduledCorkProposal {
-	return &ScheduledCorkProposal{
+func NewScheduledCorkProposal(title string, description string, blockHeight uint64, targetContractAddress string, contractCallProtoJSON string) (*ScheduledCorkProposal, error) {
+	prop := &ScheduledCorkProposal{
 		Title:                 title,
 		Description:           description,
 		BlockHeight:           blockHeight,
 		TargetContractAddress: targetContractAddress,
 		ContractCallProtoJson: contractCallProtoJSON,
 	}
+	err := prop.ValidateBasic()
+	if err != nil {
+		return nil, err
+	}
+
+	return prop, nil
 }
 
 func (m *ScheduledCorkProposal) ProposalRoute() string {
@@ -111,8 +118,12 @@ func (m *ScheduledCorkProposal) ValidateBasic() error {
 		return fmt.Errorf("can't have an empty command")
 	}
 
-	if len(common.HexToAddress(m.TargetContractAddress)) == 0 {
-		return fmt.Errorf("can't have an empty contract address")
+	if !json.Valid([]byte(m.ContractCallProtoJson)) {
+		return fmt.Errorf("contract call has invalid JSON formatting")
+	}
+
+	if !common.IsHexAddress(m.TargetContractAddress) {
+		return fmt.Errorf("invalid contract address")
 	}
 
 	return nil

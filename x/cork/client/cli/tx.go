@@ -190,9 +190,11 @@ Where proposal.json contains:
   "description": "I trust them, approve cork",
   "block_height": 100000,
   "target_contract_address": "0x123801a7D398351b8bE11C439e05C5B3259aeC9B",
-  "contract_call_proto_json": "{\"function_name\":\"cork\",\"function_args\":[]}",
+  "contract_call_proto_json": "{\"cellar_id\":\"\0x123801a7D398351b8bE11C439e05C5B3259aeC9B\",\"<cellar_type_name>\":{\"some_fuction\":{\"function_args\":{}},\"block_height\":12345}}",
   "deposit": "10000usomm"
 }
+
+The contract_call_proto_json field must be the JSON representation of a ScheduleRequest, which is defined in Steward's protos. For more information, see the Steward API docs at https://github.com/peggyjv/steward.
 `,
 				version.AppName,
 			),
@@ -224,7 +226,10 @@ Where proposal.json contains:
 
 			// TODO(bolten): verify properly formatted JSON? maybe put it in the ValidateBasic?
 
-			content := types.NewScheduledCorkProposal(proposal.Title, proposal.Description, proposal.BlockHeight, proposal.TargetContractAddress, proposal.ContractCallProtoJson)
+			content, err := types.NewScheduledCorkProposal(proposal.Title, proposal.Description, proposal.BlockHeight, proposal.TargetContractAddress, proposal.ContractCallProtoJson)
+			if err != nil {
+				return err
+			}
 			from := clientCtx.GetFromAddress()
 			msg, err := govtypes.NewMsgSubmitProposal(content, deposit, from)
 			if err != nil {

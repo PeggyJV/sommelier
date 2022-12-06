@@ -109,14 +109,16 @@ func postScheduledCorkProposalHandlerFn(clientCtx client.Context) http.HandlerFu
 			return
 		}
 
-		content := types.NewScheduledCorkProposal(
+		content, err := types.NewScheduledCorkProposal(
 			req.Title,
 			req.Description,
 			req.BlockHeight,
 			req.TargetContractAddress,
 			req.ContractCallProtoJSON,
 		)
-
+		if rest.CheckBadRequestError(w, err) {
+			return
+		}
 		msg, err := govtypes.NewMsgSubmitProposal(content, req.Deposit, req.Proposer)
 		if rest.CheckBadRequestError(w, err) {
 			return

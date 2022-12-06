@@ -1,7 +1,6 @@
 syntax = "proto3";
 package cork.v2;
 
-import "cosmos_proto/cosmos.proto";
 import "cork/v2/cork.proto";
 
 option go_package = "github.com/peggyjv/sommelier/v4/x/cork/types";
@@ -39,6 +38,24 @@ message ScheduledCorkProposal {
   string description = 2;
   uint64 block_height = 3;
   string target_contract_address = 4;
+  /*
+  * The JSON representation of a ScheduleRequest defined in the Steward protos
+  *
+  * Example: The following is the JSON form of a ScheduleRequest containing a steward.v2.cellar_v1.TrustPosition
+  * message, which maps to the `trustPosition(address)` function of the the V1 Cellar contract.
+  *
+  * {
+  *   "cellar_id": "0x1234567890000000000000000000000000000000",
+  *   "cellar_v1": {
+  *     "trust_position": {
+  *       "erc20_address": "0x1234567890000000000000000000000000000000"
+  *     }
+  *   },
+  *   "block_height": 1000000
+  * }
+  *
+  * See Steward's API docs for more information https://github.com/peggyjv/steward
+  */
   string contract_call_proto_json = 5;
 }
 

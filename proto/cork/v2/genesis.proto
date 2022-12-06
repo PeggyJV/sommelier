@@ -22,7 +22,7 @@ message GenesisState {
 
 // Params cork parameters
 message Params {
-    // VoteThreshold defines the percentage of bonded stake required to vote each period
+    // VoteThreshold defines the percentage of bonded stake required to vote for a scheduled cork to be approved
     string vote_threshold      = 1 [
         (gogoproto.moretags)   = "yaml:\"vote_threshold\"",
         (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",

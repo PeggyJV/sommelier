@@ -198,6 +198,7 @@ func (s *IntegrationTestSuite) TestScheduledCork() {
 		resultRes, err := corkQueryClient.QueryCorkResult(context.Background(), &types.QueryCorkResultRequest{Id: corkID})
 		s.Require().NoError(err, "failed to query cork result")
 		s.Require().True(resultRes.CorkResult.Approved, "cork was not approved")
+		s.Require().True(sdk.MustNewDecFromStr(resultRes.CorkResult.ApprovalPercentage).GT(corkVoteThreshold))
 		s.Require().Equal(counterContract, common.HexToAddress(resultRes.CorkResult.Cork.TargetContractAddress))
 
 		s.T().Log("verify scheduled corks were deleted")
