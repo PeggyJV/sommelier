@@ -161,10 +161,14 @@ func (s *IntegrationTestSuite) TestScheduledCork() {
 			s.T().Logf("cork msg for orch %d sent successfully", i)
 		}
 
-		s.T().Log("wait for scheduled height")
+		s.T().Log("verify scheduled corks were created")
 		corkQueryClient := types.NewQueryClient(clientCtx)
+		res, err := corkQueryClient.QueryScheduledCorksByBlockHeight(context.Background(), &types.QueryScheduledCorksByBlockHeightRequest{BlockHeight: uint64(targetBlockHeight)})
+		s.Require().NoError(err, "failed to query scheduled corks by height")
+		s.Require().Len(res.Corks, 4)
+
+		s.T().Log("wait for scheduled height")
 		gbClient := gbtypes.NewQueryClient(clientCtx)
-		var blockHeight uint64
 		s.Require().Eventuallyf(func() bool {
 			kb, err := val.keyring()
 			s.Require().NoError(err)
@@ -178,7 +182,7 @@ func (s *IntegrationTestSuite) TestScheduledCork() {
 
 			currentHeight := status.SyncInfo.LatestBlockHeight
 			if currentHeight > (targetBlockHeight + 1) {
-				blockHeight = uint64(status.SyncInfo.LatestBlockHeight)
+				// blockHeight = uint64(status.SyncInfo.LatestBlockHeight)
 				return true
 			} else if currentHeight < targetBlockHeight {
 				res, err := corkQueryClient.QueryScheduledCorks(context.Background(), &types.QueryScheduledCorksRequest{})
@@ -202,7 +206,7 @@ func (s *IntegrationTestSuite) TestScheduledCork() {
 		s.Require().Equal(counterContract, common.HexToAddress(resultRes.CorkResult.Cork.TargetContractAddress))
 
 		s.T().Log("verify scheduled corks were deleted")
-		res, err := corkQueryClient.QueryScheduledCorksByBlockHeight(context.Background(), &types.QueryScheduledCorksByBlockHeightRequest{BlockHeight: blockHeight})
+		res, err = corkQueryClient.QueryScheduledCorksByBlockHeight(context.Background(), &types.QueryScheduledCorksByBlockHeightRequest{BlockHeight: uint64(targetBlockHeight)})
 		s.Require().NoError(err, "failed to query scheduled corks by height")
 		s.Require().Len(res.Corks, 0)
 
