@@ -190,7 +190,7 @@ Where proposal.json contains:
   "description": "I trust them, approve cork",
   "block_height": 100000,
   "target_contract_address": "0x123801a7D398351b8bE11C439e05C5B3259aeC9B",
-  "contract_call_proto_json": "{\"cellar_id\":\"\0x123801a7D398351b8bE11C439e05C5B3259aeC9B\",\"<cellar_type_name>\":{\"some_fuction\":{\"function_args\":{}},\"block_height\":12345}}",
+  "contract_call_proto_json": "{\"cellar_id\":\"0x123801a7D398351b8bE11C439e05C5B3259aeC9B\",\"<cellar_type_name>\":{\"some_fuction\":{\"function_args\":{}},\"block_height\":12345}}",
   "deposit": "10000usomm"
 }
 

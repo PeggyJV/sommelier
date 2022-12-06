@@ -205,6 +205,7 @@ func (c *chain) clientContext(nodeURI string, kb *keyring.Keyring, fromName stri
 	interfaceRegistry.RegisterImplementations((*govtypes.Content)(nil),
 		&corktypes.AddManagedCellarIDsProposal{},
 		&corktypes.RemoveManagedCellarIDsProposal{},
+		&corktypes.ScheduledCorkProposal{},
 	)
 	interfaceRegistry.RegisterImplementations((*cryptotypes.PubKey)(nil), &secp256k1.PubKey{}, &ed25519.PubKey{})
 
