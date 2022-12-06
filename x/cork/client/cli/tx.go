@@ -224,8 +224,6 @@ The contract_call_proto_json field must be the JSON representation of a Schedule
 				return fmt.Errorf("%s is not a valid contract address", proposal.TargetContractAddress)
 			}
 
-			// TODO(bolten): verify properly formatted JSON? maybe put it in the ValidateBasic?
-
 			content, err := types.NewScheduledCorkProposal(proposal.Title, proposal.Description, proposal.BlockHeight, proposal.TargetContractAddress, proposal.ContractCallProtoJson)
 			if err != nil {
 				return err

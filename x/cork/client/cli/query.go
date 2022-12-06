@@ -5,6 +5,7 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/peggyjv/sommelier/v4/x/cork/types"
 	"github.com/spf13/cobra"
 )
@@ -200,6 +201,10 @@ func queryScheduledCorksByID() *cobra.Command {
 			}
 
 			id := args[0]
+			// the length of a keccak256 hash string
+			if len(id) != 64 {
+				return sdkerrors.New("", uint32(1), "invalid ID length, must be a keccak256 hash")
+			}
 
 			queryClient := types.NewQueryClient(ctx)
 			req := &types.QueryScheduledCorksByIDRequest{
@@ -233,6 +238,10 @@ func queryCorkResult() *cobra.Command {
 			}
 
 			corkID := args[0]
+			// the length of a keccak256 hash string
+			if len(corkID) != 64 {
+				return sdkerrors.New("", uint32(1), "invalid ID length, must be a keccak256 hash")
+			}
 
 			queryClient := types.NewQueryClient(ctx)
 			req := &types.QueryCorkResultRequest{
