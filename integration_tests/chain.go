@@ -34,6 +34,7 @@ import (
 const (
 	keyringPassphrase = "testpassphrase"
 	keyringAppName    = "testnet"
+	feeAmount         = 246913560
 )
 
 var (
@@ -278,14 +279,14 @@ func (c *chain) sendMsgs(clientCtx client.Context, msgs ...sdk.Msg) (*sdk.TxResp
 		}
 	}
 
-	txf.WithFees("246913560testsomm")
+	txf.WithFees("246913560usomm")
 
 	txb, err := tx.BuildUnsignedTx(txf, msgs...)
 	if err != nil {
 		return nil, err
 	}
 
-	txb.SetFeeAmount(sdk.Coins{{Denom: "testsomm", Amount: sdk.NewInt(246913560)}})
+	txb.SetFeeAmount(sdk.Coins{{Denom: "usomm", Amount: sdk.NewInt(feeAmount)}})
 
 	err = tx.Sign(txf, fromName, txb, false)
 	if err != nil {

@@ -52,7 +52,7 @@ func TestSubmitBid(t *testing.T) {
 				"50000gravity0xdac17f958d2ee523a2206206994597c13d831ec7",
 				fmt.Sprintf("--%s=%s", "from", "cosmos16zrkzad482haunrn25ywvwy6fclh3vh7r0hcny"),
 			},
-			err: sdkerrors.New("", uint32(1), "key with addressD0876175B53AAFDE4C735508E6389A4E3F78B2FEnot found: key not found"), // Expect key not found error since this is just a mock request
+			err: sdkerrors.New("", uint32(1), "cosmos16zrkzad482haunrn25ywvwy6fclh3vh7r0hcny.info: key not found"), // Expect key not found error since this is just a mock request
 		},
 		{
 			name: "Insufficient args",

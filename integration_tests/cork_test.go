@@ -3,7 +3,6 @@ package integration_tests
 import (
 	"context"
 	"fmt"
-	"math/big"
 	"strings"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -85,13 +84,6 @@ func ABIEncodedInc() []byte {
 	}
 
 	return abiEncodedCall
-}
-
-func UnpackEthUInt(bz []byte) sdk.Int {
-	output := big.NewInt(0)
-	output.SetBytes(bz)
-
-	return sdk.NewIntFromBigInt(output)
 }
 
 func (s *IntegrationTestSuite) getCurrentCount() (*sdk.Int, error) {

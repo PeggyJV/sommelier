@@ -6,7 +6,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/ethereum/go-ethereum/common"
 	gravitytypes "github.com/peggyjv/gravity-bridge/module/v2/x/gravity/types"
-	appParams "github.com/peggyjv/sommelier/v4/app/params"
+	"github.com/peggyjv/sommelier/v4/app/params"
 	"github.com/peggyjv/sommelier/v4/x/cellarfees/types"
 )
 
@@ -53,7 +53,7 @@ func (h Hooks) AfterSendToCosmosEvent(ctx sdk.Context, event gravitytypes.SendTo
 
 	// Denom cannot be SOMM
 	_, denom := h.k.gravityKeeper.ERC20ToDenomLookup(ctx, common.HexToAddress(event.TokenContract))
-	if denom == appParams.BaseCoinUnit {
+	if denom == params.BaseCoinUnit {
 		return
 	}
 
