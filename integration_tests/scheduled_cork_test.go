@@ -135,7 +135,7 @@ func (s *IntegrationTestSuite) TestScheduledCork() {
 			TargetContractAddress: counterContract.Hex(),
 		}
 		corkID := cork.IDHash(uint64(targetBlockHeight))
-		s.T().Logf("cork ID is %s", corkID)
+		s.T().Logf("cork ID is %s", hex.EncodeToString(corkID))
 		for i, orch := range s.chain.orchestrators {
 			i := i
 			orch := orch
@@ -231,7 +231,6 @@ func (s *IntegrationTestSuite) TestScheduledCork() {
 			ContractCallProtoJson: "{\"cellar_id\":\"0x123801a7D398351b8bE11C439e05C5B3259aeC9B\",\"cellar_v1\":{\"some_fuction\":{\"function_args\":{}},\"block_height\":12345}}",
 			BlockHeight:           uint64(targetBlockHeight),
 		}
-
 		corkProposalMsg, err := govtypes.NewMsgSubmitProposal(
 			&corkProposal,
 			sdk.Coins{
