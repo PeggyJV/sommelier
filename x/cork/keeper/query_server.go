@@ -15,13 +15,21 @@ import (
 var _ types.QueryServer = Keeper{}
 
 // QueryParams implements QueryServer
-func (k Keeper) QueryParams(c context.Context, _ *types.QueryParamsRequest) (*types.QueryParamsResponse, error) {
+func (k Keeper) QueryParams(c context.Context, req *types.QueryParamsRequest) (*types.QueryParamsResponse, error) {
+	if req == nil {
+		return nil, status.Error(codes.InvalidArgument, "empty request")
+	}
+
 	return &types.QueryParamsResponse{
 		Params: k.GetParamSet(sdk.UnwrapSDKContext(c)),
 	}, nil
 }
 
-func (k Keeper) QueryCellarIDs(c context.Context, _ *types.QueryCellarIDsRequest) (*types.QueryCellarIDsResponse, error) {
+func (k Keeper) QueryCellarIDs(c context.Context, req *types.QueryCellarIDsRequest) (*types.QueryCellarIDsResponse, error) {
+	if req == nil {
+		return nil, status.Error(codes.InvalidArgument, "empty request")
+	}
+
 	ctx := sdk.UnwrapSDKContext(c)
 
 	response := &types.QueryCellarIDsResponse{}
@@ -32,7 +40,11 @@ func (k Keeper) QueryCellarIDs(c context.Context, _ *types.QueryCellarIDsRequest
 	return response, nil
 }
 
-func (k Keeper) QueryScheduledCorks(c context.Context, _ *types.QueryScheduledCorksRequest) (*types.QueryScheduledCorksResponse, error) {
+func (k Keeper) QueryScheduledCorks(c context.Context, req *types.QueryScheduledCorksRequest) (*types.QueryScheduledCorksResponse, error) {
+	if req == nil {
+		return nil, status.Error(codes.InvalidArgument, "empty request")
+	}
+
 	ctx := sdk.UnwrapSDKContext(c)
 
 	response := types.QueryScheduledCorksResponse{}
@@ -49,7 +61,11 @@ func (k Keeper) QueryScheduledCorks(c context.Context, _ *types.QueryScheduledCo
 	return &response, nil
 }
 
-func (k Keeper) QueryScheduledBlockHeights(c context.Context, _ *types.QueryScheduledBlockHeightsRequest) (*types.QueryScheduledBlockHeightsResponse, error) {
+func (k Keeper) QueryScheduledBlockHeights(c context.Context, req *types.QueryScheduledBlockHeightsRequest) (*types.QueryScheduledBlockHeightsResponse, error) {
+	if req == nil {
+		return nil, status.Error(codes.InvalidArgument, "empty request")
+	}
+
 	ctx := sdk.UnwrapSDKContext(c)
 	response := types.QueryScheduledBlockHeightsResponse{}
 	response.BlockHeights = k.GetScheduledBlockHeights(ctx)
@@ -57,6 +73,10 @@ func (k Keeper) QueryScheduledBlockHeights(c context.Context, _ *types.QuerySche
 }
 
 func (k Keeper) QueryScheduledCorksByBlockHeight(c context.Context, req *types.QueryScheduledCorksByBlockHeightRequest) (*types.QueryScheduledCorksByBlockHeightResponse, error) {
+	if req == nil {
+		return nil, status.Error(codes.InvalidArgument, "empty request")
+	}
+
 	ctx := sdk.UnwrapSDKContext(c)
 
 	response := types.QueryScheduledCorksByBlockHeightResponse{}
@@ -65,6 +85,10 @@ func (k Keeper) QueryScheduledCorksByBlockHeight(c context.Context, req *types.Q
 }
 
 func (k Keeper) QueryScheduledCorksByID(c context.Context, req *types.QueryScheduledCorksByIDRequest) (*types.QueryScheduledCorksByIDResponse, error) {
+	if req == nil {
+		return nil, status.Error(codes.InvalidArgument, "empty request")
+	}
+
 	ctx := sdk.UnwrapSDKContext(c)
 	id, err := hex.DecodeString(req.Id)
 	if err != nil {
@@ -77,6 +101,10 @@ func (k Keeper) QueryScheduledCorksByID(c context.Context, req *types.QuerySched
 }
 
 func (k Keeper) QueryCorkResult(c context.Context, req *types.QueryCorkResultRequest) (*types.QueryCorkResultResponse, error) {
+	if req == nil {
+		return nil, status.Error(codes.InvalidArgument, "empty request")
+	}
+
 	ctx := sdk.UnwrapSDKContext(c)
 	id, err := hex.DecodeString(req.Id)
 	if err != nil {
@@ -95,6 +123,10 @@ func (k Keeper) QueryCorkResult(c context.Context, req *types.QueryCorkResultReq
 }
 
 func (k Keeper) QueryCorkResults(c context.Context, req *types.QueryCorkResultsRequest) (*types.QueryCorkResultsResponse, error) {
+	if req == nil {
+		return nil, status.Error(codes.InvalidArgument, "empty request")
+	}
+
 	ctx := sdk.UnwrapSDKContext(c)
 
 	response := types.QueryCorkResultsResponse{}

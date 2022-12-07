@@ -148,7 +148,9 @@ func (suite *KeeperTestSuite) TestGetWinningVotes() {
 		EncodedContractCall:   []byte("testcall"),
 		TargetContractAddress: sampleCellarHex,
 	}
-	corkKeeper.SetScheduledCork(ctx, testHeight, []byte("test"), cork)
+	val := []byte("this is twenty chars")
+	require.Equal(20, len(val))
+	corkKeeper.SetScheduledCork(ctx, testHeight, val, cork)
 
 	suite.stakingKeeper.EXPECT().GetLastTotalPower(ctx).Return(sdk.NewInt(100))
 	suite.stakingKeeper.EXPECT().Validator(ctx, gomock.Any()).Return(suite.validator)
@@ -162,8 +164,60 @@ func (suite *KeeperTestSuite) TestGetWinningVotes() {
 	require.True(results[0].Approved)
 	require.Equal("100.000000000000000000", results[0].ApprovalPercentage)
 
-	// scheduled cork should be deleted once approved
-	// Collin: The corks are not being deleted. It works in integration testing, and the DeleteScheduledCork unit test works.
-	// I can't see anything wrong in the GetApprovedScheduledCorks function.
+	// scheduled cork should be deleted at the scheduled height
 	require.Empty(corkKeeper.GetScheduledCorksByBlockHeight(ctx, testHeight))
+}
+
+func (suite *KeeperTestSuite) TestInvalidationNonce() {
+	ctx, corkKeeper := suite.ctx, suite.corkKeeper
+	require := suite.Require()
+
+	require.Zero(corkKeeper.GetLatestInvalidationNonce(ctx))
+
+	corkKeeper.SetLatestInvalidationNonce(ctx, uint64(5))
+	require.Equal(uint64(5), corkKeeper.GetLatestInvalidationNonce(ctx))
+
+	corkKeeper.IncrementInvalidationNonce(ctx)
+	require.Equal(uint64(6), corkKeeper.GetLatestInvalidationNonce(ctx))
+}
+
+func (suite *KeeperTestSuite) TestCorkResults() {
+	ctx, corkKeeper := suite.ctx, suite.corkKeeper
+	require := suite.Require()
+
+	require.Empty(corkKeeper.GetCorkResults(ctx))
+
+	testHeight := uint64(ctx.BlockHeight())
+	cork := types.Cork{
+		EncodedContractCall:   []byte("testcall"),
+		TargetContractAddress: sampleCellarHex,
+	}
+	id := cork.IDHash(testHeight)
+	result := types.CorkResult{
+		Cork:               &cork,
+		BlockHeight:        testHeight,
+		Approved:           true,
+		ApprovalPercentage: "100.00",
+	}
+	corkKeeper.SetCorkResult(ctx, id, result)
+	actualResult, found := corkKeeper.GetCorkResult(ctx, id)
+	require.True(found)
+	require.Equal(result, actualResult)
+
+	results := corkKeeper.GetCorkResults(ctx)
+	require.Equal(&actualResult, results[0])
+
+	corkKeeper.DeleteCorkResult(ctx, id)
+	require.Empty(corkKeeper.GetCorkResults(ctx))
+}
+
+func (suite *KeeperTestSuite) TestParamSet() {
+	ctx, corkKeeper := suite.ctx, suite.corkKeeper
+	require := suite.Require()
+
+	require.Panics(func() { corkKeeper.GetParamSet(ctx) })
+
+	params := types.DefaultParams()
+	corkKeeper.setParams(ctx, params)
+	require.Equal(params, corkKeeper.GetParamSet(ctx))
 }
