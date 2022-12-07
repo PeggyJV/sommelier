@@ -116,11 +116,11 @@ func (m *ScheduledCorkProposal) ValidateBasic() error {
 	}
 
 	if len(m.ContractCallProtoJson) == 0 {
-		return sdkerrors.Wrapf(ErrInvalidJson, "cannot have empty contract call")
+		return sdkerrors.Wrapf(ErrInvalidJSON, "cannot have empty contract call")
 	}
 
 	if !json.Valid([]byte(m.ContractCallProtoJson)) {
-		return sdkerrors.Wrapf(ErrInvalidJson, "%s", m.ContractCallProtoJson)
+		return sdkerrors.Wrapf(ErrInvalidJSON, "%s", m.ContractCallProtoJson)
 	}
 
 	if !common.IsHexAddress(m.TargetContractAddress) {

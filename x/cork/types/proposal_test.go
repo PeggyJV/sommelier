@@ -84,7 +84,7 @@ func TestScheduledCorkProposalValidation(t *testing.T) {
 				TargetContractAddress: "0x0000000000000000000000000000000000000000",
 			},
 			expPass: false,
-			err:     sdkerrors.Wrap(ErrInvalidJson, "cannot have empty contract call"),
+			err:     sdkerrors.Wrap(ErrInvalidJSON, "cannot have empty contract call"),
 		},
 		{
 			name: "Invalid JSON",
@@ -96,7 +96,7 @@ func TestScheduledCorkProposalValidation(t *testing.T) {
 				TargetContractAddress: "0x0000000000000000000000000000000000000000",
 			},
 			expPass: false,
-			err:     sdkerrors.Wrapf(ErrInvalidJson, "[}"),
+			err:     sdkerrors.Wrapf(ErrInvalidJSON, "[}"),
 		},
 	}
 

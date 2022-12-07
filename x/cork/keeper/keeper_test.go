@@ -93,7 +93,7 @@ func (suite *KeeperTestSuite) TestSetGetCellarIDsHappyPath() {
 	cellarIDSet := types.CellarIDSet{
 		Ids: []string{sampleCellarHex},
 	}
-	var expected []common.Address
+	expected := []common.Address{}
 	for _, id := range cellarIDSet.Ids {
 		expected = append(expected, common.HexToAddress(id))
 	}
