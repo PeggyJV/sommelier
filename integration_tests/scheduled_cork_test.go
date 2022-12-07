@@ -1,7 +1,6 @@
 package integration_tests
 
 import (
-	"bytes"
 	"context"
 	"encoding/hex"
 	"time"
@@ -9,7 +8,6 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/crypto"
 	gbtypes "github.com/peggyjv/gravity-bridge/module/v2/x/gravity/types"
 	"github.com/peggyjv/sommelier/v4/x/cork/types"
 )
@@ -132,12 +130,11 @@ func (s *IntegrationTestSuite) TestScheduledCork() {
 		targetBlockHeight := currentBlockHeight + 15
 
 		s.T().Logf("scheduling cork calls for height %d", targetBlockHeight)
-		blockHeightBytes := sdk.Uint64ToBigEndian(uint64(targetBlockHeight))
-		corkID := hex.EncodeToString(crypto.Keccak256Hash(
-			bytes.Join(
-				[][]byte{blockHeightBytes, counterContract.Bytes(), ABIEncodedInc()},
-				[]byte{},
-			)).Bytes())
+		cork := types.Cork{
+			EncodedContractCall:   ABIEncodedInc(),
+			TargetContractAddress: counterContract.Hex(),
+		}
+		corkID := cork.IDHash(uint64(targetBlockHeight))
 		s.T().Logf("cork ID is %s", corkID)
 		for i, orch := range s.chain.orchestrators {
 			i := i
@@ -199,7 +196,7 @@ func (s *IntegrationTestSuite) TestScheduledCork() {
 		}, 3*time.Minute, 1*time.Second, "never reached scheduled height")
 
 		s.T().Log("verify the cork was approved")
-		resultRes, err := corkQueryClient.QueryCorkResult(context.Background(), &types.QueryCorkResultRequest{Id: corkID})
+		resultRes, err := corkQueryClient.QueryCorkResult(context.Background(), &types.QueryCorkResultRequest{Id: hex.EncodeToString(corkID)})
 		s.Require().NoError(err, "failed to query cork result")
 		s.Require().True(resultRes.CorkResult.Approved, "cork was not approved")
 		s.Require().True(sdk.MustNewDecFromStr(resultRes.CorkResult.ApprovalPercentage).GT(corkVoteThreshold))
