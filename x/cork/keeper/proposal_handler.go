@@ -55,3 +55,10 @@ func HandleRemoveManagedCellarsProposal(ctx sdk.Context, k Keeper, p types.Remov
 
 	return nil
 }
+
+// HandleScheduledCorkProposal is a handler for executing a passed scheduled cork proposal
+func HandleScheduledCorkProposal(ctx sdk.Context, k Keeper, p types.ScheduledCorkProposal) error {
+	// all of the recorded state necessary is available by querying the proposal in the gov module,
+	// so this is a no-op
+	return nil
+}

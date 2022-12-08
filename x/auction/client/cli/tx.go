@@ -45,7 +45,7 @@ $ %s tx gov submit-proposal set-token-prices <path/to/proposal.json> --from=<key
 Where proposal.json contains:
 
 {
-  "title": "Best token price proposal evar",
+  "title": "Best token price proposal ever",
   "description": "Add the guac",
   "token_prices": [ { denom: "usomm", usd_price: 1000000 }, { denom: "gravity0xdac17f958d2ee523a2206206994597c13d831ec7", usd_price: 0.12501 } ],
   "deposit": "10000usommm"

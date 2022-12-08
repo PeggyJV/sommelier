@@ -49,7 +49,7 @@ Where proposal.json contains:
   "title": "Dollary-doos LP Cellar Proposal",
   "description": "I have a hunch",
   "cellar_ids": ["0x123801a7D398351b8bE11C439e05C5B3259aeC9B", "0x456801a7D398351b8bE11C439e05C5B3259aeC9B"],
-  "deposit": "1000stake"
+  "deposit": "10000usomm"
 }
 `,
 				version.AppName,
@@ -119,7 +119,7 @@ Where proposal.json contains:
   "title": "Dollary-doos LP Cellar Removal Proposal",
   "description": "I don't trust them",
   "cellar_ids": ["0x123801a7D398351b8bE11C439e05C5B3259aeC9B", "0x456801a7D398351b8bE11C439e05C5B3259aeC9B"],
-  "deposit": "1000stake"
+  "deposit": "10000usomm"
 }
 `,
 				version.AppName,
@@ -157,6 +157,77 @@ Where proposal.json contains:
 				proposal.Description,
 				&types.CellarIDSet{Ids: proposal.CellarIds})
 
+			from := clientCtx.GetFromAddress()
+			msg, err := govtypes.NewMsgSubmitProposal(content, deposit, from)
+			if err != nil {
+				return err
+			}
+
+			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), msg)
+		},
+	}
+
+	return cmd
+}
+
+// GetCmdSubmitScheduledCorkProposal implements the command to submit scheduled cork proposal
+func GetCmdSubmitScheduledCorkProposal() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "schedule-cork [proposal-file]",
+		Args:  cobra.ExactArgs(1),
+		Short: "Submit a scheduled cork proposal",
+		Long: strings.TrimSpace(
+			fmt.Sprintf(`Submit a scheduled cork proposal along with an initial deposit.
+The proposal details must be supplied via a JSON file.
+
+Example:
+$ %s tx gov submit-proposal schedule-cork <path/to/proposal.json> --from=<key_or_address>
+
+Where proposal.json contains:
+
+{
+  "title": "Dollary-doos LP Scheduled Cork Proposal",
+  "description": "I trust them, approve cork",
+  "block_height": 100000,
+  "target_contract_address": "0x123801a7D398351b8bE11C439e05C5B3259aeC9B",
+  "contract_call_proto_json": "{\"cellar_id\":\"0x123801a7D398351b8bE11C439e05C5B3259aeC9B\",\"<cellar_type_name>\":{\"some_fuction\":{\"function_args\":{}},\"block_height\":12345}}",
+  "deposit": "10000usomm"
+}
+
+The contract_call_proto_json field must be the JSON representation of a ScheduleRequest, which is defined in Steward's protos. For more information, see the Steward API docs at https://github.com/peggyjv/steward.
+`,
+				version.AppName,
+			),
+		),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			clientCtx, err := client.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			proposal := types.ScheduledCorkProposalWithDeposit{}
+			contents, err := ioutil.ReadFile(args[0])
+			if err != nil {
+				return err
+			}
+
+			if err = clientCtx.Codec.UnmarshalJSON(contents, &proposal); err != nil {
+				return err
+			}
+
+			deposit, err := sdk.ParseCoinsNormalized(proposal.Deposit)
+			if err != nil {
+				return err
+			}
+
+			if !common.IsHexAddress(proposal.TargetContractAddress) {
+				return fmt.Errorf("%s is not a valid contract address", proposal.TargetContractAddress)
+			}
+
+			content := types.NewScheduledCorkProposal(proposal.Title, proposal.Description, proposal.BlockHeight, proposal.TargetContractAddress, proposal.ContractCallProtoJson)
+			if err := content.ValidateBasic(); err != nil {
+				return err
+			}
 			from := clientCtx.GetFromAddress()
 			msg, err := govtypes.NewMsgSubmitProposal(content, deposit, from)
 			if err != nil {

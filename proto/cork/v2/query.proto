@@ -1,0 +1,114 @@
+syntax = "proto3";
+package cork.v2;
+
+import "gogoproto/gogo.proto";
+import "google/api/annotations.proto";
+import "cork/v2/genesis.proto";
+import "cork/v2/cork.proto";
+
+option go_package = "github.com/peggyjv/sommelier/v4/x/cork/types";
+
+// Query defines the gRPC query service for the cork module.
+service Query {
+  // QueryParams queries the allocation module parameters.
+  rpc QueryParams(QueryParamsRequest) returns (QueryParamsResponse) {
+    option (google.api.http).get = "/sommelier/cork/v2/params";
+  }
+  // QueryCellarIDs returns all cellars and current tick ranges
+  rpc QueryCellarIDs(QueryCellarIDsRequest) returns (QueryCellarIDsResponse) {
+    option (google.api.http).get = "/sommelier/cork/v2/cellar_ids";
+  }
+  // QueryScheduledCorks returns all scheduled corks
+  rpc QueryScheduledCorks(QueryScheduledCorksRequest) returns (QueryScheduledCorksResponse) {
+    option (google.api.http).get = "/sommelier/cork/v2/scheduled_corks";
+  }
+  // QueryScheduledBlockHeights returns all scheduled block heights
+  rpc QueryScheduledBlockHeights(QueryScheduledBlockHeightsRequest) returns (QueryScheduledBlockHeightsResponse) {
+    option (google.api.http).get = "/sommelier/cork/v2/scheduled_block_heights";
+  }
+
+  // QueryScheduledCorks returns all scheduled corks at a block height
+  rpc QueryScheduledCorksByBlockHeight(QueryScheduledCorksByBlockHeightRequest) returns (QueryScheduledCorksByBlockHeightResponse) {
+    option (google.api.http).get = "/sommelier/cork/v2/scheduled_corks_by_block_height/{block_height}";
+  }
+
+  // QueryScheduledCorks returns all scheduled corks with the specified ID
+  rpc QueryScheduledCorksByID(QueryScheduledCorksByIDRequest) returns (QueryScheduledCorksByIDResponse) {
+    option (google.api.http).get = "/sommelier/cork/v2/scheduled_corks_by_id/{id}";
+  }
+
+  rpc QueryCorkResult(QueryCorkResultRequest) returns (QueryCorkResultResponse) {
+    option (google.api.http).get = "/sommelier/cork/v2/cork_results/{id}";
+  }
+
+  rpc QueryCorkResults(QueryCorkResultsRequest) returns (QueryCorkResultsResponse) {
+    option (google.api.http).get = "/sommelier/cork/v2/cork_results";
+  }
+}
+
+// QueryParamsRequest is the request type for the Query/Params gRPC method.
+message QueryParamsRequest {}
+
+// QueryParamsRequest is the response type for the Query/Params gRPC method.
+message QueryParamsResponse {
+  // allocation parameters
+  Params params = 1 [(gogoproto.nullable) = false];
+}
+
+// QueryCellarIDsRequest is the request type for Query/QueryCellarIDs gRPC method.
+message QueryCellarIDsRequest {}
+
+// QueryCellarIDsResponse is the response type for Query/QueryCellars gRPC method.
+message QueryCellarIDsResponse {
+  repeated string cellar_ids = 1;
+}
+
+// QueryScheduledCorksRequest
+message QueryScheduledCorksRequest {}
+
+// QueryScheduledCorksResponse
+message QueryScheduledCorksResponse {
+  repeated ScheduledCork corks = 1;
+}
+
+// QueryScheduledBlockHeightsRequest
+message QueryScheduledBlockHeightsRequest {}
+
+// QueryScheduledBlockHeightsResponse
+message QueryScheduledBlockHeightsResponse {
+  repeated uint64 block_heights = 1;
+}
+
+// QueryScheduledCorksByBlockHeightRequest
+message QueryScheduledCorksByBlockHeightRequest {
+  uint64 block_height = 1;
+}
+
+// QueryScheduledCorksByBlockHeightResponse
+message QueryScheduledCorksByBlockHeightResponse {
+  repeated ScheduledCork corks = 1;
+}
+
+// QueryScheduledCorksByIDRequest
+message QueryScheduledCorksByIDRequest {
+  string id = 1;
+}
+
+// QueryScheduledCorksByIDResponse
+message QueryScheduledCorksByIDResponse {
+  repeated ScheduledCork corks = 1;
+}
+
+message QueryCorkResultRequest {
+  string id = 1;
+}
+
+message QueryCorkResultResponse {
+  CorkResult corkResult = 1;
+}
+
+message QueryCorkResultsRequest {}
+
+message QueryCorkResultsResponse {
+  repeated CorkResult corkResults = 1;
+}
