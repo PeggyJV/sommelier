@@ -92,7 +92,7 @@ func (c *chain) configDir() string {
 	return fmt.Sprintf("%s/%s", c.dataDir, c.id)
 }
 
-func (c *chain) createAndInitValidators(count int) error { // nolint:unused
+func (c *chain) createAndInitValidators(count int) error { //nolint:unused
 	for i := 0; i < count; i++ {
 		node := c.createValidator(i)
 
@@ -145,7 +145,7 @@ func (c *chain) createAndInitValidatorsWithMnemonics(mnemonics []string) error {
 	return nil
 }
 
-func (c *chain) createAndInitOrchestrators(count int) error { // nolint:unused
+func (c *chain) createAndInitOrchestrators(count int) error { //nolint:unused
 	mnemonics := make([]string, count)
 	for i := 0; i < count; i++ {
 		mnemonic, err := createMnemonic()
@@ -195,7 +195,7 @@ func (c *chain) createOrchestrator(index int) *orchestrator {
 	}
 }
 
-func (c *chain) clientContext(nodeURI string, kb *keyring.Keyring, fromName string, fromAddr sdk.AccAddress) (*client.Context, error) { // nolint:unparam
+func (c *chain) clientContext(nodeURI string, kb *keyring.Keyring, fromName string, fromAddr sdk.AccAddress) (*client.Context, error) { //nolint:unparam
 	amino := codec.NewLegacyAmino()
 	interfaceRegistry := sdkTypes.NewInterfaceRegistry()
 	interfaceRegistry.RegisterImplementations((*sdk.Msg)(nil),
@@ -205,6 +205,7 @@ func (c *chain) clientContext(nodeURI string, kb *keyring.Keyring, fromName stri
 	interfaceRegistry.RegisterImplementations((*govtypes.Content)(nil),
 		&corktypes.AddManagedCellarIDsProposal{},
 		&corktypes.RemoveManagedCellarIDsProposal{},
+		&corktypes.ScheduledCorkProposal{},
 	)
 	interfaceRegistry.RegisterImplementations((*cryptotypes.PubKey)(nil), &secp256k1.PubKey{}, &ed25519.PubKey{})
 

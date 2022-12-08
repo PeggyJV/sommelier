@@ -3,160 +3,223 @@ package keeper
 import (
 	"testing"
 
+	"github.com/cosmos/cosmos-sdk/baseapp"
+	"github.com/cosmos/cosmos-sdk/codec"
+	"github.com/cosmos/cosmos-sdk/testutil"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/cosmos/cosmos-sdk/types/bech32"
+	paramskeeper "github.com/cosmos/cosmos-sdk/x/params/keeper"
 	"github.com/ethereum/go-ethereum/common"
+	"github.com/golang/mock/gomock"
+	moduletestutil "github.com/peggyjv/sommelier/v4/testutil"
+	corktestutil "github.com/peggyjv/sommelier/v4/x/cork/testutil"
 	"github.com/peggyjv/sommelier/v4/x/cork/types"
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
+	"github.com/stretchr/testify/suite"
+	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
+	tmtime "github.com/tendermint/tendermint/types/time"
 )
 
 var (
-	sampleValHex     = "24ep6yqkhpwnfdrrapu6fzmjp3xrpsgca11ab1e"
-	sampleValAddr, _ = sdk.ValAddressFromHex(sampleValHex)
-
 	sampleCellarHex  = "0xc0ffee254729296a45a3885639AC7E10F9d54979"
 	sampleCellarAddr = common.HexToAddress(sampleCellarHex)
 )
 
-func TestCellarIDs_SetGetHas(t *testing.T) {
-	t.Run("happy path", func(t *testing.T) {
-		k, ctx, _, _ := setupCorkKeeper(t)
+type KeeperTestSuite struct {
+	suite.Suite
 
-		cellarID := sampleCellarAddr
-		cellarAddrs := k.GetCellarIDs(ctx)
-		assert.Len(t, cellarAddrs, 0)
-		assert.Equal(t, false, k.HasCellarID(ctx, cellarID))
+	ctx           sdk.Context
+	corkKeeper    Keeper
+	gravityKeeper *corktestutil.MockGravityKeeper
+	stakingKeeper *corktestutil.MockStakingKeeper
+	validator     *corktestutil.MockValidatorI
 
-		k.SetCellarIDs(ctx, types.CellarIDSet{
-			Ids: []string{cellarID.String()},
-		})
-		cellarAddrs = k.GetCellarIDs(ctx)
-		assert.Len(t, cellarAddrs, 1)
-		assert.Contains(t, cellarAddrs[0].String(), cellarID.String())
-		assert.Equal(t, true, k.HasCellarID(ctx, cellarID))
-	})
+	queryClient types.QueryClient
+
+	encCfg moduletestutil.TestEncodingConfig
 }
 
-func TestSetCorkGetCork_Unit(t *testing.T) {
-	testCases := []struct {
-		name string
-		test func()
-	}{
-		{
-			name: "set cork and get cork - happy",
-			test: func() {
-				cellarID := sampleCellarAddr
-				valCork := types.ValidatorCork{
-					Validator: sampleValAddr.String(),
-					Cork: &types.Cork{
-						TargetContractAddress: cellarID.String(),
-						EncodedContractCall:   []byte{33},
-					},
-				}
+func (suite *KeeperTestSuite) SetupTest() {
+	key := sdk.NewKVStoreKey(types.StoreKey)
+	tkey := sdk.NewTransientStoreKey("transient_test")
+	testCtx := testutil.DefaultContext(key, tkey)
+	ctx := testCtx.WithBlockHeader(tmproto.Header{Height: 5, Time: tmtime.Now()})
+	encCfg := moduletestutil.MakeTestEncodingConfig()
 
-				k, ctx, _, _ := setupCorkKeeper(t)
+	// gomock initializations
+	ctrl := gomock.NewController(suite.T())
+	defer ctrl.Finish()
 
-				valAddr, err := sdk.ValAddressFromBech32(valCork.Validator)
-				require.NoError(t, err)
+	suite.gravityKeeper = corktestutil.NewMockGravityKeeper(ctrl)
+	suite.stakingKeeper = corktestutil.NewMockStakingKeeper(ctrl)
+	suite.validator = corktestutil.NewMockValidatorI(ctrl)
+	suite.ctx = ctx
 
-				t.Log("Verify no cork exists for the validator")
-				cork, found := k.GetCork(ctx, valAddr, sampleCellarAddr)
-				assert.Equal(t, false, found)
-				assert.Error(t, cork.ValidateBasic())
-				assert.Contains(t, cork.ValidateBasic().Error(),
-					"cork has an empty contract call body")
+	params := paramskeeper.NewKeeper(
+		encCfg.Codec,
+		codec.NewLegacyAmino(),
+		key,
+		tkey,
+	)
 
-				t.Log("Set corks")
-				commit := types.Cork{
-					TargetContractAddress: sampleCellarAddr.String(),
-					EncodedContractCall:   []byte{33},
-				}
-				require.NoError(t, err)
-				k.SetCork(
-					ctx,
-					/* val */ valAddr,
-					/* cork */ commit,
-				)
+	params.Subspace(types.ModuleName)
+	subSpace, found := params.GetSubspace(types.ModuleName)
+	suite.Assertions.True(found)
 
-				t.Log("test getter after k.SetCork")
-				cork, found = k.GetCork(ctx, valAddr, sampleCellarAddr)
-				assert.NoError(t, cork.ValidateBasic())
-				assert.Equal(t, true, found)
-			},
-		},
-	}
+	suite.corkKeeper = NewKeeper(
+		encCfg.Codec,
+		key,
+		subSpace,
+		suite.stakingKeeper,
+		suite.gravityKeeper,
+	)
 
-	for _, tc := range testCases {
-		tc := tc
-		t.Run(tc.name, func(t *testing.T) {
-			tc.test()
-		})
-	}
+	types.RegisterInterfaces(encCfg.InterfaceRegistry)
+
+	queryHelper := baseapp.NewQueryServerTestHelper(ctx, encCfg.InterfaceRegistry)
+	types.RegisterQueryServer(queryHelper, suite.corkKeeper)
+	queryClient := types.NewQueryClient(queryHelper)
+
+	suite.queryClient = queryClient
+	suite.encCfg = encCfg
 }
 
-func TestGetWinningVotes_Unit(t *testing.T) {
-	type TestCase struct {
-		name         string
-		description  string
-		CellarID     common.Address
-		ValCorkPairs []types.ValidatorCork
-		WinningVotes []types.Cork
+func TestKeeperTestSuite(t *testing.T) {
+	suite.Run(t, new(KeeperTestSuite))
+}
+
+func (suite *KeeperTestSuite) TestSetGetCellarIDsHappyPath() {
+	ctx, corkKeeper := suite.ctx, suite.corkKeeper
+	require := suite.Require()
+
+	cellarIDSet := types.CellarIDSet{
+		Ids: []string{sampleCellarHex},
 	}
-
-	tc := TestCase{
-		name:        "single vote - happy",
-		description: "Check that a single voter has the only approved cork",
-		CellarID:    sampleCellarAddr,
-		ValCorkPairs: []types.ValidatorCork{
-			{
-				Validator: sampleValAddr.String(),
-				Cork: &types.Cork{
-					TargetContractAddress: sampleCellarAddr.String(),
-					EncodedContractCall:   []byte{33},
-				},
-			},
-		},
-		WinningVotes: []types.Cork{
-			{
-				TargetContractAddress: sampleCellarAddr.String(),
-				EncodedContractCall:   []byte{33},
-			},
-		},
+	expected := []common.Address{}
+	for _, id := range cellarIDSet.Ids {
+		expected = append(expected, common.HexToAddress(id))
 	}
-	t.Run(tc.name, func(t *testing.T) {
-		k, ctx, mocks, _ := setupCorkKeeper(t)
+	corkKeeper.SetCellarIDs(ctx, cellarIDSet)
+	actual := corkKeeper.GetCellarIDs(ctx)
 
-		for _, vc := range tc.ValCorkPairs {
-			valAddr, err := sdk.ValAddressFromBech32(vc.Validator)
-			require.NoError(t, err)
-			commit := types.Cork{
-				TargetContractAddress: sampleCellarAddr.String(),
-				EncodedContractCall:   []byte{33},
-			}
-			k.SetCork(ctx, valAddr, commit)
-		}
+	require.Equal(expected, actual)
+	require.True(corkKeeper.HasCellarID(ctx, sampleCellarAddr))
+}
 
-		totalPower := sdk.NewInt(100)
-		mocks.mockStakingKeeper.
-			EXPECT().GetLastTotalPower(ctx).
-			Return(totalPower)
+func (suite *KeeperTestSuite) TestSetGetDeleteScheduledCork() {
+	ctx, corkKeeper := suite.ctx, suite.corkKeeper
+	require := suite.Require()
 
-		valAddr, err := sdk.ValAddressFromHex("24C0FFEE254729296A45A3885639AC7E10F9D549")
-		assert.NoError(t, err)
-		mocks.mockStakingKeeper.
-			EXPECT().Validator(ctx, valAddr).Return(mocks.mockValidator)
-		mocks.mockStakingKeeper.
-			EXPECT().PowerReduction(ctx).Return(totalPower)
-		mocks.mockValidator.
-			EXPECT().GetConsensusPower(totalPower).Return(int64(100))
-		winningVotes := k.GetApprovedCorks(ctx,
-			/*threshold=*/ sdk.MustNewDecFromStr("0.66"))
-		assert.Lenf(t, winningVotes, 1, tc.description)
+	testHeight := uint64(123)
+	val := []byte("testaddress")
+	expectedCork := types.Cork{
+		EncodedContractCall:   []byte("testcall"),
+		TargetContractAddress: sampleCellarHex,
+	}
+	expectedID := expectedCork.IDHash(testHeight)
+	actualID := corkKeeper.SetScheduledCork(ctx, testHeight, val, expectedCork)
+	require.Equal(expectedID, actualID)
+	actualCork, found := corkKeeper.GetScheduledCork(ctx, testHeight, actualID, val, sampleCellarAddr)
+	require.True(found)
+	require.Equal(expectedCork, actualCork)
 
-		encodedPayloadForContract := tc.ValCorkPairs[0].Cork.EncodedContractCall
-		assert.EqualValues(t,
-			encodedPayloadForContract,
-			winningVotes[0].EncodedContractCall)
-	})
+	actualCorks := corkKeeper.GetScheduledCorks(ctx)
+	require.Equal(&expectedCork, actualCorks[0].Cork)
 
+	actualCorks = corkKeeper.GetScheduledCorksByID(ctx, actualID)
+	require.Equal(&expectedCork, actualCorks[0].Cork)
+	require.Equal(expectedID, actualCorks[0].Id)
+
+	actualHeights := corkKeeper.GetScheduledBlockHeights(ctx)
+	require.Equal(actualCorks[0].BlockHeight, actualHeights[0])
+
+	actualCorks = corkKeeper.GetScheduledCorksByBlockHeight(ctx, testHeight)
+	require.Equal(&expectedCork, actualCorks[0].Cork)
+	require.Equal(testHeight, actualCorks[0].BlockHeight)
+	require.Equal(expectedID, actualCorks[0].Id)
+
+	corkKeeper.DeleteScheduledCork(ctx, testHeight, expectedID, sdk.ValAddress(val), sampleCellarAddr)
+	require.Empty(corkKeeper.GetScheduledCorks(ctx))
+}
+
+func (suite *KeeperTestSuite) TestGetWinningVotes() {
+	ctx, corkKeeper := suite.ctx, suite.corkKeeper
+	require := suite.Require()
+	testHeight := uint64(ctx.BlockHeight())
+	cork := types.Cork{
+		EncodedContractCall:   []byte("testcall"),
+		TargetContractAddress: sampleCellarHex,
+	}
+	_, bytes, err := bech32.DecodeAndConvert("somm1fcl08ymkl70dhyg3vmx4hjsqvxym7dawnp0zfp")
+	require.NoError(err)
+	require.Equal(20, len(bytes))
+	corkKeeper.SetScheduledCork(ctx, testHeight, bytes, cork)
+
+	suite.stakingKeeper.EXPECT().GetLastTotalPower(ctx).Return(sdk.NewInt(100))
+	suite.stakingKeeper.EXPECT().Validator(ctx, gomock.Any()).Return(suite.validator)
+	suite.validator.EXPECT().GetConsensusPower(gomock.Any()).Return(int64(100))
+	suite.stakingKeeper.EXPECT().PowerReduction(ctx).Return(sdk.OneInt())
+
+	winningScheduledVotes := corkKeeper.GetApprovedScheduledCorks(ctx, testHeight, sdk.ZeroDec())
+	results := corkKeeper.GetCorkResults(ctx)
+	require.Equal(cork, winningScheduledVotes[0])
+	require.Equal(&cork, results[0].Cork)
+	require.True(results[0].Approved)
+	require.Equal("100.000000000000000000", results[0].ApprovalPercentage)
+
+	// scheduled cork should be deleted at the scheduled height
+	require.Empty(corkKeeper.GetScheduledCorksByBlockHeight(ctx, testHeight))
+}
+
+func (suite *KeeperTestSuite) TestInvalidationNonce() {
+	ctx, corkKeeper := suite.ctx, suite.corkKeeper
+	require := suite.Require()
+
+	require.Zero(corkKeeper.GetLatestInvalidationNonce(ctx))
+
+	corkKeeper.SetLatestInvalidationNonce(ctx, uint64(5))
+	require.Equal(uint64(5), corkKeeper.GetLatestInvalidationNonce(ctx))
+
+	corkKeeper.IncrementInvalidationNonce(ctx)
+	require.Equal(uint64(6), corkKeeper.GetLatestInvalidationNonce(ctx))
+}
+
+func (suite *KeeperTestSuite) TestCorkResults() {
+	ctx, corkKeeper := suite.ctx, suite.corkKeeper
+	require := suite.Require()
+
+	require.Empty(corkKeeper.GetCorkResults(ctx))
+
+	testHeight := uint64(ctx.BlockHeight())
+	cork := types.Cork{
+		EncodedContractCall:   []byte("testcall"),
+		TargetContractAddress: sampleCellarHex,
+	}
+	id := cork.IDHash(testHeight)
+	result := types.CorkResult{
+		Cork:               &cork,
+		BlockHeight:        testHeight,
+		Approved:           true,
+		ApprovalPercentage: "100.00",
+	}
+	corkKeeper.SetCorkResult(ctx, id, result)
+	actualResult, found := corkKeeper.GetCorkResult(ctx, id)
+	require.True(found)
+	require.Equal(result, actualResult)
+
+	results := corkKeeper.GetCorkResults(ctx)
+	require.Equal(&actualResult, results[0])
+
+	corkKeeper.DeleteCorkResult(ctx, id)
+	require.Empty(corkKeeper.GetCorkResults(ctx))
+}
+
+func (suite *KeeperTestSuite) TestParamSet() {
+	ctx, corkKeeper := suite.ctx, suite.corkKeeper
+	require := suite.Require()
+
+	require.Panics(func() { corkKeeper.GetParamSet(ctx) })
+
+	params := types.DefaultParams()
+	corkKeeper.setParams(ctx, params)
+	require.Equal(params, corkKeeper.GetParamSet(ctx))
 }

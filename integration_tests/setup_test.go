@@ -59,7 +59,9 @@ var (
 	alphaERC20Contract    = common.HexToAddress("0x0000000000000000000000000000000000000000")
 	betaERC20Contract     = common.HexToAddress("0x0000000000000000000000000000000000000000")
 	unusedGenesisContract = common.HexToAddress("0x0000000000000000000000000000000000000001")
-	unusedAddedContract   = common.HexToAddress("0x0000000000000000000000000000000000000002")
+
+	// 67%
+	corkVoteThreshold = sdk.NewDecWithPrec(67, 2)
 )
 
 func MNEMONICS() []string {
@@ -143,7 +145,7 @@ func (s *IntegrationTestSuite) TearDownSuite() {
 	s.Require().NoError(s.dockerPool.RemoveNetwork(s.dockerNetwork))
 }
 
-func (s *IntegrationTestSuite) initNodes(nodeCount int) { // nolint:unused
+func (s *IntegrationTestSuite) initNodes(nodeCount int) { //nolint:unused
 	s.Require().NoError(s.chain.createAndInitValidators(nodeCount))
 	s.Require().NoError(s.chain.createAndInitOrchestrators(nodeCount))
 
@@ -203,7 +205,7 @@ func (s *IntegrationTestSuite) initNodesWithMnemonics(mnemonics ...string) {
 	}
 }
 
-func (s *IntegrationTestSuite) initEthereum() { // nolint:unused
+func (s *IntegrationTestSuite) initEthereum() { //nolint:unused
 	// generate ethereum keys for validators add them to the ethereum genesis
 	ethGenesis := EthereumGenesis{
 		Difficulty: "0x400",
@@ -414,6 +416,7 @@ func (s *IntegrationTestSuite) initGenesis() {
 	// we add the first validator address as a cellar so that it will trigger the cellarfees hook
 	// when we send test fees
 	corkGenState.CellarIds = corktypes.CellarIDSet{Ids: []string{unusedGenesisContract.String(), s.chain.validators[0].ethereumKey.address}}
+	corkGenState.Params.VoteThreshold = corkVoteThreshold
 	bz, err = cdc.MarshalJSON(&corkGenState)
 	s.Require().NoError(err)
 	appGenState[corktypes.ModuleName] = bz
@@ -674,15 +677,12 @@ func (s *IntegrationTestSuite) runOrchestrators() {
 	s.orchResources = make([]*dockertest.Resource, len(s.chain.orchestrators))
 	for i, orch := range s.chain.orchestrators {
 		gorcCfg := fmt.Sprintf(`keystore = "/root/gorc/keystore/"
-
 [gravity]
 contract = "%s"
 fees_denom = "%s"
-
 [ethereum]
 key_derivation_path = "m/44'/60'/0'/0/0"
 rpc = "http://%s:8545"
-
 [cosmos]
 key_derivation_path = "m/44'/118'/1'/0/0"
 grpc = "http://%s:9090"
