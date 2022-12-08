@@ -306,7 +306,7 @@ type ScheduledCorkProposal struct {
 	//	  "block_height": 1000000
 	//	}
 	//
-	// See Steward's API docs for more information https://github.com/peggyjv/steward
+	// You can use the Steward CLI to generate the required JSON rather than constructing it by hand https://github.com/peggyjv/steward
 	ContractCallProtoJson string `protobuf:"bytes,5,opt,name=contract_call_proto_json,json=contractCallProtoJson,proto3" json:"contract_call_proto_json,omitempty"`
 }
 

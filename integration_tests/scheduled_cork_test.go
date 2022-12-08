@@ -179,7 +179,6 @@ func (s *IntegrationTestSuite) TestScheduledCork() {
 
 			currentHeight := status.SyncInfo.LatestBlockHeight
 			if currentHeight > (targetBlockHeight + 1) {
-				// blockHeight = uint64(status.SyncInfo.LatestBlockHeight)
 				return true
 			} else if currentHeight < targetBlockHeight {
 				res, err := corkQueryClient.QueryScheduledCorks(context.Background(), &types.QueryScheduledCorksRequest{})

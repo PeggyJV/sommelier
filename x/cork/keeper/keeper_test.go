@@ -7,6 +7,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/testutil"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/cosmos/cosmos-sdk/types/bech32"
 	paramskeeper "github.com/cosmos/cosmos-sdk/x/params/keeper"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/golang/mock/gomock"
@@ -148,9 +149,10 @@ func (suite *KeeperTestSuite) TestGetWinningVotes() {
 		EncodedContractCall:   []byte("testcall"),
 		TargetContractAddress: sampleCellarHex,
 	}
-	val := []byte("this is twenty chars")
-	require.Equal(20, len(val))
-	corkKeeper.SetScheduledCork(ctx, testHeight, val, cork)
+	_, bytes, err := bech32.DecodeAndConvert("somm1fcl08ymkl70dhyg3vmx4hjsqvxym7dawnp0zfp")
+	require.NoError(err)
+	require.Equal(20, len(bytes))
+	corkKeeper.SetScheduledCork(ctx, testHeight, bytes, cork)
 
 	suite.stakingKeeper.EXPECT().GetLastTotalPower(ctx).Return(sdk.NewInt(100))
 	suite.stakingKeeper.EXPECT().Validator(ctx, gomock.Any()).Return(suite.validator)

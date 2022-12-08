@@ -7,42 +7,6 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestNewAddManagedCellarIDsProposal(t *testing.T) {
-	expectedMsg := &AddManagedCellarIDsProposal{
-		Title:       "Add Cellar IDs",
-		Description: "Adds Cellar IDs",
-		CellarIds:   &CellarIDSet{Ids: []string{"1", "2"}},
-	}
-
-	createdMsg := NewAddManagedCellarIDsProposal("Add Cellar IDs", "Adds Cellar IDs", &CellarIDSet{Ids: []string{"1", "2"}})
-	require.Equal(t, expectedMsg, createdMsg)
-}
-
-func TestNewRemoveManagedCellarIDsProposal(t *testing.T) {
-	expectedMsg := &RemoveManagedCellarIDsProposal{
-		Title:       "Remove Cellar IDs",
-		Description: "Remove Cellar IDs",
-		CellarIds:   &CellarIDSet{Ids: []string{"1", "2"}},
-	}
-
-	createdMsg := NewRemoveManagedCellarIDsProposal("Remove Cellar IDs", "Remove Cellar IDs", &CellarIDSet{Ids: []string{"1", "2"}})
-	require.Equal(t, expectedMsg, createdMsg)
-}
-
-func TestScheduledCorkProposal(t *testing.T) {
-	expectedMsg := &ScheduledCorkProposal{
-		Title:                 "Scheduled Cork",
-		Description:           "Schedules a cork via governance",
-		BlockHeight:           1,
-		ContractCallProtoJson: "{\"thing\":1}",
-		TargetContractAddress: "0x0000000000000000000000000000000000000000",
-	}
-
-	createdMsg, err := NewScheduledCorkProposal("Scheduled Cork", "Schedules a cork via governance", 1, "0x0000000000000000000000000000000000000000", "{\"thing\":1}")
-	require.Nil(t, err)
-	require.Equal(t, expectedMsg, createdMsg)
-}
-
 func TestScheduledCorkProposalValidation(t *testing.T) {
 	testCases := []struct {
 		name                  string
