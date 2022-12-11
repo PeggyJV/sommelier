@@ -1,0 +1,97 @@
+syntax = "proto3";
+package auction.v1;
+
+import "gogoproto/gogo.proto";
+import "google/api/annotations.proto";
+import "auction/v1/genesis.proto";
+import "auction/v1/auction.proto";
+import "cosmos_proto/cosmos.proto";
+import "cosmos/base/query/v1beta1/pagination.proto";
+
+option go_package = "github.com/peggyjv/sommelier/v4/x/auction/types";
+
+service Query {
+  rpc QueryParams(QueryParamsRequest) returns (QueryParamsResponse) {
+    option (google.api.http).get = "/sommelier/auction/v1/params";
+  }
+
+  rpc QueryActiveAuction(QueryActiveAuctionRequest) returns (QueryActiveAuctionResponse) {
+    option (google.api.http).get = "/sommelier/auction/v1/active_auctions/{auction_id}";
+  }
+
+  rpc QueryEndedAuction(QueryEndedAuctionRequest) returns (QueryEndedAuctionResponse) {
+    option (google.api.http).get = "/sommelier/auction/v1/ended_auctions/{auction_id}";
+  }
+
+  rpc QueryActiveAuctions(QueryActiveAuctionsRequest) returns (QueryActiveAuctionsResponse) {
+    option (google.api.http).get = "/sommelier/auction/v1/active_auctions";
+  }
+
+  rpc QueryEndedAuctions(QueryEndedAuctionsRequest) returns (QueryEndedAuctionsResponse) {
+    option (google.api.http).get = "/sommelier/auction/v1/ended_auctions";
+  }
+
+  rpc QueryBid(QueryBidRequest) returns (QueryBidResponse) {
+    option (google.api.http).get = "/sommelier/auction/v1/auctions/{auction_id}/bids/{bid_id}";
+  }
+
+  rpc QueryBidsByAuction(QueryBidsByAuctionRequest) returns (QueryBidsByAuctionResponse) {
+    option (google.api.http).get = "/sommelier/auction/v1/auctions/{auction_id}/bids";
+  }
+}
+
+message QueryParamsRequest {}
+
+message QueryParamsResponse {
+  Params params = 1 [(gogoproto.nullable) = false];
+}
+
+message QueryActiveAuctionRequest {
+  uint32 auction_id = 1;
+}
+
+message QueryActiveAuctionResponse {
+  Auction auction = 1;
+}
+
+message QueryEndedAuctionRequest {
+  uint32 auction_id = 1;
+}
+
+message QueryEndedAuctionResponse {
+  Auction auction = 1;
+}
+
+message QueryActiveAuctionsRequest {}
+
+message QueryActiveAuctionsResponse {
+  repeated Auction auctions = 1;
+}
+
+message QueryEndedAuctionsRequest {
+  cosmos.base.query.v1beta1.PageRequest pagination = 1 [ (gogoproto.nullable) = false ];
+}
+
+message QueryEndedAuctionsResponse {
+  repeated Auction auctions = 1;
+  cosmos.base.query.v1beta1.PageResponse pagination = 2 [ (gogoproto.nullable) = false ];
+}
+
+message QueryBidRequest {
+  uint64 bid_id = 1;
+  uint32 auction_id = 2;
+}
+
+message QueryBidResponse {
+  Bid bid = 1;
+}
+
+message QueryBidsByAuctionRequest {
+  uint32 auction_id = 1;
+  cosmos.base.query.v1beta1.PageRequest pagination = 2 [ (gogoproto.nullable) = false ];
+}
+
+message QueryBidsByAuctionResponse {
+  repeated Bid bids = 1;
+  cosmos.base.query.v1beta1.PageResponse pagination = 2 [ (gogoproto.nullable) = false ];
+}

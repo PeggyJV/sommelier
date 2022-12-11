@@ -30,6 +30,8 @@ func GetQueryCmd(queryRoute string) *cobra.Command {
 
 	cmd.AddCommand(CmdQueryParams())
 	cmd.AddCommand(CmdQueryModuleAccounts())
+	cmd.AddCommand(CmdQueryFeeAccrualCounters())
+	cmd.AddCommand(CmdQueryLastRewardSupplyPeak())
 
 	return cmd
 }
@@ -44,7 +46,7 @@ func CmdQueryParams() *cobra.Command {
 
 			queryClient := types.NewQueryClient(clientCtx)
 
-			res, err := queryClient.Params(context.Background(), &types.QueryParamsRequest{})
+			res, err := queryClient.QueryParams(context.Background(), &types.QueryParamsRequest{})
 			if err != nil {
 				return err
 			}
@@ -69,7 +71,60 @@ func CmdQueryModuleAccounts() *cobra.Command {
 
 			queryClient := types.NewQueryClient(clientCtx)
 
-			res, err := queryClient.ModuleAccounts(context.Background(), &types.QueryModuleAccountsRequest{})
+			res, err := queryClient.QueryModuleAccounts(
+				context.Background(), &types.QueryModuleAccountsRequest{})
+			if err != nil {
+				return err
+			}
+
+			return clientCtx.PrintProto(res)
+		},
+	}
+
+	flags.AddQueryFlagsToCmd(cmd)
+
+	return cmd
+}
+
+func CmdQueryLastRewardSupplyPeak() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:     "last-reward-supply-peak",
+		Aliases: []string{"lrsp"},
+		Short:   "shows the previous SOMM reward supply peak amount used to calculate rewards per block",
+		Args:    cobra.NoArgs,
+		RunE: func(cmd *cobra.Command, args []string) error {
+			clientCtx := client.GetClientContextFromCmd(cmd)
+
+			queryClient := types.NewQueryClient(clientCtx)
+
+			res, err := queryClient.QueryLastRewardSupplyPeak(
+				context.Background(), &types.QueryLastRewardSupplyPeakRequest{})
+			if err != nil {
+				return err
+			}
+
+			return clientCtx.PrintProto(res)
+		},
+	}
+
+	flags.AddQueryFlagsToCmd(cmd)
+
+	return cmd
+}
+
+func CmdQueryFeeAccrualCounters() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:     "fee-accrual-counters",
+		Aliases: []string{"fac"},
+		Short:   "shows the number of fee accruals per denom since the last respective auction",
+		Args:    cobra.NoArgs,
+		RunE: func(cmd *cobra.Command, args []string) error {
+			clientCtx := client.GetClientContextFromCmd(cmd)
+
+			queryClient := types.NewQueryClient(clientCtx)
+
+			res, err := queryClient.QueryFeeAccrualCounters(
+				context.Background(), &types.QueryFeeAccrualCountersRequest{})
 			if err != nil {
 				return err
 			}

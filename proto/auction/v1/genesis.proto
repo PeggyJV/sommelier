@@ -1,0 +1,27 @@
+syntax = "proto3";
+package auction.v1;
+
+import "auction/v1/tx.proto";
+import "auction/v1/auction.proto";
+import "gogoproto/gogo.proto";
+
+option go_package = "github.com/peggyjv/sommelier/v4/x/auction/types";
+
+message GenesisState {
+  Params params = 1 [ (gogoproto.nullable) = false ];
+  repeated Auction auctions = 2;
+  repeated Bid bids = 3;
+  repeated TokenPrice token_prices = 4;
+  uint32 last_auction_id = 5;
+  uint64 last_bid_id = 6;
+}
+
+message Params {
+  uint64 price_max_block_age = 1;
+  uint64 minimum_bid_in_usomm = 2;
+  uint64 auction_max_block_age = 3;
+  string auction_price_decrease_acceleration_rate = 4 [
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+    (gogoproto.nullable) = false
+  ];
+}

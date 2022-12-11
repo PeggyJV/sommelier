@@ -380,11 +380,14 @@ e2e_clean_slate:
 e2e_basic: e2e_clean_slate
 	@integration_tests/integration_tests.test -test.run TestBasicChain -test.failfast -test.v || make -s fail
 
-e2e_cork_test: e2e_clean_slate
-	@E2E_SKIP_CLEANUP=true integration_tests/integration_tests.test -test.failfast -test.v -test.run IntegrationTestSuite -testify.m TestCork || make -s fail
-
 e2e_scheduled_cork_test: e2e_clean_slate
 	@E2E_SKIP_CLEANUP=true integration_tests/integration_tests.test -test.failfast -test.v -test.run IntegrationTestSuite -testify.m TestScheduledCork || make -s fail
+
+e2e_auction_module_test: e2e_clean_slate
+	@E2E_SKIP_CLEANUP=true integration_tests/integration_tests.test -test.failfast -test.v -test.run IntegrationTestSuite -testify.m TestAuctionModule || make -s fail
+
+e2e_cellarfees_test: e2e_clean_slate
+	@E2E_SKIP_CLEANUP=true integration_tests/integration_tests.test -test.failfast -test.v -test.run IntegrationTestSuite -testify.m TestCellarFees || make -s fail
 
 fail:
 	@echo 'test failed; dumping container logs into ./testlogs for review'

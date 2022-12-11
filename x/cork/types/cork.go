@@ -3,6 +3,7 @@ package types
 import (
 	"bytes"
 
+	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/crypto"
 	tmbytes "github.com/tendermint/tendermint/libs/bytes"
@@ -13,6 +14,18 @@ func (c *Cork) InvalidationScope() tmbytes.HexBytes {
 	return crypto.Keccak256Hash(
 		bytes.Join(
 			[][]byte{addr.Bytes(), c.EncodedContractCall},
+			[]byte{},
+		)).Bytes()
+}
+
+func (c *Cork) IDHash(blockHeight uint64) []byte {
+	blockHeightBytes := sdk.Uint64ToBigEndian(blockHeight)
+
+	address := common.HexToAddress(c.TargetContractAddress)
+
+	return crypto.Keccak256Hash(
+		bytes.Join(
+			[][]byte{blockHeightBytes, address.Bytes(), c.EncodedContractCall},
 			[]byte{},
 		)).Bytes()
 }
@@ -38,7 +51,7 @@ func (c *Cork) ValidateBasic() error {
 	}
 
 	if !common.IsHexAddress(c.TargetContractAddress) {
-		return ErrInvalidAddress
+		return ErrInvalidEthereumAddress
 	}
 
 	return nil
