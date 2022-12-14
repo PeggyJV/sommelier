@@ -85,7 +85,6 @@ fn compile_protos(out_dir: &Path, tmp_dir: &Path) {
     config.out_dir(tmp_dir);
     config
         .type_attribute(".", "#[derive(serde::Deserialize, serde::Serialize)]")
-        .type_attribute(".", "#[serde(rename_all = \"snake_case\")]")
         .compile_protos(&protos, &proto_include_paths)
         .unwrap();
 
