@@ -84,6 +84,7 @@ fn compile_protos(out_dir: &Path, tmp_dir: &Path) {
     let mut config = prost_build::Config::default();
     config.out_dir(tmp_dir);
     config
+        .type_attribute(".", "#[derive(serde::Deserialize, serde::Serialize)]")
         .compile_protos(&protos, &proto_include_paths)
         .unwrap();
 
@@ -94,7 +95,7 @@ fn compile_protos(out_dir: &Path, tmp_dir: &Path) {
         .build_server(false)
         .format(true)
         .out_dir(tmp_dir)
-        .compile(&protos, &proto_include_paths)
+        .compile_with_config(config, &protos, &proto_include_paths)
         .unwrap();
 
     copy_generated_files(tmp_dir, out_dir);
