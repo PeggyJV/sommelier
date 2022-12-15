@@ -39,8 +39,8 @@ func (s *IntegrationTestSuite) TestScheduledCork() {
 		}, 20*time.Second, 1*time.Second, "got a non-empty result for scheduled corks")
 
 		s.T().Logf("create governance proposal to add counter contract")
-		orch := s.chain.orchestrators[0]
-		clientCtx, err := s.chain.clientContext("tcp://localhost:26657", orch.keyring, "orch", orch.keyInfo.GetAddress())
+		proposer := s.chain.proposer
+		proposerCtx, err := s.chain.clientContext("tcp://localhost:26657", proposer.keyring, "proposer", proposer.keyInfo.GetAddress())
 		s.Require().NoError(err)
 
 		proposal := types.AddManagedCellarIDsProposal{
@@ -58,17 +58,17 @@ func (s *IntegrationTestSuite) TestScheduledCork() {
 					Amount: stakeAmount.Quo(sdk.NewInt(2)),
 				},
 			},
-			orch.keyInfo.GetAddress(),
+			proposer.keyInfo.GetAddress(),
 		)
 		s.Require().NoError(err, "unable to create governance proposal")
 
 		s.T().Log("submit proposal adding test cellar ID")
-		submitProposalResponse, err := s.chain.sendMsgs(*clientCtx, proposalMsg)
+		submitProposalResponse, err := s.chain.sendMsgs(*proposerCtx, proposalMsg)
 		s.Require().NoError(err)
 		s.Require().Zero(submitProposalResponse.Code, "raw log: %s", submitProposalResponse.RawLog)
 
 		s.T().Log("check proposal was submitted correctly")
-		govQueryClient := govtypes.NewQueryClient(clientCtx)
+		govQueryClient := govtypes.NewQueryClient(proposerCtx)
 		proposalsQueryResponse, err := govQueryClient.Proposals(context.Background(), &govtypes.QueryProposalsRequest{})
 		s.Require().NoError(err)
 		s.Require().NotEmpty(proposalsQueryResponse.Proposals)
@@ -122,7 +122,7 @@ func (s *IntegrationTestSuite) TestScheduledCork() {
 		}, 10*time.Second, 2*time.Second, "did not find address in managed cellars")
 
 		s.T().Log("schedule a cork for the future")
-		node, err := clientCtx.GetNode()
+		node, err := proposerCtx.GetNode()
 		s.Require().NoError(err)
 		status, err := node.Status(context.Background())
 		s.Require().NoError(err)
@@ -159,13 +159,13 @@ func (s *IntegrationTestSuite) TestScheduledCork() {
 		}
 
 		s.T().Log("verify scheduled corks were created")
-		corkQueryClient := types.NewQueryClient(clientCtx)
+		corkQueryClient := types.NewQueryClient(proposerCtx)
 		res, err := corkQueryClient.QueryScheduledCorksByBlockHeight(context.Background(), &types.QueryScheduledCorksByBlockHeightRequest{BlockHeight: uint64(targetBlockHeight)})
 		s.Require().NoError(err, "failed to query scheduled corks by height")
 		s.Require().Len(res.Corks, 4)
 
 		s.T().Log("wait for scheduled height")
-		gbClient := gbtypes.NewQueryClient(clientCtx)
+		gbClient := gbtypes.NewQueryClient(proposerCtx)
 		s.Require().Eventuallyf(func() bool {
 			kb, err := val.keyring()
 			s.Require().NoError(err)
@@ -238,12 +238,12 @@ func (s *IntegrationTestSuite) TestScheduledCork() {
 					Amount: stakeAmount.Quo(sdk.NewInt(2)),
 				},
 			},
-			orch.keyInfo.GetAddress(),
+			proposer.keyInfo.GetAddress(),
 		)
 		s.Require().NoError(err, "Unable to create governance proposal")
 
 		s.T().Log("Submit proposal")
-		submitProposalResponse, err = s.chain.sendMsgs(*clientCtx, corkProposalMsg)
+		submitProposalResponse, err = s.chain.sendMsgs(*proposerCtx, corkProposalMsg)
 		s.Require().NoError(err)
 		s.Require().Zero(submitProposalResponse.Code, "raw log: %s", submitProposalResponse.RawLog)
 

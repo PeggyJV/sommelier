@@ -113,7 +113,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        test_type: ["ScheduledCork", "AuctionModule"]
+        test_type: ["ScheduledCork", "AuctionModule", "CellarFees"]
     steps:
       # Not needed on self hosted test runner that already has go installed
       #       - name: Set up Go 1.16
