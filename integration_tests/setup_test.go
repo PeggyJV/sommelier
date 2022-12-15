@@ -62,6 +62,8 @@ var (
 
 	// 67%
 	corkVoteThreshold = sdk.NewDecWithPrec(67, 2)
+
+	proposerMnemonic = "exit own pull hurry crawl glimpse winter service exclude same dog wrap method online practice deal lend athlete resemble chuckle culture receive autumn cinnamon"
 )
 
 func MNEMONICS() []string {
@@ -164,6 +166,11 @@ func (s *IntegrationTestSuite) initNodes(nodeCount int) { //nolint:unused
 		)
 	}
 
+	// add proposer account to genesis file (so it can bid)
+	s.Require().NoError(
+		addGenesisAccount(val0ConfigDir, "", initBalanceStr, s.chain.proposer.keyInfo.GetAddress()),
+	)
+
 	// copy the genesis file to the remaining validators
 	for _, val := range s.chain.validators[1:] {
 		err := copyFile(
@@ -177,6 +184,7 @@ func (s *IntegrationTestSuite) initNodes(nodeCount int) { //nolint:unused
 func (s *IntegrationTestSuite) initNodesWithMnemonics(mnemonics ...string) {
 	s.Require().NoError(s.chain.createAndInitValidatorsWithMnemonics(mnemonics))
 	s.Require().NoError(s.chain.createAndInitOrchestratorsWithMnemonics(mnemonics))
+	s.Require().NoError(s.chain.createAndInitProposerWithMnemonic(proposerMnemonic))
 
 	//initialize a genesis file for the first validator
 	val0ConfigDir := s.chain.validators[0].configDir()
@@ -194,6 +202,11 @@ func (s *IntegrationTestSuite) initNodesWithMnemonics(mnemonics ...string) {
 			addGenesisAccount(val0ConfigDir, "", initBalanceStr, orch.keyInfo.GetAddress()),
 		)
 	}
+
+	// add proposer account to genesis file (so it can bid)
+	s.Require().NoError(
+		addGenesisAccount(val0ConfigDir, "", initBalanceStr, s.chain.proposer.keyInfo.GetAddress()),
+	)
 
 	// copy the genesis file to the remaining validators
 	for _, val := range s.chain.validators[1:] {
