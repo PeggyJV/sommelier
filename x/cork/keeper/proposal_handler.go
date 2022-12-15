@@ -4,6 +4,7 @@ import (
 	"sort"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/peggyjv/sommelier/v4/x/cork/types"
 )
@@ -58,7 +59,9 @@ func HandleRemoveManagedCellarsProposal(ctx sdk.Context, k Keeper, p types.Remov
 
 // HandleScheduledCorkProposal is a handler for executing a passed scheduled cork proposal
 func HandleScheduledCorkProposal(ctx sdk.Context, k Keeper, p types.ScheduledCorkProposal) error {
-	// all of the recorded state necessary is available by querying the proposal in the gov module,
-	// so this is a no-op
+	if !k.HasCellarID(ctx, common.HexToAddress(p.TargetContractAddress)) {
+		return sdkerrors.Wrapf(types.ErrUnmanagedCellarAddress, "id: %s", p.TargetContractAddress)
+	}
+
 	return nil
 }
