@@ -14,6 +14,32 @@ import (
 
 func (s *IntegrationTestSuite) TestScheduledCork() {
 	s.Run("Bring up chain, and schedule a cork call to ethereum", func() {
+		s.T().Log("submitting a scheduled cork porposal with unsupported cellar ID to verify rejection")
+		proposer := s.chain.proposer
+		proposerCtx, err := s.chain.clientContext("tcp://localhost:26657", proposer.keyring, "proposer", proposer.keyInfo.GetAddress())
+		s.Require().NoError(err)
+		invalidProposal := types.ScheduledCorkProposal{
+			Title:                 "invalid proposal",
+			Description:           "proposal for cellar ID that doesn't exist",
+			TargetContractAddress: "0x0000000000000000000000000000000000000000",
+			ContractCallProtoJson: "{\"thing\": 1}",
+		}
+		proposalMsg, err := govtypes.NewMsgSubmitProposal(
+			&invalidProposal,
+			sdk.Coins{
+				{
+					Denom:  testDenom,
+					Amount: stakeAmount.Quo(sdk.NewInt(2)),
+				},
+			},
+			proposer.keyInfo.GetAddress(),
+		)
+		s.Require().NoError(err, "unable to create governance proposal")
+
+		submitProposalResponse, err := s.chain.sendMsgs(*proposerCtx, proposalMsg)
+		s.Require().NoError(err)
+		s.Require().Equal(uint32(5), submitProposalResponse.Code, "raw log: %s", submitProposalResponse.RawLog)
+		s.T().Log("proposal rejected as expected!")
 
 		// makes sure ethereum can be contacted and counter contract is working
 		count, err := s.getCurrentCount()
@@ -39,10 +65,6 @@ func (s *IntegrationTestSuite) TestScheduledCork() {
 		}, 20*time.Second, 1*time.Second, "got a non-empty result for scheduled corks")
 
 		s.T().Logf("create governance proposal to add counter contract")
-		proposer := s.chain.proposer
-		proposerCtx, err := s.chain.clientContext("tcp://localhost:26657", proposer.keyring, "proposer", proposer.keyInfo.GetAddress())
-		s.Require().NoError(err)
-
 		proposal := types.AddManagedCellarIDsProposal{
 			Title:       "add counter contract in test",
 			Description: "test description",
@@ -50,7 +72,7 @@ func (s *IntegrationTestSuite) TestScheduledCork() {
 				Ids: []string{counterContract.Hex()},
 			},
 		}
-		proposalMsg, err := govtypes.NewMsgSubmitProposal(
+		proposalMsg, err = govtypes.NewMsgSubmitProposal(
 			&proposal,
 			sdk.Coins{
 				{
@@ -63,7 +85,7 @@ func (s *IntegrationTestSuite) TestScheduledCork() {
 		s.Require().NoError(err, "unable to create governance proposal")
 
 		s.T().Log("submit proposal adding test cellar ID")
-		submitProposalResponse, err := s.chain.sendMsgs(*proposerCtx, proposalMsg)
+		submitProposalResponse, err = s.chain.sendMsgs(*proposerCtx, proposalMsg)
 		s.Require().NoError(err)
 		s.Require().Zero(submitProposalResponse.Code, "raw log: %s", submitProposalResponse.RawLog)
 
@@ -226,7 +248,7 @@ func (s *IntegrationTestSuite) TestScheduledCork() {
 		corkProposal := types.ScheduledCorkProposal{
 			Title:                 "initial token price submission",
 			Description:           "our first token prices",
-			TargetContractAddress: "0x0000000000000000000000000000000000000000",
+			TargetContractAddress: unusedGenesisContract.Hex(),
 			ContractCallProtoJson: "{\"cellar_id\":\"0x123801a7D398351b8bE11C439e05C5B3259aeC9B\",\"cellar_v1\":{\"some_fuction\":{\"function_args\":{}},\"block_height\":12345}}",
 			BlockHeight:           uint64(targetBlockHeight),
 		}
