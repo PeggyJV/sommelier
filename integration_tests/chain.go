@@ -146,7 +146,7 @@ func (c *chain) createAndInitValidatorsWithMnemonics(mnemonics []string) error {
 	return nil
 }
 
-func (c *chain) createAndInitProposerWithMnemonic(mnemonic string) error { //nolint:unused
+func (c *chain) createAndInitProposerWithMnemonic(mnemonic string) error {
 	hdPath := hd.CreateHDPath(sdk.CoinType, 1, 0)
 
 	// create keys
