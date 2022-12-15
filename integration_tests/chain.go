@@ -65,6 +65,7 @@ type chain struct {
 	id            string
 	validators    []*validator
 	orchestrators []*orchestrator
+	proposer      *proposer
 }
 
 func newChain() (*chain, error) {
@@ -141,6 +142,26 @@ func (c *chain) createAndInitValidatorsWithMnemonics(mnemonics []string) error {
 			return err
 		}
 	}
+
+	return nil
+}
+
+func (c *chain) createAndInitProposerWithMnemonic(mnemonic string) error { //nolint:unused
+	hdPath := hd.CreateHDPath(sdk.CoinType, 1, 0)
+
+	// create keys
+	info, kb, err := createMemoryKeyFromMnemonic("proposer", mnemonic, "", hdPath)
+	if err != nil {
+		return err
+	}
+
+	proposer := proposer{}
+
+	proposer.keyInfo = *info
+	proposer.mnemonic = mnemonic
+	proposer.keyring = kb
+
+	c.proposer = &proposer
 
 	return nil
 }
