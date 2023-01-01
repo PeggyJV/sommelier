@@ -16,7 +16,7 @@ message GenesisState {
 // Params incentives parameters
 message Params {
     // DistributionPerBlokc defines the amount of coins to be sent to the distribution module from the community pool every block
-    cosmos.base.v1beta1.Coin  distrbution_per_block          = 1 [(gogoproto.moretags)   = "yaml:\"distrbution_per_block\""];
+    repeated cosmos.base.v1beta1.Coin  distrbution_per_block          = 1 [(gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins" , (gogoproto.moretags)   = "yaml:\"distrbution_per_block\"" , (gogoproto.nullable) = false];
 
 
 }

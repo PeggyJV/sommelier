@@ -22,9 +22,9 @@ func ParamKeyTable() paramtypes.KeyTable {
 
 // DefaultParams returns default oracle parameters
 func DefaultParams() Params {
-	coins := sdk.NewCoin("foo", sdk.NewInt(1))
+	coins := sdk.NewCoins(sdk.NewCoin("foo", sdk.NewInt(1)))
 	return Params{
-		DistrbutionPerBlock: &coins, // 67%
+		DistrbutionPerBlock: coins, // 1 foo per block
 	}
 }
 
@@ -50,7 +50,7 @@ func validateDistributionPerBlock(i interface{}) error {
 	}
 
 	if coinsPerBlock.IsNil() {
-		return errors.New("vote threshold cannot be nil")
+		return errors.New("distribution per block cannot be nil")
 	}
 
 	return nil
