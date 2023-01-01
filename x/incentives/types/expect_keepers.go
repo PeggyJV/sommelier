@@ -1,4 +1,4 @@
-//go:generate mockgen  -destination=../keeper/mock_keepers.go -package=keeper github.com/peggyjv/sommelier/x/incentives/types DistributionKeeper,BankingKeeper
+//go:generate mockgen  -destination=../testutil/expected_keepers_mocks.go -package=keeper github.com/peggyjv/sommelier/v4/x/incentives/types DistributionKeeper,BankKeeper
 
 package types
 
