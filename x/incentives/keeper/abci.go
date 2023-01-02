@@ -33,7 +33,7 @@ func (k Keeper) EndBlocker(ctx sdk.Context) {
 	feePool.CommunityPool = newPool
 
 	// Send to fee collector for distribution
-	err := k.bankKeeper.SendCoinsFromModuleToModule(ctx, distributiontypes.ModuleName, authtypes.FeeCollectorName, params.DistrbutionPerBlock)
+	err := k.BankKeeper.SendCoinsFromModuleToModule(ctx, distributiontypes.ModuleName, authtypes.FeeCollectorName, params.DistrbutionPerBlock)
 	if err != nil {
 		panic(err)
 	}

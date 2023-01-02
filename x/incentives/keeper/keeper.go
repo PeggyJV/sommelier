@@ -14,7 +14,27 @@ type Keeper struct {
 	cdc                codec.BinaryCodec
 	paramSpace         paramtypes.Subspace
 	DistributionKeeper types.DistributionKeeper
-	bankKeeper         types.BankKeeper
+	BankKeeper         types.BankKeeper
+}
+
+func NewKeeper(
+	cdc codec.BinaryCodec,
+	storeKey sdk.StoreKey,
+	paramSpace paramtypes.Subspace,
+	DistributionKeeper types.DistributionKeeper,
+	bankKeeper types.BankKeeper,
+) Keeper {
+	if !paramSpace.HasKeyTable() {
+		paramSpace = paramSpace.WithKeyTable(types.ParamKeyTable())
+	}
+
+	return Keeper{
+		storeKey:           storeKey,
+		cdc:                cdc,
+		paramSpace:         paramSpace,
+		DistributionKeeper: DistributionKeeper,
+		BankKeeper:         bankKeeper,
+	}
 }
 
 ////////////
