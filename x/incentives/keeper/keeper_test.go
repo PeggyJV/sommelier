@@ -63,36 +63,8 @@ func (suite *KeeperTestSuite) SetupTest() {
 		suite.bankKeeper,
 	)
 
-	// cellarfeesTypes.RegisterInterfaces(encCfg.InterfaceRegistry)
-
-	// queryHelper := baseapp.NewQueryServerTestHelper(ctx, encCfg.InterfaceRegistry)
-	// cellarfeesTypes.RegisterQueryServer(queryHelper, suite.cellarfeesKeeper)
-	// queryClient := cellarfeesTypes.NewQueryClient(queryHelper)
-
-	// suite.queryClient = queryClient
-	// suite.encCfg = encCfg
 }
 
 func TestKeeperTestSuite(t *testing.T) {
 	suite.Run(t, new(KeeperTestSuite))
-}
-
-func (suite *KeeperTestSuite) TestKeeperGettingSettingFeeAccrualCounters() {
-	// ctx, cellarfeesKeeper := suite.ctx, suite.cellarfeesKeeper
-	// require := suite.Require()
-
-	// expected := cellarfeesTypes.DefaultFeeAccrualCounters()
-	// cellarfeesKeeper.SetFeeAccrualCounters(ctx, expected)
-
-	// require.Equal(expected, cellarfeesKeeper.GetFeeAccrualCounters(ctx))
-}
-
-func (suite *KeeperTestSuite) TestKeeperGettingSettingLastRewardSupplyPeak() {
-	// ctx, cellarfeesKeeper := suite.ctx, suite.cellarfeesKeeper
-	// require := suite.Require()
-
-	// expected := sdk.NewInt(10 ^ 19 - 1)
-	// cellarfeesKeeper.SetLastRewardSupplyPeak(ctx, expected)
-
-	// require.Equal(expected, cellarfeesKeeper.GetLastRewardSupplyPeak(ctx))
 }

@@ -22,9 +22,9 @@ func ParamKeyTable() paramtypes.KeyTable {
 
 // DefaultParams returns default oracle parameters
 func DefaultParams() Params {
-	coins := sdk.NewCoins(sdk.NewCoin("foo", sdk.NewInt(1)))
+	coins := sdk.NewCoins(sdk.NewCoin("usomm", sdk.NewInt(2_000_000)))
 	return Params{
-		DistrbutionPerBlock: coins, // 1 foo per block
+		DistrbutionPerBlock: coins, // 2 somm per block
 	}
 }
 

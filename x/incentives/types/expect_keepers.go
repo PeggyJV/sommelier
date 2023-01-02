@@ -1,12 +1,22 @@
-//go:generate mockgen  -destination=../testutil/expected_keepers_mocks.go -package=keeper github.com/peggyjv/sommelier/v4/x/incentives/types DistributionKeeper,BankKeeper
+//go:generate mockgen  -destination=../testutil/expected_keepers_mocks.go -package=keeper github.com/peggyjv/sommelier/v4/x/incentives/types AccountKeeper,DistributionKeeper,BankKeeper
 
 package types
 
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/cosmos/cosmos-sdk/x/auth/types"
 	distributiontypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
 )
 
+// AccountKeeper defines the expected account keeper.
+type AccountKeeper interface {
+	GetAccount(ctx sdk.Context, addr sdk.AccAddress) types.AccountI
+
+	GetModuleAddress(name string) sdk.AccAddress
+	GetModuleAccount(ctx sdk.Context, name string) types.ModuleAccountI
+}
+
+// DistributionKeeper defines the expected distribution keeper methods
 type DistributionKeeper interface {
 	GetFeePool(ctx sdk.Context) (feePool distributiontypes.FeePool)
 	SetFeePool(ctx sdk.Context, feePool distributiontypes.FeePool)
