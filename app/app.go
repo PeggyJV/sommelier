@@ -101,6 +101,9 @@ import (
 	corkclient "github.com/peggyjv/sommelier/v4/x/cork/client"
 	corkkeeper "github.com/peggyjv/sommelier/v4/x/cork/keeper"
 	corktypes "github.com/peggyjv/sommelier/v4/x/cork/types"
+	"github.com/peggyjv/sommelier/v4/x/incentives"
+	incentiveskeeper "github.com/peggyjv/sommelier/v4/x/incentives/keeper"
+	incentivestypes "github.com/peggyjv/sommelier/v4/x/incentives/types"
 	"github.com/rakyll/statik/fs"
 	abci "github.com/tendermint/tendermint/abci/types"
 	tmjson "github.com/tendermint/tendermint/libs/json"
@@ -160,6 +163,7 @@ var (
 		cork.AppModuleBasic{},
 		cellarfees.AppModuleBasic{},
 		auction.AppModuleBasic{},
+		incentives.AppModuleBasic{},
 	)
 
 	// module account permissions
@@ -174,6 +178,7 @@ var (
 		gravitytypes.ModuleName:        {authtypes.Minter, authtypes.Burner},
 		cellarfeestypes.ModuleName:     nil,
 		auctiontypes.ModuleName:        nil,
+		incentivestypes.ModuleName:     nil,
 	}
 
 	// module accounts that are allowed to receive tokens
@@ -217,6 +222,7 @@ type SommelierApp struct {
 	GravityKeeper    gravitykeeper.Keeper
 	AuthzKeeper      authzkeeper.Keeper
 	FeeGrantKeeper   feegrantkeeper.Keeper
+	IncentivesKeeper incentiveskeeper.Keeper
 
 	// Sommelier keepers
 	CorkKeeper       corkkeeper.Keeper
@@ -266,7 +272,7 @@ func NewSommelierApp(
 		govtypes.StoreKey, paramstypes.StoreKey, ibchost.StoreKey, upgradetypes.StoreKey,
 		evidencetypes.StoreKey, ibctransfertypes.StoreKey, capabilitytypes.StoreKey,
 		gravitytypes.StoreKey, feegrant.StoreKey, authzkeeper.StoreKey, corktypes.StoreKey,
-		cellarfeestypes.StoreKey, auctiontypes.StoreKey,
+		cellarfeestypes.StoreKey, auctiontypes.StoreKey, incentivestypes.StoreKey,
 	)
 	tkeys := sdk.NewTransientStoreKeys(paramstypes.TStoreKey)
 	memKeys := sdk.NewMemoryStoreKeys(capabilitytypes.MemStoreKey)
@@ -380,6 +386,10 @@ func NewSommelierApp(
 			app.CellarFeesKeeper.Hooks(),
 		))
 
+	app.IncentivesKeeper = incentiveskeeper.NewKeeper(
+		appCodec, keys[incentivestypes.StoreKey], app.GetSubspace(incentivestypes.ModuleName),
+		app.DistrKeeper, app.BankKeeper)
+
 	// register the proposal types
 	govRouter := govtypes.NewRouter()
 	govRouter.AddRoute(govtypes.RouterKey, govtypes.ProposalHandler).
@@ -448,6 +458,7 @@ func NewSommelierApp(
 		cork.NewAppModule(app.CorkKeeper, appCodec),
 		cellarfees.NewAppModule(app.CellarFeesKeeper, appCodec, app.AccountKeeper, app.BankKeeper, app.CorkKeeper, app.GravityKeeper, app.AuctionKeeper),
 		auction.NewAppModule(app.AuctionKeeper, app.BankKeeper, app.AccountKeeper, appCodec),
+		incentives.NewAppModule(app.IncentivesKeeper, appCodec),
 	)
 
 	// During begin block slashing happens after distr.BeginBlocker so that
