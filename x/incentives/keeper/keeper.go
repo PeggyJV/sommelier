@@ -15,14 +15,16 @@ type Keeper struct {
 	paramSpace         paramtypes.Subspace
 	DistributionKeeper types.DistributionKeeper
 	BankKeeper         types.BankKeeper
+	MintKeeper         types.MintKeeper
 }
 
 func NewKeeper(
 	cdc codec.BinaryCodec,
 	storeKey sdk.StoreKey,
 	paramSpace paramtypes.Subspace,
-	DistributionKeeper types.DistributionKeeper,
+	distributionKeeper types.DistributionKeeper,
 	bankKeeper types.BankKeeper,
+	mintKeeper types.MintKeeper,
 ) Keeper {
 	if !paramSpace.HasKeyTable() {
 		paramSpace = paramSpace.WithKeyTable(types.ParamKeyTable())
@@ -32,8 +34,9 @@ func NewKeeper(
 		storeKey:           storeKey,
 		cdc:                cdc,
 		paramSpace:         paramSpace,
-		DistributionKeeper: DistributionKeeper,
+		DistributionKeeper: distributionKeeper,
 		BankKeeper:         bankKeeper,
+		MintKeeper:         mintKeeper,
 	}
 }
 
@@ -56,4 +59,22 @@ func (k Keeper) SetParams(ctx sdk.Context, params types.Params) {
 // Logger returns a module-specific logger.
 func (k Keeper) Logger(ctx sdk.Context) log.Logger {
 	return ctx.Logger().With("module", "x/"+types.ModuleName)
+}
+
+////////////
+// APY    //
+////////////
+
+func (k Keeper) GetAPY(ctx sdk.Context) sdk.Dec {
+
+	incentivesParams := k.GetParamSet(ctx)
+	mintParams := k.MintKeeper.GetParams(ctx)
+
+	annualRewards := incentivesParams.DistrbutionPerBlock.AmountOf(mintParams.MintDenom).Mul(sdk.NewInt(int64(mintParams.BlocksPerYear)))
+
+	bondedRatio := k.MintKeeper.BondedRatio(ctx)
+	totalCoins := k.MintKeeper.StakingTokenSupply(ctx)
+
+	return annualRewards.ToDec().Quo(totalCoins.ToDec()).Quo(bondedRatio)
+
 }

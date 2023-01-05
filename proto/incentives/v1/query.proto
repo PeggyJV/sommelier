@@ -15,14 +15,27 @@ service Query {
     rpc QueryParams(QueryParamsRequest) returns (QueryParamsResponse) {
       option (google.api.http).get = "/sommelier/incentives/v1/params";
     }
-
+    // QueryAPY queries the APY returned from the incentives module.
+    rpc QueryAPY(QueryAPYRequest) returns (QueryAPYResponse) {
+      option (google.api.http).get = "/sommelier/incentives/v1/apy";
+    }
 }
 
-// QueryParamsRequest is the request type for the Query/Params gRPC method.
+// QueryParamsRequest is the request type for the QueryParams gRPC method.
 message QueryParamsRequest {}
 
-// QueryParamsRequest is the response type for the Query/Params gRPC method.
+// QueryParamsRequest is the response type for the QueryParams gRPC method.
 message QueryParamsResponse {
   // allocation parameters
   Params params = 1 [(gogoproto.nullable) = false];
+}
+
+// QueryAPYRequest is the request type for the QueryAPY gRPC method.
+message QueryAPYRequest {}
+
+
+// QueryAPYRequest is the response type for the QueryAPY gRPC method.
+message QueryAPYResponse {
+  // allocation parameters
+  string apy = 1 ;
 }

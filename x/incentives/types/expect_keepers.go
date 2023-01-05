@@ -1,4 +1,4 @@
-//go:generate mockgen  -destination=../testutil/expected_keepers_mocks.go -package=keeper github.com/peggyjv/sommelier/v4/x/incentives/types AccountKeeper,DistributionKeeper,BankKeeper
+//go:generate mockgen  -destination=../testutil/expected_keepers_mocks.go -package=keeper github.com/peggyjv/sommelier/v4/x/incentives/types AccountKeeper,DistributionKeeper,BankKeeper,MintKeeper
 
 package types
 
@@ -6,6 +6,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/auth/types"
 	distributiontypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
+	minttypes "github.com/cosmos/cosmos-sdk/x/mint/types"
 )
 
 // AccountKeeper defines the expected account keeper.
@@ -34,4 +35,11 @@ type BankKeeper interface {
 	SendCoinsFromAccountToModule(ctx sdk.Context, senderAddr sdk.AccAddress, recipientModule string, amt sdk.Coins) error
 
 	BlockedAddr(addr sdk.AccAddress) bool
+}
+
+// MintKeeper defines the expected mint keeper methods
+type MintKeeper interface {
+	GetParams(ctx sdk.Context) minttypes.Params
+	StakingTokenSupply(ctx sdk.Context) sdk.Int
+	BondedRatio(ctx sdk.Context) sdk.Dec
 }

@@ -4,7 +4,6 @@ import (
 	"testing"
 
 	"github.com/cosmos/cosmos-sdk/codec"
-	"github.com/cosmos/cosmos-sdk/testutil"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	paramskeeper "github.com/cosmos/cosmos-sdk/x/params/keeper"
 	"github.com/golang/mock/gomock"
@@ -12,8 +11,6 @@ import (
 	incentivestestutil "github.com/peggyjv/sommelier/v4/x/incentives/testutil"
 	incentivesTypes "github.com/peggyjv/sommelier/v4/x/incentives/types"
 	"github.com/stretchr/testify/suite"
-	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
-	tmtime "github.com/tendermint/tendermint/types/time"
 )
 
 type KeeperTestSuite struct {
@@ -23,6 +20,7 @@ type KeeperTestSuite struct {
 	incentivesKeeper  Keeper
 	distributionKeepr *incentivestestutil.MockDistributionKeeper
 	bankKeeper        *incentivestestutil.MockBankKeeper
+	mintKeeper        *incentivestestutil.MockMintKeeper
 
 	// queryClient cellarfeesTypes.QueryClient
 
@@ -32,8 +30,8 @@ type KeeperTestSuite struct {
 func (suite *KeeperTestSuite) SetupTest() {
 	key := sdk.NewKVStoreKey(incentivesTypes.StoreKey)
 	tkey := sdk.NewTransientStoreKey("transient_test")
-	testCtx := testutil.DefaultContext(key, tkey)
-	ctx := testCtx.WithBlockHeader(tmproto.Header{Height: 5, Time: tmtime.Now()})
+	// testCtx := testutil.DefaultContext(key, tkey)
+	// ctx := testCtx.WithBlockHeader(tmproto.Header{Height: 5, Time: tmtime.Now()})
 	encCfg := moduletestutil.MakeTestEncodingConfig()
 
 	// gomock initializations
@@ -42,7 +40,7 @@ func (suite *KeeperTestSuite) SetupTest() {
 
 	suite.distributionKeepr = incentivestestutil.NewMockDistributionKeeper(ctrl)
 	suite.bankKeeper = incentivestestutil.NewMockBankKeeper(ctrl)
-	suite.ctx = ctx
+	suite.mintKeeper = incentivestestutil.NewMockMintKeeper(ctrl)
 
 	params := paramskeeper.NewKeeper(
 		encCfg.Codec,
@@ -61,6 +59,7 @@ func (suite *KeeperTestSuite) SetupTest() {
 		subSpace,
 		suite.distributionKeepr,
 		suite.bankKeeper,
+		suite.mintKeeper,
 	)
 
 }

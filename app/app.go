@@ -388,7 +388,7 @@ func NewSommelierApp(
 
 	app.IncentivesKeeper = incentiveskeeper.NewKeeper(
 		appCodec, keys[incentivestypes.StoreKey], app.GetSubspace(incentivestypes.ModuleName),
-		app.DistrKeeper, app.BankKeeper)
+		app.DistrKeeper, app.BankKeeper, app.MintKeeper)
 
 	// register the proposal types
 	govRouter := govtypes.NewRouter()

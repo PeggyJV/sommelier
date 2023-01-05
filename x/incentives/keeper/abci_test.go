@@ -10,8 +10,8 @@ func (suite *KeeperTestSuite) TestBeginBlockerZeroRewardsBalance() {
 
 	params := inventivesTypes.DefaultParams()
 	incentivesKeeper.SetParams(ctx, params)
+	
 
-	suite.bankKeeper.SetBalance(ctx, feesAccount.GetAddress(), sdk.NewCoin(appParams.BaseCoinUnit, sdk.ZeroInt()))
 
 	// // mocks
 	// suite.bankKeeper.EXPECT().GetBalance(ctx, feesAccount.GetAddress(), appParams.BaseCoinUnit).Return(sdk.NewCoin(appParams.BaseCoinUnit, sdk.ZeroInt()))
