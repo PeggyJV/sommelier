@@ -8,13 +8,13 @@ import (
 	"github.com/peggyjv/sommelier/v4/x/incentives/keeper"
 )
 
-// NewHandler returns a handler for "auction" type messages.
+// NewHandler returns a handler for "incentive" type messages.
 func NewHandler(k keeper.Keeper) sdk.Handler {
 	return func(ctx sdk.Context, msg sdk.Msg) (*sdk.Result, error) {
 		ctx = ctx.WithEventManager(sdk.NewEventManager())
 		switch msg := msg.(type) {
 		default:
-			return nil, sdkerrors.Wrapf(sdkerrors.ErrUnknownRequest, "unrecognized auction message type: %T", msg)
+			return nil, sdkerrors.Wrapf(sdkerrors.ErrUnknownRequest, "unrecognized incentives message type: %T", msg)
 		}
 	}
 }

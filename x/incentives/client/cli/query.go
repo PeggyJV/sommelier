@@ -1,6 +1,8 @@
 package cli
 
 import (
+	"context"
+
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/peggyjv/sommelier/v4/x/incentives/types"
@@ -8,7 +10,7 @@ import (
 )
 
 func GetQueryCmd() *cobra.Command {
-	incentiveQueryCmd := &cobra.Command{
+	incentivesQueryCmd := &cobra.Command{
 		Use:                        "incentives",
 		Short:                      "Querying commands for the incentives module",
 		DisableFlagParsing:         true,
@@ -16,21 +18,19 @@ func GetQueryCmd() *cobra.Command {
 		RunE:                       client.ValidateCmd,
 	}
 
-	incentiveQueryCmd.AddCommand([]*cobra.Command{
-		QueryParams(),
-		QueryAPY(),
+	incentivesQueryCmd.AddCommand([]*cobra.Command{
+		CmdQueryParams(),
+		CmdQueryAPY(),
 	}...)
 
-	return incentiveQueryCmd
-
+	return incentivesQueryCmd
 }
 
-func QueryParams() *cobra.Command {
+func CmdQueryParams() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:     "parameters",
-		Aliases: []string{"params"},
-		Args:    cobra.NoArgs,
-		Short:   "query incentive params",
+		Use:   "params",
+		Args:  cobra.NoArgs,
+		Short: "query incentive params",
 		RunE: func(cmd *cobra.Command, _ []string) error {
 			ctx, err := client.GetClientQueryContext(cmd)
 			if err != nil {
@@ -40,7 +40,7 @@ func QueryParams() *cobra.Command {
 			queryClient := types.NewQueryClient(ctx)
 			req := &types.QueryParamsRequest{}
 
-			res, err := queryClient.QueryParams(cmd.Context(), req)
+			res, err := queryClient.QueryParams(context.Background(), req)
 			if err != nil {
 				return err
 			}
@@ -53,12 +53,11 @@ func QueryParams() *cobra.Command {
 	return cmd
 }
 
-func QueryAPY() *cobra.Command {
+func CmdQueryAPY() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:     "Gets APY of SOMM rewards from incentives",
-		Aliases: []string{"apy"},
-		Args:    cobra.NoArgs,
-		Short:   "query incentives APY",
+		Use:   "apy",
+		Args:  cobra.NoArgs,
+		Short: "query incentives APY",
 		RunE: func(cmd *cobra.Command, _ []string) error {
 			ctx, err := client.GetClientQueryContext(cmd)
 			if err != nil {

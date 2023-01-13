@@ -13,12 +13,13 @@ func (k Keeper) BeginBlocker(ctx sdk.Context) {}
 //
 // 1) Get the amount of coins to distribute
 //
-// 2) Send the coinst to the distribution module
+// 2) Send the coins to the distribution module
 
 func (k Keeper) EndBlocker(ctx sdk.Context) {
 	incentivesParams := k.GetParamSet(ctx)
 	// check if incentives are enabled
 	if uint64(ctx.BlockHeight()) > incentivesParams.IncentivesCutoffHeight || incentivesParams.DistributionPerBlock.IsZero() {
+
 		return
 	}
 

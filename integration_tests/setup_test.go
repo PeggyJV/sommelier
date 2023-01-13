@@ -16,7 +16,6 @@ import (
 
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
-	"github.com/peggyjv/sommelier/v4/app/params"
 	auctiontypes "github.com/peggyjv/sommelier/v4/x/auction/types"
 	cellarfeestypes "github.com/peggyjv/sommelier/v4/x/cellarfees/types"
 	corktypes "github.com/peggyjv/sommelier/v4/x/cork/types"
@@ -445,9 +444,8 @@ func (s *IntegrationTestSuite) initGenesis() {
 	s.Require().NoError(err)
 	appGenState[gravitytypes.ModuleName] = bz
 
-	var incentivesGenState incentivestypes.GenesisState
+	incentivesGenState := incentivestypes.DefaultGenesisState()
 	s.Require().NoError(cdc.UnmarshalJSON(appGenState[gravitytypes.ModuleName], &gravityGenState))
-	incentivesGenState.Params.DistributionPerBlock = sdk.NewCoin(params.BaseCoinUnit, sdk.ZeroInt())
 	bz, err = cdc.MarshalJSON(&incentivesGenState)
 	s.Require().NoError(err)
 	appGenState[incentivestypes.ModuleName] = bz

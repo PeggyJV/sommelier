@@ -24,6 +24,10 @@ service Query {
   rpc QueryFeeAccrualCounters(QueryFeeAccrualCountersRequest) returns (QueryFeeAccrualCountersResponse) {
     option (google.api.http).get = "/sommelier/cellarfees/v1/fee_accrual_counters";
   }
+
+  rpc QueryAPY(QueryAPYRequest) returns (QueryAPYResponse) {
+    option (google.api.http).get = "/sommelier/cellarfees/v1/apy";
+  }
 }
 
 message QueryParamsRequest {}
@@ -52,7 +56,6 @@ message QueryFeeAccrualCountersResponse {
 }
 
 message QueryAPYRequest {}
-
 
 message QueryAPYResponse {
   string apy = 1 ;

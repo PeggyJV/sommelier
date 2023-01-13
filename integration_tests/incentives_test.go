@@ -114,7 +114,8 @@ func (s *IntegrationTestSuite) TestIncentives() {
 		beforeAmount = s.queryDelegationRewardAmount(ctx, val.keyInfo.GetAddress().String(), distQueryClient)
 		time.Sleep(time.Second * 12)
 		afterAmount = s.queryDelegationRewardAmount(ctx, val.keyInfo.GetAddress().String(), distQueryClient)
-		s.Require().Greater(afterAmount, beforeAmount)
+		s.T().Logf("before: %s, after: %s", beforeAmount.String(), afterAmount.String())
+		s.Require().True(afterAmount.GT(beforeAmount))
 	})
 }
 

@@ -44,7 +44,7 @@ func NewKeeper(
 // Params //
 ////////////
 
-// GetParamSet returns the vote period from the parameters
+// GetParamSet returns the parameters
 func (k Keeper) GetParamSet(ctx sdk.Context) types.Params {
 	var p types.Params
 	k.paramSpace.GetParamSet(ctx, &p)
@@ -66,16 +66,17 @@ func (k Keeper) Logger(ctx sdk.Context) log.Logger {
 ////////////
 
 func (k Keeper) GetAPY(ctx sdk.Context) sdk.Dec {
-	incentivesParams := k.GetParamSet(ctx)
+	// incentivesParams := k.GetParamSet(ctx)
 	// check if incentives are enabled
-	if uint64(ctx.BlockHeight()) > incentivesParams.IncentivesCutoffHeight || incentivesParams.DistributionPerBlock.IsZero() {
-		return sdk.ZeroDec()
-	}
+	// if uint64(ctx.BlockHeight()) > incentivesParams.IncentivesCutoffHeight || incentivesParams.DistributionPerBlock.IsZero() {
+	// 	return sdk.ZeroDec()
+	// }
 
-	mintParams := k.MintKeeper.GetParams(ctx)
-	bondedRatio := k.MintKeeper.BondedRatio(ctx)
-	totalCoins := k.MintKeeper.StakingTokenSupply(ctx)
-	annualRewards := incentivesParams.DistributionPerBlock.Amount.Mul(sdk.NewInt(int64(mintParams.BlocksPerYear)))
+	// mintParams := k.MintKeeper.GetParams(ctx)
+	// bondedRatio := k.MintKeeper.BondedRatio(ctx)
+	// totalCoins := k.MintKeeper.StakingTokenSupply(ctx)
+	// annualRewards := incentivesParams.DistributionPerBlock.Amount.Mul(sdk.NewInt(int64(mintParams.BlocksPerYear)))
 
-	return annualRewards.ToDec().Quo(totalCoins.ToDec()).Quo(bondedRatio)
+	// return annualRewards.ToDec().Quo(totalCoins.ToDec()).Quo(bondedRatio)
+	return sdk.ZeroDec()
 }

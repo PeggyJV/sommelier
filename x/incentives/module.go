@@ -13,7 +13,7 @@ import (
 	sim "github.com/cosmos/cosmos-sdk/types/simulation"
 	"github.com/gorilla/mux"
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
-	"github.com/peggyjv/sommelier/v4/x/cork/client/cli"
+	"github.com/peggyjv/sommelier/v4/x/incentives/client/cli"
 	"github.com/peggyjv/sommelier/v4/x/incentives/keeper"
 	"github.com/peggyjv/sommelier/v4/x/incentives/types"
 	"github.com/spf13/cobra"
@@ -59,7 +59,7 @@ func (AppModuleBasic) RegisterRESTRoutes(_ client.Context, _ *mux.Router) {}
 
 // GetTxCmd returns the root tx command for the incentives module.
 func (AppModuleBasic) GetTxCmd() *cobra.Command {
-	return cli.GetTxCmd()
+	return nil
 }
 
 // GetQueryCmd returns the root query command for the incentives module.
@@ -155,7 +155,7 @@ func (am AppModule) BeginBlock(ctx sdk.Context, _ abci.RequestBeginBlock) {
 
 // EndBlock returns the end blocker for the incentives module.
 func (am AppModule) EndBlock(ctx sdk.Context, _ abci.RequestEndBlock) []abci.ValidatorUpdate {
-	// am.keeper.EndBlocker(ctx)
+	am.keeper.EndBlocker(ctx)
 	return []abci.ValidatorUpdate{}
 }
 
