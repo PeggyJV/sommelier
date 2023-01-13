@@ -121,13 +121,15 @@ func (k Keeper) SetFeeAccrualCounters(ctx sdk.Context, counters types.FeeAccrual
 
 func (k Keeper) GetAPY(ctx sdk.Context) sdk.Dec {
 	remainingRewardsSupply := k.bankKeeper.GetBalance(ctx, k.GetFeesAccount(ctx).GetAddress(), params.BaseCoinUnit).Amount
-	emission := k.GetEmission(ctx, remainingRewardsSupply)
+	if remainingRewardsSupply.IsZero() {
+		return sdk.ZeroDec()
+	}
 
 	mintParams := k.mintKeeper.GetParams(ctx)
-	annualRewards := emission.AmountOf(params.BaseCoinUnit).Mul(sdk.NewInt(int64(mintParams.BlocksPerYear)))
-
 	bondedRatio := k.mintKeeper.BondedRatio(ctx)
 	totalCoins := k.mintKeeper.StakingTokenSupply(ctx)
+	emission := k.GetEmission(ctx, remainingRewardsSupply)
+	annualRewards := emission.AmountOf(params.BaseCoinUnit).Mul(sdk.NewInt(int64(mintParams.BlocksPerYear)))
 
 	return annualRewards.ToDec().Quo(totalCoins.ToDec()).Quo(bondedRatio)
 }

@@ -16,6 +16,7 @@ func (suite *KeeperTestSuite) TestQueriesHappyPath() {
 	stakingTotalSupply := sdk.NewInt(100_000_000_000)
 
 	incentivesParams := types.DefaultParams()
+	incentivesParams.IncentivesCutoffHeight = 1500
 	incentivesKeeper.SetParams(ctx, incentivesParams)
 
 	// mocks

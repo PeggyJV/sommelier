@@ -17,4 +17,7 @@ message GenesisState {
 message Params {
     // DistributionPerBlock defines the coin to be sent to the distribution module from the community pool every block
     cosmos.base.v1beta1.Coin distribution_per_block = 1 [(gogoproto.nullable) = false];
+    // IncentivesCutoffHeight defines the block height after which the incentives module will stop sending coins to the distribution module from
+    // the community pool
+    uint64 incentives_cutoff_height = 2;
 }

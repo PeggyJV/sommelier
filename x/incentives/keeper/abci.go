@@ -16,8 +16,13 @@ func (k Keeper) BeginBlocker(ctx sdk.Context) {}
 // 2) Send the coinst to the distribution module
 
 func (k Keeper) EndBlocker(ctx sdk.Context) {
-	params := k.GetParamSet(ctx)
-	distPerBlockCoins := sdk.NewCoins(params.DistributionPerBlock)
+	incentivesParams := k.GetParamSet(ctx)
+	// check if incentives are enabled
+	if uint64(ctx.BlockHeight()) > incentivesParams.IncentivesCutoffHeight || incentivesParams.DistributionPerBlock.IsZero() {
+		return
+	}
+
+	distPerBlockCoins := sdk.NewCoins(incentivesParams.DistributionPerBlock)
 	feePool := k.DistributionKeeper.GetFeePool(ctx)
 	newPool, negative := feePool.CommunityPool.SafeSub(sdk.NewDecCoinsFromCoins(distPerBlockCoins...))
 	if negative {

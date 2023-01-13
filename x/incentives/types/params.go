@@ -11,7 +11,8 @@ import (
 
 // Parameter keys
 var (
-	KeyDistributionPerBlock = []byte("DistributionPerBlock")
+	KeyDistributionPerBlock   = []byte("DistributionPerBlock")
+	KeyIncentivesCutoffHeight = []byte("IncentivesCutoffHeight")
 )
 
 var _ paramtypes.ParamSet = &Params{}
@@ -26,6 +27,8 @@ func DefaultParams() Params {
 	return Params{
 		// 2 somm per block
 		DistributionPerBlock: sdk.NewCoin(params.BaseCoinUnit, sdk.NewInt(2_000_000)),
+		// Anything lower than current height is "off"
+		IncentivesCutoffHeight: 0,
 	}
 }
 
@@ -33,6 +36,7 @@ func DefaultParams() Params {
 func (p *Params) ParamSetPairs() paramtypes.ParamSetPairs {
 	return paramtypes.ParamSetPairs{
 		paramtypes.NewParamSetPair(KeyDistributionPerBlock, &p.DistributionPerBlock, validateDistributionPerBlock),
+		paramtypes.NewParamSetPair(KeyIncentivesCutoffHeight, &p.IncentivesCutoffHeight, validateIncentivesCutoffHeight),
 	}
 }
 
@@ -54,5 +58,11 @@ func validateDistributionPerBlock(i interface{}) error {
 		return errors.New("distribution per block cannot be nil")
 	}
 
+	return nil
+}
+
+// Since there is no unsigned integer that is an invalid height, this is a no-op.
+// Collin: I wasn't sure if it was safe to pass `nil` into the above NewParamSetPair call so I defined this.
+func validateIncentivesCutoffHeight(_ interface{}) error {
 	return nil
 }

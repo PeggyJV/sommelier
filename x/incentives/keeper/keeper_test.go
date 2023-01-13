@@ -83,9 +83,7 @@ func (suite *KeeperTestSuite) TestGetAPY() {
 	bondedRatio := sdk.MustNewDecFromStr("0.2")
 	stakingTotalSupply := sdk.NewInt(10_000_000)
 
-	incentivesKeeper.SetParams(ctx, incentivesTypes.Params{
-		DistributionPerBlock: distributionPerBlock,
-	})
+	incentivesKeeper.SetParams(ctx, incentivesTypes.DefaultParams())
 	suite.mintKeeper.EXPECT().GetParams(ctx).Return(mintTypes.Params{
 		BlocksPerYear: uint64(blocksPerYear),
 		MintDenom:     params.BaseCoinUnit,
@@ -93,7 +91,14 @@ func (suite *KeeperTestSuite) TestGetAPY() {
 	suite.mintKeeper.EXPECT().BondedRatio(ctx).Return(bondedRatio)
 	suite.mintKeeper.EXPECT().StakingTokenSupply(ctx).Return(stakingTotalSupply)
 
-	// scheduled incentives should be deleted at the scheduled height
+	// incentives disabled
+	require.Equal(sdk.ZeroDec(), incentivesKeeper.GetAPY(ctx))
+
+	// incentives enabled
+	incentivesKeeper.SetParams(ctx, incentivesTypes.Params{
+		DistributionPerBlock:   distributionPerBlock,
+		IncentivesCutoffHeight: 1000,
+	})
 	expected := distributionPerBlock.Amount.Mul(sdk.NewInt(int64(blocksPerYear))).ToDec().Quo(stakingTotalSupply.ToDec().Mul(bondedRatio))
 	require.Equal(expected, incentivesKeeper.GetAPY(ctx))
 }
