@@ -11,6 +11,7 @@ import (
 	minttypes "github.com/cosmos/cosmos-sdk/x/mint/types"
 	paramskeeper "github.com/cosmos/cosmos-sdk/x/params/keeper"
 	"github.com/golang/mock/gomock"
+	"github.com/peggyjv/sommelier/v4/app/params"
 	cellarfeestestutil "github.com/peggyjv/sommelier/v4/x/cellarfees/testutil"
 
 	moduletestutil "github.com/peggyjv/sommelier/v4/testutil"
@@ -120,7 +121,6 @@ func (suite *KeeperTestSuite) TestKeeperGettingSettingLastRewardSupplyPeak() {
 func (suite *KeeperTestSuite) TestGetAPY() {
 	ctx, cellarfeesKeeper := suite.ctx, suite.cellarfeesKeeper
 	require := suite.Require()
-	denom := "usomm"
 	blocksPerYear := 365 * 6
 	bondedRatio := sdk.MustNewDecFromStr("0.2")
 	stakingTotalSupply := sdk.NewInt(2_500_000_000_000)
@@ -132,10 +132,10 @@ func (suite *KeeperTestSuite) TestGetAPY() {
 	cellarfeesKeeper.SetParams(ctx, cellarfeesParams)
 	suite.mintKeeper.EXPECT().GetParams(ctx).Return(minttypes.Params{
 		BlocksPerYear: uint64(blocksPerYear),
-		MintDenom:     denom,
+		MintDenom:     params.BaseCoinUnit,
 	})
 	suite.accountKeeper.EXPECT().GetModuleAccount(ctx, gomock.Any()).Return(feesAccount)
-	suite.bankKeeper.EXPECT().GetBalance(ctx, gomock.Any(), denom).Return(sdk.NewCoin(denom, sdk.NewInt(9_000_000)))
+	suite.bankKeeper.EXPECT().GetBalance(ctx, gomock.Any(), params.BaseCoinUnit).Return(sdk.NewCoin(params.BaseCoinUnit, sdk.NewInt(9_000_000)))
 	suite.mintKeeper.EXPECT().BondedRatio(ctx).Return(bondedRatio)
 	suite.mintKeeper.EXPECT().StakingTokenSupply(ctx).Return(stakingTotalSupply)
 

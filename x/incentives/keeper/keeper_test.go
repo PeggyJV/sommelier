@@ -9,6 +9,7 @@ import (
 	mintTypes "github.com/cosmos/cosmos-sdk/x/mint/types"
 	paramskeeper "github.com/cosmos/cosmos-sdk/x/params/keeper"
 	"github.com/golang/mock/gomock"
+	"github.com/peggyjv/sommelier/v4/app/params"
 	moduletestutil "github.com/peggyjv/sommelier/v4/testutil"
 	incentivestestutil "github.com/peggyjv/sommelier/v4/x/incentives/testutil"
 	incentivesTypes "github.com/peggyjv/sommelier/v4/x/incentives/types"
@@ -77,8 +78,7 @@ func TestKeeperTestSuite(t *testing.T) {
 func (suite *KeeperTestSuite) TestGetAPY() {
 	ctx, incentivesKeeper := suite.ctx, suite.incentivesKeeper
 	require := suite.Require()
-	denom := "usomm"
-	distributionPerBlock := sdk.NewCoin(denom, sdk.OneInt())
+	distributionPerBlock := sdk.NewCoin(params.BaseCoinUnit, sdk.OneInt())
 	blocksPerYear := 365 * 6
 	bondedRatio := sdk.MustNewDecFromStr("0.2")
 	stakingTotalSupply := sdk.NewInt(10_000_000)
@@ -88,7 +88,7 @@ func (suite *KeeperTestSuite) TestGetAPY() {
 	})
 	suite.mintKeeper.EXPECT().GetParams(ctx).Return(mintTypes.Params{
 		BlocksPerYear: uint64(blocksPerYear),
-		MintDenom:     denom,
+		MintDenom:     params.BaseCoinUnit,
 	})
 	suite.mintKeeper.EXPECT().BondedRatio(ctx).Return(bondedRatio)
 	suite.mintKeeper.EXPECT().StakingTokenSupply(ctx).Return(stakingTotalSupply)

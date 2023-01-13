@@ -6,6 +6,7 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
+	"github.com/peggyjv/sommelier/v4/app/params"
 )
 
 // Parameter keys
@@ -24,7 +25,7 @@ func ParamKeyTable() paramtypes.KeyTable {
 func DefaultParams() Params {
 	return Params{
 		// 2 somm per block
-		DistributionPerBlock: sdk.NewCoin("usomm", sdk.NewInt(2_000_000)),
+		DistributionPerBlock: sdk.NewCoin(params.BaseCoinUnit, sdk.NewInt(2_000_000)),
 	}
 }
 

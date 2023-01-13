@@ -4,29 +4,29 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	distributionTypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
 	"github.com/golang/mock/gomock"
+	"github.com/peggyjv/sommelier/v4/app/params"
 	inventivesTypes "github.com/peggyjv/sommelier/v4/x/incentives/types"
 )
 
 func (suite *KeeperTestSuite) TestBeginBlockerZeroRewardsBalance() {
 	ctx, incentivesKeeper := suite.ctx, suite.incentivesKeeper
 	require := suite.Require()
-	denom := "usomm"
-	distributionPerBlock := sdk.NewCoin(denom, sdk.OneInt())
+	distributionPerBlock := sdk.NewCoin(params.BaseCoinUnit, sdk.OneInt())
 
-	params := inventivesTypes.DefaultParams()
-	params.DistributionPerBlock = distributionPerBlock
-	incentivesKeeper.SetParams(ctx, params)
+	incentivesParams := inventivesTypes.DefaultParams()
+	incentivesParams.DistributionPerBlock = distributionPerBlock
+	incentivesKeeper.SetParams(ctx, incentivesParams)
 
 	// mocks
 	pool := distributionTypes.FeePool{
-		CommunityPool: sdk.NewDecCoins(sdk.NewDecCoin(denom, sdk.NewInt(10_000_000))),
+		CommunityPool: sdk.NewDecCoins(sdk.NewDecCoin(params.BaseCoinUnit, sdk.NewInt(10_000_000))),
 	}
 	suite.distributionKeepr.EXPECT().GetFeePool(ctx).Return(pool)
 	suite.bankKeeper.EXPECT().SendCoinsFromModuleToModule(ctx, gomock.Any(), gomock.Any(), gomock.Any()).Times(1)
 
-	expectedAmount := pool.CommunityPool.AmountOf(denom).Sub(distributionPerBlock.Amount.ToDec())
+	expectedAmount := pool.CommunityPool.AmountOf(params.BaseCoinUnit).Sub(distributionPerBlock.Amount.ToDec())
 	expectedPool := distributionTypes.FeePool{
-		CommunityPool: sdk.NewDecCoins(sdk.NewDecCoinFromDec(denom, expectedAmount)),
+		CommunityPool: sdk.NewDecCoins(sdk.NewDecCoinFromDec(params.BaseCoinUnit, expectedAmount)),
 	}
 	suite.distributionKeepr.EXPECT().SetFeePool(ctx, expectedPool).Times(1)
 
