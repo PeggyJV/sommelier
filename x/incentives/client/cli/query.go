@@ -17,15 +17,15 @@ func GetQueryCmd() *cobra.Command {
 	}
 
 	incentiveQueryCmd.AddCommand([]*cobra.Command{
-		queryParams(),
-		queryAPY(),
+		QueryParams(),
+		QueryAPY(),
 	}...)
 
 	return incentiveQueryCmd
 
 }
 
-func queryParams() *cobra.Command {
+func QueryParams() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:     "parameters",
 		Aliases: []string{"params"},
@@ -53,7 +53,7 @@ func queryParams() *cobra.Command {
 	return cmd
 }
 
-func queryAPY() *cobra.Command {
+func QueryAPY() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:     "Gets APY of SOMM rewards from incentives",
 		Aliases: []string{"apy"},

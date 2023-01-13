@@ -67,7 +67,7 @@ func (AppModuleBasic) GetQueryCmd() *cobra.Command {
 	return cli.GetQueryCmd()
 }
 
-// RegisterGRPCGatewayRoutes registers the gRPC Gateway routes for the distribution module.
+// RegisterGRPCGatewayRoutes registers the gRPC Gateway routes for the incentives module.
 // also implements app modeul basic
 func (AppModuleBasic) RegisterGRPCGatewayRoutes(clientCtx client.Context, mux *runtime.ServeMux) {
 	types.RegisterQueryHandlerClient(context.Background(), mux, types.NewQueryClient(clientCtx))
@@ -129,8 +129,7 @@ func (am AppModule) WeightedOperations(simState module.SimulationState) []sim.We
 
 // RegisterServices registers module services.
 func (am AppModule) RegisterServices(cfg module.Configurator) {
-	// types.RegisterMsgServer(cfg.MsgServer(), am.keeper)
-	// types.RegisterQueryServer(cfg.QueryServer(), am.keeper)
+	types.RegisterQueryServer(cfg.QueryServer(), am.keeper)
 }
 
 // InitGenesis performs genesis initialization for the incentives module.
