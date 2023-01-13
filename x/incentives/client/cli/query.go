@@ -18,6 +18,7 @@ func GetQueryCmd() *cobra.Command {
 
 	incentiveQueryCmd.AddCommand([]*cobra.Command{
 		queryParams(),
+		queryAPY(),
 	}...)
 
 	return incentiveQueryCmd
@@ -40,6 +41,34 @@ func queryParams() *cobra.Command {
 			req := &types.QueryParamsRequest{}
 
 			res, err := queryClient.QueryParams(cmd.Context(), req)
+			if err != nil {
+				return err
+			}
+
+			return ctx.PrintProto(res)
+		},
+	}
+	flags.AddQueryFlagsToCmd(cmd)
+
+	return cmd
+}
+
+func queryAPY() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:     "Gets APY of SOMM rewards from incentives",
+		Aliases: []string{"apy"},
+		Args:    cobra.NoArgs,
+		Short:   "query incentives APY",
+		RunE: func(cmd *cobra.Command, _ []string) error {
+			ctx, err := client.GetClientQueryContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			queryClient := types.NewQueryClient(ctx)
+			req := &types.QueryAPYRequest{}
+
+			res, err := queryClient.QueryAPY(cmd.Context(), req)
 			if err != nil {
 				return err
 			}

@@ -84,6 +84,7 @@ type AppModule struct {
 	cdc           codec.Codec
 	accountKeeper types.AccountKeeper
 	bankKeeper    types.BankKeeper
+	mintKeeper    types.MintKeeper
 	corkKeeper    types.CorkKeeper
 	gravityKeeper types.GravityKeeper
 	auctionKeeper types.AuctionKeeper
@@ -91,13 +92,14 @@ type AppModule struct {
 
 // NewAppModule creates a new AppModule object
 func NewAppModule(keeper keeper.Keeper, cdc codec.Codec, accountKeeper types.AccountKeeper, bankKeeper types.BankKeeper,
-	corkKeeper types.CorkKeeper, gravityKeeper types.GravityKeeper, auctionKeeper types.AuctionKeeper) AppModule {
+	mintKeeper types.MintKeeper, corkKeeper types.CorkKeeper, gravityKeeper types.GravityKeeper, auctionKeeper types.AuctionKeeper) AppModule {
 	return AppModule{
 		AppModuleBasic: AppModuleBasic{},
 		keeper:         keeper,
 		cdc:            cdc,
 		accountKeeper:  accountKeeper,
 		bankKeeper:     bankKeeper,
+		mintKeeper:     mintKeeper,
 		corkKeeper:     corkKeeper,
 		gravityKeeper:  gravityKeeper,
 		auctionKeeper:  auctionKeeper,

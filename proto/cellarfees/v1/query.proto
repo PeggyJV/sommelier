@@ -50,3 +50,10 @@ message QueryFeeAccrualCountersRequest {}
 message QueryFeeAccrualCountersResponse {
   FeeAccrualCounters fee_accrual_counters = 1 [(gogoproto.nullable) = false];
 }
+
+message QueryAPYRequest {}
+
+
+message QueryAPYResponse {
+  string apy = 1 ;
+}

@@ -2,6 +2,8 @@ package keeper
 
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	minttypes "github.com/cosmos/cosmos-sdk/x/mint/types"
+	"github.com/golang/mock/gomock"
 	cellarfeesTypes "github.com/peggyjv/sommelier/v4/x/cellarfees/types"
 )
 
@@ -51,6 +53,31 @@ func (suite *KeeperTestSuite) TestQueriesHappyPath() {
 	feeAccrualCountersResponse, err := cellarfeesKeeper.QueryFeeAccrualCounters(sdk.WrapSDKContext(ctx), &cellarfeesTypes.QueryFeeAccrualCountersRequest{})
 	require.Nil(err)
 	require.Equal(&cellarfeesTypes.QueryFeeAccrualCountersResponse{FeeAccrualCounters: expectedFeeAccrualCounters}, feeAccrualCountersResponse)
+
+	// QueryAPY
+	denom := "usomm"
+	blocksPerYear := 365 * 6
+	bondedRatio := sdk.MustNewDecFromStr("0.2")
+	stakingTotalSupply := sdk.NewInt(2_500_000_000_000)
+	lastPeak := sdk.NewInt(10_000_000)
+	cellarfeesKeeper.SetLastRewardSupplyPeak(ctx, lastPeak)
+	cellarfeesParams := cellarfeesTypes.DefaultParams()
+	cellarfeesParams.RewardEmissionPeriod = 10
+	cellarfeesKeeper.SetParams(ctx, cellarfeesParams)
+
+	//// mocks for QueryAPY
+	suite.mintKeeper.EXPECT().GetParams(ctx).Return(minttypes.Params{
+		BlocksPerYear: uint64(blocksPerYear),
+		MintDenom:     denom,
+	})
+	suite.accountKeeper.EXPECT().GetModuleAccount(ctx, gomock.Any()).Return(feesAccount)
+	suite.bankKeeper.EXPECT().GetBalance(ctx, gomock.Any(), denom).Return(sdk.NewCoin(denom, sdk.NewInt(9_000_000)))
+	suite.mintKeeper.EXPECT().BondedRatio(ctx).Return(bondedRatio)
+	suite.mintKeeper.EXPECT().StakingTokenSupply(ctx).Return(stakingTotalSupply)
+
+	APYResult, err := cellarfeesKeeper.QueryAPY(sdk.WrapSDKContext(ctx), &cellarfeesTypes.QueryAPYRequest{})
+	require.Nil(err)
+	require.Equal("0.004380000000000000", APYResult.Apy)
 }
 
 func (suite *KeeperTestSuite) TestQueriesUnhappyPath() {

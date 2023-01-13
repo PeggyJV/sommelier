@@ -4,13 +4,17 @@ import (
 	"testing"
 
 	"github.com/cosmos/cosmos-sdk/codec"
+	"github.com/cosmos/cosmos-sdk/testutil"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	mintTypes "github.com/cosmos/cosmos-sdk/x/mint/types"
 	paramskeeper "github.com/cosmos/cosmos-sdk/x/params/keeper"
 	"github.com/golang/mock/gomock"
 	moduletestutil "github.com/peggyjv/sommelier/v4/testutil"
 	incentivestestutil "github.com/peggyjv/sommelier/v4/x/incentives/testutil"
 	incentivesTypes "github.com/peggyjv/sommelier/v4/x/incentives/types"
 	"github.com/stretchr/testify/suite"
+	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
+	tmtime "github.com/tendermint/tendermint/types/time"
 )
 
 type KeeperTestSuite struct {
@@ -30,8 +34,8 @@ type KeeperTestSuite struct {
 func (suite *KeeperTestSuite) SetupTest() {
 	key := sdk.NewKVStoreKey(incentivesTypes.StoreKey)
 	tkey := sdk.NewTransientStoreKey("transient_test")
-	// testCtx := testutil.DefaultContext(key, tkey)
-	// ctx := testCtx.WithBlockHeader(tmproto.Header{Height: 5, Time: tmtime.Now()})
+	testCtx := testutil.DefaultContext(key, tkey)
+	ctx := testCtx.WithBlockHeader(tmproto.Header{Height: 5, Time: tmtime.Now()})
 	encCfg := moduletestutil.MakeTestEncodingConfig()
 
 	// gomock initializations
@@ -41,6 +45,7 @@ func (suite *KeeperTestSuite) SetupTest() {
 	suite.distributionKeepr = incentivestestutil.NewMockDistributionKeeper(ctrl)
 	suite.bankKeeper = incentivestestutil.NewMockBankKeeper(ctrl)
 	suite.mintKeeper = incentivestestutil.NewMockMintKeeper(ctrl)
+	suite.ctx = ctx
 
 	params := paramskeeper.NewKeeper(
 		encCfg.Codec,
@@ -62,8 +67,33 @@ func (suite *KeeperTestSuite) SetupTest() {
 		suite.mintKeeper,
 	)
 
+	suite.encCfg = encCfg
 }
 
 func TestKeeperTestSuite(t *testing.T) {
 	suite.Run(t, new(KeeperTestSuite))
+}
+
+func (suite *KeeperTestSuite) TestGetAPY() {
+	ctx, incentivesKeeper := suite.ctx, suite.incentivesKeeper
+	require := suite.Require()
+	denom := "usomm"
+	distributionPerBlock := sdk.NewCoin(denom, sdk.OneInt())
+	blocksPerYear := 365 * 6
+	bondedRatio := sdk.MustNewDecFromStr("0.2")
+	stakingTotalSupply := sdk.NewInt(10_000_000)
+
+	incentivesKeeper.SetParams(ctx, incentivesTypes.Params{
+		DistributionPerBlock: distributionPerBlock,
+	})
+	suite.mintKeeper.EXPECT().GetParams(ctx).Return(mintTypes.Params{
+		BlocksPerYear: uint64(blocksPerYear),
+		MintDenom:     denom,
+	})
+	suite.mintKeeper.EXPECT().BondedRatio(ctx).Return(bondedRatio)
+	suite.mintKeeper.EXPECT().StakingTokenSupply(ctx).Return(stakingTotalSupply)
+
+	// scheduled incentives should be deleted at the scheduled height
+	expected := distributionPerBlock.Amount.Mul(sdk.NewInt(int64(blocksPerYear))).ToDec().Quo(stakingTotalSupply.ToDec().Mul(bondedRatio))
+	require.Equal(expected, incentivesKeeper.GetAPY(ctx))
 }

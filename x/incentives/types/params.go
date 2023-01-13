@@ -10,7 +10,7 @@ import (
 
 // Parameter keys
 var (
-	KeyDistributionPerBlock = []byte("distrbution_per_block")
+	KeyDistributionPerBlock = []byte("DistributionPerBlock")
 )
 
 var _ paramtypes.ParamSet = &Params{}
@@ -22,22 +22,22 @@ func ParamKeyTable() paramtypes.KeyTable {
 
 // DefaultParams returns default oracle parameters
 func DefaultParams() Params {
-	coins := sdk.NewCoins(sdk.NewCoin("usomm", sdk.NewInt(2_000_000)))
 	return Params{
-		DistrbutionPerBlock: coins, // 2 somm per block
+		// 2 somm per block
+		DistributionPerBlock: sdk.NewCoin("usomm", sdk.NewInt(2_000_000)),
 	}
 }
 
 // ParamSetPairs returns the parameter set pairs.
 func (p *Params) ParamSetPairs() paramtypes.ParamSetPairs {
 	return paramtypes.ParamSetPairs{
-		paramtypes.NewParamSetPair(KeyDistributionPerBlock, &p.DistrbutionPerBlock, validateDistributionPerBlock),
+		paramtypes.NewParamSetPair(KeyDistributionPerBlock, &p.DistributionPerBlock, validateDistributionPerBlock),
 	}
 }
 
 // ValidateBasic performs basic validation on oracle parameters.
 func (p *Params) ValidateBasic() error {
-	if err := validateDistributionPerBlock(p.DistrbutionPerBlock); err != nil {
+	if err := validateDistributionPerBlock(p.DistributionPerBlock); err != nil {
 		return err
 	}
 	return nil

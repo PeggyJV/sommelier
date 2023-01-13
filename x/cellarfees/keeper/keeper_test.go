@@ -8,6 +8,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/testutil"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
+	minttypes "github.com/cosmos/cosmos-sdk/x/mint/types"
 	paramskeeper "github.com/cosmos/cosmos-sdk/x/params/keeper"
 	"github.com/golang/mock/gomock"
 	cellarfeestestutil "github.com/peggyjv/sommelier/v4/x/cellarfees/testutil"
@@ -30,6 +31,7 @@ type KeeperTestSuite struct {
 	cellarfeesKeeper Keeper
 	accountKeeper    *cellarfeestestutil.MockAccountKeeper
 	bankKeeper       *cellarfeestestutil.MockBankKeeper
+	mintKeeper       *cellarfeestestutil.MockMintKeeper
 	corkKeeper       *cellarfeestestutil.MockCorkKeeper
 	gravityKeeper    *cellarfeestestutil.MockGravityKeeper
 	auctionKeeper    *cellarfeestestutil.MockAuctionKeeper
@@ -51,6 +53,7 @@ func (suite *KeeperTestSuite) SetupTest() {
 	defer ctrl.Finish()
 
 	suite.bankKeeper = cellarfeestestutil.NewMockBankKeeper(ctrl)
+	suite.mintKeeper = cellarfeestestutil.NewMockMintKeeper(ctrl)
 	suite.accountKeeper = cellarfeestestutil.NewMockAccountKeeper(ctrl)
 	suite.corkKeeper = cellarfeestestutil.NewMockCorkKeeper(ctrl)
 	suite.gravityKeeper = cellarfeestestutil.NewMockGravityKeeper(ctrl)
@@ -74,6 +77,7 @@ func (suite *KeeperTestSuite) SetupTest() {
 		subSpace,
 		suite.accountKeeper,
 		suite.bankKeeper,
+		suite.mintKeeper,
 		suite.corkKeeper,
 		suite.gravityKeeper,
 		suite.auctionKeeper,
@@ -111,4 +115,31 @@ func (suite *KeeperTestSuite) TestKeeperGettingSettingLastRewardSupplyPeak() {
 	cellarfeesKeeper.SetLastRewardSupplyPeak(ctx, expected)
 
 	require.Equal(expected, cellarfeesKeeper.GetLastRewardSupplyPeak(ctx))
+}
+
+func (suite *KeeperTestSuite) TestGetAPY() {
+	ctx, cellarfeesKeeper := suite.ctx, suite.cellarfeesKeeper
+	require := suite.Require()
+	denom := "usomm"
+	blocksPerYear := 365 * 6
+	bondedRatio := sdk.MustNewDecFromStr("0.2")
+	stakingTotalSupply := sdk.NewInt(2_500_000_000_000)
+	lastPeak := sdk.NewInt(10_000_000)
+
+	cellarfeesKeeper.SetLastRewardSupplyPeak(ctx, lastPeak)
+	cellarfeesParams := cellarfeesTypes.DefaultParams()
+	cellarfeesParams.RewardEmissionPeriod = 10
+	cellarfeesKeeper.SetParams(ctx, cellarfeesParams)
+	suite.mintKeeper.EXPECT().GetParams(ctx).Return(minttypes.Params{
+		BlocksPerYear: uint64(blocksPerYear),
+		MintDenom:     denom,
+	})
+	suite.accountKeeper.EXPECT().GetModuleAccount(ctx, gomock.Any()).Return(feesAccount)
+	suite.bankKeeper.EXPECT().GetBalance(ctx, gomock.Any(), denom).Return(sdk.NewCoin(denom, sdk.NewInt(9_000_000)))
+	suite.mintKeeper.EXPECT().BondedRatio(ctx).Return(bondedRatio)
+	suite.mintKeeper.EXPECT().StakingTokenSupply(ctx).Return(stakingTotalSupply)
+
+	expectedEmission := lastPeak.Quo(sdk.NewIntFromUint64(cellarfeesParams.RewardEmissionPeriod))
+	expected := expectedEmission.Mul(sdk.NewInt(int64(blocksPerYear))).ToDec().Quo(stakingTotalSupply.ToDec().Mul(bondedRatio))
+	require.Equal(expected, cellarfeesKeeper.GetAPY(ctx))
 }

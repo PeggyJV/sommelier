@@ -1,8 +1,6 @@
 package keeper
 
 import (
-	"fmt"
-
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	distributiontypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
 
@@ -11,7 +9,7 @@ import (
 
 func (k Keeper) BeginBlocker(ctx sdk.Context) {}
 
-// EndBlocker defines distrbution of incentives to stakers
+// EndBlocker defines Distribution of incentives to stakers
 //
 // 1) Get the amount of coins to distribute
 //
@@ -19,23 +17,20 @@ func (k Keeper) BeginBlocker(ctx sdk.Context) {}
 
 func (k Keeper) EndBlocker(ctx sdk.Context) {
 	params := k.GetParamSet(ctx)
-
-	k.Logger(ctx).Info("tallying scheduled cork votes", "height", fmt.Sprintf("%d", ctx.BlockHeight()))
-
+	distPerBlockCoins := sdk.NewCoins(params.DistributionPerBlock)
 	feePool := k.DistributionKeeper.GetFeePool(ctx)
-
-	newPool, negative := feePool.CommunityPool.SafeSub(sdk.NewDecCoinsFromCoins(params.DistrbutionPerBlock...))
+	newPool, negative := feePool.CommunityPool.SafeSub(sdk.NewDecCoinsFromCoins(distPerBlockCoins...))
 	if negative {
 		k.Logger(ctx).Error("Insufficient coins in community to distribute", "community pool", feePool.CommunityPool)
 		return
 	}
 
-	feePool.CommunityPool = newPool
-
 	// Send to fee collector for distribution
-	err := k.BankKeeper.SendCoinsFromModuleToModule(ctx, distributiontypes.ModuleName, authtypes.FeeCollectorName, params.DistrbutionPerBlock)
+	err := k.BankKeeper.SendCoinsFromModuleToModule(ctx, distributiontypes.ModuleName, authtypes.FeeCollectorName, distPerBlockCoins)
 	if err != nil {
 		panic(err)
 	}
 
+	feePool.CommunityPool = newPool
+	k.DistributionKeeper.SetFeePool(ctx, feePool)
 }

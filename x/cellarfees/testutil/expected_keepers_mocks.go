@@ -9,9 +9,10 @@ import (
 
 	types "github.com/cosmos/cosmos-sdk/types"
 	types0 "github.com/cosmos/cosmos-sdk/x/auth/types"
+	types1 "github.com/cosmos/cosmos-sdk/x/mint/types"
 	common "github.com/ethereum/go-ethereum/common"
 	gomock "github.com/golang/mock/gomock"
-	types1 "github.com/peggyjv/sommelier/v4/x/auction/types"
+	types2 "github.com/peggyjv/sommelier/v4/x/auction/types"
 )
 
 // MockAccountKeeper is a mock of AccountKeeper interface.
@@ -341,10 +342,10 @@ func (mr *MockAuctionKeeperMockRecorder) BeginAuction(ctx, startingTokensForSale
 }
 
 // GetActiveAuctions mocks base method.
-func (m *MockAuctionKeeper) GetActiveAuctions(ctx types.Context) []*types1.Auction {
+func (m *MockAuctionKeeper) GetActiveAuctions(ctx types.Context) []*types2.Auction {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetActiveAuctions", ctx)
-	ret0, _ := ret[0].([]*types1.Auction)
+	ret0, _ := ret[0].([]*types2.Auction)
 	return ret0
 }
 
@@ -352,4 +353,69 @@ func (m *MockAuctionKeeper) GetActiveAuctions(ctx types.Context) []*types1.Aucti
 func (mr *MockAuctionKeeperMockRecorder) GetActiveAuctions(ctx interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetActiveAuctions", reflect.TypeOf((*MockAuctionKeeper)(nil).GetActiveAuctions), ctx)
+}
+
+// MockMintKeeper is a mock of MintKeeper interface.
+type MockMintKeeper struct {
+	ctrl     *gomock.Controller
+	recorder *MockMintKeeperMockRecorder
+}
+
+// MockMintKeeperMockRecorder is the mock recorder for MockMintKeeper.
+type MockMintKeeperMockRecorder struct {
+	mock *MockMintKeeper
+}
+
+// NewMockMintKeeper creates a new mock instance.
+func NewMockMintKeeper(ctrl *gomock.Controller) *MockMintKeeper {
+	mock := &MockMintKeeper{ctrl: ctrl}
+	mock.recorder = &MockMintKeeperMockRecorder{mock}
+	return mock
+}
+
+// EXPECT returns an object that allows the caller to indicate expected use.
+func (m *MockMintKeeper) EXPECT() *MockMintKeeperMockRecorder {
+	return m.recorder
+}
+
+// BondedRatio mocks base method.
+func (m *MockMintKeeper) BondedRatio(ctx types.Context) types.Dec {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "BondedRatio", ctx)
+	ret0, _ := ret[0].(types.Dec)
+	return ret0
+}
+
+// BondedRatio indicates an expected call of BondedRatio.
+func (mr *MockMintKeeperMockRecorder) BondedRatio(ctx interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "BondedRatio", reflect.TypeOf((*MockMintKeeper)(nil).BondedRatio), ctx)
+}
+
+// GetParams mocks base method.
+func (m *MockMintKeeper) GetParams(ctx types.Context) types1.Params {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetParams", ctx)
+	ret0, _ := ret[0].(types1.Params)
+	return ret0
+}
+
+// GetParams indicates an expected call of GetParams.
+func (mr *MockMintKeeperMockRecorder) GetParams(ctx interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetParams", reflect.TypeOf((*MockMintKeeper)(nil).GetParams), ctx)
+}
+
+// StakingTokenSupply mocks base method.
+func (m *MockMintKeeper) StakingTokenSupply(ctx types.Context) types.Int {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "StakingTokenSupply", ctx)
+	ret0, _ := ret[0].(types.Int)
+	return ret0
+}
+
+// StakingTokenSupply indicates an expected call of StakingTokenSupply.
+func (mr *MockMintKeeperMockRecorder) StakingTokenSupply(ctx interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "StakingTokenSupply", reflect.TypeOf((*MockMintKeeper)(nil).StakingTokenSupply), ctx)
 }

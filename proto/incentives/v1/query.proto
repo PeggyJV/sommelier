@@ -4,8 +4,6 @@ package incentives.v1;
 import "gogoproto/gogo.proto";
 import "google/api/annotations.proto";
 import "incentives/v1/genesis.proto";
-import "cosmos_proto/cosmos.proto";
-import "cosmos/base/query/v1beta1/pagination.proto";
 
 option go_package = "github.com/peggyjv/sommelier/v4/x/incentives/types";
 
