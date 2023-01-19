@@ -8,7 +8,7 @@ import (
 	"github.com/tendermint/tendermint/libs/log"
 )
 
-// Keeper of the oracle store
+// Keeper of the incentives store
 type Keeper struct {
 	storeKey           sdk.StoreKey
 	cdc                codec.BinaryCodec
@@ -68,7 +68,7 @@ func (k Keeper) Logger(ctx sdk.Context) log.Logger {
 func (k Keeper) GetAPY(ctx sdk.Context) sdk.Dec {
 	incentivesParams := k.GetParamSet(ctx)
 	// check if incentives are enabled
-	if uint64(ctx.BlockHeight()) > incentivesParams.IncentivesCutoffHeight || incentivesParams.DistributionPerBlock.IsZero() {
+	if uint64(ctx.BlockHeight()) >= incentivesParams.IncentivesCutoffHeight || incentivesParams.DistributionPerBlock.IsZero() {
 		return sdk.ZeroDec()
 	}
 

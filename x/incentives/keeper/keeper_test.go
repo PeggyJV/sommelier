@@ -21,13 +21,11 @@ import (
 type KeeperTestSuite struct {
 	suite.Suite
 
-	ctx               sdk.Context
-	incentivesKeeper  Keeper
-	distributionKeepr *incentivestestutil.MockDistributionKeeper
-	bankKeeper        *incentivestestutil.MockBankKeeper
-	mintKeeper        *incentivestestutil.MockMintKeeper
-
-	// queryClient cellarfeesTypes.QueryClient
+	ctx                sdk.Context
+	incentivesKeeper   Keeper
+	distributionKeeper *incentivestestutil.MockDistributionKeeper
+	bankKeeper         *incentivestestutil.MockBankKeeper
+	mintKeeper         *incentivestestutil.MockMintKeeper
 
 	encCfg moduletestutil.TestEncodingConfig
 }
@@ -43,7 +41,7 @@ func (suite *KeeperTestSuite) SetupTest() {
 	ctrl := gomock.NewController(suite.T())
 	defer ctrl.Finish()
 
-	suite.distributionKeepr = incentivestestutil.NewMockDistributionKeeper(ctrl)
+	suite.distributionKeeper = incentivestestutil.NewMockDistributionKeeper(ctrl)
 	suite.bankKeeper = incentivestestutil.NewMockBankKeeper(ctrl)
 	suite.mintKeeper = incentivestestutil.NewMockMintKeeper(ctrl)
 	suite.ctx = ctx
@@ -63,7 +61,7 @@ func (suite *KeeperTestSuite) SetupTest() {
 		encCfg.Codec,
 		key,
 		subSpace,
-		suite.distributionKeepr,
+		suite.distributionKeeper,
 		suite.bankKeeper,
 		suite.mintKeeper,
 	)

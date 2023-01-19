@@ -150,7 +150,7 @@ func (am AppModule) ExportGenesis(ctx sdk.Context, cdc codec.JSONCodec) json.Raw
 
 // BeginBlock returns the begin blocker for the incentives module.
 func (am AppModule) BeginBlock(ctx sdk.Context, _ abci.RequestBeginBlock) {
-	// am.keeper.BeginBlocker(ctx)
+	am.keeper.BeginBlocker(ctx)
 }
 
 // EndBlock returns the end blocker for the incentives module.

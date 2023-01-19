@@ -15,7 +15,9 @@ import (
 	"time"
 
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
+	disttypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
+	"github.com/peggyjv/sommelier/v4/app/params"
 	auctiontypes "github.com/peggyjv/sommelier/v4/x/auction/types"
 	cellarfeestypes "github.com/peggyjv/sommelier/v4/x/cellarfees/types"
 	corktypes "github.com/peggyjv/sommelier/v4/x/cork/types"
@@ -303,7 +305,12 @@ func (s *IntegrationTestSuite) initGenesis() {
 		Address: authtypes.NewModuleAddress(auctiontypes.ModuleName).String(),
 		Coins:   sdk.NewCoins(sdk.NewCoin("gravity0x3506424f91fd33084466f402d5d97f05f8e3b4af", sdk.NewInt(5000000000))),
 	}
+	distBalance := banktypes.Balance{
+		Address: authtypes.NewModuleAddress(disttypes.ModuleName).String(),
+		Coins:   sdk.NewCoins(sdk.NewCoin(params.BaseCoinUnit, sdk.NewInt(1000000000))),
+	}
 	bankGenState.Balances = append(bankGenState.Balances, balance)
+	bankGenState.Balances = append(bankGenState.Balances, distBalance)
 
 	bz, err := cdc.MarshalJSON(&bankGenState)
 	s.Require().NoError(err)
@@ -346,6 +353,16 @@ func (s *IntegrationTestSuite) initGenesis() {
 	bz, err = cdc.MarshalJSON(&mintGenState)
 	s.Require().NoError(err)
 	appGenState[minttypes.ModuleName] = bz
+
+	distGenState := disttypes.DefaultGenesisState()
+	s.Require().NoError(cdc.UnmarshalJSON(appGenState[minttypes.ModuleName], &mintGenState))
+	distGenState.Params.CommunityTax = sdk.ZeroDec()
+	distGenState.Params.BaseProposerReward = sdk.ZeroDec()
+	distGenState.Params.BonusProposerReward = sdk.ZeroDec()
+	distGenState.FeePool.CommunityPool = sdk.NewDecCoins(sdk.NewDecCoin(params.BaseCoinUnit, sdk.NewInt(1000000000)))
+	bz, err = cdc.MarshalJSON(distGenState)
+	s.Require().NoError(err)
+	appGenState[disttypes.ModuleName] = bz
 
 	var genUtilGenState genutiltypes.GenesisState
 	s.Require().NoError(cdc.UnmarshalJSON(appGenState[genutiltypes.ModuleName], &genUtilGenState))

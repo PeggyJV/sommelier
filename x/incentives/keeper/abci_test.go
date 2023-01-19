@@ -3,34 +3,57 @@ package keeper
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	distributionTypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
-	"github.com/golang/mock/gomock"
 	"github.com/peggyjv/sommelier/v4/app/params"
-	inventivesTypes "github.com/peggyjv/sommelier/v4/x/incentives/types"
+	incentivesTypes "github.com/peggyjv/sommelier/v4/x/incentives/types"
 )
 
-func (suite *KeeperTestSuite) TestBeginBlockerZeroRewardsBalance() {
+func (suite *KeeperTestSuite) TestEndBlockerIncentivesDisabledDoesNothing() {
 	ctx, incentivesKeeper := suite.ctx, suite.incentivesKeeper
 	require := suite.Require()
-	distributionPerBlock := sdk.NewCoin(params.BaseCoinUnit, sdk.OneInt())
+	// distributionPerBlock := sdk.NewCoin(params.BaseCoinUnit, sdk.OneInt())
 
-	incentivesParams := inventivesTypes.DefaultParams()
+	incentivesParams := incentivesTypes.DefaultParams()
+	incentivesKeeper.SetParams(ctx, incentivesParams)
+
+	// By not mocking any other calls, the test will panic and fail if an unmocked keeper function is called,
+	// implying that the function isn't exiting early as designed.
+
+	require.NotPanics(func() { incentivesKeeper.BeginBlocker(ctx) })
+	require.NotPanics(func() { incentivesKeeper.EndBlocker(ctx) })
+
+	incentivesParams.DistributionPerBlock = sdk.NewCoin(params.BaseCoinUnit, sdk.OneInt())
+	incentivesKeeper.SetParams(ctx, incentivesParams)
+
+	require.NotPanics(func() { incentivesKeeper.BeginBlocker(ctx) })
+	require.NotPanics(func() { incentivesKeeper.EndBlocker(ctx) })
+
+	incentivesParams.DistributionPerBlock = sdk.NewCoin(params.BaseCoinUnit, sdk.ZeroInt())
+	incentivesParams.IncentivesCutoffHeight = 1500
+	incentivesKeeper.SetParams(ctx, incentivesParams)
+
+	require.NotPanics(func() { incentivesKeeper.BeginBlocker(ctx) })
+	require.NotPanics(func() { incentivesKeeper.EndBlocker(ctx) })
+}
+
+func (suite *KeeperTestSuite) TestEndBlockerInsufficientCommunityPoolBalance() {
+	ctx, incentivesKeeper := suite.ctx, suite.incentivesKeeper
+	require := suite.Require()
+	distributionPerBlock := sdk.NewCoin(params.BaseCoinUnit, sdk.NewInt(1000))
+
+	incentivesParams := incentivesTypes.DefaultParams()
 	incentivesParams.DistributionPerBlock = distributionPerBlock
+	incentivesParams.IncentivesCutoffHeight = 100
 	incentivesKeeper.SetParams(ctx, incentivesParams)
 
 	// mocks
 	pool := distributionTypes.FeePool{
-		CommunityPool: sdk.NewDecCoins(sdk.NewDecCoin(params.BaseCoinUnit, sdk.NewInt(10_000_000))),
+		CommunityPool: sdk.NewDecCoins(sdk.NewDecCoin(params.BaseCoinUnit, sdk.NewInt(999))),
 	}
-	suite.distributionKeepr.EXPECT().GetFeePool(ctx).Return(pool)
-	suite.bankKeeper.EXPECT().SendCoinsFromModuleToModule(ctx, gomock.Any(), gomock.Any(), gomock.Any()).Times(1)
+	suite.distributionKeeper.EXPECT().GetFeePool(ctx).Return(pool)
 
-	expectedAmount := pool.CommunityPool.AmountOf(params.BaseCoinUnit).Sub(distributionPerBlock.Amount.ToDec())
-	expectedPool := distributionTypes.FeePool{
-		CommunityPool: sdk.NewDecCoins(sdk.NewDecCoinFromDec(params.BaseCoinUnit, expectedAmount)),
-	}
-	suite.distributionKeepr.EXPECT().SetFeePool(ctx, expectedPool).Times(1)
+	// By not mocking the bank SendModuleToModule call, the test will panic and fail if the community pool balance
+	// check branch isn't taken as intended.
 
-	// // Note BeginBlocker is only run once for completeness, since it has no code in it
 	require.NotPanics(func() { incentivesKeeper.BeginBlocker(ctx) })
 	require.NotPanics(func() { incentivesKeeper.EndBlocker(ctx) })
 }

@@ -2,12 +2,17 @@ package integration_tests
 
 import (
 	"context"
+	"fmt"
 	"time"
 
+	"github.com/cosmos/cosmos-sdk/client"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/cosmos/cosmos-sdk/types/bech32"
 	disttypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
+	minttypes "github.com/cosmos/cosmos-sdk/x/mint/types"
 	paramsproposal "github.com/cosmos/cosmos-sdk/x/params/types/proposal"
+	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 	"github.com/peggyjv/sommelier/v4/app/params"
 	incentivestypes "github.com/peggyjv/sommelier/v4/x/incentives/types"
 )
@@ -18,7 +23,13 @@ func (s *IntegrationTestSuite) TestIncentives() {
 		defer cancel()
 
 		val := s.chain.validators[0]
+		s.T().Logf("validator %s", val.keyInfo.GetAddress().String())
 		kb, err := val.keyring()
+		s.Require().NoError(err)
+
+		_, bytes, err := bech32.DecodeAndConvert(val.keyInfo.GetAddress().String())
+		s.Require().NoError(err)
+		valOperatorAddress, err := bech32.ConvertAndEncode("sommvaloper", bytes)
 		s.Require().NoError(err)
 
 		clientCtx, err := s.chain.clientContext("tcp://localhost:26657", &kb, "val", val.keyInfo.GetAddress())
@@ -26,11 +37,25 @@ func (s *IntegrationTestSuite) TestIncentives() {
 
 		incentivesQueryClient := incentivestypes.NewQueryClient(clientCtx)
 		distQueryClient := disttypes.NewQueryClient(clientCtx)
+		mintQueryClient := minttypes.NewQueryClient(clientCtx)
+		stakingQueryClient := stakingtypes.NewQueryClient(clientCtx)
 
 		s.T().Log("verifying that the base distribution rate is zero")
-		beforeAmount := s.queryDelegationRewardAmount(ctx, val.keyInfo.GetAddress().String(), distQueryClient)
+		incentivesParamsRes, err := incentivesQueryClient.QueryParams(ctx, &incentivestypes.QueryParamsRequest{})
+		s.Require().NoError(err)
+		s.Require().Equal(uint64(0), incentivesParamsRes.Params.IncentivesCutoffHeight)
+		s.Require().True(incentivesParamsRes.Params.DistributionPerBlock.Amount.IsZero())
+
+		s.T().Log("verifying APY query returns zero")
+		incentivesAPYRes, err := incentivesQueryClient.QueryAPY(ctx, &incentivestypes.QueryAPYRequest{})
+		s.Require().NoError(err)
+		initialAPY, err := sdk.NewDecFromStr(incentivesAPYRes.Apy)
+		s.Require().NoError(err)
+		s.Require().True(initialAPY.IsZero())
+
+		beforeAmount := s.queryValidatorRewards(ctx, valOperatorAddress, distQueryClient)
 		time.Sleep(time.Second * 12)
-		afterAmount := s.queryDelegationRewardAmount(ctx, val.keyInfo.GetAddress().String(), distQueryClient)
+		afterAmount := s.queryValidatorRewards(ctx, valOperatorAddress, distQueryClient)
 		s.Require().Equal(beforeAmount, afterAmount)
 
 		s.T().Log("submitting proposal to enable incentives")
@@ -41,6 +66,8 @@ func (s *IntegrationTestSuite) TestIncentives() {
 		orchClientCtx, err := s.chain.clientContext("tcp://localhost:26657", orch.keyring, "orch", orch.keyInfo.GetAddress())
 		s.Require().NoError(err)
 
+		expectedUsommAmount := int64(2_000_000)
+		expectedDistributionPerBlock := sdk.NewCoin(params.BaseCoinUnit, sdk.NewInt(expectedUsommAmount))
 		proposal := paramsproposal.ParameterChangeProposal{
 			Title:       "enable incentives",
 			Description: "enables incentives",
@@ -49,6 +76,11 @@ func (s *IntegrationTestSuite) TestIncentives() {
 					Subspace: "incentives",
 					Key:      "IncentivesCutoffHeight",
 					Value:    "\"1000\"",
+				},
+				{
+					Subspace: "incentives",
+					Key:      "DistributionPerBlock",
+					Value:    fmt.Sprintf("{\"denom\":\"%s\",\"amount\":\"%d\"}", params.BaseCoinUnit, expectedUsommAmount),
 				},
 			},
 		}
@@ -106,24 +138,66 @@ func (s *IntegrationTestSuite) TestIncentives() {
 		s.T().Log("proposal approved!")
 
 		s.T().Log("verifying parameter was changed")
-		incentivesParamsRes, err := incentivesQueryClient.QueryParams(ctx, &incentivestypes.QueryParamsRequest{})
+		incentivesParamsRes, err = incentivesQueryClient.QueryParams(ctx, &incentivestypes.QueryParamsRequest{})
 		s.Require().NoError(err)
 		s.Require().Equal(incentivesParamsRes.Params.IncentivesCutoffHeight, uint64(1000))
 
-		s.T().Log("verifying that the base distribution rate is greater than zero")
-		beforeAmount = s.queryDelegationRewardAmount(ctx, val.keyInfo.GetAddress().String(), distQueryClient)
+		s.T().Log("verifying that the base distribution rate is the expected value")
+		beforeAmount, beforeHeight := s.getRewardAmountAndHeight(ctx, distQueryClient, valOperatorAddress, clientCtx)
 		time.Sleep(time.Second * 12)
-		afterAmount = s.queryDelegationRewardAmount(ctx, val.keyInfo.GetAddress().String(), distQueryClient)
-		s.T().Logf("before: %s, after: %s", beforeAmount.String(), afterAmount.String())
+		afterAmount, afterHeight := s.getRewardAmountAndHeight(ctx, distQueryClient, valOperatorAddress, clientCtx)
+		// Assumes each validator has equally weight bonding power
+		actualDistributionPerBlock := (afterAmount.Sub(beforeAmount)).Quo(sdk.NewDec(afterHeight - beforeHeight)).Mul(sdk.NewDec(int64(len(s.chain.validators))))
+		s.T().Logf("before: %s, after: %s, blocks %d-%d", beforeAmount.String(), afterAmount.String(), beforeHeight, afterHeight)
 		s.Require().True(afterAmount.GT(beforeAmount))
+		s.Require().Equal(expectedDistributionPerBlock.Amount.ToDec(), actualDistributionPerBlock)
+
+		s.T().Log("verifying APY query returns expected value")
+		mintParams, err := mintQueryClient.Params(ctx, &minttypes.QueryParamsRequest{})
+		s.Require().NoError(err)
+		stakingPool, err := stakingQueryClient.Pool(ctx, &stakingtypes.QueryPoolRequest{})
+		s.Require().NoError(err)
+		tokensTotal := stakingPool.Pool.BondedTokens.Add(stakingPool.Pool.NotBondedTokens)
+		// assumes bonded ratio is 100%
+		expectedAPY := actualDistributionPerBlock.Mul(sdk.NewDec(int64(mintParams.Params.BlocksPerYear))).Quo(tokensTotal.ToDec())
+		incentivesAPYRes, err = incentivesQueryClient.QueryAPY(ctx, &incentivestypes.QueryAPYRequest{})
+		s.Require().NoError(err)
+		APY, err := sdk.NewDecFromStr(incentivesAPYRes.Apy[:10])
+		s.Require().NoError(err)
+		// maxDiff, err := sdk.NewDecFromStr("0.00001")
+		// s.Require().NoError(err)
+		s.Require().Equal(expectedAPY, APY)
 	})
 }
 
-func (s *IntegrationTestSuite) queryDelegationRewardAmount(ctx context.Context, delegatorAddress string, distQueryClient disttypes.QueryClient) sdk.Dec {
-	rewardsRes, err := distQueryClient.DelegationRewards(ctx, &disttypes.QueryDelegationRewardsRequest{
-		DelegatorAddress: delegatorAddress,
-		ValidatorAddress: "sommvaloper199sjfhaw3hempwzljw0lgwsm9kk6r8e5ef3hmp",
+func (s *IntegrationTestSuite) queryValidatorRewards(ctx context.Context, valOperatorAddress string, distQueryClient disttypes.QueryClient) sdk.Dec {
+	rewardsRes, err := distQueryClient.ValidatorOutstandingRewards(ctx, &disttypes.QueryValidatorOutstandingRewardsRequest{
+		ValidatorAddress: valOperatorAddress,
 	})
 	s.Require().NoError(err)
-	return rewardsRes.Rewards.AmountOf(params.BaseCoinUnit)
+	return rewardsRes.Rewards.Rewards.AmountOf(params.BaseCoinUnit)
+}
+
+func (s *IntegrationTestSuite) getCurrentHeight(clientCtx *client.Context) int64 {
+	node, err := clientCtx.GetNode()
+	s.Require().NoError(err)
+	status, err := node.Status(context.Background())
+	s.Require().NoError(err)
+
+	return status.SyncInfo.LatestBlockHeight
+}
+
+func (s *IntegrationTestSuite) getRewardAmountAndHeight(ctx context.Context, distQueryClient disttypes.QueryClient, operatorAddress string, clientCtx *client.Context) (sdk.Dec, int64) {
+	var amount sdk.Dec
+	var height int64
+
+	s.Require().Eventually(func() bool {
+		initialHeight := s.getCurrentHeight(clientCtx)
+		amount = s.queryValidatorRewards(ctx, operatorAddress, distQueryClient)
+		currentHeight := s.getCurrentHeight(clientCtx)
+		height = currentHeight
+		return initialHeight == currentHeight
+	}, time.Second*30, time.Second*1, "failed to reliably determine height of reward sample")
+
+	return amount, height
 }

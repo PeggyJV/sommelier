@@ -58,5 +58,5 @@ message QueryFeeAccrualCountersResponse {
 message QueryAPYRequest {}
 
 message QueryAPYResponse {
-  string apy = 1 ;
+  string apy = 1;
 }

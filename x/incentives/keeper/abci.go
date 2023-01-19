@@ -18,8 +18,7 @@ func (k Keeper) BeginBlocker(ctx sdk.Context) {}
 func (k Keeper) EndBlocker(ctx sdk.Context) {
 	incentivesParams := k.GetParamSet(ctx)
 	// check if incentives are enabled
-	if uint64(ctx.BlockHeight()) > incentivesParams.IncentivesCutoffHeight || incentivesParams.DistributionPerBlock.IsZero() {
-
+	if uint64(ctx.BlockHeight()) >= incentivesParams.IncentivesCutoffHeight || incentivesParams.DistributionPerBlock.IsZero() {
 		return
 	}
 

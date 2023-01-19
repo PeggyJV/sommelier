@@ -16,6 +16,7 @@ func (suite *KeeperTestSuite) TestQueriesHappyPath() {
 	stakingTotalSupply := sdk.NewInt(100_000_000_000)
 
 	incentivesParams := types.DefaultParams()
+	incentivesParams.DistributionPerBlock = sdk.NewCoin(params.BaseCoinUnit, sdk.NewInt(2_000_000))
 	incentivesParams.IncentivesCutoffHeight = 1500
 	incentivesKeeper.SetParams(ctx, incentivesParams)
 
@@ -33,5 +34,6 @@ func (suite *KeeperTestSuite) TestQueriesHappyPath() {
 
 	APYResult, err := incentivesKeeper.QueryAPY(sdk.WrapSDKContext(ctx), &types.QueryAPYRequest{})
 	require.Nil(err)
-	require.Equal("0.219000000000000000", APYResult.Apy)
+	expectedAPY := incentivesParams.DistributionPerBlock.Amount.Mul(sdk.NewInt(int64(blocksPerYear))).ToDec().Quo(stakingTotalSupply.ToDec()).Quo(bondedRatio)
+	require.Equal(expectedAPY.String(), APYResult.Apy)
 }

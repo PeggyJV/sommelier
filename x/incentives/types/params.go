@@ -1,10 +1,8 @@
 package types
 
 import (
-	"errors"
-	"fmt"
-
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
 	"github.com/peggyjv/sommelier/v4/app/params"
 )
@@ -22,12 +20,11 @@ func ParamKeyTable() paramtypes.KeyTable {
 	return paramtypes.NewKeyTable().RegisterParamSet(&Params{})
 }
 
-// DefaultParams returns default oracle parameters
+// DefaultParams returns default incentives parameters
 func DefaultParams() Params {
 	return Params{
-		// 2 somm per block
-		DistributionPerBlock: sdk.NewCoin(params.BaseCoinUnit, sdk.NewInt(2_000_000)),
-		// Anything lower than current height is "off"
+		DistributionPerBlock: sdk.NewCoin(params.BaseCoinUnit, sdk.ZeroInt()),
+		// Anything lower than or equal to current height is "off"
 		IncentivesCutoffHeight: 0,
 	}
 }
@@ -40,7 +37,7 @@ func (p *Params) ParamSetPairs() paramtypes.ParamSetPairs {
 	}
 }
 
-// ValidateBasic performs basic validation on oracle parameters.
+// ValidateBasic performs basic validation on incentives parameters.
 func (p *Params) ValidateBasic() error {
 	if err := validateDistributionPerBlock(p.DistributionPerBlock); err != nil {
 		return err
@@ -51,11 +48,17 @@ func (p *Params) ValidateBasic() error {
 func validateDistributionPerBlock(i interface{}) error {
 	coinsPerBlock, ok := i.(sdk.Coin)
 	if !ok {
-		return fmt.Errorf("invalid parameter type: %T", i)
+		return sdkerrors.Wrapf(ErrInvalidDistributionPerBlock, "invalid parameter type: %T", i)
 	}
 
 	if coinsPerBlock.IsNil() {
-		return errors.New("distribution per block cannot be nil")
+		return sdkerrors.Wrapf(ErrInvalidDistributionPerBlock, "distribution per block cannot be nil")
+	}
+	if coinsPerBlock.Amount.IsNegative() {
+		return sdkerrors.Wrapf(ErrInvalidDistributionPerBlock, "distribution per block cannot be negative")
+	}
+	if coinsPerBlock.Denom != (params.BaseCoinUnit) {
+		return sdkerrors.Wrapf(ErrInvalidDistributionPerBlock, "distribution per block denom must be %s, got %s", params.BaseCoinUnit, coinsPerBlock.Denom)
 	}
 
 	return nil
