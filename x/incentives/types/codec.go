@@ -5,6 +5,4 @@ import (
 )
 
 // RegisterInterfaces registers the incentives proto files
-func RegisterInterfaces(registry codectypes.InterfaceRegistry) {
-
-}
+func RegisterInterfaces(registry codectypes.InterfaceRegistry) {}

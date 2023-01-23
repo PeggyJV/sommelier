@@ -21,7 +21,6 @@ import (
 	auctiontypes "github.com/peggyjv/sommelier/v4/x/auction/types"
 	cellarfeestypes "github.com/peggyjv/sommelier/v4/x/cellarfees/types"
 	corktypes "github.com/peggyjv/sommelier/v4/x/cork/types"
-	incentivestypes "github.com/peggyjv/sommelier/v4/x/incentives/types"
 
 	gravitytypes "github.com/peggyjv/gravity-bridge/module/v2/x/gravity/types"
 
@@ -461,11 +460,11 @@ func (s *IntegrationTestSuite) initGenesis() {
 	s.Require().NoError(err)
 	appGenState[gravitytypes.ModuleName] = bz
 
-	incentivesGenState := incentivestypes.DefaultGenesisState()
-	s.Require().NoError(cdc.UnmarshalJSON(appGenState[gravitytypes.ModuleName], &gravityGenState))
-	bz, err = cdc.MarshalJSON(&incentivesGenState)
-	s.Require().NoError(err)
-	appGenState[incentivestypes.ModuleName] = bz
+	// incentivesGenState := incentivestypes.DefaultGenesisState()
+	// s.Require().NoError(cdc.UnmarshalJSON(appGenState[gravitytypes.ModuleName], &gravityGenState))
+	// bz, err = cdc.MarshalJSON(&incentivesGenState)
+	// s.Require().NoError(err)
+	// appGenState[incentivestypes.ModuleName] = bz
 
 	// serialize genesis state
 	bz, err = json.MarshalIndent(appGenState, "", "  ")

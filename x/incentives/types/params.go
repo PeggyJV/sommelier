@@ -57,7 +57,7 @@ func validateDistributionPerBlock(i interface{}) error {
 	if coinsPerBlock.Amount.IsNegative() {
 		return sdkerrors.Wrapf(ErrInvalidDistributionPerBlock, "distribution per block cannot be negative")
 	}
-	if coinsPerBlock.Denom != (params.BaseCoinUnit) {
+	if coinsPerBlock.Denom != params.BaseCoinUnit {
 		return sdkerrors.Wrapf(ErrInvalidDistributionPerBlock, "distribution per block denom must be %s, got %s", params.BaseCoinUnit, coinsPerBlock.Denom)
 	}
 

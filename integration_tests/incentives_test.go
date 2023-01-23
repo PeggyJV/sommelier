@@ -44,7 +44,7 @@ func (s *IntegrationTestSuite) TestIncentives() {
 		incentivesParamsRes, err := incentivesQueryClient.QueryParams(ctx, &incentivestypes.QueryParamsRequest{})
 		s.Require().NoError(err)
 		s.Require().Equal(uint64(0), incentivesParamsRes.Params.IncentivesCutoffHeight)
-		s.Require().True(incentivesParamsRes.Params.DistributionPerBlock.Amount.IsZero())
+		s.Require().Equal(sdk.ZeroInt(), incentivesParamsRes.Params.DistributionPerBlock.Amount)
 
 		s.T().Log("verifying APY query returns zero")
 		incentivesAPYRes, err := incentivesQueryClient.QueryAPY(ctx, &incentivestypes.QueryAPYRequest{})
@@ -147,6 +147,7 @@ func (s *IntegrationTestSuite) TestIncentives() {
 		time.Sleep(time.Second * 12)
 		afterAmount, afterHeight := s.getRewardAmountAndHeight(ctx, distQueryClient, valOperatorAddress, clientCtx)
 		// Assumes each validator has equally weight bonding power
+		s.T().Logf("blocks %d-%d", beforeHeight, afterHeight)
 		actualDistributionPerBlock := (afterAmount.Sub(beforeAmount)).Quo(sdk.NewDec(afterHeight - beforeHeight)).Mul(sdk.NewDec(int64(len(s.chain.validators))))
 		s.T().Logf("before: %s, after: %s, blocks %d-%d", beforeAmount.String(), afterAmount.String(), beforeHeight, afterHeight)
 		s.Require().True(afterAmount.GT(beforeAmount))
@@ -164,8 +165,6 @@ func (s *IntegrationTestSuite) TestIncentives() {
 		s.Require().NoError(err)
 		APY, err := sdk.NewDecFromStr(incentivesAPYRes.Apy[:10])
 		s.Require().NoError(err)
-		// maxDiff, err := sdk.NewDecFromStr("0.00001")
-		// s.Require().NoError(err)
 		s.Require().Equal(expectedAPY, APY)
 	})
 }
@@ -194,9 +193,8 @@ func (s *IntegrationTestSuite) getRewardAmountAndHeight(ctx context.Context, dis
 	s.Require().Eventually(func() bool {
 		initialHeight := s.getCurrentHeight(clientCtx)
 		amount = s.queryValidatorRewards(ctx, operatorAddress, distQueryClient)
-		currentHeight := s.getCurrentHeight(clientCtx)
-		height = currentHeight
-		return initialHeight == currentHeight
+		height = s.getCurrentHeight(clientCtx)
+		return initialHeight == height
 	}, time.Second*30, time.Second*1, "failed to reliably determine height of reward sample")
 
 	return amount, height

@@ -10,7 +10,6 @@ import (
 func (suite *KeeperTestSuite) TestEndBlockerIncentivesDisabledDoesNothing() {
 	ctx, incentivesKeeper := suite.ctx, suite.incentivesKeeper
 	require := suite.Require()
-	// distributionPerBlock := sdk.NewCoin(params.BaseCoinUnit, sdk.OneInt())
 
 	incentivesParams := incentivesTypes.DefaultParams()
 	incentivesKeeper.SetParams(ctx, incentivesParams)
