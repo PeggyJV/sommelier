@@ -32,6 +32,7 @@ func GetQueryCmd(queryRoute string) *cobra.Command {
 	cmd.AddCommand(CmdQueryModuleAccounts())
 	cmd.AddCommand(CmdQueryFeeAccrualCounters())
 	cmd.AddCommand(CmdQueryLastRewardSupplyPeak())
+	cmd.AddCommand(CmdQueryAPY())
 
 	return cmd
 }
@@ -130,6 +131,34 @@ func CmdQueryFeeAccrualCounters() *cobra.Command {
 			}
 
 			return clientCtx.PrintProto(res)
+		},
+	}
+
+	flags.AddQueryFlagsToCmd(cmd)
+
+	return cmd
+}
+
+func CmdQueryAPY() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "apy",
+		Args:  cobra.NoArgs,
+		Short: "query cellarfees APY",
+		RunE: func(cmd *cobra.Command, _ []string) error {
+			ctx, err := client.GetClientQueryContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			queryClient := types.NewQueryClient(ctx)
+			req := &types.QueryAPYRequest{}
+
+			res, err := queryClient.QueryAPY(cmd.Context(), req)
+			if err != nil {
+				return err
+			}
+
+			return ctx.PrintProto(res)
 		},
 	}
 

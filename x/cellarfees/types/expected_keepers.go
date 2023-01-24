@@ -3,6 +3,7 @@ package types
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/auth/types"
+	minttypes "github.com/cosmos/cosmos-sdk/x/mint/types"
 	"github.com/ethereum/go-ethereum/common"
 	auctiontypes "github.com/peggyjv/sommelier/v4/x/auction/types"
 )
@@ -49,4 +50,11 @@ type AuctionKeeper interface {
 		priceDecreaseBlockInterval uint64,
 		fundingModuleAccount string,
 		proceedsModuleAccount string) error
+}
+
+// MintKeeper defines the expected mint keeper methods
+type MintKeeper interface {
+	GetParams(ctx sdk.Context) minttypes.Params
+	StakingTokenSupply(ctx sdk.Context) sdk.Int
+	BondedRatio(ctx sdk.Context) sdk.Dec
 }

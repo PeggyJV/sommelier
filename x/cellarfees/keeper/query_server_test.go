@@ -2,6 +2,9 @@ package keeper
 
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	minttypes "github.com/cosmos/cosmos-sdk/x/mint/types"
+	"github.com/golang/mock/gomock"
+	"github.com/peggyjv/sommelier/v4/app/params"
 	cellarfeesTypes "github.com/peggyjv/sommelier/v4/x/cellarfees/types"
 )
 
@@ -12,8 +15,8 @@ func (suite *KeeperTestSuite) TestQueriesHappyPath() {
 	// mock
 	suite.accountKeeper.EXPECT().GetModuleAccount(ctx, cellarfeesTypes.ModuleName).Return(feesAccount)
 
-	params := cellarfeesTypes.DefaultParams()
-	cellarfeesKeeper.SetParams(ctx, params)
+	cellarfeesParams := cellarfeesTypes.DefaultParams()
+	cellarfeesKeeper.SetParams(ctx, cellarfeesParams)
 
 	expectedLastRewardSupplyPeakAmount := sdk.NewInt(25000)
 	cellarfeesKeeper.SetLastRewardSupplyPeak(ctx, expectedLastRewardSupplyPeakAmount)
@@ -35,7 +38,7 @@ func (suite *KeeperTestSuite) TestQueriesHappyPath() {
 	// QueryParams
 	paramsResponse, err := cellarfeesKeeper.QueryParams(sdk.WrapSDKContext(ctx), &cellarfeesTypes.QueryParamsRequest{})
 	require.Nil(err)
-	require.Equal(&cellarfeesTypes.QueryParamsResponse{Params: params}, paramsResponse)
+	require.Equal(&cellarfeesTypes.QueryParamsResponse{Params: cellarfeesParams}, paramsResponse)
 
 	// QueryModuleAccounts
 	moduleAccountsResponse, err := cellarfeesKeeper.QueryModuleAccounts(sdk.WrapSDKContext(ctx), &cellarfeesTypes.QueryModuleAccountsRequest{})
@@ -51,6 +54,29 @@ func (suite *KeeperTestSuite) TestQueriesHappyPath() {
 	feeAccrualCountersResponse, err := cellarfeesKeeper.QueryFeeAccrualCounters(sdk.WrapSDKContext(ctx), &cellarfeesTypes.QueryFeeAccrualCountersRequest{})
 	require.Nil(err)
 	require.Equal(&cellarfeesTypes.QueryFeeAccrualCountersResponse{FeeAccrualCounters: expectedFeeAccrualCounters}, feeAccrualCountersResponse)
+
+	// QueryAPY
+	blocksPerYear := 365 * 6
+	bondedRatio := sdk.MustNewDecFromStr("0.2")
+	stakingTotalSupply := sdk.NewInt(2_500_000_000_000)
+	lastPeak := sdk.NewInt(10_000_000)
+	cellarfeesKeeper.SetLastRewardSupplyPeak(ctx, lastPeak)
+	cellarfeesParams.RewardEmissionPeriod = 10
+	cellarfeesKeeper.SetParams(ctx, cellarfeesParams)
+
+	//// mocks for QueryAPY
+	suite.mintKeeper.EXPECT().GetParams(ctx).Return(minttypes.Params{
+		BlocksPerYear: uint64(blocksPerYear),
+		MintDenom:     params.BaseCoinUnit,
+	})
+	suite.accountKeeper.EXPECT().GetModuleAccount(ctx, gomock.Any()).Return(feesAccount)
+	suite.bankKeeper.EXPECT().GetBalance(ctx, gomock.Any(), params.BaseCoinUnit).Return(sdk.NewCoin(params.BaseCoinUnit, sdk.NewInt(9_000_000)))
+	suite.mintKeeper.EXPECT().BondedRatio(ctx).Return(bondedRatio)
+	suite.mintKeeper.EXPECT().StakingTokenSupply(ctx).Return(stakingTotalSupply)
+
+	APYResult, err := cellarfeesKeeper.QueryAPY(sdk.WrapSDKContext(ctx), &cellarfeesTypes.QueryAPYRequest{})
+	require.Nil(err)
+	require.Equal("0.004380000000000000", APYResult.Apy)
 }
 
 func (suite *KeeperTestSuite) TestQueriesUnhappyPath() {

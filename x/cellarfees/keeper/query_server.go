@@ -46,3 +46,9 @@ func (k Keeper) QueryFeeAccrualCounters(c context.Context, req *types.QueryFeeAc
 
 	return &types.QueryFeeAccrualCountersResponse{FeeAccrualCounters: k.GetFeeAccrualCounters(sdk.UnwrapSDKContext(c))}, nil
 }
+
+func (k Keeper) QueryAPY(c context.Context, _ *types.QueryAPYRequest) (*types.QueryAPYResponse, error) {
+	return &types.QueryAPYResponse{
+		Apy: k.GetAPY(sdk.UnwrapSDKContext(c)).String(),
+	}, nil
+}
