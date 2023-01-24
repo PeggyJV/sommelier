@@ -9,6 +9,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
+	"github.com/peggyjv/sommelier/v4/app/params"
 	"github.com/peggyjv/sommelier/v4/x/cellarfees/types"
 )
 
@@ -18,6 +19,7 @@ type Keeper struct {
 	paramSpace    paramtypes.Subspace
 	accountKeeper types.AccountKeeper
 	bankKeeper    types.BankKeeper
+	mintKeeper    types.MintKeeper
 	corkKeeper    types.CorkKeeper
 	gravityKeeper types.GravityKeeper
 	auctionKeeper types.AuctionKeeper
@@ -29,6 +31,7 @@ func NewKeeper(
 	paramSpace paramtypes.Subspace,
 	accountKeeper types.AccountKeeper,
 	bankKeeper types.BankKeeper,
+	mintKeeper types.MintKeeper,
 	corkKeeper types.CorkKeeper,
 	gravityKeeper types.GravityKeeper,
 	auctionKeeper types.AuctionKeeper,
@@ -43,6 +46,7 @@ func NewKeeper(
 		paramSpace:    paramSpace,
 		accountKeeper: accountKeeper,
 		bankKeeper:    bankKeeper,
+		mintKeeper:    mintKeeper,
 		corkKeeper:    corkKeeper,
 		gravityKeeper: gravityKeeper,
 		auctionKeeper: auctionKeeper,
@@ -109,4 +113,23 @@ func (k Keeper) SetFeeAccrualCounters(ctx sdk.Context, counters types.FeeAccrual
 	store := ctx.KVStore(k.storeKey)
 	b := k.cdc.MustMarshal(&counters)
 	store.Set(types.GetFeeAccrualCountersKey(), b)
+}
+
+////////////
+// APY    //
+////////////
+
+func (k Keeper) GetAPY(ctx sdk.Context) sdk.Dec {
+	remainingRewardsSupply := k.bankKeeper.GetBalance(ctx, k.GetFeesAccount(ctx).GetAddress(), params.BaseCoinUnit).Amount
+	if remainingRewardsSupply.IsZero() {
+		return sdk.ZeroDec()
+	}
+
+	mintParams := k.mintKeeper.GetParams(ctx)
+	bondedRatio := k.mintKeeper.BondedRatio(ctx)
+	totalCoins := k.mintKeeper.StakingTokenSupply(ctx)
+	emission := k.GetEmission(ctx, remainingRewardsSupply)
+	annualRewards := emission.AmountOf(params.BaseCoinUnit).Mul(sdk.NewInt(int64(mintParams.BlocksPerYear)))
+
+	return annualRewards.ToDec().Quo(totalCoins.ToDec()).Quo(bondedRatio)
 }

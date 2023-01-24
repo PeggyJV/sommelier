@@ -1,4 +1,4 @@
-package cork
+package incentives
 
 import (
 	"context"
@@ -13,9 +13,9 @@ import (
 	sim "github.com/cosmos/cosmos-sdk/types/simulation"
 	"github.com/gorilla/mux"
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
-	"github.com/peggyjv/sommelier/v4/x/cork/client/cli"
-	"github.com/peggyjv/sommelier/v4/x/cork/keeper"
-	"github.com/peggyjv/sommelier/v4/x/cork/types"
+	"github.com/peggyjv/sommelier/v4/x/incentives/client/cli"
+	"github.com/peggyjv/sommelier/v4/x/incentives/keeper"
+	"github.com/peggyjv/sommelier/v4/x/incentives/types"
 	"github.com/spf13/cobra"
 	abci "github.com/tendermint/tendermint/abci/types"
 )
@@ -26,10 +26,10 @@ var (
 	_ module.AppModuleSimulation = AppModule{}
 )
 
-// AppModuleBasic defines the basic application module used by the cork module.
+// AppModuleBasic defines the basic application module used by the incentives module.
 type AppModuleBasic struct{}
 
-// Name returns the cork module's name
+// Name returns the incentives module's name
 func (AppModuleBasic) Name() string {
 	return types.ModuleName
 }
@@ -37,14 +37,14 @@ func (AppModuleBasic) Name() string {
 // RegisterLegacyAminoCodec doesn't support amino
 func (AppModuleBasic) RegisterLegacyAminoCodec(cdc *codec.LegacyAmino) {}
 
-// DefaultGenesis returns default genesis state as raw bytes for the oracle
+// DefaultGenesis returns default genesis state as raw bytes for the incentives
 // module.
 func (AppModuleBasic) DefaultGenesis(cdc codec.JSONCodec) json.RawMessage {
 	gs := types.DefaultGenesisState()
 	return cdc.MustMarshalJSON(&gs)
 }
 
-// ValidateGenesis performs genesis state validation for the cork module.
+// ValidateGenesis performs genesis state validation for the incentives module.
 func (AppModuleBasic) ValidateGenesis(cdc codec.JSONCodec, _ client.TxEncodingConfig, bz json.RawMessage) error {
 	var gs types.GenesisState
 	if err := cdc.UnmarshalJSON(bz, &gs); err != nil {
@@ -57,17 +57,17 @@ func (AppModuleBasic) ValidateGenesis(cdc codec.JSONCodec, _ client.TxEncodingCo
 // We don't want to support the legacy rest server here
 func (AppModuleBasic) RegisterRESTRoutes(_ client.Context, _ *mux.Router) {}
 
-// GetTxCmd returns the root tx command for the cork module.
+// GetTxCmd returns the root tx command for the incentives module.
 func (AppModuleBasic) GetTxCmd() *cobra.Command {
-	return cli.GetTxCmd()
+	return nil
 }
 
-// GetQueryCmd returns the root query command for the cork module.
+// GetQueryCmd returns the root query command for the incentives module.
 func (AppModuleBasic) GetQueryCmd() *cobra.Command {
 	return cli.GetQueryCmd()
 }
 
-// RegisterGRPCGatewayRoutes registers the gRPC Gateway routes for the cork module.
+// RegisterGRPCGatewayRoutes registers the gRPC Gateway routes for the incentives module.
 // also implements app modeul basic
 func (AppModuleBasic) RegisterGRPCGatewayRoutes(clientCtx client.Context, mux *runtime.ServeMux) {
 	types.RegisterQueryHandlerClient(context.Background(), mux, types.NewQueryClient(clientCtx))
@@ -78,32 +78,39 @@ func (b AppModuleBasic) RegisterInterfaces(registry codectypes.InterfaceRegistry
 	types.RegisterInterfaces(registry)
 }
 
-// AppModule implements an application module for the cork module.
+// AppModule implements an application module for the incentives module.
 type AppModule struct {
 	AppModuleBasic
-	keeper keeper.Keeper
-	cdc    codec.Codec
+	keeper             keeper.Keeper
+	distributionKeeper types.DistributionKeeper
+	bankKeeper         types.BankKeeper
+	mintKeeper         types.MintKeeper
+	cdc                codec.Codec
 }
 
 // NewAppModule creates a new AppModule object
-func NewAppModule(keeper keeper.Keeper, cdc codec.Codec) AppModule {
+func NewAppModule(keeper keeper.Keeper, distributionKeeper types.DistributionKeeper,
+	bankKeeper types.BankKeeper, mintKeeper types.MintKeeper, cdc codec.Codec) AppModule {
 	return AppModule{
-		AppModuleBasic: AppModuleBasic{},
-		keeper:         keeper,
-		cdc:            cdc,
+		AppModuleBasic:     AppModuleBasic{},
+		keeper:             keeper,
+		distributionKeeper: distributionKeeper,
+		bankKeeper:         bankKeeper,
+		mintKeeper:         mintKeeper,
+		cdc:                cdc,
 	}
 }
 
-// Name returns the cork module's name.
+// Name returns the incentives module's name.
 func (AppModule) Name() string { return types.ModuleName }
 
 // RegisterInvariants performs a no-op.
 func (AppModule) RegisterInvariants(_ sdk.InvariantRegistry) {}
 
-// Route returns the message routing key for the cork module.
+// Route returns the message routing key for the incentives module.
 func (am AppModule) Route() sdk.Route { return sdk.NewRoute(types.RouterKey, NewHandler(am.keeper)) }
 
-// QuerierRoute returns the cork module's querier route name.
+// QuerierRoute returns the incentives module's querier route name.
 func (AppModule) QuerierRoute() string { return types.QuerierRoute }
 
 // LegacyQuerierHandler returns a nil Querier.
@@ -113,7 +120,7 @@ func (am AppModule) LegacyQuerierHandler(_ *codec.LegacyAmino) sdk.Querier {
 
 // ConsensusVersion implements AppModule/ConsensusVersion.
 func (AppModule) ConsensusVersion() uint64 {
-	return 2
+	return 1
 }
 
 func (am AppModule) WeightedOperations(simState module.SimulationState) []sim.WeightedOperation {
@@ -122,11 +129,10 @@ func (am AppModule) WeightedOperations(simState module.SimulationState) []sim.We
 
 // RegisterServices registers module services.
 func (am AppModule) RegisterServices(cfg module.Configurator) {
-	types.RegisterMsgServer(cfg.MsgServer(), am.keeper)
 	types.RegisterQueryServer(cfg.QueryServer(), am.keeper)
 }
 
-// InitGenesis performs genesis initialization for the cork module.
+// InitGenesis performs genesis initialization for the incentives module.
 func (am AppModule) InitGenesis(ctx sdk.Context, cdc codec.JSONCodec, data json.RawMessage) []abci.ValidatorUpdate {
 	var genesisState types.GenesisState
 	cdc.MustUnmarshalJSON(data, &genesisState)
@@ -135,19 +141,19 @@ func (am AppModule) InitGenesis(ctx sdk.Context, cdc codec.JSONCodec, data json.
 	return []abci.ValidatorUpdate{}
 }
 
-// ExportGenesis returns the exported genesis state as raw bytes for the oracle
+// ExportGenesis returns the exported genesis state as raw bytes for the incentives
 // module.
 func (am AppModule) ExportGenesis(ctx sdk.Context, cdc codec.JSONCodec) json.RawMessage {
 	genesisState := keeper.ExportGenesis(ctx, am.keeper)
 	return cdc.MustMarshalJSON(&genesisState)
 }
 
-// BeginBlock returns the begin blocker for the cork module.
+// BeginBlock returns the begin blocker for the incentives module.
 func (am AppModule) BeginBlock(ctx sdk.Context, _ abci.RequestBeginBlock) {
 	am.keeper.BeginBlocker(ctx)
 }
 
-// EndBlock returns the end blocker for the cork module.
+// EndBlock returns the end blocker for the incentives module.
 func (am AppModule) EndBlock(ctx sdk.Context, _ abci.RequestEndBlock) []abci.ValidatorUpdate {
 	am.keeper.EndBlocker(ctx)
 	return []abci.ValidatorUpdate{}
@@ -155,21 +161,21 @@ func (am AppModule) EndBlock(ctx sdk.Context, _ abci.RequestEndBlock) []abci.Val
 
 // AppModuleSimulation functions
 
-// GenerateGenesisState creates a randomized GenState of the cork module.
+// GenerateGenesisState creates a randomized GenState of the distribution module.
 func (AppModule) GenerateGenesisState(simState *module.SimulationState) {
 }
 
-// ProposalContents returns all the cork content functions used to
+// ProposalContents returns all the distribution content functions used to
 // simulate governance proposals.
 func (am AppModule) ProposalContents(_ module.SimulationState) []sim.WeightedProposalContent {
 	return nil
 }
 
-// RandomizedParams creates randomized cork param changes for the simulator.
+// RandomizedParams creates randomized distribution param changes for the simulator.
 func (AppModule) RandomizedParams(r *rand.Rand) []sim.ParamChange {
 	return nil
 }
 
-// RegisterStoreDecoder registers a decoder for cork module's types
+// RegisterStoreDecoder registers a decoder for distribution module's types
 func (am AppModule) RegisterStoreDecoder(sdr sdk.StoreDecoderRegistry) {
 }

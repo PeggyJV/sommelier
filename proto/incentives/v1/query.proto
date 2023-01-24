@@ -1,0 +1,38 @@
+syntax = "proto3";
+package incentives.v1;
+
+import "gogoproto/gogo.proto";
+import "google/api/annotations.proto";
+import "incentives/v1/genesis.proto";
+
+option go_package = "github.com/peggyjv/sommelier/v4/x/incentives/types";
+
+// Query defines the gRPC query service for the cork module.
+service Query {
+    // QueryParams queries the allocation module parameters.
+    rpc QueryParams(QueryParamsRequest) returns (QueryParamsResponse) {
+      option (google.api.http).get = "/sommelier/incentives/v1/params";
+    }
+    // QueryAPY queries the APY returned from the incentives module.
+    rpc QueryAPY(QueryAPYRequest) returns (QueryAPYResponse) {
+      option (google.api.http).get = "/sommelier/incentives/v1/apy";
+    }
+}
+
+// QueryParamsRequest is the request type for the QueryParams gRPC method.
+message QueryParamsRequest {}
+
+// QueryParamsRequest is the response type for the QueryParams gRPC method.
+message QueryParamsResponse {
+  // allocation parameters
+  Params params = 1 [(gogoproto.nullable) = false];
+}
+
+// QueryAPYRequest is the request type for the QueryAPY gRPC method.
+message QueryAPYRequest {}
+
+
+// QueryAPYRequest is the response type for the QueryAPY gRPC method.
+message QueryAPYResponse {
+  string apy = 1;
+}
