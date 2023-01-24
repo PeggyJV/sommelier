@@ -66,6 +66,9 @@ func (s *IntegrationTestSuite) TestIncentives() {
 		orchClientCtx, err := s.chain.clientContext("tcp://localhost:26657", orch.keyring, "orch", orch.keyInfo.GetAddress())
 		s.Require().NoError(err)
 
+		// Collin: test takes about ~110 blocks to reach the cutoff check at the end on my machine.
+		// Hopefully this is high enough to avoid a false negative in CI.
+		cutoffHeight := 200
 		expectedUsommAmount := int64(2_000_000)
 		expectedDistributionPerBlock := sdk.NewCoin(params.BaseCoinUnit, sdk.NewInt(expectedUsommAmount))
 		proposal := paramsproposal.ParameterChangeProposal{
@@ -75,7 +78,7 @@ func (s *IntegrationTestSuite) TestIncentives() {
 				{
 					Subspace: "incentives",
 					Key:      "IncentivesCutoffHeight",
-					Value:    "\"1000\"",
+					Value:    fmt.Sprintf("\"%d\"", cutoffHeight),
 				},
 				{
 					Subspace: "incentives",
@@ -140,7 +143,7 @@ func (s *IntegrationTestSuite) TestIncentives() {
 		s.T().Log("verifying parameter was changed")
 		incentivesParamsRes, err = incentivesQueryClient.QueryParams(ctx, &incentivestypes.QueryParamsRequest{})
 		s.Require().NoError(err)
-		s.Require().Equal(incentivesParamsRes.Params.IncentivesCutoffHeight, uint64(1000))
+		s.Require().Equal(incentivesParamsRes.Params.IncentivesCutoffHeight, uint64(cutoffHeight))
 
 		s.T().Log("verifying that the base distribution rate is the expected value")
 		beforeAmount, beforeHeight := s.getRewardAmountAndHeight(ctx, distQueryClient, valOperatorAddress, clientCtx)
@@ -166,6 +169,29 @@ func (s *IntegrationTestSuite) TestIncentives() {
 		APY, err := sdk.NewDecFromStr(incentivesAPYRes.Apy[:10])
 		s.Require().NoError(err)
 		s.Require().Equal(expectedAPY, APY)
+
+		s.T().Log("verifying incentives end after cutoff")
+		s.Require().Eventually(func() bool {
+			startingAmount, startingHeight := s.getRewardAmountAndHeight(ctx, distQueryClient, valOperatorAddress, clientCtx)
+			// since rewards sent to the distribution module are issued on the next block, we wait for the height after
+			// the cutoff to check rewards
+			if startingHeight <= int64(cutoffHeight) {
+				return false
+			}
+
+			time.Sleep(time.Second * 5)
+			endingAmount, _ := s.getRewardAmountAndHeight(ctx, distQueryClient, valOperatorAddress, clientCtx)
+
+			if s.Equal(startingAmount, endingAmount) {
+				return true
+			}
+
+			s.FailNow("rewards per block are nonzero after cutoff height")
+
+			// required to satisfy the eventually block even though it's unreachable
+			return false
+		}, time.Minute*5, time.Second*10, "incentives did not end after cutoff height")
+		s.T().Log("incentives ended!")
 	})
 }
 
