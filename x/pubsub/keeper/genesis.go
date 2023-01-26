@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/peggyjv/sommelier/v3/x/pubsub/types"
+	"github.com/peggyjv/sommelier/v4/x/pubsub/types"
 )
 
 // InitGenesis initializes the module's state from a provided genesis
@@ -35,15 +35,20 @@ func InitGenesis(ctx sdk.Context, k Keeper, gs types.GenesisState) {
 		}
 		k.SetSubscriberIntent(ctx, addr, *subscriberIntent)
 	}
+
+	for _, defaultSubscription := range gs.DefaultSubscriptions {
+		k.SetDefaultSubscription(ctx, *defaultSubscription)
+	}
 }
 
 // ExportGenesis returns the module's exported genesis.
 func ExportGenesis(ctx sdk.Context, k Keeper) types.GenesisState {
 	return types.GenesisState{
-		Params:            k.GetParams(ctx),
-		Publishers:        k.GetPublishers(ctx),
-		Subscribers:       k.GetSubscribers(ctx),
-		PublisherIntents:  k.GetPublisherIntents(ctx),
-		SubscriberIntents: k.GetSubscriberIntents(ctx),
+		Params:               k.GetParams(ctx),
+		Publishers:           k.GetPublishers(ctx),
+		Subscribers:          k.GetSubscribers(ctx),
+		PublisherIntents:     k.GetPublisherIntents(ctx),
+		SubscriberIntents:    k.GetSubscriberIntents(ctx),
+		DefaultSubscriptions: k.GetDefaultSubscriptions(ctx),
 	}
 }

@@ -46,6 +46,9 @@ const (
 
 	// SubscriberIntentByPublisherDomainKeyPrefix - <prefix>|<publisher_domain>|<subscriber_address>|<subscription_id> -> SubscriberIntent
 	SubscriberIntentByPublisherDomainKeyPrefix
+
+	// DefaultSubscriptionKeyPrefix - <prefix>|<subscription_id> -> DefaultSubscription
+	DefaultSubscriptionKeyPrefix
 )
 
 func delimiter() []byte {
@@ -138,4 +141,14 @@ func GetSubscriberIntentBySubscriptionIdKey(subscriptionId string, subscriberAdd
 // GetSubscriberIntentByPublisherDomainKey returns the key for a SubscriberIntent indexed by publisher domain
 func GetSubscriberIntentByPublisherDomainKey(publisherDomain string, subscriberAddress sdk.AccAddress, subscriptionId string) []byte {
 	return bytes.Join([][]byte{{SubscriberIntentByPublisherDomainKeyPrefix}, []byte(publisherDomain), subscriberAddress.Bytes(), []byte(subscriptionId)}, delimiter())
+}
+
+// GetDefaultSubscriptionPrefix returns a prefix for iterating all DefaultSubscripions
+func GetDefaultSubscriptionPrefix() []byte {
+	return append([]byte{DefaultSubscriptionKeyPrefix}, delimiter()...)
+}
+
+// GetDefaultSubscriptionKey returns the key for a DefaultSubscription
+func GetDefaultSubscriptionKey(subsciptionId string) []byte {
+	return bytes.Join([][]byte{{DefaultSubscriptionKeyPrefix}, []byte(subsciptionId)}, delimiter())
 }

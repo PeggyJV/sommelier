@@ -7,7 +7,7 @@ import "cosmos/base/query/v1beta1/pagination.proto";
 import "pubsub/v1/params.proto";
 import "pubsub/v1/pubsub.proto";
 
-option go_package = "github.com/peggyjv/sommelier/v3/x/pubsub/types";
+option go_package = "github.com/peggyjv/sommelier/v4/x/pubsub/types";
 
 service Query {
   rpc Params(QueryParamsRequest) returns (QueryParamsResponse) {
@@ -64,6 +64,14 @@ service Query {
 
   rpc QuerySubscriberIntentsByPublisherDomain(QuerySubscriberIntentsByPublisherDomainRequest) returns (QuerySubscriberIntentsByPublisherDomainResponse) {
     option (google.api.http).get = "/sommelier/pubsub/v1/subscriber_intents_by_publisher_domain/{publisher_domain}";
+  }
+
+  rpc QueryDefaultSubscription(QueryDefaultSubscriptionRequest) returns (QueryDefaultSubscriptionResponse) {
+    option (google.api.http).get = "/sommelier/pubsub/v1/default_subscriptions/{subscription_id}";
+  }
+
+  rpc QueryDefaultSubscriptions(QueryDefaultSubscriptionsRequest) returns (QueryDefaultSubscriptionsResponse) {
+    option (google.api.http).get = "/sommelier/pubsub/v1/default_subscriptions";
   }
 }
 
@@ -169,4 +177,18 @@ message QuerySubscriberIntentsByPublisherDomainRequest {
 
 message QuerySubscriberIntentsByPublisherDomainResponse {
   repeated SubscriberIntent subscriber_intents = 1;
+}
+
+message QueryDefaultSubscriptionRequest {
+  string subscription_id = 1;
+}
+
+message QueryDefaultSubscriptionResponse {
+  DefaultSubscription default_subscription = 1;
+}
+
+message QueryDefaultSubscriptionsRequest {}
+
+message QueryDefaultSubscriptionsResponse {
+  repeated DefaultSubscription default_subscriptions = 1;
 }

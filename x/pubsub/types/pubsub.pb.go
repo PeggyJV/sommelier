@@ -84,14 +84,12 @@ func (AllowedSubscribers) EnumDescriptor() ([]byte, []int) {
 
 // represents a publisher, which are added via governance
 type Publisher struct {
-	// unique key, FQDN of the publisher, max length of 256
-	Domain string `protobuf:"bytes,1,opt,name=domain,proto3" json:"domain,omitempty"`
 	// account address of the publisher
-	Address string `protobuf:"bytes,2,opt,name=address,proto3" json:"address,omitempty"`
-	// URL in the format https://<domain>/<address>/cacert.pem serving a cert matching ca_cert, max length of 512
-	ProofUrl string `protobuf:"bytes,3,opt,name=proof_url,json=proofUrl,proto3" json:"proof_url,omitempty"`
-	// base64 of the publisher's self-signed CA cert PEM file, expecting TLS 1.3 compatible ECDSA certificates, max length 4096
-	CaCert string `protobuf:"bytes,4,opt,name=ca_cert,json=caCert,proto3" json:"ca_cert,omitempty"`
+	Address string `protobuf:"bytes,1,opt,name=address,proto3" json:"address,omitempty"`
+	// unique key, FQDN of the publisher, max length of 256
+	Domain string `protobuf:"bytes,2,opt,name=domain,proto3" json:"domain,omitempty"`
+	// the publisher's self-signed CA cert PEM file, expecting TLS 1.3 compatible ECDSA certificates, max length 4096
+	CaCert string `protobuf:"bytes,3,opt,name=ca_cert,json=caCert,proto3" json:"ca_cert,omitempty"`
 }
 
 func (m *Publisher) Reset()         { *m = Publisher{} }
@@ -127,13 +125,6 @@ func (m *Publisher) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_Publisher proto.InternalMessageInfo
 
-func (m *Publisher) GetDomain() string {
-	if m != nil {
-		return m.Domain
-	}
-	return ""
-}
-
 func (m *Publisher) GetAddress() string {
 	if m != nil {
 		return m.Address
@@ -141,9 +132,9 @@ func (m *Publisher) GetAddress() string {
 	return ""
 }
 
-func (m *Publisher) GetProofUrl() string {
+func (m *Publisher) GetDomain() string {
 	if m != nil {
-		return m.ProofUrl
+		return m.Domain
 	}
 	return ""
 }
@@ -161,10 +152,8 @@ type Subscriber struct {
 	Address string `protobuf:"bytes,1,opt,name=address,proto3" json:"address,omitempty"`
 	// FQDN of the subscriber, max length of 256
 	Domain string `protobuf:"bytes,2,opt,name=domain,proto3" json:"domain,omitempty"`
-	// URL in the format https://<domain>/<address>/cacert.pem serving a cert matching ca_cert, max length of 512
-	ProofUrl string `protobuf:"bytes,3,opt,name=proof_url,json=proofUrl,proto3" json:"proof_url,omitempty"`
-	// base64 of the subscriber's self-signed CA cert PEM file, expecting TLS 1.3 compatible ECDSA certificates, max length 4096
-	CaCert string `protobuf:"bytes,4,opt,name=ca_cert,json=caCert,proto3" json:"ca_cert,omitempty"`
+	// the subscriber's self-signed CA cert PEM file, expecting TLS 1.3 compatible ECDSA certificates, max length 4096
+	CaCert string `protobuf:"bytes,3,opt,name=ca_cert,json=caCert,proto3" json:"ca_cert,omitempty"`
 }
 
 func (m *Subscriber) Reset()         { *m = Subscriber{} }
@@ -210,13 +199,6 @@ func (m *Subscriber) GetAddress() string {
 func (m *Subscriber) GetDomain() string {
 	if m != nil {
 		return m.Domain
-	}
-	return ""
-}
-
-func (m *Subscriber) GetProofUrl() string {
-	if m != nil {
-		return m.ProofUrl
 	}
 	return ""
 }
@@ -392,7 +374,63 @@ func (m *SubscriberIntent) GetPushUrl() string {
 	return ""
 }
 
-// governance proposal to add a publisher, the last four fields are the same as the Publisher type
+// represents a default subscription voted in by governance that can be overridden by a subscriber
+type DefaultSubscription struct {
+	// arbitary string representing a subscription, max length of 128
+	SubscriptionId string `protobuf:"bytes,1,opt,name=subscription_id,json=subscriptionId,proto3" json:"subscription_id,omitempty"`
+	// FQDN of the publisher, max length of 256
+	PublisherDomain string `protobuf:"bytes,2,opt,name=publisher_domain,json=publisherDomain,proto3" json:"publisher_domain,omitempty"`
+}
+
+func (m *DefaultSubscription) Reset()         { *m = DefaultSubscription{} }
+func (m *DefaultSubscription) String() string { return proto.CompactTextString(m) }
+func (*DefaultSubscription) ProtoMessage()    {}
+func (*DefaultSubscription) Descriptor() ([]byte, []int) {
+	return fileDescriptor_3164155f25b3675d, []int{4}
+}
+func (m *DefaultSubscription) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *DefaultSubscription) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_DefaultSubscription.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *DefaultSubscription) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_DefaultSubscription.Merge(m, src)
+}
+func (m *DefaultSubscription) XXX_Size() int {
+	return m.Size()
+}
+func (m *DefaultSubscription) XXX_DiscardUnknown() {
+	xxx_messageInfo_DefaultSubscription.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_DefaultSubscription proto.InternalMessageInfo
+
+func (m *DefaultSubscription) GetSubscriptionId() string {
+	if m != nil {
+		return m.SubscriptionId
+	}
+	return ""
+}
+
+func (m *DefaultSubscription) GetPublisherDomain() string {
+	if m != nil {
+		return m.PublisherDomain
+	}
+	return ""
+}
+
+// governance proposal to add a publisher, with domain, adress, and ca_cert the same as the Publisher type
+// proof URL expected in the format: https://<domain>/<address>/cacert.pem and serving cacert.pem matching ca_cert
 type AddPublisherProposal struct {
 	Title       string `protobuf:"bytes,1,opt,name=title,proto3" json:"title,omitempty"`
 	Description string `protobuf:"bytes,2,opt,name=description,proto3" json:"description,omitempty"`
@@ -406,7 +444,7 @@ func (m *AddPublisherProposal) Reset()         { *m = AddPublisherProposal{} }
 func (m *AddPublisherProposal) String() string { return proto.CompactTextString(m) }
 func (*AddPublisherProposal) ProtoMessage()    {}
 func (*AddPublisherProposal) Descriptor() ([]byte, []int) {
-	return fileDescriptor_3164155f25b3675d, []int{4}
+	return fileDescriptor_3164155f25b3675d, []int{5}
 }
 func (m *AddPublisherProposal) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -477,8 +515,100 @@ func (m *AddPublisherProposal) GetCaCert() string {
 	return ""
 }
 
-// governance proposal to remove a publisher (publisher's can remove themselves, but this might be necessary in the
-// event of a malicious publisher or a key compromise), since Publisher's are unique by domain, it's the only
+type AddPublisherProposalWithDeposit struct {
+	Title       string `protobuf:"bytes,1,opt,name=title,proto3" json:"title,omitempty"`
+	Description string `protobuf:"bytes,2,opt,name=description,proto3" json:"description,omitempty"`
+	Domain      string `protobuf:"bytes,3,opt,name=domain,proto3" json:"domain,omitempty"`
+	Address     string `protobuf:"bytes,4,opt,name=address,proto3" json:"address,omitempty"`
+	ProofUrl    string `protobuf:"bytes,5,opt,name=proof_url,json=proofUrl,proto3" json:"proof_url,omitempty"`
+	CaCert      string `protobuf:"bytes,6,opt,name=ca_cert,json=caCert,proto3" json:"ca_cert,omitempty"`
+	Deposit     string `protobuf:"bytes,7,opt,name=deposit,proto3" json:"deposit,omitempty"`
+}
+
+func (m *AddPublisherProposalWithDeposit) Reset()         { *m = AddPublisherProposalWithDeposit{} }
+func (m *AddPublisherProposalWithDeposit) String() string { return proto.CompactTextString(m) }
+func (*AddPublisherProposalWithDeposit) ProtoMessage()    {}
+func (*AddPublisherProposalWithDeposit) Descriptor() ([]byte, []int) {
+	return fileDescriptor_3164155f25b3675d, []int{6}
+}
+func (m *AddPublisherProposalWithDeposit) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *AddPublisherProposalWithDeposit) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_AddPublisherProposalWithDeposit.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *AddPublisherProposalWithDeposit) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_AddPublisherProposalWithDeposit.Merge(m, src)
+}
+func (m *AddPublisherProposalWithDeposit) XXX_Size() int {
+	return m.Size()
+}
+func (m *AddPublisherProposalWithDeposit) XXX_DiscardUnknown() {
+	xxx_messageInfo_AddPublisherProposalWithDeposit.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_AddPublisherProposalWithDeposit proto.InternalMessageInfo
+
+func (m *AddPublisherProposalWithDeposit) GetTitle() string {
+	if m != nil {
+		return m.Title
+	}
+	return ""
+}
+
+func (m *AddPublisherProposalWithDeposit) GetDescription() string {
+	if m != nil {
+		return m.Description
+	}
+	return ""
+}
+
+func (m *AddPublisherProposalWithDeposit) GetDomain() string {
+	if m != nil {
+		return m.Domain
+	}
+	return ""
+}
+
+func (m *AddPublisherProposalWithDeposit) GetAddress() string {
+	if m != nil {
+		return m.Address
+	}
+	return ""
+}
+
+func (m *AddPublisherProposalWithDeposit) GetProofUrl() string {
+	if m != nil {
+		return m.ProofUrl
+	}
+	return ""
+}
+
+func (m *AddPublisherProposalWithDeposit) GetCaCert() string {
+	if m != nil {
+		return m.CaCert
+	}
+	return ""
+}
+
+func (m *AddPublisherProposalWithDeposit) GetDeposit() string {
+	if m != nil {
+		return m.Deposit
+	}
+	return ""
+}
+
+// governance proposal to remove a publisher (publishers can remove themselves, but this might be necessary in the
+// event of a malicious publisher or a key compromise), since Publishers are unique by domain, it's the only
 // necessary information to remove one
 type RemovePublisherProposal struct {
 	Title       string `protobuf:"bytes,1,opt,name=title,proto3" json:"title,omitempty"`
@@ -490,7 +620,7 @@ func (m *RemovePublisherProposal) Reset()         { *m = RemovePublisherProposal
 func (m *RemovePublisherProposal) String() string { return proto.CompactTextString(m) }
 func (*RemovePublisherProposal) ProtoMessage()    {}
 func (*RemovePublisherProposal) Descriptor() ([]byte, []int) {
-	return fileDescriptor_3164155f25b3675d, []int{5}
+	return fileDescriptor_3164155f25b3675d, []int{7}
 }
 func (m *RemovePublisherProposal) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -540,6 +670,357 @@ func (m *RemovePublisherProposal) GetDomain() string {
 	return ""
 }
 
+type RemovePublisherProposalWithDeposit struct {
+	Title       string `protobuf:"bytes,1,opt,name=title,proto3" json:"title,omitempty"`
+	Description string `protobuf:"bytes,2,opt,name=description,proto3" json:"description,omitempty"`
+	Domain      string `protobuf:"bytes,3,opt,name=domain,proto3" json:"domain,omitempty"`
+	Deposit     string `protobuf:"bytes,4,opt,name=deposit,proto3" json:"deposit,omitempty"`
+}
+
+func (m *RemovePublisherProposalWithDeposit) Reset()         { *m = RemovePublisherProposalWithDeposit{} }
+func (m *RemovePublisherProposalWithDeposit) String() string { return proto.CompactTextString(m) }
+func (*RemovePublisherProposalWithDeposit) ProtoMessage()    {}
+func (*RemovePublisherProposalWithDeposit) Descriptor() ([]byte, []int) {
+	return fileDescriptor_3164155f25b3675d, []int{8}
+}
+func (m *RemovePublisherProposalWithDeposit) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *RemovePublisherProposalWithDeposit) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_RemovePublisherProposalWithDeposit.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *RemovePublisherProposalWithDeposit) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_RemovePublisherProposalWithDeposit.Merge(m, src)
+}
+func (m *RemovePublisherProposalWithDeposit) XXX_Size() int {
+	return m.Size()
+}
+func (m *RemovePublisherProposalWithDeposit) XXX_DiscardUnknown() {
+	xxx_messageInfo_RemovePublisherProposalWithDeposit.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_RemovePublisherProposalWithDeposit proto.InternalMessageInfo
+
+func (m *RemovePublisherProposalWithDeposit) GetTitle() string {
+	if m != nil {
+		return m.Title
+	}
+	return ""
+}
+
+func (m *RemovePublisherProposalWithDeposit) GetDescription() string {
+	if m != nil {
+		return m.Description
+	}
+	return ""
+}
+
+func (m *RemovePublisherProposalWithDeposit) GetDomain() string {
+	if m != nil {
+		return m.Domain
+	}
+	return ""
+}
+
+func (m *RemovePublisherProposalWithDeposit) GetDeposit() string {
+	if m != nil {
+		return m.Deposit
+	}
+	return ""
+}
+
+// set the default publisher for a given subscription ID
+// these can be overridden by the client
+type AddDefaultSubscriptionProposal struct {
+	Title           string `protobuf:"bytes,1,opt,name=title,proto3" json:"title,omitempty"`
+	Description     string `protobuf:"bytes,2,opt,name=description,proto3" json:"description,omitempty"`
+	SubscriptionId  string `protobuf:"bytes,3,opt,name=subscription_id,json=subscriptionId,proto3" json:"subscription_id,omitempty"`
+	PublisherDomain string `protobuf:"bytes,4,opt,name=publisher_domain,json=publisherDomain,proto3" json:"publisher_domain,omitempty"`
+}
+
+func (m *AddDefaultSubscriptionProposal) Reset()         { *m = AddDefaultSubscriptionProposal{} }
+func (m *AddDefaultSubscriptionProposal) String() string { return proto.CompactTextString(m) }
+func (*AddDefaultSubscriptionProposal) ProtoMessage()    {}
+func (*AddDefaultSubscriptionProposal) Descriptor() ([]byte, []int) {
+	return fileDescriptor_3164155f25b3675d, []int{9}
+}
+func (m *AddDefaultSubscriptionProposal) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *AddDefaultSubscriptionProposal) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_AddDefaultSubscriptionProposal.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *AddDefaultSubscriptionProposal) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_AddDefaultSubscriptionProposal.Merge(m, src)
+}
+func (m *AddDefaultSubscriptionProposal) XXX_Size() int {
+	return m.Size()
+}
+func (m *AddDefaultSubscriptionProposal) XXX_DiscardUnknown() {
+	xxx_messageInfo_AddDefaultSubscriptionProposal.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_AddDefaultSubscriptionProposal proto.InternalMessageInfo
+
+func (m *AddDefaultSubscriptionProposal) GetTitle() string {
+	if m != nil {
+		return m.Title
+	}
+	return ""
+}
+
+func (m *AddDefaultSubscriptionProposal) GetDescription() string {
+	if m != nil {
+		return m.Description
+	}
+	return ""
+}
+
+func (m *AddDefaultSubscriptionProposal) GetSubscriptionId() string {
+	if m != nil {
+		return m.SubscriptionId
+	}
+	return ""
+}
+
+func (m *AddDefaultSubscriptionProposal) GetPublisherDomain() string {
+	if m != nil {
+		return m.PublisherDomain
+	}
+	return ""
+}
+
+type AddDefaultSubscriptionProposalWithDeposit struct {
+	Title           string `protobuf:"bytes,1,opt,name=title,proto3" json:"title,omitempty"`
+	Description     string `protobuf:"bytes,2,opt,name=description,proto3" json:"description,omitempty"`
+	SubscriptionId  string `protobuf:"bytes,3,opt,name=subscription_id,json=subscriptionId,proto3" json:"subscription_id,omitempty"`
+	PublisherDomain string `protobuf:"bytes,4,opt,name=publisher_domain,json=publisherDomain,proto3" json:"publisher_domain,omitempty"`
+	Deposit         string `protobuf:"bytes,5,opt,name=deposit,proto3" json:"deposit,omitempty"`
+}
+
+func (m *AddDefaultSubscriptionProposalWithDeposit) Reset() {
+	*m = AddDefaultSubscriptionProposalWithDeposit{}
+}
+func (m *AddDefaultSubscriptionProposalWithDeposit) String() string {
+	return proto.CompactTextString(m)
+}
+func (*AddDefaultSubscriptionProposalWithDeposit) ProtoMessage() {}
+func (*AddDefaultSubscriptionProposalWithDeposit) Descriptor() ([]byte, []int) {
+	return fileDescriptor_3164155f25b3675d, []int{10}
+}
+func (m *AddDefaultSubscriptionProposalWithDeposit) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *AddDefaultSubscriptionProposalWithDeposit) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_AddDefaultSubscriptionProposalWithDeposit.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *AddDefaultSubscriptionProposalWithDeposit) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_AddDefaultSubscriptionProposalWithDeposit.Merge(m, src)
+}
+func (m *AddDefaultSubscriptionProposalWithDeposit) XXX_Size() int {
+	return m.Size()
+}
+func (m *AddDefaultSubscriptionProposalWithDeposit) XXX_DiscardUnknown() {
+	xxx_messageInfo_AddDefaultSubscriptionProposalWithDeposit.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_AddDefaultSubscriptionProposalWithDeposit proto.InternalMessageInfo
+
+func (m *AddDefaultSubscriptionProposalWithDeposit) GetTitle() string {
+	if m != nil {
+		return m.Title
+	}
+	return ""
+}
+
+func (m *AddDefaultSubscriptionProposalWithDeposit) GetDescription() string {
+	if m != nil {
+		return m.Description
+	}
+	return ""
+}
+
+func (m *AddDefaultSubscriptionProposalWithDeposit) GetSubscriptionId() string {
+	if m != nil {
+		return m.SubscriptionId
+	}
+	return ""
+}
+
+func (m *AddDefaultSubscriptionProposalWithDeposit) GetPublisherDomain() string {
+	if m != nil {
+		return m.PublisherDomain
+	}
+	return ""
+}
+
+func (m *AddDefaultSubscriptionProposalWithDeposit) GetDeposit() string {
+	if m != nil {
+		return m.Deposit
+	}
+	return ""
+}
+
+// remove a default subscription
+type RemoveDefaultSubscriptionProposal struct {
+	Title          string `protobuf:"bytes,1,opt,name=title,proto3" json:"title,omitempty"`
+	Description    string `protobuf:"bytes,2,opt,name=description,proto3" json:"description,omitempty"`
+	SubscriptionId string `protobuf:"bytes,3,opt,name=subscription_id,json=subscriptionId,proto3" json:"subscription_id,omitempty"`
+}
+
+func (m *RemoveDefaultSubscriptionProposal) Reset()         { *m = RemoveDefaultSubscriptionProposal{} }
+func (m *RemoveDefaultSubscriptionProposal) String() string { return proto.CompactTextString(m) }
+func (*RemoveDefaultSubscriptionProposal) ProtoMessage()    {}
+func (*RemoveDefaultSubscriptionProposal) Descriptor() ([]byte, []int) {
+	return fileDescriptor_3164155f25b3675d, []int{11}
+}
+func (m *RemoveDefaultSubscriptionProposal) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *RemoveDefaultSubscriptionProposal) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_RemoveDefaultSubscriptionProposal.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *RemoveDefaultSubscriptionProposal) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_RemoveDefaultSubscriptionProposal.Merge(m, src)
+}
+func (m *RemoveDefaultSubscriptionProposal) XXX_Size() int {
+	return m.Size()
+}
+func (m *RemoveDefaultSubscriptionProposal) XXX_DiscardUnknown() {
+	xxx_messageInfo_RemoveDefaultSubscriptionProposal.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_RemoveDefaultSubscriptionProposal proto.InternalMessageInfo
+
+func (m *RemoveDefaultSubscriptionProposal) GetTitle() string {
+	if m != nil {
+		return m.Title
+	}
+	return ""
+}
+
+func (m *RemoveDefaultSubscriptionProposal) GetDescription() string {
+	if m != nil {
+		return m.Description
+	}
+	return ""
+}
+
+func (m *RemoveDefaultSubscriptionProposal) GetSubscriptionId() string {
+	if m != nil {
+		return m.SubscriptionId
+	}
+	return ""
+}
+
+type RemoveDefaultSubscriptionProposalWithDeposit struct {
+	Title          string `protobuf:"bytes,1,opt,name=title,proto3" json:"title,omitempty"`
+	Description    string `protobuf:"bytes,2,opt,name=description,proto3" json:"description,omitempty"`
+	SubscriptionId string `protobuf:"bytes,3,opt,name=subscription_id,json=subscriptionId,proto3" json:"subscription_id,omitempty"`
+	Deposit        string `protobuf:"bytes,4,opt,name=deposit,proto3" json:"deposit,omitempty"`
+}
+
+func (m *RemoveDefaultSubscriptionProposalWithDeposit) Reset() {
+	*m = RemoveDefaultSubscriptionProposalWithDeposit{}
+}
+func (m *RemoveDefaultSubscriptionProposalWithDeposit) String() string {
+	return proto.CompactTextString(m)
+}
+func (*RemoveDefaultSubscriptionProposalWithDeposit) ProtoMessage() {}
+func (*RemoveDefaultSubscriptionProposalWithDeposit) Descriptor() ([]byte, []int) {
+	return fileDescriptor_3164155f25b3675d, []int{12}
+}
+func (m *RemoveDefaultSubscriptionProposalWithDeposit) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *RemoveDefaultSubscriptionProposalWithDeposit) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_RemoveDefaultSubscriptionProposalWithDeposit.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *RemoveDefaultSubscriptionProposalWithDeposit) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_RemoveDefaultSubscriptionProposalWithDeposit.Merge(m, src)
+}
+func (m *RemoveDefaultSubscriptionProposalWithDeposit) XXX_Size() int {
+	return m.Size()
+}
+func (m *RemoveDefaultSubscriptionProposalWithDeposit) XXX_DiscardUnknown() {
+	xxx_messageInfo_RemoveDefaultSubscriptionProposalWithDeposit.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_RemoveDefaultSubscriptionProposalWithDeposit proto.InternalMessageInfo
+
+func (m *RemoveDefaultSubscriptionProposalWithDeposit) GetTitle() string {
+	if m != nil {
+		return m.Title
+	}
+	return ""
+}
+
+func (m *RemoveDefaultSubscriptionProposalWithDeposit) GetDescription() string {
+	if m != nil {
+		return m.Description
+	}
+	return ""
+}
+
+func (m *RemoveDefaultSubscriptionProposalWithDeposit) GetSubscriptionId() string {
+	if m != nil {
+		return m.SubscriptionId
+	}
+	return ""
+}
+
+func (m *RemoveDefaultSubscriptionProposalWithDeposit) GetDeposit() string {
+	if m != nil {
+		return m.Deposit
+	}
+	return ""
+}
+
 func init() {
 	proto.RegisterEnum("pubsub.v1.PublishMethod", PublishMethod_name, PublishMethod_value)
 	proto.RegisterEnum("pubsub.v1.AllowedSubscribers", AllowedSubscribers_name, AllowedSubscribers_value)
@@ -547,49 +1028,63 @@ func init() {
 	proto.RegisterType((*Subscriber)(nil), "pubsub.v1.Subscriber")
 	proto.RegisterType((*PublisherIntent)(nil), "pubsub.v1.PublisherIntent")
 	proto.RegisterType((*SubscriberIntent)(nil), "pubsub.v1.SubscriberIntent")
+	proto.RegisterType((*DefaultSubscription)(nil), "pubsub.v1.DefaultSubscription")
 	proto.RegisterType((*AddPublisherProposal)(nil), "pubsub.v1.AddPublisherProposal")
+	proto.RegisterType((*AddPublisherProposalWithDeposit)(nil), "pubsub.v1.AddPublisherProposalWithDeposit")
 	proto.RegisterType((*RemovePublisherProposal)(nil), "pubsub.v1.RemovePublisherProposal")
+	proto.RegisterType((*RemovePublisherProposalWithDeposit)(nil), "pubsub.v1.RemovePublisherProposalWithDeposit")
+	proto.RegisterType((*AddDefaultSubscriptionProposal)(nil), "pubsub.v1.AddDefaultSubscriptionProposal")
+	proto.RegisterType((*AddDefaultSubscriptionProposalWithDeposit)(nil), "pubsub.v1.AddDefaultSubscriptionProposalWithDeposit")
+	proto.RegisterType((*RemoveDefaultSubscriptionProposal)(nil), "pubsub.v1.RemoveDefaultSubscriptionProposal")
+	proto.RegisterType((*RemoveDefaultSubscriptionProposalWithDeposit)(nil), "pubsub.v1.RemoveDefaultSubscriptionProposalWithDeposit")
 }
 
 func init() { proto.RegisterFile("pubsub/v1/pubsub.proto", fileDescriptor_3164155f25b3675d) }
 
 var fileDescriptor_3164155f25b3675d = []byte{
-	// 546 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xb4, 0x94, 0xcf, 0x6e, 0xd3, 0x40,
-	0x10, 0xc6, 0xe3, 0xfc, 0xcf, 0x20, 0x12, 0x77, 0xa9, 0x5a, 0x23, 0x84, 0x15, 0x85, 0x03, 0xa5,
-	0x88, 0x98, 0xd2, 0x03, 0x67, 0x43, 0x0f, 0x8d, 0x14, 0x4a, 0xe4, 0x34, 0x48, 0x70, 0xb1, 0xec,
-	0xec, 0x92, 0x18, 0xad, 0xb3, 0xd6, 0xee, 0x3a, 0xd0, 0xb7, 0xe0, 0x4d, 0xe0, 0xc4, 0x33, 0x70,
-	0xec, 0x91, 0x23, 0x4a, 0x5e, 0x04, 0xc5, 0xde, 0x38, 0xb1, 0xda, 0x22, 0x81, 0xd4, 0x9b, 0x67,
-	0x66, 0x77, 0xf6, 0x37, 0x9f, 0xbf, 0x5d, 0xd8, 0x8b, 0x62, 0x5f, 0xc4, 0xbe, 0x35, 0x3f, 0xb2,
-	0xd2, 0xaf, 0x6e, 0xc4, 0x99, 0x64, 0xa8, 0xa1, 0xa2, 0xf9, 0x51, 0x47, 0x40, 0x63, 0x10, 0xfb,
-	0x34, 0x10, 0x53, 0xc2, 0xd1, 0x1e, 0x54, 0x31, 0x0b, 0xbd, 0x60, 0x66, 0x68, 0x6d, 0xed, 0xa0,
-	0xe1, 0xa8, 0x08, 0x19, 0x50, 0xf3, 0x30, 0xe6, 0x44, 0x08, 0xa3, 0x98, 0x14, 0xd6, 0x21, 0x7a,
-	0x00, 0x8d, 0x88, 0x33, 0xf6, 0xd1, 0x8d, 0x39, 0x35, 0x4a, 0x49, 0xad, 0x9e, 0x24, 0x46, 0x9c,
-	0xa2, 0x7d, 0xa8, 0x8d, 0x3d, 0x77, 0x4c, 0xb8, 0x34, 0xca, 0x69, 0xbf, 0xb1, 0xf7, 0x9a, 0x70,
-	0xd9, 0x91, 0x00, 0xc3, 0xd8, 0x17, 0x63, 0x1e, 0xf8, 0x84, 0x6f, 0x77, 0xd7, 0xf2, 0xdd, 0x37,
-	0x3c, 0xc5, 0x1c, 0xcf, 0xff, 0x9d, 0xfa, 0xad, 0x08, 0xad, 0x6c, 0xd6, 0xde, 0x4c, 0x92, 0x99,
-	0x44, 0x8f, 0xa1, 0x25, 0x52, 0x92, 0x48, 0x06, 0x6c, 0xe6, 0x06, 0x58, 0x31, 0x34, 0xb7, 0xd3,
-	0x3d, 0x8c, 0x9e, 0x80, 0x1e, 0xad, 0xf7, 0xba, 0x39, 0xa8, 0x56, 0x96, 0x3f, 0x49, 0xe9, 0x9e,
-	0x43, 0x35, 0x24, 0x72, 0xca, 0x70, 0x82, 0xd6, 0x7c, 0x61, 0x74, 0x33, 0xb9, 0xbb, 0xea, 0xfc,
-	0x37, 0x49, 0xdd, 0x51, 0xeb, 0xd0, 0x7d, 0xa8, 0x47, 0x31, 0xa5, 0xc9, 0x38, 0x29, 0x73, 0x6d,
-	0x15, 0xaf, 0xa6, 0x39, 0x83, 0x7b, 0x1e, 0xa5, 0xec, 0x33, 0xc1, 0xae, 0xc8, 0x24, 0x13, 0x46,
-	0x25, 0xe9, 0xfc, 0x70, 0xab, 0xb3, 0x9d, 0xae, 0xda, 0xe8, 0x2a, 0x1c, 0xe4, 0x5d, 0xc9, 0xa1,
-	0xa7, 0xb0, 0xb3, 0xee, 0xa7, 0x54, 0x26, 0xc2, 0xa8, 0xb6, 0x4b, 0x07, 0x0d, 0x47, 0x57, 0x05,
-	0x7b, 0x9d, 0xef, 0x7c, 0xd7, 0x40, 0xdf, 0x6c, 0xfe, 0x57, 0xc9, 0x9e, 0x01, 0xda, 0x20, 0xbb,
-	0x79, 0x03, 0xed, 0x6c, 0x2a, 0xea, 0xb8, 0x6b, 0x15, 0x2e, 0x5d, 0xaf, 0x70, 0xa2, 0x97, 0x98,
-	0xe6, 0xf5, 0x12, 0xd3, 0x11, 0xa7, 0x9d, 0x1f, 0x1a, 0xec, 0xda, 0x18, 0x67, 0xff, 0x79, 0xc0,
-	0x59, 0xc4, 0x84, 0x47, 0xd1, 0x2e, 0x54, 0x64, 0x20, 0x29, 0x51, 0xb0, 0x69, 0x80, 0xda, 0x70,
-	0x07, 0x93, 0x0c, 0x5a, 0xc1, 0x6d, 0xa7, 0xb6, 0x3c, 0x58, 0xba, 0xe9, 0x4e, 0x94, 0xff, 0x72,
-	0x27, 0x2a, 0x37, 0xbb, 0xb3, 0x9a, 0x73, 0x67, 0x00, 0xfb, 0x0e, 0x09, 0xd9, 0x9c, 0xdc, 0x3a,
-	0xfa, 0xe1, 0x23, 0xb8, 0x9b, 0xf3, 0x21, 0xaa, 0x43, 0x79, 0x30, 0xea, 0xf7, 0xf5, 0x42, 0xfa,
-	0x35, 0x3c, 0xd5, 0xb5, 0xc3, 0x97, 0x80, 0xae, 0x5a, 0x0a, 0xd5, 0xa0, 0x64, 0x9f, 0xbd, 0xd7,
-	0x0b, 0xa8, 0x09, 0xf0, 0xce, 0xee, 0xf7, 0x4e, 0xec, 0xf3, 0xb7, 0xce, 0x50, 0xd7, 0x56, 0x1b,
-	0xfb, 0xbd, 0xe1, 0xb9, 0x5e, 0x7c, 0x75, 0xfa, 0x73, 0x61, 0x6a, 0x97, 0x0b, 0x53, 0xfb, 0xbd,
-	0x30, 0xb5, 0xaf, 0x4b, 0xb3, 0x70, 0xb9, 0x34, 0x0b, 0xbf, 0x96, 0x66, 0xe1, 0x43, 0x77, 0x12,
-	0xc8, 0x69, 0xec, 0x77, 0xc7, 0x2c, 0xb4, 0x22, 0x32, 0x99, 0x5c, 0x7c, 0x9a, 0x5b, 0x82, 0x85,
-	0x21, 0xa1, 0x01, 0xe1, 0xd6, 0xfc, 0xd8, 0xfa, 0xa2, 0x9e, 0x29, 0x4b, 0x5e, 0x44, 0x44, 0xf8,
-	0xd5, 0xe4, 0xb5, 0x3a, 0xfe, 0x13, 0x00, 0x00, 0xff, 0xff, 0xd3, 0xd0, 0x01, 0x81, 0xc7, 0x04,
-	0x00, 0x00,
+	// 662 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xcc, 0x56, 0x4d, 0x6f, 0xd3, 0x40,
+	0x10, 0xcd, 0x36, 0x5f, 0xcd, 0x20, 0x5a, 0x77, 0x5b, 0xb5, 0x46, 0x08, 0x53, 0xcc, 0x81, 0xb6,
+	0x40, 0x4c, 0x01, 0x89, 0xb3, 0x21, 0x87, 0x46, 0x0a, 0xa5, 0x4a, 0xfa, 0x21, 0xb8, 0x44, 0x76,
+	0x76, 0xdb, 0x18, 0x39, 0x59, 0x6b, 0x77, 0x1d, 0xe8, 0x9d, 0x33, 0xe2, 0x6f, 0x20, 0x21, 0xc1,
+	0x89, 0xdf, 0xc0, 0xb1, 0xdc, 0x90, 0xb8, 0xa0, 0xf6, 0x8f, 0xa0, 0xd8, 0x9b, 0xc4, 0x56, 0x53,
+	0x3e, 0x44, 0x03, 0xdc, 0x3c, 0x33, 0xde, 0x79, 0x6f, 0xdf, 0xcc, 0x93, 0x0d, 0x8b, 0x41, 0xe8,
+	0x8a, 0xd0, 0xb5, 0x7a, 0xeb, 0x56, 0xfc, 0x54, 0x0e, 0x38, 0x93, 0x0c, 0x97, 0x54, 0xd4, 0x5b,
+	0x37, 0x77, 0xa1, 0xb4, 0x15, 0xba, 0xbe, 0x27, 0xda, 0x94, 0x63, 0x1d, 0x8a, 0x0e, 0x21, 0x9c,
+	0x0a, 0xa1, 0xa3, 0x65, 0xb4, 0x52, 0xaa, 0x0f, 0x42, 0xbc, 0x08, 0x05, 0xc2, 0x3a, 0x8e, 0xd7,
+	0xd5, 0xa7, 0xa2, 0x82, 0x8a, 0xf0, 0x12, 0x14, 0x5b, 0x4e, 0xb3, 0x45, 0xb9, 0xd4, 0xb3, 0x71,
+	0xa1, 0xe5, 0x3c, 0xa2, 0x5c, 0x9a, 0x7b, 0x00, 0x8d, 0xd0, 0x15, 0x2d, 0xee, 0xb9, 0xe7, 0xdb,
+	0xf8, 0xfd, 0x14, 0xcc, 0x0e, 0x19, 0x57, 0xbb, 0x92, 0x76, 0x25, 0xbe, 0x01, 0xb3, 0x22, 0x06,
+	0x0b, 0xa4, 0xc7, 0xba, 0x4d, 0x8f, 0x28, 0x98, 0x99, 0x64, 0xba, 0x4a, 0xf0, 0x2a, 0x68, 0xc1,
+	0xe0, 0x6c, 0x33, 0x85, 0x3b, 0x3b, 0xcc, 0x57, 0x62, 0x02, 0x77, 0xa0, 0xd0, 0xa1, 0xb2, 0xcd,
+	0x48, 0x84, 0x3f, 0x73, 0x57, 0x2f, 0x0f, 0x45, 0x2b, 0x2b, 0xfc, 0xc7, 0x51, 0xbd, 0xae, 0xde,
+	0xc3, 0x97, 0x60, 0x3a, 0x08, 0x7d, 0xbf, 0x19, 0x72, 0x5f, 0xcf, 0xc5, 0xb7, 0xec, 0xc7, 0x3b,
+	0xdc, 0xc7, 0x9b, 0x30, 0xef, 0xf8, 0x3e, 0x7b, 0x41, 0x49, 0x53, 0x0c, 0x55, 0x11, 0x7a, 0x3e,
+	0xea, 0x7c, 0x25, 0xd1, 0xd9, 0x8e, 0xdf, 0x1a, 0x49, 0x27, 0xea, 0xd8, 0x39, 0x95, 0xc3, 0x37,
+	0x61, 0x6e, 0xd0, 0x4f, 0x09, 0x49, 0x85, 0x5e, 0x58, 0xce, 0xae, 0x94, 0xea, 0x9a, 0x2a, 0xd8,
+	0x83, 0xbc, 0xf9, 0x01, 0x81, 0x36, 0x3a, 0xfc, 0xbb, 0x92, 0xdd, 0x06, 0x3c, 0xa2, 0x3c, 0x40,
+	0x53, 0xa2, 0xcd, 0x8d, 0x2a, 0x0a, 0x6e, 0xac, 0xc2, 0xd9, 0xf1, 0x0a, 0x47, 0x7a, 0x89, 0x76,
+	0x5a, 0x2f, 0xd1, 0xde, 0xe1, 0xbe, 0xe9, 0xc1, 0x7c, 0x85, 0xee, 0x3b, 0xa1, 0x2f, 0x1b, 0x09,
+	0x36, 0x93, 0x98, 0xb3, 0xf9, 0x11, 0xc1, 0x82, 0x4d, 0xc8, 0x70, 0xa5, 0xb6, 0x38, 0x0b, 0x98,
+	0x70, 0x7c, 0xbc, 0x00, 0x79, 0xe9, 0x49, 0x9f, 0x2a, 0x88, 0x38, 0xc0, 0xcb, 0x70, 0x81, 0xd0,
+	0x21, 0x94, 0x6a, 0x9a, 0x4c, 0x25, 0x36, 0x3a, 0x9b, 0xda, 0xe8, 0x84, 0x07, 0x72, 0x69, 0x0f,
+	0x5c, 0x86, 0x52, 0xc0, 0x19, 0xdb, 0x8f, 0x94, 0xc8, 0x47, 0xb5, 0xe9, 0x28, 0xd1, 0x5f, 0x9d,
+	0x84, 0x11, 0x0a, 0x29, 0x23, 0x7c, 0x45, 0x70, 0x75, 0x1c, 0xf1, 0x3d, 0x4f, 0xb6, 0x2b, 0x34,
+	0x60, 0xc2, 0x93, 0xff, 0xfb, 0x1d, 0xfa, 0xfd, 0x48, 0x4c, 0x55, 0x2f, 0xc6, 0xfd, 0x54, 0x68,
+	0x7a, 0xb0, 0x54, 0xa7, 0x1d, 0xd6, 0xa3, 0x13, 0x1f, 0x8c, 0xf9, 0x1a, 0x81, 0x79, 0x06, 0xd6,
+	0x84, 0xb5, 0x1c, 0xdc, 0x3d, 0x97, 0xbe, 0xfb, 0x3b, 0x04, 0x86, 0x4d, 0xc8, 0x18, 0x07, 0xfc,
+	0xb1, 0x06, 0x63, 0x1c, 0x94, 0xfd, 0x65, 0x07, 0xe5, 0xc6, 0x3b, 0xe8, 0x33, 0x82, 0xd5, 0x1f,
+	0xd3, 0x3d, 0x0f, 0x19, 0x27, 0xc0, 0x3c, 0x39, 0x82, 0x7c, 0x7a, 0x04, 0xaf, 0x10, 0x5c, 0x8b,
+	0x77, 0xe2, 0x5f, 0x4e, 0xc1, 0x7c, 0x8b, 0xe0, 0xd6, 0x4f, 0x69, 0xfc, 0x55, 0x75, 0xcf, 0xdc,
+	0xda, 0xb5, 0xeb, 0x70, 0x31, 0xf5, 0x5d, 0xc4, 0xd3, 0x90, 0xdb, 0xda, 0xa9, 0xd5, 0xb4, 0x4c,
+	0xfc, 0xd4, 0xd8, 0xd0, 0xd0, 0xda, 0x03, 0xc0, 0xa7, 0x3f, 0x71, 0xb8, 0x08, 0x59, 0x7b, 0xf3,
+	0xa9, 0x96, 0xc1, 0x33, 0x00, 0xbb, 0x76, 0xad, 0x5a, 0xb1, 0xb7, 0x9f, 0xd4, 0x1b, 0x1a, 0xea,
+	0x1f, 0xac, 0x55, 0x1b, 0xdb, 0xda, 0xd4, 0xc3, 0x8d, 0x4f, 0xc7, 0x06, 0x3a, 0x3a, 0x36, 0xd0,
+	0xb7, 0x63, 0x03, 0xbd, 0x39, 0x31, 0x32, 0x47, 0x27, 0x46, 0xe6, 0xcb, 0x89, 0x91, 0x79, 0x56,
+	0x3e, 0xf0, 0x64, 0x3b, 0x74, 0xcb, 0x2d, 0xd6, 0xb1, 0x02, 0x7a, 0x70, 0x70, 0xf8, 0xbc, 0x67,
+	0x09, 0xd6, 0xe9, 0x50, 0xdf, 0xa3, 0xdc, 0xea, 0xdd, 0xb7, 0x5e, 0xaa, 0x9f, 0x1f, 0x4b, 0x1e,
+	0x06, 0x54, 0xb8, 0x85, 0xe8, 0x1f, 0xe8, 0xde, 0xf7, 0x00, 0x00, 0x00, 0xff, 0xff, 0x4a, 0x9b,
+	0x05, 0xe0, 0x1d, 0x09, 0x00, 0x00,
 }
 
 func (m *Publisher) Marshal() (dAtA []byte, err error) {
@@ -617,26 +1112,19 @@ func (m *Publisher) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 		copy(dAtA[i:], m.CaCert)
 		i = encodeVarintPubsub(dAtA, i, uint64(len(m.CaCert)))
 		i--
-		dAtA[i] = 0x22
-	}
-	if len(m.ProofUrl) > 0 {
-		i -= len(m.ProofUrl)
-		copy(dAtA[i:], m.ProofUrl)
-		i = encodeVarintPubsub(dAtA, i, uint64(len(m.ProofUrl)))
-		i--
 		dAtA[i] = 0x1a
-	}
-	if len(m.Address) > 0 {
-		i -= len(m.Address)
-		copy(dAtA[i:], m.Address)
-		i = encodeVarintPubsub(dAtA, i, uint64(len(m.Address)))
-		i--
-		dAtA[i] = 0x12
 	}
 	if len(m.Domain) > 0 {
 		i -= len(m.Domain)
 		copy(dAtA[i:], m.Domain)
 		i = encodeVarintPubsub(dAtA, i, uint64(len(m.Domain)))
+		i--
+		dAtA[i] = 0x12
+	}
+	if len(m.Address) > 0 {
+		i -= len(m.Address)
+		copy(dAtA[i:], m.Address)
+		i = encodeVarintPubsub(dAtA, i, uint64(len(m.Address)))
 		i--
 		dAtA[i] = 0xa
 	}
@@ -667,13 +1155,6 @@ func (m *Subscriber) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 		i -= len(m.CaCert)
 		copy(dAtA[i:], m.CaCert)
 		i = encodeVarintPubsub(dAtA, i, uint64(len(m.CaCert)))
-		i--
-		dAtA[i] = 0x22
-	}
-	if len(m.ProofUrl) > 0 {
-		i -= len(m.ProofUrl)
-		copy(dAtA[i:], m.ProofUrl)
-		i = encodeVarintPubsub(dAtA, i, uint64(len(m.ProofUrl)))
 		i--
 		dAtA[i] = 0x1a
 	}
@@ -808,6 +1289,43 @@ func (m *SubscriberIntent) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 
+func (m *DefaultSubscription) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *DefaultSubscription) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *DefaultSubscription) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.PublisherDomain) > 0 {
+		i -= len(m.PublisherDomain)
+		copy(dAtA[i:], m.PublisherDomain)
+		i = encodeVarintPubsub(dAtA, i, uint64(len(m.PublisherDomain)))
+		i--
+		dAtA[i] = 0x12
+	}
+	if len(m.SubscriptionId) > 0 {
+		i -= len(m.SubscriptionId)
+		copy(dAtA[i:], m.SubscriptionId)
+		i = encodeVarintPubsub(dAtA, i, uint64(len(m.SubscriptionId)))
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
 func (m *AddPublisherProposal) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
@@ -828,6 +1346,78 @@ func (m *AddPublisherProposal) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	_ = i
 	var l int
 	_ = l
+	if len(m.CaCert) > 0 {
+		i -= len(m.CaCert)
+		copy(dAtA[i:], m.CaCert)
+		i = encodeVarintPubsub(dAtA, i, uint64(len(m.CaCert)))
+		i--
+		dAtA[i] = 0x32
+	}
+	if len(m.ProofUrl) > 0 {
+		i -= len(m.ProofUrl)
+		copy(dAtA[i:], m.ProofUrl)
+		i = encodeVarintPubsub(dAtA, i, uint64(len(m.ProofUrl)))
+		i--
+		dAtA[i] = 0x2a
+	}
+	if len(m.Address) > 0 {
+		i -= len(m.Address)
+		copy(dAtA[i:], m.Address)
+		i = encodeVarintPubsub(dAtA, i, uint64(len(m.Address)))
+		i--
+		dAtA[i] = 0x22
+	}
+	if len(m.Domain) > 0 {
+		i -= len(m.Domain)
+		copy(dAtA[i:], m.Domain)
+		i = encodeVarintPubsub(dAtA, i, uint64(len(m.Domain)))
+		i--
+		dAtA[i] = 0x1a
+	}
+	if len(m.Description) > 0 {
+		i -= len(m.Description)
+		copy(dAtA[i:], m.Description)
+		i = encodeVarintPubsub(dAtA, i, uint64(len(m.Description)))
+		i--
+		dAtA[i] = 0x12
+	}
+	if len(m.Title) > 0 {
+		i -= len(m.Title)
+		copy(dAtA[i:], m.Title)
+		i = encodeVarintPubsub(dAtA, i, uint64(len(m.Title)))
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *AddPublisherProposalWithDeposit) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *AddPublisherProposalWithDeposit) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *AddPublisherProposalWithDeposit) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.Deposit) > 0 {
+		i -= len(m.Deposit)
+		copy(dAtA[i:], m.Deposit)
+		i = encodeVarintPubsub(dAtA, i, uint64(len(m.Deposit)))
+		i--
+		dAtA[i] = 0x3a
+	}
 	if len(m.CaCert) > 0 {
 		i -= len(m.CaCert)
 		copy(dAtA[i:], m.CaCert)
@@ -917,6 +1507,261 @@ func (m *RemovePublisherProposal) MarshalToSizedBuffer(dAtA []byte) (int, error)
 	return len(dAtA) - i, nil
 }
 
+func (m *RemovePublisherProposalWithDeposit) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *RemovePublisherProposalWithDeposit) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *RemovePublisherProposalWithDeposit) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.Deposit) > 0 {
+		i -= len(m.Deposit)
+		copy(dAtA[i:], m.Deposit)
+		i = encodeVarintPubsub(dAtA, i, uint64(len(m.Deposit)))
+		i--
+		dAtA[i] = 0x22
+	}
+	if len(m.Domain) > 0 {
+		i -= len(m.Domain)
+		copy(dAtA[i:], m.Domain)
+		i = encodeVarintPubsub(dAtA, i, uint64(len(m.Domain)))
+		i--
+		dAtA[i] = 0x1a
+	}
+	if len(m.Description) > 0 {
+		i -= len(m.Description)
+		copy(dAtA[i:], m.Description)
+		i = encodeVarintPubsub(dAtA, i, uint64(len(m.Description)))
+		i--
+		dAtA[i] = 0x12
+	}
+	if len(m.Title) > 0 {
+		i -= len(m.Title)
+		copy(dAtA[i:], m.Title)
+		i = encodeVarintPubsub(dAtA, i, uint64(len(m.Title)))
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *AddDefaultSubscriptionProposal) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *AddDefaultSubscriptionProposal) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *AddDefaultSubscriptionProposal) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.PublisherDomain) > 0 {
+		i -= len(m.PublisherDomain)
+		copy(dAtA[i:], m.PublisherDomain)
+		i = encodeVarintPubsub(dAtA, i, uint64(len(m.PublisherDomain)))
+		i--
+		dAtA[i] = 0x22
+	}
+	if len(m.SubscriptionId) > 0 {
+		i -= len(m.SubscriptionId)
+		copy(dAtA[i:], m.SubscriptionId)
+		i = encodeVarintPubsub(dAtA, i, uint64(len(m.SubscriptionId)))
+		i--
+		dAtA[i] = 0x1a
+	}
+	if len(m.Description) > 0 {
+		i -= len(m.Description)
+		copy(dAtA[i:], m.Description)
+		i = encodeVarintPubsub(dAtA, i, uint64(len(m.Description)))
+		i--
+		dAtA[i] = 0x12
+	}
+	if len(m.Title) > 0 {
+		i -= len(m.Title)
+		copy(dAtA[i:], m.Title)
+		i = encodeVarintPubsub(dAtA, i, uint64(len(m.Title)))
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *AddDefaultSubscriptionProposalWithDeposit) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *AddDefaultSubscriptionProposalWithDeposit) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *AddDefaultSubscriptionProposalWithDeposit) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.Deposit) > 0 {
+		i -= len(m.Deposit)
+		copy(dAtA[i:], m.Deposit)
+		i = encodeVarintPubsub(dAtA, i, uint64(len(m.Deposit)))
+		i--
+		dAtA[i] = 0x2a
+	}
+	if len(m.PublisherDomain) > 0 {
+		i -= len(m.PublisherDomain)
+		copy(dAtA[i:], m.PublisherDomain)
+		i = encodeVarintPubsub(dAtA, i, uint64(len(m.PublisherDomain)))
+		i--
+		dAtA[i] = 0x22
+	}
+	if len(m.SubscriptionId) > 0 {
+		i -= len(m.SubscriptionId)
+		copy(dAtA[i:], m.SubscriptionId)
+		i = encodeVarintPubsub(dAtA, i, uint64(len(m.SubscriptionId)))
+		i--
+		dAtA[i] = 0x1a
+	}
+	if len(m.Description) > 0 {
+		i -= len(m.Description)
+		copy(dAtA[i:], m.Description)
+		i = encodeVarintPubsub(dAtA, i, uint64(len(m.Description)))
+		i--
+		dAtA[i] = 0x12
+	}
+	if len(m.Title) > 0 {
+		i -= len(m.Title)
+		copy(dAtA[i:], m.Title)
+		i = encodeVarintPubsub(dAtA, i, uint64(len(m.Title)))
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *RemoveDefaultSubscriptionProposal) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *RemoveDefaultSubscriptionProposal) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *RemoveDefaultSubscriptionProposal) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.SubscriptionId) > 0 {
+		i -= len(m.SubscriptionId)
+		copy(dAtA[i:], m.SubscriptionId)
+		i = encodeVarintPubsub(dAtA, i, uint64(len(m.SubscriptionId)))
+		i--
+		dAtA[i] = 0x1a
+	}
+	if len(m.Description) > 0 {
+		i -= len(m.Description)
+		copy(dAtA[i:], m.Description)
+		i = encodeVarintPubsub(dAtA, i, uint64(len(m.Description)))
+		i--
+		dAtA[i] = 0x12
+	}
+	if len(m.Title) > 0 {
+		i -= len(m.Title)
+		copy(dAtA[i:], m.Title)
+		i = encodeVarintPubsub(dAtA, i, uint64(len(m.Title)))
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *RemoveDefaultSubscriptionProposalWithDeposit) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *RemoveDefaultSubscriptionProposalWithDeposit) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *RemoveDefaultSubscriptionProposalWithDeposit) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.Deposit) > 0 {
+		i -= len(m.Deposit)
+		copy(dAtA[i:], m.Deposit)
+		i = encodeVarintPubsub(dAtA, i, uint64(len(m.Deposit)))
+		i--
+		dAtA[i] = 0x22
+	}
+	if len(m.SubscriptionId) > 0 {
+		i -= len(m.SubscriptionId)
+		copy(dAtA[i:], m.SubscriptionId)
+		i = encodeVarintPubsub(dAtA, i, uint64(len(m.SubscriptionId)))
+		i--
+		dAtA[i] = 0x1a
+	}
+	if len(m.Description) > 0 {
+		i -= len(m.Description)
+		copy(dAtA[i:], m.Description)
+		i = encodeVarintPubsub(dAtA, i, uint64(len(m.Description)))
+		i--
+		dAtA[i] = 0x12
+	}
+	if len(m.Title) > 0 {
+		i -= len(m.Title)
+		copy(dAtA[i:], m.Title)
+		i = encodeVarintPubsub(dAtA, i, uint64(len(m.Title)))
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
 func encodeVarintPubsub(dAtA []byte, offset int, v uint64) int {
 	offset -= sovPubsub(v)
 	base := offset
@@ -934,15 +1779,11 @@ func (m *Publisher) Size() (n int) {
 	}
 	var l int
 	_ = l
-	l = len(m.Domain)
-	if l > 0 {
-		n += 1 + l + sovPubsub(uint64(l))
-	}
 	l = len(m.Address)
 	if l > 0 {
 		n += 1 + l + sovPubsub(uint64(l))
 	}
-	l = len(m.ProofUrl)
+	l = len(m.Domain)
 	if l > 0 {
 		n += 1 + l + sovPubsub(uint64(l))
 	}
@@ -964,10 +1805,6 @@ func (m *Subscriber) Size() (n int) {
 		n += 1 + l + sovPubsub(uint64(l))
 	}
 	l = len(m.Domain)
-	if l > 0 {
-		n += 1 + l + sovPubsub(uint64(l))
-	}
-	l = len(m.ProofUrl)
 	if l > 0 {
 		n += 1 + l + sovPubsub(uint64(l))
 	}
@@ -1036,6 +1873,23 @@ func (m *SubscriberIntent) Size() (n int) {
 	return n
 }
 
+func (m *DefaultSubscription) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.SubscriptionId)
+	if l > 0 {
+		n += 1 + l + sovPubsub(uint64(l))
+	}
+	l = len(m.PublisherDomain)
+	if l > 0 {
+		n += 1 + l + sovPubsub(uint64(l))
+	}
+	return n
+}
+
 func (m *AddPublisherProposal) Size() (n int) {
 	if m == nil {
 		return 0
@@ -1069,6 +1923,43 @@ func (m *AddPublisherProposal) Size() (n int) {
 	return n
 }
 
+func (m *AddPublisherProposalWithDeposit) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.Title)
+	if l > 0 {
+		n += 1 + l + sovPubsub(uint64(l))
+	}
+	l = len(m.Description)
+	if l > 0 {
+		n += 1 + l + sovPubsub(uint64(l))
+	}
+	l = len(m.Domain)
+	if l > 0 {
+		n += 1 + l + sovPubsub(uint64(l))
+	}
+	l = len(m.Address)
+	if l > 0 {
+		n += 1 + l + sovPubsub(uint64(l))
+	}
+	l = len(m.ProofUrl)
+	if l > 0 {
+		n += 1 + l + sovPubsub(uint64(l))
+	}
+	l = len(m.CaCert)
+	if l > 0 {
+		n += 1 + l + sovPubsub(uint64(l))
+	}
+	l = len(m.Deposit)
+	if l > 0 {
+		n += 1 + l + sovPubsub(uint64(l))
+	}
+	return n
+}
+
 func (m *RemovePublisherProposal) Size() (n int) {
 	if m == nil {
 		return 0
@@ -1084,6 +1975,131 @@ func (m *RemovePublisherProposal) Size() (n int) {
 		n += 1 + l + sovPubsub(uint64(l))
 	}
 	l = len(m.Domain)
+	if l > 0 {
+		n += 1 + l + sovPubsub(uint64(l))
+	}
+	return n
+}
+
+func (m *RemovePublisherProposalWithDeposit) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.Title)
+	if l > 0 {
+		n += 1 + l + sovPubsub(uint64(l))
+	}
+	l = len(m.Description)
+	if l > 0 {
+		n += 1 + l + sovPubsub(uint64(l))
+	}
+	l = len(m.Domain)
+	if l > 0 {
+		n += 1 + l + sovPubsub(uint64(l))
+	}
+	l = len(m.Deposit)
+	if l > 0 {
+		n += 1 + l + sovPubsub(uint64(l))
+	}
+	return n
+}
+
+func (m *AddDefaultSubscriptionProposal) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.Title)
+	if l > 0 {
+		n += 1 + l + sovPubsub(uint64(l))
+	}
+	l = len(m.Description)
+	if l > 0 {
+		n += 1 + l + sovPubsub(uint64(l))
+	}
+	l = len(m.SubscriptionId)
+	if l > 0 {
+		n += 1 + l + sovPubsub(uint64(l))
+	}
+	l = len(m.PublisherDomain)
+	if l > 0 {
+		n += 1 + l + sovPubsub(uint64(l))
+	}
+	return n
+}
+
+func (m *AddDefaultSubscriptionProposalWithDeposit) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.Title)
+	if l > 0 {
+		n += 1 + l + sovPubsub(uint64(l))
+	}
+	l = len(m.Description)
+	if l > 0 {
+		n += 1 + l + sovPubsub(uint64(l))
+	}
+	l = len(m.SubscriptionId)
+	if l > 0 {
+		n += 1 + l + sovPubsub(uint64(l))
+	}
+	l = len(m.PublisherDomain)
+	if l > 0 {
+		n += 1 + l + sovPubsub(uint64(l))
+	}
+	l = len(m.Deposit)
+	if l > 0 {
+		n += 1 + l + sovPubsub(uint64(l))
+	}
+	return n
+}
+
+func (m *RemoveDefaultSubscriptionProposal) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.Title)
+	if l > 0 {
+		n += 1 + l + sovPubsub(uint64(l))
+	}
+	l = len(m.Description)
+	if l > 0 {
+		n += 1 + l + sovPubsub(uint64(l))
+	}
+	l = len(m.SubscriptionId)
+	if l > 0 {
+		n += 1 + l + sovPubsub(uint64(l))
+	}
+	return n
+}
+
+func (m *RemoveDefaultSubscriptionProposalWithDeposit) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.Title)
+	if l > 0 {
+		n += 1 + l + sovPubsub(uint64(l))
+	}
+	l = len(m.Description)
+	if l > 0 {
+		n += 1 + l + sovPubsub(uint64(l))
+	}
+	l = len(m.SubscriptionId)
+	if l > 0 {
+		n += 1 + l + sovPubsub(uint64(l))
+	}
+	l = len(m.Deposit)
 	if l > 0 {
 		n += 1 + l + sovPubsub(uint64(l))
 	}
@@ -1127,38 +2143,6 @@ func (m *Publisher) Unmarshal(dAtA []byte) error {
 		switch fieldNum {
 		case 1:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Domain", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowPubsub
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthPubsub
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthPubsub
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.Domain = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
-		case 2:
-			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Address", wireType)
 			}
 			var stringLen uint64
@@ -1189,9 +2173,9 @@ func (m *Publisher) Unmarshal(dAtA []byte) error {
 			}
 			m.Address = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
-		case 3:
+		case 2:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field ProofUrl", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field Domain", wireType)
 			}
 			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
@@ -1219,9 +2203,9 @@ func (m *Publisher) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.ProofUrl = string(dAtA[iNdEx:postIndex])
+			m.Domain = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
-		case 4:
+		case 3:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field CaCert", wireType)
 			}
@@ -1368,38 +2352,6 @@ func (m *Subscriber) Unmarshal(dAtA []byte) error {
 			m.Domain = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		case 3:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field ProofUrl", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowPubsub
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthPubsub
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthPubsub
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.ProofUrl = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
-		case 4:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field CaCert", wireType)
 			}
@@ -1846,6 +2798,120 @@ func (m *SubscriberIntent) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
+func (m *DefaultSubscription) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowPubsub
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: DefaultSubscription: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: DefaultSubscription: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field SubscriptionId", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowPubsub
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthPubsub
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthPubsub
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.SubscriptionId = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field PublisherDomain", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowPubsub
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthPubsub
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthPubsub
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.PublisherDomain = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipPubsub(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthPubsub
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
 func (m *AddPublisherProposal) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
@@ -2088,6 +3154,280 @@ func (m *AddPublisherProposal) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
+func (m *AddPublisherProposalWithDeposit) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowPubsub
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: AddPublisherProposalWithDeposit: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: AddPublisherProposalWithDeposit: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Title", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowPubsub
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthPubsub
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthPubsub
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Title = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Description", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowPubsub
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthPubsub
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthPubsub
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Description = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 3:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Domain", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowPubsub
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthPubsub
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthPubsub
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Domain = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 4:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Address", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowPubsub
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthPubsub
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthPubsub
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Address = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 5:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field ProofUrl", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowPubsub
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthPubsub
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthPubsub
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.ProofUrl = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 6:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field CaCert", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowPubsub
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthPubsub
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthPubsub
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.CaCert = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 7:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Deposit", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowPubsub
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthPubsub
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthPubsub
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Deposit = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipPubsub(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthPubsub
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
 func (m *RemovePublisherProposal) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
@@ -2212,6 +3552,896 @@ func (m *RemovePublisherProposal) Unmarshal(dAtA []byte) error {
 				return io.ErrUnexpectedEOF
 			}
 			m.Domain = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipPubsub(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthPubsub
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *RemovePublisherProposalWithDeposit) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowPubsub
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: RemovePublisherProposalWithDeposit: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: RemovePublisherProposalWithDeposit: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Title", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowPubsub
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthPubsub
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthPubsub
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Title = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Description", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowPubsub
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthPubsub
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthPubsub
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Description = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 3:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Domain", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowPubsub
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthPubsub
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthPubsub
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Domain = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 4:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Deposit", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowPubsub
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthPubsub
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthPubsub
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Deposit = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipPubsub(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthPubsub
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *AddDefaultSubscriptionProposal) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowPubsub
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: AddDefaultSubscriptionProposal: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: AddDefaultSubscriptionProposal: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Title", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowPubsub
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthPubsub
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthPubsub
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Title = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Description", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowPubsub
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthPubsub
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthPubsub
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Description = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 3:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field SubscriptionId", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowPubsub
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthPubsub
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthPubsub
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.SubscriptionId = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 4:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field PublisherDomain", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowPubsub
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthPubsub
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthPubsub
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.PublisherDomain = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipPubsub(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthPubsub
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *AddDefaultSubscriptionProposalWithDeposit) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowPubsub
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: AddDefaultSubscriptionProposalWithDeposit: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: AddDefaultSubscriptionProposalWithDeposit: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Title", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowPubsub
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthPubsub
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthPubsub
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Title = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Description", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowPubsub
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthPubsub
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthPubsub
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Description = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 3:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field SubscriptionId", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowPubsub
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthPubsub
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthPubsub
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.SubscriptionId = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 4:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field PublisherDomain", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowPubsub
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthPubsub
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthPubsub
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.PublisherDomain = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 5:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Deposit", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowPubsub
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthPubsub
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthPubsub
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Deposit = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipPubsub(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthPubsub
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *RemoveDefaultSubscriptionProposal) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowPubsub
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: RemoveDefaultSubscriptionProposal: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: RemoveDefaultSubscriptionProposal: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Title", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowPubsub
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthPubsub
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthPubsub
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Title = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Description", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowPubsub
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthPubsub
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthPubsub
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Description = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 3:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field SubscriptionId", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowPubsub
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthPubsub
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthPubsub
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.SubscriptionId = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipPubsub(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthPubsub
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *RemoveDefaultSubscriptionProposalWithDeposit) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowPubsub
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: RemoveDefaultSubscriptionProposalWithDeposit: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: RemoveDefaultSubscriptionProposalWithDeposit: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Title", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowPubsub
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthPubsub
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthPubsub
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Title = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Description", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowPubsub
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthPubsub
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthPubsub
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Description = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 3:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field SubscriptionId", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowPubsub
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthPubsub
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthPubsub
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.SubscriptionId = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 4:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Deposit", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowPubsub
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthPubsub
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthPubsub
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Deposit = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		default:
 			iNdEx = preIndex

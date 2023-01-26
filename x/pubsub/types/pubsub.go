@@ -2,7 +2,6 @@ package types
 
 import (
 	"crypto/x509"
-	"encoding/base64"
 	"encoding/pem"
 	"fmt"
 	"net/url"
@@ -33,11 +32,7 @@ func (p *Publisher) ValidateBasic() error {
 		return fmt.Errorf("invalid address: %s", err.Error())
 	}
 
-	if err := ValidateProofUrl(p.ProofUrl, p.Domain, p.Address); err != nil {
-		return fmt.Errorf("invalid proof URL: %s", err.Error())
-	}
-
-	if err := ValidateCaCertificateBase64(p.CaCert); err != nil {
+	if err := ValidateCaCertificate(p.CaCert); err != nil {
 		return fmt.Errorf("invalid CA certificate: %s", err.Error())
 	}
 
@@ -49,7 +44,7 @@ func (s *Subscriber) ValidateBasic() error {
 		return fmt.Errorf("invalid address: %s", err.Error())
 	}
 
-	// if a subcsriber does not provide a domain, ca_cert, and proof_url, they will not be able to
+	// if a subcsriber does not provide a domain and ca_cert, they will not be able to
 	// subscribe to any publisher intents that use the PUSH method
 
 	if s.Domain != "" {
@@ -58,14 +53,8 @@ func (s *Subscriber) ValidateBasic() error {
 		}
 	}
 
-	if s.ProofUrl != "" {
-		if err := ValidateProofUrl(s.ProofUrl, s.Domain, s.Address); err != nil {
-			return fmt.Errorf("invalid proof URL: %s", err.Error())
-		}
-	}
-
 	if s.CaCert != "" {
-		if err := ValidateCaCertificateBase64(s.CaCert); err != nil {
+		if err := ValidateCaCertificate(s.CaCert); err != nil {
 			return fmt.Errorf("invalid CA certificate: %s", err.Error())
 		}
 	}
@@ -149,6 +138,18 @@ func (si *SubscriberIntent) ValidateBasic() error {
 	return nil
 }
 
+func (ds *DefaultSubscription) ValidateBasic() error {
+	if err := ValidateSubscriptionId(ds.SubscriptionId); err != nil {
+		return fmt.Errorf("invalid subscription ID: %s", err.Error())
+	}
+
+	if err := ValidateDomain(ds.PublisherDomain); err != nil {
+		return fmt.Errorf("invalid publisher domain: %s", err.Error())
+	}
+
+	return nil
+}
+
 ///////////////////////
 // Field Validations //
 ///////////////////////
@@ -182,54 +183,16 @@ func ValidateAddress(address string) error {
 	return nil
 }
 
-func ValidateProofUrl(proofUrl string, domain string, address string) error {
-	if proofUrl == "" {
-		return fmt.Errorf("empty proof URL")
-	}
-
-	if err := ValidateGenericUrl(proofUrl); err != nil {
-		return err
-	}
-
-	validProofUrl := fmt.Sprintf("https://%s/%s/cacert.pem", domain, address)
-	if proofUrl != validProofUrl {
-		return fmt.Errorf("invalid proof URL format, should be: %s", validProofUrl)
-	}
-
-	return nil
-}
-
-func ValidateGenericUrl(urlString string) error {
-	if urlString == "" {
-		return fmt.Errorf("empty URL")
-	}
-
-	if len(urlString) > MaxUrlLength {
-		return fmt.Errorf("URL over max length of %d: %d", MaxUrlLength, len(urlString))
-	}
-
-	if _, err := url.Parse(urlString); err != nil {
-		return fmt.Errorf("invalid URL format: %s", err.Error())
-	}
-
-	return nil
-}
-
-func ValidateCaCertificateBase64(certBase64 string) error {
-	if certBase64 == "" {
+func ValidateCaCertificate(certPem string) error {
+	if certPem == "" {
 		return fmt.Errorf("empty CA certificate")
 	}
 
-	if len(certBase64) > MaxCertLength {
-		return fmt.Errorf("CA cert over max length of %d: %d", MaxCertLength, len(certBase64))
+	if len(certPem) > MaxCertLength {
+		return fmt.Errorf("CA cert over max length of %d: %d", MaxCertLength, len(certPem))
 	}
 
-	certBytes, err := base64.StdEncoding.DecodeString(certBase64)
-	if err != nil {
-		return fmt.Errorf("invalid base64 encoding for CA cert")
-	}
-
-	block, rest := pem.Decode(certBytes)
+	block, rest := pem.Decode([]byte(certPem))
 	if block == nil || len(rest) > 0 {
 		return fmt.Errorf("invalid PEM formating, expecting only certificate block")
 	}

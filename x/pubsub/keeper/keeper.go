@@ -9,7 +9,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
-	"github.com/peggyjv/sommelier/v3/x/pubsub/types"
+	"github.com/peggyjv/sommelier/v4/x/pubsub/types"
 )
 
 type Keeper struct {
@@ -17,6 +17,7 @@ type Keeper struct {
 	storeKey      sdk.StoreKey
 	paramSpace    paramtypes.Subspace
 	stakingKeeper types.StakingKeeper
+	gravityKeeper types.GravityKeeper
 }
 
 func NewKeeper(
@@ -24,6 +25,7 @@ func NewKeeper(
 	storeKey sdk.StoreKey,
 	paramSpace paramtypes.Subspace,
 	stakingKeeper types.StakingKeeper,
+	gravityKeeper types.GravityKeeper,
 
 ) Keeper {
 	if !paramSpace.HasKeyTable() {
@@ -35,6 +37,7 @@ func NewKeeper(
 		storeKey:      storeKey,
 		paramSpace:    paramSpace,
 		stakingKeeper: stakingKeeper,
+		gravityKeeper: gravityKeeper,
 	}
 }
 
@@ -111,9 +114,6 @@ func (k Keeper) DeletePublisher(ctx sdk.Context, publisherDomain string) {
 // Subscriber //
 ////////////////
 
-// TODO(bolten): we are requiring sdk.AccAddress rather than using the string, as there is potential for
-// a conversion error between a bech32 string and an sdk.AccAddress and it takes up a smaller keyspace...
-// is this worth the added complexity given that we have a lot of other variable-length keys?
 func (k Keeper) SetSubscriber(ctx sdk.Context, subscriberAddress sdk.AccAddress, subscriber types.Subscriber) {
 	bz := k.cdc.MustMarshal(&subscriber)
 	ctx.KVStore(k.storeKey).Set(types.GetSubscriberKey(subscriberAddress), bz)
@@ -314,4 +314,51 @@ func (k Keeper) DeleteSubscriberIntent(ctx sdk.Context, subscriptionId string, s
 	ctx.KVStore(k.storeKey).Delete(types.GetSubscriberIntentBySubscriberAddressKey(subscriberAddress, subscriptionId))
 	ctx.KVStore(k.storeKey).Delete(types.GetSubscriberIntentBySubscriptionIdKey(subscriptionId, subscriberAddress))
 	ctx.KVStore(k.storeKey).Delete(types.GetSubscriberIntentByPublisherDomainKey(publisherDomain, subscriberAddress, subscriptionId))
+}
+
+/////////////////////////
+// DefaultSubscription //
+/////////////////////////
+
+func (k Keeper) SetDefaultSubscription(ctx sdk.Context, defaultSubscription types.DefaultSubscription) {
+	bz := k.cdc.MustMarshal(&defaultSubscription)
+	ctx.KVStore(k.storeKey).Set(types.GetDefaultSubscriptionKey(defaultSubscription.SubscriptionId), bz)
+}
+
+func (k Keeper) GetDefaultSubscription(ctx sdk.Context, subscriptionId string) (defaultSubscription types.DefaultSubscription, found bool) {
+	bz := ctx.KVStore(k.storeKey).Get(types.GetDefaultSubscriptionKey(subscriptionId))
+	if len(bz) == 0 {
+		return types.DefaultSubscription{}, false
+	}
+
+	k.cdc.MustUnmarshal(bz, &defaultSubscription)
+	return defaultSubscription, true
+}
+
+func (k Keeper) IterateDefaultSubscriptions(ctx sdk.Context, handler func(defaultSubscription types.DefaultSubscription) (stop bool)) {
+	store := ctx.KVStore(k.storeKey)
+	iter := sdk.KVStorePrefixIterator(store, types.GetDefaultSubscriptionPrefix())
+	defer iter.Close()
+
+	for ; iter.Valid(); iter.Next() {
+		var defaultSubscription types.DefaultSubscription
+		k.cdc.MustUnmarshal(iter.Value(), &defaultSubscription)
+
+		if handler(defaultSubscription) {
+			break
+		}
+	}
+}
+
+func (k Keeper) GetDefaultSubscriptions(ctx sdk.Context) (defaultSubscriptions []*types.DefaultSubscription) {
+	k.IterateDefaultSubscriptions(ctx, func(defaultSubscription types.DefaultSubscription) (stop bool) {
+		defaultSubscriptions = append(defaultSubscriptions, &defaultSubscription)
+		return false
+	})
+
+	return
+}
+
+func (k Keeper) DeleteDefaultSubscription(ctx sdk.Context, subscriptionId string) {
+	ctx.KVStore(k.storeKey).Delete(types.GetDefaultSubscriptionKey(subscriptionId))
 }

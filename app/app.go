@@ -88,9 +88,6 @@ import (
 	gravityclient "github.com/peggyjv/gravity-bridge/module/v2/x/gravity/client"
 	gravitykeeper "github.com/peggyjv/gravity-bridge/module/v2/x/gravity/keeper"
 	gravitytypes "github.com/peggyjv/gravity-bridge/module/v2/x/gravity/types"
-	"github.com/peggyjv/sommelier/v3/x/pubsub"
-	pubsubkeeper "github.com/peggyjv/sommelier/v3/x/pubsub/keeper"
-	pubsubtypes "github.com/peggyjv/sommelier/v3/x/pubsub/types"
 	appParams "github.com/peggyjv/sommelier/v4/app/params"
 	v4 "github.com/peggyjv/sommelier/v4/app/upgrades/v4"
 	"github.com/peggyjv/sommelier/v4/x/auction"
@@ -107,6 +104,9 @@ import (
 	"github.com/peggyjv/sommelier/v4/x/incentives"
 	incentiveskeeper "github.com/peggyjv/sommelier/v4/x/incentives/keeper"
 	incentivestypes "github.com/peggyjv/sommelier/v4/x/incentives/types"
+	"github.com/peggyjv/sommelier/v4/x/pubsub"
+	pubsubkeeper "github.com/peggyjv/sommelier/v4/x/pubsub/keeper"
+	pubsubtypes "github.com/peggyjv/sommelier/v4/x/pubsub/types"
 	"github.com/rakyll/statik/fs"
 	abci "github.com/tendermint/tendermint/abci/types"
 	tmjson "github.com/tendermint/tendermint/libs/json"
@@ -167,7 +167,7 @@ var (
 		cellarfees.AppModuleBasic{},
 		auction.AppModuleBasic{},
 		incentives.AppModuleBasic{},
-		pubsub.AppModduleBasic{},
+		pubsub.AppModuleBasic{},
 	)
 
 	// module account permissions
@@ -388,7 +388,7 @@ func NewSommelierApp(
 
 	app.PubsubKeeper = pubsubkeeper.NewKeeper(
 		appCodec, keys[pubsubtypes.StoreKey], app.GetSubspace(pubsubtypes.ModuleName),
-		app.StakingKeeper,
+		app.StakingKeeper, app.GravityKeeper,
 	)
 
 	app.GravityKeeper = *app.GravityKeeper.SetHooks(
@@ -411,7 +411,7 @@ func NewSommelierApp(
 		AddRoute(corktypes.RouterKey, cork.NewProposalHandler(app.CorkKeeper)).
 		AddRoute(gravitytypes.RouterKey, gravity.NewCommunityPoolEthereumSpendProposalHandler(app.GravityKeeper)).
 		AddRoute(auctiontypes.RouterKey, auction.NewSetTokenPricesProposalHandler(app.AuctionKeeper)).
-		AddRoute(pubsubtypes.RouterKey, pubsub.NewUpdatePublishersProposalHandler(app.PubsubKeeper))
+		AddRoute(pubsubtypes.RouterKey, pubsub.NewPubsubProposalHandler(app.PubsubKeeper))
 	app.GovKeeper = govkeeper.NewKeeper(
 		appCodec, keys[govtypes.StoreKey], app.GetSubspace(govtypes.ModuleName), app.AccountKeeper, app.BankKeeper,
 		&stakingKeeper, govRouter,

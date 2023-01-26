@@ -2,22 +2,11 @@ package cli
 
 import (
 	"fmt"
-	"time"
 
 	"github.com/spf13/cobra"
 
 	"github.com/cosmos/cosmos-sdk/client"
-	// "github.com/cosmos/cosmos-sdk/client/flags"
-	"github.com/peggyjv/sommelier/v3/x/pubsub/types"
-)
-
-var (
-	DefaultRelativePacketTimeoutTimestamp = uint64((time.Duration(10) * time.Minute).Nanoseconds())
-)
-
-const (
-	flagPacketTimeoutTimestamp = "packet-timeout-timestamp"
-	listSeparator              = ","
+	"github.com/peggyjv/sommelier/v4/x/pubsub/types"
 )
 
 // TODO(bolten): fill out tx commands
@@ -33,4 +22,20 @@ func GetTxCmd() *cobra.Command {
 	}
 
 	return cmd
+}
+
+func GetCmdSubmitAddPublisherProposal() *cobra.Command {
+	return nil
+}
+
+func GetCmdSubmitRemovePublisherProposal() *cobra.Command {
+	return nil
+}
+
+func GetCmdSubmitAddDefaultSubscriptionProposal() *cobra.Command {
+	return nil
+}
+
+func GetCmdSubmitRemoveDefaultSubscriptionProposal() *cobra.Command {
+	return nil
 }

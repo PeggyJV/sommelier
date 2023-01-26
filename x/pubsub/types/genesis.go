@@ -5,11 +5,12 @@ const DefaultParamspace = ModuleName
 // DefaultGenesisState get raw genesis raw message for testing
 func DefaultGenesisState() GenesisState {
 	return GenesisState{
-		Params:            DefaultParams(),
-		Publishers:        []*Publisher{},
-		Subscribers:       []*Subscriber{},
-		PublisherIntents:  []*PublisherIntent{},
-		SubscriberIntents: []*SubscriberIntent{},
+		Params:               DefaultParams(),
+		Publishers:           []*Publisher{},
+		Subscribers:          []*Subscriber{},
+		PublisherIntents:     []*PublisherIntent{},
+		SubscriberIntents:    []*SubscriberIntent{},
+		DefaultSubscriptions: []*DefaultSubscription{},
 	}
 }
 
@@ -39,6 +40,12 @@ func (gs GenesisState) Validate() error {
 
 	for _, subscriberIntent := range gs.SubscriberIntents {
 		if err := subscriberIntent.ValidateBasic(); err != nil {
+			return err
+		}
+	}
+
+	for _, defaultSubscription := range gs.DefaultSubscriptions {
+		if err := defaultSubscription.ValidateBasic(); err != nil {
 			return err
 		}
 	}

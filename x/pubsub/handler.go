@@ -6,8 +6,8 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
-	"github.com/peggyjv/sommelier/v3/x/pubsub/keeper"
-	"github.com/peggyjv/sommelier/v3/x/pubsub/types"
+	"github.com/peggyjv/sommelier/v4/x/pubsub/keeper"
+	"github.com/peggyjv/sommelier/v4/x/pubsub/types"
 )
 
 // NewHandler returns a handler for "pubsub" type messages
@@ -44,14 +44,18 @@ func NewHandler(k keeper.Keeper) sdk.Handler {
 	}
 }
 
-// NewUpdatePublishersProposalHandler returns a handler for "pubsub" governance proposals
-func NewUpdatePublishersProposalHandler(k keeper.Keeper) govtypes.Handler {
+// NewPubsubProposalHandler returns a handler for "pubsub" governance proposals
+func NewPubsubProposalHandler(k keeper.Keeper) govtypes.Handler {
 	return func(ctx sdk.Context, content govtypes.Content) error {
 		switch c := content.(type) {
 		case *types.AddPublisherProposal:
 			return keeper.HandleAddPublisherProposal(ctx, k, *c)
 		case *types.RemovePublisherProposal:
 			return keeper.HandleRemovePublisherProposal(ctx, k, *c)
+		case *types.AddDefaultSubscriptionProposal:
+			return keeper.HandleAddDefaultSubscriptionProposal(ctx, k, *c)
+		case *types.RemoveDefaultSubscriptionProposal:
+			return keeper.HandleRemoveDefaultSubscriptionProposal(ctx, k, *c)
 		default:
 			errMsg := fmt.Sprintf("unrecognized %s proposal type: %T", types.ModuleName, c)
 			return sdkerrors.Wrap(sdkerrors.ErrUnknownRequest, errMsg)

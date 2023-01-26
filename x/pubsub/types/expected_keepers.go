@@ -20,3 +20,8 @@ type StakingKeeper interface {
 	Jail(sdk.Context, sdk.ConsAddress)
 	PowerReduction(ctx sdk.Context) sdk.Int
 }
+
+// GravityKeeper defines the expected gravity keeper methods
+type GravityKeeper interface {
+	GetOrchestratorValidatorAddress(sdk.Context, sdk.AccAddress) sdk.ValAddress
+}

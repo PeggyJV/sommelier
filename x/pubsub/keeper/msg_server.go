@@ -6,7 +6,8 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-	"github.com/peggyjv/sommelier/v3/x/pubsub/types"
+	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
+	"github.com/peggyjv/sommelier/v4/x/pubsub/types"
 )
 
 var _ types.MsgServer = Keeper{}
@@ -94,8 +95,16 @@ func (k Keeper) AddSubscriberIntent(c context.Context, msg *types.MsgAddSubscrib
 	}
 
 	if publisherIntent.AllowedSubscribers == types.AllowedSubscribers_VALIDATORS {
-		_, found := k.stakingKeeper.GetValidator(ctx, sdk.ValAddress(signer))
-		if !found {
+		// TODO(bolten): this implementation ends up making the module sort of non-generic but is necessary to allow
+		// orchestrator keys to manipulate subscriptions
+		var validatorI stakingtypes.ValidatorI
+		if validator := k.gravityKeeper.GetOrchestratorValidatorAddress(ctx, signer); validator == nil {
+			validatorI = k.stakingKeeper.Validator(ctx, sdk.ValAddress(signer))
+		} else {
+			validatorI = k.stakingKeeper.Validator(ctx, validator)
+		}
+
+		if validatorI == nil {
 			return nil, sdkerrors.Wrapf(sdkerrors.ErrUnauthorized, "publisher intent requires subscriber be a validator")
 		}
 	} else if publisherIntent.AllowedSubscribers == types.AllowedSubscribers_LIST {

@@ -5,7 +5,7 @@ import (
 	"fmt"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/peggyjv/sommelier/v3/x/pubsub/types"
+	"github.com/peggyjv/sommelier/v4/x/pubsub/types"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
@@ -200,5 +200,30 @@ func (k Keeper) QuerySubscriberIntentsByPublisherDomain(c context.Context, req *
 
 	return &types.QuerySubscriberIntentsByPublisherDomainResponse{
 		SubscriberIntents: k.GetSubscriberIntentsByPublisherDomain(sdk.UnwrapSDKContext(c), req.PublisherDomain),
+	}, nil
+}
+
+func (k Keeper) QueryDefaultSubscription(c context.Context, req *types.QueryDefaultSubscriptionRequest) (*types.QueryDefaultSubscriptionResponse, error) {
+	if req == nil {
+		return nil, status.Error(codes.InvalidArgument, "empty request")
+	}
+
+	if err := types.ValidateSubscriptionId(req.SubscriptionId); err != nil {
+		return nil, status.Error(codes.InvalidArgument, fmt.Sprintf("invalid subscription id: %s", err.Error()))
+	}
+
+	defaultSubscription, found := k.GetDefaultSubscription(sdk.UnwrapSDKContext(c), req.SubscriptionId)
+	if !found {
+		return nil, status.Error(codes.NotFound, "default subscription")
+	}
+
+	return &types.QueryDefaultSubscriptionResponse{
+		DefaultSubscription: &defaultSubscription,
+	}, nil
+}
+
+func (k Keeper) QueryDefaultSubscriptions(c context.Context, _ *types.QueryDefaultSubscriptionsRequest) (*types.QueryDefaultSubscriptionsResponse, error) {
+	return &types.QueryDefaultSubscriptionsResponse{
+		DefaultSubscriptions: k.GetDefaultSubscriptions(sdk.UnwrapSDKContext(c)),
 	}, nil
 }
