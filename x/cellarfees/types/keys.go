@@ -12,6 +12,9 @@ const (
 
 	// QuerierRoute is the querier route for cellarfees
 	QuerierRoute = ModuleName
+
+	// Query endpoinits
+	QueryAPY = "apy"
 )
 
 const (

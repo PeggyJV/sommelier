@@ -12,4 +12,7 @@ const (
 
 	// QuerierRoute is the querier route for incentives
 	QuerierRoute = ModuleName
+
+	// Query endpoints
+	QueryAPY = "apy"
 )

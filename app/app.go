@@ -521,6 +521,7 @@ func NewSommelierApp(
 		cork.NewAppModule(app.CorkKeeper, appCodec),
 		cellarfees.NewAppModule(app.CellarFeesKeeper, appCodec, app.AccountKeeper, app.BankKeeper, app.MintKeeper, app.CorkKeeper, app.GravityKeeper, app.AuctionKeeper),
 		auction.NewAppModule(app.AuctionKeeper, app.BankKeeper, app.AccountKeeper, appCodec),
+		incentives.NewAppModule(app.IncentivesKeeper, app.DistrKeeper, app.BankKeeper, app.MintKeeper, appCodec),
 	)
 
 	app.sm.RegisterStoreDecoders()

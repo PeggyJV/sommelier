@@ -118,9 +118,9 @@ func (am AppModule) Route() sdk.Route { return sdk.NewRoute(types.RouterKey, New
 // QuerierRoute returns the cellarfees module's querier route name.
 func (AppModule) QuerierRoute() string { return types.QuerierRoute }
 
-// LegacyQuerierHandler returns a nil Querier.
-func (am AppModule) LegacyQuerierHandler(_ *codec.LegacyAmino) sdk.Querier {
-	return nil
+// LegacyQuerierHandler returns a Querier.
+func (am AppModule) LegacyQuerierHandler(legacyQuerierCdc *codec.LegacyAmino) sdk.Querier {
+	return keeper.NewQuerier(am.keeper, legacyQuerierCdc)
 }
 
 // ConsensusVersion implements AppModule/ConsensusVersion.
