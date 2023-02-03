@@ -524,8 +524,6 @@ func (s *IntegrationTestSuite) initValidatorConfigs() {
 
 		appConfig := srvconfig.DefaultConfig()
 		appConfig.API.Enable = true
-		appConfig.Rosetta.Enable = true
-		appConfig.Rosetta.Address = "0.0.0.0:8080"
 		appConfig.Pruning = "nothing"
 		appConfig.MinGasPrices = fmt.Sprintf("%s%s", minGasPrice, testDenom)
 
@@ -655,11 +653,10 @@ func (s *IntegrationTestSuite) runValidators() {
 			runOpts.PortBindings = map[docker.Port][]docker.PortBinding{
 				"1317/tcp":  {{HostIP: "", HostPort: "1317"}},
 				"9090/tcp":  {{HostIP: "", HostPort: "9090"}},
-				"8080/tcp":  {{HostIP: "", HostPort: "8080"}},
 				"26656/tcp": {{HostIP: "", HostPort: "26656"}},
 				"26657/tcp": {{HostIP: "", HostPort: "26657"}},
 			}
-			runOpts.ExposedPorts = []string{"1317/tcp", "9090/tcp", "26656/tcp", "26657/tcp", "8080/tcp"}
+			runOpts.ExposedPorts = []string{"1317/tcp", "9090/tcp", "26656/tcp", "26657/tcp"}
 		}
 
 		resource, err := s.dockerPool.RunWithOptions(runOpts, noRestart)
