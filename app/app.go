@@ -105,6 +105,7 @@ import (
 	incentiveskeeper "github.com/peggyjv/sommelier/v4/x/incentives/keeper"
 	incentivestypes "github.com/peggyjv/sommelier/v4/x/incentives/types"
 	"github.com/peggyjv/sommelier/v4/x/pubsub"
+	pubsubclient "github.com/peggyjv/sommelier/v4/x/pubsub/client"
 	pubsubkeeper "github.com/peggyjv/sommelier/v4/x/pubsub/keeper"
 	pubsubtypes "github.com/peggyjv/sommelier/v4/x/pubsub/types"
 	"github.com/rakyll/statik/fs"
@@ -151,6 +152,10 @@ var (
 			corkclient.RemoveProposalHandler,
 			corkclient.ScheduledCorkProposalHandler,
 			auctionclient.SetProposalHandler,
+			pubsubclient.AddPublisherProposalHandler,
+			pubsubclient.RemovePublisherProposalHandler,
+			pubsubclient.AddDefaultSubscriptionProposalHandler,
+			pubsubclient.RemoveDefaultSubscriptionProposalHandler,
 		),
 		params.AppModuleBasic{},
 		crisis.AppModuleBasic{},
