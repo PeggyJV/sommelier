@@ -8,6 +8,7 @@ import (
 	"github.com/spf13/cobra"
 
 	"github.com/cosmos/cosmos-sdk/client"
+	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/client/tx"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/version"
@@ -24,6 +25,17 @@ func GetTxCmd() *cobra.Command {
 		SuggestionsMinimumDistance: 2,
 		RunE:                       client.ValidateCmd,
 	}
+
+	pubsubTxCommand.AddCommand([]*cobra.Command{
+		GetCmdAddPublisherPullIntent(),
+		GetCmdAddPublisherPushIntent(),
+		GetCmdAddSubscriberIntent(),
+		GetCmdAddSubscriber(),
+		GetCmdRemovePublisherIntent(),
+		GetCmdRemoveSubscriberIntent(),
+		GetCmdRemoveSubscriber(),
+		GetCmdRemovePublisher(),
+	}...)
 
 	return pubsubTxCommand
 }
@@ -46,8 +58,8 @@ Where proposal.json contains:
   "title": "Add us as a publisher",
   "description": "We do strategies",
   "domain": "sommelier.example.com",
-  "address": "<bech 32 somm address owned by the publisher>",
-  "proof_url": "https://sommelier.example.com/<the same bech 32 somm address>/cacert.pem",
+  "address": "somm1y6d5kasehecexf09ka6y0ggl0pxzt6dg6n8lw0",
+  "proof_url": "https://sommelier.example.com/somm1y6d5kasehecexf09ka6y0ggl0pxzt6dg6n8lw0/cacert.pem",
   "ca_cert": "<text contents of the self-signed cacert.pem file served above>",
   "deposit": "10000000usomm"
 }
@@ -285,7 +297,7 @@ Where proposal.json contains:
 				return err
 			}
 
-			content := types.NewAddDefaultSubscriptionProposal(
+			content := types.NewRemoveDefaultSubscriptionProposal(
 				proposal.Title,
 				proposal.Description,
 				proposal.SubscriptionId,
@@ -306,4 +318,381 @@ Where proposal.json contains:
 	}
 
 	return cmd
+}
+
+func GetCmdAddPublisherPullIntent() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "add-publisher-pull-intent [subscription-id] [publisher-domain] [pull-url] [ANY|VALIDATORS|LIST] <optional_allowed_addresses>",
+		Args:  cobra.MinimumNArgs(4),
+		Short: "Add a publisher intent with a pull URL",
+		Long: strings.TrimSpace(
+			fmt.Sprintf(`Examples:
+$ %s tx pubsub add-publisher-pull-intent 0x123801a7D398351b8bE11C439e05C5B3259aeC9B sommelier.example.com "https://sommelier.example.com/pull" VALIDATORS --from=<key_or_address>
+$ %s tx pubsub add-publisher-pull-intent 0x123801a7D398351b8bE11C439e05C5B3259aeC9B sommelier.example.com "https://sommelier.example.com/pull" LIST somm1y6d5kasehecexf09ka6y0ggl0pxzt6dg6n8lw0,somm18ld4633yswcyjdklej3att6aw93nhlf7596qkk --from=<key_or_address>
+`, version.AppName, version.AppName),
+		),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			clientCtx, err := client.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			if len(args) > 5 {
+				return fmt.Errorf("too many arguments")
+			}
+
+			signer := clientCtx.GetFromAddress()
+			if signer == nil {
+				return fmt.Errorf("must include `--from` flag")
+			}
+
+			allowedSubscribers, err := parseAllowedSubscribers(args[3])
+			if err != nil {
+				return err
+			}
+
+			allowedAddresses := []string{}
+			if len(args) == 5 {
+				allowedAddresses = strings.Split(args[4], ",")
+			}
+
+			publisherIntent := types.PublisherIntent{
+				SubscriptionId:     args[0],
+				PublisherDomain:    args[1],
+				Method:             types.PublishMethod_PULL,
+				PullUrl:            args[2],
+				AllowedSubscribers: allowedSubscribers,
+				AllowedAddresses:   allowedAddresses,
+			}
+
+			msg, err := types.NewMsgAddPublisherIntentRequest(publisherIntent, signer)
+			if err != nil {
+				return err
+			}
+
+			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), msg)
+		},
+	}
+
+	flags.AddTxFlagsToCmd(cmd)
+	return cmd
+}
+
+func GetCmdAddPublisherPushIntent() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "add-publisher-push-intent [subscription-id] [publisher-domain] [ANY|VALIDATORS|LIST] <optional_allowed_addresses>",
+		Args:  cobra.MinimumNArgs(3),
+		Short: "Add a publisher intent that will push",
+		Long: strings.TrimSpace(
+			fmt.Sprintf(`Examples:
+$ %s tx pubsub add-publisher-push-intent 0x123801a7D398351b8bE11C439e05C5B3259aeC9B sommelier.example.com VALIDATORS --from=<key_or_address>
+$ %s tx pubsub add-publisher-push-intent 0x123801a7D398351b8bE11C439e05C5B3259aeC9B sommelier.example.com LIST somm1y6d5kasehecexf09ka6y0ggl0pxzt6dg6n8lw0,somm18ld4633yswcyjdklej3att6aw93nhlf7596qkk --from=<key_or_address>
+`, version.AppName, version.AppName),
+		),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			clientCtx, err := client.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			if len(args) > 4 {
+				return fmt.Errorf("too many arguments")
+			}
+
+			signer := clientCtx.GetFromAddress()
+			if signer == nil {
+				return fmt.Errorf("must include `--from` flag")
+			}
+
+			allowedSubscribers, err := parseAllowedSubscribers(args[2])
+			if err != nil {
+				return err
+			}
+
+			allowedAddresses := []string{}
+			if len(args) == 4 {
+				allowedAddresses = strings.Split(args[3], ",")
+			}
+
+			publisherIntent := types.PublisherIntent{
+				SubscriptionId:     args[0],
+				PublisherDomain:    args[1],
+				Method:             types.PublishMethod_PUSH,
+				PullUrl:            "",
+				AllowedSubscribers: allowedSubscribers,
+				AllowedAddresses:   allowedAddresses,
+			}
+
+			msg, err := types.NewMsgAddPublisherIntentRequest(publisherIntent, signer)
+			if err != nil {
+				return err
+			}
+
+			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), msg)
+		},
+	}
+
+	flags.AddTxFlagsToCmd(cmd)
+	return cmd
+}
+
+func GetCmdAddSubscriberIntent() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "add-subscriber-intent [subscription-id] [subscriber-address] [publisher-domain] <optional_push_url>",
+		Args:  cobra.MinimumNArgs(3),
+		Short: "Add a subscriber intent",
+		Long: strings.TrimSpace(
+			fmt.Sprintf(`Examples:
+$ %s tx pubsub add-subscriber-intent 0x123801a7D398351b8bE11C439e05C5B3259aeC9B somm1y6d5kasehecexf09ka6y0ggl0pxzt6dg6n8lw0 pullpublisher.example.com --from=<key_or_address>
+$ %s tx pubsub add-subscriber-intent 0x123801a7D398351b8bE11C439e05C5B3259aeC9B somm1y6d5kasehecexf09ka6y0ggl0pxzt6dg6n8lw0 pushpublisher.example.com "https://sommvalidator.example.com:5734" --from=<key_or_address>
+`, version.AppName, version.AppName),
+		),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			clientCtx, err := client.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			if len(args) > 4 {
+				return fmt.Errorf("too many arguments")
+			}
+
+			signer := clientCtx.GetFromAddress()
+			if signer == nil {
+				return fmt.Errorf("must include `--from` flag")
+			}
+
+			pushURL := ""
+			if len(args) == 4 {
+				pushURL = args[3]
+			}
+
+			subscriberIntent := types.SubscriberIntent{
+				SubscriptionId:    args[0],
+				SubscriberAddress: args[1],
+				PublisherDomain:   args[2],
+				PushUrl:           pushURL,
+			}
+
+			msg, err := types.NewMsgAddSubscriberIntentRequest(subscriberIntent, signer)
+			if err != nil {
+				return err
+			}
+
+			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), msg)
+		},
+	}
+
+	flags.AddTxFlagsToCmd(cmd)
+	return cmd
+}
+
+func GetCmdAddSubscriber() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "add-subscriber [address] <optional_domain> <optional_ca_cert>",
+		Args:  cobra.MinimumNArgs(1),
+		Short: "Add a subscriber intent",
+		Long: strings.TrimSpace(
+			fmt.Sprintf(`Examples:
+$ %s tx pubsub add-subscriber somm1y6d5kasehecexf09ka6y0ggl0pxzt6dg6n8lw0 <path/to/cacert.pem> --from=<key_or_address>
+$ %s tx pubsub add-subscriber somm1y6d5kasehecexf09ka6y0ggl0pxzt6dg6n8lw0 pushpublisher.example.com "https://sommvalidator.example.com:5734" --from=<key_or_address>
+`, version.AppName, version.AppName),
+		),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			clientCtx, err := client.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			if len(args) > 3 {
+				return fmt.Errorf("too many arguments")
+			}
+
+			signer := clientCtx.GetFromAddress()
+			if signer == nil {
+				return fmt.Errorf("must include `--from` flag")
+			}
+
+			if len(args) > 1 && len(args) != 3 {
+				return fmt.Errorf("must include both domain and CA cert path for push subscriptions")
+			}
+
+			domain := ""
+			caCert := ""
+
+			if len(args) == 3 {
+				domain = args[1]
+				caCertContent, err := ioutil.ReadFile(args[2])
+				if err != nil {
+					return fmt.Errorf("cannot read CA cert: %s", err)
+				}
+				caCert = string(caCertContent)
+			}
+
+			subscriber := types.Subscriber{
+				Address: args[0],
+				Domain:  domain,
+				CaCert:  caCert,
+			}
+
+			msg, err := types.NewMsgAddSubscriberRequest(subscriber, signer)
+			if err != nil {
+				return err
+			}
+
+			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), msg)
+		},
+	}
+
+	flags.AddTxFlagsToCmd(cmd)
+	return cmd
+}
+
+func GetCmdRemovePublisherIntent() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "remove-publisher-intent [subscription-id] [publisher-domain]",
+		Args:  cobra.ExactArgs(2),
+		Short: "Remove a publisher intent",
+		Long: strings.TrimSpace(
+			fmt.Sprintf(`Examples:
+$ %s tx pubsub remove-publisher-intent 0x123801a7D398351b8bE11C439e05C5B3259aeC9B pushpublisher.example.com --from=<key_or_address>
+`, version.AppName),
+		),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			clientCtx, err := client.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			signer := clientCtx.GetFromAddress()
+			if signer == nil {
+				return fmt.Errorf("must include `--from` flag")
+			}
+
+			msg, err := types.NewMsgRemovePublisherIntentRequest(args[0], args[1], signer)
+			if err != nil {
+				return err
+			}
+
+			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), msg)
+		},
+	}
+
+	flags.AddTxFlagsToCmd(cmd)
+	return cmd
+}
+
+func GetCmdRemoveSubscriberIntent() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "remove-subscriber-intent [subscription-id] [subscriber-address]",
+		Args:  cobra.ExactArgs(2),
+		Short: "Remove a subcriber intent",
+		Long: strings.TrimSpace(
+			fmt.Sprintf(`Examples:
+$ %s tx pubsub remove-subscriber-intent 0x123801a7D398351b8bE11C439e05C5B3259aeC9B somm1y6d5kasehecexf09ka6y0ggl0pxzt6dg6n8lw0 --from=<key_or_address>
+`, version.AppName),
+		),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			clientCtx, err := client.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			signer := clientCtx.GetFromAddress()
+			if signer == nil {
+				return fmt.Errorf("must include `--from` flag")
+			}
+
+			msg, err := types.NewMsgRemoveSubscriberIntentRequest(args[0], args[1], signer)
+			if err != nil {
+				return err
+			}
+
+			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), msg)
+		},
+	}
+
+	flags.AddTxFlagsToCmd(cmd)
+	return cmd
+}
+
+func GetCmdRemoveSubscriber() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "remove-subscriber [subscriber-address]",
+		Args:  cobra.ExactArgs(1),
+		Short: "Remove a subcriber",
+		Long: strings.TrimSpace(
+			fmt.Sprintf(`Examples:
+$ %s tx pubsub remove-subscriber somm1y6d5kasehecexf09ka6y0ggl0pxzt6dg6n8lw0 --from=<key_or_address>
+`, version.AppName),
+		),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			clientCtx, err := client.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			signer := clientCtx.GetFromAddress()
+			if signer == nil {
+				return fmt.Errorf("must include `--from` flag")
+			}
+
+			msg, err := types.NewMsgRemoveSubscriberRequest(args[0], signer)
+			if err != nil {
+				return err
+			}
+
+			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), msg)
+		},
+	}
+
+	flags.AddTxFlagsToCmd(cmd)
+	return cmd
+}
+
+func GetCmdRemovePublisher() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "remove-publisher [publisher-domain]",
+		Args:  cobra.ExactArgs(1),
+		Short: "Remove a publisher",
+		Long: strings.TrimSpace(
+			fmt.Sprintf(`Examples:
+$ %s tx pubsub remove-publisher publisher.example.com --from=<key_or_address>
+`, version.AppName),
+		),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			clientCtx, err := client.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			signer := clientCtx.GetFromAddress()
+			if signer == nil {
+				return fmt.Errorf("must include `--from` flag")
+			}
+
+			msg, err := types.NewMsgRemovePublisherRequest(args[0], signer)
+			if err != nil {
+				return err
+			}
+
+			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), msg)
+		},
+	}
+
+	flags.AddTxFlagsToCmd(cmd)
+	return cmd
+}
+
+func parseAllowedSubscribers(allowedSubscribers string) (types.AllowedSubscribers, error) {
+	switch allowedSubscribers {
+	case types.AllowedSubscribers_ANY.String():
+		return types.AllowedSubscribers_ANY, nil
+	case types.AllowedSubscribers_VALIDATORS.String():
+		return types.AllowedSubscribers_VALIDATORS, nil
+	case types.AllowedSubscribers_LIST.String():
+		return types.AllowedSubscribers_LIST, nil
+	default:
+		return types.AllowedSubscribers_ANY, fmt.Errorf("invalid allowed subcribers selection, choose ANY, VALIDATORS, or LIST: %s", allowedSubscribers)
+	}
 }

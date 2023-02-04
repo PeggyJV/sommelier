@@ -140,7 +140,7 @@ func (m *MsgAddSubscriberIntentRequest) MustGetSigner() sdk.AccAddress {
 /////////////////////////////
 
 // NewMsgAddSubscriberRequest returns a new MsgAddSubscriberRequest
-func NewMsgAddSubscriber(subscriber Subscriber, signer sdk.AccAddress) (*MsgAddSubscriberRequest, error) {
+func NewMsgAddSubscriberRequest(subscriber Subscriber, signer sdk.AccAddress) (*MsgAddSubscriberRequest, error) {
 	if signer == nil {
 		return nil, fmt.Errorf("no signer provided")
 	}
@@ -194,7 +194,7 @@ func (m *MsgAddSubscriberRequest) MustGetSigner() sdk.AccAddress {
 /////////////////////////////////////
 
 // NewMsgRemovePublisherIntentRequest returns a new MsgRemovePublisherIntentRequest
-func NewMsgRemovePublisherIntent(subscriptionID string, publisherDomain string, signer sdk.AccAddress) (*MsgRemovePublisherIntentRequest, error) {
+func NewMsgRemovePublisherIntentRequest(subscriptionID string, publisherDomain string, signer sdk.AccAddress) (*MsgRemovePublisherIntentRequest, error) {
 	if signer == nil {
 		return nil, fmt.Errorf("no signer provided")
 	}
@@ -253,14 +253,14 @@ func (m *MsgRemovePublisherIntentRequest) MustGetSigner() sdk.AccAddress {
 //////////////////////////////////////
 
 // NewMsgRemoveSubscriberIntentRequest returns a new MsgRemoveSubscriberIntentRequest
-func NewMsgRemoveSubscriberIntentRequest(subscriptionID string, subscriberAddress sdk.AccAddress, signer sdk.AccAddress) (*MsgRemoveSubscriberIntentRequest, error) {
+func NewMsgRemoveSubscriberIntentRequest(subscriptionID string, subscriberAddress string, signer sdk.AccAddress) (*MsgRemoveSubscriberIntentRequest, error) {
 	if signer == nil {
 		return nil, fmt.Errorf("no signer provided")
 	}
 
 	return &MsgRemoveSubscriberIntentRequest{
 		SubscriptionId:    subscriptionID,
-		SubscriberAddress: subscriberAddress.String(),
+		SubscriberAddress: subscriberAddress,
 		Signer:            signer.String(),
 	}, nil
 }
@@ -312,13 +312,13 @@ func (m *MsgRemoveSubscriberIntentRequest) MustGetSigner() sdk.AccAddress {
 ////////////////////////////////
 
 // NewMsgRemoveSubscriberRequest returns a new MsgRemoveSubscriberRequest
-func NewMsgRemoveSubscriber(subscriberAddress sdk.AccAddress, signer sdk.AccAddress) (*MsgRemoveSubscriberRequest, error) {
+func NewMsgRemoveSubscriberRequest(subscriberAddress string, signer sdk.AccAddress) (*MsgRemoveSubscriberRequest, error) {
 	if signer == nil {
 		return nil, fmt.Errorf("no signer provided")
 	}
 
 	return &MsgRemoveSubscriberRequest{
-		SubscriberAddress: subscriberAddress.String(),
+		SubscriberAddress: subscriberAddress,
 		Signer:            signer.String(),
 	}, nil
 }
@@ -366,7 +366,7 @@ func (m *MsgRemoveSubscriberRequest) MustGetSigner() sdk.AccAddress {
 ///////////////////////////////
 
 // NewMsgRemovePublisherRequest returns a new MsgRemovePublisherRequest
-func NewMsgRemovePublisher(publisherDomain string, signer sdk.AccAddress) (*MsgRemovePublisherRequest, error) {
+func NewMsgRemovePublisherRequest(publisherDomain string, signer sdk.AccAddress) (*MsgRemovePublisherRequest, error) {
 	if signer == nil {
 		return nil, fmt.Errorf("no signer provided")
 	}
