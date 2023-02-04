@@ -13,9 +13,9 @@ import (
 
 const (
 	MaxDomainLength         = 256
-	MaxUrlLength            = 512
+	MaxURLLength            = 512
 	MaxCertLength           = 4096
-	MaxSubscriptionIdLength = 128
+	MaxSubscriptionIDLength = 128
 	MaxAllowedSubscribers   = 256
 )
 
@@ -63,7 +63,7 @@ func (s *Subscriber) ValidateBasic() error {
 }
 
 func (pi *PublisherIntent) ValidateBasic() error {
-	if err := ValidateSubscriptionId(pi.SubscriptionId); err != nil {
+	if err := ValidateSubscriptionID(pi.SubscriptionId); err != nil {
 		return fmt.Errorf("invalid subscription ID: %s", err.Error())
 	}
 
@@ -81,7 +81,7 @@ func (pi *PublisherIntent) ValidateBasic() error {
 			return fmt.Errorf("empty pull URL when it is required by the PULL method")
 		}
 
-		if err := ValidateGenericUrl(pi.PullUrl); err != nil {
+		if err := ValidateGenericURL(pi.PullUrl); err != nil {
 			return fmt.Errorf("invalid pull URL: %s", err.Error())
 		}
 	}
@@ -115,7 +115,7 @@ func (pi *PublisherIntent) ValidateBasic() error {
 }
 
 func (si *SubscriberIntent) ValidateBasic() error {
-	if err := ValidateSubscriptionId(si.SubscriptionId); err != nil {
+	if err := ValidateSubscriptionID(si.SubscriptionId); err != nil {
 		return fmt.Errorf("invalid subscription ID: %s", err.Error())
 	}
 
@@ -130,7 +130,7 @@ func (si *SubscriberIntent) ValidateBasic() error {
 	// PushUrl is optional, but the SubscriberIntent will be rejected if the publisher intent is using
 	// the PUSH method
 	if si.PushUrl != "" {
-		if err := ValidateGenericUrl(si.PushUrl); err != nil {
+		if err := ValidateGenericURL(si.PushUrl); err != nil {
 			return fmt.Errorf("invalid push URL: %s", err.Error())
 		}
 	}
@@ -139,7 +139,7 @@ func (si *SubscriberIntent) ValidateBasic() error {
 }
 
 func (ds *DefaultSubscription) ValidateBasic() error {
-	if err := ValidateSubscriptionId(ds.SubscriptionId); err != nil {
+	if err := ValidateSubscriptionID(ds.SubscriptionId); err != nil {
 		return fmt.Errorf("invalid subscription ID: %s", err.Error())
 	}
 
@@ -217,17 +217,17 @@ func ValidateCaCertificate(certPem string) error {
 	return nil
 }
 
-func ValidateSubscriptionId(subscriptionId string) error {
-	if subscriptionId == "" {
+func ValidateSubscriptionID(subscriptionID string) error {
+	if subscriptionID == "" {
 		return fmt.Errorf("empty subscription ID")
 	}
 
-	if len(subscriptionId) > MaxSubscriptionIdLength {
-		return fmt.Errorf("subscription ID over max length of %d: %d", MaxSubscriptionIdLength, len(subscriptionId))
+	if len(subscriptionID) > MaxSubscriptionIDLength {
+		return fmt.Errorf("subscription ID over max length of %d: %d", MaxSubscriptionIDLength, len(subscriptionID))
 	}
 
 	// TODO(bolten): any other character limitations we should add here?
-	if strings.Contains(subscriptionId, "|") {
+	if strings.Contains(subscriptionID, "|") {
 		return fmt.Errorf("subscription IDs may not contain the pipe character '|'")
 	}
 

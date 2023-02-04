@@ -23,13 +23,13 @@ var _ govtypes.Content = &RemoveDefaultSubscriptionProposal{}
 // AddPublisherProposal //
 //////////////////////////
 
-func NewAddPublisherProposal(title string, description string, domain string, address string, proofUrl string, caCert string) *AddPublisherProposal {
+func NewAddPublisherProposal(title string, description string, domain string, address string, proofURL string, caCert string) *AddPublisherProposal {
 	return &AddPublisherProposal{
 		Title:       title,
 		Description: description,
 		Domain:      domain,
 		Address:     address,
-		ProofUrl:    proofUrl,
+		ProofUrl:    proofURL,
 		CaCert:      caCert,
 	}
 }
@@ -57,33 +57,33 @@ func (p *AddPublisherProposal) ValidateBasic() error {
 		return err
 	}
 
-	return ValidateProofUrl(p.ProofUrl, p.Domain, p.Address)
+	return ValidateProofURL(p.ProofUrl, p.Domain, p.Address)
 }
 
-func ValidateProofUrl(proofUrl string, domain string, address string) error {
-	if proofUrl == "" {
+func ValidateProofURL(proofURL string, domain string, address string) error {
+	if proofURL == "" {
 		return fmt.Errorf("empty proof URL")
 	}
 
-	if err := ValidateGenericUrl(proofUrl); err != nil {
+	if err := ValidateGenericURL(proofURL); err != nil {
 		return err
 	}
 
 	validProofUrl := fmt.Sprintf("https://%s/%s/cacert.pem", domain, address)
-	if proofUrl != validProofUrl {
+	if proofURL != validProofUrl {
 		return fmt.Errorf("invalid proof URL format, should be: %s", validProofUrl)
 	}
 
 	return nil
 }
 
-func ValidateGenericUrl(urlString string) error {
+func ValidateGenericURL(urlString string) error {
 	if urlString == "" {
 		return fmt.Errorf("empty URL")
 	}
 
-	if len(urlString) > MaxUrlLength {
-		return fmt.Errorf("URL over max length of %d: %d", MaxUrlLength, len(urlString))
+	if len(urlString) > MaxURLLength {
+		return fmt.Errorf("URL over max length of %d: %d", MaxURLLength, len(urlString))
 	}
 
 	if _, err := url.Parse(urlString); err != nil {
@@ -125,11 +125,11 @@ func (p *RemovePublisherProposal) ValidateBasic() error {
 // AddDefaultSubscriptionProposal //
 ///////////////////////////////////
 
-func NewAddDefaultSubscriptionProposal(title string, description string, subscriptionId string, publisherDomain string) *AddDefaultSubscriptionProposal {
+func NewAddDefaultSubscriptionProposal(title string, description string, subscriptionID string, publisherDomain string) *AddDefaultSubscriptionProposal {
 	return &AddDefaultSubscriptionProposal{
 		Title:           title,
 		Description:     description,
-		SubscriptionId:  subscriptionId,
+		SubscriptionId:  subscriptionID,
 		PublisherDomain: publisherDomain,
 	}
 }
@@ -159,11 +159,11 @@ func (p *AddDefaultSubscriptionProposal) ValidateBasic() error {
 // RemoveDefaultSubscriptionProposal //
 ///////////////////////////////////////
 
-func NewRemoveDefaultSubscriptionProposal(title string, description string, subscriptionId string) *RemoveDefaultSubscriptionProposal {
+func NewRemoveDefaultSubscriptionProposal(title string, description string, subscriptionID string) *RemoveDefaultSubscriptionProposal {
 	return &RemoveDefaultSubscriptionProposal{
 		Title:          title,
 		Description:    description,
-		SubscriptionId: subscriptionId,
+		SubscriptionId: subscriptionID,
 	}
 }
 
@@ -180,5 +180,5 @@ func (p *RemoveDefaultSubscriptionProposal) ValidateBasic() error {
 		return err
 	}
 
-	return ValidateSubscriptionId(p.SubscriptionId)
+	return ValidateSubscriptionID(p.SubscriptionId)
 }

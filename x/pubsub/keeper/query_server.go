@@ -82,7 +82,7 @@ func (k Keeper) QueryPublisherIntent(c context.Context, req *types.QueryPublishe
 		return nil, status.Error(codes.InvalidArgument, fmt.Sprintf("invalid publisher domain: %s", err.Error()))
 	}
 
-	if err := types.ValidateSubscriptionId(req.SubscriptionId); err != nil {
+	if err := types.ValidateSubscriptionID(req.SubscriptionId); err != nil {
 		return nil, status.Error(codes.InvalidArgument, fmt.Sprintf("invalid subscription ID: %s", err.Error()))
 	}
 
@@ -116,16 +116,16 @@ func (k Keeper) QueryPublisherIntentsByPublisherDomain(c context.Context, req *t
 	}, nil
 }
 
-func (k Keeper) QueryPublisherIntentsBySubscriptionId(c context.Context, req *types.QueryPublisherIntentsBySubscriptionIdRequest) (*types.QueryPublisherIntentsBySubscriptionIdResponse, error) {
+func (k Keeper) QueryPublisherIntentsBySubscriptionID(c context.Context, req *types.QueryPublisherIntentsBySubscriptionIDRequest) (*types.QueryPublisherIntentsBySubscriptionIDResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "empty request")
 	}
 
-	if err := types.ValidateSubscriptionId(req.SubscriptionId); err != nil {
+	if err := types.ValidateSubscriptionID(req.SubscriptionId); err != nil {
 		return nil, status.Error(codes.InvalidArgument, fmt.Sprintf("invalid subscription ID: %s", err.Error()))
 	}
 
-	return &types.QueryPublisherIntentsBySubscriptionIdResponse{
+	return &types.QueryPublisherIntentsBySubscriptionIDResponse{
 		PublisherIntents: k.GetPublisherIntentsBySubscriptionID(sdk.UnwrapSDKContext(c), req.SubscriptionId),
 	}, nil
 }
@@ -140,7 +140,7 @@ func (k Keeper) QuerySubscriberIntent(c context.Context, req *types.QuerySubscri
 		return nil, status.Error(codes.InvalidArgument, fmt.Sprintf("invalid subscriber address :%s", err.Error()))
 	}
 
-	if err := types.ValidateSubscriptionId(req.SubscriptionId); err != nil {
+	if err := types.ValidateSubscriptionID(req.SubscriptionId); err != nil {
 		return nil, status.Error(codes.InvalidArgument, fmt.Sprintf("invalid subscription ID: %s", err.Error()))
 	}
 
@@ -175,16 +175,16 @@ func (k Keeper) QuerySubscriberIntentsBySubscriberAddress(c context.Context, req
 	}, nil
 }
 
-func (k Keeper) QuerySubscriberIntentsBySubscriptionId(c context.Context, req *types.QuerySubscriberIntentsBySubscriptionIdRequest) (*types.QuerySubscriberIntentsBySubscriptionIdResponse, error) {
+func (k Keeper) QuerySubscriberIntentsBySubscriptionID(c context.Context, req *types.QuerySubscriberIntentsBySubscriptionIDRequest) (*types.QuerySubscriberIntentsBySubscriptionIDResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "empty request")
 	}
 
-	if err := types.ValidateSubscriptionId(req.SubscriptionId); err != nil {
+	if err := types.ValidateSubscriptionID(req.SubscriptionId); err != nil {
 		return nil, status.Error(codes.InvalidArgument, fmt.Sprintf("invalid subscription ID: %s", err.Error()))
 	}
 
-	return &types.QuerySubscriberIntentsBySubscriptionIdResponse{
+	return &types.QuerySubscriberIntentsBySubscriptionIDResponse{
 		SubscriberIntents: k.GetSubscriberIntentsBySubscriptionID(sdk.UnwrapSDKContext(c), req.SubscriptionId),
 	}, nil
 }
@@ -208,7 +208,7 @@ func (k Keeper) QueryDefaultSubscription(c context.Context, req *types.QueryDefa
 		return nil, status.Error(codes.InvalidArgument, "empty request")
 	}
 
-	if err := types.ValidateSubscriptionId(req.SubscriptionId); err != nil {
+	if err := types.ValidateSubscriptionID(req.SubscriptionId); err != nil {
 		return nil, status.Error(codes.InvalidArgument, fmt.Sprintf("invalid subscription id: %s", err.Error()))
 	}
 

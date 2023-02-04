@@ -64,7 +64,7 @@ func (k Keeper) AddSubscriberIntent(c context.Context, msg *types.MsgAddSubscrib
 		return nil, sdkerrors.Wrapf(types.ErrInvalid, "invalid subscriber intent: %s", err.Error())
 	}
 
-	subscriptionId := subscriberIntent.SubscriptionId
+	subscriptionID := subscriberIntent.SubscriptionId
 	subscriberAddress := subscriberIntent.SubscriberAddress
 	publisherDomain := subscriberIntent.PublisherDomain
 
@@ -86,9 +86,9 @@ func (k Keeper) AddSubscriberIntent(c context.Context, msg *types.MsgAddSubscrib
 		return nil, sdkerrors.Wrapf(types.ErrAlreadyExists, "subscriber already has intent for this subscription ID, must be removed first")
 	}
 
-	publisherIntent, found := k.GetPublisherIntent(ctx, subscriptionId, publisherDomain)
+	publisherIntent, found := k.GetPublisherIntent(ctx, subscriptionID, publisherDomain)
 	if !found {
-		return nil, sdkerrors.Wrapf(sdkerrors.ErrNotFound, "no publisher intent for domain %s and subscription ID %s found", publisherDomain, subscriptionId)
+		return nil, sdkerrors.Wrapf(sdkerrors.ErrNotFound, "no publisher intent for domain %s and subscription ID %s found", publisherDomain, subscriptionID)
 	}
 
 	if publisherIntent.AllowedSubscribers == types.AllowedSubscribers_VALIDATORS {
@@ -182,10 +182,10 @@ func (k Keeper) AddSubscriber(c context.Context, msg *types.MsgAddSubscriberRequ
 
 func (k Keeper) RemovePublisherIntent(c context.Context, msg *types.MsgRemovePublisherIntentRequest) (*types.MsgRemovePublisherIntentResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
-	subscriptionId := msg.SubscriptionId
+	subscriptionID := msg.SubscriptionId
 	publisherDomain := msg.PublisherDomain
 
-	if err := types.ValidateSubscriptionId(subscriptionId); err != nil {
+	if err := types.ValidateSubscriptionID(subscriptionID); err != nil {
 		return nil, sdkerrors.Wrapf(types.ErrInvalid, "invalid subscription ID: %s", err.Error())
 	}
 
@@ -203,12 +203,12 @@ func (k Keeper) RemovePublisherIntent(c context.Context, msg *types.MsgRemovePub
 		return nil, sdkerrors.Wrapf(sdkerrors.ErrUnauthorized, "registered publisher address must be signer: %s", publisher.Address)
 	}
 
-	_, found = k.GetPublisherIntent(ctx, subscriptionId, publisherDomain)
+	_, found = k.GetPublisherIntent(ctx, subscriptionID, publisherDomain)
 	if !found {
-		return nil, sdkerrors.Wrapf(sdkerrors.ErrNotFound, "no publisher intent for domain %s and subscription ID %s found", publisherDomain, subscriptionId)
+		return nil, sdkerrors.Wrapf(sdkerrors.ErrNotFound, "no publisher intent for domain %s and subscription ID %s found", publisherDomain, subscriptionID)
 	}
 
-	k.DeletePublisherIntent(ctx, subscriptionId, publisherDomain)
+	k.DeletePublisherIntent(ctx, subscriptionID, publisherDomain)
 
 	ctx.EventManager().EmitEvents(
 		sdk.Events{
@@ -220,7 +220,7 @@ func (k Keeper) RemovePublisherIntent(c context.Context, msg *types.MsgRemovePub
 			),
 			sdk.NewEvent(
 				types.EventTypeRemovePublisherIntent,
-				sdk.NewAttribute(types.AttributeKeySubscriptionID, subscriptionId),
+				sdk.NewAttribute(types.AttributeKeySubscriptionID, subscriptionID),
 				sdk.NewAttribute(types.AttributeKeyPublisherDomain, publisherDomain),
 			),
 		},
@@ -231,10 +231,10 @@ func (k Keeper) RemovePublisherIntent(c context.Context, msg *types.MsgRemovePub
 
 func (k Keeper) RemoveSubscriberIntent(c context.Context, msg *types.MsgRemoveSubscriberIntentRequest) (*types.MsgRemoveSubscriberIntentResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
-	subscriptionId := msg.SubscriptionId
+	subscriptionID := msg.SubscriptionId
 	subscriberAddress := msg.SubscriberAddress
 
-	if err := types.ValidateSubscriptionId(subscriptionId); err != nil {
+	if err := types.ValidateSubscriptionID(subscriptionID); err != nil {
 		return nil, sdkerrors.Wrapf(types.ErrInvalid, "invalid subscription ID: %s", err.Error())
 	}
 
@@ -254,12 +254,12 @@ func (k Keeper) RemoveSubscriberIntent(c context.Context, msg *types.MsgRemoveSu
 		return nil, sdkerrors.Wrapf(sdkerrors.ErrUnauthorized, "registered subscriber address must be signer: %s", subscriber.Address)
 	}
 
-	subscriberIntent, found := k.GetSubscriberIntent(ctx, subscriptionId, subscriberAccAddress)
+	subscriberIntent, found := k.GetSubscriberIntent(ctx, subscriptionID, subscriberAccAddress)
 	if !found {
-		return nil, sdkerrors.Wrapf(sdkerrors.ErrNotFound, "no subscriber intent for address %s and subscription ID %s found", subscriberAddress, subscriptionId)
+		return nil, sdkerrors.Wrapf(sdkerrors.ErrNotFound, "no subscriber intent for address %s and subscription ID %s found", subscriberAddress, subscriptionID)
 	}
 
-	k.DeleteSubscriberIntent(ctx, subscriptionId, subscriberAccAddress, subscriberIntent.PublisherDomain)
+	k.DeleteSubscriberIntent(ctx, subscriptionID, subscriberAccAddress, subscriberIntent.PublisherDomain)
 
 	ctx.EventManager().EmitEvents(
 		sdk.Events{
@@ -271,7 +271,7 @@ func (k Keeper) RemoveSubscriberIntent(c context.Context, msg *types.MsgRemoveSu
 			),
 			sdk.NewEvent(
 				types.EventTypeRemoveSubscriberIntent,
-				sdk.NewAttribute(types.AttributeKeySubscriptionID, subscriptionId),
+				sdk.NewAttribute(types.AttributeKeySubscriptionID, subscriptionID),
 				sdk.NewAttribute(types.AttributeKeySubscriberAddress, subscriberAddress),
 				sdk.NewAttribute(types.AttributeKeyPublisherDomain, subscriberIntent.PublisherDomain),
 			),

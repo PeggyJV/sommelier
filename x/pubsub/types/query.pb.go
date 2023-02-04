@@ -718,26 +718,26 @@ func (m *QueryPublisherIntentsByPublisherDomainResponse) GetPublisherIntents() [
 	return nil
 }
 
-type QueryPublisherIntentsBySubscriptionIdRequest struct {
+type QueryPublisherIntentsBySubscriptionIDRequest struct {
 	SubscriptionId string `protobuf:"bytes,1,opt,name=subscription_id,json=subscriptionId,proto3" json:"subscription_id,omitempty"`
 }
 
-func (m *QueryPublisherIntentsBySubscriptionIdRequest) Reset() {
-	*m = QueryPublisherIntentsBySubscriptionIdRequest{}
+func (m *QueryPublisherIntentsBySubscriptionIDRequest) Reset() {
+	*m = QueryPublisherIntentsBySubscriptionIDRequest{}
 }
-func (m *QueryPublisherIntentsBySubscriptionIdRequest) String() string {
+func (m *QueryPublisherIntentsBySubscriptionIDRequest) String() string {
 	return proto.CompactTextString(m)
 }
-func (*QueryPublisherIntentsBySubscriptionIdRequest) ProtoMessage() {}
-func (*QueryPublisherIntentsBySubscriptionIdRequest) Descriptor() ([]byte, []int) {
+func (*QueryPublisherIntentsBySubscriptionIDRequest) ProtoMessage() {}
+func (*QueryPublisherIntentsBySubscriptionIDRequest) Descriptor() ([]byte, []int) {
 	return fileDescriptor_1eae429cdae9f3b6, []int{16}
 }
-func (m *QueryPublisherIntentsBySubscriptionIdRequest) XXX_Unmarshal(b []byte) error {
+func (m *QueryPublisherIntentsBySubscriptionIDRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *QueryPublisherIntentsBySubscriptionIdRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *QueryPublisherIntentsBySubscriptionIDRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_QueryPublisherIntentsBySubscriptionIdRequest.Marshal(b, m, deterministic)
+		return xxx_messageInfo_QueryPublisherIntentsBySubscriptionIDRequest.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -747,45 +747,45 @@ func (m *QueryPublisherIntentsBySubscriptionIdRequest) XXX_Marshal(b []byte, det
 		return b[:n], nil
 	}
 }
-func (m *QueryPublisherIntentsBySubscriptionIdRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_QueryPublisherIntentsBySubscriptionIdRequest.Merge(m, src)
+func (m *QueryPublisherIntentsBySubscriptionIDRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryPublisherIntentsBySubscriptionIDRequest.Merge(m, src)
 }
-func (m *QueryPublisherIntentsBySubscriptionIdRequest) XXX_Size() int {
+func (m *QueryPublisherIntentsBySubscriptionIDRequest) XXX_Size() int {
 	return m.Size()
 }
-func (m *QueryPublisherIntentsBySubscriptionIdRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_QueryPublisherIntentsBySubscriptionIdRequest.DiscardUnknown(m)
+func (m *QueryPublisherIntentsBySubscriptionIDRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryPublisherIntentsBySubscriptionIDRequest.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_QueryPublisherIntentsBySubscriptionIdRequest proto.InternalMessageInfo
+var xxx_messageInfo_QueryPublisherIntentsBySubscriptionIDRequest proto.InternalMessageInfo
 
-func (m *QueryPublisherIntentsBySubscriptionIdRequest) GetSubscriptionId() string {
+func (m *QueryPublisherIntentsBySubscriptionIDRequest) GetSubscriptionId() string {
 	if m != nil {
 		return m.SubscriptionId
 	}
 	return ""
 }
 
-type QueryPublisherIntentsBySubscriptionIdResponse struct {
+type QueryPublisherIntentsBySubscriptionIDResponse struct {
 	PublisherIntents []*PublisherIntent `protobuf:"bytes,1,rep,name=publisher_intents,json=publisherIntents,proto3" json:"publisher_intents,omitempty"`
 }
 
-func (m *QueryPublisherIntentsBySubscriptionIdResponse) Reset() {
-	*m = QueryPublisherIntentsBySubscriptionIdResponse{}
+func (m *QueryPublisherIntentsBySubscriptionIDResponse) Reset() {
+	*m = QueryPublisherIntentsBySubscriptionIDResponse{}
 }
-func (m *QueryPublisherIntentsBySubscriptionIdResponse) String() string {
+func (m *QueryPublisherIntentsBySubscriptionIDResponse) String() string {
 	return proto.CompactTextString(m)
 }
-func (*QueryPublisherIntentsBySubscriptionIdResponse) ProtoMessage() {}
-func (*QueryPublisherIntentsBySubscriptionIdResponse) Descriptor() ([]byte, []int) {
+func (*QueryPublisherIntentsBySubscriptionIDResponse) ProtoMessage() {}
+func (*QueryPublisherIntentsBySubscriptionIDResponse) Descriptor() ([]byte, []int) {
 	return fileDescriptor_1eae429cdae9f3b6, []int{17}
 }
-func (m *QueryPublisherIntentsBySubscriptionIdResponse) XXX_Unmarshal(b []byte) error {
+func (m *QueryPublisherIntentsBySubscriptionIDResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *QueryPublisherIntentsBySubscriptionIdResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *QueryPublisherIntentsBySubscriptionIDResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_QueryPublisherIntentsBySubscriptionIdResponse.Marshal(b, m, deterministic)
+		return xxx_messageInfo_QueryPublisherIntentsBySubscriptionIDResponse.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -795,19 +795,19 @@ func (m *QueryPublisherIntentsBySubscriptionIdResponse) XXX_Marshal(b []byte, de
 		return b[:n], nil
 	}
 }
-func (m *QueryPublisherIntentsBySubscriptionIdResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_QueryPublisherIntentsBySubscriptionIdResponse.Merge(m, src)
+func (m *QueryPublisherIntentsBySubscriptionIDResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryPublisherIntentsBySubscriptionIDResponse.Merge(m, src)
 }
-func (m *QueryPublisherIntentsBySubscriptionIdResponse) XXX_Size() int {
+func (m *QueryPublisherIntentsBySubscriptionIDResponse) XXX_Size() int {
 	return m.Size()
 }
-func (m *QueryPublisherIntentsBySubscriptionIdResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_QueryPublisherIntentsBySubscriptionIdResponse.DiscardUnknown(m)
+func (m *QueryPublisherIntentsBySubscriptionIDResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryPublisherIntentsBySubscriptionIDResponse.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_QueryPublisherIntentsBySubscriptionIdResponse proto.InternalMessageInfo
+var xxx_messageInfo_QueryPublisherIntentsBySubscriptionIDResponse proto.InternalMessageInfo
 
-func (m *QueryPublisherIntentsBySubscriptionIdResponse) GetPublisherIntents() []*PublisherIntent {
+func (m *QueryPublisherIntentsBySubscriptionIDResponse) GetPublisherIntents() []*PublisherIntent {
 	if m != nil {
 		return m.PublisherIntents
 	}
@@ -1086,26 +1086,26 @@ func (m *QuerySubscriberIntentsBySubscriberAddressResponse) GetSubscriberIntents
 	return nil
 }
 
-type QuerySubscriberIntentsBySubscriptionIdRequest struct {
+type QuerySubscriberIntentsBySubscriptionIDRequest struct {
 	SubscriptionId string `protobuf:"bytes,1,opt,name=subscription_id,json=subscriptionId,proto3" json:"subscription_id,omitempty"`
 }
 
-func (m *QuerySubscriberIntentsBySubscriptionIdRequest) Reset() {
-	*m = QuerySubscriberIntentsBySubscriptionIdRequest{}
+func (m *QuerySubscriberIntentsBySubscriptionIDRequest) Reset() {
+	*m = QuerySubscriberIntentsBySubscriptionIDRequest{}
 }
-func (m *QuerySubscriberIntentsBySubscriptionIdRequest) String() string {
+func (m *QuerySubscriberIntentsBySubscriptionIDRequest) String() string {
 	return proto.CompactTextString(m)
 }
-func (*QuerySubscriberIntentsBySubscriptionIdRequest) ProtoMessage() {}
-func (*QuerySubscriberIntentsBySubscriptionIdRequest) Descriptor() ([]byte, []int) {
+func (*QuerySubscriberIntentsBySubscriptionIDRequest) ProtoMessage() {}
+func (*QuerySubscriberIntentsBySubscriptionIDRequest) Descriptor() ([]byte, []int) {
 	return fileDescriptor_1eae429cdae9f3b6, []int{24}
 }
-func (m *QuerySubscriberIntentsBySubscriptionIdRequest) XXX_Unmarshal(b []byte) error {
+func (m *QuerySubscriberIntentsBySubscriptionIDRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *QuerySubscriberIntentsBySubscriptionIdRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *QuerySubscriberIntentsBySubscriptionIDRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_QuerySubscriberIntentsBySubscriptionIdRequest.Marshal(b, m, deterministic)
+		return xxx_messageInfo_QuerySubscriberIntentsBySubscriptionIDRequest.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -1115,45 +1115,45 @@ func (m *QuerySubscriberIntentsBySubscriptionIdRequest) XXX_Marshal(b []byte, de
 		return b[:n], nil
 	}
 }
-func (m *QuerySubscriberIntentsBySubscriptionIdRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_QuerySubscriberIntentsBySubscriptionIdRequest.Merge(m, src)
+func (m *QuerySubscriberIntentsBySubscriptionIDRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QuerySubscriberIntentsBySubscriptionIDRequest.Merge(m, src)
 }
-func (m *QuerySubscriberIntentsBySubscriptionIdRequest) XXX_Size() int {
+func (m *QuerySubscriberIntentsBySubscriptionIDRequest) XXX_Size() int {
 	return m.Size()
 }
-func (m *QuerySubscriberIntentsBySubscriptionIdRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_QuerySubscriberIntentsBySubscriptionIdRequest.DiscardUnknown(m)
+func (m *QuerySubscriberIntentsBySubscriptionIDRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_QuerySubscriberIntentsBySubscriptionIDRequest.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_QuerySubscriberIntentsBySubscriptionIdRequest proto.InternalMessageInfo
+var xxx_messageInfo_QuerySubscriberIntentsBySubscriptionIDRequest proto.InternalMessageInfo
 
-func (m *QuerySubscriberIntentsBySubscriptionIdRequest) GetSubscriptionId() string {
+func (m *QuerySubscriberIntentsBySubscriptionIDRequest) GetSubscriptionId() string {
 	if m != nil {
 		return m.SubscriptionId
 	}
 	return ""
 }
 
-type QuerySubscriberIntentsBySubscriptionIdResponse struct {
+type QuerySubscriberIntentsBySubscriptionIDResponse struct {
 	SubscriberIntents []*SubscriberIntent `protobuf:"bytes,1,rep,name=subscriber_intents,json=subscriberIntents,proto3" json:"subscriber_intents,omitempty"`
 }
 
-func (m *QuerySubscriberIntentsBySubscriptionIdResponse) Reset() {
-	*m = QuerySubscriberIntentsBySubscriptionIdResponse{}
+func (m *QuerySubscriberIntentsBySubscriptionIDResponse) Reset() {
+	*m = QuerySubscriberIntentsBySubscriptionIDResponse{}
 }
-func (m *QuerySubscriberIntentsBySubscriptionIdResponse) String() string {
+func (m *QuerySubscriberIntentsBySubscriptionIDResponse) String() string {
 	return proto.CompactTextString(m)
 }
-func (*QuerySubscriberIntentsBySubscriptionIdResponse) ProtoMessage() {}
-func (*QuerySubscriberIntentsBySubscriptionIdResponse) Descriptor() ([]byte, []int) {
+func (*QuerySubscriberIntentsBySubscriptionIDResponse) ProtoMessage() {}
+func (*QuerySubscriberIntentsBySubscriptionIDResponse) Descriptor() ([]byte, []int) {
 	return fileDescriptor_1eae429cdae9f3b6, []int{25}
 }
-func (m *QuerySubscriberIntentsBySubscriptionIdResponse) XXX_Unmarshal(b []byte) error {
+func (m *QuerySubscriberIntentsBySubscriptionIDResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *QuerySubscriberIntentsBySubscriptionIdResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *QuerySubscriberIntentsBySubscriptionIDResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_QuerySubscriberIntentsBySubscriptionIdResponse.Marshal(b, m, deterministic)
+		return xxx_messageInfo_QuerySubscriberIntentsBySubscriptionIDResponse.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -1163,19 +1163,19 @@ func (m *QuerySubscriberIntentsBySubscriptionIdResponse) XXX_Marshal(b []byte, d
 		return b[:n], nil
 	}
 }
-func (m *QuerySubscriberIntentsBySubscriptionIdResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_QuerySubscriberIntentsBySubscriptionIdResponse.Merge(m, src)
+func (m *QuerySubscriberIntentsBySubscriptionIDResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QuerySubscriberIntentsBySubscriptionIDResponse.Merge(m, src)
 }
-func (m *QuerySubscriberIntentsBySubscriptionIdResponse) XXX_Size() int {
+func (m *QuerySubscriberIntentsBySubscriptionIDResponse) XXX_Size() int {
 	return m.Size()
 }
-func (m *QuerySubscriberIntentsBySubscriptionIdResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_QuerySubscriberIntentsBySubscriptionIdResponse.DiscardUnknown(m)
+func (m *QuerySubscriberIntentsBySubscriptionIDResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_QuerySubscriberIntentsBySubscriptionIDResponse.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_QuerySubscriberIntentsBySubscriptionIdResponse proto.InternalMessageInfo
+var xxx_messageInfo_QuerySubscriberIntentsBySubscriptionIDResponse proto.InternalMessageInfo
 
-func (m *QuerySubscriberIntentsBySubscriptionIdResponse) GetSubscriberIntents() []*SubscriberIntent {
+func (m *QuerySubscriberIntentsBySubscriptionIDResponse) GetSubscriberIntents() []*SubscriberIntent {
 	if m != nil {
 		return m.SubscriberIntents
 	}
@@ -1463,16 +1463,16 @@ func init() {
 	proto.RegisterType((*QueryPublisherIntentsResponse)(nil), "pubsub.v1.QueryPublisherIntentsResponse")
 	proto.RegisterType((*QueryPublisherIntentsByPublisherDomainRequest)(nil), "pubsub.v1.QueryPublisherIntentsByPublisherDomainRequest")
 	proto.RegisterType((*QueryPublisherIntentsByPublisherDomainResponse)(nil), "pubsub.v1.QueryPublisherIntentsByPublisherDomainResponse")
-	proto.RegisterType((*QueryPublisherIntentsBySubscriptionIdRequest)(nil), "pubsub.v1.QueryPublisherIntentsBySubscriptionIdRequest")
-	proto.RegisterType((*QueryPublisherIntentsBySubscriptionIdResponse)(nil), "pubsub.v1.QueryPublisherIntentsBySubscriptionIdResponse")
+	proto.RegisterType((*QueryPublisherIntentsBySubscriptionIDRequest)(nil), "pubsub.v1.QueryPublisherIntentsBySubscriptionIDRequest")
+	proto.RegisterType((*QueryPublisherIntentsBySubscriptionIDResponse)(nil), "pubsub.v1.QueryPublisherIntentsBySubscriptionIDResponse")
 	proto.RegisterType((*QuerySubscriberIntentRequest)(nil), "pubsub.v1.QuerySubscriberIntentRequest")
 	proto.RegisterType((*QuerySubscriberIntentResponse)(nil), "pubsub.v1.QuerySubscriberIntentResponse")
 	proto.RegisterType((*QuerySubscriberIntentsRequest)(nil), "pubsub.v1.QuerySubscriberIntentsRequest")
 	proto.RegisterType((*QuerySubscriberIntentsResponse)(nil), "pubsub.v1.QuerySubscriberIntentsResponse")
 	proto.RegisterType((*QuerySubscriberIntentsBySubscriberAddressRequest)(nil), "pubsub.v1.QuerySubscriberIntentsBySubscriberAddressRequest")
 	proto.RegisterType((*QuerySubscriberIntentsBySubscriberAddressResponse)(nil), "pubsub.v1.QuerySubscriberIntentsBySubscriberAddressResponse")
-	proto.RegisterType((*QuerySubscriberIntentsBySubscriptionIdRequest)(nil), "pubsub.v1.QuerySubscriberIntentsBySubscriptionIdRequest")
-	proto.RegisterType((*QuerySubscriberIntentsBySubscriptionIdResponse)(nil), "pubsub.v1.QuerySubscriberIntentsBySubscriptionIdResponse")
+	proto.RegisterType((*QuerySubscriberIntentsBySubscriptionIDRequest)(nil), "pubsub.v1.QuerySubscriberIntentsBySubscriptionIDRequest")
+	proto.RegisterType((*QuerySubscriberIntentsBySubscriptionIDResponse)(nil), "pubsub.v1.QuerySubscriberIntentsBySubscriptionIDResponse")
 	proto.RegisterType((*QuerySubscriberIntentsByPublisherDomainRequest)(nil), "pubsub.v1.QuerySubscriberIntentsByPublisherDomainRequest")
 	proto.RegisterType((*QuerySubscriberIntentsByPublisherDomainResponse)(nil), "pubsub.v1.QuerySubscriberIntentsByPublisherDomainResponse")
 	proto.RegisterType((*QueryDefaultSubscriptionRequest)(nil), "pubsub.v1.QueryDefaultSubscriptionRequest")
@@ -1484,7 +1484,7 @@ func init() {
 func init() { proto.RegisterFile("pubsub/v1/query.proto", fileDescriptor_1eae429cdae9f3b6) }
 
 var fileDescriptor_1eae429cdae9f3b6 = []byte{
-	// 1232 bytes of a gzipped FileDescriptorProto
+	// 1233 bytes of a gzipped FileDescriptorProto
 	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xb4, 0x58, 0x4b, 0x6f, 0x1c, 0x45,
 	0x10, 0xf6, 0x04, 0xb0, 0xe4, 0x8a, 0x14, 0xdb, 0x95, 0x75, 0xe2, 0xac, 0xe3, 0xb1, 0xdd, 0x11,
 	0x7e, 0xe1, 0xec, 0x60, 0xe3, 0xc8, 0x79, 0x81, 0x14, 0xcb, 0x90, 0x07, 0x21, 0x38, 0x36, 0x02,
@@ -1516,52 +1516,53 @@ var fileDescriptor_1eae429cdae9f3b6 = []byte{
 	0x87, 0x9d, 0xf1, 0xfa, 0x15, 0x45, 0x2f, 0xcb, 0x6f, 0xc7, 0x78, 0x02, 0x03, 0xd1, 0xc5, 0x69,
 	0xa2, 0x72, 0x6e, 0xc3, 0xb8, 0xe4, 0x9c, 0xe3, 0xb8, 0x0d, 0xc3, 0x69, 0x1c, 0x61, 0x65, 0xbb,
 	0x01, 0x19, 0x4a, 0x01, 0xa1, 0xe4, 0x11, 0x5c, 0x16, 0x66, 0x5a, 0x8d, 0x2d, 0x41, 0x0d, 0x7b,
-	0x98, 0xc1, 0x3d, 0x28, 0xa9, 0xc6, 0x7e, 0xd1, 0xb4, 0x3e, 0x82, 0x05, 0x49, 0xea, 0xcd, 0x8e,
-	0x07, 0x0f, 0x59, 0x09, 0x1a, 0x44, 0x13, 0x36, 0xc8, 0xae, 0xb4, 0x5e, 0xe9, 0xc0, 0x2f, 0x9a,
-	0x52, 0x9b, 0xf7, 0x4c, 0x3c, 0x2d, 0x9d, 0xe3, 0x70, 0xbc, 0xf5, 0xa0, 0x3e, 0x12, 0x0e, 0xef,
-	0xc5, 0x6c, 0x5e, 0xce, 0xf0, 0x0e, 0x24, 0xc2, 0x77, 0x0e, 0xc5, 0x98, 0x70, 0xca, 0x43, 0x8a,
-	0x34, 0x65, 0x21, 0x13, 0x92, 0x54, 0xd1, 0x5c, 0xd4, 0x40, 0x97, 0x39, 0x70, 0x30, 0xf7, 0x3a,
-	0xaa, 0xd0, 0x59, 0xef, 0xae, 0x68, 0x86, 0xd3, 0x68, 0x28, 0x31, 0xe1, 0x75, 0x71, 0xb6, 0xd5,
-	0x84, 0x89, 0xd7, 0xb3, 0xc7, 0x25, 0xfd, 0x05, 0x2c, 0x1e, 0x23, 0xc5, 0x09, 0x70, 0xfc, 0x98,
-	0xf7, 0xb3, 0x1c, 0x40, 0xaf, 0x93, 0xf2, 0x39, 0x9f, 0x7e, 0x85, 0xc8, 0x27, 0xc0, 0xeb, 0x13,
-	0x79, 0xf6, 0xe7, 0x5f, 0x6c, 0xfb, 0x60, 0x28, 0x07, 0x3f, 0x01, 0x6e, 0xf7, 0x60, 0x82, 0xa5,
-	0x5f, 0xb3, 0x3f, 0x35, 0x5b, 0x35, 0x3f, 0x59, 0xcd, 0x63, 0xbf, 0x52, 0x0b, 0x26, 0xe5, 0xb1,
-	0x38, 0xf6, 0x87, 0x50, 0xa8, 0x04, 0xc7, 0xe5, 0xe4, 0x6d, 0x3e, 0xe3, 0x7a, 0x02, 0xbd, 0x28,
-	0xca, 0xd9, 0x4a, 0xd6, 0x48, 0x88, 0x3c, 0x6d, 0x34, 0xec, 0xbb, 0x30, 0xd5, 0xc5, 0x87, 0x63,
-	0xdb, 0x84, 0x11, 0x11, 0xb6, 0xb0, 0xb4, 0x79, 0xe0, 0x0a, 0x02, 0x70, 0x74, 0xe9, 0x9b, 0xf3,
-	0xf0, 0x0a, 0x4b, 0x8d, 0x35, 0xe8, 0x0f, 0x24, 0x2a, 0x8e, 0x27, 0x22, 0x65, 0xb5, 0x6f, 0x51,
-	0x97, 0x1d, 0x07, 0x38, 0xc9, 0xa5, 0xaf, 0x7e, 0xff, 0xeb, 0xfb, 0x53, 0xe3, 0x38, 0x66, 0x50,
-	0xb7, 0x5e, 0xb7, 0x6b, 0x8e, 0xdd, 0x34, 0xd2, 0xa2, 0x1b, 0xbf, 0xd3, 0xe0, 0x4c, 0xe7, 0xaf,
-	0x0b, 0x4e, 0x66, 0xe2, 0xa6, 0x44, 0x71, 0x71, 0xaa, 0x8b, 0x07, 0x4f, 0x7e, 0x9d, 0x25, 0x5f,
-	0xc6, 0x25, 0x71, 0xf2, 0x48, 0x7c, 0x1a, 0x8f, 0xd3, 0x13, 0xb0, 0x8f, 0x5f, 0x6a, 0x30, 0x98,
-	0x52, 0xb8, 0x28, 0x4f, 0x19, 0xd5, 0x83, 0x74, 0x73, 0xe1, 0xb0, 0x66, 0x18, 0xac, 0x29, 0x9c,
-	0xc8, 0x81, 0x85, 0x3f, 0x84, 0x18, 0xe2, 0xe9, 0xc8, 0x62, 0xc8, 0x08, 0xe6, 0x2c, 0x86, 0xac,
-	0x14, 0x26, 0x6f, 0x32, 0x0c, 0x2b, 0x78, 0x45, 0x88, 0x21, 0xa1, 0x46, 0x8d, 0xc7, 0xd9, 0xbd,
-	0xbe, 0x8f, 0x5f, 0x6b, 0x30, 0x94, 0x16, 0xbe, 0xd8, 0x25, 0x6f, 0x54, 0x9f, 0x4b, 0x5d, 0x7d,
-	0x38, 0xb8, 0x59, 0x06, 0x8e, 0xe0, 0x64, 0x1e, 0x38, 0xfc, 0x55, 0x83, 0x82, 0x48, 0x97, 0xe0,
-	0xb4, 0xf4, 0x1d, 0x3a, 0xd4, 0x43, 0x71, 0x26, 0xd7, 0x8f, 0x63, 0xda, 0x64, 0x98, 0xde, 0xc3,
-	0x77, 0xbb, 0x3f, 0x5a, 0xb8, 0xe2, 0x04, 0x2d, 0x15, 0x55, 0x32, 0x5c, 0x4d, 0xfb, 0xf8, 0xa3,
-	0x96, 0xfe, 0x97, 0x8f, 0xef, 0x3a, 0xcc, 0xc3, 0x15, 0x15, 0x74, 0x36, 0xdf, 0x91, 0x33, 0x28,
-	0x31, 0x06, 0xb3, 0x38, 0xad, 0xc6, 0x00, 0x9f, 0x69, 0x30, 0xad, 0xa6, 0x63, 0xf1, 0x6a, 0x1e,
-	0x08, 0xd9, 0xaf, 0x4f, 0xf1, 0x5a, 0x0f, 0x37, 0x39, 0x9f, 0x5b, 0x8c, 0xcf, 0x0d, 0xbc, 0xd6,
-	0xf3, 0x8b, 0xe0, 0x3f, 0x1a, 0xbc, 0xaa, 0x24, 0x6b, 0x71, 0x25, 0x1f, 0xa7, 0x50, 0x37, 0x14,
-	0xaf, 0x1e, 0xff, 0x62, 0x6f, 0x1d, 0x57, 0xb6, 0xf6, 0xca, 0xa9, 0x06, 0x13, 0x74, 0xdc, 0x6f,
-	0x61, 0xc7, 0xa5, 0x7f, 0x70, 0xb3, 0x1d, 0x27, 0x11, 0xdc, 0xd9, 0x8e, 0x93, 0x29, 0x64, 0xf2,
-	0x21, 0x63, 0xb0, 0x8e, 0x0f, 0x72, 0xe6, 0x38, 0x7e, 0x22, 0xc1, 0xae, 0x11, 0x90, 0xf8, 0x49,
-	0xcb, 0x7c, 0x2c, 0x08, 0xe7, 0x26, 0x17, 0x5c, 0x34, 0x38, 0x73, 0x0a, 0x9e, 0x9c, 0x87, 0xc1,
-	0x78, 0xcc, 0xe1, 0x8c, 0x22, 0x0f, 0xfc, 0x5b, 0x83, 0x39, 0x65, 0x7d, 0x8b, 0x37, 0x72, 0x91,
-	0xc8, 0x85, 0x77, 0xf1, 0x66, 0x6f, 0x97, 0x39, 0xb3, 0x35, 0xc6, 0xec, 0x2d, 0xbc, 0xf9, 0x3c,
-	0x2f, 0x84, 0xff, 0x86, 0x9b, 0x22, 0x57, 0xf3, 0x66, 0x37, 0x85, 0xaa, 0x00, 0xcf, 0x6e, 0x0a,
-	0x65, 0x81, 0x4d, 0x3e, 0x60, 0x2c, 0x1f, 0xe0, 0x7d, 0x45, 0x96, 0x6a, 0xa3, 0xf4, 0x9f, 0x06,
-	0x33, 0x8a, 0x72, 0x18, 0x55, 0xc0, 0x4b, 0x36, 0xe4, 0xf5, 0x5e, 0xae, 0xf6, 0x38, 0x80, 0x47,
-	0xc4, 0xd3, 0x5b, 0x52, 0xb4, 0x37, 0x7f, 0xd1, 0xf8, 0x77, 0x2f, 0x81, 0xb6, 0xc4, 0xf9, 0x34,
-	0x60, 0xb9, 0x5e, 0x2f, 0xbe, 0xa6, 0xe4, 0xab, 0xd4, 0xac, 0x42, 0x39, 0x2c, 0x78, 0xb6, 0x9f,
-	0x35, 0xb8, 0x20, 0xd5, 0xd7, 0xa8, 0x02, 0x28, 0x9a, 0xbd, 0x05, 0x35, 0x67, 0x0e, 0x7f, 0x89,
-	0xc1, 0x5f, 0xc0, 0x79, 0x75, 0xf8, 0xab, 0x77, 0x9e, 0x1c, 0xe8, 0xda, 0xd3, 0x03, 0x5d, 0x7b,
-	0x76, 0xa0, 0x6b, 0xdf, 0x1e, 0xea, 0x7d, 0x4f, 0x0f, 0xf5, 0xbe, 0x3f, 0x0e, 0xf5, 0xbe, 0x47,
-	0xa5, 0xaa, 0xe3, 0x6f, 0xb7, 0xac, 0xd2, 0x96, 0x5b, 0x37, 0x3c, 0xbb, 0x5a, 0xdd, 0xfb, 0xac,
-	0x9d, 0x88, 0xdb, 0x5e, 0x36, 0x76, 0xc3, 0xe0, 0xfe, 0x9e, 0x67, 0x53, 0xab, 0x9f, 0x7d, 0xc1,
-	0x7e, 0xe3, 0xff, 0x00, 0x00, 0x00, 0xff, 0xff, 0xf7, 0xa5, 0x86, 0x8c, 0x75, 0x17, 0x00, 0x00,
+	0x98, 0xc1, 0x3d, 0x28, 0xa9, 0xc6, 0x7e, 0xd1, 0xb4, 0x3e, 0x82, 0x05, 0x49, 0xea, 0xcd, 0xe4,
+	0x83, 0xaf, 0x85, 0xac, 0x04, 0x0d, 0xa2, 0x09, 0x1b, 0x64, 0x57, 0x5a, 0xaf, 0x74, 0xe0, 0x17,
+	0x4d, 0xa9, 0xcd, 0x7b, 0x26, 0x9e, 0x96, 0xce, 0x71, 0x38, 0xde, 0x7a, 0x50, 0x1f, 0x09, 0x87,
+	0xf7, 0x62, 0x36, 0x2f, 0x67, 0x78, 0x07, 0x12, 0xe1, 0x3b, 0x87, 0x62, 0x4c, 0x38, 0xe5, 0x21,
+	0x45, 0x9a, 0xb2, 0x90, 0x09, 0x49, 0xaa, 0x68, 0x2e, 0x6a, 0xa0, 0xcb, 0x1c, 0x38, 0x98, 0x7b,
+	0x1d, 0x55, 0xe8, 0xac, 0x77, 0x57, 0x34, 0xc3, 0x69, 0x34, 0x94, 0x98, 0xf0, 0xba, 0x38, 0xdb,
+	0x6a, 0xc2, 0xc4, 0xeb, 0xd9, 0xe3, 0x92, 0xfe, 0x02, 0x16, 0x8f, 0x91, 0xe2, 0x04, 0x38, 0x7e,
+	0xcc, 0xfb, 0x59, 0x0e, 0xa0, 0xd7, 0x49, 0xf9, 0x9c, 0x4f, 0xbf, 0x42, 0xe4, 0x13, 0xe0, 0xf5,
+	0x89, 0x3c, 0xfb, 0xf3, 0x2f, 0xb6, 0x7d, 0x30, 0x94, 0x83, 0x9f, 0x00, 0xb7, 0x7b, 0x30, 0xc1,
+	0xd2, 0xaf, 0xd9, 0x9f, 0x9a, 0xad, 0x9a, 0x9f, 0xac, 0xe6, 0xb1, 0x5f, 0xa9, 0x05, 0x93, 0xf2,
+	0x58, 0x1c, 0xfb, 0x43, 0x28, 0x54, 0x82, 0xe3, 0x72, 0xf2, 0x36, 0x9f, 0x71, 0x3d, 0x81, 0x5e,
+	0x14, 0xe5, 0x6c, 0x25, 0x6b, 0x24, 0x44, 0x9e, 0x36, 0x1a, 0xf6, 0x5d, 0x98, 0xea, 0xe2, 0xc3,
+	0xb1, 0x6d, 0xc2, 0x88, 0x08, 0x5b, 0x58, 0xda, 0x3c, 0x70, 0x05, 0x01, 0x38, 0xba, 0xf4, 0xcd,
+	0x79, 0x78, 0x85, 0xa5, 0xc6, 0x1a, 0xf4, 0x07, 0x12, 0x15, 0xc7, 0x13, 0x91, 0xb2, 0xda, 0xb7,
+	0xa8, 0xcb, 0x8e, 0x03, 0x9c, 0xe4, 0xd2, 0x57, 0xbf, 0xff, 0xf5, 0xfd, 0xa9, 0x71, 0x1c, 0x33,
+	0xa8, 0x5b, 0xaf, 0xdb, 0x35, 0xc7, 0x6e, 0x1a, 0x69, 0xd1, 0x8d, 0xdf, 0x69, 0x70, 0xa6, 0xf3,
+	0xd7, 0x05, 0x27, 0x33, 0x71, 0x53, 0xa2, 0xb8, 0x38, 0xd5, 0xc5, 0x83, 0x27, 0xbf, 0xce, 0x92,
+	0x2f, 0xe3, 0x92, 0x38, 0x79, 0x24, 0x3e, 0x8d, 0xc7, 0xe9, 0x09, 0xd8, 0xc7, 0x2f, 0x35, 0x18,
+	0x4c, 0x29, 0x5c, 0x94, 0xa7, 0x8c, 0xea, 0x41, 0xba, 0xb9, 0x70, 0x58, 0x33, 0x0c, 0xd6, 0x14,
+	0x4e, 0xe4, 0xc0, 0xc2, 0x1f, 0x42, 0x0c, 0xf1, 0x74, 0x64, 0x31, 0x64, 0x04, 0x73, 0x16, 0x43,
+	0x56, 0x0a, 0x93, 0x37, 0x19, 0x86, 0x15, 0xbc, 0x22, 0xc4, 0x90, 0x50, 0xa3, 0xc6, 0xe3, 0xec,
+	0x5e, 0xdf, 0xc7, 0xaf, 0x35, 0x18, 0x4a, 0x0b, 0x5f, 0xec, 0x92, 0x37, 0xaa, 0xcf, 0xa5, 0xae,
+	0x3e, 0x1c, 0xdc, 0x2c, 0x03, 0x47, 0x70, 0x32, 0x0f, 0x1c, 0xfe, 0xaa, 0x41, 0x41, 0xa4, 0x4b,
+	0x70, 0x5a, 0xfa, 0x0e, 0x1d, 0xea, 0xa1, 0x38, 0x93, 0xeb, 0xc7, 0x31, 0x6d, 0x32, 0x4c, 0xef,
+	0xe1, 0xbb, 0xdd, 0x1f, 0x2d, 0x5c, 0x71, 0x82, 0x96, 0x8a, 0x2a, 0x19, 0xae, 0xa6, 0x7d, 0xfc,
+	0x51, 0x4b, 0xff, 0xcb, 0xc7, 0x77, 0x1d, 0xe6, 0xe1, 0x8a, 0x0a, 0x3a, 0x9b, 0xef, 0xc8, 0x19,
+	0x94, 0x18, 0x83, 0x59, 0x9c, 0x56, 0x63, 0x80, 0xcf, 0x34, 0x98, 0x56, 0xd3, 0xb1, 0x78, 0x35,
+	0x0f, 0x84, 0xec, 0xd7, 0xa7, 0x78, 0xad, 0x87, 0x9b, 0x9c, 0xcf, 0x2d, 0xc6, 0xe7, 0x06, 0x5e,
+	0xeb, 0xf9, 0x45, 0xf0, 0x1f, 0x0d, 0x5e, 0x55, 0x92, 0xb5, 0xb8, 0x92, 0x8f, 0x53, 0xa8, 0x1b,
+	0x8a, 0x57, 0x8f, 0x7f, 0xb1, 0xb7, 0x8e, 0x2b, 0x5b, 0x7b, 0xe5, 0x54, 0x83, 0x09, 0x3a, 0xee,
+	0xb7, 0xb0, 0xe3, 0xd2, 0x3f, 0xb8, 0xd9, 0x8e, 0x93, 0x08, 0xee, 0x6c, 0xc7, 0xc9, 0x14, 0x32,
+	0xf9, 0x90, 0x31, 0x58, 0xc7, 0x07, 0x39, 0x73, 0x1c, 0x3f, 0x91, 0x60, 0xd7, 0x08, 0x48, 0xfc,
+	0xa4, 0x65, 0x3e, 0x16, 0x84, 0x73, 0x93, 0x0b, 0x2e, 0x1a, 0x9c, 0x39, 0x05, 0x4f, 0xce, 0xc3,
+	0x60, 0x3c, 0xe6, 0x70, 0x46, 0x91, 0x07, 0xfe, 0xad, 0xc1, 0x9c, 0xb2, 0xbe, 0xc5, 0x1b, 0xb9,
+	0x48, 0xe4, 0xc2, 0xbb, 0x78, 0xb3, 0xb7, 0xcb, 0x9c, 0xd9, 0x1a, 0x63, 0xf6, 0x16, 0xde, 0x7c,
+	0x9e, 0x17, 0xc2, 0x7f, 0xc3, 0x4d, 0x91, 0xab, 0x79, 0xb3, 0x9b, 0x42, 0x55, 0x80, 0x67, 0x37,
+	0x85, 0xb2, 0xc0, 0x26, 0x1f, 0x30, 0x96, 0x0f, 0xf0, 0xbe, 0x22, 0x4b, 0xb5, 0x51, 0xfa, 0x4f,
+	0x83, 0x19, 0x45, 0x39, 0x8c, 0x2a, 0xe0, 0x25, 0x1b, 0xf2, 0x7a, 0x2f, 0x57, 0x7b, 0x1c, 0xc0,
+	0x23, 0xe2, 0xe9, 0x2d, 0x29, 0xda, 0x9b, 0xbf, 0x68, 0xfc, 0xbb, 0x97, 0x40, 0x5b, 0xe2, 0x7c,
+	0x1a, 0xb0, 0x5c, 0xaf, 0x17, 0x5f, 0x53, 0xf2, 0x55, 0x6a, 0x56, 0xa1, 0x1c, 0x16, 0x3c, 0xdb,
+	0xcf, 0x1a, 0x5c, 0x90, 0xea, 0x6b, 0x54, 0x01, 0x14, 0xcd, 0xde, 0x82, 0x9a, 0x33, 0x87, 0xbf,
+	0xc4, 0xe0, 0x2f, 0xe0, 0xbc, 0x3a, 0xfc, 0xd5, 0x3b, 0x4f, 0x0e, 0x74, 0xed, 0xe9, 0x81, 0xae,
+	0x3d, 0x3b, 0xd0, 0xb5, 0x6f, 0x0f, 0xf5, 0xbe, 0xa7, 0x87, 0x7a, 0xdf, 0x1f, 0x87, 0x7a, 0xdf,
+	0xa3, 0x52, 0xd5, 0xf1, 0xb7, 0x5b, 0x56, 0x69, 0xcb, 0xad, 0x1b, 0x9e, 0x5d, 0xad, 0xee, 0x7d,
+	0xd6, 0x4e, 0xc4, 0x6d, 0x2f, 0x1b, 0xbb, 0x61, 0x70, 0x7f, 0xcf, 0xb3, 0xa9, 0xd5, 0xcf, 0xbe,
+	0x60, 0xbf, 0xf1, 0x7f, 0x00, 0x00, 0x00, 0xff, 0xff, 0x12, 0x41, 0x6e, 0xff, 0x75, 0x17, 0x00,
+	0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -1584,11 +1585,11 @@ type QueryClient interface {
 	QueryPublisherIntent(ctx context.Context, in *QueryPublisherIntentRequest, opts ...grpc.CallOption) (*QueryPublisherIntentResponse, error)
 	QueryPublisherIntents(ctx context.Context, in *QueryPublisherIntentsRequest, opts ...grpc.CallOption) (*QueryPublisherIntentsResponse, error)
 	QueryPublisherIntentsByPublisherDomain(ctx context.Context, in *QueryPublisherIntentsByPublisherDomainRequest, opts ...grpc.CallOption) (*QueryPublisherIntentsByPublisherDomainResponse, error)
-	QueryPublisherIntentsBySubscriptionId(ctx context.Context, in *QueryPublisherIntentsBySubscriptionIdRequest, opts ...grpc.CallOption) (*QueryPublisherIntentsBySubscriptionIdResponse, error)
+	QueryPublisherIntentsBySubscriptionID(ctx context.Context, in *QueryPublisherIntentsBySubscriptionIDRequest, opts ...grpc.CallOption) (*QueryPublisherIntentsBySubscriptionIDResponse, error)
 	QuerySubscriberIntent(ctx context.Context, in *QuerySubscriberIntentRequest, opts ...grpc.CallOption) (*QuerySubscriberIntentResponse, error)
 	QuerySubscriberIntents(ctx context.Context, in *QuerySubscriberIntentsRequest, opts ...grpc.CallOption) (*QuerySubscriberIntentsResponse, error)
 	QuerySubscriberIntentsBySubscriberAddress(ctx context.Context, in *QuerySubscriberIntentsBySubscriberAddressRequest, opts ...grpc.CallOption) (*QuerySubscriberIntentsBySubscriberAddressResponse, error)
-	QuerySubscriberIntentsBySubscriptionId(ctx context.Context, in *QuerySubscriberIntentsBySubscriptionIdRequest, opts ...grpc.CallOption) (*QuerySubscriberIntentsBySubscriptionIdResponse, error)
+	QuerySubscriberIntentsBySubscriptionID(ctx context.Context, in *QuerySubscriberIntentsBySubscriptionIDRequest, opts ...grpc.CallOption) (*QuerySubscriberIntentsBySubscriptionIDResponse, error)
 	QuerySubscriberIntentsByPublisherDomain(ctx context.Context, in *QuerySubscriberIntentsByPublisherDomainRequest, opts ...grpc.CallOption) (*QuerySubscriberIntentsByPublisherDomainResponse, error)
 	QueryDefaultSubscription(ctx context.Context, in *QueryDefaultSubscriptionRequest, opts ...grpc.CallOption) (*QueryDefaultSubscriptionResponse, error)
 	QueryDefaultSubscriptions(ctx context.Context, in *QueryDefaultSubscriptionsRequest, opts ...grpc.CallOption) (*QueryDefaultSubscriptionsResponse, error)
@@ -1674,9 +1675,9 @@ func (c *queryClient) QueryPublisherIntentsByPublisherDomain(ctx context.Context
 	return out, nil
 }
 
-func (c *queryClient) QueryPublisherIntentsBySubscriptionId(ctx context.Context, in *QueryPublisherIntentsBySubscriptionIdRequest, opts ...grpc.CallOption) (*QueryPublisherIntentsBySubscriptionIdResponse, error) {
-	out := new(QueryPublisherIntentsBySubscriptionIdResponse)
-	err := c.cc.Invoke(ctx, "/pubsub.v1.Query/QueryPublisherIntentsBySubscriptionId", in, out, opts...)
+func (c *queryClient) QueryPublisherIntentsBySubscriptionID(ctx context.Context, in *QueryPublisherIntentsBySubscriptionIDRequest, opts ...grpc.CallOption) (*QueryPublisherIntentsBySubscriptionIDResponse, error) {
+	out := new(QueryPublisherIntentsBySubscriptionIDResponse)
+	err := c.cc.Invoke(ctx, "/pubsub.v1.Query/QueryPublisherIntentsBySubscriptionID", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -1710,9 +1711,9 @@ func (c *queryClient) QuerySubscriberIntentsBySubscriberAddress(ctx context.Cont
 	return out, nil
 }
 
-func (c *queryClient) QuerySubscriberIntentsBySubscriptionId(ctx context.Context, in *QuerySubscriberIntentsBySubscriptionIdRequest, opts ...grpc.CallOption) (*QuerySubscriberIntentsBySubscriptionIdResponse, error) {
-	out := new(QuerySubscriberIntentsBySubscriptionIdResponse)
-	err := c.cc.Invoke(ctx, "/pubsub.v1.Query/QuerySubscriberIntentsBySubscriptionId", in, out, opts...)
+func (c *queryClient) QuerySubscriberIntentsBySubscriptionID(ctx context.Context, in *QuerySubscriberIntentsBySubscriptionIDRequest, opts ...grpc.CallOption) (*QuerySubscriberIntentsBySubscriptionIDResponse, error) {
+	out := new(QuerySubscriberIntentsBySubscriptionIDResponse)
+	err := c.cc.Invoke(ctx, "/pubsub.v1.Query/QuerySubscriberIntentsBySubscriptionID", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -1756,11 +1757,11 @@ type QueryServer interface {
 	QueryPublisherIntent(context.Context, *QueryPublisherIntentRequest) (*QueryPublisherIntentResponse, error)
 	QueryPublisherIntents(context.Context, *QueryPublisherIntentsRequest) (*QueryPublisherIntentsResponse, error)
 	QueryPublisherIntentsByPublisherDomain(context.Context, *QueryPublisherIntentsByPublisherDomainRequest) (*QueryPublisherIntentsByPublisherDomainResponse, error)
-	QueryPublisherIntentsBySubscriptionId(context.Context, *QueryPublisherIntentsBySubscriptionIdRequest) (*QueryPublisherIntentsBySubscriptionIdResponse, error)
+	QueryPublisherIntentsBySubscriptionID(context.Context, *QueryPublisherIntentsBySubscriptionIDRequest) (*QueryPublisherIntentsBySubscriptionIDResponse, error)
 	QuerySubscriberIntent(context.Context, *QuerySubscriberIntentRequest) (*QuerySubscriberIntentResponse, error)
 	QuerySubscriberIntents(context.Context, *QuerySubscriberIntentsRequest) (*QuerySubscriberIntentsResponse, error)
 	QuerySubscriberIntentsBySubscriberAddress(context.Context, *QuerySubscriberIntentsBySubscriberAddressRequest) (*QuerySubscriberIntentsBySubscriberAddressResponse, error)
-	QuerySubscriberIntentsBySubscriptionId(context.Context, *QuerySubscriberIntentsBySubscriptionIdRequest) (*QuerySubscriberIntentsBySubscriptionIdResponse, error)
+	QuerySubscriberIntentsBySubscriptionID(context.Context, *QuerySubscriberIntentsBySubscriptionIDRequest) (*QuerySubscriberIntentsBySubscriptionIDResponse, error)
 	QuerySubscriberIntentsByPublisherDomain(context.Context, *QuerySubscriberIntentsByPublisherDomainRequest) (*QuerySubscriberIntentsByPublisherDomainResponse, error)
 	QueryDefaultSubscription(context.Context, *QueryDefaultSubscriptionRequest) (*QueryDefaultSubscriptionResponse, error)
 	QueryDefaultSubscriptions(context.Context, *QueryDefaultSubscriptionsRequest) (*QueryDefaultSubscriptionsResponse, error)
@@ -1794,8 +1795,8 @@ func (*UnimplementedQueryServer) QueryPublisherIntents(ctx context.Context, req 
 func (*UnimplementedQueryServer) QueryPublisherIntentsByPublisherDomain(ctx context.Context, req *QueryPublisherIntentsByPublisherDomainRequest) (*QueryPublisherIntentsByPublisherDomainResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method QueryPublisherIntentsByPublisherDomain not implemented")
 }
-func (*UnimplementedQueryServer) QueryPublisherIntentsBySubscriptionId(ctx context.Context, req *QueryPublisherIntentsBySubscriptionIdRequest) (*QueryPublisherIntentsBySubscriptionIdResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method QueryPublisherIntentsBySubscriptionId not implemented")
+func (*UnimplementedQueryServer) QueryPublisherIntentsBySubscriptionID(ctx context.Context, req *QueryPublisherIntentsBySubscriptionIDRequest) (*QueryPublisherIntentsBySubscriptionIDResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method QueryPublisherIntentsBySubscriptionID not implemented")
 }
 func (*UnimplementedQueryServer) QuerySubscriberIntent(ctx context.Context, req *QuerySubscriberIntentRequest) (*QuerySubscriberIntentResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method QuerySubscriberIntent not implemented")
@@ -1806,8 +1807,8 @@ func (*UnimplementedQueryServer) QuerySubscriberIntents(ctx context.Context, req
 func (*UnimplementedQueryServer) QuerySubscriberIntentsBySubscriberAddress(ctx context.Context, req *QuerySubscriberIntentsBySubscriberAddressRequest) (*QuerySubscriberIntentsBySubscriberAddressResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method QuerySubscriberIntentsBySubscriberAddress not implemented")
 }
-func (*UnimplementedQueryServer) QuerySubscriberIntentsBySubscriptionId(ctx context.Context, req *QuerySubscriberIntentsBySubscriptionIdRequest) (*QuerySubscriberIntentsBySubscriptionIdResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method QuerySubscriberIntentsBySubscriptionId not implemented")
+func (*UnimplementedQueryServer) QuerySubscriberIntentsBySubscriptionID(ctx context.Context, req *QuerySubscriberIntentsBySubscriptionIDRequest) (*QuerySubscriberIntentsBySubscriptionIDResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method QuerySubscriberIntentsBySubscriptionID not implemented")
 }
 func (*UnimplementedQueryServer) QuerySubscriberIntentsByPublisherDomain(ctx context.Context, req *QuerySubscriberIntentsByPublisherDomainRequest) (*QuerySubscriberIntentsByPublisherDomainResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method QuerySubscriberIntentsByPublisherDomain not implemented")
@@ -1967,20 +1968,20 @@ func _Query_QueryPublisherIntentsByPublisherDomain_Handler(srv interface{}, ctx 
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Query_QueryPublisherIntentsBySubscriptionId_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(QueryPublisherIntentsBySubscriptionIdRequest)
+func _Query_QueryPublisherIntentsBySubscriptionID_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryPublisherIntentsBySubscriptionIDRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(QueryServer).QueryPublisherIntentsBySubscriptionId(ctx, in)
+		return srv.(QueryServer).QueryPublisherIntentsBySubscriptionID(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/pubsub.v1.Query/QueryPublisherIntentsBySubscriptionId",
+		FullMethod: "/pubsub.v1.Query/QueryPublisherIntentsBySubscriptionID",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(QueryServer).QueryPublisherIntentsBySubscriptionId(ctx, req.(*QueryPublisherIntentsBySubscriptionIdRequest))
+		return srv.(QueryServer).QueryPublisherIntentsBySubscriptionID(ctx, req.(*QueryPublisherIntentsBySubscriptionIDRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -2039,20 +2040,20 @@ func _Query_QuerySubscriberIntentsBySubscriberAddress_Handler(srv interface{}, c
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Query_QuerySubscriberIntentsBySubscriptionId_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(QuerySubscriberIntentsBySubscriptionIdRequest)
+func _Query_QuerySubscriberIntentsBySubscriptionID_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QuerySubscriberIntentsBySubscriptionIDRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(QueryServer).QuerySubscriberIntentsBySubscriptionId(ctx, in)
+		return srv.(QueryServer).QuerySubscriberIntentsBySubscriptionID(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/pubsub.v1.Query/QuerySubscriberIntentsBySubscriptionId",
+		FullMethod: "/pubsub.v1.Query/QuerySubscriberIntentsBySubscriptionID",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(QueryServer).QuerySubscriberIntentsBySubscriptionId(ctx, req.(*QuerySubscriberIntentsBySubscriptionIdRequest))
+		return srv.(QueryServer).QuerySubscriberIntentsBySubscriptionID(ctx, req.(*QuerySubscriberIntentsBySubscriptionIDRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -2148,8 +2149,8 @@ var _Query_serviceDesc = grpc.ServiceDesc{
 			Handler:    _Query_QueryPublisherIntentsByPublisherDomain_Handler,
 		},
 		{
-			MethodName: "QueryPublisherIntentsBySubscriptionId",
-			Handler:    _Query_QueryPublisherIntentsBySubscriptionId_Handler,
+			MethodName: "QueryPublisherIntentsBySubscriptionID",
+			Handler:    _Query_QueryPublisherIntentsBySubscriptionID_Handler,
 		},
 		{
 			MethodName: "QuerySubscriberIntent",
@@ -2164,8 +2165,8 @@ var _Query_serviceDesc = grpc.ServiceDesc{
 			Handler:    _Query_QuerySubscriberIntentsBySubscriberAddress_Handler,
 		},
 		{
-			MethodName: "QuerySubscriberIntentsBySubscriptionId",
-			Handler:    _Query_QuerySubscriberIntentsBySubscriptionId_Handler,
+			MethodName: "QuerySubscriberIntentsBySubscriptionID",
+			Handler:    _Query_QuerySubscriberIntentsBySubscriptionID_Handler,
 		},
 		{
 			MethodName: "QuerySubscriberIntentsByPublisherDomain",
@@ -2689,7 +2690,7 @@ func (m *QueryPublisherIntentsByPublisherDomainResponse) MarshalToSizedBuffer(dA
 	return len(dAtA) - i, nil
 }
 
-func (m *QueryPublisherIntentsBySubscriptionIdRequest) Marshal() (dAtA []byte, err error) {
+func (m *QueryPublisherIntentsBySubscriptionIDRequest) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -2699,12 +2700,12 @@ func (m *QueryPublisherIntentsBySubscriptionIdRequest) Marshal() (dAtA []byte, e
 	return dAtA[:n], nil
 }
 
-func (m *QueryPublisherIntentsBySubscriptionIdRequest) MarshalTo(dAtA []byte) (int, error) {
+func (m *QueryPublisherIntentsBySubscriptionIDRequest) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *QueryPublisherIntentsBySubscriptionIdRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *QueryPublisherIntentsBySubscriptionIDRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -2719,7 +2720,7 @@ func (m *QueryPublisherIntentsBySubscriptionIdRequest) MarshalToSizedBuffer(dAtA
 	return len(dAtA) - i, nil
 }
 
-func (m *QueryPublisherIntentsBySubscriptionIdResponse) Marshal() (dAtA []byte, err error) {
+func (m *QueryPublisherIntentsBySubscriptionIDResponse) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -2729,12 +2730,12 @@ func (m *QueryPublisherIntentsBySubscriptionIdResponse) Marshal() (dAtA []byte, 
 	return dAtA[:n], nil
 }
 
-func (m *QueryPublisherIntentsBySubscriptionIdResponse) MarshalTo(dAtA []byte) (int, error) {
+func (m *QueryPublisherIntentsBySubscriptionIDResponse) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *QueryPublisherIntentsBySubscriptionIdResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *QueryPublisherIntentsBySubscriptionIDResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -2955,7 +2956,7 @@ func (m *QuerySubscriberIntentsBySubscriberAddressResponse) MarshalToSizedBuffer
 	return len(dAtA) - i, nil
 }
 
-func (m *QuerySubscriberIntentsBySubscriptionIdRequest) Marshal() (dAtA []byte, err error) {
+func (m *QuerySubscriberIntentsBySubscriptionIDRequest) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -2965,12 +2966,12 @@ func (m *QuerySubscriberIntentsBySubscriptionIdRequest) Marshal() (dAtA []byte, 
 	return dAtA[:n], nil
 }
 
-func (m *QuerySubscriberIntentsBySubscriptionIdRequest) MarshalTo(dAtA []byte) (int, error) {
+func (m *QuerySubscriberIntentsBySubscriptionIDRequest) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *QuerySubscriberIntentsBySubscriptionIdRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *QuerySubscriberIntentsBySubscriptionIDRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -2985,7 +2986,7 @@ func (m *QuerySubscriberIntentsBySubscriptionIdRequest) MarshalToSizedBuffer(dAt
 	return len(dAtA) - i, nil
 }
 
-func (m *QuerySubscriberIntentsBySubscriptionIdResponse) Marshal() (dAtA []byte, err error) {
+func (m *QuerySubscriberIntentsBySubscriptionIDResponse) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -2995,12 +2996,12 @@ func (m *QuerySubscriberIntentsBySubscriptionIdResponse) Marshal() (dAtA []byte,
 	return dAtA[:n], nil
 }
 
-func (m *QuerySubscriberIntentsBySubscriptionIdResponse) MarshalTo(dAtA []byte) (int, error) {
+func (m *QuerySubscriberIntentsBySubscriptionIDResponse) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *QuerySubscriberIntentsBySubscriptionIdResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *QuerySubscriberIntentsBySubscriptionIDResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -3427,7 +3428,7 @@ func (m *QueryPublisherIntentsByPublisherDomainResponse) Size() (n int) {
 	return n
 }
 
-func (m *QueryPublisherIntentsBySubscriptionIdRequest) Size() (n int) {
+func (m *QueryPublisherIntentsBySubscriptionIDRequest) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -3440,7 +3441,7 @@ func (m *QueryPublisherIntentsBySubscriptionIdRequest) Size() (n int) {
 	return n
 }
 
-func (m *QueryPublisherIntentsBySubscriptionIdResponse) Size() (n int) {
+func (m *QueryPublisherIntentsBySubscriptionIDResponse) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -3537,7 +3538,7 @@ func (m *QuerySubscriberIntentsBySubscriberAddressResponse) Size() (n int) {
 	return n
 }
 
-func (m *QuerySubscriberIntentsBySubscriptionIdRequest) Size() (n int) {
+func (m *QuerySubscriberIntentsBySubscriptionIDRequest) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -3550,7 +3551,7 @@ func (m *QuerySubscriberIntentsBySubscriptionIdRequest) Size() (n int) {
 	return n
 }
 
-func (m *QuerySubscriberIntentsBySubscriptionIdResponse) Size() (n int) {
+func (m *QuerySubscriberIntentsBySubscriptionIDResponse) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -4886,7 +4887,7 @@ func (m *QueryPublisherIntentsByPublisherDomainResponse) Unmarshal(dAtA []byte) 
 	}
 	return nil
 }
-func (m *QueryPublisherIntentsBySubscriptionIdRequest) Unmarshal(dAtA []byte) error {
+func (m *QueryPublisherIntentsBySubscriptionIDRequest) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -4909,10 +4910,10 @@ func (m *QueryPublisherIntentsBySubscriptionIdRequest) Unmarshal(dAtA []byte) er
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: QueryPublisherIntentsBySubscriptionIdRequest: wiretype end group for non-group")
+			return fmt.Errorf("proto: QueryPublisherIntentsBySubscriptionIDRequest: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: QueryPublisherIntentsBySubscriptionIdRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: QueryPublisherIntentsBySubscriptionIDRequest: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
@@ -4968,7 +4969,7 @@ func (m *QueryPublisherIntentsBySubscriptionIdRequest) Unmarshal(dAtA []byte) er
 	}
 	return nil
 }
-func (m *QueryPublisherIntentsBySubscriptionIdResponse) Unmarshal(dAtA []byte) error {
+func (m *QueryPublisherIntentsBySubscriptionIDResponse) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -4991,10 +4992,10 @@ func (m *QueryPublisherIntentsBySubscriptionIdResponse) Unmarshal(dAtA []byte) e
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: QueryPublisherIntentsBySubscriptionIdResponse: wiretype end group for non-group")
+			return fmt.Errorf("proto: QueryPublisherIntentsBySubscriptionIDResponse: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: QueryPublisherIntentsBySubscriptionIdResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: QueryPublisherIntentsBySubscriptionIDResponse: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
@@ -5552,7 +5553,7 @@ func (m *QuerySubscriberIntentsBySubscriberAddressResponse) Unmarshal(dAtA []byt
 	}
 	return nil
 }
-func (m *QuerySubscriberIntentsBySubscriptionIdRequest) Unmarshal(dAtA []byte) error {
+func (m *QuerySubscriberIntentsBySubscriptionIDRequest) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -5575,10 +5576,10 @@ func (m *QuerySubscriberIntentsBySubscriptionIdRequest) Unmarshal(dAtA []byte) e
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: QuerySubscriberIntentsBySubscriptionIdRequest: wiretype end group for non-group")
+			return fmt.Errorf("proto: QuerySubscriberIntentsBySubscriptionIDRequest: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: QuerySubscriberIntentsBySubscriptionIdRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: QuerySubscriberIntentsBySubscriptionIDRequest: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
@@ -5634,7 +5635,7 @@ func (m *QuerySubscriberIntentsBySubscriptionIdRequest) Unmarshal(dAtA []byte) e
 	}
 	return nil
 }
-func (m *QuerySubscriberIntentsBySubscriptionIdResponse) Unmarshal(dAtA []byte) error {
+func (m *QuerySubscriberIntentsBySubscriptionIDResponse) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -5657,10 +5658,10 @@ func (m *QuerySubscriberIntentsBySubscriptionIdResponse) Unmarshal(dAtA []byte) 
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: QuerySubscriberIntentsBySubscriptionIdResponse: wiretype end group for non-group")
+			return fmt.Errorf("proto: QuerySubscriberIntentsBySubscriptionIDResponse: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: QuerySubscriberIntentsBySubscriptionIdResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: QuerySubscriberIntentsBySubscriptionIDResponse: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:

@@ -194,13 +194,13 @@ func (m *MsgAddSubscriberRequest) MustGetSigner() sdk.AccAddress {
 /////////////////////////////////////
 
 // NewMsgRemovePublisherIntentRequest returns a new MsgRemovePublisherIntentRequest
-func NewMsgRemovePublisherIntent(subscriptionId string, publisherDomain string, signer sdk.AccAddress) (*MsgRemovePublisherIntentRequest, error) {
+func NewMsgRemovePublisherIntent(subscriptionID string, publisherDomain string, signer sdk.AccAddress) (*MsgRemovePublisherIntentRequest, error) {
 	if signer == nil {
 		return nil, fmt.Errorf("no signer provided")
 	}
 
 	return &MsgRemovePublisherIntentRequest{
-		SubscriptionId:  subscriptionId,
+		SubscriptionId:  subscriptionID,
 		PublisherDomain: publisherDomain,
 		Signer:          signer.String(),
 	}, nil
@@ -218,7 +218,7 @@ func (m *MsgRemovePublisherIntentRequest) ValidateBasic() error {
 		return sdkerrors.Wrap(sdkerrors.ErrInvalidAddress, err.Error())
 	}
 
-	if err := ValidateSubscriptionId(m.SubscriptionId); err != nil {
+	if err := ValidateSubscriptionID(m.SubscriptionId); err != nil {
 		return fmt.Errorf("invalid subscription ID: %s", err.Error())
 	}
 
@@ -253,13 +253,13 @@ func (m *MsgRemovePublisherIntentRequest) MustGetSigner() sdk.AccAddress {
 //////////////////////////////////////
 
 // NewMsgRemoveSubscriberIntentRequest returns a new MsgRemoveSubscriberIntentRequest
-func NewMsgRemoveSubscriberIntentRequest(subscriptionId string, subscriberAddress sdk.AccAddress, signer sdk.AccAddress) (*MsgRemoveSubscriberIntentRequest, error) {
+func NewMsgRemoveSubscriberIntentRequest(subscriptionID string, subscriberAddress sdk.AccAddress, signer sdk.AccAddress) (*MsgRemoveSubscriberIntentRequest, error) {
 	if signer == nil {
 		return nil, fmt.Errorf("no signer provided")
 	}
 
 	return &MsgRemoveSubscriberIntentRequest{
-		SubscriptionId:    subscriptionId,
+		SubscriptionId:    subscriptionID,
 		SubscriberAddress: subscriberAddress.String(),
 		Signer:            signer.String(),
 	}, nil
@@ -277,7 +277,7 @@ func (m *MsgRemoveSubscriberIntentRequest) ValidateBasic() error {
 		return sdkerrors.Wrap(sdkerrors.ErrInvalidAddress, err.Error())
 	}
 
-	if err := ValidateSubscriptionId(m.SubscriptionId); err != nil {
+	if err := ValidateSubscriptionID(m.SubscriptionId); err != nil {
 		return fmt.Errorf("invalid subscription ID: %s", err.Error())
 	}
 
