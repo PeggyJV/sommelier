@@ -79,18 +79,15 @@ Where proposal.json contains:
 				return err
 			}
 
-			for _, tokenPrice := range proposal.GetTokenPrices() {
-				err := tokenPrice.ValidateBasic()
-				if err != nil {
-					return err
-				}
-			}
-
 			content := types.NewSetTokenPricesProposal(
 				proposal.Title,
 				proposal.Description,
 				proposal.TokenPrices,
 			)
+
+			if err = content.ValidateBasic(); err != nil {
+				return err
+			}
 
 			from := clientCtx.GetFromAddress()
 			msg, err := govtypes.NewMsgSubmitProposal(content, deposit, from)
