@@ -26,6 +26,10 @@ func GetTxCmd() *cobra.Command {
 		RunE:                       client.ValidateCmd,
 	}
 
+	auctionTxCmd.AddCommand([]*cobra.Command{
+		GetCmdSubmitBid(),
+	}...)
+
 	return auctionTxCmd
 }
 
@@ -48,7 +52,7 @@ Where proposal.json contains:
   "title": "Best token price proposal ever",
   "description": "Add the guac",
   "token_prices": [ { denom: "usomm", usd_price: 1000000 }, { denom: "gravity0xdac17f958d2ee523a2206206994597c13d831ec7", usd_price: 0.12501 } ],
-  "deposit": "10000usommm"
+  "deposit": "10000000usomm"
 }
 `,
 				version.AppName,
