@@ -1,0 +1,11 @@
+syntax = "proto3";
+package pubsub.v1;
+
+import "gogoproto/gogo.proto";
+
+option go_package = "github.com/peggyjv/sommelier/v4/x/pubsub/types";
+
+// Params defines the parameters for the module.
+message Params {
+  option (gogoproto.goproto_stringer) = false;
+}
