@@ -60,7 +60,7 @@ func postAddPublisherProposalHandlerFn(clientCtx client.Context) http.HandlerFun
 			req.Description,
 			req.Domain,
 			req.Address,
-			req.ProofUrl,
+			req.ProofURL,
 			req.CaCert,
 		)
 
@@ -121,7 +121,7 @@ func postAddDefaultSubscriptionProposalHandlerFn(clientCtx client.Context) http.
 		content := types.NewAddDefaultSubscriptionProposal(
 			req.Title,
 			req.Description,
-			req.SubscriptionId,
+			req.SubscriptionID,
 			req.PublisherDomain,
 		)
 
@@ -152,7 +152,7 @@ func postRemoveDefaultSubscriptionProposalHandlerFn(clientCtx client.Context) ht
 		content := types.NewRemoveDefaultSubscriptionProposal(
 			req.Title,
 			req.Description,
-			req.SubscriptionId,
+			req.SubscriptionID,
 		)
 
 		msg, err := govtypes.NewMsgSubmitProposal(content, req.Deposit, req.Proposer)

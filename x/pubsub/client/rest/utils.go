@@ -14,7 +14,7 @@ type (
 		Description string         `json:"description" yaml:"description"`
 		Domain      string         `json:"domain" yaml:"domain"`
 		Address     string         `json:"address" yaml:"address"`
-		ProofUrl    string         `json:"proof_url" yaml:"proof_url"`
+		ProofURL    string         `json:"proof_url" yaml:"proof_url"`
 		CaCert      string         `json:"ca_cert" yaml:"ca_cert"`
 		Proposer    sdk.AccAddress `json:"proposer" yaml:"proposer"`
 		Deposit     sdk.Coins      `json:"deposit" yaml:"deposit"`
@@ -37,7 +37,7 @@ type (
 
 		Title           string         `json:"title" yaml:"title"`
 		Description     string         `json:"description" yaml:"description"`
-		SubscriptionId  string         `json:"subscription_id" yaml:"subscription_id"`
+		SubscriptionID  string         `json:"subscription_id" yaml:"subscription_id"`
 		PublisherDomain string         `json:"publisher_domain" yaml:"publisher_domain"`
 		Proposer        sdk.AccAddress `json:"proposer" yaml:"proposer"`
 		Deposit         sdk.Coins      `json:"deposit" yaml:"deposit"`
@@ -49,7 +49,7 @@ type (
 
 		Title          string         `json:"title" yaml:"title"`
 		Description    string         `json:"description" yaml:"description"`
-		SubscriptionId string         `json:"subscription_id" yaml:"subscription_id"`
+		SubscriptionID string         `json:"subscription_id" yaml:"subscription_id"`
 		Proposer       sdk.AccAddress `json:"proposer" yaml:"proposer"`
 		Deposit        sdk.Coins      `json:"deposit" yaml:"deposit"`
 	}
