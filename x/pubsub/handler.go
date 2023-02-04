@@ -16,25 +16,25 @@ func NewHandler(k keeper.Keeper) sdk.Handler {
 		ctx = ctx.WithEventManager(sdk.NewEventManager())
 
 		switch msg := msg.(type) {
-		case *types.MsgRemovePublisher:
+		case *types.MsgRemovePublisherRequest:
 			res, err := k.RemovePublisher(sdk.WrapSDKContext(ctx), msg)
 			return sdk.WrapServiceResult(ctx, res, err)
-		case *types.MsgAddSubscriber:
+		case *types.MsgAddSubscriberRequest:
 			res, err := k.AddSubscriber(sdk.WrapSDKContext(ctx), msg)
 			return sdk.WrapServiceResult(ctx, res, err)
-		case *types.MsgRemoveSubscriber:
+		case *types.MsgRemoveSubscriberRequest:
 			res, err := k.RemoveSubscriber(sdk.WrapSDKContext(ctx), msg)
 			return sdk.WrapServiceResult(ctx, res, err)
-		case *types.MsgAddPublisherIntent:
+		case *types.MsgAddPublisherIntentRequest:
 			res, err := k.AddPublisherIntent(sdk.WrapSDKContext(ctx), msg)
 			return sdk.WrapServiceResult(ctx, res, err)
-		case *types.MsgRemovePublisherIntent:
+		case *types.MsgRemovePublisherIntentRequest:
 			res, err := k.RemovePublisherIntent(sdk.WrapSDKContext(ctx), msg)
 			return sdk.WrapServiceResult(ctx, res, err)
-		case *types.MsgAddSubscriberIntent:
+		case *types.MsgAddSubscriberIntentRequest:
 			res, err := k.AddSubscriberIntent(sdk.WrapSDKContext(ctx), msg)
 			return sdk.WrapServiceResult(ctx, res, err)
-		case *types.MsgRemoveSubscriberIntent:
+		case *types.MsgRemoveSubscriberIntentRequest:
 			res, err := k.RemoveSubscriberIntent(sdk.WrapSDKContext(ctx), msg)
 			return sdk.WrapServiceResult(ctx, res, err)
 		default:

@@ -8,49 +8,49 @@ import (
 )
 
 var (
-	_ sdk.Msg = &MsgAddPublisherIntent{}
-	_ sdk.Msg = &MsgAddSubscriberIntent{}
-	_ sdk.Msg = &MsgAddSubscriber{}
-	_ sdk.Msg = &MsgRemovePublisherIntent{}
-	_ sdk.Msg = &MsgRemoveSubscriberIntent{}
-	_ sdk.Msg = &MsgRemoveSubscriber{}
-	_ sdk.Msg = &MsgRemovePublisher{}
+	_ sdk.Msg = &MsgAddPublisherIntentRequest{}
+	_ sdk.Msg = &MsgAddSubscriberIntentRequest{}
+	_ sdk.Msg = &MsgAddSubscriberRequest{}
+	_ sdk.Msg = &MsgRemovePublisherIntentRequest{}
+	_ sdk.Msg = &MsgRemoveSubscriberIntentRequest{}
+	_ sdk.Msg = &MsgRemoveSubscriberRequest{}
+	_ sdk.Msg = &MsgRemovePublisherRequest{}
 )
 
 const (
-	TypeMsgAddPublisherIntent     = "add_publisher_intent"
-	TypeMsgAddSubscriberIntent    = "add_subscriber_intent"
-	TypeMsgAddSubscriber          = "add_subscriber"
-	TypeMsgRemovePublisherIntent  = "remove_publisher_intent"
-	TypeMsgRemoveSubscriberIntent = "remove_subscriber_intent"
-	TypeMsgRemoveSubscriber       = "remove_subscriber"
-	TypeMsgRemovePublisher        = "remove_publisher"
+	TypeMsgAddPublisherIntentRequest     = "add_publisher_intent"
+	TypeMsgAddSubscriberIntentRequest    = "add_subscriber_intent"
+	TypeMsgAddSubscriberRequest          = "add_subscriber"
+	TypeMsgRemovePublisherIntentRequest  = "remove_publisher_intent"
+	TypeMsgRemoveSubscriberIntentRequest = "remove_subscriber_intent"
+	TypeMsgRemoveSubscriberRequest       = "remove_subscriber"
+	TypeMsgRemovePublisherRequest        = "remove_publisher"
 )
 
-///////////////////////////
-// MsgAddPublisherIntent //
-///////////////////////////
+//////////////////////////////////
+// MsgAddPublisherIntentRequest //
+//////////////////////////////////
 
-// NewMsgAddPublisherIntent returns a new MsgAddPublisherIntent
-func NewMsgAddPublisherIntent(publisherIntent PublisherIntent, signer sdk.AccAddress) (*MsgAddPublisherIntent, error) {
+// NewMsgAddPublisherIntentRequest returns a new MsgAddPublisherIntentRequest
+func NewMsgAddPublisherIntentRequest(publisherIntent PublisherIntent, signer sdk.AccAddress) (*MsgAddPublisherIntentRequest, error) {
 	if signer == nil {
 		return nil, fmt.Errorf("no signer provided")
 	}
 
-	return &MsgAddPublisherIntent{
+	return &MsgAddPublisherIntentRequest{
 		PublisherIntent: &publisherIntent,
 		Signer:          signer.String(),
 	}, nil
 }
 
 // Route implements sdk.Msg
-func (m *MsgAddPublisherIntent) Route() string { return ModuleName }
+func (m *MsgAddPublisherIntentRequest) Route() string { return ModuleName }
 
 // Type implements sdk.Msg
-func (m *MsgAddPublisherIntent) Type() string { return TypeMsgAddPublisherIntent }
+func (m *MsgAddPublisherIntentRequest) Type() string { return TypeMsgAddPublisherIntentRequest }
 
 // ValidateBasic implements sdk.Msg
-func (m *MsgAddPublisherIntent) ValidateBasic() error {
+func (m *MsgAddPublisherIntentRequest) ValidateBasic() error {
 	if _, err := sdk.AccAddressFromBech32(m.Signer); err != nil {
 		return sdkerrors.Wrap(sdkerrors.ErrInvalidAddress, err.Error())
 	}
@@ -63,17 +63,17 @@ func (m *MsgAddPublisherIntent) ValidateBasic() error {
 }
 
 // GetSignBytes implements sdk.Msg
-func (m *MsgAddPublisherIntent) GetSignBytes() []byte {
-	panic("amino support disabled")
+func (m *MsgAddPublisherIntentRequest) GetSignBytes() []byte {
+	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(m))
 }
 
 // GetSigners implements sdk.Msg
-func (m *MsgAddPublisherIntent) GetSigners() []sdk.AccAddress {
+func (m *MsgAddPublisherIntentRequest) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{m.MustGetSigner()}
 }
 
 // MustGetSigner returns the signer address
-func (m *MsgAddPublisherIntent) MustGetSigner() sdk.AccAddress {
+func (m *MsgAddPublisherIntentRequest) MustGetSigner() sdk.AccAddress {
 	addr, err := sdk.AccAddressFromBech32(m.Signer)
 	if err != nil {
 		panic(err)
@@ -81,30 +81,30 @@ func (m *MsgAddPublisherIntent) MustGetSigner() sdk.AccAddress {
 	return addr
 }
 
-////////////////////////////
-// MsgAddSubscriberIntent //
-////////////////////////////
+///////////////////////////////////
+// MsgAddSubscriberIntentRequest //
+///////////////////////////////////
 
-// NewMsgAddSubscriberIntent returns a new MsgAddSubscriberIntent
-func NewMsgAddSubscriberIntent(subscriberIntent SubscriberIntent, signer sdk.AccAddress) (*MsgAddSubscriberIntent, error) {
+// NewMsgAddSubscriberIntentRequest returns a new MsgAddSubscriberIntentRequest
+func NewMsgAddSubscriberIntentRequest(subscriberIntent SubscriberIntent, signer sdk.AccAddress) (*MsgAddSubscriberIntentRequest, error) {
 	if signer == nil {
 		return nil, fmt.Errorf("no signer provided")
 	}
 
-	return &MsgAddSubscriberIntent{
+	return &MsgAddSubscriberIntentRequest{
 		SubscriberIntent: &subscriberIntent,
 		Signer:           signer.String(),
 	}, nil
 }
 
 // Route implements sdk.Msg
-func (m *MsgAddSubscriberIntent) Route() string { return ModuleName }
+func (m *MsgAddSubscriberIntentRequest) Route() string { return ModuleName }
 
 // Type implements sdk.Msg
-func (m *MsgAddSubscriberIntent) Type() string { return TypeMsgAddSubscriberIntent }
+func (m *MsgAddSubscriberIntentRequest) Type() string { return TypeMsgAddSubscriberIntentRequest }
 
 // ValidateBasic implements sdk.Msg
-func (m *MsgAddSubscriberIntent) ValidateBasic() error {
+func (m *MsgAddSubscriberIntentRequest) ValidateBasic() error {
 	if _, err := sdk.AccAddressFromBech32(m.Signer); err != nil {
 		return sdkerrors.Wrap(sdkerrors.ErrInvalidAddress, err.Error())
 	}
@@ -117,17 +117,17 @@ func (m *MsgAddSubscriberIntent) ValidateBasic() error {
 }
 
 // GetSignBytes implements sdk.Msg
-func (m *MsgAddSubscriberIntent) GetSignBytes() []byte {
-	panic("amino support disabled")
+func (m *MsgAddSubscriberIntentRequest) GetSignBytes() []byte {
+	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(m))
 }
 
 // GetSigners implements sdk.Msg
-func (m *MsgAddSubscriberIntent) GetSigners() []sdk.AccAddress {
+func (m *MsgAddSubscriberIntentRequest) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{m.MustGetSigner()}
 }
 
 // MustGetSigner returns the signer address
-func (m *MsgAddSubscriberIntent) MustGetSigner() sdk.AccAddress {
+func (m *MsgAddSubscriberIntentRequest) MustGetSigner() sdk.AccAddress {
 	addr, err := sdk.AccAddressFromBech32(m.Signer)
 	if err != nil {
 		panic(err)
@@ -135,30 +135,30 @@ func (m *MsgAddSubscriberIntent) MustGetSigner() sdk.AccAddress {
 	return addr
 }
 
-//////////////////////
-// MsgAddSubscriber //
-//////////////////////
+/////////////////////////////
+// MsgAddSubscriberRequest //
+/////////////////////////////
 
-// NewMsgAddSubscriber returns a new MsgAddSubscriber
-func NewMsgAddSubscriber(subscriber Subscriber, signer sdk.AccAddress) (*MsgAddSubscriber, error) {
+// NewMsgAddSubscriberRequest returns a new MsgAddSubscriberRequest
+func NewMsgAddSubscriber(subscriber Subscriber, signer sdk.AccAddress) (*MsgAddSubscriberRequest, error) {
 	if signer == nil {
 		return nil, fmt.Errorf("no signer provided")
 	}
 
-	return &MsgAddSubscriber{
+	return &MsgAddSubscriberRequest{
 		Subscriber: &subscriber,
 		Signer:     signer.String(),
 	}, nil
 }
 
 // Route implements sdk.Msg
-func (m *MsgAddSubscriber) Route() string { return ModuleName }
+func (m *MsgAddSubscriberRequest) Route() string { return ModuleName }
 
 // Type implements sdk.Msg
-func (m *MsgAddSubscriber) Type() string { return TypeMsgAddSubscriber }
+func (m *MsgAddSubscriberRequest) Type() string { return TypeMsgAddSubscriberRequest }
 
 // ValidateBasic implements sdk.Msg
-func (m *MsgAddSubscriber) ValidateBasic() error {
+func (m *MsgAddSubscriberRequest) ValidateBasic() error {
 	if _, err := sdk.AccAddressFromBech32(m.Signer); err != nil {
 		return sdkerrors.Wrap(sdkerrors.ErrInvalidAddress, err.Error())
 	}
@@ -171,17 +171,17 @@ func (m *MsgAddSubscriber) ValidateBasic() error {
 }
 
 // GetSignBytes implements sdk.Msg
-func (m *MsgAddSubscriber) GetSignBytes() []byte {
-	panic("amino support disabled")
+func (m *MsgAddSubscriberRequest) GetSignBytes() []byte {
+	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(m))
 }
 
 // GetSigners implements sdk.Msg
-func (m *MsgAddSubscriber) GetSigners() []sdk.AccAddress {
+func (m *MsgAddSubscriberRequest) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{m.MustGetSigner()}
 }
 
 // MustGetSigner returns the signer address
-func (m *MsgAddSubscriber) MustGetSigner() sdk.AccAddress {
+func (m *MsgAddSubscriberRequest) MustGetSigner() sdk.AccAddress {
 	addr, err := sdk.AccAddressFromBech32(m.Signer)
 	if err != nil {
 		panic(err)
@@ -189,17 +189,17 @@ func (m *MsgAddSubscriber) MustGetSigner() sdk.AccAddress {
 	return addr
 }
 
-//////////////////////////////
-// MsgRemovePublisherIntent //
-//////////////////////////////
+/////////////////////////////////////
+// MsgRemovePublisherIntentRequest //
+/////////////////////////////////////
 
-// NewMsgRemovePublisherIntent returns a new MsgRemovePublisherIntent
-func NewMsgRemovePublisherIntent(subscriptionId string, publisherDomain string, signer sdk.AccAddress) (*MsgRemovePublisherIntent, error) {
+// NewMsgRemovePublisherIntentRequest returns a new MsgRemovePublisherIntentRequest
+func NewMsgRemovePublisherIntent(subscriptionId string, publisherDomain string, signer sdk.AccAddress) (*MsgRemovePublisherIntentRequest, error) {
 	if signer == nil {
 		return nil, fmt.Errorf("no signer provided")
 	}
 
-	return &MsgRemovePublisherIntent{
+	return &MsgRemovePublisherIntentRequest{
 		SubscriptionId:  subscriptionId,
 		PublisherDomain: publisherDomain,
 		Signer:          signer.String(),
@@ -207,13 +207,13 @@ func NewMsgRemovePublisherIntent(subscriptionId string, publisherDomain string, 
 }
 
 // Route implements sdk.Msg
-func (m *MsgRemovePublisherIntent) Route() string { return ModuleName }
+func (m *MsgRemovePublisherIntentRequest) Route() string { return ModuleName }
 
 // Type implements sdk.Msg
-func (m *MsgRemovePublisherIntent) Type() string { return TypeMsgRemovePublisherIntent }
+func (m *MsgRemovePublisherIntentRequest) Type() string { return TypeMsgRemovePublisherIntentRequest }
 
 // ValidateBasic implements sdk.Msg
-func (m *MsgRemovePublisherIntent) ValidateBasic() error {
+func (m *MsgRemovePublisherIntentRequest) ValidateBasic() error {
 	if _, err := sdk.AccAddressFromBech32(m.Signer); err != nil {
 		return sdkerrors.Wrap(sdkerrors.ErrInvalidAddress, err.Error())
 	}
@@ -230,17 +230,17 @@ func (m *MsgRemovePublisherIntent) ValidateBasic() error {
 }
 
 // GetSignBytes implements sdk.Msg
-func (m *MsgRemovePublisherIntent) GetSignBytes() []byte {
-	panic("amino support disabled")
+func (m *MsgRemovePublisherIntentRequest) GetSignBytes() []byte {
+	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(m))
 }
 
 // GetSigners implements sdk.Msg
-func (m *MsgRemovePublisherIntent) GetSigners() []sdk.AccAddress {
+func (m *MsgRemovePublisherIntentRequest) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{m.MustGetSigner()}
 }
 
 // MustGetSigner returns the signer address
-func (m *MsgRemovePublisherIntent) MustGetSigner() sdk.AccAddress {
+func (m *MsgRemovePublisherIntentRequest) MustGetSigner() sdk.AccAddress {
 	addr, err := sdk.AccAddressFromBech32(m.Signer)
 	if err != nil {
 		panic(err)
@@ -248,17 +248,17 @@ func (m *MsgRemovePublisherIntent) MustGetSigner() sdk.AccAddress {
 	return addr
 }
 
-///////////////////////////////
-// MsgRemoveSubscriberIntent //
-///////////////////////////////
+//////////////////////////////////////
+// MsgRemoveSubscriberIntentRequest //
+//////////////////////////////////////
 
-// NewMsgRemoveSubscriberIntent returns a new MsgRemoveSubscriberIntent
-func NewMsgRemoveSubscriberIntent(subscriptionId string, subscriberAddress sdk.AccAddress, signer sdk.AccAddress) (*MsgRemoveSubscriberIntent, error) {
+// NewMsgRemoveSubscriberIntentRequest returns a new MsgRemoveSubscriberIntentRequest
+func NewMsgRemoveSubscriberIntentRequest(subscriptionId string, subscriberAddress sdk.AccAddress, signer sdk.AccAddress) (*MsgRemoveSubscriberIntentRequest, error) {
 	if signer == nil {
 		return nil, fmt.Errorf("no signer provided")
 	}
 
-	return &MsgRemoveSubscriberIntent{
+	return &MsgRemoveSubscriberIntentRequest{
 		SubscriptionId:    subscriptionId,
 		SubscriberAddress: subscriberAddress.String(),
 		Signer:            signer.String(),
@@ -266,13 +266,13 @@ func NewMsgRemoveSubscriberIntent(subscriptionId string, subscriberAddress sdk.A
 }
 
 // Route implements sdk.Msg
-func (m *MsgRemoveSubscriberIntent) Route() string { return ModuleName }
+func (m *MsgRemoveSubscriberIntentRequest) Route() string { return ModuleName }
 
 // Type implements sdk.Msg
-func (m *MsgRemoveSubscriberIntent) Type() string { return TypeMsgRemoveSubscriberIntent }
+func (m *MsgRemoveSubscriberIntentRequest) Type() string { return TypeMsgRemoveSubscriberIntentRequest }
 
 // ValidateBasic implements sdk.Msg
-func (m *MsgRemoveSubscriberIntent) ValidateBasic() error {
+func (m *MsgRemoveSubscriberIntentRequest) ValidateBasic() error {
 	if _, err := sdk.AccAddressFromBech32(m.Signer); err != nil {
 		return sdkerrors.Wrap(sdkerrors.ErrInvalidAddress, err.Error())
 	}
@@ -289,17 +289,17 @@ func (m *MsgRemoveSubscriberIntent) ValidateBasic() error {
 }
 
 // GetSignBytes implements sdk.Msg
-func (m *MsgRemoveSubscriberIntent) GetSignBytes() []byte {
-	panic("amino support disabled")
+func (m *MsgRemoveSubscriberIntentRequest) GetSignBytes() []byte {
+	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(m))
 }
 
 // GetSigners implements sdk.Msg
-func (m *MsgRemoveSubscriberIntent) GetSigners() []sdk.AccAddress {
+func (m *MsgRemoveSubscriberIntentRequest) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{m.MustGetSigner()}
 }
 
 // MustGetSigner returns the signer address
-func (m *MsgRemoveSubscriberIntent) MustGetSigner() sdk.AccAddress {
+func (m *MsgRemoveSubscriberIntentRequest) MustGetSigner() sdk.AccAddress {
 	addr, err := sdk.AccAddressFromBech32(m.Signer)
 	if err != nil {
 		panic(err)
@@ -307,30 +307,30 @@ func (m *MsgRemoveSubscriberIntent) MustGetSigner() sdk.AccAddress {
 	return addr
 }
 
-/////////////////////////
-// MsgRemoveSubscriber //
-/////////////////////////
+////////////////////////////////
+// MsgRemoveSubscriberRequest //
+////////////////////////////////
 
-// NewMsgRemoveSubscriber returns a new MsgRemoveSubscriber
-func NewMsgRemoveSubscriber(subscriberAddress sdk.AccAddress, signer sdk.AccAddress) (*MsgRemoveSubscriber, error) {
+// NewMsgRemoveSubscriberRequest returns a new MsgRemoveSubscriberRequest
+func NewMsgRemoveSubscriber(subscriberAddress sdk.AccAddress, signer sdk.AccAddress) (*MsgRemoveSubscriberRequest, error) {
 	if signer == nil {
 		return nil, fmt.Errorf("no signer provided")
 	}
 
-	return &MsgRemoveSubscriber{
+	return &MsgRemoveSubscriberRequest{
 		SubscriberAddress: subscriberAddress.String(),
 		Signer:            signer.String(),
 	}, nil
 }
 
 // Route implements sdk.Msg
-func (m *MsgRemoveSubscriber) Route() string { return ModuleName }
+func (m *MsgRemoveSubscriberRequest) Route() string { return ModuleName }
 
 // Type implements sdk.Msg
-func (m *MsgRemoveSubscriber) Type() string { return TypeMsgRemoveSubscriber }
+func (m *MsgRemoveSubscriberRequest) Type() string { return TypeMsgRemoveSubscriberRequest }
 
 // ValidateBasic implements sdk.Msg
-func (m *MsgRemoveSubscriber) ValidateBasic() error {
+func (m *MsgRemoveSubscriberRequest) ValidateBasic() error {
 	if _, err := sdk.AccAddressFromBech32(m.Signer); err != nil {
 		return sdkerrors.Wrap(sdkerrors.ErrInvalidAddress, err.Error())
 	}
@@ -343,17 +343,17 @@ func (m *MsgRemoveSubscriber) ValidateBasic() error {
 }
 
 // GetSignBytes implements sdk.Msg
-func (m *MsgRemoveSubscriber) GetSignBytes() []byte {
-	panic("amino support disabled")
+func (m *MsgRemoveSubscriberRequest) GetSignBytes() []byte {
+	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(m))
 }
 
 // GetSigners implements sdk.Msg
-func (m *MsgRemoveSubscriber) GetSigners() []sdk.AccAddress {
+func (m *MsgRemoveSubscriberRequest) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{m.MustGetSigner()}
 }
 
 // MustGetSigner returns the signer address
-func (m *MsgRemoveSubscriber) MustGetSigner() sdk.AccAddress {
+func (m *MsgRemoveSubscriberRequest) MustGetSigner() sdk.AccAddress {
 	addr, err := sdk.AccAddressFromBech32(m.Signer)
 	if err != nil {
 		panic(err)
@@ -361,30 +361,30 @@ func (m *MsgRemoveSubscriber) MustGetSigner() sdk.AccAddress {
 	return addr
 }
 
-////////////////////////
-// MsgRemovePublisher //
-////////////////////////
+///////////////////////////////
+// MsgRemovePublisherRequest //
+///////////////////////////////
 
-// NewMsgRemovePublisher returns a new MsgRemovePublisher
-func NewMsgRemovePublisher(publisherDomain string, signer sdk.AccAddress) (*MsgRemovePublisher, error) {
+// NewMsgRemovePublisherRequest returns a new MsgRemovePublisherRequest
+func NewMsgRemovePublisher(publisherDomain string, signer sdk.AccAddress) (*MsgRemovePublisherRequest, error) {
 	if signer == nil {
 		return nil, fmt.Errorf("no signer provided")
 	}
 
-	return &MsgRemovePublisher{
+	return &MsgRemovePublisherRequest{
 		PublisherDomain: publisherDomain,
 		Signer:          signer.String(),
 	}, nil
 }
 
 // Route implements sdk.Msg
-func (m *MsgRemovePublisher) Route() string { return ModuleName }
+func (m *MsgRemovePublisherRequest) Route() string { return ModuleName }
 
 // Type implements sdk.Msg
-func (m *MsgRemovePublisher) Type() string { return TypeMsgRemovePublisher }
+func (m *MsgRemovePublisherRequest) Type() string { return TypeMsgRemovePublisherRequest }
 
 // ValidateBasic implements sdk.Msg
-func (m *MsgRemovePublisher) ValidateBasic() error {
+func (m *MsgRemovePublisherRequest) ValidateBasic() error {
 	if _, err := sdk.AccAddressFromBech32(m.Signer); err != nil {
 		return sdkerrors.Wrap(sdkerrors.ErrInvalidAddress, err.Error())
 	}
@@ -397,17 +397,17 @@ func (m *MsgRemovePublisher) ValidateBasic() error {
 }
 
 // GetSignBytes implements sdk.Msg
-func (m *MsgRemovePublisher) GetSignBytes() []byte {
-	panic("amino support disabled")
+func (m *MsgRemovePublisherRequest) GetSignBytes() []byte {
+	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(m))
 }
 
 // GetSigners implements sdk.Msg
-func (m *MsgRemovePublisher) GetSigners() []sdk.AccAddress {
+func (m *MsgRemovePublisherRequest) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{m.MustGetSigner()}
 }
 
 // MustGetSigner returns the signer address
-func (m *MsgRemovePublisher) MustGetSigner() sdk.AccAddress {
+func (m *MsgRemovePublisherRequest) MustGetSigner() sdk.AccAddress {
 	addr, err := sdk.AccAddressFromBech32(m.Signer)
 	if err != nil {
 		panic(err)

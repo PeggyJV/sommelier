@@ -35,14 +35,14 @@ const (
 	// PublisherIntentByPublisherDomainKeyPrefix - <prefix>|<publisher_domain>|<subscription_id> -> PublisherIntent
 	PublisherIntentByPublisherDomainKeyPrefix
 
-	// PublisherIntentBySubscriptionIdKeyPrefix - <prefix>|<subscription_id>|<publisher_domain> -> PublisherIntent
-	PublisherIntentBySubscriptionIdKeyPrefix
+	// PublisherIntentBySubscriptionIDKeyPrefix - <prefix>|<subscription_id>|<publisher_domain> -> PublisherIntent
+	PublisherIntentBySubscriptionIDKeyPrefix
 
 	// SubscriberIntentBySubscriberAddressKeyPrefix - <prefix>|<subscriber_address>|<subscription_id> -> SubscriberIntent
 	SubscriberIntentBySubscriberAddressKeyPrefix
 
-	// SubscriberIntentBySubscriptionIdKeyPrefix - <prefix>|<subscription_id>|<subscriber_address> -> SubscriberIntent
-	SubscriberIntentBySubscriptionIdKeyPrefix
+	// SubscriberIntentBySubscriptionIDKeyPrefix - <prefix>|<subscription_id>|<subscriber_address> -> SubscriberIntent
+	SubscriberIntentBySubscriptionIDKeyPrefix
 
 	// SubscriberIntentByPublisherDomainKeyPrefix - <prefix>|<publisher_domain>|<subscriber_address>|<subscription_id> -> SubscriberIntent
 	SubscriberIntentByPublisherDomainKeyPrefix
@@ -87,20 +87,20 @@ func GetPublisherIntentsByPublisherDomainPrefix(publisherDomain string) []byte {
 	return append(key, delimiter()...)
 }
 
-// GetPublisherIntentsBySubscriptionIdPrefix returns a prefix for all PublisherIntents indexed by subscription ID
-func GetPublisherIntentsBySubscriptionIdPrefix(subscriptionId string) []byte {
-	key := bytes.Join([][]byte{{PublisherIntentBySubscriptionIdKeyPrefix}, []byte(subscriptionId)}, delimiter())
+// GetPublisherIntentsBySubscriptionIDPrefix returns a prefix for all PublisherIntents indexed by subscription ID
+func GetPublisherIntentsBySubscriptionIDPrefix(subscriptionID string) []byte {
+	key := bytes.Join([][]byte{{PublisherIntentBySubscriptionIDKeyPrefix}, []byte(subscriptionID)}, delimiter())
 	return append(key, delimiter()...)
 }
 
 // GetPublisherIntentByPublisherDomainKey returns the key for a PublisherIntent indexed by domain
-func GetPublisherIntentByPublisherDomainKey(publisherDomain string, subscriptionId string) []byte {
-	return bytes.Join([][]byte{{PublisherIntentByPublisherDomainKeyPrefix}, []byte(publisherDomain), []byte(subscriptionId)}, delimiter())
+func GetPublisherIntentByPublisherDomainKey(publisherDomain string, subscriptionID string) []byte {
+	return bytes.Join([][]byte{{PublisherIntentByPublisherDomainKeyPrefix}, []byte(publisherDomain), []byte(subscriptionID)}, delimiter())
 }
 
-// GetPublisherIntentBySubscriptionIdKey returns the key for a PublisherIntent indexed by subscription ID
-func GetPublisherIntentBySubscriptionIdKey(subsciptionId string, publisherDomain string) []byte {
-	key := bytes.Join([][]byte{{PublisherIntentBySubscriptionIdKeyPrefix}, []byte(subsciptionId), []byte(publisherDomain)}, delimiter())
+// GetPublisherIntentBySubscriptionIDKey returns the key for a PublisherIntent indexed by subscription ID
+func GetPublisherIntentBySubscriptionIDKey(subsciptionID string, publisherDomain string) []byte {
+	key := bytes.Join([][]byte{{PublisherIntentBySubscriptionIDKeyPrefix}, []byte(subsciptionID), []byte(publisherDomain)}, delimiter())
 	return append(key, delimiter()...)
 }
 
@@ -116,9 +116,9 @@ func GetSubscriberIntentsBySubscriberAddressPrefix(subscriberAddress sdk.AccAddr
 	return append(key, delimiter()...)
 }
 
-// GetSubscriberIntentsBySubscriptionIdPrefix returns a prefix for all SubscriberIntents indexed by subscription ID
-func GetSubscriberIntentsBySubscriptionIdPrefix(subscriptionId string) []byte {
-	key := bytes.Join([][]byte{{SubscriberIntentBySubscriptionIdKeyPrefix}, []byte(subscriptionId)}, delimiter())
+// GetSubscriberIntentsBySubscriptionIDPrefix returns a prefix for all SubscriberIntents indexed by subscription ID
+func GetSubscriberIntentsBySubscriptionIDPrefix(subscriptionID string) []byte {
+	key := bytes.Join([][]byte{{SubscriberIntentBySubscriptionIDKeyPrefix}, []byte(subscriptionID)}, delimiter())
 	return append(key, delimiter()...)
 }
 
@@ -129,18 +129,18 @@ func GetSubscriberIntentsByPublisherDomainPrefix(publisherDomain string) []byte 
 }
 
 // GetSubscriberIntentBySubscriberAddressKey returns the key for a SubscriberIntent indexed by address
-func GetSubscriberIntentBySubscriberAddressKey(subscriberAddress sdk.AccAddress, subscriptionId string) []byte {
-	return bytes.Join([][]byte{{SubscriberIntentBySubscriberAddressKeyPrefix}, subscriberAddress.Bytes(), []byte(subscriptionId)}, delimiter())
+func GetSubscriberIntentBySubscriberAddressKey(subscriberAddress sdk.AccAddress, subscriptionID string) []byte {
+	return bytes.Join([][]byte{{SubscriberIntentBySubscriberAddressKeyPrefix}, subscriberAddress.Bytes(), []byte(subscriptionID)}, delimiter())
 }
 
-// GetSubscriberIntentBySubscriptionIdKey returns the key for a SubscriberIntent indexed by subscription ID
-func GetSubscriberIntentBySubscriptionIdKey(subscriptionId string, subscriberAddress sdk.AccAddress) []byte {
-	return bytes.Join([][]byte{{SubscriberIntentBySubscriptionIdKeyPrefix}, []byte(subscriptionId), subscriberAddress.Bytes()}, delimiter())
+// GetSubscriberIntentBySubscriptionIDKey returns the key for a SubscriberIntent indexed by subscription ID
+func GetSubscriberIntentBySubscriptionIDKey(subscriptionID string, subscriberAddress sdk.AccAddress) []byte {
+	return bytes.Join([][]byte{{SubscriberIntentBySubscriptionIDKeyPrefix}, []byte(subscriptionID), subscriberAddress.Bytes()}, delimiter())
 }
 
 // GetSubscriberIntentByPublisherDomainKey returns the key for a SubscriberIntent indexed by publisher domain
-func GetSubscriberIntentByPublisherDomainKey(publisherDomain string, subscriberAddress sdk.AccAddress, subscriptionId string) []byte {
-	return bytes.Join([][]byte{{SubscriberIntentByPublisherDomainKeyPrefix}, []byte(publisherDomain), subscriberAddress.Bytes(), []byte(subscriptionId)}, delimiter())
+func GetSubscriberIntentByPublisherDomainKey(publisherDomain string, subscriberAddress sdk.AccAddress, subscriptionID string) []byte {
+	return bytes.Join([][]byte{{SubscriberIntentByPublisherDomainKeyPrefix}, []byte(publisherDomain), subscriberAddress.Bytes(), []byte(subscriptionID)}, delimiter())
 }
 
 // GetDefaultSubscriptionPrefix returns a prefix for iterating all DefaultSubscripions
@@ -149,6 +149,6 @@ func GetDefaultSubscriptionPrefix() []byte {
 }
 
 // GetDefaultSubscriptionKey returns the key for a DefaultSubscription
-func GetDefaultSubscriptionKey(subsciptionId string) []byte {
-	return bytes.Join([][]byte{{DefaultSubscriptionKeyPrefix}, []byte(subsciptionId)}, delimiter())
+func GetDefaultSubscriptionKey(subsciptionID string) []byte {
+	return bytes.Join([][]byte{{DefaultSubscriptionKeyPrefix}, []byte(subsciptionID)}, delimiter())
 }

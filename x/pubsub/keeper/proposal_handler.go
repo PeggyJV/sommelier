@@ -10,8 +10,6 @@ import (
 func HandleAddPublisherProposal(ctx sdk.Context, k Keeper, p types.AddPublisherProposal) error {
 	_, found := k.GetPublisher(ctx, p.Domain)
 	if found {
-		// TODO(bolten): should we just overwrite an existing publisher if governance passes like this, or should we
-		// require that the existing publisher is removed first?
 		return sdkerrors.Wrapf(types.ErrAlreadyExists, "publisher already exists with domain: %s", p.Domain)
 	}
 
@@ -21,11 +19,7 @@ func HandleAddPublisherProposal(ctx sdk.Context, k Keeper, p types.AddPublisherP
 		CaCert:  p.CaCert,
 	}
 
-	// TODO(bolten): is there a way to verify the submitter of the proposal matches the address? should we care?
-
 	k.SetPublisher(ctx, publisher)
-
-	// TODO(bolten): should events be emitted for these proposal handlers?
 
 	return nil
 }

@@ -12,7 +12,7 @@ const (
 
 	AttributeKeyPublisherDomain   = "publisher_domain"
 	AttributeKeyPublisherAddress  = "publisher_address"
-	AttributeKeySubscriptionId    = "subscription_id"
+	AttributeKeySubscriptionID    = "subscription_id"
 	AttributeKeySubscriberAddress = "subscriber_address"
 
 	AttributeValueCategory = ModuleName

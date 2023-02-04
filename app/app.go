@@ -183,6 +183,7 @@ var (
 		cellarfeestypes.ModuleName:     nil,
 		auctiontypes.ModuleName:        nil,
 		incentivestypes.ModuleName:     nil,
+		pubsubtypes.ModuleName:         nil,
 	}
 
 	// module accounts that are allowed to receive tokens
@@ -226,13 +227,13 @@ type SommelierApp struct {
 	GravityKeeper    gravitykeeper.Keeper
 	AuthzKeeper      authzkeeper.Keeper
 	FeeGrantKeeper   feegrantkeeper.Keeper
-	PubsubKeeper     pubsubkeeper.Keeper
 
 	// Sommelier keepers
 	CorkKeeper       corkkeeper.Keeper
 	CellarFeesKeeper cellarfeeskeeper.Keeper
 	AuctionKeeper    auctionkeeper.Keeper
 	IncentivesKeeper incentiveskeeper.Keeper
+	PubsubKeeper     pubsubkeeper.Keeper
 
 	// make capability scoped keepers public for test purposes (IBC only)
 	ScopedIBCKeeper      capabilitykeeper.ScopedKeeper
@@ -468,7 +469,7 @@ func NewSommelierApp(
 		cellarfees.NewAppModule(app.CellarFeesKeeper, appCodec, app.AccountKeeper, app.BankKeeper, app.MintKeeper, app.CorkKeeper, app.GravityKeeper, app.AuctionKeeper),
 		auction.NewAppModule(app.AuctionKeeper, app.BankKeeper, app.AccountKeeper, appCodec),
 		incentives.NewAppModule(app.IncentivesKeeper, app.DistrKeeper, app.BankKeeper, app.MintKeeper, appCodec),
-		pubsub.NewAppModule(appCodec, app.PubsubKeeper, app.StakingKeeper),
+		pubsub.NewAppModule(appCodec, app.PubsubKeeper, app.StakingKeeper, app.GravityKeeper),
 	)
 
 	// During begin block slashing happens after distr.BeginBlocker so that
@@ -536,7 +537,7 @@ func NewSommelierApp(
 		cork.NewAppModule(app.CorkKeeper, appCodec),
 		cellarfees.NewAppModule(app.CellarFeesKeeper, appCodec, app.AccountKeeper, app.BankKeeper, app.MintKeeper, app.CorkKeeper, app.GravityKeeper, app.AuctionKeeper),
 		auction.NewAppModule(app.AuctionKeeper, app.BankKeeper, app.AccountKeeper, appCodec),
-		pubsub.NewAppModule(appCodec, app.PubsubKeeper, app.StakingKeeper),
+		pubsub.NewAppModule(appCodec, app.PubsubKeeper, app.StakingKeeper, app.GravityKeeper),
 	)
 
 	app.sm.RegisterStoreDecoders()

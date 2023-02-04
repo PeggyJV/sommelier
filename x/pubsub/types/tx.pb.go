@@ -27,23 +27,23 @@ var _ = math.Inf
 // proto package needs to be updated.
 const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
-type MsgRemovePublisher struct {
+type MsgRemovePublisherRequest struct {
 	PublisherDomain string `protobuf:"bytes,1,opt,name=publisher_domain,json=publisherDomain,proto3" json:"publisher_domain,omitempty"`
 	Signer          string `protobuf:"bytes,2,opt,name=signer,proto3" json:"signer,omitempty"`
 }
 
-func (m *MsgRemovePublisher) Reset()         { *m = MsgRemovePublisher{} }
-func (m *MsgRemovePublisher) String() string { return proto.CompactTextString(m) }
-func (*MsgRemovePublisher) ProtoMessage()    {}
-func (*MsgRemovePublisher) Descriptor() ([]byte, []int) {
+func (m *MsgRemovePublisherRequest) Reset()         { *m = MsgRemovePublisherRequest{} }
+func (m *MsgRemovePublisherRequest) String() string { return proto.CompactTextString(m) }
+func (*MsgRemovePublisherRequest) ProtoMessage()    {}
+func (*MsgRemovePublisherRequest) Descriptor() ([]byte, []int) {
 	return fileDescriptor_de188e882df4c8a7, []int{0}
 }
-func (m *MsgRemovePublisher) XXX_Unmarshal(b []byte) error {
+func (m *MsgRemovePublisherRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *MsgRemovePublisher) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *MsgRemovePublisherRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_MsgRemovePublisher.Marshal(b, m, deterministic)
+		return xxx_messageInfo_MsgRemovePublisherRequest.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -53,26 +53,26 @@ func (m *MsgRemovePublisher) XXX_Marshal(b []byte, deterministic bool) ([]byte, 
 		return b[:n], nil
 	}
 }
-func (m *MsgRemovePublisher) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MsgRemovePublisher.Merge(m, src)
+func (m *MsgRemovePublisherRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgRemovePublisherRequest.Merge(m, src)
 }
-func (m *MsgRemovePublisher) XXX_Size() int {
+func (m *MsgRemovePublisherRequest) XXX_Size() int {
 	return m.Size()
 }
-func (m *MsgRemovePublisher) XXX_DiscardUnknown() {
-	xxx_messageInfo_MsgRemovePublisher.DiscardUnknown(m)
+func (m *MsgRemovePublisherRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgRemovePublisherRequest.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_MsgRemovePublisher proto.InternalMessageInfo
+var xxx_messageInfo_MsgRemovePublisherRequest proto.InternalMessageInfo
 
-func (m *MsgRemovePublisher) GetPublisherDomain() string {
+func (m *MsgRemovePublisherRequest) GetPublisherDomain() string {
 	if m != nil {
 		return m.PublisherDomain
 	}
 	return ""
 }
 
-func (m *MsgRemovePublisher) GetSigner() string {
+func (m *MsgRemovePublisherRequest) GetSigner() string {
 	if m != nil {
 		return m.Signer
 	}
@@ -115,23 +115,23 @@ func (m *MsgRemovePublisherResponse) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_MsgRemovePublisherResponse proto.InternalMessageInfo
 
-type MsgAddSubscriber struct {
+type MsgAddSubscriberRequest struct {
 	Subscriber *Subscriber `protobuf:"bytes,1,opt,name=subscriber,proto3" json:"subscriber,omitempty"`
 	Signer     string      `protobuf:"bytes,2,opt,name=signer,proto3" json:"signer,omitempty"`
 }
 
-func (m *MsgAddSubscriber) Reset()         { *m = MsgAddSubscriber{} }
-func (m *MsgAddSubscriber) String() string { return proto.CompactTextString(m) }
-func (*MsgAddSubscriber) ProtoMessage()    {}
-func (*MsgAddSubscriber) Descriptor() ([]byte, []int) {
+func (m *MsgAddSubscriberRequest) Reset()         { *m = MsgAddSubscriberRequest{} }
+func (m *MsgAddSubscriberRequest) String() string { return proto.CompactTextString(m) }
+func (*MsgAddSubscriberRequest) ProtoMessage()    {}
+func (*MsgAddSubscriberRequest) Descriptor() ([]byte, []int) {
 	return fileDescriptor_de188e882df4c8a7, []int{2}
 }
-func (m *MsgAddSubscriber) XXX_Unmarshal(b []byte) error {
+func (m *MsgAddSubscriberRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *MsgAddSubscriber) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *MsgAddSubscriberRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_MsgAddSubscriber.Marshal(b, m, deterministic)
+		return xxx_messageInfo_MsgAddSubscriberRequest.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -141,26 +141,26 @@ func (m *MsgAddSubscriber) XXX_Marshal(b []byte, deterministic bool) ([]byte, er
 		return b[:n], nil
 	}
 }
-func (m *MsgAddSubscriber) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MsgAddSubscriber.Merge(m, src)
+func (m *MsgAddSubscriberRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgAddSubscriberRequest.Merge(m, src)
 }
-func (m *MsgAddSubscriber) XXX_Size() int {
+func (m *MsgAddSubscriberRequest) XXX_Size() int {
 	return m.Size()
 }
-func (m *MsgAddSubscriber) XXX_DiscardUnknown() {
-	xxx_messageInfo_MsgAddSubscriber.DiscardUnknown(m)
+func (m *MsgAddSubscriberRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgAddSubscriberRequest.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_MsgAddSubscriber proto.InternalMessageInfo
+var xxx_messageInfo_MsgAddSubscriberRequest proto.InternalMessageInfo
 
-func (m *MsgAddSubscriber) GetSubscriber() *Subscriber {
+func (m *MsgAddSubscriberRequest) GetSubscriber() *Subscriber {
 	if m != nil {
 		return m.Subscriber
 	}
 	return nil
 }
 
-func (m *MsgAddSubscriber) GetSigner() string {
+func (m *MsgAddSubscriberRequest) GetSigner() string {
 	if m != nil {
 		return m.Signer
 	}
@@ -203,23 +203,23 @@ func (m *MsgAddSubscriberResponse) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_MsgAddSubscriberResponse proto.InternalMessageInfo
 
-type MsgRemoveSubscriber struct {
+type MsgRemoveSubscriberRequest struct {
 	SubscriberAddress string `protobuf:"bytes,1,opt,name=subscriber_address,json=subscriberAddress,proto3" json:"subscriber_address,omitempty"`
 	Signer            string `protobuf:"bytes,2,opt,name=signer,proto3" json:"signer,omitempty"`
 }
 
-func (m *MsgRemoveSubscriber) Reset()         { *m = MsgRemoveSubscriber{} }
-func (m *MsgRemoveSubscriber) String() string { return proto.CompactTextString(m) }
-func (*MsgRemoveSubscriber) ProtoMessage()    {}
-func (*MsgRemoveSubscriber) Descriptor() ([]byte, []int) {
+func (m *MsgRemoveSubscriberRequest) Reset()         { *m = MsgRemoveSubscriberRequest{} }
+func (m *MsgRemoveSubscriberRequest) String() string { return proto.CompactTextString(m) }
+func (*MsgRemoveSubscriberRequest) ProtoMessage()    {}
+func (*MsgRemoveSubscriberRequest) Descriptor() ([]byte, []int) {
 	return fileDescriptor_de188e882df4c8a7, []int{4}
 }
-func (m *MsgRemoveSubscriber) XXX_Unmarshal(b []byte) error {
+func (m *MsgRemoveSubscriberRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *MsgRemoveSubscriber) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *MsgRemoveSubscriberRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_MsgRemoveSubscriber.Marshal(b, m, deterministic)
+		return xxx_messageInfo_MsgRemoveSubscriberRequest.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -229,26 +229,26 @@ func (m *MsgRemoveSubscriber) XXX_Marshal(b []byte, deterministic bool) ([]byte,
 		return b[:n], nil
 	}
 }
-func (m *MsgRemoveSubscriber) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MsgRemoveSubscriber.Merge(m, src)
+func (m *MsgRemoveSubscriberRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgRemoveSubscriberRequest.Merge(m, src)
 }
-func (m *MsgRemoveSubscriber) XXX_Size() int {
+func (m *MsgRemoveSubscriberRequest) XXX_Size() int {
 	return m.Size()
 }
-func (m *MsgRemoveSubscriber) XXX_DiscardUnknown() {
-	xxx_messageInfo_MsgRemoveSubscriber.DiscardUnknown(m)
+func (m *MsgRemoveSubscriberRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgRemoveSubscriberRequest.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_MsgRemoveSubscriber proto.InternalMessageInfo
+var xxx_messageInfo_MsgRemoveSubscriberRequest proto.InternalMessageInfo
 
-func (m *MsgRemoveSubscriber) GetSubscriberAddress() string {
+func (m *MsgRemoveSubscriberRequest) GetSubscriberAddress() string {
 	if m != nil {
 		return m.SubscriberAddress
 	}
 	return ""
 }
 
-func (m *MsgRemoveSubscriber) GetSigner() string {
+func (m *MsgRemoveSubscriberRequest) GetSigner() string {
 	if m != nil {
 		return m.Signer
 	}
@@ -291,23 +291,23 @@ func (m *MsgRemoveSubscriberResponse) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_MsgRemoveSubscriberResponse proto.InternalMessageInfo
 
-type MsgAddPublisherIntent struct {
+type MsgAddPublisherIntentRequest struct {
 	PublisherIntent *PublisherIntent `protobuf:"bytes,1,opt,name=publisher_intent,json=publisherIntent,proto3" json:"publisher_intent,omitempty"`
 	Signer          string           `protobuf:"bytes,2,opt,name=signer,proto3" json:"signer,omitempty"`
 }
 
-func (m *MsgAddPublisherIntent) Reset()         { *m = MsgAddPublisherIntent{} }
-func (m *MsgAddPublisherIntent) String() string { return proto.CompactTextString(m) }
-func (*MsgAddPublisherIntent) ProtoMessage()    {}
-func (*MsgAddPublisherIntent) Descriptor() ([]byte, []int) {
+func (m *MsgAddPublisherIntentRequest) Reset()         { *m = MsgAddPublisherIntentRequest{} }
+func (m *MsgAddPublisherIntentRequest) String() string { return proto.CompactTextString(m) }
+func (*MsgAddPublisherIntentRequest) ProtoMessage()    {}
+func (*MsgAddPublisherIntentRequest) Descriptor() ([]byte, []int) {
 	return fileDescriptor_de188e882df4c8a7, []int{6}
 }
-func (m *MsgAddPublisherIntent) XXX_Unmarshal(b []byte) error {
+func (m *MsgAddPublisherIntentRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *MsgAddPublisherIntent) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *MsgAddPublisherIntentRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_MsgAddPublisherIntent.Marshal(b, m, deterministic)
+		return xxx_messageInfo_MsgAddPublisherIntentRequest.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -317,26 +317,26 @@ func (m *MsgAddPublisherIntent) XXX_Marshal(b []byte, deterministic bool) ([]byt
 		return b[:n], nil
 	}
 }
-func (m *MsgAddPublisherIntent) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MsgAddPublisherIntent.Merge(m, src)
+func (m *MsgAddPublisherIntentRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgAddPublisherIntentRequest.Merge(m, src)
 }
-func (m *MsgAddPublisherIntent) XXX_Size() int {
+func (m *MsgAddPublisherIntentRequest) XXX_Size() int {
 	return m.Size()
 }
-func (m *MsgAddPublisherIntent) XXX_DiscardUnknown() {
-	xxx_messageInfo_MsgAddPublisherIntent.DiscardUnknown(m)
+func (m *MsgAddPublisherIntentRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgAddPublisherIntentRequest.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_MsgAddPublisherIntent proto.InternalMessageInfo
+var xxx_messageInfo_MsgAddPublisherIntentRequest proto.InternalMessageInfo
 
-func (m *MsgAddPublisherIntent) GetPublisherIntent() *PublisherIntent {
+func (m *MsgAddPublisherIntentRequest) GetPublisherIntent() *PublisherIntent {
 	if m != nil {
 		return m.PublisherIntent
 	}
 	return nil
 }
 
-func (m *MsgAddPublisherIntent) GetSigner() string {
+func (m *MsgAddPublisherIntentRequest) GetSigner() string {
 	if m != nil {
 		return m.Signer
 	}
@@ -379,24 +379,24 @@ func (m *MsgAddPublisherIntentResponse) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_MsgAddPublisherIntentResponse proto.InternalMessageInfo
 
-type MsgRemovePublisherIntent struct {
+type MsgRemovePublisherIntentRequest struct {
 	SubscriptionId  string `protobuf:"bytes,1,opt,name=subscription_id,json=subscriptionId,proto3" json:"subscription_id,omitempty"`
 	PublisherDomain string `protobuf:"bytes,2,opt,name=publisher_domain,json=publisherDomain,proto3" json:"publisher_domain,omitempty"`
 	Signer          string `protobuf:"bytes,3,opt,name=signer,proto3" json:"signer,omitempty"`
 }
 
-func (m *MsgRemovePublisherIntent) Reset()         { *m = MsgRemovePublisherIntent{} }
-func (m *MsgRemovePublisherIntent) String() string { return proto.CompactTextString(m) }
-func (*MsgRemovePublisherIntent) ProtoMessage()    {}
-func (*MsgRemovePublisherIntent) Descriptor() ([]byte, []int) {
+func (m *MsgRemovePublisherIntentRequest) Reset()         { *m = MsgRemovePublisherIntentRequest{} }
+func (m *MsgRemovePublisherIntentRequest) String() string { return proto.CompactTextString(m) }
+func (*MsgRemovePublisherIntentRequest) ProtoMessage()    {}
+func (*MsgRemovePublisherIntentRequest) Descriptor() ([]byte, []int) {
 	return fileDescriptor_de188e882df4c8a7, []int{8}
 }
-func (m *MsgRemovePublisherIntent) XXX_Unmarshal(b []byte) error {
+func (m *MsgRemovePublisherIntentRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *MsgRemovePublisherIntent) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *MsgRemovePublisherIntentRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_MsgRemovePublisherIntent.Marshal(b, m, deterministic)
+		return xxx_messageInfo_MsgRemovePublisherIntentRequest.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -406,33 +406,33 @@ func (m *MsgRemovePublisherIntent) XXX_Marshal(b []byte, deterministic bool) ([]
 		return b[:n], nil
 	}
 }
-func (m *MsgRemovePublisherIntent) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MsgRemovePublisherIntent.Merge(m, src)
+func (m *MsgRemovePublisherIntentRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgRemovePublisherIntentRequest.Merge(m, src)
 }
-func (m *MsgRemovePublisherIntent) XXX_Size() int {
+func (m *MsgRemovePublisherIntentRequest) XXX_Size() int {
 	return m.Size()
 }
-func (m *MsgRemovePublisherIntent) XXX_DiscardUnknown() {
-	xxx_messageInfo_MsgRemovePublisherIntent.DiscardUnknown(m)
+func (m *MsgRemovePublisherIntentRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgRemovePublisherIntentRequest.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_MsgRemovePublisherIntent proto.InternalMessageInfo
+var xxx_messageInfo_MsgRemovePublisherIntentRequest proto.InternalMessageInfo
 
-func (m *MsgRemovePublisherIntent) GetSubscriptionId() string {
+func (m *MsgRemovePublisherIntentRequest) GetSubscriptionId() string {
 	if m != nil {
 		return m.SubscriptionId
 	}
 	return ""
 }
 
-func (m *MsgRemovePublisherIntent) GetPublisherDomain() string {
+func (m *MsgRemovePublisherIntentRequest) GetPublisherDomain() string {
 	if m != nil {
 		return m.PublisherDomain
 	}
 	return ""
 }
 
-func (m *MsgRemovePublisherIntent) GetSigner() string {
+func (m *MsgRemovePublisherIntentRequest) GetSigner() string {
 	if m != nil {
 		return m.Signer
 	}
@@ -475,23 +475,23 @@ func (m *MsgRemovePublisherIntentResponse) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_MsgRemovePublisherIntentResponse proto.InternalMessageInfo
 
-type MsgAddSubscriberIntent struct {
+type MsgAddSubscriberIntentRequest struct {
 	SubscriberIntent *SubscriberIntent `protobuf:"bytes,1,opt,name=subscriber_intent,json=subscriberIntent,proto3" json:"subscriber_intent,omitempty"`
 	Signer           string            `protobuf:"bytes,2,opt,name=signer,proto3" json:"signer,omitempty"`
 }
 
-func (m *MsgAddSubscriberIntent) Reset()         { *m = MsgAddSubscriberIntent{} }
-func (m *MsgAddSubscriberIntent) String() string { return proto.CompactTextString(m) }
-func (*MsgAddSubscriberIntent) ProtoMessage()    {}
-func (*MsgAddSubscriberIntent) Descriptor() ([]byte, []int) {
+func (m *MsgAddSubscriberIntentRequest) Reset()         { *m = MsgAddSubscriberIntentRequest{} }
+func (m *MsgAddSubscriberIntentRequest) String() string { return proto.CompactTextString(m) }
+func (*MsgAddSubscriberIntentRequest) ProtoMessage()    {}
+func (*MsgAddSubscriberIntentRequest) Descriptor() ([]byte, []int) {
 	return fileDescriptor_de188e882df4c8a7, []int{10}
 }
-func (m *MsgAddSubscriberIntent) XXX_Unmarshal(b []byte) error {
+func (m *MsgAddSubscriberIntentRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *MsgAddSubscriberIntent) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *MsgAddSubscriberIntentRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_MsgAddSubscriberIntent.Marshal(b, m, deterministic)
+		return xxx_messageInfo_MsgAddSubscriberIntentRequest.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -501,26 +501,26 @@ func (m *MsgAddSubscriberIntent) XXX_Marshal(b []byte, deterministic bool) ([]by
 		return b[:n], nil
 	}
 }
-func (m *MsgAddSubscriberIntent) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MsgAddSubscriberIntent.Merge(m, src)
+func (m *MsgAddSubscriberIntentRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgAddSubscriberIntentRequest.Merge(m, src)
 }
-func (m *MsgAddSubscriberIntent) XXX_Size() int {
+func (m *MsgAddSubscriberIntentRequest) XXX_Size() int {
 	return m.Size()
 }
-func (m *MsgAddSubscriberIntent) XXX_DiscardUnknown() {
-	xxx_messageInfo_MsgAddSubscriberIntent.DiscardUnknown(m)
+func (m *MsgAddSubscriberIntentRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgAddSubscriberIntentRequest.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_MsgAddSubscriberIntent proto.InternalMessageInfo
+var xxx_messageInfo_MsgAddSubscriberIntentRequest proto.InternalMessageInfo
 
-func (m *MsgAddSubscriberIntent) GetSubscriberIntent() *SubscriberIntent {
+func (m *MsgAddSubscriberIntentRequest) GetSubscriberIntent() *SubscriberIntent {
 	if m != nil {
 		return m.SubscriberIntent
 	}
 	return nil
 }
 
-func (m *MsgAddSubscriberIntent) GetSigner() string {
+func (m *MsgAddSubscriberIntentRequest) GetSigner() string {
 	if m != nil {
 		return m.Signer
 	}
@@ -563,24 +563,24 @@ func (m *MsgAddSubscriberIntentResponse) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_MsgAddSubscriberIntentResponse proto.InternalMessageInfo
 
-type MsgRemoveSubscriberIntent struct {
+type MsgRemoveSubscriberIntentRequest struct {
 	SubscriptionId    string `protobuf:"bytes,1,opt,name=subscription_id,json=subscriptionId,proto3" json:"subscription_id,omitempty"`
 	SubscriberAddress string `protobuf:"bytes,2,opt,name=subscriber_address,json=subscriberAddress,proto3" json:"subscriber_address,omitempty"`
 	Signer            string `protobuf:"bytes,3,opt,name=signer,proto3" json:"signer,omitempty"`
 }
 
-func (m *MsgRemoveSubscriberIntent) Reset()         { *m = MsgRemoveSubscriberIntent{} }
-func (m *MsgRemoveSubscriberIntent) String() string { return proto.CompactTextString(m) }
-func (*MsgRemoveSubscriberIntent) ProtoMessage()    {}
-func (*MsgRemoveSubscriberIntent) Descriptor() ([]byte, []int) {
+func (m *MsgRemoveSubscriberIntentRequest) Reset()         { *m = MsgRemoveSubscriberIntentRequest{} }
+func (m *MsgRemoveSubscriberIntentRequest) String() string { return proto.CompactTextString(m) }
+func (*MsgRemoveSubscriberIntentRequest) ProtoMessage()    {}
+func (*MsgRemoveSubscriberIntentRequest) Descriptor() ([]byte, []int) {
 	return fileDescriptor_de188e882df4c8a7, []int{12}
 }
-func (m *MsgRemoveSubscriberIntent) XXX_Unmarshal(b []byte) error {
+func (m *MsgRemoveSubscriberIntentRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *MsgRemoveSubscriberIntent) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *MsgRemoveSubscriberIntentRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_MsgRemoveSubscriberIntent.Marshal(b, m, deterministic)
+		return xxx_messageInfo_MsgRemoveSubscriberIntentRequest.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -590,33 +590,33 @@ func (m *MsgRemoveSubscriberIntent) XXX_Marshal(b []byte, deterministic bool) ([
 		return b[:n], nil
 	}
 }
-func (m *MsgRemoveSubscriberIntent) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MsgRemoveSubscriberIntent.Merge(m, src)
+func (m *MsgRemoveSubscriberIntentRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgRemoveSubscriberIntentRequest.Merge(m, src)
 }
-func (m *MsgRemoveSubscriberIntent) XXX_Size() int {
+func (m *MsgRemoveSubscriberIntentRequest) XXX_Size() int {
 	return m.Size()
 }
-func (m *MsgRemoveSubscriberIntent) XXX_DiscardUnknown() {
-	xxx_messageInfo_MsgRemoveSubscriberIntent.DiscardUnknown(m)
+func (m *MsgRemoveSubscriberIntentRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgRemoveSubscriberIntentRequest.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_MsgRemoveSubscriberIntent proto.InternalMessageInfo
+var xxx_messageInfo_MsgRemoveSubscriberIntentRequest proto.InternalMessageInfo
 
-func (m *MsgRemoveSubscriberIntent) GetSubscriptionId() string {
+func (m *MsgRemoveSubscriberIntentRequest) GetSubscriptionId() string {
 	if m != nil {
 		return m.SubscriptionId
 	}
 	return ""
 }
 
-func (m *MsgRemoveSubscriberIntent) GetSubscriberAddress() string {
+func (m *MsgRemoveSubscriberIntentRequest) GetSubscriberAddress() string {
 	if m != nil {
 		return m.SubscriberAddress
 	}
 	return ""
 }
 
-func (m *MsgRemoveSubscriberIntent) GetSigner() string {
+func (m *MsgRemoveSubscriberIntentRequest) GetSigner() string {
 	if m != nil {
 		return m.Signer
 	}
@@ -660,62 +660,62 @@ func (m *MsgRemoveSubscriberIntentResponse) XXX_DiscardUnknown() {
 var xxx_messageInfo_MsgRemoveSubscriberIntentResponse proto.InternalMessageInfo
 
 func init() {
-	proto.RegisterType((*MsgRemovePublisher)(nil), "pubsub.v1.MsgRemovePublisher")
+	proto.RegisterType((*MsgRemovePublisherRequest)(nil), "pubsub.v1.MsgRemovePublisherRequest")
 	proto.RegisterType((*MsgRemovePublisherResponse)(nil), "pubsub.v1.MsgRemovePublisherResponse")
-	proto.RegisterType((*MsgAddSubscriber)(nil), "pubsub.v1.MsgAddSubscriber")
+	proto.RegisterType((*MsgAddSubscriberRequest)(nil), "pubsub.v1.MsgAddSubscriberRequest")
 	proto.RegisterType((*MsgAddSubscriberResponse)(nil), "pubsub.v1.MsgAddSubscriberResponse")
-	proto.RegisterType((*MsgRemoveSubscriber)(nil), "pubsub.v1.MsgRemoveSubscriber")
+	proto.RegisterType((*MsgRemoveSubscriberRequest)(nil), "pubsub.v1.MsgRemoveSubscriberRequest")
 	proto.RegisterType((*MsgRemoveSubscriberResponse)(nil), "pubsub.v1.MsgRemoveSubscriberResponse")
-	proto.RegisterType((*MsgAddPublisherIntent)(nil), "pubsub.v1.MsgAddPublisherIntent")
+	proto.RegisterType((*MsgAddPublisherIntentRequest)(nil), "pubsub.v1.MsgAddPublisherIntentRequest")
 	proto.RegisterType((*MsgAddPublisherIntentResponse)(nil), "pubsub.v1.MsgAddPublisherIntentResponse")
-	proto.RegisterType((*MsgRemovePublisherIntent)(nil), "pubsub.v1.MsgRemovePublisherIntent")
+	proto.RegisterType((*MsgRemovePublisherIntentRequest)(nil), "pubsub.v1.MsgRemovePublisherIntentRequest")
 	proto.RegisterType((*MsgRemovePublisherIntentResponse)(nil), "pubsub.v1.MsgRemovePublisherIntentResponse")
-	proto.RegisterType((*MsgAddSubscriberIntent)(nil), "pubsub.v1.MsgAddSubscriberIntent")
+	proto.RegisterType((*MsgAddSubscriberIntentRequest)(nil), "pubsub.v1.MsgAddSubscriberIntentRequest")
 	proto.RegisterType((*MsgAddSubscriberIntentResponse)(nil), "pubsub.v1.MsgAddSubscriberIntentResponse")
-	proto.RegisterType((*MsgRemoveSubscriberIntent)(nil), "pubsub.v1.MsgRemoveSubscriberIntent")
+	proto.RegisterType((*MsgRemoveSubscriberIntentRequest)(nil), "pubsub.v1.MsgRemoveSubscriberIntentRequest")
 	proto.RegisterType((*MsgRemoveSubscriberIntentResponse)(nil), "pubsub.v1.MsgRemoveSubscriberIntentResponse")
 }
 
 func init() { proto.RegisterFile("pubsub/v1/tx.proto", fileDescriptor_de188e882df4c8a7) }
 
 var fileDescriptor_de188e882df4c8a7 = []byte{
-	// 564 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x94, 0x55, 0xcb, 0x6e, 0xd3, 0x40,
-	0x14, 0x8d, 0x53, 0x51, 0xa9, 0x17, 0x41, 0xc2, 0x54, 0x89, 0x82, 0x43, 0x4c, 0x9a, 0xf0, 0x68,
-	0x05, 0xd8, 0x6a, 0x81, 0x0f, 0x28, 0x02, 0xa9, 0x5d, 0x44, 0x82, 0xb0, 0xa8, 0x54, 0x21, 0x85,
-	0x38, 0x1e, 0xb9, 0x83, 0x62, 0x8f, 0xe5, 0xb1, 0xad, 0x96, 0x0f, 0x60, 0xc3, 0x86, 0x1f, 0xe1,
-	0x3f, 0x58, 0x76, 0xc9, 0x12, 0x25, 0x3f, 0x82, 0xe4, 0x4c, 0x26, 0x63, 0x67, 0xec, 0xb4, 0xcb,
-	0xb9, 0xf7, 0xf8, 0x9c, 0xe3, 0x33, 0xf7, 0xda, 0x80, 0x82, 0xd8, 0x66, 0xb1, 0x6d, 0x25, 0x87,
-	0x56, 0x74, 0x69, 0x06, 0x21, 0x8d, 0x28, 0xda, 0x59, 0xd4, 0xcc, 0xe4, 0x50, 0x6f, 0xae, 0xda,
-	0xbc, 0x98, 0x42, 0x7a, 0x67, 0x80, 0x06, 0xcc, 0x1d, 0x62, 0x8f, 0x26, 0xf8, 0x63, 0x6c, 0x4f,
-	0x09, 0xbb, 0xc0, 0x21, 0x3a, 0x80, 0x7a, 0xb0, 0x3c, 0x8c, 0x1c, 0xea, 0x8d, 0x89, 0xdf, 0xd2,
-	0xba, 0xda, 0xfe, 0xce, 0xb0, 0x26, 0xea, 0xef, 0xd3, 0x32, 0x6a, 0xc2, 0x36, 0x23, 0xae, 0x8f,
-	0xc3, 0x56, 0x35, 0x05, 0xf0, 0x53, 0xef, 0x11, 0xe8, 0xeb, 0xc4, 0x43, 0xcc, 0x02, 0xea, 0x33,
-	0xdc, 0x1b, 0x43, 0x7d, 0xc0, 0xdc, 0x63, 0xc7, 0xf9, 0x1c, 0xdb, 0x6c, 0x12, 0x12, 0x1b, 0x87,
-	0xe8, 0x2d, 0x00, 0x13, 0xa7, 0x54, 0xee, 0xee, 0x51, 0xc3, 0x14, 0xaf, 0x60, 0xae, 0xa0, 0x43,
-	0x09, 0x58, 0x68, 0x40, 0x87, 0x56, 0x5e, 0x42, 0xc8, 0x7f, 0x81, 0x5d, 0x61, 0x4e, 0x72, 0xf0,
-	0x0a, 0xd0, 0x8a, 0x78, 0x34, 0x76, 0x9c, 0x10, 0x33, 0xc6, 0x5f, 0xfc, 0xc1, 0xaa, 0x73, 0xbc,
-	0x68, 0x14, 0x2a, 0x77, 0xa0, 0xad, 0x60, 0x17, 0xe2, 0x09, 0x34, 0x16, 0xc6, 0x44, 0x2c, 0xa7,
-	0x7e, 0x84, 0xfd, 0x08, 0x7d, 0x90, 0x53, 0x27, 0x69, 0x8d, 0xc7, 0xa0, 0x4b, 0x31, 0xe4, 0x9e,
-	0x92, 0x6e, 0x84, 0xd3, 0x14, 0xd9, 0x7a, 0x0c, 0x1d, 0xa5, 0xae, 0x30, 0xf6, 0x43, 0x4b, 0x23,
-	0xcb, 0xdd, 0x19, 0x67, 0x7d, 0x0e, 0x35, 0x9e, 0x40, 0x10, 0x11, 0xea, 0x8f, 0x88, 0xc3, 0x83,
-	0xb9, 0x2f, 0x97, 0x4f, 0x1d, 0xe5, 0xec, 0x54, 0x37, 0xcd, 0xce, 0x56, 0xc6, 0x69, 0x0f, 0xba,
-	0x45, 0x3e, 0x84, 0xd9, 0xef, 0xd0, 0xcc, 0x5f, 0x2f, 0x77, 0x7a, 0x02, 0xd2, 0x5d, 0x65, 0x73,
-	0x6c, 0x2b, 0xc7, 0x89, 0x33, 0xd7, 0x59, 0x9e, 0xa9, 0x28, 0xc9, 0x2e, 0x18, 0x6a, 0x6d, 0xe1,
-	0xee, 0xa7, 0x06, 0x0f, 0x15, 0x33, 0x70, 0xdb, 0x2c, 0xd5, 0x03, 0x59, 0xdd, 0x3c, 0x90, 0xd9,
-	0x3c, 0xfb, 0xb0, 0x57, 0x68, 0x66, 0x69, 0xf9, 0xe8, 0xf7, 0x1d, 0xd8, 0x1a, 0x30, 0x17, 0x9d,
-	0x41, 0x2d, 0xff, 0x39, 0xe8, 0x48, 0xb1, 0xad, 0x5f, 0x8c, 0xfe, 0xb4, 0xb4, 0xbd, 0x14, 0x40,
-	0x9f, 0xe0, 0x5e, 0x76, 0xe1, 0xdb, 0xd9, 0xe7, 0x32, 0x4d, 0xbd, 0x5f, 0xd2, 0x14, 0x94, 0xe7,
-	0x50, 0x5f, 0x5b, 0x62, 0x43, 0xe5, 0x46, 0x22, 0x7e, 0x56, 0xde, 0x17, 0xdc, 0x5f, 0x01, 0x29,
-	0x76, 0xb4, 0xbb, 0x66, 0x2b, 0x87, 0xd0, 0xf7, 0x37, 0x21, 0x84, 0x02, 0x81, 0x86, 0x7a, 0xd7,
-	0xfa, 0xa5, 0x81, 0x72, 0x9d, 0x17, 0x37, 0x00, 0x09, 0xa9, 0x09, 0xec, 0xaa, 0x56, 0x65, 0xaf,
-	0x24, 0x64, 0x2e, 0x73, 0xb0, 0x11, 0x22, 0x44, 0xa6, 0xd0, 0x2c, 0x18, 0xf8, 0x27, 0xe5, 0x99,
-	0x73, 0xa9, 0x97, 0x37, 0x41, 0x2d, 0xd5, 0xde, 0x9d, 0xfc, 0x99, 0x19, 0xda, 0xf5, 0xcc, 0xd0,
-	0xfe, 0xcd, 0x0c, 0xed, 0xd7, 0xdc, 0xa8, 0x5c, 0xcf, 0x8d, 0xca, 0xdf, 0xb9, 0x51, 0x39, 0x37,
-	0x5d, 0x12, 0x5d, 0xc4, 0xb6, 0x39, 0xa1, 0x9e, 0x15, 0x60, 0xd7, 0xbd, 0xfa, 0x96, 0x58, 0x8c,
-	0x7a, 0x1e, 0x9e, 0x12, 0x1c, 0x5a, 0xc9, 0x1b, 0xeb, 0x92, 0xff, 0x03, 0xad, 0xe8, 0x2a, 0xc0,
-	0xcc, 0xde, 0x4e, 0x7f, 0x85, 0xaf, 0xff, 0x07, 0x00, 0x00, 0xff, 0xff, 0xe2, 0xbf, 0xf0, 0xa1,
-	0x43, 0x07, 0x00, 0x00,
+	// 574 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x8c, 0x95, 0xcf, 0x6e, 0xd3, 0x40,
+	0x10, 0xc6, 0xeb, 0x54, 0x54, 0xea, 0x20, 0x48, 0x58, 0xd4, 0x10, 0xdc, 0xd6, 0x0d, 0x2e, 0xd0,
+	0x94, 0x82, 0xad, 0x16, 0x78, 0x80, 0x22, 0x90, 0xda, 0x43, 0x24, 0x14, 0x2e, 0x88, 0x43, 0xa3,
+	0x38, 0x5e, 0x39, 0xae, 0xea, 0x3f, 0x78, 0x6d, 0xab, 0x3d, 0x70, 0xe0, 0x01, 0x90, 0x10, 0x4f,
+	0xc5, 0xb1, 0x47, 0x4e, 0x08, 0x25, 0x2f, 0x82, 0x64, 0x4f, 0x62, 0x6f, 0xbc, 0xb6, 0x73, 0xcc,
+	0xec, 0xb7, 0xfb, 0xfd, 0xf6, 0x9b, 0xd9, 0x18, 0x88, 0x1f, 0x19, 0x2c, 0x32, 0xf4, 0xf8, 0x58,
+	0x0f, 0xaf, 0x35, 0x3f, 0xf0, 0x42, 0x8f, 0x6c, 0xa6, 0x35, 0x2d, 0x3e, 0x96, 0xdb, 0xd9, 0x32,
+	0x16, 0x13, 0x89, 0x7a, 0x01, 0x8f, 0xfb, 0xcc, 0x1a, 0x50, 0xc7, 0x8b, 0xe9, 0xc7, 0xc8, 0xb8,
+	0xb2, 0xd9, 0x84, 0x06, 0x03, 0xfa, 0x35, 0xa2, 0x2c, 0x24, 0x87, 0xd0, 0xf2, 0xe7, 0xb5, 0xa1,
+	0xe9, 0x39, 0x23, 0xdb, 0xed, 0x48, 0x5d, 0xa9, 0xb7, 0x39, 0x68, 0x2e, 0xea, 0xef, 0x93, 0x32,
+	0x69, 0xc3, 0x06, 0xb3, 0x2d, 0x97, 0x06, 0x9d, 0x46, 0x22, 0xc0, 0x5f, 0xea, 0x0e, 0xc8, 0xa2,
+	0xf3, 0x99, 0xef, 0xb9, 0x8c, 0xaa, 0x13, 0x78, 0xd4, 0x67, 0xd6, 0xa9, 0x69, 0x7e, 0x8a, 0x0c,
+	0x36, 0x0e, 0x6c, 0x23, 0xf3, 0x7e, 0x0b, 0xc0, 0x16, 0xc5, 0xc4, 0xf5, 0xee, 0xc9, 0x96, 0xb6,
+	0xb8, 0x90, 0x96, 0xdb, 0x91, 0x13, 0x96, 0x72, 0xc8, 0xd0, 0x29, 0x3a, 0x21, 0xc5, 0x38, 0xc7,
+	0x58, 0x04, 0x79, 0x05, 0x24, 0x3b, 0x7f, 0x38, 0x32, 0xcd, 0x80, 0x32, 0x86, 0x31, 0x3c, 0xc8,
+	0x56, 0x4e, 0xd3, 0x85, 0x52, 0x80, 0x5d, 0xd8, 0x16, 0x9a, 0x20, 0xc3, 0x37, 0xd8, 0x49, 0xf9,
+	0x16, 0x21, 0x9d, 0xbb, 0x21, 0x75, 0xc3, 0x39, 0xc5, 0x87, 0x7c, 0x2b, 0xec, 0x64, 0x09, 0x43,
+	0x91, 0x73, 0xa1, 0x2c, 0x6f, 0xce, 0xda, 0x94, 0x16, 0x4a, 0xe9, 0xf6, 0x60, 0xb7, 0xc4, 0x1e,
+	0xf9, 0x7e, 0x48, 0xb0, 0x57, 0x6c, 0x24, 0xcf, 0x78, 0x00, 0x4d, 0xcc, 0xc3, 0x0f, 0x6d, 0xcf,
+	0x1d, 0xda, 0x26, 0xc6, 0x74, 0x3f, 0x5f, 0x3e, 0x37, 0x85, 0x73, 0xd5, 0xa8, 0x9b, 0xab, 0x75,
+	0x0e, 0x58, 0x85, 0x6e, 0x39, 0x0e, 0x32, 0x7f, 0x97, 0xe6, 0xb7, 0xca, 0x02, 0xe7, 0x89, 0xcf,
+	0x20, 0xd7, 0x41, 0x3e, 0xd6, 0x6d, 0xe1, 0xac, 0xe1, 0xf6, 0x16, 0x5b, 0xaa, 0x94, 0x06, 0xdb,
+	0x05, 0xa5, 0x0c, 0x01, 0x29, 0x7f, 0x49, 0xb9, 0xab, 0x94, 0x81, 0xae, 0x1c, 0xad, 0x78, 0x5a,
+	0x1b, 0xf5, 0xd3, 0xca, 0xc7, 0xbb, 0x0f, 0x4f, 0x2a, 0x98, 0x52, 0xf2, 0x93, 0xbf, 0x77, 0x60,
+	0xbd, 0xcf, 0x2c, 0x72, 0x01, 0xcd, 0xa5, 0x46, 0x90, 0xa7, 0xb9, 0xf4, 0x4a, 0xff, 0x5f, 0xe4,
+	0x67, 0x35, 0xaa, 0xd4, 0x87, 0x7c, 0x86, 0x7b, 0x5c, 0x80, 0x44, 0xe5, 0xf7, 0x89, 0xfe, 0x3f,
+	0xe4, 0xfd, 0x4a, 0x0d, 0x9e, 0x3c, 0x82, 0xd6, 0xf2, 0x1d, 0x89, 0x10, 0xaa, 0x78, 0xfe, 0xf3,
+	0x3a, 0x19, 0x5a, 0x58, 0x40, 0x8a, 0xcf, 0x8a, 0x1c, 0x14, 0xe8, 0xc4, 0x6f, 0x4a, 0xee, 0xd5,
+	0x0b, 0xd1, 0xc8, 0x87, 0x2d, 0xe1, 0x73, 0x20, 0x2f, 0x2a, 0x53, 0xe6, 0xed, 0x8e, 0x56, 0xd2,
+	0xa2, 0xe3, 0x25, 0x3c, 0x14, 0x0c, 0x36, 0xe9, 0x55, 0x24, 0xcf, 0xbb, 0x1d, 0xae, 0xa0, 0x44,
+	0x2f, 0x06, 0x6d, 0xf1, 0x34, 0x92, 0xa3, 0xea, 0x46, 0xf0, 0x8e, 0x2f, 0x57, 0x13, 0xa7, 0xa6,
+	0xef, 0xce, 0x7e, 0x4f, 0x15, 0xe9, 0x76, 0xaa, 0x48, 0xff, 0xa6, 0x8a, 0xf4, 0x73, 0xa6, 0xac,
+	0xdd, 0xce, 0x94, 0xb5, 0x3f, 0x33, 0x65, 0xed, 0x8b, 0x66, 0xd9, 0xe1, 0x24, 0x32, 0xb4, 0xb1,
+	0xe7, 0xe8, 0x3e, 0xb5, 0xac, 0x9b, 0xcb, 0x58, 0x67, 0x9e, 0xe3, 0xd0, 0x2b, 0x9b, 0x06, 0x7a,
+	0xfc, 0x46, 0xbf, 0xc6, 0xcf, 0xac, 0x1e, 0xde, 0xf8, 0x94, 0x19, 0x1b, 0xc9, 0xd7, 0xf6, 0xf5,
+	0xff, 0x00, 0x00, 0x00, 0xff, 0xff, 0x48, 0x81, 0xac, 0x89, 0xa6, 0x07, 0x00, 0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -730,13 +730,13 @@ const _ = grpc.SupportPackageIsVersion4
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
 type MsgClient interface {
-	RemovePublisher(ctx context.Context, in *MsgRemovePublisher, opts ...grpc.CallOption) (*MsgRemovePublisherResponse, error)
-	AddSubscriber(ctx context.Context, in *MsgAddSubscriber, opts ...grpc.CallOption) (*MsgAddSubscriberResponse, error)
-	RemoveSubscriber(ctx context.Context, in *MsgRemoveSubscriber, opts ...grpc.CallOption) (*MsgRemoveSubscriberResponse, error)
-	AddPublisherIntent(ctx context.Context, in *MsgAddPublisherIntent, opts ...grpc.CallOption) (*MsgAddPublisherIntentResponse, error)
-	RemovePublisherIntent(ctx context.Context, in *MsgRemovePublisherIntent, opts ...grpc.CallOption) (*MsgRemovePublisherIntentResponse, error)
-	AddSubscriberIntent(ctx context.Context, in *MsgAddSubscriberIntent, opts ...grpc.CallOption) (*MsgAddSubscriberIntentResponse, error)
-	RemoveSubscriberIntent(ctx context.Context, in *MsgRemoveSubscriberIntent, opts ...grpc.CallOption) (*MsgRemoveSubscriberIntentResponse, error)
+	RemovePublisher(ctx context.Context, in *MsgRemovePublisherRequest, opts ...grpc.CallOption) (*MsgRemovePublisherResponse, error)
+	AddSubscriber(ctx context.Context, in *MsgAddSubscriberRequest, opts ...grpc.CallOption) (*MsgAddSubscriberResponse, error)
+	RemoveSubscriber(ctx context.Context, in *MsgRemoveSubscriberRequest, opts ...grpc.CallOption) (*MsgRemoveSubscriberResponse, error)
+	AddPublisherIntent(ctx context.Context, in *MsgAddPublisherIntentRequest, opts ...grpc.CallOption) (*MsgAddPublisherIntentResponse, error)
+	RemovePublisherIntent(ctx context.Context, in *MsgRemovePublisherIntentRequest, opts ...grpc.CallOption) (*MsgRemovePublisherIntentResponse, error)
+	AddSubscriberIntent(ctx context.Context, in *MsgAddSubscriberIntentRequest, opts ...grpc.CallOption) (*MsgAddSubscriberIntentResponse, error)
+	RemoveSubscriberIntent(ctx context.Context, in *MsgRemoveSubscriberIntentRequest, opts ...grpc.CallOption) (*MsgRemoveSubscriberIntentResponse, error)
 }
 
 type msgClient struct {
@@ -747,7 +747,7 @@ func NewMsgClient(cc grpc1.ClientConn) MsgClient {
 	return &msgClient{cc}
 }
 
-func (c *msgClient) RemovePublisher(ctx context.Context, in *MsgRemovePublisher, opts ...grpc.CallOption) (*MsgRemovePublisherResponse, error) {
+func (c *msgClient) RemovePublisher(ctx context.Context, in *MsgRemovePublisherRequest, opts ...grpc.CallOption) (*MsgRemovePublisherResponse, error) {
 	out := new(MsgRemovePublisherResponse)
 	err := c.cc.Invoke(ctx, "/pubsub.v1.Msg/RemovePublisher", in, out, opts...)
 	if err != nil {
@@ -756,7 +756,7 @@ func (c *msgClient) RemovePublisher(ctx context.Context, in *MsgRemovePublisher,
 	return out, nil
 }
 
-func (c *msgClient) AddSubscriber(ctx context.Context, in *MsgAddSubscriber, opts ...grpc.CallOption) (*MsgAddSubscriberResponse, error) {
+func (c *msgClient) AddSubscriber(ctx context.Context, in *MsgAddSubscriberRequest, opts ...grpc.CallOption) (*MsgAddSubscriberResponse, error) {
 	out := new(MsgAddSubscriberResponse)
 	err := c.cc.Invoke(ctx, "/pubsub.v1.Msg/AddSubscriber", in, out, opts...)
 	if err != nil {
@@ -765,7 +765,7 @@ func (c *msgClient) AddSubscriber(ctx context.Context, in *MsgAddSubscriber, opt
 	return out, nil
 }
 
-func (c *msgClient) RemoveSubscriber(ctx context.Context, in *MsgRemoveSubscriber, opts ...grpc.CallOption) (*MsgRemoveSubscriberResponse, error) {
+func (c *msgClient) RemoveSubscriber(ctx context.Context, in *MsgRemoveSubscriberRequest, opts ...grpc.CallOption) (*MsgRemoveSubscriberResponse, error) {
 	out := new(MsgRemoveSubscriberResponse)
 	err := c.cc.Invoke(ctx, "/pubsub.v1.Msg/RemoveSubscriber", in, out, opts...)
 	if err != nil {
@@ -774,7 +774,7 @@ func (c *msgClient) RemoveSubscriber(ctx context.Context, in *MsgRemoveSubscribe
 	return out, nil
 }
 
-func (c *msgClient) AddPublisherIntent(ctx context.Context, in *MsgAddPublisherIntent, opts ...grpc.CallOption) (*MsgAddPublisherIntentResponse, error) {
+func (c *msgClient) AddPublisherIntent(ctx context.Context, in *MsgAddPublisherIntentRequest, opts ...grpc.CallOption) (*MsgAddPublisherIntentResponse, error) {
 	out := new(MsgAddPublisherIntentResponse)
 	err := c.cc.Invoke(ctx, "/pubsub.v1.Msg/AddPublisherIntent", in, out, opts...)
 	if err != nil {
@@ -783,7 +783,7 @@ func (c *msgClient) AddPublisherIntent(ctx context.Context, in *MsgAddPublisherI
 	return out, nil
 }
 
-func (c *msgClient) RemovePublisherIntent(ctx context.Context, in *MsgRemovePublisherIntent, opts ...grpc.CallOption) (*MsgRemovePublisherIntentResponse, error) {
+func (c *msgClient) RemovePublisherIntent(ctx context.Context, in *MsgRemovePublisherIntentRequest, opts ...grpc.CallOption) (*MsgRemovePublisherIntentResponse, error) {
 	out := new(MsgRemovePublisherIntentResponse)
 	err := c.cc.Invoke(ctx, "/pubsub.v1.Msg/RemovePublisherIntent", in, out, opts...)
 	if err != nil {
@@ -792,7 +792,7 @@ func (c *msgClient) RemovePublisherIntent(ctx context.Context, in *MsgRemovePubl
 	return out, nil
 }
 
-func (c *msgClient) AddSubscriberIntent(ctx context.Context, in *MsgAddSubscriberIntent, opts ...grpc.CallOption) (*MsgAddSubscriberIntentResponse, error) {
+func (c *msgClient) AddSubscriberIntent(ctx context.Context, in *MsgAddSubscriberIntentRequest, opts ...grpc.CallOption) (*MsgAddSubscriberIntentResponse, error) {
 	out := new(MsgAddSubscriberIntentResponse)
 	err := c.cc.Invoke(ctx, "/pubsub.v1.Msg/AddSubscriberIntent", in, out, opts...)
 	if err != nil {
@@ -801,7 +801,7 @@ func (c *msgClient) AddSubscriberIntent(ctx context.Context, in *MsgAddSubscribe
 	return out, nil
 }
 
-func (c *msgClient) RemoveSubscriberIntent(ctx context.Context, in *MsgRemoveSubscriberIntent, opts ...grpc.CallOption) (*MsgRemoveSubscriberIntentResponse, error) {
+func (c *msgClient) RemoveSubscriberIntent(ctx context.Context, in *MsgRemoveSubscriberIntentRequest, opts ...grpc.CallOption) (*MsgRemoveSubscriberIntentResponse, error) {
 	out := new(MsgRemoveSubscriberIntentResponse)
 	err := c.cc.Invoke(ctx, "/pubsub.v1.Msg/RemoveSubscriberIntent", in, out, opts...)
 	if err != nil {
@@ -812,38 +812,38 @@ func (c *msgClient) RemoveSubscriberIntent(ctx context.Context, in *MsgRemoveSub
 
 // MsgServer is the server API for Msg service.
 type MsgServer interface {
-	RemovePublisher(context.Context, *MsgRemovePublisher) (*MsgRemovePublisherResponse, error)
-	AddSubscriber(context.Context, *MsgAddSubscriber) (*MsgAddSubscriberResponse, error)
-	RemoveSubscriber(context.Context, *MsgRemoveSubscriber) (*MsgRemoveSubscriberResponse, error)
-	AddPublisherIntent(context.Context, *MsgAddPublisherIntent) (*MsgAddPublisherIntentResponse, error)
-	RemovePublisherIntent(context.Context, *MsgRemovePublisherIntent) (*MsgRemovePublisherIntentResponse, error)
-	AddSubscriberIntent(context.Context, *MsgAddSubscriberIntent) (*MsgAddSubscriberIntentResponse, error)
-	RemoveSubscriberIntent(context.Context, *MsgRemoveSubscriberIntent) (*MsgRemoveSubscriberIntentResponse, error)
+	RemovePublisher(context.Context, *MsgRemovePublisherRequest) (*MsgRemovePublisherResponse, error)
+	AddSubscriber(context.Context, *MsgAddSubscriberRequest) (*MsgAddSubscriberResponse, error)
+	RemoveSubscriber(context.Context, *MsgRemoveSubscriberRequest) (*MsgRemoveSubscriberResponse, error)
+	AddPublisherIntent(context.Context, *MsgAddPublisherIntentRequest) (*MsgAddPublisherIntentResponse, error)
+	RemovePublisherIntent(context.Context, *MsgRemovePublisherIntentRequest) (*MsgRemovePublisherIntentResponse, error)
+	AddSubscriberIntent(context.Context, *MsgAddSubscriberIntentRequest) (*MsgAddSubscriberIntentResponse, error)
+	RemoveSubscriberIntent(context.Context, *MsgRemoveSubscriberIntentRequest) (*MsgRemoveSubscriberIntentResponse, error)
 }
 
 // UnimplementedMsgServer can be embedded to have forward compatible implementations.
 type UnimplementedMsgServer struct {
 }
 
-func (*UnimplementedMsgServer) RemovePublisher(ctx context.Context, req *MsgRemovePublisher) (*MsgRemovePublisherResponse, error) {
+func (*UnimplementedMsgServer) RemovePublisher(ctx context.Context, req *MsgRemovePublisherRequest) (*MsgRemovePublisherResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method RemovePublisher not implemented")
 }
-func (*UnimplementedMsgServer) AddSubscriber(ctx context.Context, req *MsgAddSubscriber) (*MsgAddSubscriberResponse, error) {
+func (*UnimplementedMsgServer) AddSubscriber(ctx context.Context, req *MsgAddSubscriberRequest) (*MsgAddSubscriberResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method AddSubscriber not implemented")
 }
-func (*UnimplementedMsgServer) RemoveSubscriber(ctx context.Context, req *MsgRemoveSubscriber) (*MsgRemoveSubscriberResponse, error) {
+func (*UnimplementedMsgServer) RemoveSubscriber(ctx context.Context, req *MsgRemoveSubscriberRequest) (*MsgRemoveSubscriberResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method RemoveSubscriber not implemented")
 }
-func (*UnimplementedMsgServer) AddPublisherIntent(ctx context.Context, req *MsgAddPublisherIntent) (*MsgAddPublisherIntentResponse, error) {
+func (*UnimplementedMsgServer) AddPublisherIntent(ctx context.Context, req *MsgAddPublisherIntentRequest) (*MsgAddPublisherIntentResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method AddPublisherIntent not implemented")
 }
-func (*UnimplementedMsgServer) RemovePublisherIntent(ctx context.Context, req *MsgRemovePublisherIntent) (*MsgRemovePublisherIntentResponse, error) {
+func (*UnimplementedMsgServer) RemovePublisherIntent(ctx context.Context, req *MsgRemovePublisherIntentRequest) (*MsgRemovePublisherIntentResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method RemovePublisherIntent not implemented")
 }
-func (*UnimplementedMsgServer) AddSubscriberIntent(ctx context.Context, req *MsgAddSubscriberIntent) (*MsgAddSubscriberIntentResponse, error) {
+func (*UnimplementedMsgServer) AddSubscriberIntent(ctx context.Context, req *MsgAddSubscriberIntentRequest) (*MsgAddSubscriberIntentResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method AddSubscriberIntent not implemented")
 }
-func (*UnimplementedMsgServer) RemoveSubscriberIntent(ctx context.Context, req *MsgRemoveSubscriberIntent) (*MsgRemoveSubscriberIntentResponse, error) {
+func (*UnimplementedMsgServer) RemoveSubscriberIntent(ctx context.Context, req *MsgRemoveSubscriberIntentRequest) (*MsgRemoveSubscriberIntentResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method RemoveSubscriberIntent not implemented")
 }
 
@@ -852,7 +852,7 @@ func RegisterMsgServer(s grpc1.Server, srv MsgServer) {
 }
 
 func _Msg_RemovePublisher_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(MsgRemovePublisher)
+	in := new(MsgRemovePublisherRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -864,13 +864,13 @@ func _Msg_RemovePublisher_Handler(srv interface{}, ctx context.Context, dec func
 		FullMethod: "/pubsub.v1.Msg/RemovePublisher",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MsgServer).RemovePublisher(ctx, req.(*MsgRemovePublisher))
+		return srv.(MsgServer).RemovePublisher(ctx, req.(*MsgRemovePublisherRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _Msg_AddSubscriber_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(MsgAddSubscriber)
+	in := new(MsgAddSubscriberRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -882,13 +882,13 @@ func _Msg_AddSubscriber_Handler(srv interface{}, ctx context.Context, dec func(i
 		FullMethod: "/pubsub.v1.Msg/AddSubscriber",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MsgServer).AddSubscriber(ctx, req.(*MsgAddSubscriber))
+		return srv.(MsgServer).AddSubscriber(ctx, req.(*MsgAddSubscriberRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _Msg_RemoveSubscriber_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(MsgRemoveSubscriber)
+	in := new(MsgRemoveSubscriberRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -900,13 +900,13 @@ func _Msg_RemoveSubscriber_Handler(srv interface{}, ctx context.Context, dec fun
 		FullMethod: "/pubsub.v1.Msg/RemoveSubscriber",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MsgServer).RemoveSubscriber(ctx, req.(*MsgRemoveSubscriber))
+		return srv.(MsgServer).RemoveSubscriber(ctx, req.(*MsgRemoveSubscriberRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _Msg_AddPublisherIntent_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(MsgAddPublisherIntent)
+	in := new(MsgAddPublisherIntentRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -918,13 +918,13 @@ func _Msg_AddPublisherIntent_Handler(srv interface{}, ctx context.Context, dec f
 		FullMethod: "/pubsub.v1.Msg/AddPublisherIntent",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MsgServer).AddPublisherIntent(ctx, req.(*MsgAddPublisherIntent))
+		return srv.(MsgServer).AddPublisherIntent(ctx, req.(*MsgAddPublisherIntentRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _Msg_RemovePublisherIntent_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(MsgRemovePublisherIntent)
+	in := new(MsgRemovePublisherIntentRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -936,13 +936,13 @@ func _Msg_RemovePublisherIntent_Handler(srv interface{}, ctx context.Context, de
 		FullMethod: "/pubsub.v1.Msg/RemovePublisherIntent",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MsgServer).RemovePublisherIntent(ctx, req.(*MsgRemovePublisherIntent))
+		return srv.(MsgServer).RemovePublisherIntent(ctx, req.(*MsgRemovePublisherIntentRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _Msg_AddSubscriberIntent_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(MsgAddSubscriberIntent)
+	in := new(MsgAddSubscriberIntentRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -954,13 +954,13 @@ func _Msg_AddSubscriberIntent_Handler(srv interface{}, ctx context.Context, dec 
 		FullMethod: "/pubsub.v1.Msg/AddSubscriberIntent",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MsgServer).AddSubscriberIntent(ctx, req.(*MsgAddSubscriberIntent))
+		return srv.(MsgServer).AddSubscriberIntent(ctx, req.(*MsgAddSubscriberIntentRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _Msg_RemoveSubscriberIntent_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(MsgRemoveSubscriberIntent)
+	in := new(MsgRemoveSubscriberIntentRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -972,7 +972,7 @@ func _Msg_RemoveSubscriberIntent_Handler(srv interface{}, ctx context.Context, d
 		FullMethod: "/pubsub.v1.Msg/RemoveSubscriberIntent",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MsgServer).RemoveSubscriberIntent(ctx, req.(*MsgRemoveSubscriberIntent))
+		return srv.(MsgServer).RemoveSubscriberIntent(ctx, req.(*MsgRemoveSubscriberIntentRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -1014,7 +1014,7 @@ var _Msg_serviceDesc = grpc.ServiceDesc{
 	Metadata: "pubsub/v1/tx.proto",
 }
 
-func (m *MsgRemovePublisher) Marshal() (dAtA []byte, err error) {
+func (m *MsgRemovePublisherRequest) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -1024,12 +1024,12 @@ func (m *MsgRemovePublisher) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *MsgRemovePublisher) MarshalTo(dAtA []byte) (int, error) {
+func (m *MsgRemovePublisherRequest) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *MsgRemovePublisher) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *MsgRemovePublisherRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -1074,7 +1074,7 @@ func (m *MsgRemovePublisherResponse) MarshalToSizedBuffer(dAtA []byte) (int, err
 	return len(dAtA) - i, nil
 }
 
-func (m *MsgAddSubscriber) Marshal() (dAtA []byte, err error) {
+func (m *MsgAddSubscriberRequest) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -1084,12 +1084,12 @@ func (m *MsgAddSubscriber) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *MsgAddSubscriber) MarshalTo(dAtA []byte) (int, error) {
+func (m *MsgAddSubscriberRequest) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *MsgAddSubscriber) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *MsgAddSubscriberRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -1139,7 +1139,7 @@ func (m *MsgAddSubscriberResponse) MarshalToSizedBuffer(dAtA []byte) (int, error
 	return len(dAtA) - i, nil
 }
 
-func (m *MsgRemoveSubscriber) Marshal() (dAtA []byte, err error) {
+func (m *MsgRemoveSubscriberRequest) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -1149,12 +1149,12 @@ func (m *MsgRemoveSubscriber) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *MsgRemoveSubscriber) MarshalTo(dAtA []byte) (int, error) {
+func (m *MsgRemoveSubscriberRequest) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *MsgRemoveSubscriber) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *MsgRemoveSubscriberRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -1199,7 +1199,7 @@ func (m *MsgRemoveSubscriberResponse) MarshalToSizedBuffer(dAtA []byte) (int, er
 	return len(dAtA) - i, nil
 }
 
-func (m *MsgAddPublisherIntent) Marshal() (dAtA []byte, err error) {
+func (m *MsgAddPublisherIntentRequest) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -1209,12 +1209,12 @@ func (m *MsgAddPublisherIntent) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *MsgAddPublisherIntent) MarshalTo(dAtA []byte) (int, error) {
+func (m *MsgAddPublisherIntentRequest) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *MsgAddPublisherIntent) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *MsgAddPublisherIntentRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -1264,7 +1264,7 @@ func (m *MsgAddPublisherIntentResponse) MarshalToSizedBuffer(dAtA []byte) (int, 
 	return len(dAtA) - i, nil
 }
 
-func (m *MsgRemovePublisherIntent) Marshal() (dAtA []byte, err error) {
+func (m *MsgRemovePublisherIntentRequest) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -1274,12 +1274,12 @@ func (m *MsgRemovePublisherIntent) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *MsgRemovePublisherIntent) MarshalTo(dAtA []byte) (int, error) {
+func (m *MsgRemovePublisherIntentRequest) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *MsgRemovePublisherIntent) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *MsgRemovePublisherIntentRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -1331,7 +1331,7 @@ func (m *MsgRemovePublisherIntentResponse) MarshalToSizedBuffer(dAtA []byte) (in
 	return len(dAtA) - i, nil
 }
 
-func (m *MsgAddSubscriberIntent) Marshal() (dAtA []byte, err error) {
+func (m *MsgAddSubscriberIntentRequest) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -1341,12 +1341,12 @@ func (m *MsgAddSubscriberIntent) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *MsgAddSubscriberIntent) MarshalTo(dAtA []byte) (int, error) {
+func (m *MsgAddSubscriberIntentRequest) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *MsgAddSubscriberIntent) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *MsgAddSubscriberIntentRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -1396,7 +1396,7 @@ func (m *MsgAddSubscriberIntentResponse) MarshalToSizedBuffer(dAtA []byte) (int,
 	return len(dAtA) - i, nil
 }
 
-func (m *MsgRemoveSubscriberIntent) Marshal() (dAtA []byte, err error) {
+func (m *MsgRemoveSubscriberIntentRequest) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -1406,12 +1406,12 @@ func (m *MsgRemoveSubscriberIntent) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *MsgRemoveSubscriberIntent) MarshalTo(dAtA []byte) (int, error) {
+func (m *MsgRemoveSubscriberIntentRequest) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *MsgRemoveSubscriberIntent) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *MsgRemoveSubscriberIntentRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -1474,7 +1474,7 @@ func encodeVarintTx(dAtA []byte, offset int, v uint64) int {
 	dAtA[offset] = uint8(v)
 	return base
 }
-func (m *MsgRemovePublisher) Size() (n int) {
+func (m *MsgRemovePublisherRequest) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -1500,7 +1500,7 @@ func (m *MsgRemovePublisherResponse) Size() (n int) {
 	return n
 }
 
-func (m *MsgAddSubscriber) Size() (n int) {
+func (m *MsgAddSubscriberRequest) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -1526,7 +1526,7 @@ func (m *MsgAddSubscriberResponse) Size() (n int) {
 	return n
 }
 
-func (m *MsgRemoveSubscriber) Size() (n int) {
+func (m *MsgRemoveSubscriberRequest) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -1552,7 +1552,7 @@ func (m *MsgRemoveSubscriberResponse) Size() (n int) {
 	return n
 }
 
-func (m *MsgAddPublisherIntent) Size() (n int) {
+func (m *MsgAddPublisherIntentRequest) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -1578,7 +1578,7 @@ func (m *MsgAddPublisherIntentResponse) Size() (n int) {
 	return n
 }
 
-func (m *MsgRemovePublisherIntent) Size() (n int) {
+func (m *MsgRemovePublisherIntentRequest) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -1608,7 +1608,7 @@ func (m *MsgRemovePublisherIntentResponse) Size() (n int) {
 	return n
 }
 
-func (m *MsgAddSubscriberIntent) Size() (n int) {
+func (m *MsgAddSubscriberIntentRequest) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -1634,7 +1634,7 @@ func (m *MsgAddSubscriberIntentResponse) Size() (n int) {
 	return n
 }
 
-func (m *MsgRemoveSubscriberIntent) Size() (n int) {
+func (m *MsgRemoveSubscriberIntentRequest) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -1670,7 +1670,7 @@ func sovTx(x uint64) (n int) {
 func sozTx(x uint64) (n int) {
 	return sovTx(uint64((x << 1) ^ uint64((int64(x) >> 63))))
 }
-func (m *MsgRemovePublisher) Unmarshal(dAtA []byte) error {
+func (m *MsgRemovePublisherRequest) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -1693,10 +1693,10 @@ func (m *MsgRemovePublisher) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: MsgRemovePublisher: wiretype end group for non-group")
+			return fmt.Errorf("proto: MsgRemovePublisherRequest: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: MsgRemovePublisher: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: MsgRemovePublisherRequest: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
@@ -1834,7 +1834,7 @@ func (m *MsgRemovePublisherResponse) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *MsgAddSubscriber) Unmarshal(dAtA []byte) error {
+func (m *MsgAddSubscriberRequest) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -1857,10 +1857,10 @@ func (m *MsgAddSubscriber) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: MsgAddSubscriber: wiretype end group for non-group")
+			return fmt.Errorf("proto: MsgAddSubscriberRequest: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: MsgAddSubscriber: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: MsgAddSubscriberRequest: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
@@ -2002,7 +2002,7 @@ func (m *MsgAddSubscriberResponse) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *MsgRemoveSubscriber) Unmarshal(dAtA []byte) error {
+func (m *MsgRemoveSubscriberRequest) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -2025,10 +2025,10 @@ func (m *MsgRemoveSubscriber) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: MsgRemoveSubscriber: wiretype end group for non-group")
+			return fmt.Errorf("proto: MsgRemoveSubscriberRequest: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: MsgRemoveSubscriber: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: MsgRemoveSubscriberRequest: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
@@ -2166,7 +2166,7 @@ func (m *MsgRemoveSubscriberResponse) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *MsgAddPublisherIntent) Unmarshal(dAtA []byte) error {
+func (m *MsgAddPublisherIntentRequest) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -2189,10 +2189,10 @@ func (m *MsgAddPublisherIntent) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: MsgAddPublisherIntent: wiretype end group for non-group")
+			return fmt.Errorf("proto: MsgAddPublisherIntentRequest: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: MsgAddPublisherIntent: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: MsgAddPublisherIntentRequest: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
@@ -2334,7 +2334,7 @@ func (m *MsgAddPublisherIntentResponse) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *MsgRemovePublisherIntent) Unmarshal(dAtA []byte) error {
+func (m *MsgRemovePublisherIntentRequest) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -2357,10 +2357,10 @@ func (m *MsgRemovePublisherIntent) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: MsgRemovePublisherIntent: wiretype end group for non-group")
+			return fmt.Errorf("proto: MsgRemovePublisherIntentRequest: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: MsgRemovePublisherIntent: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: MsgRemovePublisherIntentRequest: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
@@ -2530,7 +2530,7 @@ func (m *MsgRemovePublisherIntentResponse) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *MsgAddSubscriberIntent) Unmarshal(dAtA []byte) error {
+func (m *MsgAddSubscriberIntentRequest) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -2553,10 +2553,10 @@ func (m *MsgAddSubscriberIntent) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: MsgAddSubscriberIntent: wiretype end group for non-group")
+			return fmt.Errorf("proto: MsgAddSubscriberIntentRequest: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: MsgAddSubscriberIntent: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: MsgAddSubscriberIntentRequest: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
@@ -2698,7 +2698,7 @@ func (m *MsgAddSubscriberIntentResponse) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *MsgRemoveSubscriberIntent) Unmarshal(dAtA []byte) error {
+func (m *MsgRemoveSubscriberIntentRequest) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -2721,10 +2721,10 @@ func (m *MsgRemoveSubscriberIntent) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: MsgRemoveSubscriberIntent: wiretype end group for non-group")
+			return fmt.Errorf("proto: MsgRemoveSubscriberIntentRequest: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: MsgRemoveSubscriberIntent: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: MsgRemoveSubscriberIntentRequest: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:

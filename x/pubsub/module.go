@@ -93,18 +93,21 @@ type AppModule struct {
 	cdc           codec.Codec
 	keeper        keeper.Keeper
 	stakingKeeper types.StakingKeeper
+	gravityKeeper types.GravityKeeper
 }
 
 func NewAppModule(
 	cdc codec.Codec,
 	keeper keeper.Keeper,
 	stakingKeeper types.StakingKeeper,
+	gravityKeeper types.GravityKeeper,
 ) AppModule {
 	return AppModule{
 		AppModuleBasic: AppModuleBasic{},
 		cdc:            cdc,
 		keeper:         keeper,
 		stakingKeeper:  stakingKeeper,
+		gravityKeeper:  gravityKeeper,
 	}
 }
 

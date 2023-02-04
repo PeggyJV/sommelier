@@ -6,44 +6,44 @@ import "pubsub/v1/pubsub.proto";
 option go_package = "github.com/peggyjv/sommelier/v4/x/pubsub/types";
 
 service Msg {
-    rpc RemovePublisher (MsgRemovePublisher) returns (MsgRemovePublisherResponse);
-    rpc AddSubscriber (MsgAddSubscriber) returns (MsgAddSubscriberResponse);
-    rpc RemoveSubscriber (MsgRemoveSubscriber) returns (MsgRemoveSubscriberResponse);
-    rpc AddPublisherIntent (MsgAddPublisherIntent) returns (MsgAddPublisherIntentResponse);
-    rpc RemovePublisherIntent (MsgRemovePublisherIntent) returns (MsgRemovePublisherIntentResponse);
-    rpc AddSubscriberIntent (MsgAddSubscriberIntent) returns (MsgAddSubscriberIntentResponse);
-    rpc RemoveSubscriberIntent (MsgRemoveSubscriberIntent) returns (MsgRemoveSubscriberIntentResponse);
+    rpc RemovePublisher (MsgRemovePublisherRequest) returns (MsgRemovePublisherResponse);
+    rpc AddSubscriber (MsgAddSubscriberRequest) returns (MsgAddSubscriberResponse);
+    rpc RemoveSubscriber (MsgRemoveSubscriberRequest) returns (MsgRemoveSubscriberResponse);
+    rpc AddPublisherIntent (MsgAddPublisherIntentRequest) returns (MsgAddPublisherIntentResponse);
+    rpc RemovePublisherIntent (MsgRemovePublisherIntentRequest) returns (MsgRemovePublisherIntentResponse);
+    rpc AddSubscriberIntent (MsgAddSubscriberIntentRequest) returns (MsgAddSubscriberIntentResponse);
+    rpc RemoveSubscriberIntent (MsgRemoveSubscriberIntentRequest) returns (MsgRemoveSubscriberIntentResponse);
 }
 
-message MsgRemovePublisher {
+message MsgRemovePublisherRequest {
   string publisher_domain = 1;
   string signer = 2;
 }
 
 message MsgRemovePublisherResponse {}
 
-message MsgAddSubscriber {
+message MsgAddSubscriberRequest {
   Subscriber subscriber = 1;
   string signer = 2;
 }
 
 message MsgAddSubscriberResponse {}
 
-message MsgRemoveSubscriber {
+message MsgRemoveSubscriberRequest {
   string subscriber_address = 1;
   string signer = 2;
 }
 
 message MsgRemoveSubscriberResponse {}
 
-message MsgAddPublisherIntent {
+message MsgAddPublisherIntentRequest {
   PublisherIntent publisher_intent = 1;
   string signer = 2;
 }
 
 message MsgAddPublisherIntentResponse {}
 
-message MsgRemovePublisherIntent {
+message MsgRemovePublisherIntentRequest {
   string subscription_id = 1;
   string publisher_domain = 2;
   string signer = 3;
@@ -51,14 +51,14 @@ message MsgRemovePublisherIntent {
 
 message MsgRemovePublisherIntentResponse {}
 
-message MsgAddSubscriberIntent {
+message MsgAddSubscriberIntentRequest {
   SubscriberIntent subscriber_intent = 1;
   string signer = 2;
 }
 
 message MsgAddSubscriberIntentResponse {}
 
-message MsgRemoveSubscriberIntent {
+message MsgRemoveSubscriberIntentRequest {
   string subscription_id = 1;
   string subscriber_address = 2;
   string signer = 3;

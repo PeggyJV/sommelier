@@ -12,7 +12,7 @@ import (
 
 var _ types.MsgServer = Keeper{}
 
-func (k Keeper) AddPublisherIntent(c context.Context, msg *types.MsgAddPublisherIntent) (*types.MsgAddPublisherIntentResponse, error) {
+func (k Keeper) AddPublisherIntent(c context.Context, msg *types.MsgAddPublisherIntentRequest) (*types.MsgAddPublisherIntentResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
 	publisherIntent := msg.PublisherIntent
 
@@ -32,8 +32,6 @@ func (k Keeper) AddPublisherIntent(c context.Context, msg *types.MsgAddPublisher
 
 	_, found = k.GetPublisherIntent(ctx, publisherIntent.SubscriptionId, publisherIntent.PublisherDomain)
 	if found {
-		// TODO(bolten): would this UX be better if it removed the old one for you? deleting a publisher intent will clear out
-		// any subscriber intents attached to it
 		return nil, sdkerrors.Wrapf(types.ErrAlreadyExists, "publisher already has intent for this subscription ID, must be removed first")
 	}
 
@@ -49,7 +47,7 @@ func (k Keeper) AddPublisherIntent(c context.Context, msg *types.MsgAddPublisher
 			),
 			sdk.NewEvent(
 				types.EventTypeAddPublisherIntent,
-				sdk.NewAttribute(types.AttributeKeySubscriptionId, publisherIntent.SubscriptionId),
+				sdk.NewAttribute(types.AttributeKeySubscriptionID, publisherIntent.SubscriptionId),
 				sdk.NewAttribute(types.AttributeKeyPublisherDomain, publisherIntent.PublisherDomain),
 			),
 		},
@@ -58,7 +56,7 @@ func (k Keeper) AddPublisherIntent(c context.Context, msg *types.MsgAddPublisher
 	return &types.MsgAddPublisherIntentResponse{}, nil
 }
 
-func (k Keeper) AddSubscriberIntent(c context.Context, msg *types.MsgAddSubscriberIntent) (*types.MsgAddSubscriberIntentResponse, error) {
+func (k Keeper) AddSubscriberIntent(c context.Context, msg *types.MsgAddSubscriberIntentRequest) (*types.MsgAddSubscriberIntentResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
 	subscriberIntent := msg.SubscriberIntent
 
@@ -85,7 +83,6 @@ func (k Keeper) AddSubscriberIntent(c context.Context, msg *types.MsgAddSubscrib
 
 	_, found = k.GetSubscriberIntent(ctx, subscriberIntent.SubscriptionId, subscriberAccAddress)
 	if found {
-		// TODO(bolten): would this UX be better if it removed the old one for you?
 		return nil, sdkerrors.Wrapf(types.ErrAlreadyExists, "subscriber already has intent for this subscription ID, must be removed first")
 	}
 
@@ -108,7 +105,6 @@ func (k Keeper) AddSubscriberIntent(c context.Context, msg *types.MsgAddSubscrib
 			return nil, sdkerrors.Wrapf(sdkerrors.ErrUnauthorized, "publisher intent requires subscriber be a validator")
 		}
 	} else if publisherIntent.AllowedSubscribers == types.AllowedSubscribers_LIST {
-		// TODO(bolten): this is inefficient, perhaps could be replaced by a map?
 		found := false
 		for _, allowedAddress := range publisherIntent.AllowedAddresses {
 			if allowedAddress == signerAddress {
@@ -134,7 +130,7 @@ func (k Keeper) AddSubscriberIntent(c context.Context, msg *types.MsgAddSubscrib
 			),
 			sdk.NewEvent(
 				types.EventTypeAddSubscriberIntent,
-				sdk.NewAttribute(types.AttributeKeySubscriptionId, subscriberIntent.SubscriptionId),
+				sdk.NewAttribute(types.AttributeKeySubscriptionID, subscriberIntent.SubscriptionId),
 				sdk.NewAttribute(types.AttributeKeySubscriberAddress, subscriberIntent.SubscriberAddress),
 				sdk.NewAttribute(types.AttributeKeyPublisherDomain, subscriberIntent.PublisherDomain),
 			),
@@ -144,7 +140,7 @@ func (k Keeper) AddSubscriberIntent(c context.Context, msg *types.MsgAddSubscrib
 	return &types.MsgAddSubscriberIntentResponse{}, nil
 }
 
-func (k Keeper) AddSubscriber(c context.Context, msg *types.MsgAddSubscriber) (*types.MsgAddSubscriberResponse, error) {
+func (k Keeper) AddSubscriber(c context.Context, msg *types.MsgAddSubscriberRequest) (*types.MsgAddSubscriberResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
 	subscriber := msg.Subscriber
 
@@ -156,8 +152,12 @@ func (k Keeper) AddSubscriber(c context.Context, msg *types.MsgAddSubscriber) (*
 	subscriberAccAddress, _ := sdk.AccAddressFromBech32(subscriber.Address)
 	_, found := k.GetSubscriber(ctx, subscriberAccAddress)
 	if found {
-		// TODO(bolten): would this UX be better if it removed the old one for you?
 		return nil, sdkerrors.Wrapf(types.ErrAlreadyExists, "subscriber already exists, must be removed first")
+	}
+
+	signer := msg.MustGetSigner()
+	if signer.String() != subscriber.Address {
+		return nil, sdkerrors.Wrapf(sdkerrors.ErrUnauthorized, "subscriber address must be signer: %s", subscriber.Address)
 	}
 
 	k.SetSubscriber(ctx, subscriberAccAddress, *subscriber)
@@ -180,7 +180,7 @@ func (k Keeper) AddSubscriber(c context.Context, msg *types.MsgAddSubscriber) (*
 	return &types.MsgAddSubscriberResponse{}, nil
 }
 
-func (k Keeper) RemovePublisherIntent(c context.Context, msg *types.MsgRemovePublisherIntent) (*types.MsgRemovePublisherIntentResponse, error) {
+func (k Keeper) RemovePublisherIntent(c context.Context, msg *types.MsgRemovePublisherIntentRequest) (*types.MsgRemovePublisherIntentResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
 	subscriptionId := msg.SubscriptionId
 	publisherDomain := msg.PublisherDomain
@@ -220,7 +220,7 @@ func (k Keeper) RemovePublisherIntent(c context.Context, msg *types.MsgRemovePub
 			),
 			sdk.NewEvent(
 				types.EventTypeRemovePublisherIntent,
-				sdk.NewAttribute(types.AttributeKeySubscriptionId, subscriptionId),
+				sdk.NewAttribute(types.AttributeKeySubscriptionID, subscriptionId),
 				sdk.NewAttribute(types.AttributeKeyPublisherDomain, publisherDomain),
 			),
 		},
@@ -229,7 +229,7 @@ func (k Keeper) RemovePublisherIntent(c context.Context, msg *types.MsgRemovePub
 	return &types.MsgRemovePublisherIntentResponse{}, nil
 }
 
-func (k Keeper) RemoveSubscriberIntent(c context.Context, msg *types.MsgRemoveSubscriberIntent) (*types.MsgRemoveSubscriberIntentResponse, error) {
+func (k Keeper) RemoveSubscriberIntent(c context.Context, msg *types.MsgRemoveSubscriberIntentRequest) (*types.MsgRemoveSubscriberIntentResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
 	subscriptionId := msg.SubscriptionId
 	subscriberAddress := msg.SubscriberAddress
@@ -271,7 +271,7 @@ func (k Keeper) RemoveSubscriberIntent(c context.Context, msg *types.MsgRemoveSu
 			),
 			sdk.NewEvent(
 				types.EventTypeRemoveSubscriberIntent,
-				sdk.NewAttribute(types.AttributeKeySubscriptionId, subscriptionId),
+				sdk.NewAttribute(types.AttributeKeySubscriptionID, subscriptionId),
 				sdk.NewAttribute(types.AttributeKeySubscriberAddress, subscriberAddress),
 				sdk.NewAttribute(types.AttributeKeyPublisherDomain, subscriberIntent.PublisherDomain),
 			),
@@ -281,7 +281,7 @@ func (k Keeper) RemoveSubscriberIntent(c context.Context, msg *types.MsgRemoveSu
 	return &types.MsgRemoveSubscriberIntentResponse{}, nil
 }
 
-func (k Keeper) RemoveSubscriber(c context.Context, msg *types.MsgRemoveSubscriber) (*types.MsgRemoveSubscriberResponse, error) {
+func (k Keeper) RemoveSubscriber(c context.Context, msg *types.MsgRemoveSubscriberRequest) (*types.MsgRemoveSubscriberResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
 	subscriberAddress := msg.SubscriberAddress
 
@@ -313,7 +313,7 @@ func (k Keeper) RemoveSubscriber(c context.Context, msg *types.MsgRemoveSubscrib
 			),
 			sdk.NewEvent(
 				types.EventTypeRemoveSubscriber,
-				sdk.NewAttribute(types.AttributeKeySubscriptionId, subscriberAddress),
+				sdk.NewAttribute(types.AttributeKeySubscriptionID, subscriberAddress),
 			),
 		},
 	)
@@ -321,7 +321,7 @@ func (k Keeper) RemoveSubscriber(c context.Context, msg *types.MsgRemoveSubscrib
 	return &types.MsgRemoveSubscriberResponse{}, nil
 }
 
-func (k Keeper) RemovePublisher(c context.Context, msg *types.MsgRemovePublisher) (*types.MsgRemovePublisherResponse, error) {
+func (k Keeper) RemovePublisher(c context.Context, msg *types.MsgRemovePublisherRequest) (*types.MsgRemovePublisherResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
 	publisherDomain := msg.PublisherDomain
 

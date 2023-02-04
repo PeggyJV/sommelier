@@ -126,7 +126,7 @@ func (k Keeper) QueryPublisherIntentsBySubscriptionId(c context.Context, req *ty
 	}
 
 	return &types.QueryPublisherIntentsBySubscriptionIdResponse{
-		PublisherIntents: k.GetPublisherIntentsBySubscriptionId(sdk.UnwrapSDKContext(c), req.SubscriptionId),
+		PublisherIntents: k.GetPublisherIntentsBySubscriptionID(sdk.UnwrapSDKContext(c), req.SubscriptionId),
 	}, nil
 }
 
@@ -185,7 +185,7 @@ func (k Keeper) QuerySubscriberIntentsBySubscriptionId(c context.Context, req *t
 	}
 
 	return &types.QuerySubscriberIntentsBySubscriptionIdResponse{
-		SubscriberIntents: k.GetSubscriberIntentsBySubscriptionId(sdk.UnwrapSDKContext(c), req.SubscriptionId),
+		SubscriberIntents: k.GetSubscriberIntentsBySubscriptionID(sdk.UnwrapSDKContext(c), req.SubscriptionId),
 	}, nil
 }
 
