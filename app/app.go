@@ -90,6 +90,7 @@ import (
 	gravitytypes "github.com/peggyjv/gravity-bridge/module/v2/x/gravity/types"
 	appParams "github.com/peggyjv/sommelier/v4/app/params"
 	v4 "github.com/peggyjv/sommelier/v4/app/upgrades/v4"
+	v5 "github.com/peggyjv/sommelier/v4/app/upgrades/v5"
 	"github.com/peggyjv/sommelier/v4/x/auction"
 	auctionclient "github.com/peggyjv/sommelier/v4/x/auction/client"
 	auctionkeeper "github.com/peggyjv/sommelier/v4/x/auction/keeper"
@@ -392,6 +393,10 @@ func NewSommelierApp(
 		app.AccountKeeper, app.BankKeeper, app.MintKeeper, app.CorkKeeper, app.GravityKeeper, app.AuctionKeeper,
 	)
 
+	app.IncentivesKeeper = incentiveskeeper.NewKeeper(
+		appCodec, keys[incentivestypes.StoreKey], app.GetSubspace(incentivestypes.ModuleName), app.DistrKeeper, app.BankKeeper, app.MintKeeper,
+	)
+
 	app.PubsubKeeper = pubsubkeeper.NewKeeper(
 		appCodec, keys[pubsubtypes.StoreKey], app.GetSubspace(pubsubtypes.ModuleName),
 		app.StakingKeeper, app.GravityKeeper,
@@ -402,10 +407,6 @@ func NewSommelierApp(
 			app.CorkKeeper.Hooks(),
 			app.CellarFeesKeeper.Hooks(),
 		))
-
-	app.IncentivesKeeper = incentiveskeeper.NewKeeper(
-		appCodec, keys[incentivestypes.StoreKey], app.GetSubspace(incentivestypes.ModuleName), app.DistrKeeper, app.BankKeeper, app.MintKeeper,
-	)
 
 	// register the proposal types
 	govRouter := govtypes.NewRouter()
@@ -787,13 +788,27 @@ func (app *SommelierApp) setupUpgradeStoreLoaders() {
 		panic(fmt.Sprintf("failed to read upgrade info from disk %s", err))
 	}
 
-	if upgradeInfo.Name == v4.UpgradeName && !app.UpgradeKeeper.IsSkipHeight(upgradeInfo.Height) {
-		storeUpgrades := store.StoreUpgrades{
+	if app.UpgradeKeeper.IsSkipHeight(upgradeInfo.Height) {
+		return
+	}
+
+	var storeUpgrades *store.StoreUpgrades = nil
+
+	if upgradeInfo.Name == v4.UpgradeName {
+		storeUpgrades = &store.StoreUpgrades{
 			Added:   []string{corktypes.ModuleName, cellarfeestypes.ModuleName},
 			Deleted: []string{"allocation"},
 		}
+	}
 
-		app.SetStoreLoader(upgradetypes.UpgradeStoreLoader(upgradeInfo.Height, &storeUpgrades))
+	if upgradeInfo.Name == v5.UpgradeName {
+		storeUpgrades = &store.StoreUpgrades{
+			Added: []string{auctiontypes.ModuleName, incentivestypes.ModuleName, pubsubtypes.ModuleName},
+		}
+	}
+
+	if storeUpgrades != nil {
+		app.SetStoreLoader(upgradetypes.UpgradeStoreLoader(upgradeInfo.Height, storeUpgrades))
 	}
 }
 
@@ -805,6 +820,14 @@ func (app *SommelierApp) setupUpgradeHandlers() {
 			app.configurator,
 			app.AccountKeeper,
 			app.BankKeeper,
+		),
+	)
+
+	app.UpgradeKeeper.SetUpgradeHandler(
+		v5.UpgradeName,
+		v5.CreateUpgradeHandler(
+			app.mm,
+			app.configurator,
 		),
 	)
 }
