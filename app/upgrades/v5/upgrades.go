@@ -117,8 +117,8 @@ func pubsubInitGenesis(ctx sdk.Context, pubsubKeeper pubsubkeeper.Keeper) {
 	// Initialize the 7seas publisher.
 	publisher := pubsubtypes.Publisher{
 		Address: "somm14zsm5frvjuqxk3f9377altc6xq368dglhmkxmp",
-		Domain:  SEVEN_SEAS_DOMAIN,
-		CaCert:  SEVEN_SEAS_PUBLISHER_CA,
+		Domain:  SevenSeasDomain,
+		CaCert:  SevenSeasPublisherCA,
 	}
 	publishers := []*pubsubtypes.Publisher{&publisher}
 
@@ -138,7 +138,7 @@ func pubsubInitGenesis(ctx sdk.Context, pubsubKeeper pubsubkeeper.Keeper) {
 	for _, cellar := range cellars {
 		publisherIntents = append(publisherIntents, &pubsubtypes.PublisherIntent{
 			SubscriptionId:     cellar,
-			PublisherDomain:    SEVEN_SEAS_DOMAIN,
+			PublisherDomain:    SevenSeasDomain,
 			Method:             pubsubtypes.PublishMethod_PUSH,
 			AllowedSubscribers: pubsubtypes.AllowedSubscribers_VALIDATORS,
 		})
@@ -149,7 +149,7 @@ func pubsubInitGenesis(ctx sdk.Context, pubsubKeeper pubsubkeeper.Keeper) {
 	for _, cellar := range cellars {
 		defaultSubscriptions = append(defaultSubscriptions, &pubsubtypes.DefaultSubscription{
 			SubscriptionId:  cellar,
-			PublisherDomain: SEVEN_SEAS_DOMAIN,
+			PublisherDomain: SevenSeasDomain,
 		})
 	}
 
@@ -161,7 +161,7 @@ func pubsubInitGenesis(ctx sdk.Context, pubsubKeeper pubsubkeeper.Keeper) {
 			subscriberIntents = append(subscriberIntents, &pubsubtypes.SubscriberIntent{
 				SubscriptionId:    cellar,
 				SubscriberAddress: subscriber.Address,
-				PublisherDomain:   SEVEN_SEAS_DOMAIN,
+				PublisherDomain:   SevenSeasDomain,
 			})
 		}
 	}
@@ -185,157 +185,157 @@ func createSubscribers() []*pubsubtypes.Subscriber {
 
 	subscribers = append(subscribers, &pubsubtypes.Subscriber{
 		Address: "somm1s2q8avjykkztudpl8k60f0ns4v5mvnjp5t366c",
-		CaCert:  FIGMENT_SUBSCRIBER_CA,
+		CaCert:  FigmentSubscriberCA,
 		PushUrl: "sommelier-steward.staking.production.figment.io:5734",
 	})
 
 	subscribers = append(subscribers, &pubsubtypes.Subscriber{
 		Address: "somm148a27t9usz9u5xzzjnkt2u8fergs48935dzdnt",
-		CaCert:  STANDARD_CRYPTO_SUBSCRIBER_CA,
+		CaCert:  StandardCryptoSubscriberCA,
 		PushUrl: "steward.sommelier.standardcryptovc.com:5734",
 	})
 
 	subscribers = append(subscribers, &pubsubtypes.Subscriber{
 		Address: "somm1kfzuvra3ym8nxffwdlyj0xvkky87qc0ywh9d42",
-		CaCert:  ROCKAWAY_SUBSCRIBER_CA,
+		CaCert:  RockawaySubscriberCA,
 		PushUrl: "steward-01.rbf.systems:5734",
 	})
 
 	subscribers = append(subscribers, &pubsubtypes.Subscriber{
 		Address: "somm1tznv6agw8pdzv34ykdpau243kdwyvf9lz4dedh",
-		CaCert:  BLOCKSCAPE_SUBSCRIBER_CA,
+		CaCert:  BlockscapeSubscriberCA,
 		PushUrl: "steward.blockscape.network:5734",
 	})
 
 	subscribers = append(subscribers, &pubsubtypes.Subscriber{
 		Address: "somm1p7vn9hajt44fxwn4ecfxjs2r469l0tgmjlqzmp",
-		CaCert:  SIMPLY_SUBSCRIBER_CA,
+		CaCert:  SimplySubscriberCA,
 		PushUrl: "sommelier-steward.simply-vc.com.mt:5734",
 	})
 
 	subscribers = append(subscribers, &pubsubtypes.Subscriber{
 		Address: "somm1lxktamk5tw30cksdlafyzr47vc5cdm76u4tkjm",
-		CaCert:  PUPMOS_SUBSCRIBER_CA,
+		CaCert:  PupmosSubscriberCA,
 		PushUrl: "steward.sommelier.pupmos.network:5734",
 	})
 
 	subscribers = append(subscribers, &pubsubtypes.Subscriber{
 		Address: "somm1yrcqnv7xvfztuh0020vxrnuhgc6dghv3kxvvnk",
-		CaCert:  LAVENDER_FIVE_SUBSCRIBER_CA,
+		CaCert:  LavenderFiveSubscriberCA,
 		PushUrl: "steward.lavenderfive.com:5734",
 	})
 
 	subscribers = append(subscribers, &pubsubtypes.Subscriber{
 		Address: "somm1y0yvuwnk7g3at6yvl6ctgsvzuxaeqjkw53tduu",
-		CaCert:  POLKACHU_SUBSCRIBER_CA,
+		CaCert:  PolkachuSubscriberCA,
 		PushUrl: "steward.polkachu.com:5734",
 	})
 
 	subscribers = append(subscribers, &pubsubtypes.Subscriber{
 		Address: "somm10qfl0f55vruhcuqwnqg00uykkdpnl4g3fzx2m7",
-		CaCert:  STAKECITO_SUBSCRIBER_CA,
+		CaCert:  StakecitoSubscriberCA,
 		PushUrl: "steward.stakesandstone.com:5734",
 	})
 
 	subscribers = append(subscribers, &pubsubtypes.Subscriber{
 		Address: "somm19ts4umurauutumqdcu5n8x73fn9dfwwshhf8a4",
-		CaCert:  CHORUS_ONE_SUBSCRIBER_CA,
+		CaCert:  ChorusOneSubscriberCA,
 		PushUrl: "sommelier-steward.chorus.one:443",
 	})
 
 	subscribers = append(subscribers, &pubsubtypes.Subscriber{
 		Address: "somm1p7tskps8hya4ldeu8qfghxwq72g5fzp6aekap7",
-		CaCert:  IMPERATOR_SUBSCRIBER_CA,
+		CaCert:  ImperatorSubscriberCA,
 		PushUrl: "steward.imperator.co:30812",
 	})
 
 	subscribers = append(subscribers, &pubsubtypes.Subscriber{
 		Address: "somm1h0df0k7wlzzg53wnglayftwnv6du74ggdu28fz",
-		CaCert:  TEKU_SUBSCRIBER_CA,
+		CaCert:  TekuSubscriberCA,
 		PushUrl: "sommelier.teku.network:5734",
 	})
 
 	subscribers = append(subscribers, &pubsubtypes.Subscriber{
 		Address: "somm1tj8echy75u4z0f04z4vda3jzgx4x02de9umhv9",
-		CaCert:  FORBOLE_SUBSCRIBER_CA,
+		CaCert:  ForboleSubscriberCA,
 		PushUrl: "steward.sommelier.forbole.com:5734",
 	})
 
 	subscribers = append(subscribers, &pubsubtypes.Subscriber{
 		Address: "somm15h8ls6mwt8k709wc8f48ycxa80vcu690j6rnwy",
-		CaCert:  BOUBOU_SUBSCRIBER_CA,
+		CaCert:  BoubouSubscriberCA,
 		PushUrl: "sommelier-steward.boubounode.com:5734",
 	})
 
 	subscribers = append(subscribers, &pubsubtypes.Subscriber{
 		Address: "somm1pajq6rx0vgxjzdccukyh3h403rqprfhcsvhrat",
-		CaCert:  SLEEPY_KITTEN_SUBSCRIBER_CA,
+		CaCert:  SleepyKittenSubscriberCA,
 		PushUrl: "steward.sommelier.sleepykitten.info:5734",
 	})
 
 	subscribers = append(subscribers, &pubsubtypes.Subscriber{
 		Address: "somm17qlejm42fz4re8cskz5hlah4hh3s8w9y2yxgu6",
-		CaCert:  EVERSTAKE_SUBSCRIBER_CA,
+		CaCert:  EverstakeSubscriberCA,
 		PushUrl: "sommelier-steward.everstake.one:5734",
 	})
 
 	subscribers = append(subscribers, &pubsubtypes.Subscriber{
 		Address: "somm1zqklnhsp0q0rew352akcg35a45ruq3vn2c7fym",
-		CaCert:  TESSELATED_SUBSCRIBER_CA,
+		CaCert:  TesselatedSubscriberCA,
 		PushUrl: "sommelier.tessageo.com:5734",
 	})
 
 	subscribers = append(subscribers, &pubsubtypes.Subscriber{
 		Address: "somm1z3jzvtxplxh2c7qn8j4teq63vsngkf0488w3uj",
-		CaCert:  ZTAKE_SUBSCRIBER_CA,
+		CaCert:  ZtakeSubscriberCA,
 		PushUrl: "sommelier.ztake.org:5734",
 	})
 
 	subscribers = append(subscribers, &pubsubtypes.Subscriber{
 		Address: "somm1ydtvj3ruqqq7zxkz9w5lze5ecylh82v03h5udg",
-		CaCert:  TWO_BUCK_CHUCK_SUBSCRIBER_CA,
+		CaCert:  TwoBuckChuckSubscriberCA,
 		PushUrl: "tastings.two-buck-chuck.xyz:5734",
 	})
 
 	subscribers = append(subscribers, &pubsubtypes.Subscriber{
 		Address: "somm1xvfdclzyw03ye5mfskw6lvvmervexx8hx58823",
-		CaCert:  COSMOSTATION_SUBSCRIBER_CA,
+		CaCert:  CosmostationSubscriberCA,
 		PushUrl: "steward.sommelier.cosmostation.io:5734",
 	})
 
 	subscribers = append(subscribers, &pubsubtypes.Subscriber{
 		Address: "somm1ge3qxg5ydd25huhf4v8nge8kjsgyps83qvw775",
-		CaCert:  MCB_SUBSCRIBER_CA,
+		CaCert:  MCBSubscriberCA,
 		PushUrl: "sommelier.mcbnode.com:5734",
 	})
 
 	subscribers = append(subscribers, &pubsubtypes.Subscriber{
 		Address: "somm19e4mx2geplpm6ksexxex8dg4dr4a5p7utl4y8z",
-		CaCert:  POLYCHAIN_SUBSCRIBER_CA,
+		CaCert:  PolychainSubscriberCA,
 		PushUrl: "steward.sommelier.unit410.com:5734",
 	})
 
 	subscribers = append(subscribers, &pubsubtypes.Subscriber{
 		Address: "somm1v78rxsl5ycptaq2dq5mu6ftzqcgk2aqtfx4ryr",
-		CaCert:  KINGSUPER_SUBSCRIBER_CA,
+		CaCert:  KingSuperSubscriberCA,
 		PushUrl: "sommelier-steward.kingsuper.services:5734",
 	})
 
 	subscribers = append(subscribers, &pubsubtypes.Subscriber{
 		Address: "somm1rs4hcjr0jgw9ah8ml5p84cvc0yxcvf8krer8wu",
-		CaCert:  CHILL_VALIDATION_SUBSCRIBER_CA,
+		CaCert:  ChillValidationSubscriberCA,
 		PushUrl: "steward0.chillvalidation.com:5734",
 	})
 
 	subscribers = append(subscribers, &pubsubtypes.Subscriber{
 		Address: "somm1g7kwsxw5khxg2zftpfcla8x4pz7zjukzc6luqy",
-		CaCert:  CHAINNODES_SUBSCRIBER_CA,
+		CaCert:  ChainnodesSubscriberCA,
 		PushUrl: "steward.chainnodes.net:5734",
 	})
 
 	subscribers = append(subscribers, &pubsubtypes.Subscriber{
 		Address: "somm13d6vkp03nelzu7aq4v6n88nw0tye2ht7j9xern",
-		CaCert:  SEVEN_SEAS_SUBSCRIBER_CA,
+		CaCert:  SevenSeasSubscriberCA,
 		PushUrl: "steward.sommelier.7seas.capital:5734",
 	})
 
