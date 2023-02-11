@@ -47,4 +47,7 @@ var (
 	ErrMinimumBidParam                                          = sdkerrors.Register(ModuleName, 40, "invalid minimum bid param")
 	ErrInvalidAuctionMaxBlockAgeParam                           = sdkerrors.Register(ModuleName, 41, "invalid auction max block age param")
 	ErrInvalidAuctionPriceDecreaseAccelerationRateParam         = sdkerrors.Register(ModuleName, 42, "invalid auction price decrease acceleration rate param")
+	ErrTokenPriceExponentTooHigh                                = sdkerrors.Register(ModuleName, 43, "token price exponent too high, maximum precision of 18")
+	ErrInvalidMinimumSaleTokensUSDValue                         = sdkerrors.Register(ModuleName, 44, "invalid minimum sale tokens USD value")
+	ErrAuctionBelowMinimumUSDValue                              = sdkerrors.Register(ModuleName, 45, "auction USD value below minimum")
 )

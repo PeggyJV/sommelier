@@ -828,6 +828,10 @@ func (app *SommelierApp) setupUpgradeHandlers() {
 		v5.CreateUpgradeHandler(
 			app.mm,
 			app.configurator,
+			app.AuctionKeeper,
+			app.CellarFeesKeeper,
+			app.IncentivesKeeper,
+			app.PubsubKeeper,
 		),
 	)
 }

@@ -20,13 +20,13 @@ message Subscriber {
   // unique key, account address representation of either an account or a validator
   string address = 1;
 
-  // the below fields are optional, and only required if the subscriber wants to use "push" subscriptions
-
-  // FQDN of the subscriber, max length of 256
-  string domain = 2;
+  // the below fields are optional, and only required if the subscriber wants to use "push" PublisherIntents
 
   // the subscriber's self-signed CA cert PEM file, expecting TLS 1.3 compatible ECDSA certificates, max length 4096
-  string ca_cert = 3;
+  string ca_cert = 2;
+
+  // max length of 512
+  string push_url = 3;
 }
 
 // for a given PublisherIntent, whether or not it is pulled or pushed
@@ -86,9 +86,6 @@ message SubscriberIntent {
 
   // FQDN of the publisher, max length of 256
   string publisher_domain = 3;
-
-  // optional, only needs to be set if the PublisherIntent for this subscription uses the PUSH method, max length of 512
-  string push_url = 4;
 }
 
 // represents a default subscription voted in by governance that can be overridden by a subscriber

@@ -438,14 +438,13 @@ $ %s tx pubsub add-publisher-push-intent 0x123801a7D398351b8bE11C439e05C5B3259ae
 
 func GetCmdAddSubscriberIntent() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "add-subscriber-intent [subscription-id] [subscriber-address] [publisher-domain] <optional_push_url>",
-		Args:  cobra.MinimumNArgs(3),
+		Use:   "add-subscriber-intent [subscription-id] [subscriber-address] [publisher-domain]",
+		Args:  cobra.ExactArgs(3),
 		Short: "Add a subscriber intent",
 		Long: strings.TrimSpace(
 			fmt.Sprintf(`Examples:
 $ %s tx pubsub add-subscriber-intent 0x123801a7D398351b8bE11C439e05C5B3259aeC9B somm1y6d5kasehecexf09ka6y0ggl0pxzt6dg6n8lw0 pullpublisher.example.com --from=<key_or_address>
-$ %s tx pubsub add-subscriber-intent 0x123801a7D398351b8bE11C439e05C5B3259aeC9B somm1y6d5kasehecexf09ka6y0ggl0pxzt6dg6n8lw0 pushpublisher.example.com "https://sommvalidator.example.com:5734" --from=<key_or_address>
-`, version.AppName, version.AppName),
+`, version.AppName),
 		),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			clientCtx, err := client.GetClientTxContext(cmd)
@@ -453,25 +452,15 @@ $ %s tx pubsub add-subscriber-intent 0x123801a7D398351b8bE11C439e05C5B3259aeC9B 
 				return err
 			}
 
-			if len(args) > 4 {
-				return fmt.Errorf("too many arguments")
-			}
-
 			signer := clientCtx.GetFromAddress()
 			if signer == nil {
 				return fmt.Errorf("must include `--from` flag")
-			}
-
-			pushURL := ""
-			if len(args) == 4 {
-				pushURL = args[3]
 			}
 
 			subscriberIntent := types.SubscriberIntent{
 				SubscriptionId:    args[0],
 				SubscriberAddress: args[1],
 				PublisherDomain:   args[2],
-				PushUrl:           pushURL,
 			}
 
 			msg, err := types.NewMsgAddSubscriberIntentRequest(subscriberIntent, signer)
@@ -489,13 +478,13 @@ $ %s tx pubsub add-subscriber-intent 0x123801a7D398351b8bE11C439e05C5B3259aeC9B 
 
 func GetCmdAddSubscriber() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "add-subscriber [address] <optional_domain> <optional_ca_cert>",
+		Use:   "add-subscriber [address] <optional_ca_cert> <optional_push_url>",
 		Args:  cobra.MinimumNArgs(1),
-		Short: "Add a subscriber intent",
+		Short: "Add a subscriber",
 		Long: strings.TrimSpace(
 			fmt.Sprintf(`Examples:
-$ %s tx pubsub add-subscriber somm1y6d5kasehecexf09ka6y0ggl0pxzt6dg6n8lw0 <path/to/cacert.pem> --from=<key_or_address>
-$ %s tx pubsub add-subscriber somm1y6d5kasehecexf09ka6y0ggl0pxzt6dg6n8lw0 pushpublisher.example.com "https://sommvalidator.example.com:5734" --from=<key_or_address>
+$ %s tx pubsub add-subscriber somm1y6d5kasehecexf09ka6y0ggl0pxzt6dg6n8lw0 --from=<key_or_address>
+$ %s tx pubsub add-subscriber somm1y6d5kasehecexf09ka6y0ggl0pxzt6dg6n8lw0 <path/to/cacert.pem> "sommvalidator.example.com:5734" --from=<key_or_address>
 `, version.AppName, version.AppName),
 		),
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -514,25 +503,25 @@ $ %s tx pubsub add-subscriber somm1y6d5kasehecexf09ka6y0ggl0pxzt6dg6n8lw0 pushpu
 			}
 
 			if len(args) > 1 && len(args) != 3 {
-				return fmt.Errorf("must include both domain and CA cert path for push subscriptions")
+				return fmt.Errorf("must include both CA cert path and push URL for push subscriptions")
 			}
 
-			domain := ""
 			caCert := ""
+			pushURL := ""
 
 			if len(args) == 3 {
-				domain = args[1]
-				caCertContent, err := ioutil.ReadFile(args[2])
+				caCertContent, err := ioutil.ReadFile(args[1])
 				if err != nil {
 					return fmt.Errorf("cannot read CA cert: %s", err)
 				}
 				caCert = string(caCertContent)
+				pushURL = args[2]
 			}
 
 			subscriber := types.Subscriber{
 				Address: args[0],
-				Domain:  domain,
 				CaCert:  caCert,
+				PushUrl: pushURL,
 			}
 
 			msg, err := types.NewMsgAddSubscriberRequest(subscriber, signer)

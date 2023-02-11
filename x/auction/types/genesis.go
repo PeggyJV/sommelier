@@ -5,7 +5,12 @@ const DefaultParamspace = ModuleName
 // DefaultGenesisState get raw genesis raw message for testing
 func DefaultGenesisState() GenesisState {
 	return GenesisState{
-		Params: DefaultParams(),
+		Params:        DefaultParams(),
+		Auctions:      []*Auction{},
+		Bids:          []*Bid{},
+		TokenPrices:   []*TokenPrice{},
+		LastAuctionId: 0,
+		LastBidId:     0,
 	}
 }
 

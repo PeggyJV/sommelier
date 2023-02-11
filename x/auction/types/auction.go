@@ -126,6 +126,10 @@ func (t *TokenPrice) ValidateBasic() error {
 		return sdkerrors.Wrapf(ErrInvalidTokenPriceDenom, "denom: %s", t.Denom)
 	}
 
+	if t.Exponent > 18 {
+		return sdkerrors.Wrapf(ErrTokenPriceExponentTooHigh, "exponent: %d", t.Exponent)
+	}
+
 	return nil
 }
 
@@ -140,6 +144,10 @@ func (t *ProposedTokenPrice) ValidateBasic() error {
 
 	if !strings.HasPrefix(t.Denom, gravitytypes.GravityDenomPrefix) && t.Denom != params.BaseCoinUnit {
 		return sdkerrors.Wrapf(ErrInvalidTokenPriceDenom, "denom: %s", t.Denom)
+	}
+
+	if t.Exponent > 18 {
+		return sdkerrors.Wrapf(ErrTokenPriceExponentTooHigh, "exponent: %d", t.Exponent)
 	}
 
 	return nil

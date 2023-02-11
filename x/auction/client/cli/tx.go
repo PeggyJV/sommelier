@@ -51,7 +51,7 @@ Where proposal.json contains:
 {
   "title": "Best token price proposal ever",
   "description": "Add the guac",
-  "token_prices": [ { denom: "usomm", usd_price: 1000000 }, { denom: "gravity0xdac17f958d2ee523a2206206994597c13d831ec7", usd_price: 0.12501 } ],
+  "token_prices": [ { denom: "usomm", exponent: 6, usd_price: 10 }, { denom: "gravity0xdac17f958d2ee523a2206206994597c13d831ec7", exponent: 6, usd_price: 0.12501 } ],
   "deposit": "10000000usomm"
 }
 `,

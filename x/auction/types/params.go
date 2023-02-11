@@ -10,6 +10,7 @@ import (
 var (
 	KeyPriceMaxBlockAge                     = []byte("PriceMaxBlockAge")
 	KeyMinimumBidInUsomm                    = []byte("MinimumBidInUsomm")
+	KeyMinimumSaleTokensUSDValue            = []byte("MinimumSaleTokensUSDValue")
 	KeyAuctionMaxBlockAge                   = []byte("AuctionMaxBlockAge")
 	KeyAuctionPriceDecreaseAccelerationRate = []byte("AuctionPriceDecreaseAccelerationRate")
 )
@@ -26,6 +27,7 @@ func DefaultParams() Params {
 	return Params{
 		PriceMaxBlockAge:                     403200,                         // roughly four weeks based on 6 second blocks
 		MinimumBidInUsomm:                    1000000,                        // 1 somm
+		MinimumSaleTokensUsdValue:            sdk.MustNewDecFromStr("1.0"),   // minimum value of sale tokens to consider starting an auction
 		AuctionMaxBlockAge:                   864000,                         // roughly 60 days based on 6 second blocks
 		AuctionPriceDecreaseAccelerationRate: sdk.MustNewDecFromStr("0.001"), // 0.1%
 	}
@@ -36,6 +38,7 @@ func (p *Params) ParamSetPairs() paramtypes.ParamSetPairs {
 	return paramtypes.ParamSetPairs{
 		paramtypes.NewParamSetPair(KeyPriceMaxBlockAge, &p.PriceMaxBlockAge, validatePriceMaxBlockAge),
 		paramtypes.NewParamSetPair(KeyMinimumBidInUsomm, &p.MinimumBidInUsomm, validateMinimumBidInUsomm),
+		paramtypes.NewParamSetPair(KeyMinimumSaleTokensUSDValue, &p.MinimumSaleTokensUsdValue, validateMinimumSaleTokensUSDValue),
 		paramtypes.NewParamSetPair(KeyAuctionMaxBlockAge, &p.AuctionMaxBlockAge, validateAuctionMaxBlockAge),
 		paramtypes.NewParamSetPair(KeyAuctionPriceDecreaseAccelerationRate, &p.AuctionPriceDecreaseAccelerationRate, validateAuctionPriceDecreaseAccelerationRate),
 	}
@@ -79,6 +82,20 @@ func validateMinimumBidInUsomm(i interface{}) error {
 	_, ok := i.(uint64)
 	if !ok {
 		return sdkerrors.Wrapf(ErrMinimumBidParam, "invalid minimum bid in usomm parameter type: %T", i)
+	}
+
+	return nil
+}
+
+func validateMinimumSaleTokensUSDValue(i interface{}) error {
+	minimumSaleTokensUsdValue, ok := i.(sdk.Dec)
+	if !ok {
+		return sdkerrors.Wrapf(ErrInvalidMinimumSaleTokensUSDValue, "invalid minimum sale tokens USD value parameter type: %T", i)
+	}
+
+	if minimumSaleTokensUsdValue.LT(sdk.MustNewDecFromStr("1.0")) {
+		// Setting this to a minimum of 1.0 USD to ensure we can realistically charge a non-fractional usomm value
+		return sdkerrors.Wrapf(ErrInvalidMinimumSaleTokensUSDValue, "minimum sale tokens USD value must be at least 1.0")
 	}
 
 	return nil
