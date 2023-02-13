@@ -4,7 +4,7 @@ package cellarfees.v1;
 import "gogoproto/gogo.proto";
 import "cellarfees/v1/params.proto";
 
-option go_package = "github.com/peggyjv/sommelier/v4/x/cellarfees/types";
+option go_package = "github.com/peggyjv/sommelier/v5/x/cellarfees/types";
 
 // GenesisState defines the cellarfees module's genesis state.
 message GenesisState {

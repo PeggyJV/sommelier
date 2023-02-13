@@ -5,7 +5,7 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	"github.com/peggyjv/sommelier/v4/x/incentives/keeper"
+	"github.com/peggyjv/sommelier/v5/x/incentives/keeper"
 )
 
 // NewHandler returns a handler for "incentive" type messages.

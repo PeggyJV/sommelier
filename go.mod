@@ -1,4 +1,4 @@
-module github.com/peggyjv/sommelier/v4
+module github.com/peggyjv/sommelier/v5
 
 go 1.15
 

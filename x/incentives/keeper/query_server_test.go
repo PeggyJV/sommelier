@@ -1,8 +1,8 @@
 package keeper
 
 import (
-	"github.com/peggyjv/sommelier/v4/app/params"
-	"github.com/peggyjv/sommelier/v4/x/incentives/types"
+	"github.com/peggyjv/sommelier/v5/app/params"
+	"github.com/peggyjv/sommelier/v5/x/incentives/types"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	mintTypes "github.com/cosmos/cosmos-sdk/x/mint/types"
