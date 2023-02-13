@@ -1,6 +1,6 @@
 [package]
 name = "somme_prost_build"
-version = "0.1.0"
+version = "5.0.0"
 authors = ["PeggyJV","Justin Kilpatrick <justin@althea.net>"]
 edition = "2018"
 
