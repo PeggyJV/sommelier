@@ -116,6 +116,7 @@ jobs:
         test_type: [
           "Cork",
           "ScheduledCork",
+          "Incentives",
         ]
     steps:
 # Not needed on self hosted test runner that already has go installed

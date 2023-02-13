@@ -14,7 +14,9 @@ import (
 	"testing"
 	"time"
 
+	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
+	"github.com/peggyjv/sommelier/v4/app/params"
 	corktypes "github.com/peggyjv/sommelier/v4/x/cork/types"
 
 	gravitytypes "github.com/peggyjv/gravity-bridge/module/v2/x/gravity/types"
@@ -27,6 +29,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	crisistypes "github.com/cosmos/cosmos-sdk/x/crisis/types"
+	disttypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
 	genutiltypes "github.com/cosmos/cosmos-sdk/x/genutil/types"
 	minttypes "github.com/cosmos/cosmos-sdk/x/mint/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
@@ -55,6 +58,8 @@ var (
 	counterContract       = common.HexToAddress("0x0000000000000000000000000000000000000000")
 	unusedGenesisContract = common.HexToAddress("0x0000000000000000000000000000000000000001")
 	unusedAddedContract   = common.HexToAddress("0x0000000000000000000000000000000000000002")
+
+	proposerMnemonic = "exit own pull hurry crawl glimpse winter service exclude same dog wrap method online practice deal lend athlete resemble chuckle culture receive autumn cinnamon"
 )
 
 func MNEMONICS() []string {
@@ -157,6 +162,10 @@ func (s *IntegrationTestSuite) initNodes(nodeCount int) { // nolint:unused
 		)
 	}
 
+	s.Require().NoError(
+		addGenesisAccount(val0ConfigDir, "", initBalanceStr, s.chain.proposer.keyInfo.GetAddress()),
+	)
+
 	// copy the genesis file to the remaining validators
 	for _, val := range s.chain.validators[1:] {
 		err := copyFile(
@@ -170,6 +179,7 @@ func (s *IntegrationTestSuite) initNodes(nodeCount int) { // nolint:unused
 func (s *IntegrationTestSuite) initNodesWithMnemonics(mnemonics ...string) {
 	s.Require().NoError(s.chain.createAndInitValidatorsWithMnemonics(mnemonics))
 	s.Require().NoError(s.chain.createAndInitOrchestratorsWithMnemonics(mnemonics))
+	s.Require().NoError(s.chain.createAndInitProposerWithMnemonic(proposerMnemonic))
 
 	//initialize a genesis file for the first validator
 	val0ConfigDir := s.chain.validators[0].configDir()
@@ -185,6 +195,10 @@ func (s *IntegrationTestSuite) initNodesWithMnemonics(mnemonics ...string) {
 			addGenesisAccount(val0ConfigDir, "", initBalanceStr, orch.keyInfo.GetAddress()),
 		)
 	}
+
+	s.Require().NoError(
+		addGenesisAccount(val0ConfigDir, "", initBalanceStr, s.chain.proposer.keyInfo.GetAddress()),
+	)
 
 	// copy the genesis file to the remaining validators
 	for _, val := range s.chain.validators[1:] {
@@ -275,6 +289,12 @@ func (s *IntegrationTestSuite) initGenesis() {
 		},
 	})
 
+	distBalance := banktypes.Balance{
+		Address: authtypes.NewModuleAddress(disttypes.ModuleName).String(),
+		Coins:   sdk.NewCoins(sdk.NewCoin(params.BaseCoinUnit, sdk.NewInt(1000000000))),
+	}
+	bankGenState.Balances = append(bankGenState.Balances, distBalance)
+
 	bz, err := cdc.MarshalJSON(&bankGenState)
 	s.Require().NoError(err)
 	appGenState[banktypes.ModuleName] = bz
@@ -309,9 +329,23 @@ func (s *IntegrationTestSuite) initGenesis() {
 	var mintGenState minttypes.GenesisState
 	s.Require().NoError(cdc.UnmarshalJSON(appGenState[minttypes.ModuleName], &mintGenState))
 	mintGenState.Params.MintDenom = testDenom
+	mintGenState.Params.InflationMax = sdk.ZeroDec()
+	mintGenState.Params.InflationMin = sdk.ZeroDec()
+	mintGenState.Params.InflationRateChange = sdk.ZeroDec()
+	mintGenState.Minter.Inflation = sdk.ZeroDec()
 	bz, err = cdc.MarshalJSON(&mintGenState)
 	s.Require().NoError(err)
 	appGenState[minttypes.ModuleName] = bz
+
+	distGenState := disttypes.DefaultGenesisState()
+	s.Require().NoError(cdc.UnmarshalJSON(appGenState[minttypes.ModuleName], &mintGenState))
+	distGenState.Params.CommunityTax = sdk.ZeroDec()
+	distGenState.Params.BaseProposerReward = sdk.ZeroDec()
+	distGenState.Params.BonusProposerReward = sdk.ZeroDec()
+	distGenState.FeePool.CommunityPool = sdk.NewDecCoins(sdk.NewDecCoin(params.BaseCoinUnit, sdk.NewInt(1000000000)))
+	bz, err = cdc.MarshalJSON(distGenState)
+	s.Require().NoError(err)
+	appGenState[disttypes.ModuleName] = bz
 
 	var genUtilGenState genutiltypes.GenesisState
 	s.Require().NoError(cdc.UnmarshalJSON(appGenState[genutiltypes.ModuleName], &genUtilGenState))
