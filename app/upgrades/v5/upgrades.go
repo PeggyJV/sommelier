@@ -34,10 +34,12 @@ func CreateUpgradeHandler(
 func incentivesInitGenesis(ctx sdk.Context, incentivesKeeper incentiveskeeper.Keeper) {
 	genesisState := incentivestypes.DefaultGenesisState()
 
-	// TODO(bolten): update IncentivesCutoffHeight when we know the upgrade proposal block height
+	upgradeHeight := uint64(7766725)
+	incentivesBlocks := uint64(5000000)
+
 	params := incentivestypes.Params{
 		DistributionPerBlock:   sdk.NewCoin(appparams.BaseCoinUnit, sdk.NewInt(2000000)),
-		IncentivesCutoffHeight: 1,
+		IncentivesCutoffHeight: upgradeHeight + incentivesBlocks,
 	}
 	genesisState.Params = params
 
