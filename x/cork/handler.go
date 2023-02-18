@@ -6,8 +6,8 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	"github.com/peggyjv/sommelier/v4/x/cork/keeper"
-	"github.com/peggyjv/sommelier/v4/x/cork/types"
+	"github.com/peggyjv/sommelier/v5/x/cork/keeper"
+	"github.com/peggyjv/sommelier/v5/x/cork/types"
 )
 
 // NewHandler returns a handler for "oracle" type messages.

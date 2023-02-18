@@ -14,7 +14,7 @@ import (
 	// "github.com/cosmos/cosmos-sdk/client/flags"
 	// sdk "github.com/cosmos/cosmos-sdk/types"
 
-	"github.com/peggyjv/sommelier/v4/x/cellarfees/types"
+	"github.com/peggyjv/sommelier/v5/x/cellarfees/types"
 )
 
 // GetQueryCmd returns the cli query commands for this module

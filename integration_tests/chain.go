@@ -6,7 +6,7 @@ import (
 	"os"
 
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
-	corktypes "github.com/peggyjv/sommelier/v4/x/cork/types"
+	corktypes "github.com/peggyjv/sommelier/v5/x/cork/types"
 
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
@@ -25,8 +25,8 @@ import (
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 	gravitytypes "github.com/peggyjv/gravity-bridge/module/v2/x/gravity/types"
-	"github.com/peggyjv/sommelier/v4/app"
-	"github.com/peggyjv/sommelier/v4/app/params"
+	"github.com/peggyjv/sommelier/v5/app"
+	"github.com/peggyjv/sommelier/v5/app/params"
 	tmrand "github.com/tendermint/tendermint/libs/rand"
 	rpchttp "github.com/tendermint/tendermint/rpc/client/http"
 )
@@ -64,6 +64,7 @@ type chain struct {
 	id            string
 	validators    []*validator
 	orchestrators []*orchestrator
+	proposer      *proposer
 }
 
 func newChain() (*chain, error) {
@@ -140,6 +141,26 @@ func (c *chain) createAndInitValidatorsWithMnemonics(mnemonics []string) error {
 			return err
 		}
 	}
+
+	return nil
+}
+
+func (c *chain) createAndInitProposerWithMnemonic(mnemonic string) error {
+	hdPath := hd.CreateHDPath(sdk.CoinType, 1, 0)
+
+	// create keys
+	info, kb, err := createMemoryKeyFromMnemonic("proposer", mnemonic, "", hdPath)
+	if err != nil {
+		return err
+	}
+
+	proposer := proposer{}
+
+	proposer.keyInfo = *info
+	proposer.mnemonic = mnemonic
+	proposer.keyring = kb
+
+	c.proposer = &proposer
 
 	return nil
 }

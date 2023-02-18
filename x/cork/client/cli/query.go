@@ -4,7 +4,7 @@ import (
 	"strconv"
 
 	"github.com/cosmos/cosmos-sdk/client"
-	"github.com/peggyjv/sommelier/v4/x/cork/types"
+	"github.com/peggyjv/sommelier/v5/x/cork/types"
 	"github.com/spf13/cobra"
 )
 

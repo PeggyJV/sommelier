@@ -606,7 +606,7 @@ dependencies = [
 
 [[package]]
 name = "somm_proto"
-version = "0.1.0"
+version = "5.0.0"
 dependencies = [
  "bytes",
  "cosmos-sdk-proto",
