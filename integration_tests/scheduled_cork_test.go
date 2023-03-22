@@ -7,7 +7,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 	"github.com/ethereum/go-ethereum/common"
-	gbtypes "github.com/peggyjv/gravity-bridge/module/v2/x/gravity/types"
+	gbtypes "github.com/peggyjv/gravity-bridge/module/v3/x/gravity/types"
 	"github.com/peggyjv/sommelier/v6/x/cork/types"
 )
 

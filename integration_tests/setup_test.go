@@ -19,7 +19,7 @@ import (
 	"github.com/peggyjv/sommelier/v6/app/params"
 	corktypes "github.com/peggyjv/sommelier/v6/x/cork/types"
 
-	gravitytypes "github.com/peggyjv/gravity-bridge/module/v2/x/gravity/types"
+	gravitytypes "github.com/peggyjv/gravity-bridge/module/v3/x/gravity/types"
 
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/ethclient"

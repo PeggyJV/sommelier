@@ -30,7 +30,7 @@ import (
 	"github.com/tendermint/tendermint/libs/log"
 	dbm "github.com/tendermint/tm-db"
 
-	bridgecmd "github.com/peggyjv/gravity-bridge/module/v2/cmd/gravity/cmd"
+	bridgecmd "github.com/peggyjv/gravity-bridge/module/v3/cmd/gravity/cmd"
 	"github.com/peggyjv/sommelier/v6/app"
 	"github.com/peggyjv/sommelier/v6/app/params"
 )

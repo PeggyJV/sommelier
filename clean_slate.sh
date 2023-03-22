@@ -4,16 +4,16 @@ set -e
 
 echo Cleaning up test environment
 docker rm --force \
-       $(shell docker ps -qa --filter="name=ethereum") \
-       $(shell docker ps -qa --filter="name=sommelier") \
-       $(shell docker ps -qa --filter="name=orchestrator") \
+       $(docker ps -qa --filter="name=ethereum") \
+       $(docker ps -qa --filter="name=sommelier") \
+       $(docker ps -qa --filter="name=orchestrator") \
        1>/dev/null \
        2>/dev/null \
        || true
 docker wait \
-       $(shell docker ps -qa --filter="name=ethereum") \
-       $(shell docker ps -qa --filter="name=sommelier") \
-       $(shell docker ps -qa --filter="name=orchestrator") \
+       $(docker ps -qa --filter="name=ethereum") \
+       $(docker ps -qa --filter="name=sommelier") \
+       $(docker ps -qa --filter="name=orchestrator") \
        1>/dev/null \
        2>/dev/null \
        || true
