@@ -3,7 +3,7 @@ package cellarfees.v1;
 
 import "gogoproto/gogo.proto";
 
-option go_package = "github.com/peggyjv/sommelier/v5/x/cellarfees/types";
+option go_package = "github.com/peggyjv/sommelier/v6/x/cellarfees/types";
 
 // Params defines the parameters for the module.
 message Params {
