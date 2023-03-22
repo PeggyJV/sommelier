@@ -23,7 +23,7 @@ import (
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/crypto"
 	gravitytypes "github.com/peggyjv/gravity-bridge/module/v2/x/gravity/types"
-	"github.com/peggyjv/sommelier/v5/app"
+	"github.com/peggyjv/sommelier/v6/app"
 	tmcfg "github.com/tendermint/tendermint/config"
 	tmos "github.com/tendermint/tendermint/libs/os"
 	"github.com/tendermint/tendermint/p2p"

@@ -7,8 +7,8 @@ import (
 	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
 	gravitytypes "github.com/peggyjv/gravity-bridge/module/v2/x/gravity/types"
-	cellarfeestypes "github.com/peggyjv/sommelier/v5/x/cellarfees/types"
-	corktypes "github.com/peggyjv/sommelier/v5/x/cork/types"
+	cellarfeestypes "github.com/peggyjv/sommelier/v6/x/cellarfees/types"
+	corktypes "github.com/peggyjv/sommelier/v6/x/cork/types"
 )
 
 func CreateUpgradeHandler(

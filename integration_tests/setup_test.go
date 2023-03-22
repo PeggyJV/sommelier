@@ -16,8 +16,8 @@ import (
 
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
-	"github.com/peggyjv/sommelier/v5/app/params"
-	corktypes "github.com/peggyjv/sommelier/v5/x/cork/types"
+	"github.com/peggyjv/sommelier/v6/app/params"
+	corktypes "github.com/peggyjv/sommelier/v6/x/cork/types"
 
 	gravitytypes "github.com/peggyjv/gravity-bridge/module/v2/x/gravity/types"
 
