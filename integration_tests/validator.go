@@ -167,7 +167,7 @@ func (v *validator) createKeyFromMnemonic(name, mnemonic string, passphrase stri
 	return nil
 }
 
-func (v *validator) createKey(name string) error { // nolint:unused
+func (v *validator) createKey(name string) error { //nolint:unused
 	mnemonic, err := createMnemonic()
 	if err != nil {
 		return err
@@ -176,7 +176,7 @@ func (v *validator) createKey(name string) error { // nolint:unused
 	return v.createKeyFromMnemonic(name, mnemonic, "")
 }
 
-func (v *validator) generateEthereumKey() error { // nolint:unused
+func (v *validator) generateEthereumKey() error { //nolint:unused
 	privateKey, err := crypto.GenerateKey()
 	if err != nil {
 		return err

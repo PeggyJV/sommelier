@@ -2,7 +2,7 @@ package cli
 
 import (
 	"fmt"
-	"io/ioutil"
+	"os"
 	"strings"
 
 	"github.com/cosmos/cosmos-sdk/client"
@@ -62,7 +62,7 @@ Where proposal.json contains:
 			}
 
 			proposal := types.AddManagedCellarIDsProposalWithDeposit{}
-			contents, err := ioutil.ReadFile(args[0])
+			contents, err := os.ReadFile(args[0])
 			if err != nil {
 				return err
 			}
@@ -132,7 +132,7 @@ Where proposal.json contains:
 			}
 
 			proposal := types.RemoveManagedCellarIDsProposalWithDeposit{}
-			contents, err := ioutil.ReadFile(args[0])
+			contents, err := os.ReadFile(args[0])
 			if err != nil {
 				return err
 			}
