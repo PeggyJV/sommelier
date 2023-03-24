@@ -1,0 +1,84 @@
+syntax = "proto3";
+package axelar_cork.v1;
+
+import "axelar_cork/v1/cork.proto";
+
+option go_package = "github.com/peggyjv/sommelier/v4/x/axelar-cork/types";
+
+// note: current plan is to accept either chain name or chain ID. if both and they dont match, error.
+
+message AddManagedCellarIDsProposal {
+  string title = 1;
+  string description = 2;
+  string chain = 3;
+  uint64 id = 4;
+  CellarIDSet cellar_ids = 5;
+}
+
+// AddManagedCellarIDsProposalWithDeposit is a specific definition for CLI commands
+message AddManagedCellarIDsProposalWithDeposit {
+  string title = 1;
+  string description = 2;
+  string chain = 3;
+  uint64 id = 4;
+  CellarIDSet cellar_ids = 5;
+  string deposit = 6;
+}
+
+message RemoveManagedCellarIDsProposal {
+  string title = 1;
+  string description = 2;
+  string chain = 3;
+  uint64 id = 4;
+  CellarIDSet cellar_ids = 5;
+}
+
+// RemoveManagedCellarIDsProposalWithDeposit is a specific definition for CLI commands
+message RemoveManagedCellarIDsProposalWithDeposit {
+  string title = 1;
+  string description = 2;
+  string chain = 3;
+  uint64 id = 4;
+  CellarIDSet cellar_ids = 5;
+  string deposit = 6;
+}
+
+message ScheduledAxelarCorkProposal {
+  string title = 1;
+  string description = 2;
+  uint64 block_height = 3;
+  string chain = 4;
+  uint64 id = 5;
+  string target_contract_address = 6;
+  /*
+  * The JSON representation of a ScheduleRequest defined in the Steward protos
+  *
+  * Example: The following is the JSON form of a ScheduleRequest containing a steward.v2.cellar_v1.TrustPosition
+  * message, which maps to the `trustPosition(address)` function of the the V1 Cellar contract.
+  *
+  * {
+  *   "cellar_id": "0x1234567890000000000000000000000000000000",
+  *   "cellar_v1": {
+  *     "trust_position": {
+  *       "erc20_address": "0x1234567890000000000000000000000000000000"
+  *     }
+  *   },
+  *   "block_height": 1000000
+  * }
+  *
+  * You can use the Steward CLI to generate the required JSON rather than constructing it by hand https://github.com/peggyjv/steward
+  */
+  string contract_call_proto_json = 7;
+}
+
+// ScheduledCorkProposalWithDeposit is a specific definition for CLI commands
+message ScheduledAxelarCorkProposalWithDeposit {
+  string title = 1;
+  string description = 2;
+  uint64 block_height = 3;
+  string chain = 4;
+  uint64 id = 5;
+  string target_contract_address = 6;
+  string contract_call_proto_json = 7;
+  string deposit = 8;
+}
