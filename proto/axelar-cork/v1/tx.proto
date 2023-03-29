@@ -1,6 +1,7 @@
 syntax = "proto3";
 package axelar_cork.v1;
 
+import "cosmos/base/v1beta1/coin.proto";
 import "axelar_cork/v1/cork.proto";
 
 option go_package = "github.com/peggyjv/sommelier/v4/x/axelar_cork/types";
@@ -8,6 +9,7 @@ option go_package = "github.com/peggyjv/sommelier/v4/x/axelar_cork/types";
 // MsgService defines the msgs that the cork module handles
 service Msg {
   rpc ScheduleCork (MsgScheduleCorkRequest) returns (MsgScheduleCorkResponse);
+  rpc IncreaseCorkFee (MsgIncreaseCorkFeeRequest) returns (MsgIncreaseCorkFeeResponse);
 }
 
 // MsgScheduleCorkRequest - sdk.Msg for scheduling a cork request for on or after a specific block height
@@ -28,3 +30,10 @@ message MsgScheduleCorkResponse {
   // cork ID
   string id = 1;
 }
+
+message MsgIncreaseCorkFeeRequest {
+  string id = 1;
+  cosmos.base.v1beta1.Coin fee = 2;
+}
+
+message MsgIncreaseCorkFeeResponse {}
