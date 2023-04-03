@@ -3,7 +3,7 @@ package axelar_cork.v1;
 
 import "axelar_cork/v1/cork.proto";
 
-option go_package = "github.com/peggyjv/sommelier/v4/x/axelar-cork/types";
+option go_package = "github.com/peggyjv/sommelier/v6/x/axelarcork/types";
 
 // note: current plan is to accept either chain name or chain ID. if both and they dont match, error.
 

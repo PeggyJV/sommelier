@@ -6,9 +6,9 @@ import (
 	authkeeper "github.com/cosmos/cosmos-sdk/x/auth/keeper"
 	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
-	gravitytypes "github.com/peggyjv/gravity-bridge/module/v2/x/gravity/types"
-	cellarfeestypes "github.com/peggyjv/sommelier/v4/x/cellarfees/types"
-	corktypes "github.com/peggyjv/sommelier/v4/x/cork/types"
+	gravitytypes "github.com/peggyjv/gravity-bridge/module/v3/x/gravity/types"
+	cellarfeestypes "github.com/peggyjv/sommelier/v6/x/cellarfees/types"
+	corktypes "github.com/peggyjv/sommelier/v6/x/cork/types"
 )
 
 func CreateUpgradeHandler(

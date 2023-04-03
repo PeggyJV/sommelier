@@ -4,7 +4,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
-	"github.com/peggyjv/sommelier/v4/x/incentives/types"
+	"github.com/peggyjv/sommelier/v6/x/incentives/types"
 	"github.com/tendermint/tendermint/libs/log"
 )
 

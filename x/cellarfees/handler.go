@@ -5,7 +5,7 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	"github.com/peggyjv/sommelier/v4/x/cellarfees/keeper"
+	"github.com/peggyjv/sommelier/v6/x/cellarfees/keeper"
 )
 
 // NewHandler returns a handler for "cellarfees" type messages.

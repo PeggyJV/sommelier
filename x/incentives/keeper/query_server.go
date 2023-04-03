@@ -4,7 +4,7 @@ import (
 	"context"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/peggyjv/sommelier/v4/x/incentives/types"
+	"github.com/peggyjv/sommelier/v6/x/incentives/types"
 )
 
 var _ types.QueryServer = Keeper{}

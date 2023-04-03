@@ -5,7 +5,7 @@ import "gogoproto/gogo.proto";
 import "google/api/annotations.proto";
 import "incentives/v1/genesis.proto";
 
-option go_package = "github.com/peggyjv/sommelier/v4/x/incentives/types";
+option go_package = "github.com/peggyjv/sommelier/v6/x/incentives/types";
 
 // Query defines the gRPC query service for the cork module.
 service Query {

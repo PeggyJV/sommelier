@@ -15,14 +15,11 @@ import (
 	"time"
 
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
-	disttypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
-	"github.com/peggyjv/sommelier/v4/app/params"
-	auctiontypes "github.com/peggyjv/sommelier/v4/x/auction/types"
-	cellarfeestypes "github.com/peggyjv/sommelier/v4/x/cellarfees/types"
-	corktypes "github.com/peggyjv/sommelier/v4/x/cork/types"
+	"github.com/peggyjv/sommelier/v6/app/params"
+	corktypes "github.com/peggyjv/sommelier/v6/x/cork/types"
 
-	gravitytypes "github.com/peggyjv/gravity-bridge/module/v2/x/gravity/types"
+	gravitytypes "github.com/peggyjv/gravity-bridge/module/v3/x/gravity/types"
 
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/ethclient"
@@ -32,6 +29,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	crisistypes "github.com/cosmos/cosmos-sdk/x/crisis/types"
+	disttypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
 	genutiltypes "github.com/cosmos/cosmos-sdk/x/genutil/types"
 	minttypes "github.com/cosmos/cosmos-sdk/x/mint/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
@@ -45,8 +43,8 @@ import (
 )
 
 const (
-	testDenom           = "usomm"
-	initBalanceStr      = "210000000000usomm"
+	testDenom           = "testsomm"
+	initBalanceStr      = "110000000000testsomm"
 	minGasPrice         = "2"
 	ethChainID     uint = 15
 )
@@ -58,12 +56,8 @@ var (
 	// todo(mvid): split these out into their respective tests
 	gravityContract       = common.HexToAddress("0x04C89607413713Ec9775E14b954286519d836FEf")
 	counterContract       = common.HexToAddress("0x0000000000000000000000000000000000000000")
-	alphaERC20Contract    = common.HexToAddress("0x0000000000000000000000000000000000000000")
-	betaERC20Contract     = common.HexToAddress("0x0000000000000000000000000000000000000000")
 	unusedGenesisContract = common.HexToAddress("0x0000000000000000000000000000000000000001")
-
-	// 67%
-	corkVoteThreshold = sdk.NewDecWithPrec(67, 2)
+	unusedAddedContract   = common.HexToAddress("0x0000000000000000000000000000000000000002")
 
 	proposerMnemonic = "exit own pull hurry crawl glimpse winter service exclude same dog wrap method online practice deal lend athlete resemble chuckle culture receive autumn cinnamon"
 )
@@ -168,7 +162,6 @@ func (s *IntegrationTestSuite) initNodes(nodeCount int) { //nolint:unused
 		)
 	}
 
-	// add proposer account to genesis file (so it can bid)
 	s.Require().NoError(
 		addGenesisAccount(val0ConfigDir, "", initBalanceStr, s.chain.proposer.keyInfo.GetAddress()),
 	)
@@ -191,7 +184,6 @@ func (s *IntegrationTestSuite) initNodesWithMnemonics(mnemonics ...string) {
 	//initialize a genesis file for the first validator
 	val0ConfigDir := s.chain.validators[0].configDir()
 	for _, val := range s.chain.validators {
-		// Fund the first validator with some funds to be used by auction module integration tests
 		s.Require().NoError(
 			addGenesisAccount(val0ConfigDir, "", initBalanceStr, val.keyInfo.GetAddress()),
 		)
@@ -199,13 +191,11 @@ func (s *IntegrationTestSuite) initNodesWithMnemonics(mnemonics ...string) {
 
 	// add orchestrator accounts to genesis file
 	for _, orch := range s.chain.orchestrators {
-		// Fund the first orchestrator with some funds to be used by auction module integration tests
 		s.Require().NoError(
 			addGenesisAccount(val0ConfigDir, "", initBalanceStr, orch.keyInfo.GetAddress()),
 		)
 	}
 
-	// add proposer account to genesis file (so it can bid)
 	s.Require().NoError(
 		addGenesisAccount(val0ConfigDir, "", initBalanceStr, s.chain.proposer.keyInfo.GetAddress()),
 	)
@@ -299,16 +289,10 @@ func (s *IntegrationTestSuite) initGenesis() {
 		},
 	})
 
-	// Set up auction module with some coins to auction off
-	balance := banktypes.Balance{
-		Address: authtypes.NewModuleAddress(auctiontypes.ModuleName).String(),
-		Coins:   sdk.NewCoins(sdk.NewCoin("gravity0x3506424f91fd33084466f402d5d97f05f8e3b4af", sdk.NewInt(5000000000))),
-	}
 	distBalance := banktypes.Balance{
 		Address: authtypes.NewModuleAddress(disttypes.ModuleName).String(),
 		Coins:   sdk.NewCoins(sdk.NewCoin(params.BaseCoinUnit, sdk.NewInt(1000000000))),
 	}
-	bankGenState.Balances = append(bankGenState.Balances, balance)
 	bankGenState.Balances = append(bankGenState.Balances, distBalance)
 
 	bz, err := cdc.MarshalJSON(&bankGenState)
@@ -366,56 +350,6 @@ func (s *IntegrationTestSuite) initGenesis() {
 	var genUtilGenState genutiltypes.GenesisState
 	s.Require().NoError(cdc.UnmarshalJSON(appGenState[genutiltypes.ModuleName], &genUtilGenState))
 
-	// Add an auction for integration testing of the auction module
-	var auctionGenState auctiontypes.GenesisState
-	s.Require().NoError(cdc.UnmarshalJSON(appGenState[auctiontypes.ModuleName], &auctionGenState))
-	auctionGenState.TokenPrices = append(auctionGenState.TokenPrices, &auctiontypes.TokenPrice{
-		Denom:            alphaFeeDenom,
-		UsdPrice:         sdk.MustNewDecFromStr("1.0"),
-		LastUpdatedBlock: 0,
-	})
-	auctionGenState.TokenPrices = append(auctionGenState.TokenPrices, &auctiontypes.TokenPrice{
-		Denom:            betaFeeDenom,
-		UsdPrice:         sdk.MustNewDecFromStr("5.0"),
-		LastUpdatedBlock: 0,
-	})
-	auctionGenState.TokenPrices = append(auctionGenState.TokenPrices, &auctiontypes.TokenPrice{
-		Denom:            testDenom,
-		UsdPrice:         sdk.MustNewDecFromStr("0.5"),
-		LastUpdatedBlock: 0,
-	})
-	auctionGenState.Auctions = append(auctionGenState.Auctions, &auctiontypes.Auction{
-		Id:                         uint32(1),
-		StartingTokensForSale:      sdk.NewCoin("gravity0x3506424f91fd33084466f402d5d97f05f8e3b4af", sdk.NewInt(5000000000)),
-		StartBlock:                 uint64(1),
-		EndBlock:                   uint64(0),
-		InitialPriceDecreaseRate:   sdk.MustNewDecFromStr("0.05"),
-		CurrentPriceDecreaseRate:   sdk.MustNewDecFromStr("0.05"),
-		PriceDecreaseBlockInterval: uint64(1000),
-		InitialUnitPriceInUsomm:    sdk.MustNewDecFromStr("2"),
-		CurrentUnitPriceInUsomm:    sdk.MustNewDecFromStr("2"),
-		RemainingTokensForSale:     sdk.NewCoin("gravity0x3506424f91fd33084466f402d5d97f05f8e3b4af", sdk.NewInt(5000000000)),
-		FundingModuleAccount:       cellarfeestypes.ModuleName,
-		ProceedsModuleAccount:      cellarfeestypes.ModuleName,
-	})
-
-	bz, err = cdc.MarshalJSON(&auctionGenState)
-	s.Require().NoError(err)
-	appGenState[auctiontypes.ModuleName] = bz
-
-	// set cellarfees gen state
-	cellarfeesGenState := cellarfeestypes.DefaultGenesisState()
-	s.Require().NoError(cdc.UnmarshalJSON(appGenState[cellarfeestypes.ModuleName], &cellarfeesGenState))
-	cellarfeesGenState.Params = cellarfeestypes.Params{
-		FeeAccrualAuctionThreshold: 2,
-		RewardEmissionPeriod:       100,
-		InitialPriceDecreaseRate:   sdk.MustNewDecFromStr("0.05"),
-		PriceDecreaseBlockInterval: uint64(1000),
-	}
-	bz, err = cdc.MarshalJSON(&cellarfeesGenState)
-	s.Require().NoError(err)
-	appGenState[cellarfeestypes.ModuleName] = bz
-
 	// generate genesis txs
 	genTxs := make([]json.RawMessage, len(s.chain.validators))
 	for i, val := range s.chain.validators {
@@ -442,11 +376,7 @@ func (s *IntegrationTestSuite) initGenesis() {
 
 	var corkGenState corktypes.GenesisState
 	s.Require().NoError(cdc.UnmarshalJSON(appGenState[corktypes.ModuleName], &corkGenState))
-
-	// we add the first validator address as a cellar so that it will trigger the cellarfees hook
-	// when we send test fees
-	corkGenState.CellarIds = corktypes.CellarIDSet{Ids: []string{unusedGenesisContract.String(), s.chain.validators[0].ethereumKey.address}}
-	corkGenState.Params.VoteThreshold = corkVoteThreshold
+	corkGenState.CellarIds = corktypes.CellarIDSet{Ids: []string{unusedGenesisContract.String()}}
 	bz, err = cdc.MarshalJSON(&corkGenState)
 	s.Require().NoError(err)
 	appGenState[corktypes.ModuleName] = bz
@@ -459,12 +389,6 @@ func (s *IntegrationTestSuite) initGenesis() {
 	bz, err = cdc.MarshalJSON(&gravityGenState)
 	s.Require().NoError(err)
 	appGenState[gravitytypes.ModuleName] = bz
-
-	// incentivesGenState := incentivestypes.DefaultGenesisState()
-	// s.Require().NoError(cdc.UnmarshalJSON(appGenState[gravitytypes.ModuleName], &gravityGenState))
-	// bz, err = cdc.MarshalJSON(&incentivesGenState)
-	// s.Require().NoError(err)
-	// appGenState[incentivestypes.ModuleName] = bz
 
 	// serialize genesis state
 	bz, err = json.MarshalIndent(appGenState, "", "  ")
@@ -602,20 +526,7 @@ func (s *IntegrationTestSuite) runEthContainer() {
 			if strings.HasPrefix(s, "gravity contract deployed at") {
 				strSpl := strings.Split(s, "-")
 				gravityContract = common.HexToAddress(strings.ReplaceAll(strSpl[1], " ", ""))
-				// this is not the last contract deployed
-				continue
-			}
-			if strings.HasPrefix(s, "alphaERC20 contract deployed at") {
-				strSpl := strings.Split(s, "-")
-				alphaERC20Contract = common.HexToAddress(strings.ReplaceAll(strSpl[1], " ", ""))
-				// this is not the last contract deployed
-				continue
-			}
-			if strings.HasPrefix(s, "betaERC20 contract deployed at") {
-				strSpl := strings.Split(s, "-")
-				betaERC20Contract = common.HexToAddress(strings.ReplaceAll(strSpl[1], " ", ""))
-				// this is not the last contract deployed
-				continue
+				// continue, this is not the last contract deployed
 			}
 			if strings.HasPrefix(s, "counter contract deployed at") {
 				strSpl := strings.Split(s, "-")
@@ -625,10 +536,8 @@ func (s *IntegrationTestSuite) runEthContainer() {
 		}
 		return false
 	}, time.Minute*5, time.Second*10, "unable to retrieve gravity address from logs")
-	s.T().Logf("gravity contract deployed at %s", gravityContract.String())
-	s.T().Logf("alphaERC20 contract deployed at %s", alphaERC20Contract.String())
-	s.T().Logf("betaERC20 contract deployed at %s", betaERC20Contract.String())
-	s.T().Logf("counter contract deployed at %s", counterContract.String())
+	s.T().Logf("gravity contrained deployed at %s", gravityContract.String())
+
 	s.T().Logf("started Ethereum container: %s", s.ethResource.Container.ID)
 }
 
@@ -713,12 +622,15 @@ func (s *IntegrationTestSuite) runOrchestrators() {
 	s.orchResources = make([]*dockertest.Resource, len(s.chain.orchestrators))
 	for i, orch := range s.chain.orchestrators {
 		gorcCfg := fmt.Sprintf(`keystore = "/root/gorc/keystore/"
+
 [gravity]
 contract = "%s"
 fees_denom = "%s"
+
 [ethereum]
 key_derivation_path = "m/44'/60'/0'/0/0"
 rpc = "http://%s:8545"
+
 [cosmos]
 key_derivation_path = "m/44'/118'/1'/0/0"
 grpc = "http://%s:9090"

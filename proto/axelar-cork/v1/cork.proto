@@ -1,7 +1,7 @@
 syntax = "proto3";
 package axelar_cork.v1;
 
-option go_package = "github.com/peggyjv/sommelier/v4/x/axelar-cork/types";
+option go_package = "github.com/peggyjv/sommelier/v6/x/axelarcork/types";
 
 // todo: do we need Axelar in the name or should we depend on the namespace?
 message AxelarCork {

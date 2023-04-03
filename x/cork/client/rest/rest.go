@@ -8,7 +8,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/types/rest"
 	govrest "github.com/cosmos/cosmos-sdk/x/gov/client/rest"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
-	"github.com/peggyjv/sommelier/v4/x/cork/types"
+	"github.com/peggyjv/sommelier/v6/x/cork/types"
 )
 
 // AddProposalRESTHandler returns a ProposalRESTHandler that exposes add managed cellar IDs REST handler with a given sub-route.

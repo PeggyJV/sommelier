@@ -1,11 +1,11 @@
 package cli
 
 import (
-	"io/ioutil"
+	"os"
 	"testing"
 
 	"github.com/cosmos/cosmos-sdk/simapp/params"
-	"github.com/peggyjv/sommelier/v4/x/cork/types"
+	"github.com/peggyjv/sommelier/v6/x/cork/types"
 
 	"github.com/cosmos/cosmos-sdk/testutil"
 	"github.com/stretchr/testify/require"
@@ -24,7 +24,7 @@ func TestParseAddManagedCellarsProposal(t *testing.T) {
 `)
 
 	proposal := types.AddManagedCellarIDsProposalWithDeposit{}
-	contents, err := ioutil.ReadFile(okJSON.Name())
+	contents, err := os.ReadFile(okJSON.Name())
 	require.NoError(t, err)
 
 	err = encodingConfig.Marshaler.UnmarshalJSON(contents, &proposal)
@@ -50,7 +50,7 @@ func TestParseRemoveManagedCellarsProposal(t *testing.T) {
 `)
 
 	proposal := types.RemoveManagedCellarIDsProposalWithDeposit{}
-	contents, err := ioutil.ReadFile(okJSON.Name())
+	contents, err := os.ReadFile(okJSON.Name())
 	require.NoError(t, err)
 
 	err = encodingConfig.Marshaler.UnmarshalJSON(contents, &proposal)

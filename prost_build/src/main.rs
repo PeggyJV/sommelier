@@ -44,17 +44,19 @@ fn compile_protos(out_dir: &Path, tmp_dir: &Path) {
     // this gives us the repo root by going up two levels from the module root
     let root = root.parent().unwrap().to_path_buf();
 
-    let mut allocation_proto_dir = root.clone();
-    allocation_proto_dir.push("proto/allocation/v1");
+    let mut cellarfees_proto_dir = root.clone();
+    cellarfees_proto_dir.push("proto/cellarfees/v1");
     let mut cork_proto_dir = root.clone();
-    cork_proto_dir.push("proto/cork/v2");
+    cork_proto_dir.push("proto/cork/v1");
+    let mut incentives_proto_dir = root.clone();
+    incentives_proto_dir.push("proto/incentives/v1");
     let mut somm_proto_include_dir = root.clone();
     somm_proto_include_dir.push("proto");
     let mut third_party_proto_include_dir = root;
     third_party_proto_include_dir.push("third_party/proto");
 
     // Paths
-    let proto_paths = [allocation_proto_dir, cork_proto_dir];
+    let proto_paths = [cellarfees_proto_dir, cork_proto_dir, incentives_proto_dir];
     // we need to have an include which is just the folder of our protos to satisfy protoc
     // which insists that any passed file be included in a directory passed as an include
     let proto_include_paths = [somm_proto_include_dir, third_party_proto_include_dir];
@@ -84,7 +86,6 @@ fn compile_protos(out_dir: &Path, tmp_dir: &Path) {
     let mut config = prost_build::Config::default();
     config.out_dir(tmp_dir);
     config
-        .type_attribute(".", "#[derive(serde::Deserialize, serde::Serialize)]")
         .compile_protos(&protos, &proto_include_paths)
         .unwrap();
 
@@ -95,7 +96,7 @@ fn compile_protos(out_dir: &Path, tmp_dir: &Path) {
         .build_server(false)
         .format(true)
         .out_dir(tmp_dir)
-        .compile_with_config(config, &protos, &proto_include_paths)
+        .compile(&protos, &proto_include_paths)
         .unwrap();
 
     copy_generated_files(tmp_dir, out_dir);
