@@ -1,0 +1,39 @@
+syntax = "proto3";
+package axelar_cork.v1;
+
+import "cosmos/base/v1beta1/coin.proto";
+import "axelar-cork/v1/cork.proto";
+
+option go_package = "github.com/peggyjv/sommelier/x/axelarcork/types";
+
+// MsgService defines the msgs that the cork module handles
+service Msg {
+  rpc ScheduleCork(MsgScheduleCorkRequest) returns (MsgScheduleCorkResponse);
+  rpc IncreaseCorkFee(MsgIncreaseCorkFeeRequest) returns (MsgIncreaseCorkFeeResponse);
+}
+
+// MsgScheduleCorkRequest - sdk.Msg for scheduling a cork request for on or after a specific block height
+message MsgScheduleCorkRequest {
+  // the scheduled cork
+  AxelarCork cork = 1;
+  // the chain name
+  string chain = 2;
+  // the chain id
+  uint64 chain_id = 3;
+  // the block height that must be reached
+  uint64 block_height = 4;
+  // signer account address
+  string signer = 5;
+}
+
+message MsgScheduleCorkResponse {
+  // cork ID
+  string id = 1;
+}
+
+message MsgIncreaseCorkFeeRequest {
+  string                   id  = 1;
+  cosmos.base.v1beta1.Coin fee = 2;
+}
+
+message MsgIncreaseCorkFeeResponse {}

@@ -1,0 +1,47 @@
+syntax = "proto3";
+package axelar_cork.v1;
+
+import "gogoproto/gogo.proto";
+
+option go_package = "github.com/peggyjv/sommelier/x/axelarcork/types";
+
+// todo: do we need Axelar in the name or should we depend on the namespace?
+message AxelarCork {
+  // call body containing the ABI encoded bytes to send to the contract
+  bytes encoded_contract_call = 1;
+  // address of the contract to send the call
+  string target_contract_address = 2;
+}
+
+message ScheduledAxelarCork {
+  AxelarCork cork         = 1;
+  uint64     block_height = 2;
+  string     validator    = 3;
+  bytes      id           = 4;
+}
+
+message AxelarCorkResult {
+  AxelarCork cork                = 1;
+  uint64     block_height        = 2;
+  bool       approved            = 3;
+  string     approval_percentage = 4;
+}
+
+message CellarIDSet {
+  repeated string ids = 1;
+}
+
+message ChainConfiguration {
+  string name           = 1;
+  uint64 id             = 2;
+  string vote_threshold = 3 [
+    (gogoproto.moretags)   = "yaml:\"vote_threshold\"",
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+    (gogoproto.nullable)   = false
+  ];
+  CellarIDSet cellar_ids = 4;
+}
+
+message ChainConfigurations {
+  repeated ChainConfiguration configurations = 1;
+}
