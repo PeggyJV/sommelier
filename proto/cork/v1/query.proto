@@ -38,7 +38,8 @@ service Query {
   }
 
   // QueryScheduledCorks returns all scheduled corks at a block height
-  rpc QueryScheduledCorksByBlockHeight(QueryScheduledCorksByBlockHeightRequest) returns (QueryScheduledCorksByBlockHeightResponse) {
+  rpc QueryScheduledCorksByBlockHeight(QueryScheduledCorksByBlockHeightRequest)
+      returns (QueryScheduledCorksByBlockHeightResponse) {
     option (google.api.http).get = "/sommelier/cork/v1/scheduled_corks_by_block_height/{block_height}";
   }
 }
@@ -61,20 +62,18 @@ message QuerySubmittedCorksResponse {
   repeated Cork corks = 1;
 }
 
-
 // QueryCommitPeriodRequest is the request type for the Query/QueryCommitPeriod gRPC method.
 message QueryCommitPeriodRequest {}
 
 // QueryCommitPeriodResponse is the response type for the Query/QueryCommitPeriod gRPC method.
 message QueryCommitPeriodResponse {
   // block height at which the query was processed
-  int64 current_height    = 1;
+  int64 current_height = 1;
   // latest vote period start block height
   int64 vote_period_start = 2;
   // block height at which the current voting period ends
-  int64 vote_period_end   = 3;
+  int64 vote_period_end = 3;
 }
-
 
 // QueryCellarIDsRequest is the request type for Query/QueryCellarIDs gRPC method.
 message QueryCellarIDsRequest {}

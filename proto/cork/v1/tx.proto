@@ -9,8 +9,8 @@ option go_package = "github.com/peggyjv/sommelier/v6/x/cork/types";
 
 // MsgService defines the msgs that the cork module handles
 service Msg {
-  rpc SubmitCork (MsgSubmitCorkRequest) returns (MsgSubmitCorkResponse);
-  rpc ScheduleCork (MsgScheduleCorkRequest) returns (MsgScheduleCorkResponse);
+  rpc SubmitCork(MsgSubmitCorkRequest) returns (MsgSubmitCorkResponse);
+  rpc ScheduleCork(MsgScheduleCorkRequest) returns (MsgScheduleCorkResponse);
 }
 
 // MsgSubmitCorkRequest - sdk.Msg for submitting calls to Ethereum through the gravity bridge contract

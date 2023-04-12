@@ -9,8 +9,7 @@ option go_package = "github.com/peggyjv/sommelier/x/axelarcork/types";
 // GenesisState - all cork state that must be provided at genesis
 message GenesisState {
   ChainConfigurations chain_configurations = 1 [(gogoproto.nullable) = false];
-  // todo: these nonces will be per chain?
-  uint64                       invalidation_nonce = 2;
-  repeated ScheduledAxelarCork scheduled_corks    = 3;
-  repeated AxelarCorkResult    cork_results       = 4;
+  repeated uint64                       invalidation_nonces = 2;
+  repeated ScheduledCork scheduled_corks = 4;
+  repeated CorkResult cork_results = 5;
 }

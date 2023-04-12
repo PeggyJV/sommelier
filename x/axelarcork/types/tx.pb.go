@@ -6,7 +6,7 @@ package types
 import (
 	context "context"
 	fmt "fmt"
-	types "github.com/cosmos/cosmos-sdk/types"
+	_ "github.com/cosmos/cosmos-sdk/types"
 	grpc1 "github.com/cosmos/gogoproto/grpc"
 	proto "github.com/cosmos/gogoproto/proto"
 	grpc "google.golang.org/grpc"
@@ -31,9 +31,9 @@ const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 // MsgScheduleCorkRequest - sdk.Msg for scheduling a cork request for on or after a specific block height
 type MsgScheduleCorkRequest struct {
 	// the scheduled cork
-	Cork *AxelarCork `protobuf:"bytes,1,opt,name=cork,proto3" json:"cork,omitempty"`
+	Cork *Cork `protobuf:"bytes,1,opt,name=cork,proto3" json:"cork,omitempty"`
 	// the chain name
-	Chain string `protobuf:"bytes,2,opt,name=chain,proto3" json:"chain,omitempty"`
+	ChainName string `protobuf:"bytes,2,opt,name=chain_name,json=chainName,proto3" json:"chain_name,omitempty"`
 	// the chain id
 	ChainId uint64 `protobuf:"varint,3,opt,name=chain_id,json=chainId,proto3" json:"chain_id,omitempty"`
 	// the block height that must be reached
@@ -75,16 +75,16 @@ func (m *MsgScheduleCorkRequest) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_MsgScheduleCorkRequest proto.InternalMessageInfo
 
-func (m *MsgScheduleCorkRequest) GetCork() *AxelarCork {
+func (m *MsgScheduleCorkRequest) GetCork() *Cork {
 	if m != nil {
 		return m.Cork
 	}
 	return nil
 }
 
-func (m *MsgScheduleCorkRequest) GetChain() string {
+func (m *MsgScheduleCorkRequest) GetChainName() string {
 	if m != nil {
-		return m.Chain
+		return m.ChainName
 	}
 	return ""
 }
@@ -155,132 +155,37 @@ func (m *MsgScheduleCorkResponse) GetId() string {
 	return ""
 }
 
-type MsgIncreaseCorkFeeRequest struct {
-	Id  string      `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
-	Fee *types.Coin `protobuf:"bytes,2,opt,name=fee,proto3" json:"fee,omitempty"`
-}
-
-func (m *MsgIncreaseCorkFeeRequest) Reset()         { *m = MsgIncreaseCorkFeeRequest{} }
-func (m *MsgIncreaseCorkFeeRequest) String() string { return proto.CompactTextString(m) }
-func (*MsgIncreaseCorkFeeRequest) ProtoMessage()    {}
-func (*MsgIncreaseCorkFeeRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_1760ad9eba86eab6, []int{2}
-}
-func (m *MsgIncreaseCorkFeeRequest) XXX_Unmarshal(b []byte) error {
-	return m.Unmarshal(b)
-}
-func (m *MsgIncreaseCorkFeeRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	if deterministic {
-		return xxx_messageInfo_MsgIncreaseCorkFeeRequest.Marshal(b, m, deterministic)
-	} else {
-		b = b[:cap(b)]
-		n, err := m.MarshalToSizedBuffer(b)
-		if err != nil {
-			return nil, err
-		}
-		return b[:n], nil
-	}
-}
-func (m *MsgIncreaseCorkFeeRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MsgIncreaseCorkFeeRequest.Merge(m, src)
-}
-func (m *MsgIncreaseCorkFeeRequest) XXX_Size() int {
-	return m.Size()
-}
-func (m *MsgIncreaseCorkFeeRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_MsgIncreaseCorkFeeRequest.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_MsgIncreaseCorkFeeRequest proto.InternalMessageInfo
-
-func (m *MsgIncreaseCorkFeeRequest) GetId() string {
-	if m != nil {
-		return m.Id
-	}
-	return ""
-}
-
-func (m *MsgIncreaseCorkFeeRequest) GetFee() *types.Coin {
-	if m != nil {
-		return m.Fee
-	}
-	return nil
-}
-
-type MsgIncreaseCorkFeeResponse struct {
-}
-
-func (m *MsgIncreaseCorkFeeResponse) Reset()         { *m = MsgIncreaseCorkFeeResponse{} }
-func (m *MsgIncreaseCorkFeeResponse) String() string { return proto.CompactTextString(m) }
-func (*MsgIncreaseCorkFeeResponse) ProtoMessage()    {}
-func (*MsgIncreaseCorkFeeResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_1760ad9eba86eab6, []int{3}
-}
-func (m *MsgIncreaseCorkFeeResponse) XXX_Unmarshal(b []byte) error {
-	return m.Unmarshal(b)
-}
-func (m *MsgIncreaseCorkFeeResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	if deterministic {
-		return xxx_messageInfo_MsgIncreaseCorkFeeResponse.Marshal(b, m, deterministic)
-	} else {
-		b = b[:cap(b)]
-		n, err := m.MarshalToSizedBuffer(b)
-		if err != nil {
-			return nil, err
-		}
-		return b[:n], nil
-	}
-}
-func (m *MsgIncreaseCorkFeeResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MsgIncreaseCorkFeeResponse.Merge(m, src)
-}
-func (m *MsgIncreaseCorkFeeResponse) XXX_Size() int {
-	return m.Size()
-}
-func (m *MsgIncreaseCorkFeeResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_MsgIncreaseCorkFeeResponse.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_MsgIncreaseCorkFeeResponse proto.InternalMessageInfo
-
 func init() {
 	proto.RegisterType((*MsgScheduleCorkRequest)(nil), "axelar_cork.v1.MsgScheduleCorkRequest")
 	proto.RegisterType((*MsgScheduleCorkResponse)(nil), "axelar_cork.v1.MsgScheduleCorkResponse")
-	proto.RegisterType((*MsgIncreaseCorkFeeRequest)(nil), "axelar_cork.v1.MsgIncreaseCorkFeeRequest")
-	proto.RegisterType((*MsgIncreaseCorkFeeResponse)(nil), "axelar_cork.v1.MsgIncreaseCorkFeeResponse")
 }
 
 func init() { proto.RegisterFile("axelar-cork/v1/tx.proto", fileDescriptor_1760ad9eba86eab6) }
 
 var fileDescriptor_1760ad9eba86eab6 = []byte{
-	// 418 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x8c, 0x92, 0xc1, 0x8e, 0xd3, 0x30,
-	0x10, 0x86, 0xeb, 0xb6, 0xbb, 0xb0, 0xee, 0x6a, 0x91, 0x2c, 0xb4, 0x9b, 0x46, 0x28, 0x2a, 0x3d,
-	0x40, 0x17, 0x84, 0xad, 0x96, 0x27, 0x80, 0x95, 0x10, 0x3d, 0xf4, 0x12, 0x2e, 0x88, 0x4b, 0x95,
-	0x38, 0x83, 0x63, 0xda, 0xc4, 0x21, 0x4e, 0xa3, 0xf6, 0x2d, 0x78, 0x18, 0x1e, 0x82, 0x63, 0x8f,
-	0x1c, 0x51, 0xfb, 0x22, 0x28, 0x93, 0x22, 0x41, 0x88, 0x04, 0x37, 0x8f, 0xe7, 0x9b, 0x99, 0x7f,
-	0x7e, 0x0d, 0xbd, 0x09, 0xb6, 0xb0, 0x0e, 0xf2, 0x17, 0xd2, 0xe4, 0x2b, 0x51, 0x4e, 0x45, 0xb1,
-	0xe5, 0x59, 0x6e, 0x0a, 0xc3, 0xae, 0xea, 0xc4, 0xb2, 0x4a, 0xf0, 0x72, 0xea, 0x7a, 0xd2, 0xd8,
-	0xc4, 0x58, 0x11, 0x06, 0x16, 0x44, 0x39, 0x0d, 0xa1, 0x08, 0xa6, 0x42, 0x1a, 0x9d, 0xd6, 0xbc,
-	0x3b, 0x6c, 0x34, 0xc2, 0x3a, 0x4c, 0x8d, 0xbf, 0x12, 0x7a, 0xbd, 0xb0, 0xea, 0x9d, 0x8c, 0x21,
-	0xda, 0xac, 0xe1, 0xce, 0xe4, 0x2b, 0x1f, 0x3e, 0x6f, 0xc0, 0x16, 0x8c, 0xd3, 0x7e, 0x05, 0x3a,
-	0x64, 0x44, 0x26, 0x83, 0x99, 0xcb, 0xff, 0x1c, 0xca, 0x5f, 0x61, 0x88, 0x05, 0xc8, 0xb1, 0x87,
-	0xf4, 0x4c, 0xc6, 0x81, 0x4e, 0x9d, 0xee, 0x88, 0x4c, 0x2e, 0xfc, 0x3a, 0x60, 0x43, 0x7a, 0x1f,
-	0x1f, 0x4b, 0x1d, 0x39, 0xbd, 0x11, 0x99, 0xf4, 0xfd, 0x7b, 0x18, 0xcf, 0x23, 0xf6, 0x98, 0x5e,
-	0x86, 0x6b, 0x23, 0x57, 0xcb, 0x18, 0xb4, 0x8a, 0x0b, 0xa7, 0x8f, 0xe9, 0x01, 0xfe, 0xbd, 0xc5,
-	0x2f, 0x76, 0x4d, 0xcf, 0xad, 0x56, 0x29, 0xe4, 0xce, 0x19, 0x36, 0x3d, 0x45, 0xe3, 0x5b, 0x7a,
-	0xf3, 0x97, 0x6a, 0x9b, 0x99, 0xd4, 0x02, 0xbb, 0xa2, 0x5d, 0x1d, 0xa1, 0xe8, 0x0b, 0xbf, 0xab,
-	0xa3, 0xf1, 0x7b, 0x3a, 0x5c, 0x58, 0x35, 0x4f, 0x65, 0x0e, 0x81, 0x45, 0xf4, 0x0d, 0xc0, 0xaf,
-	0x1d, 0x1b, 0x30, 0x7b, 0x4e, 0x7b, 0x1f, 0x01, 0x70, 0x83, 0xc1, 0x6c, 0xc8, 0x6b, 0x5f, 0x79,
-	0xe5, 0x2b, 0x3f, 0xf9, 0xca, 0xef, 0x8c, 0x4e, 0xfd, 0x8a, 0x1a, 0x3f, 0xa2, 0x6e, 0x5b, 0xe7,
-	0x5a, 0xc7, 0x6c, 0x4f, 0x68, 0x6f, 0x61, 0x15, 0x5b, 0xd2, 0xcb, 0xdf, 0x75, 0xb2, 0x27, 0x4d,
-	0x23, 0xdb, 0xed, 0x77, 0x9f, 0xfe, 0x93, 0x3b, 0x2d, 0x1c, 0xd3, 0x07, 0x0d, 0x0d, 0xec, 0xb6,
-	0xa5, 0xb6, 0xdd, 0x01, 0xf7, 0xd9, 0xff, 0xa0, 0xf5, 0xa4, 0xd7, 0xf3, 0x6f, 0x07, 0x8f, 0xec,
-	0x0f, 0x1e, 0xf9, 0x71, 0xf0, 0xc8, 0x97, 0xa3, 0xd7, 0xd9, 0x1f, 0xbd, 0xce, 0xf7, 0xa3, 0xd7,
-	0xf9, 0x20, 0x94, 0x2e, 0xe2, 0x4d, 0xc8, 0xa5, 0x49, 0x44, 0x06, 0x4a, 0xed, 0x3e, 0x95, 0xc2,
-	0x9a, 0x24, 0x81, 0xb5, 0x86, 0x5c, 0x6c, 0x45, 0x3d, 0x03, 0xef, 0xaf, 0xd8, 0x65, 0x60, 0xc3,
-	0x73, 0x3c, 0xbf, 0x97, 0x3f, 0x03, 0x00, 0x00, 0xff, 0xff, 0x4b, 0x08, 0xe3, 0xc6, 0xe4, 0x02,
-	0x00, 0x00,
+	// 348 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x84, 0x91, 0xbf, 0x52, 0xea, 0x40,
+	0x14, 0xc6, 0x59, 0xe0, 0x72, 0x2f, 0x0b, 0x43, 0xb1, 0x73, 0x07, 0x02, 0x33, 0x66, 0x90, 0x42,
+	0x63, 0x61, 0x76, 0x82, 0x6f, 0xa0, 0x8d, 0x14, 0x58, 0xc4, 0xce, 0x26, 0x93, 0x3f, 0xc7, 0xcd,
+	0x4a, 0x92, 0x8d, 0xd9, 0x25, 0x03, 0x6f, 0xe1, 0xdb, 0xf8, 0x0a, 0x96, 0x94, 0x96, 0x0e, 0xbc,
+	0x88, 0xc3, 0xc6, 0x42, 0xd1, 0x19, 0xcb, 0xf3, 0x7d, 0xbf, 0x3d, 0xdf, 0xd9, 0x73, 0xf0, 0xc0,
+	0x5f, 0x41, 0xe2, 0x17, 0xe7, 0xa1, 0x28, 0x16, 0xb4, 0x74, 0xa8, 0x5a, 0xd9, 0x79, 0x21, 0x94,
+	0x20, 0xbd, 0xca, 0xf0, 0xf6, 0x86, 0x5d, 0x3a, 0x23, 0x33, 0x14, 0x32, 0x15, 0x92, 0x06, 0xbe,
+	0x04, 0x5a, 0x3a, 0x01, 0x28, 0xdf, 0xa1, 0xa1, 0xe0, 0x59, 0xc5, 0x8f, 0x86, 0x07, 0x8d, 0xf4,
+	0x3b, 0x6d, 0x4d, 0x9e, 0x11, 0xee, 0xcf, 0x25, 0xbb, 0x0d, 0x63, 0x88, 0x96, 0x09, 0x5c, 0x89,
+	0x62, 0xe1, 0xc2, 0xe3, 0x12, 0xa4, 0x22, 0x16, 0x6e, 0xee, 0x41, 0x03, 0x8d, 0x91, 0xd5, 0x99,
+	0xfe, 0xb7, 0xbf, 0x86, 0xda, 0x1a, 0xd5, 0x04, 0x39, 0xc2, 0x38, 0x8c, 0x7d, 0x9e, 0x79, 0x99,
+	0x9f, 0x82, 0x51, 0x1f, 0x23, 0xab, 0xed, 0xb6, 0xb5, 0x72, 0xe3, 0xa7, 0x40, 0x86, 0xf8, 0x5f,
+	0x65, 0xf3, 0xc8, 0x68, 0x8c, 0x91, 0xd5, 0x74, 0xff, 0xea, 0x7a, 0x16, 0x91, 0x63, 0xdc, 0x0d,
+	0x12, 0x11, 0x2e, 0xbc, 0x18, 0x38, 0x8b, 0x95, 0xd1, 0xd4, 0x76, 0x47, 0x6b, 0xd7, 0x5a, 0x22,
+	0x7d, 0xdc, 0x92, 0x9c, 0x65, 0x50, 0x18, 0x7f, 0x74, 0xe3, 0x8f, 0x6a, 0x72, 0x86, 0x07, 0xdf,
+	0x06, 0x97, 0xb9, 0xc8, 0x24, 0x90, 0x1e, 0xae, 0xf3, 0x48, 0xcf, 0xdd, 0x76, 0xeb, 0x3c, 0x9a,
+	0xde, 0xe3, 0xc6, 0x5c, 0x32, 0xe2, 0xe1, 0xee, 0x67, 0x9c, 0x9c, 0x1c, 0x7e, 0xe9, 0xe7, 0x45,
+	0x8c, 0x4e, 0x7f, 0xe5, 0xaa, 0xdc, 0xcb, 0xd9, 0xcb, 0xd6, 0x44, 0x9b, 0xad, 0x89, 0xde, 0xb6,
+	0x26, 0x7a, 0xda, 0x99, 0xb5, 0xcd, 0xce, 0xac, 0xbd, 0xee, 0xcc, 0xda, 0x1d, 0x65, 0x5c, 0xc5,
+	0xcb, 0xc0, 0x0e, 0x45, 0x4a, 0x73, 0x60, 0x6c, 0xfd, 0x50, 0x52, 0x29, 0xd2, 0x14, 0x12, 0x0e,
+	0x05, 0x5d, 0xd1, 0x2a, 0x40, 0xdf, 0x47, 0xad, 0x73, 0x90, 0x41, 0x4b, 0x9f, 0xe7, 0xe2, 0x3d,
+	0x00, 0x00, 0xff, 0xff, 0xa5, 0x09, 0x4f, 0x1e, 0x04, 0x02, 0x00, 0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -296,7 +201,6 @@ const _ = grpc.SupportPackageIsVersion4
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
 type MsgClient interface {
 	ScheduleCork(ctx context.Context, in *MsgScheduleCorkRequest, opts ...grpc.CallOption) (*MsgScheduleCorkResponse, error)
-	IncreaseCorkFee(ctx context.Context, in *MsgIncreaseCorkFeeRequest, opts ...grpc.CallOption) (*MsgIncreaseCorkFeeResponse, error)
 }
 
 type msgClient struct {
@@ -316,19 +220,9 @@ func (c *msgClient) ScheduleCork(ctx context.Context, in *MsgScheduleCorkRequest
 	return out, nil
 }
 
-func (c *msgClient) IncreaseCorkFee(ctx context.Context, in *MsgIncreaseCorkFeeRequest, opts ...grpc.CallOption) (*MsgIncreaseCorkFeeResponse, error) {
-	out := new(MsgIncreaseCorkFeeResponse)
-	err := c.cc.Invoke(ctx, "/axelar_cork.v1.Msg/IncreaseCorkFee", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
 // MsgServer is the server API for Msg service.
 type MsgServer interface {
 	ScheduleCork(context.Context, *MsgScheduleCorkRequest) (*MsgScheduleCorkResponse, error)
-	IncreaseCorkFee(context.Context, *MsgIncreaseCorkFeeRequest) (*MsgIncreaseCorkFeeResponse, error)
 }
 
 // UnimplementedMsgServer can be embedded to have forward compatible implementations.
@@ -337,9 +231,6 @@ type UnimplementedMsgServer struct {
 
 func (*UnimplementedMsgServer) ScheduleCork(ctx context.Context, req *MsgScheduleCorkRequest) (*MsgScheduleCorkResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ScheduleCork not implemented")
-}
-func (*UnimplementedMsgServer) IncreaseCorkFee(ctx context.Context, req *MsgIncreaseCorkFeeRequest) (*MsgIncreaseCorkFeeResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method IncreaseCorkFee not implemented")
 }
 
 func RegisterMsgServer(s grpc1.Server, srv MsgServer) {
@@ -364,24 +255,6 @@ func _Msg_ScheduleCork_Handler(srv interface{}, ctx context.Context, dec func(in
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Msg_IncreaseCorkFee_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(MsgIncreaseCorkFeeRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(MsgServer).IncreaseCorkFee(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/axelar_cork.v1.Msg/IncreaseCorkFee",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MsgServer).IncreaseCorkFee(ctx, req.(*MsgIncreaseCorkFeeRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
 var _Msg_serviceDesc = grpc.ServiceDesc{
 	ServiceName: "axelar_cork.v1.Msg",
 	HandlerType: (*MsgServer)(nil),
@@ -389,10 +262,6 @@ var _Msg_serviceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "ScheduleCork",
 			Handler:    _Msg_ScheduleCork_Handler,
-		},
-		{
-			MethodName: "IncreaseCorkFee",
-			Handler:    _Msg_IncreaseCorkFee_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
@@ -436,10 +305,10 @@ func (m *MsgScheduleCorkRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) 
 		i--
 		dAtA[i] = 0x18
 	}
-	if len(m.Chain) > 0 {
-		i -= len(m.Chain)
-		copy(dAtA[i:], m.Chain)
-		i = encodeVarintTx(dAtA, i, uint64(len(m.Chain)))
+	if len(m.ChainName) > 0 {
+		i -= len(m.ChainName)
+		copy(dAtA[i:], m.ChainName)
+		i = encodeVarintTx(dAtA, i, uint64(len(m.ChainName)))
 		i--
 		dAtA[i] = 0x12
 	}
@@ -488,71 +357,6 @@ func (m *MsgScheduleCorkResponse) MarshalToSizedBuffer(dAtA []byte) (int, error)
 	return len(dAtA) - i, nil
 }
 
-func (m *MsgIncreaseCorkFeeRequest) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
-	dAtA = make([]byte, size)
-	n, err := m.MarshalToSizedBuffer(dAtA[:size])
-	if err != nil {
-		return nil, err
-	}
-	return dAtA[:n], nil
-}
-
-func (m *MsgIncreaseCorkFeeRequest) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
-	return m.MarshalToSizedBuffer(dAtA[:size])
-}
-
-func (m *MsgIncreaseCorkFeeRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
-	i := len(dAtA)
-	_ = i
-	var l int
-	_ = l
-	if m.Fee != nil {
-		{
-			size, err := m.Fee.MarshalToSizedBuffer(dAtA[:i])
-			if err != nil {
-				return 0, err
-			}
-			i -= size
-			i = encodeVarintTx(dAtA, i, uint64(size))
-		}
-		i--
-		dAtA[i] = 0x12
-	}
-	if len(m.Id) > 0 {
-		i -= len(m.Id)
-		copy(dAtA[i:], m.Id)
-		i = encodeVarintTx(dAtA, i, uint64(len(m.Id)))
-		i--
-		dAtA[i] = 0xa
-	}
-	return len(dAtA) - i, nil
-}
-
-func (m *MsgIncreaseCorkFeeResponse) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
-	dAtA = make([]byte, size)
-	n, err := m.MarshalToSizedBuffer(dAtA[:size])
-	if err != nil {
-		return nil, err
-	}
-	return dAtA[:n], nil
-}
-
-func (m *MsgIncreaseCorkFeeResponse) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
-	return m.MarshalToSizedBuffer(dAtA[:size])
-}
-
-func (m *MsgIncreaseCorkFeeResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
-	i := len(dAtA)
-	_ = i
-	var l int
-	_ = l
-	return len(dAtA) - i, nil
-}
-
 func encodeVarintTx(dAtA []byte, offset int, v uint64) int {
 	offset -= sovTx(v)
 	base := offset
@@ -574,7 +378,7 @@ func (m *MsgScheduleCorkRequest) Size() (n int) {
 		l = m.Cork.Size()
 		n += 1 + l + sovTx(uint64(l))
 	}
-	l = len(m.Chain)
+	l = len(m.ChainName)
 	if l > 0 {
 		n += 1 + l + sovTx(uint64(l))
 	}
@@ -601,32 +405,6 @@ func (m *MsgScheduleCorkResponse) Size() (n int) {
 	if l > 0 {
 		n += 1 + l + sovTx(uint64(l))
 	}
-	return n
-}
-
-func (m *MsgIncreaseCorkFeeRequest) Size() (n int) {
-	if m == nil {
-		return 0
-	}
-	var l int
-	_ = l
-	l = len(m.Id)
-	if l > 0 {
-		n += 1 + l + sovTx(uint64(l))
-	}
-	if m.Fee != nil {
-		l = m.Fee.Size()
-		n += 1 + l + sovTx(uint64(l))
-	}
-	return n
-}
-
-func (m *MsgIncreaseCorkFeeResponse) Size() (n int) {
-	if m == nil {
-		return 0
-	}
-	var l int
-	_ = l
 	return n
 }
 
@@ -695,7 +473,7 @@ func (m *MsgScheduleCorkRequest) Unmarshal(dAtA []byte) error {
 				return io.ErrUnexpectedEOF
 			}
 			if m.Cork == nil {
-				m.Cork = &AxelarCork{}
+				m.Cork = &Cork{}
 			}
 			if err := m.Cork.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
@@ -703,7 +481,7 @@ func (m *MsgScheduleCorkRequest) Unmarshal(dAtA []byte) error {
 			iNdEx = postIndex
 		case 2:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Chain", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field ChainName", wireType)
 			}
 			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
@@ -731,7 +509,7 @@ func (m *MsgScheduleCorkRequest) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.Chain = string(dAtA[iNdEx:postIndex])
+			m.ChainName = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		case 3:
 			if wireType != 0 {
@@ -885,174 +663,6 @@ func (m *MsgScheduleCorkResponse) Unmarshal(dAtA []byte) error {
 			}
 			m.Id = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
-		default:
-			iNdEx = preIndex
-			skippy, err := skipTx(dAtA[iNdEx:])
-			if err != nil {
-				return err
-			}
-			if (skippy < 0) || (iNdEx+skippy) < 0 {
-				return ErrInvalidLengthTx
-			}
-			if (iNdEx + skippy) > l {
-				return io.ErrUnexpectedEOF
-			}
-			iNdEx += skippy
-		}
-	}
-
-	if iNdEx > l {
-		return io.ErrUnexpectedEOF
-	}
-	return nil
-}
-func (m *MsgIncreaseCorkFeeRequest) Unmarshal(dAtA []byte) error {
-	l := len(dAtA)
-	iNdEx := 0
-	for iNdEx < l {
-		preIndex := iNdEx
-		var wire uint64
-		for shift := uint(0); ; shift += 7 {
-			if shift >= 64 {
-				return ErrIntOverflowTx
-			}
-			if iNdEx >= l {
-				return io.ErrUnexpectedEOF
-			}
-			b := dAtA[iNdEx]
-			iNdEx++
-			wire |= uint64(b&0x7F) << shift
-			if b < 0x80 {
-				break
-			}
-		}
-		fieldNum := int32(wire >> 3)
-		wireType := int(wire & 0x7)
-		if wireType == 4 {
-			return fmt.Errorf("proto: MsgIncreaseCorkFeeRequest: wiretype end group for non-group")
-		}
-		if fieldNum <= 0 {
-			return fmt.Errorf("proto: MsgIncreaseCorkFeeRequest: illegal tag %d (wire type %d)", fieldNum, wire)
-		}
-		switch fieldNum {
-		case 1:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Id", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowTx
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthTx
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthTx
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.Id = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
-		case 2:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Fee", wireType)
-			}
-			var msglen int
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowTx
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				msglen |= int(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			if msglen < 0 {
-				return ErrInvalidLengthTx
-			}
-			postIndex := iNdEx + msglen
-			if postIndex < 0 {
-				return ErrInvalidLengthTx
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			if m.Fee == nil {
-				m.Fee = &types.Coin{}
-			}
-			if err := m.Fee.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
-				return err
-			}
-			iNdEx = postIndex
-		default:
-			iNdEx = preIndex
-			skippy, err := skipTx(dAtA[iNdEx:])
-			if err != nil {
-				return err
-			}
-			if (skippy < 0) || (iNdEx+skippy) < 0 {
-				return ErrInvalidLengthTx
-			}
-			if (iNdEx + skippy) > l {
-				return io.ErrUnexpectedEOF
-			}
-			iNdEx += skippy
-		}
-	}
-
-	if iNdEx > l {
-		return io.ErrUnexpectedEOF
-	}
-	return nil
-}
-func (m *MsgIncreaseCorkFeeResponse) Unmarshal(dAtA []byte) error {
-	l := len(dAtA)
-	iNdEx := 0
-	for iNdEx < l {
-		preIndex := iNdEx
-		var wire uint64
-		for shift := uint(0); ; shift += 7 {
-			if shift >= 64 {
-				return ErrIntOverflowTx
-			}
-			if iNdEx >= l {
-				return io.ErrUnexpectedEOF
-			}
-			b := dAtA[iNdEx]
-			iNdEx++
-			wire |= uint64(b&0x7F) << shift
-			if b < 0x80 {
-				break
-			}
-		}
-		fieldNum := int32(wire >> 3)
-		wireType := int(wire & 0x7)
-		if wireType == 4 {
-			return fmt.Errorf("proto: MsgIncreaseCorkFeeResponse: wiretype end group for non-group")
-		}
-		if fieldNum <= 0 {
-			return fmt.Errorf("proto: MsgIncreaseCorkFeeResponse: illegal tag %d (wire type %d)", fieldNum, wire)
-		}
-		switch fieldNum {
 		default:
 			iNdEx = preIndex
 			skippy, err := skipTx(dAtA[iNdEx:])

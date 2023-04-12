@@ -150,7 +150,7 @@ var xxx_messageInfo_QueryScheduledCorksRequest proto.InternalMessageInfo
 
 // QueryScheduledCorksResponse
 type QueryScheduledCorksResponse struct {
-	Corks []*ScheduledAxelarCork `protobuf:"bytes,1,rep,name=corks,proto3" json:"corks,omitempty"`
+	Corks []*ScheduledCork `protobuf:"bytes,1,rep,name=corks,proto3" json:"corks,omitempty"`
 }
 
 func (m *QueryScheduledCorksResponse) Reset()         { *m = QueryScheduledCorksResponse{} }
@@ -186,7 +186,7 @@ func (m *QueryScheduledCorksResponse) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_QueryScheduledCorksResponse proto.InternalMessageInfo
 
-func (m *QueryScheduledCorksResponse) GetCorks() []*ScheduledAxelarCork {
+func (m *QueryScheduledCorksResponse) GetCorks() []*ScheduledCork {
 	if m != nil {
 		return m.Corks
 	}
@@ -324,7 +324,7 @@ func (m *QueryScheduledCorksByBlockHeightRequest) GetBlockHeight() uint64 {
 
 // QueryScheduledCorksByBlockHeightResponse
 type QueryScheduledCorksByBlockHeightResponse struct {
-	Corks []*ScheduledAxelarCork `protobuf:"bytes,1,rep,name=corks,proto3" json:"corks,omitempty"`
+	Corks []*ScheduledCork `protobuf:"bytes,1,rep,name=corks,proto3" json:"corks,omitempty"`
 }
 
 func (m *QueryScheduledCorksByBlockHeightResponse) Reset() {
@@ -362,7 +362,7 @@ func (m *QueryScheduledCorksByBlockHeightResponse) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_QueryScheduledCorksByBlockHeightResponse proto.InternalMessageInfo
 
-func (m *QueryScheduledCorksByBlockHeightResponse) GetCorks() []*ScheduledAxelarCork {
+func (m *QueryScheduledCorksByBlockHeightResponse) GetCorks() []*ScheduledCork {
 	if m != nil {
 		return m.Corks
 	}
@@ -416,7 +416,7 @@ func (m *QueryScheduledCorksByIDRequest) GetId() string {
 
 // QueryScheduledCorksByIDResponse
 type QueryScheduledCorksByIDResponse struct {
-	Corks []*ScheduledAxelarCork `protobuf:"bytes,1,rep,name=corks,proto3" json:"corks,omitempty"`
+	Corks []*ScheduledCork `protobuf:"bytes,1,rep,name=corks,proto3" json:"corks,omitempty"`
 }
 
 func (m *QueryScheduledCorksByIDResponse) Reset()         { *m = QueryScheduledCorksByIDResponse{} }
@@ -452,9 +452,177 @@ func (m *QueryScheduledCorksByIDResponse) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_QueryScheduledCorksByIDResponse proto.InternalMessageInfo
 
-func (m *QueryScheduledCorksByIDResponse) GetCorks() []*ScheduledAxelarCork {
+func (m *QueryScheduledCorksByIDResponse) GetCorks() []*ScheduledCork {
 	if m != nil {
 		return m.Corks
+	}
+	return nil
+}
+
+type QueryCorkResultRequest struct {
+	Id string `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+}
+
+func (m *QueryCorkResultRequest) Reset()         { *m = QueryCorkResultRequest{} }
+func (m *QueryCorkResultRequest) String() string { return proto.CompactTextString(m) }
+func (*QueryCorkResultRequest) ProtoMessage()    {}
+func (*QueryCorkResultRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_a4b70b298631af36, []int{10}
+}
+func (m *QueryCorkResultRequest) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *QueryCorkResultRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_QueryCorkResultRequest.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *QueryCorkResultRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryCorkResultRequest.Merge(m, src)
+}
+func (m *QueryCorkResultRequest) XXX_Size() int {
+	return m.Size()
+}
+func (m *QueryCorkResultRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryCorkResultRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QueryCorkResultRequest proto.InternalMessageInfo
+
+func (m *QueryCorkResultRequest) GetId() string {
+	if m != nil {
+		return m.Id
+	}
+	return ""
+}
+
+type QueryCorkResultResponse struct {
+	CorkResult *CorkResult `protobuf:"bytes,1,opt,name=corkResult,proto3" json:"corkResult,omitempty"`
+}
+
+func (m *QueryCorkResultResponse) Reset()         { *m = QueryCorkResultResponse{} }
+func (m *QueryCorkResultResponse) String() string { return proto.CompactTextString(m) }
+func (*QueryCorkResultResponse) ProtoMessage()    {}
+func (*QueryCorkResultResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_a4b70b298631af36, []int{11}
+}
+func (m *QueryCorkResultResponse) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *QueryCorkResultResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_QueryCorkResultResponse.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *QueryCorkResultResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryCorkResultResponse.Merge(m, src)
+}
+func (m *QueryCorkResultResponse) XXX_Size() int {
+	return m.Size()
+}
+func (m *QueryCorkResultResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryCorkResultResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QueryCorkResultResponse proto.InternalMessageInfo
+
+func (m *QueryCorkResultResponse) GetCorkResult() *CorkResult {
+	if m != nil {
+		return m.CorkResult
+	}
+	return nil
+}
+
+type QueryCorkResultsRequest struct {
+}
+
+func (m *QueryCorkResultsRequest) Reset()         { *m = QueryCorkResultsRequest{} }
+func (m *QueryCorkResultsRequest) String() string { return proto.CompactTextString(m) }
+func (*QueryCorkResultsRequest) ProtoMessage()    {}
+func (*QueryCorkResultsRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_a4b70b298631af36, []int{12}
+}
+func (m *QueryCorkResultsRequest) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *QueryCorkResultsRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_QueryCorkResultsRequest.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *QueryCorkResultsRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryCorkResultsRequest.Merge(m, src)
+}
+func (m *QueryCorkResultsRequest) XXX_Size() int {
+	return m.Size()
+}
+func (m *QueryCorkResultsRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryCorkResultsRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QueryCorkResultsRequest proto.InternalMessageInfo
+
+type QueryCorkResultsResponse struct {
+	CorkResults []*CorkResult `protobuf:"bytes,1,rep,name=corkResults,proto3" json:"corkResults,omitempty"`
+}
+
+func (m *QueryCorkResultsResponse) Reset()         { *m = QueryCorkResultsResponse{} }
+func (m *QueryCorkResultsResponse) String() string { return proto.CompactTextString(m) }
+func (*QueryCorkResultsResponse) ProtoMessage()    {}
+func (*QueryCorkResultsResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_a4b70b298631af36, []int{13}
+}
+func (m *QueryCorkResultsResponse) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *QueryCorkResultsResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_QueryCorkResultsResponse.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *QueryCorkResultsResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryCorkResultsResponse.Merge(m, src)
+}
+func (m *QueryCorkResultsResponse) XXX_Size() int {
+	return m.Size()
+}
+func (m *QueryCorkResultsResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryCorkResultsResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QueryCorkResultsResponse proto.InternalMessageInfo
+
+func (m *QueryCorkResultsResponse) GetCorkResults() []*CorkResult {
+	if m != nil {
+		return m.CorkResults
 	}
 	return nil
 }
@@ -470,50 +638,61 @@ func init() {
 	proto.RegisterType((*QueryScheduledCorksByBlockHeightResponse)(nil), "axelar_cork.v1.QueryScheduledCorksByBlockHeightResponse")
 	proto.RegisterType((*QueryScheduledCorksByIDRequest)(nil), "axelar_cork.v1.QueryScheduledCorksByIDRequest")
 	proto.RegisterType((*QueryScheduledCorksByIDResponse)(nil), "axelar_cork.v1.QueryScheduledCorksByIDResponse")
+	proto.RegisterType((*QueryCorkResultRequest)(nil), "axelar_cork.v1.QueryCorkResultRequest")
+	proto.RegisterType((*QueryCorkResultResponse)(nil), "axelar_cork.v1.QueryCorkResultResponse")
+	proto.RegisterType((*QueryCorkResultsRequest)(nil), "axelar_cork.v1.QueryCorkResultsRequest")
+	proto.RegisterType((*QueryCorkResultsResponse)(nil), "axelar_cork.v1.QueryCorkResultsResponse")
 }
 
 func init() { proto.RegisterFile("axelar-cork/v1/query.proto", fileDescriptor_a4b70b298631af36) }
 
 var fileDescriptor_a4b70b298631af36 = []byte{
-	// 597 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xa4, 0x55, 0x4f, 0x6f, 0x12, 0x41,
-	0x14, 0x67, 0xb1, 0xd5, 0xf0, 0x5a, 0x39, 0x8c, 0x7f, 0x5a, 0xd7, 0xba, 0xd2, 0x45, 0x2b, 0x5a,
-	0xdd, 0x11, 0x6a, 0xac, 0x4d, 0xbc, 0x48, 0x7b, 0x28, 0xc6, 0x83, 0xae, 0x17, 0x63, 0x4c, 0xc8,
-	0xc2, 0x4e, 0x96, 0x91, 0x85, 0xa1, 0x3b, 0x0b, 0x29, 0x69, 0x7a, 0xf1, 0x6e, 0x62, 0xe2, 0x27,
-	0xe8, 0xb7, 0xf0, 0xe4, 0xd9, 0x63, 0x13, 0x2f, 0x1e, 0x0d, 0x98, 0xf8, 0x35, 0x9a, 0x9d, 0x5d,
-	0xc8, 0xb2, 0x59, 0xca, 0x92, 0xde, 0xe0, 0xfd, 0xde, 0xfb, 0xfd, 0x19, 0xde, 0x0b, 0x20, 0x1b,
-	0x87, 0xc4, 0x36, 0x9c, 0x27, 0x75, 0xe6, 0x34, 0x71, 0xaf, 0x88, 0x0f, 0xba, 0xc4, 0xe9, 0x6b,
-	0x1d, 0x87, 0xb9, 0x0c, 0x65, 0x7d, 0xac, 0xea, 0x61, 0x5a, 0xaf, 0x28, 0x5f, 0xb7, 0x98, 0xc5,
-	0x04, 0x84, 0xbd, 0x4f, 0x7e, 0x97, 0xbc, 0x66, 0x31, 0x66, 0xd9, 0x04, 0x1b, 0x1d, 0x8a, 0x8d,
-	0x76, 0x9b, 0xb9, 0x86, 0x4b, 0x59, 0x9b, 0x8f, 0xd0, 0x08, 0xbf, 0x45, 0xda, 0x84, 0xd3, 0x11,
-	0x7a, 0x2b, 0x82, 0x0a, 0x25, 0x01, 0xa9, 0x2b, 0x70, 0xe3, 0x9d, 0xe7, 0x65, 0x97, 0xd8, 0xb6,
-	0xe1, 0x54, 0xf6, 0xb8, 0x4e, 0x0e, 0xba, 0x84, 0xbb, 0xea, 0x36, 0xdc, 0x8c, 0x02, 0xbc, 0xc3,
-	0xda, 0x9c, 0xa0, 0x3b, 0x00, 0x75, 0x51, 0xac, 0x52, 0x93, 0xaf, 0x4a, 0xb9, 0x4b, 0x85, 0x8c,
-	0x9e, 0xf1, 0x2b, 0x15, 0x93, 0xab, 0x6b, 0x20, 0x8b, 0xc1, 0xf7, 0xf5, 0x06, 0x31, 0xbb, 0x36,
-	0x31, 0x77, 0x99, 0xd3, 0x1c, 0xd3, 0x7e, 0x80, 0xdb, 0xb1, 0x68, 0xc0, 0xbd, 0x03, 0x8b, 0x9e,
-	0x39, 0x9f, 0x76, 0xa9, 0x94, 0xd7, 0x26, 0xdf, 0x46, 0x1b, 0x8f, 0xbd, 0x12, 0x75, 0x6f, 0x58,
-	0xf7, 0x27, 0xd4, 0x3c, 0xac, 0x4f, 0x32, 0x97, 0x6d, 0x56, 0x6f, 0xee, 0x13, 0x6a, 0x35, 0xdc,
-	0xb1, 0x7c, 0x05, 0xd4, 0xf3, 0x9a, 0x02, 0x17, 0x79, 0xb8, 0x5a, 0xf3, 0xea, 0xd5, 0x86, 0x0f,
-	0x08, 0x37, 0x0b, 0xfa, 0x72, 0x2d, 0xd4, 0xac, 0xbe, 0x81, 0x07, 0x31, 0x49, 0xca, 0xfd, 0x10,
-	0x63, 0xa0, 0x8a, 0xd6, 0x61, 0x39, 0xcc, 0xb7, 0x2a, 0xe5, 0xa4, 0xc2, 0x82, 0xbe, 0x14, 0xa2,
-	0x53, 0x09, 0x14, 0x66, 0xb3, 0x5d, 0xfc, 0x91, 0x9e, 0x82, 0x12, 0x2b, 0x53, 0xd9, 0x1b, 0x79,
-	0xcd, 0x42, 0x9a, 0x9a, 0xc2, 0x61, 0x46, 0x4f, 0x53, 0x53, 0xfd, 0x04, 0x77, 0xa7, 0x4e, 0x5c,
-	0xd8, 0x4f, 0xe9, 0xe4, 0x0a, 0x2c, 0x0a, 0x7a, 0xf4, 0x55, 0x82, 0xec, 0xe4, 0xc2, 0xa1, 0xfb,
-	0x51, 0xa2, 0xd8, 0x4d, 0x95, 0x37, 0x66, 0xb5, 0xf9, 0x36, 0xd5, 0xc7, 0x5f, 0x7e, 0xff, 0xfb,
-	0x9e, 0xde, 0x40, 0xf7, 0x30, 0x67, 0xad, 0x16, 0xb1, 0x29, 0x71, 0x70, 0xf4, 0x30, 0xc6, 0x7b,
-	0x8d, 0x4e, 0x24, 0xb8, 0x16, 0x13, 0x1c, 0x3d, 0x8a, 0x55, 0x8b, 0x5d, 0x76, 0x79, 0x33, 0x51,
-	0x6f, 0x60, 0xaf, 0x28, 0xec, 0x6d, 0xa2, 0x87, 0xd3, 0xed, 0xf1, 0xd1, 0xa4, 0x20, 0xe4, 0xe8,
-	0xa7, 0x14, 0xbd, 0xb5, 0xf0, 0x3a, 0xa3, 0xe2, 0xf9, 0xf2, 0x31, 0xf7, 0x21, 0x97, 0xe6, 0x19,
-	0x09, 0x8c, 0xef, 0x08, 0xe3, 0x5b, 0xa8, 0x98, 0xc4, 0xf8, 0xc4, 0x5d, 0xa1, 0xff, 0x12, 0xe4,
-	0x66, 0xad, 0x3d, 0xda, 0x4e, 0xf0, 0x8a, 0x71, 0x67, 0x27, 0xbf, 0x98, 0x7f, 0x30, 0x88, 0xf4,
-	0x56, 0x44, 0x7a, 0x8d, 0xf6, 0x13, 0xff, 0x16, 0xd5, 0x5a, 0x7f, 0x22, 0x1b, 0x3e, 0x0a, 0x7f,
-	0x3b, 0x46, 0x3f, 0x24, 0x58, 0x99, 0x72, 0x47, 0x48, 0x4b, 0xe4, 0x73, 0x7c, 0xa2, 0x32, 0x4e,
-	0xdc, 0x1f, 0xc4, 0x79, 0x29, 0xe2, 0x3c, 0x47, 0xcf, 0xe6, 0x8a, 0x43, 0x4d, 0x7c, 0x44, 0xcd,
-	0xe3, 0x72, 0xe5, 0xd7, 0x40, 0x91, 0x4e, 0x07, 0x8a, 0xf4, 0x77, 0xa0, 0x48, 0xdf, 0x86, 0x4a,
-	0xea, 0x74, 0xa8, 0xa4, 0xfe, 0x0c, 0x95, 0xd4, 0x47, 0x6c, 0x51, 0xb7, 0xd1, 0xad, 0x69, 0x75,
-	0xd6, 0xc2, 0x1d, 0x62, 0x59, 0xfd, 0xcf, 0xbd, 0x90, 0xc2, 0x61, 0xa0, 0x21, 0x24, 0xdc, 0x7e,
-	0x87, 0xf0, 0xda, 0x65, 0xf1, 0xa7, 0xb3, 0x75, 0x16, 0x00, 0x00, 0xff, 0xff, 0x0d, 0xda, 0x16,
-	0xca, 0x0f, 0x07, 0x00, 0x00,
+	// 711 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xa4, 0x56, 0xcf, 0x4f, 0x13, 0x41,
+	0x14, 0x66, 0x10, 0x4c, 0xfa, 0x8a, 0x68, 0xc6, 0x1f, 0xc0, 0x0a, 0x2b, 0x2c, 0x41, 0x1a, 0x90,
+	0x0e, 0x94, 0x18, 0x88, 0x7a, 0x02, 0x12, 0x6d, 0x62, 0x62, 0x5c, 0xa3, 0x31, 0x5e, 0x9a, 0xb6,
+	0x3b, 0xd9, 0xae, 0x5d, 0x3a, 0x65, 0x67, 0x4b, 0x68, 0x08, 0x17, 0xcf, 0x1e, 0x4c, 0x34, 0x9e,
+	0xfd, 0x2f, 0x3c, 0x79, 0xf7, 0xe0, 0x81, 0xc4, 0x8b, 0x47, 0x03, 0xc6, 0xbf, 0xc3, 0x74, 0x76,
+	0x76, 0xdd, 0xdd, 0x6e, 0xd9, 0x25, 0xdc, 0x60, 0xde, 0xf7, 0xbe, 0xef, 0x7b, 0xb3, 0xf3, 0xbd,
+	0x14, 0x94, 0xea, 0x01, 0xb5, 0xab, 0xce, 0x4a, 0x9d, 0x39, 0x4d, 0xb2, 0xbf, 0x46, 0xf6, 0x3a,
+	0xd4, 0xe9, 0x16, 0xdb, 0x0e, 0x73, 0x19, 0x1e, 0xf7, 0x6a, 0x95, 0x5e, 0xad, 0xb8, 0xbf, 0xa6,
+	0xdc, 0x30, 0x99, 0xc9, 0x44, 0x89, 0xf4, 0xfe, 0xf2, 0x50, 0xca, 0xb4, 0xc9, 0x98, 0x69, 0x53,
+	0x52, 0x6d, 0x5b, 0xa4, 0xda, 0x6a, 0x31, 0xb7, 0xea, 0x5a, 0xac, 0xc5, 0xfd, 0x6a, 0x8c, 0xdf,
+	0xa4, 0x2d, 0xca, 0x2d, 0xbf, 0x3a, 0x15, 0xab, 0x0a, 0x25, 0x51, 0xd2, 0x26, 0xe0, 0xe6, 0xf3,
+	0x9e, 0x97, 0x6d, 0x6a, 0xdb, 0x55, 0xa7, 0xbc, 0xc3, 0x75, 0xba, 0xd7, 0xa1, 0xdc, 0xd5, 0x36,
+	0xe0, 0x56, 0xbc, 0xc0, 0xdb, 0xac, 0xc5, 0x29, 0x9e, 0x01, 0xa8, 0x8b, 0xc3, 0x8a, 0x65, 0xf0,
+	0x49, 0x34, 0x7b, 0xa9, 0x90, 0xd3, 0x73, 0xde, 0x49, 0xd9, 0xe0, 0xda, 0x34, 0x28, 0xa2, 0xf1,
+	0x45, 0xbd, 0x41, 0x8d, 0x8e, 0x4d, 0x8d, 0x6d, 0xe6, 0x34, 0x03, 0x5a, 0x1d, 0x6e, 0x27, 0x56,
+	0x25, 0xf7, 0x3a, 0x8c, 0xf6, 0xcc, 0x79, 0xb4, 0xf9, 0xd2, 0x4c, 0x31, 0x7a, 0x37, 0xc5, 0x48,
+	0x9b, 0xee, 0x61, 0xb5, 0x79, 0x98, 0x8b, 0x72, 0x6e, 0xd9, 0xac, 0xde, 0x7c, 0x42, 0x2d, 0xb3,
+	0xe1, 0x06, 0xc2, 0x65, 0xd0, 0xce, 0x02, 0x49, 0xfd, 0x79, 0xb8, 0x52, 0xeb, 0x9d, 0x57, 0x1a,
+	0x5e, 0x41, 0xf8, 0x18, 0xd1, 0xc7, 0x6a, 0x21, 0xb0, 0xf6, 0x14, 0x16, 0x13, 0x66, 0xd8, 0xea,
+	0x86, 0x18, 0xa5, 0x2a, 0x9e, 0x83, 0xb1, 0x30, 0xdf, 0x24, 0x9a, 0x45, 0x85, 0x11, 0x3d, 0x1f,
+	0xa2, 0xd3, 0x2a, 0x50, 0x48, 0x67, 0xbb, 0xc8, 0xf5, 0xac, 0x82, 0x9a, 0x28, 0x50, 0xde, 0xf1,
+	0x5d, 0x8e, 0xc3, 0xb0, 0x65, 0x08, 0x6f, 0x39, 0x7d, 0xd8, 0x32, 0xb4, 0x57, 0x70, 0x67, 0x60,
+	0xc7, 0x45, 0x9c, 0x14, 0xfc, 0x37, 0xd5, 0x3b, 0xa3, 0xbc, 0x63, 0xbb, 0x83, 0x1c, 0xbc, 0x84,
+	0x89, 0x3e, 0xa4, 0x54, 0x7e, 0x00, 0x50, 0x0f, 0x4e, 0x45, 0x4b, 0xbe, 0xa4, 0xc4, 0xe5, 0x43,
+	0x7d, 0x21, 0xb4, 0x36, 0xd5, 0x47, 0x1b, 0xbc, 0x8f, 0xd7, 0x30, 0xd9, 0x5f, 0x92, 0x92, 0x8f,
+	0x20, 0xff, 0x9f, 0xc4, 0x1f, 0xf9, 0x2c, 0xcd, 0x30, 0xbc, 0xf4, 0x23, 0x07, 0xa3, 0x82, 0x1a,
+	0xbf, 0x47, 0x30, 0x1e, 0x0d, 0x15, 0x5e, 0x88, 0xb3, 0x24, 0xa6, 0x51, 0xb9, 0x9b, 0x06, 0xf3,
+	0x9c, 0x6a, 0xcb, 0xef, 0x7e, 0xfe, 0xf9, 0x38, 0xbc, 0x80, 0xe7, 0x09, 0x67, 0xbb, 0xbb, 0xd4,
+	0xb6, 0xa8, 0x43, 0xbc, 0xce, 0x20, 0xfb, 0x41, 0x74, 0xf1, 0x17, 0x04, 0xd7, 0x13, 0xbe, 0x33,
+	0x5e, 0x4a, 0x14, 0x4b, 0xcc, 0xb3, 0xb2, 0x9c, 0x09, 0x2b, 0xdd, 0xad, 0x0a, 0x77, 0x4b, 0xb8,
+	0x30, 0xd0, 0x1d, 0xf7, 0x1b, 0x05, 0x1f, 0xc7, 0xdf, 0x50, 0x7c, 0x9b, 0x84, 0x63, 0x8b, 0xd7,
+	0xce, 0x56, 0x4f, 0xd8, 0x03, 0x4a, 0xe9, 0x3c, 0x2d, 0xd2, 0xf7, 0xa6, 0xf0, 0x5d, 0xc2, 0xab,
+	0x19, 0x7c, 0x47, 0xd6, 0x07, 0xfe, 0x8b, 0x60, 0x36, 0x2d, 0xdd, 0x78, 0x23, 0xc3, 0x1d, 0x26,
+	0x6d, 0x17, 0x65, 0xf3, 0xfc, 0x8d, 0x72, 0xa2, 0x67, 0x62, 0xa2, 0x32, 0x7e, 0x9c, 0xf5, 0x4b,
+	0x54, 0x6a, 0xdd, 0xc8, 0x68, 0xe4, 0x30, 0xfc, 0xdf, 0x11, 0xfe, 0x8a, 0x64, 0xb4, 0xfa, 0x77,
+	0x06, 0x2e, 0x66, 0xb2, 0x19, 0xac, 0x23, 0x85, 0x64, 0xc6, 0xcb, 0x69, 0x1e, 0x8a, 0x69, 0xee,
+	0xe3, 0xf5, 0xf3, 0x4c, 0x63, 0x19, 0xe4, 0xd0, 0x32, 0x8e, 0xf0, 0x67, 0x04, 0x57, 0x63, 0xc9,
+	0xc7, 0x03, 0xe2, 0x16, 0x5f, 0x5b, 0xca, 0x62, 0x2a, 0x4e, 0x3a, 0x2c, 0x09, 0x87, 0xf7, 0xf0,
+	0xd2, 0xe0, 0x5c, 0x32, 0xa7, 0x59, 0x71, 0xbc, 0x95, 0xe1, 0x19, 0xfb, 0x84, 0xe0, 0x5a, 0x7c,
+	0x25, 0xe1, 0x34, 0xc5, 0xe0, 0x9d, 0x17, 0xd2, 0x81, 0xd2, 0xdb, 0x8a, 0xf0, 0xb6, 0x88, 0x17,
+	0x32, 0x79, 0xdb, 0x2a, 0x7f, 0x3f, 0x51, 0xd1, 0xf1, 0x89, 0x8a, 0x7e, 0x9f, 0xa8, 0xe8, 0xc3,
+	0xa9, 0x3a, 0x74, 0x7c, 0xaa, 0x0e, 0xfd, 0x3a, 0x55, 0x87, 0xde, 0x10, 0xd3, 0x72, 0x1b, 0x9d,
+	0x5a, 0xb1, 0xce, 0x76, 0x49, 0x9b, 0x9a, 0x66, 0xf7, 0xed, 0x7e, 0x88, 0xf2, 0x20, 0x4c, 0xea,
+	0x76, 0xdb, 0x94, 0xd7, 0x2e, 0x8b, 0xdf, 0x20, 0xeb, 0xff, 0x02, 0x00, 0x00, 0xff, 0xff, 0xd1,
+	0xd9, 0xdd, 0x86, 0x1e, 0x09, 0x00, 0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -538,6 +717,8 @@ type QueryClient interface {
 	QueryScheduledCorksByBlockHeight(ctx context.Context, in *QueryScheduledCorksByBlockHeightRequest, opts ...grpc.CallOption) (*QueryScheduledCorksByBlockHeightResponse, error)
 	// QueryScheduledCorks returns all scheduled corks with the specified ID
 	QueryScheduledCorksByID(ctx context.Context, in *QueryScheduledCorksByIDRequest, opts ...grpc.CallOption) (*QueryScheduledCorksByIDResponse, error)
+	QueryCorkResult(ctx context.Context, in *QueryCorkResultRequest, opts ...grpc.CallOption) (*QueryCorkResultResponse, error)
+	QueryCorkResults(ctx context.Context, in *QueryCorkResultsRequest, opts ...grpc.CallOption) (*QueryCorkResultsResponse, error)
 }
 
 type queryClient struct {
@@ -593,6 +774,24 @@ func (c *queryClient) QueryScheduledCorksByID(ctx context.Context, in *QuerySche
 	return out, nil
 }
 
+func (c *queryClient) QueryCorkResult(ctx context.Context, in *QueryCorkResultRequest, opts ...grpc.CallOption) (*QueryCorkResultResponse, error) {
+	out := new(QueryCorkResultResponse)
+	err := c.cc.Invoke(ctx, "/axelar_cork.v1.Query/QueryCorkResult", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *queryClient) QueryCorkResults(ctx context.Context, in *QueryCorkResultsRequest, opts ...grpc.CallOption) (*QueryCorkResultsResponse, error) {
+	out := new(QueryCorkResultsResponse)
+	err := c.cc.Invoke(ctx, "/axelar_cork.v1.Query/QueryCorkResults", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // QueryServer is the server API for Query service.
 type QueryServer interface {
 	// QueryCellarIDs returns all cellars and current tick ranges
@@ -605,6 +804,8 @@ type QueryServer interface {
 	QueryScheduledCorksByBlockHeight(context.Context, *QueryScheduledCorksByBlockHeightRequest) (*QueryScheduledCorksByBlockHeightResponse, error)
 	// QueryScheduledCorks returns all scheduled corks with the specified ID
 	QueryScheduledCorksByID(context.Context, *QueryScheduledCorksByIDRequest) (*QueryScheduledCorksByIDResponse, error)
+	QueryCorkResult(context.Context, *QueryCorkResultRequest) (*QueryCorkResultResponse, error)
+	QueryCorkResults(context.Context, *QueryCorkResultsRequest) (*QueryCorkResultsResponse, error)
 }
 
 // UnimplementedQueryServer can be embedded to have forward compatible implementations.
@@ -625,6 +826,12 @@ func (*UnimplementedQueryServer) QueryScheduledCorksByBlockHeight(ctx context.Co
 }
 func (*UnimplementedQueryServer) QueryScheduledCorksByID(ctx context.Context, req *QueryScheduledCorksByIDRequest) (*QueryScheduledCorksByIDResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method QueryScheduledCorksByID not implemented")
+}
+func (*UnimplementedQueryServer) QueryCorkResult(ctx context.Context, req *QueryCorkResultRequest) (*QueryCorkResultResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method QueryCorkResult not implemented")
+}
+func (*UnimplementedQueryServer) QueryCorkResults(ctx context.Context, req *QueryCorkResultsRequest) (*QueryCorkResultsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method QueryCorkResults not implemented")
 }
 
 func RegisterQueryServer(s grpc1.Server, srv QueryServer) {
@@ -721,6 +928,42 @@ func _Query_QueryScheduledCorksByID_Handler(srv interface{}, ctx context.Context
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Query_QueryCorkResult_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryCorkResultRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QueryServer).QueryCorkResult(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/axelar_cork.v1.Query/QueryCorkResult",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServer).QueryCorkResult(ctx, req.(*QueryCorkResultRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Query_QueryCorkResults_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryCorkResultsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QueryServer).QueryCorkResults(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/axelar_cork.v1.Query/QueryCorkResults",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServer).QueryCorkResults(ctx, req.(*QueryCorkResultsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 var _Query_serviceDesc = grpc.ServiceDesc{
 	ServiceName: "axelar_cork.v1.Query",
 	HandlerType: (*QueryServer)(nil),
@@ -744,6 +987,14 @@ var _Query_serviceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "QueryScheduledCorksByID",
 			Handler:    _Query_QueryScheduledCorksByID_Handler,
+		},
+		{
+			MethodName: "QueryCorkResult",
+			Handler:    _Query_QueryCorkResult_Handler,
+		},
+		{
+			MethodName: "QueryCorkResults",
+			Handler:    _Query_QueryCorkResults_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
@@ -1061,6 +1312,131 @@ func (m *QueryScheduledCorksByIDResponse) MarshalToSizedBuffer(dAtA []byte) (int
 	return len(dAtA) - i, nil
 }
 
+func (m *QueryCorkResultRequest) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *QueryCorkResultRequest) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *QueryCorkResultRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.Id) > 0 {
+		i -= len(m.Id)
+		copy(dAtA[i:], m.Id)
+		i = encodeVarintQuery(dAtA, i, uint64(len(m.Id)))
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *QueryCorkResultResponse) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *QueryCorkResultResponse) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *QueryCorkResultResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if m.CorkResult != nil {
+		{
+			size, err := m.CorkResult.MarshalToSizedBuffer(dAtA[:i])
+			if err != nil {
+				return 0, err
+			}
+			i -= size
+			i = encodeVarintQuery(dAtA, i, uint64(size))
+		}
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *QueryCorkResultsRequest) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *QueryCorkResultsRequest) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *QueryCorkResultsRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	return len(dAtA) - i, nil
+}
+
+func (m *QueryCorkResultsResponse) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *QueryCorkResultsResponse) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *QueryCorkResultsResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.CorkResults) > 0 {
+		for iNdEx := len(m.CorkResults) - 1; iNdEx >= 0; iNdEx-- {
+			{
+				size, err := m.CorkResults[iNdEx].MarshalToSizedBuffer(dAtA[:i])
+				if err != nil {
+					return 0, err
+				}
+				i -= size
+				i = encodeVarintQuery(dAtA, i, uint64(size))
+			}
+			i--
+			dAtA[i] = 0xa
+		}
+	}
+	return len(dAtA) - i, nil
+}
+
 func encodeVarintQuery(dAtA []byte, offset int, v uint64) int {
 	offset -= sovQuery(v)
 	base := offset
@@ -1193,6 +1569,56 @@ func (m *QueryScheduledCorksByIDResponse) Size() (n int) {
 	_ = l
 	if len(m.Corks) > 0 {
 		for _, e := range m.Corks {
+			l = e.Size()
+			n += 1 + l + sovQuery(uint64(l))
+		}
+	}
+	return n
+}
+
+func (m *QueryCorkResultRequest) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.Id)
+	if l > 0 {
+		n += 1 + l + sovQuery(uint64(l))
+	}
+	return n
+}
+
+func (m *QueryCorkResultResponse) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if m.CorkResult != nil {
+		l = m.CorkResult.Size()
+		n += 1 + l + sovQuery(uint64(l))
+	}
+	return n
+}
+
+func (m *QueryCorkResultsRequest) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	return n
+}
+
+func (m *QueryCorkResultsResponse) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if len(m.CorkResults) > 0 {
+		for _, e := range m.CorkResults {
 			l = e.Size()
 			n += 1 + l + sovQuery(uint64(l))
 		}
@@ -1446,7 +1872,7 @@ func (m *QueryScheduledCorksResponse) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.Corks = append(m.Corks, &ScheduledAxelarCork{})
+			m.Corks = append(m.Corks, &ScheduledCork{})
 			if err := m.Corks[len(m.Corks)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
@@ -1775,7 +2201,7 @@ func (m *QueryScheduledCorksByBlockHeightResponse) Unmarshal(dAtA []byte) error 
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.Corks = append(m.Corks, &ScheduledAxelarCork{})
+			m.Corks = append(m.Corks, &ScheduledCork{})
 			if err := m.Corks[len(m.Corks)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
@@ -1941,8 +2367,310 @@ func (m *QueryScheduledCorksByIDResponse) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.Corks = append(m.Corks, &ScheduledAxelarCork{})
+			m.Corks = append(m.Corks, &ScheduledCork{})
 			if err := m.Corks[len(m.Corks)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuery(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *QueryCorkResultRequest) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuery
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: QueryCorkResultRequest: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: QueryCorkResultRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Id", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Id = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuery(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *QueryCorkResultResponse) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuery
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: QueryCorkResultResponse: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: QueryCorkResultResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field CorkResult", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.CorkResult == nil {
+				m.CorkResult = &CorkResult{}
+			}
+			if err := m.CorkResult.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuery(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *QueryCorkResultsRequest) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuery
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: QueryCorkResultsRequest: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: QueryCorkResultsRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuery(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *QueryCorkResultsResponse) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuery
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: QueryCorkResultsResponse: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: QueryCorkResultsResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field CorkResults", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.CorkResults = append(m.CorkResults, &CorkResult{})
+			if err := m.CorkResults[len(m.CorkResults)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex

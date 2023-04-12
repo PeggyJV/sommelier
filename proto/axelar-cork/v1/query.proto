@@ -8,30 +8,38 @@ import "axelar-cork/v1/cork.proto";
 
 option go_package = "github.com/peggyjv/sommelier/x/axelarcork/types";
 
+
 // Query defines the gRPC query service for the cork module.
 service Query {
   // QueryCellarIDs returns all cellars and current tick ranges
   rpc QueryCellarIDs(QueryCellarIDsRequest) returns (QueryCellarIDsResponse) {
-    option (google.api.http).get = "/sommelier/axelar-cork/v1/cellar_ids";
+    option (google.api.http).get = "/sommelier/axelarcork/v1/cellar_ids";
   }
   // QueryScheduledCorks returns all scheduled corks
   rpc QueryScheduledCorks(QueryScheduledCorksRequest) returns (QueryScheduledCorksResponse) {
-    option (google.api.http).get = "/sommelier/axelar-cork/v1/scheduled_corks";
+    option (google.api.http).get = "/sommelier/axelarcork/v1/scheduled_corks";
   }
   // QueryScheduledBlockHeights returns all scheduled block heights
   rpc QueryScheduledBlockHeights(QueryScheduledBlockHeightsRequest) returns (QueryScheduledBlockHeightsResponse) {
-    option (google.api.http).get = "/sommelier/axelar-cork/v1/scheduled_block_heights";
+    option (google.api.http).get = "/sommelier/axelarcork/v1/scheduled_block_heights";
   }
 
   // QueryScheduledCorks returns all scheduled corks at a block height
-  rpc QueryScheduledCorksByBlockHeight(QueryScheduledCorksByBlockHeightRequest)
-      returns (QueryScheduledCorksByBlockHeightResponse) {
-    option (google.api.http).get = "/sommelier/axelar-cork/v1/scheduled_corks_by_block_height/{block_height}";
+  rpc QueryScheduledCorksByBlockHeight(QueryScheduledCorksByBlockHeightRequest) returns (QueryScheduledCorksByBlockHeightResponse) {
+    option (google.api.http).get = "/sommelier/axelarcork/v1/scheduled_corks_by_block_height/{block_height}";
   }
 
   // QueryScheduledCorks returns all scheduled corks with the specified ID
   rpc QueryScheduledCorksByID(QueryScheduledCorksByIDRequest) returns (QueryScheduledCorksByIDResponse) {
-    option (google.api.http).get = "/sommelier/axelar-cork/v1/scheduled_corks_by_id/{id}";
+    option (google.api.http).get = "/sommelier/axelarcork/v1/scheduled_corks_by_id/{id}";
+  }
+
+  rpc QueryCorkResult(QueryCorkResultRequest) returns (QueryCorkResultResponse) {
+    option (google.api.http).get = "/sommelier/axelarcork/v1/cork_results/{id}";
+  }
+
+  rpc QueryCorkResults(QueryCorkResultsRequest) returns (QueryCorkResultsResponse) {
+    option (google.api.http).get = "/sommelier/axelarcork/v1/cork_results";
   }
 }
 
@@ -48,7 +56,7 @@ message QueryScheduledCorksRequest {}
 
 // QueryScheduledCorksResponse
 message QueryScheduledCorksResponse {
-  repeated ScheduledAxelarCork corks = 1;
+  repeated ScheduledCork corks = 1;
 }
 
 // QueryScheduledBlockHeightsRequest
@@ -66,7 +74,7 @@ message QueryScheduledCorksByBlockHeightRequest {
 
 // QueryScheduledCorksByBlockHeightResponse
 message QueryScheduledCorksByBlockHeightResponse {
-  repeated ScheduledAxelarCork corks = 1;
+  repeated ScheduledCork corks = 1;
 }
 
 // QueryScheduledCorksByIDRequest
@@ -76,5 +84,19 @@ message QueryScheduledCorksByIDRequest {
 
 // QueryScheduledCorksByIDResponse
 message QueryScheduledCorksByIDResponse {
-  repeated ScheduledAxelarCork corks = 1;
+  repeated ScheduledCork corks = 1;
+}
+
+message QueryCorkResultRequest {
+  string id = 1;
+}
+
+message QueryCorkResultResponse {
+  CorkResult corkResult = 1;
+}
+
+message QueryCorkResultsRequest {}
+
+message QueryCorkResultsResponse {
+  repeated CorkResult corkResults = 1;
 }

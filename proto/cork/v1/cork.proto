@@ -13,14 +13,14 @@ message Cork {
 }
 
 message ValidatorCork {
-  Cork cork = 1;
+  Cork   cork      = 1;
   string validator = 2;
 }
 
 message ScheduledCork {
-  Cork cork = 1;
+  Cork   cork         = 1;
   uint64 block_height = 2;
-  string validator = 3;
+  string validator    = 3;
 }
 
 message CellarIDSet {

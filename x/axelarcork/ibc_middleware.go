@@ -6,6 +6,7 @@ import (
 	"github.com/cosmos/ibc-go/v3/modules/core/04-channel/types"
 	porttypes "github.com/cosmos/ibc-go/v3/modules/core/05-port/types"
 	"github.com/cosmos/ibc-go/v3/modules/core/exported"
+	"github.com/peggyjv/sommelier/v6/x/axelarcork/keeper"
 )
 
 var _ porttypes.Middleware = &IBCMiddleware{}
@@ -59,11 +60,14 @@ func (im IBCMiddleware) OnTimeoutPacket(ctx sdk.Context, packet types.Packet, re
 }
 
 func (im IBCMiddleware) SendPacket(ctx sdk.Context, chanCap *capabilitytypes.Capability, packet exported.PacketI) error {
-	//TODO implement me
-	panic("implement me")
+	return im.keeper.SendPacket(ctx, chanCap, packet)
 }
 
 func (im IBCMiddleware) WriteAcknowledgement(ctx sdk.Context, chanCap *capabilitytypes.Capability, packet exported.PacketI, ack exported.Acknowledgement) error {
-	//TODO implement me
-	panic("implement me")
+	return im.keeper.WriteAcknowledgement(ctx, chanCap, packet, ack)
+}
+
+// GetAppVersion returns the application version of the underlying application
+func (i IBCMiddleware) GetAppVersion(ctx sdk.Context, portID, channelID string) (string, bool) {
+	return i.keeper.GetAppVersion(ctx, portID, channelID)
 }

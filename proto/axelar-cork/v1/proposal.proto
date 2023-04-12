@@ -10,8 +10,8 @@ option go_package = "github.com/peggyjv/sommelier/x/axelarcork/types";
 message AddManagedCellarIDsProposal {
   string      title       = 1;
   string      description = 2;
-  string      chain       = 3;
-  uint64      id          = 4;
+  string      chain_name       = 3;
+  uint64      chain_id          = 4;
   CellarIDSet cellar_ids  = 5;
 }
 
@@ -19,8 +19,8 @@ message AddManagedCellarIDsProposal {
 message AddManagedCellarIDsProposalWithDeposit {
   string      title       = 1;
   string      description = 2;
-  string      chain       = 3;
-  uint64      id          = 4;
+  string      chain_name       = 3;
+  uint64      chain_id          = 4;
   CellarIDSet cellar_ids  = 5;
   string      deposit     = 6;
 }
@@ -28,8 +28,8 @@ message AddManagedCellarIDsProposalWithDeposit {
 message RemoveManagedCellarIDsProposal {
   string      title       = 1;
   string      description = 2;
-  string      chain       = 3;
-  uint64      id          = 4;
+  string      chain_name       = 3;
+  uint64      chain_id          = 4;
   CellarIDSet cellar_ids  = 5;
 }
 
@@ -37,18 +37,18 @@ message RemoveManagedCellarIDsProposal {
 message RemoveManagedCellarIDsProposalWithDeposit {
   string      title       = 1;
   string      description = 2;
-  string      chain       = 3;
-  uint64      id          = 4;
+  string      chain_name       = 3;
+  uint64      chain_id          = 4;
   CellarIDSet cellar_ids  = 5;
   string      deposit     = 6;
 }
 
-message ScheduledAxelarCorkProposal {
+message ScheduledCorkProposal {
   string title                   = 1;
   string description             = 2;
   uint64 block_height            = 3;
-  string chain                   = 4;
-  uint64 id                      = 5;
+  string chain_name                   = 4;
+  uint64 chain_id                      = 5;
   string target_contract_address = 6;
   /*
    * The JSON representation of a ScheduleRequest defined in the Steward protos
@@ -73,12 +73,12 @@ message ScheduledAxelarCorkProposal {
 }
 
 // ScheduledCorkProposalWithDeposit is a specific definition for CLI commands
-message ScheduledAxelarCorkProposalWithDeposit {
+message ScheduledCorkProposalWithDeposit {
   string title                    = 1;
   string description              = 2;
   uint64 block_height             = 3;
-  string chain                    = 4;
-  uint64 id                       = 5;
+  string chain_name                    = 4;
+  uint64 chain_id                       = 5;
   string target_contract_address  = 6;
   string contract_call_proto_json = 7;
   string deposit                  = 8;
