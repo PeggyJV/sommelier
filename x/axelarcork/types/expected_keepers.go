@@ -3,9 +3,11 @@ package types
 //go:generate  mockgen -destination=../keeper/mock_keepers.go -package=keeper github.com/peggyjv/sommelier/x/cork/types StakingKeeper, GravityKeeper
 
 import (
+	"context"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	capabilitytypes "github.com/cosmos/cosmos-sdk/x/capability/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
+	"github.com/cosmos/ibc-go/v3/modules/apps/transfer/types"
 	channeltypes "github.com/cosmos/ibc-go/v3/modules/core/04-channel/types"
 	ibcexported "github.com/cosmos/ibc-go/v3/modules/core/exported"
 )
@@ -36,4 +38,8 @@ type StakingKeeper interface {
 	Slash(sdk.Context, sdk.ConsAddress, int64, int64, sdk.Dec)
 	Jail(sdk.Context, sdk.ConsAddress)
 	PowerReduction(ctx sdk.Context) sdk.Int
+}
+
+type TransferKeeper interface {
+	Transfer(goCtx context.Context, msg *types.MsgTransfer) (*types.MsgTransferResponse, error)
 }

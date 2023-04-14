@@ -3,12 +3,15 @@ package axelar_cork.v1;
 
 import "cosmos/base/v1beta1/coin.proto";
 import "axelar-cork/v1/cork.proto";
+import "gogoproto/gogo.proto";
 
 option go_package = "github.com/peggyjv/sommelier/x/axelarcork/types";
 
 // MsgService defines the msgs that the cork module handles
 service Msg {
   rpc ScheduleCork(MsgScheduleCorkRequest) returns (MsgScheduleCorkResponse);
+  rpc RelayCork(MsgRelayCorkRequest) returns (MsgRelayCorkResponse);
+  rpc BumpCorkGas(MsgBumpCorkGasRequest) returns (MsgBumpCorkGasResponse);
 }
 
 // MsgScheduleCorkRequest - sdk.Msg for scheduling a cork request for on or after a specific block height
@@ -29,3 +32,22 @@ message MsgScheduleCorkResponse {
   // cork ID
   string id = 1;
 }
+
+message MsgRelayCorkRequest {
+  string signer = 1;
+  cosmos.base.v1beta1.Coin token = 2 [(gogoproto.nullable) = false];
+  uint64 fee = 3;
+  uint64 chain_id = 4;
+  string chain_name = 5;
+  string chain_addr = 6;
+}
+
+message MsgRelayCorkResponse {}
+
+message MsgBumpCorkGasRequest {
+  string signer = 1;
+  cosmos.base.v1beta1.Coin token = 2 [(gogoproto.nullable) = false];
+  string message_id = 3;
+}
+
+message MsgBumpCorkGasResponse {}

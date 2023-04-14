@@ -13,10 +13,11 @@ import (
 
 // Keeper of the oracle store
 type Keeper struct {
-	storeKey      sdk.StoreKey
-	cdc           codec.BinaryCodec
-	paramSpace    paramtypes.Subspace
-	stakingKeeper types.StakingKeeper
+	storeKey       sdk.StoreKey
+	cdc            codec.BinaryCodec
+	paramSpace     paramtypes.Subspace
+	stakingKeeper  types.StakingKeeper
+	transferKeeper types.TransferKeeper
 
 	ics4Wrapper types.ICS4Wrapper
 }
@@ -24,7 +25,8 @@ type Keeper struct {
 // NewKeeper creates a new x/cork Keeper instance
 func NewKeeper(
 	cdc codec.BinaryCodec, key sdk.StoreKey, paramSpace paramtypes.Subspace,
-	stakingKeeper types.StakingKeeper, wrapper types.ICS4Wrapper,
+	stakingKeeper types.StakingKeeper, transferKeeper types.TransferKeeper,
+	wrapper types.ICS4Wrapper,
 ) Keeper {
 	// set KeyTable if it has not already been set
 	if !paramSpace.HasKeyTable() {
@@ -32,10 +34,11 @@ func NewKeeper(
 	}
 
 	return Keeper{
-		storeKey:      key,
-		cdc:           cdc,
-		paramSpace:    paramSpace,
-		stakingKeeper: stakingKeeper,
+		storeKey:       key,
+		cdc:            cdc,
+		paramSpace:     paramSpace,
+		stakingKeeper:  stakingKeeper,
+		transferKeeper: transferKeeper,
 
 		ics4Wrapper: wrapper,
 	}
@@ -44,6 +47,22 @@ func NewKeeper(
 // Logger returns a module-specific logger.
 func (k Keeper) Logger(ctx sdk.Context) log.Logger {
 	return ctx.Logger().With("module", "x/"+types.ModuleName)
+}
+
+////////////
+// Params //
+////////////
+
+// GetParamSet returns the vote period from the parameters
+func (k Keeper) GetParamSet(ctx sdk.Context) types.Params {
+	var p types.Params
+	k.paramSpace.GetParamSet(ctx, &p)
+	return p
+}
+
+// setParams sets the parameters in the store
+func (k Keeper) setParams(ctx sdk.Context, params types.Params) {
+	k.paramSpace.SetParamSet(ctx, &params)
 }
 
 /////////////////////

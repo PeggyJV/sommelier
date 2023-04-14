@@ -8,22 +8,26 @@ import (
 // InitGenesis initialize default parameters
 // and the keeper's address to pubkey map
 func InitGenesis(ctx sdk.Context, k Keeper, gs types.GenesisState) {
-	k.setParams(ctx, gs.Params)
+	k.setParams(ctx, *gs.Params)
 	// Set the vote period at initialization
-	k.SetCellarIDs(ctx, gs.CellarIds)
-	k.SetLatestInvalidationNonce(ctx, gs.InvalidationNonce)
 
-	for _, corkResult := range gs.CorkResults {
-		k.SetCorkResult(ctx, corkResult.Cork.IDHash(corkResult.BlockHeight), *corkResult)
-	}
+	for i, config := range gs.ChainConfigurations.Configurations {
+		k.SetChainConfigurationByID(ctx, config.Id, *config)
+		k.SetCellarIDs(ctx, config.Id, *gs.CellarIds[i])
+		k.SetLatestInvalidationNonce(ctx, config.Id, gs.InvalidationNonces[i])
 
-	for _, scheduledCork := range gs.ScheduledCorks {
-		valAddr, err := sdk.ValAddressFromHex(scheduledCork.Validator)
-		if err != nil {
-			panic(err)
+		for _, corkResult := range gs.CorkResults[i].CorkResults {
+			k.SetCorkResult(ctx, config.Id, corkResult.Cork.IDHash(corkResult.BlockHeight), *corkResult)
 		}
 
-		k.SetScheduledCork(ctx, scheduledCork.BlockHeight, valAddr, *scheduledCork.Cork)
+		for _, scheduledCork := range gs.ScheduledCorks[i].ScheduledCorks {
+			valAddr, err := sdk.ValAddressFromHex(scheduledCork.Validator)
+			if err != nil {
+				panic(err)
+			}
+
+			k.SetScheduledCork(ctx, config.Id, scheduledCork.BlockHeight, valAddr, *scheduledCork.Cork)
+		}
 	}
 }
 
@@ -31,16 +35,37 @@ func InitGenesis(ctx sdk.Context, k Keeper, gs types.GenesisState) {
 // to a genesis file, which can be imported again
 // with InitGenesis
 func ExportGenesis(ctx sdk.Context, k Keeper) types.GenesisState {
-	var ids types.CellarIDSet
-	for _, id := range k.GetCellarIDs(ctx) {
-		ids.Ids = append(ids.Ids, id.Hex())
-	}
+	var gs types.GenesisState
 
-	return types.GenesisState{
-		Params:            k.GetParamSet(ctx),
-		CellarIds:         ids,
-		InvalidationNonce: k.GetLatestInvalidationNonce(ctx),
-		ScheduledCorks:    k.GetScheduledCorks(ctx),
-		CorkResults:       k.GetCorkResults(ctx),
-	}
+	ps := k.GetParamSet(ctx)
+	gs.Params = &ps
+
+	k.IterateChainConfigurations(ctx, func(config types.ChainConfiguration) (stop bool) {
+		gs.ChainConfigurations.Configurations = append(gs.ChainConfigurations.Configurations, &config)
+
+		cellarIDs := k.GetCellarIDs(ctx, config.Id)
+		var cellarIDSet types.CellarIDSet
+		for _, id := range cellarIDs {
+			cellarIDSet.Ids = append(cellarIDSet.Ids, id.String())
+		}
+		gs.CellarIds = append(gs.CellarIds, &cellarIDSet)
+
+		gs.InvalidationNonces = append(gs.InvalidationNonces, k.GetLatestInvalidationNonce(ctx, config.Id))
+
+		var scheduledCorks types.ScheduledCorks
+		for _, sc := range k.GetScheduledCorks(ctx, config.Id) {
+			scheduledCorks.ScheduledCorks = append(scheduledCorks.ScheduledCorks, sc)
+		}
+		gs.ScheduledCorks = append(gs.ScheduledCorks, &scheduledCorks)
+
+		var corkResults types.CorkResults
+		for _, cr := range k.GetCorkResults(ctx, config.Id) {
+			corkResults.CorkResults = append(corkResults.CorkResults, cr)
+		}
+		gs.CorkResults = append(gs.CorkResults, &corkResults)
+
+		return false
+	})
+
+	return gs
 }

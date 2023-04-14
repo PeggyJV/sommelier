@@ -21,11 +21,19 @@ message ScheduledCork {
   bytes id = 4;
 }
 
+message ScheduledCorks {
+  repeated ScheduledCork scheduled_corks = 1;
+}
+
 message CorkResult {
   Cork cork = 1;
   uint64 block_height = 2;
   bool approved = 3;
   string approval_percentage = 4;
+}
+
+message CorkResults {
+  repeated CorkResult cork_results = 1;
 }
 
 message CellarIDSet {

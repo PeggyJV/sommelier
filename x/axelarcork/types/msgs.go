@@ -11,8 +11,9 @@ var (
 )
 
 const (
-	TypeMsgSubmitCorkRequest   = "cork_submit"
 	TypeMsgScheduleCorkRequest = "cork_schedule"
+	TypeMsgRelayCorkRequest    = "cork_relay"
+	TypeMsgBumpCorkGasRequest  = "cork_bump_gas"
 )
 
 ////////////////////////////
@@ -58,6 +59,82 @@ func (m *MsgScheduleCorkRequest) GetSigners() []sdk.AccAddress {
 
 // MustGetSigner returns the signer address
 func (m *MsgScheduleCorkRequest) MustGetSigner() sdk.AccAddress {
+	addr, err := sdk.AccAddressFromBech32(m.Signer)
+	if err != nil {
+		panic(err)
+	}
+	return addr
+}
+
+/////////////////////////
+// MsgRelayCorkRequest //
+/////////////////////////
+
+// Route implements sdk.Msg
+func (m *MsgRelayCorkRequest) Route() string { return ModuleName }
+
+// Type implements sdk.Msg
+func (m *MsgRelayCorkRequest) Type() string { return TypeMsgRelayCorkRequest }
+
+// ValidateBasic implements sdk.Msg
+func (m *MsgRelayCorkRequest) ValidateBasic() error {
+	if _, err := sdk.AccAddressFromBech32(m.Signer); err != nil {
+		return sdkerrors.Wrap(sdkerrors.ErrInvalidAddress, err.Error())
+	}
+
+	return nil
+}
+
+// GetSignBytes implements sdk.Msg
+func (m *MsgRelayCorkRequest) GetSignBytes() []byte {
+	panic("amino support disabled")
+}
+
+// GetSigners implements sdk.Msg
+func (m *MsgRelayCorkRequest) GetSigners() []sdk.AccAddress {
+	return []sdk.AccAddress{m.MustGetSigner()}
+}
+
+// MustGetSigner returns the signer address
+func (m *MsgRelayCorkRequest) MustGetSigner() sdk.AccAddress {
+	addr, err := sdk.AccAddressFromBech32(m.Signer)
+	if err != nil {
+		panic(err)
+	}
+	return addr
+}
+
+///////////////////////////
+// MsgBumpCorkGasRequest //
+///////////////////////////
+
+// Route implements sdk.Msg
+func (m *MsgBumpCorkGasRequest) Route() string { return ModuleName }
+
+// Type implements sdk.Msg
+func (m *MsgBumpCorkGasRequest) Type() string { return TypeMsgBumpCorkGasRequest }
+
+// ValidateBasic implements sdk.Msg
+func (m *MsgBumpCorkGasRequest) ValidateBasic() error {
+	if _, err := sdk.AccAddressFromBech32(m.Signer); err != nil {
+		return sdkerrors.Wrap(sdkerrors.ErrInvalidAddress, err.Error())
+	}
+
+	return nil
+}
+
+// GetSignBytes implements sdk.Msg
+func (m *MsgBumpCorkGasRequest) GetSignBytes() []byte {
+	panic("amino support disabled")
+}
+
+// GetSigners implements sdk.Msg
+func (m *MsgBumpCorkGasRequest) GetSigners() []sdk.AccAddress {
+	return []sdk.AccAddress{m.MustGetSigner()}
+}
+
+// MustGetSigner returns the signer address
+func (m *MsgBumpCorkGasRequest) MustGetSigner() sdk.AccAddress {
 	addr, err := sdk.AccAddressFromBech32(m.Signer)
 	if err != nil {
 		panic(err)

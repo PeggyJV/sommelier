@@ -23,9 +23,11 @@ func (k Keeper) SendPacket(ctx sdk.Context, chanCap *capabilitytypes.Capability,
 }
 
 func (k Keeper) ValidateAxelarCorkPacket(ctx sdk.Context, packet ibcexported.PacketI) error {
-	// check if this is a call to axelar
-	// todo: exit early if this isn't axelar. how do we look up if it is axelar?
-	// channelID := packet.GetDestChannel()
+	// check if this is a call to axelar, exit early if this isn't axelar
+	channelID := packet.GetDestChannel()
+	if channelID != k.GetParamSet(ctx).IbcChannel {
+		return nil
+	}
 
 	// Parse the amount and denom from the packet
 	var packetData transfertypes.FungibleTokenPacketData
@@ -33,8 +35,13 @@ func (k Keeper) ValidateAxelarCorkPacket(ctx sdk.Context, packet ibcexported.Pac
 		return err
 	}
 
+	// if we are not sending to the axelar gmp management account, we can skip
+	if packetData.Receiver != k.GetParamSet(ctx).GmpAccount {
+		return nil
+	}
+
+	// if the memo field is empty, we can pass the message along
 	if packetData.Memo == "" {
-		// if the memo field is empty, we can pass the message along
 		return nil
 	}
 
