@@ -86,21 +86,12 @@ Where proposal.json contains:
 				proposal.Description,
 				&types.CellarIDSet{Ids: proposal.CellarIds.Ids})
 
-			name, err := cmd.Flags().GetString(FlagAxelarChainName)
+			name, chainID, err := GetChainInfoFromFlags(cmd)
 			if err != nil {
 				return err
 			}
-			chainID, err := cmd.Flags().GetUint64(FlagAxelarChainID)
-			if err != nil {
-				return err
-			}
-
-			if name != "" {
-				content.ChainName = name
-			}
-			if chainID != 0 {
-				content.ChainId = chainID
-			}
+			content.ChainName = name
+			content.ChainId = chainID
 
 			from := clientCtx.GetFromAddress()
 			msg, err := govtypes.NewMsgSubmitProposal(content, deposit, from)
@@ -174,21 +165,12 @@ Where proposal.json contains:
 				proposal.Description,
 				&types.CellarIDSet{Ids: proposal.CellarIds.Ids})
 
-			name, err := cmd.Flags().GetString(FlagAxelarChainName)
+			name, chainID, err := GetChainInfoFromFlags(cmd)
 			if err != nil {
 				return err
 			}
-			chainID, err := cmd.Flags().GetUint64(FlagAxelarChainID)
-			if err != nil {
-				return err
-			}
-
-			if name != "" {
-				content.ChainName = name
-			}
-			if chainID != 0 {
-				content.ChainId = chainID
-			}
+			content.ChainName = name
+			content.ChainId = chainID
 
 			from := clientCtx.GetFromAddress()
 			msg, err := govtypes.NewMsgSubmitProposal(content, deposit, from)
@@ -265,21 +247,12 @@ The contract_call_proto_json field must be the JSON representation of a Schedule
 			}
 			from := clientCtx.GetFromAddress()
 
-			name, err := cmd.Flags().GetString(FlagAxelarChainName)
+			name, chainID, err := GetChainInfoFromFlags(cmd)
 			if err != nil {
 				return err
 			}
-			chainID, err := cmd.Flags().GetUint64(FlagAxelarChainID)
-			if err != nil {
-				return err
-			}
-
-			if name != "" {
-				content.ChainName = name
-			}
-			if chainID != 0 {
-				content.ChainId = chainID
-			}
+			content.ChainName = name
+			content.ChainId = chainID
 
 			msg, err := govtypes.NewMsgSubmitProposal(content, deposit, from)
 			if err != nil {
