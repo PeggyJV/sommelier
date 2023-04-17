@@ -11,6 +11,10 @@ option go_package = "github.com/peggyjv/sommelier/x/axelarcork/types";
 
 // Query defines the gRPC query service for the cork module.
 service Query {
+  // QueryParams queries the axelar cork module parameters.
+  rpc QueryParams(QueryParamsRequest) returns (QueryParamsResponse) {
+    option (google.api.http).get = "/sommelier/cork/v1/params";
+  }
   // QueryCellarIDs returns all cellars and current tick ranges
   rpc QueryCellarIDs(QueryCellarIDsRequest) returns (QueryCellarIDsResponse) {
     option (google.api.http).get = "/sommelier/axelarcork/v1/cellar_ids";
@@ -43,8 +47,20 @@ service Query {
   }
 }
 
+// QueryParamsRequest is the request type for the Query/Params gRPC method.
+message QueryParamsRequest {}
+
+// QueryParamsRequest is the response type for the Query/Params gRPC method.
+message QueryParamsResponse {
+  // allocation parameters
+  Params params = 1 [(gogoproto.nullable) = false];
+}
+
 // QueryCellarIDsRequest is the request type for Query/QueryCellarIDs gRPC method.
-message QueryCellarIDsRequest {}
+message QueryCellarIDsRequest {
+  string chain_name = 1;
+  uint64 chain_id = 2;
+}
 
 // QueryCellarIDsResponse is the response type for Query/QueryCellars gRPC method.
 message QueryCellarIDsResponse {
@@ -52,7 +68,10 @@ message QueryCellarIDsResponse {
 }
 
 // QueryScheduledCorksRequest
-message QueryScheduledCorksRequest {}
+message QueryScheduledCorksRequest {
+  string chain_name = 1;
+  uint64 chain_id = 2;
+}
 
 // QueryScheduledCorksResponse
 message QueryScheduledCorksResponse {
@@ -60,7 +79,10 @@ message QueryScheduledCorksResponse {
 }
 
 // QueryScheduledBlockHeightsRequest
-message QueryScheduledBlockHeightsRequest {}
+message QueryScheduledBlockHeightsRequest {
+  string chain_name = 1;
+  uint64 chain_id = 2;
+}
 
 // QueryScheduledBlockHeightsResponse
 message QueryScheduledBlockHeightsResponse {
@@ -70,6 +92,8 @@ message QueryScheduledBlockHeightsResponse {
 // QueryScheduledCorksByBlockHeightRequest
 message QueryScheduledCorksByBlockHeightRequest {
   uint64 block_height = 1;
+  string chain_name = 2;
+  uint64 chain_id = 3;
 }
 
 // QueryScheduledCorksByBlockHeightResponse
@@ -80,6 +104,8 @@ message QueryScheduledCorksByBlockHeightResponse {
 // QueryScheduledCorksByIDRequest
 message QueryScheduledCorksByIDRequest {
   string id = 1;
+  string chain_name = 2;
+  uint64 chain_id = 3;
 }
 
 // QueryScheduledCorksByIDResponse
@@ -89,13 +115,18 @@ message QueryScheduledCorksByIDResponse {
 
 message QueryCorkResultRequest {
   string id = 1;
+  string chain_name = 2;
+  uint64 chain_id = 3;
 }
 
 message QueryCorkResultResponse {
   CorkResult corkResult = 1;
 }
 
-message QueryCorkResultsRequest {}
+message QueryCorkResultsRequest {
+  string chain_name = 1;
+  uint64 chain_id = 2;
+}
 
 message QueryCorkResultsResponse {
   repeated CorkResult corkResults = 1;

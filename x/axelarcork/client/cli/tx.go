@@ -2,7 +2,7 @@ package cli
 
 import (
 	"fmt"
-	"io/ioutil"
+	"os"
 	"strings"
 
 	"github.com/cosmos/cosmos-sdk/client"
@@ -18,14 +18,13 @@ import (
 // GetTxCmd returns the transaction commands for this module
 func GetTxCmd() *cobra.Command {
 	corkTxCmd := &cobra.Command{
-		Use:                        "cork",
-		Short:                      "Cork transaction subcommands",
+		Use:                        "axelar-cork",
+		Short:                      "Axelar Cork transaction subcommands",
 		DisableFlagParsing:         true,
 		SuggestionsMinimumDistance: 2,
 		RunE:                       client.ValidateCmd,
 	}
 
-	// todo(mvid): figure out what is useful, implement
 	return corkTxCmd
 }
 
@@ -62,7 +61,7 @@ Where proposal.json contains:
 			}
 
 			proposal := types.AddManagedCellarIDsProposalWithDeposit{}
-			contents, err := ioutil.ReadFile(args[0])
+			contents, err := os.ReadFile(args[0])
 			if err != nil {
 				return err
 			}
@@ -76,7 +75,7 @@ Where proposal.json contains:
 				return err
 			}
 
-			for _, id := range proposal.CellarIds {
+			for _, id := range proposal.CellarIds.Ids {
 				if !common.IsHexAddress(id) {
 					return fmt.Errorf("%s is not a valid ethereum address", id)
 				}
@@ -85,7 +84,23 @@ Where proposal.json contains:
 			content := types.NewAddManagedCellarIDsProposal(
 				proposal.Title,
 				proposal.Description,
-				&types.CellarIDSet{Ids: proposal.CellarIds})
+				&types.CellarIDSet{Ids: proposal.CellarIds.Ids})
+
+			name, err := cmd.Flags().GetString(FlagAxelarChainName)
+			if err != nil {
+				return err
+			}
+			chainID, err := cmd.Flags().GetUint64(FlagAxelarChainID)
+			if err != nil {
+				return err
+			}
+
+			if name != "" {
+				content.ChainName = name
+			}
+			if chainID != 0 {
+				content.ChainId = chainID
+			}
 
 			from := clientCtx.GetFromAddress()
 			msg, err := govtypes.NewMsgSubmitProposal(content, deposit, from)
@@ -96,6 +111,8 @@ Where proposal.json contains:
 			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), msg)
 		},
 	}
+
+	AddChainFlagsToCmd(cmd)
 
 	return cmd
 }
@@ -132,7 +149,7 @@ Where proposal.json contains:
 			}
 
 			proposal := types.RemoveManagedCellarIDsProposalWithDeposit{}
-			contents, err := ioutil.ReadFile(args[0])
+			contents, err := os.ReadFile(args[0])
 			if err != nil {
 				return err
 			}
@@ -146,7 +163,7 @@ Where proposal.json contains:
 				return err
 			}
 
-			for _, id := range proposal.CellarIds {
+			for _, id := range proposal.CellarIds.Ids {
 				if !common.IsHexAddress(id) {
 					return fmt.Errorf("%s is not a valid ethereum address", id)
 				}
@@ -155,7 +172,23 @@ Where proposal.json contains:
 			content := types.NewRemoveManagedCellarIDsProposal(
 				proposal.Title,
 				proposal.Description,
-				&types.CellarIDSet{Ids: proposal.CellarIds})
+				&types.CellarIDSet{Ids: proposal.CellarIds.Ids})
+
+			name, err := cmd.Flags().GetString(FlagAxelarChainName)
+			if err != nil {
+				return err
+			}
+			chainID, err := cmd.Flags().GetUint64(FlagAxelarChainID)
+			if err != nil {
+				return err
+			}
+
+			if name != "" {
+				content.ChainName = name
+			}
+			if chainID != 0 {
+				content.ChainId = chainID
+			}
 
 			from := clientCtx.GetFromAddress()
 			msg, err := govtypes.NewMsgSubmitProposal(content, deposit, from)
@@ -166,6 +199,8 @@ Where proposal.json contains:
 			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), msg)
 		},
 	}
+
+	AddChainFlagsToCmd(cmd)
 
 	return cmd
 }
@@ -206,7 +241,7 @@ The contract_call_proto_json field must be the JSON representation of a Schedule
 			}
 
 			proposal := types.ScheduledCorkProposalWithDeposit{}
-			contents, err := ioutil.ReadFile(args[0])
+			contents, err := os.ReadFile(args[0])
 			if err != nil {
 				return err
 			}
@@ -229,6 +264,23 @@ The contract_call_proto_json field must be the JSON representation of a Schedule
 				return err
 			}
 			from := clientCtx.GetFromAddress()
+
+			name, err := cmd.Flags().GetString(FlagAxelarChainName)
+			if err != nil {
+				return err
+			}
+			chainID, err := cmd.Flags().GetUint64(FlagAxelarChainID)
+			if err != nil {
+				return err
+			}
+
+			if name != "" {
+				content.ChainName = name
+			}
+			if chainID != 0 {
+				content.ChainId = chainID
+			}
+
 			msg, err := govtypes.NewMsgSubmitProposal(content, deposit, from)
 			if err != nil {
 				return err
@@ -237,6 +289,8 @@ The contract_call_proto_json field must be the JSON representation of a Schedule
 			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), msg)
 		},
 	}
+
+	AddChainFlagsToCmd(cmd)
 
 	return cmd
 }

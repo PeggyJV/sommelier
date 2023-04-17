@@ -10,11 +10,22 @@ import (
 	"github.com/spf13/cobra"
 )
 
+const (
+	FlagAxelarChainID   = "axelar-chain-id"
+	FlagAxelarChainName = "axelar-chain-name"
+)
+
+// AddChainFlagsToCmd adds common chain flags to a module command.
+func AddChainFlagsToCmd(cmd *cobra.Command) {
+	cmd.Flags().String(FlagAxelarChainName, "", "The case sensitive name of the Axelar target chain")
+	cmd.Flags().Uint64(FlagAxelarChainID, 0, "The Chain ID for the Axelar target EVM chain")
+}
+
 // GetQueryCmd returns the cli query commands for this module
 func GetQueryCmd() *cobra.Command {
 	corkQueryCmd := &cobra.Command{
-		Use:                        "cork",
-		Short:                      "Querying commands for the cork module",
+		Use:                        "axelar-cork",
+		Short:                      "Querying commands for the axelar cork module",
 		DisableFlagParsing:         true,
 		SuggestionsMinimumDistance: 2,
 		RunE:                       client.ValidateCmd,
@@ -60,6 +71,7 @@ func queryParams() *cobra.Command {
 	}
 
 	flags.AddQueryFlagsToCmd(cmd)
+	AddChainFlagsToCmd(cmd)
 
 	return cmd
 }
@@ -76,8 +88,24 @@ func queryCellarIDs() *cobra.Command {
 				return err
 			}
 
-			queryClient := types.NewQueryClient(ctx)
 			req := &types.QueryCellarIDsRequest{}
+			name, err := cmd.Flags().GetString(FlagAxelarChainName)
+			if err != nil {
+				return err
+			}
+			chainID, err := cmd.Flags().GetUint64(FlagAxelarChainID)
+			if err != nil {
+				return err
+			}
+
+			if name != "" {
+				req.ChainName = name
+			}
+			if chainID != 0 {
+				req.ChainId = chainID
+			}
+
+			queryClient := types.NewQueryClient(ctx)
 
 			res, err := queryClient.QueryCellarIDs(cmd.Context(), req)
 			if err != nil {
@@ -89,6 +117,7 @@ func queryCellarIDs() *cobra.Command {
 	}
 
 	flags.AddQueryFlagsToCmd(cmd)
+	AddChainFlagsToCmd(cmd)
 
 	return cmd
 }
@@ -108,6 +137,22 @@ func queryScheduledCorks() *cobra.Command {
 			queryClient := types.NewQueryClient(ctx)
 			req := &types.QueryScheduledCorksRequest{}
 
+			name, err := cmd.Flags().GetString(FlagAxelarChainName)
+			if err != nil {
+				return err
+			}
+			chainID, err := cmd.Flags().GetUint64(FlagAxelarChainID)
+			if err != nil {
+				return err
+			}
+
+			if name != "" {
+				req.ChainName = name
+			}
+			if chainID != 0 {
+				req.ChainId = chainID
+			}
+
 			res, err := queryClient.QueryScheduledCorks(cmd.Context(), req)
 			if err != nil {
 				return err
@@ -118,6 +163,7 @@ func queryScheduledCorks() *cobra.Command {
 	}
 
 	flags.AddQueryFlagsToCmd(cmd)
+	AddChainFlagsToCmd(cmd)
 
 	return cmd
 }
@@ -144,6 +190,22 @@ func queryScheduledCorksByBlockHeight() *cobra.Command {
 				BlockHeight: uint64(height),
 			}
 
+			name, err := cmd.Flags().GetString(FlagAxelarChainName)
+			if err != nil {
+				return err
+			}
+			chainID, err := cmd.Flags().GetUint64(FlagAxelarChainID)
+			if err != nil {
+				return err
+			}
+
+			if name != "" {
+				req.ChainName = name
+			}
+			if chainID != 0 {
+				req.ChainId = chainID
+			}
+
 			res, err := queryClient.QueryScheduledCorksByBlockHeight(cmd.Context(), req)
 			if err != nil {
 				return err
@@ -154,6 +216,7 @@ func queryScheduledCorksByBlockHeight() *cobra.Command {
 	}
 
 	flags.AddQueryFlagsToCmd(cmd)
+	AddChainFlagsToCmd(cmd)
 
 	return cmd
 }
@@ -173,6 +236,22 @@ func queryScheduledBlockHeights() *cobra.Command {
 			queryClient := types.NewQueryClient(ctx)
 			req := &types.QueryScheduledBlockHeightsRequest{}
 
+			name, err := cmd.Flags().GetString(FlagAxelarChainName)
+			if err != nil {
+				return err
+			}
+			chainID, err := cmd.Flags().GetUint64(FlagAxelarChainID)
+			if err != nil {
+				return err
+			}
+
+			if name != "" {
+				req.ChainName = name
+			}
+			if chainID != 0 {
+				req.ChainId = chainID
+			}
+
 			res, err := queryClient.QueryScheduledBlockHeights(cmd.Context(), req)
 			if err != nil {
 				return err
@@ -183,6 +262,7 @@ func queryScheduledBlockHeights() *cobra.Command {
 	}
 
 	flags.AddQueryFlagsToCmd(cmd)
+	AddChainFlagsToCmd(cmd)
 
 	return cmd
 }
@@ -211,6 +291,22 @@ func queryScheduledCorksByID() *cobra.Command {
 				Id: id,
 			}
 
+			name, err := cmd.Flags().GetString(FlagAxelarChainName)
+			if err != nil {
+				return err
+			}
+			chainID, err := cmd.Flags().GetUint64(FlagAxelarChainID)
+			if err != nil {
+				return err
+			}
+
+			if name != "" {
+				req.ChainName = name
+			}
+			if chainID != 0 {
+				req.ChainId = chainID
+			}
+
 			res, err := queryClient.QueryScheduledCorksByID(cmd.Context(), req)
 			if err != nil {
 				return err
@@ -221,6 +317,7 @@ func queryScheduledCorksByID() *cobra.Command {
 	}
 
 	flags.AddQueryFlagsToCmd(cmd)
+	AddChainFlagsToCmd(cmd)
 
 	return cmd
 }
@@ -248,6 +345,22 @@ func queryCorkResult() *cobra.Command {
 				Id: corkID,
 			}
 
+			name, err := cmd.Flags().GetString(FlagAxelarChainName)
+			if err != nil {
+				return err
+			}
+			chainID, err := cmd.Flags().GetUint64(FlagAxelarChainID)
+			if err != nil {
+				return err
+			}
+
+			if name != "" {
+				req.ChainName = name
+			}
+			if chainID != 0 {
+				req.ChainId = chainID
+			}
+
 			res, err := queryClient.QueryCorkResult(cmd.Context(), req)
 			if err != nil {
 				return err
@@ -258,6 +371,7 @@ func queryCorkResult() *cobra.Command {
 	}
 
 	flags.AddQueryFlagsToCmd(cmd)
+	AddChainFlagsToCmd(cmd)
 
 	return cmd
 }
@@ -277,6 +391,22 @@ func queryCorkResults() *cobra.Command {
 			queryClient := types.NewQueryClient(ctx)
 			req := &types.QueryCorkResultsRequest{}
 
+			name, err := cmd.Flags().GetString(FlagAxelarChainName)
+			if err != nil {
+				return err
+			}
+			chainID, err := cmd.Flags().GetUint64(FlagAxelarChainID)
+			if err != nil {
+				return err
+			}
+
+			if name != "" {
+				req.ChainName = name
+			}
+			if chainID != 0 {
+				req.ChainId = chainID
+			}
+
 			res, err := queryClient.QueryCorkResults(cmd.Context(), req)
 			if err != nil {
 				return err
@@ -287,6 +417,7 @@ func queryCorkResults() *cobra.Command {
 	}
 
 	flags.AddQueryFlagsToCmd(cmd)
+	AddChainFlagsToCmd(cmd)
 
 	return cmd
 }

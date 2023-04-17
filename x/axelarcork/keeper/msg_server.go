@@ -27,7 +27,7 @@ func (k Keeper) ScheduleCork(c context.Context, msg *types.MsgScheduleCorkReques
 		return nil, err
 	}
 
-	if !config.HasCellarID(common.HexToAddress(msg.Cork.TargetContractAddress)) {
+	if !k.HasCellarID(ctx, config.Id, common.HexToAddress(msg.Cork.TargetContractAddress)) {
 		return nil, types.ErrUnmanagedCellarAddress
 	}
 

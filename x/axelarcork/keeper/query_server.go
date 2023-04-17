@@ -31,9 +31,13 @@ func (k Keeper) QueryCellarIDs(c context.Context, req *types.QueryCellarIDsReque
 	}
 
 	ctx := sdk.UnwrapSDKContext(c)
+	config, err := k.GetChainConfigurationByNameAndID(ctx, req.ChainName, req.ChainId)
+	if err != nil {
+		return nil, err
+	}
 
 	response := &types.QueryCellarIDsResponse{}
-	for _, id := range k.GetCellarIDs(ctx) {
+	for _, id := range k.GetCellarIDs(ctx, config.Id) {
 		response.CellarIds = append(response.CellarIds, id.Hex())
 	}
 
@@ -46,10 +50,14 @@ func (k Keeper) QueryScheduledCorks(c context.Context, req *types.QueryScheduled
 	}
 
 	ctx := sdk.UnwrapSDKContext(c)
+	config, err := k.GetChainConfigurationByNameAndID(ctx, req.ChainName, req.ChainId)
+	if err != nil {
+		return nil, err
+	}
 
 	response := types.QueryScheduledCorksResponse{}
 
-	k.IterateScheduledCorks(ctx, func(val sdk.ValAddress, blockHeight uint64, id []byte, cel common.Address, cork types.Cork) (stop bool) {
+	k.IterateScheduledCorks(ctx, config.Id, func(val sdk.ValAddress, blockHeight uint64, id []byte, cel common.Address, cork types.Cork) (stop bool) {
 		response.Corks = append(response.Corks, &types.ScheduledCork{
 			Cork:        &cork,
 			BlockHeight: blockHeight,
@@ -67,8 +75,13 @@ func (k Keeper) QueryScheduledBlockHeights(c context.Context, req *types.QuerySc
 	}
 
 	ctx := sdk.UnwrapSDKContext(c)
+	config, err := k.GetChainConfigurationByNameAndID(ctx, req.ChainName, req.ChainId)
+	if err != nil {
+		return nil, err
+	}
+
 	response := types.QueryScheduledBlockHeightsResponse{}
-	response.BlockHeights = k.GetScheduledBlockHeights(ctx)
+	response.BlockHeights = k.GetScheduledBlockHeights(ctx, config.Id)
 	return &response, nil
 }
 
@@ -78,9 +91,13 @@ func (k Keeper) QueryScheduledCorksByBlockHeight(c context.Context, req *types.Q
 	}
 
 	ctx := sdk.UnwrapSDKContext(c)
+	config, err := k.GetChainConfigurationByNameAndID(ctx, req.ChainName, req.ChainId)
+	if err != nil {
+		return nil, err
+	}
 
 	response := types.QueryScheduledCorksByBlockHeightResponse{}
-	response.Corks = k.GetScheduledCorksByBlockHeight(ctx, req.BlockHeight)
+	response.Corks = k.GetScheduledCorksByBlockHeight(ctx, config.Id, req.BlockHeight)
 	return &response, nil
 }
 
@@ -90,13 +107,18 @@ func (k Keeper) QueryScheduledCorksByID(c context.Context, req *types.QuerySched
 	}
 
 	ctx := sdk.UnwrapSDKContext(c)
+	config, err := k.GetChainConfigurationByNameAndID(ctx, req.ChainName, req.ChainId)
+	if err != nil {
+		return nil, err
+	}
+
 	id, err := hex.DecodeString(req.Id)
 	if err != nil {
 		return nil, status.Errorf(codes.InvalidArgument, "Failed to decode %s from hexidecimal to bytes", req.Id)
 	}
 
 	response := types.QueryScheduledCorksByIDResponse{}
-	response.Corks = k.GetScheduledCorksByID(ctx, id)
+	response.Corks = k.GetScheduledCorksByID(ctx, config.Id, id)
 	return &response, nil
 }
 
@@ -106,6 +128,11 @@ func (k Keeper) QueryCorkResult(c context.Context, req *types.QueryCorkResultReq
 	}
 
 	ctx := sdk.UnwrapSDKContext(c)
+	config, err := k.GetChainConfigurationByNameAndID(ctx, req.ChainName, req.ChainId)
+	if err != nil {
+		return nil, err
+	}
+
 	id, err := hex.DecodeString(req.Id)
 	if err != nil {
 		return nil, status.Errorf(codes.InvalidArgument, "Failed to decode %s from hexidecimal to bytes", req.Id)
@@ -113,7 +140,7 @@ func (k Keeper) QueryCorkResult(c context.Context, req *types.QueryCorkResultReq
 
 	response := types.QueryCorkResultResponse{}
 	var found bool
-	result, found := k.GetCorkResult(ctx, id)
+	result, found := k.GetCorkResult(ctx, config.Id, id)
 	if !found {
 		return &types.QueryCorkResultResponse{}, status.Errorf(codes.NotFound, "No cork result found for id: %s", req.GetId())
 	}
@@ -128,8 +155,12 @@ func (k Keeper) QueryCorkResults(c context.Context, req *types.QueryCorkResultsR
 	}
 
 	ctx := sdk.UnwrapSDKContext(c)
+	config, err := k.GetChainConfigurationByNameAndID(ctx, req.ChainName, req.ChainId)
+	if err != nil {
+		return nil, err
+	}
 
 	response := types.QueryCorkResultsResponse{}
-	response.CorkResults = k.GetCorkResults(ctx)
+	response.CorkResults = k.GetCorkResults(ctx, config.Id)
 	return &response, nil
 }
