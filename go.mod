@@ -1,6 +1,6 @@
 module github.com/peggyjv/sommelier/v4
 
-go 1.15
+go 1.18
 
 require (
 	github.com/StackExchange/wmi v1.2.1 // indirect
