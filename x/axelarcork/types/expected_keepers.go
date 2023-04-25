@@ -4,8 +4,10 @@ package types
 
 import (
 	"context"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	capabilitytypes "github.com/cosmos/cosmos-sdk/x/capability/types"
+	distributiontypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 	"github.com/cosmos/ibc-go/v3/modules/apps/transfer/types"
 	channeltypes "github.com/cosmos/ibc-go/v3/modules/core/04-channel/types"
@@ -42,4 +44,9 @@ type StakingKeeper interface {
 
 type TransferKeeper interface {
 	Transfer(goCtx context.Context, msg *types.MsgTransfer) (*types.MsgTransferResponse, error)
+}
+
+type DistributionKeeper interface {
+	GetFeePool(ctx sdk.Context) (feePool distributiontypes.FeePool)
+	SetFeePool(ctx sdk.Context, feePool distributiontypes.FeePool)
 }

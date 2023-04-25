@@ -1,7 +1,13 @@
 package keeper
 
 import (
+	"encoding/json"
+	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
+	distributiontypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
+	transfertypes "github.com/cosmos/ibc-go/v3/modules/apps/transfer/types"
+	clienttypes "github.com/cosmos/ibc-go/v3/modules/core/02-client/types"
 	"sort"
+	"time"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
@@ -77,6 +83,62 @@ func HandleScheduledCorkProposal(ctx sdk.Context, k Keeper, p types.ScheduledCor
 	if !k.HasCellarID(ctx, config.Id, common.HexToAddress(p.TargetContractAddress)) {
 		return sdkerrors.Wrapf(types.ErrUnmanagedCellarAddress, "id: %s", p.TargetContractAddress)
 	}
+
+	return nil
+}
+
+func HandleCommunityPoolSpendProposal(ctx sdk.Context, k Keeper, p types.CommunityPoolSpendProposal) error {
+	feePool := k.distributionKeeper.GetFeePool(ctx)
+
+	// NOTE the community pool isn't a module account, however its coins
+	// are held in the distribution module account. Thus, the community pool
+	// must be reduced separately from the createSendToEthereum calls
+	newPool, negative := feePool.CommunityPool.SafeSub(sdk.NewDecCoinsFromCoins(p.Amount))
+	if negative {
+		return distributiontypes.ErrBadDistribution
+	}
+
+	feePool.CommunityPool = newPool
+	sender := authtypes.NewModuleAddress(distributiontypes.ModuleName)
+
+	params := k.GetParamSet(ctx)
+	config, err := k.GetChainConfigurationByNameAndID(ctx, p.ChainName, p.ChainId)
+	if err != nil {
+		return err
+	}
+
+	axelarMemo := types.AxelarBody{
+		DestinationChain:   config.Name,
+		DestinationAddress: p.Recipient,
+		Payload:            nil,
+		Type:               types.PureTokenTransfer,
+	}
+	bz, err := json.Marshal(axelarMemo)
+
+	transferMsg := transfertypes.NewMsgTransfer(
+		params.IbcPort,
+		params.IbcChannel,
+		p.Amount,
+		sender.String(),
+		p.Recipient,
+		clienttypes.ZeroHeight(),
+		uint64(ctx.BlockTime().Add(time.Duration(params.TimeoutDuration)).UnixNano()),
+	)
+	transferMsg.Memo = string(bz)
+	resp, err := k.transferKeeper.Transfer(ctx.Context(), transferMsg)
+	if err != nil {
+		return err
+	}
+
+	k.distributionKeeper.SetFeePool(ctx, feePool)
+	k.Logger(ctx).Info("transfer from the community pool issued to the axelar bridge",
+		"ibc sequence", resp,
+		"amount", p.Amount.String(),
+		"recipient", p.Recipient,
+		"chain", config.Name,
+		"sender", sender.String(),
+		"timeout duration", params.TimeoutDuration,
+	)
 
 	return nil
 }

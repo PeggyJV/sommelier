@@ -76,7 +76,7 @@ func (k Keeper) RelayCork(c context.Context, msg *types.MsgRelayCorkRequest) (*t
 		DestinationChain:   config.Name,
 		DestinationAddress: msg.ChainAddr,
 		Payload:            cork.EncodedContractCall,
-		Type:               types.MessageWithToken,
+		Type:               types.PureMessage,
 		Fee: &types.Fee{
 			Amount:    strconv.FormatUint(msg.Fee, 10),
 			Recipient: params.ExecutorAccount,

@@ -51,7 +51,7 @@ func (c *Cork) ValidateBasic() error {
 	}
 
 	if !common.IsHexAddress(c.TargetContractAddress) {
-		return ErrInvalidEthereumAddress
+		return ErrInvalidEVMAddress
 	}
 
 	return nil

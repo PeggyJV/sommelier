@@ -13,11 +13,12 @@ import (
 
 // Keeper of the oracle store
 type Keeper struct {
-	storeKey       sdk.StoreKey
-	cdc            codec.BinaryCodec
-	paramSpace     paramtypes.Subspace
-	stakingKeeper  types.StakingKeeper
-	transferKeeper types.TransferKeeper
+	storeKey           sdk.StoreKey
+	cdc                codec.BinaryCodec
+	paramSpace         paramtypes.Subspace
+	stakingKeeper      types.StakingKeeper
+	transferKeeper     types.TransferKeeper
+	distributionKeeper types.DistributionKeeper
 
 	ics4Wrapper types.ICS4Wrapper
 }
@@ -26,7 +27,7 @@ type Keeper struct {
 func NewKeeper(
 	cdc codec.BinaryCodec, key sdk.StoreKey, paramSpace paramtypes.Subspace,
 	stakingKeeper types.StakingKeeper, transferKeeper types.TransferKeeper,
-	wrapper types.ICS4Wrapper,
+	distributionKeeper types.DistributionKeeper, wrapper types.ICS4Wrapper,
 ) Keeper {
 	// set KeyTable if it has not already been set
 	if !paramSpace.HasKeyTable() {
@@ -34,11 +35,12 @@ func NewKeeper(
 	}
 
 	return Keeper{
-		storeKey:       key,
-		cdc:            cdc,
-		paramSpace:     paramSpace,
-		stakingKeeper:  stakingKeeper,
-		transferKeeper: transferKeeper,
+		storeKey:           key,
+		cdc:                cdc,
+		paramSpace:         paramSpace,
+		stakingKeeper:      stakingKeeper,
+		transferKeeper:     transferKeeper,
+		distributionKeeper: distributionKeeper,
 
 		ics4Wrapper: wrapper,
 	}

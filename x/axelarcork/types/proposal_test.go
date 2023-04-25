@@ -36,7 +36,7 @@ func TestScheduledCorkProposalValidation(t *testing.T) {
 				TargetContractAddress: "0x01",
 			},
 			expPass: false,
-			err:     sdkerrors.Wrapf(ErrInvalidEthereumAddress, "0x01"),
+			err:     sdkerrors.Wrapf(ErrInvalidEVMAddress, "0x01"),
 		},
 		{
 			name: "Empty proto JSON",

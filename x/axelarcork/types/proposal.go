@@ -3,6 +3,7 @@ package types
 import (
 	"encoding/json"
 	"fmt"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
@@ -13,11 +14,13 @@ const (
 	ProposalTypeAddManagedCellarIDs    = "AddManagedCellarIDs"
 	ProposalTypeRemoveManagedCellarIDs = "RemoveManagedCellarIDs"
 	ProposalTypeScheduledCork          = "ScheduledCork"
+	ProposalTypeCommunitySpend         = "CommunitySpend"
 )
 
 var _ govtypes.Content = &AddManagedCellarIDsProposal{}
 var _ govtypes.Content = &RemoveManagedCellarIDsProposal{}
 var _ govtypes.Content = &ScheduledCorkProposal{}
+var _ govtypes.Content = &CommunityPoolSpendProposal{}
 
 func init() {
 	govtypes.RegisterProposalType(ProposalTypeAddManagedCellarIDs)
@@ -118,7 +121,46 @@ func (m *ScheduledCorkProposal) ValidateBasic() error {
 	}
 
 	if !common.IsHexAddress(m.TargetContractAddress) {
-		return sdkerrors.Wrapf(ErrInvalidEthereumAddress, "%s", m.TargetContractAddress)
+		return sdkerrors.Wrapf(ErrInvalidEVMAddress, "%s", m.TargetContractAddress)
+	}
+
+	return nil
+}
+
+func NewCommunitySpendProposal(title string, description string, recipient string, chainID uint64, chainName string, amount sdk.Coin) *CommunityPoolSpendProposal {
+	return &CommunityPoolSpendProposal{
+		Title:       title,
+		Description: description,
+		Recipient:   recipient,
+		ChainId:     chainID,
+		ChainName:   chainName,
+		Amount:      amount,
+	}
+}
+
+func (m *CommunityPoolSpendProposal) ProposalRoute() string {
+	return RouterKey
+}
+
+func (m *CommunityPoolSpendProposal) ProposalType() string {
+	return ProposalTypeCommunitySpend
+}
+
+func (m *CommunityPoolSpendProposal) ValidateBasic() error {
+	if err := govtypes.ValidateAbstract(m); err != nil {
+		return err
+	}
+
+	if m.Amount.Amount.IsZero() {
+		return ErrValuelessSend
+	}
+
+	if m.Recipient == "" {
+		return sdkerrors.Wrapf(ErrInvalidEVMAddress, "empty recipient")
+	}
+
+	if !common.IsHexAddress(m.Recipient) {
+		return sdkerrors.Wrapf(ErrInvalidEVMAddress, "%s", m.Recipient)
 	}
 
 	return nil
