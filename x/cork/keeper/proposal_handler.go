@@ -5,7 +5,7 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/ethereum/go-ethereum/common"
-	"github.com/peggyjv/sommelier/v5/x/cork/types"
+	"github.com/peggyjv/sommelier/v6/x/cork/types"
 )
 
 // HandleAddManagedCellarsProposal is a handler for executing a passed community cellar addition proposal

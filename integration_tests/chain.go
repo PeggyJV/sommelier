@@ -2,11 +2,10 @@ package integration_tests
 
 import (
 	"fmt"
-	"io/ioutil"
 	"os"
 
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
-	corktypes "github.com/peggyjv/sommelier/v5/x/cork/types"
+	corktypes "github.com/peggyjv/sommelier/v6/x/cork/types"
 
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
@@ -24,9 +23,9 @@ import (
 	sdkTx "github.com/cosmos/cosmos-sdk/x/auth/tx"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
-	gravitytypes "github.com/peggyjv/gravity-bridge/module/v2/x/gravity/types"
-	"github.com/peggyjv/sommelier/v5/app"
-	"github.com/peggyjv/sommelier/v5/app/params"
+	gravitytypes "github.com/peggyjv/gravity-bridge/module/v3/x/gravity/types"
+	"github.com/peggyjv/sommelier/v6/app"
+	"github.com/peggyjv/sommelier/v6/app/params"
 	tmrand "github.com/tendermint/tendermint/libs/rand"
 	rpchttp "github.com/tendermint/tendermint/rpc/client/http"
 )
@@ -77,7 +76,7 @@ func newChain() (*chain, error) {
 		}
 	}
 
-	tmpDir, err := ioutil.TempDir(dir, "somm-e2e-testnet")
+	tmpDir, err := os.MkdirTemp(dir, "somm-e2e-testnet")
 	if err != nil {
 		return nil, err
 	}
@@ -92,7 +91,7 @@ func (c *chain) configDir() string {
 	return fmt.Sprintf("%s/%s", c.dataDir, c.id)
 }
 
-func (c *chain) createAndInitValidators(count int) error { // nolint:unused
+func (c *chain) createAndInitValidators(count int) error { //nolint:unused
 	for i := 0; i < count; i++ {
 		node := c.createValidator(i)
 
@@ -165,7 +164,7 @@ func (c *chain) createAndInitProposerWithMnemonic(mnemonic string) error {
 	return nil
 }
 
-func (c *chain) createAndInitOrchestrators(count int) error { // nolint:unused
+func (c *chain) createAndInitOrchestrators(count int) error { //nolint:unused
 	mnemonics := make([]string, count)
 	for i := 0; i < count; i++ {
 		mnemonic, err := createMnemonic()
@@ -215,7 +214,7 @@ func (c *chain) createOrchestrator(index int) *orchestrator {
 	}
 }
 
-func (c *chain) clientContext(nodeURI string, kb *keyring.Keyring, fromName string, fromAddr sdk.AccAddress) (*client.Context, error) { // nolint:unparam
+func (c *chain) clientContext(nodeURI string, kb *keyring.Keyring, fromName string, fromAddr sdk.AccAddress) (*client.Context, error) { //nolint:unparam
 	amino := codec.NewLegacyAmino()
 	interfaceRegistry := sdkTypes.NewInterfaceRegistry()
 	interfaceRegistry.RegisterImplementations((*sdk.Msg)(nil),

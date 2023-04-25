@@ -6,7 +6,7 @@ import "google/api/annotations.proto";
 import "cosmos/base/query/v1beta1/pagination.proto";
 import "cellarfees/v1/params.proto";
 
-option go_package = "github.com/peggyjv/sommelier/v5/x/cellarfees/types";
+option go_package = "github.com/peggyjv/sommelier/v6/x/cellarfees/types";
 
 service Query {
   rpc Params(QueryParamsRequest) returns (QueryParamsResponse) {

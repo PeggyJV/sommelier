@@ -2,7 +2,7 @@ package keeper
 
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/peggyjv/sommelier/v5/x/cork/types"
+	"github.com/peggyjv/sommelier/v6/x/cork/types"
 )
 
 // InitGenesis initialize default parameters

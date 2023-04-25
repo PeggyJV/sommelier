@@ -16,10 +16,10 @@ import (
 
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
-	"github.com/peggyjv/sommelier/v5/app/params"
-	corktypes "github.com/peggyjv/sommelier/v5/x/cork/types"
+	"github.com/peggyjv/sommelier/v6/app/params"
+	corktypes "github.com/peggyjv/sommelier/v6/x/cork/types"
 
-	gravitytypes "github.com/peggyjv/gravity-bridge/module/v2/x/gravity/types"
+	gravitytypes "github.com/peggyjv/gravity-bridge/module/v3/x/gravity/types"
 
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/ethclient"
@@ -143,7 +143,7 @@ func (s *IntegrationTestSuite) TearDownSuite() {
 	s.Require().NoError(s.dockerPool.RemoveNetwork(s.dockerNetwork))
 }
 
-func (s *IntegrationTestSuite) initNodes(nodeCount int) { // nolint:unused
+func (s *IntegrationTestSuite) initNodes(nodeCount int) { //nolint:unused
 	s.Require().NoError(s.chain.createAndInitValidators(nodeCount))
 	s.Require().NoError(s.chain.createAndInitOrchestrators(nodeCount))
 
@@ -210,7 +210,7 @@ func (s *IntegrationTestSuite) initNodesWithMnemonics(mnemonics ...string) {
 	}
 }
 
-func (s *IntegrationTestSuite) initEthereum() { // nolint:unused
+func (s *IntegrationTestSuite) initEthereum() { //nolint:unused
 	// generate ethereum keys for validators add them to the ethereum genesis
 	ethGenesis := EthereumGenesis{
 		Difficulty: "0x400",

@@ -18,8 +18,12 @@ jobs:
     permissions:
       contents: read
       packages: write
-    runs-on: [self-hosted, linux]
+    runs-on: ubuntu-20.04
     steps:
+      - name: Set up Go 1.18
+        uses: actions/setup-go@v2
+        with:
+          go-version: 1.18
       - name: checkout
         uses: actions/checkout@v2
       - name: Set up Docker Buildx
@@ -64,7 +68,7 @@ jobs:
     permissions:
       contents: write
       packages: write
-    runs-on: [self-hosted, linux]
+    runs-on: ubuntu-20.04
     steps:
       - name: checkout
         uses: actions/checkout@v2
@@ -108,7 +112,7 @@ jobs:
 
   integration-tests:
     environment: CI
-    runs-on: [self-hosted, linux]
+    runs-on: ubuntu-20.04
     needs: [ sommelier-build, hardhat-build ]
     strategy:
       fail-fast: false
@@ -119,11 +123,10 @@ jobs:
           "Incentives",
         ]
     steps:
-# Not needed on self hosted test runner that already has go installed
-#       - name: Set up Go 1.16
-#         uses: actions/setup-go@v2
-#         with:
-#           go-version: ^1.16
+      - name: Set up Go 1.18
+        uses: actions/setup-go@v2
+        with:
+          go-version: 1.18
       - name: checkout
         uses: actions/checkout@v2
       - name: go-cache
@@ -170,4 +173,9 @@ jobs:
       - name: Run end to end test
         run: ./integration_tests/integration_tests.test -test.failfast -test.v -test.run IntegrationTestSuite -testify.m Test${{ matrix.test_type }}
         env:
+          E2E_SKIP_CLEANUP: true
           ARCHIVE_NODE_URL: ${{ secrets.ARCHIVE_NODE_URL }}
+      - name: Clean up docker images
+        run: ./clean_slate.sh
+      - name: Remove testnet tempdir
+        run: sudo rm -rf somm-e2e-testnet*

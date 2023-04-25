@@ -22,8 +22,8 @@ import (
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/crypto"
-	gravitytypes "github.com/peggyjv/gravity-bridge/module/v2/x/gravity/types"
-	"github.com/peggyjv/sommelier/v5/app"
+	gravitytypes "github.com/peggyjv/gravity-bridge/module/v3/x/gravity/types"
+	"github.com/peggyjv/sommelier/v6/app"
 	tmcfg "github.com/tendermint/tendermint/config"
 	tmos "github.com/tendermint/tendermint/libs/os"
 	"github.com/tendermint/tendermint/p2p"
@@ -167,7 +167,7 @@ func (v *validator) createKeyFromMnemonic(name, mnemonic string, passphrase stri
 	return nil
 }
 
-func (v *validator) createKey(name string) error { // nolint:unused
+func (v *validator) createKey(name string) error { //nolint:unused
 	mnemonic, err := createMnemonic()
 	if err != nil {
 		return err
@@ -176,7 +176,7 @@ func (v *validator) createKey(name string) error { // nolint:unused
 	return v.createKeyFromMnemonic(name, mnemonic, "")
 }
 
-func (v *validator) generateEthereumKey() error { // nolint:unused
+func (v *validator) generateEthereumKey() error { //nolint:unused
 	privateKey, err := crypto.GenerateKey()
 	if err != nil {
 		return err
