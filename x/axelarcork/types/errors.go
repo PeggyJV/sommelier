@@ -11,5 +11,5 @@ var (
 	ErrEmptyContractCall      = sdkerrors.Register(ModuleName, 4, "cork has an empty contract call body")
 	ErrSchedulingInThePast    = sdkerrors.Register(ModuleName, 5, "cork is trying to be scheduled for a block that has already passed")
 	ErrInvalidJSON            = sdkerrors.Register(ModuleName, 6, "invalid json")
-	ErrValuelessSend          = sdkerrors.Register(ModuleName, 7, "trying to transfer an empty token amount")
+	ErrValuelessSend          = sdkerrors.Register(ModuleName, 7, "transferring an empty token amount")
 )
