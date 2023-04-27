@@ -95,16 +95,43 @@ Text proposals describe a desired action for the protocol to take by community a
 
 #### Parameter change
 
-Each module in a Cosmos SDK chain may choose to define a set of parameters -- values that affect the module which can be adjusted via governance without requiring an upgrade.
+Each module in a Cosmos SDK chain may choose to define a set of parameters -- values that affect the module which can be adjusted via governance without requiring an upgrade. Any of these parameters may be set to new values in a proposal.
 
 #### Community spend
+
+The community pool holds a large allocation of SOMM to fund governance-driven efforts. These proposals describe the intended use, a destination address, and an amount, which is transferred upon passing. In addition to the traditional Cosmos community spend proposal, Sommelier's gravity module has defined a proposal for Ethereum spends, in which the destination address is on Ethereum and the funds after passing are bridged to the destination address. One example of its use is funding incentive programs on Ethereum cellars.
+
 #### Upgrade
 
-### Sommelier
+Software upgrades to the Sommelier chain are handled through an upgrade proposal, which defines a "plan name" of the expected upgrade and a block height at which the upgrade must be executed. At the upgrade height, all nodes will panic if they do not have code for the defined upgrade plan. Once validators replace their old binary with the new binary containing the upgrade code (whether manually or through a pre-established setup using a tool like Cosmovisor), the upgrade handler will be executed and the chain will resume producing blocks when enough validators have upgraded. There is also a proposal type for canceling an upgrade, though it can only work if there is enough time for the voting period to pass before the upgrade height.
+
+### Sommelier cellars
+
+In addition to the Ethereum community spend proposal defined in the gravity module, there are a set of custom proposals for the addition or removal of cellar IDs. Cellar IDs are addresses of Ethereum smart contracts designated as cellars. Once approved by governance, these target addresses will be callable by strategists to manage the cellar.
 
 # Gravity Bridge
 
 # Steward
+
+Steward provides the interface strategists use to manage Cellar contracts. Each validator runs their own instance of the Steward process and receives contract call data over an authenticated connection. After confirming the caller's authorization to interact with the target contract, Steward submits the call to the Sommelier chain. A quorum of these submissions must occur on chain in order for any call to be finally executed on the target contract. This model allows strategists to have access to contract functionality necessary to manage investment while preventing a malicious or compromised strategist from having direct access to user funds.
+
+## Deployment
+
+Unlike most chains, Sommelier requires a server API sidecar process (Steward) to be accessible from the internet. Communications to Steward are protected using mutually-authenticated TLS. During our bootstrapping phase, Steward has a harcoded certificate authority to allow Seven Seas client certificates, though the protocol will be expanded to allow new strategist integrators via governance in the v7 upgrade, which will also include an authorization layer mapping specific strategist integrators with the cellar addresses for which they have been approved. For validators, they must create their own self-signed CA and server certificates by following the instructions in the "steward-registry" repo and adding their data via pull request:
+
+https://github.com/PeggyJV/steward-registry
+
+The v7 upgrade will also provide a method for handling this on-chain and will remove the necessity of the registry.
+
+The Steward server process must be on a publicly available port, the default of which is 5734, but can be changed as necessary. The fully qualified URL and port number to access your steward instance should be included in your steward-registry pull request.
+
+## API
+
+Steward's API is a GRPC interface which exposes a defined subset of contract functionality as protobufs. It does not accept raw encoded Ethereum calls, but rather accepts the parameters of function calls and handles the encoding itself, to ensure only authorized functions and in some cases bounded values are used. Existing Sommelier cellars are built using a specific architecture developed by a team of smart contract developers the protocol team has coordinated with, but any new cellar architecture approved by governance can be supported. However, due to the nature of how the API permissions and encodes cellar calls, code updates to Steward and a subsequent validator update of the Steward process is necessary before a new cellar architecture will be functional.
+
+## Strategists
+
+Strategists must submit calls to each validator's Steward instance using the defined GRPC API. In order for a call to be made to an Ethereum cellar, these updates must be sent to the Steward instance's of a consensus power of validators. The current architecture defines a periodic voting window every 10 blocks, and the strategist should submit their calls at the beginning of this window to allow for some latency. A call that reverts will remain in the gravity module until it times out, and depending on the revert being either transient or permanent, it may be retried at any time until it times out. The current timeout period is expected to be roughly 12 hours.
 
 # Auctions
 
