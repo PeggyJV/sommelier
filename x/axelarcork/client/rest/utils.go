@@ -38,4 +38,17 @@ type (
 		Proposer              sdk.AccAddress `json:"proposer" yaml:"proposer"`
 		Deposit               sdk.Coins      `json:"deposit" yaml:"deposit"`
 	}
+	// CommunityPoolSpendProposalReq defines a community pool spend proposal request body.
+	CommunityPoolSpendProposalReq struct {
+		BaseReq rest.BaseReq `json:"base_req" yaml:"base_req"`
+
+		Title       string         `json:"title" yaml:"title"`
+		Description string         `json:"description" yaml:"description"`
+		Recipient   string         `json:"recipient" yaml:"recipient"`
+		Amount      sdk.Coin       `json:"amount" yaml:"amount"`
+		ChainID     uint64         `json:"chain_id" yaml:"chain_id"`
+		ChainName   string         `json:"chain_name" yaml:"chain_name"`
+		Proposer    sdk.AccAddress `json:"proposer" yaml:"proposer"`
+		Deposit     sdk.Coins      `json:"deposit" yaml:"deposit"`
+	}
 )

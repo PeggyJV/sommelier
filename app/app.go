@@ -409,8 +409,15 @@ func NewSommelierApp(
 
 	scopedAxelarCorkKeeper := app.CapabilityKeeper.ScopeToModule(axelarcorktypes.ModuleName)
 	app.ScopedAxelarCorkKeeper = scopedAxelarCorkKeeper
-	app.AxelarCorkKeeper = axelarcorkkeeper.NewKeeper(appCodec, keys[axelarcorktypes.StoreKey],
-		app.GetSubspace(axelarcorktypes.ModuleName), app.StakingKeeper, app.IBCKeeper.ChannelKeeper)
+	app.AxelarCorkKeeper = axelarcorkkeeper.NewKeeper(
+		appCodec,
+		keys[axelarcorktypes.StoreKey],
+		app.GetSubspace(axelarcorktypes.ModuleName),
+		app.StakingKeeper,
+		app.TransferKeeper,
+		app.DistrKeeper,
+		app.IBCKeeper.ChannelKeeper,
+	)
 	axelarCorkModule := axelarcork.NewAppModule(app.AxelarCorkKeeper, appCodec)
 
 	app.CellarFeesKeeper = cellarfeeskeeper.NewKeeper(

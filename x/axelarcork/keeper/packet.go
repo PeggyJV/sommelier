@@ -76,7 +76,7 @@ func (k Keeper) WriteAcknowledgement(ctx sdk.Context, chanCap *capabilitytypes.C
 	return k.ics4Wrapper.WriteAcknowledgement(ctx, chanCap, packet, acknowledgement)
 }
 
-// GetAppVersion wraps IBC ChannelKeeper's GetAppVersion function
-func (k Keeper) GetAppVersion(ctx sdk.Context, portID, channelID string) (string, bool) {
-	return k.ics4Wrapper.GetAppVersion(ctx, portID, channelID)
-}
+//// GetAppVersion wraps IBC ChannelKeeper's GetAppVersion function
+//func (k Keeper) GetAppVersion(ctx sdk.Context, portID, channelID string) (string, bool) {
+//	return k.ics4Wrapper.GetAppVersion(ctx, portID, channelID)
+//}

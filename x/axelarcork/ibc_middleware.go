@@ -68,6 +68,6 @@ func (im IBCMiddleware) WriteAcknowledgement(ctx sdk.Context, chanCap *capabilit
 }
 
 // GetAppVersion returns the application version of the underlying application
-func (i IBCMiddleware) GetAppVersion(ctx sdk.Context, portID, channelID string) (string, bool) {
-	return i.keeper.GetAppVersion(ctx, portID, channelID)
-}
+//func (i IBCMiddleware) GetAppVersion(ctx sdk.Context, portID, channelID string) (string, bool) {
+//	return i.keeper.GetAppVersion(ctx, portID, channelID)
+//}

@@ -267,3 +267,80 @@ The contract_call_proto_json field must be the JSON representation of a Schedule
 
 	return cmd
 }
+
+func CmdSubmitCommunityPoolEthereumSpendProposal() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "community-pool-spend [proposal-file]",
+		Args:  cobra.ExactArgs(1),
+		Short: "Submit a community pool spend proposal",
+		Long: strings.TrimSpace(
+			fmt.Sprintf(`Submit a community pool spend proposal along with an initial deposit.
+The proposal details must be supplied via a JSON file. The funds from the community pool
+will be bridged to the target EVM via Axelar to the supplied recipient address. Only one denomination
+of Cosmos token can be sent. Fees will be removed from the balance by Axelar automatically.
+
+Example:
+$ %s tx gov submit-proposal community-pool-spend <path/to/proposal.json> --from=<key_or_address>
+
+Where proposal.json contains:
+
+{
+	"title": "Community Pool Ethereum Spend",
+	"description": "Bridge me some tokens to Ethereum!",
+	"recipient": "0x0000000000000000000000000000000000000000",
+	"chain_name": "Avalanche",
+	"amount": "20000stake",
+	"deposit": "1000stake"
+}
+`,
+				version.AppName,
+			),
+		),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			clientCtx, err := client.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			proposal, err := ParseCommunityPoolSpendProposal(clientCtx.Codec, args[0])
+			if err != nil {
+				return err
+			}
+
+			if len(proposal.Title) == 0 {
+				return fmt.Errorf("title is empty")
+			}
+
+			if len(proposal.Description) == 0 {
+				return fmt.Errorf("description is empty")
+			}
+
+			if !common.IsHexAddress(proposal.Recipient) {
+				return fmt.Errorf("recipient is not a valid Ethereum address")
+			}
+
+			amount, err := sdk.ParseCoinNormalized(proposal.Amount)
+			if err != nil {
+				return err
+			}
+
+			deposit, err := sdk.ParseCoinsNormalized(proposal.Deposit)
+			if err != nil {
+				return err
+			}
+
+			from := clientCtx.GetFromAddress()
+
+			content := types.NewCommunitySpendProposal(proposal.Title, proposal.Description, proposal.Recipient, proposal.ChainId, proposal.ChainName, amount)
+
+			msg, err := govtypes.NewMsgSubmitProposal(content, deposit, from)
+			if err != nil {
+				return err
+			}
+
+			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), msg)
+		},
+	}
+
+	return cmd
+}

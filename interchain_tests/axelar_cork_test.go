@@ -15,7 +15,6 @@ import (
 	"github.com/strangelove-ventures/interchaintest/v3/chain/cosmos"
 	"github.com/strangelove-ventures/interchaintest/v3/ibc"
 	"github.com/strangelove-ventures/interchaintest/v3/testreporter"
-	"github.com/strangelove-ventures/interchaintest/v3/testutil"
 	"github.com/stretchr/testify/require"
 )
 
@@ -39,16 +38,6 @@ func TestAxelarCorkSubmissions(t *testing.T) {
 	// pulling image from env to foster local dev
 	imageTag := os.Getenv("SOMMELIER_IMAGE")
 	imageTagComponents := strings.Split(imageTag, ":")
-
-	// disabling seeds in axelar because it causes intermittent test failures
-	axlConfigFileOverrides := make(map[string]any)
-	axlConfigTomlOverrides := make(testutil.Toml)
-
-	axlP2POverrides := make(testutil.Toml)
-	axlP2POverrides["seeds"] = ""
-	axlConfigTomlOverrides["p2p"] = axlP2POverrides
-
-	axlConfigFileOverrides["config/config.toml"] = axlConfigTomlOverrides
 
 	// Chain factory
 	cf := ibctest.NewBuiltinChainFactory(zaptest.NewLogger(t), []*ibctest.ChainSpec{

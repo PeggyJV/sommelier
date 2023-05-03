@@ -1,6 +1,12 @@
 package cli
 
-import "github.com/spf13/cobra"
+import (
+	"os"
+
+	"github.com/cosmos/cosmos-sdk/codec"
+	"github.com/peggyjv/sommelier/v6/x/axelarcork/types"
+	"github.com/spf13/cobra"
+)
 
 const (
 	FlagAxelarChainID   = "axelar-chain-id"
@@ -24,4 +30,20 @@ func GetChainInfoFromFlags(cmd *cobra.Command) (string, uint64, error) {
 	}
 
 	return name, chainID, nil
+}
+
+// ParseCommunityPoolSpendProposal reads and parses a CommunityPoolEthereumSpendProposalForCLI from a file.
+func ParseCommunityPoolSpendProposal(cdc codec.JSONCodec, proposalFile string) (types.CommunityPoolSpendProposalForCLI, error) {
+	proposal := types.CommunityPoolSpendProposalForCLI{}
+
+	contents, err := os.ReadFile(proposalFile)
+	if err != nil {
+		return proposal, err
+	}
+
+	if err = cdc.UnmarshalJSON(contents, &proposal); err != nil {
+		return proposal, err
+	}
+
+	return proposal, nil
 }

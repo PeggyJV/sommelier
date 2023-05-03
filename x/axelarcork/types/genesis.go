@@ -4,8 +4,9 @@ const DefaultParamspace = ModuleName
 
 // DefaultGenesisState get raw genesis raw message for testing
 func DefaultGenesisState() GenesisState {
+	defaultParams := DefaultParams()
 	return GenesisState{
-		Params: DefaultParams(),
+		Params: &defaultParams,
 	}
 }
 
