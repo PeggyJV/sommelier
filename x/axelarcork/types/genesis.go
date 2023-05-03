@@ -6,7 +6,12 @@ const DefaultParamspace = ModuleName
 func DefaultGenesisState() GenesisState {
 	defaultParams := DefaultParams()
 	return GenesisState{
-		Params: &defaultParams,
+		Params:              &defaultParams,
+		ChainConfigurations: ChainConfigurations{},
+		InvalidationNonces:  []uint64{},
+		CellarIds:           []*CellarIDSet{},
+		ScheduledCorks:      []*ScheduledCorks{},
+		CorkResults:         []*CorkResults{},
 	}
 }
 
@@ -15,6 +20,8 @@ func (gs GenesisState) Validate() error {
 	if err := gs.Params.ValidateBasic(); err != nil {
 		return err
 	}
+
+	// todo (mvid): flesh out initial validation
 
 	return nil
 }
