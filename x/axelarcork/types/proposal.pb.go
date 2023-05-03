@@ -691,6 +691,268 @@ func (m *CommunityPoolSpendProposalForCLI) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_CommunityPoolSpendProposalForCLI proto.InternalMessageInfo
 
+type AddChainConfigurationProposal struct {
+	Title              string              `protobuf:"bytes,1,opt,name=title,proto3" json:"title,omitempty"`
+	Description        string              `protobuf:"bytes,2,opt,name=description,proto3" json:"description,omitempty"`
+	ChainConfiguration *ChainConfiguration `protobuf:"bytes,3,opt,name=chain_configuration,json=chainConfiguration,proto3" json:"chain_configuration,omitempty"`
+}
+
+func (m *AddChainConfigurationProposal) Reset()         { *m = AddChainConfigurationProposal{} }
+func (m *AddChainConfigurationProposal) String() string { return proto.CompactTextString(m) }
+func (*AddChainConfigurationProposal) ProtoMessage()    {}
+func (*AddChainConfigurationProposal) Descriptor() ([]byte, []int) {
+	return fileDescriptor_38ae8c693397bc99, []int{8}
+}
+func (m *AddChainConfigurationProposal) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *AddChainConfigurationProposal) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_AddChainConfigurationProposal.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *AddChainConfigurationProposal) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_AddChainConfigurationProposal.Merge(m, src)
+}
+func (m *AddChainConfigurationProposal) XXX_Size() int {
+	return m.Size()
+}
+func (m *AddChainConfigurationProposal) XXX_DiscardUnknown() {
+	xxx_messageInfo_AddChainConfigurationProposal.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_AddChainConfigurationProposal proto.InternalMessageInfo
+
+func (m *AddChainConfigurationProposal) GetTitle() string {
+	if m != nil {
+		return m.Title
+	}
+	return ""
+}
+
+func (m *AddChainConfigurationProposal) GetDescription() string {
+	if m != nil {
+		return m.Description
+	}
+	return ""
+}
+
+func (m *AddChainConfigurationProposal) GetChainConfiguration() *ChainConfiguration {
+	if m != nil {
+		return m.ChainConfiguration
+	}
+	return nil
+}
+
+type AddChainConfigurationProposalWithDeposit struct {
+	Title              string              `protobuf:"bytes,1,opt,name=title,proto3" json:"title,omitempty"`
+	Description        string              `protobuf:"bytes,2,opt,name=description,proto3" json:"description,omitempty"`
+	ChainConfiguration *ChainConfiguration `protobuf:"bytes,3,opt,name=chain_configuration,json=chainConfiguration,proto3" json:"chain_configuration,omitempty"`
+	Deposit            string              `protobuf:"bytes,4,opt,name=deposit,proto3" json:"deposit,omitempty"`
+}
+
+func (m *AddChainConfigurationProposalWithDeposit) Reset() {
+	*m = AddChainConfigurationProposalWithDeposit{}
+}
+func (m *AddChainConfigurationProposalWithDeposit) String() string { return proto.CompactTextString(m) }
+func (*AddChainConfigurationProposalWithDeposit) ProtoMessage()    {}
+func (*AddChainConfigurationProposalWithDeposit) Descriptor() ([]byte, []int) {
+	return fileDescriptor_38ae8c693397bc99, []int{9}
+}
+func (m *AddChainConfigurationProposalWithDeposit) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *AddChainConfigurationProposalWithDeposit) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_AddChainConfigurationProposalWithDeposit.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *AddChainConfigurationProposalWithDeposit) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_AddChainConfigurationProposalWithDeposit.Merge(m, src)
+}
+func (m *AddChainConfigurationProposalWithDeposit) XXX_Size() int {
+	return m.Size()
+}
+func (m *AddChainConfigurationProposalWithDeposit) XXX_DiscardUnknown() {
+	xxx_messageInfo_AddChainConfigurationProposalWithDeposit.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_AddChainConfigurationProposalWithDeposit proto.InternalMessageInfo
+
+func (m *AddChainConfigurationProposalWithDeposit) GetTitle() string {
+	if m != nil {
+		return m.Title
+	}
+	return ""
+}
+
+func (m *AddChainConfigurationProposalWithDeposit) GetDescription() string {
+	if m != nil {
+		return m.Description
+	}
+	return ""
+}
+
+func (m *AddChainConfigurationProposalWithDeposit) GetChainConfiguration() *ChainConfiguration {
+	if m != nil {
+		return m.ChainConfiguration
+	}
+	return nil
+}
+
+func (m *AddChainConfigurationProposalWithDeposit) GetDeposit() string {
+	if m != nil {
+		return m.Deposit
+	}
+	return ""
+}
+
+type RemoveChainConfigurationProposal struct {
+	Title       string `protobuf:"bytes,1,opt,name=title,proto3" json:"title,omitempty"`
+	Description string `protobuf:"bytes,2,opt,name=description,proto3" json:"description,omitempty"`
+	ChainId     uint64 `protobuf:"varint,3,opt,name=chain_id,json=chainId,proto3" json:"chain_id,omitempty"`
+}
+
+func (m *RemoveChainConfigurationProposal) Reset()         { *m = RemoveChainConfigurationProposal{} }
+func (m *RemoveChainConfigurationProposal) String() string { return proto.CompactTextString(m) }
+func (*RemoveChainConfigurationProposal) ProtoMessage()    {}
+func (*RemoveChainConfigurationProposal) Descriptor() ([]byte, []int) {
+	return fileDescriptor_38ae8c693397bc99, []int{10}
+}
+func (m *RemoveChainConfigurationProposal) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *RemoveChainConfigurationProposal) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_RemoveChainConfigurationProposal.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *RemoveChainConfigurationProposal) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_RemoveChainConfigurationProposal.Merge(m, src)
+}
+func (m *RemoveChainConfigurationProposal) XXX_Size() int {
+	return m.Size()
+}
+func (m *RemoveChainConfigurationProposal) XXX_DiscardUnknown() {
+	xxx_messageInfo_RemoveChainConfigurationProposal.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_RemoveChainConfigurationProposal proto.InternalMessageInfo
+
+func (m *RemoveChainConfigurationProposal) GetTitle() string {
+	if m != nil {
+		return m.Title
+	}
+	return ""
+}
+
+func (m *RemoveChainConfigurationProposal) GetDescription() string {
+	if m != nil {
+		return m.Description
+	}
+	return ""
+}
+
+func (m *RemoveChainConfigurationProposal) GetChainId() uint64 {
+	if m != nil {
+		return m.ChainId
+	}
+	return 0
+}
+
+type RemoveChainConfigurationProposalWithDeposit struct {
+	Title       string `protobuf:"bytes,1,opt,name=title,proto3" json:"title,omitempty"`
+	Description string `protobuf:"bytes,2,opt,name=description,proto3" json:"description,omitempty"`
+	ChainId     uint64 `protobuf:"varint,3,opt,name=chain_id,json=chainId,proto3" json:"chain_id,omitempty"`
+	Deposit     string `protobuf:"bytes,4,opt,name=deposit,proto3" json:"deposit,omitempty"`
+}
+
+func (m *RemoveChainConfigurationProposalWithDeposit) Reset() {
+	*m = RemoveChainConfigurationProposalWithDeposit{}
+}
+func (m *RemoveChainConfigurationProposalWithDeposit) String() string {
+	return proto.CompactTextString(m)
+}
+func (*RemoveChainConfigurationProposalWithDeposit) ProtoMessage() {}
+func (*RemoveChainConfigurationProposalWithDeposit) Descriptor() ([]byte, []int) {
+	return fileDescriptor_38ae8c693397bc99, []int{11}
+}
+func (m *RemoveChainConfigurationProposalWithDeposit) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *RemoveChainConfigurationProposalWithDeposit) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_RemoveChainConfigurationProposalWithDeposit.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *RemoveChainConfigurationProposalWithDeposit) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_RemoveChainConfigurationProposalWithDeposit.Merge(m, src)
+}
+func (m *RemoveChainConfigurationProposalWithDeposit) XXX_Size() int {
+	return m.Size()
+}
+func (m *RemoveChainConfigurationProposalWithDeposit) XXX_DiscardUnknown() {
+	xxx_messageInfo_RemoveChainConfigurationProposalWithDeposit.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_RemoveChainConfigurationProposalWithDeposit proto.InternalMessageInfo
+
+func (m *RemoveChainConfigurationProposalWithDeposit) GetTitle() string {
+	if m != nil {
+		return m.Title
+	}
+	return ""
+}
+
+func (m *RemoveChainConfigurationProposalWithDeposit) GetDescription() string {
+	if m != nil {
+		return m.Description
+	}
+	return ""
+}
+
+func (m *RemoveChainConfigurationProposalWithDeposit) GetChainId() uint64 {
+	if m != nil {
+		return m.ChainId
+	}
+	return 0
+}
+
+func (m *RemoveChainConfigurationProposalWithDeposit) GetDeposit() string {
+	if m != nil {
+		return m.Deposit
+	}
+	return ""
+}
+
 func init() {
 	proto.RegisterType((*AddManagedCellarIDsProposal)(nil), "axelar_cork.v1.AddManagedCellarIDsProposal")
 	proto.RegisterType((*AddManagedCellarIDsProposalWithDeposit)(nil), "axelar_cork.v1.AddManagedCellarIDsProposalWithDeposit")
@@ -700,59 +962,69 @@ func init() {
 	proto.RegisterType((*ScheduledCorkProposalWithDeposit)(nil), "axelar_cork.v1.ScheduledCorkProposalWithDeposit")
 	proto.RegisterType((*CommunityPoolSpendProposal)(nil), "axelar_cork.v1.CommunityPoolSpendProposal")
 	proto.RegisterType((*CommunityPoolSpendProposalForCLI)(nil), "axelar_cork.v1.CommunityPoolSpendProposalForCLI")
+	proto.RegisterType((*AddChainConfigurationProposal)(nil), "axelar_cork.v1.AddChainConfigurationProposal")
+	proto.RegisterType((*AddChainConfigurationProposalWithDeposit)(nil), "axelar_cork.v1.AddChainConfigurationProposalWithDeposit")
+	proto.RegisterType((*RemoveChainConfigurationProposal)(nil), "axelar_cork.v1.RemoveChainConfigurationProposal")
+	proto.RegisterType((*RemoveChainConfigurationProposalWithDeposit)(nil), "axelar_cork.v1.RemoveChainConfigurationProposalWithDeposit")
 }
 
 func init() { proto.RegisterFile("axelar-cork/v1/proposal.proto", fileDescriptor_38ae8c693397bc99) }
 
 var fileDescriptor_38ae8c693397bc99 = []byte{
-	// 745 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xdc, 0x96, 0x31, 0x4f, 0xdb, 0x4c,
-	0x18, 0xc7, 0x63, 0x48, 0x80, 0x5c, 0x78, 0x79, 0xc1, 0x2f, 0xbc, 0x35, 0x50, 0xec, 0xd4, 0x03,
-	0x02, 0xa9, 0xb5, 0x05, 0xad, 0x4a, 0x95, 0x0d, 0x07, 0x55, 0x4d, 0xd5, 0x56, 0x28, 0x0c, 0x95,
-	0xba, 0x58, 0x17, 0xfb, 0xe4, 0x1c, 0xd8, 0x3e, 0xcb, 0x77, 0x89, 0xc8, 0xd8, 0x8d, 0xb1, 0x63,
-	0x97, 0x4a, 0xf9, 0x2c, 0x9d, 0x90, 0x2a, 0x55, 0x8c, 0x9d, 0xac, 0x0a, 0x96, 0x8e, 0x55, 0xf8,
-	0x02, 0x55, 0xee, 0xe2, 0x90, 0x04, 0x9a, 0x85, 0x2e, 0x65, 0xf3, 0xfd, 0xff, 0xcf, 0xa3, 0xdc,
-	0xf3, 0xbb, 0xe7, 0xb9, 0x0b, 0x58, 0x83, 0xc7, 0xc8, 0x87, 0xf1, 0x23, 0x87, 0xc4, 0x47, 0x66,
-	0x73, 0xcb, 0x8c, 0x62, 0x12, 0x11, 0x0a, 0x7d, 0x23, 0x8a, 0x09, 0x23, 0xf2, 0x9c, 0xb0, 0xed,
-	0xae, 0x6d, 0x34, 0xb7, 0x56, 0x96, 0x47, 0xc2, 0xb9, 0xce, 0x43, 0x57, 0x16, 0x3d, 0xe2, 0x11,
-	0xfe, 0x69, 0x76, 0xbf, 0x7a, 0xaa, 0xea, 0x10, 0x1a, 0x10, 0x6a, 0xd6, 0x20, 0x45, 0x66, 0x73,
-	0xab, 0x86, 0x18, 0xec, 0x66, 0xe1, 0x50, 0xf8, 0xfa, 0x17, 0x09, 0xac, 0xee, 0xba, 0xee, 0x6b,
-	0x18, 0x42, 0x0f, 0xb9, 0x65, 0xe4, 0xfb, 0x30, 0xae, 0xec, 0xd1, 0xfd, 0xde, 0x36, 0xe4, 0x45,
-	0x90, 0x63, 0x98, 0xf9, 0x48, 0x91, 0x8a, 0xd2, 0x46, 0xbe, 0x2a, 0x16, 0x72, 0x11, 0x14, 0x5c,
-	0x44, 0x9d, 0x18, 0x47, 0x0c, 0x93, 0x50, 0x99, 0xe0, 0xde, 0xa0, 0x24, 0xaf, 0x01, 0xe0, 0xd4,
-	0x21, 0x0e, 0xed, 0x10, 0x06, 0x48, 0x99, 0xe4, 0x01, 0x79, 0xae, 0xbc, 0x81, 0x01, 0x92, 0x97,
-	0xc1, 0x8c, 0xb0, 0xb1, 0xab, 0x64, 0x8b, 0xd2, 0x46, 0xb6, 0x3a, 0xcd, 0xd7, 0x15, 0x57, 0x2e,
-	0x01, 0xe0, 0xf0, 0x6d, 0xd8, 0xd8, 0xa5, 0x4a, 0xae, 0x28, 0x6d, 0x14, 0xb6, 0x57, 0x8d, 0x61,
-	0x0e, 0x46, 0xba, 0xd1, 0x03, 0xc4, 0xaa, 0x79, 0x11, 0x5e, 0x71, 0xa9, 0xfe, 0x53, 0x02, 0xeb,
-	0x63, 0xaa, 0x79, 0x8b, 0x59, 0x7d, 0x0f, 0x45, 0x84, 0x62, 0xf6, 0x77, 0x15, 0x26, 0x2b, 0x60,
-	0xda, 0x15, 0x1b, 0x57, 0xa6, 0xf8, 0x4f, 0xa6, 0x4b, 0xfd, 0xab, 0x04, 0xd4, 0x2a, 0x0a, 0x48,
-	0x13, 0xdd, 0x91, 0x33, 0xbc, 0x94, 0xc0, 0xe6, 0xf8, 0x82, 0xee, 0xe2, 0x31, 0x7e, 0x9a, 0x00,
-	0x4b, 0x07, 0x4e, 0x1d, 0xb9, 0x0d, 0x1f, 0xb9, 0x65, 0x12, 0x1f, 0xdd, 0xfa, 0xf4, 0x1e, 0x80,
-	0xd9, 0x9a, 0x4f, 0x9c, 0x23, 0xbb, 0x8e, 0xb0, 0x57, 0x67, 0xbc, 0xc6, 0x6c, 0xb5, 0xc0, 0xb5,
-	0x17, 0x5c, 0x1a, 0x81, 0x90, 0x1d, 0x07, 0x21, 0x37, 0x0c, 0xe1, 0x29, 0xb8, 0xc7, 0x60, 0xec,
-	0x21, 0x66, 0x3b, 0x24, 0x64, 0x31, 0x74, 0x98, 0x0d, 0x5d, 0x37, 0x46, 0x94, 0xf6, 0x0a, 0x5b,
-	0x12, 0x76, 0xb9, 0xe7, 0xee, 0x0a, 0x53, 0xde, 0x01, 0x4a, 0x3f, 0xc1, 0x81, 0xbe, 0x6f, 0xf3,
-	0x5b, 0xc8, 0x3e, 0xa4, 0x24, 0x54, 0xa6, 0x45, 0x62, 0xea, 0x97, 0xa1, 0xef, 0xef, 0x77, 0xdd,
-	0x97, 0x94, 0x84, 0xfa, 0xe7, 0x09, 0x50, 0xbc, 0x91, 0xcf, 0x9f, 0x68, 0x86, 0x3b, 0x85, 0x6a,
-	0xb0, 0xc9, 0x66, 0x86, 0x9b, 0xec, 0x52, 0x02, 0x2b, 0x65, 0x12, 0x04, 0x8d, 0x10, 0xb3, 0xd6,
-	0x3e, 0x21, 0xfe, 0x41, 0x84, 0x42, 0xf7, 0xd6, 0x9d, 0x76, 0x1f, 0xe4, 0x63, 0xe4, 0xe0, 0x08,
-	0xa3, 0x90, 0xa5, 0xa3, 0xd4, 0x17, 0xc6, 0x8d, 0xd2, 0x30, 0xd4, 0xdc, 0x28, 0xd4, 0x1d, 0x30,
-	0x05, 0x03, 0xd2, 0x08, 0xc5, 0xb0, 0x14, 0xb6, 0x97, 0x0d, 0xf1, 0x98, 0x19, 0xdd, 0xc7, 0xcc,
-	0xe8, 0x3d, 0x66, 0x46, 0x99, 0xe0, 0xd0, 0xca, 0x9e, 0x26, 0x5a, 0xa6, 0xda, 0x0b, 0x2f, 0xcd,
-	0x9e, 0xb4, 0x35, 0xe9, 0x63, 0x5b, 0x93, 0x7e, 0xb4, 0xb5, 0x8c, 0xfe, 0x7e, 0x12, 0x14, 0x7f,
-	0x5f, 0xf5, 0x73, 0x12, 0x97, 0x5f, 0x55, 0xe4, 0xf5, 0xa1, 0xda, 0xad, 0xf9, 0x4e, 0xa2, 0xcd,
-	0xb6, 0x60, 0xe0, 0x97, 0x74, 0x2e, 0xeb, 0x29, 0x8d, 0x67, 0x37, 0xd0, 0xb0, 0xfe, 0xef, 0x24,
-	0x9a, 0x2c, 0xa2, 0x07, 0x4c, 0x7d, 0x98, 0xd2, 0xf6, 0x35, 0x4a, 0xd6, 0x62, 0x27, 0xd1, 0xe6,
-	0x45, 0x5e, 0xdf, 0xd2, 0x07, 0xd9, 0x19, 0xa3, 0xec, 0xac, 0xff, 0x3a, 0x89, 0xf6, 0xaf, 0x48,
-	0x49, 0x1d, 0xfd, 0x0a, 0xe8, 0x93, 0xeb, 0x40, 0xad, 0xa5, 0x4e, 0xa2, 0x2d, 0x0c, 0x66, 0x74,
-	0x3d, 0x7d, 0x90, 0xf3, 0xe6, 0x10, 0xe7, 0xbc, 0xb5, 0xd0, 0x49, 0xb4, 0x7f, 0x44, 0x86, 0xd0,
-	0xf5, 0x94, 0xac, 0xfc, 0xf0, 0xaa, 0xb7, 0x78, 0x0f, 0x5a, 0x72, 0x27, 0xd1, 0xe6, 0xd2, 0xd2,
-	0x45, 0x97, 0xf5, 0xfb, 0xad, 0x34, 0x73, 0xd2, 0xd6, 0x32, 0xdd, 0x73, 0xb0, 0x2a, 0xa7, 0xe7,
-	0xaa, 0x74, 0x76, 0xae, 0x4a, 0xdf, 0xcf, 0x55, 0xe9, 0xc3, 0x85, 0x9a, 0x39, 0xbb, 0x50, 0x33,
-	0xdf, 0x2e, 0xd4, 0xcc, 0x3b, 0xd3, 0xc3, 0xac, 0xde, 0xa8, 0x19, 0x0e, 0x09, 0xcc, 0x08, 0x79,
-	0x5e, 0xeb, 0xb0, 0x69, 0x52, 0x12, 0x04, 0xc8, 0xc7, 0x28, 0x36, 0x8f, 0x4d, 0x71, 0xb1, 0xf2,
-	0xff, 0x3b, 0xac, 0x15, 0x21, 0x5a, 0x9b, 0xe2, 0x73, 0xf0, 0xf8, 0x57, 0x00, 0x00, 0x00, 0xff,
-	0xff, 0x90, 0xee, 0x09, 0xfd, 0x3a, 0x09, 0x00, 0x00,
+	// 843 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xdc, 0x96, 0xcf, 0x6f, 0xdc, 0x44,
+	0x14, 0xc7, 0x77, 0x92, 0xcd, 0x8f, 0x9d, 0x0d, 0xa5, 0x75, 0x13, 0x70, 0x52, 0x62, 0x2f, 0x73,
+	0xa8, 0x52, 0x01, 0xb6, 0x12, 0x10, 0x45, 0xb9, 0xc5, 0xae, 0x10, 0x8b, 0x00, 0x45, 0x9b, 0x03,
+	0x12, 0x17, 0x6b, 0xd6, 0x33, 0x78, 0xa7, 0xb1, 0x3d, 0x96, 0x3d, 0xbb, 0x6a, 0x8e, 0xdc, 0x7a,
+	0xe4, 0x88, 0x90, 0x90, 0xf2, 0x07, 0xf0, 0x57, 0x70, 0xaa, 0x84, 0x84, 0xca, 0x8d, 0x93, 0x85,
+	0x92, 0x0b, 0x47, 0xb4, 0xfd, 0x07, 0x90, 0x67, 0xd6, 0xa9, 0xbd, 0xdb, 0x2c, 0x87, 0xa4, 0x87,
+	0xe6, 0x66, 0xbf, 0xef, 0x7b, 0xeb, 0xf7, 0x3e, 0xef, 0xbd, 0x99, 0x85, 0xdb, 0xf8, 0x09, 0x0d,
+	0x71, 0xfa, 0x91, 0xcf, 0xd3, 0x63, 0x7b, 0xb4, 0x6b, 0x27, 0x29, 0x4f, 0x78, 0x86, 0x43, 0x2b,
+	0x49, 0xb9, 0xe0, 0xda, 0x2d, 0x25, 0x7b, 0x85, 0x6c, 0x8d, 0x76, 0xb7, 0x36, 0xa7, 0xdc, 0xa5,
+	0x5d, 0xba, 0x6e, 0xad, 0x07, 0x3c, 0xe0, 0xf2, 0xd1, 0x2e, 0x9e, 0x26, 0x56, 0xc3, 0xe7, 0x59,
+	0xc4, 0x33, 0xbb, 0x8f, 0x33, 0x6a, 0x8f, 0x76, 0xfb, 0x54, 0xe0, 0x22, 0x8a, 0xc5, 0x4a, 0x47,
+	0xbf, 0x03, 0x78, 0xef, 0x80, 0x90, 0xaf, 0x71, 0x8c, 0x03, 0x4a, 0x5c, 0x1a, 0x86, 0x38, 0xed,
+	0x3e, 0xca, 0x0e, 0x27, 0x69, 0x68, 0xeb, 0x70, 0x49, 0x30, 0x11, 0x52, 0x1d, 0x74, 0xc0, 0x4e,
+	0xab, 0xa7, 0x5e, 0xb4, 0x0e, 0x6c, 0x13, 0x9a, 0xf9, 0x29, 0x4b, 0x04, 0xe3, 0xb1, 0xbe, 0x20,
+	0xb5, 0xaa, 0x49, 0xdb, 0x86, 0xd0, 0x1f, 0x60, 0x16, 0x7b, 0x31, 0x8e, 0xa8, 0xbe, 0x28, 0x1d,
+	0x5a, 0xd2, 0xf2, 0x0d, 0x8e, 0xa8, 0xb6, 0x09, 0x57, 0x95, 0xcc, 0x88, 0xde, 0xec, 0x80, 0x9d,
+	0x66, 0x6f, 0x45, 0xbe, 0x77, 0x89, 0xb6, 0x0f, 0xa1, 0x2f, 0xd3, 0xf0, 0x18, 0xc9, 0xf4, 0xa5,
+	0x0e, 0xd8, 0x69, 0xef, 0xdd, 0xb3, 0xea, 0x1c, 0xac, 0x32, 0xd1, 0x23, 0x2a, 0x7a, 0x2d, 0xe5,
+	0xde, 0x25, 0x19, 0xfa, 0x17, 0xc0, 0xfb, 0x73, 0xaa, 0xf9, 0x96, 0x89, 0xc1, 0x23, 0x9a, 0xf0,
+	0x8c, 0x89, 0x37, 0xab, 0x30, 0x4d, 0x87, 0x2b, 0x44, 0x25, 0xae, 0x2f, 0xcb, 0x4f, 0x96, 0xaf,
+	0xe8, 0x0f, 0x00, 0x8d, 0x1e, 0x8d, 0xf8, 0x88, 0xde, 0x90, 0x1e, 0xbe, 0x00, 0xf0, 0xc1, 0xfc,
+	0x82, 0x6e, 0x62, 0x1b, 0x7f, 0x59, 0x80, 0x1b, 0x47, 0xfe, 0x80, 0x92, 0x61, 0x48, 0x89, 0xcb,
+	0xd3, 0xe3, 0x2b, 0x77, 0xef, 0x7d, 0xb8, 0xd6, 0x0f, 0xb9, 0x7f, 0xec, 0x0d, 0x28, 0x0b, 0x06,
+	0x42, 0xd6, 0xd8, 0xec, 0xb5, 0xa5, 0xed, 0x0b, 0x69, 0x9a, 0x82, 0xd0, 0x9c, 0x07, 0x61, 0xa9,
+	0x0e, 0xe1, 0x53, 0xf8, 0xae, 0xc0, 0x69, 0x40, 0x85, 0xe7, 0xf3, 0x58, 0xa4, 0xd8, 0x17, 0x1e,
+	0x26, 0x24, 0xa5, 0x59, 0x36, 0x29, 0x6c, 0x43, 0xc9, 0xee, 0x44, 0x3d, 0x50, 0xa2, 0xf6, 0x10,
+	0xea, 0x17, 0x01, 0x3e, 0x0e, 0x43, 0x4f, 0x9e, 0x42, 0xde, 0xe3, 0x8c, 0xc7, 0xfa, 0x8a, 0x0a,
+	0x2c, 0x75, 0x17, 0x87, 0xe1, 0x61, 0xa1, 0x7e, 0x99, 0xf1, 0x18, 0xfd, 0xb6, 0x00, 0x3b, 0xaf,
+	0xe4, 0x73, 0x1d, 0xc3, 0x70, 0xa3, 0x50, 0x55, 0x87, 0x6c, 0xb5, 0x3e, 0x64, 0x2f, 0x00, 0xdc,
+	0x72, 0x79, 0x14, 0x0d, 0x63, 0x26, 0x4e, 0x0e, 0x39, 0x0f, 0x8f, 0x12, 0x1a, 0x93, 0x2b, 0x4f,
+	0xda, 0x7b, 0xb0, 0x95, 0x52, 0x9f, 0x25, 0x8c, 0xc6, 0xa2, 0x5c, 0xa5, 0x0b, 0xc3, 0xbc, 0x55,
+	0xaa, 0x43, 0x5d, 0x9a, 0x86, 0xfa, 0x10, 0x2e, 0xe3, 0x88, 0x0f, 0x63, 0xb5, 0x2c, 0xed, 0xbd,
+	0x4d, 0x4b, 0x5d, 0x66, 0x56, 0x71, 0x99, 0x59, 0x93, 0xcb, 0xcc, 0x72, 0x39, 0x8b, 0x9d, 0xe6,
+	0xb3, 0xdc, 0x6c, 0xf4, 0x26, 0xee, 0xfb, 0x6b, 0x4f, 0x4f, 0x4d, 0xf0, 0xd3, 0xa9, 0x09, 0xfe,
+	0x39, 0x35, 0x1b, 0xe8, 0x87, 0x45, 0xd8, 0xb9, 0xbc, 0xea, 0xcf, 0x79, 0xea, 0x7e, 0xd5, 0xd5,
+	0xee, 0xd7, 0x6a, 0x77, 0x6e, 0x8f, 0x73, 0x73, 0xed, 0x04, 0x47, 0xe1, 0x3e, 0x92, 0x66, 0x54,
+	0xd2, 0xf8, 0xec, 0x15, 0x34, 0x9c, 0x77, 0xc6, 0xb9, 0xa9, 0x29, 0xef, 0x8a, 0x88, 0xea, 0x94,
+	0xf6, 0x66, 0x28, 0x39, 0xeb, 0xe3, 0xdc, 0xbc, 0xad, 0xe2, 0x2e, 0x24, 0x54, 0x65, 0x67, 0x4d,
+	0xb3, 0x73, 0xee, 0x8e, 0x73, 0xf3, 0x6d, 0x15, 0x52, 0x2a, 0xe8, 0x25, 0xd0, 0x4f, 0x66, 0x81,
+	0x3a, 0x1b, 0xe3, 0xdc, 0xbc, 0x53, 0x8d, 0x28, 0x34, 0x54, 0xe5, 0xfc, 0xa0, 0xc6, 0xb9, 0xe5,
+	0xdc, 0x19, 0xe7, 0xe6, 0x5b, 0x2a, 0x42, 0xd9, 0x51, 0x49, 0x56, 0xfb, 0xf0, 0xe5, 0x6c, 0xc9,
+	0x19, 0x74, 0xb4, 0x71, 0x6e, 0xde, 0x2a, 0x4b, 0x57, 0x53, 0x76, 0x31, 0x6f, 0xfb, 0xab, 0x4f,
+	0x4f, 0xcd, 0x46, 0xd1, 0x07, 0xf4, 0x2b, 0x80, 0xdb, 0x07, 0x84, 0xb8, 0xc5, 0x37, 0x5d, 0x1e,
+	0x7f, 0xcf, 0x82, 0x61, 0x8a, 0x0b, 0x2c, 0x57, 0x1e, 0xbe, 0x23, 0x78, 0x57, 0x95, 0xe5, 0x57,
+	0x7f, 0x56, 0x02, 0x6e, 0xef, 0xa1, 0x99, 0x73, 0x79, 0x26, 0x81, 0x9e, 0xe6, 0xcf, 0xd8, 0xd0,
+	0x9f, 0x00, 0xee, 0xcc, 0x4d, 0xf7, 0x3a, 0x4e, 0x9d, 0xd7, 0x91, 0x79, 0x75, 0xf9, 0x9b, 0xf5,
+	0xe5, 0x1f, 0xc2, 0x8e, 0xba, 0x56, 0x5f, 0x43, 0x13, 0xaa, 0x3b, 0xbe, 0x58, 0xdb, 0x71, 0xf4,
+	0x33, 0x80, 0x1f, 0xfc, 0xdf, 0x77, 0xaf, 0x83, 0xe6, 0xe5, 0x29, 0x5c, 0xce, 0xc4, 0xe9, 0x3e,
+	0x3b, 0x33, 0xc0, 0xf3, 0x33, 0x03, 0xfc, 0x7d, 0x66, 0x80, 0x1f, 0xcf, 0x8d, 0xc6, 0xf3, 0x73,
+	0xa3, 0xf1, 0xd7, 0xb9, 0xd1, 0xf8, 0xce, 0x0e, 0x98, 0x18, 0x0c, 0xfb, 0x96, 0xcf, 0x23, 0x3b,
+	0xa1, 0x41, 0x70, 0xf2, 0x78, 0x64, 0x67, 0x3c, 0x8a, 0x68, 0xc8, 0x68, 0x6a, 0x3f, 0xb1, 0x55,
+	0x77, 0xe4, 0xdf, 0x70, 0x71, 0x92, 0xd0, 0xac, 0xbf, 0x2c, 0x8f, 0xe7, 0x8f, 0xff, 0x0b, 0x00,
+	0x00, 0xff, 0xff, 0xc6, 0xac, 0xa6, 0x10, 0xd1, 0x0b, 0x00, 0x00,
 }
 
 func (m *AddManagedCellarIDsProposal) Marshal() (dAtA []byte, err error) {
@@ -1292,6 +1564,202 @@ func (m *CommunityPoolSpendProposalForCLI) MarshalToSizedBuffer(dAtA []byte) (in
 	return len(dAtA) - i, nil
 }
 
+func (m *AddChainConfigurationProposal) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *AddChainConfigurationProposal) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *AddChainConfigurationProposal) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if m.ChainConfiguration != nil {
+		{
+			size, err := m.ChainConfiguration.MarshalToSizedBuffer(dAtA[:i])
+			if err != nil {
+				return 0, err
+			}
+			i -= size
+			i = encodeVarintProposal(dAtA, i, uint64(size))
+		}
+		i--
+		dAtA[i] = 0x1a
+	}
+	if len(m.Description) > 0 {
+		i -= len(m.Description)
+		copy(dAtA[i:], m.Description)
+		i = encodeVarintProposal(dAtA, i, uint64(len(m.Description)))
+		i--
+		dAtA[i] = 0x12
+	}
+	if len(m.Title) > 0 {
+		i -= len(m.Title)
+		copy(dAtA[i:], m.Title)
+		i = encodeVarintProposal(dAtA, i, uint64(len(m.Title)))
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *AddChainConfigurationProposalWithDeposit) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *AddChainConfigurationProposalWithDeposit) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *AddChainConfigurationProposalWithDeposit) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.Deposit) > 0 {
+		i -= len(m.Deposit)
+		copy(dAtA[i:], m.Deposit)
+		i = encodeVarintProposal(dAtA, i, uint64(len(m.Deposit)))
+		i--
+		dAtA[i] = 0x22
+	}
+	if m.ChainConfiguration != nil {
+		{
+			size, err := m.ChainConfiguration.MarshalToSizedBuffer(dAtA[:i])
+			if err != nil {
+				return 0, err
+			}
+			i -= size
+			i = encodeVarintProposal(dAtA, i, uint64(size))
+		}
+		i--
+		dAtA[i] = 0x1a
+	}
+	if len(m.Description) > 0 {
+		i -= len(m.Description)
+		copy(dAtA[i:], m.Description)
+		i = encodeVarintProposal(dAtA, i, uint64(len(m.Description)))
+		i--
+		dAtA[i] = 0x12
+	}
+	if len(m.Title) > 0 {
+		i -= len(m.Title)
+		copy(dAtA[i:], m.Title)
+		i = encodeVarintProposal(dAtA, i, uint64(len(m.Title)))
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *RemoveChainConfigurationProposal) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *RemoveChainConfigurationProposal) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *RemoveChainConfigurationProposal) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if m.ChainId != 0 {
+		i = encodeVarintProposal(dAtA, i, uint64(m.ChainId))
+		i--
+		dAtA[i] = 0x18
+	}
+	if len(m.Description) > 0 {
+		i -= len(m.Description)
+		copy(dAtA[i:], m.Description)
+		i = encodeVarintProposal(dAtA, i, uint64(len(m.Description)))
+		i--
+		dAtA[i] = 0x12
+	}
+	if len(m.Title) > 0 {
+		i -= len(m.Title)
+		copy(dAtA[i:], m.Title)
+		i = encodeVarintProposal(dAtA, i, uint64(len(m.Title)))
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *RemoveChainConfigurationProposalWithDeposit) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *RemoveChainConfigurationProposalWithDeposit) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *RemoveChainConfigurationProposalWithDeposit) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.Deposit) > 0 {
+		i -= len(m.Deposit)
+		copy(dAtA[i:], m.Deposit)
+		i = encodeVarintProposal(dAtA, i, uint64(len(m.Deposit)))
+		i--
+		dAtA[i] = 0x22
+	}
+	if m.ChainId != 0 {
+		i = encodeVarintProposal(dAtA, i, uint64(m.ChainId))
+		i--
+		dAtA[i] = 0x18
+	}
+	if len(m.Description) > 0 {
+		i -= len(m.Description)
+		copy(dAtA[i:], m.Description)
+		i = encodeVarintProposal(dAtA, i, uint64(len(m.Description)))
+		i--
+		dAtA[i] = 0x12
+	}
+	if len(m.Title) > 0 {
+		i -= len(m.Title)
+		copy(dAtA[i:], m.Title)
+		i = encodeVarintProposal(dAtA, i, uint64(len(m.Title)))
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
 func encodeVarintProposal(dAtA []byte, offset int, v uint64) int {
 	offset -= sovProposal(v)
 	base := offset
@@ -1555,6 +2023,96 @@ func (m *CommunityPoolSpendProposalForCLI) Size() (n int) {
 	l = len(m.Amount)
 	if l > 0 {
 		n += 1 + l + sovProposal(uint64(l))
+	}
+	l = len(m.Deposit)
+	if l > 0 {
+		n += 1 + l + sovProposal(uint64(l))
+	}
+	return n
+}
+
+func (m *AddChainConfigurationProposal) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.Title)
+	if l > 0 {
+		n += 1 + l + sovProposal(uint64(l))
+	}
+	l = len(m.Description)
+	if l > 0 {
+		n += 1 + l + sovProposal(uint64(l))
+	}
+	if m.ChainConfiguration != nil {
+		l = m.ChainConfiguration.Size()
+		n += 1 + l + sovProposal(uint64(l))
+	}
+	return n
+}
+
+func (m *AddChainConfigurationProposalWithDeposit) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.Title)
+	if l > 0 {
+		n += 1 + l + sovProposal(uint64(l))
+	}
+	l = len(m.Description)
+	if l > 0 {
+		n += 1 + l + sovProposal(uint64(l))
+	}
+	if m.ChainConfiguration != nil {
+		l = m.ChainConfiguration.Size()
+		n += 1 + l + sovProposal(uint64(l))
+	}
+	l = len(m.Deposit)
+	if l > 0 {
+		n += 1 + l + sovProposal(uint64(l))
+	}
+	return n
+}
+
+func (m *RemoveChainConfigurationProposal) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.Title)
+	if l > 0 {
+		n += 1 + l + sovProposal(uint64(l))
+	}
+	l = len(m.Description)
+	if l > 0 {
+		n += 1 + l + sovProposal(uint64(l))
+	}
+	if m.ChainId != 0 {
+		n += 1 + sovProposal(uint64(m.ChainId))
+	}
+	return n
+}
+
+func (m *RemoveChainConfigurationProposalWithDeposit) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.Title)
+	if l > 0 {
+		n += 1 + l + sovProposal(uint64(l))
+	}
+	l = len(m.Description)
+	if l > 0 {
+		n += 1 + l + sovProposal(uint64(l))
+	}
+	if m.ChainId != 0 {
+		n += 1 + sovProposal(uint64(m.ChainId))
 	}
 	l = len(m.Deposit)
 	if l > 0 {
@@ -3404,6 +3962,636 @@ func (m *CommunityPoolSpendProposalForCLI) Unmarshal(dAtA []byte) error {
 			m.Amount = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		case 7:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Deposit", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowProposal
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthProposal
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthProposal
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Deposit = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipProposal(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthProposal
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *AddChainConfigurationProposal) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowProposal
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: AddChainConfigurationProposal: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: AddChainConfigurationProposal: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Title", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowProposal
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthProposal
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthProposal
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Title = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Description", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowProposal
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthProposal
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthProposal
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Description = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 3:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field ChainConfiguration", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowProposal
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthProposal
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthProposal
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.ChainConfiguration == nil {
+				m.ChainConfiguration = &ChainConfiguration{}
+			}
+			if err := m.ChainConfiguration.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipProposal(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthProposal
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *AddChainConfigurationProposalWithDeposit) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowProposal
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: AddChainConfigurationProposalWithDeposit: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: AddChainConfigurationProposalWithDeposit: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Title", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowProposal
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthProposal
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthProposal
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Title = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Description", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowProposal
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthProposal
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthProposal
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Description = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 3:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field ChainConfiguration", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowProposal
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthProposal
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthProposal
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.ChainConfiguration == nil {
+				m.ChainConfiguration = &ChainConfiguration{}
+			}
+			if err := m.ChainConfiguration.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 4:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Deposit", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowProposal
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthProposal
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthProposal
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Deposit = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipProposal(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthProposal
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *RemoveChainConfigurationProposal) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowProposal
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: RemoveChainConfigurationProposal: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: RemoveChainConfigurationProposal: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Title", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowProposal
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthProposal
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthProposal
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Title = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Description", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowProposal
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthProposal
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthProposal
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Description = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 3:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field ChainId", wireType)
+			}
+			m.ChainId = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowProposal
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.ChainId |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		default:
+			iNdEx = preIndex
+			skippy, err := skipProposal(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthProposal
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *RemoveChainConfigurationProposalWithDeposit) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowProposal
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: RemoveChainConfigurationProposalWithDeposit: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: RemoveChainConfigurationProposalWithDeposit: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Title", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowProposal
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthProposal
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthProposal
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Title = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Description", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowProposal
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthProposal
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthProposal
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Description = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 3:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field ChainId", wireType)
+			}
+			m.ChainId = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowProposal
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.ChainId |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 4:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Deposit", wireType)
 			}

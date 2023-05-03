@@ -8,18 +8,18 @@ option go_package = "github.com/peggyjv/sommelier/x/axelarcork/types";
 
 // GenesisState - all cork state that must be provided at genesis
 message GenesisState {
-  Params params = 1;
-  ChainConfigurations chain_configurations = 2 [(gogoproto.nullable) = false];
-  repeated uint64                       invalidation_nonces = 3;
-  repeated CellarIDSet cellar_ids = 4;
-  repeated ScheduledCorks scheduled_corks = 5;
-  repeated CorkResults cork_results = 6;
+  Params                  params               = 1;
+  ChainConfigurations     chain_configurations = 2 [(gogoproto.nullable) = false];
+  repeated uint64         invalidation_nonces  = 3;
+  repeated CellarIDSet    cellar_ids           = 4;
+  repeated ScheduledCorks scheduled_corks      = 5;
+  repeated CorkResults    cork_results         = 6;
 }
 
 message Params {
-  string ibc_channel = 1 [(gogoproto.moretags) = "yaml:\"ibc_channel\""];
-  string ibc_port = 2 [(gogoproto.moretags) = "yaml:\"ibc_port\""];
-  string gmp_account = 3 [(gogoproto.moretags) = "yaml:\"gmp_account\""];
+  string ibc_channel      = 1 [(gogoproto.moretags) = "yaml:\"ibc_channel\""];
+  string ibc_port         = 2 [(gogoproto.moretags) = "yaml:\"ibc_port\""];
+  string gmp_account      = 3 [(gogoproto.moretags) = "yaml:\"gmp_account\""];
   string executor_account = 4 [(gogoproto.moretags) = "yaml:\"executor_account\""];
   uint64 timeout_duration = 5 [(gogoproto.moretags) = "yaml:\"timeout_duration\""];
 }

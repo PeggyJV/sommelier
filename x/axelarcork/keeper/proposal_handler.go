@@ -142,3 +142,17 @@ func HandleCommunityPoolSpendProposal(ctx sdk.Context, k Keeper, p types.Communi
 
 	return nil
 }
+
+// HandleAddChainConfigurationProposal is a handler for executing a passed chain configuration addition proposal
+func HandleAddChainConfigurationProposal(ctx sdk.Context, k Keeper, p types.AddChainConfigurationProposal) error {
+	k.SetChainConfigurationByID(ctx, p.ChainConfiguration.Id, *p.ChainConfiguration)
+
+	return nil
+}
+
+// HandleRemoveChainConfigurationProposal is a handler for executing a passed chain configuration removal proposal
+func HandleRemoveChainConfigurationProposal(ctx sdk.Context, k Keeper, p types.RemoveChainConfigurationProposal) error {
+	k.DeleteChainConfigurationByID(ctx, p.ChainId)
+
+	return nil
+}

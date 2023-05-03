@@ -8,7 +8,6 @@ import "axelar-cork/v1/cork.proto";
 
 option go_package = "github.com/peggyjv/sommelier/x/axelarcork/types";
 
-
 // Query defines the gRPC query service for the cork module.
 service Query {
   // QueryParams queries the axelar cork module parameters.
@@ -29,7 +28,8 @@ service Query {
   }
 
   // QueryScheduledCorks returns all scheduled corks at a block height
-  rpc QueryScheduledCorksByBlockHeight(QueryScheduledCorksByBlockHeightRequest) returns (QueryScheduledCorksByBlockHeightResponse) {
+  rpc QueryScheduledCorksByBlockHeight(QueryScheduledCorksByBlockHeightRequest)
+      returns (QueryScheduledCorksByBlockHeightResponse) {
     option (google.api.http).get = "/sommelier/axelarcork/v1/scheduled_corks_by_block_height/{block_height}";
   }
 
@@ -59,7 +59,7 @@ message QueryParamsResponse {
 // QueryCellarIDsRequest is the request type for Query/QueryCellarIDs gRPC method.
 message QueryCellarIDsRequest {
   string chain_name = 1;
-  uint64 chain_id = 2;
+  uint64 chain_id   = 2;
 }
 
 // QueryCellarIDsResponse is the response type for Query/QueryCellars gRPC method.
@@ -70,7 +70,7 @@ message QueryCellarIDsResponse {
 // QueryScheduledCorksRequest
 message QueryScheduledCorksRequest {
   string chain_name = 1;
-  uint64 chain_id = 2;
+  uint64 chain_id   = 2;
 }
 
 // QueryScheduledCorksResponse
@@ -81,7 +81,7 @@ message QueryScheduledCorksResponse {
 // QueryScheduledBlockHeightsRequest
 message QueryScheduledBlockHeightsRequest {
   string chain_name = 1;
-  uint64 chain_id = 2;
+  uint64 chain_id   = 2;
 }
 
 // QueryScheduledBlockHeightsResponse
@@ -92,8 +92,8 @@ message QueryScheduledBlockHeightsResponse {
 // QueryScheduledCorksByBlockHeightRequest
 message QueryScheduledCorksByBlockHeightRequest {
   uint64 block_height = 1;
-  string chain_name = 2;
-  uint64 chain_id = 3;
+  string chain_name   = 2;
+  uint64 chain_id     = 3;
 }
 
 // QueryScheduledCorksByBlockHeightResponse
@@ -103,9 +103,9 @@ message QueryScheduledCorksByBlockHeightResponse {
 
 // QueryScheduledCorksByIDRequest
 message QueryScheduledCorksByIDRequest {
-  string id = 1;
+  string id         = 1;
   string chain_name = 2;
-  uint64 chain_id = 3;
+  uint64 chain_id   = 3;
 }
 
 // QueryScheduledCorksByIDResponse
@@ -114,9 +114,9 @@ message QueryScheduledCorksByIDResponse {
 }
 
 message QueryCorkResultRequest {
-  string id = 1;
+  string id         = 1;
   string chain_name = 2;
-  uint64 chain_id = 3;
+  uint64 chain_id   = 3;
 }
 
 message QueryCorkResultResponse {
@@ -125,7 +125,7 @@ message QueryCorkResultResponse {
 
 message QueryCorkResultsRequest {
   string chain_name = 1;
-  uint64 chain_id = 2;
+  uint64 chain_id   = 2;
 }
 
 message QueryCorkResultsResponse {

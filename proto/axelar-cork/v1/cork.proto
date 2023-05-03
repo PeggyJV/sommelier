@@ -15,10 +15,10 @@ message Cork {
 }
 
 message ScheduledCork {
-  Cork cork = 1;
+  Cork   cork         = 1;
   uint64 block_height = 2;
-  string validator = 3;
-  bytes id = 4;
+  string validator    = 3;
+  bytes  id           = 4;
 }
 
 message ScheduledCorks {
@@ -26,9 +26,9 @@ message ScheduledCorks {
 }
 
 message CorkResult {
-  Cork cork = 1;
-  uint64 block_height = 2;
-  bool approved = 3;
+  Cork   cork                = 1;
+  uint64 block_height        = 2;
+  bool   approved            = 3;
   string approval_percentage = 4;
 }
 
@@ -48,6 +48,7 @@ message ChainConfiguration {
     (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
     (gogoproto.nullable)   = false
   ];
+  string proxy_address = 4;
 }
 
 message ChainConfigurations {

@@ -72,17 +72,22 @@ func (k Keeper) RelayCork(c context.Context, msg *types.MsgRelayCorkRequest) (*t
 		return nil, fmt.Errorf("no cork on chain %d found for address %s", config.Id, msg.ChainAddr)
 	}
 
+	proxyWrappedMsg := types.ProxyWrapper{
+		Target: msg.ChainAddr,
+		Body:   cork.EncodedContractCall,
+	}
+	pwbz, err := json.Marshal(proxyWrappedMsg)
+
 	axelarMemo := types.AxelarBody{
 		DestinationChain:   config.Name,
-		DestinationAddress: msg.ChainAddr,
-		Payload:            cork.EncodedContractCall,
+		DestinationAddress: config.ProxyAddress,
+		Payload:            pwbz,
 		Type:               types.PureMessage,
 		Fee: &types.Fee{
 			Amount:    strconv.FormatUint(msg.Fee, 10),
 			Recipient: params.ExecutorAccount,
 		},
 	}
-
 	bz, err := json.Marshal(axelarMemo)
 
 	transferMsg := transfertypes.NewMsgTransfer(

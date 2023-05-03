@@ -34,20 +34,20 @@ message MsgScheduleCorkResponse {
 }
 
 message MsgRelayCorkRequest {
-  string signer = 1;
-  cosmos.base.v1beta1.Coin token = 2 [(gogoproto.nullable) = false];
-  uint64 fee = 3;
-  uint64 chain_id = 4;
-  string chain_name = 5;
-  string chain_addr = 6;
+  string                   signer     = 1;
+  cosmos.base.v1beta1.Coin token      = 2 [(gogoproto.nullable) = false];
+  uint64                   fee        = 3;
+  uint64                   chain_id   = 4;
+  string                   chain_name = 5;
+  string                   chain_addr = 6;
 }
 
 message MsgRelayCorkResponse {}
 
 message MsgBumpCorkGasRequest {
-  string signer = 1;
-  cosmos.base.v1beta1.Coin token = 2 [(gogoproto.nullable) = false];
-  string message_id = 3;
+  string                   signer     = 1;
+  cosmos.base.v1beta1.Coin token      = 2 [(gogoproto.nullable) = false];
+  string                   message_id = 3;
 }
 
 message MsgBumpCorkGasResponse {}

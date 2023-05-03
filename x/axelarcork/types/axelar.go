@@ -15,6 +15,11 @@ type AxelarBody struct {
 	Fee                *Fee   `json:"fee"`
 }
 
+type ProxyWrapper struct {
+	Target string `json:"target"`
+	Body   []byte `body:"body"`
+}
+
 type Fee struct {
 	Amount    string `json:"amount"`
 	Recipient string `json:"recipient"`

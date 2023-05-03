@@ -3,6 +3,7 @@ package rest
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/rest"
+	"github.com/peggyjv/sommelier/v6/x/axelarcork/types"
 )
 
 type (
@@ -48,6 +49,26 @@ type (
 		Amount      sdk.Coin       `json:"amount" yaml:"amount"`
 		ChainID     uint64         `json:"chain_id" yaml:"chain_id"`
 		ChainName   string         `json:"chain_name" yaml:"chain_name"`
+		Proposer    sdk.AccAddress `json:"proposer" yaml:"proposer"`
+		Deposit     sdk.Coins      `json:"deposit" yaml:"deposit"`
+	}
+	// AddChainConfigurationProposalReq defines a chain configuration addition proposal request body.
+	AddChainConfigurationProposalReq struct {
+		BaseReq rest.BaseReq `json:"base_req" yaml:"base_req"`
+
+		Title              string                   `json:"title" yaml:"title"`
+		Description        string                   `json:"description" yaml:"description"`
+		ChainConfiguration types.ChainConfiguration `json:"chain_configuration" yaml:"chain_configuration"`
+		Proposer           sdk.AccAddress           `json:"proposer" yaml:"proposer"`
+		Deposit            sdk.Coins                `json:"deposit" yaml:"deposit"`
+	}
+	// RemoveChainConfigurationProposalReq defines a chain configuration removal proposal request body.
+	RemoveChainConfigurationProposalReq struct {
+		BaseReq rest.BaseReq `json:"base_req" yaml:"base_req"`
+
+		Title       string         `json:"title" yaml:"title"`
+		Description string         `json:"description" yaml:"description"`
+		ChainID     uint64         `json:"chain_id" yaml:"chain_id"`
 		Proposer    sdk.AccAddress `json:"proposer" yaml:"proposer"`
 		Deposit     sdk.Coins      `json:"deposit" yaml:"deposit"`
 	}

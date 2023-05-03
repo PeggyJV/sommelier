@@ -6,9 +6,9 @@ import "gogoproto/gogo.proto";
 option go_package = "github.com/peggyjv/sommelier/x/axelarcork/types";
 
 message CorkEvent {
-      string signer = 1;
-      string validator = 2;
-      string cork = 3;
-      uint64 block_height = 4;
-      uint64 chain_id = 5;
+  string signer       = 1;
+  string validator    = 2;
+  string cork         = 3;
+  uint64 block_height = 4;
+  uint64 chain_id     = 5;
 }

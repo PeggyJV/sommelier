@@ -344,3 +344,146 @@ Where proposal.json contains:
 
 	return cmd
 }
+
+// GetCmdSubmitAddChainConfigurationProposal implements the command to submit a cellar id addition proposal
+func GetCmdSubmitAddChainConfigurationProposal() *cobra.Command {
+
+	cmd := &cobra.Command{
+		Use:   "add-chain-config [proposal-file]",
+		Args:  cobra.ExactArgs(1),
+		Short: "Submit a chain configuration addition proposal",
+		Long: strings.TrimSpace(
+			fmt.Sprintf(`Submit a chain configuration addition proposal along with an initial deposit.
+The proposal details must be supplied via a JSON file.
+
+Example:
+$ %s tx gov submit-proposal add-chain-config <path/to/proposal.json> --from=<key_or_address>
+
+Where proposal.json contains:
+
+{
+  "title": "Enable Fake EVM proposal",
+  "description": "Fake it 'til you make it'",
+  "chain_congifuration": {
+	"name": "FakeEVM",
+	"id": 1000,
+	"vote_threshold": "0.333",
+	"proxy_address": "0x1234..."
+  },
+  "deposit": "10000usomm"
+}
+`,
+				version.AppName,
+			),
+		),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			clientCtx, err := client.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			proposal := types.AddChainConfigurationProposalWithDeposit{}
+			contents, err := os.ReadFile(args[0])
+			if err != nil {
+				return err
+			}
+
+			if err = clientCtx.Codec.UnmarshalJSON(contents, &proposal); err != nil {
+				return err
+			}
+
+			deposit, err := sdk.ParseCoinsNormalized(proposal.Deposit)
+			if err != nil {
+				return err
+			}
+
+			if err := proposal.ChainConfiguration.ValidateBasic(); err != nil {
+				return err
+			}
+
+			content := types.NewAddChainConfigurationProposal(
+				proposal.Title,
+				proposal.Description,
+				*proposal.ChainConfiguration,
+			)
+
+			from := clientCtx.GetFromAddress()
+			msg, err := govtypes.NewMsgSubmitProposal(content, deposit, from)
+			if err != nil {
+				return err
+			}
+
+			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), msg)
+		},
+	}
+
+	return cmd
+}
+
+// GetCmdSubmitRemoveChainConfigurationProposal implements the command to submit a chain configuration removal proposal
+func GetCmdSubmitRemoveChainConfigurationProposal() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "remove-chain-configuration [proposal-file]",
+		Args:  cobra.ExactArgs(1),
+		Short: "Submit a chain configuration removal proposal",
+		Long: strings.TrimSpace(
+			fmt.Sprintf(`Submit a chain configuration removal proposal along with an initial deposit.
+The proposal details must be supplied via a JSON file.
+
+Example:
+$ %s tx gov submit-proposal remove-chain-configuration <path/to/proposal.json> --from=<key_or_address>
+
+Where proposal.json contains:
+
+{
+  "title": "Dollary-doos LP Cellar Removal Proposal",
+  "description": "I don't trust them",
+  "chain_id": 1000,
+  "deposit": "10000usomm"
+}
+`,
+				version.AppName,
+			),
+		),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			clientCtx, err := client.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			proposal := types.RemoveChainConfigurationProposalWithDeposit{}
+			contents, err := os.ReadFile(args[0])
+			if err != nil {
+				return err
+			}
+
+			if err = clientCtx.Codec.UnmarshalJSON(contents, &proposal); err != nil {
+				return err
+			}
+
+			deposit, err := sdk.ParseCoinsNormalized(proposal.Deposit)
+			if err != nil {
+				return err
+			}
+
+			if proposal.ChainId == 0 {
+				return fmt.Errorf("chain ID cannot be zero")
+			}
+
+			content := types.NewRemoveChainConfigurationProposal(
+				proposal.Title,
+				proposal.Description,
+				proposal.ChainId)
+
+			from := clientCtx.GetFromAddress()
+			msg, err := govtypes.NewMsgSubmitProposal(content, deposit, from)
+			if err != nil {
+				return err
+			}
+
+			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), msg)
+		},
+	}
+
+	return cmd
+}

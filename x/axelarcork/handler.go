@@ -35,6 +35,10 @@ func NewProposalHandler(k keeper.Keeper) govtypes.Handler {
 			return keeper.HandleScheduledCorkProposal(ctx, k, *c)
 		case *types.CommunityPoolSpendProposal:
 			return keeper.HandleCommunityPoolSpendProposal(ctx, k, *c)
+		case *types.AddChainConfigurationProposal:
+			return keeper.HandleAddChainConfigurationProposal(ctx, k, *c)
+		case *types.RemoveChainConfigurationProposal:
+			return keeper.HandleRemoveChainConfigurationProposal(ctx, k, *c)
 
 		default:
 			return sdkerrors.Wrapf(sdkerrors.ErrUnknownRequest, "unrecognized cork proposal content type: %T", c)

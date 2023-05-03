@@ -11,16 +11,20 @@ import (
 )
 
 const (
-	ProposalTypeAddManagedCellarIDs    = "AddManagedCellarIDs"
-	ProposalTypeRemoveManagedCellarIDs = "RemoveManagedCellarIDs"
-	ProposalTypeScheduledCork          = "ScheduledCork"
-	ProposalTypeCommunitySpend         = "CommunitySpend"
+	ProposalTypeAddManagedCellarIDs      = "AddManagedCellarIDs"
+	ProposalTypeRemoveManagedCellarIDs   = "RemoveManagedCellarIDs"
+	ProposalTypeScheduledCork            = "ScheduledCork"
+	ProposalTypeCommunitySpend           = "CommunitySpend"
+	ProposalTypeAddChainConfiguration    = "AddChainConfiguration"
+	ProposalTypeRemoveChainConfiguration = "RemoveChainConfiguration"
 )
 
 var _ govtypes.Content = &AddManagedCellarIDsProposal{}
 var _ govtypes.Content = &RemoveManagedCellarIDsProposal{}
 var _ govtypes.Content = &ScheduledCorkProposal{}
 var _ govtypes.Content = &CommunityPoolSpendProposal{}
+var _ govtypes.Content = &AddChainConfigurationProposal{}
+var _ govtypes.Content = &RemoveChainConfigurationProposal{}
 
 func init() {
 	govtypes.RegisterProposalType(ProposalTypeAddManagedCellarIDs)
@@ -31,6 +35,13 @@ func init() {
 
 	govtypes.RegisterProposalType(ProposalTypeScheduledCork)
 	govtypes.RegisterProposalTypeCodec(&ScheduledCorkProposal{}, "sommelier/ScheduledCorkProposal")
+
+	govtypes.RegisterProposalType(ProposalTypeAddChainConfiguration)
+	govtypes.RegisterProposalTypeCodec(&AddChainConfigurationProposal{}, "sommelier/AddChainConfigurationProposal")
+
+	govtypes.RegisterProposalType(ProposalTypeRemoveChainConfiguration)
+	govtypes.RegisterProposalTypeCodec(&RemoveChainConfigurationProposal{}, "sommelier/RemoveChainConfigurationProposal")
+
 }
 
 func NewAddManagedCellarIDsProposal(title string, description string, cellarIds *CellarIDSet) *AddManagedCellarIDsProposal {
@@ -161,6 +172,58 @@ func (m *CommunityPoolSpendProposal) ValidateBasic() error {
 
 	if !common.IsHexAddress(m.Recipient) {
 		return sdkerrors.Wrapf(ErrInvalidEVMAddress, "%s", m.Recipient)
+	}
+
+	return nil
+}
+
+func NewAddChainConfigurationProposal(title string, description string, configuration ChainConfiguration) *AddChainConfigurationProposal {
+	return &AddChainConfigurationProposal{
+		Title:              title,
+		Description:        description,
+		ChainConfiguration: &configuration,
+	}
+}
+
+func (m *AddChainConfigurationProposal) ProposalRoute() string {
+	return RouterKey
+}
+
+func (m *AddChainConfigurationProposal) ProposalType() string {
+	return ProposalTypeAddChainConfiguration
+}
+
+func (m *AddChainConfigurationProposal) ValidateBasic() error {
+	if err := govtypes.ValidateAbstract(m); err != nil {
+		return err
+	}
+
+	if err := m.ChainConfiguration.ValidateBasic(); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func NewRemoveChainConfigurationProposal(title string, description string, chainID uint64) *RemoveChainConfigurationProposal {
+	return &RemoveChainConfigurationProposal{
+		Title:       title,
+		Description: description,
+		ChainId:     chainID,
+	}
+}
+
+func (m *RemoveChainConfigurationProposal) ProposalRoute() string {
+	return RouterKey
+}
+
+func (m *RemoveChainConfigurationProposal) ProposalType() string {
+	return ProposalTypeRemoveChainConfiguration
+}
+
+func (m *RemoveChainConfigurationProposal) ValidateBasic() error {
+	if err := govtypes.ValidateAbstract(m); err != nil {
+		return err
 	}
 
 	return nil

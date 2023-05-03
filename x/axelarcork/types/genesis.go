@@ -21,6 +21,12 @@ func (gs GenesisState) Validate() error {
 		return err
 	}
 
+	for _, cc := range gs.ChainConfigurations.Configurations {
+		if err := cc.ValidateBasic(); err != nil {
+			return err
+		}
+	}
+
 	// todo (mvid): flesh out initial validation
 
 	return nil

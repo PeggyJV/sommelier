@@ -164,3 +164,77 @@ func postCommunitySpendProposalHandlerFn(clientCtx client.Context) http.HandlerF
 		tx.WriteGeneratedTxResponse(clientCtx, w, req.BaseReq, msg)
 	}
 }
+
+// AddChainConfigurationProposalRESTHandler returns a ProposalRESTHandler that exposes add chain configuration REST handler with a given sub-route.
+func AddChainConfigurationProposalRESTHandler(clientCtx client.Context) govrest.ProposalRESTHandler {
+	return govrest.ProposalRESTHandler{
+		SubRoute: "add_chain_configuration",
+		Handler:  postAddChainConfigurationProposalHandlerFn(clientCtx),
+	}
+}
+
+// RemoveChainConfigurationProposalRESTHandler returns a ProposalRESTHandler that exposes remove chain configuration REST handler with a given sub-route.
+func RemoveChainConfigurationProposalRESTHandler(clientCtx client.Context) govrest.ProposalRESTHandler {
+	return govrest.ProposalRESTHandler{
+		SubRoute: "remove_chain_configuration",
+		Handler:  postRemoveChainConfigurationProposalHandlerFn(clientCtx),
+	}
+}
+
+func postAddChainConfigurationProposalHandlerFn(clientCtx client.Context) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		var req AddChainConfigurationProposalReq
+		if !rest.ReadRESTReq(w, r, clientCtx.LegacyAmino, &req) {
+			return
+		}
+
+		req.BaseReq = req.BaseReq.Sanitize()
+		if !req.BaseReq.ValidateBasic(w) {
+			return
+		}
+
+		content := types.NewAddChainConfigurationProposal(
+			req.Title,
+			req.Description,
+			req.ChainConfiguration)
+
+		msg, err := govtypes.NewMsgSubmitProposal(content, req.Deposit, req.Proposer)
+		if rest.CheckBadRequestError(w, err) {
+			return
+		}
+		if rest.CheckBadRequestError(w, msg.ValidateBasic()) {
+			return
+		}
+
+		tx.WriteGeneratedTxResponse(clientCtx, w, req.BaseReq, msg)
+	}
+}
+
+func postRemoveChainConfigurationProposalHandlerFn(clientCtx client.Context) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		var req RemoveChainConfigurationProposalReq
+		if !rest.ReadRESTReq(w, r, clientCtx.LegacyAmino, &req) {
+			return
+		}
+
+		req.BaseReq = req.BaseReq.Sanitize()
+		if !req.BaseReq.ValidateBasic(w) {
+			return
+		}
+
+		content := types.NewRemoveChainConfigurationProposal(
+			req.Title,
+			req.Description,
+			req.ChainID)
+
+		msg, err := govtypes.NewMsgSubmitProposal(content, req.Deposit, req.Proposer)
+		if rest.CheckBadRequestError(w, err) {
+			return
+		}
+		if rest.CheckBadRequestError(w, msg.ValidateBasic()) {
+			return
+		}
+
+		tx.WriteGeneratedTxResponse(clientCtx, w, req.BaseReq, msg)
+	}
+}

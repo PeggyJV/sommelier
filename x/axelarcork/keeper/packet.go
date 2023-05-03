@@ -56,12 +56,21 @@ func (k Keeper) ValidateAxelarCorkPacket(ctx sdk.Context, packet ibcexported.Pac
 		return fmt.Errorf("configuration not found for chain %s", axelarBody.DestinationChain)
 	}
 
-	winningCork, ok := k.GetWinningCork(ctx, chainConfig.Id, common.HexToAddress(axelarBody.DestinationAddress))
+	if chainConfig.ProxyAddress != axelarBody.DestinationAddress {
+		return fmt.Errorf("msg cannot bypass the proxy. expected addr %s, received %s", chainConfig.ProxyAddress, axelarBody.DestinationAddress)
+	}
+
+	var wrappedBody types.ProxyWrapper
+	if err := json.Unmarshal(axelarBody.Payload, &wrappedBody); err != nil {
+		return err
+	}
+
+	winningCork, ok := k.GetWinningCork(ctx, chainConfig.Id, common.HexToAddress(wrappedBody.Target))
 	if !ok {
 		return fmt.Errorf("no cork expected for chain %s:%d at address %s", chainConfig.Name, chainConfig.Id, axelarBody.DestinationAddress)
 	}
 
-	if !bytes.Equal(winningCork.EncodedContractCall, axelarBody.Payload) {
+	if !bytes.Equal(winningCork.EncodedContractCall, wrappedBody.Body) {
 		return fmt.Errorf("cork body did not match expected body. received: %x, expected: %x", axelarBody.Payload, winningCork.EncodedContractCall)
 	}
 

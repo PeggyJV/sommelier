@@ -79,3 +79,7 @@ func (k Keeper) GetChainConfigurationByName(ctx sdk.Context, chainName string) (
 
 	return chainConfig, found
 }
+
+func (k Keeper) DeleteChainConfigurationByID(ctx sdk.Context, chainID uint64) {
+	ctx.KVStore(k.storeKey).Delete(types.ChainConfigurationKey(chainID))
+}
