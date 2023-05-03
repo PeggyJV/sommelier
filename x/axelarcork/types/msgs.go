@@ -1,6 +1,7 @@
 package types
 
 import (
+	"fmt"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/ethereum/go-ethereum/common"
@@ -80,6 +81,10 @@ func (m *MsgRelayCorkRequest) Type() string { return TypeMsgRelayCorkRequest }
 func (m *MsgRelayCorkRequest) ValidateBasic() error {
 	if _, err := sdk.AccAddressFromBech32(m.Signer); err != nil {
 		return sdkerrors.Wrap(sdkerrors.ErrInvalidAddress, err.Error())
+	}
+
+	if m.TargetContractAddress == "" {
+		return fmt.Errorf("cannot relay a cork to an empty address")
 	}
 
 	return nil

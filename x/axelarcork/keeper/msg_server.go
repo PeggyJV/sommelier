@@ -67,13 +67,13 @@ func (k Keeper) RelayCork(c context.Context, msg *types.MsgRelayCorkRequest) (*t
 	}
 
 	// winning cork will be deleted during the middleware pass
-	cork, ok := k.GetWinningCork(ctx, config.Id, common.HexToAddress(msg.ChainAddr))
+	cork, ok := k.GetWinningCork(ctx, config.Id, common.HexToAddress(msg.TargetContractAddress))
 	if !ok {
-		return nil, fmt.Errorf("no cork on chain %d found for address %s", config.Id, msg.ChainAddr)
+		return nil, fmt.Errorf("no cork on chain %d found for address %s", config.Id, msg.TargetContractAddress)
 	}
 
 	proxyWrappedMsg := types.ProxyWrapper{
-		Target: msg.ChainAddr,
+		Target: msg.TargetContractAddress,
 		Body:   cork.EncodedContractCall,
 	}
 	pwbz, err := json.Marshal(proxyWrappedMsg)

@@ -39,7 +39,7 @@ message MsgRelayCorkRequest {
   uint64                   fee        = 3;
   uint64                   chain_id   = 4;
   string                   chain_name = 5;
-  string                   chain_addr = 6;
+  string                   target_contract_address = 6;
 }
 
 message MsgRelayCorkResponse {}
