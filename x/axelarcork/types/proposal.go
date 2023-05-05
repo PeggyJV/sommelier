@@ -44,11 +44,13 @@ func init() {
 
 }
 
-func NewAddManagedCellarIDsProposal(title string, description string, cellarIds *CellarIDSet) *AddManagedCellarIDsProposal {
+func NewAddManagedCellarIDsProposal(title string, description string, chainName string, chainID uint64, cellarIds *CellarIDSet) *AddManagedCellarIDsProposal {
 	return &AddManagedCellarIDsProposal{
 		Title:       title,
 		Description: description,
 		CellarIds:   cellarIds,
+		ChainName:   chainName,
+		ChainId:     chainID,
 	}
 }
 
@@ -72,11 +74,13 @@ func (m *AddManagedCellarIDsProposal) ValidateBasic() error {
 	return nil
 }
 
-func NewRemoveManagedCellarIDsProposal(title string, description string, cellarIds *CellarIDSet) *RemoveManagedCellarIDsProposal {
+func NewRemoveManagedCellarIDsProposal(title string, description string, chainName string, chainID uint64, cellarIds *CellarIDSet) *RemoveManagedCellarIDsProposal {
 	return &RemoveManagedCellarIDsProposal{
 		Title:       title,
 		Description: description,
 		CellarIds:   cellarIds,
+		ChainName:   chainName,
+		ChainId:     chainID,
 	}
 }
 

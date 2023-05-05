@@ -45,6 +45,10 @@ service Query {
   rpc QueryCorkResults(QueryCorkResultsRequest) returns (QueryCorkResultsResponse) {
     option (google.api.http).get = "/sommelier/axelarcork/v1/cork_results";
   }
+
+  rpc QueryChainConfigurations(QueryChainConfigurationsRequest) returns (QueryChainConfigurationsResponse) {
+    option (google.api.http).get = "/sommelier/axelarcork/v1/chain_configurations";
+  }
 }
 
 // QueryParamsRequest is the request type for the Query/Params gRPC method.
@@ -130,4 +134,10 @@ message QueryCorkResultsRequest {
 
 message QueryCorkResultsResponse {
   repeated CorkResult corkResults = 1;
+}
+
+message QueryChainConfigurationsRequest {}
+
+message QueryChainConfigurationsResponse {
+  repeated ChainConfiguration configurations = 1;
 }

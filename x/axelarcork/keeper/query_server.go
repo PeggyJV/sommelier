@@ -164,3 +164,18 @@ func (k Keeper) QueryCorkResults(c context.Context, req *types.QueryCorkResultsR
 	response.CorkResults = k.GetCorkResults(ctx, config.Id)
 	return &response, nil
 }
+
+func (k Keeper) QueryChainConfigurations(c context.Context, req *types.QueryChainConfigurationsRequest) (*types.QueryChainConfigurationsResponse, error) {
+	if req == nil {
+		return nil, status.Error(codes.InvalidArgument, "empty request")
+	}
+
+	ctx := sdk.UnwrapSDKContext(c)
+	var chainConfigurations []*types.ChainConfiguration
+	k.IterateChainConfigurations(ctx, func(config types.ChainConfiguration) (stop bool) {
+		chainConfigurations = append(chainConfigurations, &config)
+		return false
+	})
+
+	return &types.QueryChainConfigurationsResponse{Configurations: chainConfigurations}, nil
+}
