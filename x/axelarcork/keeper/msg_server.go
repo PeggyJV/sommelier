@@ -44,7 +44,7 @@ func (k Keeper) ScheduleCork(c context.Context, msg *types.MsgScheduleCorkReques
 
 	corkID := k.SetScheduledCork(ctx, config.Id, msg.BlockHeight, validatorAddr, *msg.Cork)
 
-	if err := ctx.EventManager().EmitTypedEvent(&types.CorkEvent{
+	if err := ctx.EventManager().EmitTypedEvent(&types.ScheduleCorkEvent{
 		Signer:      signer.String(),
 		Validator:   validatorAddr.String(),
 		Cork:        msg.Cork.String(),
