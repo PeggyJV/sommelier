@@ -84,8 +84,3 @@ func (k Keeper) ValidateAxelarCorkPacket(ctx sdk.Context, packet ibcexported.Pac
 func (k Keeper) WriteAcknowledgement(ctx sdk.Context, chanCap *capabilitytypes.Capability, packet ibcexported.PacketI, acknowledgement ibcexported.Acknowledgement) error {
 	return k.ics4Wrapper.WriteAcknowledgement(ctx, chanCap, packet, acknowledgement)
 }
-
-//// GetAppVersion wraps IBC ChannelKeeper's GetAppVersion function
-//func (k Keeper) GetAppVersion(ctx sdk.Context, portID, channelID string) (string, bool) {
-//	return k.ics4Wrapper.GetAppVersion(ctx, portID, channelID)
-//}

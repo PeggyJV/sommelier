@@ -23,7 +23,7 @@ type Keeper struct {
 	ics4Wrapper types.ICS4Wrapper
 }
 
-// NewKeeper creates a new x/cork Keeper instance
+// NewKeeper creates a new x/axelarcork Keeper instance
 func NewKeeper(
 	cdc codec.BinaryCodec, key sdk.StoreKey, paramSpace paramtypes.Subspace,
 	stakingKeeper types.StakingKeeper, transferKeeper types.TransferKeeper,

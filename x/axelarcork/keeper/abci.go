@@ -14,7 +14,7 @@ func (k Keeper) BeginBlocker(ctx sdk.Context) {}
 //
 // 1) Collects all winning votes
 //
-// 2) Submits all winning votes as contract calls via the gravity bridge
+// 2) Stores all winning votes as corks that strategists are allowed to relay via Axelar
 
 func (k Keeper) EndBlocker(ctx sdk.Context) {
 	k.IterateChainConfigurations(ctx, func(config types.ChainConfiguration) (stop bool) {
