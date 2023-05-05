@@ -241,18 +241,16 @@ The contract_call_proto_json field must be the JSON representation of a Schedule
 				return fmt.Errorf("%s is not a valid contract address", proposal.TargetContractAddress)
 			}
 
-			content := types.NewScheduledCorkProposal(proposal.Title, proposal.Description, proposal.BlockHeight, proposal.TargetContractAddress, proposal.ContractCallProtoJson)
-			if err := content.ValidateBasic(); err != nil {
-				return err
-			}
-			from := clientCtx.GetFromAddress()
-
 			name, chainID, err := GetChainInfoFromFlags(cmd)
 			if err != nil {
 				return err
 			}
-			content.ChainName = name
-			content.ChainId = chainID
+
+			content := types.NewScheduledCorkProposal(proposal.Title, proposal.Description, proposal.BlockHeight, name, chainID, proposal.TargetContractAddress, proposal.ContractCallProtoJson)
+			if err := content.ValidateBasic(); err != nil {
+				return err
+			}
+			from := clientCtx.GetFromAddress()
 
 			msg, err := govtypes.NewMsgSubmitProposal(content, deposit, from)
 			if err != nil {

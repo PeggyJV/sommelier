@@ -4,18 +4,18 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"github.com/icza/dyno"
-	"go.uber.org/zap/zaptest"
 	"os"
 	"strings"
 	"testing"
 	"time"
 
+	"github.com/icza/dyno"
 	ibctest "github.com/strangelove-ventures/interchaintest/v3"
 	"github.com/strangelove-ventures/interchaintest/v3/chain/cosmos"
 	"github.com/strangelove-ventures/interchaintest/v3/ibc"
 	"github.com/strangelove-ventures/interchaintest/v3/testreporter"
 	"github.com/stretchr/testify/require"
+	"go.uber.org/zap/zaptest"
 )
 
 const (

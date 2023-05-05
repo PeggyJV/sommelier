@@ -113,6 +113,8 @@ func postScheduledCorkProposalHandlerFn(clientCtx client.Context) http.HandlerFu
 			req.Title,
 			req.Description,
 			req.BlockHeight,
+			req.ChainName,
+			req.ChainID,
 			req.TargetContractAddress,
 			req.ContractCallProtoJSON,
 		)
