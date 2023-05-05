@@ -92,7 +92,7 @@ func HandleCommunityPoolSpendProposal(ctx sdk.Context, k Keeper, p types.Communi
 
 	// NOTE the community pool isn't a module account, however its coins
 	// are held in the distribution module account. Thus, the community pool
-	// must be reduced separately from the createSendToEthereum calls
+	// must be reduced separately from the Axelar IBC calls
 	newPool, negative := feePool.CommunityPool.SafeSub(sdk.NewDecCoinsFromCoins(p.Amount))
 	if negative {
 		return distributiontypes.ErrBadDistribution

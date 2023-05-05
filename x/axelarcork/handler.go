@@ -10,7 +10,7 @@ import (
 	"github.com/peggyjv/sommelier/v6/x/axelarcork/types"
 )
 
-// NewHandler returns a handler for "cork" type messages.
+// NewHandler returns a handler for "axelarcork" type messages.
 func NewHandler(k keeper.Keeper) sdk.Handler {
 	return func(ctx sdk.Context, msg sdk.Msg) (*sdk.Result, error) {
 		ctx = ctx.WithEventManager(sdk.NewEventManager())
@@ -18,8 +18,14 @@ func NewHandler(k keeper.Keeper) sdk.Handler {
 		case *types.MsgScheduleCorkRequest:
 			res, err := k.ScheduleCork(sdk.WrapSDKContext(ctx), msg)
 			return sdk.WrapServiceResult(ctx, res, err)
+		case *types.MsgRelayCorkRequest:
+			res, err := k.RelayCork(sdk.WrapSDKContext(ctx), msg)
+			return sdk.WrapServiceResult(ctx, res, err)
+		case *types.MsgBumpCorkGasRequest:
+			res, err := k.BumpCorkGas(sdk.WrapSDKContext(ctx), msg)
+			return sdk.WrapServiceResult(ctx, res, err)
 		default:
-			return nil, sdkerrors.Wrapf(sdkerrors.ErrUnknownRequest, "unrecognized cork message type: %T", msg)
+			return nil, sdkerrors.Wrapf(sdkerrors.ErrUnknownRequest, "unrecognized axelar cork message type: %T", msg)
 		}
 	}
 }
@@ -41,7 +47,7 @@ func NewProposalHandler(k keeper.Keeper) govtypes.Handler {
 			return keeper.HandleRemoveChainConfigurationProposal(ctx, k, *c)
 
 		default:
-			return sdkerrors.Wrapf(sdkerrors.ErrUnknownRequest, "unrecognized cork proposal content type: %T", c)
+			return sdkerrors.Wrapf(sdkerrors.ErrUnknownRequest, "unrecognized axelar cork proposal content type: %T", c)
 		}
 	}
 }
