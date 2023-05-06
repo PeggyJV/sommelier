@@ -99,7 +99,7 @@ func (k Keeper) DeleteScheduledCork(ctx sdk.Context, chainID uint64, blockHeight
 	ctx.KVStore(k.storeKey).Delete(types.GetScheduledCorkKey(chainID, blockHeight, id, val, contract))
 }
 
-// IterateScheduledCorks iterates over all scheduled corks in the store
+// IterateScheduledCorks iterates over all scheduled corks by chain ID
 func (k Keeper) IterateScheduledCorks(ctx sdk.Context, chainID uint64, cb func(val sdk.ValAddress, blockHeight uint64, id []byte, cel common.Address, cork types.Cork) (stop bool)) {
 	k.IterateScheduledCorksByPrefix(ctx, types.GetScheduledCorkKeyPrefix(chainID), cb)
 }
@@ -270,7 +270,7 @@ func (k Keeper) DeleteCorkResult(ctx sdk.Context, chainID uint64, id []byte) {
 	ctx.KVStore(k.storeKey).Delete(types.GetCorkResultKey(chainID, id))
 }
 
-// IterateCorksResult iterates over all cork results in the store
+// IterateCorksResult iterates over all cork results by chain ID
 func (k Keeper) IterateCorkResults(ctx sdk.Context, chainID uint64, cb func(id []byte, blockHeight uint64, approved bool, approvalPercentage string, corkResult types.CorkResult) (stop bool)) {
 	store := ctx.KVStore(k.storeKey)
 	iter := sdk.KVStorePrefixIterator(store, types.GetCorkResultPrefix(chainID))
