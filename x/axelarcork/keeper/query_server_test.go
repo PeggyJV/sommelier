@@ -2,22 +2,41 @@ package keeper
 
 import (
 	"encoding/hex"
+	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/peggyjv/sommelier/v6/x/axelarcork/types"
 )
 
+const TestEVMChainID = 2
+
 func (suite *KeeperTestSuite) TestQueriesHappyPath() {
 	ctx, corkKeeper := suite.ctx, suite.corkKeeper
 	require := suite.Require()
 
-	params := types.DefaultParams()
+	testGMPAccount := authtypes.NewModuleAddress("test-gmp-account")
+
+	params := types.Params{
+		IbcChannel:      "test-ibc-channel",
+		IbcPort:         "test-ibc-port",
+		GmpAccount:      testGMPAccount.String(),
+		ExecutorAccount: "test-executor-account",
+		TimeoutDuration: 10,
+	}
 	corkKeeper.setParams(ctx, params)
+
+	corkKeeper.SetChainConfigurationByID(ctx, TestEVMChainID, types.ChainConfiguration{
+		Name:          "testevm",
+		Id:            TestEVMChainID,
+		VoteThreshold: sdk.NewDec(0),
+		ProxyAddress:  "0x123",
+	})
 
 	testHeight := uint64(ctx.BlockHeight())
 	cork := types.Cork{
 		EncodedContractCall:   []byte("testcall"),
 		TargetContractAddress: sampleCellarHex,
+		ChainId:               TestEVMChainID,
 	}
 	id := cork.IDHash(testHeight)
 	val := sdk.ValAddress("12345678901234567890")
@@ -27,7 +46,7 @@ func (suite *KeeperTestSuite) TestQueriesHappyPath() {
 		Validator:   "cosmosvaloper1xyerxdp4xcmnswfsxyerxdp4xcmnswfs008wpw",
 		Id:          id,
 	}
-	corkKeeper.SetScheduledCork(ctx, testHeight, val, cork)
+	corkKeeper.SetScheduledCork(ctx, TestEVMChainID, testHeight, val, cork)
 
 	corkResult := types.CorkResult{
 		Cork:               &cork,
@@ -35,35 +54,43 @@ func (suite *KeeperTestSuite) TestQueriesHappyPath() {
 		Approved:           true,
 		ApprovalPercentage: "100.00",
 	}
-	corkKeeper.SetCorkResult(ctx, id, corkResult)
+	corkKeeper.SetCorkResult(ctx, TestEVMChainID, id, corkResult)
 
-	corkKeeper.SetCellarIDs(ctx, types.CellarIDSet{Ids: []string{"0x0000000000000000000000000000000000000000", "0x1111111111111111111111111111111111111111"}})
+	corkKeeper.SetCellarIDs(ctx, TestEVMChainID, types.CellarIDSet{Ids: []string{"0x0000000000000000000000000000000000000000", "0x1111111111111111111111111111111111111111"}})
 
 	paramsResult, err := corkKeeper.QueryParams(sdk.WrapSDKContext(ctx), &types.QueryParamsRequest{})
 	require.Nil(err)
 	require.Equal(params, paramsResult.Params)
 
-	scheduledCorksResult, err := corkKeeper.QueryScheduledCorks(sdk.WrapSDKContext(ctx), &types.QueryScheduledCorksRequest{})
+	scheduledCorksResult, err := corkKeeper.QueryScheduledCorks(sdk.WrapSDKContext(ctx), &types.QueryScheduledCorksRequest{ChainId: TestEVMChainID})
 	require.Nil(err)
 	require.Equal(&expectedScheduledCork, scheduledCorksResult.Corks[0])
 
-	scheduledCorksByHeightResult, err := corkKeeper.QueryScheduledCorksByBlockHeight(sdk.WrapSDKContext(ctx), &types.QueryScheduledCorksByBlockHeightRequest{BlockHeight: testHeight})
+	scheduledCorksByHeightResult, err := corkKeeper.QueryScheduledCorksByBlockHeight(sdk.WrapSDKContext(ctx),
+		&types.QueryScheduledCorksByBlockHeightRequest{
+			BlockHeight: testHeight,
+			ChainId:     TestEVMChainID,
+		})
 	require.Nil(err)
 	require.Equal(&expectedScheduledCork, scheduledCorksByHeightResult.Corks[0])
 
-	scheduledCorksByIDResult, err := corkKeeper.QueryScheduledCorksByID(sdk.WrapSDKContext(ctx), &types.QueryScheduledCorksByIDRequest{Id: hex.EncodeToString(id)})
+	scheduledCorksByIDResult, err := corkKeeper.QueryScheduledCorksByID(sdk.WrapSDKContext(ctx),
+		&types.QueryScheduledCorksByIDRequest{
+			Id:      hex.EncodeToString(id),
+			ChainId: TestEVMChainID,
+		})
 	require.Nil(err)
 	require.Equal(&expectedScheduledCork, scheduledCorksByIDResult.Corks[0])
 
-	blockHeightResult, err := corkKeeper.QueryScheduledBlockHeights(sdk.WrapSDKContext(ctx), &types.QueryScheduledBlockHeightsRequest{})
+	blockHeightResult, err := corkKeeper.QueryScheduledBlockHeights(sdk.WrapSDKContext(ctx), &types.QueryScheduledBlockHeightsRequest{ChainId: TestEVMChainID})
 	require.Nil(err)
 	require.Equal(testHeight, blockHeightResult.BlockHeights[0])
 
-	corkResultResult, err := corkKeeper.QueryCorkResult(sdk.WrapSDKContext(ctx), &types.QueryCorkResultRequest{Id: hex.EncodeToString(id)})
+	corkResultResult, err := corkKeeper.QueryCorkResult(sdk.WrapSDKContext(ctx), &types.QueryCorkResultRequest{Id: hex.EncodeToString(id), ChainId: TestEVMChainID})
 	require.Nil(err)
 	require.Equal(&corkResult, corkResultResult.CorkResult)
 
-	corkResultsResult, err := corkKeeper.QueryCorkResults(sdk.WrapSDKContext(ctx), &types.QueryCorkResultsRequest{})
+	corkResultsResult, err := corkKeeper.QueryCorkResults(sdk.WrapSDKContext(ctx), &types.QueryCorkResultsRequest{ChainId: TestEVMChainID})
 	require.Nil(err)
 	require.Equal(&corkResult, corkResultsResult.CorkResults[0])
 }

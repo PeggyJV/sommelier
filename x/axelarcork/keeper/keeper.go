@@ -117,6 +117,7 @@ func (k Keeper) IterateScheduledCorksByPrefix(ctx sdk.Context, prefix []byte, cb
 		var cork types.Cork
 		keyPair := bytes.NewBuffer(iter.Key())
 		keyPair.Next(1) // trim prefix byte
+		keyPair.Next(8) // trim chain id, it was filtered in the prefix
 		blockHeight := sdk.BigEndianToUint64(keyPair.Next(8))
 		id := keyPair.Next(32)
 		val := sdk.ValAddress(keyPair.Next(20))

@@ -19,8 +19,8 @@ func (k Keeper) BeginBlocker(ctx sdk.Context) {}
 func (k Keeper) EndBlocker(ctx sdk.Context) {
 	k.IterateChainConfigurations(ctx, func(config types.ChainConfiguration) (stop bool) {
 		k.Logger(ctx).Info("tallying scheduled cork votes",
-			"height", fmt.Sprintf("%d", ctx.BlockHeight(),
-				"chain id", config.Id))
+			"height", fmt.Sprintf("%d", ctx.BlockHeight()),
+			"chain id", config.Id)
 		winningScheduledVotes := k.GetApprovedScheduledCorks(ctx, config.Id, uint64(ctx.BlockHeight()), config.VoteThreshold)
 		if len(winningScheduledVotes) > 0 {
 			k.Logger(ctx).Info("marking all winning scheduled cork votes as relayable",
