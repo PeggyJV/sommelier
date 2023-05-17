@@ -35,6 +35,8 @@ type KeeperTestSuite struct {
 	distributionKeeper *corktestutil.MockDistributionKeeper
 	ics4wrapper        *corktestutil.MockICS4Wrapper
 
+	validator *corktestutil.MockValidatorI
+
 	queryClient types.QueryClient
 
 	encCfg moduletestutil.TestEncodingConfig
@@ -55,6 +57,7 @@ func (suite *KeeperTestSuite) SetupTest() {
 	suite.transferKeeper = corktestutil.NewMockTransferKeeper(ctrl)
 	suite.distributionKeeper = corktestutil.NewMockDistributionKeeper(ctrl)
 	suite.ics4wrapper = corktestutil.NewMockICS4Wrapper(ctrl)
+	suite.validator = corktestutil.NewMockValidatorI(ctrl)
 	suite.ctx = ctx
 
 	params := paramskeeper.NewKeeper(
@@ -176,8 +179,8 @@ func (suite *KeeperTestSuite) TestGetWinningVotes() {
 	corkKeeper.SetScheduledCork(ctx, TestEVMChainID, testHeight, bytes, cork)
 
 	suite.stakingKeeper.EXPECT().GetLastTotalPower(ctx).Return(sdk.NewInt(100))
-	//suite.stakingKeeper.EXPECT().Validator(ctx, gomock.Any()).Return(suite.validator)
-	//suite.validator.EXPECT().GetConsensusPower(gomock.Any()).Return(int64(100))
+	suite.stakingKeeper.EXPECT().Validator(ctx, gomock.Any()).Return(suite.validator)
+	suite.validator.EXPECT().GetConsensusPower(gomock.Any()).Return(int64(100))
 	suite.stakingKeeper.EXPECT().PowerReduction(ctx).Return(sdk.OneInt())
 
 	winningScheduledVotes := corkKeeper.GetApprovedScheduledCorks(ctx, TestEVMChainID, testHeight, sdk.ZeroDec())
