@@ -8,7 +8,7 @@ import (
 // InitGenesis initialize default parameters
 // and the keeper's address to pubkey map
 func InitGenesis(ctx sdk.Context, k Keeper, gs types.GenesisState) {
-	k.setParams(ctx, *gs.Params)
+	k.SetParams(ctx, *gs.Params)
 	// Set the vote period at initialization
 
 	for i, config := range gs.ChainConfigurations.Configurations {

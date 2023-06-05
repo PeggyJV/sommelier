@@ -2,7 +2,7 @@
 // Source: x/axelarcork/types/expected_keepers.go
 
 // Package mock_types is a generated GoMock package.
-package mock_types
+package mocks
 
 import (
 	context "context"

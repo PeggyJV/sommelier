@@ -1,7 +1,7 @@
 package keeper
 
 import (
-	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
+	"github.com/peggyjv/sommelier/v6/x/axelarcork/tests/mocks"
 	"testing"
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
@@ -9,11 +9,11 @@ import (
 	"github.com/cosmos/cosmos-sdk/testutil"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/bech32"
+	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	paramskeeper "github.com/cosmos/cosmos-sdk/x/params/keeper"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/golang/mock/gomock"
 	moduletestutil "github.com/peggyjv/sommelier/v6/testutil"
-	corktestutil "github.com/peggyjv/sommelier/v6/x/axelarcork/tests"
 	"github.com/peggyjv/sommelier/v6/x/axelarcork/types"
 	"github.com/stretchr/testify/suite"
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
@@ -30,12 +30,12 @@ type KeeperTestSuite struct {
 
 	ctx                sdk.Context
 	corkKeeper         Keeper
-	stakingKeeper      *corktestutil.MockStakingKeeper
-	transferKeeper     *corktestutil.MockTransferKeeper
-	distributionKeeper *corktestutil.MockDistributionKeeper
-	ics4wrapper        *corktestutil.MockICS4Wrapper
+	stakingKeeper      *mocks.MockStakingKeeper
+	transferKeeper     *mocks.MockTransferKeeper
+	distributionKeeper *mocks.MockDistributionKeeper
+	ics4wrapper        *mocks.MockICS4Wrapper
 
-	validator *corktestutil.MockValidatorI
+	validator *mocks.MockValidatorI
 
 	queryClient types.QueryClient
 
@@ -53,11 +53,11 @@ func (suite *KeeperTestSuite) SetupTest() {
 	ctrl := gomock.NewController(suite.T())
 	defer ctrl.Finish()
 
-	suite.stakingKeeper = corktestutil.NewMockStakingKeeper(ctrl)
-	suite.transferKeeper = corktestutil.NewMockTransferKeeper(ctrl)
-	suite.distributionKeeper = corktestutil.NewMockDistributionKeeper(ctrl)
-	suite.ics4wrapper = corktestutil.NewMockICS4Wrapper(ctrl)
-	suite.validator = corktestutil.NewMockValidatorI(ctrl)
+	suite.stakingKeeper = mocks.NewMockStakingKeeper(ctrl)
+	suite.transferKeeper = mocks.NewMockTransferKeeper(ctrl)
+	suite.distributionKeeper = mocks.NewMockDistributionKeeper(ctrl)
+	suite.ics4wrapper = mocks.NewMockICS4Wrapper(ctrl)
+	suite.validator = mocks.NewMockValidatorI(ctrl)
 	suite.ctx = ctx
 
 	params := paramskeeper.NewKeeper(
@@ -253,6 +253,6 @@ func (suite *KeeperTestSuite) TestParamSet() {
 		ExecutorAccount: "test-executor-account",
 		TimeoutDuration: 10,
 	}
-	corkKeeper.setParams(ctx, params)
+	corkKeeper.SetParams(ctx, params)
 	require.Equal(params, corkKeeper.GetParamSet(ctx))
 }

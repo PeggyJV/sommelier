@@ -2,7 +2,7 @@
 // Source: /Users/mv/go/pkg/mod/github.com/cosmos/cosmos-sdk@v0.45.13/x/staking/types/exported.go
 
 // Package mock_types is a generated GoMock package.
-package mock_types
+package mocks
 
 import (
 	reflect "reflect"

@@ -84,6 +84,8 @@ Where proposal.json contains:
 			content := types.NewAddManagedCellarIDsProposal(
 				proposal.Title,
 				proposal.Description,
+				"",
+				0,
 				&types.CellarIDSet{Ids: proposal.CellarIds.Ids})
 
 			name, chainID, err := GetChainInfoFromFlags(cmd)
@@ -163,6 +165,8 @@ Where proposal.json contains:
 			content := types.NewRemoveManagedCellarIDsProposal(
 				proposal.Title,
 				proposal.Description,
+				"",
+				0,
 				&types.CellarIDSet{Ids: proposal.CellarIds.Ids})
 
 			name, chainID, err := GetChainInfoFromFlags(cmd)

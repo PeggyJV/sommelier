@@ -1,6 +1,7 @@
 package keeper
 
 import (
+	"github.com/peggyjv/sommelier/v6/x/axelarcork/tests/mocks"
 	"reflect"
 	"testing"
 
@@ -13,7 +14,6 @@ import (
 
 	"github.com/golang/mock/gomock"
 
-	mock_types "github.com/peggyjv/sommelier/v6/x/axelarcork/tests"
 	"github.com/peggyjv/sommelier/v6/x/axelarcork/types"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -25,8 +25,8 @@ import (
 )
 
 type mocksForCork struct {
-	mockStakingKeeper *mock_types.MockStakingKeeper
-	mockValidator     *mock_types.MockValidatorI
+	mockStakingKeeper *mocks.MockStakingKeeper
+	mockValidator     *mocks.MockValidatorI
 }
 
 func setupCorkKeeper(t *testing.T) (
@@ -56,10 +56,10 @@ func setupCorkKeeper(t *testing.T) (
 	require.True(t, found)
 
 	ctrl := gomock.NewController(t)
-	mockStakingKeeper := mock_types.NewMockStakingKeeper(ctrl)
-	mockTransferKeeper := mock_types.NewMockTransferKeeper(ctrl)
-	mockDistributionKeeper := mock_types.NewMockDistributionKeeper(ctrl)
-	mockICS4wrapper := mock_types.NewMockICS4Wrapper(ctrl)
+	mockStakingKeeper := mocks.NewMockStakingKeeper(ctrl)
+	mockTransferKeeper := mocks.NewMockTransferKeeper(ctrl)
+	mockDistributionKeeper := mocks.NewMockDistributionKeeper(ctrl)
+	mockICS4wrapper := mocks.NewMockICS4Wrapper(ctrl)
 
 	k := NewKeeper(
 		protoCodec,
@@ -75,7 +75,7 @@ func setupCorkKeeper(t *testing.T) (
 
 	return k, ctx, mocksForCork{
 		mockStakingKeeper: mockStakingKeeper,
-		mockValidator:     mock_types.NewMockValidatorI(ctrl),
+		mockValidator:     mocks.NewMockValidatorI(ctrl),
 	}, ctrl
 }
 

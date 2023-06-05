@@ -23,7 +23,7 @@ func (suite *KeeperTestSuite) TestQueriesHappyPath() {
 		ExecutorAccount: "test-executor-account",
 		TimeoutDuration: 10,
 	}
-	corkKeeper.setParams(ctx, params)
+	corkKeeper.SetParams(ctx, params)
 
 	corkKeeper.SetChainConfigurationByID(ctx, TestEVMChainID, types.ChainConfiguration{
 		Name:          "testevm",
