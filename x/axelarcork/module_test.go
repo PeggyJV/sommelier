@@ -8,6 +8,7 @@ import (
 	channeltypes "github.com/cosmos/ibc-go/v3/modules/core/04-channel/types"
 	"github.com/golang/mock/gomock"
 	"github.com/peggyjv/sommelier/v6/x/axelarcork/tests"
+	"github.com/peggyjv/sommelier/v6/x/axelarcork/types"
 	"github.com/stretchr/testify/require"
 )
 
@@ -20,15 +21,6 @@ var (
 	testDestinationPort    = "axelar"
 	testDestinationChannel = "channel-2"
 )
-
-func makeIBCDenom(port, channel, denom string) string {
-	prefixedDenom := transfertypes.GetDenomPrefix(port, channel) + denom
-	return transfertypes.ParseDenomTrace(prefixedDenom).IBCDenom()
-}
-
-func emptyPacket() channeltypes.Packet {
-	return channeltypes.Packet{}
-}
 
 func transferPacket(t *testing.T, receiver string, metadata any) channeltypes.Packet {
 	t.Helper()
@@ -119,4 +111,26 @@ func TestSendPacket_NotGMPReceiver(t *testing.T) {
 	)
 
 	require.NoError(t, acMiddleware.SendPacket(ctx, nil, packet))
+}
+
+func TestSendPacket_EmptyPayload(t *testing.T) {
+	ctl := gomock.NewController(t)
+	defer ctl.Finish()
+
+	setup := tests.NewTestSetup(t, ctl)
+	ctx := setup.Initializer.Ctx
+	acMiddleware := setup.AxelarCorkMiddleware
+
+	// Test data
+	acBody := types.AxelarBody{
+		DestinationChain:   "sommelier",
+		DestinationAddress: "test-addr",
+		Payload:            nil,
+		Type:               0,
+		Fee:                nil,
+	}
+	packet := transferPacket(t, tests.TestGMPAccount.String(), acBody)
+
+	// expect error for non-existent
+	require.Error(t, acMiddleware.SendPacket(ctx, nil, packet))
 }

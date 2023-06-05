@@ -28,8 +28,8 @@ var TestGMPAccount = authtypes.NewModuleAddress("test-gmp-account")
 func TestParams() types.Params {
 
 	return types.Params{
-		IbcChannel:      "axelar",
-		IbcPort:         "channel-2",
+		IbcChannel:      "channel-2",
+		IbcPort:         "axelar",
 		GmpAccount:      TestGMPAccount.String(),
 		ExecutorAccount: "test-executor-account",
 		TimeoutDuration: 100,
