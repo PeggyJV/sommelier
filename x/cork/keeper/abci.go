@@ -20,15 +20,15 @@ func (k Keeper) submitContractCall(ctx sdk.Context, cork types.Cork) {
 	// increment invalidation nonce
 	invalidationNonce := k.IncrementInvalidationNonce(ctx)
 	// submit contract call to bridge
-	contractCall := k.gravityKeeper.CreateContractCallTx(
+	k.gravityKeeper.CreateContractCallTx(
 		ctx,
 		invalidationNonce,
 		cork.InvalidationScope(),
 		common.HexToAddress(cork.TargetContractAddress),
 		cork.EncodedContractCall,
 		[]gravitytypes.ERC20Token{}, // tokens are always zero
-		[]gravitytypes.ERC20Token{})
-	k.gravityKeeper.SetOutgoingTx(ctx, contractCall)
+		[]gravitytypes.ERC20Token{},
+	)
 }
 
 // EndBlocker defines the oracle logic that executes at the end of every block:
