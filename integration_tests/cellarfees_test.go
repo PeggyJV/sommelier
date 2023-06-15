@@ -16,9 +16,6 @@ import (
 	corktypes "github.com/peggyjv/sommelier/v4/x/cork/types"
 )
 
-const alphaFeeDenom string = "gravity0x4C4a2f8c81640e47606d3fd77B353E87Ba015584"
-const betaFeeDenom string = "gravity0x21dF544947ba3E8b3c32561399E88B52Dc8b2823"
-
 func (s *IntegrationTestSuite) TestCellarFees() {
 	s.Run("Bring up chain, send fees from ethereum, observe auction and fee distribution", func() {
 		val := s.chain.validators[0]
