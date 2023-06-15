@@ -145,6 +145,9 @@ func (suite *KeeperTestSuite) TestGetWinningVotes() {
 	ctx, corkKeeper := suite.ctx, suite.corkKeeper
 	require := suite.Require()
 	testHeight := uint64(ctx.BlockHeight())
+	params := types.DefaultParams()
+	params.VoteThreshold = sdk.ZeroDec()
+	corkKeeper.setParams(ctx, params)
 	cork := types.Cork{
 		EncodedContractCall:   []byte("testcall"),
 		TargetContractAddress: sampleCellarHex,
@@ -159,7 +162,7 @@ func (suite *KeeperTestSuite) TestGetWinningVotes() {
 	suite.validator.EXPECT().GetConsensusPower(gomock.Any()).Return(int64(100))
 	suite.stakingKeeper.EXPECT().PowerReduction(ctx).Return(sdk.OneInt())
 
-	winningScheduledVotes := corkKeeper.GetApprovedScheduledCorks(ctx, testHeight, sdk.ZeroDec())
+	winningScheduledVotes := corkKeeper.GetApprovedScheduledCorks(ctx)
 	results := corkKeeper.GetCorkResults(ctx)
 	require.Equal(cork, winningScheduledVotes[0])
 	require.Equal(&cork, results[0].Cork)

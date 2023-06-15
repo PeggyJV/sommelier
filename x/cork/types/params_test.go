@@ -26,7 +26,7 @@ func TestParamsValidate(t *testing.T) {
 		{
 			name: "invalid vote threshold",
 			params: Params{
-				VoteThreshold: sdk.ZeroDec(),
+				VoteThreshold: sdk.NewDec(-1),
 			},
 			expPass: false,
 		},

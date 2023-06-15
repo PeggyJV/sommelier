@@ -62,6 +62,9 @@ var (
 	betaERC20Contract     = common.HexToAddress("0x0000000000000000000000000000000000000000")
 	unusedGenesisContract = common.HexToAddress("0x0000000000000000000000000000000000000001")
 
+	alphaFeeDenom = ""
+	betaFeeDenom  = ""
+
 	// 67%
 	corkVoteThreshold = sdk.NewDecWithPrec(67, 2)
 
@@ -367,6 +370,8 @@ func (s *IntegrationTestSuite) initGenesis() {
 	s.Require().NoError(cdc.UnmarshalJSON(appGenState[genutiltypes.ModuleName], &genUtilGenState))
 
 	// Add an auction for integration testing of the auction module
+	alphaFeeDenom = fmt.Sprintf("gravity%s", alphaERC20Contract.Hex())
+	betaFeeDenom = fmt.Sprintf("gravity%s", betaERC20Contract.Hex())
 	var auctionGenState auctiontypes.GenesisState
 	s.Require().NoError(cdc.UnmarshalJSON(appGenState[auctiontypes.ModuleName], &auctionGenState))
 	auctionGenState.TokenPrices = append(auctionGenState.TokenPrices, &auctiontypes.TokenPrice{
@@ -534,10 +539,6 @@ func (s *IntegrationTestSuite) initValidatorConfigs() {
 func (s *IntegrationTestSuite) runEthContainer() {
 	s.T().Log("starting Ethereum container...")
 	var err error
-
-	nodeURL := os.Getenv("ARCHIVE_NODE_URL")
-	s.Require().NotEmptyf(nodeURL, "ARCHIVE_NODE_URL env variable must be set")
-
 	runOpts := dockertest.RunOptions{
 		Name:       "ethereum",
 		Repository: "ethereum",
@@ -547,7 +548,6 @@ func (s *IntegrationTestSuite) runEthContainer() {
 			"8545/tcp": {{HostIP: "", HostPort: "8545"}},
 		},
 		ExposedPorts: []string{"8545/tcp"},
-		Env:          []string{fmt.Sprintf("ARCHIVE_NODE_URL=%s", nodeURL)},
 	}
 
 	s.ethResource, err = s.dockerPool.RunWithOptions(
@@ -810,7 +810,7 @@ msg_batch_size = 5
 				return strings.Contains(containerLogsBuf.String(), match)
 			},
 			3*time.Minute,
-			20*time.Second,
+			1*time.Second,
 			"orchestrator %s not healthy",
 			resource.Container.ID,
 		)
