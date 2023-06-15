@@ -184,7 +184,7 @@ var (
 
 	// TestingcorkParams is a set of gravity params for testing
 	TestingcorkParams = types.Params{
-		VoteThreshold: threshold,
+		VoteThreshold: sdk.MustNewDecFromStr(corkVoteThresholdStr),
 	}
 )
 

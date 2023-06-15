@@ -11,9 +11,7 @@ import (
 	"github.com/tendermint/tendermint/libs/log"
 )
 
-var (
-	threshold = sdk.MustNewDecFromStr("0.67")
-)
+const corkVoteThresholdStr = "0.67"
 
 // Keeper of the oracle store
 type Keeper struct {
@@ -302,6 +300,7 @@ func (k Keeper) GetApprovedScheduledCorks(ctx sdk.Context) (approvedCorks []type
 		return false
 	})
 
+	threshold := sdk.MustNewDecFromStr(corkVoteThresholdStr)
 	for i, power := range powers {
 		cork := corks[i]
 		approvalPercentage := sdk.NewIntFromUint64(power).ToDec().Quo(totalPower.ToDec())
