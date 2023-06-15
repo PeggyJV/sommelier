@@ -24,6 +24,7 @@ func ParamKeyTable() paramtypes.KeyTable {
 // DefaultParams returns default oracle parameters
 func DefaultParams() Params {
 	return Params{
+		// Deprecated
 		VoteThreshold: sdk.NewDecWithPrec(67, 2), // 67%
 	}
 }
