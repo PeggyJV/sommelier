@@ -62,6 +62,9 @@ var (
 	betaERC20Contract     = common.HexToAddress("0x0000000000000000000000000000000000000000")
 	unusedGenesisContract = common.HexToAddress("0x0000000000000000000000000000000000000001")
 
+	alphaFeeDenom = ""
+	betaFeeDenom  = ""
+
 	// 67%
 	corkVoteThreshold = sdk.NewDecWithPrec(67, 2)
 
@@ -367,6 +370,8 @@ func (s *IntegrationTestSuite) initGenesis() {
 	s.Require().NoError(cdc.UnmarshalJSON(appGenState[genutiltypes.ModuleName], &genUtilGenState))
 
 	// Add an auction for integration testing of the auction module
+	alphaFeeDenom = fmt.Sprintf("gravity%s", alphaERC20Contract.Hex())
+	betaFeeDenom = fmt.Sprintf("gravity%s", betaERC20Contract.Hex())
 	var auctionGenState auctiontypes.GenesisState
 	s.Require().NoError(cdc.UnmarshalJSON(appGenState[auctiontypes.ModuleName], &auctionGenState))
 	auctionGenState.TokenPrices = append(auctionGenState.TokenPrices, &auctiontypes.TokenPrice{
