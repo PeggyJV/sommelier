@@ -298,7 +298,7 @@ func (k Keeper) GetApprovedScheduledCorks(ctx sdk.Context) (approvedCorks []type
 		return false
 	})
 
-	threshold := k.GetParamSet(ctx).VoteThreshold
+	threshold := sdk.NewDec(2).Quo(sdk.NewDec(3))
 	for i, power := range powers {
 		cork := corks[i]
 		approvalPercentage := sdk.NewIntFromUint64(power).ToDec().Quo(totalPower.ToDec())
