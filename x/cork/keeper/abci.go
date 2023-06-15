@@ -38,10 +38,8 @@ func (k Keeper) submitContractCall(ctx sdk.Context, cork types.Cork) {
 // 2) Submits all winning votes as contract calls via the gravity bridge
 
 func (k Keeper) EndBlocker(ctx sdk.Context) {
-	params := k.GetParamSet(ctx)
-
 	k.Logger(ctx).Info("tallying scheduled cork votes", "height", fmt.Sprintf("%d", ctx.BlockHeight()))
-	winningScheduledVotes := k.GetApprovedScheduledCorks(ctx, uint64(ctx.BlockHeight()), params.VoteThreshold)
+	winningScheduledVotes := k.GetApprovedScheduledCorks(ctx)
 	if len(winningScheduledVotes) > 0 {
 		k.Logger(ctx).Info("packaging all winning scheduled cork votes into contract calls",
 			"winning votes", winningScheduledVotes)

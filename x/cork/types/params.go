@@ -53,7 +53,7 @@ func validateVoteThreshold(i interface{}) error {
 		return errors.New("vote threshold cannot be nil")
 	}
 
-	if voteThreshold.LTE(sdk.ZeroDec()) || voteThreshold.GT(sdk.OneDec()) {
+	if voteThreshold.LT(sdk.ZeroDec()) || voteThreshold.GT(sdk.OneDec()) {
 		return fmt.Errorf("vote threshold value must be within the 0% - 100% range, got: %s", voteThreshold)
 	}
 
