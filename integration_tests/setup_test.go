@@ -451,6 +451,7 @@ func (s *IntegrationTestSuite) initGenesis() {
 	// we add the first validator address as a cellar so that it will trigger the cellarfees hook
 	// when we send test fees
 	corkGenState.CellarIds = corktypes.CellarIDSet{Ids: []string{unusedGenesisContract.String(), s.chain.validators[0].ethereumKey.address}}
+	corkGenState.Params = corktypes.DefaultParams()
 	corkGenState.Params.VoteThreshold = corkVoteThreshold
 	bz, err = cdc.MarshalJSON(&corkGenState)
 	s.Require().NoError(err)

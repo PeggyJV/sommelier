@@ -32,7 +32,12 @@ func (k Keeper) ScheduleCork(c context.Context, msg *types.MsgScheduleCorkReques
 		return nil, sdkerrors.Wrapf(sdkerrors.ErrUnauthorized, "signer %s is not a delegate", signer.String())
 	}
 
+	if k.GetValidatorCorkCount(ctx, validatorAddr) >= k.GetParamSet(ctx).MaxCorksPerValidator {
+		return nil, sdkerrors.Wrapf(types.ErrValidatorCorkCapacityReached, "validator %s has submitted too many uncompleted corks", validatorAddr.String())
+	}
+
 	corkID := k.SetScheduledCork(ctx, msg.BlockHeight, validatorAddr, *msg.Cork)
+	k.IncrementValidatorCorkCount(ctx, validatorAddr)
 
 	ctx.EventManager().EmitEvents(
 		sdk.Events{

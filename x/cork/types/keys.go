@@ -45,6 +45,9 @@ const (
 
 	// CorkResultPrefix - <prefix><id> -> CorkResult
 	CorkResultPrefix
+
+	// ValidatorCorkCountKey - <prefix><val_address> -> uint64(count)
+	ValidatorCorkCountKey
 )
 
 // GetCorkForValidatorAddressKey returns the key for a validators vote for a given address
@@ -80,4 +83,8 @@ func GetCorkResultPrefix() []byte {
 
 func GetCorkResultKey(id []byte) []byte {
 	return append(GetCorkResultPrefix(), id...)
+}
+
+func GetValidatorCorkCountKey(val sdk.ValAddress) []byte {
+	return append([]byte{ValidatorCorkCountKey}, val.Bytes()...)
 }
