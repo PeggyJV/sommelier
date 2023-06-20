@@ -118,10 +118,9 @@ func (suite *KeeperTestSuite) TestSetGetDeleteScheduledCork() {
 	require := suite.Require()
 
 	corkKeeper.SetChainConfigurationByID(ctx, TestEVMChainID, types.ChainConfiguration{
-		Name:          "testevm",
-		Id:            TestEVMChainID,
-		VoteThreshold: sdk.NewDec(0),
-		ProxyAddress:  "0x123",
+		Name:         "testevm",
+		Id:           TestEVMChainID,
+		ProxyAddress: "0x123",
 	})
 
 	testHeight := uint64(123)
@@ -162,10 +161,9 @@ func (suite *KeeperTestSuite) TestGetWinningVotes() {
 	require := suite.Require()
 
 	corkKeeper.SetChainConfigurationByID(ctx, TestEVMChainID, types.ChainConfiguration{
-		Name:          "testevm",
-		Id:            TestEVMChainID,
-		VoteThreshold: sdk.NewDec(0),
-		ProxyAddress:  "0x123",
+		Name:         "testevm",
+		Id:           TestEVMChainID,
+		ProxyAddress: "0x123",
 	})
 
 	testHeight := uint64(ctx.BlockHeight())
@@ -183,7 +181,7 @@ func (suite *KeeperTestSuite) TestGetWinningVotes() {
 	suite.validator.EXPECT().GetConsensusPower(gomock.Any()).Return(int64(100))
 	suite.stakingKeeper.EXPECT().PowerReduction(ctx).Return(sdk.OneInt())
 
-	winningScheduledVotes := corkKeeper.GetApprovedScheduledCorks(ctx, TestEVMChainID, testHeight, sdk.ZeroDec())
+	winningScheduledVotes := corkKeeper.GetApprovedScheduledCorks(ctx, TestEVMChainID)
 	results := corkKeeper.GetCorkResults(ctx, TestEVMChainID)
 	require.Len(winningScheduledVotes, 1)
 	require.Equal(cork, winningScheduledVotes[0])

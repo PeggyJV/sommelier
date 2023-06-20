@@ -3,7 +3,6 @@ package types
 import (
 	"testing"
 
-	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/require"
 )
 
@@ -21,20 +20,6 @@ func TestParamsValidate(t *testing.T) {
 		{
 			name:    "empty",
 			params:  Params{},
-			expPass: false,
-		},
-		{
-			name: "invalid vote threshold",
-			params: Params{
-				VoteThreshold: sdk.ZeroDec(),
-			},
-			expPass: false,
-		},
-		{
-			name: "nil vote threshold",
-			params: Params{
-				VoteThreshold: sdk.Dec{},
-			},
 			expPass: false,
 		},
 	}

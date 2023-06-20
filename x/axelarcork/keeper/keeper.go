@@ -55,6 +55,8 @@ func (k Keeper) Logger(ctx sdk.Context) log.Logger {
 // Params //
 ////////////
 
+const CorkVoteThresholdStr = "0.67"
+
 // GetParamSet returns the vote period from the parameters
 func (k Keeper) GetParamSet(ctx sdk.Context) types.Params {
 	var p types.Params
@@ -240,9 +242,8 @@ func (k Keeper) SetLatestInvalidationNonce(ctx sdk.Context, chainID uint64, inva
 }
 
 func (k Keeper) IncrementInvalidationNonce(ctx sdk.Context, chainID uint64) uint64 {
-	store := ctx.KVStore(k.storeKey)
 	nextNonce := k.GetLatestInvalidationNonce(ctx, chainID) + 1
-	store.Set(types.LatestInvalidationNonceKey(chainID), sdk.Uint64ToBigEndian(nextNonce))
+	k.SetLatestInvalidationNonce(ctx, chainID, nextNonce)
 	return nextNonce
 }
 
@@ -305,25 +306,18 @@ func (k Keeper) GetCorkResults(ctx sdk.Context, chainID uint64) []*types.CorkRes
 // Votes //
 ///////////
 
-func (k Keeper) GetApprovedScheduledCorks(ctx sdk.Context, chainID uint64, currentBlockHeight uint64, threshold sdk.Dec) (approvedCorks []types.Cork) {
-	corksForBlockHeight := make(map[uint64][]types.Cork)
-	corkPowersForBlockHeight := make(map[uint64][]uint64)
-
+func (k Keeper) GetApprovedScheduledCorks(ctx sdk.Context, chainID uint64) (approvedCorks []types.Cork) {
+	currentBlockHeight := uint64(ctx.BlockHeight())
 	totalPower := k.stakingKeeper.GetLastTotalPower(ctx)
-
-	k.IterateScheduledCorks(ctx, chainID, func(val sdk.ValAddress, scheduledBlockHeight uint64, id []byte, addr common.Address, cork types.Cork) (stop bool) {
-		if currentBlockHeight != scheduledBlockHeight {
-			// only operate on scheduled corksForBlockHeight that are valid, quit early when a further one is found
-			return true
-		}
-
+	corks := []types.Cork{}
+	powers := []uint64{}
+	k.IterateScheduledCorksByBlockHeight(ctx, chainID, currentBlockHeight, func(val sdk.ValAddress, _ uint64, id []byte, addr common.Address, cork types.Cork) (stop bool) {
 		validator := k.stakingKeeper.Validator(ctx, val)
 		validatorPower := uint64(validator.GetConsensusPower(k.stakingKeeper.PowerReduction(ctx)))
-
 		found := false
-		for i, c := range corksForBlockHeight[scheduledBlockHeight] {
+		for i, c := range corks {
 			if c.Equals(cork) {
-				corkPowersForBlockHeight[scheduledBlockHeight][i] += validatorPower
+				powers[i] += validatorPower
 
 				found = true
 				break
@@ -331,33 +325,32 @@ func (k Keeper) GetApprovedScheduledCorks(ctx sdk.Context, chainID uint64, curre
 		}
 
 		if !found {
-			corksForBlockHeight[scheduledBlockHeight] = append(corksForBlockHeight[scheduledBlockHeight], cork)
-			corkPowersForBlockHeight[scheduledBlockHeight] = append(corkPowersForBlockHeight[scheduledBlockHeight], validatorPower)
+			corks = append(corks, cork)
+			powers = append(powers, validatorPower)
 		}
 
-		k.DeleteScheduledCork(ctx, chainID, scheduledBlockHeight, id, val, addr)
+		k.DeleteScheduledCork(ctx, chainID, currentBlockHeight, id, val, addr)
 
 		return false
 	})
 
-	for blockHeight := range corkPowersForBlockHeight {
-		for i, power := range corkPowersForBlockHeight[blockHeight] {
-			cork := corksForBlockHeight[blockHeight][i]
-			approvalPercentage := sdk.NewIntFromUint64(power).ToDec().Quo(totalPower.ToDec())
-			quorumReached := approvalPercentage.GT(threshold)
-			corkResult := types.CorkResult{
-				Cork:               &cork,
-				BlockHeight:        blockHeight,
-				Approved:           quorumReached,
-				ApprovalPercentage: approvalPercentage.Mul(sdk.NewDec(100)).String(),
-			}
-			corkID := cork.IDHash(blockHeight)
+	threshold := sdk.MustNewDecFromStr(CorkVoteThresholdStr)
+	for i, power := range powers {
+		cork := corks[i]
+		approvalPercentage := sdk.NewIntFromUint64(power).ToDec().Quo(totalPower.ToDec())
+		quorumReached := approvalPercentage.GT(threshold)
+		corkResult := types.CorkResult{
+			Cork:               &cork,
+			BlockHeight:        currentBlockHeight,
+			Approved:           quorumReached,
+			ApprovalPercentage: approvalPercentage.Mul(sdk.NewDec(100)).String(),
+		}
+		corkID := cork.IDHash(currentBlockHeight)
 
-			k.SetCorkResult(ctx, chainID, corkID, corkResult)
+		k.SetCorkResult(ctx, chainID, corkID, corkResult)
 
-			if quorumReached {
-				approvedCorks = append(approvedCorks, cork)
-			}
+		if quorumReached {
+			approvedCorks = append(approvedCorks, cork)
 		}
 	}
 
