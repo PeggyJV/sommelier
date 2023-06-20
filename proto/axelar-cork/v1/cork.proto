@@ -43,12 +43,7 @@ message CellarIDSet {
 message ChainConfiguration {
   string name           = 1;
   uint64 id             = 2;
-  string vote_threshold = 3 [
-    (gogoproto.moretags)   = "yaml:\"vote_threshold\"",
-    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
-    (gogoproto.nullable)   = false
-  ];
-  string proxy_address = 4;
+  string proxy_address = 3;
 }
 
 message ChainConfigurations {

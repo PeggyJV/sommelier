@@ -9,8 +9,8 @@ pub struct Params {
     /// DistributionPerBlock defines the coin to be sent to the distribution module from the community pool every block
     #[prost(message, optional, tag = "1")]
     pub distribution_per_block: ::core::option::Option<cosmos_sdk_proto::cosmos::base::v1beta1::Coin>,
-    /// IncentivesCutoffHeight defines the block height after which the incentives module will stop sending coins to the distribution module from
-    /// the community pool
+    /// IncentivesCutoffHeight defines the block height after which the incentives module will stop sending coins to the
+    /// distribution module from the community pool
     #[prost(uint64, tag = "2")]
     pub incentives_cutoff_height: u64,
 }
