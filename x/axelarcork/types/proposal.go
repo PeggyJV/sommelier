@@ -11,12 +11,13 @@ import (
 )
 
 const (
-	ProposalTypeAddManagedCellarIDs      = "AddManagedCellarIDs"
-	ProposalTypeRemoveManagedCellarIDs   = "RemoveManagedCellarIDs"
-	ProposalTypeScheduledCork            = "ScheduledCork"
-	ProposalTypeCommunitySpend           = "CommunitySpend"
-	ProposalTypeAddChainConfiguration    = "AddChainConfiguration"
-	ProposalTypeRemoveChainConfiguration = "RemoveChainConfiguration"
+	ProposalTypeAddManagedCellarIDs = "AddAxelarManagedCellarIDs"
+
+	ProposalTypeRemoveManagedCellarIDs   = "RemoveAxelarManagedCellarIDs"
+	ProposalTypeScheduledCork            = "AxelarScheduledCork"
+	ProposalTypeCommunitySpend           = "AxelarCommunitySpend"
+	ProposalTypeAddChainConfiguration    = "AddAxelarChainConfiguration"
+	ProposalTypeRemoveChainConfiguration = "RemoveAxelarChainConfiguration"
 )
 
 var _ govtypes.Content = &AddManagedCellarIDsProposal{}
@@ -28,19 +29,19 @@ var _ govtypes.Content = &RemoveChainConfigurationProposal{}
 
 func init() {
 	govtypes.RegisterProposalType(ProposalTypeAddManagedCellarIDs)
-	govtypes.RegisterProposalTypeCodec(&AddManagedCellarIDsProposal{}, "sommelier/AddManagedCellarIDsProposal")
+	govtypes.RegisterProposalTypeCodec(&AddManagedCellarIDsProposal{}, "sommelier/AddAxelarManagedCellarIDsProposal")
 
 	govtypes.RegisterProposalType(ProposalTypeRemoveManagedCellarIDs)
-	govtypes.RegisterProposalTypeCodec(&RemoveManagedCellarIDsProposal{}, "sommelier/RemoveManagedCellarIDsProposal")
+	govtypes.RegisterProposalTypeCodec(&RemoveManagedCellarIDsProposal{}, "sommelier/RemoveAxelarManagedCellarIDsProposal")
 
 	govtypes.RegisterProposalType(ProposalTypeScheduledCork)
-	govtypes.RegisterProposalTypeCodec(&ScheduledCorkProposal{}, "sommelier/ScheduledCorkProposal")
+	govtypes.RegisterProposalTypeCodec(&ScheduledCorkProposal{}, "sommelier/AxelarScheduledCorkProposal")
 
 	govtypes.RegisterProposalType(ProposalTypeAddChainConfiguration)
-	govtypes.RegisterProposalTypeCodec(&AddChainConfigurationProposal{}, "sommelier/AddChainConfigurationProposal")
+	govtypes.RegisterProposalTypeCodec(&AddChainConfigurationProposal{}, "sommelier/AddAxelarChainConfigurationProposal")
 
 	govtypes.RegisterProposalType(ProposalTypeRemoveChainConfiguration)
-	govtypes.RegisterProposalTypeCodec(&RemoveChainConfigurationProposal{}, "sommelier/RemoveChainConfigurationProposal")
+	govtypes.RegisterProposalTypeCodec(&RemoveChainConfigurationProposal{}, "sommelier/RemoveAxelarChainConfigurationProposal")
 
 }
 
