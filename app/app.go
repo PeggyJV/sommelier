@@ -318,6 +318,7 @@ func NewSommelierApp(
 	scopedIBCKeeper := app.CapabilityKeeper.ScopeToModule(ibchost.ModuleName)
 	scopedTransferKeeper := app.CapabilityKeeper.ScopeToModule(ibctransfertypes.ModuleName)
 	scopedICAHostKeeper := app.CapabilityKeeper.ScopeToModule(icahosttypes.SubModuleName)
+	scopedAxelarCorkKeeper := app.CapabilityKeeper.ScopeToModule(axelarcorktypes.ModuleName)
 	app.CapabilityKeeper.Seal()
 
 	// add keepers
@@ -407,7 +408,6 @@ func NewSommelierApp(
 		app.StakingKeeper, app.GravityKeeper,
 	)
 
-	scopedAxelarCorkKeeper := app.CapabilityKeeper.ScopeToModule(axelarcorktypes.ModuleName)
 	app.ScopedAxelarCorkKeeper = scopedAxelarCorkKeeper
 	app.AxelarCorkKeeper = axelarcorkkeeper.NewKeeper(
 		appCodec,
