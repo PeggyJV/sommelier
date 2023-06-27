@@ -408,7 +408,6 @@ func NewSommelierApp(
 		app.StakingKeeper, app.GravityKeeper,
 	)
 
-	app.ScopedAxelarCorkKeeper = scopedAxelarCorkKeeper
 	app.AxelarCorkKeeper = axelarcorkkeeper.NewKeeper(
 		appCodec,
 		keys[axelarcorktypes.StoreKey],
@@ -418,7 +417,6 @@ func NewSommelierApp(
 		app.DistrKeeper,
 		app.IBCKeeper.ChannelKeeper,
 	)
-	axelarCorkModule := axelarcork.NewAppModule(app.AxelarCorkKeeper, appCodec)
 
 	app.CellarFeesKeeper = cellarfeeskeeper.NewKeeper(
 		appCodec, keys[cellarfeestypes.StoreKey], app.GetSubspace(cellarfeestypes.ModuleName),
@@ -496,7 +494,7 @@ func NewSommelierApp(
 		ica.NewAppModule(nil, &app.ICAHostKeeper),
 		params.NewAppModule(app.ParamsKeeper),
 		transferModule,
-		axelarCorkModule,
+		axelarcork.NewAppModule(app.AxelarCorkKeeper, appCodec),
 		gravity.NewAppModule(app.GravityKeeper, app.BankKeeper),
 		authzmodule.NewAppModule(appCodec, app.AuthzKeeper, app.AccountKeeper, app.BankKeeper, app.interfaceRegistry),
 		cork.NewAppModule(app.CorkKeeper, appCodec),
@@ -661,6 +659,7 @@ func NewSommelierApp(
 	app.ScopedIBCKeeper = scopedIBCKeeper
 	app.ScopedTransferKeeper = scopedTransferKeeper
 	app.ScopedICAHostKeeper = scopedICAHostKeeper
+	app.ScopedAxelarCorkKeeper = scopedAxelarCorkKeeper
 
 	return app
 }
