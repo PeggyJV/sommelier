@@ -10,13 +10,13 @@ import (
 func TestScheduledCorkProposalValidation(t *testing.T) {
 	testCases := []struct {
 		name                  string
-		scheduledCorkProposal ScheduledCorkProposal
+		scheduledCorkProposal AxelarScheduledCorkProposal
 		expPass               bool
 		err                   error
 	}{
 		{
 			name: "Happy path",
-			scheduledCorkProposal: ScheduledCorkProposal{
+			scheduledCorkProposal: AxelarScheduledCorkProposal{
 				Title:                 "Scheduled Cork",
 				Description:           "Schedules a cork via governance",
 				BlockHeight:           1,
@@ -28,7 +28,7 @@ func TestScheduledCorkProposalValidation(t *testing.T) {
 		},
 		{
 			name: "Contract address invalid",
-			scheduledCorkProposal: ScheduledCorkProposal{
+			scheduledCorkProposal: AxelarScheduledCorkProposal{
 				Title:                 "Scheduled Cork",
 				Description:           "Schedules a cork via governance",
 				BlockHeight:           1,
@@ -40,7 +40,7 @@ func TestScheduledCorkProposalValidation(t *testing.T) {
 		},
 		{
 			name: "Empty proto JSON",
-			scheduledCorkProposal: ScheduledCorkProposal{
+			scheduledCorkProposal: AxelarScheduledCorkProposal{
 				Title:                 "Scheduled Cork",
 				Description:           "Schedules a cork via governance",
 				BlockHeight:           1,
@@ -52,7 +52,7 @@ func TestScheduledCorkProposalValidation(t *testing.T) {
 		},
 		{
 			name: "Invalid JSON",
-			scheduledCorkProposal: ScheduledCorkProposal{
+			scheduledCorkProposal: AxelarScheduledCorkProposal{
 				Title:                 "Scheduled Cork",
 				Description:           "Schedules a cork via governance",
 				BlockHeight:           1,

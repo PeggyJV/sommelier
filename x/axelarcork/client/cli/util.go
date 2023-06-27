@@ -33,8 +33,8 @@ func GetChainInfoFromFlags(cmd *cobra.Command) (string, uint64, error) {
 }
 
 // ParseCommunityPoolSpendProposal reads and parses a CommunityPoolEthereumSpendProposalForCLI from a file.
-func ParseCommunityPoolSpendProposal(cdc codec.JSONCodec, proposalFile string) (types.CommunityPoolSpendProposalForCLI, error) {
-	proposal := types.CommunityPoolSpendProposalForCLI{}
+func ParseCommunityPoolSpendProposal(cdc codec.JSONCodec, proposalFile string) (types.AxelarCommunityPoolSpendProposalForCLI, error) {
+	proposal := types.AxelarCommunityPoolSpendProposalForCLI{}
 
 	contents, err := os.ReadFile(proposalFile)
 	if err != nil {

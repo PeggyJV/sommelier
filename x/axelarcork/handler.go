@@ -33,13 +33,13 @@ func NewHandler(k keeper.Keeper) sdk.Handler {
 func NewProposalHandler(k keeper.Keeper) govtypes.Handler {
 	return func(ctx sdk.Context, content govtypes.Content) error {
 		switch c := content.(type) {
-		case *types.AddManagedCellarIDsProposal:
+		case *types.AddAxelarManagedCellarIDsProposal:
 			return keeper.HandleAddManagedCellarsProposal(ctx, k, *c)
-		case *types.RemoveManagedCellarIDsProposal:
+		case *types.RemoveAxelarManagedCellarIDsProposal:
 			return keeper.HandleRemoveManagedCellarsProposal(ctx, k, *c)
-		case *types.ScheduledCorkProposal:
+		case *types.AxelarScheduledCorkProposal:
 			return keeper.HandleScheduledCorkProposal(ctx, k, *c)
-		case *types.CommunityPoolSpendProposal:
+		case *types.AxelarCommunityPoolSpendProposal:
 			return keeper.HandleCommunityPoolSpendProposal(ctx, k, *c)
 		case *types.AddChainConfigurationProposal:
 			return keeper.HandleAddChainConfigurationProposal(ctx, k, *c)

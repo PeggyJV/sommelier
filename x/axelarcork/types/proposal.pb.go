@@ -24,7 +24,7 @@ var _ = math.Inf
 // proto package needs to be updated.
 const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
-type AddManagedCellarIDsProposal struct {
+type AddAxelarManagedCellarIDsProposal struct {
 	Title       string       `protobuf:"bytes,1,opt,name=title,proto3" json:"title,omitempty"`
 	Description string       `protobuf:"bytes,2,opt,name=description,proto3" json:"description,omitempty"`
 	ChainName   string       `protobuf:"bytes,3,opt,name=chain_name,json=chainName,proto3" json:"chain_name,omitempty"`
@@ -32,18 +32,18 @@ type AddManagedCellarIDsProposal struct {
 	CellarIds   *CellarIDSet `protobuf:"bytes,5,opt,name=cellar_ids,json=cellarIds,proto3" json:"cellar_ids,omitempty"`
 }
 
-func (m *AddManagedCellarIDsProposal) Reset()         { *m = AddManagedCellarIDsProposal{} }
-func (m *AddManagedCellarIDsProposal) String() string { return proto.CompactTextString(m) }
-func (*AddManagedCellarIDsProposal) ProtoMessage()    {}
-func (*AddManagedCellarIDsProposal) Descriptor() ([]byte, []int) {
+func (m *AddAxelarManagedCellarIDsProposal) Reset()         { *m = AddAxelarManagedCellarIDsProposal{} }
+func (m *AddAxelarManagedCellarIDsProposal) String() string { return proto.CompactTextString(m) }
+func (*AddAxelarManagedCellarIDsProposal) ProtoMessage()    {}
+func (*AddAxelarManagedCellarIDsProposal) Descriptor() ([]byte, []int) {
 	return fileDescriptor_38ae8c693397bc99, []int{0}
 }
-func (m *AddManagedCellarIDsProposal) XXX_Unmarshal(b []byte) error {
+func (m *AddAxelarManagedCellarIDsProposal) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *AddManagedCellarIDsProposal) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *AddAxelarManagedCellarIDsProposal) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_AddManagedCellarIDsProposal.Marshal(b, m, deterministic)
+		return xxx_messageInfo_AddAxelarManagedCellarIDsProposal.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -53,47 +53,47 @@ func (m *AddManagedCellarIDsProposal) XXX_Marshal(b []byte, deterministic bool) 
 		return b[:n], nil
 	}
 }
-func (m *AddManagedCellarIDsProposal) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_AddManagedCellarIDsProposal.Merge(m, src)
+func (m *AddAxelarManagedCellarIDsProposal) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_AddAxelarManagedCellarIDsProposal.Merge(m, src)
 }
-func (m *AddManagedCellarIDsProposal) XXX_Size() int {
+func (m *AddAxelarManagedCellarIDsProposal) XXX_Size() int {
 	return m.Size()
 }
-func (m *AddManagedCellarIDsProposal) XXX_DiscardUnknown() {
-	xxx_messageInfo_AddManagedCellarIDsProposal.DiscardUnknown(m)
+func (m *AddAxelarManagedCellarIDsProposal) XXX_DiscardUnknown() {
+	xxx_messageInfo_AddAxelarManagedCellarIDsProposal.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_AddManagedCellarIDsProposal proto.InternalMessageInfo
+var xxx_messageInfo_AddAxelarManagedCellarIDsProposal proto.InternalMessageInfo
 
-func (m *AddManagedCellarIDsProposal) GetTitle() string {
+func (m *AddAxelarManagedCellarIDsProposal) GetTitle() string {
 	if m != nil {
 		return m.Title
 	}
 	return ""
 }
 
-func (m *AddManagedCellarIDsProposal) GetDescription() string {
+func (m *AddAxelarManagedCellarIDsProposal) GetDescription() string {
 	if m != nil {
 		return m.Description
 	}
 	return ""
 }
 
-func (m *AddManagedCellarIDsProposal) GetChainName() string {
+func (m *AddAxelarManagedCellarIDsProposal) GetChainName() string {
 	if m != nil {
 		return m.ChainName
 	}
 	return ""
 }
 
-func (m *AddManagedCellarIDsProposal) GetChainId() uint64 {
+func (m *AddAxelarManagedCellarIDsProposal) GetChainId() uint64 {
 	if m != nil {
 		return m.ChainId
 	}
 	return 0
 }
 
-func (m *AddManagedCellarIDsProposal) GetCellarIds() *CellarIDSet {
+func (m *AddAxelarManagedCellarIDsProposal) GetCellarIds() *CellarIDSet {
 	if m != nil {
 		return m.CellarIds
 	}
@@ -101,7 +101,7 @@ func (m *AddManagedCellarIDsProposal) GetCellarIds() *CellarIDSet {
 }
 
 // AddManagedCellarIDsProposalWithDeposit is a specific definition for CLI commands
-type AddManagedCellarIDsProposalWithDeposit struct {
+type AddAxelarManagedCellarIDsProposalWithDeposit struct {
 	Title       string       `protobuf:"bytes,1,opt,name=title,proto3" json:"title,omitempty"`
 	Description string       `protobuf:"bytes,2,opt,name=description,proto3" json:"description,omitempty"`
 	ChainName   string       `protobuf:"bytes,3,opt,name=chain_name,json=chainName,proto3" json:"chain_name,omitempty"`
@@ -110,20 +110,22 @@ type AddManagedCellarIDsProposalWithDeposit struct {
 	Deposit     string       `protobuf:"bytes,6,opt,name=deposit,proto3" json:"deposit,omitempty"`
 }
 
-func (m *AddManagedCellarIDsProposalWithDeposit) Reset() {
-	*m = AddManagedCellarIDsProposalWithDeposit{}
+func (m *AddAxelarManagedCellarIDsProposalWithDeposit) Reset() {
+	*m = AddAxelarManagedCellarIDsProposalWithDeposit{}
 }
-func (m *AddManagedCellarIDsProposalWithDeposit) String() string { return proto.CompactTextString(m) }
-func (*AddManagedCellarIDsProposalWithDeposit) ProtoMessage()    {}
-func (*AddManagedCellarIDsProposalWithDeposit) Descriptor() ([]byte, []int) {
+func (m *AddAxelarManagedCellarIDsProposalWithDeposit) String() string {
+	return proto.CompactTextString(m)
+}
+func (*AddAxelarManagedCellarIDsProposalWithDeposit) ProtoMessage() {}
+func (*AddAxelarManagedCellarIDsProposalWithDeposit) Descriptor() ([]byte, []int) {
 	return fileDescriptor_38ae8c693397bc99, []int{1}
 }
-func (m *AddManagedCellarIDsProposalWithDeposit) XXX_Unmarshal(b []byte) error {
+func (m *AddAxelarManagedCellarIDsProposalWithDeposit) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *AddManagedCellarIDsProposalWithDeposit) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *AddAxelarManagedCellarIDsProposalWithDeposit) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_AddManagedCellarIDsProposalWithDeposit.Marshal(b, m, deterministic)
+		return xxx_messageInfo_AddAxelarManagedCellarIDsProposalWithDeposit.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -133,61 +135,61 @@ func (m *AddManagedCellarIDsProposalWithDeposit) XXX_Marshal(b []byte, determini
 		return b[:n], nil
 	}
 }
-func (m *AddManagedCellarIDsProposalWithDeposit) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_AddManagedCellarIDsProposalWithDeposit.Merge(m, src)
+func (m *AddAxelarManagedCellarIDsProposalWithDeposit) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_AddAxelarManagedCellarIDsProposalWithDeposit.Merge(m, src)
 }
-func (m *AddManagedCellarIDsProposalWithDeposit) XXX_Size() int {
+func (m *AddAxelarManagedCellarIDsProposalWithDeposit) XXX_Size() int {
 	return m.Size()
 }
-func (m *AddManagedCellarIDsProposalWithDeposit) XXX_DiscardUnknown() {
-	xxx_messageInfo_AddManagedCellarIDsProposalWithDeposit.DiscardUnknown(m)
+func (m *AddAxelarManagedCellarIDsProposalWithDeposit) XXX_DiscardUnknown() {
+	xxx_messageInfo_AddAxelarManagedCellarIDsProposalWithDeposit.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_AddManagedCellarIDsProposalWithDeposit proto.InternalMessageInfo
+var xxx_messageInfo_AddAxelarManagedCellarIDsProposalWithDeposit proto.InternalMessageInfo
 
-func (m *AddManagedCellarIDsProposalWithDeposit) GetTitle() string {
+func (m *AddAxelarManagedCellarIDsProposalWithDeposit) GetTitle() string {
 	if m != nil {
 		return m.Title
 	}
 	return ""
 }
 
-func (m *AddManagedCellarIDsProposalWithDeposit) GetDescription() string {
+func (m *AddAxelarManagedCellarIDsProposalWithDeposit) GetDescription() string {
 	if m != nil {
 		return m.Description
 	}
 	return ""
 }
 
-func (m *AddManagedCellarIDsProposalWithDeposit) GetChainName() string {
+func (m *AddAxelarManagedCellarIDsProposalWithDeposit) GetChainName() string {
 	if m != nil {
 		return m.ChainName
 	}
 	return ""
 }
 
-func (m *AddManagedCellarIDsProposalWithDeposit) GetChainId() uint64 {
+func (m *AddAxelarManagedCellarIDsProposalWithDeposit) GetChainId() uint64 {
 	if m != nil {
 		return m.ChainId
 	}
 	return 0
 }
 
-func (m *AddManagedCellarIDsProposalWithDeposit) GetCellarIds() *CellarIDSet {
+func (m *AddAxelarManagedCellarIDsProposalWithDeposit) GetCellarIds() *CellarIDSet {
 	if m != nil {
 		return m.CellarIds
 	}
 	return nil
 }
 
-func (m *AddManagedCellarIDsProposalWithDeposit) GetDeposit() string {
+func (m *AddAxelarManagedCellarIDsProposalWithDeposit) GetDeposit() string {
 	if m != nil {
 		return m.Deposit
 	}
 	return ""
 }
 
-type RemoveManagedCellarIDsProposal struct {
+type RemoveAxelarManagedCellarIDsProposal struct {
 	Title       string       `protobuf:"bytes,1,opt,name=title,proto3" json:"title,omitempty"`
 	Description string       `protobuf:"bytes,2,opt,name=description,proto3" json:"description,omitempty"`
 	ChainName   string       `protobuf:"bytes,3,opt,name=chain_name,json=chainName,proto3" json:"chain_name,omitempty"`
@@ -195,18 +197,18 @@ type RemoveManagedCellarIDsProposal struct {
 	CellarIds   *CellarIDSet `protobuf:"bytes,5,opt,name=cellar_ids,json=cellarIds,proto3" json:"cellar_ids,omitempty"`
 }
 
-func (m *RemoveManagedCellarIDsProposal) Reset()         { *m = RemoveManagedCellarIDsProposal{} }
-func (m *RemoveManagedCellarIDsProposal) String() string { return proto.CompactTextString(m) }
-func (*RemoveManagedCellarIDsProposal) ProtoMessage()    {}
-func (*RemoveManagedCellarIDsProposal) Descriptor() ([]byte, []int) {
+func (m *RemoveAxelarManagedCellarIDsProposal) Reset()         { *m = RemoveAxelarManagedCellarIDsProposal{} }
+func (m *RemoveAxelarManagedCellarIDsProposal) String() string { return proto.CompactTextString(m) }
+func (*RemoveAxelarManagedCellarIDsProposal) ProtoMessage()    {}
+func (*RemoveAxelarManagedCellarIDsProposal) Descriptor() ([]byte, []int) {
 	return fileDescriptor_38ae8c693397bc99, []int{2}
 }
-func (m *RemoveManagedCellarIDsProposal) XXX_Unmarshal(b []byte) error {
+func (m *RemoveAxelarManagedCellarIDsProposal) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *RemoveManagedCellarIDsProposal) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *RemoveAxelarManagedCellarIDsProposal) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_RemoveManagedCellarIDsProposal.Marshal(b, m, deterministic)
+		return xxx_messageInfo_RemoveAxelarManagedCellarIDsProposal.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -216,47 +218,47 @@ func (m *RemoveManagedCellarIDsProposal) XXX_Marshal(b []byte, deterministic boo
 		return b[:n], nil
 	}
 }
-func (m *RemoveManagedCellarIDsProposal) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_RemoveManagedCellarIDsProposal.Merge(m, src)
+func (m *RemoveAxelarManagedCellarIDsProposal) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_RemoveAxelarManagedCellarIDsProposal.Merge(m, src)
 }
-func (m *RemoveManagedCellarIDsProposal) XXX_Size() int {
+func (m *RemoveAxelarManagedCellarIDsProposal) XXX_Size() int {
 	return m.Size()
 }
-func (m *RemoveManagedCellarIDsProposal) XXX_DiscardUnknown() {
-	xxx_messageInfo_RemoveManagedCellarIDsProposal.DiscardUnknown(m)
+func (m *RemoveAxelarManagedCellarIDsProposal) XXX_DiscardUnknown() {
+	xxx_messageInfo_RemoveAxelarManagedCellarIDsProposal.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_RemoveManagedCellarIDsProposal proto.InternalMessageInfo
+var xxx_messageInfo_RemoveAxelarManagedCellarIDsProposal proto.InternalMessageInfo
 
-func (m *RemoveManagedCellarIDsProposal) GetTitle() string {
+func (m *RemoveAxelarManagedCellarIDsProposal) GetTitle() string {
 	if m != nil {
 		return m.Title
 	}
 	return ""
 }
 
-func (m *RemoveManagedCellarIDsProposal) GetDescription() string {
+func (m *RemoveAxelarManagedCellarIDsProposal) GetDescription() string {
 	if m != nil {
 		return m.Description
 	}
 	return ""
 }
 
-func (m *RemoveManagedCellarIDsProposal) GetChainName() string {
+func (m *RemoveAxelarManagedCellarIDsProposal) GetChainName() string {
 	if m != nil {
 		return m.ChainName
 	}
 	return ""
 }
 
-func (m *RemoveManagedCellarIDsProposal) GetChainId() uint64 {
+func (m *RemoveAxelarManagedCellarIDsProposal) GetChainId() uint64 {
 	if m != nil {
 		return m.ChainId
 	}
 	return 0
 }
 
-func (m *RemoveManagedCellarIDsProposal) GetCellarIds() *CellarIDSet {
+func (m *RemoveAxelarManagedCellarIDsProposal) GetCellarIds() *CellarIDSet {
 	if m != nil {
 		return m.CellarIds
 	}
@@ -264,7 +266,7 @@ func (m *RemoveManagedCellarIDsProposal) GetCellarIds() *CellarIDSet {
 }
 
 // RemoveManagedCellarIDsProposalWithDeposit is a specific definition for CLI commands
-type RemoveManagedCellarIDsProposalWithDeposit struct {
+type RemoveAxelarManagedCellarIDsProposalWithDeposit struct {
 	Title       string       `protobuf:"bytes,1,opt,name=title,proto3" json:"title,omitempty"`
 	Description string       `protobuf:"bytes,2,opt,name=description,proto3" json:"description,omitempty"`
 	ChainName   string       `protobuf:"bytes,3,opt,name=chain_name,json=chainName,proto3" json:"chain_name,omitempty"`
@@ -273,22 +275,22 @@ type RemoveManagedCellarIDsProposalWithDeposit struct {
 	Deposit     string       `protobuf:"bytes,6,opt,name=deposit,proto3" json:"deposit,omitempty"`
 }
 
-func (m *RemoveManagedCellarIDsProposalWithDeposit) Reset() {
-	*m = RemoveManagedCellarIDsProposalWithDeposit{}
+func (m *RemoveAxelarManagedCellarIDsProposalWithDeposit) Reset() {
+	*m = RemoveAxelarManagedCellarIDsProposalWithDeposit{}
 }
-func (m *RemoveManagedCellarIDsProposalWithDeposit) String() string {
+func (m *RemoveAxelarManagedCellarIDsProposalWithDeposit) String() string {
 	return proto.CompactTextString(m)
 }
-func (*RemoveManagedCellarIDsProposalWithDeposit) ProtoMessage() {}
-func (*RemoveManagedCellarIDsProposalWithDeposit) Descriptor() ([]byte, []int) {
+func (*RemoveAxelarManagedCellarIDsProposalWithDeposit) ProtoMessage() {}
+func (*RemoveAxelarManagedCellarIDsProposalWithDeposit) Descriptor() ([]byte, []int) {
 	return fileDescriptor_38ae8c693397bc99, []int{3}
 }
-func (m *RemoveManagedCellarIDsProposalWithDeposit) XXX_Unmarshal(b []byte) error {
+func (m *RemoveAxelarManagedCellarIDsProposalWithDeposit) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *RemoveManagedCellarIDsProposalWithDeposit) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *RemoveAxelarManagedCellarIDsProposalWithDeposit) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_RemoveManagedCellarIDsProposalWithDeposit.Marshal(b, m, deterministic)
+		return xxx_messageInfo_RemoveAxelarManagedCellarIDsProposalWithDeposit.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -298,61 +300,61 @@ func (m *RemoveManagedCellarIDsProposalWithDeposit) XXX_Marshal(b []byte, determ
 		return b[:n], nil
 	}
 }
-func (m *RemoveManagedCellarIDsProposalWithDeposit) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_RemoveManagedCellarIDsProposalWithDeposit.Merge(m, src)
+func (m *RemoveAxelarManagedCellarIDsProposalWithDeposit) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_RemoveAxelarManagedCellarIDsProposalWithDeposit.Merge(m, src)
 }
-func (m *RemoveManagedCellarIDsProposalWithDeposit) XXX_Size() int {
+func (m *RemoveAxelarManagedCellarIDsProposalWithDeposit) XXX_Size() int {
 	return m.Size()
 }
-func (m *RemoveManagedCellarIDsProposalWithDeposit) XXX_DiscardUnknown() {
-	xxx_messageInfo_RemoveManagedCellarIDsProposalWithDeposit.DiscardUnknown(m)
+func (m *RemoveAxelarManagedCellarIDsProposalWithDeposit) XXX_DiscardUnknown() {
+	xxx_messageInfo_RemoveAxelarManagedCellarIDsProposalWithDeposit.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_RemoveManagedCellarIDsProposalWithDeposit proto.InternalMessageInfo
+var xxx_messageInfo_RemoveAxelarManagedCellarIDsProposalWithDeposit proto.InternalMessageInfo
 
-func (m *RemoveManagedCellarIDsProposalWithDeposit) GetTitle() string {
+func (m *RemoveAxelarManagedCellarIDsProposalWithDeposit) GetTitle() string {
 	if m != nil {
 		return m.Title
 	}
 	return ""
 }
 
-func (m *RemoveManagedCellarIDsProposalWithDeposit) GetDescription() string {
+func (m *RemoveAxelarManagedCellarIDsProposalWithDeposit) GetDescription() string {
 	if m != nil {
 		return m.Description
 	}
 	return ""
 }
 
-func (m *RemoveManagedCellarIDsProposalWithDeposit) GetChainName() string {
+func (m *RemoveAxelarManagedCellarIDsProposalWithDeposit) GetChainName() string {
 	if m != nil {
 		return m.ChainName
 	}
 	return ""
 }
 
-func (m *RemoveManagedCellarIDsProposalWithDeposit) GetChainId() uint64 {
+func (m *RemoveAxelarManagedCellarIDsProposalWithDeposit) GetChainId() uint64 {
 	if m != nil {
 		return m.ChainId
 	}
 	return 0
 }
 
-func (m *RemoveManagedCellarIDsProposalWithDeposit) GetCellarIds() *CellarIDSet {
+func (m *RemoveAxelarManagedCellarIDsProposalWithDeposit) GetCellarIds() *CellarIDSet {
 	if m != nil {
 		return m.CellarIds
 	}
 	return nil
 }
 
-func (m *RemoveManagedCellarIDsProposalWithDeposit) GetDeposit() string {
+func (m *RemoveAxelarManagedCellarIDsProposalWithDeposit) GetDeposit() string {
 	if m != nil {
 		return m.Deposit
 	}
 	return ""
 }
 
-type ScheduledCorkProposal struct {
+type AxelarScheduledCorkProposal struct {
 	Title                 string `protobuf:"bytes,1,opt,name=title,proto3" json:"title,omitempty"`
 	Description           string `protobuf:"bytes,2,opt,name=description,proto3" json:"description,omitempty"`
 	BlockHeight           uint64 `protobuf:"varint,3,opt,name=block_height,json=blockHeight,proto3" json:"block_height,omitempty"`
@@ -379,18 +381,18 @@ type ScheduledCorkProposal struct {
 	ContractCallProtoJson string `protobuf:"bytes,7,opt,name=contract_call_proto_json,json=contractCallProtoJson,proto3" json:"contract_call_proto_json,omitempty"`
 }
 
-func (m *ScheduledCorkProposal) Reset()         { *m = ScheduledCorkProposal{} }
-func (m *ScheduledCorkProposal) String() string { return proto.CompactTextString(m) }
-func (*ScheduledCorkProposal) ProtoMessage()    {}
-func (*ScheduledCorkProposal) Descriptor() ([]byte, []int) {
+func (m *AxelarScheduledCorkProposal) Reset()         { *m = AxelarScheduledCorkProposal{} }
+func (m *AxelarScheduledCorkProposal) String() string { return proto.CompactTextString(m) }
+func (*AxelarScheduledCorkProposal) ProtoMessage()    {}
+func (*AxelarScheduledCorkProposal) Descriptor() ([]byte, []int) {
 	return fileDescriptor_38ae8c693397bc99, []int{4}
 }
-func (m *ScheduledCorkProposal) XXX_Unmarshal(b []byte) error {
+func (m *AxelarScheduledCorkProposal) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *ScheduledCorkProposal) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *AxelarScheduledCorkProposal) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_ScheduledCorkProposal.Marshal(b, m, deterministic)
+		return xxx_messageInfo_AxelarScheduledCorkProposal.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -400,61 +402,61 @@ func (m *ScheduledCorkProposal) XXX_Marshal(b []byte, deterministic bool) ([]byt
 		return b[:n], nil
 	}
 }
-func (m *ScheduledCorkProposal) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_ScheduledCorkProposal.Merge(m, src)
+func (m *AxelarScheduledCorkProposal) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_AxelarScheduledCorkProposal.Merge(m, src)
 }
-func (m *ScheduledCorkProposal) XXX_Size() int {
+func (m *AxelarScheduledCorkProposal) XXX_Size() int {
 	return m.Size()
 }
-func (m *ScheduledCorkProposal) XXX_DiscardUnknown() {
-	xxx_messageInfo_ScheduledCorkProposal.DiscardUnknown(m)
+func (m *AxelarScheduledCorkProposal) XXX_DiscardUnknown() {
+	xxx_messageInfo_AxelarScheduledCorkProposal.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_ScheduledCorkProposal proto.InternalMessageInfo
+var xxx_messageInfo_AxelarScheduledCorkProposal proto.InternalMessageInfo
 
-func (m *ScheduledCorkProposal) GetTitle() string {
+func (m *AxelarScheduledCorkProposal) GetTitle() string {
 	if m != nil {
 		return m.Title
 	}
 	return ""
 }
 
-func (m *ScheduledCorkProposal) GetDescription() string {
+func (m *AxelarScheduledCorkProposal) GetDescription() string {
 	if m != nil {
 		return m.Description
 	}
 	return ""
 }
 
-func (m *ScheduledCorkProposal) GetBlockHeight() uint64 {
+func (m *AxelarScheduledCorkProposal) GetBlockHeight() uint64 {
 	if m != nil {
 		return m.BlockHeight
 	}
 	return 0
 }
 
-func (m *ScheduledCorkProposal) GetChainName() string {
+func (m *AxelarScheduledCorkProposal) GetChainName() string {
 	if m != nil {
 		return m.ChainName
 	}
 	return ""
 }
 
-func (m *ScheduledCorkProposal) GetChainId() uint64 {
+func (m *AxelarScheduledCorkProposal) GetChainId() uint64 {
 	if m != nil {
 		return m.ChainId
 	}
 	return 0
 }
 
-func (m *ScheduledCorkProposal) GetTargetContractAddress() string {
+func (m *AxelarScheduledCorkProposal) GetTargetContractAddress() string {
 	if m != nil {
 		return m.TargetContractAddress
 	}
 	return ""
 }
 
-func (m *ScheduledCorkProposal) GetContractCallProtoJson() string {
+func (m *AxelarScheduledCorkProposal) GetContractCallProtoJson() string {
 	if m != nil {
 		return m.ContractCallProtoJson
 	}
@@ -462,7 +464,7 @@ func (m *ScheduledCorkProposal) GetContractCallProtoJson() string {
 }
 
 // ScheduledCorkProposalWithDeposit is a specific definition for CLI commands
-type ScheduledCorkProposalWithDeposit struct {
+type AxelarScheduledCorkProposalWithDeposit struct {
 	Title                 string `protobuf:"bytes,1,opt,name=title,proto3" json:"title,omitempty"`
 	Description           string `protobuf:"bytes,2,opt,name=description,proto3" json:"description,omitempty"`
 	BlockHeight           uint64 `protobuf:"varint,3,opt,name=block_height,json=blockHeight,proto3" json:"block_height,omitempty"`
@@ -473,18 +475,20 @@ type ScheduledCorkProposalWithDeposit struct {
 	Deposit               string `protobuf:"bytes,8,opt,name=deposit,proto3" json:"deposit,omitempty"`
 }
 
-func (m *ScheduledCorkProposalWithDeposit) Reset()         { *m = ScheduledCorkProposalWithDeposit{} }
-func (m *ScheduledCorkProposalWithDeposit) String() string { return proto.CompactTextString(m) }
-func (*ScheduledCorkProposalWithDeposit) ProtoMessage()    {}
-func (*ScheduledCorkProposalWithDeposit) Descriptor() ([]byte, []int) {
+func (m *AxelarScheduledCorkProposalWithDeposit) Reset() {
+	*m = AxelarScheduledCorkProposalWithDeposit{}
+}
+func (m *AxelarScheduledCorkProposalWithDeposit) String() string { return proto.CompactTextString(m) }
+func (*AxelarScheduledCorkProposalWithDeposit) ProtoMessage()    {}
+func (*AxelarScheduledCorkProposalWithDeposit) Descriptor() ([]byte, []int) {
 	return fileDescriptor_38ae8c693397bc99, []int{5}
 }
-func (m *ScheduledCorkProposalWithDeposit) XXX_Unmarshal(b []byte) error {
+func (m *AxelarScheduledCorkProposalWithDeposit) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *ScheduledCorkProposalWithDeposit) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *AxelarScheduledCorkProposalWithDeposit) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_ScheduledCorkProposalWithDeposit.Marshal(b, m, deterministic)
+		return xxx_messageInfo_AxelarScheduledCorkProposalWithDeposit.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -494,75 +498,75 @@ func (m *ScheduledCorkProposalWithDeposit) XXX_Marshal(b []byte, deterministic b
 		return b[:n], nil
 	}
 }
-func (m *ScheduledCorkProposalWithDeposit) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_ScheduledCorkProposalWithDeposit.Merge(m, src)
+func (m *AxelarScheduledCorkProposalWithDeposit) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_AxelarScheduledCorkProposalWithDeposit.Merge(m, src)
 }
-func (m *ScheduledCorkProposalWithDeposit) XXX_Size() int {
+func (m *AxelarScheduledCorkProposalWithDeposit) XXX_Size() int {
 	return m.Size()
 }
-func (m *ScheduledCorkProposalWithDeposit) XXX_DiscardUnknown() {
-	xxx_messageInfo_ScheduledCorkProposalWithDeposit.DiscardUnknown(m)
+func (m *AxelarScheduledCorkProposalWithDeposit) XXX_DiscardUnknown() {
+	xxx_messageInfo_AxelarScheduledCorkProposalWithDeposit.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_ScheduledCorkProposalWithDeposit proto.InternalMessageInfo
+var xxx_messageInfo_AxelarScheduledCorkProposalWithDeposit proto.InternalMessageInfo
 
-func (m *ScheduledCorkProposalWithDeposit) GetTitle() string {
+func (m *AxelarScheduledCorkProposalWithDeposit) GetTitle() string {
 	if m != nil {
 		return m.Title
 	}
 	return ""
 }
 
-func (m *ScheduledCorkProposalWithDeposit) GetDescription() string {
+func (m *AxelarScheduledCorkProposalWithDeposit) GetDescription() string {
 	if m != nil {
 		return m.Description
 	}
 	return ""
 }
 
-func (m *ScheduledCorkProposalWithDeposit) GetBlockHeight() uint64 {
+func (m *AxelarScheduledCorkProposalWithDeposit) GetBlockHeight() uint64 {
 	if m != nil {
 		return m.BlockHeight
 	}
 	return 0
 }
 
-func (m *ScheduledCorkProposalWithDeposit) GetChainName() string {
+func (m *AxelarScheduledCorkProposalWithDeposit) GetChainName() string {
 	if m != nil {
 		return m.ChainName
 	}
 	return ""
 }
 
-func (m *ScheduledCorkProposalWithDeposit) GetChainId() uint64 {
+func (m *AxelarScheduledCorkProposalWithDeposit) GetChainId() uint64 {
 	if m != nil {
 		return m.ChainId
 	}
 	return 0
 }
 
-func (m *ScheduledCorkProposalWithDeposit) GetTargetContractAddress() string {
+func (m *AxelarScheduledCorkProposalWithDeposit) GetTargetContractAddress() string {
 	if m != nil {
 		return m.TargetContractAddress
 	}
 	return ""
 }
 
-func (m *ScheduledCorkProposalWithDeposit) GetContractCallProtoJson() string {
+func (m *AxelarScheduledCorkProposalWithDeposit) GetContractCallProtoJson() string {
 	if m != nil {
 		return m.ContractCallProtoJson
 	}
 	return ""
 }
 
-func (m *ScheduledCorkProposalWithDeposit) GetDeposit() string {
+func (m *AxelarScheduledCorkProposalWithDeposit) GetDeposit() string {
 	if m != nil {
 		return m.Deposit
 	}
 	return ""
 }
 
-type CommunityPoolSpendProposal struct {
+type AxelarCommunityPoolSpendProposal struct {
 	Title       string     `protobuf:"bytes,1,opt,name=title,proto3" json:"title,omitempty"`
 	Description string     `protobuf:"bytes,2,opt,name=description,proto3" json:"description,omitempty"`
 	Recipient   string     `protobuf:"bytes,3,opt,name=recipient,proto3" json:"recipient,omitempty"`
@@ -571,18 +575,18 @@ type CommunityPoolSpendProposal struct {
 	Amount      types.Coin `protobuf:"bytes,6,opt,name=amount,proto3" json:"amount"`
 }
 
-func (m *CommunityPoolSpendProposal) Reset()         { *m = CommunityPoolSpendProposal{} }
-func (m *CommunityPoolSpendProposal) String() string { return proto.CompactTextString(m) }
-func (*CommunityPoolSpendProposal) ProtoMessage()    {}
-func (*CommunityPoolSpendProposal) Descriptor() ([]byte, []int) {
+func (m *AxelarCommunityPoolSpendProposal) Reset()         { *m = AxelarCommunityPoolSpendProposal{} }
+func (m *AxelarCommunityPoolSpendProposal) String() string { return proto.CompactTextString(m) }
+func (*AxelarCommunityPoolSpendProposal) ProtoMessage()    {}
+func (*AxelarCommunityPoolSpendProposal) Descriptor() ([]byte, []int) {
 	return fileDescriptor_38ae8c693397bc99, []int{6}
 }
-func (m *CommunityPoolSpendProposal) XXX_Unmarshal(b []byte) error {
+func (m *AxelarCommunityPoolSpendProposal) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *CommunityPoolSpendProposal) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *AxelarCommunityPoolSpendProposal) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_CommunityPoolSpendProposal.Marshal(b, m, deterministic)
+		return xxx_messageInfo_AxelarCommunityPoolSpendProposal.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -592,54 +596,54 @@ func (m *CommunityPoolSpendProposal) XXX_Marshal(b []byte, deterministic bool) (
 		return b[:n], nil
 	}
 }
-func (m *CommunityPoolSpendProposal) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_CommunityPoolSpendProposal.Merge(m, src)
+func (m *AxelarCommunityPoolSpendProposal) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_AxelarCommunityPoolSpendProposal.Merge(m, src)
 }
-func (m *CommunityPoolSpendProposal) XXX_Size() int {
+func (m *AxelarCommunityPoolSpendProposal) XXX_Size() int {
 	return m.Size()
 }
-func (m *CommunityPoolSpendProposal) XXX_DiscardUnknown() {
-	xxx_messageInfo_CommunityPoolSpendProposal.DiscardUnknown(m)
+func (m *AxelarCommunityPoolSpendProposal) XXX_DiscardUnknown() {
+	xxx_messageInfo_AxelarCommunityPoolSpendProposal.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_CommunityPoolSpendProposal proto.InternalMessageInfo
+var xxx_messageInfo_AxelarCommunityPoolSpendProposal proto.InternalMessageInfo
 
-func (m *CommunityPoolSpendProposal) GetTitle() string {
+func (m *AxelarCommunityPoolSpendProposal) GetTitle() string {
 	if m != nil {
 		return m.Title
 	}
 	return ""
 }
 
-func (m *CommunityPoolSpendProposal) GetDescription() string {
+func (m *AxelarCommunityPoolSpendProposal) GetDescription() string {
 	if m != nil {
 		return m.Description
 	}
 	return ""
 }
 
-func (m *CommunityPoolSpendProposal) GetRecipient() string {
+func (m *AxelarCommunityPoolSpendProposal) GetRecipient() string {
 	if m != nil {
 		return m.Recipient
 	}
 	return ""
 }
 
-func (m *CommunityPoolSpendProposal) GetChainId() uint64 {
+func (m *AxelarCommunityPoolSpendProposal) GetChainId() uint64 {
 	if m != nil {
 		return m.ChainId
 	}
 	return 0
 }
 
-func (m *CommunityPoolSpendProposal) GetChainName() string {
+func (m *AxelarCommunityPoolSpendProposal) GetChainName() string {
 	if m != nil {
 		return m.ChainName
 	}
 	return ""
 }
 
-func (m *CommunityPoolSpendProposal) GetAmount() types.Coin {
+func (m *AxelarCommunityPoolSpendProposal) GetAmount() types.Coin {
 	if m != nil {
 		return m.Amount
 	}
@@ -648,7 +652,7 @@ func (m *CommunityPoolSpendProposal) GetAmount() types.Coin {
 
 // This format of the community spend Ethereum proposal is specifically for
 // the CLI to allow simple text serialization.
-type CommunityPoolSpendProposalForCLI struct {
+type AxelarCommunityPoolSpendProposalForCLI struct {
 	Title       string `protobuf:"bytes,1,opt,name=title,proto3" json:"title,omitempty" yaml:"title"`
 	Description string `protobuf:"bytes,2,opt,name=description,proto3" json:"description,omitempty" yaml:"description"`
 	Recipient   string `protobuf:"bytes,3,opt,name=recipient,proto3" json:"recipient,omitempty" yaml:"recipient"`
@@ -658,18 +662,20 @@ type CommunityPoolSpendProposalForCLI struct {
 	Deposit     string `protobuf:"bytes,7,opt,name=deposit,proto3" json:"deposit,omitempty" yaml:"deposit"`
 }
 
-func (m *CommunityPoolSpendProposalForCLI) Reset()         { *m = CommunityPoolSpendProposalForCLI{} }
-func (m *CommunityPoolSpendProposalForCLI) String() string { return proto.CompactTextString(m) }
-func (*CommunityPoolSpendProposalForCLI) ProtoMessage()    {}
-func (*CommunityPoolSpendProposalForCLI) Descriptor() ([]byte, []int) {
+func (m *AxelarCommunityPoolSpendProposalForCLI) Reset() {
+	*m = AxelarCommunityPoolSpendProposalForCLI{}
+}
+func (m *AxelarCommunityPoolSpendProposalForCLI) String() string { return proto.CompactTextString(m) }
+func (*AxelarCommunityPoolSpendProposalForCLI) ProtoMessage()    {}
+func (*AxelarCommunityPoolSpendProposalForCLI) Descriptor() ([]byte, []int) {
 	return fileDescriptor_38ae8c693397bc99, []int{7}
 }
-func (m *CommunityPoolSpendProposalForCLI) XXX_Unmarshal(b []byte) error {
+func (m *AxelarCommunityPoolSpendProposalForCLI) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *CommunityPoolSpendProposalForCLI) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *AxelarCommunityPoolSpendProposalForCLI) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_CommunityPoolSpendProposalForCLI.Marshal(b, m, deterministic)
+		return xxx_messageInfo_AxelarCommunityPoolSpendProposalForCLI.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -679,17 +685,17 @@ func (m *CommunityPoolSpendProposalForCLI) XXX_Marshal(b []byte, deterministic b
 		return b[:n], nil
 	}
 }
-func (m *CommunityPoolSpendProposalForCLI) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_CommunityPoolSpendProposalForCLI.Merge(m, src)
+func (m *AxelarCommunityPoolSpendProposalForCLI) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_AxelarCommunityPoolSpendProposalForCLI.Merge(m, src)
 }
-func (m *CommunityPoolSpendProposalForCLI) XXX_Size() int {
+func (m *AxelarCommunityPoolSpendProposalForCLI) XXX_Size() int {
 	return m.Size()
 }
-func (m *CommunityPoolSpendProposalForCLI) XXX_DiscardUnknown() {
-	xxx_messageInfo_CommunityPoolSpendProposalForCLI.DiscardUnknown(m)
+func (m *AxelarCommunityPoolSpendProposalForCLI) XXX_DiscardUnknown() {
+	xxx_messageInfo_AxelarCommunityPoolSpendProposalForCLI.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_CommunityPoolSpendProposalForCLI proto.InternalMessageInfo
+var xxx_messageInfo_AxelarCommunityPoolSpendProposalForCLI proto.InternalMessageInfo
 
 type AddChainConfigurationProposal struct {
 	Title              string              `protobuf:"bytes,1,opt,name=title,proto3" json:"title,omitempty"`
@@ -954,14 +960,14 @@ func (m *RemoveChainConfigurationProposalWithDeposit) GetDeposit() string {
 }
 
 func init() {
-	proto.RegisterType((*AddManagedCellarIDsProposal)(nil), "axelar_cork.v1.AddManagedCellarIDsProposal")
-	proto.RegisterType((*AddManagedCellarIDsProposalWithDeposit)(nil), "axelar_cork.v1.AddManagedCellarIDsProposalWithDeposit")
-	proto.RegisterType((*RemoveManagedCellarIDsProposal)(nil), "axelar_cork.v1.RemoveManagedCellarIDsProposal")
-	proto.RegisterType((*RemoveManagedCellarIDsProposalWithDeposit)(nil), "axelar_cork.v1.RemoveManagedCellarIDsProposalWithDeposit")
-	proto.RegisterType((*ScheduledCorkProposal)(nil), "axelar_cork.v1.ScheduledCorkProposal")
-	proto.RegisterType((*ScheduledCorkProposalWithDeposit)(nil), "axelar_cork.v1.ScheduledCorkProposalWithDeposit")
-	proto.RegisterType((*CommunityPoolSpendProposal)(nil), "axelar_cork.v1.CommunityPoolSpendProposal")
-	proto.RegisterType((*CommunityPoolSpendProposalForCLI)(nil), "axelar_cork.v1.CommunityPoolSpendProposalForCLI")
+	proto.RegisterType((*AddAxelarManagedCellarIDsProposal)(nil), "axelar_cork.v1.AddAxelarManagedCellarIDsProposal")
+	proto.RegisterType((*AddAxelarManagedCellarIDsProposalWithDeposit)(nil), "axelar_cork.v1.AddAxelarManagedCellarIDsProposalWithDeposit")
+	proto.RegisterType((*RemoveAxelarManagedCellarIDsProposal)(nil), "axelar_cork.v1.RemoveAxelarManagedCellarIDsProposal")
+	proto.RegisterType((*RemoveAxelarManagedCellarIDsProposalWithDeposit)(nil), "axelar_cork.v1.RemoveAxelarManagedCellarIDsProposalWithDeposit")
+	proto.RegisterType((*AxelarScheduledCorkProposal)(nil), "axelar_cork.v1.AxelarScheduledCorkProposal")
+	proto.RegisterType((*AxelarScheduledCorkProposalWithDeposit)(nil), "axelar_cork.v1.AxelarScheduledCorkProposalWithDeposit")
+	proto.RegisterType((*AxelarCommunityPoolSpendProposal)(nil), "axelar_cork.v1.AxelarCommunityPoolSpendProposal")
+	proto.RegisterType((*AxelarCommunityPoolSpendProposalForCLI)(nil), "axelar_cork.v1.AxelarCommunityPoolSpendProposalForCLI")
 	proto.RegisterType((*AddChainConfigurationProposal)(nil), "axelar_cork.v1.AddChainConfigurationProposal")
 	proto.RegisterType((*AddChainConfigurationProposalWithDeposit)(nil), "axelar_cork.v1.AddChainConfigurationProposalWithDeposit")
 	proto.RegisterType((*RemoveChainConfigurationProposal)(nil), "axelar_cork.v1.RemoveChainConfigurationProposal")
@@ -971,63 +977,64 @@ func init() {
 func init() { proto.RegisterFile("axelar-cork/v1/proposal.proto", fileDescriptor_38ae8c693397bc99) }
 
 var fileDescriptor_38ae8c693397bc99 = []byte{
-	// 843 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xdc, 0x96, 0xcf, 0x6f, 0xdc, 0x44,
-	0x14, 0xc7, 0x77, 0x92, 0xcd, 0x8f, 0x9d, 0x0d, 0xa5, 0x75, 0x13, 0x70, 0x52, 0x62, 0x2f, 0x73,
-	0xa8, 0x52, 0x01, 0xb6, 0x12, 0x10, 0x45, 0xb9, 0xc5, 0xae, 0x10, 0x8b, 0x00, 0x45, 0x9b, 0x03,
-	0x12, 0x17, 0x6b, 0xd6, 0x33, 0x78, 0xa7, 0xb1, 0x3d, 0x96, 0x3d, 0xbb, 0x6a, 0x8e, 0xdc, 0x7a,
-	0xe4, 0x88, 0x90, 0x90, 0xf2, 0x07, 0xf0, 0x57, 0x70, 0xaa, 0x84, 0x84, 0xca, 0x8d, 0x93, 0x85,
-	0x92, 0x0b, 0x47, 0xb4, 0xfd, 0x07, 0x90, 0x67, 0xd6, 0xa9, 0xbd, 0xdb, 0x2c, 0x87, 0xa4, 0x87,
-	0xe6, 0x66, 0xbf, 0xef, 0x7b, 0xeb, 0xf7, 0x3e, 0xef, 0xbd, 0x99, 0x85, 0xdb, 0xf8, 0x09, 0x0d,
-	0x71, 0xfa, 0x91, 0xcf, 0xd3, 0x63, 0x7b, 0xb4, 0x6b, 0x27, 0x29, 0x4f, 0x78, 0x86, 0x43, 0x2b,
-	0x49, 0xb9, 0xe0, 0xda, 0x2d, 0x25, 0x7b, 0x85, 0x6c, 0x8d, 0x76, 0xb7, 0x36, 0xa7, 0xdc, 0xa5,
-	0x5d, 0xba, 0x6e, 0xad, 0x07, 0x3c, 0xe0, 0xf2, 0xd1, 0x2e, 0x9e, 0x26, 0x56, 0xc3, 0xe7, 0x59,
-	0xc4, 0x33, 0xbb, 0x8f, 0x33, 0x6a, 0x8f, 0x76, 0xfb, 0x54, 0xe0, 0x22, 0x8a, 0xc5, 0x4a, 0x47,
-	0xbf, 0x03, 0x78, 0xef, 0x80, 0x90, 0xaf, 0x71, 0x8c, 0x03, 0x4a, 0x5c, 0x1a, 0x86, 0x38, 0xed,
-	0x3e, 0xca, 0x0e, 0x27, 0x69, 0x68, 0xeb, 0x70, 0x49, 0x30, 0x11, 0x52, 0x1d, 0x74, 0xc0, 0x4e,
-	0xab, 0xa7, 0x5e, 0xb4, 0x0e, 0x6c, 0x13, 0x9a, 0xf9, 0x29, 0x4b, 0x04, 0xe3, 0xb1, 0xbe, 0x20,
-	0xb5, 0xaa, 0x49, 0xdb, 0x86, 0xd0, 0x1f, 0x60, 0x16, 0x7b, 0x31, 0x8e, 0xa8, 0xbe, 0x28, 0x1d,
-	0x5a, 0xd2, 0xf2, 0x0d, 0x8e, 0xa8, 0xb6, 0x09, 0x57, 0x95, 0xcc, 0x88, 0xde, 0xec, 0x80, 0x9d,
-	0x66, 0x6f, 0x45, 0xbe, 0x77, 0x89, 0xb6, 0x0f, 0xa1, 0x2f, 0xd3, 0xf0, 0x18, 0xc9, 0xf4, 0xa5,
-	0x0e, 0xd8, 0x69, 0xef, 0xdd, 0xb3, 0xea, 0x1c, 0xac, 0x32, 0xd1, 0x23, 0x2a, 0x7a, 0x2d, 0xe5,
-	0xde, 0x25, 0x19, 0xfa, 0x17, 0xc0, 0xfb, 0x73, 0xaa, 0xf9, 0x96, 0x89, 0xc1, 0x23, 0x9a, 0xf0,
-	0x8c, 0x89, 0x37, 0xab, 0x30, 0x4d, 0x87, 0x2b, 0x44, 0x25, 0xae, 0x2f, 0xcb, 0x4f, 0x96, 0xaf,
-	0xe8, 0x0f, 0x00, 0x8d, 0x1e, 0x8d, 0xf8, 0x88, 0xde, 0x90, 0x1e, 0xbe, 0x00, 0xf0, 0xc1, 0xfc,
-	0x82, 0x6e, 0x62, 0x1b, 0x7f, 0x59, 0x80, 0x1b, 0x47, 0xfe, 0x80, 0x92, 0x61, 0x48, 0x89, 0xcb,
-	0xd3, 0xe3, 0x2b, 0x77, 0xef, 0x7d, 0xb8, 0xd6, 0x0f, 0xb9, 0x7f, 0xec, 0x0d, 0x28, 0x0b, 0x06,
-	0x42, 0xd6, 0xd8, 0xec, 0xb5, 0xa5, 0xed, 0x0b, 0x69, 0x9a, 0x82, 0xd0, 0x9c, 0x07, 0x61, 0xa9,
-	0x0e, 0xe1, 0x53, 0xf8, 0xae, 0xc0, 0x69, 0x40, 0x85, 0xe7, 0xf3, 0x58, 0xa4, 0xd8, 0x17, 0x1e,
-	0x26, 0x24, 0xa5, 0x59, 0x36, 0x29, 0x6c, 0x43, 0xc9, 0xee, 0x44, 0x3d, 0x50, 0xa2, 0xf6, 0x10,
-	0xea, 0x17, 0x01, 0x3e, 0x0e, 0x43, 0x4f, 0x9e, 0x42, 0xde, 0xe3, 0x8c, 0xc7, 0xfa, 0x8a, 0x0a,
-	0x2c, 0x75, 0x17, 0x87, 0xe1, 0x61, 0xa1, 0x7e, 0x99, 0xf1, 0x18, 0xfd, 0xb6, 0x00, 0x3b, 0xaf,
-	0xe4, 0x73, 0x1d, 0xc3, 0x70, 0xa3, 0x50, 0x55, 0x87, 0x6c, 0xb5, 0x3e, 0x64, 0x2f, 0x00, 0xdc,
-	0x72, 0x79, 0x14, 0x0d, 0x63, 0x26, 0x4e, 0x0e, 0x39, 0x0f, 0x8f, 0x12, 0x1a, 0x93, 0x2b, 0x4f,
-	0xda, 0x7b, 0xb0, 0x95, 0x52, 0x9f, 0x25, 0x8c, 0xc6, 0xa2, 0x5c, 0xa5, 0x0b, 0xc3, 0xbc, 0x55,
-	0xaa, 0x43, 0x5d, 0x9a, 0x86, 0xfa, 0x10, 0x2e, 0xe3, 0x88, 0x0f, 0x63, 0xb5, 0x2c, 0xed, 0xbd,
-	0x4d, 0x4b, 0x5d, 0x66, 0x56, 0x71, 0x99, 0x59, 0x93, 0xcb, 0xcc, 0x72, 0x39, 0x8b, 0x9d, 0xe6,
-	0xb3, 0xdc, 0x6c, 0xf4, 0x26, 0xee, 0xfb, 0x6b, 0x4f, 0x4f, 0x4d, 0xf0, 0xd3, 0xa9, 0x09, 0xfe,
-	0x39, 0x35, 0x1b, 0xe8, 0x87, 0x45, 0xd8, 0xb9, 0xbc, 0xea, 0xcf, 0x79, 0xea, 0x7e, 0xd5, 0xd5,
-	0xee, 0xd7, 0x6a, 0x77, 0x6e, 0x8f, 0x73, 0x73, 0xed, 0x04, 0x47, 0xe1, 0x3e, 0x92, 0x66, 0x54,
-	0xd2, 0xf8, 0xec, 0x15, 0x34, 0x9c, 0x77, 0xc6, 0xb9, 0xa9, 0x29, 0xef, 0x8a, 0x88, 0xea, 0x94,
-	0xf6, 0x66, 0x28, 0x39, 0xeb, 0xe3, 0xdc, 0xbc, 0xad, 0xe2, 0x2e, 0x24, 0x54, 0x65, 0x67, 0x4d,
-	0xb3, 0x73, 0xee, 0x8e, 0x73, 0xf3, 0x6d, 0x15, 0x52, 0x2a, 0xe8, 0x25, 0xd0, 0x4f, 0x66, 0x81,
-	0x3a, 0x1b, 0xe3, 0xdc, 0xbc, 0x53, 0x8d, 0x28, 0x34, 0x54, 0xe5, 0xfc, 0xa0, 0xc6, 0xb9, 0xe5,
-	0xdc, 0x19, 0xe7, 0xe6, 0x5b, 0x2a, 0x42, 0xd9, 0x51, 0x49, 0x56, 0xfb, 0xf0, 0xe5, 0x6c, 0xc9,
-	0x19, 0x74, 0xb4, 0x71, 0x6e, 0xde, 0x2a, 0x4b, 0x57, 0x53, 0x76, 0x31, 0x6f, 0xfb, 0xab, 0x4f,
-	0x4f, 0xcd, 0x46, 0xd1, 0x07, 0xf4, 0x2b, 0x80, 0xdb, 0x07, 0x84, 0xb8, 0xc5, 0x37, 0x5d, 0x1e,
-	0x7f, 0xcf, 0x82, 0x61, 0x8a, 0x0b, 0x2c, 0x57, 0x1e, 0xbe, 0x23, 0x78, 0x57, 0x95, 0xe5, 0x57,
-	0x7f, 0x56, 0x02, 0x6e, 0xef, 0xa1, 0x99, 0x73, 0x79, 0x26, 0x81, 0x9e, 0xe6, 0xcf, 0xd8, 0xd0,
-	0x9f, 0x00, 0xee, 0xcc, 0x4d, 0xf7, 0x3a, 0x4e, 0x9d, 0xd7, 0x91, 0x79, 0x75, 0xf9, 0x9b, 0xf5,
-	0xe5, 0x1f, 0xc2, 0x8e, 0xba, 0x56, 0x5f, 0x43, 0x13, 0xaa, 0x3b, 0xbe, 0x58, 0xdb, 0x71, 0xf4,
-	0x33, 0x80, 0x1f, 0xfc, 0xdf, 0x77, 0xaf, 0x83, 0xe6, 0xe5, 0x29, 0x5c, 0xce, 0xc4, 0xe9, 0x3e,
-	0x3b, 0x33, 0xc0, 0xf3, 0x33, 0x03, 0xfc, 0x7d, 0x66, 0x80, 0x1f, 0xcf, 0x8d, 0xc6, 0xf3, 0x73,
-	0xa3, 0xf1, 0xd7, 0xb9, 0xd1, 0xf8, 0xce, 0x0e, 0x98, 0x18, 0x0c, 0xfb, 0x96, 0xcf, 0x23, 0x3b,
-	0xa1, 0x41, 0x70, 0xf2, 0x78, 0x64, 0x67, 0x3c, 0x8a, 0x68, 0xc8, 0x68, 0x6a, 0x3f, 0xb1, 0x55,
-	0x77, 0xe4, 0xdf, 0x70, 0x71, 0x92, 0xd0, 0xac, 0xbf, 0x2c, 0x8f, 0xe7, 0x8f, 0xff, 0x0b, 0x00,
-	0x00, 0xff, 0xff, 0xc6, 0xac, 0xa6, 0x10, 0xd1, 0x0b, 0x00, 0x00,
+	// 849 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xdc, 0x96, 0xcf, 0x6f, 0xe3, 0x44,
+	0x14, 0xc7, 0x33, 0x6d, 0xfa, 0x23, 0x93, 0xb2, 0xec, 0x7a, 0xbb, 0xe0, 0xee, 0xd2, 0x38, 0x6b,
+	0xa1, 0x55, 0x11, 0x8b, 0xad, 0x16, 0xc4, 0xa2, 0xdc, 0x62, 0xaf, 0x10, 0x41, 0x80, 0xaa, 0xe4,
+	0x80, 0xc4, 0xc5, 0x9a, 0x78, 0x06, 0x67, 0xb6, 0xb6, 0xc7, 0xb2, 0x27, 0xd1, 0xe6, 0x2f, 0x60,
+	0x8f, 0x1c, 0x11, 0xa7, 0x48, 0x5c, 0xf9, 0x43, 0x7a, 0x5c, 0x24, 0x0e, 0x9c, 0x2c, 0xd4, 0x5e,
+	0x38, 0xe7, 0x80, 0xb4, 0x37, 0xe4, 0x99, 0x38, 0x6b, 0x27, 0x34, 0x8b, 0xd4, 0xf6, 0x40, 0x6f,
+	0xf6, 0xfb, 0xce, 0xf3, 0xbc, 0xf7, 0x79, 0x6f, 0xde, 0x18, 0xee, 0xa3, 0xe7, 0xc4, 0x47, 0xf1,
+	0x47, 0x2e, 0x8b, 0x4f, 0xcc, 0xd1, 0xa1, 0x19, 0xc5, 0x2c, 0x62, 0x09, 0xf2, 0x8d, 0x28, 0x66,
+	0x9c, 0x29, 0xb7, 0xa4, 0xec, 0x64, 0xb2, 0x31, 0x3a, 0xbc, 0xbf, 0xb7, 0xb0, 0x5c, 0xd8, 0xc5,
+	0xd2, 0xfb, 0xbb, 0x1e, 0xf3, 0x98, 0x78, 0x34, 0xb3, 0xa7, 0x99, 0xb5, 0xe1, 0xb2, 0x24, 0x60,
+	0x89, 0xd9, 0x47, 0x09, 0x31, 0x47, 0x87, 0x7d, 0xc2, 0x51, 0xe6, 0x45, 0x43, 0xa9, 0xeb, 0xbf,
+	0x01, 0xf8, 0xb0, 0x8d, 0x71, 0x5b, 0x7c, 0xf6, 0x6b, 0x14, 0x22, 0x8f, 0x60, 0x9b, 0xf8, 0x3e,
+	0x8a, 0x3b, 0x4f, 0x93, 0xe3, 0x59, 0x30, 0xca, 0x2e, 0xdc, 0xe0, 0x94, 0xfb, 0x44, 0x05, 0x4d,
+	0x70, 0x50, 0xeb, 0xca, 0x17, 0xa5, 0x09, 0xeb, 0x98, 0x24, 0x6e, 0x4c, 0x23, 0x4e, 0x59, 0xa8,
+	0xae, 0x09, 0xad, 0x68, 0x52, 0xf6, 0x21, 0x74, 0x07, 0x88, 0x86, 0x4e, 0x88, 0x02, 0xa2, 0xae,
+	0x8b, 0x05, 0x35, 0x61, 0xf9, 0x06, 0x05, 0x44, 0xd9, 0x83, 0xdb, 0x52, 0xa6, 0x58, 0xad, 0x36,
+	0xc1, 0x41, 0xb5, 0xbb, 0x25, 0xde, 0x3b, 0x58, 0x69, 0x41, 0xe8, 0x8a, 0x30, 0x1c, 0x8a, 0x13,
+	0x75, 0xa3, 0x09, 0x0e, 0xea, 0x47, 0x0f, 0x8c, 0x32, 0x0d, 0x23, 0x0f, 0xb4, 0x47, 0x78, 0xb7,
+	0x26, 0x97, 0x77, 0x70, 0xa2, 0xff, 0x0d, 0xe0, 0xe3, 0x37, 0xe6, 0xf4, 0x2d, 0xe5, 0x83, 0xa7,
+	0x24, 0x62, 0x09, 0xe5, 0xff, 0xaf, 0xf4, 0x14, 0x15, 0x6e, 0x61, 0x19, 0xb8, 0xba, 0x29, 0xb6,
+	0xcc, 0x5f, 0xf5, 0xdf, 0x01, 0x7c, 0xbf, 0x4b, 0x02, 0x36, 0x22, 0x37, 0xaa, 0x9e, 0xaf, 0x00,
+	0x34, 0xff, 0x4b, 0x5a, 0x37, 0xb1, 0xa4, 0xbf, 0xac, 0xc1, 0x07, 0x32, 0xeb, 0x9e, 0x3b, 0x20,
+	0x78, 0xe8, 0x13, 0x6c, 0xb3, 0xf8, 0xe4, 0xd2, 0x95, 0x7c, 0x08, 0x77, 0xfa, 0x3e, 0x73, 0x4f,
+	0x9c, 0x01, 0xa1, 0xde, 0x80, 0x8b, 0x4c, 0xab, 0xdd, 0xba, 0xb0, 0x7d, 0x21, 0x4c, 0x0b, 0x28,
+	0xaa, 0xab, 0x50, 0x6c, 0x94, 0x51, 0x7c, 0x0a, 0xdf, 0xe5, 0x28, 0xf6, 0x08, 0x77, 0x5c, 0x16,
+	0xf2, 0x18, 0xb9, 0xdc, 0x41, 0x18, 0xc7, 0x24, 0x49, 0x66, 0xe9, 0xdd, 0x93, 0xb2, 0x3d, 0x53,
+	0xdb, 0x52, 0x54, 0x9e, 0x40, 0x75, 0xee, 0xe0, 0x22, 0xdf, 0x77, 0xc4, 0x8c, 0x72, 0x9e, 0x25,
+	0x2c, 0x54, 0xb7, 0xa4, 0x63, 0xae, 0xdb, 0xc8, 0xf7, 0x8f, 0x33, 0xf5, 0xcb, 0x84, 0x85, 0xfa,
+	0xe9, 0x1a, 0x7c, 0xb4, 0x82, 0xd2, 0x55, 0x34, 0xc6, 0x8d, 0x02, 0x56, 0x6c, 0xb8, 0xed, 0x72,
+	0xc3, 0xbd, 0x02, 0xb0, 0x29, 0x51, 0xda, 0x2c, 0x08, 0x86, 0x21, 0xe5, 0xe3, 0x63, 0xc6, 0xfc,
+	0x5e, 0x44, 0x42, 0x7c, 0xe9, 0xae, 0x7b, 0x0f, 0xd6, 0x62, 0xe2, 0xd2, 0x88, 0x92, 0x90, 0xe7,
+	0x87, 0x6b, 0x6e, 0x58, 0x75, 0xb8, 0xca, 0x68, 0x37, 0x16, 0xd1, 0x3e, 0x81, 0x9b, 0x28, 0x60,
+	0xc3, 0x50, 0x1e, 0x9f, 0xfa, 0xd1, 0x9e, 0x21, 0xaf, 0x3d, 0x23, 0xbb, 0xf6, 0x8c, 0xd9, 0xb5,
+	0x67, 0xd8, 0x8c, 0x86, 0x56, 0xf5, 0x34, 0xd5, 0x2a, 0xdd, 0xd9, 0xf2, 0xd6, 0xce, 0x8b, 0x89,
+	0x06, 0x7e, 0x9a, 0x68, 0xe0, 0xaf, 0x89, 0x56, 0xd1, 0x7f, 0x58, 0xcf, 0xdb, 0xe8, 0xe2, 0xdc,
+	0x3f, 0x67, 0xb1, 0xfd, 0x55, 0x47, 0x79, 0x54, 0x22, 0x60, 0xdd, 0x9e, 0xa6, 0xda, 0xce, 0x18,
+	0x05, 0x7e, 0x4b, 0x17, 0x66, 0x3d, 0x67, 0xf2, 0xd9, 0xbf, 0x30, 0xb1, 0xde, 0x99, 0xa6, 0x9a,
+	0x22, 0x57, 0x17, 0x44, 0xbd, 0xcc, 0xea, 0x68, 0x89, 0x95, 0xb5, 0x3b, 0x4d, 0xb5, 0xdb, 0xd2,
+	0x6f, 0x2e, 0xe9, 0x45, 0x82, 0xc6, 0x22, 0x41, 0xeb, 0xee, 0x34, 0xd5, 0xde, 0x96, 0x2e, 0xb9,
+	0xa2, 0xbf, 0xc6, 0xfa, 0xc9, 0x32, 0x56, 0xeb, 0xde, 0x34, 0xd5, 0xee, 0x14, 0x3d, 0x32, 0x4d,
+	0x2f, 0xd2, 0xfe, 0xa0, 0x44, 0xbb, 0x66, 0xdd, 0x99, 0xa6, 0xda, 0x5b, 0xd2, 0x43, 0xda, 0xf5,
+	0x9c, 0xaf, 0xf2, 0xf8, 0x75, 0x9f, 0x89, 0x7e, 0xb4, 0x94, 0x69, 0xaa, 0xdd, 0xca, 0x53, 0x97,
+	0x1d, 0x37, 0xef, 0xbd, 0xd6, 0xf6, 0x8b, 0x89, 0x56, 0xc9, 0xaa, 0xa1, 0xff, 0x0a, 0xe0, 0x7e,
+	0x1b, 0x63, 0x3b, 0xdb, 0xd3, 0x66, 0xe1, 0xf7, 0xd4, 0x1b, 0xc6, 0x28, 0xc3, 0x72, 0xe9, 0x16,
+	0xec, 0xc1, 0xbb, 0x32, 0x2d, 0xb7, 0xf8, 0x59, 0x01, 0xb8, 0x7e, 0xa4, 0x2f, 0xcd, 0xeb, 0xa5,
+	0x00, 0xba, 0x8a, 0xbb, 0x64, 0xcb, 0xfe, 0xa2, 0x0e, 0x56, 0x86, 0x7b, 0x15, 0x13, 0xe8, 0x3a,
+	0x22, 0x2f, 0x0e, 0x82, 0x6a, 0x79, 0x10, 0x0c, 0x61, 0x53, 0x5e, 0xba, 0xd7, 0x50, 0x84, 0xe2,
+	0x49, 0x5f, 0x2f, 0x9d, 0x74, 0xfd, 0x67, 0x00, 0x3f, 0x7c, 0xd3, 0xbe, 0x57, 0x41, 0xf3, 0xe2,
+	0x10, 0x2e, 0x66, 0x62, 0x75, 0x4e, 0xcf, 0x1a, 0xe0, 0xe5, 0x59, 0x03, 0xfc, 0x79, 0xd6, 0x00,
+	0x3f, 0x9e, 0x37, 0x2a, 0x2f, 0xcf, 0x1b, 0x95, 0x3f, 0xce, 0x1b, 0x95, 0xef, 0x4c, 0x8f, 0xf2,
+	0xc1, 0xb0, 0x6f, 0xb8, 0x2c, 0x30, 0x23, 0xe2, 0x79, 0xe3, 0x67, 0x23, 0x33, 0x61, 0x41, 0x40,
+	0x7c, 0x4a, 0x62, 0xf3, 0xb9, 0x29, 0xab, 0x23, 0x7e, 0xdb, 0xf9, 0x38, 0x22, 0x49, 0x7f, 0x53,
+	0x8c, 0xea, 0x8f, 0xff, 0x09, 0x00, 0x00, 0xff, 0xff, 0x7f, 0x9c, 0xc2, 0xe0, 0x01, 0x0c, 0x00,
+	0x00,
 }
 
-func (m *AddManagedCellarIDsProposal) Marshal() (dAtA []byte, err error) {
+func (m *AddAxelarManagedCellarIDsProposal) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -1037,12 +1044,12 @@ func (m *AddManagedCellarIDsProposal) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *AddManagedCellarIDsProposal) MarshalTo(dAtA []byte) (int, error) {
+func (m *AddAxelarManagedCellarIDsProposal) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *AddManagedCellarIDsProposal) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *AddAxelarManagedCellarIDsProposal) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -1088,7 +1095,7 @@ func (m *AddManagedCellarIDsProposal) MarshalToSizedBuffer(dAtA []byte) (int, er
 	return len(dAtA) - i, nil
 }
 
-func (m *AddManagedCellarIDsProposalWithDeposit) Marshal() (dAtA []byte, err error) {
+func (m *AddAxelarManagedCellarIDsProposalWithDeposit) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -1098,141 +1105,12 @@ func (m *AddManagedCellarIDsProposalWithDeposit) Marshal() (dAtA []byte, err err
 	return dAtA[:n], nil
 }
 
-func (m *AddManagedCellarIDsProposalWithDeposit) MarshalTo(dAtA []byte) (int, error) {
+func (m *AddAxelarManagedCellarIDsProposalWithDeposit) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *AddManagedCellarIDsProposalWithDeposit) MarshalToSizedBuffer(dAtA []byte) (int, error) {
-	i := len(dAtA)
-	_ = i
-	var l int
-	_ = l
-	if len(m.Deposit) > 0 {
-		i -= len(m.Deposit)
-		copy(dAtA[i:], m.Deposit)
-		i = encodeVarintProposal(dAtA, i, uint64(len(m.Deposit)))
-		i--
-		dAtA[i] = 0x32
-	}
-	if m.CellarIds != nil {
-		{
-			size, err := m.CellarIds.MarshalToSizedBuffer(dAtA[:i])
-			if err != nil {
-				return 0, err
-			}
-			i -= size
-			i = encodeVarintProposal(dAtA, i, uint64(size))
-		}
-		i--
-		dAtA[i] = 0x2a
-	}
-	if m.ChainId != 0 {
-		i = encodeVarintProposal(dAtA, i, uint64(m.ChainId))
-		i--
-		dAtA[i] = 0x20
-	}
-	if len(m.ChainName) > 0 {
-		i -= len(m.ChainName)
-		copy(dAtA[i:], m.ChainName)
-		i = encodeVarintProposal(dAtA, i, uint64(len(m.ChainName)))
-		i--
-		dAtA[i] = 0x1a
-	}
-	if len(m.Description) > 0 {
-		i -= len(m.Description)
-		copy(dAtA[i:], m.Description)
-		i = encodeVarintProposal(dAtA, i, uint64(len(m.Description)))
-		i--
-		dAtA[i] = 0x12
-	}
-	if len(m.Title) > 0 {
-		i -= len(m.Title)
-		copy(dAtA[i:], m.Title)
-		i = encodeVarintProposal(dAtA, i, uint64(len(m.Title)))
-		i--
-		dAtA[i] = 0xa
-	}
-	return len(dAtA) - i, nil
-}
-
-func (m *RemoveManagedCellarIDsProposal) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
-	dAtA = make([]byte, size)
-	n, err := m.MarshalToSizedBuffer(dAtA[:size])
-	if err != nil {
-		return nil, err
-	}
-	return dAtA[:n], nil
-}
-
-func (m *RemoveManagedCellarIDsProposal) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
-	return m.MarshalToSizedBuffer(dAtA[:size])
-}
-
-func (m *RemoveManagedCellarIDsProposal) MarshalToSizedBuffer(dAtA []byte) (int, error) {
-	i := len(dAtA)
-	_ = i
-	var l int
-	_ = l
-	if m.CellarIds != nil {
-		{
-			size, err := m.CellarIds.MarshalToSizedBuffer(dAtA[:i])
-			if err != nil {
-				return 0, err
-			}
-			i -= size
-			i = encodeVarintProposal(dAtA, i, uint64(size))
-		}
-		i--
-		dAtA[i] = 0x2a
-	}
-	if m.ChainId != 0 {
-		i = encodeVarintProposal(dAtA, i, uint64(m.ChainId))
-		i--
-		dAtA[i] = 0x20
-	}
-	if len(m.ChainName) > 0 {
-		i -= len(m.ChainName)
-		copy(dAtA[i:], m.ChainName)
-		i = encodeVarintProposal(dAtA, i, uint64(len(m.ChainName)))
-		i--
-		dAtA[i] = 0x1a
-	}
-	if len(m.Description) > 0 {
-		i -= len(m.Description)
-		copy(dAtA[i:], m.Description)
-		i = encodeVarintProposal(dAtA, i, uint64(len(m.Description)))
-		i--
-		dAtA[i] = 0x12
-	}
-	if len(m.Title) > 0 {
-		i -= len(m.Title)
-		copy(dAtA[i:], m.Title)
-		i = encodeVarintProposal(dAtA, i, uint64(len(m.Title)))
-		i--
-		dAtA[i] = 0xa
-	}
-	return len(dAtA) - i, nil
-}
-
-func (m *RemoveManagedCellarIDsProposalWithDeposit) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
-	dAtA = make([]byte, size)
-	n, err := m.MarshalToSizedBuffer(dAtA[:size])
-	if err != nil {
-		return nil, err
-	}
-	return dAtA[:n], nil
-}
-
-func (m *RemoveManagedCellarIDsProposalWithDeposit) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
-	return m.MarshalToSizedBuffer(dAtA[:size])
-}
-
-func (m *RemoveManagedCellarIDsProposalWithDeposit) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *AddAxelarManagedCellarIDsProposalWithDeposit) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -1285,7 +1163,7 @@ func (m *RemoveManagedCellarIDsProposalWithDeposit) MarshalToSizedBuffer(dAtA []
 	return len(dAtA) - i, nil
 }
 
-func (m *ScheduledCorkProposal) Marshal() (dAtA []byte, err error) {
+func (m *RemoveAxelarManagedCellarIDsProposal) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -1295,12 +1173,141 @@ func (m *ScheduledCorkProposal) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *ScheduledCorkProposal) MarshalTo(dAtA []byte) (int, error) {
+func (m *RemoveAxelarManagedCellarIDsProposal) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *ScheduledCorkProposal) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *RemoveAxelarManagedCellarIDsProposal) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if m.CellarIds != nil {
+		{
+			size, err := m.CellarIds.MarshalToSizedBuffer(dAtA[:i])
+			if err != nil {
+				return 0, err
+			}
+			i -= size
+			i = encodeVarintProposal(dAtA, i, uint64(size))
+		}
+		i--
+		dAtA[i] = 0x2a
+	}
+	if m.ChainId != 0 {
+		i = encodeVarintProposal(dAtA, i, uint64(m.ChainId))
+		i--
+		dAtA[i] = 0x20
+	}
+	if len(m.ChainName) > 0 {
+		i -= len(m.ChainName)
+		copy(dAtA[i:], m.ChainName)
+		i = encodeVarintProposal(dAtA, i, uint64(len(m.ChainName)))
+		i--
+		dAtA[i] = 0x1a
+	}
+	if len(m.Description) > 0 {
+		i -= len(m.Description)
+		copy(dAtA[i:], m.Description)
+		i = encodeVarintProposal(dAtA, i, uint64(len(m.Description)))
+		i--
+		dAtA[i] = 0x12
+	}
+	if len(m.Title) > 0 {
+		i -= len(m.Title)
+		copy(dAtA[i:], m.Title)
+		i = encodeVarintProposal(dAtA, i, uint64(len(m.Title)))
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *RemoveAxelarManagedCellarIDsProposalWithDeposit) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *RemoveAxelarManagedCellarIDsProposalWithDeposit) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *RemoveAxelarManagedCellarIDsProposalWithDeposit) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.Deposit) > 0 {
+		i -= len(m.Deposit)
+		copy(dAtA[i:], m.Deposit)
+		i = encodeVarintProposal(dAtA, i, uint64(len(m.Deposit)))
+		i--
+		dAtA[i] = 0x32
+	}
+	if m.CellarIds != nil {
+		{
+			size, err := m.CellarIds.MarshalToSizedBuffer(dAtA[:i])
+			if err != nil {
+				return 0, err
+			}
+			i -= size
+			i = encodeVarintProposal(dAtA, i, uint64(size))
+		}
+		i--
+		dAtA[i] = 0x2a
+	}
+	if m.ChainId != 0 {
+		i = encodeVarintProposal(dAtA, i, uint64(m.ChainId))
+		i--
+		dAtA[i] = 0x20
+	}
+	if len(m.ChainName) > 0 {
+		i -= len(m.ChainName)
+		copy(dAtA[i:], m.ChainName)
+		i = encodeVarintProposal(dAtA, i, uint64(len(m.ChainName)))
+		i--
+		dAtA[i] = 0x1a
+	}
+	if len(m.Description) > 0 {
+		i -= len(m.Description)
+		copy(dAtA[i:], m.Description)
+		i = encodeVarintProposal(dAtA, i, uint64(len(m.Description)))
+		i--
+		dAtA[i] = 0x12
+	}
+	if len(m.Title) > 0 {
+		i -= len(m.Title)
+		copy(dAtA[i:], m.Title)
+		i = encodeVarintProposal(dAtA, i, uint64(len(m.Title)))
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *AxelarScheduledCorkProposal) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *AxelarScheduledCorkProposal) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *AxelarScheduledCorkProposal) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -1353,7 +1360,7 @@ func (m *ScheduledCorkProposal) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 
-func (m *ScheduledCorkProposalWithDeposit) Marshal() (dAtA []byte, err error) {
+func (m *AxelarScheduledCorkProposalWithDeposit) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -1363,12 +1370,12 @@ func (m *ScheduledCorkProposalWithDeposit) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *ScheduledCorkProposalWithDeposit) MarshalTo(dAtA []byte) (int, error) {
+func (m *AxelarScheduledCorkProposalWithDeposit) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *ScheduledCorkProposalWithDeposit) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *AxelarScheduledCorkProposalWithDeposit) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -1428,7 +1435,7 @@ func (m *ScheduledCorkProposalWithDeposit) MarshalToSizedBuffer(dAtA []byte) (in
 	return len(dAtA) - i, nil
 }
 
-func (m *CommunityPoolSpendProposal) Marshal() (dAtA []byte, err error) {
+func (m *AxelarCommunityPoolSpendProposal) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -1438,12 +1445,12 @@ func (m *CommunityPoolSpendProposal) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *CommunityPoolSpendProposal) MarshalTo(dAtA []byte) (int, error) {
+func (m *AxelarCommunityPoolSpendProposal) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *CommunityPoolSpendProposal) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *AxelarCommunityPoolSpendProposal) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -1494,7 +1501,7 @@ func (m *CommunityPoolSpendProposal) MarshalToSizedBuffer(dAtA []byte) (int, err
 	return len(dAtA) - i, nil
 }
 
-func (m *CommunityPoolSpendProposalForCLI) Marshal() (dAtA []byte, err error) {
+func (m *AxelarCommunityPoolSpendProposalForCLI) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -1504,12 +1511,12 @@ func (m *CommunityPoolSpendProposalForCLI) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *CommunityPoolSpendProposalForCLI) MarshalTo(dAtA []byte) (int, error) {
+func (m *AxelarCommunityPoolSpendProposalForCLI) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *CommunityPoolSpendProposalForCLI) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *AxelarCommunityPoolSpendProposalForCLI) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -1771,7 +1778,7 @@ func encodeVarintProposal(dAtA []byte, offset int, v uint64) int {
 	dAtA[offset] = uint8(v)
 	return base
 }
-func (m *AddManagedCellarIDsProposal) Size() (n int) {
+func (m *AddAxelarManagedCellarIDsProposal) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -1799,67 +1806,7 @@ func (m *AddManagedCellarIDsProposal) Size() (n int) {
 	return n
 }
 
-func (m *AddManagedCellarIDsProposalWithDeposit) Size() (n int) {
-	if m == nil {
-		return 0
-	}
-	var l int
-	_ = l
-	l = len(m.Title)
-	if l > 0 {
-		n += 1 + l + sovProposal(uint64(l))
-	}
-	l = len(m.Description)
-	if l > 0 {
-		n += 1 + l + sovProposal(uint64(l))
-	}
-	l = len(m.ChainName)
-	if l > 0 {
-		n += 1 + l + sovProposal(uint64(l))
-	}
-	if m.ChainId != 0 {
-		n += 1 + sovProposal(uint64(m.ChainId))
-	}
-	if m.CellarIds != nil {
-		l = m.CellarIds.Size()
-		n += 1 + l + sovProposal(uint64(l))
-	}
-	l = len(m.Deposit)
-	if l > 0 {
-		n += 1 + l + sovProposal(uint64(l))
-	}
-	return n
-}
-
-func (m *RemoveManagedCellarIDsProposal) Size() (n int) {
-	if m == nil {
-		return 0
-	}
-	var l int
-	_ = l
-	l = len(m.Title)
-	if l > 0 {
-		n += 1 + l + sovProposal(uint64(l))
-	}
-	l = len(m.Description)
-	if l > 0 {
-		n += 1 + l + sovProposal(uint64(l))
-	}
-	l = len(m.ChainName)
-	if l > 0 {
-		n += 1 + l + sovProposal(uint64(l))
-	}
-	if m.ChainId != 0 {
-		n += 1 + sovProposal(uint64(m.ChainId))
-	}
-	if m.CellarIds != nil {
-		l = m.CellarIds.Size()
-		n += 1 + l + sovProposal(uint64(l))
-	}
-	return n
-}
-
-func (m *RemoveManagedCellarIDsProposalWithDeposit) Size() (n int) {
+func (m *AddAxelarManagedCellarIDsProposalWithDeposit) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -1891,7 +1838,67 @@ func (m *RemoveManagedCellarIDsProposalWithDeposit) Size() (n int) {
 	return n
 }
 
-func (m *ScheduledCorkProposal) Size() (n int) {
+func (m *RemoveAxelarManagedCellarIDsProposal) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.Title)
+	if l > 0 {
+		n += 1 + l + sovProposal(uint64(l))
+	}
+	l = len(m.Description)
+	if l > 0 {
+		n += 1 + l + sovProposal(uint64(l))
+	}
+	l = len(m.ChainName)
+	if l > 0 {
+		n += 1 + l + sovProposal(uint64(l))
+	}
+	if m.ChainId != 0 {
+		n += 1 + sovProposal(uint64(m.ChainId))
+	}
+	if m.CellarIds != nil {
+		l = m.CellarIds.Size()
+		n += 1 + l + sovProposal(uint64(l))
+	}
+	return n
+}
+
+func (m *RemoveAxelarManagedCellarIDsProposalWithDeposit) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.Title)
+	if l > 0 {
+		n += 1 + l + sovProposal(uint64(l))
+	}
+	l = len(m.Description)
+	if l > 0 {
+		n += 1 + l + sovProposal(uint64(l))
+	}
+	l = len(m.ChainName)
+	if l > 0 {
+		n += 1 + l + sovProposal(uint64(l))
+	}
+	if m.ChainId != 0 {
+		n += 1 + sovProposal(uint64(m.ChainId))
+	}
+	if m.CellarIds != nil {
+		l = m.CellarIds.Size()
+		n += 1 + l + sovProposal(uint64(l))
+	}
+	l = len(m.Deposit)
+	if l > 0 {
+		n += 1 + l + sovProposal(uint64(l))
+	}
+	return n
+}
+
+func (m *AxelarScheduledCorkProposal) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -1926,7 +1933,7 @@ func (m *ScheduledCorkProposal) Size() (n int) {
 	return n
 }
 
-func (m *ScheduledCorkProposalWithDeposit) Size() (n int) {
+func (m *AxelarScheduledCorkProposalWithDeposit) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -1965,7 +1972,7 @@ func (m *ScheduledCorkProposalWithDeposit) Size() (n int) {
 	return n
 }
 
-func (m *CommunityPoolSpendProposal) Size() (n int) {
+func (m *AxelarCommunityPoolSpendProposal) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -1995,7 +2002,7 @@ func (m *CommunityPoolSpendProposal) Size() (n int) {
 	return n
 }
 
-func (m *CommunityPoolSpendProposalForCLI) Size() (n int) {
+func (m *AxelarCommunityPoolSpendProposalForCLI) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -2127,7 +2134,7 @@ func sovProposal(x uint64) (n int) {
 func sozProposal(x uint64) (n int) {
 	return sovProposal(uint64((x << 1) ^ uint64((int64(x) >> 63))))
 }
-func (m *AddManagedCellarIDsProposal) Unmarshal(dAtA []byte) error {
+func (m *AddAxelarManagedCellarIDsProposal) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -2150,10 +2157,10 @@ func (m *AddManagedCellarIDsProposal) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: AddManagedCellarIDsProposal: wiretype end group for non-group")
+			return fmt.Errorf("proto: AddAxelarManagedCellarIDsProposal: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: AddManagedCellarIDsProposal: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: AddAxelarManagedCellarIDsProposal: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
@@ -2328,7 +2335,7 @@ func (m *AddManagedCellarIDsProposal) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *AddManagedCellarIDsProposalWithDeposit) Unmarshal(dAtA []byte) error {
+func (m *AddAxelarManagedCellarIDsProposalWithDeposit) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -2351,444 +2358,10 @@ func (m *AddManagedCellarIDsProposalWithDeposit) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: AddManagedCellarIDsProposalWithDeposit: wiretype end group for non-group")
+			return fmt.Errorf("proto: AddAxelarManagedCellarIDsProposalWithDeposit: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: AddManagedCellarIDsProposalWithDeposit: illegal tag %d (wire type %d)", fieldNum, wire)
-		}
-		switch fieldNum {
-		case 1:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Title", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowProposal
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthProposal
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthProposal
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.Title = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
-		case 2:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Description", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowProposal
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthProposal
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthProposal
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.Description = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
-		case 3:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field ChainName", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowProposal
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthProposal
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthProposal
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.ChainName = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
-		case 4:
-			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field ChainId", wireType)
-			}
-			m.ChainId = 0
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowProposal
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				m.ChainId |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-		case 5:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field CellarIds", wireType)
-			}
-			var msglen int
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowProposal
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				msglen |= int(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			if msglen < 0 {
-				return ErrInvalidLengthProposal
-			}
-			postIndex := iNdEx + msglen
-			if postIndex < 0 {
-				return ErrInvalidLengthProposal
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			if m.CellarIds == nil {
-				m.CellarIds = &CellarIDSet{}
-			}
-			if err := m.CellarIds.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
-				return err
-			}
-			iNdEx = postIndex
-		case 6:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Deposit", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowProposal
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthProposal
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthProposal
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.Deposit = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
-		default:
-			iNdEx = preIndex
-			skippy, err := skipProposal(dAtA[iNdEx:])
-			if err != nil {
-				return err
-			}
-			if (skippy < 0) || (iNdEx+skippy) < 0 {
-				return ErrInvalidLengthProposal
-			}
-			if (iNdEx + skippy) > l {
-				return io.ErrUnexpectedEOF
-			}
-			iNdEx += skippy
-		}
-	}
-
-	if iNdEx > l {
-		return io.ErrUnexpectedEOF
-	}
-	return nil
-}
-func (m *RemoveManagedCellarIDsProposal) Unmarshal(dAtA []byte) error {
-	l := len(dAtA)
-	iNdEx := 0
-	for iNdEx < l {
-		preIndex := iNdEx
-		var wire uint64
-		for shift := uint(0); ; shift += 7 {
-			if shift >= 64 {
-				return ErrIntOverflowProposal
-			}
-			if iNdEx >= l {
-				return io.ErrUnexpectedEOF
-			}
-			b := dAtA[iNdEx]
-			iNdEx++
-			wire |= uint64(b&0x7F) << shift
-			if b < 0x80 {
-				break
-			}
-		}
-		fieldNum := int32(wire >> 3)
-		wireType := int(wire & 0x7)
-		if wireType == 4 {
-			return fmt.Errorf("proto: RemoveManagedCellarIDsProposal: wiretype end group for non-group")
-		}
-		if fieldNum <= 0 {
-			return fmt.Errorf("proto: RemoveManagedCellarIDsProposal: illegal tag %d (wire type %d)", fieldNum, wire)
-		}
-		switch fieldNum {
-		case 1:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Title", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowProposal
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthProposal
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthProposal
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.Title = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
-		case 2:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Description", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowProposal
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthProposal
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthProposal
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.Description = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
-		case 3:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field ChainName", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowProposal
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthProposal
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthProposal
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.ChainName = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
-		case 4:
-			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field ChainId", wireType)
-			}
-			m.ChainId = 0
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowProposal
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				m.ChainId |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-		case 5:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field CellarIds", wireType)
-			}
-			var msglen int
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowProposal
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				msglen |= int(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			if msglen < 0 {
-				return ErrInvalidLengthProposal
-			}
-			postIndex := iNdEx + msglen
-			if postIndex < 0 {
-				return ErrInvalidLengthProposal
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			if m.CellarIds == nil {
-				m.CellarIds = &CellarIDSet{}
-			}
-			if err := m.CellarIds.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
-				return err
-			}
-			iNdEx = postIndex
-		default:
-			iNdEx = preIndex
-			skippy, err := skipProposal(dAtA[iNdEx:])
-			if err != nil {
-				return err
-			}
-			if (skippy < 0) || (iNdEx+skippy) < 0 {
-				return ErrInvalidLengthProposal
-			}
-			if (iNdEx + skippy) > l {
-				return io.ErrUnexpectedEOF
-			}
-			iNdEx += skippy
-		}
-	}
-
-	if iNdEx > l {
-		return io.ErrUnexpectedEOF
-	}
-	return nil
-}
-func (m *RemoveManagedCellarIDsProposalWithDeposit) Unmarshal(dAtA []byte) error {
-	l := len(dAtA)
-	iNdEx := 0
-	for iNdEx < l {
-		preIndex := iNdEx
-		var wire uint64
-		for shift := uint(0); ; shift += 7 {
-			if shift >= 64 {
-				return ErrIntOverflowProposal
-			}
-			if iNdEx >= l {
-				return io.ErrUnexpectedEOF
-			}
-			b := dAtA[iNdEx]
-			iNdEx++
-			wire |= uint64(b&0x7F) << shift
-			if b < 0x80 {
-				break
-			}
-		}
-		fieldNum := int32(wire >> 3)
-		wireType := int(wire & 0x7)
-		if wireType == 4 {
-			return fmt.Errorf("proto: RemoveManagedCellarIDsProposalWithDeposit: wiretype end group for non-group")
-		}
-		if fieldNum <= 0 {
-			return fmt.Errorf("proto: RemoveManagedCellarIDsProposalWithDeposit: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: AddAxelarManagedCellarIDsProposalWithDeposit: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
@@ -2995,7 +2568,7 @@ func (m *RemoveManagedCellarIDsProposalWithDeposit) Unmarshal(dAtA []byte) error
 	}
 	return nil
 }
-func (m *ScheduledCorkProposal) Unmarshal(dAtA []byte) error {
+func (m *RemoveAxelarManagedCellarIDsProposal) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -3018,10 +2591,444 @@ func (m *ScheduledCorkProposal) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: ScheduledCorkProposal: wiretype end group for non-group")
+			return fmt.Errorf("proto: RemoveAxelarManagedCellarIDsProposal: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: ScheduledCorkProposal: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: RemoveAxelarManagedCellarIDsProposal: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Title", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowProposal
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthProposal
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthProposal
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Title = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Description", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowProposal
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthProposal
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthProposal
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Description = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 3:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field ChainName", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowProposal
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthProposal
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthProposal
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.ChainName = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 4:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field ChainId", wireType)
+			}
+			m.ChainId = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowProposal
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.ChainId |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 5:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field CellarIds", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowProposal
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthProposal
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthProposal
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.CellarIds == nil {
+				m.CellarIds = &CellarIDSet{}
+			}
+			if err := m.CellarIds.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipProposal(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthProposal
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *RemoveAxelarManagedCellarIDsProposalWithDeposit) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowProposal
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: RemoveAxelarManagedCellarIDsProposalWithDeposit: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: RemoveAxelarManagedCellarIDsProposalWithDeposit: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Title", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowProposal
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthProposal
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthProposal
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Title = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Description", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowProposal
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthProposal
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthProposal
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Description = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 3:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field ChainName", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowProposal
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthProposal
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthProposal
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.ChainName = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 4:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field ChainId", wireType)
+			}
+			m.ChainId = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowProposal
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.ChainId |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 5:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field CellarIds", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowProposal
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthProposal
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthProposal
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.CellarIds == nil {
+				m.CellarIds = &CellarIDSet{}
+			}
+			if err := m.CellarIds.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 6:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Deposit", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowProposal
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthProposal
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthProposal
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Deposit = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipProposal(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthProposal
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *AxelarScheduledCorkProposal) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowProposal
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: AxelarScheduledCorkProposal: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: AxelarScheduledCorkProposal: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
@@ -3243,7 +3250,7 @@ func (m *ScheduledCorkProposal) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *ScheduledCorkProposalWithDeposit) Unmarshal(dAtA []byte) error {
+func (m *AxelarScheduledCorkProposalWithDeposit) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -3266,10 +3273,10 @@ func (m *ScheduledCorkProposalWithDeposit) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: ScheduledCorkProposalWithDeposit: wiretype end group for non-group")
+			return fmt.Errorf("proto: AxelarScheduledCorkProposalWithDeposit: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: ScheduledCorkProposalWithDeposit: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: AxelarScheduledCorkProposalWithDeposit: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
@@ -3523,7 +3530,7 @@ func (m *ScheduledCorkProposalWithDeposit) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *CommunityPoolSpendProposal) Unmarshal(dAtA []byte) error {
+func (m *AxelarCommunityPoolSpendProposal) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -3546,10 +3553,10 @@ func (m *CommunityPoolSpendProposal) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: CommunityPoolSpendProposal: wiretype end group for non-group")
+			return fmt.Errorf("proto: AxelarCommunityPoolSpendProposal: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: CommunityPoolSpendProposal: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: AxelarCommunityPoolSpendProposal: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
@@ -3753,7 +3760,7 @@ func (m *CommunityPoolSpendProposal) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *CommunityPoolSpendProposalForCLI) Unmarshal(dAtA []byte) error {
+func (m *AxelarCommunityPoolSpendProposalForCLI) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -3776,10 +3783,10 @@ func (m *CommunityPoolSpendProposalForCLI) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: CommunityPoolSpendProposalForCLI: wiretype end group for non-group")
+			return fmt.Errorf("proto: AxelarCommunityPoolSpendProposalForCLI: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: CommunityPoolSpendProposalForCLI: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: AxelarCommunityPoolSpendProposalForCLI: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:

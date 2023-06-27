@@ -9,7 +9,7 @@ option go_package = "github.com/peggyjv/sommelier/x/axelarcork/types";
 
 // note: current plan is to accept either chain name or chain ID. if both and they dont match, error.
 
-message AddManagedCellarIDsProposal {
+message AddAxelarManagedCellarIDsProposal {
   string      title       = 1;
   string      description = 2;
   string      chain_name  = 3;
@@ -18,7 +18,7 @@ message AddManagedCellarIDsProposal {
 }
 
 // AddManagedCellarIDsProposalWithDeposit is a specific definition for CLI commands
-message AddManagedCellarIDsProposalWithDeposit {
+message AddAxelarManagedCellarIDsProposalWithDeposit {
   string      title       = 1;
   string      description = 2;
   string      chain_name  = 3;
@@ -27,7 +27,7 @@ message AddManagedCellarIDsProposalWithDeposit {
   string      deposit     = 6;
 }
 
-message RemoveManagedCellarIDsProposal {
+message RemoveAxelarManagedCellarIDsProposal {
   string      title       = 1;
   string      description = 2;
   string      chain_name  = 3;
@@ -36,7 +36,7 @@ message RemoveManagedCellarIDsProposal {
 }
 
 // RemoveManagedCellarIDsProposalWithDeposit is a specific definition for CLI commands
-message RemoveManagedCellarIDsProposalWithDeposit {
+message RemoveAxelarManagedCellarIDsProposalWithDeposit {
   string      title       = 1;
   string      description = 2;
   string      chain_name  = 3;
@@ -45,7 +45,7 @@ message RemoveManagedCellarIDsProposalWithDeposit {
   string      deposit     = 6;
 }
 
-message ScheduledCorkProposal {
+message AxelarScheduledCorkProposal {
   string title                   = 1;
   string description             = 2;
   uint64 block_height            = 3;
@@ -75,7 +75,7 @@ message ScheduledCorkProposal {
 }
 
 // ScheduledCorkProposalWithDeposit is a specific definition for CLI commands
-message ScheduledCorkProposalWithDeposit {
+message AxelarScheduledCorkProposalWithDeposit {
   string title                    = 1;
   string description              = 2;
   uint64 block_height             = 3;
@@ -86,7 +86,7 @@ message ScheduledCorkProposalWithDeposit {
   string deposit                  = 8;
 }
 
-message CommunityPoolSpendProposal {
+message AxelarCommunityPoolSpendProposal {
   option (gogoproto.equal)            = false;
   option (gogoproto.goproto_getters)  = true;
   option (gogoproto.goproto_stringer) = true;
@@ -101,7 +101,7 @@ message CommunityPoolSpendProposal {
 
 // This format of the community spend Ethereum proposal is specifically for
 // the CLI to allow simple text serialization.
-message CommunityPoolSpendProposalForCLI {
+message AxelarCommunityPoolSpendProposalForCLI {
   option (gogoproto.goproto_getters)  = false;
   option (gogoproto.goproto_stringer) = true;
 

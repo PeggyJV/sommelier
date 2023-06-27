@@ -23,7 +23,7 @@ func TestParseAddManagedCellarsProposal(t *testing.T) {
 }
 `)
 
-	proposal := types.AddManagedCellarIDsProposalWithDeposit{}
+	proposal := types.AddAxelarManagedCellarIDsProposalWithDeposit{}
 	contents, err := ioutil.ReadFile(okJSON.Name())
 	require.NoError(t, err)
 
@@ -49,7 +49,7 @@ func TestParseRemoveManagedCellarsProposal(t *testing.T) {
 }
 `)
 
-	proposal := types.RemoveManagedCellarIDsProposalWithDeposit{}
+	proposal := types.RemoveAxelarManagedCellarIDsProposalWithDeposit{}
 	contents, err := ioutil.ReadFile(okJSON.Name())
 	require.NoError(t, err)
 
@@ -75,7 +75,7 @@ func TestParseSubmitScheduledCorkProposal(t *testing.T) {
 }
 `)
 
-	proposal := types.ScheduledCorkProposalWithDeposit{}
+	proposal := types.AxelarScheduledCorkProposalWithDeposit{}
 	contents, err := ioutil.ReadFile(okJSON.Name())
 	require.NoError(t, err)
 

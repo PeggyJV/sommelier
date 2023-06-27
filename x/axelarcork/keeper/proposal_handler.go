@@ -16,7 +16,7 @@ import (
 )
 
 // HandleAddManagedCellarsProposal is a handler for executing a passed community cellar addition proposal
-func HandleAddManagedCellarsProposal(ctx sdk.Context, k Keeper, p types.AddManagedCellarIDsProposal) error {
+func HandleAddManagedCellarsProposal(ctx sdk.Context, k Keeper, p types.AddAxelarManagedCellarIDsProposal) error {
 	config, err := k.GetChainConfigurationByNameAndID(ctx, p.ChainName, p.ChainId)
 	if err != nil {
 		return err
@@ -48,7 +48,7 @@ func HandleAddManagedCellarsProposal(ctx sdk.Context, k Keeper, p types.AddManag
 }
 
 // HandleRemoveManagedCellarsProposal is a handler for executing a passed community cellar removal proposal
-func HandleRemoveManagedCellarsProposal(ctx sdk.Context, k Keeper, p types.RemoveManagedCellarIDsProposal) error {
+func HandleRemoveManagedCellarsProposal(ctx sdk.Context, k Keeper, p types.RemoveAxelarManagedCellarIDsProposal) error {
 	config, err := k.GetChainConfigurationByNameAndID(ctx, p.ChainName, p.ChainId)
 	if err != nil {
 		return err
@@ -74,7 +74,7 @@ func HandleRemoveManagedCellarsProposal(ctx sdk.Context, k Keeper, p types.Remov
 }
 
 // HandleScheduledCorkProposal is a handler for executing a passed scheduled cork proposal
-func HandleScheduledCorkProposal(ctx sdk.Context, k Keeper, p types.ScheduledCorkProposal) error {
+func HandleScheduledCorkProposal(ctx sdk.Context, k Keeper, p types.AxelarScheduledCorkProposal) error {
 	config, err := k.GetChainConfigurationByNameAndID(ctx, p.ChainName, p.ChainId)
 	if err != nil {
 		return err
@@ -87,7 +87,7 @@ func HandleScheduledCorkProposal(ctx sdk.Context, k Keeper, p types.ScheduledCor
 	return nil
 }
 
-func HandleCommunityPoolSpendProposal(ctx sdk.Context, k Keeper, p types.CommunityPoolSpendProposal) error {
+func HandleCommunityPoolSpendProposal(ctx sdk.Context, k Keeper, p types.AxelarCommunityPoolSpendProposal) error {
 	feePool := k.distributionKeeper.GetFeePool(ctx)
 
 	// NOTE the community pool isn't a module account, however its coins

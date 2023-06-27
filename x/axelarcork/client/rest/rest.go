@@ -50,6 +50,8 @@ func postAddProposalHandlerFn(clientCtx client.Context) http.HandlerFunc {
 		content := types.NewAddManagedCellarIDsProposal(
 			req.Title,
 			req.Description,
+			"",
+			req.ChainID,
 			&types.CellarIDSet{
 				Ids: req.CellarIDs,
 			})
@@ -81,6 +83,8 @@ func postRemoveProposalHandlerFn(clientCtx client.Context) http.HandlerFunc {
 		content := types.NewRemoveManagedCellarIDsProposal(
 			req.Title,
 			req.Description,
+			"",
+			req.ChainID,
 			&types.CellarIDSet{
 				Ids: req.CellarIDs,
 			})

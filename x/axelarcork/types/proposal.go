@@ -20,22 +20,22 @@ const (
 	ProposalTypeRemoveChainConfiguration = "RemoveAxelarChainConfiguration"
 )
 
-var _ govtypes.Content = &AddManagedCellarIDsProposal{}
-var _ govtypes.Content = &RemoveManagedCellarIDsProposal{}
-var _ govtypes.Content = &ScheduledCorkProposal{}
-var _ govtypes.Content = &CommunityPoolSpendProposal{}
+var _ govtypes.Content = &AddAxelarManagedCellarIDsProposal{}
+var _ govtypes.Content = &RemoveAxelarManagedCellarIDsProposal{}
+var _ govtypes.Content = &AxelarScheduledCorkProposal{}
+var _ govtypes.Content = &AxelarCommunityPoolSpendProposal{}
 var _ govtypes.Content = &AddChainConfigurationProposal{}
 var _ govtypes.Content = &RemoveChainConfigurationProposal{}
 
 func init() {
 	govtypes.RegisterProposalType(ProposalTypeAddManagedCellarIDs)
-	govtypes.RegisterProposalTypeCodec(&AddManagedCellarIDsProposal{}, "sommelier/AddAxelarManagedCellarIDsProposal")
+	govtypes.RegisterProposalTypeCodec(&AddAxelarManagedCellarIDsProposal{}, "sommelier/AddAxelarManagedCellarIDsProposal")
 
 	govtypes.RegisterProposalType(ProposalTypeRemoveManagedCellarIDs)
-	govtypes.RegisterProposalTypeCodec(&RemoveManagedCellarIDsProposal{}, "sommelier/RemoveAxelarManagedCellarIDsProposal")
+	govtypes.RegisterProposalTypeCodec(&RemoveAxelarManagedCellarIDsProposal{}, "sommelier/RemoveAxelarManagedCellarIDsProposal")
 
 	govtypes.RegisterProposalType(ProposalTypeScheduledCork)
-	govtypes.RegisterProposalTypeCodec(&ScheduledCorkProposal{}, "sommelier/AxelarScheduledCorkProposal")
+	govtypes.RegisterProposalTypeCodec(&AxelarScheduledCorkProposal{}, "sommelier/AxelarScheduledCorkProposal")
 
 	govtypes.RegisterProposalType(ProposalTypeAddChainConfiguration)
 	govtypes.RegisterProposalTypeCodec(&AddChainConfigurationProposal{}, "sommelier/AddAxelarChainConfigurationProposal")
@@ -45,8 +45,8 @@ func init() {
 
 }
 
-func NewAddManagedCellarIDsProposal(title string, description string, chainName string, chainID uint64, cellarIds *CellarIDSet) *AddManagedCellarIDsProposal {
-	return &AddManagedCellarIDsProposal{
+func NewAddManagedCellarIDsProposal(title string, description string, chainName string, chainID uint64, cellarIds *CellarIDSet) *AddAxelarManagedCellarIDsProposal {
+	return &AddAxelarManagedCellarIDsProposal{
 		Title:       title,
 		Description: description,
 		CellarIds:   cellarIds,
@@ -55,15 +55,15 @@ func NewAddManagedCellarIDsProposal(title string, description string, chainName 
 	}
 }
 
-func (m *AddManagedCellarIDsProposal) ProposalRoute() string {
+func (m *AddAxelarManagedCellarIDsProposal) ProposalRoute() string {
 	return RouterKey
 }
 
-func (m *AddManagedCellarIDsProposal) ProposalType() string {
+func (m *AddAxelarManagedCellarIDsProposal) ProposalType() string {
 	return ProposalTypeAddManagedCellarIDs
 }
 
-func (m *AddManagedCellarIDsProposal) ValidateBasic() error {
+func (m *AddAxelarManagedCellarIDsProposal) ValidateBasic() error {
 	if err := govtypes.ValidateAbstract(m); err != nil {
 		return err
 	}
@@ -75,8 +75,8 @@ func (m *AddManagedCellarIDsProposal) ValidateBasic() error {
 	return nil
 }
 
-func NewRemoveManagedCellarIDsProposal(title string, description string, chainName string, chainID uint64, cellarIds *CellarIDSet) *RemoveManagedCellarIDsProposal {
-	return &RemoveManagedCellarIDsProposal{
+func NewRemoveManagedCellarIDsProposal(title string, description string, chainName string, chainID uint64, cellarIds *CellarIDSet) *RemoveAxelarManagedCellarIDsProposal {
+	return &RemoveAxelarManagedCellarIDsProposal{
 		Title:       title,
 		Description: description,
 		CellarIds:   cellarIds,
@@ -85,15 +85,15 @@ func NewRemoveManagedCellarIDsProposal(title string, description string, chainNa
 	}
 }
 
-func (m *RemoveManagedCellarIDsProposal) ProposalRoute() string {
+func (m *RemoveAxelarManagedCellarIDsProposal) ProposalRoute() string {
 	return RouterKey
 }
 
-func (m *RemoveManagedCellarIDsProposal) ProposalType() string {
+func (m *RemoveAxelarManagedCellarIDsProposal) ProposalType() string {
 	return ProposalTypeRemoveManagedCellarIDs
 }
 
-func (m *RemoveManagedCellarIDsProposal) ValidateBasic() error {
+func (m *RemoveAxelarManagedCellarIDsProposal) ValidateBasic() error {
 	if err := govtypes.ValidateAbstract(m); err != nil {
 		return err
 	}
@@ -105,8 +105,8 @@ func (m *RemoveManagedCellarIDsProposal) ValidateBasic() error {
 	return nil
 }
 
-func NewScheduledCorkProposal(title string, description string, blockHeight uint64, chainName string, chainID uint64, targetContractAddress string, contractCallProtoJSON string) *ScheduledCorkProposal {
-	return &ScheduledCorkProposal{
+func NewScheduledCorkProposal(title string, description string, blockHeight uint64, chainName string, chainID uint64, targetContractAddress string, contractCallProtoJSON string) *AxelarScheduledCorkProposal {
+	return &AxelarScheduledCorkProposal{
 		Title:                 title,
 		Description:           description,
 		BlockHeight:           blockHeight,
@@ -117,15 +117,15 @@ func NewScheduledCorkProposal(title string, description string, blockHeight uint
 	}
 }
 
-func (m *ScheduledCorkProposal) ProposalRoute() string {
+func (m *AxelarScheduledCorkProposal) ProposalRoute() string {
 	return RouterKey
 }
 
-func (m *ScheduledCorkProposal) ProposalType() string {
+func (m *AxelarScheduledCorkProposal) ProposalType() string {
 	return ProposalTypeScheduledCork
 }
 
-func (m *ScheduledCorkProposal) ValidateBasic() error {
+func (m *AxelarScheduledCorkProposal) ValidateBasic() error {
 	if err := govtypes.ValidateAbstract(m); err != nil {
 		return err
 	}
@@ -145,8 +145,8 @@ func (m *ScheduledCorkProposal) ValidateBasic() error {
 	return nil
 }
 
-func NewCommunitySpendProposal(title string, description string, recipient string, chainID uint64, chainName string, amount sdk.Coin) *CommunityPoolSpendProposal {
-	return &CommunityPoolSpendProposal{
+func NewCommunitySpendProposal(title string, description string, recipient string, chainID uint64, chainName string, amount sdk.Coin) *AxelarCommunityPoolSpendProposal {
+	return &AxelarCommunityPoolSpendProposal{
 		Title:       title,
 		Description: description,
 		Recipient:   recipient,
@@ -156,15 +156,15 @@ func NewCommunitySpendProposal(title string, description string, recipient strin
 	}
 }
 
-func (m *CommunityPoolSpendProposal) ProposalRoute() string {
+func (m *AxelarCommunityPoolSpendProposal) ProposalRoute() string {
 	return RouterKey
 }
 
-func (m *CommunityPoolSpendProposal) ProposalType() string {
+func (m *AxelarCommunityPoolSpendProposal) ProposalType() string {
 	return ProposalTypeCommunitySpend
 }
 
-func (m *CommunityPoolSpendProposal) ValidateBasic() error {
+func (m *AxelarCommunityPoolSpendProposal) ValidateBasic() error {
 	if err := govtypes.ValidateAbstract(m); err != nil {
 		return err
 	}

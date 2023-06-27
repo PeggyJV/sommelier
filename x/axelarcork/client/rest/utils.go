@@ -13,6 +13,7 @@ type (
 
 		Title       string         `json:"title" yaml:"title"`
 		Description string         `json:"description" yaml:"description"`
+		ChainID     uint64         `json:"chain_id" yaml:"chain_id"`
 		CellarIDs   []string       `json:"cellar_ids" yaml:"cellar_ids"`
 		Proposer    sdk.AccAddress `json:"proposer" yaml:"proposer"`
 		Deposit     sdk.Coins      `json:"deposit" yaml:"deposit"`
@@ -23,6 +24,7 @@ type (
 
 		Title       string         `json:"title" yaml:"title"`
 		Description string         `json:"description" yaml:"description"`
+		ChainID     uint64         `json:"chain_id" yaml:"chain_id"`
 		CellarIDs   []string       `json:"cellar_ids" yaml:"cellar_ids"`
 		Proposer    sdk.AccAddress `json:"proposer" yaml:"proposer"`
 		Deposit     sdk.Coins      `json:"deposit" yaml:"deposit"`

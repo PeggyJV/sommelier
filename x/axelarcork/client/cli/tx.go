@@ -60,7 +60,7 @@ Where proposal.json contains:
 				return err
 			}
 
-			proposal := types.AddManagedCellarIDsProposalWithDeposit{}
+			proposal := types.AddAxelarManagedCellarIDsProposalWithDeposit{}
 			contents, err := os.ReadFile(args[0])
 			if err != nil {
 				return err
@@ -141,7 +141,7 @@ Where proposal.json contains:
 				return err
 			}
 
-			proposal := types.RemoveManagedCellarIDsProposalWithDeposit{}
+			proposal := types.RemoveAxelarManagedCellarIDsProposalWithDeposit{}
 			contents, err := os.ReadFile(args[0])
 			if err != nil {
 				return err
@@ -226,7 +226,7 @@ The contract_call_proto_json field must be the JSON representation of a Schedule
 				return err
 			}
 
-			proposal := types.ScheduledCorkProposalWithDeposit{}
+			proposal := types.AxelarScheduledCorkProposalWithDeposit{}
 			contents, err := os.ReadFile(args[0])
 			if err != nil {
 				return err
