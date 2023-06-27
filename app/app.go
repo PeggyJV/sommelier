@@ -99,6 +99,7 @@ import (
 	v5 "github.com/peggyjv/sommelier/v6/app/upgrades/v5"
 	v6 "github.com/peggyjv/sommelier/v6/app/upgrades/v6"
 	"github.com/peggyjv/sommelier/v6/x/axelarcork"
+	axelarcorkclient "github.com/peggyjv/sommelier/v6/x/axelarcork/client"
 	axelarcorkkeeper "github.com/peggyjv/sommelier/v6/x/axelarcork/keeper"
 	axelarcorktypes "github.com/peggyjv/sommelier/v6/x/axelarcork/types"
 	"github.com/peggyjv/sommelier/v6/x/cellarfees"
@@ -153,6 +154,8 @@ var (
 			gravityclient.ProposalHandler,
 			corkclient.AddProposalHandler,
 			corkclient.RemoveProposalHandler,
+			axelarcorkclient.AddProposalHandler,
+			axelarcorkclient.AddChainConfigurationHandler,
 		),
 		params.AppModuleBasic{},
 		crisis.AppModuleBasic{},
@@ -167,6 +170,7 @@ var (
 		authzmodule.AppModuleBasic{},
 		gravity.AppModuleBasic{},
 		cork.AppModuleBasic{},
+		axelarcork.AppModuleBasic{},
 		cellarfees.AppModuleBasic{},
 		incentives.AppModuleBasic{},
 	)
@@ -293,6 +297,7 @@ func NewSommelierApp(
 		feegrant.StoreKey,
 		authzkeeper.StoreKey,
 		corktypes.StoreKey,
+		axelarcorktypes.StoreKey,
 		incentivestypes.StoreKey,
 	)
 	tkeys := sdk.NewTransientStoreKeys(paramstypes.TStoreKey)
@@ -856,6 +861,7 @@ func initParamsKeeper(appCodec codec.BinaryCodec, legacyAmino *codec.LegacyAmino
 	paramsKeeper.Subspace(icahosttypes.SubModuleName)
 	paramsKeeper.Subspace(gravitytypes.ModuleName)
 	paramsKeeper.Subspace(corktypes.ModuleName)
+	paramsKeeper.Subspace(axelarcorktypes.ModuleName)
 	paramsKeeper.Subspace(cellarfeestypes.ModuleName)
 	paramsKeeper.Subspace(incentivestypes.ModuleName)
 
