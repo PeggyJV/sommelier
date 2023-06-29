@@ -2,6 +2,7 @@ package integration_tests
 
 import (
 	"fmt"
+	"github.com/peggyjv/sommelier/v6/app"
 	"os"
 
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
@@ -24,7 +25,6 @@ import (
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 	gravitytypes "github.com/peggyjv/gravity-bridge/module/v3/x/gravity/types"
-	"github.com/peggyjv/sommelier/v6/app"
 	"github.com/peggyjv/sommelier/v6/app/params"
 	tmrand "github.com/tendermint/tendermint/libs/rand"
 	rpchttp "github.com/tendermint/tendermint/rpc/client/http"
