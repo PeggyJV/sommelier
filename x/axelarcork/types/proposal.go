@@ -43,6 +43,8 @@ func init() {
 	govtypes.RegisterProposalType(ProposalTypeRemoveChainConfiguration)
 	govtypes.RegisterProposalTypeCodec(&RemoveChainConfigurationProposal{}, "sommelier/RemoveAxelarChainConfigurationProposal")
 
+	govtypes.RegisterProposalType(ProposalTypeCommunitySpend)
+	govtypes.RegisterProposalTypeCodec(&AxelarCommunityPoolSpendProposal{}, "sommelier/AxelarCommunitySpendProposal")
 }
 
 func NewAddManagedCellarIDsProposal(title string, description string, chainName string, chainID uint64, cellarIds *CellarIDSet) *AddAxelarManagedCellarIDsProposal {
