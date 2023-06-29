@@ -18,7 +18,7 @@ func TestParseAddManagedCellarsProposal(t *testing.T) {
 {
   "title": "Dollary-doos LP Cellar Proposal",
   "description": "I have a hunch",
-  "cellar_ids": ["0x123801a7D398351b8bE11C439e05C5B3259aeC9B", "0x456801a7D398351b8bE11C439e05C5B3259aeC9B"],
+  "cellar_ids": {"ids": ["0x123801a7D398351b8bE11C439e05C5B3259aeC9B", "0x456801a7D398351b8bE11C439e05C5B3259aeC9B"]},
   "deposit": "1000stake"
 }
 `)
@@ -32,8 +32,8 @@ func TestParseAddManagedCellarsProposal(t *testing.T) {
 
 	require.Equal(t, "Dollary-doos LP Cellar Proposal", proposal.Title)
 	require.Equal(t, "I have a hunch", proposal.Description)
-	require.Equal(t, "0x123801a7D398351b8bE11C439e05C5B3259aeC9B", proposal.CellarIds[0])
-	require.Equal(t, "0x456801a7D398351b8bE11C439e05C5B3259aeC9B", proposal.CellarIds[1])
+	require.Equal(t, "0x123801a7D398351b8bE11C439e05C5B3259aeC9B", proposal.CellarIds.Ids[0])
+	require.Equal(t, "0x456801a7D398351b8bE11C439e05C5B3259aeC9B", proposal.CellarIds.Ids[1])
 	require.Equal(t, "1000stake", proposal.Deposit)
 }
 
@@ -44,7 +44,7 @@ func TestParseRemoveManagedCellarsProposal(t *testing.T) {
 {
   "title": "Dollary-doos LP Cellar Proposal",
   "description": "I have a hunch",
-  "cellar_ids": ["0x123801a7D398351b8bE11C439e05C5B3259aeC9B", "0x456801a7D398351b8bE11C439e05C5B3259aeC9B"],
+  "cellar_ids": {"ids": ["0x123801a7D398351b8bE11C439e05C5B3259aeC9B", "0x456801a7D398351b8bE11C439e05C5B3259aeC9B"]},
   "deposit": "1000stake"
 }
 `)
@@ -58,8 +58,8 @@ func TestParseRemoveManagedCellarsProposal(t *testing.T) {
 
 	require.Equal(t, "Dollary-doos LP Cellar Proposal", proposal.Title)
 	require.Equal(t, "I have a hunch", proposal.Description)
-	require.Equal(t, "0x123801a7D398351b8bE11C439e05C5B3259aeC9B", proposal.CellarIds[0])
-	require.Equal(t, "0x456801a7D398351b8bE11C439e05C5B3259aeC9B", proposal.CellarIds[1])
+	require.Equal(t, "0x123801a7D398351b8bE11C439e05C5B3259aeC9B", proposal.CellarIds.Ids[0])
+	require.Equal(t, "0x456801a7D398351b8bE11C439e05C5B3259aeC9B", proposal.CellarIds.Ids[1])
 	require.Equal(t, "1000stake", proposal.Deposit)
 }
 

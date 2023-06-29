@@ -34,11 +34,11 @@ message MsgScheduleCorkResponse {
 }
 
 message MsgRelayCorkRequest {
-  string                   signer     = 1;
-  cosmos.base.v1beta1.Coin token      = 2 [(gogoproto.nullable) = false];
-  uint64                   fee        = 3;
-  uint64                   chain_id   = 4;
-  string                   chain_name = 5;
+  string                   signer                  = 1;
+  cosmos.base.v1beta1.Coin token                   = 2 [(gogoproto.nullable) = false];
+  uint64                   fee                     = 3;
+  uint64                   chain_id                = 4;
+  string                   chain_name              = 5;
   string                   target_contract_address = 6;
 }
 

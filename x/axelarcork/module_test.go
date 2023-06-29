@@ -61,7 +61,7 @@ func TestSendPacket_NoMemo(t *testing.T) {
 	acMiddleware := setup.AxelarCorkMiddleware
 
 	// Test data
-	packet := transferPacket(t, tests.TestGMPAccount.String(), "{}")
+	packet := transferPacket(t, tests.TestGMPAccount.String(), "")
 
 	// Expected mocks
 	gomock.InOrder(

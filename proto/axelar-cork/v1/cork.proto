@@ -41,8 +41,8 @@ message CellarIDSet {
 }
 
 message ChainConfiguration {
-  string name           = 1;
-  uint64 id             = 2;
+  string name          = 1;
+  uint64 id            = 2;
   string proxy_address = 3;
 }
 

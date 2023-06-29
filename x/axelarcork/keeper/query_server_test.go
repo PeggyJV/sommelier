@@ -26,10 +26,9 @@ func (suite *KeeperTestSuite) TestQueriesHappyPath() {
 	corkKeeper.SetParams(ctx, params)
 
 	corkKeeper.SetChainConfigurationByID(ctx, TestEVMChainID, types.ChainConfiguration{
-		Name:          "testevm",
-		Id:            TestEVMChainID,
-		VoteThreshold: sdk.NewDec(0),
-		ProxyAddress:  "0x123",
+		Name:         "testevm",
+		Id:           TestEVMChainID,
+		ProxyAddress: "0x123",
 	})
 
 	testHeight := uint64(ctx.BlockHeight())

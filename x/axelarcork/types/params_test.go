@@ -15,7 +15,18 @@ func TestParamsValidate(t *testing.T) {
 		{
 			name:    "default",
 			params:  DefaultParams(),
-			expPass: true,
+			expPass: false,
+		},
+		{
+			name: "fake-configuration",
+			params: Params{
+				IbcChannel:      "test-channel",
+				IbcPort:         "test-port",
+				GmpAccount:      "test-account",
+				ExecutorAccount: "test-executor",
+				TimeoutDuration: 0,
+			},
+			expPass: false,
 		},
 		{
 			name:    "empty",
