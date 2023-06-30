@@ -2,6 +2,7 @@ package keeper
 
 import (
 	"encoding/hex"
+
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"

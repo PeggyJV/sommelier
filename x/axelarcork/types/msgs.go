@@ -9,7 +9,7 @@ import (
 )
 
 var (
-	_ sdk.Msg = &MsgScheduleCorkRequest{}
+	_ sdk.Msg = &MsgScheduleAxelarCorkRequest{}
 )
 
 const (
@@ -19,12 +19,12 @@ const (
 )
 
 ////////////////////////////
-// MsgScheduleCorkRequest //
+// MsgScheduleAxelarCorkRequest //
 ////////////////////////////
 
-// NewMsgScheduleCorkRequest return a new MsgScheduleCorkRequest
-func NewMsgScheduleCorkRequest(body []byte, address common.Address, blockHeight uint64, signer sdk.AccAddress) (*MsgScheduleCorkRequest, error) {
-	return &MsgScheduleCorkRequest{
+// NewMsgScheduleCorkRequest return a new MsgScheduleAxelarCorkRequest
+func NewMsgScheduleCorkRequest(body []byte, address common.Address, blockHeight uint64, signer sdk.AccAddress) (*MsgScheduleAxelarCorkRequest, error) {
+	return &MsgScheduleAxelarCorkRequest{
 		Cork: &Cork{
 			EncodedContractCall:   body,
 			TargetContractAddress: address.String(),
@@ -35,13 +35,13 @@ func NewMsgScheduleCorkRequest(body []byte, address common.Address, blockHeight 
 }
 
 // Route implements sdk.Msg
-func (m *MsgScheduleCorkRequest) Route() string { return ModuleName }
+func (m *MsgScheduleAxelarCorkRequest) Route() string { return ModuleName }
 
 // Type implements sdk.Msg
-func (m *MsgScheduleCorkRequest) Type() string { return TypeMsgScheduleCorkRequest }
+func (m *MsgScheduleAxelarCorkRequest) Type() string { return TypeMsgScheduleCorkRequest }
 
 // ValidateBasic implements sdk.Msg
-func (m *MsgScheduleCorkRequest) ValidateBasic() error {
+func (m *MsgScheduleAxelarCorkRequest) ValidateBasic() error {
 	if _, err := sdk.AccAddressFromBech32(m.Signer); err != nil {
 		return sdkerrors.Wrap(sdkerrors.ErrInvalidAddress, err.Error())
 	}
@@ -50,17 +50,17 @@ func (m *MsgScheduleCorkRequest) ValidateBasic() error {
 }
 
 // GetSignBytes implements sdk.Msg
-func (m *MsgScheduleCorkRequest) GetSignBytes() []byte {
+func (m *MsgScheduleAxelarCorkRequest) GetSignBytes() []byte {
 	panic("amino support disabled")
 }
 
 // GetSigners implements sdk.Msg
-func (m *MsgScheduleCorkRequest) GetSigners() []sdk.AccAddress {
+func (m *MsgScheduleAxelarCorkRequest) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{m.MustGetSigner()}
 }
 
 // MustGetSigner returns the signer address
-func (m *MsgScheduleCorkRequest) MustGetSigner() sdk.AccAddress {
+func (m *MsgScheduleAxelarCorkRequest) MustGetSigner() sdk.AccAddress {
 	addr, err := sdk.AccAddressFromBech32(m.Signer)
 	if err != nil {
 		panic(err)
@@ -69,17 +69,17 @@ func (m *MsgScheduleCorkRequest) MustGetSigner() sdk.AccAddress {
 }
 
 /////////////////////////
-// MsgRelayCorkRequest //
+// MsgRelayAxelarCorkRequest //
 /////////////////////////
 
 // Route implements sdk.Msg
-func (m *MsgRelayCorkRequest) Route() string { return ModuleName }
+func (m *MsgRelayAxelarCorkRequest) Route() string { return ModuleName }
 
 // Type implements sdk.Msg
-func (m *MsgRelayCorkRequest) Type() string { return TypeMsgRelayCorkRequest }
+func (m *MsgRelayAxelarCorkRequest) Type() string { return TypeMsgRelayCorkRequest }
 
 // ValidateBasic implements sdk.Msg
-func (m *MsgRelayCorkRequest) ValidateBasic() error {
+func (m *MsgRelayAxelarCorkRequest) ValidateBasic() error {
 	if _, err := sdk.AccAddressFromBech32(m.Signer); err != nil {
 		return sdkerrors.Wrap(sdkerrors.ErrInvalidAddress, err.Error())
 	}
@@ -92,17 +92,17 @@ func (m *MsgRelayCorkRequest) ValidateBasic() error {
 }
 
 // GetSignBytes implements sdk.Msg
-func (m *MsgRelayCorkRequest) GetSignBytes() []byte {
+func (m *MsgRelayAxelarCorkRequest) GetSignBytes() []byte {
 	panic("amino support disabled")
 }
 
 // GetSigners implements sdk.Msg
-func (m *MsgRelayCorkRequest) GetSigners() []sdk.AccAddress {
+func (m *MsgRelayAxelarCorkRequest) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{m.MustGetSigner()}
 }
 
 // MustGetSigner returns the signer address
-func (m *MsgRelayCorkRequest) MustGetSigner() sdk.AccAddress {
+func (m *MsgRelayAxelarCorkRequest) MustGetSigner() sdk.AccAddress {
 	addr, err := sdk.AccAddressFromBech32(m.Signer)
 	if err != nil {
 		panic(err)
@@ -111,17 +111,17 @@ func (m *MsgRelayCorkRequest) MustGetSigner() sdk.AccAddress {
 }
 
 ///////////////////////////
-// MsgBumpCorkGasRequest //
+// MsgBumpAxelarCorkGasRequest //
 ///////////////////////////
 
 // Route implements sdk.Msg
-func (m *MsgBumpCorkGasRequest) Route() string { return ModuleName }
+func (m *MsgBumpAxelarCorkGasRequest) Route() string { return ModuleName }
 
 // Type implements sdk.Msg
-func (m *MsgBumpCorkGasRequest) Type() string { return TypeMsgBumpCorkGasRequest }
+func (m *MsgBumpAxelarCorkGasRequest) Type() string { return TypeMsgBumpCorkGasRequest }
 
 // ValidateBasic implements sdk.Msg
-func (m *MsgBumpCorkGasRequest) ValidateBasic() error {
+func (m *MsgBumpAxelarCorkGasRequest) ValidateBasic() error {
 	if _, err := sdk.AccAddressFromBech32(m.Signer); err != nil {
 		return sdkerrors.Wrap(sdkerrors.ErrInvalidAddress, err.Error())
 	}
@@ -130,17 +130,17 @@ func (m *MsgBumpCorkGasRequest) ValidateBasic() error {
 }
 
 // GetSignBytes implements sdk.Msg
-func (m *MsgBumpCorkGasRequest) GetSignBytes() []byte {
+func (m *MsgBumpAxelarCorkGasRequest) GetSignBytes() []byte {
 	panic("amino support disabled")
 }
 
 // GetSigners implements sdk.Msg
-func (m *MsgBumpCorkGasRequest) GetSigners() []sdk.AccAddress {
+func (m *MsgBumpAxelarCorkGasRequest) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{m.MustGetSigner()}
 }
 
 // MustGetSigner returns the signer address
-func (m *MsgBumpCorkGasRequest) MustGetSigner() sdk.AccAddress {
+func (m *MsgBumpAxelarCorkGasRequest) MustGetSigner() sdk.AccAddress {
 	addr, err := sdk.AccAddressFromBech32(m.Signer)
 	if err != nil {
 		panic(err)

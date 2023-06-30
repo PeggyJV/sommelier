@@ -15,13 +15,13 @@ func NewHandler(k keeper.Keeper) sdk.Handler {
 	return func(ctx sdk.Context, msg sdk.Msg) (*sdk.Result, error) {
 		ctx = ctx.WithEventManager(sdk.NewEventManager())
 		switch msg := msg.(type) {
-		case *types.MsgScheduleCorkRequest:
+		case *types.MsgScheduleAxelarCorkRequest:
 			res, err := k.ScheduleCork(sdk.WrapSDKContext(ctx), msg)
 			return sdk.WrapServiceResult(ctx, res, err)
-		case *types.MsgRelayCorkRequest:
+		case *types.MsgRelayAxelarCorkRequest:
 			res, err := k.RelayCork(sdk.WrapSDKContext(ctx), msg)
 			return sdk.WrapServiceResult(ctx, res, err)
-		case *types.MsgBumpCorkGasRequest:
+		case *types.MsgBumpAxelarCorkGasRequest:
 			res, err := k.BumpCorkGas(sdk.WrapSDKContext(ctx), msg)
 			return sdk.WrapServiceResult(ctx, res, err)
 		default:

@@ -1,8 +1,9 @@
 package keeper
 
 import (
-	"github.com/peggyjv/sommelier/v6/x/axelarcork/tests/mocks"
 	"testing"
+
+	"github.com/peggyjv/sommelier/v6/x/axelarcork/tests/mocks"
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/codec"

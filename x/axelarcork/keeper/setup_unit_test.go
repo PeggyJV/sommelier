@@ -1,9 +1,10 @@
 package keeper
 
 import (
-	"github.com/peggyjv/sommelier/v6/x/axelarcork/tests/mocks"
 	"reflect"
 	"testing"
+
+	"github.com/peggyjv/sommelier/v6/x/axelarcork/tests/mocks"
 
 	"github.com/cosmos/cosmos-sdk/codec"
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"

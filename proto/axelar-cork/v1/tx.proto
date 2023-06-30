@@ -9,13 +9,13 @@ option go_package = "github.com/peggyjv/sommelier/x/axelarcork/types";
 
 // MsgService defines the msgs that the cork module handles
 service Msg {
-  rpc ScheduleCork(MsgScheduleCorkRequest) returns (MsgScheduleCorkResponse);
-  rpc RelayCork(MsgRelayCorkRequest) returns (MsgRelayCorkResponse);
-  rpc BumpCorkGas(MsgBumpCorkGasRequest) returns (MsgBumpCorkGasResponse);
+  rpc ScheduleCork(MsgScheduleAxelarCorkRequest) returns (MsgScheduleAxelarCorkResponse);
+  rpc RelayCork(MsgRelayAxelarCorkRequest) returns (MsgRelayAxelarCorkResponse);
+  rpc BumpCorkGas(MsgBumpAxelarCorkGasRequest) returns (MsgBumpAxelarCorkGasResponse);
 }
 
 // MsgScheduleCorkRequest - sdk.Msg for scheduling a cork request for on or after a specific block height
-message MsgScheduleCorkRequest {
+message MsgScheduleAxelarCorkRequest {
   // the scheduled cork
   Cork cork = 1;
   // the chain name
@@ -28,12 +28,12 @@ message MsgScheduleCorkRequest {
   string signer = 5;
 }
 
-message MsgScheduleCorkResponse {
+message MsgScheduleAxelarCorkResponse {
   // cork ID
   string id = 1;
 }
 
-message MsgRelayCorkRequest {
+message MsgRelayAxelarCorkRequest {
   string                   signer                  = 1;
   cosmos.base.v1beta1.Coin token                   = 2 [(gogoproto.nullable) = false];
   uint64                   fee                     = 3;
@@ -42,12 +42,12 @@ message MsgRelayCorkRequest {
   string                   target_contract_address = 6;
 }
 
-message MsgRelayCorkResponse {}
+message MsgRelayAxelarCorkResponse {}
 
-message MsgBumpCorkGasRequest {
+message MsgBumpAxelarCorkGasRequest {
   string                   signer     = 1;
   cosmos.base.v1beta1.Coin token      = 2 [(gogoproto.nullable) = false];
   string                   message_id = 3;
 }
 
-message MsgBumpCorkGasResponse {}
+message MsgBumpAxelarCorkGasResponse {}

@@ -81,23 +81,22 @@ func (b AppModuleBasic) RegisterInterfaces(registry codectypes.InterfaceRegistry
 // AppModule implements an application module for the incentives module.
 type AppModule struct {
 	AppModuleBasic
-	keeper             keeper.Keeper
-	distributionKeeper types.DistributionKeeper
-	bankKeeper         types.BankKeeper
-	mintKeeper         types.MintKeeper
-	cdc                codec.Codec
+	keeper keeper.Keeper
+	//distributionKeeper types.DistributionKeeper
+	//bankKeeper         types.BankKeeper
+	//mintKeeper         types.MintKeeper
+	cdc codec.Codec
 }
 
 // NewAppModule creates a new AppModule object
-func NewAppModule(keeper keeper.Keeper, distributionKeeper types.DistributionKeeper,
-	bankKeeper types.BankKeeper, mintKeeper types.MintKeeper, cdc codec.Codec) AppModule {
+func NewAppModule(keeper keeper.Keeper, cdc codec.Codec) AppModule {
 	return AppModule{
-		AppModuleBasic:     AppModuleBasic{},
-		keeper:             keeper,
-		distributionKeeper: distributionKeeper,
-		bankKeeper:         bankKeeper,
-		mintKeeper:         mintKeeper,
-		cdc:                cdc,
+		AppModuleBasic: AppModuleBasic{},
+		keeper:         keeper,
+		//distributionKeeper: distributionKeeper,
+		//bankKeeper:         bankKeeper,
+		//mintKeeper:         mintKeeper,
+		cdc: cdc,
 	}
 }
 

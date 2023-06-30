@@ -1,6 +1,8 @@
 package tests
 
 import (
+	"testing"
+
 	"github.com/cosmos/cosmos-sdk/codec"
 	cdctypes "github.com/cosmos/cosmos-sdk/codec/types"
 	"github.com/cosmos/cosmos-sdk/store"
@@ -19,7 +21,6 @@ import (
 	"github.com/tendermint/tendermint/libs/log"
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
 	tmdb "github.com/tendermint/tm-db"
-	"testing"
 )
 
 var TestGMPAccount = authtypes.NewModuleAddress("test-gmp-account")

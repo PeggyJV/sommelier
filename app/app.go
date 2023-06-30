@@ -385,6 +385,17 @@ func NewSommelierApp(
 		app.IBCKeeper.ChannelKeeper, app.IBCKeeper.ChannelKeeper, &app.IBCKeeper.PortKeeper,
 		app.AccountKeeper, app.BankKeeper, scopedTransferKeeper,
 	)
+
+	// create axelar cork keeper
+	app.AxelarCorkKeeper = axelarcorkkeeper.NewKeeper(
+		appCodec,
+		keys[axelarcorktypes.StoreKey],
+		app.GetSubspace(axelarcorktypes.ModuleName),
+		app.StakingKeeper,
+		app.TransferKeeper,
+		app.DistrKeeper,
+		app.IBCKeeper.ChannelKeeper,
+	)
 	transferModule := ibctransfer.NewAppModule(app.TransferKeeper)
 	transferIBCModule := ibctransfer.NewIBCModule(app.TransferKeeper)
 	var transferStack ibcporttypes.IBCModule = transferIBCModule
@@ -415,16 +426,6 @@ func NewSommelierApp(
 	app.CorkKeeper = corkkeeper.NewKeeper(
 		appCodec, keys[corktypes.StoreKey], app.GetSubspace(corktypes.ModuleName),
 		app.StakingKeeper, app.GravityKeeper,
-	)
-
-	app.AxelarCorkKeeper = axelarcorkkeeper.NewKeeper(
-		appCodec,
-		keys[axelarcorktypes.StoreKey],
-		app.GetSubspace(axelarcorktypes.ModuleName),
-		app.StakingKeeper,
-		app.TransferKeeper,
-		app.DistrKeeper,
-		app.IBCKeeper.ChannelKeeper,
 	)
 
 	app.CellarFeesKeeper = cellarfeeskeeper.NewKeeper(
@@ -507,8 +508,8 @@ func NewSommelierApp(
 		gravity.NewAppModule(app.GravityKeeper, app.BankKeeper),
 		authzmodule.NewAppModule(appCodec, app.AuthzKeeper, app.AccountKeeper, app.BankKeeper, app.interfaceRegistry),
 		cork.NewAppModule(app.CorkKeeper, appCodec),
-		cellarfees.NewAppModule(app.CellarFeesKeeper, appCodec, app.AccountKeeper, app.BankKeeper),
-		incentives.NewAppModule(app.IncentivesKeeper, app.DistrKeeper, app.BankKeeper, app.MintKeeper, appCodec),
+		cellarfees.NewAppModule(app.CellarFeesKeeper, appCodec),
+		incentives.NewAppModule(app.IncentivesKeeper, appCodec),
 	)
 
 	// During begin block slashing happens after distr.BeginBlocker so that
@@ -630,8 +631,8 @@ func NewSommelierApp(
 		authzmodule.NewAppModule(appCodec, app.AuthzKeeper, app.AccountKeeper, app.BankKeeper, app.interfaceRegistry),
 		cork.NewAppModule(app.CorkKeeper, appCodec),
 		axelarcork.NewAppModule(app.AxelarCorkKeeper, appCodec),
-		cellarfees.NewAppModule(app.CellarFeesKeeper, appCodec, app.AccountKeeper, app.BankKeeper),
-		incentives.NewAppModule(app.IncentivesKeeper, app.DistrKeeper, app.BankKeeper, app.MintKeeper, appCodec),
+		cellarfees.NewAppModule(app.CellarFeesKeeper, appCodec),
+		incentives.NewAppModule(app.IncentivesKeeper, appCodec),
 	)
 
 	app.sm.RegisterStoreDecoders()

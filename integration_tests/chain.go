@@ -2,8 +2,9 @@ package integration_tests
 
 import (
 	"fmt"
-	"github.com/peggyjv/sommelier/v6/app"
 	"os"
+
+	"github.com/peggyjv/sommelier/v6/app"
 
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 	corktypes "github.com/peggyjv/sommelier/v6/x/cork/types"

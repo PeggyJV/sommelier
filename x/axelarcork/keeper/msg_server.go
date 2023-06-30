@@ -19,7 +19,7 @@ import (
 var _ types.MsgServer = Keeper{}
 
 // ScheduleCork implements types.MsgServer
-func (k Keeper) ScheduleCork(c context.Context, msg *types.MsgScheduleCorkRequest) (*types.MsgScheduleCorkResponse, error) {
+func (k Keeper) ScheduleCork(c context.Context, msg *types.MsgScheduleAxelarCorkRequest) (*types.MsgScheduleAxelarCorkResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
 
 	config, err := k.GetChainConfigurationByNameAndID(ctx, msg.ChainName, msg.ChainId)
@@ -54,10 +54,10 @@ func (k Keeper) ScheduleCork(c context.Context, msg *types.MsgScheduleCorkReques
 		return nil, err
 	}
 
-	return &types.MsgScheduleCorkResponse{Id: hex.EncodeToString(corkID)}, nil
+	return &types.MsgScheduleAxelarCorkResponse{Id: hex.EncodeToString(corkID)}, nil
 }
 
-func (k Keeper) RelayCork(c context.Context, msg *types.MsgRelayCorkRequest) (*types.MsgRelayCorkResponse, error) {
+func (k Keeper) RelayCork(c context.Context, msg *types.MsgRelayAxelarCorkRequest) (*types.MsgRelayAxelarCorkResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
 	params := k.GetParamSet(ctx)
 
@@ -105,10 +105,10 @@ func (k Keeper) RelayCork(c context.Context, msg *types.MsgRelayCorkRequest) (*t
 		return nil, err
 	}
 
-	return &types.MsgRelayCorkResponse{}, nil
+	return &types.MsgRelayAxelarCorkResponse{}, nil
 }
 
-func (k Keeper) BumpCorkGas(c context.Context, msg *types.MsgBumpCorkGasRequest) (*types.MsgBumpCorkGasResponse, error) {
+func (k Keeper) BumpCorkGas(c context.Context, msg *types.MsgBumpAxelarCorkGasRequest) (*types.MsgBumpAxelarCorkGasResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
 	params := k.GetParamSet(ctx)
 
@@ -127,5 +127,5 @@ func (k Keeper) BumpCorkGas(c context.Context, msg *types.MsgBumpCorkGasRequest)
 		return nil, err
 	}
 
-	return &types.MsgBumpCorkGasResponse{}, nil
+	return &types.MsgBumpAxelarCorkGasResponse{}, nil
 }

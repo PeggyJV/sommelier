@@ -30,7 +30,7 @@ var _ = math.Inf
 const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
 // MsgScheduleCorkRequest - sdk.Msg for scheduling a cork request for on or after a specific block height
-type MsgScheduleCorkRequest struct {
+type MsgScheduleAxelarCorkRequest struct {
 	// the scheduled cork
 	Cork *Cork `protobuf:"bytes,1,opt,name=cork,proto3" json:"cork,omitempty"`
 	// the chain name
@@ -43,18 +43,18 @@ type MsgScheduleCorkRequest struct {
 	Signer string `protobuf:"bytes,5,opt,name=signer,proto3" json:"signer,omitempty"`
 }
 
-func (m *MsgScheduleCorkRequest) Reset()         { *m = MsgScheduleCorkRequest{} }
-func (m *MsgScheduleCorkRequest) String() string { return proto.CompactTextString(m) }
-func (*MsgScheduleCorkRequest) ProtoMessage()    {}
-func (*MsgScheduleCorkRequest) Descriptor() ([]byte, []int) {
+func (m *MsgScheduleAxelarCorkRequest) Reset()         { *m = MsgScheduleAxelarCorkRequest{} }
+func (m *MsgScheduleAxelarCorkRequest) String() string { return proto.CompactTextString(m) }
+func (*MsgScheduleAxelarCorkRequest) ProtoMessage()    {}
+func (*MsgScheduleAxelarCorkRequest) Descriptor() ([]byte, []int) {
 	return fileDescriptor_1760ad9eba86eab6, []int{0}
 }
-func (m *MsgScheduleCorkRequest) XXX_Unmarshal(b []byte) error {
+func (m *MsgScheduleAxelarCorkRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *MsgScheduleCorkRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *MsgScheduleAxelarCorkRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_MsgScheduleCorkRequest.Marshal(b, m, deterministic)
+		return xxx_messageInfo_MsgScheduleAxelarCorkRequest.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -64,70 +64,70 @@ func (m *MsgScheduleCorkRequest) XXX_Marshal(b []byte, deterministic bool) ([]by
 		return b[:n], nil
 	}
 }
-func (m *MsgScheduleCorkRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MsgScheduleCorkRequest.Merge(m, src)
+func (m *MsgScheduleAxelarCorkRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgScheduleAxelarCorkRequest.Merge(m, src)
 }
-func (m *MsgScheduleCorkRequest) XXX_Size() int {
+func (m *MsgScheduleAxelarCorkRequest) XXX_Size() int {
 	return m.Size()
 }
-func (m *MsgScheduleCorkRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_MsgScheduleCorkRequest.DiscardUnknown(m)
+func (m *MsgScheduleAxelarCorkRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgScheduleAxelarCorkRequest.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_MsgScheduleCorkRequest proto.InternalMessageInfo
+var xxx_messageInfo_MsgScheduleAxelarCorkRequest proto.InternalMessageInfo
 
-func (m *MsgScheduleCorkRequest) GetCork() *Cork {
+func (m *MsgScheduleAxelarCorkRequest) GetCork() *Cork {
 	if m != nil {
 		return m.Cork
 	}
 	return nil
 }
 
-func (m *MsgScheduleCorkRequest) GetChainName() string {
+func (m *MsgScheduleAxelarCorkRequest) GetChainName() string {
 	if m != nil {
 		return m.ChainName
 	}
 	return ""
 }
 
-func (m *MsgScheduleCorkRequest) GetChainId() uint64 {
+func (m *MsgScheduleAxelarCorkRequest) GetChainId() uint64 {
 	if m != nil {
 		return m.ChainId
 	}
 	return 0
 }
 
-func (m *MsgScheduleCorkRequest) GetBlockHeight() uint64 {
+func (m *MsgScheduleAxelarCorkRequest) GetBlockHeight() uint64 {
 	if m != nil {
 		return m.BlockHeight
 	}
 	return 0
 }
 
-func (m *MsgScheduleCorkRequest) GetSigner() string {
+func (m *MsgScheduleAxelarCorkRequest) GetSigner() string {
 	if m != nil {
 		return m.Signer
 	}
 	return ""
 }
 
-type MsgScheduleCorkResponse struct {
+type MsgScheduleAxelarCorkResponse struct {
 	// cork ID
 	Id string `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
 }
 
-func (m *MsgScheduleCorkResponse) Reset()         { *m = MsgScheduleCorkResponse{} }
-func (m *MsgScheduleCorkResponse) String() string { return proto.CompactTextString(m) }
-func (*MsgScheduleCorkResponse) ProtoMessage()    {}
-func (*MsgScheduleCorkResponse) Descriptor() ([]byte, []int) {
+func (m *MsgScheduleAxelarCorkResponse) Reset()         { *m = MsgScheduleAxelarCorkResponse{} }
+func (m *MsgScheduleAxelarCorkResponse) String() string { return proto.CompactTextString(m) }
+func (*MsgScheduleAxelarCorkResponse) ProtoMessage()    {}
+func (*MsgScheduleAxelarCorkResponse) Descriptor() ([]byte, []int) {
 	return fileDescriptor_1760ad9eba86eab6, []int{1}
 }
-func (m *MsgScheduleCorkResponse) XXX_Unmarshal(b []byte) error {
+func (m *MsgScheduleAxelarCorkResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *MsgScheduleCorkResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *MsgScheduleAxelarCorkResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_MsgScheduleCorkResponse.Marshal(b, m, deterministic)
+		return xxx_messageInfo_MsgScheduleAxelarCorkResponse.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -137,26 +137,26 @@ func (m *MsgScheduleCorkResponse) XXX_Marshal(b []byte, deterministic bool) ([]b
 		return b[:n], nil
 	}
 }
-func (m *MsgScheduleCorkResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MsgScheduleCorkResponse.Merge(m, src)
+func (m *MsgScheduleAxelarCorkResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgScheduleAxelarCorkResponse.Merge(m, src)
 }
-func (m *MsgScheduleCorkResponse) XXX_Size() int {
+func (m *MsgScheduleAxelarCorkResponse) XXX_Size() int {
 	return m.Size()
 }
-func (m *MsgScheduleCorkResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_MsgScheduleCorkResponse.DiscardUnknown(m)
+func (m *MsgScheduleAxelarCorkResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgScheduleAxelarCorkResponse.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_MsgScheduleCorkResponse proto.InternalMessageInfo
+var xxx_messageInfo_MsgScheduleAxelarCorkResponse proto.InternalMessageInfo
 
-func (m *MsgScheduleCorkResponse) GetId() string {
+func (m *MsgScheduleAxelarCorkResponse) GetId() string {
 	if m != nil {
 		return m.Id
 	}
 	return ""
 }
 
-type MsgRelayCorkRequest struct {
+type MsgRelayAxelarCorkRequest struct {
 	Signer                string     `protobuf:"bytes,1,opt,name=signer,proto3" json:"signer,omitempty"`
 	Token                 types.Coin `protobuf:"bytes,2,opt,name=token,proto3" json:"token"`
 	Fee                   uint64     `protobuf:"varint,3,opt,name=fee,proto3" json:"fee,omitempty"`
@@ -165,18 +165,18 @@ type MsgRelayCorkRequest struct {
 	TargetContractAddress string     `protobuf:"bytes,6,opt,name=target_contract_address,json=targetContractAddress,proto3" json:"target_contract_address,omitempty"`
 }
 
-func (m *MsgRelayCorkRequest) Reset()         { *m = MsgRelayCorkRequest{} }
-func (m *MsgRelayCorkRequest) String() string { return proto.CompactTextString(m) }
-func (*MsgRelayCorkRequest) ProtoMessage()    {}
-func (*MsgRelayCorkRequest) Descriptor() ([]byte, []int) {
+func (m *MsgRelayAxelarCorkRequest) Reset()         { *m = MsgRelayAxelarCorkRequest{} }
+func (m *MsgRelayAxelarCorkRequest) String() string { return proto.CompactTextString(m) }
+func (*MsgRelayAxelarCorkRequest) ProtoMessage()    {}
+func (*MsgRelayAxelarCorkRequest) Descriptor() ([]byte, []int) {
 	return fileDescriptor_1760ad9eba86eab6, []int{2}
 }
-func (m *MsgRelayCorkRequest) XXX_Unmarshal(b []byte) error {
+func (m *MsgRelayAxelarCorkRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *MsgRelayCorkRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *MsgRelayAxelarCorkRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_MsgRelayCorkRequest.Marshal(b, m, deterministic)
+		return xxx_messageInfo_MsgRelayAxelarCorkRequest.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -186,75 +186,75 @@ func (m *MsgRelayCorkRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte,
 		return b[:n], nil
 	}
 }
-func (m *MsgRelayCorkRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MsgRelayCorkRequest.Merge(m, src)
+func (m *MsgRelayAxelarCorkRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgRelayAxelarCorkRequest.Merge(m, src)
 }
-func (m *MsgRelayCorkRequest) XXX_Size() int {
+func (m *MsgRelayAxelarCorkRequest) XXX_Size() int {
 	return m.Size()
 }
-func (m *MsgRelayCorkRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_MsgRelayCorkRequest.DiscardUnknown(m)
+func (m *MsgRelayAxelarCorkRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgRelayAxelarCorkRequest.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_MsgRelayCorkRequest proto.InternalMessageInfo
+var xxx_messageInfo_MsgRelayAxelarCorkRequest proto.InternalMessageInfo
 
-func (m *MsgRelayCorkRequest) GetSigner() string {
+func (m *MsgRelayAxelarCorkRequest) GetSigner() string {
 	if m != nil {
 		return m.Signer
 	}
 	return ""
 }
 
-func (m *MsgRelayCorkRequest) GetToken() types.Coin {
+func (m *MsgRelayAxelarCorkRequest) GetToken() types.Coin {
 	if m != nil {
 		return m.Token
 	}
 	return types.Coin{}
 }
 
-func (m *MsgRelayCorkRequest) GetFee() uint64 {
+func (m *MsgRelayAxelarCorkRequest) GetFee() uint64 {
 	if m != nil {
 		return m.Fee
 	}
 	return 0
 }
 
-func (m *MsgRelayCorkRequest) GetChainId() uint64 {
+func (m *MsgRelayAxelarCorkRequest) GetChainId() uint64 {
 	if m != nil {
 		return m.ChainId
 	}
 	return 0
 }
 
-func (m *MsgRelayCorkRequest) GetChainName() string {
+func (m *MsgRelayAxelarCorkRequest) GetChainName() string {
 	if m != nil {
 		return m.ChainName
 	}
 	return ""
 }
 
-func (m *MsgRelayCorkRequest) GetTargetContractAddress() string {
+func (m *MsgRelayAxelarCorkRequest) GetTargetContractAddress() string {
 	if m != nil {
 		return m.TargetContractAddress
 	}
 	return ""
 }
 
-type MsgRelayCorkResponse struct {
+type MsgRelayAxelarCorkResponse struct {
 }
 
-func (m *MsgRelayCorkResponse) Reset()         { *m = MsgRelayCorkResponse{} }
-func (m *MsgRelayCorkResponse) String() string { return proto.CompactTextString(m) }
-func (*MsgRelayCorkResponse) ProtoMessage()    {}
-func (*MsgRelayCorkResponse) Descriptor() ([]byte, []int) {
+func (m *MsgRelayAxelarCorkResponse) Reset()         { *m = MsgRelayAxelarCorkResponse{} }
+func (m *MsgRelayAxelarCorkResponse) String() string { return proto.CompactTextString(m) }
+func (*MsgRelayAxelarCorkResponse) ProtoMessage()    {}
+func (*MsgRelayAxelarCorkResponse) Descriptor() ([]byte, []int) {
 	return fileDescriptor_1760ad9eba86eab6, []int{3}
 }
-func (m *MsgRelayCorkResponse) XXX_Unmarshal(b []byte) error {
+func (m *MsgRelayAxelarCorkResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *MsgRelayCorkResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *MsgRelayAxelarCorkResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_MsgRelayCorkResponse.Marshal(b, m, deterministic)
+		return xxx_messageInfo_MsgRelayAxelarCorkResponse.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -264,36 +264,36 @@ func (m *MsgRelayCorkResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte
 		return b[:n], nil
 	}
 }
-func (m *MsgRelayCorkResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MsgRelayCorkResponse.Merge(m, src)
+func (m *MsgRelayAxelarCorkResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgRelayAxelarCorkResponse.Merge(m, src)
 }
-func (m *MsgRelayCorkResponse) XXX_Size() int {
+func (m *MsgRelayAxelarCorkResponse) XXX_Size() int {
 	return m.Size()
 }
-func (m *MsgRelayCorkResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_MsgRelayCorkResponse.DiscardUnknown(m)
+func (m *MsgRelayAxelarCorkResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgRelayAxelarCorkResponse.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_MsgRelayCorkResponse proto.InternalMessageInfo
+var xxx_messageInfo_MsgRelayAxelarCorkResponse proto.InternalMessageInfo
 
-type MsgBumpCorkGasRequest struct {
+type MsgBumpAxelarCorkGasRequest struct {
 	Signer    string     `protobuf:"bytes,1,opt,name=signer,proto3" json:"signer,omitempty"`
 	Token     types.Coin `protobuf:"bytes,2,opt,name=token,proto3" json:"token"`
 	MessageId string     `protobuf:"bytes,3,opt,name=message_id,json=messageId,proto3" json:"message_id,omitempty"`
 }
 
-func (m *MsgBumpCorkGasRequest) Reset()         { *m = MsgBumpCorkGasRequest{} }
-func (m *MsgBumpCorkGasRequest) String() string { return proto.CompactTextString(m) }
-func (*MsgBumpCorkGasRequest) ProtoMessage()    {}
-func (*MsgBumpCorkGasRequest) Descriptor() ([]byte, []int) {
+func (m *MsgBumpAxelarCorkGasRequest) Reset()         { *m = MsgBumpAxelarCorkGasRequest{} }
+func (m *MsgBumpAxelarCorkGasRequest) String() string { return proto.CompactTextString(m) }
+func (*MsgBumpAxelarCorkGasRequest) ProtoMessage()    {}
+func (*MsgBumpAxelarCorkGasRequest) Descriptor() ([]byte, []int) {
 	return fileDescriptor_1760ad9eba86eab6, []int{4}
 }
-func (m *MsgBumpCorkGasRequest) XXX_Unmarshal(b []byte) error {
+func (m *MsgBumpAxelarCorkGasRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *MsgBumpCorkGasRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *MsgBumpAxelarCorkGasRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_MsgBumpCorkGasRequest.Marshal(b, m, deterministic)
+		return xxx_messageInfo_MsgBumpAxelarCorkGasRequest.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -303,54 +303,54 @@ func (m *MsgBumpCorkGasRequest) XXX_Marshal(b []byte, deterministic bool) ([]byt
 		return b[:n], nil
 	}
 }
-func (m *MsgBumpCorkGasRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MsgBumpCorkGasRequest.Merge(m, src)
+func (m *MsgBumpAxelarCorkGasRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgBumpAxelarCorkGasRequest.Merge(m, src)
 }
-func (m *MsgBumpCorkGasRequest) XXX_Size() int {
+func (m *MsgBumpAxelarCorkGasRequest) XXX_Size() int {
 	return m.Size()
 }
-func (m *MsgBumpCorkGasRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_MsgBumpCorkGasRequest.DiscardUnknown(m)
+func (m *MsgBumpAxelarCorkGasRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgBumpAxelarCorkGasRequest.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_MsgBumpCorkGasRequest proto.InternalMessageInfo
+var xxx_messageInfo_MsgBumpAxelarCorkGasRequest proto.InternalMessageInfo
 
-func (m *MsgBumpCorkGasRequest) GetSigner() string {
+func (m *MsgBumpAxelarCorkGasRequest) GetSigner() string {
 	if m != nil {
 		return m.Signer
 	}
 	return ""
 }
 
-func (m *MsgBumpCorkGasRequest) GetToken() types.Coin {
+func (m *MsgBumpAxelarCorkGasRequest) GetToken() types.Coin {
 	if m != nil {
 		return m.Token
 	}
 	return types.Coin{}
 }
 
-func (m *MsgBumpCorkGasRequest) GetMessageId() string {
+func (m *MsgBumpAxelarCorkGasRequest) GetMessageId() string {
 	if m != nil {
 		return m.MessageId
 	}
 	return ""
 }
 
-type MsgBumpCorkGasResponse struct {
+type MsgBumpAxelarCorkGasResponse struct {
 }
 
-func (m *MsgBumpCorkGasResponse) Reset()         { *m = MsgBumpCorkGasResponse{} }
-func (m *MsgBumpCorkGasResponse) String() string { return proto.CompactTextString(m) }
-func (*MsgBumpCorkGasResponse) ProtoMessage()    {}
-func (*MsgBumpCorkGasResponse) Descriptor() ([]byte, []int) {
+func (m *MsgBumpAxelarCorkGasResponse) Reset()         { *m = MsgBumpAxelarCorkGasResponse{} }
+func (m *MsgBumpAxelarCorkGasResponse) String() string { return proto.CompactTextString(m) }
+func (*MsgBumpAxelarCorkGasResponse) ProtoMessage()    {}
+func (*MsgBumpAxelarCorkGasResponse) Descriptor() ([]byte, []int) {
 	return fileDescriptor_1760ad9eba86eab6, []int{5}
 }
-func (m *MsgBumpCorkGasResponse) XXX_Unmarshal(b []byte) error {
+func (m *MsgBumpAxelarCorkGasResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *MsgBumpCorkGasResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *MsgBumpAxelarCorkGasResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_MsgBumpCorkGasResponse.Marshal(b, m, deterministic)
+		return xxx_messageInfo_MsgBumpAxelarCorkGasResponse.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -360,66 +360,67 @@ func (m *MsgBumpCorkGasResponse) XXX_Marshal(b []byte, deterministic bool) ([]by
 		return b[:n], nil
 	}
 }
-func (m *MsgBumpCorkGasResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MsgBumpCorkGasResponse.Merge(m, src)
+func (m *MsgBumpAxelarCorkGasResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgBumpAxelarCorkGasResponse.Merge(m, src)
 }
-func (m *MsgBumpCorkGasResponse) XXX_Size() int {
+func (m *MsgBumpAxelarCorkGasResponse) XXX_Size() int {
 	return m.Size()
 }
-func (m *MsgBumpCorkGasResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_MsgBumpCorkGasResponse.DiscardUnknown(m)
+func (m *MsgBumpAxelarCorkGasResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgBumpAxelarCorkGasResponse.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_MsgBumpCorkGasResponse proto.InternalMessageInfo
+var xxx_messageInfo_MsgBumpAxelarCorkGasResponse proto.InternalMessageInfo
 
 func init() {
-	proto.RegisterType((*MsgScheduleCorkRequest)(nil), "axelar_cork.v1.MsgScheduleCorkRequest")
-	proto.RegisterType((*MsgScheduleCorkResponse)(nil), "axelar_cork.v1.MsgScheduleCorkResponse")
-	proto.RegisterType((*MsgRelayCorkRequest)(nil), "axelar_cork.v1.MsgRelayCorkRequest")
-	proto.RegisterType((*MsgRelayCorkResponse)(nil), "axelar_cork.v1.MsgRelayCorkResponse")
-	proto.RegisterType((*MsgBumpCorkGasRequest)(nil), "axelar_cork.v1.MsgBumpCorkGasRequest")
-	proto.RegisterType((*MsgBumpCorkGasResponse)(nil), "axelar_cork.v1.MsgBumpCorkGasResponse")
+	proto.RegisterType((*MsgScheduleAxelarCorkRequest)(nil), "axelar_cork.v1.MsgScheduleAxelarCorkRequest")
+	proto.RegisterType((*MsgScheduleAxelarCorkResponse)(nil), "axelar_cork.v1.MsgScheduleAxelarCorkResponse")
+	proto.RegisterType((*MsgRelayAxelarCorkRequest)(nil), "axelar_cork.v1.MsgRelayAxelarCorkRequest")
+	proto.RegisterType((*MsgRelayAxelarCorkResponse)(nil), "axelar_cork.v1.MsgRelayAxelarCorkResponse")
+	proto.RegisterType((*MsgBumpAxelarCorkGasRequest)(nil), "axelar_cork.v1.MsgBumpAxelarCorkGasRequest")
+	proto.RegisterType((*MsgBumpAxelarCorkGasResponse)(nil), "axelar_cork.v1.MsgBumpAxelarCorkGasResponse")
 }
 
 func init() { proto.RegisterFile("axelar-cork/v1/tx.proto", fileDescriptor_1760ad9eba86eab6) }
 
 var fileDescriptor_1760ad9eba86eab6 = []byte{
-	// 553 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xb4, 0x54, 0xc1, 0x8e, 0xd2, 0x40,
-	0x18, 0xa6, 0x2c, 0xa0, 0x1d, 0x36, 0x1b, 0x33, 0xb2, 0x50, 0x48, 0xb6, 0x62, 0xd5, 0x15, 0x0f,
-	0xb6, 0x01, 0xa3, 0x77, 0xe1, 0xa0, 0x1c, 0xf0, 0x50, 0x13, 0x0f, 0xc6, 0xa4, 0x19, 0xda, 0xdf,
-	0xa1, 0x42, 0x3b, 0xd8, 0x19, 0x08, 0x3c, 0x80, 0x77, 0x1f, 0xc0, 0xf7, 0xf0, 0x15, 0xf6, 0xb8,
-	0x47, 0x4f, 0xc6, 0xc0, 0xc5, 0xc7, 0x30, 0x9d, 0xa9, 0x4a, 0x59, 0xe2, 0x9e, 0xbc, 0xcd, 0xfc,
-	0xdf, 0xf7, 0x7f, 0xf9, 0xbf, 0x6f, 0xfe, 0x16, 0x35, 0xc8, 0x0a, 0x66, 0x24, 0x79, 0xec, 0xb3,
-	0x64, 0xea, 0x2c, 0xbb, 0x8e, 0x58, 0xd9, 0xf3, 0x84, 0x09, 0x86, 0x4f, 0x14, 0xe0, 0xa5, 0x80,
-	0xbd, 0xec, 0xb6, 0x4c, 0x9f, 0xf1, 0x88, 0x71, 0x67, 0x4c, 0x38, 0x38, 0xcb, 0xee, 0x18, 0x04,
-	0xe9, 0x3a, 0x3e, 0x0b, 0x63, 0xc5, 0x6f, 0x35, 0xf7, 0x84, 0x64, 0x9f, 0x82, 0x6a, 0x94, 0x51,
-	0x26, 0x8f, 0x4e, 0x7a, 0x52, 0x55, 0xeb, 0xab, 0x86, 0xea, 0x23, 0x4e, 0x5f, 0xfb, 0x13, 0x08,
-	0x16, 0x33, 0x18, 0xb0, 0x64, 0xea, 0xc2, 0xc7, 0x05, 0x70, 0x81, 0x3b, 0xa8, 0x94, 0xb6, 0x1b,
-	0x5a, 0x5b, 0xeb, 0x54, 0x7b, 0x35, 0x3b, 0x3f, 0x8a, 0x2d, 0xa9, 0x92, 0x81, 0xcf, 0x10, 0xf2,
-	0x27, 0x24, 0x8c, 0xbd, 0x98, 0x44, 0x60, 0x14, 0xdb, 0x5a, 0x47, 0x77, 0x75, 0x59, 0x79, 0x45,
-	0x22, 0xc0, 0x4d, 0x74, 0x53, 0xc1, 0x61, 0x60, 0x1c, 0xb5, 0xb5, 0x4e, 0xc9, 0xbd, 0x21, 0xef,
-	0xc3, 0x00, 0xdf, 0x45, 0xc7, 0xe3, 0x19, 0xf3, 0xa7, 0xde, 0x04, 0x42, 0x3a, 0x11, 0x46, 0x49,
-	0xc2, 0x55, 0x59, 0x7b, 0x29, 0x4b, 0xb8, 0x8e, 0x2a, 0x3c, 0xa4, 0x31, 0x24, 0x46, 0x59, 0x0a,
-	0x67, 0x37, 0xeb, 0x11, 0x6a, 0x5c, 0x19, 0x9c, 0xcf, 0x59, 0xcc, 0x01, 0x9f, 0xa0, 0x62, 0x18,
-	0xc8, 0xb9, 0x75, 0xb7, 0x18, 0x06, 0xd6, 0x4f, 0x0d, 0xdd, 0x1e, 0x71, 0xea, 0xc2, 0x8c, 0xac,
-	0x77, 0x1d, 0xfe, 0x95, 0xd6, 0x76, 0xa5, 0xf1, 0x53, 0x54, 0x16, 0x6c, 0x0a, 0xb1, 0xb4, 0x52,
-	0xed, 0x35, 0x6d, 0x95, 0xba, 0x9d, 0xa6, 0x6e, 0x67, 0xa9, 0xdb, 0x03, 0x16, 0xc6, 0xfd, 0xd2,
-	0xc5, 0xf7, 0x3b, 0x05, 0x57, 0xb1, 0xf1, 0x2d, 0x74, 0xf4, 0x1e, 0x20, 0xb3, 0x98, 0x1e, 0x73,
-	0xce, 0x4b, 0x79, 0xe7, 0xf9, 0xcc, 0xca, 0xfb, 0x99, 0x3d, 0x43, 0x0d, 0x41, 0x12, 0x0a, 0xc2,
-	0xf3, 0x59, 0x2c, 0x12, 0xe2, 0x0b, 0x8f, 0x04, 0x41, 0x02, 0x9c, 0x1b, 0x15, 0xc9, 0x3d, 0x55,
-	0xf0, 0x20, 0x43, 0x9f, 0x2b, 0xd0, 0xaa, 0xa3, 0x5a, 0xde, 0xa9, 0x8a, 0xc4, 0xfa, 0xa4, 0xa1,
-	0xd3, 0x11, 0xa7, 0xfd, 0x45, 0x34, 0x4f, 0xeb, 0x2f, 0x08, 0xff, 0x4f, 0x21, 0x9c, 0x21, 0x14,
-	0x01, 0xe7, 0x84, 0xc2, 0xef, 0xe7, 0xd6, 0x5d, 0x3d, 0xab, 0x0c, 0x03, 0xcb, 0x90, 0xeb, 0x96,
-	0x1b, 0x43, 0x4d, 0xd8, 0xfb, 0x52, 0x44, 0x47, 0x23, 0x4e, 0xb1, 0x87, 0x8e, 0x77, 0x1f, 0x15,
-	0x9f, 0xef, 0x2f, 0xde, 0xe1, 0x75, 0x6d, 0x3d, 0xbc, 0x96, 0x97, 0x6d, 0xc7, 0x1b, 0xa4, 0xff,
-	0xc9, 0x07, 0xdf, 0x3b, 0xd0, 0xb5, 0xbf, 0x27, 0xad, 0xfb, 0xff, 0x26, 0x65, 0xba, 0xef, 0x50,
-	0x75, 0xc7, 0x17, 0x7e, 0x70, 0xa0, 0xe9, 0x6a, 0xfc, 0xad, 0xf3, 0xeb, 0x68, 0x4a, 0xbd, 0x3f,
-	0xbc, 0xd8, 0x98, 0xda, 0xe5, 0xc6, 0xd4, 0x7e, 0x6c, 0x4c, 0xed, 0xf3, 0xd6, 0x2c, 0x5c, 0x6e,
-	0xcd, 0xc2, 0xb7, 0xad, 0x59, 0x78, 0xeb, 0xd0, 0x50, 0x4c, 0x16, 0x63, 0xdb, 0x67, 0x91, 0x33,
-	0x07, 0x4a, 0xd7, 0x1f, 0x96, 0x0e, 0x67, 0x51, 0x04, 0xb3, 0x10, 0x12, 0x67, 0xe5, 0x28, 0x7d,
-	0xf9, 0x47, 0x10, 0xeb, 0x39, 0xf0, 0x71, 0x45, 0x7e, 0xfa, 0x4f, 0x7e, 0x05, 0x00, 0x00, 0xff,
-	0xff, 0x02, 0x14, 0x27, 0xdf, 0x76, 0x04, 0x00, 0x00,
+	// 561 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xb4, 0x54, 0x41, 0x6f, 0xd3, 0x4c,
+	0x10, 0x8d, 0xd3, 0xb4, 0xdf, 0xe7, 0x4d, 0x55, 0xa1, 0x55, 0xa1, 0x8e, 0x69, 0x4d, 0xf0, 0x29,
+	0x40, 0xeb, 0x55, 0x82, 0xe0, 0xde, 0xe4, 0x00, 0x39, 0x84, 0x83, 0xb9, 0x71, 0x89, 0xd6, 0xf6,
+	0xb0, 0x36, 0x89, 0xbd, 0xc1, 0xbb, 0x89, 0x92, 0xdf, 0xc0, 0x85, 0x3f, 0x84, 0xc4, 0xb1, 0xc7,
+	0x1e, 0x39, 0x21, 0x94, 0xdc, 0xf9, 0x0d, 0xc8, 0xbb, 0xae, 0x4a, 0x42, 0x8a, 0x72, 0xe1, 0xb6,
+	0x3b, 0xef, 0xcd, 0xce, 0xcc, 0x9b, 0xa7, 0x45, 0x27, 0x74, 0x0e, 0x63, 0x9a, 0x5f, 0x84, 0x3c,
+	0x1f, 0x91, 0x59, 0x9b, 0xc8, 0xb9, 0x37, 0xc9, 0xb9, 0xe4, 0xf8, 0x48, 0x03, 0xc3, 0x02, 0xf0,
+	0x66, 0x6d, 0xdb, 0x09, 0xb9, 0x48, 0xb9, 0x20, 0x01, 0x15, 0x40, 0x66, 0xed, 0x00, 0x24, 0x6d,
+	0x93, 0x90, 0x27, 0x99, 0xe6, 0xdb, 0x8d, 0x8d, 0x87, 0x54, 0x9e, 0x86, 0x8e, 0x19, 0x67, 0x5c,
+	0x1d, 0x49, 0x71, 0xd2, 0x51, 0xf7, 0x8b, 0x81, 0x4e, 0x07, 0x82, 0xbd, 0x0d, 0x63, 0x88, 0xa6,
+	0x63, 0xb8, 0x54, 0xe9, 0x3d, 0x9e, 0x8f, 0x7c, 0xf8, 0x38, 0x05, 0x21, 0x71, 0x0b, 0xd5, 0x8a,
+	0x47, 0x2c, 0xa3, 0x69, 0xb4, 0xea, 0x9d, 0x63, 0x6f, 0xbd, 0x21, 0x4f, 0x51, 0x15, 0x03, 0x9f,
+	0x21, 0x14, 0xc6, 0x34, 0xc9, 0x86, 0x19, 0x4d, 0xc1, 0xaa, 0x36, 0x8d, 0x96, 0xe9, 0x9b, 0x2a,
+	0xf2, 0x86, 0xa6, 0x80, 0x1b, 0xe8, 0x7f, 0x0d, 0x27, 0x91, 0xb5, 0xd7, 0x34, 0x5a, 0x35, 0xff,
+	0x3f, 0x75, 0xef, 0x47, 0xf8, 0x31, 0x3a, 0x0c, 0xc6, 0x3c, 0x1c, 0x0d, 0x63, 0x48, 0x58, 0x2c,
+	0xad, 0x9a, 0x82, 0xeb, 0x2a, 0xf6, 0x5a, 0x85, 0xf0, 0x03, 0x74, 0x20, 0x12, 0x96, 0x41, 0x6e,
+	0xed, 0xab, 0x87, 0xcb, 0x9b, 0x4b, 0xd0, 0xd9, 0x1d, 0xed, 0x8b, 0x09, 0xcf, 0x04, 0xe0, 0x23,
+	0x54, 0x4d, 0x22, 0xd5, 0xbd, 0xe9, 0x57, 0x93, 0xc8, 0xfd, 0x69, 0xa0, 0xc6, 0x40, 0x30, 0x1f,
+	0xc6, 0x74, 0xf1, 0xe7, 0xb4, 0xb7, 0x65, 0x8c, 0xdf, 0xcb, 0xe0, 0x17, 0x68, 0x5f, 0xf2, 0x11,
+	0x64, 0x6a, 0xac, 0x7a, 0xa7, 0xe1, 0xe9, 0x3d, 0x78, 0xc5, 0x1e, 0xbc, 0x72, 0x0f, 0x5e, 0x8f,
+	0x27, 0x59, 0xb7, 0x76, 0xf5, 0xfd, 0x51, 0xc5, 0xd7, 0x6c, 0x7c, 0x0f, 0xed, 0xbd, 0x07, 0x28,
+	0xc7, 0x2d, 0x8e, 0x6b, 0x2a, 0xd4, 0xd6, 0x55, 0x58, 0xd7, 0x6f, 0x7f, 0x53, 0xbf, 0x97, 0xe8,
+	0x44, 0xd2, 0x9c, 0x81, 0x1c, 0x86, 0x3c, 0x93, 0x39, 0x0d, 0xe5, 0x90, 0x46, 0x51, 0x0e, 0x42,
+	0x58, 0x07, 0x8a, 0x7b, 0x5f, 0xc3, 0xbd, 0x12, 0xbd, 0xd4, 0xa0, 0x7b, 0x8a, 0xec, 0x6d, 0xf3,
+	0x6a, 0x79, 0xdc, 0x4f, 0x06, 0x7a, 0x38, 0x10, 0xac, 0x3b, 0x4d, 0x27, 0xb7, 0xe8, 0x2b, 0x2a,
+	0xfe, 0x91, 0x20, 0x67, 0x08, 0xa5, 0x20, 0x04, 0x65, 0x70, 0x63, 0x03, 0xd3, 0x37, 0xcb, 0x48,
+	0x3f, 0x72, 0x1d, 0x65, 0xc6, 0x2d, 0xcd, 0xe8, 0x6e, 0x3b, 0x5f, 0xab, 0x68, 0x6f, 0x20, 0x18,
+	0x1e, 0xa1, 0xc3, 0x9b, 0x95, 0x17, 0x14, 0x7c, 0xbe, 0x69, 0xcb, 0xbf, 0x59, 0xda, 0xbe, 0xd8,
+	0x91, 0x5d, 0x3a, 0x28, 0x40, 0xa6, 0x52, 0x4f, 0x55, 0x7a, 0xb2, 0x25, 0x77, 0xbb, 0x97, 0xec,
+	0xa7, 0xbb, 0x50, 0xcb, 0x1a, 0x31, 0xaa, 0x17, 0x53, 0x97, 0xf3, 0xe2, 0x67, 0x5b, 0x52, 0xef,
+	0x5a, 0x91, 0x7d, 0xbe, 0x1b, 0x59, 0x57, 0xea, 0xf6, 0xaf, 0x96, 0x8e, 0x71, 0xbd, 0x74, 0x8c,
+	0x1f, 0x4b, 0xc7, 0xf8, 0xbc, 0x72, 0x2a, 0xd7, 0x2b, 0xa7, 0xf2, 0x6d, 0xe5, 0x54, 0xde, 0x11,
+	0x96, 0xc8, 0x78, 0x1a, 0x78, 0x21, 0x4f, 0xc9, 0x04, 0x18, 0x5b, 0x7c, 0x98, 0x11, 0xc1, 0xd3,
+	0x14, 0xc6, 0x09, 0xe4, 0x64, 0x4e, 0x74, 0x15, 0xf5, 0xb3, 0xc8, 0xc5, 0x04, 0x44, 0x70, 0xa0,
+	0xbe, 0x90, 0xe7, 0xbf, 0x02, 0x00, 0x00, 0xff, 0xff, 0x1c, 0xf5, 0xdc, 0x2b, 0xbe, 0x04, 0x00,
+	0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -434,9 +435,9 @@ const _ = grpc.SupportPackageIsVersion4
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
 type MsgClient interface {
-	ScheduleCork(ctx context.Context, in *MsgScheduleCorkRequest, opts ...grpc.CallOption) (*MsgScheduleCorkResponse, error)
-	RelayCork(ctx context.Context, in *MsgRelayCorkRequest, opts ...grpc.CallOption) (*MsgRelayCorkResponse, error)
-	BumpCorkGas(ctx context.Context, in *MsgBumpCorkGasRequest, opts ...grpc.CallOption) (*MsgBumpCorkGasResponse, error)
+	ScheduleCork(ctx context.Context, in *MsgScheduleAxelarCorkRequest, opts ...grpc.CallOption) (*MsgScheduleAxelarCorkResponse, error)
+	RelayCork(ctx context.Context, in *MsgRelayAxelarCorkRequest, opts ...grpc.CallOption) (*MsgRelayAxelarCorkResponse, error)
+	BumpCorkGas(ctx context.Context, in *MsgBumpAxelarCorkGasRequest, opts ...grpc.CallOption) (*MsgBumpAxelarCorkGasResponse, error)
 }
 
 type msgClient struct {
@@ -447,8 +448,8 @@ func NewMsgClient(cc grpc1.ClientConn) MsgClient {
 	return &msgClient{cc}
 }
 
-func (c *msgClient) ScheduleCork(ctx context.Context, in *MsgScheduleCorkRequest, opts ...grpc.CallOption) (*MsgScheduleCorkResponse, error) {
-	out := new(MsgScheduleCorkResponse)
+func (c *msgClient) ScheduleCork(ctx context.Context, in *MsgScheduleAxelarCorkRequest, opts ...grpc.CallOption) (*MsgScheduleAxelarCorkResponse, error) {
+	out := new(MsgScheduleAxelarCorkResponse)
 	err := c.cc.Invoke(ctx, "/axelar_cork.v1.Msg/ScheduleCork", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -456,8 +457,8 @@ func (c *msgClient) ScheduleCork(ctx context.Context, in *MsgScheduleCorkRequest
 	return out, nil
 }
 
-func (c *msgClient) RelayCork(ctx context.Context, in *MsgRelayCorkRequest, opts ...grpc.CallOption) (*MsgRelayCorkResponse, error) {
-	out := new(MsgRelayCorkResponse)
+func (c *msgClient) RelayCork(ctx context.Context, in *MsgRelayAxelarCorkRequest, opts ...grpc.CallOption) (*MsgRelayAxelarCorkResponse, error) {
+	out := new(MsgRelayAxelarCorkResponse)
 	err := c.cc.Invoke(ctx, "/axelar_cork.v1.Msg/RelayCork", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -465,8 +466,8 @@ func (c *msgClient) RelayCork(ctx context.Context, in *MsgRelayCorkRequest, opts
 	return out, nil
 }
 
-func (c *msgClient) BumpCorkGas(ctx context.Context, in *MsgBumpCorkGasRequest, opts ...grpc.CallOption) (*MsgBumpCorkGasResponse, error) {
-	out := new(MsgBumpCorkGasResponse)
+func (c *msgClient) BumpCorkGas(ctx context.Context, in *MsgBumpAxelarCorkGasRequest, opts ...grpc.CallOption) (*MsgBumpAxelarCorkGasResponse, error) {
+	out := new(MsgBumpAxelarCorkGasResponse)
 	err := c.cc.Invoke(ctx, "/axelar_cork.v1.Msg/BumpCorkGas", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -476,22 +477,22 @@ func (c *msgClient) BumpCorkGas(ctx context.Context, in *MsgBumpCorkGasRequest, 
 
 // MsgServer is the server API for Msg service.
 type MsgServer interface {
-	ScheduleCork(context.Context, *MsgScheduleCorkRequest) (*MsgScheduleCorkResponse, error)
-	RelayCork(context.Context, *MsgRelayCorkRequest) (*MsgRelayCorkResponse, error)
-	BumpCorkGas(context.Context, *MsgBumpCorkGasRequest) (*MsgBumpCorkGasResponse, error)
+	ScheduleCork(context.Context, *MsgScheduleAxelarCorkRequest) (*MsgScheduleAxelarCorkResponse, error)
+	RelayCork(context.Context, *MsgRelayAxelarCorkRequest) (*MsgRelayAxelarCorkResponse, error)
+	BumpCorkGas(context.Context, *MsgBumpAxelarCorkGasRequest) (*MsgBumpAxelarCorkGasResponse, error)
 }
 
 // UnimplementedMsgServer can be embedded to have forward compatible implementations.
 type UnimplementedMsgServer struct {
 }
 
-func (*UnimplementedMsgServer) ScheduleCork(ctx context.Context, req *MsgScheduleCorkRequest) (*MsgScheduleCorkResponse, error) {
+func (*UnimplementedMsgServer) ScheduleCork(ctx context.Context, req *MsgScheduleAxelarCorkRequest) (*MsgScheduleAxelarCorkResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ScheduleCork not implemented")
 }
-func (*UnimplementedMsgServer) RelayCork(ctx context.Context, req *MsgRelayCorkRequest) (*MsgRelayCorkResponse, error) {
+func (*UnimplementedMsgServer) RelayCork(ctx context.Context, req *MsgRelayAxelarCorkRequest) (*MsgRelayAxelarCorkResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method RelayCork not implemented")
 }
-func (*UnimplementedMsgServer) BumpCorkGas(ctx context.Context, req *MsgBumpCorkGasRequest) (*MsgBumpCorkGasResponse, error) {
+func (*UnimplementedMsgServer) BumpCorkGas(ctx context.Context, req *MsgBumpAxelarCorkGasRequest) (*MsgBumpAxelarCorkGasResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method BumpCorkGas not implemented")
 }
 
@@ -500,7 +501,7 @@ func RegisterMsgServer(s grpc1.Server, srv MsgServer) {
 }
 
 func _Msg_ScheduleCork_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(MsgScheduleCorkRequest)
+	in := new(MsgScheduleAxelarCorkRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -512,13 +513,13 @@ func _Msg_ScheduleCork_Handler(srv interface{}, ctx context.Context, dec func(in
 		FullMethod: "/axelar_cork.v1.Msg/ScheduleCork",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MsgServer).ScheduleCork(ctx, req.(*MsgScheduleCorkRequest))
+		return srv.(MsgServer).ScheduleCork(ctx, req.(*MsgScheduleAxelarCorkRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _Msg_RelayCork_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(MsgRelayCorkRequest)
+	in := new(MsgRelayAxelarCorkRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -530,13 +531,13 @@ func _Msg_RelayCork_Handler(srv interface{}, ctx context.Context, dec func(inter
 		FullMethod: "/axelar_cork.v1.Msg/RelayCork",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MsgServer).RelayCork(ctx, req.(*MsgRelayCorkRequest))
+		return srv.(MsgServer).RelayCork(ctx, req.(*MsgRelayAxelarCorkRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _Msg_BumpCorkGas_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(MsgBumpCorkGasRequest)
+	in := new(MsgBumpAxelarCorkGasRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -548,7 +549,7 @@ func _Msg_BumpCorkGas_Handler(srv interface{}, ctx context.Context, dec func(int
 		FullMethod: "/axelar_cork.v1.Msg/BumpCorkGas",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MsgServer).BumpCorkGas(ctx, req.(*MsgBumpCorkGasRequest))
+		return srv.(MsgServer).BumpCorkGas(ctx, req.(*MsgBumpAxelarCorkGasRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -574,7 +575,7 @@ var _Msg_serviceDesc = grpc.ServiceDesc{
 	Metadata: "axelar-cork/v1/tx.proto",
 }
 
-func (m *MsgScheduleCorkRequest) Marshal() (dAtA []byte, err error) {
+func (m *MsgScheduleAxelarCorkRequest) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -584,12 +585,12 @@ func (m *MsgScheduleCorkRequest) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *MsgScheduleCorkRequest) MarshalTo(dAtA []byte) (int, error) {
+func (m *MsgScheduleAxelarCorkRequest) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *MsgScheduleCorkRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *MsgScheduleAxelarCorkRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -633,7 +634,7 @@ func (m *MsgScheduleCorkRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) 
 	return len(dAtA) - i, nil
 }
 
-func (m *MsgScheduleCorkResponse) Marshal() (dAtA []byte, err error) {
+func (m *MsgScheduleAxelarCorkResponse) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -643,12 +644,12 @@ func (m *MsgScheduleCorkResponse) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *MsgScheduleCorkResponse) MarshalTo(dAtA []byte) (int, error) {
+func (m *MsgScheduleAxelarCorkResponse) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *MsgScheduleCorkResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *MsgScheduleAxelarCorkResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -663,7 +664,7 @@ func (m *MsgScheduleCorkResponse) MarshalToSizedBuffer(dAtA []byte) (int, error)
 	return len(dAtA) - i, nil
 }
 
-func (m *MsgRelayCorkRequest) Marshal() (dAtA []byte, err error) {
+func (m *MsgRelayAxelarCorkRequest) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -673,12 +674,12 @@ func (m *MsgRelayCorkRequest) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *MsgRelayCorkRequest) MarshalTo(dAtA []byte) (int, error) {
+func (m *MsgRelayAxelarCorkRequest) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *MsgRelayCorkRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *MsgRelayAxelarCorkRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -727,7 +728,7 @@ func (m *MsgRelayCorkRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 
-func (m *MsgRelayCorkResponse) Marshal() (dAtA []byte, err error) {
+func (m *MsgRelayAxelarCorkResponse) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -737,12 +738,12 @@ func (m *MsgRelayCorkResponse) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *MsgRelayCorkResponse) MarshalTo(dAtA []byte) (int, error) {
+func (m *MsgRelayAxelarCorkResponse) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *MsgRelayCorkResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *MsgRelayAxelarCorkResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -750,7 +751,7 @@ func (m *MsgRelayCorkResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 
-func (m *MsgBumpCorkGasRequest) Marshal() (dAtA []byte, err error) {
+func (m *MsgBumpAxelarCorkGasRequest) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -760,12 +761,12 @@ func (m *MsgBumpCorkGasRequest) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *MsgBumpCorkGasRequest) MarshalTo(dAtA []byte) (int, error) {
+func (m *MsgBumpAxelarCorkGasRequest) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *MsgBumpCorkGasRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *MsgBumpAxelarCorkGasRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -797,7 +798,7 @@ func (m *MsgBumpCorkGasRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 
-func (m *MsgBumpCorkGasResponse) Marshal() (dAtA []byte, err error) {
+func (m *MsgBumpAxelarCorkGasResponse) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -807,12 +808,12 @@ func (m *MsgBumpCorkGasResponse) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *MsgBumpCorkGasResponse) MarshalTo(dAtA []byte) (int, error) {
+func (m *MsgBumpAxelarCorkGasResponse) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *MsgBumpCorkGasResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *MsgBumpAxelarCorkGasResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -831,7 +832,7 @@ func encodeVarintTx(dAtA []byte, offset int, v uint64) int {
 	dAtA[offset] = uint8(v)
 	return base
 }
-func (m *MsgScheduleCorkRequest) Size() (n int) {
+func (m *MsgScheduleAxelarCorkRequest) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -858,7 +859,7 @@ func (m *MsgScheduleCorkRequest) Size() (n int) {
 	return n
 }
 
-func (m *MsgScheduleCorkResponse) Size() (n int) {
+func (m *MsgScheduleAxelarCorkResponse) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -871,7 +872,7 @@ func (m *MsgScheduleCorkResponse) Size() (n int) {
 	return n
 }
 
-func (m *MsgRelayCorkRequest) Size() (n int) {
+func (m *MsgRelayAxelarCorkRequest) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -900,7 +901,7 @@ func (m *MsgRelayCorkRequest) Size() (n int) {
 	return n
 }
 
-func (m *MsgRelayCorkResponse) Size() (n int) {
+func (m *MsgRelayAxelarCorkResponse) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -909,7 +910,7 @@ func (m *MsgRelayCorkResponse) Size() (n int) {
 	return n
 }
 
-func (m *MsgBumpCorkGasRequest) Size() (n int) {
+func (m *MsgBumpAxelarCorkGasRequest) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -928,7 +929,7 @@ func (m *MsgBumpCorkGasRequest) Size() (n int) {
 	return n
 }
 
-func (m *MsgBumpCorkGasResponse) Size() (n int) {
+func (m *MsgBumpAxelarCorkGasResponse) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -943,7 +944,7 @@ func sovTx(x uint64) (n int) {
 func sozTx(x uint64) (n int) {
 	return sovTx(uint64((x << 1) ^ uint64((int64(x) >> 63))))
 }
-func (m *MsgScheduleCorkRequest) Unmarshal(dAtA []byte) error {
+func (m *MsgScheduleAxelarCorkRequest) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -966,10 +967,10 @@ func (m *MsgScheduleCorkRequest) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: MsgScheduleCorkRequest: wiretype end group for non-group")
+			return fmt.Errorf("proto: MsgScheduleAxelarCorkRequest: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: MsgScheduleCorkRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: MsgScheduleAxelarCorkRequest: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
@@ -1131,7 +1132,7 @@ func (m *MsgScheduleCorkRequest) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *MsgScheduleCorkResponse) Unmarshal(dAtA []byte) error {
+func (m *MsgScheduleAxelarCorkResponse) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -1154,10 +1155,10 @@ func (m *MsgScheduleCorkResponse) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: MsgScheduleCorkResponse: wiretype end group for non-group")
+			return fmt.Errorf("proto: MsgScheduleAxelarCorkResponse: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: MsgScheduleCorkResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: MsgScheduleAxelarCorkResponse: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
@@ -1213,7 +1214,7 @@ func (m *MsgScheduleCorkResponse) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *MsgRelayCorkRequest) Unmarshal(dAtA []byte) error {
+func (m *MsgRelayAxelarCorkRequest) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -1236,10 +1237,10 @@ func (m *MsgRelayCorkRequest) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: MsgRelayCorkRequest: wiretype end group for non-group")
+			return fmt.Errorf("proto: MsgRelayAxelarCorkRequest: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: MsgRelayCorkRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: MsgRelayAxelarCorkRequest: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
@@ -1430,7 +1431,7 @@ func (m *MsgRelayCorkRequest) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *MsgRelayCorkResponse) Unmarshal(dAtA []byte) error {
+func (m *MsgRelayAxelarCorkResponse) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -1453,10 +1454,10 @@ func (m *MsgRelayCorkResponse) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: MsgRelayCorkResponse: wiretype end group for non-group")
+			return fmt.Errorf("proto: MsgRelayAxelarCorkResponse: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: MsgRelayCorkResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: MsgRelayAxelarCorkResponse: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		default:
@@ -1480,7 +1481,7 @@ func (m *MsgRelayCorkResponse) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *MsgBumpCorkGasRequest) Unmarshal(dAtA []byte) error {
+func (m *MsgBumpAxelarCorkGasRequest) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -1503,10 +1504,10 @@ func (m *MsgBumpCorkGasRequest) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: MsgBumpCorkGasRequest: wiretype end group for non-group")
+			return fmt.Errorf("proto: MsgBumpAxelarCorkGasRequest: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: MsgBumpCorkGasRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: MsgBumpAxelarCorkGasRequest: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
@@ -1627,7 +1628,7 @@ func (m *MsgBumpCorkGasRequest) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *MsgBumpCorkGasResponse) Unmarshal(dAtA []byte) error {
+func (m *MsgBumpAxelarCorkGasResponse) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -1650,10 +1651,10 @@ func (m *MsgBumpCorkGasResponse) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: MsgBumpCorkGasResponse: wiretype end group for non-group")
+			return fmt.Errorf("proto: MsgBumpAxelarCorkGasResponse: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: MsgBumpCorkGasResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: MsgBumpAxelarCorkGasResponse: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		default:

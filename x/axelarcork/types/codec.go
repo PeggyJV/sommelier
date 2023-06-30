@@ -11,13 +11,18 @@ import (
 func RegisterInterfaces(registry codectypes.InterfaceRegistry) {
 	registry.RegisterImplementations(
 		(*sdk.Msg)(nil),
-		&MsgScheduleCorkRequest{},
+		&MsgScheduleAxelarCorkRequest{},
+		&MsgRelayAxelarCorkRequest{},
+		&MsgBumpAxelarCorkGasRequest{},
 	)
 
 	registry.RegisterImplementations((*govtypes.Content)(nil),
+		&AxelarScheduledCorkProposal{},
+		&AddChainConfigurationProposal{},
+		&RemoveChainConfigurationProposal{},
+		&AxelarCommunityPoolSpendProposal{},
 		&AddAxelarManagedCellarIDsProposal{},
 		&RemoveAxelarManagedCellarIDsProposal{},
-		&AxelarScheduledCorkProposal{},
 	)
 
 	msgservice.RegisterMsgServiceDesc(registry, &_Msg_serviceDesc)
