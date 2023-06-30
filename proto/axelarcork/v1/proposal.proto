@@ -1,11 +1,11 @@
 syntax = "proto3";
-package axelar_cork.v1;
+package axelarcork.v1;
 
-import "axelar-cork/v1/cork.proto";
+import "axelarcork/v1/cork.proto";
 import "gogoproto/gogo.proto";
 import "cosmos/base/v1beta1/coin.proto";
 
-option go_package = "github.com/peggyjv/sommelier/x/axelarcork/types";
+option go_package = "github.com/peggyjv/sommelier/v6/x/axelarcork/types";
 
 // note: current plan is to accept either chain name or chain ID. if both and they dont match, error.
 

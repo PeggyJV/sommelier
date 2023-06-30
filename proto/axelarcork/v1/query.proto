@@ -1,12 +1,12 @@
 syntax = "proto3";
-package axelar_cork.v1;
+package axelarcork.v1;
 
 import "gogoproto/gogo.proto";
 import "google/api/annotations.proto";
-import "axelar-cork/v1/genesis.proto";
-import "axelar-cork/v1/cork.proto";
+import "axelarcork/v1/genesis.proto";
+import "axelarcork/v1/cork.proto";
 
-option go_package = "github.com/peggyjv/sommelier/x/axelarcork/types";
+option go_package = "github.com/peggyjv/sommelier/v6/x/axelarcork/types";
 
 // Query defines the gRPC query service for the cork module.
 service Query {

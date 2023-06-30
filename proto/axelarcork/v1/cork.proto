@@ -1,9 +1,9 @@
 syntax = "proto3";
-package axelar_cork.v1;
+package axelarcork.v1;
 
 import "gogoproto/gogo.proto";
 
-option go_package = "github.com/peggyjv/sommelier/x/axelarcork/types";
+option go_package = "github.com/peggyjv/sommelier/v6/x/axelarcork/types";
 
 message Cork {
   // call body containing the ABI encoded bytes to send to the contract
