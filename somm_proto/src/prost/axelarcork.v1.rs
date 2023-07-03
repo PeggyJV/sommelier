@@ -63,7 +63,7 @@ pub struct ChainConfigurations {
 }
 /// MsgScheduleCorkRequest - sdk.Msg for scheduling a cork request for on or after a specific block height
 #[derive(Clone, PartialEq, ::prost::Message)]
-pub struct MsgScheduleCorkRequest {
+pub struct MsgScheduleAxelarCorkRequest {
     /// the scheduled cork
     #[prost(message, optional, tag = "1")]
     pub cork: ::core::option::Option<Cork>,
@@ -81,13 +81,13 @@ pub struct MsgScheduleCorkRequest {
     pub signer: ::prost::alloc::string::String,
 }
 #[derive(Clone, PartialEq, ::prost::Message)]
-pub struct MsgScheduleCorkResponse {
+pub struct MsgScheduleAxelarCorkResponse {
     /// cork ID
     #[prost(string, tag = "1")]
     pub id: ::prost::alloc::string::String,
 }
 #[derive(Clone, PartialEq, ::prost::Message)]
-pub struct MsgRelayCorkRequest {
+pub struct MsgRelayAxelarCorkRequest {
     #[prost(string, tag = "1")]
     pub signer: ::prost::alloc::string::String,
     #[prost(message, optional, tag = "2")]
@@ -102,9 +102,9 @@ pub struct MsgRelayCorkRequest {
     pub target_contract_address: ::prost::alloc::string::String,
 }
 #[derive(Clone, PartialEq, ::prost::Message)]
-pub struct MsgRelayCorkResponse {}
+pub struct MsgRelayAxelarCorkResponse {}
 #[derive(Clone, PartialEq, ::prost::Message)]
-pub struct MsgBumpCorkGasRequest {
+pub struct MsgBumpAxelarCorkGasRequest {
     #[prost(string, tag = "1")]
     pub signer: ::prost::alloc::string::String,
     #[prost(message, optional, tag = "2")]
@@ -113,7 +113,7 @@ pub struct MsgBumpCorkGasRequest {
     pub message_id: ::prost::alloc::string::String,
 }
 #[derive(Clone, PartialEq, ::prost::Message)]
-pub struct MsgBumpCorkGasResponse {}
+pub struct MsgBumpAxelarCorkGasResponse {}
 #[doc = r" Generated client implementations."]
 pub mod msg_client {
     #![allow(unused_variables, dead_code, missing_docs)]
@@ -150,8 +150,8 @@ pub mod msg_client {
         }
         pub async fn schedule_cork(
             &mut self,
-            request: impl tonic::IntoRequest<super::MsgScheduleCorkRequest>,
-        ) -> Result<tonic::Response<super::MsgScheduleCorkResponse>, tonic::Status> {
+            request: impl tonic::IntoRequest<super::MsgScheduleAxelarCorkRequest>,
+        ) -> Result<tonic::Response<super::MsgScheduleAxelarCorkResponse>, tonic::Status> {
             self.inner.ready().await.map_err(|e| {
                 tonic::Status::new(
                     tonic::Code::Unknown,
@@ -159,13 +159,13 @@ pub mod msg_client {
                 )
             })?;
             let codec = tonic::codec::ProstCodec::default();
-            let path = http::uri::PathAndQuery::from_static("/axelar_cork.v1.Msg/ScheduleCork");
+            let path = http::uri::PathAndQuery::from_static("/axelarcork.v1.Msg/ScheduleCork");
             self.inner.unary(request.into_request(), path, codec).await
         }
         pub async fn relay_cork(
             &mut self,
-            request: impl tonic::IntoRequest<super::MsgRelayCorkRequest>,
-        ) -> Result<tonic::Response<super::MsgRelayCorkResponse>, tonic::Status> {
+            request: impl tonic::IntoRequest<super::MsgRelayAxelarCorkRequest>,
+        ) -> Result<tonic::Response<super::MsgRelayAxelarCorkResponse>, tonic::Status> {
             self.inner.ready().await.map_err(|e| {
                 tonic::Status::new(
                     tonic::Code::Unknown,
@@ -173,13 +173,13 @@ pub mod msg_client {
                 )
             })?;
             let codec = tonic::codec::ProstCodec::default();
-            let path = http::uri::PathAndQuery::from_static("/axelar_cork.v1.Msg/RelayCork");
+            let path = http::uri::PathAndQuery::from_static("/axelarcork.v1.Msg/RelayCork");
             self.inner.unary(request.into_request(), path, codec).await
         }
         pub async fn bump_cork_gas(
             &mut self,
-            request: impl tonic::IntoRequest<super::MsgBumpCorkGasRequest>,
-        ) -> Result<tonic::Response<super::MsgBumpCorkGasResponse>, tonic::Status> {
+            request: impl tonic::IntoRequest<super::MsgBumpAxelarCorkGasRequest>,
+        ) -> Result<tonic::Response<super::MsgBumpAxelarCorkGasResponse>, tonic::Status> {
             self.inner.ready().await.map_err(|e| {
                 tonic::Status::new(
                     tonic::Code::Unknown,
@@ -187,7 +187,7 @@ pub mod msg_client {
                 )
             })?;
             let codec = tonic::codec::ProstCodec::default();
-            let path = http::uri::PathAndQuery::from_static("/axelar_cork.v1.Msg/BumpCorkGas");
+            let path = http::uri::PathAndQuery::from_static("/axelarcork.v1.Msg/BumpCorkGas");
             self.inner.unary(request.into_request(), path, codec).await
         }
     }
@@ -396,7 +396,7 @@ pub mod query_client {
                 )
             })?;
             let codec = tonic::codec::ProstCodec::default();
-            let path = http::uri::PathAndQuery::from_static("/axelar_cork.v1.Query/QueryParams");
+            let path = http::uri::PathAndQuery::from_static("/axelarcork.v1.Query/QueryParams");
             self.inner.unary(request.into_request(), path, codec).await
         }
         #[doc = " QueryCellarIDs returns all cellars and current tick ranges"]
@@ -411,7 +411,7 @@ pub mod query_client {
                 )
             })?;
             let codec = tonic::codec::ProstCodec::default();
-            let path = http::uri::PathAndQuery::from_static("/axelar_cork.v1.Query/QueryCellarIDs");
+            let path = http::uri::PathAndQuery::from_static("/axelarcork.v1.Query/QueryCellarIDs");
             self.inner.unary(request.into_request(), path, codec).await
         }
         #[doc = " QueryScheduledCorks returns all scheduled corks"]
@@ -427,7 +427,7 @@ pub mod query_client {
             })?;
             let codec = tonic::codec::ProstCodec::default();
             let path =
-                http::uri::PathAndQuery::from_static("/axelar_cork.v1.Query/QueryScheduledCorks");
+                http::uri::PathAndQuery::from_static("/axelarcork.v1.Query/QueryScheduledCorks");
             self.inner.unary(request.into_request(), path, codec).await
         }
         #[doc = " QueryScheduledBlockHeights returns all scheduled block heights"]
@@ -444,7 +444,7 @@ pub mod query_client {
             })?;
             let codec = tonic::codec::ProstCodec::default();
             let path = http::uri::PathAndQuery::from_static(
-                "/axelar_cork.v1.Query/QueryScheduledBlockHeights",
+                "/axelarcork.v1.Query/QueryScheduledBlockHeights",
             );
             self.inner.unary(request.into_request(), path, codec).await
         }
@@ -462,7 +462,7 @@ pub mod query_client {
             })?;
             let codec = tonic::codec::ProstCodec::default();
             let path = http::uri::PathAndQuery::from_static(
-                "/axelar_cork.v1.Query/QueryScheduledCorksByBlockHeight",
+                "/axelarcork.v1.Query/QueryScheduledCorksByBlockHeight",
             );
             self.inner.unary(request.into_request(), path, codec).await
         }
@@ -480,7 +480,7 @@ pub mod query_client {
             })?;
             let codec = tonic::codec::ProstCodec::default();
             let path = http::uri::PathAndQuery::from_static(
-                "/axelar_cork.v1.Query/QueryScheduledCorksByID",
+                "/axelarcork.v1.Query/QueryScheduledCorksByID",
             );
             self.inner.unary(request.into_request(), path, codec).await
         }
@@ -495,8 +495,7 @@ pub mod query_client {
                 )
             })?;
             let codec = tonic::codec::ProstCodec::default();
-            let path =
-                http::uri::PathAndQuery::from_static("/axelar_cork.v1.Query/QueryCorkResult");
+            let path = http::uri::PathAndQuery::from_static("/axelarcork.v1.Query/QueryCorkResult");
             self.inner.unary(request.into_request(), path, codec).await
         }
         pub async fn query_cork_results(
@@ -511,7 +510,7 @@ pub mod query_client {
             })?;
             let codec = tonic::codec::ProstCodec::default();
             let path =
-                http::uri::PathAndQuery::from_static("/axelar_cork.v1.Query/QueryCorkResults");
+                http::uri::PathAndQuery::from_static("/axelarcork.v1.Query/QueryCorkResults");
             self.inner.unary(request.into_request(), path, codec).await
         }
         pub async fn query_chain_configurations(
@@ -527,7 +526,7 @@ pub mod query_client {
             })?;
             let codec = tonic::codec::ProstCodec::default();
             let path = http::uri::PathAndQuery::from_static(
-                "/axelar_cork.v1.Query/QueryChainConfigurations",
+                "/axelarcork.v1.Query/QueryChainConfigurations",
             );
             self.inner.unary(request.into_request(), path, codec).await
         }
@@ -561,7 +560,7 @@ pub struct ScheduleCorkEvent {
 // note: current plan is to accept either chain name or chain ID. if both and they dont match, error.
 
 #[derive(Clone, PartialEq, ::prost::Message)]
-pub struct AddManagedCellarIDsProposal {
+pub struct AddAxelarManagedCellarIDsProposal {
     #[prost(string, tag = "1")]
     pub title: ::prost::alloc::string::String,
     #[prost(string, tag = "2")]
@@ -575,7 +574,7 @@ pub struct AddManagedCellarIDsProposal {
 }
 /// AddManagedCellarIDsProposalWithDeposit is a specific definition for CLI commands
 #[derive(Clone, PartialEq, ::prost::Message)]
-pub struct AddManagedCellarIDsProposalWithDeposit {
+pub struct AddAxelarManagedCellarIDsProposalWithDeposit {
     #[prost(string, tag = "1")]
     pub title: ::prost::alloc::string::String,
     #[prost(string, tag = "2")]
@@ -590,7 +589,7 @@ pub struct AddManagedCellarIDsProposalWithDeposit {
     pub deposit: ::prost::alloc::string::String,
 }
 #[derive(Clone, PartialEq, ::prost::Message)]
-pub struct RemoveManagedCellarIDsProposal {
+pub struct RemoveAxelarManagedCellarIDsProposal {
     #[prost(string, tag = "1")]
     pub title: ::prost::alloc::string::String,
     #[prost(string, tag = "2")]
@@ -604,7 +603,7 @@ pub struct RemoveManagedCellarIDsProposal {
 }
 /// RemoveManagedCellarIDsProposalWithDeposit is a specific definition for CLI commands
 #[derive(Clone, PartialEq, ::prost::Message)]
-pub struct RemoveManagedCellarIDsProposalWithDeposit {
+pub struct RemoveAxelarManagedCellarIDsProposalWithDeposit {
     #[prost(string, tag = "1")]
     pub title: ::prost::alloc::string::String,
     #[prost(string, tag = "2")]
@@ -619,7 +618,7 @@ pub struct RemoveManagedCellarIDsProposalWithDeposit {
     pub deposit: ::prost::alloc::string::String,
 }
 #[derive(Clone, PartialEq, ::prost::Message)]
-pub struct ScheduledCorkProposal {
+pub struct AxelarScheduledCorkProposal {
     #[prost(string, tag = "1")]
     pub title: ::prost::alloc::string::String,
     #[prost(string, tag = "2")]
@@ -655,7 +654,7 @@ pub struct ScheduledCorkProposal {
 }
 /// ScheduledCorkProposalWithDeposit is a specific definition for CLI commands
 #[derive(Clone, PartialEq, ::prost::Message)]
-pub struct ScheduledCorkProposalWithDeposit {
+pub struct AxelarScheduledCorkProposalWithDeposit {
     #[prost(string, tag = "1")]
     pub title: ::prost::alloc::string::String,
     #[prost(string, tag = "2")]
@@ -674,7 +673,7 @@ pub struct ScheduledCorkProposalWithDeposit {
     pub deposit: ::prost::alloc::string::String,
 }
 #[derive(Clone, PartialEq, ::prost::Message)]
-pub struct CommunityPoolSpendProposal {
+pub struct AxelarCommunityPoolSpendProposal {
     #[prost(string, tag = "1")]
     pub title: ::prost::alloc::string::String,
     #[prost(string, tag = "2")]
@@ -691,7 +690,7 @@ pub struct CommunityPoolSpendProposal {
 /// This format of the community spend Ethereum proposal is specifically for
 /// the CLI to allow simple text serialization.
 #[derive(Clone, PartialEq, ::prost::Message)]
-pub struct CommunityPoolSpendProposalForCli {
+pub struct AxelarCommunityPoolSpendProposalForCli {
     #[prost(string, tag = "1")]
     pub title: ::prost::alloc::string::String,
     #[prost(string, tag = "2")]

@@ -49,7 +49,7 @@ fn compile_protos(out_dir: &Path, tmp_dir: &Path) {
     let mut cork_proto_dir = root.clone();
     cork_proto_dir.push("proto/cork/v1");
     let mut axelar_cork_proto_dir = root.clone();
-    axelar_cork_proto_dir.push("proto/axelar-cork/v1");
+    axelar_cork_proto_dir.push("proto/axelarcork/v1");
     let mut incentives_proto_dir = root.clone();
     incentives_proto_dir.push("proto/incentives/v1");
     let mut somm_proto_include_dir = root.clone();
