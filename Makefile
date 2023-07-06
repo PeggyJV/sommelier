@@ -212,6 +212,9 @@ proto-lint:
 proto-check-breaking:
 	@$(DOCKER_BUF) breaking --against $(HTTPS_GIT)#branch=main
 
+proto-version:
+	@$(protoImage) buf --version
+
 #####################
 # Integration tests #
 #####################

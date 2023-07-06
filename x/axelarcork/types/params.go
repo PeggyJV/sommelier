@@ -11,6 +11,7 @@ import (
 
 // Parameter keys
 var (
+	KeyEnabled         = []byte("enabled")
 	KeyIBCChannel      = []byte("ibcchannel")
 	KeyIBCPort         = []byte("ibcport")
 	KeyGMPAccount      = []byte("gmpaccount")
@@ -28,6 +29,7 @@ func ParamKeyTable() paramtypes.KeyTable {
 // DefaultParams returns default oracle parameters
 func DefaultParams() Params {
 	return Params{
+		Enabled:         false,
 		IbcChannel:      "",
 		IbcPort:         "",
 		GmpAccount:      "",
@@ -39,6 +41,7 @@ func DefaultParams() Params {
 // ParamSetPairs returns the parameter set pairs.
 func (p *Params) ParamSetPairs() paramtypes.ParamSetPairs {
 	return paramtypes.ParamSetPairs{
+		paramtypes.NewParamSetPair(KeyEnabled, &p.Enabled, validateEnabled),
 		paramtypes.NewParamSetPair(KeyIBCChannel, &p.IbcChannel, validateIBCChannel),
 		paramtypes.NewParamSetPair(KeyIBCPort, &p.IbcPort, validateIBCPort),
 		paramtypes.NewParamSetPair(KeyGMPAccount, &p.GmpAccount, validateGMPAccount),
@@ -49,21 +52,37 @@ func (p *Params) ParamSetPairs() paramtypes.ParamSetPairs {
 
 // ValidateBasic performs basic validation on oracle parameters.
 func (p *Params) ValidateBasic() error {
-	if err := validateIBCChannel(p.IbcChannel); err != nil {
+	if err := validateEnabled(p.Enabled); err != nil {
 		return err
 	}
-	if err := validateIBCPort(p.IbcPort); err != nil {
-		return err
+
+	if p.Enabled {
+		if err := validateIBCChannel(p.IbcChannel); err != nil {
+			return err
+		}
+		if err := validateIBCPort(p.IbcPort); err != nil {
+			return err
+		}
+		if err := validateGMPAccount(p.GmpAccount); err != nil {
+			return err
+		}
+		if err := validateExecutorAccount(p.ExecutorAccount); err != nil {
+			return err
+		}
+		if err := validateTimeoutDuration(p.TimeoutDuration); err != nil {
+			return err
+		}
 	}
-	if err := validateGMPAccount(p.GmpAccount); err != nil {
-		return err
+
+	return nil
+}
+
+func validateEnabled(i interface{}) error {
+	_, ok := i.(bool)
+	if !ok {
+		return fmt.Errorf("invalid parameter type: %T", i)
 	}
-	if err := validateExecutorAccount(p.ExecutorAccount); err != nil {
-		return err
-	}
-	if err := validateTimeoutDuration(p.TimeoutDuration); err != nil {
-		return err
-	}
+
 	return nil
 }
 

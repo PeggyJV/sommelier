@@ -2,6 +2,7 @@ package keeper
 
 import (
 	"bytes"
+	"reflect"
 
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -66,7 +67,14 @@ func (k Keeper) GetParamSet(ctx sdk.Context) types.Params {
 
 // SetParams sets the parameters in the store
 func (k Keeper) SetParams(ctx sdk.Context, params types.Params) {
-	k.paramSpace.SetParamSet(ctx, &params)
+	// using this direct method instead of k.paramSpace.SetParamSet because our
+	// param validation should have happened on ValidateBasic, where it is
+	// contingent on being "enabled"
+	for _, pair := range params.ParamSetPairs() {
+		v := reflect.Indirect(reflect.ValueOf(pair.Value)).Interface()
+
+		k.paramSpace.Set(ctx, pair.Key, v)
+	}
 }
 
 /////////////////////
