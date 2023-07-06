@@ -53,15 +53,11 @@ func ExportGenesis(ctx sdk.Context, k Keeper) types.GenesisState {
 		gs.InvalidationNonces = append(gs.InvalidationNonces, k.GetLatestInvalidationNonce(ctx, config.Id))
 
 		var scheduledCorks types.ScheduledCorks
-		for _, sc := range k.GetScheduledCorks(ctx, config.Id) {
-			scheduledCorks.ScheduledCorks = append(scheduledCorks.ScheduledCorks, sc)
-		}
+		scheduledCorks.ScheduledCorks = append(scheduledCorks.ScheduledCorks, k.GetScheduledCorks(ctx, config.Id)...)
 		gs.ScheduledCorks = append(gs.ScheduledCorks, &scheduledCorks)
 
 		var corkResults types.CorkResults
-		for _, cr := range k.GetCorkResults(ctx, config.Id) {
-			corkResults.CorkResults = append(corkResults.CorkResults, cr)
-		}
+		corkResults.CorkResults = append(corkResults.CorkResults, k.GetCorkResults(ctx, config.Id)...)
 		gs.CorkResults = append(gs.CorkResults, &corkResults)
 
 		return false

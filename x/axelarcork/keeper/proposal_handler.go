@@ -115,6 +115,9 @@ func HandleCommunityPoolSpendProposal(ctx sdk.Context, k Keeper, p types.AxelarC
 		Type:               types.PureTokenTransfer,
 	}
 	bz, err := json.Marshal(axelarMemo)
+	if err != nil {
+		return err
+	}
 
 	transferMsg := transfertypes.NewMsgTransfer(
 		params.IbcPort,

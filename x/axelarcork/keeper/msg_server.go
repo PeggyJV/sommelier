@@ -77,6 +77,9 @@ func (k Keeper) RelayCork(c context.Context, msg *types.MsgRelayAxelarCorkReques
 		Body:   cork.EncodedContractCall,
 	}
 	pwbz, err := json.Marshal(proxyWrappedMsg)
+	if err != nil {
+		return nil, err
+	}
 
 	axelarMemo := types.AxelarBody{
 		DestinationChain:   config.Name,
@@ -89,6 +92,9 @@ func (k Keeper) RelayCork(c context.Context, msg *types.MsgRelayAxelarCorkReques
 		},
 	}
 	bz, err := json.Marshal(axelarMemo)
+	if err != nil {
+		return nil, err
+	}
 
 	transferMsg := transfertypes.NewMsgTransfer(
 		params.IbcPort,

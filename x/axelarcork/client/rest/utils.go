@@ -37,7 +37,7 @@ type (
 		Description           string         `json:"description" yaml:"description"`
 		BlockHeight           uint64         `json:"block_height" yaml:"block_height"`
 		ChainName             string         `json:"chain_name" yaml:"chain_name"`
-		ChainID               uint64         `json:"chain_id" yaml:"chain_id""`
+		ChainID               uint64         `json:"chain_id" yaml:"chain_id"`
 		TargetContractAddress string         `json:"target_contract_address" yaml:"target_contract_address"`
 		ContractCallProtoJSON string         `json:"contract_call_proto_json" yaml:"contract_call_proto_json"`
 		Proposer              sdk.AccAddress `json:"proposer" yaml:"proposer"`
