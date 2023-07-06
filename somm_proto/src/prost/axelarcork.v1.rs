@@ -222,15 +222,17 @@ pub struct GenesisState {
 }
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct Params {
-    #[prost(string, tag = "1")]
-    pub ibc_channel: ::prost::alloc::string::String,
+    #[prost(bool, tag = "1")]
+    pub enabled: bool,
     #[prost(string, tag = "2")]
-    pub ibc_port: ::prost::alloc::string::String,
+    pub ibc_channel: ::prost::alloc::string::String,
     #[prost(string, tag = "3")]
-    pub gmp_account: ::prost::alloc::string::String,
+    pub ibc_port: ::prost::alloc::string::String,
     #[prost(string, tag = "4")]
+    pub gmp_account: ::prost::alloc::string::String,
+    #[prost(string, tag = "5")]
     pub executor_account: ::prost::alloc::string::String,
-    #[prost(uint64, tag = "5")]
+    #[prost(uint64, tag = "6")]
     pub timeout_duration: u64,
 }
 /// QueryParamsRequest is the request type for the Query/Params gRPC method.
