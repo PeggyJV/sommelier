@@ -24,6 +24,10 @@ func (k Keeper) SendPacket(ctx sdk.Context, chanCap *capabilitytypes.Capability,
 }
 
 func (k Keeper) ValidateAxelarCorkPacket(ctx sdk.Context, packet ibcexported.PacketI) error {
+	if !k.GetParamSet(ctx).Enabled {
+		return nil
+	}
+
 	// check if this is a call to axelar, exit early if this isn't axelar
 	channelID := packet.GetDestChannel()
 	if channelID != k.GetParamSet(ctx).IbcChannel {

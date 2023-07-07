@@ -12,4 +12,5 @@ var (
 	ErrSchedulingInThePast    = sdkerrors.Register(ModuleName, 5, "cork is trying to be scheduled for a block that has already passed")
 	ErrInvalidJSON            = sdkerrors.Register(ModuleName, 6, "invalid json")
 	ErrValuelessSend          = sdkerrors.Register(ModuleName, 7, "transferring an empty token amount")
+	ErrDisabled               = sdkerrors.Register(ModuleName, 8, "axelar disabled")
 )

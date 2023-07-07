@@ -21,6 +21,9 @@ var _ types.MsgServer = Keeper{}
 // ScheduleCork implements types.MsgServer
 func (k Keeper) ScheduleCork(c context.Context, msg *types.MsgScheduleAxelarCorkRequest) (*types.MsgScheduleAxelarCorkResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
+	if !k.GetParamSet(ctx).Enabled {
+		return nil, types.ErrDisabled
+	}
 
 	config, err := k.GetChainConfigurationByNameAndID(ctx, msg.ChainName, msg.ChainId)
 	if err != nil {
@@ -60,6 +63,10 @@ func (k Keeper) ScheduleCork(c context.Context, msg *types.MsgScheduleAxelarCork
 func (k Keeper) RelayCork(c context.Context, msg *types.MsgRelayAxelarCorkRequest) (*types.MsgRelayAxelarCorkResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
 	params := k.GetParamSet(ctx)
+
+	if !params.Enabled {
+		return nil, types.ErrDisabled
+	}
 
 	config, err := k.GetChainConfigurationByNameAndID(ctx, msg.ChainName, msg.ChainId)
 	if err != nil {
@@ -117,6 +124,10 @@ func (k Keeper) RelayCork(c context.Context, msg *types.MsgRelayAxelarCorkReques
 func (k Keeper) BumpCorkGas(c context.Context, msg *types.MsgBumpAxelarCorkGasRequest) (*types.MsgBumpAxelarCorkGasResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
 	params := k.GetParamSet(ctx)
+
+	if !params.Enabled {
+		return nil, types.ErrDisabled
+	}
 
 	transferMsg := transfertypes.NewMsgTransfer(
 		params.IbcPort,
