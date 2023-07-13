@@ -32,9 +32,9 @@ func (k Keeper) ScheduleCork(c context.Context, msg *types.MsgScheduleAxelarCork
 	}
 	validatorAddr := sdk.ValAddress(signer)
 
-	config, err := k.GetChainConfigurationByNameAndID(ctx, msg.ChainName, msg.ChainId)
-	if err != nil {
-		return nil, err
+	config, ok := k.GetChainConfigurationByID(ctx, msg.ChainId)
+	if !ok {
+		return nil, fmt.Errorf("chain by id %d not found", msg.ChainId)
 	}
 
 	if !k.HasCellarID(ctx, config.Id, common.HexToAddress(msg.Cork.TargetContractAddress)) {
@@ -68,9 +68,9 @@ func (k Keeper) RelayCork(c context.Context, msg *types.MsgRelayAxelarCorkReques
 		return nil, types.ErrDisabled
 	}
 
-	config, err := k.GetChainConfigurationByNameAndID(ctx, msg.ChainName, msg.ChainId)
-	if err != nil {
-		return nil, err
+	config, ok := k.GetChainConfigurationByID(ctx, msg.ChainId)
+	if !ok {
+		return nil, fmt.Errorf("chain by id %d not found", msg.ChainId)
 	}
 
 	// winning cork will be deleted during the middleware pass

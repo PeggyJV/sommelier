@@ -12,46 +12,41 @@ option go_package = "github.com/peggyjv/sommelier/v6/x/axelarcork/types";
 message AddAxelarManagedCellarIDsProposal {
   string      title       = 1;
   string      description = 2;
-  string      chain_name  = 3;
-  uint64      chain_id    = 4;
-  CellarIDSet cellar_ids  = 5;
+  uint64      chain_id    = 3;
+  CellarIDSet cellar_ids  = 4;
 }
 
 // AddManagedCellarIDsProposalWithDeposit is a specific definition for CLI commands
 message AddAxelarManagedCellarIDsProposalWithDeposit {
   string      title       = 1;
   string      description = 2;
-  string      chain_name  = 3;
-  uint64      chain_id    = 4;
-  CellarIDSet cellar_ids  = 5;
-  string      deposit     = 6;
+  uint64      chain_id    = 3;
+  CellarIDSet cellar_ids  = 4;
+  string      deposit     = 5;
 }
 
 message RemoveAxelarManagedCellarIDsProposal {
   string      title       = 1;
   string      description = 2;
-  string      chain_name  = 3;
-  uint64      chain_id    = 4;
-  CellarIDSet cellar_ids  = 5;
+  uint64      chain_id    = 3;
+  CellarIDSet cellar_ids  = 4;
 }
 
 // RemoveManagedCellarIDsProposalWithDeposit is a specific definition for CLI commands
 message RemoveAxelarManagedCellarIDsProposalWithDeposit {
   string      title       = 1;
   string      description = 2;
-  string      chain_name  = 3;
-  uint64      chain_id    = 4;
-  CellarIDSet cellar_ids  = 5;
-  string      deposit     = 6;
+  uint64      chain_id    = 3;
+  CellarIDSet cellar_ids  = 4;
+  string      deposit     = 5;
 }
 
 message AxelarScheduledCorkProposal {
   string title                   = 1;
   string description             = 2;
   uint64 block_height            = 3;
-  string chain_name              = 4;
-  uint64 chain_id                = 5;
-  string target_contract_address = 6;
+  uint64 chain_id                = 4;
+  string target_contract_address = 5;
   /*
    * The JSON representation of a ScheduleRequest defined in the Steward protos
    *
@@ -71,7 +66,7 @@ message AxelarScheduledCorkProposal {
    * You can use the Steward CLI to generate the required JSON rather than constructing it by hand
    * https://github.com/peggyjv/steward
    */
-  string contract_call_proto_json = 7;
+  string contract_call_proto_json = 6;
 }
 
 // ScheduledCorkProposalWithDeposit is a specific definition for CLI commands
@@ -79,11 +74,10 @@ message AxelarScheduledCorkProposalWithDeposit {
   string title                    = 1;
   string description              = 2;
   uint64 block_height             = 3;
-  string chain_name               = 4;
-  uint64 chain_id                 = 5;
-  string target_contract_address  = 6;
-  string contract_call_proto_json = 7;
-  string deposit                  = 8;
+  uint64 chain_id                 = 4;
+  string target_contract_address  = 5;
+  string contract_call_proto_json = 6;
+  string deposit                  = 7;
 }
 
 message AxelarCommunityPoolSpendProposal {
@@ -95,8 +89,7 @@ message AxelarCommunityPoolSpendProposal {
   string                   description = 2;
   string                   recipient   = 3;
   uint64                   chain_id    = 4;
-  string                   chain_name  = 5;
-  cosmos.base.v1beta1.Coin amount      = 6 [(gogoproto.nullable) = false];
+  cosmos.base.v1beta1.Coin amount      = 5 [(gogoproto.nullable) = false];
 }
 
 // This format of the community spend Ethereum proposal is specifically for

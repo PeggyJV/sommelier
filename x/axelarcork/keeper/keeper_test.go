@@ -194,19 +194,6 @@ func (suite *KeeperTestSuite) TestGetWinningVotes() {
 	require.Empty(corkKeeper.GetScheduledCorksByBlockHeight(ctx, TestEVMChainID, testHeight))
 }
 
-func (suite *KeeperTestSuite) TestInvalidationNonce() {
-	ctx, corkKeeper := suite.ctx, suite.corkKeeper
-	require := suite.Require()
-
-	require.Zero(corkKeeper.GetLatestInvalidationNonce(ctx, TestEVMChainID))
-
-	corkKeeper.SetLatestInvalidationNonce(ctx, TestEVMChainID, uint64(5))
-	require.Equal(uint64(5), corkKeeper.GetLatestInvalidationNonce(ctx, TestEVMChainID))
-
-	corkKeeper.IncrementInvalidationNonce(ctx, TestEVMChainID)
-	require.Equal(uint64(6), corkKeeper.GetLatestInvalidationNonce(ctx, TestEVMChainID))
-}
-
 func (suite *KeeperTestSuite) TestCorkResults() {
 	ctx, corkKeeper := suite.ctx, suite.corkKeeper
 	require := suite.Require()

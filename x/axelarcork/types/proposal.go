@@ -48,12 +48,11 @@ func init() {
 	govtypes.RegisterProposalTypeCodec(&AxelarCommunityPoolSpendProposal{}, "sommelier/AxelarCommunitySpendProposal")
 }
 
-func NewAddManagedCellarIDsProposal(title string, description string, chainName string, chainID uint64, cellarIds *CellarIDSet) *AddAxelarManagedCellarIDsProposal {
+func NewAddManagedCellarIDsProposal(title string, description string, chainID uint64, cellarIds *CellarIDSet) *AddAxelarManagedCellarIDsProposal {
 	return &AddAxelarManagedCellarIDsProposal{
 		Title:       title,
 		Description: description,
 		CellarIds:   cellarIds,
-		ChainName:   chainName,
 		ChainId:     chainID,
 	}
 }
@@ -78,12 +77,11 @@ func (m *AddAxelarManagedCellarIDsProposal) ValidateBasic() error {
 	return nil
 }
 
-func NewRemoveManagedCellarIDsProposal(title string, description string, chainName string, chainID uint64, cellarIds *CellarIDSet) *RemoveAxelarManagedCellarIDsProposal {
+func NewRemoveManagedCellarIDsProposal(title string, description string, chainID uint64, cellarIds *CellarIDSet) *RemoveAxelarManagedCellarIDsProposal {
 	return &RemoveAxelarManagedCellarIDsProposal{
 		Title:       title,
 		Description: description,
 		CellarIds:   cellarIds,
-		ChainName:   chainName,
 		ChainId:     chainID,
 	}
 }
@@ -108,12 +106,11 @@ func (m *RemoveAxelarManagedCellarIDsProposal) ValidateBasic() error {
 	return nil
 }
 
-func NewAxelarScheduledCorkProposal(title string, description string, blockHeight uint64, chainName string, chainID uint64, targetContractAddress string, contractCallProtoJSON string) *AxelarScheduledCorkProposal {
+func NewAxelarScheduledCorkProposal(title string, description string, blockHeight uint64, chainID uint64, targetContractAddress string, contractCallProtoJSON string) *AxelarScheduledCorkProposal {
 	return &AxelarScheduledCorkProposal{
 		Title:                 title,
 		Description:           description,
 		BlockHeight:           blockHeight,
-		ChainName:             chainName,
 		ChainId:               chainID,
 		TargetContractAddress: targetContractAddress,
 		ContractCallProtoJson: contractCallProtoJSON,
@@ -148,13 +145,12 @@ func (m *AxelarScheduledCorkProposal) ValidateBasic() error {
 	return nil
 }
 
-func NewAxelarCommunitySpendProposal(title string, description string, recipient string, chainID uint64, chainName string, amount sdk.Coin) *AxelarCommunityPoolSpendProposal {
+func NewAxelarCommunitySpendProposal(title string, description string, recipient string, chainID uint64, amount sdk.Coin) *AxelarCommunityPoolSpendProposal {
 	return &AxelarCommunityPoolSpendProposal{
 		Title:       title,
 		Description: description,
 		Recipient:   recipient,
 		ChainId:     chainID,
-		ChainName:   chainName,
 		Amount:      amount,
 	}
 }

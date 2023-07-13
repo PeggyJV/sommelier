@@ -3,6 +3,7 @@ package keeper
 import (
 	"context"
 	"encoding/hex"
+	"fmt"
 
 	"github.com/ethereum/go-ethereum/common"
 
@@ -31,9 +32,9 @@ func (k Keeper) QueryCellarIDs(c context.Context, req *types.QueryCellarIDsReque
 	}
 
 	ctx := sdk.UnwrapSDKContext(c)
-	config, err := k.GetChainConfigurationByNameAndID(ctx, req.ChainName, req.ChainId)
-	if err != nil {
-		return nil, err
+	config, ok := k.GetChainConfigurationByID(ctx, req.ChainId)
+	if !ok {
+		return nil, fmt.Errorf("chain by id %d not found", req.ChainId)
 	}
 
 	response := &types.QueryCellarIDsResponse{}
@@ -50,9 +51,9 @@ func (k Keeper) QueryScheduledCorks(c context.Context, req *types.QueryScheduled
 	}
 
 	ctx := sdk.UnwrapSDKContext(c)
-	config, err := k.GetChainConfigurationByNameAndID(ctx, req.ChainName, req.ChainId)
-	if err != nil {
-		return nil, err
+	config, ok := k.GetChainConfigurationByID(ctx, req.ChainId)
+	if !ok {
+		return nil, fmt.Errorf("chain by id %d not found", req.ChainId)
 	}
 
 	response := types.QueryScheduledCorksResponse{}
@@ -75,9 +76,9 @@ func (k Keeper) QueryScheduledBlockHeights(c context.Context, req *types.QuerySc
 	}
 
 	ctx := sdk.UnwrapSDKContext(c)
-	config, err := k.GetChainConfigurationByNameAndID(ctx, req.ChainName, req.ChainId)
-	if err != nil {
-		return nil, err
+	config, ok := k.GetChainConfigurationByID(ctx, req.ChainId)
+	if !ok {
+		return nil, fmt.Errorf("chain by id %d not found", req.ChainId)
 	}
 
 	response := types.QueryScheduledBlockHeightsResponse{}
@@ -91,9 +92,9 @@ func (k Keeper) QueryScheduledCorksByBlockHeight(c context.Context, req *types.Q
 	}
 
 	ctx := sdk.UnwrapSDKContext(c)
-	config, err := k.GetChainConfigurationByNameAndID(ctx, req.ChainName, req.ChainId)
-	if err != nil {
-		return nil, err
+	config, ok := k.GetChainConfigurationByID(ctx, req.ChainId)
+	if !ok {
+		return nil, fmt.Errorf("chain by id %d not found", req.ChainId)
 	}
 
 	response := types.QueryScheduledCorksByBlockHeightResponse{}
@@ -107,9 +108,9 @@ func (k Keeper) QueryScheduledCorksByID(c context.Context, req *types.QuerySched
 	}
 
 	ctx := sdk.UnwrapSDKContext(c)
-	config, err := k.GetChainConfigurationByNameAndID(ctx, req.ChainName, req.ChainId)
-	if err != nil {
-		return nil, err
+	config, ok := k.GetChainConfigurationByID(ctx, req.ChainId)
+	if !ok {
+		return nil, fmt.Errorf("chain by id %d not found", req.ChainId)
 	}
 
 	id, err := hex.DecodeString(req.Id)
@@ -128,9 +129,9 @@ func (k Keeper) QueryCorkResult(c context.Context, req *types.QueryCorkResultReq
 	}
 
 	ctx := sdk.UnwrapSDKContext(c)
-	config, err := k.GetChainConfigurationByNameAndID(ctx, req.ChainName, req.ChainId)
-	if err != nil {
-		return nil, err
+	config, ok := k.GetChainConfigurationByID(ctx, req.ChainId)
+	if !ok {
+		return nil, fmt.Errorf("chain by id %d not found", req.ChainId)
 	}
 
 	id, err := hex.DecodeString(req.Id)
@@ -155,9 +156,9 @@ func (k Keeper) QueryCorkResults(c context.Context, req *types.QueryCorkResultsR
 	}
 
 	ctx := sdk.UnwrapSDKContext(c)
-	config, err := k.GetChainConfigurationByNameAndID(ctx, req.ChainName, req.ChainId)
-	if err != nil {
-		return nil, err
+	config, ok := k.GetChainConfigurationByID(ctx, req.ChainId)
+	if !ok {
+		return nil, fmt.Errorf("chain by id %d not found", req.ChainId)
 	}
 
 	response := types.QueryCorkResultsResponse{}

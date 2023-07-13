@@ -78,13 +78,14 @@ func queryCellarIDs() *cobra.Command {
 				return err
 			}
 
-			req := &types.QueryCellarIDsRequest{}
-			name, chainID, err := GetChainInfoFromFlags(cmd)
+			chainID, err := GetChainInfoFromFlags(cmd)
 			if err != nil {
 				return err
 			}
-			req.ChainName = name
-			req.ChainId = chainID
+
+			req := &types.QueryCellarIDsRequest{
+				ChainId: chainID,
+			}
 
 			queryClient := types.NewQueryClient(ctx)
 
@@ -116,14 +117,15 @@ func queryScheduledCorks() *cobra.Command {
 			}
 
 			queryClient := types.NewQueryClient(ctx)
-			req := &types.QueryScheduledCorksRequest{}
 
-			name, chainID, err := GetChainInfoFromFlags(cmd)
+			chainID, err := GetChainInfoFromFlags(cmd)
 			if err != nil {
 				return err
 			}
-			req.ChainName = name
-			req.ChainId = chainID
+
+			req := &types.QueryScheduledCorksRequest{
+				ChainId: chainID,
+			}
 
 			res, err := queryClient.QueryScheduledCorks(cmd.Context(), req)
 			if err != nil {
@@ -158,16 +160,15 @@ func queryScheduledCorksByBlockHeight() *cobra.Command {
 			}
 
 			queryClient := types.NewQueryClient(ctx)
-			req := &types.QueryScheduledCorksByBlockHeightRequest{
-				BlockHeight: uint64(height),
-			}
-
-			name, chainID, err := GetChainInfoFromFlags(cmd)
+			chainID, err := GetChainInfoFromFlags(cmd)
 			if err != nil {
 				return err
 			}
-			req.ChainName = name
-			req.ChainId = chainID
+
+			req := &types.QueryScheduledCorksByBlockHeightRequest{
+				BlockHeight: uint64(height),
+				ChainId:     chainID,
+			}
 
 			res, err := queryClient.QueryScheduledCorksByBlockHeight(cmd.Context(), req)
 			if err != nil {
@@ -197,14 +198,14 @@ func queryScheduledBlockHeights() *cobra.Command {
 			}
 
 			queryClient := types.NewQueryClient(ctx)
-			req := &types.QueryScheduledBlockHeightsRequest{}
-
-			name, chainID, err := GetChainInfoFromFlags(cmd)
+			chainID, err := GetChainInfoFromFlags(cmd)
 			if err != nil {
 				return err
 			}
-			req.ChainName = name
-			req.ChainId = chainID
+
+			req := &types.QueryScheduledBlockHeightsRequest{
+				ChainId: chainID,
+			}
 
 			res, err := queryClient.QueryScheduledBlockHeights(cmd.Context(), req)
 			if err != nil {
@@ -241,17 +242,15 @@ func queryScheduledCorksByID() *cobra.Command {
 			}
 
 			queryClient := types.NewQueryClient(ctx)
-			req := &types.QueryScheduledCorksByIDRequest{
-				Id: id,
-			}
-
-			name, chainID, err := GetChainInfoFromFlags(cmd)
+			chainID, err := GetChainInfoFromFlags(cmd)
 			if err != nil {
 				return err
 			}
-			req.ChainName = name
-			req.ChainId = chainID
 
+			req := &types.QueryScheduledCorksByIDRequest{
+				Id:      id,
+				ChainId: chainID,
+			}
 			res, err := queryClient.QueryScheduledCorksByID(cmd.Context(), req)
 			if err != nil {
 				return err
@@ -286,16 +285,15 @@ func queryCorkResult() *cobra.Command {
 			}
 
 			queryClient := types.NewQueryClient(ctx)
-			req := &types.QueryCorkResultRequest{
-				Id: corkID,
-			}
-
-			name, chainID, err := GetChainInfoFromFlags(cmd)
+			chainID, err := GetChainInfoFromFlags(cmd)
 			if err != nil {
 				return err
 			}
-			req.ChainName = name
-			req.ChainId = chainID
+
+			req := &types.QueryCorkResultRequest{
+				Id:      corkID,
+				ChainId: chainID,
+			}
 
 			res, err := queryClient.QueryCorkResult(cmd.Context(), req)
 			if err != nil {
@@ -325,14 +323,14 @@ func queryCorkResults() *cobra.Command {
 			}
 
 			queryClient := types.NewQueryClient(ctx)
-			req := &types.QueryCorkResultsRequest{}
-
-			name, chainID, err := GetChainInfoFromFlags(cmd)
+			chainID, err := GetChainInfoFromFlags(cmd)
 			if err != nil {
 				return err
 			}
-			req.ChainName = name
-			req.ChainId = chainID
+
+			req := &types.QueryCorkResultsRequest{
+				ChainId: chainID,
+			}
 
 			res, err := queryClient.QueryCorkResults(cmd.Context(), req)
 			if err != nil {

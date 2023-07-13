@@ -2,6 +2,7 @@ package keeper
 
 import (
 	"encoding/json"
+	"fmt"
 	"sort"
 	"time"
 
@@ -18,9 +19,9 @@ import (
 
 // HandleAddManagedCellarsProposal is a handler for executing a passed community cellar addition proposal
 func HandleAddManagedCellarsProposal(ctx sdk.Context, k Keeper, p types.AddAxelarManagedCellarIDsProposal) error {
-	config, err := k.GetChainConfigurationByNameAndID(ctx, p.ChainName, p.ChainId)
-	if err != nil {
-		return err
+	config, ok := k.GetChainConfigurationByID(ctx, p.ChainId)
+	if !ok {
+		return fmt.Errorf("chain by id %d not found", p.ChainId)
 	}
 
 	cellarIDs := k.GetCellarIDs(ctx, config.Id)
@@ -50,9 +51,9 @@ func HandleAddManagedCellarsProposal(ctx sdk.Context, k Keeper, p types.AddAxela
 
 // HandleRemoveManagedCellarsProposal is a handler for executing a passed community cellar removal proposal
 func HandleRemoveManagedCellarsProposal(ctx sdk.Context, k Keeper, p types.RemoveAxelarManagedCellarIDsProposal) error {
-	config, err := k.GetChainConfigurationByNameAndID(ctx, p.ChainName, p.ChainId)
-	if err != nil {
-		return err
+	config, ok := k.GetChainConfigurationByID(ctx, p.ChainId)
+	if !ok {
+		return fmt.Errorf("chain by id %d not found", p.ChainId)
 	}
 
 	var outputCellarIDs types.CellarIDSet
@@ -76,9 +77,9 @@ func HandleRemoveManagedCellarsProposal(ctx sdk.Context, k Keeper, p types.Remov
 
 // HandleScheduledCorkProposal is a handler for executing a passed scheduled cork proposal
 func HandleScheduledCorkProposal(ctx sdk.Context, k Keeper, p types.AxelarScheduledCorkProposal) error {
-	config, err := k.GetChainConfigurationByNameAndID(ctx, p.ChainName, p.ChainId)
-	if err != nil {
-		return err
+	config, ok := k.GetChainConfigurationByID(ctx, p.ChainId)
+	if !ok {
+		return fmt.Errorf("chain by id %d not found", p.ChainId)
 	}
 
 	if !k.HasCellarID(ctx, config.Id, common.HexToAddress(p.TargetContractAddress)) {
@@ -103,9 +104,9 @@ func HandleCommunityPoolSpendProposal(ctx sdk.Context, k Keeper, p types.AxelarC
 	sender := authtypes.NewModuleAddress(distributiontypes.ModuleName)
 
 	params := k.GetParamSet(ctx)
-	config, err := k.GetChainConfigurationByNameAndID(ctx, p.ChainName, p.ChainId)
-	if err != nil {
-		return err
+	config, ok := k.GetChainConfigurationByID(ctx, p.ChainId)
+	if !ok {
+		return fmt.Errorf("chain by id %d not found", p.ChainId)
 	}
 
 	axelarMemo := types.AxelarBody{

@@ -9,27 +9,21 @@ import (
 )
 
 const (
-	FlagAxelarChainID   = "axelar-chain-id"
-	FlagAxelarChainName = "axelar-chain-name"
+	FlagAxelarChainID = "axelar-chain-id"
 )
 
 // AddChainFlagsToCmd adds common chain flags to a module command.
 func AddChainFlagsToCmd(cmd *cobra.Command) {
-	cmd.Flags().String(FlagAxelarChainName, "", "The case sensitive name of the Axelar target chain")
 	cmd.Flags().Uint64(FlagAxelarChainID, 0, "The Chain ID for the Axelar target EVM chain")
 }
 
-func GetChainInfoFromFlags(cmd *cobra.Command) (string, uint64, error) {
-	name, err := cmd.Flags().GetString(FlagAxelarChainName)
-	if err != nil {
-		return "", 0, err
-	}
+func GetChainInfoFromFlags(cmd *cobra.Command) (uint64, error) {
 	chainID, err := cmd.Flags().GetUint64(FlagAxelarChainID)
 	if err != nil {
-		return "", 0, err
+		return 0, err
 	}
 
-	return name, chainID, nil
+	return chainID, nil
 }
 
 // ParseCommunityPoolSpendProposal reads and parses a CommunityPoolEthereumSpendProposalForCLI from a file.

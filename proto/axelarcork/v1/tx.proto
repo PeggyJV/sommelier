@@ -18,14 +18,12 @@ service Msg {
 message MsgScheduleAxelarCorkRequest {
   // the scheduled cork
   AxelarCork cork = 1;
-  // the chain name
-  string chain_name = 2;
   // the chain id
-  uint64 chain_id = 3;
+  uint64 chain_id = 2;
   // the block height that must be reached
-  uint64 block_height = 4;
+  uint64 block_height = 3;
   // signer account address
-  string signer = 5;
+  string signer = 4;
 }
 
 message MsgScheduleAxelarCorkResponse {
@@ -38,8 +36,7 @@ message MsgRelayAxelarCorkRequest {
   cosmos.base.v1beta1.Coin token                   = 2 [(gogoproto.nullable) = false];
   uint64                   fee                     = 3;
   uint64                   chain_id                = 4;
-  string                   chain_name              = 5;
-  string                   target_contract_address = 6;
+  string                   target_contract_address = 5;
 }
 
 message MsgRelayAxelarCorkResponse {}

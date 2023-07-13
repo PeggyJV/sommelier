@@ -81,19 +81,16 @@ Where proposal.json contains:
 				}
 			}
 
-			content := types.NewAddManagedCellarIDsProposal(
-				proposal.Title,
-				proposal.Description,
-				"",
-				0,
-				&types.CellarIDSet{Ids: proposal.CellarIds.Ids})
-
-			name, chainID, err := GetChainInfoFromFlags(cmd)
+			chainID, err := GetChainInfoFromFlags(cmd)
 			if err != nil {
 				return err
 			}
-			content.ChainName = name
-			content.ChainId = chainID
+
+			content := types.NewAddManagedCellarIDsProposal(
+				proposal.Title,
+				proposal.Description,
+				chainID,
+				&types.CellarIDSet{Ids: proposal.CellarIds.Ids})
 
 			from := clientCtx.GetFromAddress()
 			msg, err := govtypes.NewMsgSubmitProposal(content, deposit, from)
@@ -162,19 +159,16 @@ Where proposal.json contains:
 				}
 			}
 
-			content := types.NewRemoveManagedCellarIDsProposal(
-				proposal.Title,
-				proposal.Description,
-				"",
-				0,
-				&types.CellarIDSet{Ids: proposal.CellarIds.Ids})
-
-			name, chainID, err := GetChainInfoFromFlags(cmd)
+			chainID, err := GetChainInfoFromFlags(cmd)
 			if err != nil {
 				return err
 			}
-			content.ChainName = name
-			content.ChainId = chainID
+
+			content := types.NewRemoveManagedCellarIDsProposal(
+				proposal.Title,
+				proposal.Description,
+				chainID,
+				&types.CellarIDSet{Ids: proposal.CellarIds.Ids})
 
 			from := clientCtx.GetFromAddress()
 			msg, err := govtypes.NewMsgSubmitProposal(content, deposit, from)
@@ -245,12 +239,13 @@ The contract_call_proto_json field must be the JSON representation of a Schedule
 				return fmt.Errorf("%s is not a valid contract address", proposal.TargetContractAddress)
 			}
 
-			name, chainID, err := GetChainInfoFromFlags(cmd)
+			chainID, err := GetChainInfoFromFlags(cmd)
 			if err != nil {
 				return err
 			}
 
-			content := types.NewAxelarScheduledCorkProposal(proposal.Title, proposal.Description, proposal.BlockHeight, name, chainID, proposal.TargetContractAddress, proposal.ContractCallProtoJson)
+			content := types.NewAxelarScheduledCorkProposal(proposal.Title, proposal.Description, proposal.BlockHeight,
+				chainID, proposal.TargetContractAddress, proposal.ContractCallProtoJson)
 			if err := content.ValidateBasic(); err != nil {
 				return err
 			}
@@ -333,7 +328,7 @@ Where proposal.json contains:
 
 			from := clientCtx.GetFromAddress()
 
-			content := types.NewAxelarCommunitySpendProposal(proposal.Title, proposal.Description, proposal.Recipient, proposal.ChainId, proposal.ChainName, amount)
+			content := types.NewAxelarCommunitySpendProposal(proposal.Title, proposal.Description, proposal.Recipient, proposal.ChainId, amount)
 
 			msg, err := govtypes.NewMsgSubmitProposal(content, deposit, from)
 			if err != nil {

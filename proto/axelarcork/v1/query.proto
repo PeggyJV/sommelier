@@ -62,8 +62,7 @@ message QueryParamsResponse {
 
 // QueryCellarIDsRequest is the request type for Query/QueryCellarIDs gRPC method.
 message QueryCellarIDsRequest {
-  string chain_name = 1;
-  uint64 chain_id   = 2;
+  uint64 chain_id   = 1;
 }
 
 // QueryCellarIDsResponse is the response type for Query/QueryCellars gRPC method.
@@ -73,8 +72,7 @@ message QueryCellarIDsResponse {
 
 // QueryScheduledCorksRequest
 message QueryScheduledCorksRequest {
-  string chain_name = 1;
-  uint64 chain_id   = 2;
+  uint64 chain_id   = 1;
 }
 
 // QueryScheduledCorksResponse
@@ -84,8 +82,7 @@ message QueryScheduledCorksResponse {
 
 // QueryScheduledBlockHeightsRequest
 message QueryScheduledBlockHeightsRequest {
-  string chain_name = 1;
-  uint64 chain_id   = 2;
+  uint64 chain_id   = 1;
 }
 
 // QueryScheduledBlockHeightsResponse
@@ -96,8 +93,7 @@ message QueryScheduledBlockHeightsResponse {
 // QueryScheduledCorksByBlockHeightRequest
 message QueryScheduledCorksByBlockHeightRequest {
   uint64 block_height = 1;
-  string chain_name   = 2;
-  uint64 chain_id     = 3;
+  uint64 chain_id     = 2;
 }
 
 // QueryScheduledCorksByBlockHeightResponse
@@ -108,8 +104,7 @@ message QueryScheduledCorksByBlockHeightResponse {
 // QueryScheduledCorksByIDRequest
 message QueryScheduledCorksByIDRequest {
   string id         = 1;
-  string chain_name = 2;
-  uint64 chain_id   = 3;
+  uint64 chain_id   = 2;
 }
 
 // QueryScheduledCorksByIDResponse
@@ -119,8 +114,7 @@ message QueryScheduledCorksByIDResponse {
 
 message QueryCorkResultRequest {
   string id         = 1;
-  string chain_name = 2;
-  uint64 chain_id   = 3;
+  uint64 chain_id   = 2;
 }
 
 message QueryCorkResultResponse {
@@ -128,8 +122,7 @@ message QueryCorkResultResponse {
 }
 
 message QueryCorkResultsRequest {
-  string chain_name = 1;
-  uint64 chain_id   = 2;
+  uint64 chain_id   = 1;
 }
 
 message QueryCorkResultsResponse {

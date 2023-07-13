@@ -50,7 +50,6 @@ func postAddProposalHandlerFn(clientCtx client.Context) http.HandlerFunc {
 		content := types.NewAddManagedCellarIDsProposal(
 			req.Title,
 			req.Description,
-			"",
 			req.ChainID,
 			&types.CellarIDSet{
 				Ids: req.CellarIDs,
@@ -83,7 +82,6 @@ func postRemoveProposalHandlerFn(clientCtx client.Context) http.HandlerFunc {
 		content := types.NewRemoveManagedCellarIDsProposal(
 			req.Title,
 			req.Description,
-			"",
 			req.ChainID,
 			&types.CellarIDSet{
 				Ids: req.CellarIDs,
@@ -117,7 +115,6 @@ func postScheduledCorkProposalHandlerFn(clientCtx client.Context) http.HandlerFu
 			req.Title,
 			req.Description,
 			req.BlockHeight,
-			req.ChainName,
 			req.ChainID,
 			req.TargetContractAddress,
 			req.ContractCallProtoJSON,
@@ -157,7 +154,7 @@ func postCommunitySpendProposalHandlerFn(clientCtx client.Context) http.HandlerF
 			return
 		}
 
-		content := types.NewAxelarCommunitySpendProposal(req.Title, req.Description, req.Recipient, req.ChainID, req.ChainName, req.Amount)
+		content := types.NewAxelarCommunitySpendProposal(req.Title, req.Description, req.Recipient, req.ChainID, req.Amount)
 
 		msg, err := govtypes.NewMsgSubmitProposal(content, req.Deposit, req.Proposer)
 		if rest.CheckBadRequestError(w, err) {
