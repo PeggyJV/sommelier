@@ -81,6 +81,10 @@ endif
 # The below include contains the tools target.
 include contrib/devtools/Makefile
 
+###############################################################################
+###                              Documentation                              ###
+###############################################################################
+
 all: install lint test
 
 build: go.sum
@@ -137,7 +141,9 @@ sync-docs:
 	aws cloudfront create-invalidation --distribution-id ${CF_DISTRIBUTION_ID} --profile terraform --path "/*" ;
 .PHONY: sync-docs
 
-
+###############################################################################
+###                           Tests & Simulation                            ###
+###############################################################################
 
 test: test-unit test-build
 
@@ -197,7 +203,7 @@ proto-all: proto-format proto-lint proto-gen format
 
 proto-gen:
 	@echo "Generating Protobuf files"
-	@$(protoImage) sh ./scripts/protocgen.sh
+	sh ./scripts/protocgen.sh
 
 proto-format:
 	@echo "Formatting Protobuf files"
@@ -214,6 +220,8 @@ proto-check-breaking:
 
 proto-version:
 	@$(protoImage) buf --version
+
+.PHONY: proto-all proto-gen proto-swagger-gen proto-format proto-lint proto-check-breaking proto-update-deps
 
 #####################
 # Integration tests #

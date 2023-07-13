@@ -14,7 +14,6 @@ func InitGenesis(ctx sdk.Context, k Keeper, gs types.GenesisState) {
 	for i, config := range gs.ChainConfigurations.Configurations {
 		k.SetChainConfigurationByID(ctx, config.Id, *config)
 		k.SetCellarIDs(ctx, config.Id, *gs.CellarIds[i])
-		k.SetLatestInvalidationNonce(ctx, config.Id, gs.InvalidationNonces[i])
 
 		for _, corkResult := range gs.CorkResults[i].CorkResults {
 			k.SetCorkResult(ctx, config.Id, corkResult.Cork.IDHash(corkResult.BlockHeight), *corkResult)
@@ -50,13 +49,11 @@ func ExportGenesis(ctx sdk.Context, k Keeper) types.GenesisState {
 		}
 		gs.CellarIds = append(gs.CellarIds, &cellarIDSet)
 
-		gs.InvalidationNonces = append(gs.InvalidationNonces, k.GetLatestInvalidationNonce(ctx, config.Id))
-
-		var scheduledCorks types.ScheduledCorks
+		var scheduledCorks types.ScheduledAxelarCorks
 		scheduledCorks.ScheduledCorks = append(scheduledCorks.ScheduledCorks, k.GetScheduledCorks(ctx, config.Id)...)
 		gs.ScheduledCorks = append(gs.ScheduledCorks, &scheduledCorks)
 
-		var corkResults types.CorkResults
+		var corkResults types.AxelarCorkResults
 		corkResults.CorkResults = append(corkResults.CorkResults, k.GetCorkResults(ctx, config.Id)...)
 		gs.CorkResults = append(gs.CorkResults, &corkResults)
 

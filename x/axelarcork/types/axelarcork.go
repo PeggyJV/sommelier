@@ -6,19 +6,9 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/crypto"
-	tmbytes "github.com/tendermint/tendermint/libs/bytes"
 )
 
-func (c *Cork) InvalidationScope() tmbytes.HexBytes {
-	addr := common.HexToAddress(c.TargetContractAddress)
-	return crypto.Keccak256Hash(
-		bytes.Join(
-			[][]byte{addr.Bytes(), c.EncodedContractCall},
-			[]byte{},
-		)).Bytes()
-}
-
-func (c *Cork) IDHash(blockHeight uint64) []byte {
+func (c *AxelarCork) IDHash(blockHeight uint64) []byte {
 	blockHeightBytes := sdk.Uint64ToBigEndian(blockHeight)
 
 	address := common.HexToAddress(c.TargetContractAddress)
@@ -30,7 +20,7 @@ func (c *Cork) IDHash(blockHeight uint64) []byte {
 		)).Bytes()
 }
 
-func (c *Cork) Equals(other Cork) bool {
+func (c *AxelarCork) Equals(other AxelarCork) bool {
 	firstAddr := common.HexToAddress(c.TargetContractAddress)
 	secondAddr := common.HexToAddress(other.TargetContractAddress)
 
@@ -45,7 +35,7 @@ func (c *Cork) Equals(other Cork) bool {
 	return true
 }
 
-func (c *Cork) ValidateBasic() error {
+func (c *AxelarCork) ValidateBasic() error {
 	if len(c.EncodedContractCall) == 0 {
 		return ErrEmptyContractCall
 	}

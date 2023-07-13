@@ -34,7 +34,7 @@ func (k Keeper) ValidateAxelarCorkPacket(ctx sdk.Context, packet ibcexported.Pac
 		return nil
 	}
 
-	// Parse the amount and denom from the packet
+	// Parse the data from the packet
 	var packetData transfertypes.FungibleTokenPacketData
 	packetDataBz := packet.GetData()
 	if err := json.Unmarshal(packetDataBz, &packetData); err != nil {

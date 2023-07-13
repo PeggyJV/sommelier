@@ -108,7 +108,7 @@ func (m *RemoveAxelarManagedCellarIDsProposal) ValidateBasic() error {
 	return nil
 }
 
-func NewScheduledCorkProposal(title string, description string, blockHeight uint64, chainName string, chainID uint64, targetContractAddress string, contractCallProtoJSON string) *AxelarScheduledCorkProposal {
+func NewAxelarScheduledCorkProposal(title string, description string, blockHeight uint64, chainName string, chainID uint64, targetContractAddress string, contractCallProtoJSON string) *AxelarScheduledCorkProposal {
 	return &AxelarScheduledCorkProposal{
 		Title:                 title,
 		Description:           description,
@@ -148,7 +148,7 @@ func (m *AxelarScheduledCorkProposal) ValidateBasic() error {
 	return nil
 }
 
-func NewCommunitySpendProposal(title string, description string, recipient string, chainID uint64, chainName string, amount sdk.Coin) *AxelarCommunityPoolSpendProposal {
+func NewAxelarCommunitySpendProposal(title string, description string, recipient string, chainID uint64, chainName string, amount sdk.Coin) *AxelarCommunityPoolSpendProposal {
 	return &AxelarCommunityPoolSpendProposal{
 		Title:       title,
 		Description: description,
@@ -174,10 +174,6 @@ func (m *AxelarCommunityPoolSpendProposal) ValidateBasic() error {
 
 	if m.Amount.Amount.IsZero() {
 		return ErrValuelessSend
-	}
-
-	if m.Recipient == "" {
-		return sdkerrors.Wrapf(ErrInvalidEVMAddress, "empty recipient")
 	}
 
 	if !common.IsHexAddress(m.Recipient) {

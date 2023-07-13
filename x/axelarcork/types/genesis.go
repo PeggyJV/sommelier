@@ -8,10 +8,9 @@ func DefaultGenesisState() GenesisState {
 	return GenesisState{
 		Params:              &defaultParams,
 		ChainConfigurations: ChainConfigurations{},
-		InvalidationNonces:  []uint64{},
 		CellarIds:           []*CellarIDSet{},
-		ScheduledCorks:      []*ScheduledCorks{},
-		CorkResults:         []*CorkResults{},
+		ScheduledCorks:      []*ScheduledAxelarCorks{},
+		CorkResults:         []*AxelarCorkResults{},
 	}
 }
 

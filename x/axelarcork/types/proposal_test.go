@@ -17,7 +17,7 @@ func TestScheduledCorkProposalValidation(t *testing.T) {
 		{
 			name: "Happy path",
 			scheduledCorkProposal: AxelarScheduledCorkProposal{
-				Title:                 "Scheduled Cork",
+				Title:                 "Scheduled AxelarCork",
 				Description:           "Schedules a cork via governance",
 				BlockHeight:           1,
 				ContractCallProtoJson: "{\"thing\":1}",
@@ -29,7 +29,7 @@ func TestScheduledCorkProposalValidation(t *testing.T) {
 		{
 			name: "Contract address invalid",
 			scheduledCorkProposal: AxelarScheduledCorkProposal{
-				Title:                 "Scheduled Cork",
+				Title:                 "Scheduled AxelarCork",
 				Description:           "Schedules a cork via governance",
 				BlockHeight:           1,
 				ContractCallProtoJson: "{\"thing\":1}",
@@ -41,7 +41,7 @@ func TestScheduledCorkProposalValidation(t *testing.T) {
 		{
 			name: "Empty proto JSON",
 			scheduledCorkProposal: AxelarScheduledCorkProposal{
-				Title:                 "Scheduled Cork",
+				Title:                 "Scheduled AxelarCork",
 				Description:           "Schedules a cork via governance",
 				BlockHeight:           1,
 				ContractCallProtoJson: "",
@@ -53,7 +53,7 @@ func TestScheduledCorkProposalValidation(t *testing.T) {
 		{
 			name: "Invalid JSON",
 			scheduledCorkProposal: AxelarScheduledCorkProposal{
-				Title:                 "Scheduled Cork",
+				Title:                 "Scheduled AxelarCork",
 				Description:           "Schedules a cork via governance",
 				BlockHeight:           1,
 				ContractCallProtoJson: "[}",

@@ -25,6 +25,13 @@ func (k Keeper) ScheduleCork(c context.Context, msg *types.MsgScheduleAxelarCork
 		return nil, types.ErrDisabled
 	}
 
+	signer := msg.MustGetSigner()
+	validator := k.stakingKeeper.Validator(ctx, sdk.ValAddress(signer))
+	if validator != nil {
+		return nil, fmt.Errorf("validator not found for acc addr %s", signer)
+	}
+	validatorAddr := sdk.ValAddress(signer)
+
 	config, err := k.GetChainConfigurationByNameAndID(ctx, msg.ChainName, msg.ChainId)
 	if err != nil {
 		return nil, err
@@ -37,13 +44,6 @@ func (k Keeper) ScheduleCork(c context.Context, msg *types.MsgScheduleAxelarCork
 	if msg.BlockHeight <= uint64(ctx.BlockHeight()) {
 		return nil, types.ErrSchedulingInThePast
 	}
-
-	signer := msg.MustGetSigner()
-	validator := k.stakingKeeper.Validator(ctx, sdk.ValAddress(signer))
-	if validator != nil {
-		return nil, fmt.Errorf("validator not found for acc addr %s", signer)
-	}
-	validatorAddr := sdk.ValAddress(signer)
 
 	corkID := k.SetScheduledCork(ctx, config.Id, msg.BlockHeight, validatorAddr, *msg.Cork)
 

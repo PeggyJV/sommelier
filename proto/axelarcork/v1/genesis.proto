@@ -1,7 +1,7 @@
 syntax = "proto3";
 package axelarcork.v1;
 
-import "axelarcork/v1/cork.proto";
+import "axelarcork/v1/axelarcork.proto";
 import "gogoproto/gogo.proto";
 
 option go_package = "github.com/peggyjv/sommelier/v6/x/axelarcork/types";
@@ -10,10 +10,9 @@ option go_package = "github.com/peggyjv/sommelier/v6/x/axelarcork/types";
 message GenesisState {
   Params                  params               = 1;
   ChainConfigurations     chain_configurations = 2 [(gogoproto.nullable) = false];
-  repeated uint64         invalidation_nonces  = 3;
-  repeated CellarIDSet    cellar_ids           = 4;
-  repeated ScheduledCorks scheduled_corks      = 5;
-  repeated CorkResults    cork_results         = 6;
+  repeated CellarIDSet    cellar_ids           = 3;
+  repeated ScheduledAxelarCorks scheduled_corks      = 4;
+  repeated AxelarCorkResults    cork_results         = 5;
 }
 
 message Params {

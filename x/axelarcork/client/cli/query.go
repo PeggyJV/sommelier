@@ -29,6 +29,7 @@ func GetQueryCmd() *cobra.Command {
 		queryScheduledCorksByID(),
 		queryCorkResult(),
 		queryCorkResults(),
+		queryChainConfigurations(),
 	}...)
 
 	return corkQueryCmd
@@ -334,6 +335,36 @@ func queryCorkResults() *cobra.Command {
 			req.ChainId = chainID
 
 			res, err := queryClient.QueryCorkResults(cmd.Context(), req)
+			if err != nil {
+				return err
+			}
+
+			return ctx.PrintProto(res)
+		},
+	}
+
+	flags.AddQueryFlagsToCmd(cmd)
+	AddChainFlagsToCmd(cmd)
+
+	return cmd
+}
+
+func queryChainConfigurations() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:     "chain-configurations",
+		Aliases: []string{"cfgs"},
+		Args:    cobra.NoArgs,
+		Short:   "query axelar chain configurations",
+		RunE: func(cmd *cobra.Command, _ []string) error {
+			ctx, err := client.GetClientQueryContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			queryClient := types.NewQueryClient(ctx)
+			req := &types.QueryChainConfigurationsRequest{}
+
+			res, err := queryClient.QueryChainConfigurations(cmd.Context(), req)
 			if err != nil {
 				return err
 			}

@@ -19,7 +19,7 @@ import (
 func GetTxCmd() *cobra.Command {
 	corkTxCmd := &cobra.Command{
 		Use:                        "axelar-cork",
-		Short:                      "Axelar Cork transaction subcommands",
+		Short:                      "Axelar AxelarCork transaction subcommands",
 		DisableFlagParsing:         true,
 		SuggestionsMinimumDistance: 2,
 		RunE:                       client.ValidateCmd,
@@ -207,7 +207,7 @@ $ %s tx gov submit-proposal schedule-cork <path/to/proposal.json> --from=<key_or
 Where proposal.json contains:
 
 {
-  "title": "Dollary-doos LP Scheduled Cork Proposal",
+  "title": "Dollary-doos LP Scheduled AxelarCork Proposal",
   "description": "I trust them, approve cork",
   "block_height": 100000,
   "target_contract_address": "0x123801a7D398351b8bE11C439e05C5B3259aeC9B",
@@ -250,7 +250,7 @@ The contract_call_proto_json field must be the JSON representation of a Schedule
 				return err
 			}
 
-			content := types.NewScheduledCorkProposal(proposal.Title, proposal.Description, proposal.BlockHeight, name, chainID, proposal.TargetContractAddress, proposal.ContractCallProtoJson)
+			content := types.NewAxelarScheduledCorkProposal(proposal.Title, proposal.Description, proposal.BlockHeight, name, chainID, proposal.TargetContractAddress, proposal.ContractCallProtoJson)
 			if err := content.ValidateBasic(); err != nil {
 				return err
 			}
@@ -333,7 +333,7 @@ Where proposal.json contains:
 
 			from := clientCtx.GetFromAddress()
 
-			content := types.NewCommunitySpendProposal(proposal.Title, proposal.Description, proposal.Recipient, proposal.ChainId, proposal.ChainName, amount)
+			content := types.NewAxelarCommunitySpendProposal(proposal.Title, proposal.Description, proposal.Recipient, proposal.ChainId, proposal.ChainName, amount)
 
 			msg, err := govtypes.NewMsgSubmitProposal(content, deposit, from)
 			if err != nil {

@@ -33,14 +33,14 @@ func (suite *KeeperTestSuite) TestQueriesHappyPath() {
 	})
 
 	testHeight := uint64(ctx.BlockHeight())
-	cork := types.Cork{
+	cork := types.AxelarCork{
 		EncodedContractCall:   []byte("testcall"),
 		TargetContractAddress: sampleCellarHex,
 		ChainId:               TestEVMChainID,
 	}
 	id := cork.IDHash(testHeight)
 	val := sdk.ValAddress("12345678901234567890")
-	expectedScheduledCork := types.ScheduledCork{
+	expectedScheduledCork := types.ScheduledAxelarCork{
 		Cork:        &cork,
 		BlockHeight: testHeight,
 		Validator:   "cosmosvaloper1xyerxdp4xcmnswfsxyerxdp4xcmnswfs008wpw",
@@ -48,7 +48,7 @@ func (suite *KeeperTestSuite) TestQueriesHappyPath() {
 	}
 	corkKeeper.SetScheduledCork(ctx, TestEVMChainID, testHeight, val, cork)
 
-	corkResult := types.CorkResult{
+	corkResult := types.AxelarCorkResult{
 		Cork:               &cork,
 		BlockHeight:        testHeight,
 		Approved:           true,

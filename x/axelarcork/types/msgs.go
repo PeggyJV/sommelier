@@ -13,9 +13,9 @@ var (
 )
 
 const (
-	TypeMsgScheduleCorkRequest = "cork_schedule"
-	TypeMsgRelayCorkRequest    = "cork_relay"
-	TypeMsgBumpCorkGasRequest  = "cork_bump_gas"
+	TypeMsgScheduleCorkRequest = "axelar_cork_schedule"
+	TypeMsgRelayCorkRequest    = "axelar_cork_relay"
+	TypeMsgBumpCorkGasRequest  = "axelar_cork_bump_gas"
 )
 
 ////////////////////////////
@@ -25,7 +25,7 @@ const (
 // NewMsgScheduleCorkRequest return a new MsgScheduleAxelarCorkRequest
 func NewMsgScheduleCorkRequest(body []byte, address common.Address, blockHeight uint64, signer sdk.AccAddress) (*MsgScheduleAxelarCorkRequest, error) {
 	return &MsgScheduleAxelarCorkRequest{
-		Cork: &Cork{
+		Cork: &AxelarCork{
 			EncodedContractCall:   body,
 			TargetContractAddress: address.String(),
 		},
@@ -51,7 +51,7 @@ func (m *MsgScheduleAxelarCorkRequest) ValidateBasic() error {
 
 // GetSignBytes implements sdk.Msg
 func (m *MsgScheduleAxelarCorkRequest) GetSignBytes() []byte {
-	panic("amino support disabled")
+	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(m))
 }
 
 // GetSigners implements sdk.Msg
@@ -93,7 +93,7 @@ func (m *MsgRelayAxelarCorkRequest) ValidateBasic() error {
 
 // GetSignBytes implements sdk.Msg
 func (m *MsgRelayAxelarCorkRequest) GetSignBytes() []byte {
-	panic("amino support disabled")
+	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(m))
 }
 
 // GetSigners implements sdk.Msg
@@ -131,7 +131,7 @@ func (m *MsgBumpAxelarCorkGasRequest) ValidateBasic() error {
 
 // GetSignBytes implements sdk.Msg
 func (m *MsgBumpAxelarCorkGasRequest) GetSignBytes() []byte {
-	panic("amino support disabled")
+	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(m))
 }
 
 // GetSigners implements sdk.Msg

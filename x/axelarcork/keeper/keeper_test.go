@@ -126,7 +126,7 @@ func (suite *KeeperTestSuite) TestSetGetDeleteScheduledCork() {
 
 	testHeight := uint64(123)
 	val := []byte("testaddress")
-	expectedCork := types.Cork{
+	expectedCork := types.AxelarCork{
 		EncodedContractCall:   []byte("testcall"),
 		TargetContractAddress: sampleCellarHex,
 	}
@@ -168,7 +168,7 @@ func (suite *KeeperTestSuite) TestGetWinningVotes() {
 	})
 
 	testHeight := uint64(ctx.BlockHeight())
-	cork := types.Cork{
+	cork := types.AxelarCork{
 		EncodedContractCall:   []byte("testcall"),
 		TargetContractAddress: sampleCellarHex,
 	}
@@ -214,12 +214,12 @@ func (suite *KeeperTestSuite) TestCorkResults() {
 	require.Empty(corkKeeper.GetCorkResults(ctx, TestEVMChainID))
 
 	testHeight := uint64(ctx.BlockHeight())
-	cork := types.Cork{
+	cork := types.AxelarCork{
 		EncodedContractCall:   []byte("testcall"),
 		TargetContractAddress: sampleCellarHex,
 	}
 	id := cork.IDHash(testHeight)
-	result := types.CorkResult{
+	result := types.AxelarCorkResult{
 		Cork:               &cork,
 		BlockHeight:        testHeight,
 		Approved:           true,

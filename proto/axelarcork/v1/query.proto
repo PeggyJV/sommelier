@@ -4,7 +4,7 @@ package axelarcork.v1;
 import "gogoproto/gogo.proto";
 import "google/api/annotations.proto";
 import "axelarcork/v1/genesis.proto";
-import "axelarcork/v1/cork.proto";
+import "axelarcork/v1/axelarcork.proto";
 
 option go_package = "github.com/peggyjv/sommelier/v6/x/axelarcork/types";
 
@@ -79,7 +79,7 @@ message QueryScheduledCorksRequest {
 
 // QueryScheduledCorksResponse
 message QueryScheduledCorksResponse {
-  repeated ScheduledCork corks = 1;
+  repeated ScheduledAxelarCork corks = 1;
 }
 
 // QueryScheduledBlockHeightsRequest
@@ -102,7 +102,7 @@ message QueryScheduledCorksByBlockHeightRequest {
 
 // QueryScheduledCorksByBlockHeightResponse
 message QueryScheduledCorksByBlockHeightResponse {
-  repeated ScheduledCork corks = 1;
+  repeated ScheduledAxelarCork corks = 1;
 }
 
 // QueryScheduledCorksByIDRequest
@@ -114,7 +114,7 @@ message QueryScheduledCorksByIDRequest {
 
 // QueryScheduledCorksByIDResponse
 message QueryScheduledCorksByIDResponse {
-  repeated ScheduledCork corks = 1;
+  repeated ScheduledAxelarCork corks = 1;
 }
 
 message QueryCorkResultRequest {
@@ -124,7 +124,7 @@ message QueryCorkResultRequest {
 }
 
 message QueryCorkResultResponse {
-  CorkResult corkResult = 1;
+  AxelarCorkResult corkResult = 1;
 }
 
 message QueryCorkResultsRequest {
@@ -133,7 +133,7 @@ message QueryCorkResultsRequest {
 }
 
 message QueryCorkResultsResponse {
-  repeated CorkResult corkResults = 1;
+  repeated AxelarCorkResult corkResults = 1;
 }
 
 message QueryChainConfigurationsRequest {}

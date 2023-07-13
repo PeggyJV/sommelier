@@ -29,22 +29,19 @@ const (
 	// CorkForAddressKeyPrefix - <prefix><chain_id><val_address><address> -> <cork>
 	CorkForAddressKeyPrefix // key for corks
 
-	// LatestInvalidationNonceKey - <prefix><chain_id> -> uint64(latestNonce)
-	LatestInvalidationNonceKeyPrefix
-
 	// CellarIDsKeyPrefix - <prefix><chain_id> -> []string
 	CellarIDsKeyPrefix
 
 	// ScheduledCorkKeyPrefix - <prefix><chain_id><block_height><val_address><address> -> <cork>
 	ScheduledCorkKeyPrefix
 
-	// CorkResultPrefix - <prefix><chain_id><id> -> CorkResult
+	// CorkResultPrefix - <prefix><chain_id><id> -> AxelarCorkResult
 	CorkResultPrefix
 
 	// ChainConfigurationPrefix - <prefix><chain_id> -> ChainConfiguration
 	ChainConfigurationPrefix
 
-	// WinningCorkPrefix - <prefix><chain_id> -> Cork
+	// WinningCorkPrefix - <prefix><chain_id> -> AxelarCork
 	WinningCorkPrefix
 )
 
@@ -95,12 +92,6 @@ func ChainConfigurationKey(chainID uint64) []byte {
 	cid := make([]byte, 8)
 	binary.BigEndian.PutUint64(cid, chainID)
 	return bytes.Join([][]byte{{ChainConfigurationPrefix}, cid}, []byte{})
-}
-
-func LatestInvalidationNonceKey(chainID uint64) []byte {
-	cid := make([]byte, 8)
-	binary.BigEndian.PutUint64(cid, chainID)
-	return bytes.Join([][]byte{{LatestInvalidationNonceKeyPrefix}, cid}, []byte{})
 }
 
 func GetWinningCorkKey(chainID uint64, address common.Address) []byte {

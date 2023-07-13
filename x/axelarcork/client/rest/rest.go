@@ -14,7 +14,7 @@ import (
 // AddProposalRESTHandler returns a ProposalRESTHandler that exposes add managed cellar IDs REST handler with a given sub-route.
 func AddProposalRESTHandler(clientCtx client.Context) govrest.ProposalRESTHandler {
 	return govrest.ProposalRESTHandler{
-		SubRoute: "add_managed_cellar_ids",
+		SubRoute: "add_axelar_managed_cellar_ids",
 		Handler:  postAddProposalHandlerFn(clientCtx),
 	}
 }
@@ -22,7 +22,7 @@ func AddProposalRESTHandler(clientCtx client.Context) govrest.ProposalRESTHandle
 // RemoveProposalRESTHandler returns a ProposalRESTHandler that exposes remove managed cellar IDs REST handler with a given sub-route.
 func RemoveProposalRESTHandler(clientCtx client.Context) govrest.ProposalRESTHandler {
 	return govrest.ProposalRESTHandler{
-		SubRoute: "remove_managed_cellar_ids",
+		SubRoute: "remove_axelar_managed_cellar_ids",
 		Handler:  postRemoveProposalHandlerFn(clientCtx),
 	}
 }
@@ -30,7 +30,7 @@ func RemoveProposalRESTHandler(clientCtx client.Context) govrest.ProposalRESTHan
 // ScheduledCorkProposalRESTHandler returns a ProposalRESTHandler that exposes the scheduled cork REST handler with a given sub-route.
 func ScheduledCorkProposalRESTHandler(clientCtx client.Context) govrest.ProposalRESTHandler {
 	return govrest.ProposalRESTHandler{
-		SubRoute: "scheduled_cork",
+		SubRoute: "scheduled_axelar_cork",
 		Handler:  postScheduledCorkProposalHandlerFn(clientCtx),
 	}
 }
@@ -113,7 +113,7 @@ func postScheduledCorkProposalHandlerFn(clientCtx client.Context) http.HandlerFu
 			return
 		}
 
-		content := types.NewScheduledCorkProposal(
+		content := types.NewAxelarScheduledCorkProposal(
 			req.Title,
 			req.Description,
 			req.BlockHeight,
@@ -140,7 +140,7 @@ func postScheduledCorkProposalHandlerFn(clientCtx client.Context) http.HandlerFu
 // CommunitySpendProposalRESTHandler returns a ProposalRESTHandler that exposes the community pool spend REST handler with a given sub-route.
 func CommunitySpendProposalRESTHandler(clientCtx client.Context) govrest.ProposalRESTHandler {
 	return govrest.ProposalRESTHandler{
-		SubRoute: "community_pool_ethereum_spend",
+		SubRoute: "community_pool_evm_spend",
 		Handler:  postCommunitySpendProposalHandlerFn(clientCtx),
 	}
 }
@@ -157,7 +157,7 @@ func postCommunitySpendProposalHandlerFn(clientCtx client.Context) http.HandlerF
 			return
 		}
 
-		content := types.NewCommunitySpendProposal(req.Title, req.Description, req.Recipient, req.ChainID, req.ChainName, req.Amount)
+		content := types.NewAxelarCommunitySpendProposal(req.Title, req.Description, req.Recipient, req.ChainID, req.ChainName, req.Amount)
 
 		msg, err := govtypes.NewMsgSubmitProposal(content, req.Deposit, req.Proposer)
 		if rest.CheckBadRequestError(w, err) {

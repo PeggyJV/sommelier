@@ -3,8 +3,8 @@ package types
 import (
 	"errors"
 	"fmt"
-
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/ethereum/go-ethereum/common"
 
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
 )
@@ -137,6 +137,10 @@ func validateExecutorAccount(i interface{}) error {
 
 	if execAcc == "" {
 		return errors.New("executor account cannot be empty")
+	}
+
+	if _, err := common.ParseHexOrString(execAcc); err != nil {
+		return err
 	}
 
 	return nil

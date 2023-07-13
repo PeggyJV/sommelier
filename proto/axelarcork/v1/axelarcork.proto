@@ -5,7 +5,7 @@ import "gogoproto/gogo.proto";
 
 option go_package = "github.com/peggyjv/sommelier/v6/x/axelarcork/types";
 
-message Cork {
+message AxelarCork {
   // call body containing the ABI encoded bytes to send to the contract
   bytes encoded_contract_call = 1;
   // the chain ID of the evm target chain
@@ -14,26 +14,26 @@ message Cork {
   string target_contract_address = 3;
 }
 
-message ScheduledCork {
-  Cork   cork         = 1;
+message ScheduledAxelarCork {
+  AxelarCork   cork         = 1;
   uint64 block_height = 2;
   string validator    = 3;
   bytes  id           = 4;
 }
 
-message ScheduledCorks {
-  repeated ScheduledCork scheduled_corks = 1;
+message ScheduledAxelarCorks {
+  repeated ScheduledAxelarCork scheduled_corks = 1;
 }
 
-message CorkResult {
-  Cork   cork                = 1;
+message AxelarCorkResult {
+  AxelarCork   cork                = 1;
   uint64 block_height        = 2;
   bool   approved            = 3;
   string approval_percentage = 4;
 }
 
-message CorkResults {
-  repeated CorkResult cork_results = 1;
+message AxelarCorkResults {
+  repeated AxelarCorkResult cork_results = 1;
 }
 
 message CellarIDSet {

@@ -2,7 +2,7 @@ syntax = "proto3";
 package axelarcork.v1;
 
 import "cosmos/base/v1beta1/coin.proto";
-import "axelarcork/v1/cork.proto";
+import "axelarcork/v1/axelarcork.proto";
 import "gogoproto/gogo.proto";
 
 option go_package = "github.com/peggyjv/sommelier/v6/x/axelarcork/types";
@@ -17,7 +17,7 @@ service Msg {
 // MsgScheduleCorkRequest - sdk.Msg for scheduling a cork request for on or after a specific block height
 message MsgScheduleAxelarCorkRequest {
   // the scheduled cork
-  Cork cork = 1;
+  AxelarCork cork = 1;
   // the chain name
   string chain_name = 2;
   // the chain id
