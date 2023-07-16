@@ -13,7 +13,7 @@ import (
 // GetQueryCmd returns the cli query commands for this module
 func GetQueryCmd() *cobra.Command {
 	corkQueryCmd := &cobra.Command{
-		Use:                        "axelar-cork",
+		Use:                        "axelarcork",
 		Short:                      "Querying commands for the axelar cork module",
 		DisableFlagParsing:         true,
 		SuggestionsMinimumDistance: 2,

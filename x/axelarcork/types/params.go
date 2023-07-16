@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	host "github.com/cosmos/ibc-go/v3/modules/core/24-host"
 	"github.com/ethereum/go-ethereum/common"
 
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
@@ -92,8 +93,8 @@ func validateIBCChannel(i interface{}) error {
 		return fmt.Errorf("invalid parameter type: %T", i)
 	}
 
-	if ibcChannel == "" {
-		return errors.New("ibc channel cannot be empty")
+	if err := host.ChannelIdentifierValidator(ibcChannel); err != nil {
+		return err
 	}
 
 	return nil
@@ -105,8 +106,8 @@ func validateIBCPort(i interface{}) error {
 		return fmt.Errorf("invalid parameter type: %T", i)
 	}
 
-	if ibcPort == "" {
-		return errors.New("ibc port cannot be empty")
+	if err := host.PortIdentifierValidator(ibcPort); err != nil {
+		return err
 	}
 
 	return nil

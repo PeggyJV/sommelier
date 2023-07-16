@@ -24,13 +24,14 @@ func (k Keeper) SendPacket(ctx sdk.Context, chanCap *capabilitytypes.Capability,
 }
 
 func (k Keeper) ValidateAxelarCorkPacket(ctx sdk.Context, packet ibcexported.PacketI) error {
-	if !k.GetParamSet(ctx).Enabled {
+	params := k.GetParamSet(ctx)
+	if !params.Enabled {
 		return nil
 	}
 
 	// check if this is a call to axelar, exit early if this isn't axelar
 	channelID := packet.GetDestChannel()
-	if channelID != k.GetParamSet(ctx).IbcChannel {
+	if channelID != params.IbcChannel {
 		return nil
 	}
 
@@ -42,7 +43,7 @@ func (k Keeper) ValidateAxelarCorkPacket(ctx sdk.Context, packet ibcexported.Pac
 	}
 
 	// if we are not sending to the axelar gmp management account, we can skip
-	if packetData.Receiver != k.GetParamSet(ctx).GmpAccount {
+	if packetData.Receiver != params.GmpAccount {
 		return nil
 	}
 

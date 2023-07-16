@@ -16,7 +16,7 @@ var (
 	testDenom  = "usomm"
 	testAmount = "100"
 
-	testSourcePort         = "somm"
+	testSourcePort         = "sommelier"
 	testSourceChannel      = "channel-1"
 	testDestinationPort    = "axelar"
 	testDestinationChannel = "channel-2"
@@ -131,6 +131,8 @@ func TestSendPacket_EmptyPayload(t *testing.T) {
 	}
 	packet := transferPacket(t, tests.TestGMPAccount.String(), acBody)
 
-	// expect error for non-existent
-	require.Error(t, acMiddleware.SendPacket(ctx, nil, packet))
+	setup.
+
+		// expect error for non-existent
+		require.Error(t, acMiddleware.SendPacket(ctx, nil, packet))
 }
