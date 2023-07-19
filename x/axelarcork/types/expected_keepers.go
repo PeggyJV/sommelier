@@ -4,6 +4,7 @@ package types
 
 import (
 	"context"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	capabilitytypes "github.com/cosmos/cosmos-sdk/x/capability/types"
 	distributiontypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
