@@ -35,6 +35,7 @@ type KeeperTestSuite struct {
 	transferKeeper     *mocks.MockTransferKeeper
 	distributionKeeper *mocks.MockDistributionKeeper
 	ics4wrapper        *mocks.MockICS4Wrapper
+	gravityKeeper      *mocks.MockGravityKeeper
 
 	validator *mocks.MockValidatorI
 
@@ -80,6 +81,7 @@ func (suite *KeeperTestSuite) SetupTest() {
 		suite.transferKeeper,
 		suite.distributionKeeper,
 		suite.ics4wrapper,
+		suite.gravityKeeper,
 	)
 
 	//types.RegisterInterfaces(encCfg.InterfaceRegistry)

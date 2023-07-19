@@ -1,6 +1,6 @@
 package types
 
-//go:generate  mockgen -destination=../keeper/mock_keepers.go -package=keeper github.com/peggyjv/sommelier/x/cork/types StakingKeeper, GravityKeeper
+//go:generate mockgen --source=x/axelarcork/types/expected_keepers.go --destination=x/axelarcork/tests/mocks/expected_keepers_mocks.go --package=mocks
 
 import (
 	"context"
