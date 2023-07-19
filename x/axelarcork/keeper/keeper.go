@@ -20,6 +20,7 @@ type Keeper struct {
 	stakingKeeper      types.StakingKeeper
 	transferKeeper     types.TransferKeeper
 	distributionKeeper types.DistributionKeeper
+	gravityKeeper      types.GravityKeeper
 
 	ics4Wrapper types.ICS4Wrapper
 }
@@ -29,6 +30,7 @@ func NewKeeper(
 	cdc codec.BinaryCodec, key sdk.StoreKey, paramSpace paramtypes.Subspace,
 	stakingKeeper types.StakingKeeper, transferKeeper types.TransferKeeper,
 	distributionKeeper types.DistributionKeeper, wrapper types.ICS4Wrapper,
+	gravityKeeper types.GravityKeeper,
 ) Keeper {
 	// set KeyTable if it has not already been set
 	if !paramSpace.HasKeyTable() {
@@ -42,6 +44,7 @@ func NewKeeper(
 		stakingKeeper:      stakingKeeper,
 		transferKeeper:     transferKeeper,
 		distributionKeeper: distributionKeeper,
+		gravityKeeper:      gravityKeeper,
 
 		ics4Wrapper: wrapper,
 	}

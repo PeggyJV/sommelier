@@ -395,6 +395,7 @@ func NewSommelierApp(
 		app.TransferKeeper,
 		app.DistrKeeper,
 		app.IBCKeeper.ChannelKeeper,
+		app.GravityKeeper,
 	)
 	transferModule := ibctransfer.NewAppModule(app.TransferKeeper)
 	transferIBCModule := ibctransfer.NewIBCModule(app.TransferKeeper)

@@ -5,6 +5,7 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"strconv"
 	"time"
 
@@ -26,11 +27,10 @@ func (k Keeper) ScheduleCork(c context.Context, msg *types.MsgScheduleAxelarCork
 	}
 
 	signer := msg.MustGetSigner()
-	validator := k.stakingKeeper.Validator(ctx, sdk.ValAddress(signer))
-	if validator != nil {
-		return nil, fmt.Errorf("validator not found for acc addr %s", signer)
+	validatorAddr := k.gravityKeeper.GetOrchestratorValidatorAddress(ctx, signer)
+	if validatorAddr == nil {
+		return nil, sdkerrors.Wrapf(sdkerrors.ErrUnauthorized, "signer %s is not a delegate", signer.String())
 	}
-	validatorAddr := sdk.ValAddress(signer)
 
 	config, ok := k.GetChainConfigurationByID(ctx, msg.ChainId)
 	if !ok {

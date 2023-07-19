@@ -4,7 +4,6 @@ package types
 
 import (
 	"context"
-
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	capabilitytypes "github.com/cosmos/cosmos-sdk/x/capability/types"
 	distributiontypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
@@ -48,4 +47,9 @@ type TransferKeeper interface {
 type DistributionKeeper interface {
 	GetFeePool(ctx sdk.Context) (feePool distributiontypes.FeePool)
 	SetFeePool(ctx sdk.Context, feePool distributiontypes.FeePool)
+}
+
+// GravityKeeper defines the expected gravity keeper methods
+type GravityKeeper interface {
+	GetOrchestratorValidatorAddress(ctx sdk.Context, orchAddr sdk.AccAddress) sdk.ValAddress
 }

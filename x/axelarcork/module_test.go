@@ -131,8 +131,6 @@ func TestSendPacket_EmptyPayload(t *testing.T) {
 	}
 	packet := transferPacket(t, tests.TestGMPAccount.String(), acBody)
 
-	setup.
-
-		// expect error for non-existent
-		require.Error(t, acMiddleware.SendPacket(ctx, nil, packet))
+	// expect error for non-existent
+	require.Error(t, acMiddleware.SendPacket(ctx, nil, packet))
 }
