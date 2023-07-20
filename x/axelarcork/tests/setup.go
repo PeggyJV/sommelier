@@ -62,8 +62,8 @@ func NewTestSetup(t *testing.T, ctl *gomock.Controller) *Setup {
 		Initializer: initializer,
 
 		Keepers: &testKeepers{
-			ParamsKeeper: &paramsKeeper,
-			RouterKeeper: acKeeper,
+			ParamsKeeper:     &paramsKeeper,
+			AxelarCorkKeeper: acKeeper,
 		},
 
 		Mocks: &testMocks{
@@ -87,8 +87,8 @@ type Setup struct {
 }
 
 type testKeepers struct {
-	ParamsKeeper *paramskeeper.Keeper
-	RouterKeeper *keeper.Keeper
+	ParamsKeeper     *paramskeeper.Keeper
+	AxelarCorkKeeper *keeper.Keeper
 }
 
 type testMocks struct {

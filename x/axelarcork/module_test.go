@@ -121,9 +121,26 @@ func TestSendPacket_EmptyPayload(t *testing.T) {
 	ctx := setup.Initializer.Ctx
 	acMiddleware := setup.AxelarCorkMiddleware
 
+	params := types.Params{
+		Enabled:         true,
+		IbcChannel:      testDestinationChannel,
+		IbcPort:         testDestinationPort,
+		GmpAccount:      tests.TestGMPAccount.String(),
+		ExecutorAccount: "abc123",
+		TimeoutDuration: 10,
+	}
+	setup.Keepers.AxelarCorkKeeper.SetParams(ctx, params)
+
+	ethChainConfig := types.ChainConfiguration{
+		Name:         "Ethereum",
+		Id:           1,
+		ProxyAddress: "test-proxy-addr",
+	}
+	setup.Keepers.AxelarCorkKeeper.SetChainConfigurationByID(ctx, 1, ethChainConfig)
+
 	// Test data
 	acBody := types.AxelarBody{
-		DestinationChain:   "sommelier",
+		DestinationChain:   "Ethereum",
 		DestinationAddress: "test-addr",
 		Payload:            nil,
 		Type:               0,
