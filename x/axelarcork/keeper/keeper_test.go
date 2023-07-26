@@ -1,6 +1,7 @@
 package keeper
 
 import (
+	"encoding/hex"
 	"testing"
 
 	"github.com/peggyjv/sommelier/v6/x/axelarcork/tests/mocks"
@@ -145,7 +146,7 @@ func (suite *KeeperTestSuite) TestSetGetDeleteScheduledCork() {
 	actualCorks = corkKeeper.GetScheduledAxelarCorksByID(ctx, TestEVMChainID, actualID)
 	require.Len(actualCorks, 1)
 	require.Equal(&expectedCork, actualCorks[0].Cork)
-	require.Equal(expectedID, actualCorks[0].Id)
+	require.Equal(hex.EncodeToString(expectedID), actualCorks[0].Id)
 
 	actualHeights := corkKeeper.GetScheduledBlockHeights(ctx, TestEVMChainID)
 	require.Equal(actualCorks[0].BlockHeight, actualHeights[0])
@@ -153,7 +154,7 @@ func (suite *KeeperTestSuite) TestSetGetDeleteScheduledCork() {
 	actualCorks = corkKeeper.GetScheduledAxelarCorksByBlockHeight(ctx, TestEVMChainID, testHeight)
 	require.Equal(&expectedCork, actualCorks[0].Cork)
 	require.Equal(testHeight, actualCorks[0].BlockHeight)
-	require.Equal(expectedID, actualCorks[0].Id)
+	require.Equal(hex.EncodeToString(expectedID), actualCorks[0].Id)
 
 	corkKeeper.DeleteScheduledAxelarCork(ctx, TestEVMChainID, testHeight, expectedID, sdk.ValAddress(val), sampleCellarAddr)
 	require.Empty(corkKeeper.GetScheduledAxelarCorks(ctx, TestEVMChainID))
