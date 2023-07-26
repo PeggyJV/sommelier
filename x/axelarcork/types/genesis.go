@@ -10,7 +10,7 @@ func DefaultGenesisState() GenesisState {
 		ChainConfigurations: ChainConfigurations{},
 		CellarIds:           []*CellarIDSet{},
 		ScheduledCorks:      []*ScheduledAxelarCorks{},
-		CorkResults:         []*AxelarCorkResults{},
+		CorkResults:         &AxelarCorkResults{},
 	}
 }
 
@@ -25,8 +25,6 @@ func (gs GenesisState) Validate() error {
 			return err
 		}
 	}
-
-	gs.ScheduledCorks
 
 	// todo (mvid): flesh out initial validation
 

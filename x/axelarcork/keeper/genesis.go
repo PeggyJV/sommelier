@@ -14,19 +14,26 @@ func InitGenesis(ctx sdk.Context, k Keeper, gs types.GenesisState) {
 	for i, config := range gs.ChainConfigurations.Configurations {
 		k.SetChainConfiguration(ctx, config.Id, *config)
 		k.SetCellarIDs(ctx, config.Id, *gs.CellarIds[i])
+	}
 
-		for _, corkResult := range gs.CorkResults[i].CorkResults {
-			k.SetAxelarCorkResult(ctx, config.Id, corkResult.Cork.IDHash(config.Id, corkResult.BlockHeight), *corkResult)
+	for _, corkResult := range gs.CorkResults.CorkResults {
+		k.SetAxelarCorkResult(
+			ctx,
+			corkResult.Cork.ChainId,
+			corkResult.Cork.IDHash(
+				corkResult.Cork.ChainId,
+				corkResult.BlockHeight),
+			*corkResult,
+		)
+	}
+
+	for _, scheduledCork := range gs.ScheduledCorks.ScheduledCorks {
+		valAddr, err := sdk.ValAddressFromHex(scheduledCork.Validator)
+		if err != nil {
+			panic(err)
 		}
 
-		for _, scheduledCork := range gs.ScheduledCorks[i].ScheduledCorks {
-			valAddr, err := sdk.ValAddressFromHex(scheduledCork.Validator)
-			if err != nil {
-				panic(err)
-			}
-
-			k.SetScheduledAxelarCork(ctx, config.Id, scheduledCork.BlockHeight, valAddr, *scheduledCork.Cork)
-		}
+		k.SetScheduledAxelarCork(ctx, scheduledCork.Cork.ChainId, scheduledCork.BlockHeight, valAddr, *scheduledCork.Cork)
 	}
 }
 
@@ -49,13 +56,8 @@ func ExportGenesis(ctx sdk.Context, k Keeper) types.GenesisState {
 		}
 		gs.CellarIds = append(gs.CellarIds, &cellarIDSet)
 
-		var scheduledCorks types.ScheduledAxelarCorks
-		scheduledCorks.ScheduledCorks = append(scheduledCorks.ScheduledCorks, k.GetScheduledAxelarCorks(ctx, config.Id)...)
-		gs.ScheduledCorks = append(gs.ScheduledCorks, &scheduledCorks)
-
-		var corkResults types.AxelarCorkResults
-		corkResults.CorkResults = append(corkResults.CorkResults, k.GetAxelarCorkResults(ctx, config.Id)...)
-		gs.CorkResults = append(gs.CorkResults, &corkResults)
+		gs.ScheduledCorks.ScheduledCorks = append(gs.ScheduledCorks.ScheduledCorks, k.GetScheduledAxelarCorks(ctx, config.Id)...)
+		gs.CorkResults.CorkResults = append(gs.CorkResults.CorkResults, k.GetAxelarCorkResults(ctx, config.Id)...)
 
 		return false
 	})
