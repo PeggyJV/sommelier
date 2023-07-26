@@ -63,7 +63,7 @@ func (k Keeper) QueryScheduledCorks(c context.Context, req *types.QueryScheduled
 			Cork:        &cork,
 			BlockHeight: blockHeight,
 			Validator:   val.String(),
-			Id:          id,
+			Id:          hex.EncodeToString(id),
 		})
 		return false
 	})

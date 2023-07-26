@@ -2,6 +2,7 @@ package keeper
 
 import (
 	"bytes"
+	"encoding/hex"
 	"reflect"
 
 	"github.com/cosmos/cosmos-sdk/codec"
@@ -150,7 +151,7 @@ func (k Keeper) GetScheduledAxelarCorks(ctx sdk.Context, chainID uint64) []*type
 			Validator:   val.String(),
 			Cork:        &cork,
 			BlockHeight: blockHeight,
-			Id:          id,
+			Id:          hex.EncodeToString(id),
 		})
 		return false
 	})
@@ -165,7 +166,7 @@ func (k Keeper) GetScheduledAxelarCorksByBlockHeight(ctx sdk.Context, chainID ui
 			Validator:   val.String(),
 			Cork:        &cork,
 			BlockHeight: blockHeight,
-			Id:          Id,
+			Id:          hex.EncodeToString(Id),
 		})
 
 		return false
@@ -182,7 +183,7 @@ func (k Keeper) GetScheduledAxelarCorksByID(ctx sdk.Context, chainID uint64, que
 				Validator:   val.String(),
 				Cork:        &cork,
 				BlockHeight: blockHeight,
-				Id:          id,
+				Id:          hex.EncodeToString(id),
 			})
 		}
 

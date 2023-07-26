@@ -39,12 +39,13 @@ func (suite *KeeperTestSuite) TestQueriesHappyPath() {
 		ChainId:               TestEVMChainID,
 	}
 	id := cork.IDHash(TestEVMChainID, testHeight)
+
 	val := sdk.ValAddress("12345678901234567890")
 	expectedScheduledCork := types.ScheduledAxelarCork{
 		Cork:        &cork,
 		BlockHeight: testHeight,
 		Validator:   "cosmosvaloper1xyerxdp4xcmnswfsxyerxdp4xcmnswfs008wpw",
-		Id:          id,
+		Id:          hex.EncodeToString(id),
 	}
 	corkKeeper.SetScheduledAxelarCork(ctx, TestEVMChainID, testHeight, val, cork)
 

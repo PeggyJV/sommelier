@@ -19,7 +19,7 @@ import (
 func GetTxCmd() *cobra.Command {
 	corkTxCmd := &cobra.Command{
 		Use:                        "axelar-cork",
-		Short:                      "Axelar AxelarCork transaction subcommands",
+		Short:                      "AxelarCork transaction subcommands",
 		DisableFlagParsing:         true,
 		SuggestionsMinimumDistance: 2,
 		RunE:                       client.ValidateCmd,
