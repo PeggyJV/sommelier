@@ -26,6 +26,8 @@ func (gs GenesisState) Validate() error {
 		}
 	}
 
+	gs.ScheduledCorks
+
 	// todo (mvid): flesh out initial validation
 
 	return nil

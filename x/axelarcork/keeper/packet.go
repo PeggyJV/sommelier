@@ -6,22 +6,11 @@ import (
 	"fmt"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	capabilitytypes "github.com/cosmos/cosmos-sdk/x/capability/types"
 	transfertypes "github.com/cosmos/ibc-go/v3/modules/apps/transfer/types"
 	ibcexported "github.com/cosmos/ibc-go/v3/modules/core/exported"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/peggyjv/sommelier/v6/x/axelarcork/types"
 )
-
-// SendPacket wraps IBC ChannelKeeper's SendPacket function
-// If the packet does not get blocked by validation, it passes to the IBC Channel keeper
-func (k Keeper) SendPacket(ctx sdk.Context, chanCap *capabilitytypes.Capability, packet ibcexported.PacketI) error {
-	if err := k.ValidateAxelarCorkPacket(ctx, packet); err != nil {
-		k.Logger(ctx).Error(fmt.Sprintf("ICS20 packet send was denied: %s", err.Error()))
-		return err
-	}
-	return k.ics4Wrapper.SendPacket(ctx, chanCap, packet)
-}
 
 func (k Keeper) ValidateAxelarCorkPacket(ctx sdk.Context, packet ibcexported.PacketI) error {
 	params := k.GetParamSet(ctx)
@@ -72,7 +61,7 @@ func (k Keeper) ValidateAxelarCorkPacket(ctx sdk.Context, packet ibcexported.Pac
 		return err
 	}
 
-	winningCork, ok := k.GetWinningCork(ctx, chainConfig.Id, common.HexToAddress(wrappedBody.Target))
+	winningCork, ok := k.GetWinningAxelarCork(ctx, chainConfig.Id, common.HexToAddress(wrappedBody.Target))
 	if !ok {
 		return fmt.Errorf("no cork expected for chain %s:%d at address %s", chainConfig.Name, chainConfig.Id, axelarBody.DestinationAddress)
 	}
@@ -82,12 +71,7 @@ func (k Keeper) ValidateAxelarCorkPacket(ctx sdk.Context, packet ibcexported.Pac
 	}
 
 	// all checks have passed, delete the cork from state
-	k.DeleteWinningCork(ctx, chainConfig.Id, winningCork)
+	k.DeleteWinningAxelarCork(ctx, chainConfig.Id, winningCork)
 
 	return nil
-}
-
-// WriteAcknowledgement wraps IBC ChannelKeeper's WriteAcknowledgement function
-func (k Keeper) WriteAcknowledgement(ctx sdk.Context, chanCap *capabilitytypes.Capability, packet ibcexported.PacketI, acknowledgement ibcexported.Acknowledgement) error {
-	return k.ics4Wrapper.WriteAcknowledgement(ctx, chanCap, packet, acknowledgement)
 }

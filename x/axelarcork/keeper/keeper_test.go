@@ -120,7 +120,7 @@ func (suite *KeeperTestSuite) TestSetGetDeleteScheduledCork() {
 	ctx, corkKeeper := suite.ctx, suite.corkKeeper
 	require := suite.Require()
 
-	corkKeeper.SetChainConfigurationByID(ctx, TestEVMChainID, types.ChainConfiguration{
+	corkKeeper.SetChainConfiguration(ctx, TestEVMChainID, types.ChainConfiguration{
 		Name:         "testevm",
 		Id:           TestEVMChainID,
 		ProxyAddress: "0x123",
@@ -132,17 +132,17 @@ func (suite *KeeperTestSuite) TestSetGetDeleteScheduledCork() {
 		EncodedContractCall:   []byte("testcall"),
 		TargetContractAddress: sampleCellarHex,
 	}
-	expectedID := expectedCork.IDHash(testHeight)
-	actualID := corkKeeper.SetScheduledCork(ctx, TestEVMChainID, testHeight, val, expectedCork)
+	expectedID := expectedCork.IDHash(TestEVMChainID, testHeight)
+	actualID := corkKeeper.SetScheduledAxelarCork(ctx, TestEVMChainID, testHeight, val, expectedCork)
 	require.Equal(expectedID, actualID)
-	actualCork, found := corkKeeper.GetScheduledCork(ctx, TestEVMChainID, testHeight, actualID, val, sampleCellarAddr)
+	actualCork, found := corkKeeper.GetScheduledAxelarCork(ctx, TestEVMChainID, testHeight, actualID, val, sampleCellarAddr)
 	require.True(found)
 	require.Equal(expectedCork, actualCork)
 
-	actualCorks := corkKeeper.GetScheduledCorks(ctx, TestEVMChainID)
+	actualCorks := corkKeeper.GetScheduledAxelarCorks(ctx, TestEVMChainID)
 	require.Equal(&expectedCork, actualCorks[0].Cork)
 
-	actualCorks = corkKeeper.GetScheduledCorksByID(ctx, TestEVMChainID, actualID)
+	actualCorks = corkKeeper.GetScheduledAxelarCorksByID(ctx, TestEVMChainID, actualID)
 	require.Len(actualCorks, 1)
 	require.Equal(&expectedCork, actualCorks[0].Cork)
 	require.Equal(expectedID, actualCorks[0].Id)
@@ -150,20 +150,20 @@ func (suite *KeeperTestSuite) TestSetGetDeleteScheduledCork() {
 	actualHeights := corkKeeper.GetScheduledBlockHeights(ctx, TestEVMChainID)
 	require.Equal(actualCorks[0].BlockHeight, actualHeights[0])
 
-	actualCorks = corkKeeper.GetScheduledCorksByBlockHeight(ctx, TestEVMChainID, testHeight)
+	actualCorks = corkKeeper.GetScheduledAxelarCorksByBlockHeight(ctx, TestEVMChainID, testHeight)
 	require.Equal(&expectedCork, actualCorks[0].Cork)
 	require.Equal(testHeight, actualCorks[0].BlockHeight)
 	require.Equal(expectedID, actualCorks[0].Id)
 
-	corkKeeper.DeleteScheduledCork(ctx, TestEVMChainID, testHeight, expectedID, sdk.ValAddress(val), sampleCellarAddr)
-	require.Empty(corkKeeper.GetScheduledCorks(ctx, TestEVMChainID))
+	corkKeeper.DeleteScheduledAxelarCork(ctx, TestEVMChainID, testHeight, expectedID, sdk.ValAddress(val), sampleCellarAddr)
+	require.Empty(corkKeeper.GetScheduledAxelarCorks(ctx, TestEVMChainID))
 }
 
 func (suite *KeeperTestSuite) TestGetWinningVotes() {
 	ctx, corkKeeper := suite.ctx, suite.corkKeeper
 	require := suite.Require()
 
-	corkKeeper.SetChainConfigurationByID(ctx, TestEVMChainID, types.ChainConfiguration{
+	corkKeeper.SetChainConfiguration(ctx, TestEVMChainID, types.ChainConfiguration{
 		Name:         "testevm",
 		Id:           TestEVMChainID,
 		ProxyAddress: "0x123",
@@ -177,15 +177,15 @@ func (suite *KeeperTestSuite) TestGetWinningVotes() {
 	_, bytes, err := bech32.DecodeAndConvert("somm1fcl08ymkl70dhyg3vmx4hjsqvxym7dawnp0zfp")
 	require.NoError(err)
 	require.Equal(20, len(bytes))
-	corkKeeper.SetScheduledCork(ctx, TestEVMChainID, testHeight, bytes, cork)
+	corkKeeper.SetScheduledAxelarCork(ctx, TestEVMChainID, testHeight, bytes, cork)
 
 	suite.stakingKeeper.EXPECT().GetLastTotalPower(ctx).Return(sdk.NewInt(100))
 	suite.stakingKeeper.EXPECT().Validator(ctx, gomock.Any()).Return(suite.validator)
 	suite.validator.EXPECT().GetConsensusPower(gomock.Any()).Return(int64(100))
 	suite.stakingKeeper.EXPECT().PowerReduction(ctx).Return(sdk.OneInt())
 
-	winningScheduledVotes := corkKeeper.GetApprovedScheduledCorks(ctx, TestEVMChainID)
-	results := corkKeeper.GetCorkResults(ctx, TestEVMChainID)
+	winningScheduledVotes := corkKeeper.GetApprovedScheduledAxelarCorks(ctx, TestEVMChainID)
+	results := corkKeeper.GetAxelarCorkResults(ctx, TestEVMChainID)
 	require.Len(winningScheduledVotes, 1)
 	require.Equal(cork, winningScheduledVotes[0])
 	require.Equal(&cork, results[0].Cork)
@@ -193,37 +193,37 @@ func (suite *KeeperTestSuite) TestGetWinningVotes() {
 	require.Equal("100.000000000000000000", results[0].ApprovalPercentage)
 
 	// scheduled cork should be deleted at the scheduled height
-	require.Empty(corkKeeper.GetScheduledCorksByBlockHeight(ctx, TestEVMChainID, testHeight))
+	require.Empty(corkKeeper.GetScheduledAxelarCorksByBlockHeight(ctx, TestEVMChainID, testHeight))
 }
 
 func (suite *KeeperTestSuite) TestCorkResults() {
 	ctx, corkKeeper := suite.ctx, suite.corkKeeper
 	require := suite.Require()
 
-	require.Empty(corkKeeper.GetCorkResults(ctx, TestEVMChainID))
+	require.Empty(corkKeeper.GetAxelarCorkResults(ctx, TestEVMChainID))
 
 	testHeight := uint64(ctx.BlockHeight())
 	cork := types.AxelarCork{
 		EncodedContractCall:   []byte("testcall"),
 		TargetContractAddress: sampleCellarHex,
 	}
-	id := cork.IDHash(testHeight)
+	id := cork.IDHash(TestEVMChainID, testHeight)
 	result := types.AxelarCorkResult{
 		Cork:               &cork,
 		BlockHeight:        testHeight,
 		Approved:           true,
 		ApprovalPercentage: "100.00",
 	}
-	corkKeeper.SetCorkResult(ctx, TestEVMChainID, id, result)
-	actualResult, found := corkKeeper.GetCorkResult(ctx, TestEVMChainID, id)
+	corkKeeper.SetAxelarCorkResult(ctx, TestEVMChainID, id, result)
+	actualResult, found := corkKeeper.GetAxelarCorkResult(ctx, TestEVMChainID, id)
 	require.True(found)
 	require.Equal(result, actualResult)
 
-	results := corkKeeper.GetCorkResults(ctx, TestEVMChainID)
+	results := corkKeeper.GetAxelarCorkResults(ctx, TestEVMChainID)
 	require.Equal(&actualResult, results[0])
 
-	corkKeeper.DeleteCorkResult(ctx, TestEVMChainID, id)
-	require.Empty(corkKeeper.GetCorkResults(ctx, TestEVMChainID))
+	corkKeeper.DeleteAxelarCorkResult(ctx, TestEVMChainID, id)
+	require.Empty(corkKeeper.GetAxelarCorkResults(ctx, TestEVMChainID))
 }
 
 func (suite *KeeperTestSuite) TestParamSet() {

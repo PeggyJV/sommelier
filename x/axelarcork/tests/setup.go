@@ -56,7 +56,7 @@ func NewTestSetup(t *testing.T, ctl *gomock.Controller) *Setup {
 	require.NoError(t, initializer.StateStore.LoadLatestVersion())
 
 	acKeeper.SetParams(initializer.Ctx, TestParams())
-	//acKeeper.SetChainConfigurationByID()
+	//acKeeper.SetChainConfiguration()
 
 	return &Setup{
 		Initializer: initializer,

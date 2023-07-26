@@ -22,7 +22,7 @@ type Keeper struct {
 	distributionKeeper types.DistributionKeeper
 	gravityKeeper      types.GravityKeeper
 
-	ics4Wrapper types.ICS4Wrapper
+	Ics4Wrapper types.ICS4Wrapper
 }
 
 // NewKeeper creates a new x/axelarcork Keeper instance
@@ -46,7 +46,7 @@ func NewKeeper(
 		distributionKeeper: distributionKeeper,
 		gravityKeeper:      gravityKeeper,
 
-		ics4Wrapper: wrapper,
+		Ics4Wrapper: wrapper,
 	}
 }
 
@@ -84,19 +84,19 @@ func (k Keeper) SetParams(ctx sdk.Context, params types.Params) {
 // Scheduled Corks //
 /////////////////////
 
-func (k Keeper) SetScheduledCork(ctx sdk.Context, chainID uint64, blockHeight uint64, val sdk.ValAddress, cork types.AxelarCork) []byte {
-	id := cork.IDHash(blockHeight)
+func (k Keeper) SetScheduledAxelarCork(ctx sdk.Context, chainID uint64, blockHeight uint64, val sdk.ValAddress, cork types.AxelarCork) []byte {
+	id := cork.IDHash(chainID, blockHeight)
 	bz := k.cdc.MustMarshal(&cork)
-	ctx.KVStore(k.storeKey).Set(types.GetScheduledCorkKey(chainID, blockHeight, id, val, common.HexToAddress(cork.TargetContractAddress)), bz)
+	ctx.KVStore(k.storeKey).Set(types.GetScheduledAxelarCorkKey(chainID, blockHeight, id, val, common.HexToAddress(cork.TargetContractAddress)), bz)
 	return id
 }
 
-// GetScheduledCork gets the scheduled cork for a given validator
+// GetScheduledAxelarCork gets the scheduled cork for a given validator
 // CONTRACT: must provide the validator address here not the delegate address
-func (k Keeper) GetScheduledCork(ctx sdk.Context, chainID uint64, blockHeight uint64, id []byte, val sdk.ValAddress, contract common.Address) (types.AxelarCork, bool) {
+func (k Keeper) GetScheduledAxelarCork(ctx sdk.Context, chainID uint64, blockHeight uint64, id []byte, val sdk.ValAddress, contract common.Address) (types.AxelarCork, bool) {
 	store := ctx.KVStore(k.storeKey)
 
-	bz := store.Get(types.GetScheduledCorkKey(chainID, blockHeight, id, val, contract))
+	bz := store.Get(types.GetScheduledAxelarCorkKey(chainID, blockHeight, id, val, contract))
 	if len(bz) == 0 {
 		return types.AxelarCork{}, false
 	}
@@ -106,22 +106,22 @@ func (k Keeper) GetScheduledCork(ctx sdk.Context, chainID uint64, blockHeight ui
 	return cork, true
 }
 
-// DeleteScheduledCork deletes the scheduled cork for a given validator
+// DeleteScheduledAxelarCork deletes the scheduled cork for a given validator
 // CONTRACT: must provide the validator address here not the delegate address
-func (k Keeper) DeleteScheduledCork(ctx sdk.Context, chainID uint64, blockHeight uint64, id []byte, val sdk.ValAddress, contract common.Address) {
-	ctx.KVStore(k.storeKey).Delete(types.GetScheduledCorkKey(chainID, blockHeight, id, val, contract))
+func (k Keeper) DeleteScheduledAxelarCork(ctx sdk.Context, chainID uint64, blockHeight uint64, id []byte, val sdk.ValAddress, contract common.Address) {
+	ctx.KVStore(k.storeKey).Delete(types.GetScheduledAxelarCorkKey(chainID, blockHeight, id, val, contract))
 }
 
-// IterateScheduledCorks iterates over all scheduled corks by chain ID
-func (k Keeper) IterateScheduledCorks(ctx sdk.Context, chainID uint64, cb func(val sdk.ValAddress, blockHeight uint64, id []byte, cel common.Address, cork types.AxelarCork) (stop bool)) {
-	k.IterateScheduledCorksByPrefix(ctx, types.GetScheduledCorkKeyPrefix(chainID), cb)
+// IterateScheduledAxelarCorks iterates over all scheduled corks by chain ID
+func (k Keeper) IterateScheduledAxelarCorks(ctx sdk.Context, chainID uint64, cb func(val sdk.ValAddress, blockHeight uint64, id []byte, cel common.Address, cork types.AxelarCork) (stop bool)) {
+	k.IterateScheduledAxelarCorksByPrefix(ctx, types.GetScheduledAxelarCorkKeyPrefix(chainID), cb)
 }
 
-func (k Keeper) IterateScheduledCorksByBlockHeight(ctx sdk.Context, chainID uint64, blockHeight uint64, cb func(val sdk.ValAddress, blockHeight uint64, id []byte, cel common.Address, cork types.AxelarCork) (stop bool)) {
-	k.IterateScheduledCorksByPrefix(ctx, types.GetScheduledCorkKeyByBlockHeightPrefix(chainID, blockHeight), cb)
+func (k Keeper) IterateScheduledAxelarCorksByBlockHeight(ctx sdk.Context, chainID uint64, blockHeight uint64, cb func(val sdk.ValAddress, blockHeight uint64, id []byte, cel common.Address, cork types.AxelarCork) (stop bool)) {
+	k.IterateScheduledAxelarCorksByPrefix(ctx, types.GetScheduledAxelarCorkKeyByBlockHeightPrefix(chainID, blockHeight), cb)
 }
 
-func (k Keeper) IterateScheduledCorksByPrefix(ctx sdk.Context, prefix []byte, cb func(val sdk.ValAddress, blockHeight uint64, id []byte, cel common.Address, cork types.AxelarCork) (stop bool)) {
+func (k Keeper) IterateScheduledAxelarCorksByPrefix(ctx sdk.Context, prefix []byte, cb func(val sdk.ValAddress, blockHeight uint64, id []byte, cel common.Address, cork types.AxelarCork) (stop bool)) {
 	store := ctx.KVStore(k.storeKey)
 	iter := sdk.KVStorePrefixIterator(store, prefix)
 	defer iter.Close()
@@ -143,9 +143,9 @@ func (k Keeper) IterateScheduledCorksByPrefix(ctx sdk.Context, prefix []byte, cb
 	}
 }
 
-func (k Keeper) GetScheduledCorks(ctx sdk.Context, chainID uint64) []*types.ScheduledAxelarCork {
+func (k Keeper) GetScheduledAxelarCorks(ctx sdk.Context, chainID uint64) []*types.ScheduledAxelarCork {
 	var scheduledCorks []*types.ScheduledAxelarCork
-	k.IterateScheduledCorks(ctx, chainID, func(val sdk.ValAddress, blockHeight uint64, id []byte, _ common.Address, cork types.AxelarCork) (stop bool) {
+	k.IterateScheduledAxelarCorks(ctx, chainID, func(val sdk.ValAddress, blockHeight uint64, id []byte, _ common.Address, cork types.AxelarCork) (stop bool) {
 		scheduledCorks = append(scheduledCorks, &types.ScheduledAxelarCork{
 			Validator:   val.String(),
 			Cork:        &cork,
@@ -158,9 +158,9 @@ func (k Keeper) GetScheduledCorks(ctx sdk.Context, chainID uint64) []*types.Sche
 	return scheduledCorks
 }
 
-func (k Keeper) GetScheduledCorksByBlockHeight(ctx sdk.Context, chainID uint64, height uint64) []*types.ScheduledAxelarCork {
+func (k Keeper) GetScheduledAxelarCorksByBlockHeight(ctx sdk.Context, chainID uint64, height uint64) []*types.ScheduledAxelarCork {
 	var scheduledCorks []*types.ScheduledAxelarCork
-	k.IterateScheduledCorksByBlockHeight(ctx, chainID, height, func(val sdk.ValAddress, blockHeight uint64, Id []byte, _ common.Address, cork types.AxelarCork) (stop bool) {
+	k.IterateScheduledAxelarCorksByBlockHeight(ctx, chainID, height, func(val sdk.ValAddress, blockHeight uint64, Id []byte, _ common.Address, cork types.AxelarCork) (stop bool) {
 		scheduledCorks = append(scheduledCorks, &types.ScheduledAxelarCork{
 			Validator:   val.String(),
 			Cork:        &cork,
@@ -174,9 +174,9 @@ func (k Keeper) GetScheduledCorksByBlockHeight(ctx sdk.Context, chainID uint64, 
 	return scheduledCorks
 }
 
-func (k Keeper) GetScheduledCorksByID(ctx sdk.Context, chainID uint64, queriedID []byte) []*types.ScheduledAxelarCork {
+func (k Keeper) GetScheduledAxelarCorksByID(ctx sdk.Context, chainID uint64, queriedID []byte) []*types.ScheduledAxelarCork {
 	var scheduledCorks []*types.ScheduledAxelarCork
-	k.IterateScheduledCorks(ctx, chainID, func(val sdk.ValAddress, blockHeight uint64, id []byte, _ common.Address, cork types.AxelarCork) (stop bool) {
+	k.IterateScheduledAxelarCorks(ctx, chainID, func(val sdk.ValAddress, blockHeight uint64, id []byte, _ common.Address, cork types.AxelarCork) (stop bool) {
 		if bytes.Equal(id, queriedID) {
 			scheduledCorks = append(scheduledCorks, &types.ScheduledAxelarCork{
 				Validator:   val.String(),
@@ -196,15 +196,15 @@ func (k Keeper) GetScheduledCorksByID(ctx sdk.Context, chainID uint64, queriedID
 // WinningCork //
 /////////////////
 
-func (k Keeper) SetWinningCork(ctx sdk.Context, chainID uint64, cork types.AxelarCork) {
+func (k Keeper) SetWinningAxelarCork(ctx sdk.Context, chainID uint64, cork types.AxelarCork) {
 	bz := k.cdc.MustMarshal(&cork)
-	ctx.KVStore(k.storeKey).Set(types.GetWinningCorkKey(chainID, common.HexToAddress(cork.TargetContractAddress)), bz)
+	ctx.KVStore(k.storeKey).Set(types.GetWinningAxelarCorkKey(chainID, common.HexToAddress(cork.TargetContractAddress)), bz)
 }
 
-func (k Keeper) GetWinningCork(ctx sdk.Context, chainID uint64, contract common.Address) (types.AxelarCork, bool) {
+func (k Keeper) GetWinningAxelarCork(ctx sdk.Context, chainID uint64, contract common.Address) (types.AxelarCork, bool) {
 	store := ctx.KVStore(k.storeKey)
 
-	bz := store.Get(types.GetWinningCorkKey(chainID, contract))
+	bz := store.Get(types.GetWinningAxelarCorkKey(chainID, contract))
 	if len(bz) == 0 {
 		return types.AxelarCork{}, false
 	}
@@ -214,8 +214,8 @@ func (k Keeper) GetWinningCork(ctx sdk.Context, chainID uint64, contract common.
 	return cork, true
 }
 
-func (k Keeper) DeleteWinningCork(ctx sdk.Context, chainID uint64, cork types.AxelarCork) {
-	ctx.KVStore(k.storeKey).Delete(types.GetWinningCorkKey(chainID, common.HexToAddress(cork.TargetContractAddress)))
+func (k Keeper) DeleteWinningAxelarCork(ctx sdk.Context, chainID uint64, cork types.AxelarCork) {
+	ctx.KVStore(k.storeKey).Delete(types.GetWinningAxelarCorkKey(chainID, common.HexToAddress(cork.TargetContractAddress)))
 }
 
 ///////////////////////////
@@ -226,7 +226,7 @@ func (k Keeper) GetScheduledBlockHeights(ctx sdk.Context, chainID uint64) []uint
 	var heights []uint64
 
 	latestHeight := uint64(0)
-	k.IterateScheduledCorks(ctx, chainID, func(_ sdk.ValAddress, blockHeight uint64, _ []byte, _ common.Address, _ types.AxelarCork) (stop bool) {
+	k.IterateScheduledAxelarCorks(ctx, chainID, func(_ sdk.ValAddress, blockHeight uint64, _ []byte, _ common.Address, _ types.AxelarCork) (stop bool) {
 		if blockHeight > latestHeight {
 			heights = append(heights, blockHeight)
 		}
@@ -241,14 +241,14 @@ func (k Keeper) GetScheduledBlockHeights(ctx sdk.Context, chainID uint64) []uint
 // AxelarCork Results //
 //////////////////
 
-func (k Keeper) SetCorkResult(ctx sdk.Context, chainID uint64, id []byte, corkResult types.AxelarCorkResult) {
+func (k Keeper) SetAxelarCorkResult(ctx sdk.Context, chainID uint64, id []byte, corkResult types.AxelarCorkResult) {
 	bz := k.cdc.MustMarshal(&corkResult)
-	ctx.KVStore(k.storeKey).Set(types.GetCorkResultKey(chainID, id), bz)
+	ctx.KVStore(k.storeKey).Set(types.GetAxelarCorkResultKey(chainID, id), bz)
 }
 
-func (k Keeper) GetCorkResult(ctx sdk.Context, chainID uint64, id []byte) (types.AxelarCorkResult, bool) {
+func (k Keeper) GetAxelarCorkResult(ctx sdk.Context, chainID uint64, id []byte) (types.AxelarCorkResult, bool) {
 	store := ctx.KVStore(k.storeKey)
-	bz := store.Get(types.GetCorkResultKey(chainID, id))
+	bz := store.Get(types.GetAxelarCorkResultKey(chainID, id))
 	if len(bz) == 0 {
 		return types.AxelarCorkResult{}, false
 	}
@@ -258,14 +258,14 @@ func (k Keeper) GetCorkResult(ctx sdk.Context, chainID uint64, id []byte) (types
 	return corkResult, true
 }
 
-func (k Keeper) DeleteCorkResult(ctx sdk.Context, chainID uint64, id []byte) {
-	ctx.KVStore(k.storeKey).Delete(types.GetCorkResultKey(chainID, id))
+func (k Keeper) DeleteAxelarCorkResult(ctx sdk.Context, chainID uint64, id []byte) {
+	ctx.KVStore(k.storeKey).Delete(types.GetAxelarCorkResultKey(chainID, id))
 }
 
 // IterateCorksResult iterates over all cork results by chain ID
-func (k Keeper) IterateCorkResults(ctx sdk.Context, chainID uint64, cb func(id []byte, blockHeight uint64, approved bool, approvalPercentage string, corkResult types.AxelarCorkResult) (stop bool)) {
+func (k Keeper) IterateAxelarCorkResults(ctx sdk.Context, chainID uint64, cb func(id []byte, blockHeight uint64, approved bool, approvalPercentage string, corkResult types.AxelarCorkResult) (stop bool)) {
 	store := ctx.KVStore(k.storeKey)
-	iter := sdk.KVStorePrefixIterator(store, types.GetCorkResultPrefix(chainID))
+	iter := sdk.KVStorePrefixIterator(store, types.GetAxelarCorkResultPrefix(chainID))
 	defer iter.Close()
 
 	for ; iter.Valid(); iter.Next() {
@@ -281,10 +281,10 @@ func (k Keeper) IterateCorkResults(ctx sdk.Context, chainID uint64, cb func(id [
 	}
 }
 
-// GetCorkResults returns AxelarCorkResults
-func (k Keeper) GetCorkResults(ctx sdk.Context, chainID uint64) []*types.AxelarCorkResult {
+// GetAxelarCorkResults returns AxelarCorkResults
+func (k Keeper) GetAxelarCorkResults(ctx sdk.Context, chainID uint64) []*types.AxelarCorkResult {
 	var corkResults []*types.AxelarCorkResult
-	k.IterateCorkResults(ctx, chainID, func(id []byte, blockHeight uint64, approved bool, approvalPercentage string, corkResult types.AxelarCorkResult) (stop bool) {
+	k.IterateAxelarCorkResults(ctx, chainID, func(id []byte, blockHeight uint64, approved bool, approvalPercentage string, corkResult types.AxelarCorkResult) (stop bool) {
 		corkResults = append(corkResults, &corkResult)
 		return false
 	})
@@ -296,12 +296,12 @@ func (k Keeper) GetCorkResults(ctx sdk.Context, chainID uint64) []*types.AxelarC
 // Votes //
 ///////////
 
-func (k Keeper) GetApprovedScheduledCorks(ctx sdk.Context, chainID uint64) (approvedCorks []types.AxelarCork) {
+func (k Keeper) GetApprovedScheduledAxelarCorks(ctx sdk.Context, chainID uint64) (approvedCorks []types.AxelarCork) {
 	currentBlockHeight := uint64(ctx.BlockHeight())
 	totalPower := k.stakingKeeper.GetLastTotalPower(ctx)
 	corks := []types.AxelarCork{}
 	powers := []uint64{}
-	k.IterateScheduledCorksByBlockHeight(ctx, chainID, currentBlockHeight, func(val sdk.ValAddress, _ uint64, id []byte, addr common.Address, cork types.AxelarCork) (stop bool) {
+	k.IterateScheduledAxelarCorksByBlockHeight(ctx, chainID, currentBlockHeight, func(val sdk.ValAddress, _ uint64, id []byte, addr common.Address, cork types.AxelarCork) (stop bool) {
 		validator := k.stakingKeeper.Validator(ctx, val)
 		validatorPower := uint64(validator.GetConsensusPower(k.stakingKeeper.PowerReduction(ctx)))
 		found := false
@@ -319,7 +319,7 @@ func (k Keeper) GetApprovedScheduledCorks(ctx sdk.Context, chainID uint64) (appr
 			powers = append(powers, validatorPower)
 		}
 
-		k.DeleteScheduledCork(ctx, chainID, currentBlockHeight, id, val, addr)
+		k.DeleteScheduledAxelarCork(ctx, chainID, currentBlockHeight, id, val, addr)
 
 		return false
 	})
@@ -335,9 +335,9 @@ func (k Keeper) GetApprovedScheduledCorks(ctx sdk.Context, chainID uint64) (appr
 			Approved:           quorumReached,
 			ApprovalPercentage: approvalPercentage.Mul(sdk.NewDec(100)).String(),
 		}
-		corkID := cork.IDHash(currentBlockHeight)
+		corkID := cork.IDHash(chainID, currentBlockHeight)
 
-		k.SetCorkResult(ctx, chainID, corkID, corkResult)
+		k.SetAxelarCorkResult(ctx, chainID, corkID, corkResult)
 
 		if quorumReached {
 			approvedCorks = append(approvedCorks, cork)

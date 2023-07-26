@@ -136,7 +136,7 @@ func TestSendPacket_EmptyPayload(t *testing.T) {
 		Id:           1,
 		ProxyAddress: "test-proxy-addr",
 	}
-	setup.Keepers.AxelarCorkKeeper.SetChainConfigurationByID(ctx, 1, ethChainConfig)
+	setup.Keepers.AxelarCorkKeeper.SetChainConfiguration(ctx, 1, ethChainConfig)
 
 	// Test data
 	acBody := types.AxelarBody{

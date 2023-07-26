@@ -26,7 +26,7 @@ func (suite *KeeperTestSuite) TestQueriesHappyPath() {
 	}
 	corkKeeper.SetParams(ctx, params)
 
-	corkKeeper.SetChainConfigurationByID(ctx, TestEVMChainID, types.ChainConfiguration{
+	corkKeeper.SetChainConfiguration(ctx, TestEVMChainID, types.ChainConfiguration{
 		Name:         "testevm",
 		Id:           TestEVMChainID,
 		ProxyAddress: "0x123",
@@ -38,7 +38,7 @@ func (suite *KeeperTestSuite) TestQueriesHappyPath() {
 		TargetContractAddress: sampleCellarHex,
 		ChainId:               TestEVMChainID,
 	}
-	id := cork.IDHash(testHeight)
+	id := cork.IDHash(TestEVMChainID, testHeight)
 	val := sdk.ValAddress("12345678901234567890")
 	expectedScheduledCork := types.ScheduledAxelarCork{
 		Cork:        &cork,
@@ -46,7 +46,7 @@ func (suite *KeeperTestSuite) TestQueriesHappyPath() {
 		Validator:   "cosmosvaloper1xyerxdp4xcmnswfsxyerxdp4xcmnswfs008wpw",
 		Id:          id,
 	}
-	corkKeeper.SetScheduledCork(ctx, TestEVMChainID, testHeight, val, cork)
+	corkKeeper.SetScheduledAxelarCork(ctx, TestEVMChainID, testHeight, val, cork)
 
 	corkResult := types.AxelarCorkResult{
 		Cork:               &cork,
@@ -54,7 +54,7 @@ func (suite *KeeperTestSuite) TestQueriesHappyPath() {
 		Approved:           true,
 		ApprovalPercentage: "100.00",
 	}
-	corkKeeper.SetCorkResult(ctx, TestEVMChainID, id, corkResult)
+	corkKeeper.SetAxelarCorkResult(ctx, TestEVMChainID, id, corkResult)
 
 	corkKeeper.SetCellarIDs(ctx, TestEVMChainID, types.CellarIDSet{Ids: []string{"0x0000000000000000000000000000000000000000", "0x1111111111111111111111111111111111111111"}})
 

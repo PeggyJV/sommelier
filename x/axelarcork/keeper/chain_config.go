@@ -16,7 +16,7 @@ func (k Keeper) GetChainConfigurationByID(ctx sdk.Context, chainID uint64) (type
 	return chainConfig, true
 }
 
-func (k Keeper) SetChainConfigurationByID(ctx sdk.Context, chainID uint64, config types.ChainConfiguration) {
+func (k Keeper) SetChainConfiguration(ctx sdk.Context, chainID uint64, config types.ChainConfiguration) {
 	bz := k.cdc.MustMarshal(&config)
 	ctx.KVStore(k.storeKey).Set(types.ChainConfigurationKey(chainID), bz)
 }

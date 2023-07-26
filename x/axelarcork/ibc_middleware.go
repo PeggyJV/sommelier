@@ -1,6 +1,7 @@
 package axelarcork
 
 import (
+	"fmt"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	capabilitytypes "github.com/cosmos/cosmos-sdk/x/capability/types"
 	"github.com/cosmos/ibc-go/v3/modules/core/04-channel/types"
@@ -60,14 +61,13 @@ func (im IBCMiddleware) OnTimeoutPacket(ctx sdk.Context, packet types.Packet, re
 }
 
 func (im IBCMiddleware) SendPacket(ctx sdk.Context, chanCap *capabilitytypes.Capability, packet exported.PacketI) error {
-	return im.keeper.SendPacket(ctx, chanCap, packet)
+	if err := im.keeper.ValidateAxelarCorkPacket(ctx, packet); err != nil {
+		im.keeper.Logger(ctx).Error(fmt.Sprintf("ICS20 packet send was denied: %s", err.Error()))
+		return err
+	}
+	return im.keeper.Ics4Wrapper.SendPacket(ctx, chanCap, packet)
 }
 
 func (im IBCMiddleware) WriteAcknowledgement(ctx sdk.Context, chanCap *capabilitytypes.Capability, packet exported.PacketI, ack exported.Acknowledgement) error {
-	return im.keeper.WriteAcknowledgement(ctx, chanCap, packet, ack)
+	return im.keeper.Ics4Wrapper.WriteAcknowledgement(ctx, chanCap, packet, ack)
 }
-
-// GetAppVersion returns the application version of the underlying application
-//func (i IBCMiddleware) GetAppVersion(ctx sdk.Context, portID, channelID string) (string, bool) {
-//	return i.keeper.GetAppVersion(ctx, portID, channelID)
-//}

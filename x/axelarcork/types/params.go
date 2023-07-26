@@ -141,8 +141,8 @@ func validateExecutorAccount(i interface{}) error {
 		return errors.New("executor account cannot be empty")
 	}
 
-	if _, err := common.ParseHexOrString(execAcc); err != nil {
-		return err
+	if !common.IsHexAddress(execAcc) {
+		return errors.New("invalid executor account address")
 	}
 
 	return nil

@@ -45,11 +45,6 @@ const (
 	WinningCorkPrefix
 )
 
-// GetCorkForValidatorAddressKey returns the key for a validators vote for a given address
-func GetCorkForValidatorAddressKey(chainID uint64, val sdk.ValAddress, contract common.Address) []byte {
-	return append(GetCorkValidatorKeyPrefix(chainID, val), contract.Bytes()...)
-}
-
 // GetCorkValidatorKeyPrefix returns the key prefix for cork commits for a validator
 func GetCorkValidatorKeyPrefix(chainID uint64, val sdk.ValAddress) []byte {
 	cid := make([]byte, 8)
@@ -63,29 +58,29 @@ func MakeCellarIDsKey(chainID uint64) []byte {
 	return bytes.Join([][]byte{{CellarIDsKeyPrefix}, cid}, []byte{})
 }
 
-func GetScheduledCorkKeyPrefix(chainID uint64) []byte {
+func GetScheduledAxelarCorkKeyPrefix(chainID uint64) []byte {
 	cid := make([]byte, 8)
 	binary.BigEndian.PutUint64(cid, chainID)
 	return bytes.Join([][]byte{{ScheduledCorkKeyPrefix}, cid}, []byte{})
 }
 
-func GetScheduledCorkKeyByBlockHeightPrefix(chainID uint64, blockHeight uint64) []byte {
-	return append(GetScheduledCorkKeyPrefix(chainID), sdk.Uint64ToBigEndian(blockHeight)...)
+func GetScheduledAxelarCorkKeyByBlockHeightPrefix(chainID uint64, blockHeight uint64) []byte {
+	return append(GetScheduledAxelarCorkKeyPrefix(chainID), sdk.Uint64ToBigEndian(blockHeight)...)
 }
 
-func GetScheduledCorkKey(chainID uint64, blockHeight uint64, id []byte, val sdk.ValAddress, contract common.Address) []byte {
+func GetScheduledAxelarCorkKey(chainID uint64, blockHeight uint64, id []byte, val sdk.ValAddress, contract common.Address) []byte {
 	blockHeightBytes := sdk.Uint64ToBigEndian(blockHeight)
-	return bytes.Join([][]byte{GetScheduledCorkKeyPrefix(chainID), blockHeightBytes, id, val.Bytes(), contract.Bytes()}, []byte{})
+	return bytes.Join([][]byte{GetScheduledAxelarCorkKeyPrefix(chainID), blockHeightBytes, id, val.Bytes(), contract.Bytes()}, []byte{})
 }
 
-func GetCorkResultPrefix(chainID uint64) []byte {
+func GetAxelarCorkResultPrefix(chainID uint64) []byte {
 	cid := make([]byte, 8)
 	binary.BigEndian.PutUint64(cid, chainID)
 	return bytes.Join([][]byte{{CorkResultPrefix}, cid}, []byte{})
 }
 
-func GetCorkResultKey(chainID uint64, id []byte) []byte {
-	return append(GetCorkResultPrefix(chainID), id...)
+func GetAxelarCorkResultKey(chainID uint64, id []byte) []byte {
+	return append(GetAxelarCorkResultPrefix(chainID), id...)
 }
 
 func ChainConfigurationKey(chainID uint64) []byte {
@@ -94,7 +89,7 @@ func ChainConfigurationKey(chainID uint64) []byte {
 	return bytes.Join([][]byte{{ChainConfigurationPrefix}, cid}, []byte{})
 }
 
-func GetWinningCorkKey(chainID uint64, address common.Address) []byte {
+func GetWinningAxelarCorkKey(chainID uint64, address common.Address) []byte {
 	cid := make([]byte, 8)
 	binary.BigEndian.PutUint64(cid, chainID)
 	return bytes.Join([][]byte{{WinningCorkPrefix}, cid, address.Bytes()}, []byte{})

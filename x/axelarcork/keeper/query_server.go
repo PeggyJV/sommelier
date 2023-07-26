@@ -58,7 +58,7 @@ func (k Keeper) QueryScheduledCorks(c context.Context, req *types.QueryScheduled
 
 	response := types.QueryScheduledCorksResponse{}
 
-	k.IterateScheduledCorks(ctx, config.Id, func(val sdk.ValAddress, blockHeight uint64, id []byte, cel common.Address, cork types.AxelarCork) (stop bool) {
+	k.IterateScheduledAxelarCorks(ctx, config.Id, func(val sdk.ValAddress, blockHeight uint64, id []byte, cel common.Address, cork types.AxelarCork) (stop bool) {
 		response.Corks = append(response.Corks, &types.ScheduledAxelarCork{
 			Cork:        &cork,
 			BlockHeight: blockHeight,
@@ -98,7 +98,7 @@ func (k Keeper) QueryScheduledCorksByBlockHeight(c context.Context, req *types.Q
 	}
 
 	response := types.QueryScheduledCorksByBlockHeightResponse{}
-	response.Corks = k.GetScheduledCorksByBlockHeight(ctx, config.Id, req.BlockHeight)
+	response.Corks = k.GetScheduledAxelarCorksByBlockHeight(ctx, config.Id, req.BlockHeight)
 	return &response, nil
 }
 
@@ -119,7 +119,7 @@ func (k Keeper) QueryScheduledCorksByID(c context.Context, req *types.QuerySched
 	}
 
 	response := types.QueryScheduledCorksByIDResponse{}
-	response.Corks = k.GetScheduledCorksByID(ctx, config.Id, id)
+	response.Corks = k.GetScheduledAxelarCorksByID(ctx, config.Id, id)
 	return &response, nil
 }
 
@@ -141,7 +141,7 @@ func (k Keeper) QueryCorkResult(c context.Context, req *types.QueryCorkResultReq
 
 	response := types.QueryCorkResultResponse{}
 	var found bool
-	result, found := k.GetCorkResult(ctx, config.Id, id)
+	result, found := k.GetAxelarCorkResult(ctx, config.Id, id)
 	if !found {
 		return &types.QueryCorkResultResponse{}, status.Errorf(codes.NotFound, "No cork result found for id: %s", req.GetId())
 	}
@@ -162,7 +162,7 @@ func (k Keeper) QueryCorkResults(c context.Context, req *types.QueryCorkResultsR
 	}
 
 	response := types.QueryCorkResultsResponse{}
-	response.CorkResults = k.GetCorkResults(ctx, config.Id)
+	response.CorkResults = k.GetAxelarCorkResults(ctx, config.Id)
 	return &response, nil
 }
 

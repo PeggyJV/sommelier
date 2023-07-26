@@ -18,7 +18,7 @@ message ScheduledAxelarCork {
   AxelarCork   cork         = 1;
   uint64 block_height = 2;
   string validator    = 3;
-  bytes  id           = 4;
+  string id           = 4;
 }
 
 message ScheduledAxelarCorks {

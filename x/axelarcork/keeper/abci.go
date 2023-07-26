@@ -22,13 +22,13 @@ func (k Keeper) EndBlocker(ctx sdk.Context) {
 		k.Logger(ctx).Info("tallying scheduled cork votes",
 			"height", fmt.Sprintf("%d", ctx.BlockHeight()),
 			"chain id", config.Id)
-		winningScheduledVotes := k.GetApprovedScheduledCorks(ctx, config.Id)
+		winningScheduledVotes := k.GetApprovedScheduledAxelarCorks(ctx, config.Id)
 		if len(winningScheduledVotes) > 0 {
 			k.Logger(ctx).Info("marking all winning scheduled cork votes as relayable",
 				"winning votes", winningScheduledVotes,
 				"chain id", config.Id)
 			for _, c := range winningScheduledVotes {
-				k.SetWinningCork(ctx, config.Id, c)
+				k.SetWinningAxelarCork(ctx, config.Id, c)
 			}
 		}
 

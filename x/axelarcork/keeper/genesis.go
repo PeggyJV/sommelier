@@ -12,11 +12,11 @@ func InitGenesis(ctx sdk.Context, k Keeper, gs types.GenesisState) {
 	// Set the vote period at initialization
 
 	for i, config := range gs.ChainConfigurations.Configurations {
-		k.SetChainConfigurationByID(ctx, config.Id, *config)
+		k.SetChainConfiguration(ctx, config.Id, *config)
 		k.SetCellarIDs(ctx, config.Id, *gs.CellarIds[i])
 
 		for _, corkResult := range gs.CorkResults[i].CorkResults {
-			k.SetCorkResult(ctx, config.Id, corkResult.Cork.IDHash(corkResult.BlockHeight), *corkResult)
+			k.SetAxelarCorkResult(ctx, config.Id, corkResult.Cork.IDHash(config.Id, corkResult.BlockHeight), *corkResult)
 		}
 
 		for _, scheduledCork := range gs.ScheduledCorks[i].ScheduledCorks {
@@ -25,7 +25,7 @@ func InitGenesis(ctx sdk.Context, k Keeper, gs types.GenesisState) {
 				panic(err)
 			}
 
-			k.SetScheduledCork(ctx, config.Id, scheduledCork.BlockHeight, valAddr, *scheduledCork.Cork)
+			k.SetScheduledAxelarCork(ctx, config.Id, scheduledCork.BlockHeight, valAddr, *scheduledCork.Cork)
 		}
 	}
 }
@@ -50,11 +50,11 @@ func ExportGenesis(ctx sdk.Context, k Keeper) types.GenesisState {
 		gs.CellarIds = append(gs.CellarIds, &cellarIDSet)
 
 		var scheduledCorks types.ScheduledAxelarCorks
-		scheduledCorks.ScheduledCorks = append(scheduledCorks.ScheduledCorks, k.GetScheduledCorks(ctx, config.Id)...)
+		scheduledCorks.ScheduledCorks = append(scheduledCorks.ScheduledCorks, k.GetScheduledAxelarCorks(ctx, config.Id)...)
 		gs.ScheduledCorks = append(gs.ScheduledCorks, &scheduledCorks)
 
 		var corkResults types.AxelarCorkResults
-		corkResults.CorkResults = append(corkResults.CorkResults, k.GetCorkResults(ctx, config.Id)...)
+		corkResults.CorkResults = append(corkResults.CorkResults, k.GetAxelarCorkResults(ctx, config.Id)...)
 		gs.CorkResults = append(gs.CorkResults, &corkResults)
 
 		return false

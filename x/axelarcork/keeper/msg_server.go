@@ -46,7 +46,7 @@ func (k Keeper) ScheduleCork(c context.Context, msg *types.MsgScheduleAxelarCork
 		return nil, types.ErrSchedulingInThePast
 	}
 
-	corkID := k.SetScheduledCork(ctx, config.Id, msg.BlockHeight, validatorAddr, *msg.Cork)
+	corkID := k.SetScheduledAxelarCork(ctx, config.Id, msg.BlockHeight, validatorAddr, *msg.Cork)
 
 	if err := ctx.EventManager().EmitTypedEvent(&types.ScheduleCorkEvent{
 		Signer:      signer.String(),
@@ -75,7 +75,7 @@ func (k Keeper) RelayCork(c context.Context, msg *types.MsgRelayAxelarCorkReques
 	}
 
 	// winning cork will be deleted during the middleware pass
-	cork, ok := k.GetWinningCork(ctx, config.Id, common.HexToAddress(msg.TargetContractAddress))
+	cork, ok := k.GetWinningAxelarCork(ctx, config.Id, common.HexToAddress(msg.TargetContractAddress))
 	if !ok {
 		return nil, fmt.Errorf("no cork on chain %d found for address %s", config.Id, msg.TargetContractAddress)
 	}
