@@ -89,8 +89,14 @@ func ChainConfigurationKey(chainID uint64) []byte {
 	return bytes.Join([][]byte{{ChainConfigurationPrefix}, cid}, []byte{})
 }
 
-func GetWinningAxelarCorkKey(chainID uint64, address common.Address) []byte {
+func GetWinningAxelarCorkKeyPrefix(chainID uint64) []byte {
 	cid := make([]byte, 8)
 	binary.BigEndian.PutUint64(cid, chainID)
-	return bytes.Join([][]byte{{WinningCorkPrefix}, cid, address.Bytes()}, []byte{})
+	return bytes.Join([][]byte{{WinningCorkPrefix}, cid}, []byte{})
+}
+
+func GetWinningAxelarCorkKey(chainID uint64, blockheight uint64, address common.Address) []byte {
+	bh := make([]byte, 8)
+	binary.BigEndian.PutUint64(bh, blockheight)
+	return bytes.Join([][]byte{GetWinningAxelarCorkKeyPrefix(chainID), bh, address.Bytes()}, []byte{})
 }

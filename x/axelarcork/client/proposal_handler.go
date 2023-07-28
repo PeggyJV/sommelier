@@ -7,10 +7,10 @@ import (
 )
 
 var (
-	AddProposalHandler                        = govclient.NewProposalHandler(cli.GetCmdSubmitAddProposal, rest.AddProposalRESTHandler)
-	RemoveProposalHandler                     = govclient.NewProposalHandler(cli.GetCmdSubmitRemoveProposal, rest.RemoveProposalRESTHandler)
-	ScheduledCorkProposalHandler              = govclient.NewProposalHandler(cli.GetCmdSubmitScheduledCorkProposal, rest.ScheduledCorkProposalRESTHandler)
-	CommunityPoolEthereumSpendProposalHandler = govclient.NewProposalHandler(cli.CmdSubmitCommunityPoolEthereumSpendProposal, rest.CommunitySpendProposalRESTHandler)
+	AddProposalHandler                        = govclient.NewProposalHandler(cli.GetCmdSubmitAddCellarIDProposal, rest.AddProposalRESTHandler)
+	RemoveProposalHandler                     = govclient.NewProposalHandler(cli.GetCmdSubmitRemoveCellarIDProposal, rest.RemoveProposalRESTHandler)
+	ScheduledCorkProposalHandler              = govclient.NewProposalHandler(cli.GetCmdSubmitScheduledAxelarCorkProposal, rest.ScheduledCorkProposalRESTHandler)
+	CommunityPoolEthereumSpendProposalHandler = govclient.NewProposalHandler(cli.CmdSubmitAxelarCommunityPoolEthereumSpendProposal, rest.CommunitySpendProposalRESTHandler)
 	AddChainConfigurationHandler              = govclient.NewProposalHandler(cli.GetCmdSubmitAddChainConfigurationProposal, rest.AddChainConfigurationProposalRESTHandler)
 	RemoveChainConfigurationHandler           = govclient.NewProposalHandler(cli.GetCmdSubmitRemoveChainConfigurationProposal, rest.RemoveChainConfigurationProposalRESTHandler)
 )

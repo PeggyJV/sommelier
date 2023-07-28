@@ -61,7 +61,7 @@ func (k Keeper) ValidateAxelarCorkPacket(ctx sdk.Context, packet ibcexported.Pac
 		return err
 	}
 
-	winningCork, ok := k.GetWinningAxelarCork(ctx, chainConfig.Id, common.HexToAddress(wrappedBody.Target))
+	blockHeight, winningCork, ok := k.GetWinningAxelarCork(ctx, chainConfig.Id, common.HexToAddress(wrappedBody.Target))
 	if !ok {
 		return fmt.Errorf("no cork expected for chain %s:%d at address %s", chainConfig.Name, chainConfig.Id, axelarBody.DestinationAddress)
 	}
@@ -71,7 +71,7 @@ func (k Keeper) ValidateAxelarCorkPacket(ctx sdk.Context, packet ibcexported.Pac
 	}
 
 	// all checks have passed, delete the cork from state
-	k.DeleteWinningAxelarCork(ctx, chainConfig.Id, winningCork)
+	k.DeleteWinningAxelarCorkByBlockheight(ctx, chainConfig.Id, blockHeight, winningCork)
 
 	return nil
 }

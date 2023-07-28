@@ -2,6 +2,7 @@ package keeper
 
 import (
 	"bytes"
+	"encoding/binary"
 	"encoding/hex"
 	"reflect"
 
@@ -197,15 +198,53 @@ func (k Keeper) GetScheduledAxelarCorksByID(ctx sdk.Context, chainID uint64, que
 // WinningCork //
 /////////////////
 
-func (k Keeper) SetWinningAxelarCork(ctx sdk.Context, chainID uint64, cork types.AxelarCork) {
+func (k Keeper) SetWinningAxelarCork(ctx sdk.Context, chainID uint64, blockHeight uint64, cork types.AxelarCork) {
 	bz := k.cdc.MustMarshal(&cork)
-	ctx.KVStore(k.storeKey).Set(types.GetWinningAxelarCorkKey(chainID, common.HexToAddress(cork.TargetContractAddress)), bz)
+	ctx.KVStore(k.storeKey).Set(types.GetWinningAxelarCorkKey(chainID, blockHeight, common.HexToAddress(cork.TargetContractAddress)), bz)
 }
 
-func (k Keeper) GetWinningAxelarCork(ctx sdk.Context, chainID uint64, contract common.Address) (types.AxelarCork, bool) {
+func (k Keeper) IterateWinningAxelarCorks(ctx sdk.Context, chainID uint64, cb func(contract common.Address, blockHeight uint64, cork types.AxelarCork) (stop bool)) {
+	store := ctx.KVStore(k.storeKey)
+	iter := sdk.KVStorePrefixIterator(store, types.GetWinningAxelarCorkKeyPrefix(chainID))
+	defer iter.Close()
+
+	for ; iter.Valid(); iter.Next() {
+		var cork types.AxelarCork
+		keyPair := bytes.NewBuffer(iter.Key())
+		keyPair.Next(1) // trim prefix byte
+		keyPair.Next(8) // trim chain ID
+		blockHeight := binary.BigEndian.Uint64(keyPair.Next(8))
+		contractAddress := common.BytesToAddress(keyPair.Next(20)) // contract
+
+		k.cdc.MustUnmarshal(iter.Value(), &cork)
+		if cb(contractAddress, blockHeight, cork) {
+			break
+		}
+	}
+}
+
+func (k Keeper) GetWinningAxelarCork(ctx sdk.Context, chainID uint64, contractAddr common.Address) (uint64, types.AxelarCork, bool) {
+	var bh uint64
+	var c types.AxelarCork
+	found := false
+	k.IterateWinningAxelarCorks(ctx, chainID, func(contract common.Address, blockHeight uint64, cork types.AxelarCork) (stop bool) {
+		if contractAddr == contract {
+			bh = blockHeight
+			c = cork
+			found = true
+			return true
+		}
+
+		return false
+	})
+
+	return bh, c, found
+}
+
+func (k Keeper) GetWinningAxelarCorkByBlockheight(ctx sdk.Context, chainID uint64, blockHeight uint64, contract common.Address) (types.AxelarCork, bool) {
 	store := ctx.KVStore(k.storeKey)
 
-	bz := store.Get(types.GetWinningAxelarCorkKey(chainID, contract))
+	bz := store.Get(types.GetWinningAxelarCorkKey(chainID, blockHeight, contract))
 	if len(bz) == 0 {
 		return types.AxelarCork{}, false
 	}
@@ -215,8 +254,21 @@ func (k Keeper) GetWinningAxelarCork(ctx sdk.Context, chainID uint64, contract c
 	return cork, true
 }
 
-func (k Keeper) DeleteWinningAxelarCork(ctx sdk.Context, chainID uint64, cork types.AxelarCork) {
-	ctx.KVStore(k.storeKey).Delete(types.GetWinningAxelarCorkKey(chainID, common.HexToAddress(cork.TargetContractAddress)))
+func (k Keeper) DeleteWinningAxelarCorkByBlockheight(ctx sdk.Context, chainID uint64, blockHeight uint64, cork types.AxelarCork) {
+	ctx.KVStore(k.storeKey).Delete(types.GetWinningAxelarCorkKey(chainID, blockHeight, common.HexToAddress(cork.TargetContractAddress)))
+}
+
+func (k Keeper) DeleteWinningAxelarCork(ctx sdk.Context, chainID uint64, c types.AxelarCork) {
+
+	k.IterateWinningAxelarCorks(ctx, chainID, func(contract common.Address, blockHeight uint64, cork types.AxelarCork) (stop bool) {
+		if c.Equals(cork) {
+			k.DeleteWinningAxelarCorkByBlockheight(ctx, chainID, blockHeight, cork)
+
+			return true
+		}
+
+		return false
+	})
 }
 
 ///////////////////////////

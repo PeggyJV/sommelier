@@ -13,12 +13,13 @@ import (
 
 // Parameter keys
 var (
-	KeyEnabled         = []byte("enabled")
-	KeyIBCChannel      = []byte("ibcchannel")
-	KeyIBCPort         = []byte("ibcport")
-	KeyGMPAccount      = []byte("gmpaccount")
-	KeyExecutorAccount = []byte("executoraccount")
-	KeyTimeoutDuration = []byte("timeoutduration")
+	KeyEnabled           = []byte("enabled")
+	KeyIBCChannel        = []byte("ibcchannel")
+	KeyIBCPort           = []byte("ibcport")
+	KeyGMPAccount        = []byte("gmpaccount")
+	KeyExecutorAccount   = []byte("executoraccount")
+	KeyTimeoutDuration   = []byte("timeoutduration")
+	KeyCorkTimeoutBlocks = []byte("corktimeoutblocks")
 )
 
 var _ paramtypes.ParamSet = &Params{}
@@ -31,12 +32,13 @@ func ParamKeyTable() paramtypes.KeyTable {
 // DefaultParams returns default oracle parameters
 func DefaultParams() Params {
 	return Params{
-		Enabled:         false,
-		IbcChannel:      "",
-		IbcPort:         "",
-		GmpAccount:      "",
-		ExecutorAccount: "",
-		TimeoutDuration: 0,
+		Enabled:           false,
+		IbcChannel:        "",
+		IbcPort:           "",
+		GmpAccount:        "",
+		ExecutorAccount:   "",
+		TimeoutDuration:   0,
+		CorkTimeoutBlocks: 100,
 	}
 }
 
@@ -49,6 +51,7 @@ func (p *Params) ParamSetPairs() paramtypes.ParamSetPairs {
 		paramtypes.NewParamSetPair(KeyGMPAccount, &p.GmpAccount, validateGMPAccount),
 		paramtypes.NewParamSetPair(KeyExecutorAccount, &p.ExecutorAccount, validateExecutorAccount),
 		paramtypes.NewParamSetPair(KeyTimeoutDuration, &p.TimeoutDuration, validateTimeoutDuration),
+		paramtypes.NewParamSetPair(KeyCorkTimeoutBlocks, &p.CorkTimeoutBlocks, validateCorkTimeoutBlocks),
 	}
 }
 
@@ -72,6 +75,9 @@ func (p *Params) ValidateBasic() error {
 			return err
 		}
 		if err := validateTimeoutDuration(p.TimeoutDuration); err != nil {
+			return err
+		}
+		if err := validateCorkTimeoutBlocks(p.CorkTimeoutBlocks); err != nil {
 			return err
 		}
 	}
@@ -156,6 +162,19 @@ func validateTimeoutDuration(i interface{}) error {
 
 	if timeout == 0 {
 		return errors.New("timeout duration cannot be zero")
+	}
+
+	return nil
+}
+
+func validateCorkTimeoutBlocks(i interface{}) error {
+	timeout, ok := i.(uint64)
+	if !ok {
+		return fmt.Errorf("invalid parameter type: %T", i)
+	}
+
+	if timeout == 0 {
+		return errors.New("timeout blocks cannot be zero")
 	}
 
 	return nil

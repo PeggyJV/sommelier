@@ -75,7 +75,7 @@ func (k Keeper) RelayCork(c context.Context, msg *types.MsgRelayAxelarCorkReques
 	}
 
 	// winning cork will be deleted during the middleware pass
-	cork, ok := k.GetWinningAxelarCork(ctx, config.Id, common.HexToAddress(msg.TargetContractAddress))
+	_, cork, ok := k.GetWinningAxelarCork(ctx, config.Id, common.HexToAddress(msg.TargetContractAddress))
 	if !ok {
 		return nil, fmt.Errorf("no cork on chain %d found for address %s", config.Id, msg.TargetContractAddress)
 	}
@@ -146,4 +146,11 @@ func (k Keeper) BumpCorkGas(c context.Context, msg *types.MsgBumpAxelarCorkGasRe
 	}
 
 	return &types.MsgBumpAxelarCorkGasResponse{}, nil
+}
+
+func (k Keeper) CancelScheduledCork(c context.Context, msg *types.MsgCancelAxelarCorkRequest) (*types.MsgCancelAxelarCorkResponse, error) {
+
+	// todo: implement
+
+	return &types.MsgCancelAxelarCorkResponse{}, nil
 }

@@ -3,6 +3,8 @@ package keeper
 import (
 	"fmt"
 
+	"github.com/ethereum/go-ethereum/common"
+
 	"github.com/peggyjv/sommelier/v6/x/axelarcork/types"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -28,9 +30,25 @@ func (k Keeper) EndBlocker(ctx sdk.Context) {
 				"winning votes", winningScheduledVotes,
 				"chain id", config.Id)
 			for _, c := range winningScheduledVotes {
-				k.SetWinningAxelarCork(ctx, config.Id, c)
+				k.SetWinningAxelarCork(ctx, config.Id, uint64(ctx.BlockHeight()), c)
 			}
 		}
+
+		k.Logger(ctx).Info("removing timed out approved corks",
+			"height", fmt.Sprintf("%d", ctx.BlockHeight()),
+			"chain id", config.Id)
+
+		timeoutHeight := k.GetParamSet(ctx).CorkTimeoutBlocks + uint64(ctx.BlockHeight())
+		k.IterateWinningAxelarCorks(ctx, config.Id, func(_ common.Address, blockHeight uint64, cork types.AxelarCork) (stop bool) {
+			if blockHeight >= timeoutHeight {
+				k.Logger(ctx).Info("deleting expired approved scheduled axelar cork",
+					"scheduled height", fmt.Sprintf("%d", blockHeight),
+					"target contract address", cork.TargetContractAddress)
+
+				k.DeleteWinningAxelarCorkByBlockheight(ctx, config.Id, blockHeight, cork)
+			}
+			return false
+		})
 
 		return false
 	})

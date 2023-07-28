@@ -25,11 +25,165 @@ func GetTxCmd() *cobra.Command {
 		RunE:                       client.ValidateCmd,
 	}
 
+	corkTxCmd.AddCommand(
+		CmdScheduleAxelarCork(),
+		CmdRelayAxelarCork(),
+		CmdBumpAxelarCorkGas())
+
 	return corkTxCmd
 }
 
-// GetCmdSubmitAddProposal implements the command to submit a cellar id addition proposal
-func GetCmdSubmitAddProposal() *cobra.Command {
+//////////////
+// Commands //
+//////////////
+
+func CmdScheduleAxelarCork() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "schedule-axelar-cork [chain-id] [contract-address] [block-height] [contract-call]",
+		Args:  cobra.ExactArgs(4),
+		Short: "Schedule an Axelar cork",
+
+		RunE: func(cmd *cobra.Command, args []string) error {
+			clientCtx, err := client.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			from := clientCtx.GetFromAddress()
+
+			chainID, err := sdk.ParseUint(args[0])
+			if err != nil {
+				return err
+			}
+
+			contractAddr := args[1]
+			if !common.IsHexAddress(contractAddr) {
+				return fmt.Errorf("contract address %s is invalid", contractAddr)
+			}
+
+			blockHeight, err := sdk.ParseUint(args[2])
+			if err != nil {
+				return err
+			}
+
+			contractCallBz := []byte(args[3]) // todo: how are contract calls submitted?
+
+			scheduleCorkMsg := types.MsgScheduleAxelarCorkRequest{
+				Cork: &types.AxelarCork{
+					EncodedContractCall:   contractCallBz,
+					ChainId:               chainID.Uint64(),
+					TargetContractAddress: contractAddr,
+				},
+				ChainId:     chainID.Uint64(),
+				BlockHeight: blockHeight.Uint64(),
+				Signer:      from.String(),
+			}
+			if err := scheduleCorkMsg.ValidateBasic(); err != nil {
+				return err
+			}
+			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), &scheduleCorkMsg)
+
+		},
+	}
+
+	return cmd
+}
+
+func CmdRelayAxelarCork() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "relay-axelar-cork [chain-id] [contract-address] [token] [fee]",
+		Args:  cobra.ExactArgs(4),
+		Short: "Relay a consensus validated Axelar cork",
+
+		RunE: func(cmd *cobra.Command, args []string) error {
+			clientCtx, err := client.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			from := clientCtx.GetFromAddress()
+
+			chainID, err := sdk.ParseUint(args[0])
+			if err != nil {
+				return err
+			}
+
+			contractAddr := args[1]
+			if !common.IsHexAddress(contractAddr) {
+				return fmt.Errorf("contract address %s is invalid", contractAddr)
+			}
+
+			token, err := sdk.ParseCoinNormalized(args[2])
+			if err != nil {
+				return err
+			}
+
+			fee, err := sdk.ParseUint(args[3])
+			if err != nil {
+				return err
+			}
+
+			relayCorkMsg := types.MsgRelayAxelarCorkRequest{
+				Signer:                from.String(),
+				Token:                 token,
+				Fee:                   fee.Uint64(),
+				ChainId:               chainID.Uint64(),
+				TargetContractAddress: contractAddr,
+			}
+			if err := relayCorkMsg.ValidateBasic(); err != nil {
+				return err
+			}
+			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), &relayCorkMsg)
+
+		},
+	}
+
+	return cmd
+}
+
+func CmdBumpAxelarCorkGas() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "bump-axelar-cork [token] [message-id]",
+		Args:  cobra.ExactArgs(2),
+		Short: "Add gas for an Axelar cork that is stuck relaying",
+
+		RunE: func(cmd *cobra.Command, args []string) error {
+			clientCtx, err := client.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			from := clientCtx.GetFromAddress()
+
+			token, err := sdk.ParseCoinNormalized(args[0])
+			if err != nil {
+				return err
+			}
+
+			messageID := args[1]
+
+			bumpAxelarCorkGasMsg := types.MsgBumpAxelarCorkGasRequest{
+				Signer:    from.String(),
+				Token:     token,
+				MessageId: messageID,
+			}
+			if err := bumpAxelarCorkGasMsg.ValidateBasic(); err != nil {
+				return err
+			}
+			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), &bumpAxelarCorkGasMsg)
+
+		},
+	}
+
+	return cmd
+}
+
+///////////////
+// Proposals //
+///////////////
+
+// GetCmdSubmitAddCellarIDProposal implements the command to submit a cellar id addition proposal
+func GetCmdSubmitAddCellarIDProposal() *cobra.Command {
 
 	cmd := &cobra.Command{
 		Use:   "add-cellar-id [proposal-file]",
@@ -81,15 +235,10 @@ Where proposal.json contains:
 				}
 			}
 
-			chainID, err := GetChainInfoFromFlags(cmd)
-			if err != nil {
-				return err
-			}
-
 			content := types.NewAddManagedCellarIDsProposal(
 				proposal.Title,
 				proposal.Description,
-				chainID,
+				proposal.ChainId,
 				&types.CellarIDSet{Ids: proposal.CellarIds.Ids})
 
 			from := clientCtx.GetFromAddress()
@@ -101,14 +250,11 @@ Where proposal.json contains:
 			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), msg)
 		},
 	}
-
-	AddChainFlagsToCmd(cmd)
-
 	return cmd
 }
 
-// GetCmdSubmitRemoveProposal implements the command to submit a cellar id removal proposal
-func GetCmdSubmitRemoveProposal() *cobra.Command {
+// GetCmdSubmitRemoveCellarIDProposal implements the command to submit a cellar id removal proposal
+func GetCmdSubmitRemoveCellarIDProposal() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "remove-cellar-id [proposal-file]",
 		Args:  cobra.ExactArgs(1),
@@ -159,15 +305,10 @@ Where proposal.json contains:
 				}
 			}
 
-			chainID, err := GetChainInfoFromFlags(cmd)
-			if err != nil {
-				return err
-			}
-
 			content := types.NewRemoveManagedCellarIDsProposal(
 				proposal.Title,
 				proposal.Description,
-				chainID,
+				proposal.ChainId,
 				&types.CellarIDSet{Ids: proposal.CellarIds.Ids})
 
 			from := clientCtx.GetFromAddress()
@@ -180,15 +321,13 @@ Where proposal.json contains:
 		},
 	}
 
-	AddChainFlagsToCmd(cmd)
-
 	return cmd
 }
 
-// GetCmdSubmitScheduledCorkProposal implements the command to submit scheduled cork proposal
-func GetCmdSubmitScheduledCorkProposal() *cobra.Command {
+// GetCmdSubmitScheduledAxelarCorkProposal implements the command to submit scheduled cork proposal
+func GetCmdSubmitScheduledAxelarCorkProposal() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "schedule-cork [proposal-file]",
+		Use:   "schedule-axelar-cork [proposal-file]",
 		Args:  cobra.ExactArgs(1),
 		Short: "Submit a scheduled cork proposal",
 		Long: strings.TrimSpace(
@@ -239,13 +378,14 @@ The contract_call_proto_json field must be the JSON representation of a Schedule
 				return fmt.Errorf("%s is not a valid contract address", proposal.TargetContractAddress)
 			}
 
-			chainID, err := GetChainInfoFromFlags(cmd)
-			if err != nil {
-				return err
-			}
-
-			content := types.NewAxelarScheduledCorkProposal(proposal.Title, proposal.Description, proposal.BlockHeight,
-				chainID, proposal.TargetContractAddress, proposal.ContractCallProtoJson)
+			content := types.NewAxelarScheduledCorkProposal(
+				proposal.Title,
+				proposal.Description,
+				proposal.BlockHeight,
+				proposal.ChainId,
+				proposal.TargetContractAddress,
+				proposal.ContractCallProtoJson,
+			)
 			if err := content.ValidateBasic(); err != nil {
 				return err
 			}
@@ -260,15 +400,13 @@ The contract_call_proto_json field must be the JSON representation of a Schedule
 		},
 	}
 
-	AddChainFlagsToCmd(cmd)
-
 	return cmd
 }
 
-func CmdSubmitCommunityPoolEthereumSpendProposal() *cobra.Command {
+func CmdSubmitAxelarCommunityPoolEthereumSpendProposal() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "community-pool-spend [proposal-file]",
-		Args:  cobra.ExactArgs(1),
+		Use:   "axelar-community-pool-spend [proposal-file]",
+		Args:  cobra.ExactArgs(2),
 		Short: "Submit a community pool spend proposal",
 		Long: strings.TrimSpace(
 			fmt.Sprintf(`Submit a community pool spend proposal along with an initial deposit.
@@ -328,7 +466,13 @@ Where proposal.json contains:
 
 			from := clientCtx.GetFromAddress()
 
-			content := types.NewAxelarCommunitySpendProposal(proposal.Title, proposal.Description, proposal.Recipient, proposal.ChainId, amount)
+			content := types.NewAxelarCommunitySpendProposal(
+				proposal.Title,
+				proposal.Description,
+				proposal.Recipient,
+				proposal.ChainId,
+				amount,
+			)
 
 			msg, err := govtypes.NewMsgSubmitProposal(content, deposit, from)
 			if err != nil {

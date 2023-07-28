@@ -22,4 +22,5 @@ message Params {
   string gmp_account      = 4 [(gogoproto.moretags) = "yaml:\"gmp_account\""];
   string executor_account = 5 [(gogoproto.moretags) = "yaml:\"executor_account\""];
   uint64 timeout_duration = 6 [(gogoproto.moretags) = "yaml:\"timeout_duration\""];
+  uint64 cork_timeout_blocks = 7 [(gogoproto.moretags) = "yaml:\"cork_timeout_blocks\""];
 }

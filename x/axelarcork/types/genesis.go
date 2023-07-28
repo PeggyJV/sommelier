@@ -26,7 +26,17 @@ func (gs GenesisState) Validate() error {
 		}
 	}
 
-	// todo (mvid): flesh out initial validation
+	for _, sc := range gs.ScheduledCorks.ScheduledCorks {
+		if err := sc.Cork.ValidateBasic(); err != nil {
+			return err
+		}
+	}
+
+	for _, cr := range gs.CorkResults.CorkResults {
+		if err := cr.Cork.ValidateBasic(); err != nil {
+			return err
+		}
+	}
 
 	return nil
 }

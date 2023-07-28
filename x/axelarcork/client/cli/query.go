@@ -3,6 +3,8 @@ package cli
 import (
 	"strconv"
 
+	sdk "github.com/cosmos/cosmos-sdk/types"
+
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
@@ -61,30 +63,29 @@ func queryParams() *cobra.Command {
 	}
 
 	flags.AddQueryFlagsToCmd(cmd)
-	AddChainFlagsToCmd(cmd)
 
 	return cmd
 }
 
 func queryCellarIDs() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:     "cellar-ids",
+		Use:     "cellar-ids [chain-id]",
 		Aliases: []string{"cids"},
-		Args:    cobra.NoArgs,
+		Args:    cobra.ExactArgs(1),
 		Short:   "query managed cellar ids from the chain",
-		RunE: func(cmd *cobra.Command, _ []string) error {
+		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx, err := client.GetClientQueryContext(cmd)
 			if err != nil {
 				return err
 			}
 
-			chainID, err := GetChainInfoFromFlags(cmd)
+			chainID, err := sdk.ParseUint(args[0])
 			if err != nil {
 				return err
 			}
 
 			req := &types.QueryCellarIDsRequest{
-				ChainId: chainID,
+				ChainId: chainID.Uint64(),
 			}
 
 			queryClient := types.NewQueryClient(ctx)
@@ -99,18 +100,17 @@ func queryCellarIDs() *cobra.Command {
 	}
 
 	flags.AddQueryFlagsToCmd(cmd)
-	AddChainFlagsToCmd(cmd)
 
 	return cmd
 }
 
 func queryScheduledCorks() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:     "scheduled-corks",
+		Use:     "scheduled-corks [chain-id]",
 		Aliases: []string{"scs"},
-		Args:    cobra.NoArgs,
+		Args:    cobra.ExactArgs(1),
 		Short:   "query scheduled corks from the chain",
-		RunE: func(cmd *cobra.Command, _ []string) error {
+		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx, err := client.GetClientQueryContext(cmd)
 			if err != nil {
 				return err
@@ -118,13 +118,13 @@ func queryScheduledCorks() *cobra.Command {
 
 			queryClient := types.NewQueryClient(ctx)
 
-			chainID, err := GetChainInfoFromFlags(cmd)
+			chainID, err := sdk.ParseUint(args[0])
 			if err != nil {
 				return err
 			}
 
 			req := &types.QueryScheduledCorksRequest{
-				ChainId: chainID,
+				ChainId: chainID.Uint64(),
 			}
 
 			res, err := queryClient.QueryScheduledCorks(cmd.Context(), req)
@@ -137,14 +137,13 @@ func queryScheduledCorks() *cobra.Command {
 	}
 
 	flags.AddQueryFlagsToCmd(cmd)
-	AddChainFlagsToCmd(cmd)
 
 	return cmd
 }
 
 func queryScheduledCorksByBlockHeight() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:     "scheduled-corks-by-block-height",
+		Use:     "scheduled-corks-by-block-height [chain-id]",
 		Aliases: []string{"scbbh"},
 		Args:    cobra.ExactArgs(1),
 		Short:   "query scheduled corks from the chain by block height",
@@ -160,14 +159,14 @@ func queryScheduledCorksByBlockHeight() *cobra.Command {
 			}
 
 			queryClient := types.NewQueryClient(ctx)
-			chainID, err := GetChainInfoFromFlags(cmd)
+			chainID, err := sdk.ParseUint(args[0])
 			if err != nil {
 				return err
 			}
 
 			req := &types.QueryScheduledCorksByBlockHeightRequest{
 				BlockHeight: uint64(height),
-				ChainId:     chainID,
+				ChainId:     chainID.Uint64(),
 			}
 
 			res, err := queryClient.QueryScheduledCorksByBlockHeight(cmd.Context(), req)
@@ -180,31 +179,30 @@ func queryScheduledCorksByBlockHeight() *cobra.Command {
 	}
 
 	flags.AddQueryFlagsToCmd(cmd)
-	AddChainFlagsToCmd(cmd)
 
 	return cmd
 }
 
 func queryScheduledBlockHeights() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:     "scheduled-block-heights",
+		Use:     "scheduled-block-heights [chain-id]",
 		Aliases: []string{"scbhs"},
-		Args:    cobra.NoArgs,
+		Args:    cobra.ExactArgs(1),
 		Short:   "query scheduled cork block heights from the chain",
-		RunE: func(cmd *cobra.Command, _ []string) error {
+		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx, err := client.GetClientQueryContext(cmd)
 			if err != nil {
 				return err
 			}
 
 			queryClient := types.NewQueryClient(ctx)
-			chainID, err := GetChainInfoFromFlags(cmd)
+			chainID, err := sdk.ParseUint(args[0])
 			if err != nil {
 				return err
 			}
 
 			req := &types.QueryScheduledBlockHeightsRequest{
-				ChainId: chainID,
+				ChainId: chainID.Uint64(),
 			}
 
 			res, err := queryClient.QueryScheduledBlockHeights(cmd.Context(), req)
@@ -217,14 +215,13 @@ func queryScheduledBlockHeights() *cobra.Command {
 	}
 
 	flags.AddQueryFlagsToCmd(cmd)
-	AddChainFlagsToCmd(cmd)
 
 	return cmd
 }
 
 func queryScheduledCorksByID() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:     "scheduled-corks-by-id",
+		Use:     "scheduled-corks-by-id [chain-id]",
 		Aliases: []string{"scbi"},
 		Args:    cobra.ExactArgs(1),
 		Short:   "query scheduled corks by their cork ID",
@@ -242,14 +239,14 @@ func queryScheduledCorksByID() *cobra.Command {
 			}
 
 			queryClient := types.NewQueryClient(ctx)
-			chainID, err := GetChainInfoFromFlags(cmd)
+			chainID, err := sdk.ParseUint(args[0])
 			if err != nil {
 				return err
 			}
 
 			req := &types.QueryScheduledCorksByIDRequest{
 				Id:      id,
-				ChainId: chainID,
+				ChainId: chainID.Uint64(),
 			}
 			res, err := queryClient.QueryScheduledCorksByID(cmd.Context(), req)
 			if err != nil {
@@ -261,16 +258,15 @@ func queryScheduledCorksByID() *cobra.Command {
 	}
 
 	flags.AddQueryFlagsToCmd(cmd)
-	AddChainFlagsToCmd(cmd)
 
 	return cmd
 }
 
 func queryCorkResult() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:     "cork-result",
+		Use:     "cork-result [chain-id] [cork-id]",
 		Aliases: []string{"cr"},
-		Args:    cobra.ExactArgs(1),
+		Args:    cobra.ExactArgs(2),
 		Short:   "query cork result from the chain",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx, err := client.GetClientQueryContext(cmd)
@@ -285,14 +281,14 @@ func queryCorkResult() *cobra.Command {
 			}
 
 			queryClient := types.NewQueryClient(ctx)
-			chainID, err := GetChainInfoFromFlags(cmd)
+			chainID, err := sdk.ParseUint(args[1])
 			if err != nil {
 				return err
 			}
 
 			req := &types.QueryCorkResultRequest{
 				Id:      corkID,
-				ChainId: chainID,
+				ChainId: chainID.Uint64(),
 			}
 
 			res, err := queryClient.QueryCorkResult(cmd.Context(), req)
@@ -305,31 +301,30 @@ func queryCorkResult() *cobra.Command {
 	}
 
 	flags.AddQueryFlagsToCmd(cmd)
-	AddChainFlagsToCmd(cmd)
 
 	return cmd
 }
 
 func queryCorkResults() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:     "cork-results",
+		Use:     "cork-results [chain-id]",
 		Aliases: []string{"crs"},
-		Args:    cobra.NoArgs,
+		Args:    cobra.ExactArgs(1),
 		Short:   "query cork results from the chain",
-		RunE: func(cmd *cobra.Command, _ []string) error {
+		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx, err := client.GetClientQueryContext(cmd)
 			if err != nil {
 				return err
 			}
 
 			queryClient := types.NewQueryClient(ctx)
-			chainID, err := GetChainInfoFromFlags(cmd)
+			chainID, err := sdk.ParseUint(args[0])
 			if err != nil {
 				return err
 			}
 
 			req := &types.QueryCorkResultsRequest{
-				ChainId: chainID,
+				ChainId: chainID.Uint64(),
 			}
 
 			res, err := queryClient.QueryCorkResults(cmd.Context(), req)
@@ -342,7 +337,6 @@ func queryCorkResults() *cobra.Command {
 	}
 
 	flags.AddQueryFlagsToCmd(cmd)
-	AddChainFlagsToCmd(cmd)
 
 	return cmd
 }
@@ -372,7 +366,6 @@ func queryChainConfigurations() *cobra.Command {
 	}
 
 	flags.AddQueryFlagsToCmd(cmd)
-	AddChainFlagsToCmd(cmd)
 
 	return cmd
 }

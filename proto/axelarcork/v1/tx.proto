@@ -12,6 +12,7 @@ service Msg {
   rpc ScheduleCork(MsgScheduleAxelarCorkRequest) returns (MsgScheduleAxelarCorkResponse);
   rpc RelayCork(MsgRelayAxelarCorkRequest) returns (MsgRelayAxelarCorkResponse);
   rpc BumpCorkGas(MsgBumpAxelarCorkGasRequest) returns (MsgBumpAxelarCorkGasResponse);
+  rpc CancelScheduledCork(MsgCancelAxelarCorkRequest) returns (MsgCancelAxelarCorkResponse);
 }
 
 // MsgScheduleCorkRequest - sdk.Msg for scheduling a cork request for on or after a specific block height
@@ -48,3 +49,11 @@ message MsgBumpAxelarCorkGasRequest {
 }
 
 message MsgBumpAxelarCorkGasResponse {}
+
+message MsgCancelAxelarCorkRequest {
+  string                   signer                  = 1;
+  uint64                   chain_id                = 2;
+  string                   target_contract_address = 3;
+}
+
+message MsgCancelAxelarCorkResponse {}
