@@ -40,6 +40,7 @@ func RegisterInterfaces(registry codectypes.InterfaceRegistry) {
 		&MsgScheduleAxelarCorkRequest{},
 		&MsgRelayAxelarCorkRequest{},
 		&MsgBumpAxelarCorkGasRequest{},
+		&MsgCancelAxelarCorkRequest{},
 	)
 
 	registry.RegisterImplementations((*govtypes.Content)(nil),

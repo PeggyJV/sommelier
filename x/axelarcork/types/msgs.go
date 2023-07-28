@@ -13,9 +13,10 @@ var (
 )
 
 const (
-	TypeMsgScheduleCorkRequest = "axelar_cork_schedule"
-	TypeMsgRelayCorkRequest    = "axelar_cork_relay"
-	TypeMsgBumpCorkGasRequest  = "axelar_cork_bump_gas"
+	TypeMsgScheduleCorkRequest     = "axelar_cork_schedule"
+	TypeMsgRelayCorkRequest        = "axelar_cork_relay"
+	TypeMsgBumpCorkGasRequest      = "axelar_cork_bump_gas"
+	TypeMsgCancelAxelarCorkRequest = "axelar_cancel_cork"
 )
 
 ////////////////////////////
@@ -141,6 +142,44 @@ func (m *MsgBumpAxelarCorkGasRequest) GetSigners() []sdk.AccAddress {
 
 // MustGetSigner returns the signer address
 func (m *MsgBumpAxelarCorkGasRequest) MustGetSigner() sdk.AccAddress {
+	addr, err := sdk.AccAddressFromBech32(m.Signer)
+	if err != nil {
+		panic(err)
+	}
+	return addr
+}
+
+///////////////////////////
+// MsgCancelAxelarCorkRequest //
+///////////////////////////
+
+// Route implements sdk.Msg
+func (m *MsgCancelAxelarCorkRequest) Route() string { return ModuleName }
+
+// Type implements sdk.Msg
+func (m *MsgCancelAxelarCorkRequest) Type() string { return TypeMsgBumpCorkGasRequest }
+
+// ValidateBasic implements sdk.Msg
+func (m *MsgCancelAxelarCorkRequest) ValidateBasic() error {
+	if _, err := sdk.AccAddressFromBech32(m.Signer); err != nil {
+		return sdkerrors.Wrap(sdkerrors.ErrInvalidAddress, err.Error())
+	}
+
+	return nil
+}
+
+// GetSignBytes implements sdk.Msg
+func (m *MsgCancelAxelarCorkRequest) GetSignBytes() []byte {
+	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(m))
+}
+
+// GetSigners implements sdk.Msg
+func (m *MsgCancelAxelarCorkRequest) GetSigners() []sdk.AccAddress {
+	return []sdk.AccAddress{m.MustGetSigner()}
+}
+
+// MustGetSigner returns the signer address
+func (m *MsgCancelAxelarCorkRequest) MustGetSigner() sdk.AccAddress {
 	addr, err := sdk.AccAddressFromBech32(m.Signer)
 	if err != nil {
 		panic(err)

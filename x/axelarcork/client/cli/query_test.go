@@ -64,6 +64,7 @@ func TestQueryCorkResultCmd(t *testing.T) {
 		{
 			name: "Invalid ID",
 			args: []string{
+				"1",
 				"bad",
 			},
 			err: sdkerrors.New("", uint32(1), "invalid ID length, must be a keccak256 hash"),
