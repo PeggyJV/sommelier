@@ -38,7 +38,7 @@ func DefaultParams() Params {
 		GmpAccount:        "",
 		ExecutorAccount:   "",
 		TimeoutDuration:   0,
-		CorkTimeoutBlocks: 100,
+		CorkTimeoutBlocks: 10000,
 	}
 }
 

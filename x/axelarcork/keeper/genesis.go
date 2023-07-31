@@ -28,7 +28,7 @@ func InitGenesis(ctx sdk.Context, k Keeper, gs types.GenesisState) {
 	}
 
 	for _, scheduledCork := range gs.ScheduledCorks.ScheduledCorks {
-		valAddr, err := sdk.ValAddressFromHex(scheduledCork.Validator)
+		valAddr, err := sdk.ValAddressFromBech32(scheduledCork.Validator)
 		if err != nil {
 			panic(err)
 		}
