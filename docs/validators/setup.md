@@ -75,11 +75,13 @@ sommelier.service ```
 
 Once your service files are configured, install them to systemd:
 
-```bash # And install them to systemd sudo mv geth.service
-/etc/systemd/system/geth.service \ && sudo mv orchestrator.service
-/etc/systemd/system/ \ && sudo mv steward.service /etc/systemd/system/ \ &&
-sudo mv sommelier.service /etc/systemd/system/ \ && sudo systemctl
-daemon-reload ```
+```bash 
+sudo mv geth.service /etc/systemd/system/geth.service \ 
+    && sudo mv orchestrator.service /etc/systemd/system/ \ 
+    && sudo mv steward.service /etc/systemd/system/ \ 
+    && sudo mv sommelier.service /etc/systemd/system/ \ 
+    && sudo systemctl daemon-reload 
+```
 
 At this point, if you chose to use it, geth can be started. The other services need further setup. Start geth and ensure there are no errors in the log:
 
@@ -94,19 +96,19 @@ Now let's set up a configuration file for the `steward` and `orchestrator` proce
 Create a directory to work in and download the provided example config file:
 
 ```bash 
-mkdir -p $HOME/steward && cd $HOME/steward wget
-https://raw.githubusercontent.com/PeggyJV/sommelier/main/contrib/mainnet/sommelier-3/config.toml
+mkdir -p $HOME/steward && cd $HOME/steward 
+wget https://raw.githubusercontent.com/PeggyJV/sommelier/main/contrib/mainnet/sommelier-3/config.toml
 ```
 
 Modify the steward/orchestrator config for your environment as needed. In particular, change the `keystore` field to the path where you would like steward to store the keys created in the following steps.
 
-See the [Steward configuration doc for more information](https://github.com/PeggyJV/steward/blob/main/docs/01-Configuration.md)
+See the [Steward configuration doc](https://github.com/PeggyJV/steward/blob/main/docs/01-Configuration.md) for more information.
 
 ```bash
 nano config.toml
 ```
 
-Initialize the validator node files. Replace "<MONIKER>" with your desired validator moniker (name).
+Initialize the validator node files. Replace "\<MONIKER\>" with your desired validator moniker (name).
 
 ```bash
 sommelier init <MONIKER> --chain-id sommelier-3
@@ -120,7 +122,7 @@ For an overview of the purpose of each key in the Sommelier system, see [Keys](.
 >
 > ```toml
 > keystore = "/some/path/keystore"
-
+>
 > [cosmos]
 > key_derivation_path = "m/44'/118'/0'/0/0"
 >
@@ -135,9 +137,9 @@ steward -c config.toml keys cosmos add orchestrator
 steward -c config.toml keys eth add signer
 ```
 
-You should now see two key files in your configure keystore path named "orchestrator" and "signer" respectively. 
+You should now see two key files in your configured keystore path named "orchestrator" and "signer" respectively. 
 
-Before the addresses associated with your delegate keys can be used, they will need a small amount of funds. Send a small amount of SOMM to the "orchestrator" address and a small amount of ETH to the "signer" address.
+Before the addresses associated with your delegate keys can be used, they will need funds. Send a small amount of SOMM to the "orchestrator" address and a small amount of ETH to the "signer" address.
 
 Next you will need a validator key, which we will name "validator". This example generates a new key. 
 
@@ -156,7 +158,7 @@ At this point you should have:
 
 #### 4. Setup the validator node
 
-From [this text file](/contrib/mainnet/sommelierr-3/peers.txt), copy the listed peers to the `persistent_peers` field of the config file ~/.sommelier/config/config.toml: 
+From [this text file](/contrib/mainnet/sommelier-3/peers.txt), copy the listed peers to the `persistent_peers` field of the config file ~/.sommelier/config/config.toml: 
 
 ```bash
 nano ~/.sommelier/config/config.toml
@@ -174,7 +176,7 @@ Sync your node. This may take a few minutes.
 sudo systemctl start sommelier && sudo journalctl -u sommelier -f
 ```
 
-Once your node is synced, create your validator on chain. Replace "<MONIKER>" in the example with your desired validator name, and change any other values you wish to configure:
+Once your node is synced, create your validator on chain. Replace "\<MONIKER\>" in the example with your desired validator name, and change any other values you wish to configure:
 
 ```bash
 sommelier tx staking create-validator \ 
@@ -207,7 +209,7 @@ sommelier tx gravity set-delegate-keys \
     -y
 ```
 
-Start the orchestrator (note that we are not yet starting steward):
+Start Orchestrator (note that we are not yet starting Steward):
 
 ```bash
 sudo systemctl start orchestrator && sudo journalctl -u orchestrator -f
