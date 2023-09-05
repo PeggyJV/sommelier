@@ -39,7 +39,7 @@ Running a validator node on the Sommelier mainnet requires three processes:
 2. The Gravity Bridge Orchestrator
 3. [Steward](https://github.com/peggyjv/steward)
 
-We also recommend running a local `geth` process. Though a public Ethereum API service can work, you may run into request limits because of the frequent requests made by the `orchestrator` process.
+The Orchestrator (and Relayer if you are designated to run one) need an RPC endpoint to interact with Ethereum. We recommend using a service such as Alchemy or Infura. Larger validators may opt to use any existing full node they are already running for other purposes. Setup and configuration of an Ethereum node is left as an exercise for the reader. 
 
 The Steward CLI now supports all of the same commands as `gorc` and is the recommended way to configure delegate keys for new validators and to run the Orchestrator. __The Steward CLI is used to run *both* the `steward` and `orchestrator` processes__. There are post-installation steps for the `steward` process outlined at the end of the installation steps below. These are required for your Steward to participate in the protocol. For more information on these setup steps for Steward, see [Validators Instructions for Setting Up Steward](https://github.com/PeggyJV/steward/blob/main/docs/02-StewardForValidators.md) in the Steward repository.
 
@@ -54,39 +54,23 @@ mkdir install && cd install
 # Install Steward
 wget https://github.com/PeggyJV/steward/releases/download/v3.4.2/steward && chmod +x * && sudo mv * /usr/bin
 
-# Install Geth
-wget https://gethstore.blob.core.windows.net/builds/geth-linux-amd64-1.12.2-bed84606.tar.gz && tar -xvf geth-linux-amd64-1.12.2-bed84606.tar.gz && sudo mv geth-linux-amd64-1.12.2-bed84606/geth /usr/bin/geth && rm -rf geth-linux-amd64-1.12.2-bed84606*
-
 # Install Sommelier
 wget https://github.com/PeggyJV/sommelier/releases/download/v6.0.0/sommelier_6.0.0_linux_amd64.tar.gz && tar -xf sommelier_6.0.0_linux_amd64.tar.gz && sudo mv sommelier /usr/bin && rm -rf sommelier_6.0.0_linux_amd64* LICENSE README.md
 
 # Fetch systemd unit file examples
-wget https://raw.githubusercontent.com/PeggyJV/sommelier/main/contrib/systemd/geth.service https://raw.githubusercontent.com/PeggyJV/sommelier/main/contrib/systemd/sommelier.service https://raw.githubusercontent.com/PeggyJV/sommelier/main/contrib/systemd/orchestrator.service https://raw.githubusercontent.com/PeggyJV/sommelier/main/contrib/systemd/steward.service
+wget https://raw.githubusercontent.com/PeggyJV/sommelier/main/contrib/systemd/sommelier.service https://raw.githubusercontent.com/PeggyJV/sommelier/main/contrib/systemd/orchestrator.service https://raw.githubusercontent.com/PeggyJV/sommelier/main/contrib/systemd/steward.service
 
 # Modify the unit files to fit your environment
-nano geth.service
 nano orchestrator.service
 nano steward.service
 nano sommelier.service
-
-# And install them to systemd
-sudo mv geth.service /etc/systemd/system/geth.service \
-    && sudo mv orchestrator.service /etc/systemd/system/ \
-    && sudo mv steward.service /etc/systemd/system/ \
-    && sudo mv sommelier.service /etc/systemd/system/ \
-    && sudo systemctl daemon-reload
-
-# Start geth
-sudo systemctl start geth && sudo journalctl -u geth -f
 
 # Init steward/orchestrator configuration. Note that the steward and orchestrator processes share
 # much of the same configuration fields, so we share the config.toml for convenience.
 mkdir -p $HOME/steward && cd $HOME/steward
 wget https://raw.githubusercontent.com/PeggyJV/sommelier/main/contrib/mainnet/sommelier-3/config.toml
 
-# modify steward/orchestrator config for your environment
-# You can use alchemy or infura endpoints as your RPC and don't necessarily need to sync the
-# blockchain eth with geth
+# modify steward/orchestrator config for your environment, in particular your RPC URL and keystore path
 nano config.toml
 
 # Initialize the validator files
