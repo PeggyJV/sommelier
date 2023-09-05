@@ -52,13 +52,13 @@ The Steward CLI now supports all of the same commands as `gorc` and is the recom
 mkdir install && cd install
 
 # Install Steward
-wget https://github.com/PeggyJV/steward/releases/download/v2.0.2/steward && chmod +x * && sudo mv * /usr/bin
+wget https://github.com/PeggyJV/steward/releases/download/v3.4.2/steward && chmod +x * && sudo mv * /usr/bin
 
 # Install Geth
-wget https://gethstore.blob.core.windows.net/builds/geth-linux-amd64-1.10.23-d901d853.tar.gz && tar -xvf geth-linux-amd64-1.10.23-d901d853.tar.gz && sudo mv geth-linux-amd64-1.10.23-d901d853/geth /usr/bin/geth && rm -rf geth-linux-amd64-1.10.23-d901d853*
+wget https://gethstore.blob.core.windows.net/builds/geth-linux-amd64-1.12.2-bed84606.tar.gz && tar -xvf geth-linux-amd64-1.12.2-bed84606.tar.gz && sudo mv geth-linux-amd64-1.12.2-bed84606/geth /usr/bin/geth && rm -rf geth-linux-amd64-1.12.2-bed84606*
 
 # Install Sommelier
-wget https://github.com/PeggyJV/sommelier/releases/download/v4.0.1/sommelier_4.0.1_linux_amd64.tar.gz && tar -xf sommelier_4.0.1_linux_amd64.tar.gz && sudo mv sommelier /usr/bin && rm -rf sommelier_4.0.1_linux_amd64* LICENSE README.md
+wget https://github.com/PeggyJV/sommelier/releases/download/v6.0.0/sommelier_6.0.0_linux_amd64.tar.gz && tar -xf sommelier_6.0.0_linux_amd64.tar.gz && sudo mv sommelier /usr/bin && rm -rf sommelier_6.0.0_linux_amd64* LICENSE README.md
 
 # Fetch systemd unit file examples
 wget https://raw.githubusercontent.com/PeggyJV/sommelier/main/contrib/systemd/geth.service https://raw.githubusercontent.com/PeggyJV/sommelier/main/contrib/systemd/sommelier.service https://raw.githubusercontent.com/PeggyJV/sommelier/main/contrib/systemd/orchestrator.service https://raw.githubusercontent.com/PeggyJV/sommelier/main/contrib/systemd/steward.service
