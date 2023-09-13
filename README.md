@@ -20,13 +20,6 @@ We have active, helpful communities on Twitter, Discord, and Telegram.
 
 The initial release of the Sommelier blockchain will consist of a standard cosmos-sdk chain and the recently completed [Gravity Bridge refactor](https://github.com/peggyjv/gravity-bridge).
 
-### Gravity Bridge
-
-The Gravity Bridge requires some additional pieces to be deployed to support it:
-
-- [ ] [Ethereum Contract](https://github.com/PeggyJV/gravity-bridge/tree/main/solidity) and associated tooling
-- [ ] Orchestrator/Relayer binaries built from the `go.mod` commit
-
 ### Steward
 
 [Steward](https://github.com/peggyjv/steward) is a middleware between the Strategy Provider and the protocol that facilitates Cellar function calls. It's also a CLI that subsumes the functionality of `gorc`, and is used in this document to configure and run the orchestrator.
@@ -143,71 +136,3 @@ Once your Steward is running, ensure that its server endpoint is reachable over 
 
 Your installation is complete! If you have any problems, please reach out in the validator lobby channels in Discord or Telegram.
 
-### Actions
-
-Now you can try the bridge!!
-
-```bash
-# send somm to ethereum
-gorc cosmos-to-eth \
-    --cosmos-phrase="$(jq -r '.orchestrator' ~/keys.json)" \
-    --cosmos-grpc="http://localhost:9090" \
-    --cosmos-denom="somm" \
-    --amount="100000000" \
-    --eth-destination=$(gorc --config $HOME/gorc/config.toml keys eth show signer) \
-    --cosmos-prefix="cosmos"
-
-# send goreli uniswap tokens to cosmos
-gorc eth-to-cosmos \
-    --ethereum-key="$(jq -r '.eth' ~/keys.json)" \
-    --ethereum-rpc="http://localhost:8545" \
-    --cosmos-prefix="cosmos" \
-    --contract-address="$(jq -r '.gravity' ~/keys.json)" \
-    --erc20-address="0x0000000000000000000000000000000000000000" \
-    --amount="1.3530000" \
-    --cosmos-destination="$(sommelier keys show orchestrator -a)"
-
-```
-
-## Notes:
-
-### Genesis File Changes Necessary
-
-```bash
-# change stake to usomm
-sed -i 's/stake/usomm/g' ~/.sommelier/config/genesis.json
-
-# denom metadata
-# TODO: add name and symbol here
-jq -rMc '.app_state.bank.denom_metadata += [{"base": "usomm", display: "somm", "description": "A staking test token", "denom_units": [{"denom": "usomm", "exponent": 0}, {"denom": "somm", "exponent": 6}]}]' ~/.sommelier/config/genesis.json > ~/.sommelier/config/genesis.json
-
-# gravity params
-jq -rMc '.app_state.gravity.params.bridge_chain_id = "5"' ~/.sommelier/config/genesis.json > ~/.sommelier/config/genesis.json
-```
-
-### Deploy Peggy Contract
-
-```bash
-wget https://github.com/PeggyJV/gravity-bridge/releases/download/v0.1.21/Gravity.json
-contract-deployer \
-    --cosmos-node="http://localhost:26657" \
-    --eth-node="http://localhost:8545" \
-    --eth-privkey="0x0000000000000000000000000000000000000000000000000000000000000000" \
-    --contract=Gravity.json \
-    --test-mode=false
-```
-
-### Deploy Somm ERC20 representation
-
-```bash
-gorc deploy erc20 \
-    --ethereum-key="0x0000000000000000000000000000000000000000000000000000000000000000" \
-    --cosmos-grpc="http://localhost:9090" \
-    --cosmos-prefix=cosmos \
-    --cosmos-denom=usomm \
-    --ethereum-rpc=http://localhost:8545 \
-    --contract-address="0x8887F26882a3F920e40A91969D1A40D1Ef7efe10" \
-    --erc20-name=usomm \
-    --erc20-symbol=usomm \
-    --erc20-decimals=6
-```
