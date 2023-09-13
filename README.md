@@ -1,8 +1,8 @@
 # Sommelier
 
-Sommelier is a platform for running DeFi strategies managed by off-chain
-computation. It's a blockchain built with the [Cosmos
-SDK](https://github.com/cosmos/cosmos-sdk), and uses its own fork of the
+Sommelier is a platform for running DeFi strategies in special vaults, called
+Cellars, managed by off-chain computation. It's a blockchain built with the
+[Cosmos SDK](https://github.com/cosmos/cosmos-sdk), and uses its own fork of the
 [Gravity Bridge](https://github.com/peggyjv/gravity-bridge) to enable
 cross-chain execution.
 
@@ -22,16 +22,16 @@ We have active, helpful communities on Twitter, Discord, and Telegram.
 
 ## Sommelier
 
-The initial release of the Sommelier blockchain will consist of a standard
-cosmos-sdk chain and the recently completed [Gravity Bridge
+The initial release of the Sommelier blockchain consists of a standard
+cosmos-sdk chain and [Gravity Bridge
 refactor](https://github.com/peggyjv/gravity-bridge).
 
 ### Steward
 
-[Steward](https://github.com/peggyjv/steward) is a middleware between the
-Strategy Provider and the protocol that facilitates Cellar function calls. It's
-also a CLI that subsumes the functionality of `gorc`, and is used in this
-document to configure and run the orchestrator.
+[Steward](https://github.com/peggyjv/steward) is a sidecare process that
+facilitates function calls by Strategists to Cellars. It's also a CLI that
+subsumes the functionality of `gorc`, and is used in this document to configure
+and run the orchestrator.
 
 ## Join the mainnet!
 
@@ -54,7 +54,7 @@ Orchestrator. __The Steward CLI is used to run *both* the `steward` and
 process outlined at the end of the installation steps below. These are required
 for your Steward to participate in the protocol. For more information on these
 setup steps for Steward, see [Validators Instructions for Setting Up
-Steward](https://github.com/PeggyJV/steward/blob/main/docs/02-StewardForValidators.md)
+Steward](https://github.com/PeggyJV/steward/blob/3.x-main/docs/02-StewardForValidators.md)
 in the Steward repository.
 
 > NOTE: The Steward CLI and Steward itself are distinct concepts in this
@@ -69,15 +69,15 @@ in the Steward repository.
 mkdir install && cd install
 
 # Install Steward
-wget https://github.com/PeggyJV/steward/releases/download/v3.4.2/steward \
+wget https://github.com/PeggyJV/steward/releases/latest/download/steward \
     && chmod +x * \
     && sudo mv * /usr/bin
 
 # Install Sommelier
-wget https://github.com/PeggyJV/sommelier/releases/download/v6.0.0/sommelier_6.0.0_linux_amd64.tar.gz \
-    && tar -xf sommelier_6.0.0_linux_amd64.tar.gz \
+wget https://github.com/PeggyJV/sommelier/releases/download/v3.1.1/sommelier_3.1.1_linux_amd64.tar.gz \
+    && tar -xf sommelier_3.1.1_linux_amd64.tar.gz \
     && sudo mv sommelier /usr/bin \
-    && rm -rf sommelier_6.0.0_linux_amd64* LICENSE README.md
+    && rm -rf sommelier_3.1.1_linux_amd64* LICENSE README.md
 
 # Fetch systemd unit file examples
 wget \
@@ -89,6 +89,12 @@ wget \
 nano orchestrator.service
 nano steward.service
 nano sommelier.service
+
+# And install them to systemd
+sudo mv orchestrator.service /etc/systemd/system/ \
+    && sudo mv steward.service /etc/systemd/system/ \
+    && sudo mv sommelier.service /etc/systemd/system/ \
+    && sudo systemctl daemon-reload
 
 # Init steward/orchestrator configuration. Note that the steward and orchestrator processes share
 # much of the same configuration fields, so we share the config.toml for convenience.
