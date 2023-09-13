@@ -135,7 +135,23 @@ wget https://raw.githubusercontent.com/PeggyJV/sommelier/main/contrib/mainnet/so
 
 # start your sommelier node - note it may take a minute or two to sync all of the blocks
 sudo systemctl start sommelier && sudo journalctl -u sommelier -f
+```
 
+Your node should now be syncing from genesis. You will be required to update
+the binary as your sync reaches upgrade block heights. The tool
+[cosmovisor](https://docs.cosmos.network/main/tooling/cosmovisor) is useful for
+handling this process automatically. Its setup and use is left as an exercise
+for the reader. The order of binary versions you will need to complete the sync
+process is shown below.
+
+| Height | Version |
+|-|-|
+| Genesis | 3.1.1 |
+| 3610000 | [4.0.3](https://github.com/PeggyJV/sommelier/releases/tag/v4.0.3) |
+| 7766725 | [5.0.0](https://github.com/PeggyJV/sommelier/releases/tag/v5.0.0) |
+| 8704480 | [6.0.0](https://github.com/PeggyJV/sommelier/releases/tag/v6.0.0) |
+
+```bash
 # once your node is synced, create your validator
 sommelier tx staking create-validator \
   --amount=1000000usomm \
