@@ -6,6 +6,8 @@ Cellars, managed by off-chain computation. It's a blockchain built with the
 [Gravity Bridge](https://github.com/peggyjv/gravity-bridge) to enable
 cross-chain execution.
 
+For more information you can check out the [Sommelier Documentation](https://sommelier-finance.gitbook.io/sommelier-documentation/introduction/what-is-sommelier)
+
 [![codecov](https://codecov.io/gh/peggyjv/sommelier/branch/main/graph/badge.svg)](https://codecov.io/gh/peggyjv/sommelier)
 [![Go Report Card](https://goreportcard.com/badge/github.com/peggyjv/sommelier)](https://goreportcard.com/report/github.com/peggyjv/sommelier)
 [![license](https://img.shields.io/github/license/peggyjv/sommelier.svg)](https://github.com/peggyjv/sommelier/blob/main/LICENSE)
@@ -28,7 +30,7 @@ refactor](https://github.com/peggyjv/gravity-bridge).
 
 ### Steward
 
-[Steward](https://github.com/peggyjv/steward) is a sidecare process that
+[Steward](https://github.com/peggyjv/steward) is a sidecar process that
 facilitates function calls by Strategists to Cellars. It's also a CLI that
 subsumes the functionality of `gorc`, and is used in this document to configure
 and run the orchestrator.
