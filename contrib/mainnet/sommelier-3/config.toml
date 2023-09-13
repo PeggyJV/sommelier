@@ -8,13 +8,14 @@ fees_denom = "usomm"
 key_derivation_path = "m/44'/60'/0'/0/0"
 rpc = "http://localhost:8545" #Can use alchemy or infura here.
 gas_price_multiplier = 1.0
+gas_multiplier = 1.1
 blocks_to_search = 5000
 
 [cosmos]
 key_derivation_path = "m/44'/118'/0'/0/0"
 grpc = "http://localhost:9090"
 prefix = "somm"
-gas_adjustment = 1.0
+gas_adjustment = 1.1
 msg_batch_size = 5
 
 [cosmos.gas_price]
