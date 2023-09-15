@@ -12,7 +12,7 @@ import (
 const TestEVMChainID = 2
 
 func (suite *KeeperTestSuite) TestQueriesHappyPath() {
-	ctx, corkKeeper := suite.ctx, suite.corkKeeper
+	ctx, axelarcorkKeeper := suite.ctx, suite.axelarcorkKeeper
 	require := suite.Require()
 
 	testGMPAccount := authtypes.NewModuleAddress("test-gmp-account")
@@ -24,9 +24,9 @@ func (suite *KeeperTestSuite) TestQueriesHappyPath() {
 		ExecutorAccount: "test-executor-account",
 		TimeoutDuration: 10,
 	}
-	corkKeeper.SetParams(ctx, params)
+	axelarcorkKeeper.SetParams(ctx, params)
 
-	corkKeeper.SetChainConfiguration(ctx, TestEVMChainID, types.ChainConfiguration{
+	axelarcorkKeeper.SetChainConfiguration(ctx, TestEVMChainID, types.ChainConfiguration{
 		Name:         "testevm",
 		Id:           TestEVMChainID,
 		ProxyAddress: "0x123",
@@ -47,7 +47,7 @@ func (suite *KeeperTestSuite) TestQueriesHappyPath() {
 		Validator:   "cosmosvaloper1xyerxdp4xcmnswfsxyerxdp4xcmnswfs008wpw",
 		Id:          hex.EncodeToString(id),
 	}
-	corkKeeper.SetScheduledAxelarCork(ctx, TestEVMChainID, testHeight, val, cork)
+	axelarcorkKeeper.SetScheduledAxelarCork(ctx, TestEVMChainID, testHeight, val, cork)
 
 	corkResult := types.AxelarCorkResult{
 		Cork:               &cork,
@@ -55,19 +55,19 @@ func (suite *KeeperTestSuite) TestQueriesHappyPath() {
 		Approved:           true,
 		ApprovalPercentage: "100.00",
 	}
-	corkKeeper.SetAxelarCorkResult(ctx, TestEVMChainID, id, corkResult)
+	axelarcorkKeeper.SetAxelarCorkResult(ctx, TestEVMChainID, id, corkResult)
 
-	corkKeeper.SetCellarIDs(ctx, TestEVMChainID, types.CellarIDSet{Ids: []string{"0x0000000000000000000000000000000000000000", "0x1111111111111111111111111111111111111111"}})
+	axelarcorkKeeper.SetCellarIDs(ctx, TestEVMChainID, types.CellarIDSet{Ids: []string{"0x0000000000000000000000000000000000000000", "0x1111111111111111111111111111111111111111"}})
 
-	paramsResult, err := corkKeeper.QueryParams(sdk.WrapSDKContext(ctx), &types.QueryParamsRequest{})
+	paramsResult, err := axelarcorkKeeper.QueryParams(sdk.WrapSDKContext(ctx), &types.QueryParamsRequest{})
 	require.Nil(err)
 	require.Equal(params, paramsResult.Params)
 
-	scheduledCorksResult, err := corkKeeper.QueryScheduledCorks(sdk.WrapSDKContext(ctx), &types.QueryScheduledCorksRequest{ChainId: TestEVMChainID})
+	scheduledCorksResult, err := axelarcorkKeeper.QueryScheduledCorks(sdk.WrapSDKContext(ctx), &types.QueryScheduledCorksRequest{ChainId: TestEVMChainID})
 	require.Nil(err)
 	require.Equal(&expectedScheduledCork, scheduledCorksResult.Corks[0])
 
-	scheduledCorksByHeightResult, err := corkKeeper.QueryScheduledCorksByBlockHeight(sdk.WrapSDKContext(ctx),
+	scheduledCorksByHeightResult, err := axelarcorkKeeper.QueryScheduledCorksByBlockHeight(sdk.WrapSDKContext(ctx),
 		&types.QueryScheduledCorksByBlockHeightRequest{
 			BlockHeight: testHeight,
 			ChainId:     TestEVMChainID,
@@ -75,7 +75,7 @@ func (suite *KeeperTestSuite) TestQueriesHappyPath() {
 	require.Nil(err)
 	require.Equal(&expectedScheduledCork, scheduledCorksByHeightResult.Corks[0])
 
-	scheduledCorksByIDResult, err := corkKeeper.QueryScheduledCorksByID(sdk.WrapSDKContext(ctx),
+	scheduledCorksByIDResult, err := axelarcorkKeeper.QueryScheduledCorksByID(sdk.WrapSDKContext(ctx),
 		&types.QueryScheduledCorksByIDRequest{
 			Id:      hex.EncodeToString(id),
 			ChainId: TestEVMChainID,
@@ -83,48 +83,48 @@ func (suite *KeeperTestSuite) TestQueriesHappyPath() {
 	require.Nil(err)
 	require.Equal(&expectedScheduledCork, scheduledCorksByIDResult.Corks[0])
 
-	blockHeightResult, err := corkKeeper.QueryScheduledBlockHeights(sdk.WrapSDKContext(ctx), &types.QueryScheduledBlockHeightsRequest{ChainId: TestEVMChainID})
+	blockHeightResult, err := axelarcorkKeeper.QueryScheduledBlockHeights(sdk.WrapSDKContext(ctx), &types.QueryScheduledBlockHeightsRequest{ChainId: TestEVMChainID})
 	require.Nil(err)
 	require.Equal(testHeight, blockHeightResult.BlockHeights[0])
 
-	corkResultResult, err := corkKeeper.QueryCorkResult(sdk.WrapSDKContext(ctx), &types.QueryCorkResultRequest{Id: hex.EncodeToString(id), ChainId: TestEVMChainID})
+	corkResultResult, err := axelarcorkKeeper.QueryCorkResult(sdk.WrapSDKContext(ctx), &types.QueryCorkResultRequest{Id: hex.EncodeToString(id), ChainId: TestEVMChainID})
 	require.Nil(err)
 	require.Equal(&corkResult, corkResultResult.CorkResult)
 
-	corkResultsResult, err := corkKeeper.QueryCorkResults(sdk.WrapSDKContext(ctx), &types.QueryCorkResultsRequest{ChainId: TestEVMChainID})
+	corkResultsResult, err := axelarcorkKeeper.QueryCorkResults(sdk.WrapSDKContext(ctx), &types.QueryCorkResultsRequest{ChainId: TestEVMChainID})
 	require.Nil(err)
 	require.Equal(&corkResult, corkResultsResult.CorkResults[0])
 }
 
 func (suite *KeeperTestSuite) TestQueriesUnhappyPath() {
-	ctx, corkKeeper := suite.ctx, suite.corkKeeper
+	ctx, axelarcorkKeeper := suite.ctx, suite.axelarcorkKeeper
 	require := suite.Require()
 
-	paramsResult, err := corkKeeper.QueryParams(sdk.WrapSDKContext(ctx), nil)
+	paramsResult, err := axelarcorkKeeper.QueryParams(sdk.WrapSDKContext(ctx), nil)
 	require.Nil(paramsResult)
 	require.NotNil(err)
 
-	scheduledCorksResult, err := corkKeeper.QueryScheduledCorks(sdk.WrapSDKContext(ctx), nil)
+	scheduledCorksResult, err := axelarcorkKeeper.QueryScheduledCorks(sdk.WrapSDKContext(ctx), nil)
 	require.Nil(scheduledCorksResult)
 	require.NotNil(err)
 
-	scheduledCorksByHeightResult, err := corkKeeper.QueryScheduledCorksByBlockHeight(sdk.WrapSDKContext(ctx), nil)
+	scheduledCorksByHeightResult, err := axelarcorkKeeper.QueryScheduledCorksByBlockHeight(sdk.WrapSDKContext(ctx), nil)
 	require.Nil(scheduledCorksByHeightResult)
 	require.NotNil(err)
 
-	scheduledCorksByIDResult, err := corkKeeper.QueryScheduledCorksByID(sdk.WrapSDKContext(ctx), nil)
+	scheduledCorksByIDResult, err := axelarcorkKeeper.QueryScheduledCorksByID(sdk.WrapSDKContext(ctx), nil)
 	require.Nil(scheduledCorksByIDResult)
 	require.NotNil(err)
 
-	blockHeightResult, err := corkKeeper.QueryScheduledBlockHeights(sdk.WrapSDKContext(ctx), nil)
+	blockHeightResult, err := axelarcorkKeeper.QueryScheduledBlockHeights(sdk.WrapSDKContext(ctx), nil)
 	require.Nil(blockHeightResult)
 	require.NotNil(err)
 
-	corkResultResult, err := corkKeeper.QueryCorkResult(sdk.WrapSDKContext(ctx), nil)
+	corkResultResult, err := axelarcorkKeeper.QueryCorkResult(sdk.WrapSDKContext(ctx), nil)
 	require.Nil(corkResultResult)
 	require.NotNil(err)
 
-	corkResultsResult, err := corkKeeper.QueryCorkResults(sdk.WrapSDKContext(ctx), nil)
+	corkResultsResult, err := axelarcorkKeeper.QueryCorkResults(sdk.WrapSDKContext(ctx), nil)
 	require.Nil(corkResultsResult)
 	require.NotNil(err)
 }
