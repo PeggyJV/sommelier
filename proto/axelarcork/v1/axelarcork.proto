@@ -49,3 +49,11 @@ message ChainConfiguration {
 message ChainConfigurations {
   repeated ChainConfiguration configurations = 1;
 }
+
+// Used to enforce strictly newer call ordering per contract
+message AxelarContractCallNonce {
+    uint64 chain_id = 1;
+    string contract_address = 2;
+    uint64 nonce = 3;
+}
+

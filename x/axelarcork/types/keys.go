@@ -43,6 +43,9 @@ const (
 
 	// WinningCorkPrefix - <prefix><chain_id> -> AxelarCork
 	WinningCorkPrefix
+
+	// AxelarContractCallNoncePrefix - <prefix><chain_id><contract_address> -> <nonce>
+	AxelarContractCallNoncePrefix
 )
 
 // GetCorkValidatorKeyPrefix returns the key prefix for cork commits for a validator
@@ -99,4 +102,10 @@ func GetWinningAxelarCorkKey(chainID uint64, blockheight uint64, address common.
 	bh := make([]byte, 8)
 	binary.BigEndian.PutUint64(bh, blockheight)
 	return bytes.Join([][]byte{GetWinningAxelarCorkKeyPrefix(chainID), bh, address.Bytes()}, []byte{})
+}
+
+func GetAxelarContractCallNonceKey(chainID uint64, contractAddress common.Address) []byte {
+	cid := make([]byte, 8)
+	binary.BigEndian.PutUint64(cid, chainID)
+	return bytes.Join([][]byte{{AxelarContractCallNoncePrefix}, cid, contractAddress.Bytes()}, []byte{})
 }

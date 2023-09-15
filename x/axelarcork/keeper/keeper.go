@@ -434,3 +434,50 @@ func (k Keeper) HasCellarID(ctx sdk.Context, chainID uint64, address common.Addr
 
 	return found
 }
+
+/////////////////////////////////
+// Axelar Contract Call Nonces //
+/////////////////////////////////
+
+// SetAxelarContractCallNonce sets the nonce for the given chainID and address
+func (k Keeper) SetAxelarContractCallNonce(ctx sdk.Context, chainID uint64, address string, nonce uint64) {
+	store := ctx.KVStore(k.storeKey)
+	store.Set(types.GetAxelarContractCallNonceKey(chainID, common.HexToAddress(address)), sdk.Uint64ToBigEndian(nonce))
+}
+
+// GetAxelarContractCallNonce returns the nonce for the given chainID and address, returning a zero if not found
+func (k Keeper) GetAxelarContractCallNonce(ctx sdk.Context, chainID uint64, address string) uint64 {
+	store := ctx.KVStore(k.storeKey)
+	bz := store.Get(types.GetAxelarContractCallNonceKey(chainID, common.HexToAddress(address)))
+	if len(bz) == 0 {
+		return 0
+	}
+
+	return sdk.BigEndianToUint64(bz)
+}
+
+// IncrementAxelarContractCallNonce increments the nonce for the given chainID and address
+func (k Keeper) IncrementAxelarContractCallNonce(ctx sdk.Context, chainID uint64, address string) uint64 {
+	nonce := k.GetAxelarContractCallNonce(ctx, chainID, address) + 1
+	k.SetAxelarContractCallNonce(ctx, chainID, address, nonce)
+
+	return nonce
+}
+
+// IterateAxelarContractCallNonces iterates over all axelar contract call nonces
+func (k Keeper) IterateAxelarContractCallNonces(ctx sdk.Context, cb func(chainID uint64, address common.Address, nonce uint64) (stop bool)) {
+	store := ctx.KVStore(k.storeKey)
+	iter := sdk.KVStorePrefixIterator(store, []byte{types.AxelarContractCallNoncePrefix})
+	defer iter.Close()
+
+	for ; iter.Valid(); iter.Next() {
+		keyPair := bytes.NewBuffer(iter.Key())
+		keyPair.Next(1) // trim prefix byte
+		chainID := sdk.BigEndianToUint64(keyPair.Next(8))
+		address := common.BytesToAddress(keyPair.Next(20))
+		nonce := sdk.BigEndianToUint64(iter.Value())
+		if cb(chainID, address, nonce) {
+			break
+		}
+	}
+}

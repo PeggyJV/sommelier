@@ -13,6 +13,7 @@ message GenesisState {
   repeated CellarIDSet    cellar_ids           = 3;
   ScheduledAxelarCorks scheduled_corks      = 4;
   AxelarCorkResults    cork_results         = 5;
+  repeated AxelarContractCallNonce axelar_contract_call_nonces = 6;
 }
 
 message Params {
