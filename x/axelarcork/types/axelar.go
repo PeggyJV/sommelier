@@ -1,5 +1,7 @@
 package types
 
+import "math/big"
+
 const (
 	_ int64 = iota
 	PureMessage
@@ -16,8 +18,10 @@ type AxelarBody struct {
 }
 
 type ProxyWrapper struct {
-	Target string `json:"target"`
-	Body   []byte `body:"body"`
+	Target   string   `json:"target"`
+	Nonce    *big.Int `json:"nonce"`
+	Deadline *big.Int `json:"deadline"`
+	Body     []byte   `json:"body"`
 }
 
 type Fee struct {
