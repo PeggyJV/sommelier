@@ -71,9 +71,9 @@ func GetScheduledAxelarCorkKeyByBlockHeightPrefix(chainID uint64, blockHeight ui
 	return append(GetScheduledAxelarCorkKeyPrefix(chainID), sdk.Uint64ToBigEndian(blockHeight)...)
 }
 
-func GetScheduledAxelarCorkKey(chainID uint64, blockHeight uint64, id []byte, val sdk.ValAddress, contract common.Address) []byte {
+func GetScheduledAxelarCorkKey(chainID uint64, blockHeight uint64, id []byte, val sdk.ValAddress, contract common.Address, deadline uint64) []byte {
 	blockHeightBytes := sdk.Uint64ToBigEndian(blockHeight)
-	return bytes.Join([][]byte{GetScheduledAxelarCorkKeyPrefix(chainID), blockHeightBytes, id, val.Bytes(), contract.Bytes()}, []byte{})
+	return bytes.Join([][]byte{GetScheduledAxelarCorkKeyPrefix(chainID), blockHeightBytes, id, val.Bytes(), contract.Bytes(), sdk.Uint64ToBigEndian(deadline)}, []byte{})
 }
 
 func GetAxelarCorkResultPrefix(chainID uint64) []byte {
@@ -98,10 +98,10 @@ func GetWinningAxelarCorkKeyPrefix(chainID uint64) []byte {
 	return bytes.Join([][]byte{{WinningCorkPrefix}, cid}, []byte{})
 }
 
-func GetWinningAxelarCorkKey(chainID uint64, blockheight uint64, address common.Address) []byte {
+func GetWinningAxelarCorkKey(chainID uint64, blockheight uint64, address common.Address, deadline uint64) []byte {
 	bh := make([]byte, 8)
 	binary.BigEndian.PutUint64(bh, blockheight)
-	return bytes.Join([][]byte{GetWinningAxelarCorkKeyPrefix(chainID), bh, address.Bytes()}, []byte{})
+	return bytes.Join([][]byte{GetWinningAxelarCorkKeyPrefix(chainID), bh, address.Bytes(), sdk.Uint64ToBigEndian(deadline)}, []byte{})
 }
 
 func GetAxelarContractCallNonceKey(chainID uint64, contractAddress common.Address) []byte {

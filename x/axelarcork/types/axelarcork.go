@@ -16,7 +16,7 @@ func (c *AxelarCork) IDHash(chainID uint64, blockHeight uint64) []byte {
 
 	return crypto.Keccak256Hash(
 		bytes.Join(
-			[][]byte{chainIDBytes, blockHeightBytes, address.Bytes(), c.EncodedContractCall},
+			[][]byte{chainIDBytes, blockHeightBytes, address.Bytes(), c.EncodedContractCall, sdk.Uint64ToBigEndian(c.Deadline)},
 			[]byte{},
 		)).Bytes()
 }
@@ -30,6 +30,10 @@ func (c *AxelarCork) Equals(other AxelarCork) bool {
 	}
 
 	if !bytes.Equal(c.EncodedContractCall, other.EncodedContractCall) {
+		return false
+	}
+
+	if c.Deadline != other.Deadline {
 		return false
 	}
 

@@ -58,7 +58,7 @@ func (k Keeper) QueryScheduledCorks(c context.Context, req *types.QueryScheduled
 
 	response := types.QueryScheduledCorksResponse{}
 
-	k.IterateScheduledAxelarCorks(ctx, config.Id, func(val sdk.ValAddress, blockHeight uint64, id []byte, cel common.Address, cork types.AxelarCork) (stop bool) {
+	k.IterateScheduledAxelarCorks(ctx, config.Id, func(val sdk.ValAddress, blockHeight uint64, id []byte, cel common.Address, deadline uint64, cork types.AxelarCork) (stop bool) {
 		response.Corks = append(response.Corks, &types.ScheduledAxelarCork{
 			Cork:        &cork,
 			BlockHeight: blockHeight,

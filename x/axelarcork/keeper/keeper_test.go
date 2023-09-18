@@ -129,14 +129,16 @@ func (suite *KeeperTestSuite) TestSetGetDeleteScheduledCork() {
 
 	testHeight := uint64(123)
 	val := []byte("testaddress")
+	deadline := uint64(10000000000)
 	expectedCork := types.AxelarCork{
 		EncodedContractCall:   []byte("testcall"),
 		TargetContractAddress: sampleCellarHex,
+		Deadline:              deadline,
 	}
 	expectedID := expectedCork.IDHash(TestEVMChainID, testHeight)
 	actualID := axelarcorkKeeper.SetScheduledAxelarCork(ctx, TestEVMChainID, testHeight, val, expectedCork)
 	require.Equal(expectedID, actualID)
-	actualCork, found := axelarcorkKeeper.GetScheduledAxelarCork(ctx, TestEVMChainID, testHeight, actualID, val, sampleCellarAddr)
+	actualCork, found := axelarcorkKeeper.GetScheduledAxelarCork(ctx, TestEVMChainID, testHeight, actualID, val, sampleCellarAddr, deadline)
 	require.True(found)
 	require.Equal(expectedCork, actualCork)
 
@@ -156,7 +158,7 @@ func (suite *KeeperTestSuite) TestSetGetDeleteScheduledCork() {
 	require.Equal(testHeight, actualCorks[0].BlockHeight)
 	require.Equal(hex.EncodeToString(expectedID), actualCorks[0].Id)
 
-	axelarcorkKeeper.DeleteScheduledAxelarCork(ctx, TestEVMChainID, testHeight, expectedID, sdk.ValAddress(val), sampleCellarAddr)
+	axelarcorkKeeper.DeleteScheduledAxelarCork(ctx, TestEVMChainID, testHeight, expectedID, sdk.ValAddress(val), sampleCellarAddr, deadline)
 	require.Empty(axelarcorkKeeper.GetScheduledAxelarCorks(ctx, TestEVMChainID))
 }
 
@@ -171,9 +173,11 @@ func (suite *KeeperTestSuite) TestGetWinningVotes() {
 	})
 
 	testHeight := uint64(ctx.BlockHeight())
+	deadline := uint64(100000000000000)
 	cork := types.AxelarCork{
 		EncodedContractCall:   []byte("testcall"),
 		TargetContractAddress: sampleCellarHex,
+		Deadline:              deadline,
 	}
 	_, bytes, err := bech32.DecodeAndConvert("somm1fcl08ymkl70dhyg3vmx4hjsqvxym7dawnp0zfp")
 	require.NoError(err)
@@ -204,9 +208,11 @@ func (suite *KeeperTestSuite) TestCorkResults() {
 	require.Empty(axelarcorkKeeper.GetAxelarCorkResults(ctx, TestEVMChainID))
 
 	testHeight := uint64(ctx.BlockHeight())
+	deadline := uint64(100000000000000)
 	cork := types.AxelarCork{
 		EncodedContractCall:   []byte("testcall"),
 		TargetContractAddress: sampleCellarHex,
+		Deadline:              deadline,
 	}
 	id := cork.IDHash(TestEVMChainID, testHeight)
 	result := types.AxelarCorkResult{

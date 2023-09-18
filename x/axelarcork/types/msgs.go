@@ -24,11 +24,13 @@ const (
 ////////////////////////////
 
 // NewMsgScheduleCorkRequest return a new MsgScheduleAxelarCorkRequest
-func NewMsgScheduleCorkRequest(body []byte, address common.Address, blockHeight uint64, signer sdk.AccAddress) (*MsgScheduleAxelarCorkRequest, error) {
+func NewMsgScheduleCorkRequest(chainID uint64, body []byte, address common.Address, deadline uint64, blockHeight uint64, signer sdk.AccAddress) (*MsgScheduleAxelarCorkRequest, error) {
 	return &MsgScheduleAxelarCorkRequest{
 		Cork: &AxelarCork{
+			ChainId:               chainID,
 			EncodedContractCall:   body,
 			TargetContractAddress: address.String(),
+			Deadline:              deadline,
 		},
 		BlockHeight: blockHeight,
 		Signer:      signer.String(),
