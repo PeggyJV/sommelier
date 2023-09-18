@@ -12,6 +12,9 @@ message AxelarCork {
   uint64 chain_id = 2;
   // address of the contract to send the call
   string target_contract_address = 3;
+  // unix timestamp before which the contract call must be executed.
+  // enforced by the proxy contract.
+  uint64 deadline = 4;
 }
 
 message ScheduledAxelarCork {

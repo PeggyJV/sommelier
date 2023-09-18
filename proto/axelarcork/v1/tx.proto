@@ -24,7 +24,7 @@ message MsgScheduleAxelarCorkRequest {
   // the block height that must be reached
   uint64 block_height = 3;
   // signer account address
-  string signer = 4;
+  string signer = 4; 
 }
 
 message MsgScheduleAxelarCorkResponse {
