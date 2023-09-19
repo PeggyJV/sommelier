@@ -709,7 +709,6 @@ RemoveManagedCellarIDsProposalWithDeposit is a specific definition for CLI comma
 | `title` | [string](#string) |  |  |
 | `description` | [string](#string) |  |  |
 | `chain_id` | [uint64](#uint64) |  |  |
-| `deposit` | [string](#string) |  |  |
 | `new_proxy_address` | [string](#string) |  |  |
 
 
