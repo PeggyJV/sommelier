@@ -21,6 +21,9 @@ func NewHandler(k keeper.Keeper) sdk.Handler {
 		case *types.MsgRelayAxelarCorkRequest:
 			res, err := k.RelayCork(sdk.WrapSDKContext(ctx), msg)
 			return sdk.WrapServiceResult(ctx, res, err)
+		case *types.MsgRelayAxelarProxyUpgradeRequest:
+			res, err := k.RelayProxyUpgrade(sdk.WrapSDKContext(ctx), msg)
+			return sdk.WrapServiceResult(ctx, res, err)
 		case *types.MsgBumpAxelarCorkGasRequest:
 			res, err := k.BumpCorkGas(sdk.WrapSDKContext(ctx), msg)
 			return sdk.WrapServiceResult(ctx, res, err)
@@ -45,6 +48,10 @@ func NewProposalHandler(k keeper.Keeper) govtypes.Handler {
 			return keeper.HandleAddChainConfigurationProposal(ctx, k, *c)
 		case *types.RemoveChainConfigurationProposal:
 			return keeper.HandleRemoveChainConfigurationProposal(ctx, k, *c)
+		case *types.UpgradeAxelarProxyContractProposal:
+			return keeper.HandleUpgradeAxelarProxyContractProposal(ctx, k, *c)
+		case *types.CancelAxelarProxyContractUpgradeProposal:
+			return keeper.HandleCancelAxelarProxyContractUpgradeProposal(ctx, k, *c)
 
 		default:
 			return sdkerrors.Wrapf(sdkerrors.ErrUnknownRequest, "unrecognized axelar cork proposal content type: %T", c)
