@@ -20,14 +20,14 @@ var (
 	UpgradeMsgID   = big.NewInt(1)
 )
 
-func EncodeLogicCallArgs(targetContract string, nonce uint64, deadline uint64, callData []byte) ([]byte, error) {
+func EncodeLogicCallArgs(proxyContract string, nonce uint64, deadline uint64, callData []byte) ([]byte, error) {
 	return abi.Arguments{
 		{Type: Uint256},
 		{Type: Address},
 		{Type: Uint256},
 		{Type: Uint256},
 		{Type: Bytes},
-	}.Pack(LogicCallMsgID, common.HexToAddress(targetContract), big.NewInt(int64(nonce)), big.NewInt(int64(deadline)), callData)
+	}.Pack(LogicCallMsgID, common.HexToAddress(proxyContract), big.NewInt(int64(nonce)), big.NewInt(int64(deadline)), callData)
 }
 
 func EncodeUpgradeArgs(newAxelarProxy string, targets []string) ([]byte, error) {
