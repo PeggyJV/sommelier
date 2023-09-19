@@ -257,7 +257,7 @@ func (suite *KeeperTestSuite) TestParamSet() {
 	require.Equal(params, axelarcorkKeeper.GetParamSet(ctx))
 }
 
-func (suite *KeeperTestSuite) TestAxelarCorkContractNonces() {
+func (suite *KeeperTestSuite) TestAxelarCorkContractCallNonces() {
 	ctx, axelarcorkKeeper := suite.ctx, suite.axelarcorkKeeper
 	require := suite.Require()
 
