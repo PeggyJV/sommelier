@@ -481,13 +481,13 @@ func (k Keeper) IterateAxelarContractCallNonces(ctx sdk.Context, cb func(chainID
 // Axelar Upgrade Data //
 /////////////////////////
 
-// SetAxelarProxyUpgradeData sets the upgrade payload for the given chainID
+// SetAxelarProxyUpgradeData sets the upgrade data for the given chainID
 func (k Keeper) SetAxelarProxyUpgradeData(ctx sdk.Context, chainID uint64, upgradeData types.AxelarUpgradeData) {
 	ud := k.cdc.MustMarshal(&upgradeData)
 	ctx.KVStore(k.storeKey).Set(types.GetAxelarProxyUpgradeDataKey(chainID), ud)
 }
 
-// GetAxelarProxyUpgradeData returns the upgrade payload for the given chainID, returning an empty payload if not found
+// GetAxelarProxyUpgradeData returns the upgrade data for the given chainID, returning an empty payload if not found
 func (k Keeper) GetAxelarProxyUpgradeData(ctx sdk.Context, chainID uint64) (types.AxelarUpgradeData, bool) {
 	bz := ctx.KVStore(k.storeKey).Get(types.GetAxelarProxyUpgradeDataKey(chainID))
 	if len(bz) == 0 {
@@ -500,7 +500,7 @@ func (k Keeper) GetAxelarProxyUpgradeData(ctx sdk.Context, chainID uint64) (type
 	return upgradeData, true
 }
 
-// DeleteAxelarProxyUpgradeData deletes the upgrade payload for the given chainID
+// DeleteAxelarProxyUpgradeData deletes the upgrade data for the given chainID
 func (k Keeper) DeleteAxelarProxyUpgradeData(ctx sdk.Context, chainID uint64) {
 	ctx.KVStore(k.storeKey).Delete(types.GetAxelarProxyUpgradeDataKey(chainID))
 }
