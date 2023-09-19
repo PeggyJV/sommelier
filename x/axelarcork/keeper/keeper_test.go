@@ -22,6 +22,11 @@ import (
 	tmtime "github.com/tendermint/tendermint/types/time"
 )
 
+const (
+	zeroAddressHex = "0x0000000000000000000000000000000000000000"
+	oneAddressHex  = "0x1111111111111111111111111111111111111111"
+)
+
 var (
 	sampleCellarHex  = "0xc0ffee254729296a45a3885639AC7E10F9d54979"
 	sampleCellarAddr = common.HexToAddress(sampleCellarHex)
@@ -258,7 +263,7 @@ func (suite *KeeperTestSuite) TestAxelarCorkContractNonces() {
 
 	chain1 := uint64(TestEVMChainID)
 	chain2 := uint64(100)
-	address1 := "0x0000000000000000000000000000000000000000"
+	address1 := zeroAddressHex
 	address2 := sampleCellarAddr.Hex()
 
 	require.Equal(uint64(0), axelarcorkKeeper.GetAxelarContractCallNonce(ctx, chain1, address1))
@@ -297,12 +302,11 @@ func (suite *KeeperTestSuite) TestAxelarCorkContractNonces() {
 func (suite *KeeperTestSuite) TestAxelarProxyArgsEncoding() {
 	require := suite.Require()
 
-	address := "0x0000000000000000000000000000000000000000"
-	cellars := []string{sampleCellarHex, "0x1111111111111111111111111111111111111111"}
+	cellars := []string{sampleCellarHex, oneAddressHex}
 
-	_, err := types.EncodeLogicCallArgs(address, 1, 100000000, []byte("testcall"))
+	_, err := types.EncodeLogicCallArgs(zeroAddressHex, 1, 100000000, []byte("testcall"))
 	require.NoError(err)
-	_, err = types.EncodeUpgradeArgs(address, cellars)
+	_, err = types.EncodeUpgradeArgs(zeroAddressHex, cellars)
 	require.NoError(err)
 }
 
@@ -312,9 +316,8 @@ func (suite *KeeperTestSuite) TestAxelarProxyUpgradeData() {
 	require := suite.Require()
 
 	chainID := uint64(TestEVMChainID)
-	address := "0x0000000000000000000000000000000000000000"
-	cellars := []string{sampleCellarHex, "0x1111111111111111111111111111111111111111"}
-	payload, err := types.EncodeUpgradeArgs(address, cellars)
+	cellars := []string{sampleCellarHex, oneAddressHex}
+	payload, err := types.EncodeUpgradeArgs(zeroAddressHex, cellars)
 	require.NoError(err)
 	upgradeData := types.AxelarUpgradeData{
 		Payload:                   payload,

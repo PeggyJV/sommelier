@@ -40,7 +40,7 @@ func InitGenesis(ctx sdk.Context, k Keeper, gs types.GenesisState) {
 	}
 
 	for _, n := range gs.AxelarContractCallNonces {
-		if _, found := k.GetChainConfigurationByID(ctx, n.ChainId); found == false {
+		if _, found := k.GetChainConfigurationByID(ctx, n.ChainId); !found {
 			panic(fmt.Sprintf("chain configuration %d not found", n.ChainId))
 		}
 
