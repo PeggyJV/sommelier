@@ -141,6 +141,52 @@ func CmdRelayAxelarCork() *cobra.Command {
 	return cmd
 }
 
+func CmdRelayAxelarProxyUpgrade() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "relay-axelar-proxy-upgrade [chain-id] [token] [fee]",
+		Args:  cobra.ExactArgs(4),
+		Short: "Relay a proxy contract upgrade call",
+
+		RunE: func(cmd *cobra.Command, args []string) error {
+			clientCtx, err := client.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			from := clientCtx.GetFromAddress()
+
+			chainID, err := sdk.ParseUint(args[0])
+			if err != nil {
+				return err
+			}
+
+			token, err := sdk.ParseCoinNormalized(args[2])
+			if err != nil {
+				return err
+			}
+
+			fee, err := sdk.ParseUint(args[3])
+			if err != nil {
+				return err
+			}
+
+			relayProxyUpgradeMsg := types.MsgRelayAxelarProxyUpgradeRequest{
+				Signer:  from.String(),
+				Token:   token,
+				Fee:     fee.Uint64(),
+				ChainId: chainID.Uint64(),
+			}
+			if err := relayProxyUpgradeMsg.ValidateBasic(); err != nil {
+				return err
+			}
+			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), &relayProxyUpgradeMsg)
+
+		},
+	}
+
+	return cmd
+}
+
 func CmdBumpAxelarCorkGas() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "bump-axelar-cork [token] [message-id]",

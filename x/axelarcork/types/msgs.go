@@ -113,6 +113,44 @@ func (m *MsgRelayAxelarCorkRequest) MustGetSigner() sdk.AccAddress {
 	return addr
 }
 
+///////////////////////////////
+// MsgRelayAxelarProxyUpgradeRequest //
+///////////////////////////////
+
+// Route implements sdk.Msg
+func (m *MsgRelayAxelarProxyUpgradeRequest) Route() string { return ModuleName }
+
+// Type implements sdk.Msg
+func (m *MsgRelayAxelarProxyUpgradeRequest) Type() string { return TypeMsgRelayCorkRequest }
+
+// ValidateBasic implements sdk.Msg
+func (m *MsgRelayAxelarProxyUpgradeRequest) ValidateBasic() error {
+	if _, err := sdk.AccAddressFromBech32(m.Signer); err != nil {
+		return sdkerrors.Wrap(sdkerrors.ErrInvalidAddress, err.Error())
+	}
+
+	return nil
+}
+
+// GetSignBytes implements sdk.Msg
+func (m *MsgRelayAxelarProxyUpgradeRequest) GetSignBytes() []byte {
+	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(m))
+}
+
+// GetSigners implements sdk.Msg
+func (m *MsgRelayAxelarProxyUpgradeRequest) GetSigners() []sdk.AccAddress {
+	return []sdk.AccAddress{m.MustGetSigner()}
+}
+
+// MustGetSigner returns the signer address
+func (m *MsgRelayAxelarProxyUpgradeRequest) MustGetSigner() sdk.AccAddress {
+	addr, err := sdk.AccAddressFromBech32(m.Signer)
+	if err != nil {
+		panic(err)
+	}
+	return addr
+}
+
 ///////////////////////////
 // MsgBumpAxelarCorkGasRequest //
 ///////////////////////////
