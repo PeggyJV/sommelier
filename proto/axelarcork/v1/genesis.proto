@@ -14,6 +14,7 @@ message GenesisState {
   ScheduledAxelarCorks scheduled_corks      = 4;
   AxelarCorkResults    cork_results         = 5;
   repeated AxelarContractCallNonce axelar_contract_call_nonces = 6;
+  repeated AxelarUpgradeData axelar_upgrade_data = 7;
 }
 
 message Params {

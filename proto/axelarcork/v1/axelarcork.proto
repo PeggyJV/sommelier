@@ -63,7 +63,8 @@ message AxelarContractCallNonce {
 // Represents a proxy contract upgrade approved by governance with a delay in
 // execution in case of an error. 
 message AxelarUpgradeData {
-    bytes payload = 1;
-    int64 executable_height_threshold = 2;
+    uint64 chain_id = 1;
+    bytes payload = 2;
+    int64 executable_height_threshold = 3;
 }
 

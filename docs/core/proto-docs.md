@@ -233,6 +233,7 @@ execution in case of an error.
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
+| `chain_id` | [uint64](#uint64) |  |  |
 | `payload` | [bytes](#bytes) |  |  |
 | `executable_height_threshold` | [int64](#int64) |  |  |
 
@@ -386,6 +387,7 @@ GenesisState - all cork state that must be provided at genesis
 | `scheduled_corks` | [ScheduledAxelarCorks](#axelarcork.v1.ScheduledAxelarCorks) |  |  |
 | `cork_results` | [AxelarCorkResults](#axelarcork.v1.AxelarCorkResults) |  |  |
 | `axelar_contract_call_nonces` | [AxelarContractCallNonce](#axelarcork.v1.AxelarContractCallNonce) | repeated |  |
+| `axelar_upgrade_data` | [AxelarUpgradeData](#axelarcork.v1.AxelarUpgradeData) | repeated |  |
 
 
 

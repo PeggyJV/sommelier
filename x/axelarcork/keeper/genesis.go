@@ -50,6 +50,14 @@ func InitGenesis(ctx sdk.Context, k Keeper, gs types.GenesisState) {
 
 		k.SetAxelarContractCallNonce(ctx, n.ChainId, n.ContractAddress, n.Nonce)
 	}
+
+	for _, ud := range gs.AxelarUpgradeData {
+		if _, found := k.GetChainConfigurationByID(ctx, ud.ChainId); !found {
+			panic(fmt.Sprintf("chain configuration %d not found for upgrade data", ud.ChainId))
+		}
+
+		k.SetAxelarProxyUpgradeData(ctx, ud.ChainId, *ud)
+	}
 }
 
 // ExportGenesis writes the current store values
@@ -85,6 +93,12 @@ func ExportGenesis(ctx sdk.Context, k Keeper) types.GenesisState {
 		}
 
 		gs.AxelarContractCallNonces = append(gs.AxelarContractCallNonces, accn)
+
+		return false
+	})
+
+	k.IterateAxelarProxyUpgradeData(ctx, func(chainID uint64, upgradeData types.AxelarUpgradeData) (stop bool) {
+		gs.AxelarUpgradeData = append(gs.AxelarUpgradeData, &upgradeData)
 
 		return false
 	})
