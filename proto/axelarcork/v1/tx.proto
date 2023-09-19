@@ -42,6 +42,16 @@ message MsgRelayAxelarCorkRequest {
 
 message MsgRelayAxelarCorkResponse {}
 
+message MsgRelayAxelarProxyUpgradeRequest {
+  string                   signer                  = 1;
+  cosmos.base.v1beta1.Coin token                   = 2 [(gogoproto.nullable) = false];
+  uint64                   fee                     = 3;
+  uint64                   chain_id                = 4;
+}
+
+message MsgRelayAxelarProxyUpgradeResponse {}
+
+
 message MsgBumpAxelarCorkGasRequest {
   string                   signer     = 1;
   cosmos.base.v1beta1.Coin token      = 2 [(gogoproto.nullable) = false];

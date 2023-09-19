@@ -46,6 +46,9 @@ const (
 
 	// AxelarContractCallNoncePrefix - <prefix><chain_id><contract_address> -> <nonce>
 	AxelarContractCallNoncePrefix
+
+	// AxelarProxyUpgradeDataPrefix - <prefix><chain_id> -> <payload>
+	AxelarProxyUpgradeDataPrefix
 )
 
 // GetCorkValidatorKeyPrefix returns the key prefix for cork commits for a validator
@@ -108,4 +111,10 @@ func GetAxelarContractCallNonceKey(chainID uint64, contractAddress common.Addres
 	cid := make([]byte, 8)
 	binary.BigEndian.PutUint64(cid, chainID)
 	return bytes.Join([][]byte{{AxelarContractCallNoncePrefix}, cid, contractAddress.Bytes()}, []byte{})
+}
+
+func GetAxelarProxyUpgradeDataKey(chainID uint64) []byte {
+	cid := make([]byte, 8)
+	binary.BigEndian.PutUint64(cid, chainID)
+	return bytes.Join([][]byte{{AxelarProxyUpgradeDataPrefix}, cid}, []byte{})
 }

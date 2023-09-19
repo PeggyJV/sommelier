@@ -14,11 +14,13 @@ import (
 const (
 	ProposalTypeAddManagedCellarIDs = "AddAxelarManagedCellarIDs"
 
-	ProposalTypeRemoveManagedCellarIDs   = "RemoveAxelarManagedCellarIDs"
-	ProposalTypeScheduledCork            = "AxelarScheduledCork"
-	ProposalTypeCommunitySpend           = "AxelarCommunitySpend"
-	ProposalTypeAddChainConfiguration    = "AddAxelarChainConfiguration"
-	ProposalTypeRemoveChainConfiguration = "RemoveAxelarChainConfiguration"
+	ProposalTypeRemoveManagedCellarIDs           = "RemoveAxelarManagedCellarIDs"
+	ProposalTypeScheduledCork                    = "AxelarScheduledCork"
+	ProposalTypeCommunitySpend                   = "AxelarCommunitySpend"
+	ProposalTypeAddChainConfiguration            = "AddAxelarChainConfiguration"
+	ProposalTypeRemoveChainConfiguration         = "RemoveAxelarChainConfiguration"
+	ProposalTypeUpgradeAxelarProxyContract       = "UpgradeAxelarProxyContract"
+	ProposalTypeCancelAxelarProxyContractUpgrade = "CancelAxelarProxyContractUpgrade"
 )
 
 var _ govtypes.Content = &AddAxelarManagedCellarIDsProposal{}
@@ -27,6 +29,8 @@ var _ govtypes.Content = &AxelarScheduledCorkProposal{}
 var _ govtypes.Content = &AxelarCommunityPoolSpendProposal{}
 var _ govtypes.Content = &AddChainConfigurationProposal{}
 var _ govtypes.Content = &RemoveChainConfigurationProposal{}
+var _ govtypes.Content = &UpgradeAxelarProxyContractProposal{}
+var _ govtypes.Content = &CancelAxelarProxyContractUpgradeProposal{}
 
 func init() {
 	govtypes.RegisterProposalType(ProposalTypeAddManagedCellarIDs)
@@ -46,6 +50,12 @@ func init() {
 
 	govtypes.RegisterProposalType(ProposalTypeCommunitySpend)
 	govtypes.RegisterProposalTypeCodec(&AxelarCommunityPoolSpendProposal{}, "sommelier/AxelarCommunitySpendProposal")
+
+	govtypes.RegisterProposalType(ProposalTypeUpgradeAxelarProxyContract)
+	govtypes.RegisterProposalTypeCodec(&UpgradeAxelarProxyContractProposal{}, "sommelier/UpgradeAxelarProxyContractProposal")
+
+	govtypes.RegisterProposalType(ProposalTypeCancelAxelarProxyContractUpgrade)
+	govtypes.RegisterProposalTypeCodec(&CancelAxelarProxyContractUpgradeProposal{}, "sommelier/CancelAxelarProxyContractUpgradeProposal")
 }
 
 func NewAddManagedCellarIDsProposal(title string, description string, chainID uint64, cellarIds *CellarIDSet) *AddAxelarManagedCellarIDsProposal {
@@ -224,6 +234,51 @@ func (m *RemoveChainConfigurationProposal) ProposalType() string {
 }
 
 func (m *RemoveChainConfigurationProposal) ValidateBasic() error {
+	if err := govtypes.ValidateAbstract(m); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func NewUpgradeAxelarProxyContractProposal(title string, description string, chainID uint64, newProxyAddress string) *UpgradeAxelarProxyContractProposal {
+	return &UpgradeAxelarProxyContractProposal{
+		Title:           title,
+		Description:     description,
+		ChainId:         chainID,
+		NewProxyAddress: newProxyAddress,
+	}
+}
+
+func (m *UpgradeAxelarProxyContractProposal) ProposalRoute() string {
+	return RouterKey
+}
+
+func (m *UpgradeAxelarProxyContractProposal) ProposalType() string {
+	return ProposalTypeUpgradeAxelarProxyContract
+}
+
+func (m *UpgradeAxelarProxyContractProposal) ValidateBasic() error {
+	if err := govtypes.ValidateAbstract(m); err != nil {
+		return err
+	}
+
+	if !common.IsHexAddress(m.NewProxyAddress) {
+		return sdkerrors.Wrapf(ErrInvalidEVMAddress, "%s", m.NewProxyAddress)
+	}
+
+	return nil
+}
+
+func (m *CancelAxelarProxyContractUpgradeProposal) ProposalRoute() string {
+	return RouterKey
+}
+
+func (m *CancelAxelarProxyContractUpgradeProposal) ProposalType() string {
+	return ProposalTypeCancelAxelarProxyContractUpgrade
+}
+
+func (m *CancelAxelarProxyContractUpgradeProposal) ValidateBasic() error {
 	if err := govtypes.ValidateAbstract(m); err != nil {
 		return err
 	}

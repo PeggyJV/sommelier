@@ -921,6 +921,296 @@ func (m *RemoveChainConfigurationProposalWithDeposit) GetDeposit() string {
 	return ""
 }
 
+type UpgradeAxelarProxyContractProposal struct {
+	Title           string `protobuf:"bytes,1,opt,name=title,proto3" json:"title,omitempty"`
+	Description     string `protobuf:"bytes,2,opt,name=description,proto3" json:"description,omitempty"`
+	ChainId         uint64 `protobuf:"varint,3,opt,name=chain_id,json=chainId,proto3" json:"chain_id,omitempty"`
+	Deposit         string `protobuf:"bytes,4,opt,name=deposit,proto3" json:"deposit,omitempty"`
+	NewProxyAddress string `protobuf:"bytes,5,opt,name=new_proxy_address,json=newProxyAddress,proto3" json:"new_proxy_address,omitempty"`
+}
+
+func (m *UpgradeAxelarProxyContractProposal) Reset()         { *m = UpgradeAxelarProxyContractProposal{} }
+func (m *UpgradeAxelarProxyContractProposal) String() string { return proto.CompactTextString(m) }
+func (*UpgradeAxelarProxyContractProposal) ProtoMessage()    {}
+func (*UpgradeAxelarProxyContractProposal) Descriptor() ([]byte, []int) {
+	return fileDescriptor_5ffc5027adef0afd, []int{12}
+}
+func (m *UpgradeAxelarProxyContractProposal) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *UpgradeAxelarProxyContractProposal) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_UpgradeAxelarProxyContractProposal.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *UpgradeAxelarProxyContractProposal) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_UpgradeAxelarProxyContractProposal.Merge(m, src)
+}
+func (m *UpgradeAxelarProxyContractProposal) XXX_Size() int {
+	return m.Size()
+}
+func (m *UpgradeAxelarProxyContractProposal) XXX_DiscardUnknown() {
+	xxx_messageInfo_UpgradeAxelarProxyContractProposal.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_UpgradeAxelarProxyContractProposal proto.InternalMessageInfo
+
+func (m *UpgradeAxelarProxyContractProposal) GetTitle() string {
+	if m != nil {
+		return m.Title
+	}
+	return ""
+}
+
+func (m *UpgradeAxelarProxyContractProposal) GetDescription() string {
+	if m != nil {
+		return m.Description
+	}
+	return ""
+}
+
+func (m *UpgradeAxelarProxyContractProposal) GetChainId() uint64 {
+	if m != nil {
+		return m.ChainId
+	}
+	return 0
+}
+
+func (m *UpgradeAxelarProxyContractProposal) GetDeposit() string {
+	if m != nil {
+		return m.Deposit
+	}
+	return ""
+}
+
+func (m *UpgradeAxelarProxyContractProposal) GetNewProxyAddress() string {
+	if m != nil {
+		return m.NewProxyAddress
+	}
+	return ""
+}
+
+type UpgradeAxelarProxyContractProposalWithDeposit struct {
+	Title           string `protobuf:"bytes,1,opt,name=title,proto3" json:"title,omitempty"`
+	Description     string `protobuf:"bytes,2,opt,name=description,proto3" json:"description,omitempty"`
+	ChainId         uint64 `protobuf:"varint,3,opt,name=chain_id,json=chainId,proto3" json:"chain_id,omitempty"`
+	NewProxyAddress string `protobuf:"bytes,4,opt,name=new_proxy_address,json=newProxyAddress,proto3" json:"new_proxy_address,omitempty"`
+	Deposit         string `protobuf:"bytes,5,opt,name=deposit,proto3" json:"deposit,omitempty"`
+}
+
+func (m *UpgradeAxelarProxyContractProposalWithDeposit) Reset() {
+	*m = UpgradeAxelarProxyContractProposalWithDeposit{}
+}
+func (m *UpgradeAxelarProxyContractProposalWithDeposit) String() string {
+	return proto.CompactTextString(m)
+}
+func (*UpgradeAxelarProxyContractProposalWithDeposit) ProtoMessage() {}
+func (*UpgradeAxelarProxyContractProposalWithDeposit) Descriptor() ([]byte, []int) {
+	return fileDescriptor_5ffc5027adef0afd, []int{13}
+}
+func (m *UpgradeAxelarProxyContractProposalWithDeposit) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *UpgradeAxelarProxyContractProposalWithDeposit) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_UpgradeAxelarProxyContractProposalWithDeposit.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *UpgradeAxelarProxyContractProposalWithDeposit) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_UpgradeAxelarProxyContractProposalWithDeposit.Merge(m, src)
+}
+func (m *UpgradeAxelarProxyContractProposalWithDeposit) XXX_Size() int {
+	return m.Size()
+}
+func (m *UpgradeAxelarProxyContractProposalWithDeposit) XXX_DiscardUnknown() {
+	xxx_messageInfo_UpgradeAxelarProxyContractProposalWithDeposit.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_UpgradeAxelarProxyContractProposalWithDeposit proto.InternalMessageInfo
+
+func (m *UpgradeAxelarProxyContractProposalWithDeposit) GetTitle() string {
+	if m != nil {
+		return m.Title
+	}
+	return ""
+}
+
+func (m *UpgradeAxelarProxyContractProposalWithDeposit) GetDescription() string {
+	if m != nil {
+		return m.Description
+	}
+	return ""
+}
+
+func (m *UpgradeAxelarProxyContractProposalWithDeposit) GetChainId() uint64 {
+	if m != nil {
+		return m.ChainId
+	}
+	return 0
+}
+
+func (m *UpgradeAxelarProxyContractProposalWithDeposit) GetNewProxyAddress() string {
+	if m != nil {
+		return m.NewProxyAddress
+	}
+	return ""
+}
+
+func (m *UpgradeAxelarProxyContractProposalWithDeposit) GetDeposit() string {
+	if m != nil {
+		return m.Deposit
+	}
+	return ""
+}
+
+type CancelAxelarProxyContractUpgradeProposal struct {
+	Title       string `protobuf:"bytes,1,opt,name=title,proto3" json:"title,omitempty"`
+	Description string `protobuf:"bytes,2,opt,name=description,proto3" json:"description,omitempty"`
+	ChainId     uint64 `protobuf:"varint,3,opt,name=chain_id,json=chainId,proto3" json:"chain_id,omitempty"`
+}
+
+func (m *CancelAxelarProxyContractUpgradeProposal) Reset() {
+	*m = CancelAxelarProxyContractUpgradeProposal{}
+}
+func (m *CancelAxelarProxyContractUpgradeProposal) String() string { return proto.CompactTextString(m) }
+func (*CancelAxelarProxyContractUpgradeProposal) ProtoMessage()    {}
+func (*CancelAxelarProxyContractUpgradeProposal) Descriptor() ([]byte, []int) {
+	return fileDescriptor_5ffc5027adef0afd, []int{14}
+}
+func (m *CancelAxelarProxyContractUpgradeProposal) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *CancelAxelarProxyContractUpgradeProposal) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_CancelAxelarProxyContractUpgradeProposal.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *CancelAxelarProxyContractUpgradeProposal) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_CancelAxelarProxyContractUpgradeProposal.Merge(m, src)
+}
+func (m *CancelAxelarProxyContractUpgradeProposal) XXX_Size() int {
+	return m.Size()
+}
+func (m *CancelAxelarProxyContractUpgradeProposal) XXX_DiscardUnknown() {
+	xxx_messageInfo_CancelAxelarProxyContractUpgradeProposal.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_CancelAxelarProxyContractUpgradeProposal proto.InternalMessageInfo
+
+func (m *CancelAxelarProxyContractUpgradeProposal) GetTitle() string {
+	if m != nil {
+		return m.Title
+	}
+	return ""
+}
+
+func (m *CancelAxelarProxyContractUpgradeProposal) GetDescription() string {
+	if m != nil {
+		return m.Description
+	}
+	return ""
+}
+
+func (m *CancelAxelarProxyContractUpgradeProposal) GetChainId() uint64 {
+	if m != nil {
+		return m.ChainId
+	}
+	return 0
+}
+
+type CancelAxelarProxyContractUpgradeProposalWithDeposit struct {
+	Title       string `protobuf:"bytes,1,opt,name=title,proto3" json:"title,omitempty"`
+	Description string `protobuf:"bytes,2,opt,name=description,proto3" json:"description,omitempty"`
+	ChainId     uint64 `protobuf:"varint,3,opt,name=chain_id,json=chainId,proto3" json:"chain_id,omitempty"`
+	Deposit     string `protobuf:"bytes,4,opt,name=deposit,proto3" json:"deposit,omitempty"`
+}
+
+func (m *CancelAxelarProxyContractUpgradeProposalWithDeposit) Reset() {
+	*m = CancelAxelarProxyContractUpgradeProposalWithDeposit{}
+}
+func (m *CancelAxelarProxyContractUpgradeProposalWithDeposit) String() string {
+	return proto.CompactTextString(m)
+}
+func (*CancelAxelarProxyContractUpgradeProposalWithDeposit) ProtoMessage() {}
+func (*CancelAxelarProxyContractUpgradeProposalWithDeposit) Descriptor() ([]byte, []int) {
+	return fileDescriptor_5ffc5027adef0afd, []int{15}
+}
+func (m *CancelAxelarProxyContractUpgradeProposalWithDeposit) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *CancelAxelarProxyContractUpgradeProposalWithDeposit) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_CancelAxelarProxyContractUpgradeProposalWithDeposit.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *CancelAxelarProxyContractUpgradeProposalWithDeposit) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_CancelAxelarProxyContractUpgradeProposalWithDeposit.Merge(m, src)
+}
+func (m *CancelAxelarProxyContractUpgradeProposalWithDeposit) XXX_Size() int {
+	return m.Size()
+}
+func (m *CancelAxelarProxyContractUpgradeProposalWithDeposit) XXX_DiscardUnknown() {
+	xxx_messageInfo_CancelAxelarProxyContractUpgradeProposalWithDeposit.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_CancelAxelarProxyContractUpgradeProposalWithDeposit proto.InternalMessageInfo
+
+func (m *CancelAxelarProxyContractUpgradeProposalWithDeposit) GetTitle() string {
+	if m != nil {
+		return m.Title
+	}
+	return ""
+}
+
+func (m *CancelAxelarProxyContractUpgradeProposalWithDeposit) GetDescription() string {
+	if m != nil {
+		return m.Description
+	}
+	return ""
+}
+
+func (m *CancelAxelarProxyContractUpgradeProposalWithDeposit) GetChainId() uint64 {
+	if m != nil {
+		return m.ChainId
+	}
+	return 0
+}
+
+func (m *CancelAxelarProxyContractUpgradeProposalWithDeposit) GetDeposit() string {
+	if m != nil {
+		return m.Deposit
+	}
+	return ""
+}
+
 func init() {
 	proto.RegisterType((*AddAxelarManagedCellarIDsProposal)(nil), "axelarcork.v1.AddAxelarManagedCellarIDsProposal")
 	proto.RegisterType((*AddAxelarManagedCellarIDsProposalWithDeposit)(nil), "axelarcork.v1.AddAxelarManagedCellarIDsProposalWithDeposit")
@@ -934,65 +1224,75 @@ func init() {
 	proto.RegisterType((*AddChainConfigurationProposalWithDeposit)(nil), "axelarcork.v1.AddChainConfigurationProposalWithDeposit")
 	proto.RegisterType((*RemoveChainConfigurationProposal)(nil), "axelarcork.v1.RemoveChainConfigurationProposal")
 	proto.RegisterType((*RemoveChainConfigurationProposalWithDeposit)(nil), "axelarcork.v1.RemoveChainConfigurationProposalWithDeposit")
+	proto.RegisterType((*UpgradeAxelarProxyContractProposal)(nil), "axelarcork.v1.UpgradeAxelarProxyContractProposal")
+	proto.RegisterType((*UpgradeAxelarProxyContractProposalWithDeposit)(nil), "axelarcork.v1.UpgradeAxelarProxyContractProposalWithDeposit")
+	proto.RegisterType((*CancelAxelarProxyContractUpgradeProposal)(nil), "axelarcork.v1.CancelAxelarProxyContractUpgradeProposal")
+	proto.RegisterType((*CancelAxelarProxyContractUpgradeProposalWithDeposit)(nil), "axelarcork.v1.CancelAxelarProxyContractUpgradeProposalWithDeposit")
 }
 
 func init() { proto.RegisterFile("axelarcork/v1/proposal.proto", fileDescriptor_5ffc5027adef0afd) }
 
 var fileDescriptor_5ffc5027adef0afd = []byte{
-	// 843 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xdc, 0x56, 0x41, 0x8f, 0xdb, 0x44,
-	0x14, 0xce, 0x6c, 0xd3, 0xdd, 0x64, 0xb2, 0x85, 0xd6, 0xdd, 0x82, 0x1b, 0x8a, 0x9d, 0xb5, 0x50,
-	0x15, 0x44, 0x65, 0x2b, 0x01, 0xb5, 0xb0, 0xb7, 0xd8, 0x15, 0x22, 0xa8, 0xa0, 0x95, 0xf7, 0x80,
-	0xc4, 0x25, 0x9a, 0x78, 0x06, 0x67, 0xba, 0xb6, 0xc7, 0xb2, 0x27, 0x51, 0xf3, 0x0b, 0xe8, 0x91,
-	0x23, 0xe2, 0x94, 0x3b, 0x27, 0x24, 0xfe, 0x02, 0x52, 0x8f, 0x7b, 0x42, 0xc0, 0xc1, 0x42, 0xbb,
-	0x17, 0xce, 0xf9, 0x05, 0x28, 0x33, 0x71, 0x62, 0x77, 0xd9, 0x2d, 0xd2, 0x76, 0x25, 0x96, 0x5b,
-	0xe6, 0x7d, 0xef, 0xf9, 0xbd, 0xef, 0x7b, 0x6f, 0xe6, 0x05, 0xde, 0x43, 0xcf, 0x48, 0x80, 0x12,
-	0x8f, 0x25, 0x87, 0xd6, 0xa4, 0x63, 0xc5, 0x09, 0x8b, 0x59, 0x8a, 0x02, 0x33, 0x4e, 0x18, 0x67,
-	0xca, 0x8d, 0x35, 0x6a, 0x4e, 0x3a, 0x4d, 0xad, 0xec, 0x5c, 0x00, 0x85, 0x7b, 0x73, 0xc7, 0x67,
-	0x3e, 0x13, 0x3f, 0xad, 0xc5, 0xaf, 0xa5, 0x55, 0xf3, 0x58, 0x1a, 0xb2, 0xd4, 0x1a, 0xa2, 0x94,
-	0x58, 0x93, 0xce, 0x90, 0x70, 0xd4, 0xb1, 0x3c, 0x46, 0x23, 0x89, 0x1b, 0x3f, 0x01, 0xb8, 0xdb,
-	0xc3, 0xb8, 0x27, 0xbe, 0xf6, 0x05, 0x8a, 0x90, 0x4f, 0xb0, 0x43, 0x82, 0x00, 0x25, 0xfd, 0xc7,
-	0xe9, 0xfe, 0xb2, 0x20, 0x65, 0x07, 0x5e, 0xe7, 0x94, 0x07, 0x44, 0x05, 0x2d, 0xd0, 0xae, 0xbb,
-	0xf2, 0xa0, 0xb4, 0x60, 0x03, 0x93, 0xd4, 0x4b, 0x68, 0xcc, 0x29, 0x8b, 0xd4, 0x0d, 0x81, 0x15,
-	0x4d, 0xca, 0x5d, 0x58, 0xf3, 0x46, 0x88, 0x46, 0x03, 0x8a, 0xd5, 0x6b, 0x2d, 0xd0, 0xae, 0xba,
-	0x5b, 0xe2, 0xdc, 0xc7, 0xca, 0x27, 0x10, 0x7a, 0x22, 0xcf, 0x80, 0xe2, 0x54, 0xad, 0xb6, 0x40,
-	0xbb, 0xd1, 0x6d, 0x9a, 0x25, 0xca, 0x66, 0x5e, 0xc8, 0x01, 0xe1, 0x6e, 0x5d, 0x7a, 0xf7, 0x71,
-	0x6a, 0xfc, 0x0a, 0xe0, 0x83, 0x57, 0xd6, 0xfc, 0x15, 0xe5, 0xa3, 0xc7, 0x24, 0x66, 0x29, 0xe5,
-	0xff, 0xad, 0xf2, 0x15, 0x15, 0x6e, 0x61, 0x59, 0x98, 0x7a, 0x5d, 0xe4, 0xcc, 0x8f, 0xc6, 0xcf,
-	0x00, 0xbe, 0xe7, 0x92, 0x90, 0x4d, 0xc8, 0x95, 0xea, 0xc7, 0xef, 0x00, 0x5a, 0xff, 0xa6, 0xec,
-	0xab, 0xd8, 0x92, 0xd9, 0x06, 0x7c, 0x47, 0xb2, 0x3a, 0xf0, 0x46, 0x04, 0x8f, 0x03, 0x82, 0x1d,
-	0x96, 0x1c, 0x5e, 0xb8, 0x13, 0xbb, 0x70, 0x7b, 0x18, 0x30, 0xef, 0x70, 0x30, 0x22, 0xd4, 0x1f,
-	0xf1, 0x25, 0x97, 0x86, 0xb0, 0x7d, 0x26, 0x4c, 0x25, 0xaa, 0xd5, 0x32, 0xd5, 0x87, 0xf0, 0x6d,
-	0x8e, 0x12, 0x9f, 0xf0, 0x81, 0xc7, 0x22, 0x9e, 0x20, 0x8f, 0x0f, 0x10, 0xc6, 0x09, 0x49, 0xd3,
-	0x65, 0xfd, 0x77, 0x24, 0xec, 0x2c, 0xd1, 0x9e, 0x04, 0x95, 0x47, 0x50, 0x5d, 0x05, 0x78, 0x28,
-	0x08, 0x06, 0xe2, 0x11, 0x18, 0x3c, 0x4d, 0x59, 0xa4, 0x6e, 0xca, 0xc0, 0x1c, 0x77, 0x50, 0x10,
-	0xec, 0x2f, 0xd0, 0xcf, 0x53, 0x16, 0x29, 0x4d, 0x58, 0xc3, 0x04, 0xe1, 0x80, 0x46, 0x44, 0xdd,
-	0x12, 0xb5, 0xac, 0xce, 0xc6, 0x2f, 0x1b, 0xf0, 0xfe, 0x39, 0x12, 0xbd, 0x8e, 0xae, 0xff, 0x7f,
-	0xd4, 0x2a, 0x8e, 0x5a, 0xad, 0x3c, 0x6a, 0x7f, 0x00, 0xd8, 0x92, 0x3a, 0x3a, 0x2c, 0x0c, 0xc7,
-	0x11, 0xe5, 0xd3, 0x7d, 0xc6, 0x82, 0x83, 0x98, 0x44, 0xf8, 0xc2, 0xf3, 0x76, 0x0f, 0xd6, 0x13,
-	0xe2, 0xd1, 0x98, 0x92, 0x48, 0xca, 0x57, 0x77, 0xd7, 0x86, 0xf3, 0xc4, 0x7b, 0x04, 0x37, 0x51,
-	0xc8, 0xc6, 0x91, 0xbc, 0x19, 0x8d, 0xee, 0x5d, 0x53, 0x6e, 0x14, 0x73, 0xb1, 0x51, 0xcc, 0xe5,
-	0x46, 0x31, 0x1d, 0x46, 0x23, 0xbb, 0xfa, 0x22, 0xd3, 0x2b, 0xee, 0xd2, 0x7d, 0x6f, 0xfb, 0xf9,
-	0x4c, 0x07, 0xdf, 0xcf, 0x74, 0xf0, 0xd7, 0x4c, 0xaf, 0x18, 0xdf, 0x5e, 0xcb, 0x87, 0xe4, 0x6c,
-	0x72, 0x9f, 0xb2, 0xc4, 0x79, 0xd2, 0x57, 0xee, 0x97, 0x28, 0xda, 0x37, 0xe7, 0x99, 0xbe, 0x3d,
-	0x45, 0x61, 0xb0, 0x67, 0x08, 0xb3, 0x91, 0x93, 0xfe, 0xf8, 0x1f, 0x48, 0xdb, 0x6f, 0xcd, 0x33,
-	0x5d, 0x91, 0xde, 0x05, 0xd0, 0x28, 0x8b, 0xd1, 0x3d, 0x25, 0x86, 0xbd, 0x33, 0xcf, 0xf4, 0x9b,
-	0x32, 0x6e, 0x05, 0x19, 0x45, 0x89, 0xcc, 0x97, 0x25, 0xb2, 0x6f, 0xcf, 0x33, 0xfd, 0x4d, 0x19,
-	0x92, 0x23, 0xc6, 0x5a, 0xb7, 0x8f, 0x20, 0x94, 0xd6, 0x08, 0x85, 0x44, 0xce, 0x99, 0x7d, 0x67,
-	0x9e, 0xe9, 0xb7, 0x8a, 0x11, 0x0b, 0xcc, 0x70, 0xeb, 0xe2, 0xf0, 0x25, 0x0a, 0x89, 0xf2, 0xfe,
-	0x4a, 0x6d, 0x31, 0x60, 0xf6, 0xad, 0x79, 0xa6, 0xdf, 0x90, 0x11, 0xd2, 0x6e, 0xe4, 0xfa, 0x2a,
-	0x0f, 0xd6, 0x83, 0xb4, 0x25, 0x7c, 0x95, 0x79, 0xa6, 0xbf, 0x91, 0x53, 0x97, 0x23, 0xb5, 0x1a,
-	0xae, 0xbd, 0xda, 0xf3, 0x99, 0x5e, 0x59, 0x74, 0xc3, 0xf8, 0x11, 0xc0, 0x77, 0x7b, 0x18, 0x3b,
-	0x8b, 0x9c, 0x0e, 0x8b, 0xbe, 0xa1, 0xfe, 0x38, 0x41, 0x0b, 0x59, 0x2e, 0x3c, 0x63, 0x2e, 0xbc,
-	0x2d, 0x69, 0x79, 0xc5, 0xcf, 0x0a, 0x81, 0x1b, 0xdd, 0xdd, 0x97, 0x5f, 0xe2, 0x53, 0xf9, 0x5d,
-	0xc5, 0x3b, 0x65, 0x33, 0x8e, 0x00, 0x6c, 0x9f, 0x5b, 0xed, 0xeb, 0x78, 0x5e, 0x2e, 0xa1, 0xf0,
-	0xe2, 0x3d, 0xaf, 0x96, 0xef, 0xf9, 0x18, 0xb6, 0xe4, 0xb6, 0xbc, 0x84, 0x16, 0x9c, 0xbd, 0x1e,
-	0x8d, 0x1f, 0x00, 0xfc, 0xe0, 0x55, 0x79, 0x2f, 0x79, 0x43, 0x9f, 0xa9, 0x89, 0xfd, 0xe4, 0xc5,
-	0xb1, 0x06, 0x8e, 0x8e, 0x35, 0xf0, 0xe7, 0xb1, 0x06, 0xbe, 0x3b, 0xd1, 0x2a, 0x47, 0x27, 0x5a,
-	0xe5, 0xb7, 0x13, 0xad, 0xf2, 0x75, 0xd7, 0xa7, 0x7c, 0x34, 0x1e, 0x9a, 0x1e, 0x0b, 0xad, 0x98,
-	0xf8, 0xfe, 0xf4, 0xe9, 0xc4, 0x4a, 0x59, 0x18, 0x92, 0x80, 0x92, 0xc4, 0x9a, 0x3c, 0xb4, 0x9e,
-	0x15, 0xfe, 0x0a, 0x5b, 0x7c, 0x1a, 0x93, 0x74, 0xb8, 0x29, 0x1e, 0xea, 0x0f, 0xff, 0x0e, 0x00,
-	0x00, 0xff, 0xff, 0x52, 0xef, 0x69, 0x78, 0x60, 0x0b, 0x00, 0x00,
+	// 933 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xdc, 0x57, 0xcf, 0x6f, 0x1b, 0x45,
+	0x14, 0xf6, 0xa4, 0x6e, 0x12, 0x8f, 0x53, 0xda, 0x6c, 0x53, 0xd8, 0x86, 0xe2, 0x75, 0x46, 0xa8,
+	0x32, 0x50, 0x76, 0x15, 0x17, 0xb5, 0x90, 0x5b, 0xbc, 0x15, 0x22, 0xa8, 0xa0, 0x68, 0x23, 0x84,
+	0xc4, 0xc5, 0x1a, 0xef, 0x0c, 0xeb, 0x69, 0x76, 0x67, 0x56, 0xbb, 0x6b, 0x37, 0x3e, 0x70, 0xa6,
+	0x47, 0x8e, 0x88, 0x93, 0xc5, 0x95, 0x13, 0x12, 0x57, 0x8e, 0x48, 0x39, 0xe6, 0x84, 0x80, 0x83,
+	0x85, 0x92, 0x0b, 0x67, 0xff, 0x05, 0xc8, 0x33, 0xbb, 0xce, 0x3a, 0x3f, 0x9c, 0x4a, 0xa9, 0x05,
+	0xed, 0xcd, 0xf3, 0xbe, 0x99, 0x9d, 0xef, 0xfb, 0xde, 0x9b, 0x79, 0x63, 0x78, 0x07, 0xef, 0x51,
+	0x1f, 0x47, 0xae, 0x88, 0x76, 0xad, 0xee, 0xba, 0x15, 0x46, 0x22, 0x14, 0x31, 0xf6, 0xcd, 0x30,
+	0x12, 0x89, 0xd0, 0xae, 0x1d, 0xa3, 0x66, 0x77, 0x7d, 0xb5, 0x32, 0x39, 0x39, 0x07, 0xca, 0xe9,
+	0xab, 0x2b, 0x9e, 0xf0, 0x84, 0xfc, 0x69, 0x8d, 0x7e, 0xa5, 0xd1, 0x8a, 0x2b, 0xe2, 0x40, 0xc4,
+	0x56, 0x0b, 0xc7, 0xd4, 0xea, 0xae, 0xb7, 0x68, 0x82, 0xd7, 0x2d, 0x57, 0x30, 0xae, 0x70, 0xf4,
+	0x33, 0x80, 0x6b, 0x9b, 0x84, 0x6c, 0xca, 0xaf, 0x7d, 0x86, 0x39, 0xf6, 0x28, 0xb1, 0xa9, 0xef,
+	0xe3, 0x68, 0xeb, 0x51, 0xbc, 0x9d, 0x12, 0xd2, 0x56, 0xe0, 0xd5, 0x84, 0x25, 0x3e, 0xd5, 0x41,
+	0x15, 0xd4, 0x4a, 0x8e, 0x1a, 0x68, 0x55, 0x58, 0x26, 0x34, 0x76, 0x23, 0x16, 0x26, 0x4c, 0x70,
+	0x7d, 0x4e, 0x62, 0xf9, 0x90, 0x76, 0x1b, 0x2e, 0xba, 0x6d, 0xcc, 0x78, 0x93, 0x11, 0xfd, 0x4a,
+	0x15, 0xd4, 0x8a, 0xce, 0x82, 0x1c, 0x6f, 0x11, 0xed, 0x23, 0x08, 0x5d, 0xb9, 0x4f, 0x93, 0x91,
+	0x58, 0x2f, 0x56, 0x41, 0xad, 0x5c, 0x5f, 0x35, 0x27, 0x24, 0x9b, 0x19, 0x91, 0x1d, 0x9a, 0x38,
+	0x25, 0x35, 0x7b, 0x8b, 0xc4, 0xe8, 0x77, 0x00, 0xef, 0x5d, 0xc8, 0xf9, 0x4b, 0x96, 0xb4, 0x1f,
+	0xd1, 0x50, 0xc4, 0x2c, 0xf9, 0x7f, 0xd1, 0xd7, 0x74, 0xb8, 0x40, 0x14, 0x31, 0xfd, 0xaa, 0xdc,
+	0x33, 0x1b, 0xa2, 0x5f, 0x00, 0x7c, 0xdb, 0xa1, 0x81, 0xe8, 0xd2, 0x97, 0x2a, 0x1f, 0x7f, 0x02,
+	0x68, 0x3d, 0x0f, 0xed, 0x97, 0x31, 0x25, 0xfd, 0x39, 0xf8, 0xa6, 0x52, 0xb5, 0xe3, 0xb6, 0x29,
+	0xe9, 0xf8, 0x94, 0xd8, 0x22, 0xda, 0xbd, 0x74, 0x26, 0xd6, 0xe0, 0x52, 0xcb, 0x17, 0xee, 0x6e,
+	0xb3, 0x4d, 0x99, 0xd7, 0x4e, 0x52, 0x2d, 0x65, 0x19, 0xfb, 0x44, 0x86, 0x26, 0xa4, 0x16, 0x27,
+	0xa5, 0x3e, 0x80, 0x6f, 0x24, 0x38, 0xf2, 0x68, 0xd2, 0x74, 0x05, 0x4f, 0x22, 0xec, 0x26, 0x4d,
+	0x4c, 0x48, 0x44, 0xe3, 0x38, 0xe5, 0x7f, 0x4b, 0xc1, 0x76, 0x8a, 0x6e, 0x2a, 0x50, 0x7b, 0x08,
+	0xf5, 0xf1, 0x02, 0x17, 0xfb, 0x7e, 0x53, 0x5e, 0x02, 0xcd, 0x27, 0xb1, 0xe0, 0xfa, 0xbc, 0x5a,
+	0x98, 0xe1, 0x36, 0xf6, 0xfd, 0xed, 0x11, 0xfa, 0x69, 0x2c, 0xb8, 0xb6, 0x0a, 0x17, 0x09, 0xc5,
+	0xc4, 0x67, 0x9c, 0xea, 0x0b, 0x92, 0xcb, 0x78, 0x8c, 0x7e, 0x9b, 0x83, 0x77, 0xa7, 0x58, 0xf4,
+	0x22, 0xb2, 0xfe, 0xea, 0xb8, 0x95, 0x2f, 0xb5, 0xc5, 0xc9, 0x52, 0xfb, 0x0b, 0xc0, 0xaa, 0xf2,
+	0xd1, 0x16, 0x41, 0xd0, 0xe1, 0x2c, 0xe9, 0x6d, 0x0b, 0xe1, 0xef, 0x84, 0x94, 0x93, 0x4b, 0xd7,
+	0xdb, 0x1d, 0x58, 0x8a, 0xa8, 0xcb, 0x42, 0x46, 0xb9, 0xb2, 0xaf, 0xe4, 0x1c, 0x07, 0xa6, 0x99,
+	0xf7, 0x10, 0xce, 0xe3, 0x40, 0x74, 0xb8, 0x3a, 0x19, 0xe5, 0xfa, 0x6d, 0x53, 0x75, 0x14, 0x73,
+	0xd4, 0x51, 0xcc, 0xb4, 0xa3, 0x98, 0xb6, 0x60, 0xbc, 0x51, 0xdc, 0x1f, 0x18, 0x05, 0x27, 0x9d,
+	0xbe, 0xb1, 0xf4, 0xac, 0x6f, 0x80, 0xef, 0xfb, 0x06, 0xf8, 0xa7, 0x6f, 0x14, 0xd0, 0xb7, 0x57,
+	0xb2, 0x22, 0x39, 0x5f, 0xdc, 0xc7, 0x22, 0xb2, 0x1f, 0x6f, 0x69, 0x77, 0x27, 0x24, 0x36, 0x6e,
+	0x0c, 0x07, 0xc6, 0x52, 0x0f, 0x07, 0xfe, 0x06, 0x92, 0x61, 0x94, 0x89, 0xfe, 0xf0, 0x0c, 0xd1,
+	0x8d, 0xd7, 0x87, 0x03, 0x43, 0x53, 0xb3, 0x73, 0x20, 0x9a, 0x34, 0xa3, 0x7e, 0xca, 0x8c, 0xc6,
+	0xca, 0x70, 0x60, 0xdc, 0x50, 0xeb, 0xc6, 0x10, 0xca, 0x5b, 0x64, 0x9e, 0xb4, 0xa8, 0x71, 0x73,
+	0x38, 0x30, 0xae, 0xab, 0x25, 0x19, 0x82, 0x8e, 0x7d, 0xfb, 0x00, 0x42, 0x15, 0xe5, 0x38, 0xa0,
+	0xaa, 0xce, 0x1a, 0xb7, 0x86, 0x03, 0x63, 0x39, 0xbf, 0x62, 0x84, 0x21, 0xa7, 0x24, 0x07, 0x9f,
+	0xe3, 0x80, 0x6a, 0xef, 0x8c, 0xdd, 0x96, 0x05, 0xd6, 0x58, 0x1e, 0x0e, 0x8c, 0x6b, 0x6a, 0x85,
+	0x8a, 0xa3, 0xcc, 0x5f, 0xed, 0xde, 0x71, 0x21, 0x2d, 0xc8, 0xb9, 0xda, 0x70, 0x60, 0xbc, 0x96,
+	0x49, 0x57, 0x25, 0x35, 0x2e, 0xae, 0x8d, 0xc5, 0x67, 0x7d, 0xa3, 0x30, 0xca, 0x06, 0xfa, 0x09,
+	0xc0, 0xb7, 0x36, 0x09, 0xb1, 0x47, 0x7b, 0xda, 0x82, 0x7f, 0xcd, 0xbc, 0x4e, 0x84, 0x47, 0xb6,
+	0x5c, 0xba, 0xc6, 0x1c, 0x78, 0x53, 0xc9, 0x72, 0xf3, 0x9f, 0x95, 0x06, 0x97, 0xeb, 0x6b, 0x27,
+	0x6f, 0xe2, 0x53, 0xfb, 0x3b, 0x9a, 0x7b, 0x2a, 0x86, 0x0e, 0x00, 0xac, 0x4d, 0x65, 0xfb, 0x22,
+	0xae, 0x97, 0x19, 0x10, 0xcf, 0x9f, 0xf3, 0xe2, 0xe4, 0x39, 0xef, 0xc0, 0xaa, 0xea, 0x96, 0x33,
+	0x48, 0xc1, 0xf9, 0xed, 0x11, 0xfd, 0x00, 0xe0, 0x7b, 0x17, 0xed, 0x3b, 0xe3, 0x0e, 0x7d, 0xbe,
+	0x27, 0xbf, 0x02, 0x88, 0xbe, 0x08, 0xbd, 0x08, 0x93, 0xf4, 0x0d, 0xb1, 0x1d, 0x89, 0xbd, 0x5e,
+	0x76, 0x21, 0xcf, 0xf2, 0xdd, 0x73, 0x2e, 0x27, 0xed, 0x5d, 0xb8, 0xcc, 0xe9, 0xd3, 0xd1, 0xa5,
+	0xbf, 0xd7, 0x3b, 0xd1, 0x30, 0xae, 0x73, 0xfa, 0x54, 0x32, 0x4c, 0x5b, 0x05, 0xda, 0x07, 0xf0,
+	0xfd, 0x8b, 0xf9, 0xcf, 0xd8, 0xde, 0x33, 0x09, 0x17, 0xcf, 0x24, 0x3c, 0xe5, 0xc5, 0xf3, 0x0d,
+	0xac, 0xd9, 0x98, 0xbb, 0xd4, 0x3f, 0x43, 0x48, 0x2a, 0x71, 0x96, 0x65, 0xfa, 0x23, 0x80, 0xf7,
+	0x9f, 0x77, 0xff, 0xff, 0xaa, 0x5c, 0x1b, 0x8f, 0xf7, 0x0f, 0x2b, 0xe0, 0xe0, 0xb0, 0x02, 0xfe,
+	0x3e, 0xac, 0x80, 0xef, 0x8e, 0x2a, 0x85, 0x83, 0xa3, 0x4a, 0xe1, 0x8f, 0xa3, 0x4a, 0xe1, 0xab,
+	0xba, 0xc7, 0x92, 0x76, 0xa7, 0x65, 0xba, 0x22, 0xb0, 0x42, 0xea, 0x79, 0xbd, 0x27, 0x5d, 0x2b,
+	0x16, 0x41, 0x40, 0x7d, 0x46, 0x23, 0xab, 0xfb, 0xc0, 0xda, 0xcb, 0xfd, 0x73, 0xb3, 0x92, 0x5e,
+	0x48, 0xe3, 0xd6, 0xbc, 0x7c, 0x57, 0xdc, 0xff, 0x37, 0x00, 0x00, 0xff, 0xff, 0x1f, 0x58, 0x56,
+	0x3b, 0x0f, 0x0e, 0x00, 0x00,
 }
 
 func (m *AddAxelarManagedCellarIDsProposal) Marshal() (dAtA []byte, err error) {
@@ -1689,6 +1989,209 @@ func (m *RemoveChainConfigurationProposalWithDeposit) MarshalToSizedBuffer(dAtA 
 	return len(dAtA) - i, nil
 }
 
+func (m *UpgradeAxelarProxyContractProposal) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *UpgradeAxelarProxyContractProposal) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *UpgradeAxelarProxyContractProposal) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.NewProxyAddress) > 0 {
+		i -= len(m.NewProxyAddress)
+		copy(dAtA[i:], m.NewProxyAddress)
+		i = encodeVarintProposal(dAtA, i, uint64(len(m.NewProxyAddress)))
+		i--
+		dAtA[i] = 0x2a
+	}
+	if len(m.Deposit) > 0 {
+		i -= len(m.Deposit)
+		copy(dAtA[i:], m.Deposit)
+		i = encodeVarintProposal(dAtA, i, uint64(len(m.Deposit)))
+		i--
+		dAtA[i] = 0x22
+	}
+	if m.ChainId != 0 {
+		i = encodeVarintProposal(dAtA, i, uint64(m.ChainId))
+		i--
+		dAtA[i] = 0x18
+	}
+	if len(m.Description) > 0 {
+		i -= len(m.Description)
+		copy(dAtA[i:], m.Description)
+		i = encodeVarintProposal(dAtA, i, uint64(len(m.Description)))
+		i--
+		dAtA[i] = 0x12
+	}
+	if len(m.Title) > 0 {
+		i -= len(m.Title)
+		copy(dAtA[i:], m.Title)
+		i = encodeVarintProposal(dAtA, i, uint64(len(m.Title)))
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *UpgradeAxelarProxyContractProposalWithDeposit) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *UpgradeAxelarProxyContractProposalWithDeposit) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *UpgradeAxelarProxyContractProposalWithDeposit) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.Deposit) > 0 {
+		i -= len(m.Deposit)
+		copy(dAtA[i:], m.Deposit)
+		i = encodeVarintProposal(dAtA, i, uint64(len(m.Deposit)))
+		i--
+		dAtA[i] = 0x2a
+	}
+	if len(m.NewProxyAddress) > 0 {
+		i -= len(m.NewProxyAddress)
+		copy(dAtA[i:], m.NewProxyAddress)
+		i = encodeVarintProposal(dAtA, i, uint64(len(m.NewProxyAddress)))
+		i--
+		dAtA[i] = 0x22
+	}
+	if m.ChainId != 0 {
+		i = encodeVarintProposal(dAtA, i, uint64(m.ChainId))
+		i--
+		dAtA[i] = 0x18
+	}
+	if len(m.Description) > 0 {
+		i -= len(m.Description)
+		copy(dAtA[i:], m.Description)
+		i = encodeVarintProposal(dAtA, i, uint64(len(m.Description)))
+		i--
+		dAtA[i] = 0x12
+	}
+	if len(m.Title) > 0 {
+		i -= len(m.Title)
+		copy(dAtA[i:], m.Title)
+		i = encodeVarintProposal(dAtA, i, uint64(len(m.Title)))
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *CancelAxelarProxyContractUpgradeProposal) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *CancelAxelarProxyContractUpgradeProposal) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *CancelAxelarProxyContractUpgradeProposal) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if m.ChainId != 0 {
+		i = encodeVarintProposal(dAtA, i, uint64(m.ChainId))
+		i--
+		dAtA[i] = 0x18
+	}
+	if len(m.Description) > 0 {
+		i -= len(m.Description)
+		copy(dAtA[i:], m.Description)
+		i = encodeVarintProposal(dAtA, i, uint64(len(m.Description)))
+		i--
+		dAtA[i] = 0x12
+	}
+	if len(m.Title) > 0 {
+		i -= len(m.Title)
+		copy(dAtA[i:], m.Title)
+		i = encodeVarintProposal(dAtA, i, uint64(len(m.Title)))
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *CancelAxelarProxyContractUpgradeProposalWithDeposit) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *CancelAxelarProxyContractUpgradeProposalWithDeposit) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *CancelAxelarProxyContractUpgradeProposalWithDeposit) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.Deposit) > 0 {
+		i -= len(m.Deposit)
+		copy(dAtA[i:], m.Deposit)
+		i = encodeVarintProposal(dAtA, i, uint64(len(m.Deposit)))
+		i--
+		dAtA[i] = 0x22
+	}
+	if m.ChainId != 0 {
+		i = encodeVarintProposal(dAtA, i, uint64(m.ChainId))
+		i--
+		dAtA[i] = 0x18
+	}
+	if len(m.Description) > 0 {
+		i -= len(m.Description)
+		copy(dAtA[i:], m.Description)
+		i = encodeVarintProposal(dAtA, i, uint64(len(m.Description)))
+		i--
+		dAtA[i] = 0x12
+	}
+	if len(m.Title) > 0 {
+		i -= len(m.Title)
+		copy(dAtA[i:], m.Title)
+		i = encodeVarintProposal(dAtA, i, uint64(len(m.Title)))
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
 func encodeVarintProposal(dAtA []byte, offset int, v uint64) int {
 	offset -= sovProposal(v)
 	base := offset
@@ -2005,6 +2508,106 @@ func (m *RemoveChainConfigurationProposal) Size() (n int) {
 }
 
 func (m *RemoveChainConfigurationProposalWithDeposit) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.Title)
+	if l > 0 {
+		n += 1 + l + sovProposal(uint64(l))
+	}
+	l = len(m.Description)
+	if l > 0 {
+		n += 1 + l + sovProposal(uint64(l))
+	}
+	if m.ChainId != 0 {
+		n += 1 + sovProposal(uint64(m.ChainId))
+	}
+	l = len(m.Deposit)
+	if l > 0 {
+		n += 1 + l + sovProposal(uint64(l))
+	}
+	return n
+}
+
+func (m *UpgradeAxelarProxyContractProposal) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.Title)
+	if l > 0 {
+		n += 1 + l + sovProposal(uint64(l))
+	}
+	l = len(m.Description)
+	if l > 0 {
+		n += 1 + l + sovProposal(uint64(l))
+	}
+	if m.ChainId != 0 {
+		n += 1 + sovProposal(uint64(m.ChainId))
+	}
+	l = len(m.Deposit)
+	if l > 0 {
+		n += 1 + l + sovProposal(uint64(l))
+	}
+	l = len(m.NewProxyAddress)
+	if l > 0 {
+		n += 1 + l + sovProposal(uint64(l))
+	}
+	return n
+}
+
+func (m *UpgradeAxelarProxyContractProposalWithDeposit) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.Title)
+	if l > 0 {
+		n += 1 + l + sovProposal(uint64(l))
+	}
+	l = len(m.Description)
+	if l > 0 {
+		n += 1 + l + sovProposal(uint64(l))
+	}
+	if m.ChainId != 0 {
+		n += 1 + sovProposal(uint64(m.ChainId))
+	}
+	l = len(m.NewProxyAddress)
+	if l > 0 {
+		n += 1 + l + sovProposal(uint64(l))
+	}
+	l = len(m.Deposit)
+	if l > 0 {
+		n += 1 + l + sovProposal(uint64(l))
+	}
+	return n
+}
+
+func (m *CancelAxelarProxyContractUpgradeProposal) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.Title)
+	if l > 0 {
+		n += 1 + l + sovProposal(uint64(l))
+	}
+	l = len(m.Description)
+	if l > 0 {
+		n += 1 + l + sovProposal(uint64(l))
+	}
+	if m.ChainId != 0 {
+		n += 1 + sovProposal(uint64(m.ChainId))
+	}
+	return n
+}
+
+func (m *CancelAxelarProxyContractUpgradeProposalWithDeposit) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -4227,6 +4830,698 @@ func (m *RemoveChainConfigurationProposalWithDeposit) Unmarshal(dAtA []byte) err
 		}
 		if fieldNum <= 0 {
 			return fmt.Errorf("proto: RemoveChainConfigurationProposalWithDeposit: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Title", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowProposal
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthProposal
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthProposal
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Title = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Description", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowProposal
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthProposal
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthProposal
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Description = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 3:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field ChainId", wireType)
+			}
+			m.ChainId = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowProposal
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.ChainId |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 4:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Deposit", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowProposal
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthProposal
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthProposal
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Deposit = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipProposal(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthProposal
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *UpgradeAxelarProxyContractProposal) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowProposal
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: UpgradeAxelarProxyContractProposal: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: UpgradeAxelarProxyContractProposal: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Title", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowProposal
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthProposal
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthProposal
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Title = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Description", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowProposal
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthProposal
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthProposal
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Description = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 3:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field ChainId", wireType)
+			}
+			m.ChainId = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowProposal
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.ChainId |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 4:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Deposit", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowProposal
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthProposal
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthProposal
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Deposit = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 5:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field NewProxyAddress", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowProposal
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthProposal
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthProposal
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.NewProxyAddress = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipProposal(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthProposal
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *UpgradeAxelarProxyContractProposalWithDeposit) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowProposal
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: UpgradeAxelarProxyContractProposalWithDeposit: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: UpgradeAxelarProxyContractProposalWithDeposit: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Title", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowProposal
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthProposal
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthProposal
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Title = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Description", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowProposal
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthProposal
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthProposal
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Description = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 3:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field ChainId", wireType)
+			}
+			m.ChainId = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowProposal
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.ChainId |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 4:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field NewProxyAddress", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowProposal
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthProposal
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthProposal
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.NewProxyAddress = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 5:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Deposit", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowProposal
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthProposal
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthProposal
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Deposit = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipProposal(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthProposal
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *CancelAxelarProxyContractUpgradeProposal) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowProposal
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: CancelAxelarProxyContractUpgradeProposal: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: CancelAxelarProxyContractUpgradeProposal: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Title", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowProposal
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthProposal
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthProposal
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Title = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Description", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowProposal
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthProposal
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthProposal
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Description = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 3:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field ChainId", wireType)
+			}
+			m.ChainId = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowProposal
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.ChainId |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		default:
+			iNdEx = preIndex
+			skippy, err := skipProposal(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthProposal
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *CancelAxelarProxyContractUpgradeProposalWithDeposit) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowProposal
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: CancelAxelarProxyContractUpgradeProposalWithDeposit: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: CancelAxelarProxyContractUpgradeProposalWithDeposit: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:

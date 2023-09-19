@@ -60,3 +60,10 @@ message AxelarContractCallNonce {
     uint64 nonce = 3;
 }
 
+// Represents a proxy contract upgrade approved by governance with a delay in
+// execution in case of an error. 
+message AxelarUpgradeData {
+    bytes payload = 1;
+    int64 executable_height_threshold = 2;
+}
+

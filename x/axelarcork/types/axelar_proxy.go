@@ -11,7 +11,15 @@ var (
 	AddressArr, _ = abi.NewType("address[]", "", nil)
 	Bytes, _      = abi.NewType("bytes", "", nil)
 	Uint256, _    = abi.NewType("uint256", "", nil)
+
+	HourInBlocks                     = uint64((60 * 60) / 12)
+	DefaultExecutableHeightThreshold = 72 * HourInBlocks
 )
+
+type UpgradeData struct {
+	Payload                  []byte
+	ExecutionThresholdHeight uint64
+}
 
 func EncodeExecuteArgs(targetContract string, nonce uint64, deadline uint64, callData []byte) ([]byte, error) {
 	return abi.Arguments{

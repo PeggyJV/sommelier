@@ -161,3 +161,43 @@ func HandleRemoveChainConfigurationProposal(ctx sdk.Context, k Keeper, p types.R
 
 	return nil
 }
+
+// HandleUpgradeAxelarProxyContractProposal is a handler for executing a passed axelar proxy contract upgrade proposal
+func HandleUpgradeAxelarProxyContractProposal(ctx sdk.Context, k Keeper, p types.UpgradeAxelarProxyContractProposal) error {
+	_, ok := k.GetChainConfigurationByID(ctx, p.ChainId)
+	if !ok {
+		return fmt.Errorf("chain by id %d not found", p.ChainId)
+	}
+
+	cellars := []string{}
+	for _, c := range k.GetCellarIDs(ctx, p.ChainId) {
+		cellars = append(cellars, c.Hex())
+	}
+
+	payload, err := types.EncodeUpgradeArgs(p.NewProxyAddress, cellars)
+	if err != nil {
+		return err
+	}
+
+	upgradeData := types.AxelarUpgradeData{
+		Payload:                   payload,
+		ExecutableHeightThreshold: ctx.BlockHeight() + int64(types.DefaultExecutableHeightThreshold),
+	}
+
+	k.SetAxelarProxyUpgradeData(ctx, p.ChainId, upgradeData)
+
+	return nil
+}
+
+// HandleCancelAxelarProxyContractUpgradeProposal is a handler for deleting axelar proxy contract upgrade data before the
+// executable height threshold is reached.
+func HandleCancelAxelarProxyContractUpgradeProposal(ctx sdk.Context, k Keeper, p types.CancelAxelarProxyContractUpgradeProposal) error {
+	_, ok := k.GetChainConfigurationByID(ctx, p.ChainId)
+	if !ok {
+		return fmt.Errorf("chain id %d not found", p.ChainId)
+	}
+
+	k.DeleteAxelarProxyUpgradeData(ctx, p.ChainId)
+
+	return nil
+}

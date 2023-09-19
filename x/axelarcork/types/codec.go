@@ -41,6 +41,7 @@ func RegisterInterfaces(registry codectypes.InterfaceRegistry) {
 		&MsgRelayAxelarCorkRequest{},
 		&MsgBumpAxelarCorkGasRequest{},
 		&MsgCancelAxelarCorkRequest{},
+		&MsgRelayAxelarProxyUpgradeRequest{},
 	)
 
 	registry.RegisterImplementations((*govtypes.Content)(nil),
@@ -50,6 +51,8 @@ func RegisterInterfaces(registry codectypes.InterfaceRegistry) {
 		&AxelarCommunityPoolSpendProposal{},
 		&AddAxelarManagedCellarIDsProposal{},
 		&RemoveAxelarManagedCellarIDsProposal{},
+		&UpgradeAxelarProxyContractProposal{},
+		&CancelAxelarProxyContractUpgradeProposal{},
 	)
 
 	msgservice.RegisterMsgServiceDesc(registry, &_Msg_serviceDesc)

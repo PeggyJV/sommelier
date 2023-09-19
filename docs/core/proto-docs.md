@@ -9,6 +9,7 @@
     - [AxelarCork](#axelarcork.v1.AxelarCork)
     - [AxelarCorkResult](#axelarcork.v1.AxelarCorkResult)
     - [AxelarCorkResults](#axelarcork.v1.AxelarCorkResults)
+    - [AxelarUpgradeData](#axelarcork.v1.AxelarUpgradeData)
     - [CellarIDSet](#axelarcork.v1.CellarIDSet)
     - [ChainConfiguration](#axelarcork.v1.ChainConfiguration)
     - [ChainConfigurations](#axelarcork.v1.ChainConfigurations)
@@ -31,10 +32,14 @@
     - [AxelarCommunityPoolSpendProposalForCLI](#axelarcork.v1.AxelarCommunityPoolSpendProposalForCLI)
     - [AxelarScheduledCorkProposal](#axelarcork.v1.AxelarScheduledCorkProposal)
     - [AxelarScheduledCorkProposalWithDeposit](#axelarcork.v1.AxelarScheduledCorkProposalWithDeposit)
+    - [CancelAxelarProxyContractUpgradeProposal](#axelarcork.v1.CancelAxelarProxyContractUpgradeProposal)
+    - [CancelAxelarProxyContractUpgradeProposalWithDeposit](#axelarcork.v1.CancelAxelarProxyContractUpgradeProposalWithDeposit)
     - [RemoveAxelarManagedCellarIDsProposal](#axelarcork.v1.RemoveAxelarManagedCellarIDsProposal)
     - [RemoveAxelarManagedCellarIDsProposalWithDeposit](#axelarcork.v1.RemoveAxelarManagedCellarIDsProposalWithDeposit)
     - [RemoveChainConfigurationProposal](#axelarcork.v1.RemoveChainConfigurationProposal)
     - [RemoveChainConfigurationProposalWithDeposit](#axelarcork.v1.RemoveChainConfigurationProposalWithDeposit)
+    - [UpgradeAxelarProxyContractProposal](#axelarcork.v1.UpgradeAxelarProxyContractProposal)
+    - [UpgradeAxelarProxyContractProposalWithDeposit](#axelarcork.v1.UpgradeAxelarProxyContractProposalWithDeposit)
   
 - [axelarcork/v1/query.proto](#axelarcork/v1/query.proto)
     - [QueryCellarIDsRequest](#axelarcork.v1.QueryCellarIDsRequest)
@@ -65,6 +70,8 @@
     - [MsgCancelAxelarCorkResponse](#axelarcork.v1.MsgCancelAxelarCorkResponse)
     - [MsgRelayAxelarCorkRequest](#axelarcork.v1.MsgRelayAxelarCorkRequest)
     - [MsgRelayAxelarCorkResponse](#axelarcork.v1.MsgRelayAxelarCorkResponse)
+    - [MsgRelayAxelarProxyUpgradeRequest](#axelarcork.v1.MsgRelayAxelarProxyUpgradeRequest)
+    - [MsgRelayAxelarProxyUpgradeResponse](#axelarcork.v1.MsgRelayAxelarProxyUpgradeResponse)
     - [MsgScheduleAxelarCorkRequest](#axelarcork.v1.MsgScheduleAxelarCorkRequest)
     - [MsgScheduleAxelarCorkResponse](#axelarcork.v1.MsgScheduleAxelarCorkResponse)
   
@@ -211,6 +218,23 @@ Used to enforce strictly newer call ordering per contract
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | `cork_results` | [AxelarCorkResult](#axelarcork.v1.AxelarCorkResult) | repeated |  |
+
+
+
+
+
+
+<a name="axelarcork.v1.AxelarUpgradeData"></a>
+
+### AxelarUpgradeData
+Represents a proxy contract upgrade approved by governance with a delay in
+execution in case of an error.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `payload` | [bytes](#bytes) |  |  |
+| `executable_height_threshold` | [int64](#int64) |  |  |
 
 
 
@@ -567,6 +591,41 @@ ScheduledCorkProposalWithDeposit is a specific definition for CLI commands
 
 
 
+<a name="axelarcork.v1.CancelAxelarProxyContractUpgradeProposal"></a>
+
+### CancelAxelarProxyContractUpgradeProposal
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `title` | [string](#string) |  |  |
+| `description` | [string](#string) |  |  |
+| `chain_id` | [uint64](#uint64) |  |  |
+
+
+
+
+
+
+<a name="axelarcork.v1.CancelAxelarProxyContractUpgradeProposalWithDeposit"></a>
+
+### CancelAxelarProxyContractUpgradeProposalWithDeposit
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `title` | [string](#string) |  |  |
+| `description` | [string](#string) |  |  |
+| `chain_id` | [uint64](#uint64) |  |  |
+| `deposit` | [string](#string) |  |  |
+
+
+
+
+
+
 <a name="axelarcork.v1.RemoveAxelarManagedCellarIDsProposal"></a>
 
 ### RemoveAxelarManagedCellarIDsProposal
@@ -632,6 +691,44 @@ RemoveManagedCellarIDsProposalWithDeposit is a specific definition for CLI comma
 | `title` | [string](#string) |  |  |
 | `description` | [string](#string) |  |  |
 | `chain_id` | [uint64](#uint64) |  |  |
+| `deposit` | [string](#string) |  |  |
+
+
+
+
+
+
+<a name="axelarcork.v1.UpgradeAxelarProxyContractProposal"></a>
+
+### UpgradeAxelarProxyContractProposal
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `title` | [string](#string) |  |  |
+| `description` | [string](#string) |  |  |
+| `chain_id` | [uint64](#uint64) |  |  |
+| `deposit` | [string](#string) |  |  |
+| `new_proxy_address` | [string](#string) |  |  |
+
+
+
+
+
+
+<a name="axelarcork.v1.UpgradeAxelarProxyContractProposalWithDeposit"></a>
+
+### UpgradeAxelarProxyContractProposalWithDeposit
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `title` | [string](#string) |  |  |
+| `description` | [string](#string) |  |  |
+| `chain_id` | [uint64](#uint64) |  |  |
+| `new_proxy_address` | [string](#string) |  |  |
 | `deposit` | [string](#string) |  |  |
 
 
@@ -1028,6 +1125,34 @@ Query defines the gRPC query service for the cork module.
 <a name="axelarcork.v1.MsgRelayAxelarCorkResponse"></a>
 
 ### MsgRelayAxelarCorkResponse
+
+
+
+
+
+
+
+<a name="axelarcork.v1.MsgRelayAxelarProxyUpgradeRequest"></a>
+
+### MsgRelayAxelarProxyUpgradeRequest
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `signer` | [string](#string) |  |  |
+| `token` | [cosmos.base.v1beta1.Coin](#cosmos.base.v1beta1.Coin) |  |  |
+| `fee` | [uint64](#uint64) |  |  |
+| `chain_id` | [uint64](#uint64) |  |  |
+
+
+
+
+
+
+<a name="axelarcork.v1.MsgRelayAxelarProxyUpgradeResponse"></a>
+
+### MsgRelayAxelarProxyUpgradeResponse
 
 
 

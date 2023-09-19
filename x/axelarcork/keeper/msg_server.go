@@ -119,6 +119,65 @@ func (k Keeper) RelayCork(c context.Context, msg *types.MsgRelayAxelarCorkReques
 	return &types.MsgRelayAxelarCorkResponse{}, nil
 }
 
+// RelayProxyUpgrade prepares the payload for IBC transfer if the current blockheight meets
+// the payload's execution threshold, and then deletes the upgrade data.
+func (k Keeper) RelayProxyUpgrade(c context.Context, msg *types.MsgRelayAxelarProxyUpgradeRequest) (*types.MsgRelayAxelarProxyUpgradeResponse, error) {
+	ctx := sdk.UnwrapSDKContext(c)
+	params := k.GetParamSet(ctx)
+
+	if !params.Enabled {
+		return nil, types.ErrDisabled
+	}
+
+	config, ok := k.GetChainConfigurationByID(ctx, msg.ChainId)
+	if !ok {
+		return nil, fmt.Errorf("chain by id %d not found", msg.ChainId)
+	}
+
+	upgradeData, found := k.GetAxelarProxyUpgradeData(ctx, msg.ChainId)
+	if !found {
+		return nil, fmt.Errorf("no proxy upgrade data found for chain %d", msg.ChainId)
+	}
+
+	if ctx.BlockHeight() < upgradeData.ExecutableHeightThreshold {
+		return nil, fmt.Errorf("proxy upgrade call is not executable until height %d", upgradeData.ExecutableHeightThreshold)
+	}
+
+	axelarMemo := types.AxelarBody{
+		DestinationChain:   config.Name,
+		DestinationAddress: config.ProxyAddress,
+		Payload:            upgradeData.Payload,
+		Type:               types.PureMessage,
+		Fee: &types.Fee{
+			Amount:    strconv.FormatUint(msg.Fee, 10),
+			Recipient: params.ExecutorAccount,
+		},
+	}
+	bz, err := json.Marshal(axelarMemo)
+	if err != nil {
+		return nil, err
+	}
+
+	transferMsg := transfertypes.NewMsgTransfer(
+		params.IbcPort,
+		params.IbcChannel,
+		msg.Token,
+		msg.Signer,
+		params.GmpAccount,
+		clienttypes.ZeroHeight(),
+		uint64(ctx.BlockTime().Add(time.Duration(params.TimeoutDuration)).UnixNano()),
+	)
+	transferMsg.Memo = string(bz)
+	_, err = k.transferKeeper.Transfer(c, transferMsg)
+	if err != nil {
+		return nil, err
+	}
+
+	k.DeleteAxelarProxyUpgradeData(ctx, msg.ChainId)
+
+	return &types.MsgRelayAxelarProxyUpgradeResponse{}, nil
+}
+
 func (k Keeper) BumpCorkGas(c context.Context, msg *types.MsgBumpAxelarCorkGasRequest) (*types.MsgBumpAxelarCorkGasResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
 	params := k.GetParamSet(ctx)
