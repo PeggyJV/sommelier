@@ -81,7 +81,7 @@ func (k Keeper) RelayCork(c context.Context, msg *types.MsgRelayAxelarCorkReques
 	}
 
 	nonce := k.IncrementAxelarContractCallNonce(ctx, msg.ChainId, cork.TargetContractAddress)
-	payload, err := types.EncodeExecuteArgs(msg.TargetContractAddress, nonce, cork.Deadline, cork.EncodedContractCall)
+	payload, err := types.EncodeLogicCallArgs(msg.TargetContractAddress, nonce, cork.Deadline, cork.EncodedContractCall)
 	if err != nil {
 		return nil, err
 	}

@@ -293,3 +293,40 @@ func (suite *KeeperTestSuite) TestAxelarCorkContractNonces() {
 		{chain2, address2, 2},
 	}, data)
 }
+
+func (suite *KeeperTestSuite) TestAxelarProxyArgsEncoding() {
+	require := suite.Require()
+
+	address := "0x0000000000000000000000000000000000000000"
+	cellars := []string{sampleCellarHex, "0x1111111111111111111111111111111111111111"}
+
+	_, err := types.EncodeLogicCallArgs(address, 1, 100000000, []byte("testcall"))
+	require.NoError(err)
+	_, err = types.EncodeUpgradeArgs(address, cellars)
+	require.NoError(err)
+}
+
+// TestAxelarProxyUpgradeData tests the upgrade data set, get, and delete functions
+func (suite *KeeperTestSuite) TestAxelarProxyUpgradeData() {
+	ctx, axelarcorkKeeper := suite.ctx, suite.axelarcorkKeeper
+	require := suite.Require()
+
+	chainID := uint64(TestEVMChainID)
+	address := "0x0000000000000000000000000000000000000000"
+	cellars := []string{sampleCellarHex, "0x1111111111111111111111111111111111111111"}
+	payload, err := types.EncodeUpgradeArgs(address, cellars)
+	require.NoError(err)
+	upgradeData := types.AxelarUpgradeData{
+		Payload:                   payload,
+		ExecutableHeightThreshold: 10000000,
+	}
+
+	axelarcorkKeeper.SetAxelarProxyUpgradeData(ctx, chainID, upgradeData)
+	actualUpgradeData, found := axelarcorkKeeper.GetAxelarProxyUpgradeData(ctx, chainID)
+	require.True(found)
+	require.Equal(upgradeData, actualUpgradeData)
+
+	axelarcorkKeeper.DeleteAxelarProxyUpgradeData(ctx, chainID)
+	_, found = axelarcorkKeeper.GetAxelarProxyUpgradeData(ctx, chainID)
+	require.False(found)
+}
