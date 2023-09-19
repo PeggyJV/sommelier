@@ -42,6 +42,10 @@
     - [UpgradeAxelarProxyContractProposalWithDeposit](#axelarcork.v1.UpgradeAxelarProxyContractProposalWithDeposit)
   
 - [axelarcork/v1/query.proto](#axelarcork/v1/query.proto)
+    - [QueryAxelarContractCallNoncesRequest](#axelarcork.v1.QueryAxelarContractCallNoncesRequest)
+    - [QueryAxelarContractCallNoncesResponse](#axelarcork.v1.QueryAxelarContractCallNoncesResponse)
+    - [QueryAxelarProxyUpgradeDataRequest](#axelarcork.v1.QueryAxelarProxyUpgradeDataRequest)
+    - [QueryAxelarProxyUpgradeDataResponse](#axelarcork.v1.QueryAxelarProxyUpgradeDataResponse)
     - [QueryCellarIDsRequest](#axelarcork.v1.QueryCellarIDsRequest)
     - [QueryCellarIDsResponse](#axelarcork.v1.QueryCellarIDsResponse)
     - [QueryChainConfigurationsRequest](#axelarcork.v1.QueryChainConfigurationsRequest)
@@ -753,6 +757,56 @@ RemoveManagedCellarIDsProposalWithDeposit is a specific definition for CLI comma
 
 
 
+<a name="axelarcork.v1.QueryAxelarContractCallNoncesRequest"></a>
+
+### QueryAxelarContractCallNoncesRequest
+
+
+
+
+
+
+
+<a name="axelarcork.v1.QueryAxelarContractCallNoncesResponse"></a>
+
+### QueryAxelarContractCallNoncesResponse
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `contract_call_nonces` | [AxelarContractCallNonce](#axelarcork.v1.AxelarContractCallNonce) | repeated |  |
+
+
+
+
+
+
+<a name="axelarcork.v1.QueryAxelarProxyUpgradeDataRequest"></a>
+
+### QueryAxelarProxyUpgradeDataRequest
+
+
+
+
+
+
+
+<a name="axelarcork.v1.QueryAxelarProxyUpgradeDataResponse"></a>
+
+### QueryAxelarProxyUpgradeDataResponse
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `proxy_upgrade_data` | [AxelarUpgradeData](#axelarcork.v1.AxelarUpgradeData) | repeated |  |
+
+
+
+
+
+
 <a name="axelarcork.v1.QueryCellarIDsRequest"></a>
 
 ### QueryCellarIDsRequest
@@ -1038,6 +1092,8 @@ Query defines the gRPC query service for the cork module.
 | `QueryCorkResult` | [QueryCorkResultRequest](#axelarcork.v1.QueryCorkResultRequest) | [QueryCorkResultResponse](#axelarcork.v1.QueryCorkResultResponse) |  | GET|/sommelier/axelarcork/v1/cork_results/{id}|
 | `QueryCorkResults` | [QueryCorkResultsRequest](#axelarcork.v1.QueryCorkResultsRequest) | [QueryCorkResultsResponse](#axelarcork.v1.QueryCorkResultsResponse) |  | GET|/sommelier/axelarcork/v1/cork_results|
 | `QueryChainConfigurations` | [QueryChainConfigurationsRequest](#axelarcork.v1.QueryChainConfigurationsRequest) | [QueryChainConfigurationsResponse](#axelarcork.v1.QueryChainConfigurationsResponse) |  | GET|/sommelier/axelarcork/v1/chain_configurations|
+| `QueryAxelarContractCallNonces` | [QueryAxelarContractCallNoncesRequest](#axelarcork.v1.QueryAxelarContractCallNoncesRequest) | [QueryAxelarContractCallNoncesResponse](#axelarcork.v1.QueryAxelarContractCallNoncesResponse) |  | GET|/sommelier/axelarcork/v1/contract_call_nonces|
+| `QueryAxelarProxyUpgradeData` | [QueryAxelarProxyUpgradeDataRequest](#axelarcork.v1.QueryAxelarProxyUpgradeDataRequest) | [QueryAxelarProxyUpgradeDataResponse](#axelarcork.v1.QueryAxelarProxyUpgradeDataResponse) |  | GET|/sommelier/axelarcork/v1/proxy_upgrade_data|
 
  <!-- end services -->
 

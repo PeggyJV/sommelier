@@ -59,6 +59,20 @@ func (suite *KeeperTestSuite) TestQueriesHappyPath() {
 
 	axelarcorkKeeper.SetCellarIDs(ctx, TestEVMChainID, types.CellarIDSet{Ids: []string{"0x0000000000000000000000000000000000000000", "0x1111111111111111111111111111111111111111"}})
 
+	nonce := types.AxelarContractCallNonce{
+		Nonce:           1,
+		ChainId:         TestEVMChainID,
+		ContractAddress: sampleCellarHex,
+	}
+	axelarcorkKeeper.SetAxelarContractCallNonce(ctx, TestEVMChainID, sampleCellarHex, nonce.Nonce)
+
+	upgradeData := types.AxelarUpgradeData{
+		ChainId:                   TestEVMChainID,
+		Payload:                   []byte("test-payload"),
+		ExecutableHeightThreshold: 100,
+	}
+	axelarcorkKeeper.SetAxelarProxyUpgradeData(ctx, TestEVMChainID, upgradeData)
+
 	paramsResult, err := axelarcorkKeeper.QueryParams(sdk.WrapSDKContext(ctx), &types.QueryParamsRequest{})
 	require.Nil(err)
 	require.Equal(params, paramsResult.Params)
@@ -94,6 +108,14 @@ func (suite *KeeperTestSuite) TestQueriesHappyPath() {
 	corkResultsResult, err := axelarcorkKeeper.QueryCorkResults(sdk.WrapSDKContext(ctx), &types.QueryCorkResultsRequest{ChainId: TestEVMChainID})
 	require.Nil(err)
 	require.Equal(&corkResult, corkResultsResult.CorkResults[0])
+
+	noncesResult, err := axelarcorkKeeper.QueryAxelarContractCallNonces(sdk.WrapSDKContext(ctx), &types.QueryAxelarContractCallNoncesRequest{})
+	require.Nil(err)
+	require.Equal(&nonce, noncesResult.ContractCallNonces[0])
+
+	upgradeDataResult, err := axelarcorkKeeper.QueryAxelarProxyUpgradeData(sdk.WrapSDKContext(ctx), &types.QueryAxelarProxyUpgradeDataRequest{})
+	require.Nil(err)
+	require.Equal(&upgradeData, upgradeDataResult.ProxyUpgradeData[0])
 }
 
 func (suite *KeeperTestSuite) TestQueriesUnhappyPath() {
@@ -126,5 +148,9 @@ func (suite *KeeperTestSuite) TestQueriesUnhappyPath() {
 
 	corkResultsResult, err := axelarcorkKeeper.QueryCorkResults(sdk.WrapSDKContext(ctx), nil)
 	require.Nil(corkResultsResult)
+	require.NotNil(err)
+
+	noncesResult, err := axelarcorkKeeper.QueryAxelarContractCallNonces(sdk.WrapSDKContext(ctx), nil)
+	require.Nil(noncesResult)
 	require.NotNil(err)
 }

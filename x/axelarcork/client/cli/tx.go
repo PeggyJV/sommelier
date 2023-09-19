@@ -674,3 +674,141 @@ Where proposal.json contains:
 
 	return cmd
 }
+
+func GetCmdSubmitUpgradeAxelarProxyContractProposal() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "upgrade-axelar-proxy-contract [proposal-file]",
+		Args:  cobra.ExactArgs(1),
+		Short: "Submit an upgrade axelar proxy contract proposal",
+		Long: strings.TrimSpace(
+			fmt.Sprintf(`Submit an Axelar proxy contract upgrade proposal along with an initial deposit.
+The proposal details must be supplied via a JSON file.
+
+Example:
+$ %s tx gov submit-proposal upgrade-axelar-proxy-contract <path/to/proposal.json> --from=<key_or_address>
+
+Where proposal.json contains:
+
+{
+  "title": "Upgrade Axelar Proxy Contract Proposal",
+  "description": "New features",
+  "chain_id": 1000,
+  "new_proxy_address": "0x1234567890123456789012345678901234567890",
+  "deposit": "10000usomm"
+}
+`,
+				version.AppName,
+			),
+		),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			clientCtx, err := client.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			proposal := types.UpgradeAxelarProxyContractProposalWithDeposit{}
+			contents, err := os.ReadFile(args[0])
+			if err != nil {
+				return err
+			}
+
+			if err = clientCtx.Codec.UnmarshalJSON(contents, &proposal); err != nil {
+				return err
+			}
+
+			deposit, err := sdk.ParseCoinsNormalized(proposal.Deposit)
+			if err != nil {
+				return err
+			}
+
+			if proposal.ChainId == 0 {
+				return fmt.Errorf("chain ID cannot be zero")
+			}
+
+			content := types.NewUpgradeAxelarProxyContractProposal(
+				proposal.Title,
+				proposal.Description,
+				proposal.ChainId,
+				proposal.NewProxyAddress,
+			)
+
+			from := clientCtx.GetFromAddress()
+			msg, err := govtypes.NewMsgSubmitProposal(content, deposit, from)
+			if err != nil {
+				return err
+			}
+
+			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), msg)
+		},
+	}
+
+	return cmd
+}
+
+func GetCmdSubmitCancelAxelarProxyContractUpgradeProposal() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "cancel-axelar-proxy-contract-upgrade [proposal-file]",
+		Args:  cobra.ExactArgs(1),
+		Short: "Submit a cancel axelar proxy contract upgrade proposal",
+		Long: strings.TrimSpace(
+			fmt.Sprintf(`Submit a cancellation proposal for an existing Axelar proxy contract upgrade along with an initial deposit.
+The proposal details must be supplied via a JSON file.
+
+Example:
+$ %s tx gov submit-proposal cancel-axelar-proxy-contract-upgrade <path/to/proposal.json> --from=<key_or_address>
+
+Where proposal.json contains:
+
+{
+  "title": "Upgrade Axelar Proxy Contract Proposal",
+  "description": "New features",
+  "chain_id": 1000,
+  "deposit": "10000usomm"
+}
+`,
+				version.AppName,
+			),
+		),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			clientCtx, err := client.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			proposal := types.CancelAxelarProxyContractUpgradeProposalWithDeposit{}
+			contents, err := os.ReadFile(args[0])
+			if err != nil {
+				return err
+			}
+
+			if err = clientCtx.Codec.UnmarshalJSON(contents, &proposal); err != nil {
+				return err
+			}
+
+			deposit, err := sdk.ParseCoinsNormalized(proposal.Deposit)
+			if err != nil {
+				return err
+			}
+
+			if proposal.ChainId == 0 {
+				return fmt.Errorf("chain ID cannot be zero")
+			}
+
+			content := types.NewCancelAxelarProxyContractUpgradeProposal(
+				proposal.Title,
+				proposal.Description,
+				proposal.ChainId,
+			)
+
+			from := clientCtx.GetFromAddress()
+			msg, err := govtypes.NewMsgSubmitProposal(content, deposit, from)
+			if err != nil {
+				return err
+			}
+
+			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), msg)
+		},
+	}
+
+	return cmd
+}

@@ -76,4 +76,26 @@ type (
 		Proposer    sdk.AccAddress `json:"proposer" yaml:"proposer"`
 		Deposit     sdk.Coins      `json:"deposit" yaml:"deposit"`
 	}
+	// UpgradeAxelarProxyContractProposalReq defines a upgrade axelar proxy contract proposal request body.
+	UpgradeAxelarProxyContractProposalReq struct {
+		BaseReq rest.BaseReq `json:"base_req" yaml:"base_req"`
+
+		Title           string         `json:"title" yaml:"title"`
+		Description     string         `json:"description" yaml:"description"`
+		ChainID         uint64         `json:"chain_id" yaml:"chain_id"`
+		NewProxyAddress string         `json:"new_proxy_address" yaml:"new_proxy_address"`
+		Proposer        sdk.AccAddress `json:"proposer" yaml:"proposer"`
+		Deposit         sdk.Coins      `json:"deposit" yaml:"deposit"`
+	}
+
+	// CancelAxelarProxyContractUpgradeProposalReq defines a cancel axelar proxy contract upgrade proposal request body.
+	CancelAxelarProxyContractUpgradeProposalReq struct {
+		BaseReq rest.BaseReq `json:"base_req" yaml:"base_req"`
+
+		Title       string         `json:"title" yaml:"title"`
+		Description string         `json:"description" yaml:"description"`
+		ChainID     uint64         `json:"chain_id" yaml:"chain_id"`
+		Proposer    sdk.AccAddress `json:"proposer" yaml:"proposer"`
+		Deposit     sdk.Coins      `json:"deposit" yaml:"deposit"`
+	}
 )

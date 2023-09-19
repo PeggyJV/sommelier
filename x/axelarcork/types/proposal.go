@@ -270,6 +270,14 @@ func (m *UpgradeAxelarProxyContractProposal) ValidateBasic() error {
 	return nil
 }
 
+func NewCancelAxelarProxyContractUpgradeProposal(title string, description string, chainID uint64) *CancelAxelarProxyContractUpgradeProposal {
+	return &CancelAxelarProxyContractUpgradeProposal{
+		Title:       title,
+		Description: description,
+		ChainId:     chainID,
+	}
+}
+
 func (m *CancelAxelarProxyContractUpgradeProposal) ProposalRoute() string {
 	return RouterKey
 }

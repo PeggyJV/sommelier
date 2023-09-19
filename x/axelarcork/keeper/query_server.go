@@ -180,3 +180,48 @@ func (k Keeper) QueryChainConfigurations(c context.Context, req *types.QueryChai
 
 	return &types.QueryChainConfigurationsResponse{Configurations: chainConfigurations}, nil
 }
+
+func (k Keeper) QueryAxelarContractCallNonces(c context.Context, req *types.QueryAxelarContractCallNoncesRequest) (*types.QueryAxelarContractCallNoncesResponse, error) {
+	if req == nil {
+		return nil, status.Error(codes.InvalidArgument, "empty request")
+	}
+
+	ctx := sdk.UnwrapSDKContext(c)
+
+	response := types.QueryAxelarContractCallNoncesResponse{}
+
+	nonces := []*types.AxelarContractCallNonce{}
+	k.IterateAxelarContractCallNonces(ctx, func(chainID uint64, address common.Address, nonce uint64) (stop bool) {
+		nonces = append(nonces, &types.AxelarContractCallNonce{
+			ChainId:         chainID,
+			ContractAddress: address.Hex(),
+			Nonce:           nonce,
+		})
+
+		return false
+	})
+
+	response.ContractCallNonces = nonces
+
+	return &response, nil
+}
+
+func (k Keeper) QueryAxelarProxyUpgradeData(c context.Context, req *types.QueryAxelarProxyUpgradeDataRequest) (*types.QueryAxelarProxyUpgradeDataResponse, error) {
+	if req == nil {
+		return nil, status.Error(codes.InvalidArgument, "empty request")
+	}
+
+	ctx := sdk.UnwrapSDKContext(c)
+
+	response := types.QueryAxelarProxyUpgradeDataResponse{}
+
+	upgradeData := []*types.AxelarUpgradeData{}
+	k.IterateAxelarProxyUpgradeData(ctx, func(chainID uint64, data types.AxelarUpgradeData) (stop bool) {
+		upgradeData = append(upgradeData, &data)
+		return false
+	})
+
+	response.ProxyUpgradeData = upgradeData
+
+	return &response, nil
+}

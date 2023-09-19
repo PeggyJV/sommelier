@@ -369,3 +369,63 @@ func queryChainConfigurations() *cobra.Command {
 
 	return cmd
 }
+
+func queryAxelarContractCallNonces() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:     "axelar-contract-call-nonces",
+		Aliases: []string{"accn"},
+		Args:    cobra.NoArgs,
+		Short:   "query axelar contract call nonces from the chain",
+		RunE: func(cmd *cobra.Command, args []string) error {
+			ctx, err := client.GetClientQueryContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			queryClient := types.NewQueryClient(ctx)
+
+			req := &types.QueryAxelarContractCallNoncesRequest{}
+
+			res, err := queryClient.QueryAxelarContractCallNonces(cmd.Context(), req)
+			if err != nil {
+				return err
+			}
+
+			return ctx.PrintProto(res)
+		},
+	}
+
+	flags.AddQueryFlagsToCmd(cmd)
+
+	return cmd
+}
+
+func queryAxelayProxyUpgradeData() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:     "axelar-proxy-upgrade-data",
+		Aliases: []string{"apud"},
+		Args:    cobra.NoArgs,
+		Short:   "query axelar proxy upgrade data from the chain",
+		RunE: func(cmd *cobra.Command, args []string) error {
+			ctx, err := client.GetClientQueryContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			queryClient := types.NewQueryClient(ctx)
+
+			req := &types.QueryAxelarProxyUpgradeDataRequest{}
+
+			res, err := queryClient.QueryAxelarProxyUpgradeData(cmd.Context(), req)
+			if err != nil {
+				return err
+			}
+
+			return ctx.PrintProto(res)
+		},
+	}
+
+	flags.AddQueryFlagsToCmd(cmd)
+
+	return cmd
+}

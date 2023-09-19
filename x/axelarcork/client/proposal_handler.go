@@ -13,4 +13,6 @@ var (
 	CommunityPoolEthereumSpendProposalHandler = govclient.NewProposalHandler(cli.CmdSubmitAxelarCommunityPoolEthereumSpendProposal, rest.CommunitySpendProposalRESTHandler)
 	AddChainConfigurationHandler              = govclient.NewProposalHandler(cli.GetCmdSubmitAddChainConfigurationProposal, rest.AddChainConfigurationProposalRESTHandler)
 	RemoveChainConfigurationHandler           = govclient.NewProposalHandler(cli.GetCmdSubmitRemoveChainConfigurationProposal, rest.RemoveChainConfigurationProposalRESTHandler)
+	UpgradeAxelarProxyContractHandler         = govclient.NewProposalHandler(cli.GetCmdSubmitUpgradeAxelarProxyContractProposal, rest.UpgradeAxelarProxyContractProposalRESTHandler)
+	CancelAxelarProxyContractUpgradeHandler   = govclient.NewProposalHandler(cli.GetCmdSubmitCancelAxelarProxyContractUpgradeProposal, rest.CancelAxelarProxyContractUpgradeProposalRESTHandler)
 )

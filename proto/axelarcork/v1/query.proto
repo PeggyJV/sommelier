@@ -49,6 +49,14 @@ service Query {
   rpc QueryChainConfigurations(QueryChainConfigurationsRequest) returns (QueryChainConfigurationsResponse) {
     option (google.api.http).get = "/sommelier/axelarcork/v1/chain_configurations";
   }
+
+  rpc QueryAxelarContractCallNonces(QueryAxelarContractCallNoncesRequest) returns (QueryAxelarContractCallNoncesResponse) {
+    option (google.api.http).get = "/sommelier/axelarcork/v1/contract_call_nonces";
+  }
+
+  rpc QueryAxelarProxyUpgradeData(QueryAxelarProxyUpgradeDataRequest) returns (QueryAxelarProxyUpgradeDataResponse) {
+    option (google.api.http).get = "/sommelier/axelarcork/v1/proxy_upgrade_data";
+  }
 }
 
 // QueryParamsRequest is the request type for the Query/Params gRPC method.
@@ -134,3 +142,16 @@ message QueryChainConfigurationsRequest {}
 message QueryChainConfigurationsResponse {
   repeated ChainConfiguration configurations = 1;
 }
+
+message QueryAxelarContractCallNoncesRequest {}
+
+message QueryAxelarContractCallNoncesResponse {
+  repeated AxelarContractCallNonce contract_call_nonces = 1;
+}
+
+message QueryAxelarProxyUpgradeDataRequest {}
+
+message QueryAxelarProxyUpgradeDataResponse {
+  repeated AxelarUpgradeData proxy_upgrade_data = 1;
+}
+

@@ -241,3 +241,78 @@ func postRemoveChainConfigurationProposalHandlerFn(clientCtx client.Context) htt
 		tx.WriteGeneratedTxResponse(clientCtx, w, req.BaseReq, msg)
 	}
 }
+
+func UpgradeAxelarProxyContractProposalRESTHandler(clientCtx client.Context) govrest.ProposalRESTHandler {
+	return govrest.ProposalRESTHandler{
+		SubRoute: "upgrade_axelar_proxy_contract",
+		Handler:  postUpgradeAxelarProxyContractProposalHandlerFn(clientCtx),
+	}
+}
+
+func postUpgradeAxelarProxyContractProposalHandlerFn(clientCtx client.Context) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		var req UpgradeAxelarProxyContractProposalReq
+		if !rest.ReadRESTReq(w, r, clientCtx.LegacyAmino, &req) {
+			return
+		}
+
+		req.BaseReq = req.BaseReq.Sanitize()
+		if !req.BaseReq.ValidateBasic(w) {
+			return
+		}
+
+		content := types.NewUpgradeAxelarProxyContractProposal(
+			req.Title,
+			req.Description,
+			req.ChainID,
+			req.NewProxyAddress,
+		)
+
+		msg, err := govtypes.NewMsgSubmitProposal(content, req.Deposit, req.Proposer)
+		if rest.CheckBadRequestError(w, err) {
+			return
+		}
+		if rest.CheckBadRequestError(w, msg.ValidateBasic()) {
+			return
+		}
+
+		tx.WriteGeneratedTxResponse(clientCtx, w, req.BaseReq, msg)
+	}
+}
+
+func CancelAxelarProxyContractUpgradeProposalRESTHandler(clientCtx client.Context) govrest.ProposalRESTHandler {
+	return govrest.ProposalRESTHandler{
+		SubRoute: "cancel_axelar_proxy_contract_upgrade",
+		Handler:  postCancelAxelarProxyContractUpgradeProposalHandlerFn(clientCtx),
+	}
+}
+
+func postCancelAxelarProxyContractUpgradeProposalHandlerFn(clientCtx client.Context) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		var req CancelAxelarProxyContractUpgradeProposalReq
+		if !rest.ReadRESTReq(w, r, clientCtx.LegacyAmino, &req) {
+			return
+		}
+
+		req.BaseReq = req.BaseReq.Sanitize()
+		if !req.BaseReq.ValidateBasic(w) {
+			return
+		}
+
+		content := types.NewCancelAxelarProxyContractUpgradeProposal(
+			req.Title,
+			req.Description,
+			req.ChainID,
+		)
+
+		msg, err := govtypes.NewMsgSubmitProposal(content, req.Deposit, req.Proposer)
+		if rest.CheckBadRequestError(w, err) {
+			return
+		}
+		if rest.CheckBadRequestError(w, msg.ValidateBasic()) {
+			return
+		}
+
+		tx.WriteGeneratedTxResponse(clientCtx, w, req.BaseReq, msg)
+	}
+}
