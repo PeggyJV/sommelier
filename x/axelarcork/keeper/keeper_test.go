@@ -280,22 +280,33 @@ func (suite *KeeperTestSuite) TestAxelarCorkContractCallNonces() {
 	require.Equal(uint64(1), axelarcorkKeeper.GetAxelarContractCallNonce(ctx, chain1, address2))
 	require.Equal(uint64(2), axelarcorkKeeper.GetAxelarContractCallNonce(ctx, chain2, address2))
 
-	type nonceData struct {
-		chainID uint64
-		address string
-		nonce   uint64
-	}
-
-	var data []nonceData
+	var data []types.AxelarContractCallNonce
 	axelarcorkKeeper.IterateAxelarContractCallNonces(ctx, func(chainID uint64, address common.Address, nonce uint64) bool {
-		data = append(data, nonceData{chainID, address.Hex(), nonce})
+		data = append(data, types.AxelarContractCallNonce{
+			ChainId:         chainID,
+			ContractAddress: address.Hex(),
+			Nonce:           nonce,
+		})
+
 		return false
 	})
 	require.EqualValues(3, len(data))
-	require.EqualValues([]nonceData{
-		{chain1, address1, 5},
-		{chain1, address2, 1},
-		{chain2, address2, 2},
+	require.EqualValues([]types.AxelarContractCallNonce{
+		{
+			ChainId:         chain1,
+			ContractAddress: address1,
+			Nonce:           5,
+		},
+		{
+			ChainId:         chain1,
+			ContractAddress: address2,
+			Nonce:           1,
+		},
+		{
+			ChainId:         chain2,
+			ContractAddress: address2,
+			Nonce:           2,
+		},
 	}, data)
 }
 
