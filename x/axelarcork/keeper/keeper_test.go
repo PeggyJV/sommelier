@@ -315,21 +315,39 @@ func (suite *KeeperTestSuite) TestAxelarProxyUpgradeData() {
 	ctx, axelarcorkKeeper := suite.ctx, suite.axelarcorkKeeper
 	require := suite.Require()
 
-	chainID := uint64(TestEVMChainID)
+	chainID1 := uint64(TestEVMChainID)
+	chainID2 := uint64(3)
 	cellars := []string{sampleCellarHex, oneAddressHex}
 	payload, err := types.EncodeUpgradeArgs(zeroAddressHex, cellars)
 	require.NoError(err)
-	upgradeData := types.AxelarUpgradeData{
+	upgradeData1 := types.AxelarUpgradeData{
+		ChainId:                   chainID1,
 		Payload:                   payload,
 		ExecutableHeightThreshold: 10000000,
 	}
+	upgradeData2 := types.AxelarUpgradeData{
+		ChainId:                   chainID2,
+		Payload:                   payload,
+		ExecutableHeightThreshold: 10000001,
+	}
 
-	axelarcorkKeeper.SetAxelarProxyUpgradeData(ctx, chainID, upgradeData)
-	actualUpgradeData, found := axelarcorkKeeper.GetAxelarProxyUpgradeData(ctx, chainID)
+	axelarcorkKeeper.SetAxelarProxyUpgradeData(ctx, chainID1, upgradeData1)
+	actualUpgradeData1, found := axelarcorkKeeper.GetAxelarProxyUpgradeData(ctx, chainID1)
 	require.True(found)
-	require.Equal(upgradeData, actualUpgradeData)
+	require.Equal(upgradeData1, actualUpgradeData1)
 
-	axelarcorkKeeper.DeleteAxelarProxyUpgradeData(ctx, chainID)
-	_, found = axelarcorkKeeper.GetAxelarProxyUpgradeData(ctx, chainID)
+	axelarcorkKeeper.SetAxelarProxyUpgradeData(ctx, chainID2, upgradeData2)
+	var actualUpgradeData []types.AxelarUpgradeData
+	axelarcorkKeeper.IterateAxelarProxyUpgradeData(ctx, func(chainID uint64, ud types.AxelarUpgradeData) (stop bool) {
+		actualUpgradeData = append(actualUpgradeData, ud)
+
+		return false
+	})
+	require.Equal(actualUpgradeData[0], upgradeData1)
+	require.Equal(actualUpgradeData[1], upgradeData2)
+
+	axelarcorkKeeper.DeleteAxelarProxyUpgradeData(ctx, chainID1)
+	_, found = axelarcorkKeeper.GetAxelarProxyUpgradeData(ctx, chainID1)
 	require.False(found)
+
 }

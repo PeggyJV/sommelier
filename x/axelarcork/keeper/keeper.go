@@ -504,3 +504,21 @@ func (k Keeper) GetAxelarProxyUpgradeData(ctx sdk.Context, chainID uint64) (type
 func (k Keeper) DeleteAxelarProxyUpgradeData(ctx sdk.Context, chainID uint64) {
 	ctx.KVStore(k.storeKey).Delete(types.GetAxelarProxyUpgradeDataKey(chainID))
 }
+
+// IterateAxelarProxyUpgradeData iterates over all axelar proxy upgrade data
+func (k Keeper) IterateAxelarProxyUpgradeData(ctx sdk.Context, cb func(chainID uint64, upgradeData types.AxelarUpgradeData) (stop bool)) {
+	store := ctx.KVStore(k.storeKey)
+	iter := sdk.KVStorePrefixIterator(store, []byte{types.AxelarProxyUpgradeDataPrefix})
+	defer iter.Close()
+
+	for ; iter.Valid(); iter.Next() {
+		keyPair := bytes.NewBuffer(iter.Key())
+		keyPair.Next(1) // trim prefix byte
+		chainID := sdk.BigEndianToUint64(keyPair.Next(8))
+		upgradeData := types.AxelarUpgradeData{}
+		k.cdc.MustUnmarshal(iter.Value(), &upgradeData)
+		if cb(chainID, upgradeData) {
+			break
+		}
+	}
+}
