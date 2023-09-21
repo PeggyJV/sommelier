@@ -56,23 +56,48 @@ func (k Keeper) ValidateAxelarCorkPacket(ctx sdk.Context, packet ibcexported.Pac
 		return fmt.Errorf("msg cannot bypass the proxy. expected addr %s, received %s", chainConfig.ProxyAddress, axelarBody.DestinationAddress)
 	}
 
-	var wrappedBody types.ProxyWrapper
-	if err := json.Unmarshal(axelarBody.Payload, &wrappedBody); err != nil {
-		return err
+	// Validate logic call
+	if targetContract, nonce, _, callData, err := types.DecodeLogicCallArgs(axelarBody.Payload); err == nil {
+		if nonce == 0 {
+			return fmt.Errorf("nonce cannot be zero")
+		}
+
+		blockHeight, winningCork, ok := k.GetWinningAxelarCork(ctx, chainConfig.Id, common.HexToAddress(targetContract))
+		if !ok {
+			return fmt.Errorf("no cork expected for chain %s:%d at address %s", chainConfig.Name, chainConfig.Id, axelarBody.DestinationAddress)
+		}
+
+		if !bytes.Equal(winningCork.EncodedContractCall, callData) {
+			return fmt.Errorf("cork body did not match expected body. received: %x, expected: %x", callData, winningCork.EncodedContractCall)
+		}
+
+		// all checks have passed, delete the cork from state
+		k.DeleteWinningAxelarCorkByBlockheight(ctx, chainConfig.Id, blockHeight, winningCork)
+
+		return nil
 	}
 
-	// TODO (Collin): Fix this logic
-	blockHeight, winningCork, ok := k.GetWinningAxelarCork(ctx, chainConfig.Id, common.HexToAddress(wrappedBody.Target))
-	if !ok {
-		return fmt.Errorf("no cork expected for chain %s:%d at address %s", chainConfig.Name, chainConfig.Id, axelarBody.DestinationAddress)
+	// Validate upgrade
+	if newProxyContract, targets, err := types.DecodeUpgradeArgs(axelarBody.Payload); err == nil {
+		if !common.IsHexAddress(newProxyContract) {
+			return fmt.Errorf("invalid proxy address %s", newProxyContract)
+		}
+
+		if len(targets) == 0 {
+			return fmt.Errorf("no targets provided")
+		}
+
+		for _, target := range targets {
+			if !common.IsHexAddress(target) {
+				return fmt.Errorf("invalid target %s", target)
+			}
+		}
+
+		// all checks have passed, delete the upgrade data from state
+		k.DeleteAxelarProxyUpgradeData(ctx, chainConfig.Id)
+
+		return nil
 	}
 
-	if !bytes.Equal(winningCork.EncodedContractCall, wrappedBody.Body) {
-		return fmt.Errorf("cork body did not match expected body. received: %x, expected: %x", axelarBody.Payload, winningCork.EncodedContractCall)
-	}
-
-	// all checks have passed, delete the cork from state
-	k.DeleteWinningAxelarCorkByBlockheight(ctx, chainConfig.Id, blockHeight, winningCork)
-
-	return nil
+	return fmt.Errorf("invalid payload: %s", axelarBody.Payload)
 }
