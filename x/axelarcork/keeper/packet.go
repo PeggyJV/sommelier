@@ -93,6 +93,15 @@ func (k Keeper) ValidateAxelarPacket(ctx sdk.Context, packet ibcexported.PacketI
 			}
 		}
 
+		upgradeData, ok := k.GetAxelarProxyUpgradeData(ctx, chainConfig.Id)
+		if !ok {
+			return fmt.Errorf("no upgrade data expected for chain %s:%d", chainConfig.Name, chainConfig.Id)
+		}
+
+		if !bytes.Equal(upgradeData.Payload, axelarBody.Payload) {
+			return fmt.Errorf("upgrade data did not match expected data. received: %s, expected: %s", axelarBody.Payload, upgradeData.Payload)
+		}
+
 		// all checks have passed, delete the upgrade data from state
 		k.DeleteAxelarProxyUpgradeData(ctx, chainConfig.Id)
 
