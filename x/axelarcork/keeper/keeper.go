@@ -225,11 +225,6 @@ func (k Keeper) IterateWinningAxelarCorks(ctx sdk.Context, chainID uint64, cb fu
 	}
 }
 
-// TODO (Collin): This is just getting the most recent cork in the store for this chain ID/contract address pair. It's used by the IBC
-// Middleware in a way which seems to expect a precise cork for validation, but this could return a more recent winning cork that doesn't
-// match the intended packet payload.
-//
-// See if there is a way to get the proper cork given only the data in the PacketI object in ValidateAxelarCorkPacket().
 func (k Keeper) GetWinningAxelarCork(ctx sdk.Context, chainID uint64, contractAddr common.Address) (uint64, types.AxelarCork, bool) {
 	var bh uint64
 	var c types.AxelarCork
