@@ -12,7 +12,7 @@ import (
 	"github.com/peggyjv/sommelier/v6/x/axelarcork/types"
 )
 
-func (k Keeper) ValidateAxelarCorkPacket(ctx sdk.Context, packet ibcexported.PacketI) error {
+func (k Keeper) ValidateAxelarPacket(ctx sdk.Context, packet ibcexported.PacketI) error {
 	params := k.GetParamSet(ctx)
 	if !params.Enabled {
 		return nil

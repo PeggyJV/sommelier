@@ -62,7 +62,7 @@ func (im IBCMiddleware) OnTimeoutPacket(ctx sdk.Context, packet types.Packet, re
 }
 
 func (im IBCMiddleware) SendPacket(ctx sdk.Context, chanCap *capabilitytypes.Capability, packet exported.PacketI) error {
-	if err := im.keeper.ValidateAxelarCorkPacket(ctx, packet); err != nil {
+	if err := im.keeper.ValidateAxelarPacket(ctx, packet); err != nil {
 		im.keeper.Logger(ctx).Error(fmt.Sprintf("ICS20 packet send was denied: %s", err.Error()))
 		return err
 	}
