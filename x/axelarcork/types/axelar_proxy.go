@@ -1,6 +1,7 @@
 package types
 
 import (
+	fmt "fmt"
 	"math/big"
 
 	"github.com/ethereum/go-ethereum/accounts/abi"
@@ -42,10 +43,19 @@ func DecodeLogicCallArgs(data []byte) (targetContract string, nonce uint64, dead
 		return
 	}
 
-	targetContract = args[1].(common.Address).String()
-	nonce = args[2].(*big.Int).Uint64()
-	deadline = args[3].(*big.Int).Uint64()
-	callData = args[4].([]byte)
+	// Unpack(data) error will catch overflow errors, but this will handle unambiguously invalid data
+	if msgID, ok := args[0].(*big.Int); !ok || msgID.Cmp(LogicCallMsgID) != 0 {
+		return "", 0, 0, nil, fmt.Errorf("invalid logic call args")
+	}
+
+	// Collin: Do we need to check for zero values in case these assertions somehow fail?
+	targetContractArg, _ := args[1].(common.Address)
+	targetContract = targetContractArg.String()
+	nonceArg, _ := args[2].(*big.Int)
+	nonce = nonceArg.Uint64()
+	deadlineArg, _ := args[3].(*big.Int)
+	deadline = deadlineArg.Uint64()
+	callData, _ = args[4].([]byte)
 
 	return
 }
@@ -73,9 +83,18 @@ func DecodeUpgradeArgs(data []byte) (newAxelarProxy string, targets []string, er
 		return
 	}
 
-	newAxelarProxy = args[1].(common.Address).String()
+	// Unpack(data) error will catch overflow errors, but this will handle unambiguously invalid data
+	if msgID, ok := args[0].(*big.Int); !ok || msgID.Cmp(UpgradeMsgID) != 0 {
+		return "", nil, fmt.Errorf("invalid upgrade args")
+	}
+
+	// Collin: Do we need to check for zero values in case these assertions somehow fail?
+	newAxelarProxyArg, _ := args[1].(common.Address)
+	newAxelarProxy = newAxelarProxyArg.String()
+	targetsArg, _ := args[2].([]common.Address)
+
 	targets = []string{}
-	for _, target := range args[2].([]common.Address) {
+	for _, target := range targetsArg {
 		targets = append(targets, target.String())
 	}
 
