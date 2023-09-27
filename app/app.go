@@ -160,6 +160,8 @@ var (
 			axelarcorkclient.RemoveChainConfigurationHandler,
 			axelarcorkclient.ScheduledCorkProposalHandler,
 			axelarcorkclient.CommunityPoolEthereumSpendProposalHandler,
+			axelarcorkclient.UpgradeAxelarProxyContractHandler,
+			axelarcorkclient.CancelAxelarProxyContractUpgradeHandler,
 		),
 		params.AppModuleBasic{},
 		crisis.AppModuleBasic{},
