@@ -21,6 +21,38 @@ var (
 	UpgradeMsgID   = big.NewInt(1)
 )
 
+func (ccn AxelarContractCallNonce) ValidateBasic() error {
+	if ccn.Nonce == 0 {
+		return fmt.Errorf("nonce cannot be zero")
+	}
+
+	if ccn.ContractAddress == "" {
+		return fmt.Errorf("contract address cannot be empty")
+	}
+
+	if ccn.ChainId == 0 {
+		return fmt.Errorf("chain ID cannot be zero")
+	}
+
+	return nil
+}
+
+func (ud AxelarUpgradeData) ValidateBasic() error {
+	if ud.ChainId == 0 {
+		return fmt.Errorf("chain ID cannot be zero")
+	}
+
+	if ud.ExecutableHeightThreshold < 0 {
+		return fmt.Errorf("height threshold cannot be negative")
+	}
+
+	if len(ud.Payload) == 0 {
+		return fmt.Errorf("payload cannot be empty")
+	}
+
+	return nil
+}
+
 func EncodeLogicCallArgs(targetContract string, nonce uint64, deadline uint64, callData []byte) ([]byte, error) {
 	return abi.Arguments{
 		{Type: Uint256},

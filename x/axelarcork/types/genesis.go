@@ -6,11 +6,13 @@ const DefaultParamspace = ModuleName
 func DefaultGenesisState() GenesisState {
 	defaultParams := DefaultParams()
 	return GenesisState{
-		Params:              &defaultParams,
-		ChainConfigurations: ChainConfigurations{},
-		CellarIds:           []*CellarIDSet{},
-		ScheduledCorks:      &ScheduledAxelarCorks{},
-		CorkResults:         &AxelarCorkResults{},
+		Params:                   &defaultParams,
+		ChainConfigurations:      ChainConfigurations{},
+		CellarIds:                []*CellarIDSet{},
+		ScheduledCorks:           &ScheduledAxelarCorks{},
+		CorkResults:              &AxelarCorkResults{},
+		AxelarContractCallNonces: []*AxelarContractCallNonce{},
+		AxelarUpgradeData:        []*AxelarUpgradeData{},
 	}
 }
 
@@ -34,6 +36,18 @@ func (gs GenesisState) Validate() error {
 
 	for _, cr := range gs.CorkResults.CorkResults {
 		if err := cr.Cork.ValidateBasic(); err != nil {
+			return err
+		}
+	}
+
+	for _, ccn := range gs.AxelarContractCallNonces {
+		if err := ccn.ValidateBasic(); err != nil {
+			return err
+		}
+	}
+
+	for _, aud := range gs.AxelarUpgradeData {
+		if err := aud.ValidateBasic(); err != nil {
 			return err
 		}
 	}
