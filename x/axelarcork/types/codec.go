@@ -15,6 +15,8 @@ func RegisterLegacyAminoCodec(cdc *codec.LegacyAmino) {
 	cdc.RegisterConcrete(&MsgScheduleAxelarCorkRequest{}, "axelarcork/MsgScheduleAxelarCorkRequest", nil)
 	cdc.RegisterConcrete(&MsgRelayAxelarCorkRequest{}, "axelarcork/MsgRelayAxelarCorkRequest", nil)
 	cdc.RegisterConcrete(&MsgBumpAxelarCorkGasRequest{}, "axelarcork/MsgBumpAxelarCorkGasRequest", nil)
+	cdc.RegisterConcrete(&MsgCancelAxelarCorkRequest{}, "axelarcork/MsgCancelAxelarCorkRequest", nil)
+	cdc.RegisterConcrete(&MsgRelayAxelarProxyUpgradeRequest{}, "axelarcork/MsgRelayAxelarProxyUpgradeRequest", nil)
 }
 
 var (
