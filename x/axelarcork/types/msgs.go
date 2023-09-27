@@ -13,10 +13,11 @@ var (
 )
 
 const (
-	TypeMsgScheduleCorkRequest     = "axelar_cork_schedule"
-	TypeMsgRelayCorkRequest        = "axelar_cork_relay"
-	TypeMsgBumpCorkGasRequest      = "axelar_cork_bump_gas"
-	TypeMsgCancelAxelarCorkRequest = "axelar_cancel_cork"
+	TypeMsgScheduleCorkRequest            = "axelar_cork_schedule"
+	TypeMsgRelayCorkRequest               = "axelar_cork_relay"
+	TypeMsgBumpCorkGasRequest             = "axelar_cork_bump_gas"
+	TypeMsgCancelAxelarCorkRequest        = "axelar_cancel_cork"
+	TypeMsgRelayAxelarProxyUpgradeRequest = "axelar_proxy_upgrade_relay"
 )
 
 ////////////////////////////
@@ -121,7 +122,9 @@ func (m *MsgRelayAxelarCorkRequest) MustGetSigner() sdk.AccAddress {
 func (m *MsgRelayAxelarProxyUpgradeRequest) Route() string { return ModuleName }
 
 // Type implements sdk.Msg
-func (m *MsgRelayAxelarProxyUpgradeRequest) Type() string { return TypeMsgRelayCorkRequest }
+func (m *MsgRelayAxelarProxyUpgradeRequest) Type() string {
+	return TypeMsgRelayAxelarProxyUpgradeRequest
+}
 
 // ValidateBasic implements sdk.Msg
 func (m *MsgRelayAxelarProxyUpgradeRequest) ValidateBasic() error {
