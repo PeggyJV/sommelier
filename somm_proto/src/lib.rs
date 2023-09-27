@@ -5,3 +5,12 @@ pub mod cork {
 pub mod axelar_cork {
     include!("prost/axelarcork.v1.rs");
 }
+
+pub mod incentives {
+    include!("prost/incentives.v1.rs");
+}
+
+pub mod cellarfees {
+    include!("prost/cellarfees.v1.rs");
+}
+

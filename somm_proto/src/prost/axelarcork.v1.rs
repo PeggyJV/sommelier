@@ -1,5 +1,5 @@
 #[derive(Clone, PartialEq, ::prost::Message)]
-pub struct Cork {
+pub struct AxelarCork {
     /// call body containing the ABI encoded bytes to send to the contract
     #[prost(bytes = "vec", tag = "1")]
     pub encoded_contract_call: ::prost::alloc::vec::Vec<u8>,
@@ -9,27 +9,31 @@ pub struct Cork {
     /// address of the contract to send the call
     #[prost(string, tag = "3")]
     pub target_contract_address: ::prost::alloc::string::String,
+    /// unix timestamp before which the contract call must be executed.
+    /// enforced by the proxy contract.
+    #[prost(uint64, tag = "4")]
+    pub deadline: u64,
 }
 #[derive(Clone, PartialEq, ::prost::Message)]
-pub struct ScheduledCork {
+pub struct ScheduledAxelarCork {
     #[prost(message, optional, tag = "1")]
-    pub cork: ::core::option::Option<Cork>,
+    pub cork: ::core::option::Option<AxelarCork>,
     #[prost(uint64, tag = "2")]
     pub block_height: u64,
     #[prost(string, tag = "3")]
     pub validator: ::prost::alloc::string::String,
-    #[prost(bytes = "vec", tag = "4")]
-    pub id: ::prost::alloc::vec::Vec<u8>,
+    #[prost(string, tag = "4")]
+    pub id: ::prost::alloc::string::String,
 }
 #[derive(Clone, PartialEq, ::prost::Message)]
-pub struct ScheduledCorks {
+pub struct ScheduledAxelarCorks {
     #[prost(message, repeated, tag = "1")]
-    pub scheduled_corks: ::prost::alloc::vec::Vec<ScheduledCork>,
+    pub scheduled_corks: ::prost::alloc::vec::Vec<ScheduledAxelarCork>,
 }
 #[derive(Clone, PartialEq, ::prost::Message)]
-pub struct CorkResult {
+pub struct AxelarCorkResult {
     #[prost(message, optional, tag = "1")]
-    pub cork: ::core::option::Option<Cork>,
+    pub cork: ::core::option::Option<AxelarCork>,
     #[prost(uint64, tag = "2")]
     pub block_height: u64,
     #[prost(bool, tag = "3")]
@@ -38,9 +42,9 @@ pub struct CorkResult {
     pub approval_percentage: ::prost::alloc::string::String,
 }
 #[derive(Clone, PartialEq, ::prost::Message)]
-pub struct CorkResults {
+pub struct AxelarCorkResults {
     #[prost(message, repeated, tag = "1")]
-    pub cork_results: ::prost::alloc::vec::Vec<CorkResult>,
+    pub cork_results: ::prost::alloc::vec::Vec<AxelarCorkResult>,
 }
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct CellarIdSet {
@@ -61,23 +65,41 @@ pub struct ChainConfigurations {
     #[prost(message, repeated, tag = "1")]
     pub configurations: ::prost::alloc::vec::Vec<ChainConfiguration>,
 }
+/// Used to enforce strictly newer call ordering per contract
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct AxelarContractCallNonce {
+    #[prost(uint64, tag = "1")]
+    pub chain_id: u64,
+    #[prost(string, tag = "2")]
+    pub contract_address: ::prost::alloc::string::String,
+    #[prost(uint64, tag = "3")]
+    pub nonce: u64,
+}
+/// Represents a proxy contract upgrade approved by governance with a delay in
+/// execution in case of an error.
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct AxelarUpgradeData {
+    #[prost(uint64, tag = "1")]
+    pub chain_id: u64,
+    #[prost(bytes = "vec", tag = "2")]
+    pub payload: ::prost::alloc::vec::Vec<u8>,
+    #[prost(int64, tag = "3")]
+    pub executable_height_threshold: i64,
+}
 /// MsgScheduleCorkRequest - sdk.Msg for scheduling a cork request for on or after a specific block height
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct MsgScheduleAxelarCorkRequest {
     /// the scheduled cork
     #[prost(message, optional, tag = "1")]
-    pub cork: ::core::option::Option<Cork>,
-    /// the chain name
-    #[prost(string, tag = "2")]
-    pub chain_name: ::prost::alloc::string::String,
+    pub cork: ::core::option::Option<AxelarCork>,
     /// the chain id
-    #[prost(uint64, tag = "3")]
+    #[prost(uint64, tag = "2")]
     pub chain_id: u64,
     /// the block height that must be reached
-    #[prost(uint64, tag = "4")]
+    #[prost(uint64, tag = "3")]
     pub block_height: u64,
     /// signer account address
-    #[prost(string, tag = "5")]
+    #[prost(string, tag = "4")]
     pub signer: ::prost::alloc::string::String,
 }
 #[derive(Clone, PartialEq, ::prost::Message)]
@@ -97,12 +119,23 @@ pub struct MsgRelayAxelarCorkRequest {
     #[prost(uint64, tag = "4")]
     pub chain_id: u64,
     #[prost(string, tag = "5")]
-    pub chain_name: ::prost::alloc::string::String,
-    #[prost(string, tag = "6")]
     pub target_contract_address: ::prost::alloc::string::String,
 }
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct MsgRelayAxelarCorkResponse {}
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct MsgRelayAxelarProxyUpgradeRequest {
+    #[prost(string, tag = "1")]
+    pub signer: ::prost::alloc::string::String,
+    #[prost(message, optional, tag = "2")]
+    pub token: ::core::option::Option<cosmos_sdk_proto::cosmos::base::v1beta1::Coin>,
+    #[prost(uint64, tag = "3")]
+    pub fee: u64,
+    #[prost(uint64, tag = "4")]
+    pub chain_id: u64,
+}
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct MsgRelayAxelarProxyUpgradeResponse {}
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct MsgBumpAxelarCorkGasRequest {
     #[prost(string, tag = "1")]
@@ -114,6 +147,17 @@ pub struct MsgBumpAxelarCorkGasRequest {
 }
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct MsgBumpAxelarCorkGasResponse {}
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct MsgCancelAxelarCorkRequest {
+    #[prost(string, tag = "1")]
+    pub signer: ::prost::alloc::string::String,
+    #[prost(uint64, tag = "2")]
+    pub chain_id: u64,
+    #[prost(string, tag = "3")]
+    pub target_contract_address: ::prost::alloc::string::String,
+}
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct MsgCancelAxelarCorkResponse {}
 #[doc = r" Generated client implementations."]
 pub mod msg_client {
     #![allow(unused_variables, dead_code, missing_docs)]
@@ -190,6 +234,21 @@ pub mod msg_client {
             let path = http::uri::PathAndQuery::from_static("/axelarcork.v1.Msg/BumpCorkGas");
             self.inner.unary(request.into_request(), path, codec).await
         }
+        pub async fn cancel_scheduled_cork(
+            &mut self,
+            request: impl tonic::IntoRequest<super::MsgCancelAxelarCorkRequest>,
+        ) -> Result<tonic::Response<super::MsgCancelAxelarCorkResponse>, tonic::Status> {
+            self.inner.ready().await.map_err(|e| {
+                tonic::Status::new(
+                    tonic::Code::Unknown,
+                    format!("Service was not ready: {}", e.into()),
+                )
+            })?;
+            let codec = tonic::codec::ProstCodec::default();
+            let path =
+                http::uri::PathAndQuery::from_static("/axelarcork.v1.Msg/CancelScheduledCork");
+            self.inner.unary(request.into_request(), path, codec).await
+        }
     }
     impl<T: Clone> Clone for MsgClient<T> {
         fn clone(&self) -> Self {
@@ -211,14 +270,16 @@ pub struct GenesisState {
     pub params: ::core::option::Option<Params>,
     #[prost(message, optional, tag = "2")]
     pub chain_configurations: ::core::option::Option<ChainConfigurations>,
-    #[prost(uint64, repeated, tag = "3")]
-    pub invalidation_nonces: ::prost::alloc::vec::Vec<u64>,
-    #[prost(message, repeated, tag = "4")]
+    #[prost(message, repeated, tag = "3")]
     pub cellar_ids: ::prost::alloc::vec::Vec<CellarIdSet>,
-    #[prost(message, repeated, tag = "5")]
-    pub scheduled_corks: ::prost::alloc::vec::Vec<ScheduledCorks>,
+    #[prost(message, optional, tag = "4")]
+    pub scheduled_corks: ::core::option::Option<ScheduledAxelarCorks>,
+    #[prost(message, optional, tag = "5")]
+    pub cork_results: ::core::option::Option<AxelarCorkResults>,
     #[prost(message, repeated, tag = "6")]
-    pub cork_results: ::prost::alloc::vec::Vec<CorkResults>,
+    pub axelar_contract_call_nonces: ::prost::alloc::vec::Vec<AxelarContractCallNonce>,
+    #[prost(message, repeated, tag = "7")]
+    pub axelar_upgrade_data: ::prost::alloc::vec::Vec<AxelarUpgradeData>,
 }
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct Params {
@@ -234,6 +295,8 @@ pub struct Params {
     pub executor_account: ::prost::alloc::string::String,
     #[prost(uint64, tag = "6")]
     pub timeout_duration: u64,
+    #[prost(uint64, tag = "7")]
+    pub cork_timeout_blocks: u64,
 }
 /// QueryParamsRequest is the request type for the Query/Params gRPC method.
 #[derive(Clone, PartialEq, ::prost::Message)]
@@ -248,9 +311,7 @@ pub struct QueryParamsResponse {
 /// QueryCellarIDsRequest is the request type for Query/QueryCellarIDs gRPC method.
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct QueryCellarIDsRequest {
-    #[prost(string, tag = "1")]
-    pub chain_name: ::prost::alloc::string::String,
-    #[prost(uint64, tag = "2")]
+    #[prost(uint64, tag = "1")]
     pub chain_id: u64,
 }
 /// QueryCellarIDsResponse is the response type for Query/QueryCellars gRPC method.
@@ -262,23 +323,19 @@ pub struct QueryCellarIDsResponse {
 /// QueryScheduledCorksRequest
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct QueryScheduledCorksRequest {
-    #[prost(string, tag = "1")]
-    pub chain_name: ::prost::alloc::string::String,
-    #[prost(uint64, tag = "2")]
+    #[prost(uint64, tag = "1")]
     pub chain_id: u64,
 }
 /// QueryScheduledCorksResponse
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct QueryScheduledCorksResponse {
     #[prost(message, repeated, tag = "1")]
-    pub corks: ::prost::alloc::vec::Vec<ScheduledCork>,
+    pub corks: ::prost::alloc::vec::Vec<ScheduledAxelarCork>,
 }
 /// QueryScheduledBlockHeightsRequest
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct QueryScheduledBlockHeightsRequest {
-    #[prost(string, tag = "1")]
-    pub chain_name: ::prost::alloc::string::String,
-    #[prost(uint64, tag = "2")]
+    #[prost(uint64, tag = "1")]
     pub chain_id: u64,
 }
 /// QueryScheduledBlockHeightsResponse
@@ -292,58 +349,50 @@ pub struct QueryScheduledBlockHeightsResponse {
 pub struct QueryScheduledCorksByBlockHeightRequest {
     #[prost(uint64, tag = "1")]
     pub block_height: u64,
-    #[prost(string, tag = "2")]
-    pub chain_name: ::prost::alloc::string::String,
-    #[prost(uint64, tag = "3")]
+    #[prost(uint64, tag = "2")]
     pub chain_id: u64,
 }
 /// QueryScheduledCorksByBlockHeightResponse
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct QueryScheduledCorksByBlockHeightResponse {
     #[prost(message, repeated, tag = "1")]
-    pub corks: ::prost::alloc::vec::Vec<ScheduledCork>,
+    pub corks: ::prost::alloc::vec::Vec<ScheduledAxelarCork>,
 }
 /// QueryScheduledCorksByIDRequest
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct QueryScheduledCorksByIdRequest {
     #[prost(string, tag = "1")]
     pub id: ::prost::alloc::string::String,
-    #[prost(string, tag = "2")]
-    pub chain_name: ::prost::alloc::string::String,
-    #[prost(uint64, tag = "3")]
+    #[prost(uint64, tag = "2")]
     pub chain_id: u64,
 }
 /// QueryScheduledCorksByIDResponse
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct QueryScheduledCorksByIdResponse {
     #[prost(message, repeated, tag = "1")]
-    pub corks: ::prost::alloc::vec::Vec<ScheduledCork>,
+    pub corks: ::prost::alloc::vec::Vec<ScheduledAxelarCork>,
 }
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct QueryCorkResultRequest {
     #[prost(string, tag = "1")]
     pub id: ::prost::alloc::string::String,
-    #[prost(string, tag = "2")]
-    pub chain_name: ::prost::alloc::string::String,
-    #[prost(uint64, tag = "3")]
+    #[prost(uint64, tag = "2")]
     pub chain_id: u64,
 }
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct QueryCorkResultResponse {
     #[prost(message, optional, tag = "1")]
-    pub cork_result: ::core::option::Option<CorkResult>,
+    pub cork_result: ::core::option::Option<AxelarCorkResult>,
 }
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct QueryCorkResultsRequest {
-    #[prost(string, tag = "1")]
-    pub chain_name: ::prost::alloc::string::String,
-    #[prost(uint64, tag = "2")]
+    #[prost(uint64, tag = "1")]
     pub chain_id: u64,
 }
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct QueryCorkResultsResponse {
     #[prost(message, repeated, tag = "1")]
-    pub cork_results: ::prost::alloc::vec::Vec<CorkResult>,
+    pub cork_results: ::prost::alloc::vec::Vec<AxelarCorkResult>,
 }
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct QueryChainConfigurationsRequest {}
@@ -351,6 +400,20 @@ pub struct QueryChainConfigurationsRequest {}
 pub struct QueryChainConfigurationsResponse {
     #[prost(message, repeated, tag = "1")]
     pub configurations: ::prost::alloc::vec::Vec<ChainConfiguration>,
+}
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct QueryAxelarContractCallNoncesRequest {}
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct QueryAxelarContractCallNoncesResponse {
+    #[prost(message, repeated, tag = "1")]
+    pub contract_call_nonces: ::prost::alloc::vec::Vec<AxelarContractCallNonce>,
+}
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct QueryAxelarProxyUpgradeDataRequest {}
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct QueryAxelarProxyUpgradeDataResponse {
+    #[prost(message, repeated, tag = "1")]
+    pub proxy_upgrade_data: ::prost::alloc::vec::Vec<AxelarUpgradeData>,
 }
 #[doc = r" Generated client implementations."]
 pub mod query_client {
@@ -532,6 +595,40 @@ pub mod query_client {
             );
             self.inner.unary(request.into_request(), path, codec).await
         }
+        pub async fn query_axelar_contract_call_nonces(
+            &mut self,
+            request: impl tonic::IntoRequest<super::QueryAxelarContractCallNoncesRequest>,
+        ) -> Result<tonic::Response<super::QueryAxelarContractCallNoncesResponse>, tonic::Status>
+        {
+            self.inner.ready().await.map_err(|e| {
+                tonic::Status::new(
+                    tonic::Code::Unknown,
+                    format!("Service was not ready: {}", e.into()),
+                )
+            })?;
+            let codec = tonic::codec::ProstCodec::default();
+            let path = http::uri::PathAndQuery::from_static(
+                "/axelarcork.v1.Query/QueryAxelarContractCallNonces",
+            );
+            self.inner.unary(request.into_request(), path, codec).await
+        }
+        pub async fn query_axelar_proxy_upgrade_data(
+            &mut self,
+            request: impl tonic::IntoRequest<super::QueryAxelarProxyUpgradeDataRequest>,
+        ) -> Result<tonic::Response<super::QueryAxelarProxyUpgradeDataResponse>, tonic::Status>
+        {
+            self.inner.ready().await.map_err(|e| {
+                tonic::Status::new(
+                    tonic::Code::Unknown,
+                    format!("Service was not ready: {}", e.into()),
+                )
+            })?;
+            let codec = tonic::codec::ProstCodec::default();
+            let path = http::uri::PathAndQuery::from_static(
+                "/axelarcork.v1.Query/QueryAxelarProxyUpgradeData",
+            );
+            self.inner.unary(request.into_request(), path, codec).await
+        }
     }
     impl<T: Clone> Clone for QueryClient<T> {
         fn clone(&self) -> Self {
@@ -567,11 +664,9 @@ pub struct AddAxelarManagedCellarIDsProposal {
     pub title: ::prost::alloc::string::String,
     #[prost(string, tag = "2")]
     pub description: ::prost::alloc::string::String,
-    #[prost(string, tag = "3")]
-    pub chain_name: ::prost::alloc::string::String,
-    #[prost(uint64, tag = "4")]
+    #[prost(uint64, tag = "3")]
     pub chain_id: u64,
-    #[prost(message, optional, tag = "5")]
+    #[prost(message, optional, tag = "4")]
     pub cellar_ids: ::core::option::Option<CellarIdSet>,
 }
 /// AddManagedCellarIDsProposalWithDeposit is a specific definition for CLI commands
@@ -581,13 +676,11 @@ pub struct AddAxelarManagedCellarIDsProposalWithDeposit {
     pub title: ::prost::alloc::string::String,
     #[prost(string, tag = "2")]
     pub description: ::prost::alloc::string::String,
-    #[prost(string, tag = "3")]
-    pub chain_name: ::prost::alloc::string::String,
-    #[prost(uint64, tag = "4")]
+    #[prost(uint64, tag = "3")]
     pub chain_id: u64,
-    #[prost(message, optional, tag = "5")]
+    #[prost(message, optional, tag = "4")]
     pub cellar_ids: ::core::option::Option<CellarIdSet>,
-    #[prost(string, tag = "6")]
+    #[prost(string, tag = "5")]
     pub deposit: ::prost::alloc::string::String,
 }
 #[derive(Clone, PartialEq, ::prost::Message)]
@@ -596,11 +689,9 @@ pub struct RemoveAxelarManagedCellarIDsProposal {
     pub title: ::prost::alloc::string::String,
     #[prost(string, tag = "2")]
     pub description: ::prost::alloc::string::String,
-    #[prost(string, tag = "3")]
-    pub chain_name: ::prost::alloc::string::String,
-    #[prost(uint64, tag = "4")]
+    #[prost(uint64, tag = "3")]
     pub chain_id: u64,
-    #[prost(message, optional, tag = "5")]
+    #[prost(message, optional, tag = "4")]
     pub cellar_ids: ::core::option::Option<CellarIdSet>,
 }
 /// RemoveManagedCellarIDsProposalWithDeposit is a specific definition for CLI commands
@@ -610,13 +701,11 @@ pub struct RemoveAxelarManagedCellarIDsProposalWithDeposit {
     pub title: ::prost::alloc::string::String,
     #[prost(string, tag = "2")]
     pub description: ::prost::alloc::string::String,
-    #[prost(string, tag = "3")]
-    pub chain_name: ::prost::alloc::string::String,
-    #[prost(uint64, tag = "4")]
+    #[prost(uint64, tag = "3")]
     pub chain_id: u64,
-    #[prost(message, optional, tag = "5")]
+    #[prost(message, optional, tag = "4")]
     pub cellar_ids: ::core::option::Option<CellarIdSet>,
-    #[prost(string, tag = "6")]
+    #[prost(string, tag = "5")]
     pub deposit: ::prost::alloc::string::String,
 }
 #[derive(Clone, PartialEq, ::prost::Message)]
@@ -627,11 +716,9 @@ pub struct AxelarScheduledCorkProposal {
     pub description: ::prost::alloc::string::String,
     #[prost(uint64, tag = "3")]
     pub block_height: u64,
-    #[prost(string, tag = "4")]
-    pub chain_name: ::prost::alloc::string::String,
-    #[prost(uint64, tag = "5")]
+    #[prost(uint64, tag = "4")]
     pub chain_id: u64,
-    #[prost(string, tag = "6")]
+    #[prost(string, tag = "5")]
     pub target_contract_address: ::prost::alloc::string::String,
     ///
     /// The JSON representation of a ScheduleRequest defined in the Steward protos
@@ -651,8 +738,12 @@ pub struct AxelarScheduledCorkProposal {
     ///
     /// You can use the Steward CLI to generate the required JSON rather than constructing it by hand
     /// https://github.com/peggyjv/steward
-    #[prost(string, tag = "7")]
+    #[prost(string, tag = "6")]
     pub contract_call_proto_json: ::prost::alloc::string::String,
+    /// unix timestamp before which the contract call must be executed.
+    /// enforced by the Axelar proxy contract
+    #[prost(uint64, tag = "7")]
+    pub deadline: u64,
 }
 /// ScheduledCorkProposalWithDeposit is a specific definition for CLI commands
 #[derive(Clone, PartialEq, ::prost::Message)]
@@ -663,14 +754,14 @@ pub struct AxelarScheduledCorkProposalWithDeposit {
     pub description: ::prost::alloc::string::String,
     #[prost(uint64, tag = "3")]
     pub block_height: u64,
-    #[prost(string, tag = "4")]
-    pub chain_name: ::prost::alloc::string::String,
-    #[prost(uint64, tag = "5")]
+    #[prost(uint64, tag = "4")]
     pub chain_id: u64,
-    #[prost(string, tag = "6")]
+    #[prost(string, tag = "5")]
     pub target_contract_address: ::prost::alloc::string::String,
-    #[prost(string, tag = "7")]
+    #[prost(string, tag = "6")]
     pub contract_call_proto_json: ::prost::alloc::string::String,
+    #[prost(uint64, tag = "7")]
+    pub deadline: u64,
     #[prost(string, tag = "8")]
     pub deposit: ::prost::alloc::string::String,
 }
@@ -684,9 +775,7 @@ pub struct AxelarCommunityPoolSpendProposal {
     pub recipient: ::prost::alloc::string::String,
     #[prost(uint64, tag = "4")]
     pub chain_id: u64,
-    #[prost(string, tag = "5")]
-    pub chain_name: ::prost::alloc::string::String,
-    #[prost(message, optional, tag = "6")]
+    #[prost(message, optional, tag = "5")]
     pub amount: ::core::option::Option<cosmos_sdk_proto::cosmos::base::v1beta1::Coin>,
 }
 /// This format of the community spend Ethereum proposal is specifically for
@@ -739,6 +828,50 @@ pub struct RemoveChainConfigurationProposal {
 }
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct RemoveChainConfigurationProposalWithDeposit {
+    #[prost(string, tag = "1")]
+    pub title: ::prost::alloc::string::String,
+    #[prost(string, tag = "2")]
+    pub description: ::prost::alloc::string::String,
+    #[prost(uint64, tag = "3")]
+    pub chain_id: u64,
+    #[prost(string, tag = "4")]
+    pub deposit: ::prost::alloc::string::String,
+}
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct UpgradeAxelarProxyContractProposal {
+    #[prost(string, tag = "1")]
+    pub title: ::prost::alloc::string::String,
+    #[prost(string, tag = "2")]
+    pub description: ::prost::alloc::string::String,
+    #[prost(uint64, tag = "3")]
+    pub chain_id: u64,
+    #[prost(string, tag = "4")]
+    pub new_proxy_address: ::prost::alloc::string::String,
+}
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct UpgradeAxelarProxyContractProposalWithDeposit {
+    #[prost(string, tag = "1")]
+    pub title: ::prost::alloc::string::String,
+    #[prost(string, tag = "2")]
+    pub description: ::prost::alloc::string::String,
+    #[prost(uint64, tag = "3")]
+    pub chain_id: u64,
+    #[prost(string, tag = "4")]
+    pub new_proxy_address: ::prost::alloc::string::String,
+    #[prost(string, tag = "5")]
+    pub deposit: ::prost::alloc::string::String,
+}
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct CancelAxelarProxyContractUpgradeProposal {
+    #[prost(string, tag = "1")]
+    pub title: ::prost::alloc::string::String,
+    #[prost(string, tag = "2")]
+    pub description: ::prost::alloc::string::String,
+    #[prost(uint64, tag = "3")]
+    pub chain_id: u64,
+}
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct CancelAxelarProxyContractUpgradeProposalWithDeposit {
     #[prost(string, tag = "1")]
     pub title: ::prost::alloc::string::String,
     #[prost(string, tag = "2")]
