@@ -32,6 +32,8 @@ func GetQueryCmd() *cobra.Command {
 		queryCorkResult(),
 		queryCorkResults(),
 		queryChainConfigurations(),
+		queryAxelarContractCallNonces(),
+		queryAxelayProxyUpgradeData(),
 	}...)
 
 	return corkQueryCmd
