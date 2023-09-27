@@ -28,7 +28,8 @@ func GetTxCmd() *cobra.Command {
 	corkTxCmd.AddCommand(
 		CmdScheduleAxelarCork(),
 		CmdRelayAxelarCork(),
-		CmdBumpAxelarCorkGas())
+		CmdBumpAxelarCorkGas(),
+		CmdRelayAxelarProxyUpgrade())
 
 	return corkTxCmd
 }
