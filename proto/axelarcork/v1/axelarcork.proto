@@ -40,7 +40,8 @@ message AxelarCorkResults {
 }
 
 message CellarIDSet {
-  repeated string ids = 1;
+  ChainConfiguration chain = 1;
+  repeated string ids = 2;
 }
 
 message ChainConfiguration {

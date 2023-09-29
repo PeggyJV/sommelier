@@ -32,12 +32,35 @@ func (k Keeper) QueryCellarIDs(c context.Context, req *types.QueryCellarIDsReque
 	}
 
 	ctx := sdk.UnwrapSDKContext(c)
+	response := &types.QueryCellarIDsResponse{
+		CellarIds: []*types.CellarIDSet{},
+	}
+	k.IterateChainConfigurations(ctx, func(config types.ChainConfiguration) (stop bool) {
+		set := types.CellarIDSet{Chain: &config, Ids: []string{}}
+		for _, id := range k.GetCellarIDs(ctx, config.Id) {
+			set.Ids = append(set.Ids, id.Hex())
+		}
+
+		response.CellarIds = append(response.CellarIds, &set)
+
+		return false
+	})
+
+	return response, nil
+}
+
+func (k Keeper) QueryCellarIDsByChainID(c context.Context, req *types.QueryCellarIDsByChainIDRequest) (*types.QueryCellarIDsByChainIDResponse, error) {
+	if req == nil {
+		return nil, status.Error(codes.InvalidArgument, "empty request")
+	}
+
+	ctx := sdk.UnwrapSDKContext(c)
 	config, ok := k.GetChainConfigurationByID(ctx, req.ChainId)
 	if !ok {
 		return nil, fmt.Errorf("chain by id %d not found", req.ChainId)
 	}
 
-	response := &types.QueryCellarIDsResponse{}
+	response := &types.QueryCellarIDsByChainIDResponse{}
 	for _, id := range k.GetCellarIDs(ctx, config.Id) {
 		response.CellarIds = append(response.CellarIds, id.Hex())
 	}

@@ -46,6 +46,8 @@
     - [QueryAxelarContractCallNoncesResponse](#axelarcork.v1.QueryAxelarContractCallNoncesResponse)
     - [QueryAxelarProxyUpgradeDataRequest](#axelarcork.v1.QueryAxelarProxyUpgradeDataRequest)
     - [QueryAxelarProxyUpgradeDataResponse](#axelarcork.v1.QueryAxelarProxyUpgradeDataResponse)
+    - [QueryCellarIDsByChainIDRequest](#axelarcork.v1.QueryCellarIDsByChainIDRequest)
+    - [QueryCellarIDsByChainIDResponse](#axelarcork.v1.QueryCellarIDsByChainIDResponse)
     - [QueryCellarIDsRequest](#axelarcork.v1.QueryCellarIDsRequest)
     - [QueryCellarIDsResponse](#axelarcork.v1.QueryCellarIDsResponse)
     - [QueryChainConfigurationsRequest](#axelarcork.v1.QueryChainConfigurationsRequest)
@@ -254,6 +256,7 @@ execution in case of an error.
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
+| `chain` | [ChainConfiguration](#axelarcork.v1.ChainConfiguration) |  |  |
 | `ids` | [string](#string) | repeated |  |
 
 
@@ -807,10 +810,10 @@ RemoveManagedCellarIDsProposalWithDeposit is a specific definition for CLI comma
 
 
 
-<a name="axelarcork.v1.QueryCellarIDsRequest"></a>
+<a name="axelarcork.v1.QueryCellarIDsByChainIDRequest"></a>
 
-### QueryCellarIDsRequest
-QueryCellarIDsRequest is the request type for Query/QueryCellarIDs gRPC method.
+### QueryCellarIDsByChainIDRequest
+QueryCellarIDsByChainIDRequest is the request type for Query/QueryCellarIDsByChainID gRPC method.
 
 
 | Field | Type | Label | Description |
@@ -822,15 +825,40 @@ QueryCellarIDsRequest is the request type for Query/QueryCellarIDs gRPC method.
 
 
 
-<a name="axelarcork.v1.QueryCellarIDsResponse"></a>
+<a name="axelarcork.v1.QueryCellarIDsByChainIDResponse"></a>
 
-### QueryCellarIDsResponse
-QueryCellarIDsResponse is the response type for Query/QueryCellars gRPC method.
+### QueryCellarIDsByChainIDResponse
+QueryCellarIDsByChainIDResponse is the response type for Query/QueryCellarIDsByChainID gRPC method.
 
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | `cellar_ids` | [string](#string) | repeated |  |
+
+
+
+
+
+
+<a name="axelarcork.v1.QueryCellarIDsRequest"></a>
+
+### QueryCellarIDsRequest
+QueryCellarIDs is the request type for Query/QueryCellarIDs gRPC method.
+
+
+
+
+
+
+<a name="axelarcork.v1.QueryCellarIDsResponse"></a>
+
+### QueryCellarIDsResponse
+QueryCellarIDsResponse is the response type for Query/QueryCellarIDs gRPC method.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `cellar_ids` | [CellarIDSet](#axelarcork.v1.CellarIDSet) | repeated |  |
 
 
 
@@ -1084,7 +1112,8 @@ Query defines the gRPC query service for the cork module.
 | Method Name | Request Type | Response Type | Description | HTTP Verb | Endpoint |
 | ----------- | ------------ | ------------- | ------------| ------- | -------- |
 | `QueryParams` | [QueryParamsRequest](#axelarcork.v1.QueryParamsRequest) | [QueryParamsResponse](#axelarcork.v1.QueryParamsResponse) | QueryParams queries the axelar cork module parameters. | GET|/sommelier/cork/v1/params|
-| `QueryCellarIDs` | [QueryCellarIDsRequest](#axelarcork.v1.QueryCellarIDsRequest) | [QueryCellarIDsResponse](#axelarcork.v1.QueryCellarIDsResponse) | QueryCellarIDs returns all cellars and current tick ranges | GET|/sommelier/axelarcork/v1/cellar_ids|
+| `QueryCellarIDs` | [QueryCellarIDsRequest](#axelarcork.v1.QueryCellarIDsRequest) | [QueryCellarIDsResponse](#axelarcork.v1.QueryCellarIDsResponse) | QueryCellarIDs queries approved cellar ids of all supported chains | GET|/sommelier/axelarcork/v1/cellar_ids|
+| `QueryCellarIDsByChainID` | [QueryCellarIDsByChainIDRequest](#axelarcork.v1.QueryCellarIDsByChainIDRequest) | [QueryCellarIDsByChainIDResponse](#axelarcork.v1.QueryCellarIDsByChainIDResponse) | QueryCellarIDsByChainID returns all cellars and current tick ranges | GET|/sommelier/axelarcork/v1/cellar_ids_by_chain_id|
 | `QueryScheduledCorks` | [QueryScheduledCorksRequest](#axelarcork.v1.QueryScheduledCorksRequest) | [QueryScheduledCorksResponse](#axelarcork.v1.QueryScheduledCorksResponse) | QueryScheduledCorks returns all scheduled corks | GET|/sommelier/axelarcork/v1/scheduled_corks|
 | `QueryScheduledBlockHeights` | [QueryScheduledBlockHeightsRequest](#axelarcork.v1.QueryScheduledBlockHeightsRequest) | [QueryScheduledBlockHeightsResponse](#axelarcork.v1.QueryScheduledBlockHeightsResponse) | QueryScheduledBlockHeights returns all scheduled block heights | GET|/sommelier/axelarcork/v1/scheduled_block_heights|
 | `QueryScheduledCorksByBlockHeight` | [QueryScheduledCorksByBlockHeightRequest](#axelarcork.v1.QueryScheduledCorksByBlockHeightRequest) | [QueryScheduledCorksByBlockHeightResponse](#axelarcork.v1.QueryScheduledCorksByBlockHeightResponse) | QueryScheduledCorks returns all scheduled corks at a block height | GET|/sommelier/axelarcork/v1/scheduled_corks_by_block_height/{block_height}|

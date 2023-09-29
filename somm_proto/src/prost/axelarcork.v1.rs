@@ -48,7 +48,9 @@ pub struct AxelarCorkResults {
 }
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct CellarIdSet {
-    #[prost(string, repeated, tag = "1")]
+    #[prost(message, optional, tag = "1")]
+    pub chain: ::core::option::Option<ChainConfiguration>,
+    #[prost(string, repeated, tag = "2")]
     pub ids: ::prost::alloc::vec::Vec<::prost::alloc::string::String>,
 }
 #[derive(Clone, PartialEq, ::prost::Message)]
@@ -308,15 +310,24 @@ pub struct QueryParamsResponse {
     #[prost(message, optional, tag = "1")]
     pub params: ::core::option::Option<Params>,
 }
-/// QueryCellarIDsRequest is the request type for Query/QueryCellarIDs gRPC method.
+/// QueryCellarIDs is the request type for Query/QueryCellarIDs gRPC method.
 #[derive(Clone, PartialEq, ::prost::Message)]
-pub struct QueryCellarIDsRequest {
+pub struct QueryCellarIDsRequest {}
+/// QueryCellarIDsResponse is the response type for Query/QueryCellarIDs gRPC method.
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct QueryCellarIDsResponse {
+    #[prost(message, repeated, tag = "1")]
+    pub cellar_ids: ::prost::alloc::vec::Vec<CellarIdSet>,
+}
+/// QueryCellarIDsByChainIDRequest is the request type for Query/QueryCellarIDsByChainID gRPC method.
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct QueryCellarIDsByChainIdRequest {
     #[prost(uint64, tag = "1")]
     pub chain_id: u64,
 }
-/// QueryCellarIDsResponse is the response type for Query/QueryCellars gRPC method.
+/// QueryCellarIDsByChainIDResponse is the response type for Query/QueryCellarIDsByChainID gRPC method.
 #[derive(Clone, PartialEq, ::prost::Message)]
-pub struct QueryCellarIDsResponse {
+pub struct QueryCellarIDsByChainIdResponse {
     #[prost(string, repeated, tag = "1")]
     pub cellar_ids: ::prost::alloc::vec::Vec<::prost::alloc::string::String>,
 }
@@ -464,7 +475,7 @@ pub mod query_client {
             let path = http::uri::PathAndQuery::from_static("/axelarcork.v1.Query/QueryParams");
             self.inner.unary(request.into_request(), path, codec).await
         }
-        #[doc = " QueryCellarIDs returns all cellars and current tick ranges"]
+        #[doc = " QueryCellarIDs queries approved cellar ids of all supported chains"]
         pub async fn query_cellar_i_ds(
             &mut self,
             request: impl tonic::IntoRequest<super::QueryCellarIDsRequest>,
@@ -477,6 +488,24 @@ pub mod query_client {
             })?;
             let codec = tonic::codec::ProstCodec::default();
             let path = http::uri::PathAndQuery::from_static("/axelarcork.v1.Query/QueryCellarIDs");
+            self.inner.unary(request.into_request(), path, codec).await
+        }
+        #[doc = " QueryCellarIDsByChainID returns all cellars and current tick ranges"]
+        pub async fn query_cellar_i_ds_by_chain_id(
+            &mut self,
+            request: impl tonic::IntoRequest<super::QueryCellarIDsByChainIdRequest>,
+        ) -> Result<tonic::Response<super::QueryCellarIDsByChainIdResponse>, tonic::Status>
+        {
+            self.inner.ready().await.map_err(|e| {
+                tonic::Status::new(
+                    tonic::Code::Unknown,
+                    format!("Service was not ready: {}", e.into()),
+                )
+            })?;
+            let codec = tonic::codec::ProstCodec::default();
+            let path = http::uri::PathAndQuery::from_static(
+                "/axelarcork.v1.Query/QueryCellarIDsByChainID",
+            );
             self.inner.unary(request.into_request(), path, codec).await
         }
         #[doc = " QueryScheduledCorks returns all scheduled corks"]

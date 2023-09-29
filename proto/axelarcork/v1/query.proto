@@ -14,9 +14,13 @@ service Query {
   rpc QueryParams(QueryParamsRequest) returns (QueryParamsResponse) {
     option (google.api.http).get = "/sommelier/cork/v1/params";
   }
-  // QueryCellarIDs returns all cellars and current tick ranges
+  // QueryCellarIDs queries approved cellar ids of all supported chains
   rpc QueryCellarIDs(QueryCellarIDsRequest) returns (QueryCellarIDsResponse) {
     option (google.api.http).get = "/sommelier/axelarcork/v1/cellar_ids";
+  }
+  // QueryCellarIDsByChainID returns all cellars and current tick ranges
+  rpc QueryCellarIDsByChainID(QueryCellarIDsByChainIDRequest) returns (QueryCellarIDsByChainIDResponse) {
+    option (google.api.http).get = "/sommelier/axelarcork/v1/cellar_ids_by_chain_id";
   }
   // QueryScheduledCorks returns all scheduled corks
   rpc QueryScheduledCorks(QueryScheduledCorksRequest) returns (QueryScheduledCorksResponse) {
@@ -68,13 +72,21 @@ message QueryParamsResponse {
   Params params = 1 [(gogoproto.nullable) = false];
 }
 
-// QueryCellarIDsRequest is the request type for Query/QueryCellarIDs gRPC method.
-message QueryCellarIDsRequest {
+// QueryCellarIDs is the request type for Query/QueryCellarIDs gRPC method.
+message QueryCellarIDsRequest {}
+
+// QueryCellarIDsResponse is the response type for Query/QueryCellarIDs gRPC method.
+message QueryCellarIDsResponse {
+  repeated CellarIDSet cellar_ids = 1;
+}
+
+// QueryCellarIDsByChainIDRequest is the request type for Query/QueryCellarIDsByChainID gRPC method.
+message QueryCellarIDsByChainIDRequest {
   uint64 chain_id   = 1;
 }
 
-// QueryCellarIDsResponse is the response type for Query/QueryCellars gRPC method.
-message QueryCellarIDsResponse {
+// QueryCellarIDsByChainIDResponse is the response type for Query/QueryCellarIDsByChainID gRPC method.
+message QueryCellarIDsByChainIDResponse {
   repeated string cellar_ids = 1;
 }
 

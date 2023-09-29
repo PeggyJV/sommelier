@@ -26,6 +26,7 @@ func GetQueryCmd() *cobra.Command {
 		queryParams(),
 		queryScheduledCorks(),
 		queryCellarIDs(),
+		queryCellarIDsByChainID(),
 		queryScheduledBlockHeights(),
 		queryScheduledCorksByBlockHeight(),
 		queryScheduledCorksByID(),
@@ -71,10 +72,39 @@ func queryParams() *cobra.Command {
 
 func queryCellarIDs() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:     "cellar-ids [chain-id]",
+		Use:     "cellar-ids",
 		Aliases: []string{"cids"},
-		Args:    cobra.ExactArgs(1),
-		Short:   "query managed cellar ids from the chain",
+		Args:    cobra.NoArgs,
+		Short:   "query all managed cellar ids from all chains",
+		RunE: func(cmd *cobra.Command, args []string) error {
+			ctx, err := client.GetClientQueryContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			req := &types.QueryCellarIDsRequest{}
+
+			queryClient := types.NewQueryClient(ctx)
+
+			res, err := queryClient.QueryCellarIDs(cmd.Context(), req)
+			if err != nil {
+				return err
+			}
+
+			return ctx.PrintProto(res)
+		},
+	}
+
+	flags.AddQueryFlagsToCmd(cmd)
+
+	return cmd
+}
+
+func queryCellarIDsByChainID() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "cellar-ids-by-chain-id [chain-id]",
+		Args:  cobra.ExactArgs(1),
+		Short: "query managed cellar ids from the chain",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx, err := client.GetClientQueryContext(cmd)
 			if err != nil {
@@ -86,13 +116,13 @@ func queryCellarIDs() *cobra.Command {
 				return err
 			}
 
-			req := &types.QueryCellarIDsRequest{
+			req := &types.QueryCellarIDsByChainIDRequest{
 				ChainId: chainID.Uint64(),
 			}
 
 			queryClient := types.NewQueryClient(ctx)
 
-			res, err := queryClient.QueryCellarIDs(cmd.Context(), req)
+			res, err := queryClient.QueryCellarIDsByChainID(cmd.Context(), req)
 			if err != nil {
 				return err
 			}

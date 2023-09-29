@@ -26,11 +26,12 @@ func (suite *KeeperTestSuite) TestQueriesHappyPath() {
 	}
 	axelarcorkKeeper.SetParams(ctx, params)
 
-	axelarcorkKeeper.SetChainConfiguration(ctx, TestEVMChainID, types.ChainConfiguration{
+	chainConfig := types.ChainConfiguration{
 		Name:         "testevm",
 		Id:           TestEVMChainID,
 		ProxyAddress: "0x123",
-	})
+	}
+	axelarcorkKeeper.SetChainConfiguration(ctx, TestEVMChainID, chainConfig)
 
 	testHeight := uint64(ctx.BlockHeight())
 	cork := types.AxelarCork{
@@ -57,7 +58,8 @@ func (suite *KeeperTestSuite) TestQueriesHappyPath() {
 	}
 	axelarcorkKeeper.SetAxelarCorkResult(ctx, TestEVMChainID, id, corkResult)
 
-	axelarcorkKeeper.SetCellarIDs(ctx, TestEVMChainID, types.CellarIDSet{Ids: []string{"0x0000000000000000000000000000000000000000", "0x1111111111111111111111111111111111111111"}})
+	ids := []string{"0x0000000000000000000000000000000000000000", "0x1111111111111111111111111111111111111111"}
+	axelarcorkKeeper.SetCellarIDs(ctx, TestEVMChainID, types.CellarIDSet{Ids: ids})
 
 	nonce := types.AxelarContractCallNonce{
 		Nonce:           1,
@@ -108,6 +110,15 @@ func (suite *KeeperTestSuite) TestQueriesHappyPath() {
 	corkResultsResult, err := axelarcorkKeeper.QueryCorkResults(sdk.WrapSDKContext(ctx), &types.QueryCorkResultsRequest{ChainId: TestEVMChainID})
 	require.Nil(err)
 	require.Equal(&corkResult, corkResultsResult.CorkResults[0])
+
+	cellarIDsResult, err := axelarcorkKeeper.QueryCellarIDs(sdk.WrapSDKContext(ctx), &types.QueryCellarIDsRequest{})
+	require.Nil(err)
+	expectedCellarIDSet := []*types.CellarIDSet{{Ids: ids, Chain: &chainConfig}}
+	require.Equal(expectedCellarIDSet, cellarIDsResult.CellarIds)
+
+	cellarIDsByChainIDResult, err := axelarcorkKeeper.QueryCellarIDsByChainID(sdk.WrapSDKContext(ctx), &types.QueryCellarIDsByChainIDRequest{ChainId: TestEVMChainID})
+	require.Nil(err)
+	require.Equal(expectedCellarIDSet[0].Ids, cellarIDsByChainIDResult.CellarIds)
 
 	noncesResult, err := axelarcorkKeeper.QueryAxelarContractCallNonces(sdk.WrapSDKContext(ctx), &types.QueryAxelarContractCallNoncesRequest{})
 	require.Nil(err)
