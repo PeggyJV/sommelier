@@ -23,9 +23,7 @@ func InitGenesis(ctx sdk.Context, k Keeper, gs types.GenesisState) {
 		k.SetAxelarCorkResult(
 			ctx,
 			corkResult.Cork.ChainId,
-			corkResult.Cork.IDHash(
-				corkResult.Cork.ChainId,
-				corkResult.BlockHeight),
+			corkResult.Cork.IDHash(corkResult.BlockHeight),
 			*corkResult,
 		)
 	}

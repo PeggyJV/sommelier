@@ -140,7 +140,7 @@ func (suite *KeeperTestSuite) TestSetGetDeleteScheduledCork() {
 		TargetContractAddress: sampleCellarHex,
 		Deadline:              deadline,
 	}
-	expectedID := expectedCork.IDHash(TestEVMChainID, testHeight)
+	expectedID := expectedCork.IDHash(testHeight)
 	actualID := axelarcorkKeeper.SetScheduledAxelarCork(ctx, TestEVMChainID, testHeight, val, expectedCork)
 	require.Equal(expectedID, actualID)
 	actualCork, found := axelarcorkKeeper.GetScheduledAxelarCork(ctx, TestEVMChainID, testHeight, actualID, val, sampleCellarAddr, deadline)
@@ -219,7 +219,7 @@ func (suite *KeeperTestSuite) TestCorkResults() {
 		TargetContractAddress: sampleCellarHex,
 		Deadline:              deadline,
 	}
-	id := cork.IDHash(TestEVMChainID, testHeight)
+	id := cork.IDHash(testHeight)
 	result := types.AxelarCorkResult{
 		Cork:               &cork,
 		BlockHeight:        testHeight,

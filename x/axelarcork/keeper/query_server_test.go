@@ -39,7 +39,7 @@ func (suite *KeeperTestSuite) TestQueriesHappyPath() {
 		TargetContractAddress: sampleCellarHex,
 		ChainId:               TestEVMChainID,
 	}
-	id := cork.IDHash(TestEVMChainID, testHeight)
+	id := cork.IDHash(testHeight)
 
 	val := sdk.ValAddress("12345678901234567890")
 	expectedScheduledCork := types.ScheduledAxelarCork{

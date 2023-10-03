@@ -87,7 +87,7 @@ func (k Keeper) SetParams(ctx sdk.Context, params types.Params) {
 /////////////////////
 
 func (k Keeper) SetScheduledAxelarCork(ctx sdk.Context, chainID uint64, blockHeight uint64, val sdk.ValAddress, cork types.AxelarCork) []byte {
-	id := cork.IDHash(chainID, blockHeight)
+	id := cork.IDHash(blockHeight)
 	bz := k.cdc.MustMarshal(&cork)
 	ctx.KVStore(k.storeKey).Set(types.GetScheduledAxelarCorkKey(chainID, blockHeight, id, val, common.HexToAddress(cork.TargetContractAddress), cork.Deadline), bz)
 	return id
@@ -378,7 +378,7 @@ func (k Keeper) GetApprovedScheduledAxelarCorks(ctx sdk.Context, chainID uint64)
 			Approved:           quorumReached,
 			ApprovalPercentage: approvalPercentage.Mul(sdk.NewDec(100)).String(),
 		}
-		corkID := cork.IDHash(chainID, currentBlockHeight)
+		corkID := cork.IDHash(currentBlockHeight)
 
 		k.SetAxelarCorkResult(ctx, chainID, corkID, corkResult)
 
