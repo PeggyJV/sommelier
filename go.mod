@@ -29,7 +29,7 @@ require (
 	github.com/tendermint/tm-db v0.6.4
 	github.com/tklauser/go-sysconf v0.3.7 // indirect
 	github.com/xeipuuv/gojsonpointer v0.0.0-20190905194746-02993c407bfb // indirect
-	golang.org/x/net v0.0.0-20220127200216-cd36cc0744dd // indirect
+	golang.org/x/net v0.17.0 // indirect
 	google.golang.org/genproto v0.0.0-20220302033224-9aa15565e42a
 	google.golang.org/grpc v1.44.0
 	gopkg.in/yaml.v2 v2.4.0
