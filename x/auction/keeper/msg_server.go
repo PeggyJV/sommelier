@@ -7,8 +7,8 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
-	"github.com/peggyjv/sommelier/v4/app/params"
-	"github.com/peggyjv/sommelier/v4/x/auction/types"
+	"github.com/peggyjv/sommelier/v7/app/params"
+	"github.com/peggyjv/sommelier/v7/x/auction/types"
 )
 
 var _ types.MsgServer = Keeper{}
@@ -16,7 +16,6 @@ var _ types.MsgServer = Keeper{}
 // SubmitBid implements types.MsgServer
 func (k Keeper) SubmitBid(c context.Context, msg *types.MsgSubmitBidRequest) (*types.MsgSubmitBidResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
-
 	signer := msg.MustGetSigner()
 
 	// Verify auction

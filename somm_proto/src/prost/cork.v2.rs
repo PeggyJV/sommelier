@@ -132,6 +132,7 @@ pub struct GenesisState {
 /// Params cork parameters
 #[derive(serde::Deserialize, serde::Serialize, Clone, PartialEq, ::prost::Message)]
 pub struct Params {
+    /// Deprecated
     /// VoteThreshold defines the percentage of bonded stake required to vote for a scheduled cork to be approved
     #[prost(string, tag = "1")]
     pub vote_threshold: ::prost::alloc::string::String,

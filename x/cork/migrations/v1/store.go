@@ -8,7 +8,7 @@ import (
 
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/peggyjv/sommelier/v4/x/cork/migrations/v1/types"
+	"github.com/peggyjv/sommelier/v7/x/cork/migrations/v1/types"
 )
 
 func MigrateStore(ctx sdk.Context, storeKey storetypes.StoreKey, cdc codec.BinaryCodec) error {

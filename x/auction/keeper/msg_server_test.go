@@ -8,8 +8,8 @@ import (
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 
-	"github.com/peggyjv/sommelier/v4/app/params"
-	auctionTypes "github.com/peggyjv/sommelier/v4/x/auction/types"
+	"github.com/peggyjv/sommelier/v7/app/params"
+	auctionTypes "github.com/peggyjv/sommelier/v7/x/auction/types"
 )
 
 type runsBeforeWrapper func()

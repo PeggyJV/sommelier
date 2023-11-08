@@ -12,7 +12,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/version"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
-	types "github.com/peggyjv/sommelier/v4/x/auction/types"
+	types "github.com/peggyjv/sommelier/v7/x/auction/types"
 	"github.com/spf13/cobra"
 )
 
@@ -25,6 +25,10 @@ func GetTxCmd() *cobra.Command {
 		SuggestionsMinimumDistance: 2,
 		RunE:                       client.ValidateCmd,
 	}
+
+	auctionTxCmd.AddCommand([]*cobra.Command{
+		GetCmdSubmitBid(),
+	}...)
 
 	return auctionTxCmd
 }
@@ -47,8 +51,8 @@ Where proposal.json contains:
 {
   "title": "Best token price proposal ever",
   "description": "Add the guac",
-  "token_prices": [ { denom: "usomm", usd_price: 1000000 }, { denom: "gravity0xdac17f958d2ee523a2206206994597c13d831ec7", usd_price: 0.12501 } ],
-  "deposit": "10000usommm"
+  "token_prices": [ { denom: "usomm", exponent: 6, usd_price: 10 }, { denom: "gravity0xdac17f958d2ee523a2206206994597c13d831ec7", exponent: 6, usd_price: 0.12501 } ],
+  "deposit": "10000000usomm"
 }
 `,
 				version.AppName,
@@ -75,18 +79,15 @@ Where proposal.json contains:
 				return err
 			}
 
-			for _, tokenPrice := range proposal.GetTokenPrices() {
-				err := tokenPrice.ValidateBasic()
-				if err != nil {
-					return err
-				}
-			}
-
 			content := types.NewSetTokenPricesProposal(
 				proposal.Title,
 				proposal.Description,
 				proposal.TokenPrices,
 			)
+
+			if err = content.ValidateBasic(); err != nil {
+				return err
+			}
 
 			from := clientCtx.GetFromAddress()
 			msg, err := govtypes.NewMsgSubmitProposal(content, deposit, from)

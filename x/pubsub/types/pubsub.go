@@ -44,18 +44,20 @@ func (s *Subscriber) ValidateBasic() error {
 		return fmt.Errorf("invalid address: %s", err.Error())
 	}
 
-	// if a subcsriber does not provide a domain and ca_cert, they will not be able to
+	// if a subcsriber does not provide a CA cert and push URL, they will not be able to
 	// subscribe to any publisher intents that use the PUSH method
-
-	if s.Domain != "" {
-		if err := ValidateDomain(s.Domain); err != nil {
-			return fmt.Errorf("invalid domain: %s", err.Error())
-		}
-	}
 
 	if s.CaCert != "" {
 		if err := ValidateCaCertificate(s.CaCert); err != nil {
 			return fmt.Errorf("invalid CA certificate: %s", err.Error())
+		}
+	}
+
+	// PushUrl is optional, but SubscriberIntents will be rejected if the PublisherIntent is using
+	// the PUSH method and this is missing
+	if s.PushUrl != "" {
+		if err := ValidateGenericURL(s.PushUrl); err != nil {
+			return fmt.Errorf("invalid push URL: %s", err.Error())
 		}
 	}
 
@@ -125,14 +127,6 @@ func (si *SubscriberIntent) ValidateBasic() error {
 
 	if err := ValidateDomain(si.PublisherDomain); err != nil {
 		return fmt.Errorf("invalid publisher domain: %s", err.Error())
-	}
-
-	// PushUrl is optional, but the SubscriberIntent will be rejected if the publisher intent is using
-	// the PUSH method
-	if si.PushUrl != "" {
-		if err := ValidateGenericURL(si.PushUrl); err != nil {
-			return fmt.Errorf("invalid push URL: %s", err.Error())
-		}
 	}
 
 	return nil

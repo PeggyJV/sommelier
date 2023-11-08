@@ -5,8 +5,8 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-	gravitytypes "github.com/peggyjv/gravity-bridge/module/v2/x/gravity/types"
-	"github.com/peggyjv/sommelier/v4/app/params"
+	gravitytypes "github.com/peggyjv/gravity-bridge/module/v3/x/gravity/types"
+	"github.com/peggyjv/sommelier/v7/app/params"
 )
 
 func (a *Auction) ValidateBasic() error {
@@ -126,6 +126,10 @@ func (t *TokenPrice) ValidateBasic() error {
 		return sdkerrors.Wrapf(ErrInvalidTokenPriceDenom, "denom: %s", t.Denom)
 	}
 
+	if t.Exponent > 18 {
+		return sdkerrors.Wrapf(ErrTokenPriceExponentTooHigh, "exponent: %d", t.Exponent)
+	}
+
 	return nil
 }
 
@@ -140,6 +144,10 @@ func (t *ProposedTokenPrice) ValidateBasic() error {
 
 	if !strings.HasPrefix(t.Denom, gravitytypes.GravityDenomPrefix) && t.Denom != params.BaseCoinUnit {
 		return sdkerrors.Wrapf(ErrInvalidTokenPriceDenom, "denom: %s", t.Denom)
+	}
+
+	if t.Exponent > 18 {
+		return sdkerrors.Wrapf(ErrTokenPriceExponentTooHigh, "exponent: %d", t.Exponent)
 	}
 
 	return nil

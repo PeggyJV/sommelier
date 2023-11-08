@@ -12,8 +12,9 @@ import (
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
-	"github.com/peggyjv/sommelier/v4/app/params"
-	"github.com/peggyjv/sommelier/v4/x/auction/types"
+	"github.com/peggyjv/sommelier/v7/app/params"
+	appParams "github.com/peggyjv/sommelier/v7/app/params"
+	"github.com/peggyjv/sommelier/v7/x/auction/types"
 	"github.com/tendermint/tendermint/libs/log"
 )
 
@@ -214,9 +215,14 @@ func (k Keeper) BeginAuction(ctx sdk.Context,
 		return sdkerrors.Wrap(types.ErrLastSommTokenPriceTooOld, params.BaseCoinUnit)
 	}
 
-	// Calculate somm per sale token price
-	// Starting price is amount of usomm required for 1 of starting denom
-	saleTokenPriceInUsomm := lastSaleTokenPrice.UsdPrice.Quo(lastUsommTokenPrice.UsdPrice)
+	// Calculate usomm per sale token price
+	// Starting price is amount of usomm required for 1 of starting denom minimum unit -- we take the USD prices per normalized
+	// units provided by governance and calculate the USD price per minimum unit for the sale token and usomm
+	saleTokenMinUnitValue := lastSaleTokenPrice.UsdPrice.Quo(sdk.MustNewDecFromStr("10.0").Power(lastSaleTokenPrice.Exponent))
+	// technically the somm token price has an exponent set in it, but we know what our exponent is meant to be, so use it
+	usommMinUnitValue := lastUsommTokenPrice.UsdPrice.Quo(sdk.MustNewDecFromStr("10.0").Power(appParams.CoinExponent))
+	// determine how many usomm each sale token min unit costs
+	saleTokenPriceInUsomm := saleTokenMinUnitValue.Quo(usommMinUnitValue)
 
 	auctionID := k.GetLastAuctionID(ctx) + 1
 	auction := types.Auction{

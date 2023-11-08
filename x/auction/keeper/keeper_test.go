@@ -13,13 +13,13 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
-	"github.com/peggyjv/sommelier/v4/app/params"
-	moduletestutil "github.com/peggyjv/sommelier/v4/testutil"
-	auctionTypes "github.com/peggyjv/sommelier/v4/x/auction/types"
+	"github.com/peggyjv/sommelier/v7/app/params"
+	moduletestutil "github.com/peggyjv/sommelier/v7/testutil"
+	auctionTypes "github.com/peggyjv/sommelier/v7/x/auction/types"
 
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	paramskeeper "github.com/cosmos/cosmos-sdk/x/params/keeper"
-	auctiontestutil "github.com/peggyjv/sommelier/v4/x/auction/testutil"
+	auctiontestutil "github.com/peggyjv/sommelier/v7/x/auction/testutil"
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
 	tmtime "github.com/tendermint/tendermint/types/time"
 )

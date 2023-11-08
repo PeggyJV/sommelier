@@ -12,7 +12,7 @@ import (
 	types1 "github.com/cosmos/cosmos-sdk/x/mint/types"
 	common "github.com/ethereum/go-ethereum/common"
 	gomock "github.com/golang/mock/gomock"
-	types2 "github.com/peggyjv/sommelier/v4/x/auction/types"
+	types2 "github.com/peggyjv/sommelier/v7/x/auction/types"
 )
 
 // MockAccountKeeper is a mock of AccountKeeper interface.

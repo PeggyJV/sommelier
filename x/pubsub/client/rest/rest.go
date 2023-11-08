@@ -8,7 +8,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/types/rest"
 	govrest "github.com/cosmos/cosmos-sdk/x/gov/client/rest"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
-	"github.com/peggyjv/sommelier/v4/x/pubsub/types"
+	"github.com/peggyjv/sommelier/v7/x/pubsub/types"
 )
 
 // AddPublisherProposalRESTHandler returns a ProposalRESTHandler that exposes an add publisher REST handler with a given sub-route.

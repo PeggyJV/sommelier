@@ -17,12 +17,12 @@ import (
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	disttypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
-	"github.com/peggyjv/sommelier/v4/app/params"
-	auctiontypes "github.com/peggyjv/sommelier/v4/x/auction/types"
-	cellarfeestypes "github.com/peggyjv/sommelier/v4/x/cellarfees/types"
-	corktypes "github.com/peggyjv/sommelier/v4/x/cork/types"
+	"github.com/peggyjv/sommelier/v7/app/params"
+	auctiontypes "github.com/peggyjv/sommelier/v7/x/auction/types"
+	cellarfeestypes "github.com/peggyjv/sommelier/v7/x/cellarfees/types"
+	corktypes "github.com/peggyjv/sommelier/v7/x/cork/types"
 
-	gravitytypes "github.com/peggyjv/gravity-bridge/module/v2/x/gravity/types"
+	gravitytypes "github.com/peggyjv/gravity-bridge/module/v3/x/gravity/types"
 
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/ethclient"
@@ -67,6 +67,8 @@ var (
 
 	// 67%
 	corkVoteThreshold = sdk.NewDecWithPrec(67, 2)
+
+	unusedAddedContract = common.HexToAddress("0x0000000000000000000000000000000000000002")
 
 	proposerMnemonic = "exit own pull hurry crawl glimpse winter service exclude same dog wrap method online practice deal lend athlete resemble chuckle culture receive autumn cinnamon"
 )

@@ -8,8 +8,8 @@ import (
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
-	"github.com/peggyjv/sommelier/v4/x/auction/types"
-	cellarfees "github.com/peggyjv/sommelier/v4/x/cellarfees/types"
+	"github.com/peggyjv/sommelier/v7/x/auction/types"
+	cellarfees "github.com/peggyjv/sommelier/v7/x/cellarfees/types"
 )
 
 func (s *IntegrationTestSuite) TestAuctionModule() {
@@ -45,14 +45,17 @@ func (s *IntegrationTestSuite) TestAuctionModule() {
 			TokenPrices: []*types.ProposedTokenPrice{
 				{
 					Denom:    "gravity0x3506424f91fd33084466f402d5d97f05f8e3b4af",
+					Exponent: 6,
 					UsdPrice: sdk.MustNewDecFromStr("1.0"),
 				},
 				{
 					Denom:    "gravity0x5a98fcbea516cf06857215779fd812ca3bef1b32",
+					Exponent: 6,
 					UsdPrice: sdk.MustNewDecFromStr("0.25"),
 				},
 				{
 					Denom:    testDenom,
+					Exponent: 6,
 					UsdPrice: sdk.MustNewDecFromStr("0.5"),
 				},
 			},

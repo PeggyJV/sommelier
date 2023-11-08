@@ -7,7 +7,7 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/simapp/params"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-	"github.com/peggyjv/sommelier/v4/x/auction/types"
+	"github.com/peggyjv/sommelier/v7/x/auction/types"
 
 	"github.com/cosmos/cosmos-sdk/testutil"
 	"github.com/stretchr/testify/require"
