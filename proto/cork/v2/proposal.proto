@@ -3,7 +3,7 @@ package cork.v2;
 
 import "cork/v2/cork.proto";
 
-option go_package = "github.com/peggyjv/sommelier/v4/x/cork/types";
+option go_package = "github.com/peggyjv/sommelier/v7/x/cork/types";
 
 message AddManagedCellarIDsProposal {
   string title = 1;

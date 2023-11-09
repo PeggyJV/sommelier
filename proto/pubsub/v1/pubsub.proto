@@ -1,7 +1,7 @@
 syntax = "proto3";
 package pubsub.v1;
 
-option go_package = "github.com/peggyjv/sommelier/v4/x/pubsub/types";
+option go_package = "github.com/peggyjv/sommelier/v7/x/pubsub/types";
 
 // represents a publisher, which are added via governance
 message Publisher {
