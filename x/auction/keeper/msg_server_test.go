@@ -23,11 +23,11 @@ func (suite *KeeperTestSuite) TestHappyPathSubmitBidAndFulfillFully() {
 	auctionParams := auctionTypes.DefaultParams()
 	auctionKeeper.setParams(ctx, auctionParams)
 
-	sommPrice := auctionTypes.TokenPrice{Denom: params.BaseCoinUnit, UsdPrice: sdk.MustNewDecFromStr("0.01"), LastUpdatedBlock: 5}
+	sommPrice := auctionTypes.TokenPrice{Denom: params.BaseCoinUnit, Exponent: 6, UsdPrice: sdk.MustNewDecFromStr("0.01"), LastUpdatedBlock: 5}
 
 	/* #nosec */
 	saleToken := "gravity0xdac17f958d2ee523a2206206994597c13d831ec7"
-	saleTokenPrice := auctionTypes.TokenPrice{Denom: saleToken, UsdPrice: sdk.MustNewDecFromStr("0.02"), LastUpdatedBlock: 5}
+	saleTokenPrice := auctionTypes.TokenPrice{Denom: saleToken, Exponent: 6, UsdPrice: sdk.MustNewDecFromStr("0.02"), LastUpdatedBlock: 5}
 	auctionedSaleTokens := sdk.NewCoin(saleToken, sdk.NewInt(10000000000))
 
 	auctionKeeper.setTokenPrice(ctx, sommPrice)
@@ -172,11 +172,11 @@ func (suite *KeeperTestSuite) TestUnhappyPathsForSubmitBid() {
 	auctionParams := auctionTypes.DefaultParams()
 	auctionKeeper.setParams(ctx, auctionParams)
 
-	sommPrice := auctionTypes.TokenPrice{Denom: params.BaseCoinUnit, UsdPrice: sdk.MustNewDecFromStr("0.01"), LastUpdatedBlock: 5}
+	sommPrice := auctionTypes.TokenPrice{Denom: params.BaseCoinUnit, Exponent: 6, UsdPrice: sdk.MustNewDecFromStr("0.01"), LastUpdatedBlock: 5}
 
 	/* #nosec */
 	saleToken := "gravity0x853d955acef822db058eb8505911ed77f175b99e"
-	saleTokenPrice := auctionTypes.TokenPrice{Denom: saleToken, UsdPrice: sdk.MustNewDecFromStr("0.02"), LastUpdatedBlock: 5}
+	saleTokenPrice := auctionTypes.TokenPrice{Denom: saleToken, Exponent: 6, UsdPrice: sdk.MustNewDecFromStr("0.02"), LastUpdatedBlock: 5}
 	auctionedSaleTokens := sdk.NewCoin(saleToken, sdk.NewInt(1000000))
 
 	auctionKeeper.setTokenPrice(ctx, sommPrice)

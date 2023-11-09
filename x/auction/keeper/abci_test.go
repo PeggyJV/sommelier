@@ -21,11 +21,11 @@ func (suite *KeeperTestSuite) TestAbci() {
 	require.NotPanics(func() { auctionKeeper.EndBlocker(ctx) })
 
 	// Create an auction
-	sommPrice := auctionTypes.TokenPrice{Denom: params.BaseCoinUnit, UsdPrice: sdk.MustNewDecFromStr("0.01"), LastUpdatedBlock: 5}
+	sommPrice := auctionTypes.TokenPrice{Denom: params.BaseCoinUnit, Exponent: 6, UsdPrice: sdk.MustNewDecFromStr("0.01"), LastUpdatedBlock: 5}
 
 	/* #nosec */
 	saleToken := "gravity0x95aD61b0a150d79219dCF64E1E6Cc01f0B64C4cE"
-	saleTokenPrice := auctionTypes.TokenPrice{Denom: saleToken, UsdPrice: sdk.MustNewDecFromStr("0.01"), LastUpdatedBlock: 5}
+	saleTokenPrice := auctionTypes.TokenPrice{Denom: saleToken, Exponent: 6, UsdPrice: sdk.MustNewDecFromStr("0.01"), LastUpdatedBlock: 5}
 	auctionedSaleTokens := sdk.NewCoin(saleToken, sdk.NewInt(10000))
 
 	auctionKeeper.setTokenPrice(ctx, sommPrice)
