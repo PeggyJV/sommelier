@@ -118,7 +118,7 @@ func validateAuctionPriceDecreaseAccelerationRate(i interface{}) error {
 
 	if auctionPriceDecreaseAccelerationRate.LT(sdk.MustNewDecFromStr("0")) || auctionPriceDecreaseAccelerationRate.GT(sdk.MustNewDecFromStr("1.0")) {
 		// Acceleration rates could in theory be more than 100% if need be, but we are establishing this as a bound for now
-		return sdkerrors.Wrapf(ErrInvalidAuctionPriceDecreaseAccelerationRateParam, "auction price decrease acceleration rate must be betwen 0 and 1 inclusive (0%% to 100%%)")
+		return sdkerrors.Wrapf(ErrInvalidAuctionPriceDecreaseAccelerationRateParam, "auction price decrease acceleration rate must be between 0 and 1 inclusive (0%% to 100%%)")
 	}
 
 	return nil

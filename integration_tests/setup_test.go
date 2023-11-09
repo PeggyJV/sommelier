@@ -68,8 +68,6 @@ var (
 	// 67%
 	corkVoteThreshold = sdk.NewDecWithPrec(67, 2)
 
-	unusedAddedContract = common.HexToAddress("0x0000000000000000000000000000000000000002")
-
 	proposerMnemonic = "exit own pull hurry crawl glimpse winter service exclude same dog wrap method online practice deal lend athlete resemble chuckle culture receive autumn cinnamon"
 )
 

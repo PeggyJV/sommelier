@@ -92,7 +92,7 @@ func (k Keeper) QueryScheduledCorksByID(c context.Context, req *types.QuerySched
 	ctx := sdk.UnwrapSDKContext(c)
 	id, err := hex.DecodeString(req.Id)
 	if err != nil {
-		return nil, status.Errorf(codes.InvalidArgument, "Failed to decode %s from hexidecimal to bytes", req.Id)
+		return nil, status.Errorf(codes.InvalidArgument, "Failed to decode %s from hexadecimal to bytes", req.Id)
 	}
 
 	response := types.QueryScheduledCorksByIDResponse{}
@@ -108,7 +108,7 @@ func (k Keeper) QueryCorkResult(c context.Context, req *types.QueryCorkResultReq
 	ctx := sdk.UnwrapSDKContext(c)
 	id, err := hex.DecodeString(req.Id)
 	if err != nil {
-		return nil, status.Errorf(codes.InvalidArgument, "Failed to decode %s from hexidecimal to bytes", req.Id)
+		return nil, status.Errorf(codes.InvalidArgument, "Failed to decode %s from hexadecimal to bytes", req.Id)
 	}
 
 	response := types.QueryCorkResultResponse{}

@@ -6,7 +6,7 @@ import (
 
 // x/auction module sentinel errors
 var (
-	ErrCouldNotFindSaleTokenPrice                               = sdkerrors.Register(ModuleName, 2, "could not find sale token price, need to resubmit token prices and try agian")
+	ErrCouldNotFindSaleTokenPrice                               = sdkerrors.Register(ModuleName, 2, "could not find sale token price, need to resubmit token prices and try again")
 	ErrCouldNotFindSommTokenPrice                               = sdkerrors.Register(ModuleName, 3, "could not find usomm token price, need to resubmit token prices and try again")
 	ErrLastSaleTokenPriceTooOld                                 = sdkerrors.Register(ModuleName, 4, "last sale token price update too long ago, need to resubmit token prices and try again")
 	ErrLastSommTokenPriceTooOld                                 = sdkerrors.Register(ModuleName, 5, "last usomm token price update too long ago, need to resubmit token prices and try again")

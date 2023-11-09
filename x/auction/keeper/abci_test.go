@@ -97,7 +97,7 @@ func (suite *KeeperTestSuite) TestAbci() {
 	require.Equal(expectedAuction, foundAuction)
 
 	// Run EndBlocker with block interval ~sufficient~ to induce decrease to a ~negative~ price, and thus the auction must finish
-	// Since we expect auction to end here without ever transfering any funds to bidders, we need to mock bank balance checks & transfers
+	// Since we expect auction to end here without ever transferring any funds to bidders, we need to mock bank balance checks & transfers
 	// back to funding module
 	finalCtx := ctx.WithBlockHeight(ctx.BlockHeight() + int64(blockDecreaseInterval))
 	suite.mockGetBalance(finalCtx, authtypes.NewModuleAddress(auctionTypes.ModuleName), saleToken, auctionedSaleTokens)

@@ -105,7 +105,7 @@ func (k Keeper) SubmitBid(c context.Context, msg *types.MsgSubmitBidRequest) (*t
 
 	// Transfer purchase to bidder
 	if err := k.bankKeeper.SendCoinsFromModuleToAccount(ctx, types.ModuleName, signer, sdk.NewCoins(totalFulfilledSaleTokens)); err != nil {
-		panic(fmt.Sprintf("funds taken from bidder but purchased tokens not transfered for bid: %s,\n err: %s", bid.String(), err.Error()))
+		panic(fmt.Sprintf("funds taken from bidder but purchased tokens not transferred for bid: %s,\n err: %s", bid.String(), err.Error()))
 	}
 
 	// Update amount remaining in auction

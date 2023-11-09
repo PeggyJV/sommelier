@@ -365,7 +365,7 @@ func (suite *KeeperTestSuite) TestUnhappyPathsForBeginAuction() {
 				fundingModuleAccount:       permissionedFunder.GetName(),
 				proceedsModuleAccount:      permissionedReciever.GetName(),
 			},
-			expectedError: sdkerrors.Wrapf(auctionTypes.ErrInvalidInitialDecreaseRate, "Inital price decrease rate 0.000000000000000000"),
+			expectedError: sdkerrors.Wrapf(auctionTypes.ErrInvalidInitialDecreaseRate, "Initial price decrease rate 0.000000000000000000"),
 			runsBefore:    func() {},
 		},
 		{
@@ -378,7 +378,7 @@ func (suite *KeeperTestSuite) TestUnhappyPathsForBeginAuction() {
 				fundingModuleAccount:       permissionedFunder.GetName(),
 				proceedsModuleAccount:      permissionedReciever.GetName(),
 			},
-			expectedError: sdkerrors.Wrapf(auctionTypes.ErrInvalidInitialDecreaseRate, "Inital price decrease rate 1.000000000000000000"),
+			expectedError: sdkerrors.Wrapf(auctionTypes.ErrInvalidInitialDecreaseRate, "Initial price decrease rate 1.000000000000000000"),
 			runsBefore:    func() {},
 		},
 		{
