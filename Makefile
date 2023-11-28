@@ -351,7 +351,7 @@ tools-clean:
 # Integration tests #
 #####################
 
-ORCHESTRATOR_IMAGE := "ghcr.io/peggyjv/gravity-bridge-orchestrator:main"
+ORCHESTRATOR_IMAGE := "ghcr.io/peggyjv/gravity-bridge-orchestrator:v2.0.4"
 
 e2e_build_images: e2e_clean_slate
 	@docker pull $(ORCHESTRATOR_IMAGE)
@@ -360,22 +360,7 @@ e2e_build_images: e2e_clean_slate
 	@docker build -t ethereum:prebuilt -f integration_tests/ethereum/Dockerfile integration_tests/ethereum/
 
 e2e_clean_slate:
-	@docker rm --force \
-		$(shell docker ps -qa --filter="name=ethereum") \
-		$(shell docker ps -qa --filter="name=sommelier") \
-		$(shell docker ps -qa --filter="name=orchestrator") \
-		1>/dev/null \
-		2>/dev/null \
-		|| true
-	@docker wait \
-		$(shell docker ps -qa --filter="name=ethereum") \
-		$(shell docker ps -qa --filter="name=sommelier") \
-		$(shell docker ps -qa --filter="name=orchestrator") \
-		1>/dev/null \
-		2>/dev/null \
-		|| true
-	@docker network prune --force 1>/dev/null 2>/dev/null || true
-	@cd integration_tests && go test -c
+	@./clean_slate.sh
 
 e2e_basic: e2e_clean_slate
 	@integration_tests/integration_tests.test -test.run TestBasicChain -test.failfast -test.v || make -s fail

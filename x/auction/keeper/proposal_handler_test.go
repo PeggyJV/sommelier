@@ -7,8 +7,8 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	govTypes "github.com/cosmos/cosmos-sdk/x/gov/types"
-	"github.com/peggyjv/sommelier/v4/app/params"
-	auctionTypes "github.com/peggyjv/sommelier/v4/x/auction/types"
+	"github.com/peggyjv/sommelier/v7/app/params"
+	auctionTypes "github.com/peggyjv/sommelier/v7/x/auction/types"
 )
 
 // Happy path test for proposal handler

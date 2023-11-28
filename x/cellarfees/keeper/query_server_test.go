@@ -4,8 +4,8 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	minttypes "github.com/cosmos/cosmos-sdk/x/mint/types"
 	"github.com/golang/mock/gomock"
-	"github.com/peggyjv/sommelier/v4/app/params"
-	cellarfeesTypes "github.com/peggyjv/sommelier/v4/x/cellarfees/types"
+	"github.com/peggyjv/sommelier/v7/app/params"
+	cellarfeesTypes "github.com/peggyjv/sommelier/v7/x/cellarfees/types"
 )
 
 func (suite *KeeperTestSuite) TestQueriesHappyPath() {

@@ -8,7 +8,7 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/client"
 	// "github.com/cosmos/cosmos-sdk/client/flags"
-	"github.com/peggyjv/sommelier/v4/x/cellarfees/types"
+	"github.com/peggyjv/sommelier/v7/x/cellarfees/types"
 )
 
 var (

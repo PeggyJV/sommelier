@@ -6,7 +6,7 @@ import "cosmos/base/v1beta1/coin.proto";
 import "cosmos_proto/cosmos.proto";
 import "gogoproto/gogo.proto";
 
-option go_package = "github.com/peggyjv/sommelier/v4/x/auction/types";
+option go_package = "github.com/peggyjv/sommelier/v7/x/auction/types";
 
 service Msg {
   rpc SubmitBid (MsgSubmitBidRequest) returns (MsgSubmitBidResponse);

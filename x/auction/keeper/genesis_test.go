@@ -3,8 +3,8 @@ package keeper
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	"github.com/peggyjv/sommelier/v4/app/params"
-	auctionTypes "github.com/peggyjv/sommelier/v4/x/auction/types"
+	"github.com/peggyjv/sommelier/v7/app/params"
+	auctionTypes "github.com/peggyjv/sommelier/v7/x/auction/types"
 )
 
 // Tests Importing of as empty a genesis as possible

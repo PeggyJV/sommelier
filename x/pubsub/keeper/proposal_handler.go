@@ -3,7 +3,7 @@ package keeper
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-	"github.com/peggyjv/sommelier/v4/x/pubsub/types"
+	"github.com/peggyjv/sommelier/v7/x/pubsub/types"
 )
 
 // HandleAddPublisherProposal is a handler for executing a passed community publisher addition proposal

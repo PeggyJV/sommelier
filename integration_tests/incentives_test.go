@@ -13,8 +13,8 @@ import (
 	minttypes "github.com/cosmos/cosmos-sdk/x/mint/types"
 	paramsproposal "github.com/cosmos/cosmos-sdk/x/params/types/proposal"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
-	"github.com/peggyjv/sommelier/v4/app/params"
-	incentivestypes "github.com/peggyjv/sommelier/v4/x/incentives/types"
+	"github.com/peggyjv/sommelier/v7/app/params"
+	incentivestypes "github.com/peggyjv/sommelier/v7/x/incentives/types"
 )
 
 func (s *IntegrationTestSuite) TestIncentives() {

@@ -2,11 +2,10 @@ package integration_tests
 
 import (
 	"fmt"
-	"io/ioutil"
 	"os"
 
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
-	corktypes "github.com/peggyjv/sommelier/v4/x/cork/types"
+	corktypes "github.com/peggyjv/sommelier/v7/x/cork/types"
 
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
@@ -24,9 +23,9 @@ import (
 	sdkTx "github.com/cosmos/cosmos-sdk/x/auth/tx"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
-	gravitytypes "github.com/peggyjv/gravity-bridge/module/v2/x/gravity/types"
-	"github.com/peggyjv/sommelier/v4/app"
-	"github.com/peggyjv/sommelier/v4/app/params"
+	gravitytypes "github.com/peggyjv/gravity-bridge/module/v3/x/gravity/types"
+	"github.com/peggyjv/sommelier/v7/app"
+	"github.com/peggyjv/sommelier/v7/app/params"
 	tmrand "github.com/tendermint/tendermint/libs/rand"
 	rpchttp "github.com/tendermint/tendermint/rpc/client/http"
 )
@@ -78,7 +77,7 @@ func newChain() (*chain, error) {
 		}
 	}
 
-	tmpDir, err := ioutil.TempDir(dir, "somm-e2e-testnet")
+	tmpDir, err := os.MkdirTemp(dir, "somm-e2e-testnet")
 	if err != nil {
 		return nil, err
 	}

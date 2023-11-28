@@ -6,7 +6,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-	"github.com/peggyjv/sommelier/v4/x/cork/types"
+	"github.com/peggyjv/sommelier/v7/x/cork/types"
 	"github.com/spf13/cobra"
 )
 

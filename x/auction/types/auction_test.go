@@ -5,7 +5,7 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-	"github.com/peggyjv/sommelier/v4/app/params"
+	"github.com/peggyjv/sommelier/v7/app/params"
 	"github.com/stretchr/testify/require"
 )
 
@@ -133,7 +133,7 @@ func TestAuctionValidate(t *testing.T) {
 				ProceedsModuleAccount:      "someModule",
 			},
 			expPass: false,
-			err:     sdkerrors.Wrapf(ErrInvalidInitialDecreaseRate, "Inital price decrease rate %s", sdk.MustNewDecFromStr("0.0").String()),
+			err:     sdkerrors.Wrapf(ErrInvalidInitialDecreaseRate, "Initial price decrease rate %s", sdk.MustNewDecFromStr("0.0").String()),
 		},
 		{
 			name: "Initial decrease rate cannot be >= 0",
@@ -152,7 +152,7 @@ func TestAuctionValidate(t *testing.T) {
 				ProceedsModuleAccount:      "someModule",
 			},
 			expPass: false,
-			err:     sdkerrors.Wrapf(ErrInvalidInitialDecreaseRate, "Inital price decrease rate %s", sdk.MustNewDecFromStr("1.0").String()),
+			err:     sdkerrors.Wrapf(ErrInvalidInitialDecreaseRate, "Initial price decrease rate %s", sdk.MustNewDecFromStr("1.0").String()),
 		},
 		{
 			name: "Current decrease rate cannot be <= 0",
@@ -212,7 +212,7 @@ func TestAuctionValidate(t *testing.T) {
 			err:     sdkerrors.Wrapf(ErrInvalidBlockDecreaseInterval, "price decrease block interval: 0"),
 		},
 		{
-			name: "Initial unit price in usomm must be postive",
+			name: "Initial unit price in usomm must be positive",
 			auction: Auction{
 				Id:                         uint32(1),
 				StartingTokensForSale:      sdk.NewCoin("gravity0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48", sdk.NewIntFromUint64(1000)),
@@ -231,7 +231,7 @@ func TestAuctionValidate(t *testing.T) {
 			err:     sdkerrors.Wrapf(ErrPriceMustBePositive, "initial unit price in usomm: %s", sdk.MustNewDecFromStr("0.0").String()),
 		},
 		{
-			name: "Current unit price in usomm must be postive",
+			name: "Current unit price in usomm must be positive",
 			auction: Auction{
 				Id:                         uint32(1),
 				StartingTokensForSale:      sdk.NewCoin("gravity0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48", sdk.NewIntFromUint64(1000)),

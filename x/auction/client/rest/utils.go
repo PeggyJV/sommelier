@@ -3,7 +3,7 @@ package rest
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/rest"
-	"github.com/peggyjv/sommelier/v4/x/auction/types"
+	"github.com/peggyjv/sommelier/v7/x/auction/types"
 )
 
 type (

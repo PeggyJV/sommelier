@@ -18,7 +18,7 @@ import (
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 	common "github.com/ethereum/go-ethereum/common"
 	gomock "github.com/golang/mock/gomock"
-	gravitytypes "github.com/peggyjv/gravity-bridge/module/v2/x/gravity/types"
+	gravitytypes "github.com/peggyjv/gravity-bridge/module/v3/x/gravity/types"
 	bytes "github.com/tendermint/tendermint/libs/bytes"
 )
 

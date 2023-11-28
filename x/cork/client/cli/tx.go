@@ -3,6 +3,7 @@ package cli
 import (
 	"fmt"
 	"io/ioutil"
+	"os"
 	"strings"
 
 	"github.com/cosmos/cosmos-sdk/client"
@@ -11,7 +12,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/version"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 	"github.com/ethereum/go-ethereum/common"
-	types "github.com/peggyjv/sommelier/v4/x/cork/types"
+	types "github.com/peggyjv/sommelier/v7/x/cork/types"
 	"github.com/spf13/cobra"
 )
 
@@ -62,7 +63,7 @@ Where proposal.json contains:
 			}
 
 			proposal := types.AddManagedCellarIDsProposalWithDeposit{}
-			contents, err := ioutil.ReadFile(args[0])
+			contents, err := os.ReadFile(args[0])
 			if err != nil {
 				return err
 			}
@@ -132,7 +133,7 @@ Where proposal.json contains:
 			}
 
 			proposal := types.RemoveManagedCellarIDsProposalWithDeposit{}
-			contents, err := ioutil.ReadFile(args[0])
+			contents, err := os.ReadFile(args[0])
 			if err != nil {
 				return err
 			}

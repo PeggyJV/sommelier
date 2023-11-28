@@ -8,7 +8,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/types/rest"
 	govrest "github.com/cosmos/cosmos-sdk/x/gov/client/rest"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
-	"github.com/peggyjv/sommelier/v4/x/auction/types"
+	"github.com/peggyjv/sommelier/v7/x/auction/types"
 )
 
 // SetProposalRESTHandler returns a ProposalRESTHandler that exposes the set token price update REST handler with a given sub-route.

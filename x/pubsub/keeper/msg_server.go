@@ -7,7 +7,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
-	"github.com/peggyjv/sommelier/v4/x/pubsub/types"
+	"github.com/peggyjv/sommelier/v7/x/pubsub/types"
 )
 
 var _ types.MsgServer = Keeper{}
@@ -68,17 +68,17 @@ func (k Keeper) AddSubscriberIntent(c context.Context, msg *types.MsgAddSubscrib
 	subscriberAddress := subscriberIntent.SubscriberAddress
 	publisherDomain := subscriberIntent.PublisherDomain
 
+	signer := msg.MustGetSigner()
+	signerAddress := signer.String()
+	if signerAddress != subscriberIntent.SubscriberAddress {
+		return nil, sdkerrors.Wrapf(sdkerrors.ErrUnauthorized, "registered subscriber address must be signer: %s", subscriberIntent.SubscriberAddress)
+	}
+
 	// ValidateBasic will confirm this is already correctly formatted
 	subscriberAccAddress, _ := sdk.AccAddressFromBech32(subscriberIntent.SubscriberAddress)
 	subscriber, found := k.GetSubscriber(ctx, subscriberAccAddress)
 	if !found {
 		return nil, sdkerrors.Wrapf(sdkerrors.ErrNotFound, "no subscriber found with address: %s", subscriberAddress)
-	}
-
-	signer := msg.MustGetSigner()
-	signerAddress := signer.String()
-	if signerAddress != subscriber.Address {
-		return nil, sdkerrors.Wrapf(sdkerrors.ErrUnauthorized, "registered subscriber address must be signer: %s", subscriber.Address)
 	}
 
 	_, found = k.GetSubscriberIntent(ctx, subscriberIntent.SubscriptionId, subscriberAccAddress)
@@ -89,6 +89,10 @@ func (k Keeper) AddSubscriberIntent(c context.Context, msg *types.MsgAddSubscrib
 	publisherIntent, found := k.GetPublisherIntent(ctx, subscriptionID, publisherDomain)
 	if !found {
 		return nil, sdkerrors.Wrapf(sdkerrors.ErrNotFound, "no publisher intent for domain %s and subscription ID %s found", publisherDomain, subscriptionID)
+	}
+
+	if publisherIntent.Method == types.PublishMethod_PUSH && subscriber.PushUrl == "" {
+		return nil, sdkerrors.Wrapf(types.ErrInvalid, "publisher intent for subscription %s requires PushUrl set on subscriber", publisherIntent.SubscriptionId)
 	}
 
 	if publisherIntent.AllowedSubscribers == types.AllowedSubscribers_VALIDATORS {
@@ -148,16 +152,16 @@ func (k Keeper) AddSubscriber(c context.Context, msg *types.MsgAddSubscriberRequ
 		return nil, sdkerrors.Wrapf(types.ErrInvalid, "invalid subscriber: %s", err.Error())
 	}
 
+	signer := msg.MustGetSigner()
+	if signer.String() != subscriber.Address {
+		return nil, sdkerrors.Wrapf(sdkerrors.ErrUnauthorized, "subscriber address must be signer: %s", subscriber.Address)
+	}
+
 	// ValidateBasic will confirm this is already correctly formatted
 	subscriberAccAddress, _ := sdk.AccAddressFromBech32(subscriber.Address)
 	_, found := k.GetSubscriber(ctx, subscriberAccAddress)
 	if found {
 		return nil, sdkerrors.Wrapf(types.ErrAlreadyExists, "subscriber already exists, must be removed first")
-	}
-
-	signer := msg.MustGetSigner()
-	if signer.String() != subscriber.Address {
-		return nil, sdkerrors.Wrapf(sdkerrors.ErrUnauthorized, "subscriber address must be signer: %s", subscriber.Address)
 	}
 
 	k.SetSubscriber(ctx, subscriberAccAddress, *subscriber)
@@ -289,16 +293,16 @@ func (k Keeper) RemoveSubscriber(c context.Context, msg *types.MsgRemoveSubscrib
 		return nil, sdkerrors.Wrap(sdkerrors.ErrInvalidAddress, fmt.Sprintf("invalid subscriber address: %s", err.Error()))
 	}
 
-	// ValidateAddress will confirm this is already correctly formatted
-	subscriberAccAddress, _ := sdk.AccAddressFromBech32(subscriberAddress)
-	subscriber, found := k.GetSubscriber(ctx, subscriberAccAddress)
-	if !found {
-		return nil, sdkerrors.Wrapf(sdkerrors.ErrNotFound, "no subscriber found with address: %s", subscriberAddress)
+	signer := msg.MustGetSigner()
+	if signer.String() != subscriberAddress {
+		return nil, sdkerrors.Wrapf(sdkerrors.ErrUnauthorized, "registered subscriber address must be signer: %s", subscriberAddress)
 	}
 
-	signer := msg.MustGetSigner()
-	if signer.String() != subscriber.Address {
-		return nil, sdkerrors.Wrapf(sdkerrors.ErrUnauthorized, "registered subscriber address must be signer: %s", subscriber.Address)
+	// ValidateAddress will confirm this is already correctly formatted
+	subscriberAccAddress, _ := sdk.AccAddressFromBech32(subscriberAddress)
+	_, found := k.GetSubscriber(ctx, subscriberAccAddress)
+	if !found {
+		return nil, sdkerrors.Wrapf(sdkerrors.ErrNotFound, "no subscriber found with address: %s", subscriberAddress)
 	}
 
 	k.DeleteSubscriber(ctx, subscriberAccAddress)

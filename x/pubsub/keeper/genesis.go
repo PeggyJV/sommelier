@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/peggyjv/sommelier/v4/x/pubsub/types"
+	"github.com/peggyjv/sommelier/v7/x/pubsub/types"
 )
 
 // InitGenesis initializes the module's state from a provided genesis

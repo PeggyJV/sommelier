@@ -5,7 +5,7 @@ import "cosmos/base/v1beta1/coin.proto";
 import "cosmos_proto/cosmos.proto";
 import "gogoproto/gogo.proto";
 
-option go_package = "github.com/peggyjv/sommelier/v4/x/auction/types";
+option go_package = "github.com/peggyjv/sommelier/v7/x/auction/types";
 
 message Auction {
   uint32 id = 1;
@@ -51,18 +51,21 @@ message Bid {
   uint64 block_height = 9;
 }
 
+// USD price is the value for one non-fractional token (smallest unit of the token * 10^exponent)
 message TokenPrice {
   string denom = 1;
-  string usd_price = 2 [
+  uint64 exponent = 2;
+  string usd_price = 3 [
     (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
     (gogoproto.nullable) = false
   ];
-  uint64 last_updated_block = 3;
+  uint64 last_updated_block = 4;
 }
 
 message ProposedTokenPrice {
   string denom = 1;
-  string usd_price = 2 [
+  uint64 exponent = 2;
+  string usd_price = 3 [
     (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
     (gogoproto.nullable) = false
   ];

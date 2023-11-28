@@ -5,7 +5,7 @@ import "auction/v1/tx.proto";
 import "auction/v1/auction.proto";
 import "gogoproto/gogo.proto";
 
-option go_package = "github.com/peggyjv/sommelier/v4/x/auction/types";
+option go_package = "github.com/peggyjv/sommelier/v7/x/auction/types";
 
 message GenesisState {
   Params params = 1 [ (gogoproto.nullable) = false ];
@@ -19,8 +19,12 @@ message GenesisState {
 message Params {
   uint64 price_max_block_age = 1;
   uint64 minimum_bid_in_usomm = 2;
-  uint64 auction_max_block_age = 3;
-  string auction_price_decrease_acceleration_rate = 4 [
+  string minimum_sale_tokens_usd_value = 3 [
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+    (gogoproto.nullable) = false
+  ];
+  uint64 auction_max_block_age = 4;
+  string auction_price_decrease_acceleration_rate = 5 [
     (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
     (gogoproto.nullable) = false
   ];

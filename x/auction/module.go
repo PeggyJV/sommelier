@@ -13,9 +13,9 @@ import (
 	sim "github.com/cosmos/cosmos-sdk/types/simulation"
 	"github.com/gorilla/mux"
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
-	"github.com/peggyjv/sommelier/v4/x/auction/client/cli"
-	"github.com/peggyjv/sommelier/v4/x/auction/keeper"
-	"github.com/peggyjv/sommelier/v4/x/auction/types"
+	"github.com/peggyjv/sommelier/v7/x/auction/client/cli"
+	"github.com/peggyjv/sommelier/v7/x/auction/keeper"
+	"github.com/peggyjv/sommelier/v7/x/auction/types"
 	"github.com/spf13/cobra"
 	abci "github.com/tendermint/tendermint/abci/types"
 )
