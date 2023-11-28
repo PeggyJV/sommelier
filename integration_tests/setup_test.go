@@ -376,16 +376,19 @@ func (s *IntegrationTestSuite) initGenesis() {
 	s.Require().NoError(cdc.UnmarshalJSON(appGenState[auctiontypes.ModuleName], &auctionGenState))
 	auctionGenState.TokenPrices = append(auctionGenState.TokenPrices, &auctiontypes.TokenPrice{
 		Denom:            alphaFeeDenom,
+		Exponent:         6,
 		UsdPrice:         sdk.MustNewDecFromStr("1.0"),
 		LastUpdatedBlock: 0,
 	})
 	auctionGenState.TokenPrices = append(auctionGenState.TokenPrices, &auctiontypes.TokenPrice{
 		Denom:            betaFeeDenom,
+		Exponent:         6,
 		UsdPrice:         sdk.MustNewDecFromStr("5.0"),
 		LastUpdatedBlock: 0,
 	})
 	auctionGenState.TokenPrices = append(auctionGenState.TokenPrices, &auctiontypes.TokenPrice{
 		Denom:            testDenom,
+		Exponent:         6,
 		UsdPrice:         sdk.MustNewDecFromStr("0.5"),
 		LastUpdatedBlock: 0,
 	})
