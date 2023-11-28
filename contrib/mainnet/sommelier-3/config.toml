@@ -1,20 +1,21 @@
-keystore = "/home/ubuntu/gorc/keystore/" #edit this value for what it is your sommelier v2 gorc
+keystore = "/home/ubuntu/steward/keystore/" #edit this value for what it is for your sommelier v3 steward or gorc keystore.
 
 [gravity]
-contract = "0x69592e6f9d21989a043646fE8225da2600e5A0f7" 
+contract = "0x69592e6f9d21989a043646fE8225da2600e5A0f7"
 fees_denom = "usomm"
 
 [ethereum]
 key_derivation_path = "m/44'/60'/0'/0/0"
 rpc = "http://localhost:8545" #Can use alchemy or infura here.
 gas_price_multiplier = 1.0
+gas_multiplier = 1.1
 blocks_to_search = 5000
 
 [cosmos]
 key_derivation_path = "m/44'/118'/0'/0/0"
 grpc = "http://localhost:9090"
 prefix = "somm"
-gas_adjustment = 1.0
+gas_adjustment = 1.1
 msg_batch_size = 5
 
 [cosmos.gas_price]
@@ -23,3 +24,13 @@ denom = "usomm"
 
 [metrics]
 listen_addr = "127.0.0.1:3000"
+
+[keys]
+delegate_key = "orchestrator" # Edit if your orchestrator's Cosmos key name is different
+
+# Please leave the client_ca_cert_path field unset for now
+[server]
+address = "0.0.0.0"
+port = 5734
+server_cert_path = "/server/cert/path" # Edit this value after completing the Steward setup process
+server_key_path = "/server/key/path"   # Edit this value after completing the Steward setup process

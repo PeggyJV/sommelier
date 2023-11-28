@@ -6,8 +6,8 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
-	"github.com/peggyjv/sommelier/v4/x/pubsub/keeper"
-	"github.com/peggyjv/sommelier/v4/x/pubsub/types"
+	"github.com/peggyjv/sommelier/v7/x/pubsub/keeper"
+	"github.com/peggyjv/sommelier/v7/x/pubsub/types"
 )
 
 // NewHandler returns a handler for "pubsub" type messages

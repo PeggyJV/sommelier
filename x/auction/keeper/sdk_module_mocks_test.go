@@ -4,7 +4,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
-	auctionTypes "github.com/peggyjv/sommelier/v4/x/auction/types"
+	auctionTypes "github.com/peggyjv/sommelier/v7/x/auction/types"
 )
 
 func (suite *KeeperTestSuite) mockGetModuleAccount(ctx sdk.Context) {

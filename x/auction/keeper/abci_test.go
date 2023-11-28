@@ -3,8 +3,8 @@ package keeper
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
-	"github.com/peggyjv/sommelier/v4/app/params"
-	auctionTypes "github.com/peggyjv/sommelier/v4/x/auction/types"
+	"github.com/peggyjv/sommelier/v7/app/params"
+	auctionTypes "github.com/peggyjv/sommelier/v7/x/auction/types"
 )
 
 // Tests abci
@@ -21,11 +21,11 @@ func (suite *KeeperTestSuite) TestAbci() {
 	require.NotPanics(func() { auctionKeeper.EndBlocker(ctx) })
 
 	// Create an auction
-	sommPrice := auctionTypes.TokenPrice{Denom: params.BaseCoinUnit, UsdPrice: sdk.MustNewDecFromStr("0.01"), LastUpdatedBlock: 5}
+	sommPrice := auctionTypes.TokenPrice{Denom: params.BaseCoinUnit, Exponent: 6, UsdPrice: sdk.MustNewDecFromStr("0.01"), LastUpdatedBlock: 5}
 
 	/* #nosec */
 	saleToken := "gravity0x95aD61b0a150d79219dCF64E1E6Cc01f0B64C4cE"
-	saleTokenPrice := auctionTypes.TokenPrice{Denom: saleToken, UsdPrice: sdk.MustNewDecFromStr("0.01"), LastUpdatedBlock: 5}
+	saleTokenPrice := auctionTypes.TokenPrice{Denom: saleToken, Exponent: 6, UsdPrice: sdk.MustNewDecFromStr("0.01"), LastUpdatedBlock: 5}
 	auctionedSaleTokens := sdk.NewCoin(saleToken, sdk.NewInt(10000))
 
 	auctionKeeper.setTokenPrice(ctx, sommPrice)
@@ -97,7 +97,7 @@ func (suite *KeeperTestSuite) TestAbci() {
 	require.Equal(expectedAuction, foundAuction)
 
 	// Run EndBlocker with block interval ~sufficient~ to induce decrease to a ~negative~ price, and thus the auction must finish
-	// Since we expect auction to end here without ever transfering any funds to bidders, we need to mock bank balance checks & transfers
+	// Since we expect auction to end here without ever transferring any funds to bidders, we need to mock bank balance checks & transfers
 	// back to funding module
 	finalCtx := ctx.WithBlockHeight(ctx.BlockHeight() + int64(blockDecreaseInterval))
 	suite.mockGetBalance(finalCtx, authtypes.NewModuleAddress(auctionTypes.ModuleName), saleToken, auctionedSaleTokens)

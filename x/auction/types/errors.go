@@ -6,7 +6,7 @@ import (
 
 // x/auction module sentinel errors
 var (
-	ErrCouldNotFindSaleTokenPrice                               = sdkerrors.Register(ModuleName, 2, "could not find sale token price, need to resubmit token prices and try agian")
+	ErrCouldNotFindSaleTokenPrice                               = sdkerrors.Register(ModuleName, 2, "could not find sale token price, need to resubmit token prices and try again")
 	ErrCouldNotFindSommTokenPrice                               = sdkerrors.Register(ModuleName, 3, "could not find usomm token price, need to resubmit token prices and try again")
 	ErrLastSaleTokenPriceTooOld                                 = sdkerrors.Register(ModuleName, 4, "last sale token price update too long ago, need to resubmit token prices and try again")
 	ErrLastSommTokenPriceTooOld                                 = sdkerrors.Register(ModuleName, 5, "last usomm token price update too long ago, need to resubmit token prices and try again")
@@ -47,4 +47,7 @@ var (
 	ErrMinimumBidParam                                          = sdkerrors.Register(ModuleName, 40, "invalid minimum bid param")
 	ErrInvalidAuctionMaxBlockAgeParam                           = sdkerrors.Register(ModuleName, 41, "invalid auction max block age param")
 	ErrInvalidAuctionPriceDecreaseAccelerationRateParam         = sdkerrors.Register(ModuleName, 42, "invalid auction price decrease acceleration rate param")
+	ErrTokenPriceExponentTooHigh                                = sdkerrors.Register(ModuleName, 43, "token price exponent too high, maximum precision of 18")
+	ErrInvalidMinimumSaleTokensUSDValue                         = sdkerrors.Register(ModuleName, 44, "invalid minimum sale tokens USD value")
+	ErrAuctionBelowMinimumUSDValue                              = sdkerrors.Register(ModuleName, 45, "auction USD value below minimum")
 )

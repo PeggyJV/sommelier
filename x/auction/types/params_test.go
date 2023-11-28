@@ -52,7 +52,7 @@ func TestParamsValidate(t *testing.T) {
 				AuctionPriceDecreaseAccelerationRate: sdk.MustNewDecFromStr("-0.01"),
 			},
 			expPass: false,
-			err:     sdkerrors.Wrapf(ErrInvalidAuctionPriceDecreaseAccelerationRateParam, "auction price decrease acceleration rate must be betwen 0 and 1 inclusive (0%% to 100%%)"),
+			err:     sdkerrors.Wrapf(ErrInvalidAuctionPriceDecreaseAccelerationRateParam, "auction price decrease acceleration rate must be between 0 and 1 inclusive (0%% to 100%%)"),
 		},
 		{
 			name: "Auction price decrease acceleration rate bounds check upper end",
@@ -63,7 +63,7 @@ func TestParamsValidate(t *testing.T) {
 				AuctionPriceDecreaseAccelerationRate: sdk.MustNewDecFromStr("1.1"),
 			},
 			expPass: false,
-			err:     sdkerrors.Wrapf(ErrInvalidAuctionPriceDecreaseAccelerationRateParam, "auction price decrease acceleration rate must be betwen 0 and 1 inclusive (0%% to 100%%)"),
+			err:     sdkerrors.Wrapf(ErrInvalidAuctionPriceDecreaseAccelerationRateParam, "auction price decrease acceleration rate must be between 0 and 1 inclusive (0%% to 100%%)"),
 		},
 	}
 

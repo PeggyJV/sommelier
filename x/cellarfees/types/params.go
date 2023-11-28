@@ -36,7 +36,6 @@ func ParamKeyTable() paramtypes.KeyTable {
 
 // DefaultParams returns default cellarfees parameters
 func DefaultParams() Params {
-
 	return Params{
 		FeeAccrualAuctionThreshold: DefaultFeeAccrualAuctionThreshold,
 		RewardEmissionPeriod:       DefaultRewardEmissionPeriod,
