@@ -14,7 +14,7 @@ import (
 	// "github.com/cosmos/cosmos-sdk/client/flags"
 	// sdk "github.com/cosmos/cosmos-sdk/types"
 
-	"github.com/peggyjv/sommelier/v6/x/cellarfees/types"
+	"github.com/peggyjv/sommelier/v7/x/cellarfees/types"
 )
 
 // GetQueryCmd returns the cli query commands for this module
@@ -30,6 +30,9 @@ func GetQueryCmd(queryRoute string) *cobra.Command {
 
 	cmd.AddCommand(CmdQueryParams())
 	cmd.AddCommand(CmdQueryModuleAccounts())
+	cmd.AddCommand(CmdQueryFeeAccrualCounters())
+	cmd.AddCommand(CmdQueryLastRewardSupplyPeak())
+	cmd.AddCommand(CmdQueryAPY())
 
 	return cmd
 }
@@ -44,7 +47,7 @@ func CmdQueryParams() *cobra.Command {
 
 			queryClient := types.NewQueryClient(clientCtx)
 
-			res, err := queryClient.Params(context.Background(), &types.QueryParamsRequest{})
+			res, err := queryClient.QueryParams(context.Background(), &types.QueryParamsRequest{})
 			if err != nil {
 				return err
 			}
@@ -69,12 +72,93 @@ func CmdQueryModuleAccounts() *cobra.Command {
 
 			queryClient := types.NewQueryClient(clientCtx)
 
-			res, err := queryClient.ModuleAccounts(context.Background(), &types.QueryModuleAccountsRequest{})
+			res, err := queryClient.QueryModuleAccounts(
+				context.Background(), &types.QueryModuleAccountsRequest{})
 			if err != nil {
 				return err
 			}
 
 			return clientCtx.PrintProto(res)
+		},
+	}
+
+	flags.AddQueryFlagsToCmd(cmd)
+
+	return cmd
+}
+
+func CmdQueryLastRewardSupplyPeak() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:     "last-reward-supply-peak",
+		Aliases: []string{"lrsp"},
+		Short:   "shows the previous SOMM reward supply peak amount used to calculate rewards per block",
+		Args:    cobra.NoArgs,
+		RunE: func(cmd *cobra.Command, args []string) error {
+			clientCtx := client.GetClientContextFromCmd(cmd)
+
+			queryClient := types.NewQueryClient(clientCtx)
+
+			res, err := queryClient.QueryLastRewardSupplyPeak(
+				context.Background(), &types.QueryLastRewardSupplyPeakRequest{})
+			if err != nil {
+				return err
+			}
+
+			return clientCtx.PrintProto(res)
+		},
+	}
+
+	flags.AddQueryFlagsToCmd(cmd)
+
+	return cmd
+}
+
+func CmdQueryFeeAccrualCounters() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:     "fee-accrual-counters",
+		Aliases: []string{"fac"},
+		Short:   "shows the number of fee accruals per denom since the last respective auction",
+		Args:    cobra.NoArgs,
+		RunE: func(cmd *cobra.Command, args []string) error {
+			clientCtx := client.GetClientContextFromCmd(cmd)
+
+			queryClient := types.NewQueryClient(clientCtx)
+
+			res, err := queryClient.QueryFeeAccrualCounters(
+				context.Background(), &types.QueryFeeAccrualCountersRequest{})
+			if err != nil {
+				return err
+			}
+
+			return clientCtx.PrintProto(res)
+		},
+	}
+
+	flags.AddQueryFlagsToCmd(cmd)
+
+	return cmd
+}
+
+func CmdQueryAPY() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "apy",
+		Args:  cobra.NoArgs,
+		Short: "query cellarfees APY",
+		RunE: func(cmd *cobra.Command, _ []string) error {
+			ctx, err := client.GetClientQueryContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			queryClient := types.NewQueryClient(ctx)
+			req := &types.QueryAPYRequest{}
+
+			res, err := queryClient.QueryAPY(cmd.Context(), req)
+			if err != nil {
+				return err
+			}
+
+			return ctx.PrintProto(res)
 		},
 	}
 

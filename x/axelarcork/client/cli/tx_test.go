@@ -6,7 +6,7 @@ import (
 	"testing"
 
 	"github.com/cosmos/cosmos-sdk/simapp/params"
-	"github.com/peggyjv/sommelier/v6/x/axelarcork/types"
+	"github.com/peggyjv/sommelier/v7/x/axelarcork/types"
 
 	"github.com/cosmos/cosmos-sdk/testutil"
 	"github.com/stretchr/testify/require"

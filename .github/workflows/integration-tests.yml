@@ -5,7 +5,7 @@ on:
     branches:
       - main
     tags:
-      - 'v*.*.*'
+      - "v*.*.*"
   pull_request:
 
 env:
@@ -54,6 +54,7 @@ jobs:
           context: .
           file: Dockerfile
           push: true
+          platforms: linux/amd64, linux/arm64/v8
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           builder: ${{ steps.buildx.outputs.name }}
@@ -100,6 +101,7 @@ jobs:
           context: integration_tests/ethereum
           file: integration_tests/ethereum/Dockerfile
           push: true
+          platforms: linux/amd64, linux/arm64/v8
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           builder: ${{ steps.buildx.outputs.name }}
@@ -120,6 +122,8 @@ jobs:
         test_type: [
           "Cork",
           "ScheduledCork",
+          "AuctionModule",
+          "CellarFees",
           "Incentives",
         ]
     steps:

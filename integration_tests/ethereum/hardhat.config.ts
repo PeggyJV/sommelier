@@ -7,13 +7,6 @@ task(
     'integration_test_setup',
     'Sets up contracts for the integration test',
     async (args, hre) => {
-
-        // Take over vitalik.eth
-        await hre.network.provider.request({
-            method: 'hardhat_impersonateAccount',
-            params: [constants.WHALE],
-        });
-
         // Send ETH to needed parties
         const whaleSigner = await hre.ethers.getSigner(constants.WHALE);
 
@@ -37,6 +30,18 @@ task(
 
         await gravity.deployed();
         console.log(`gravity contract deployed at - ${gravity.address}`)
+
+        // The constructor for this contract funds a validator's ETH address
+        // with the test ERC20
+        const AlphaERC20 = await hre.ethers.getContractFactory("AlphaERC20");
+        const alphaERC20 = (await AlphaERC20.deploy());
+        const BetaERC20 = await hre.ethers.getContractFactory("BetaERC20");
+        const betaERC20 = (await BetaERC20.deploy());
+
+        await alphaERC20.deployed();
+        console.log(`alphaERC20 contract deployed at - ${alphaERC20.address}`)
+        await betaERC20.deployed();
+        console.log(`betaERC20 contract deployed at - ${betaERC20.address}`)
 
         const Cellar = await hre.ethers.getContractFactory("CellarPoolShare");
         const cellar = (await Cellar.deploy(
@@ -80,21 +85,7 @@ task(
         await hre.run('node');
     });
 
-
-/**
- * @type import('hardhat/config').HardhatUserConfig
- */
-const ARCHIVE_NODE_URL = process.env.ARCHIVE_NODE_URL;
-
 module.exports = {
-    networks: {
-        hardhat: {
-            forking: {
-                url: ARCHIVE_NODE_URL,
-                blockNumber: 13405367,
-            },
-        },
-    },
     solidity: {
         compilers: [
             {

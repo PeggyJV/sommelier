@@ -13,9 +13,9 @@ import (
 	sim "github.com/cosmos/cosmos-sdk/types/simulation"
 	"github.com/gorilla/mux"
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
-	"github.com/peggyjv/sommelier/v6/x/axelarcork/client/cli"
-	"github.com/peggyjv/sommelier/v6/x/axelarcork/keeper"
-	"github.com/peggyjv/sommelier/v6/x/axelarcork/types"
+	"github.com/peggyjv/sommelier/v7/x/axelarcork/client/cli"
+	"github.com/peggyjv/sommelier/v7/x/axelarcork/keeper"
+	"github.com/peggyjv/sommelier/v7/x/axelarcork/types"
 	"github.com/spf13/cobra"
 	abci "github.com/tendermint/tendermint/abci/types"
 )

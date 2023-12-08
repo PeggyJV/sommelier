@@ -4,7 +4,7 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/peggyjv/sommelier/v6/x/axelarcork/tests/mocks"
+	"github.com/peggyjv/sommelier/v7/x/axelarcork/tests/mocks"
 
 	"github.com/cosmos/cosmos-sdk/codec"
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
@@ -15,7 +15,7 @@ import (
 
 	"github.com/golang/mock/gomock"
 
-	"github.com/peggyjv/sommelier/v6/x/axelarcork/types"
+	"github.com/peggyjv/sommelier/v7/x/axelarcork/types"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 

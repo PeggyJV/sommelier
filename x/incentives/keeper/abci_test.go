@@ -3,8 +3,8 @@ package keeper
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	distributionTypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
-	"github.com/peggyjv/sommelier/v6/app/params"
-	incentivesTypes "github.com/peggyjv/sommelier/v6/x/incentives/types"
+	"github.com/peggyjv/sommelier/v7/app/params"
+	incentivesTypes "github.com/peggyjv/sommelier/v7/x/incentives/types"
 )
 
 func (suite *KeeperTestSuite) TestEndBlockerIncentivesDisabledDoesNothing() {

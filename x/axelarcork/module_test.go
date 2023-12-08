@@ -7,8 +7,8 @@ import (
 	transfertypes "github.com/cosmos/ibc-go/v3/modules/apps/transfer/types"
 	channeltypes "github.com/cosmos/ibc-go/v3/modules/core/04-channel/types"
 	"github.com/golang/mock/gomock"
-	"github.com/peggyjv/sommelier/v6/x/axelarcork/tests"
-	"github.com/peggyjv/sommelier/v6/x/axelarcork/types"
+	"github.com/peggyjv/sommelier/v7/x/axelarcork/tests"
+	"github.com/peggyjv/sommelier/v7/x/axelarcork/types"
 	"github.com/stretchr/testify/require"
 )
 

@@ -4,10 +4,8 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/peggyjv/sommelier/v6/app"
-
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
-	corktypes "github.com/peggyjv/sommelier/v6/x/cork/types"
+	corktypes "github.com/peggyjv/sommelier/v7/x/cork/types"
 
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
@@ -26,7 +24,8 @@ import (
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 	gravitytypes "github.com/peggyjv/gravity-bridge/module/v3/x/gravity/types"
-	"github.com/peggyjv/sommelier/v6/app/params"
+	"github.com/peggyjv/sommelier/v7/app"
+	"github.com/peggyjv/sommelier/v7/app/params"
 	tmrand "github.com/tendermint/tendermint/libs/rand"
 	rpchttp "github.com/tendermint/tendermint/rpc/client/http"
 )
@@ -34,6 +33,7 @@ import (
 const (
 	keyringPassphrase = "testpassphrase"
 	keyringAppName    = "testnet"
+	feeAmount         = 246913560
 )
 
 var (
@@ -225,6 +225,7 @@ func (c *chain) clientContext(nodeURI string, kb *keyring.Keyring, fromName stri
 	interfaceRegistry.RegisterImplementations((*govtypes.Content)(nil),
 		&corktypes.AddManagedCellarIDsProposal{},
 		&corktypes.RemoveManagedCellarIDsProposal{},
+		&corktypes.ScheduledCorkProposal{},
 	)
 	interfaceRegistry.RegisterImplementations((*cryptotypes.PubKey)(nil), &secp256k1.PubKey{}, &ed25519.PubKey{})
 
@@ -299,14 +300,14 @@ func (c *chain) sendMsgs(clientCtx client.Context, msgs ...sdk.Msg) (*sdk.TxResp
 		}
 	}
 
-	txf.WithFees("246913560testsomm")
+	txf.WithFees("246913560usomm")
 
 	txb, err := tx.BuildUnsignedTx(txf, msgs...)
 	if err != nil {
 		return nil, err
 	}
 
-	txb.SetFeeAmount(sdk.Coins{{Denom: "testsomm", Amount: sdk.NewInt(246913560)}})
+	txb.SetFeeAmount(sdk.Coins{{Denom: "usomm", Amount: sdk.NewInt(feeAmount)}})
 
 	err = tx.Sign(txf, fromName, txb, false)
 	if err != nil {

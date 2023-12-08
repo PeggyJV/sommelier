@@ -1,34 +1,34 @@
-#[derive(Clone, PartialEq, ::prost::Message)]
+#[derive(serde::Deserialize, serde::Serialize, Clone, PartialEq, ::prost::Message)]
 pub struct GenesisState {
     #[prost(message, optional, tag = "1")]
     pub params: ::core::option::Option<Params>,
 }
 /// Params incentives parameters
-#[derive(Clone, PartialEq, ::prost::Message)]
+#[derive(serde::Deserialize, serde::Serialize, Clone, PartialEq, ::prost::Message)]
 pub struct Params {
     /// DistributionPerBlock defines the coin to be sent to the distribution module from the community pool every block
     #[prost(message, optional, tag = "1")]
     pub distribution_per_block: ::core::option::Option<cosmos_sdk_proto::cosmos::base::v1beta1::Coin>,
-    /// IncentivesCutoffHeight defines the block height after which the incentives module will stop sending coins to the
-    /// distribution module from the community pool
+    /// IncentivesCutoffHeight defines the block height after which the incentives module will stop sending coins to the distribution module from
+    /// the community pool
     #[prost(uint64, tag = "2")]
     pub incentives_cutoff_height: u64,
 }
 /// QueryParamsRequest is the request type for the QueryParams gRPC method.
-#[derive(Clone, PartialEq, ::prost::Message)]
+#[derive(serde::Deserialize, serde::Serialize, Clone, PartialEq, ::prost::Message)]
 pub struct QueryParamsRequest {}
 /// QueryParamsRequest is the response type for the QueryParams gRPC method.
-#[derive(Clone, PartialEq, ::prost::Message)]
+#[derive(serde::Deserialize, serde::Serialize, Clone, PartialEq, ::prost::Message)]
 pub struct QueryParamsResponse {
     /// allocation parameters
     #[prost(message, optional, tag = "1")]
     pub params: ::core::option::Option<Params>,
 }
 /// QueryAPYRequest is the request type for the QueryAPY gRPC method.
-#[derive(Clone, PartialEq, ::prost::Message)]
+#[derive(serde::Deserialize, serde::Serialize, Clone, PartialEq, ::prost::Message)]
 pub struct QueryApyRequest {}
 /// QueryAPYRequest is the response type for the QueryAPY gRPC method.
-#[derive(Clone, PartialEq, ::prost::Message)]
+#[derive(serde::Deserialize, serde::Serialize, Clone, PartialEq, ::prost::Message)]
 pub struct QueryApyResponse {
     #[prost(string, tag = "1")]
     pub apy: ::prost::alloc::string::String,

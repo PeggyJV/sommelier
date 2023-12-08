@@ -94,24 +94,33 @@ import (
 	gravityclient "github.com/peggyjv/gravity-bridge/module/v3/x/gravity/client"
 	gravitykeeper "github.com/peggyjv/gravity-bridge/module/v3/x/gravity/keeper"
 	gravitytypes "github.com/peggyjv/gravity-bridge/module/v3/x/gravity/types"
-	appParams "github.com/peggyjv/sommelier/v6/app/params"
-	v4 "github.com/peggyjv/sommelier/v6/app/upgrades/v4"
-	v5 "github.com/peggyjv/sommelier/v6/app/upgrades/v5"
-	v6 "github.com/peggyjv/sommelier/v6/app/upgrades/v6"
-	"github.com/peggyjv/sommelier/v6/x/axelarcork"
-	axelarcorkclient "github.com/peggyjv/sommelier/v6/x/axelarcork/client"
-	axelarcorkkeeper "github.com/peggyjv/sommelier/v6/x/axelarcork/keeper"
-	axelarcorktypes "github.com/peggyjv/sommelier/v6/x/axelarcork/types"
-	"github.com/peggyjv/sommelier/v6/x/cellarfees"
-	cellarfeeskeeper "github.com/peggyjv/sommelier/v6/x/cellarfees/keeper"
-	cellarfeestypes "github.com/peggyjv/sommelier/v6/x/cellarfees/types"
-	"github.com/peggyjv/sommelier/v6/x/cork"
-	corkclient "github.com/peggyjv/sommelier/v6/x/cork/client"
-	corkkeeper "github.com/peggyjv/sommelier/v6/x/cork/keeper"
-	corktypes "github.com/peggyjv/sommelier/v6/x/cork/types"
-	"github.com/peggyjv/sommelier/v6/x/incentives"
-	incentiveskeeper "github.com/peggyjv/sommelier/v6/x/incentives/keeper"
-	incentivestypes "github.com/peggyjv/sommelier/v6/x/incentives/types"
+	appParams "github.com/peggyjv/sommelier/v7/app/params"
+	v4 "github.com/peggyjv/sommelier/v7/app/upgrades/v4"
+	v5 "github.com/peggyjv/sommelier/v7/app/upgrades/v5"
+	v6 "github.com/peggyjv/sommelier/v7/app/upgrades/v6"
+	v7 "github.com/peggyjv/sommelier/v7/app/upgrades/v7"
+	"github.com/peggyjv/sommelier/v7/x/auction"
+	auctionclient "github.com/peggyjv/sommelier/v7/x/auction/client"
+	auctionkeeper "github.com/peggyjv/sommelier/v7/x/auction/keeper"
+	auctiontypes "github.com/peggyjv/sommelier/v7/x/auction/types"
+	"github.com/peggyjv/sommelier/v7/x/axelarcork"
+	axelarcorkclient "github.com/peggyjv/sommelier/v7/x/axelarcork/client"
+	axelarcorkkeeper "github.com/peggyjv/sommelier/v7/x/axelarcork/keeper"
+	axelarcorktypes "github.com/peggyjv/sommelier/v7/x/axelarcork/types"
+	"github.com/peggyjv/sommelier/v7/x/cellarfees"
+	cellarfeeskeeper "github.com/peggyjv/sommelier/v7/x/cellarfees/keeper"
+	cellarfeestypes "github.com/peggyjv/sommelier/v7/x/cellarfees/types"
+	"github.com/peggyjv/sommelier/v7/x/cork"
+	corkclient "github.com/peggyjv/sommelier/v7/x/cork/client"
+	corkkeeper "github.com/peggyjv/sommelier/v7/x/cork/keeper"
+	corktypes "github.com/peggyjv/sommelier/v7/x/cork/types"
+	"github.com/peggyjv/sommelier/v7/x/incentives"
+	incentiveskeeper "github.com/peggyjv/sommelier/v7/x/incentives/keeper"
+	incentivestypes "github.com/peggyjv/sommelier/v7/x/incentives/types"
+	"github.com/peggyjv/sommelier/v7/x/pubsub"
+	pubsubclient "github.com/peggyjv/sommelier/v7/x/pubsub/client"
+	pubsubkeeper "github.com/peggyjv/sommelier/v7/x/pubsub/keeper"
+	pubsubtypes "github.com/peggyjv/sommelier/v7/x/pubsub/types"
 	"github.com/rakyll/statik/fs"
 	abci "github.com/tendermint/tendermint/abci/types"
 	tmjson "github.com/tendermint/tendermint/libs/json"
@@ -162,6 +171,12 @@ var (
 			axelarcorkclient.CommunityPoolEthereumSpendProposalHandler,
 			axelarcorkclient.UpgradeAxelarProxyContractHandler,
 			axelarcorkclient.CancelAxelarProxyContractUpgradeHandler,
+			corkclient.ScheduledCorkProposalHandler,
+			auctionclient.SetProposalHandler,
+			pubsubclient.AddPublisherProposalHandler,
+			pubsubclient.RemovePublisherProposalHandler,
+			pubsubclient.AddDefaultSubscriptionProposalHandler,
+			pubsubclient.RemoveDefaultSubscriptionProposalHandler,
 		),
 		params.AppModuleBasic{},
 		crisis.AppModuleBasic{},
@@ -179,6 +194,8 @@ var (
 		axelarcork.AppModuleBasic{},
 		cellarfees.AppModuleBasic{},
 		incentives.AppModuleBasic{},
+		auction.AppModuleBasic{},
+		pubsub.AppModuleBasic{},
 	)
 
 	// module account permissions
@@ -194,6 +211,9 @@ var (
 		gravitytypes.ModuleName:        {authtypes.Minter, authtypes.Burner},
 		cellarfeestypes.ModuleName:     nil,
 		incentivestypes.ModuleName:     nil,
+		axelarcorktypes.ModuleName:     nil,
+		auctiontypes.ModuleName:        nil,
+		pubsubtypes.ModuleName:         nil,
 	}
 
 	// module accounts that are allowed to receive tokens
@@ -244,6 +264,8 @@ type SommelierApp struct {
 	AxelarCorkKeeper axelarcorkkeeper.Keeper
 	CellarFeesKeeper cellarfeeskeeper.Keeper
 	IncentivesKeeper incentiveskeeper.Keeper
+	AuctionKeeper    auctionkeeper.Keeper
+	PubsubKeeper     pubsubkeeper.Keeper
 
 	// make capability scoped keepers public for test purposes (IBC only)
 	ScopedAxelarCorkKeeper capabilitykeeper.ScopedKeeper
@@ -305,6 +327,9 @@ func NewSommelierApp(
 		corktypes.StoreKey,
 		axelarcorktypes.StoreKey,
 		incentivestypes.StoreKey,
+		auctiontypes.StoreKey,
+		cellarfeestypes.StoreKey,
+		pubsubtypes.StoreKey,
 	)
 	tkeys := sdk.NewTransientStoreKeys(paramstypes.TStoreKey)
 	memKeys := sdk.NewMemoryStoreKeys(capabilitytypes.MemStoreKey)
@@ -393,6 +418,7 @@ func NewSommelierApp(
 		appCodec,
 		keys[axelarcorktypes.StoreKey],
 		app.GetSubspace(axelarcorktypes.ModuleName),
+		app.AccountKeeper,
 		app.StakingKeeper,
 		app.TransferKeeper,
 		app.DistrKeeper,
@@ -431,9 +457,28 @@ func NewSommelierApp(
 		app.StakingKeeper, app.GravityKeeper,
 	)
 
+	app.AuctionKeeper = auctionkeeper.NewKeeper(
+		appCodec, keys[auctiontypes.StoreKey], app.GetSubspace(auctiontypes.ModuleName),
+		app.BankKeeper, app.AccountKeeper, map[string]bool{cellarfeestypes.ModuleName: true},
+		map[string]bool{cellarfeestypes.ModuleName: true},
+	)
+
 	app.CellarFeesKeeper = cellarfeeskeeper.NewKeeper(
 		appCodec, keys[cellarfeestypes.StoreKey], app.GetSubspace(cellarfeestypes.ModuleName),
-		app.AccountKeeper, app.BankKeeper,
+		app.AccountKeeper, app.BankKeeper, app.MintKeeper, app.CorkKeeper, app.GravityKeeper, app.AuctionKeeper,
+	)
+
+	app.IncentivesKeeper = incentiveskeeper.NewKeeper(
+		appCodec, keys[incentivestypes.StoreKey], app.GetSubspace(incentivestypes.ModuleName), app.DistrKeeper, app.BankKeeper, app.MintKeeper,
+	)
+
+	app.PubsubKeeper = pubsubkeeper.NewKeeper(
+		appCodec, keys[pubsubtypes.StoreKey], app.GetSubspace(pubsubtypes.ModuleName),
+		app.StakingKeeper, app.GravityKeeper,
+	)
+
+	app.IncentivesKeeper = incentiveskeeper.NewKeeper(
+		appCodec, keys[incentivestypes.StoreKey], app.GetSubspace(incentivestypes.ModuleName), app.DistrKeeper, app.BankKeeper, app.MintKeeper,
 	)
 
 	app.IncentivesKeeper = incentiveskeeper.NewKeeper(
@@ -443,6 +488,7 @@ func NewSommelierApp(
 	app.GravityKeeper = *app.GravityKeeper.SetHooks(
 		gravitytypes.NewMultiGravityHooks(
 			app.CorkKeeper.Hooks(),
+			app.CellarFeesKeeper.Hooks(),
 		))
 
 	// register the proposal types
@@ -452,9 +498,11 @@ func NewSommelierApp(
 		AddRoute(distrtypes.RouterKey, distr.NewCommunityPoolSpendProposalHandler(app.DistrKeeper)).
 		AddRoute(upgradetypes.RouterKey, upgrade.NewSoftwareUpgradeProposalHandler(app.UpgradeKeeper)).
 		AddRoute(ibcclienttypes.RouterKey, ibcclient.NewClientProposalHandler(app.IBCKeeper.ClientKeeper)).
-		AddRoute(corktypes.RouterKey, cork.NewUpdateCellarIDsProposalHandler(app.CorkKeeper)).
+		AddRoute(corktypes.RouterKey, cork.NewProposalHandler(app.CorkKeeper)).
 		AddRoute(axelarcorktypes.RouterKey, axelarcork.NewProposalHandler(app.AxelarCorkKeeper)).
-		AddRoute(gravitytypes.RouterKey, gravity.NewCommunityPoolEthereumSpendProposalHandler(app.GravityKeeper))
+		AddRoute(gravitytypes.RouterKey, gravity.NewCommunityPoolEthereumSpendProposalHandler(app.GravityKeeper)).
+		AddRoute(auctiontypes.RouterKey, auction.NewSetTokenPricesProposalHandler(app.AuctionKeeper)).
+		AddRoute(pubsubtypes.RouterKey, pubsub.NewPubsubProposalHandler(app.PubsubKeeper))
 	app.GovKeeper = govkeeper.NewKeeper(
 		appCodec, keys[govtypes.StoreKey], app.GetSubspace(govtypes.ModuleName), app.AccountKeeper, app.BankKeeper,
 		&stakingKeeper, govRouter,
@@ -511,8 +559,10 @@ func NewSommelierApp(
 		gravity.NewAppModule(app.GravityKeeper, app.BankKeeper),
 		authzmodule.NewAppModule(appCodec, app.AuthzKeeper, app.AccountKeeper, app.BankKeeper, app.interfaceRegistry),
 		cork.NewAppModule(app.CorkKeeper, appCodec),
-		cellarfees.NewAppModule(app.CellarFeesKeeper, appCodec),
-		incentives.NewAppModule(app.IncentivesKeeper, appCodec),
+		incentives.NewAppModule(app.IncentivesKeeper, app.DistrKeeper, app.BankKeeper, app.MintKeeper, appCodec),
+		cellarfees.NewAppModule(app.CellarFeesKeeper, appCodec, app.AccountKeeper, app.BankKeeper, app.MintKeeper, app.CorkKeeper, app.GravityKeeper, app.AuctionKeeper),
+		auction.NewAppModule(app.AuctionKeeper, app.BankKeeper, app.AccountKeeper, appCodec),
+		pubsub.NewAppModule(appCodec, app.PubsubKeeper, app.StakingKeeper, app.GravityKeeper),
 	)
 
 	// During begin block slashing happens after distr.BeginBlocker so that
@@ -545,6 +595,8 @@ func NewSommelierApp(
 		corktypes.ModuleName,
 		axelarcorktypes.ModuleName,
 		cellarfeestypes.ModuleName,
+		auctiontypes.ModuleName,
+		pubsubtypes.ModuleName,
 	)
 
 	// NOTE gov must come before staking
@@ -573,6 +625,8 @@ func NewSommelierApp(
 		corktypes.ModuleName,
 		axelarcorktypes.ModuleName,
 		cellarfeestypes.ModuleName,
+		auctiontypes.ModuleName,
+		pubsubtypes.ModuleName,
 	)
 
 	// NOTE: The genutils module must occur after staking so that pools are
@@ -580,6 +634,10 @@ func NewSommelierApp(
 	// NOTE: Capability module must occur first so that it can initialize any capabilities
 	// so that other modules that want to create or claim capabilities afterwards in InitChain
 	// can do so safely.
+	// NOTE: During cellarfees development, moved crisis to end of order because when its InitChain
+	// gets run, it enforces all registered invariants before moving on to other modules. This means
+	// if a module listed after crisis has invariants that depend on their own state being initialized,
+	// their keeper will panic when a nil state is returned.
 	app.mm.SetOrderInitGenesis(
 		capabilitytypes.ModuleName,
 		authtypes.ModuleName,
@@ -605,6 +663,8 @@ func NewSommelierApp(
 		corktypes.ModuleName,
 		axelarcorktypes.ModuleName,
 		cellarfeestypes.ModuleName,
+		auctiontypes.ModuleName,
+		pubsubtypes.ModuleName,
 	)
 
 	app.mm.RegisterInvariants(&app.CrisisKeeper)
@@ -634,8 +694,10 @@ func NewSommelierApp(
 		authzmodule.NewAppModule(appCodec, app.AuthzKeeper, app.AccountKeeper, app.BankKeeper, app.interfaceRegistry),
 		cork.NewAppModule(app.CorkKeeper, appCodec),
 		axelarcork.NewAppModule(app.AxelarCorkKeeper, appCodec),
-		cellarfees.NewAppModule(app.CellarFeesKeeper, appCodec),
-		incentives.NewAppModule(app.IncentivesKeeper, appCodec),
+		incentives.NewAppModule(app.IncentivesKeeper, app.DistrKeeper, app.BankKeeper, app.MintKeeper, appCodec),
+		cellarfees.NewAppModule(app.CellarFeesKeeper, appCodec, app.AccountKeeper, app.BankKeeper, app.MintKeeper, app.CorkKeeper, app.GravityKeeper, app.AuctionKeeper),
+		auction.NewAppModule(app.AuctionKeeper, app.BankKeeper, app.AccountKeeper, appCodec),
+		pubsub.NewAppModule(appCodec, app.PubsubKeeper, app.StakingKeeper, app.GravityKeeper),
 	)
 
 	app.sm.RegisterStoreDecoders()
@@ -872,6 +934,8 @@ func initParamsKeeper(appCodec codec.BinaryCodec, legacyAmino *codec.LegacyAmino
 	paramsKeeper.Subspace(axelarcorktypes.ModuleName)
 	paramsKeeper.Subspace(cellarfeestypes.ModuleName)
 	paramsKeeper.Subspace(incentivestypes.ModuleName)
+	paramsKeeper.Subspace(auctiontypes.ModuleName)
+	paramsKeeper.Subspace(pubsubtypes.ModuleName)
 
 	return paramsKeeper
 }
@@ -907,6 +971,12 @@ func (app *SommelierApp) setupUpgradeStoreLoaders() {
 		}
 	}
 
+	if upgradeInfo.Name == v7.UpgradeName {
+		storeUpgrades = &store.StoreUpgrades{
+			Added: []string{auctiontypes.ModuleName, pubsubtypes.ModuleName},
+		}
+	}
+
 	if storeUpgrades != nil {
 		app.SetStoreLoader(upgradetypes.UpgradeStoreLoader(upgradeInfo.Height, storeUpgrades))
 	}
@@ -937,6 +1007,17 @@ func (app *SommelierApp) setupUpgradeHandlers() {
 		v6.CreateUpgradeHandler(
 			app.mm,
 			app.configurator,
+		),
+	)
+
+	app.UpgradeKeeper.SetUpgradeHandler(
+		v7.UpgradeName,
+		v7.CreateUpgradeHandler(
+			app.mm,
+			app.configurator,
+			app.AuctionKeeper,
+			app.CellarFeesKeeper,
+			app.PubsubKeeper,
 		),
 	)
 }

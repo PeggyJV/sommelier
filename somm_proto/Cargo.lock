@@ -125,8 +125,9 @@ dependencies = [
 
 [[package]]
 name = "cosmos-sdk-proto"
-version = "0.6.0"
-source = "git+http://github.com/cosmos/cosmos-rust?branch=main#2fb812dd202ade0ab9466126e409e0dade56ae4a"
+version = "0.6.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "7115eae4b8518967b8e737a3ef76025f2d007de7906d88c18f00b8bbfc70f51e"
 dependencies = [
  "prost",
  "prost-types",
@@ -606,12 +607,13 @@ dependencies = [
 
 [[package]]
 name = "somm_proto"
-version = "5.0.0"
+version = "7.0.0"
 dependencies = [
  "bytes",
  "cosmos-sdk-proto",
  "prost",
  "prost-types",
+ "serde",
  "tonic",
 ]
 

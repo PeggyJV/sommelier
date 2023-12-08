@@ -1,0 +1,26 @@
+syntax = "proto3";
+package cork.v2;
+
+import "cork/v2/cork.proto";
+
+option go_package = "github.com/peggyjv/sommelier/v7/x/cork/types";
+
+// MsgService defines the msgs that the cork module handles
+service Msg {
+  rpc ScheduleCork (MsgScheduleCorkRequest) returns (MsgScheduleCorkResponse);
+}
+
+// MsgScheduleCorkRequest - sdk.Msg for scheduling a cork request for on or after a specific block height
+message MsgScheduleCorkRequest {
+  // the scheduled cork
+  Cork cork = 1;
+  // the block height that must be reached
+  uint64 block_height = 2;
+  // signer account address
+  string signer = 3;
+}
+
+message MsgScheduleCorkResponse {
+  // cork ID
+  string id = 1;
+}

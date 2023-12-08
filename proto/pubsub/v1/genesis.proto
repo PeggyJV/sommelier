@@ -1,0 +1,19 @@
+syntax = "proto3";
+package pubsub.v1;
+
+import "gogoproto/gogo.proto";
+import "pubsub/v1/params.proto";
+import "pubsub/v1/pubsub.proto";
+
+option go_package = "github.com/peggyjv/sommelier/v7/x/pubsub/types";
+
+// GenesisState defines the pubsub module's genesis state.
+message GenesisState {
+  Params params = 1 [(gogoproto.nullable) = false];
+  repeated Publisher publishers = 2;
+  repeated Subscriber subscribers = 3;
+  repeated PublisherIntent publisher_intents = 4;
+  repeated SubscriberIntent subscriber_intents = 5;
+  repeated DefaultSubscription default_subscriptions = 6;
+}
+

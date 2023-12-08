@@ -11,7 +11,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/version"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 	"github.com/ethereum/go-ethereum/common"
-	types "github.com/peggyjv/sommelier/v6/x/axelarcork/types"
+	types "github.com/peggyjv/sommelier/v7/x/axelarcork/types"
 	"github.com/spf13/cobra"
 )
 

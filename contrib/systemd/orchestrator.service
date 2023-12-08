@@ -1,0 +1,16 @@
+[Unit]
+Description=Sommelier Orchestrator
+After=online.target
+
+[Service]
+Type=simple
+User=ubuntu
+Environment="RUST_LOG=INFO"
+WorkingDirectory=/home/ubuntu
+ExecStart=/usr/bin/steward --config /home/ubuntu/steward/config.toml orchestrator start --cosmos-key orchestrator --ethereum-key signer --orchestrator-only
+Restart=on-failure
+RestartSec=3
+LimitNOFILE=4096
+
+[Install]
+WantedBy=multi-user.target

@@ -13,9 +13,9 @@ import (
 	sim "github.com/cosmos/cosmos-sdk/types/simulation"
 	"github.com/gorilla/mux"
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
-	"github.com/peggyjv/sommelier/v6/x/incentives/client/cli"
-	"github.com/peggyjv/sommelier/v6/x/incentives/keeper"
-	"github.com/peggyjv/sommelier/v6/x/incentives/types"
+	"github.com/peggyjv/sommelier/v7/x/incentives/client/cli"
+	"github.com/peggyjv/sommelier/v7/x/incentives/keeper"
+	"github.com/peggyjv/sommelier/v7/x/incentives/types"
 	"github.com/spf13/cobra"
 	abci "github.com/tendermint/tendermint/abci/types"
 )
@@ -81,22 +81,23 @@ func (b AppModuleBasic) RegisterInterfaces(registry codectypes.InterfaceRegistry
 // AppModule implements an application module for the incentives module.
 type AppModule struct {
 	AppModuleBasic
-	keeper keeper.Keeper
-	//distributionKeeper types.DistributionKeeper
-	//bankKeeper         types.BankKeeper
-	//mintKeeper         types.MintKeeper
-	cdc codec.Codec
+	keeper             keeper.Keeper
+	distributionKeeper types.DistributionKeeper
+	bankKeeper         types.BankKeeper
+	mintKeeper         types.MintKeeper
+	cdc                codec.Codec
 }
 
 // NewAppModule creates a new AppModule object
-func NewAppModule(keeper keeper.Keeper, cdc codec.Codec) AppModule {
+func NewAppModule(keeper keeper.Keeper, distributionKeeper types.DistributionKeeper,
+	bankKeeper types.BankKeeper, mintKeeper types.MintKeeper, cdc codec.Codec) AppModule {
 	return AppModule{
-		AppModuleBasic: AppModuleBasic{},
-		keeper:         keeper,
-		//distributionKeeper: distributionKeeper,
-		//bankKeeper:         bankKeeper,
-		//mintKeeper:         mintKeeper,
-		cdc: cdc,
+		AppModuleBasic:     AppModuleBasic{},
+		keeper:             keeper,
+		distributionKeeper: distributionKeeper,
+		bankKeeper:         bankKeeper,
+		mintKeeper:         mintKeeper,
+		cdc:                cdc,
 	}
 }
 

@@ -2,7 +2,6 @@ package types
 
 import (
 	"bytes"
-	"encoding/binary"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/ethereum/go-ethereum/common"
@@ -40,6 +39,12 @@ const (
 
 	// ScheduledCorkKeyPrefix - <prefix><block_height><val_address><address> -> <cork>
 	ScheduledCorkKeyPrefix
+
+	// LatestCorkIDKey - <key> -> uint64(latestCorkID)
+	LatestCorkIDKey
+
+	// CorkResultPrefix - <prefix><id> -> CorkResult
+	CorkResultPrefix
 )
 
 // GetCorkForValidatorAddressKey returns the key for a validators vote for a given address
@@ -56,8 +61,23 @@ func MakeCellarIDsKey() []byte {
 	return []byte{CellarIDsKey}
 }
 
-func GetScheduledCorkKey(blockHeight uint64, val sdk.ValAddress, contract common.Address) []byte {
-	b := make([]byte, 8)
-	binary.BigEndian.PutUint64(b, blockHeight)
-	return bytes.Join([][]byte{{ScheduledCorkKeyPrefix}, b, val.Bytes(), contract.Bytes()}, []byte{})
+func GetScheduledCorkKeyPrefix() []byte {
+	return []byte{ScheduledCorkKeyPrefix}
+}
+
+func GetScheduledCorkKeyByBlockHeightPrefix(blockHeight uint64) []byte {
+	return append(GetScheduledCorkKeyPrefix(), sdk.Uint64ToBigEndian(blockHeight)...)
+}
+
+func GetScheduledCorkKey(blockHeight uint64, id []byte, val sdk.ValAddress, contract common.Address) []byte {
+	blockHeightBytes := sdk.Uint64ToBigEndian(blockHeight)
+	return bytes.Join([][]byte{GetScheduledCorkKeyPrefix(), blockHeightBytes, id, val.Bytes(), contract.Bytes()}, []byte{})
+}
+
+func GetCorkResultPrefix() []byte {
+	return []byte{CorkResultPrefix}
+}
+
+func GetCorkResultKey(id []byte) []byte {
+	return append(GetCorkResultPrefix(), id...)
 }

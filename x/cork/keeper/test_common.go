@@ -52,7 +52,7 @@ import (
 	"github.com/peggyjv/gravity-bridge/module/v3/x/gravity"
 	gravitykeeper "github.com/peggyjv/gravity-bridge/module/v3/x/gravity/keeper"
 	gravitytypes "github.com/peggyjv/gravity-bridge/module/v3/x/gravity/types"
-	"github.com/peggyjv/sommelier/v6/x/cork/types"
+	"github.com/peggyjv/sommelier/v7/x/cork/types"
 	"github.com/stretchr/testify/require"
 	"github.com/tendermint/tendermint/libs/log"
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
@@ -183,14 +183,13 @@ var (
 	}
 
 	// TestingcorkParams is a set of gravity params for testing
-	threshold, _      = sdk.NewDecFromStr("0.66")
 	TestingcorkParams = types.Params{
-		VoteThreshold: threshold,
-		VotePeriod:    10,
+		VoteThreshold: sdk.MustNewDecFromStr(corkVoteThresholdStr),
 	}
 )
 
 // TestInput stores the various keepers required to test gravity
+// TODO This file is mostly unused. Ask Eric/Collin about whether it's needed.
 type TestInput struct {
 	corkKeeper     Keeper
 	GravityKeeper  gravitykeeper.Keeper

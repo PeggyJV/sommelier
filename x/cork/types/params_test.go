@@ -24,24 +24,15 @@ func TestParamsValidate(t *testing.T) {
 			expPass: false,
 		},
 		{
-			name: "invalid vote period",
-			params: Params{
-				VotePeriod: 0,
-			},
-			expPass: false,
-		},
-		{
 			name: "invalid vote threshold",
 			params: Params{
-				VotePeriod:    5,
-				VoteThreshold: sdk.ZeroDec(),
+				VoteThreshold: sdk.NewDec(-1),
 			},
 			expPass: false,
 		},
 		{
 			name: "nil vote threshold",
 			params: Params{
-				VotePeriod:    5,
 				VoteThreshold: sdk.Dec{},
 			},
 			expPass: false,

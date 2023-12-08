@@ -1,0 +1,32 @@
+syntax = "proto3";
+package cork.v2;
+
+import "cork/v2/cork.proto";
+import "gogoproto/gogo.proto";
+
+option go_package = "github.com/peggyjv/sommelier/v7/x/cork/types";
+
+
+// GenesisState - all cork state that must be provided at genesis
+message GenesisState {
+    Params                          params             = 1 [
+        (gogoproto.nullable) = false
+    ];
+    CellarIDSet cellar_ids = 2 [
+        (gogoproto.nullable) = false
+    ];
+    uint64 invalidation_nonce = 3;
+    repeated ScheduledCork scheduled_corks = 4;
+    repeated CorkResult cork_results = 5;
+}
+
+// Params cork parameters
+message Params {
+    // Deprecated
+    // VoteThreshold defines the percentage of bonded stake required to vote for a scheduled cork to be approved
+    string vote_threshold      = 1 [
+        (gogoproto.moretags)   = "yaml:\"vote_threshold\"",
+        (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+        (gogoproto.nullable)   = false
+    ];
+}

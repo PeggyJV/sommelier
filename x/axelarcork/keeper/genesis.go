@@ -5,14 +5,20 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/ethereum/go-ethereum/common"
-	"github.com/peggyjv/sommelier/v6/x/axelarcork/types"
+	"github.com/peggyjv/sommelier/v7/x/axelarcork/types"
 )
 
 // InitGenesis initialize default parameters
 // and the keeper's address to pubkey map
 func InitGenesis(ctx sdk.Context, k Keeper, gs types.GenesisState) {
 	k.SetParams(ctx, *gs.Params)
-	// Set the vote period at initialization
+
+	senderAccount := k.GetSenderAccount(ctx)
+	if senderAccount == nil {
+		panic(fmt.Sprintf("%s module account has not been set", types.ModuleName))
+	}
+
+	k.accountKeeper.SetModuleAccount(ctx, senderAccount)
 
 	for i, config := range gs.ChainConfigurations.Configurations {
 		k.SetChainConfiguration(ctx, config.Id, *config)

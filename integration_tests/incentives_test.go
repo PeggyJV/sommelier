@@ -13,8 +13,8 @@ import (
 	minttypes "github.com/cosmos/cosmos-sdk/x/mint/types"
 	paramsproposal "github.com/cosmos/cosmos-sdk/x/params/types/proposal"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
-	"github.com/peggyjv/sommelier/v6/app/params"
-	incentivestypes "github.com/peggyjv/sommelier/v6/x/incentives/types"
+	"github.com/peggyjv/sommelier/v7/app/params"
+	incentivestypes "github.com/peggyjv/sommelier/v7/x/incentives/types"
 )
 
 func (s *IntegrationTestSuite) TestIncentives() {
@@ -53,10 +53,17 @@ func (s *IntegrationTestSuite) TestIncentives() {
 		s.Require().NoError(err)
 		s.Require().True(initialAPY.IsZero())
 
-		beforeAmount := s.queryValidatorRewards(ctx, valOperatorAddress, distQueryClient)
-		time.Sleep(time.Second * 12)
-		afterAmount := s.queryValidatorRewards(ctx, valOperatorAddress, distQueryClient)
-		s.Require().Equal(beforeAmount, afterAmount)
+		// this is looped because for some reason running the test too quickly after the validator
+		// containers are launched results in the validator rewards pool result increasing before
+		// reaching a steady state
+		s.T().Log("verifying validator rewards are not increasing")
+		s.Require().Eventually(func() bool {
+			beforeAmount := s.queryValidatorRewards(ctx, valOperatorAddress, distQueryClient)
+			time.Sleep(time.Second * 12)
+			afterAmount := s.queryValidatorRewards(ctx, valOperatorAddress, distQueryClient)
+
+			return beforeAmount.Equal(afterAmount)
+		}, 120*time.Second, 12*time.Second)
 
 		s.T().Log("submitting proposal to enable incentives")
 		proposer := s.chain.proposer

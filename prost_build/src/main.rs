@@ -47,18 +47,30 @@ fn compile_protos(out_dir: &Path, tmp_dir: &Path) {
     let mut cellarfees_proto_dir = root.clone();
     cellarfees_proto_dir.push("proto/cellarfees/v1");
     let mut cork_proto_dir = root.clone();
-    cork_proto_dir.push("proto/cork/v1");
+    cork_proto_dir.push("proto/cork/v2");
     let mut axelar_cork_proto_dir = root.clone();
     axelar_cork_proto_dir.push("proto/axelarcork/v1");
     let mut incentives_proto_dir = root.clone();
     incentives_proto_dir.push("proto/incentives/v1");
+    let mut auction_proto_dir = root.clone();
+    auction_proto_dir.push("proto/auction/v1");
+    let mut pubsub_proto_dir = root.clone();
+    pubsub_proto_dir.push("proto/pubsub/v1");
+
     let mut somm_proto_include_dir = root.clone();
     somm_proto_include_dir.push("proto");
     let mut third_party_proto_include_dir = root;
     third_party_proto_include_dir.push("third_party/proto");
 
     // Paths
-    let proto_paths = [cellarfees_proto_dir, cork_proto_dir, axelar_cork_proto_dir, incentives_proto_dir];
+    let proto_paths = [
+        cellarfees_proto_dir,
+        cork_proto_dir,
+        axelar_cork_proto_dir,
+        incentives_proto_dir,
+        auction_proto_dir,
+        pubsub_proto_dir,
+    ];
     // we need to have an include which is just the folder of our protos to satisfy protoc
     // which insists that any passed file be included in a directory passed as an include
     let proto_include_paths = [somm_proto_include_dir, third_party_proto_include_dir];
@@ -88,6 +100,7 @@ fn compile_protos(out_dir: &Path, tmp_dir: &Path) {
     let mut config = prost_build::Config::default();
     config.out_dir(tmp_dir);
     config
+        .type_attribute(".", "#[derive(serde::Deserialize, serde::Serialize)]")
         .compile_protos(&protos, &proto_include_paths)
         .unwrap();
 
@@ -98,7 +111,7 @@ fn compile_protos(out_dir: &Path, tmp_dir: &Path) {
         .build_server(false)
         .format(true)
         .out_dir(tmp_dir)
-        .compile(&protos, &proto_include_paths)
+        .compile_with_config(config, &protos, &proto_include_paths)
         .unwrap();
 
     copy_generated_files(tmp_dir, out_dir);

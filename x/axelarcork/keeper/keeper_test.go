@@ -4,7 +4,7 @@ import (
 	"encoding/hex"
 	"testing"
 
-	"github.com/peggyjv/sommelier/v6/x/axelarcork/tests/mocks"
+	"github.com/peggyjv/sommelier/v7/x/axelarcork/tests/mocks"
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/codec"
@@ -15,8 +15,8 @@ import (
 	paramskeeper "github.com/cosmos/cosmos-sdk/x/params/keeper"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/golang/mock/gomock"
-	moduletestutil "github.com/peggyjv/sommelier/v6/testutil"
-	"github.com/peggyjv/sommelier/v6/x/axelarcork/types"
+	moduletestutil "github.com/peggyjv/sommelier/v7/testutil"
+	"github.com/peggyjv/sommelier/v7/x/axelarcork/types"
 	"github.com/stretchr/testify/suite"
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
 	tmtime "github.com/tendermint/tendermint/types/time"

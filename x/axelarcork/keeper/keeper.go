@@ -8,9 +8,10 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
 	"github.com/ethereum/go-ethereum/common"
-	"github.com/peggyjv/sommelier/v6/x/axelarcork/types"
+	"github.com/peggyjv/sommelier/v7/x/axelarcork/types"
 	"github.com/tendermint/tendermint/libs/log"
 )
 
@@ -19,6 +20,7 @@ type Keeper struct {
 	storeKey           sdk.StoreKey
 	cdc                codec.BinaryCodec
 	paramSpace         paramtypes.Subspace
+	accountKeeper      types.AccountKeeper
 	stakingKeeper      types.StakingKeeper
 	transferKeeper     types.TransferKeeper
 	distributionKeeper types.DistributionKeeper
@@ -30,9 +32,9 @@ type Keeper struct {
 // NewKeeper creates a new x/axelarcork Keeper instance
 func NewKeeper(
 	cdc codec.BinaryCodec, key sdk.StoreKey, paramSpace paramtypes.Subspace,
-	stakingKeeper types.StakingKeeper, transferKeeper types.TransferKeeper,
-	distributionKeeper types.DistributionKeeper, wrapper types.ICS4Wrapper,
-	gravityKeeper types.GravityKeeper,
+	accountKeeper types.AccountKeeper, stakingKeeper types.StakingKeeper,
+	transferKeeper types.TransferKeeper, distributionKeeper types.DistributionKeeper,
+	wrapper types.ICS4Wrapper, gravityKeeper types.GravityKeeper,
 ) Keeper {
 	// set KeyTable if it has not already been set
 	if !paramSpace.HasKeyTable() {
@@ -43,6 +45,7 @@ func NewKeeper(
 		storeKey:           key,
 		cdc:                cdc,
 		paramSpace:         paramSpace,
+		accountKeeper:      accountKeeper,
 		stakingKeeper:      stakingKeeper,
 		transferKeeper:     transferKeeper,
 		distributionKeeper: distributionKeeper,
@@ -516,4 +519,12 @@ func (k Keeper) IterateAxelarProxyUpgradeData(ctx sdk.Context, cb func(chainID u
 			break
 		}
 	}
+}
+
+/////////////////////
+// Module Accounts //
+/////////////////////
+
+func (k Keeper) GetSenderAccount(ctx sdk.Context) authtypes.ModuleAccountI {
+	return k.accountKeeper.GetModuleAccount(ctx, types.ModuleName)
 }

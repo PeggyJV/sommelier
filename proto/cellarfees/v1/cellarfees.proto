@@ -1,0 +1,15 @@
+syntax = "proto3";
+package cellarfees.v1;
+
+import "gogoproto/gogo.proto";
+
+option go_package = "github.com/peggyjv/sommelier/v7/x/cellarfees/types";
+
+message FeeAccrualCounter {
+    string denom = 1;
+    uint64 count = 2;
+}
+
+message FeeAccrualCounters {
+    repeated FeeAccrualCounter counters = 1 [(gogoproto.nullable) = false];
+}

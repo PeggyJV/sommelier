@@ -5,7 +5,7 @@ import "axelarcork/v1/axelarcork.proto";
 import "gogoproto/gogo.proto";
 import "cosmos/base/v1beta1/coin.proto";
 
-option go_package = "github.com/peggyjv/sommelier/v6/x/axelarcork/types";
+option go_package = "github.com/peggyjv/sommelier/v7/x/axelarcork/types";
 
 // note: current plan is to accept either chain name or chain ID. if both and they dont match, error.
 
