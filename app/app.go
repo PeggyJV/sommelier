@@ -481,10 +481,6 @@ func NewSommelierApp(
 		appCodec, keys[incentivestypes.StoreKey], app.GetSubspace(incentivestypes.ModuleName), app.DistrKeeper, app.BankKeeper, app.MintKeeper,
 	)
 
-	app.IncentivesKeeper = incentiveskeeper.NewKeeper(
-		appCodec, keys[incentivestypes.StoreKey], app.GetSubspace(incentivestypes.ModuleName), app.DistrKeeper, app.BankKeeper, app.MintKeeper,
-	)
-
 	app.GravityKeeper = *app.GravityKeeper.SetHooks(
 		gravitytypes.NewMultiGravityHooks(
 			app.CorkKeeper.Hooks(),
