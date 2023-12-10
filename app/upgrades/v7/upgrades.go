@@ -22,7 +22,7 @@ func CreateUpgradeHandler(
 	return func(ctx sdk.Context, plan upgradetypes.Plan, fromVM module.VersionMap) (module.VersionMap, error) {
 		ctx.Logger().Info("v7 upgrade: entering handler")
 
-		// We must manually run InitGenesis for incentives, pubsub, and auctions so we can adjust their values
+		// We must manually run InitGenesis for pubsub and auctions so we can adjust their values
 		// during the upgrade process. RunMigrations will migrate to the new cork version. Setting the consensus
 		// version to 1 prevents RunMigrations from running InitGenesis itself.
 		fromVM[auctiontypes.ModuleName] = mm.Modules[auctiontypes.ModuleName].ConsensusVersion()
@@ -49,13 +49,18 @@ func auctionInitGenesis(ctx sdk.Context, auctionKeeper auctionkeeper.Keeper) {
 	genesisState := auctiontypes.DefaultGenesisState()
 
 	usomm52WeekLow := sdk.MustNewDecFromStr("0.079151")
+	eth52WeekHigh := sdk.MustNewDecFromStr("2359.89")
+	btc52WeekHigh := sdk.MustNewDecFromStr("44202.18")
 	oneDollar := sdk.MustNewDecFromStr("1.0")
+
 	// TODO(bolten): update LastUpdatedBlock to the upgrade height when finalized
+	var lastUpdatedBlock uint64 = 1
+
 	usommPrice := auctiontypes.TokenPrice{
 		Denom:            "usomm",
 		UsdPrice:         usomm52WeekLow,
 		Exponent:         6,
-		LastUpdatedBlock: 1,
+		LastUpdatedBlock: lastUpdatedBlock,
 	}
 
 	// setting stables to 1 dollar
@@ -63,24 +68,54 @@ func auctionInitGenesis(ctx sdk.Context, auctionKeeper auctionkeeper.Keeper) {
 		Denom:            "gravity0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
 		UsdPrice:         oneDollar,
 		Exponent:         6,
-		LastUpdatedBlock: 1,
+		LastUpdatedBlock: lastUpdatedBlock,
 	}
 
 	usdtPrice := auctiontypes.TokenPrice{
 		Denom:            "gravity0xdAC17F958D2ee523a2206206994597C13D831ec7",
 		UsdPrice:         oneDollar,
 		Exponent:         6,
-		LastUpdatedBlock: 1,
+		LastUpdatedBlock: lastUpdatedBlock,
 	}
 
 	daiPrice := auctiontypes.TokenPrice{
 		Denom:            "gravity0x6B175474E89094C44Da98b954EedeAC495271d0F",
 		UsdPrice:         oneDollar,
 		Exponent:         18,
-		LastUpdatedBlock: 1,
+		LastUpdatedBlock: lastUpdatedBlock,
 	}
 
-	genesisState.TokenPrices = []*auctiontypes.TokenPrice{&usommPrice, &usdcPrice, &usdtPrice, &daiPrice}
+	fraxPrice := auctiontypes.TokenPrice{
+		Denom:            "gravity0x853d955aCEf822Db058eb8505911ED77F175b99e",
+		UsdPrice:         oneDollar,
+		Exponent:         18,
+		LastUpdatedBlock: lastUpdatedBlock,
+	}
+
+	// setting non-stables
+	wethPrice := auctiontypes.TokenPrice{
+		Denom:            "gravity0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
+		UsdPrice:         eth52WeekHigh,
+		Exponent:         18,
+		LastUpdatedBlock: lastUpdatedBlock,
+	}
+
+	wbtcPrice := auctiontypes.TokenPrice{
+		Denom:            "gravity0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599",
+		UsdPrice:         btc52WeekHigh,
+		Exponent:         8,
+		LastUpdatedBlock: lastUpdatedBlock,
+	}
+
+	genesisState.TokenPrices = []*auctiontypes.TokenPrice{
+		&usommPrice,
+		&usdcPrice,
+		&usdtPrice,
+		&daiPrice,
+		&fraxPrice,
+		&wethPrice,
+		&wbtcPrice,
+	}
 
 	auctionkeeper.InitGenesis(ctx, auctionKeeper, genesisState)
 }
