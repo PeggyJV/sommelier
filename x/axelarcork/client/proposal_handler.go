@@ -3,16 +3,15 @@ package client
 import (
 	govclient "github.com/cosmos/cosmos-sdk/x/gov/client"
 	"github.com/peggyjv/sommelier/v7/x/axelarcork/client/cli"
-	"github.com/peggyjv/sommelier/v7/x/axelarcork/client/rest"
 )
 
 var (
-	AddProposalHandler                        = govclient.NewProposalHandler(cli.GetCmdSubmitAddCellarIDProposal, rest.AddProposalRESTHandler)
-	RemoveProposalHandler                     = govclient.NewProposalHandler(cli.GetCmdSubmitRemoveCellarIDProposal, rest.RemoveProposalRESTHandler)
-	ScheduledCorkProposalHandler              = govclient.NewProposalHandler(cli.GetCmdSubmitScheduledAxelarCorkProposal, rest.ScheduledCorkProposalRESTHandler)
-	CommunityPoolEthereumSpendProposalHandler = govclient.NewProposalHandler(cli.CmdSubmitAxelarCommunityPoolEthereumSpendProposal, rest.CommunitySpendProposalRESTHandler)
-	AddChainConfigurationHandler              = govclient.NewProposalHandler(cli.GetCmdSubmitAddChainConfigurationProposal, rest.AddChainConfigurationProposalRESTHandler)
-	RemoveChainConfigurationHandler           = govclient.NewProposalHandler(cli.GetCmdSubmitRemoveChainConfigurationProposal, rest.RemoveChainConfigurationProposalRESTHandler)
-	UpgradeAxelarProxyContractHandler         = govclient.NewProposalHandler(cli.GetCmdSubmitUpgradeAxelarProxyContractProposal, rest.UpgradeAxelarProxyContractProposalRESTHandler)
-	CancelAxelarProxyContractUpgradeHandler   = govclient.NewProposalHandler(cli.GetCmdSubmitCancelAxelarProxyContractUpgradeProposal, rest.CancelAxelarProxyContractUpgradeProposalRESTHandler)
+	AddProposalHandler                        = govclient.NewProposalHandler(cli.GetCmdSubmitAddCellarIDProposal)
+	RemoveProposalHandler                     = govclient.NewProposalHandler(cli.GetCmdSubmitRemoveCellarIDProposal)
+	ScheduledCorkProposalHandler              = govclient.NewProposalHandler(cli.GetCmdSubmitScheduledAxelarCorkProposal)
+	CommunityPoolEthereumSpendProposalHandler = govclient.NewProposalHandler(cli.CmdSubmitAxelarCommunityPoolEthereumSpendProposal)
+	AddChainConfigurationHandler              = govclient.NewProposalHandler(cli.GetCmdSubmitAddChainConfigurationProposal)
+	RemoveChainConfigurationHandler           = govclient.NewProposalHandler(cli.GetCmdSubmitRemoveChainConfigurationProposal)
+	UpgradeAxelarProxyContractHandler         = govclient.NewProposalHandler(cli.GetCmdSubmitUpgradeAxelarProxyContractProposal)
+	CancelAxelarProxyContractUpgradeHandler   = govclient.NewProposalHandler(cli.GetCmdSubmitCancelAxelarProxyContractUpgradeProposal)
 )
