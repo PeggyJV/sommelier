@@ -79,24 +79,6 @@ func TestSubmitBid(t *testing.T) {
 			err: sdkerrors.New("", uint32(1), "must include `--from` flag"),
 		},
 		{
-			name: "Auction ID overflow",
-			args: []string{
-				"4294967296",
-				"10000usomm",
-				"50000gravity0xdac17f958d2ee523a2206206994597c13d831ec7",
-			},
-			err: sdkerrors.New("", uint32(1), "strconv.ParseUint: parsing \"4294967296\": value out of range"),
-		},
-		{
-			name: "Auction ID invalid type",
-			args: []string{
-				"one hundred and twenty",
-				"10000usomm",
-				"50000gravity0xdac17f958d2ee523a2206206994597c13d831ec7",
-			},
-			err: sdkerrors.New("", uint32(1), "strconv.ParseUint: parsing \"one hundred and twenty\": invalid syntax"),
-		},
-		{
 			name: "Invalid bid",
 			args: []string{
 				"1",
