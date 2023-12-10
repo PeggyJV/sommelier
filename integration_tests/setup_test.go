@@ -15,7 +15,6 @@ import (
 	"time"
 
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
-	disttypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 	"github.com/peggyjv/sommelier/v7/app/params"
 	auctiontypes "github.com/peggyjv/sommelier/v7/x/auction/types"
@@ -62,7 +61,6 @@ var (
 	alphaERC20Contract    = common.HexToAddress("0x0000000000000000000000000000000000000000")
 	betaERC20Contract     = common.HexToAddress("0x0000000000000000000000000000000000000000")
 	unusedGenesisContract = common.HexToAddress("0x0000000000000000000000000000000000000001")
-	unusedAddedContract   = common.HexToAddress("0x0000000000000000000000000000000000000002")
 
 	alphaFeeDenom = ""
 	betaFeeDenom  = ""

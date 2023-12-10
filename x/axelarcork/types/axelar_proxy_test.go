@@ -34,7 +34,7 @@ func TestEncodingDecodingLogicCalls(t *testing.T) {
 	upgradeMsgIDBytes, err := abi.Arguments{{Type: Uint256}}.Pack(UpgradeMsgID)
 	require.NoError(t, err)
 	wrongMsgID = bytes.Join([][]byte{upgradeMsgIDBytes, wrongMsgID[len(upgradeMsgIDBytes):]}, []byte{})
-	_, _, _, _, err = DecodeLogicCallArgs(wrongMsgID)
+	_, _, _, _, err = DecodeLogicCallArgs(wrongMsgID) //nolint:dogsled
 	require.Error(t, err)
 	require.Equal(t, err.Error(), "invalid logic call args")
 
@@ -49,7 +49,7 @@ func TestEncodingDecodingLogicCalls(t *testing.T) {
 	require.Equal(t, targets, actualTargets)
 
 	// Decoding upgrade call as logic call caught
-	_, _, _, _, err = DecodeLogicCallArgs(result)
+	_, _, _, _, err = DecodeLogicCallArgs(result) //nolint:dogsled
 	require.Error(t, err)
 
 	// Specifically using the wrong msgID in an upgrade call errors
