@@ -3,7 +3,6 @@ package cli
 import (
 	"fmt"
 	"io/ioutil"
-	"strconv"
 	"strings"
 
 	"github.com/cosmos/cosmos-sdk/client"
@@ -120,7 +119,7 @@ $ %s tx auction submit-bid 1 10000usomm 50000gravity0xdac17f958d2ee523a220620699
 				return err
 			}
 
-			auctionID, err := strconv.ParseUint(args[0], 10, 32)
+			auctionID, err := sdk.ParseUint(args[0])
 			if err != nil {
 				return err
 			}
@@ -140,7 +139,7 @@ $ %s tx auction submit-bid 1 10000usomm 50000gravity0xdac17f958d2ee523a220620699
 				return fmt.Errorf("must include `--from` flag")
 			}
 
-			msg, err := types.NewMsgSubmitBidRequest(uint32(auctionID), maxBidInUsomm, saleTokenMinimumAmount, bidder)
+			msg, err := types.NewMsgSubmitBidRequest(uint32(auctionID.Uint64()), maxBidInUsomm, saleTokenMinimumAmount, bidder)
 			if err != nil {
 				return err
 			}

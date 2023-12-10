@@ -2,10 +2,10 @@ package cli
 
 import (
 	"fmt"
-	"strconv"
 
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/peggyjv/sommelier/v7/x/auction/types"
 	"github.com/spf13/cobra"
 )
@@ -77,14 +77,14 @@ func queryActiveAuction() *cobra.Command {
 				return err
 			}
 
-			auctionID, err := strconv.ParseUint(args[0], 10, 32)
+			auctionID, err := sdk.ParseUint(args[0])
 			if err != nil {
 				return err
 			}
 
 			queryClient := types.NewQueryClient(ctx)
 			req := &types.QueryActiveAuctionRequest{
-				AuctionId: uint32(auctionID),
+				AuctionId: uint32(auctionID.Uint64()),
 			}
 
 			res, err := queryClient.QueryActiveAuction(cmd.Context(), req)
@@ -113,14 +113,14 @@ func queryEndedAuction() *cobra.Command {
 				return err
 			}
 
-			auctionID, err := strconv.ParseUint(args[0], 10, 32)
+			auctionID, err := sdk.ParseUint(args[0])
 			if err != nil {
 				return err
 			}
 
 			queryClient := types.NewQueryClient(ctx)
 			req := &types.QueryEndedAuctionRequest{
-				AuctionId: uint32(auctionID),
+				AuctionId: uint32(auctionID.Uint64()),
 			}
 
 			res, err := queryClient.QueryEndedAuction(cmd.Context(), req)
@@ -285,20 +285,20 @@ func queryBid() *cobra.Command {
 				return err
 			}
 
-			auctionID, err := strconv.ParseUint(args[0], 10, 32)
+			auctionID, err := sdk.ParseUint(args[0])
 			if err != nil {
 				return err
 			}
 
-			bidID, err := strconv.ParseUint(args[1], 10, 64)
+			bidID, err := sdk.ParseUint(args[0])
 			if err != nil {
 				return err
 			}
 
 			queryClient := types.NewQueryClient(ctx)
 			req := &types.QueryBidRequest{
-				AuctionId: uint32(auctionID),
-				BidId:     bidID,
+				AuctionId: uint32(auctionID.Uint64()),
+				BidId:     bidID.Uint64(),
 			}
 
 			res, err := queryClient.QueryBid(cmd.Context(), req)
@@ -327,14 +327,14 @@ func queryBidsByAuction() *cobra.Command {
 				return err
 			}
 
-			auctionID, err := strconv.ParseUint(args[0], 10, 32)
+			auctionID, err := sdk.ParseUint(args[0])
 			if err != nil {
 				return err
 			}
 
 			queryClient := types.NewQueryClient(ctx)
 			req := &types.QueryBidsByAuctionRequest{
-				AuctionId: uint32(auctionID),
+				AuctionId: uint32(auctionID.Uint64()),
 			}
 
 			res, err := queryClient.QueryBidsByAuction(cmd.Context(), req)

@@ -1,0 +1,68 @@
+syntax = "proto3";
+package axelarcork.v1;
+
+import "cosmos/base/v1beta1/coin.proto";
+import "axelarcork/v1/axelarcork.proto";
+import "gogoproto/gogo.proto";
+
+option go_package = "github.com/peggyjv/sommelier/v7/x/axelarcork/types";
+
+// MsgService defines the msgs that the cork module handles
+service Msg {
+  rpc ScheduleCork(MsgScheduleAxelarCorkRequest) returns (MsgScheduleAxelarCorkResponse);
+  rpc RelayCork(MsgRelayAxelarCorkRequest) returns (MsgRelayAxelarCorkResponse);
+  rpc BumpCorkGas(MsgBumpAxelarCorkGasRequest) returns (MsgBumpAxelarCorkGasResponse);
+  rpc CancelScheduledCork(MsgCancelAxelarCorkRequest) returns (MsgCancelAxelarCorkResponse);
+}
+
+// MsgScheduleCorkRequest - sdk.Msg for scheduling a cork request for on or after a specific block height
+message MsgScheduleAxelarCorkRequest {
+  // the scheduled cork
+  AxelarCork cork = 1;
+  // the chain id
+  uint64 chain_id = 2;
+  // the block height that must be reached
+  uint64 block_height = 3;
+  // signer account address
+  string signer = 4;
+}
+
+message MsgScheduleAxelarCorkResponse {
+  // cork ID
+  string id = 1;
+}
+
+message MsgRelayAxelarCorkRequest {
+  string                   signer                  = 1;
+  cosmos.base.v1beta1.Coin token                   = 2 [(gogoproto.nullable) = false];
+  uint64                   fee                     = 3;
+  uint64                   chain_id                = 4;
+  string                   target_contract_address = 5;
+}
+
+message MsgRelayAxelarCorkResponse {}
+
+message MsgRelayAxelarProxyUpgradeRequest {
+  string                   signer                  = 1;
+  cosmos.base.v1beta1.Coin token                   = 2 [(gogoproto.nullable) = false];
+  uint64                   fee                     = 3;
+  uint64                   chain_id                = 4;
+}
+
+message MsgRelayAxelarProxyUpgradeResponse {}
+
+message MsgBumpAxelarCorkGasRequest {
+  string                   signer     = 1;
+  cosmos.base.v1beta1.Coin token      = 2 [(gogoproto.nullable) = false];
+  string                   message_id = 3;
+}
+
+message MsgBumpAxelarCorkGasResponse {}
+
+message MsgCancelAxelarCorkRequest {
+  string                   signer                  = 1;
+  uint64                   chain_id                = 2;
+  string                   target_contract_address = 3;
+}
+
+message MsgCancelAxelarCorkResponse {}

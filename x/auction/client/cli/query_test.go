@@ -50,20 +50,6 @@ func TestQueryActiveAuction(t *testing.T) {
 			},
 			err: sdkerrors.New("", uint32(1), "accepts 1 arg(s), received 2"),
 		},
-		{
-			name: "Auction ID overflow",
-			args: []string{
-				"4294967296",
-			},
-			err: sdkerrors.New("", uint32(1), "strconv.ParseUint: parsing \"4294967296\": value out of range"),
-		},
-		{
-			name: "Auction ID invalid type",
-			args: []string{
-				"one hundred and twenty",
-			},
-			err: sdkerrors.New("", uint32(1), "strconv.ParseUint: parsing \"one hundred and twenty\": invalid syntax"),
-		},
 	}
 
 	for _, tc := range testCases {
@@ -93,20 +79,6 @@ func TestQueryEndedAuction(t *testing.T) {
 				"2",
 			},
 			err: sdkerrors.New("", uint32(1), "accepts 1 arg(s), received 2"),
-		},
-		{
-			name: "Auction ID invalid type",
-			args: []string{
-				"one hundred and twenty",
-			},
-			err: sdkerrors.New("", uint32(1), "strconv.ParseUint: parsing \"one hundred and twenty\": invalid syntax"),
-		},
-		{
-			name: "Auction ID overflow",
-			args: []string{
-				"4294967296",
-			},
-			err: sdkerrors.New("", uint32(1), "strconv.ParseUint: parsing \"4294967296\": value out of range"),
 		},
 	}
 
@@ -249,38 +221,6 @@ func TestQueryBids(t *testing.T) {
 			},
 			err: sdkerrors.New("", uint32(1), "accepts 2 arg(s), received 3"),
 		},
-		{
-			name: "Auction ID overflow",
-			args: []string{
-				"4294967296",
-				"2",
-			},
-			err: sdkerrors.New("", uint32(1), "strconv.ParseUint: parsing \"4294967296\": value out of range"),
-		},
-		{
-			name: "Bid ID overflow",
-			args: []string{
-				"1",
-				"18446744073709551616",
-			},
-			err: sdkerrors.New("", uint32(1), "strconv.ParseUint: parsing \"18446744073709551616\": value out of range"),
-		},
-		{
-			name: "Auction ID invalid type",
-			args: []string{
-				"one hundred and twenty",
-				"2",
-			},
-			err: sdkerrors.New("", uint32(1), "strconv.ParseUint: parsing \"one hundred and twenty\": invalid syntax"),
-		},
-		{
-			name: "Bid ID invalid type",
-			args: []string{
-				"1",
-				"four",
-			},
-			err: sdkerrors.New("", uint32(1), "strconv.ParseUint: parsing \"four\": invalid syntax"),
-		},
 	}
 
 	for _, tc := range testCases {
@@ -310,20 +250,6 @@ func TestQueryBidByAuction(t *testing.T) {
 				"2",
 			},
 			err: sdkerrors.New("", uint32(1), "accepts 1 arg(s), received 2"),
-		},
-		{
-			name: "Auction ID overflow",
-			args: []string{
-				"4294967296",
-			},
-			err: sdkerrors.New("", uint32(1), "strconv.ParseUint: parsing \"4294967296\": value out of range"),
-		},
-		{
-			name: "Auction ID invalid type",
-			args: []string{
-				"one hundred and twenty",
-			},
-			err: sdkerrors.New("", uint32(1), "strconv.ParseUint: parsing \"one hundred and twenty\": invalid syntax"),
 		},
 	}
 

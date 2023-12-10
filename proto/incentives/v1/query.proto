@@ -31,7 +31,6 @@ message QueryParamsResponse {
 // QueryAPYRequest is the request type for the QueryAPY gRPC method.
 message QueryAPYRequest {}
 
-
 // QueryAPYRequest is the response type for the QueryAPY gRPC method.
 message QueryAPYResponse {
   string apy = 1;

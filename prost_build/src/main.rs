@@ -48,6 +48,8 @@ fn compile_protos(out_dir: &Path, tmp_dir: &Path) {
     cellarfees_proto_dir.push("proto/cellarfees/v1");
     let mut cork_proto_dir = root.clone();
     cork_proto_dir.push("proto/cork/v2");
+    let mut axelar_cork_proto_dir = root.clone();
+    axelar_cork_proto_dir.push("proto/axelarcork/v1");
     let mut incentives_proto_dir = root.clone();
     incentives_proto_dir.push("proto/incentives/v1");
     let mut auction_proto_dir = root.clone();
@@ -64,6 +66,7 @@ fn compile_protos(out_dir: &Path, tmp_dir: &Path) {
     let proto_paths = [
         cellarfees_proto_dir,
         cork_proto_dir,
+        axelar_cork_proto_dir,
         incentives_proto_dir,
         auction_proto_dir,
         pubsub_proto_dir,

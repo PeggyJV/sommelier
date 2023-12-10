@@ -1,0 +1,28 @@
+syntax = "proto3";
+package axelarcork.v1;
+
+import "axelarcork/v1/axelarcork.proto";
+import "gogoproto/gogo.proto";
+
+option go_package = "github.com/peggyjv/sommelier/v7/x/axelarcork/types";
+
+// GenesisState - all cork state that must be provided at genesis
+message GenesisState {
+  Params                  params               = 1;
+  ChainConfigurations     chain_configurations = 2 [(gogoproto.nullable) = false];
+  repeated CellarIDSet    cellar_ids           = 3;
+  ScheduledAxelarCorks scheduled_corks      = 4;
+  AxelarCorkResults    cork_results         = 5;
+  repeated AxelarContractCallNonce axelar_contract_call_nonces = 6;
+  repeated AxelarUpgradeData axelar_upgrade_data = 7;
+}
+
+message Params {
+  bool   enabled          = 1 [(gogoproto.moretags) = "yaml:\"enabled\""];
+  string ibc_channel      = 2 [(gogoproto.moretags) = "yaml:\"ibc_channel\""];
+  string ibc_port         = 3 [(gogoproto.moretags) = "yaml:\"ibc_port\""];
+  string gmp_account      = 4 [(gogoproto.moretags) = "yaml:\"gmp_account\""];
+  string executor_account = 5 [(gogoproto.moretags) = "yaml:\"executor_account\""];
+  uint64 timeout_duration = 6 [(gogoproto.moretags) = "yaml:\"timeout_duration\""];
+  uint64 cork_timeout_blocks = 7 [(gogoproto.moretags) = "yaml:\"cork_timeout_blocks\""];
+}
