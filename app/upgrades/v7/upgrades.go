@@ -153,12 +153,11 @@ func pubsubInitGenesis(ctx sdk.Context, pubsubKeeper pubsubkeeper.Keeper) {
 	pubsubkeeper.InitGenesis(ctx, pubsubKeeper, genesisState)
 }
 
-// TODO(bolten): update the validators in the registry
 // Addresses are from the validator's delegate orchestrator key and certs/URLs captured from the
 // steward-registry repo.
 // query to get orchestrator key: sommelier query gravity delegate-keys-by-validator sommvaloper<rest_of_val_address>
 // See source data at: https://github.com/PeggyJV/steward-registry
-// data captured at commit cdee05a8bf97f264353e10ab65752710bfb85dc9
+// data captured at commit ecdb7f386e7e573edb5d8f6ad22a1a67cfa21863
 func createSubscribers() []*pubsubtypes.Subscriber {
 	subscribers := make([]*pubsubtypes.Subscriber, 26)
 
@@ -279,7 +278,7 @@ func createSubscribers() []*pubsubtypes.Subscriber {
 	subscribers = append(subscribers, &pubsubtypes.Subscriber{
 		Address: "somm1xvfdclzyw03ye5mfskw6lvvmervexx8hx58823",
 		CaCert:  CosmostationSubscriberCA,
-		PushUrl: "steward.sommelier.cosmostation.io:5734",
+		PushUrl: "steward.sommelier.cosmostation.io:15413",
 	})
 
 	subscribers = append(subscribers, &pubsubtypes.Subscriber{
@@ -316,6 +315,60 @@ func createSubscribers() []*pubsubtypes.Subscriber {
 		Address: "somm13d6vkp03nelzu7aq4v6n88nw0tye2ht7j9xern",
 		CaCert:  SevenSeasSubscriberCA,
 		PushUrl: "steward.sommelier.7seas.capital:5734",
+	})
+
+	subscribers = append(subscribers, &pubsubtypes.Subscriber{
+		Address: "somm1xlg9tu8nwyratwhppkmen62putwf3dltkeqvl9",
+		CaCert:  GoldenRatioSubscriberCA,
+		PushUrl: "sommelier.goldenratiostaking.net:5734",
+	})
+
+	subscribers = append(subscribers, &pubsubtypes.Subscriber{
+		Address: "somm1kdq2pwdnn5225y0fjk7nzd93errzxmj2ncp60z",
+		CaCert:  CryptoCrewSubscriberCA,
+		PushUrl: "steward-somm.ccvalidators.com:5734",
+	})
+
+	subscribers = append(subscribers, &pubsubtypes.Subscriber{
+		Address: "somm1cfdkpueekdxgax0gu5fwq30nfwd2h0mg3kwtqq",
+		CaCert:  DoraFactorySubscriberCA,
+		PushUrl: "sommelier.dorafactory.org:5734",
+	})
+
+	subscribers = append(subscribers, &pubsubtypes.Subscriber{
+		Address: "somm1p0d4cg70pk9x49xzrg9dllvj6wxkvtqxfc8490",
+		CaCert:  FrenchChocolatineSubscriberCA,
+		PushUrl: "sommelier.frenchchocolatine.com:5734",
+	})
+
+	subscribers = append(subscribers, &pubsubtypes.Subscriber{
+		Address: "somm1ye5qdw92yjj0a2fvpgwgmxh9yymrcmaxn8ed3u",
+		CaCert:  FreshStakingSubscriberCA,
+		PushUrl: "somm-steward.mitera.net:5734",
+	})
+
+	subscribers = append(subscribers, &pubsubtypes.Subscriber{
+		Address: "somm1fmw3y7heca7qhfkt5uu3u65mk8gj5tx24k9x68",
+		CaCert:  KleomedesSubscriberCA,
+		PushUrl: "steward.kleomedes.network:5734",
+	})
+
+	subscribers = append(subscribers, &pubsubtypes.Subscriber{
+		Address: "somm1q9k53u4fu2v0ksgs84ek4c0xrh269haykxuqrk",
+		CaCert:  MeriaSubscriberCA,
+		PushUrl: "sommelier.meria.com:5734",
+	})
+
+	subscribers = append(subscribers, &pubsubtypes.Subscriber{
+		Address: "somm1s70pr2uyct7jtjc69kpkwm3ajysmfgzpwl32vj",
+		CaCert:  RorcualSubscriberCA,
+		PushUrl: "steward.rorcualnodes.com:5734",
+	})
+
+	subscribers = append(subscribers, &pubsubtypes.Subscriber{
+		Address: "somm1u7n35gtu85qrtu92ws5fsgs6ea4ay32nach7q7",
+		CaCert:  BlockHuntersSubscriberCA,
+		PushUrl: "somm.blockhunters.sbs:5734",
 	})
 
 	return subscribers
