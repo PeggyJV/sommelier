@@ -21,7 +21,7 @@ import (
 	cellarfeestypes "github.com/peggyjv/sommelier/v7/x/cellarfees/types"
 	corktypes "github.com/peggyjv/sommelier/v7/x/cork/types"
 
-	gravitytypes "github.com/peggyjv/gravity-bridge/module/v3/x/gravity/types"
+	gravitytypes "github.com/peggyjv/gravity-bridge/module/v4/x/gravity/types"
 
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/ethclient"

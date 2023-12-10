@@ -4,8 +4,8 @@ import (
 	"encoding/json"
 	"testing"
 
-	transfertypes "github.com/cosmos/ibc-go/v3/modules/apps/transfer/types"
-	channeltypes "github.com/cosmos/ibc-go/v3/modules/core/04-channel/types"
+	transfertypes "github.com/cosmos/ibc-go/v6/modules/apps/transfer/types"
+	channeltypes "github.com/cosmos/ibc-go/v6/modules/core/04-channel/types"
 	"github.com/golang/mock/gomock"
 	"github.com/peggyjv/sommelier/v7/x/axelarcork/tests"
 	"github.com/peggyjv/sommelier/v7/x/axelarcork/types"

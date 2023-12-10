@@ -13,9 +13,9 @@ import (
 	types1 "github.com/cosmos/cosmos-sdk/x/capability/types"
 	types2 "github.com/cosmos/cosmos-sdk/x/distribution/types"
 	types3 "github.com/cosmos/cosmos-sdk/x/staking/types"
-	types4 "github.com/cosmos/ibc-go/v3/modules/apps/transfer/types"
-	types5 "github.com/cosmos/ibc-go/v3/modules/core/04-channel/types"
-	exported "github.com/cosmos/ibc-go/v3/modules/core/exported"
+	types4 "github.com/cosmos/ibc-go/v6/modules/apps/transfer/types"
+	types5 "github.com/cosmos/ibc-go/v6/modules/core/04-channel/types"
+	exported "github.com/cosmos/ibc-go/v6/modules/core/exported"
 	gomock "github.com/golang/mock/gomock"
 )
 

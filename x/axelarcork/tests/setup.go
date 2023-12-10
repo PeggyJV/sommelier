@@ -11,7 +11,7 @@ import (
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	paramskeeper "github.com/cosmos/cosmos-sdk/x/params/keeper"
 	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
-	porttypes "github.com/cosmos/ibc-go/v3/modules/core/05-port/types"
+	porttypes "github.com/cosmos/ibc-go/v6/modules/core/05-port/types"
 	"github.com/golang/mock/gomock"
 	"github.com/peggyjv/sommelier/v7/x/axelarcork"
 	"github.com/peggyjv/sommelier/v7/x/axelarcork/keeper"
