@@ -4,7 +4,7 @@ package v7
 const UpgradeName = "v7"
 
 // 7seas domain
-const SevenSeasDomain = "7seas.capital"
+const SevenSeasDomain = "sevenseas.capital"
 
 // CA certificate literals
 // See source data at: https://github.com/PeggyJV/steward-registry

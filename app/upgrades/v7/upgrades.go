@@ -161,7 +161,7 @@ func pubsubInitGenesis(ctx sdk.Context, pubsubKeeper pubsubkeeper.Keeper) {
 	}
 
 	// Set 7seas publisher intents for existing cellars
-	publisherIntents := make([]*pubsubtypes.PublisherIntent, 8)
+	publisherIntents := make([]*pubsubtypes.PublisherIntent, 23)
 	for _, cellar := range cellars {
 		publisherIntents = append(publisherIntents, &pubsubtypes.PublisherIntent{
 			SubscriptionId:     cellar,
@@ -172,7 +172,7 @@ func pubsubInitGenesis(ctx sdk.Context, pubsubKeeper pubsubkeeper.Keeper) {
 	}
 
 	// Set default subscriptions for 7seas as the publisher for existing cellars
-	defaultSubscriptions := make([]*pubsubtypes.DefaultSubscription, 8)
+	defaultSubscriptions := make([]*pubsubtypes.DefaultSubscription, 23)
 	for _, cellar := range cellars {
 		defaultSubscriptions = append(defaultSubscriptions, &pubsubtypes.DefaultSubscription{
 			SubscriptionId:  cellar,
@@ -182,7 +182,7 @@ func pubsubInitGenesis(ctx sdk.Context, pubsubKeeper pubsubkeeper.Keeper) {
 
 	// Create subscribers and intents for existing validators
 	subscribers := createSubscribers()
-	subscriberIntents := make([]*pubsubtypes.SubscriberIntent, 208)
+	subscriberIntents := make([]*pubsubtypes.SubscriberIntent, 805)
 	for _, subscriber := range subscribers {
 		for _, cellar := range cellars {
 			subscriberIntents = append(subscriberIntents, &pubsubtypes.SubscriberIntent{
@@ -207,8 +207,10 @@ func pubsubInitGenesis(ctx sdk.Context, pubsubKeeper pubsubkeeper.Keeper) {
 // query to get orchestrator key: sommelier query gravity delegate-keys-by-validator sommvaloper<rest_of_val_address>
 // See source data at: https://github.com/PeggyJV/steward-registry
 // data captured at commit ecdb7f386e7e573edb5d8f6ad22a1a67cfa21863
+// leaving out made_in_block because I can't find their validator on-chain
+// blockhunters hadn't been merged, but verified and added here
 func createSubscribers() []*pubsubtypes.Subscriber {
-	subscribers := make([]*pubsubtypes.Subscriber, 26)
+	subscribers := make([]*pubsubtypes.Subscriber, 35)
 
 	subscribers = append(subscribers, &pubsubtypes.Subscriber{
 		Address: "somm1s2q8avjykkztudpl8k60f0ns4v5mvnjp5t366c",
