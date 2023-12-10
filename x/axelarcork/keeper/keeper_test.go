@@ -37,6 +37,7 @@ type KeeperTestSuite struct {
 
 	ctx                sdk.Context
 	axelarcorkKeeper   Keeper
+	accountKeeper      *mocks.MockAccountKeeper
 	stakingKeeper      *mocks.MockStakingKeeper
 	transferKeeper     *mocks.MockTransferKeeper
 	distributionKeeper *mocks.MockDistributionKeeper
@@ -61,6 +62,7 @@ func (suite *KeeperTestSuite) SetupTest() {
 	ctrl := gomock.NewController(suite.T())
 	defer ctrl.Finish()
 
+	suite.accountKeeper = mocks.NewMockAccountKeeper(ctrl)
 	suite.stakingKeeper = mocks.NewMockStakingKeeper(ctrl)
 	suite.transferKeeper = mocks.NewMockTransferKeeper(ctrl)
 	suite.distributionKeeper = mocks.NewMockDistributionKeeper(ctrl)
@@ -83,6 +85,7 @@ func (suite *KeeperTestSuite) SetupTest() {
 		encCfg.Codec,
 		key,
 		subSpace,
+		suite.accountKeeper,
 		suite.stakingKeeper,
 		suite.transferKeeper,
 		suite.distributionKeeper,

@@ -41,6 +41,7 @@ func NewTestSetup(t *testing.T, ctl *gomock.Controller) *Setup {
 	t.Helper()
 	initializer := newInitializer()
 
+	accountKeeperMock := mocks.NewMockAccountKeeper(ctl)
 	transferKeeperMock := mocks.NewMockTransferKeeper(ctl)
 	stakingKeeper := mocks.NewMockStakingKeeper(ctl)
 	distributionKeeperMock := mocks.NewMockDistributionKeeper(ctl)
@@ -50,7 +51,7 @@ func NewTestSetup(t *testing.T, ctl *gomock.Controller) *Setup {
 
 	paramsKeeper := initializer.paramsKeeper()
 	acKeeper := initializer.axelarcorkKeeper(
-		paramsKeeper, stakingKeeper, transferKeeperMock, distributionKeeperMock,
+		paramsKeeper, accountKeeperMock, stakingKeeper, transferKeeperMock, distributionKeeperMock,
 		ics4WrapperMock, gravityKeeper)
 
 	require.NoError(t, initializer.StateStore.LoadLatestVersion())
@@ -67,6 +68,7 @@ func NewTestSetup(t *testing.T, ctl *gomock.Controller) *Setup {
 		},
 
 		Mocks: &testMocks{
+			AccountKeeperMock:      accountKeeperMock,
 			TransferKeeperMock:     transferKeeperMock,
 			DistributionKeeperMock: distributionKeeperMock,
 			IBCModuleMock:          ibcModuleMock,
@@ -92,6 +94,7 @@ type testKeepers struct {
 }
 
 type testMocks struct {
+	AccountKeeperMock      *mocks.MockAccountKeeper
 	TransferKeeperMock     *mocks.MockTransferKeeper
 	DistributionKeeperMock *mocks.MockDistributionKeeper
 	IBCModuleMock          *mocks.MockIBCModule
@@ -141,6 +144,7 @@ func (i initializer) paramsKeeper() paramskeeper.Keeper {
 
 func (i initializer) axelarcorkKeeper(
 	paramsKeeper paramskeeper.Keeper,
+	accountKeeper types.AccountKeeper,
 	stakingKeeper types.StakingKeeper,
 	transferKeeper types.TransferKeeper,
 	distributionKeeper types.DistributionKeeper,
@@ -155,6 +159,7 @@ func (i initializer) axelarcorkKeeper(
 		i.Marshaler,
 		storeKey,
 		subspace,
+		accountKeeper,
 		stakingKeeper,
 		transferKeeper,
 		distributionKeeper,
