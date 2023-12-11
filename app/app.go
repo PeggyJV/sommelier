@@ -103,6 +103,10 @@ import (
 	auctionclient "github.com/peggyjv/sommelier/v7/x/auction/client"
 	auctionkeeper "github.com/peggyjv/sommelier/v7/x/auction/keeper"
 	auctiontypes "github.com/peggyjv/sommelier/v7/x/auction/types"
+	"github.com/peggyjv/sommelier/v7/x/axelarcork"
+	axelarcorkclient "github.com/peggyjv/sommelier/v7/x/axelarcork/client"
+	axelarcorkkeeper "github.com/peggyjv/sommelier/v7/x/axelarcork/keeper"
+	axelarcorktypes "github.com/peggyjv/sommelier/v7/x/axelarcork/types"
 	"github.com/peggyjv/sommelier/v7/x/cellarfees"
 	cellarfeeskeeper "github.com/peggyjv/sommelier/v7/x/cellarfees/keeper"
 	cellarfeestypes "github.com/peggyjv/sommelier/v7/x/cellarfees/types"
@@ -159,6 +163,14 @@ var (
 			gravityclient.ProposalHandler,
 			corkclient.AddProposalHandler,
 			corkclient.RemoveProposalHandler,
+			axelarcorkclient.AddProposalHandler,
+			axelarcorkclient.RemoveProposalHandler,
+			axelarcorkclient.AddChainConfigurationHandler,
+			axelarcorkclient.RemoveChainConfigurationHandler,
+			axelarcorkclient.ScheduledCorkProposalHandler,
+			axelarcorkclient.CommunityPoolEthereumSpendProposalHandler,
+			axelarcorkclient.UpgradeAxelarProxyContractHandler,
+			axelarcorkclient.CancelAxelarProxyContractUpgradeHandler,
 			corkclient.ScheduledCorkProposalHandler,
 			auctionclient.SetProposalHandler,
 			pubsubclient.AddPublisherProposalHandler,
@@ -179,6 +191,7 @@ var (
 		authzmodule.AppModuleBasic{},
 		gravity.AppModuleBasic{},
 		cork.AppModuleBasic{},
+		axelarcork.AppModuleBasic{},
 		cellarfees.AppModuleBasic{},
 		incentives.AppModuleBasic{},
 		auction.AppModuleBasic{},
@@ -198,6 +211,7 @@ var (
 		gravitytypes.ModuleName:        {authtypes.Minter, authtypes.Burner},
 		cellarfeestypes.ModuleName:     nil,
 		incentivestypes.ModuleName:     nil,
+		axelarcorktypes.ModuleName:     nil,
 		auctiontypes.ModuleName:        nil,
 		pubsubtypes.ModuleName:         nil,
 	}
@@ -247,15 +261,17 @@ type SommelierApp struct {
 
 	// Sommelier keepers
 	CorkKeeper       corkkeeper.Keeper
+	AxelarCorkKeeper axelarcorkkeeper.Keeper
 	CellarFeesKeeper cellarfeeskeeper.Keeper
 	IncentivesKeeper incentiveskeeper.Keeper
 	AuctionKeeper    auctionkeeper.Keeper
 	PubsubKeeper     pubsubkeeper.Keeper
 
 	// make capability scoped keepers public for test purposes (IBC only)
-	ScopedIBCKeeper      capabilitykeeper.ScopedKeeper
-	ScopedTransferKeeper capabilitykeeper.ScopedKeeper
-	ScopedICAHostKeeper  capabilitykeeper.ScopedKeeper
+	ScopedAxelarCorkKeeper capabilitykeeper.ScopedKeeper
+	ScopedIBCKeeper        capabilitykeeper.ScopedKeeper
+	ScopedTransferKeeper   capabilitykeeper.ScopedKeeper
+	ScopedICAHostKeeper    capabilitykeeper.ScopedKeeper
 
 	// the module manager
 	mm *module.Manager
@@ -309,6 +325,7 @@ func NewSommelierApp(
 		feegrant.StoreKey,
 		authzkeeper.StoreKey,
 		corktypes.StoreKey,
+		axelarcorktypes.StoreKey,
 		incentivestypes.StoreKey,
 		auctiontypes.StoreKey,
 		cellarfeestypes.StoreKey,
@@ -337,6 +354,7 @@ func NewSommelierApp(
 	scopedIBCKeeper := app.CapabilityKeeper.ScopeToModule(ibchost.ModuleName)
 	scopedTransferKeeper := app.CapabilityKeeper.ScopeToModule(ibctransfertypes.ModuleName)
 	scopedICAHostKeeper := app.CapabilityKeeper.ScopeToModule(icahosttypes.SubModuleName)
+	scopedAxelarCorkKeeper := app.CapabilityKeeper.ScopeToModule(axelarcorktypes.ModuleName)
 	app.CapabilityKeeper.Seal()
 
 	// add keepers
@@ -394,8 +412,23 @@ func NewSommelierApp(
 		app.IBCKeeper.ChannelKeeper, app.IBCKeeper.ChannelKeeper, &app.IBCKeeper.PortKeeper,
 		app.AccountKeeper, app.BankKeeper, scopedTransferKeeper,
 	)
+
+	// create axelar cork keeper
+	app.AxelarCorkKeeper = axelarcorkkeeper.NewKeeper(
+		appCodec,
+		keys[axelarcorktypes.StoreKey],
+		app.GetSubspace(axelarcorktypes.ModuleName),
+		app.AccountKeeper,
+		app.StakingKeeper,
+		app.TransferKeeper,
+		app.DistrKeeper,
+		app.IBCKeeper.ChannelKeeper,
+		app.GravityKeeper,
+	)
 	transferModule := ibctransfer.NewAppModule(app.TransferKeeper)
 	transferIBCModule := ibctransfer.NewIBCModule(app.TransferKeeper)
+	var transferStack ibcporttypes.IBCModule = transferIBCModule
+	transferStack = axelarcork.NewIBCMiddleware(app.AxelarCorkKeeper, transferStack)
 
 	// Create the ICAHost Keeper
 	app.ICAHostKeeper = icahostkeeper.NewKeeper(
@@ -462,6 +495,7 @@ func NewSommelierApp(
 		AddRoute(upgradetypes.RouterKey, upgrade.NewSoftwareUpgradeProposalHandler(app.UpgradeKeeper)).
 		AddRoute(ibcclienttypes.RouterKey, ibcclient.NewClientProposalHandler(app.IBCKeeper.ClientKeeper)).
 		AddRoute(corktypes.RouterKey, cork.NewProposalHandler(app.CorkKeeper)).
+		AddRoute(axelarcorktypes.RouterKey, axelarcork.NewProposalHandler(app.AxelarCorkKeeper)).
 		AddRoute(gravitytypes.RouterKey, gravity.NewCommunityPoolEthereumSpendProposalHandler(app.GravityKeeper)).
 		AddRoute(auctiontypes.RouterKey, auction.NewSetTokenPricesProposalHandler(app.AuctionKeeper)).
 		AddRoute(pubsubtypes.RouterKey, pubsub.NewPubsubProposalHandler(app.PubsubKeeper))
@@ -473,7 +507,7 @@ func NewSommelierApp(
 	// Create static IBC router, add transfer route, then set and seal it
 	ibcRouter := ibcporttypes.NewRouter()
 	ibcRouter.
-		AddRoute(ibctransfertypes.ModuleName, transferIBCModule).
+		AddRoute(ibctransfertypes.ModuleName, transferStack).
 		AddRoute(icahosttypes.SubModuleName, icaHostIBCModule)
 	app.IBCKeeper.SetRouter(ibcRouter)
 
@@ -517,6 +551,7 @@ func NewSommelierApp(
 		ica.NewAppModule(nil, &app.ICAHostKeeper),
 		params.NewAppModule(app.ParamsKeeper),
 		transferModule,
+		axelarcork.NewAppModule(app.AxelarCorkKeeper, appCodec),
 		gravity.NewAppModule(app.GravityKeeper, app.BankKeeper),
 		authzmodule.NewAppModule(appCodec, app.AuthzKeeper, app.AccountKeeper, app.BankKeeper, app.interfaceRegistry),
 		cork.NewAppModule(app.CorkKeeper, appCodec),
@@ -554,6 +589,7 @@ func NewSommelierApp(
 		incentivestypes.ModuleName,
 		gravitytypes.ModuleName,
 		corktypes.ModuleName,
+		axelarcorktypes.ModuleName,
 		cellarfeestypes.ModuleName,
 		auctiontypes.ModuleName,
 		pubsubtypes.ModuleName,
@@ -583,6 +619,7 @@ func NewSommelierApp(
 		incentivestypes.ModuleName,
 		gravitytypes.ModuleName,
 		corktypes.ModuleName,
+		axelarcorktypes.ModuleName,
 		cellarfeestypes.ModuleName,
 		auctiontypes.ModuleName,
 		pubsubtypes.ModuleName,
@@ -620,6 +657,7 @@ func NewSommelierApp(
 		gravitytypes.ModuleName,
 		incentivestypes.ModuleName,
 		corktypes.ModuleName,
+		axelarcorktypes.ModuleName,
 		cellarfeestypes.ModuleName,
 		auctiontypes.ModuleName,
 		pubsubtypes.ModuleName,
@@ -651,6 +689,7 @@ func NewSommelierApp(
 		ibc.NewAppModule(app.IBCKeeper),
 		authzmodule.NewAppModule(appCodec, app.AuthzKeeper, app.AccountKeeper, app.BankKeeper, app.interfaceRegistry),
 		cork.NewAppModule(app.CorkKeeper, appCodec),
+		axelarcork.NewAppModule(app.AxelarCorkKeeper, appCodec),
 		incentives.NewAppModule(app.IncentivesKeeper, app.DistrKeeper, app.BankKeeper, app.MintKeeper, appCodec),
 		cellarfees.NewAppModule(app.CellarFeesKeeper, appCodec, app.AccountKeeper, app.BankKeeper, app.MintKeeper, app.CorkKeeper, app.GravityKeeper, app.AuctionKeeper),
 		auction.NewAppModule(app.AuctionKeeper, app.BankKeeper, app.AccountKeeper, appCodec),
@@ -691,6 +730,7 @@ func NewSommelierApp(
 	app.ScopedIBCKeeper = scopedIBCKeeper
 	app.ScopedTransferKeeper = scopedTransferKeeper
 	app.ScopedICAHostKeeper = scopedICAHostKeeper
+	app.ScopedAxelarCorkKeeper = scopedAxelarCorkKeeper
 
 	return app
 }
@@ -887,6 +927,7 @@ func initParamsKeeper(appCodec codec.BinaryCodec, legacyAmino *codec.LegacyAmino
 	paramsKeeper.Subspace(icahosttypes.SubModuleName)
 	paramsKeeper.Subspace(gravitytypes.ModuleName)
 	paramsKeeper.Subspace(corktypes.ModuleName)
+	paramsKeeper.Subspace(axelarcorktypes.ModuleName)
 	paramsKeeper.Subspace(cellarfeestypes.ModuleName)
 	paramsKeeper.Subspace(incentivestypes.ModuleName)
 	paramsKeeper.Subspace(auctiontypes.ModuleName)

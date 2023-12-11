@@ -1,0 +1,169 @@
+syntax = "proto3";
+package axelarcork.v1;
+
+import "gogoproto/gogo.proto";
+import "google/api/annotations.proto";
+import "axelarcork/v1/genesis.proto";
+import "axelarcork/v1/axelarcork.proto";
+
+option go_package = "github.com/peggyjv/sommelier/v7/x/axelarcork/types";
+
+// Query defines the gRPC query service for the cork module.
+service Query {
+  // QueryParams queries the axelar cork module parameters.
+  rpc QueryParams(QueryParamsRequest) returns (QueryParamsResponse) {
+    option (google.api.http).get = "/sommelier/cork/v1/params";
+  }
+  // QueryCellarIDs queries approved cellar ids of all supported chains
+  rpc QueryCellarIDs(QueryCellarIDsRequest) returns (QueryCellarIDsResponse) {
+    option (google.api.http).get = "/sommelier/axelarcork/v1/cellar_ids";
+  }
+  // QueryCellarIDsByChainID returns all cellars and current tick ranges
+  rpc QueryCellarIDsByChainID(QueryCellarIDsByChainIDRequest) returns (QueryCellarIDsByChainIDResponse) {
+    option (google.api.http).get = "/sommelier/axelarcork/v1/cellar_ids_by_chain_id";
+  }
+  // QueryScheduledCorks returns all scheduled corks
+  rpc QueryScheduledCorks(QueryScheduledCorksRequest) returns (QueryScheduledCorksResponse) {
+    option (google.api.http).get = "/sommelier/axelarcork/v1/scheduled_corks";
+  }
+  // QueryScheduledBlockHeights returns all scheduled block heights
+  rpc QueryScheduledBlockHeights(QueryScheduledBlockHeightsRequest) returns (QueryScheduledBlockHeightsResponse) {
+    option (google.api.http).get = "/sommelier/axelarcork/v1/scheduled_block_heights";
+  }
+
+  // QueryScheduledCorks returns all scheduled corks at a block height
+  rpc QueryScheduledCorksByBlockHeight(QueryScheduledCorksByBlockHeightRequest)
+      returns (QueryScheduledCorksByBlockHeightResponse) {
+    option (google.api.http).get = "/sommelier/axelarcork/v1/scheduled_corks_by_block_height/{block_height}";
+  }
+
+  // QueryScheduledCorks returns all scheduled corks with the specified ID
+  rpc QueryScheduledCorksByID(QueryScheduledCorksByIDRequest) returns (QueryScheduledCorksByIDResponse) {
+    option (google.api.http).get = "/sommelier/axelarcork/v1/scheduled_corks_by_id/{id}";
+  }
+
+  rpc QueryCorkResult(QueryCorkResultRequest) returns (QueryCorkResultResponse) {
+    option (google.api.http).get = "/sommelier/axelarcork/v1/cork_results/{id}";
+  }
+
+  rpc QueryCorkResults(QueryCorkResultsRequest) returns (QueryCorkResultsResponse) {
+    option (google.api.http).get = "/sommelier/axelarcork/v1/cork_results";
+  }
+
+  rpc QueryChainConfigurations(QueryChainConfigurationsRequest) returns (QueryChainConfigurationsResponse) {
+    option (google.api.http).get = "/sommelier/axelarcork/v1/chain_configurations";
+  }
+
+  rpc QueryAxelarContractCallNonces(QueryAxelarContractCallNoncesRequest) returns (QueryAxelarContractCallNoncesResponse) {
+    option (google.api.http).get = "/sommelier/axelarcork/v1/contract_call_nonces";
+  }
+
+  rpc QueryAxelarProxyUpgradeData(QueryAxelarProxyUpgradeDataRequest) returns (QueryAxelarProxyUpgradeDataResponse) {
+    option (google.api.http).get = "/sommelier/axelarcork/v1/proxy_upgrade_data";
+  }
+}
+
+// QueryParamsRequest is the request type for the Query/Params gRPC method.
+message QueryParamsRequest {}
+
+// QueryParamsRequest is the response type for the Query/Params gRPC method.
+message QueryParamsResponse {
+  // allocation parameters
+  Params params = 1 [(gogoproto.nullable) = false];
+}
+
+// QueryCellarIDs is the request type for Query/QueryCellarIDs gRPC method.
+message QueryCellarIDsRequest {}
+
+// QueryCellarIDsResponse is the response type for Query/QueryCellarIDs gRPC method.
+message QueryCellarIDsResponse {
+  repeated CellarIDSet cellar_ids = 1;
+}
+
+// QueryCellarIDsByChainIDRequest is the request type for Query/QueryCellarIDsByChainID gRPC method.
+message QueryCellarIDsByChainIDRequest {
+  uint64 chain_id   = 1;
+}
+
+// QueryCellarIDsByChainIDResponse is the response type for Query/QueryCellarIDsByChainID gRPC method.
+message QueryCellarIDsByChainIDResponse {
+  repeated string cellar_ids = 1;
+}
+
+// QueryScheduledCorksRequest
+message QueryScheduledCorksRequest {
+  uint64 chain_id   = 1;
+}
+
+// QueryScheduledCorksResponse
+message QueryScheduledCorksResponse {
+  repeated ScheduledAxelarCork corks = 1;
+}
+
+// QueryScheduledBlockHeightsRequest
+message QueryScheduledBlockHeightsRequest {
+  uint64 chain_id   = 1;
+}
+
+// QueryScheduledBlockHeightsResponse
+message QueryScheduledBlockHeightsResponse {
+  repeated uint64 block_heights = 1;
+}
+
+// QueryScheduledCorksByBlockHeightRequest
+message QueryScheduledCorksByBlockHeightRequest {
+  uint64 block_height = 1;
+  uint64 chain_id     = 2;
+}
+
+// QueryScheduledCorksByBlockHeightResponse
+message QueryScheduledCorksByBlockHeightResponse {
+  repeated ScheduledAxelarCork corks = 1;
+}
+
+// QueryScheduledCorksByIDRequest
+message QueryScheduledCorksByIDRequest {
+  string id         = 1;
+  uint64 chain_id   = 2;
+}
+
+// QueryScheduledCorksByIDResponse
+message QueryScheduledCorksByIDResponse {
+  repeated ScheduledAxelarCork corks = 1;
+}
+
+message QueryCorkResultRequest {
+  string id         = 1;
+  uint64 chain_id   = 2;
+}
+
+message QueryCorkResultResponse {
+  AxelarCorkResult corkResult = 1;
+}
+
+message QueryCorkResultsRequest {
+  uint64 chain_id   = 1;
+}
+
+message QueryCorkResultsResponse {
+  repeated AxelarCorkResult corkResults = 1;
+}
+
+message QueryChainConfigurationsRequest {}
+
+message QueryChainConfigurationsResponse {
+  repeated ChainConfiguration configurations = 1;
+}
+
+message QueryAxelarContractCallNoncesRequest {}
+
+message QueryAxelarContractCallNoncesResponse {
+  repeated AxelarContractCallNonce contract_call_nonces = 1;
+}
+
+message QueryAxelarProxyUpgradeDataRequest {}
+
+message QueryAxelarProxyUpgradeDataResponse {
+  repeated AxelarUpgradeData proxy_upgrade_data = 1;
+}
+

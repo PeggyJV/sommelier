@@ -1,0 +1,71 @@
+syntax = "proto3";
+package axelarcork.v1;
+
+import "gogoproto/gogo.proto";
+
+option go_package = "github.com/peggyjv/sommelier/v7/x/axelarcork/types";
+
+message AxelarCork {
+  // call body containing the ABI encoded bytes to send to the contract
+  bytes encoded_contract_call = 1;
+  // the chain ID of the evm target chain
+  uint64 chain_id = 2;
+  // address of the contract to send the call
+  string target_contract_address = 3;
+  // unix timestamp before which the contract call must be executed.
+  // enforced by the proxy contract.
+  uint64 deadline = 4;
+}
+
+message ScheduledAxelarCork {
+  AxelarCork   cork         = 1;
+  uint64 block_height = 2;
+  string validator    = 3;
+  string id           = 4;
+}
+
+message ScheduledAxelarCorks {
+  repeated ScheduledAxelarCork scheduled_corks = 1;
+}
+
+message AxelarCorkResult {
+  AxelarCork   cork                = 1;
+  uint64 block_height        = 2;
+  bool   approved            = 3;
+  string approval_percentage = 4;
+}
+
+message AxelarCorkResults {
+  repeated AxelarCorkResult cork_results = 1;
+}
+
+message CellarIDSet {
+  ChainConfiguration chain = 1;
+  repeated string ids = 2;
+}
+
+message ChainConfiguration {
+  string name          = 1;
+  uint64 id            = 2;
+  string proxy_address = 3;
+}
+
+message ChainConfigurations {
+  repeated ChainConfiguration configurations = 1;
+}
+
+// Used to enforce strictly newer call ordering per contract
+message AxelarContractCallNonce {
+    uint64 chain_id = 1;
+    string contract_address = 2;
+    uint64 nonce = 3;
+}
+
+// Represents a proxy contract upgrade approved by governance with a delay in
+// execution in case of an error. 
+message AxelarUpgradeData {
+    uint64 chain_id = 1;
+    bytes payload = 2;
+    int64 executable_height_threshold = 3;
+}
+

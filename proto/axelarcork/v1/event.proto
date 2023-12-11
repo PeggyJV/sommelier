@@ -1,0 +1,14 @@
+syntax = "proto3";
+package axelarcork.v1;
+
+import "gogoproto/gogo.proto";
+
+option go_package = "github.com/peggyjv/sommelier/v7/x/axelarcork/types";
+
+message ScheduleCorkEvent {
+  string signer       = 1;
+  string validator    = 2;
+  string cork         = 3;
+  uint64 block_height = 4;
+  uint64 chain_id     = 5;
+}

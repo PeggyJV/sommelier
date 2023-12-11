@@ -22,7 +22,7 @@ func CreateUpgradeHandler(
 	return func(ctx sdk.Context, plan upgradetypes.Plan, fromVM module.VersionMap) (module.VersionMap, error) {
 		ctx.Logger().Info("v7 upgrade: entering handler")
 
-		// We must manually run InitGenesis for incentives, pubsub, and auctions so we can adjust their values
+		// We must manually run InitGenesis for pubsub and auctions so we can adjust their values
 		// during the upgrade process. RunMigrations will migrate to the new cork version. Setting the consensus
 		// version to 1 prevents RunMigrations from running InitGenesis itself.
 		fromVM[auctiontypes.ModuleName] = mm.Modules[auctiontypes.ModuleName].ConsensusVersion()
@@ -49,13 +49,18 @@ func auctionInitGenesis(ctx sdk.Context, auctionKeeper auctionkeeper.Keeper) {
 	genesisState := auctiontypes.DefaultGenesisState()
 
 	usomm52WeekLow := sdk.MustNewDecFromStr("0.079151")
+	eth52WeekHigh := sdk.MustNewDecFromStr("2359.89")
+	btc52WeekHigh := sdk.MustNewDecFromStr("44202.18")
 	oneDollar := sdk.MustNewDecFromStr("1.0")
+
 	// TODO(bolten): update LastUpdatedBlock to the upgrade height when finalized
+	var lastUpdatedBlock uint64 = 1
+
 	usommPrice := auctiontypes.TokenPrice{
 		Denom:            "usomm",
 		UsdPrice:         usomm52WeekLow,
 		Exponent:         6,
-		LastUpdatedBlock: 1,
+		LastUpdatedBlock: lastUpdatedBlock,
 	}
 
 	// setting stables to 1 dollar
@@ -63,24 +68,54 @@ func auctionInitGenesis(ctx sdk.Context, auctionKeeper auctionkeeper.Keeper) {
 		Denom:            "gravity0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
 		UsdPrice:         oneDollar,
 		Exponent:         6,
-		LastUpdatedBlock: 1,
+		LastUpdatedBlock: lastUpdatedBlock,
 	}
 
 	usdtPrice := auctiontypes.TokenPrice{
 		Denom:            "gravity0xdAC17F958D2ee523a2206206994597C13D831ec7",
 		UsdPrice:         oneDollar,
 		Exponent:         6,
-		LastUpdatedBlock: 1,
+		LastUpdatedBlock: lastUpdatedBlock,
 	}
 
 	daiPrice := auctiontypes.TokenPrice{
 		Denom:            "gravity0x6B175474E89094C44Da98b954EedeAC495271d0F",
 		UsdPrice:         oneDollar,
 		Exponent:         18,
-		LastUpdatedBlock: 1,
+		LastUpdatedBlock: lastUpdatedBlock,
 	}
 
-	genesisState.TokenPrices = []*auctiontypes.TokenPrice{&usommPrice, &usdcPrice, &usdtPrice, &daiPrice}
+	fraxPrice := auctiontypes.TokenPrice{
+		Denom:            "gravity0x853d955aCEf822Db058eb8505911ED77F175b99e",
+		UsdPrice:         oneDollar,
+		Exponent:         18,
+		LastUpdatedBlock: lastUpdatedBlock,
+	}
+
+	// setting non-stables
+	wethPrice := auctiontypes.TokenPrice{
+		Denom:            "gravity0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
+		UsdPrice:         eth52WeekHigh,
+		Exponent:         18,
+		LastUpdatedBlock: lastUpdatedBlock,
+	}
+
+	wbtcPrice := auctiontypes.TokenPrice{
+		Denom:            "gravity0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599",
+		UsdPrice:         btc52WeekHigh,
+		Exponent:         8,
+		LastUpdatedBlock: lastUpdatedBlock,
+	}
+
+	genesisState.TokenPrices = []*auctiontypes.TokenPrice{
+		&usommPrice,
+		&usdcPrice,
+		&usdtPrice,
+		&daiPrice,
+		&fraxPrice,
+		&wethPrice,
+		&wbtcPrice,
+	}
 
 	auctionkeeper.InitGenesis(ctx, auctionKeeper, genesisState)
 }
@@ -99,20 +134,34 @@ func pubsubInitGenesis(ctx sdk.Context, pubsubKeeper pubsubkeeper.Keeper) {
 	}
 	publishers := []*pubsubtypes.Publisher{&publisher}
 
-	// TODO(bolten): update the cellars list with the current total cellars
 	cellars := []string{
 		"0x7bAD5DF5E11151Dc5Ee1a648800057C5c934c0d5", // Aave V2
+		"0x03df2A53Cbed19B824347D6a45d09016C2D1676a", // DeFi Stars
+		"0x6c51041A91C91C86f3F08a72cB4D3F67f1208897", // ETH Trend Growth
 		"0x6b7f87279982d919bbf85182ddeab179b366d8f2", // ETH-BTC Trend
 		"0x6e2dac3b9e9adc0cbbae2d0b9fd81952a8d33872", // ETH-BTC Momentum
+		"0xDBe19d1c3F21b1bB250ca7BDaE0687A97B5f77e6", // Fraximal
+		"0xC7b69E15D86C5c1581dacce3caCaF5b68cd6596F", // Real Yield 1INCH
+		"0x0274a704a6D9129F90A62dDC6f6024b33EcDad36", // Real Yield BTC
+		"0x18ea937aba6053bC232d9Ae2C42abE7a8a2Be440", // Real Yield ENS
+		"0xb5b29320d2Dde5BA5BAFA1EbcD270052070483ec", // Real Yield ETH
+		"0x4068BDD217a45F8F668EF19F1E3A1f043e4c4934", // Real Yield LINK
+		"0xcBf2250F33c4161e18D4A2FA47464520Af5216b5", // Real Yield SNX
+		"0x6A6AF5393DC23D7e3dB28D28Ef422DB7c40932B6", // Real Yield UNI
+		"0x97e6E0a40a3D02F12d1cEC30ebfbAE04e37C119E", // Real Yield USD
 		"0x3F07A84eCdf494310D397d24c1C78B041D2fa622", // Steady ETH
 		"0x4986fD36b6b16f49b43282Ee2e24C5cF90ed166d", // Steady BTC
 		"0x05641a27C82799AaF22b436F20A3110410f29652", // Steady MATIC
 		"0x6f069f711281618467dae7873541ecc082761b33", // Steady UNI
-		"0x97e6E0a40a3D02F12d1cEC30ebfbAE04e37C119E", // Real Yield USD
+		"0x0C190DEd9Be5f512Bd72827bdaD4003e9Cc7975C", // Turbo GHO
+		"0x5195222f69c5821f8095ec565E71e18aB6A2298f", // Turbo SOMM
+		"0xc7372Ab5dd315606dB799246E8aA112405abAeFf", // Turbo stETH (stETH deposit)
+		"0xfd6db5011b171B05E1Ea3b92f9EAcaEEb055e971", // Turbo stETH (WETH deposit)
+		"0xd33dAd974b938744dAC81fE00ac67cb5AA13958E", // Turbo swETH
 	}
 
 	// Set 7seas publisher intents for existing cellars
-	publisherIntents := make([]*pubsubtypes.PublisherIntent, 8)
+	publisherIntents := make([]*pubsubtypes.PublisherIntent, 23)
 	for _, cellar := range cellars {
 		publisherIntents = append(publisherIntents, &pubsubtypes.PublisherIntent{
 			SubscriptionId:     cellar,
@@ -123,7 +172,7 @@ func pubsubInitGenesis(ctx sdk.Context, pubsubKeeper pubsubkeeper.Keeper) {
 	}
 
 	// Set default subscriptions for 7seas as the publisher for existing cellars
-	defaultSubscriptions := make([]*pubsubtypes.DefaultSubscription, 8)
+	defaultSubscriptions := make([]*pubsubtypes.DefaultSubscription, 23)
 	for _, cellar := range cellars {
 		defaultSubscriptions = append(defaultSubscriptions, &pubsubtypes.DefaultSubscription{
 			SubscriptionId:  cellar,
@@ -133,7 +182,7 @@ func pubsubInitGenesis(ctx sdk.Context, pubsubKeeper pubsubkeeper.Keeper) {
 
 	// Create subscribers and intents for existing validators
 	subscribers := createSubscribers()
-	subscriberIntents := make([]*pubsubtypes.SubscriberIntent, 208)
+	subscriberIntents := make([]*pubsubtypes.SubscriberIntent, 805)
 	for _, subscriber := range subscribers {
 		for _, cellar := range cellars {
 			subscriberIntents = append(subscriberIntents, &pubsubtypes.SubscriberIntent{
@@ -153,14 +202,15 @@ func pubsubInitGenesis(ctx sdk.Context, pubsubKeeper pubsubkeeper.Keeper) {
 	pubsubkeeper.InitGenesis(ctx, pubsubKeeper, genesisState)
 }
 
-// TODO(bolten): update the validators in the registry
 // Addresses are from the validator's delegate orchestrator key and certs/URLs captured from the
 // steward-registry repo.
 // query to get orchestrator key: sommelier query gravity delegate-keys-by-validator sommvaloper<rest_of_val_address>
 // See source data at: https://github.com/PeggyJV/steward-registry
-// data captured at commit cdee05a8bf97f264353e10ab65752710bfb85dc9
+// data captured at commit ecdb7f386e7e573edb5d8f6ad22a1a67cfa21863
+// leaving out made_in_block because I can't find their validator on-chain
+// blockhunters hadn't been merged, but verified and added here
 func createSubscribers() []*pubsubtypes.Subscriber {
-	subscribers := make([]*pubsubtypes.Subscriber, 26)
+	subscribers := make([]*pubsubtypes.Subscriber, 35)
 
 	subscribers = append(subscribers, &pubsubtypes.Subscriber{
 		Address: "somm1s2q8avjykkztudpl8k60f0ns4v5mvnjp5t366c",
@@ -279,7 +329,7 @@ func createSubscribers() []*pubsubtypes.Subscriber {
 	subscribers = append(subscribers, &pubsubtypes.Subscriber{
 		Address: "somm1xvfdclzyw03ye5mfskw6lvvmervexx8hx58823",
 		CaCert:  CosmostationSubscriberCA,
-		PushUrl: "steward.sommelier.cosmostation.io:5734",
+		PushUrl: "steward.sommelier.cosmostation.io:15413",
 	})
 
 	subscribers = append(subscribers, &pubsubtypes.Subscriber{
@@ -316,6 +366,60 @@ func createSubscribers() []*pubsubtypes.Subscriber {
 		Address: "somm13d6vkp03nelzu7aq4v6n88nw0tye2ht7j9xern",
 		CaCert:  SevenSeasSubscriberCA,
 		PushUrl: "steward.sommelier.7seas.capital:5734",
+	})
+
+	subscribers = append(subscribers, &pubsubtypes.Subscriber{
+		Address: "somm1xlg9tu8nwyratwhppkmen62putwf3dltkeqvl9",
+		CaCert:  GoldenRatioSubscriberCA,
+		PushUrl: "sommelier.goldenratiostaking.net:5734",
+	})
+
+	subscribers = append(subscribers, &pubsubtypes.Subscriber{
+		Address: "somm1kdq2pwdnn5225y0fjk7nzd93errzxmj2ncp60z",
+		CaCert:  CryptoCrewSubscriberCA,
+		PushUrl: "steward-somm.ccvalidators.com:5734",
+	})
+
+	subscribers = append(subscribers, &pubsubtypes.Subscriber{
+		Address: "somm1cfdkpueekdxgax0gu5fwq30nfwd2h0mg3kwtqq",
+		CaCert:  DoraFactorySubscriberCA,
+		PushUrl: "sommelier.dorafactory.org:5734",
+	})
+
+	subscribers = append(subscribers, &pubsubtypes.Subscriber{
+		Address: "somm1p0d4cg70pk9x49xzrg9dllvj6wxkvtqxfc8490",
+		CaCert:  FrenchChocolatineSubscriberCA,
+		PushUrl: "sommelier.frenchchocolatine.com:5734",
+	})
+
+	subscribers = append(subscribers, &pubsubtypes.Subscriber{
+		Address: "somm1ye5qdw92yjj0a2fvpgwgmxh9yymrcmaxn8ed3u",
+		CaCert:  FreshStakingSubscriberCA,
+		PushUrl: "somm-steward.mitera.net:5734",
+	})
+
+	subscribers = append(subscribers, &pubsubtypes.Subscriber{
+		Address: "somm1fmw3y7heca7qhfkt5uu3u65mk8gj5tx24k9x68",
+		CaCert:  KleomedesSubscriberCA,
+		PushUrl: "steward.kleomedes.network:5734",
+	})
+
+	subscribers = append(subscribers, &pubsubtypes.Subscriber{
+		Address: "somm1q9k53u4fu2v0ksgs84ek4c0xrh269haykxuqrk",
+		CaCert:  MeriaSubscriberCA,
+		PushUrl: "sommelier.meria.com:5734",
+	})
+
+	subscribers = append(subscribers, &pubsubtypes.Subscriber{
+		Address: "somm1s70pr2uyct7jtjc69kpkwm3ajysmfgzpwl32vj",
+		CaCert:  RorcualSubscriberCA,
+		PushUrl: "steward.rorcualnodes.com:5734",
+	})
+
+	subscribers = append(subscribers, &pubsubtypes.Subscriber{
+		Address: "somm1u7n35gtu85qrtu92ws5fsgs6ea4ay32nach7q7",
+		CaCert:  BlockHuntersSubscriberCA,
+		PushUrl: "somm.blockhunters.sbs:5734",
 	})
 
 	return subscribers
