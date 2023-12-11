@@ -1,6 +1,6 @@
 package types
 
-//go:generate  mockgen -destination=../keeper/mock_keepers.go -package=keeper github.com/peggyjv/sommelier/x/cork/types StakingKeeper, GravityKeeper
+//go:generate mockgen --source=x/cork/types/expected_keepers.go --destination=x/cork/testuil/expected_keepers_mocks.go --package=mock_types
 
 import (
 	"cosmossdk.io/math"
