@@ -2,7 +2,7 @@
 // Source: x/cork/types/expected_keepers.go
 
 // Package mock is a generated GoMock package.
-package mock
+package mock_types
 
 import (
 	reflect "reflect"
