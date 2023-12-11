@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"math/rand"
 
-	"github.com/gorilla/mux"
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
 	"github.com/spf13/cobra"
 
@@ -58,10 +57,6 @@ func (AppModuleBasic) ValidateGenesis(cdc codec.JSONCodec, _ client.TxEncodingCo
 	}
 	return gs.Validate()
 }
-
-// RegisterRESTRoutes doesn't support legacy REST routes.
-// We don't want to support the legacy rest server here
-func (AppModuleBasic) RegisterRESTRoutes(_ client.Context, _ *mux.Router) {}
 
 // GetTxCmd returns the module's root tx command.
 func (a AppModuleBasic) GetTxCmd() *cobra.Command {
