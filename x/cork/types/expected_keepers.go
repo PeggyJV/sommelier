@@ -1,6 +1,6 @@
 package types
 
-//go:generate mockgen --source=x/cork/types/expected_keepers.go --destination=x/cork/testuil/expected_keepers_mocks.go --package=mock_types
+//go:generate mockgen --source=x/cork/types/expected_keepers.go --destination=x/cork/testutil/expected_keepers_mocks.go --package=mock_types
 
 import (
 	"cosmossdk.io/math"
