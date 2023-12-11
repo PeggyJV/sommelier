@@ -115,11 +115,12 @@ func HandleCommunityPoolSpendProposal(ctx sdk.Context, k Keeper, p types.AxelarC
 		Payload:            nil,
 		Type:               types.PureTokenTransfer,
 	}
-	bz, err := json.Marshal(axelarMemo)
+	memoBz, err := json.Marshal(axelarMemo)
 	if err != nil {
 		return err
 	}
 
+	memo := string(memoBz)
 	transferMsg := transfertypes.NewMsgTransfer(
 		params.IbcPort,
 		params.IbcChannel,
@@ -128,8 +129,8 @@ func HandleCommunityPoolSpendProposal(ctx sdk.Context, k Keeper, p types.AxelarC
 		p.Recipient,
 		clienttypes.ZeroHeight(),
 		uint64(ctx.BlockTime().Add(time.Duration(params.TimeoutDuration)).UnixNano()),
+		memo,
 	)
-	transferMsg.Memo = string(bz)
 	resp, err := k.transferKeeper.Transfer(ctx.Context(), transferMsg)
 	if err != nil {
 		return err

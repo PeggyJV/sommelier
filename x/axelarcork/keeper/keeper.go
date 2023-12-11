@@ -374,7 +374,7 @@ func (k Keeper) GetApprovedScheduledAxelarCorks(ctx sdk.Context, chainID uint64)
 	threshold := sdk.MustNewDecFromStr(CorkVoteThresholdStr)
 	for i, power := range powers {
 		cork := corks[i]
-		approvalPercentage := sdk.NewIntFromUint64(power).ToDec().Quo(totalPower.ToDec())
+		approvalPercentage := sdk.NewDecFromInt(sdk.NewIntFromUint64(power)).Quo(sdk.NewDecFromInt(totalPower))
 		quorumReached := approvalPercentage.GT(threshold)
 		corkResult := types.AxelarCorkResult{
 			Cork:               &cork,

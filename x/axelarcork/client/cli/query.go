@@ -3,7 +3,7 @@ package cli
 import (
 	"strconv"
 
-	sdk "github.com/cosmos/cosmos-sdk/types"
+	"cosmossdk.io/math"
 
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
@@ -111,7 +111,7 @@ func queryCellarIDsByChainID() *cobra.Command {
 				return err
 			}
 
-			chainID, err := sdk.ParseUint(args[0])
+			chainID, err := math.ParseUint(args[0])
 			if err != nil {
 				return err
 			}
@@ -150,7 +150,7 @@ func queryScheduledCorks() *cobra.Command {
 
 			queryClient := types.NewQueryClient(ctx)
 
-			chainID, err := sdk.ParseUint(args[0])
+			chainID, err := math.ParseUint(args[0])
 			if err != nil {
 				return err
 			}
@@ -191,7 +191,7 @@ func queryScheduledCorksByBlockHeight() *cobra.Command {
 			}
 
 			queryClient := types.NewQueryClient(ctx)
-			chainID, err := sdk.ParseUint(args[0])
+			chainID, err := math.ParseUint(args[0])
 			if err != nil {
 				return err
 			}
@@ -228,7 +228,7 @@ func queryScheduledBlockHeights() *cobra.Command {
 			}
 
 			queryClient := types.NewQueryClient(ctx)
-			chainID, err := sdk.ParseUint(args[0])
+			chainID, err := math.ParseUint(args[0])
 			if err != nil {
 				return err
 			}
@@ -271,7 +271,7 @@ func queryScheduledCorksByID() *cobra.Command {
 			}
 
 			queryClient := types.NewQueryClient(ctx)
-			chainID, err := sdk.ParseUint(args[0])
+			chainID, err := math.ParseUint(args[0])
 			if err != nil {
 				return err
 			}
@@ -313,7 +313,7 @@ func queryCorkResult() *cobra.Command {
 			}
 
 			queryClient := types.NewQueryClient(ctx)
-			chainID, err := sdk.ParseUint(args[1])
+			chainID, err := math.ParseUint(args[1])
 			if err != nil {
 				return err
 			}
@@ -350,7 +350,7 @@ func queryCorkResults() *cobra.Command {
 			}
 
 			queryClient := types.NewQueryClient(ctx)
-			chainID, err := sdk.ParseUint(args[0])
+			chainID, err := math.ParseUint(args[0])
 			if err != nil {
 				return err
 			}

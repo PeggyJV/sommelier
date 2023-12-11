@@ -28,7 +28,7 @@ func TestParseAddManagedCellarsProposal(t *testing.T) {
 	contents, err := ioutil.ReadFile(okJSON.Name())
 	require.NoError(t, err)
 
-	err = encodingConfig.Marshaler.UnmarshalJSON(contents, &proposal)
+	err = encodingConfig.Codec.UnmarshalJSON(contents, &proposal)
 	require.NoError(t, err)
 
 	require.Equal(t, "Dollary-doos LP Cellar Proposal", proposal.Title)
@@ -54,7 +54,7 @@ func TestParseRemoveManagedCellarsProposal(t *testing.T) {
 	contents, err := ioutil.ReadFile(okJSON.Name())
 	require.NoError(t, err)
 
-	err = encodingConfig.Marshaler.UnmarshalJSON(contents, &proposal)
+	err = encodingConfig.Codec.UnmarshalJSON(contents, &proposal)
 	require.NoError(t, err)
 
 	require.Equal(t, "Dollary-doos LP Cellar Proposal", proposal.Title)
@@ -80,7 +80,7 @@ func TestParseSubmitScheduledCorkProposal(t *testing.T) {
 	contents, err := ioutil.ReadFile(okJSON.Name())
 	require.NoError(t, err)
 
-	err = encodingConfig.Marshaler.UnmarshalJSON(contents, &proposal)
+	err = encodingConfig.Codec.UnmarshalJSON(contents, &proposal)
 	require.NoError(t, err)
 
 	require.Equal(t, "Scheduled cork proposal", proposal.Title)
@@ -106,7 +106,7 @@ func TestParseUpgradeAxelarProxyContractProposal(t *testing.T) {
 	contents, err := os.ReadFile(okJSON.Name())
 	require.NoError(t, err)
 
-	err = encodingConfig.Marshaler.UnmarshalJSON(contents, &proposal)
+	err = encodingConfig.Codec.UnmarshalJSON(contents, &proposal)
 	require.NoError(t, err)
 
 	require.Equal(t, "Upgrade Axelar proxy contract proposal", proposal.Title)
@@ -131,7 +131,7 @@ func TestParseCancelAxelarProxyContractUpgradeProposal(t *testing.T) {
 	contents, err := os.ReadFile(okJSON.Name())
 	require.NoError(t, err)
 
-	err = encodingConfig.Marshaler.UnmarshalJSON(contents, &proposal)
+	err = encodingConfig.Codec.UnmarshalJSON(contents, &proposal)
 	require.NoError(t, err)
 
 	require.Equal(t, "Cancel Axelar proxy contract upgrade proposal", proposal.Title)
