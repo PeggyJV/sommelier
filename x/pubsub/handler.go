@@ -5,7 +5,7 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
+	govtypesv1beta1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
 	"github.com/peggyjv/sommelier/v7/x/pubsub/keeper"
 	"github.com/peggyjv/sommelier/v7/x/pubsub/types"
 )
@@ -45,8 +45,8 @@ func NewHandler(k keeper.Keeper) sdk.Handler {
 }
 
 // NewPubsubProposalHandler returns a handler for "pubsub" governance proposals
-func NewPubsubProposalHandler(k keeper.Keeper) govtypes.Handler {
-	return func(ctx sdk.Context, content govtypes.Content) error {
+func NewPubsubProposalHandler(k keeper.Keeper) govtypesv1beta1.Handler {
+	return func(ctx sdk.Context, content govtypesv1beta1.Content) error {
 		switch c := content.(type) {
 		case *types.AddPublisherProposal:
 			return keeper.HandleAddPublisherProposal(ctx, k, *c)

@@ -12,7 +12,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/client/tx"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/version"
-	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
+	govtypesv1beta1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
 	"github.com/peggyjv/sommelier/v7/x/pubsub/types"
 )
 
@@ -102,7 +102,7 @@ Where proposal.json contains:
 			}
 
 			from := clientCtx.GetFromAddress()
-			msg, err := govtypes.NewMsgSubmitProposal(content, deposit, from)
+			msg, err := govtypesv1beta1.NewMsgSubmitProposal(content, deposit, from)
 			if err != nil {
 				return err
 			}
@@ -170,7 +170,7 @@ Where proposal.json contains:
 			}
 
 			from := clientCtx.GetFromAddress()
-			msg, err := govtypes.NewMsgSubmitProposal(content, deposit, from)
+			msg, err := govtypesv1beta1.NewMsgSubmitProposal(content, deposit, from)
 			if err != nil {
 				return err
 			}
@@ -240,7 +240,7 @@ Where proposal.json contains:
 			}
 
 			from := clientCtx.GetFromAddress()
-			msg, err := govtypes.NewMsgSubmitProposal(content, deposit, from)
+			msg, err := govtypesv1beta1.NewMsgSubmitProposal(content, deposit, from)
 			if err != nil {
 				return err
 			}
@@ -308,7 +308,7 @@ Where proposal.json contains:
 			}
 
 			from := clientCtx.GetFromAddress()
-			msg, err := govtypes.NewMsgSubmitProposal(content, deposit, from)
+			msg, err := govtypesv1beta1.NewMsgSubmitProposal(content, deposit, from)
 			if err != nil {
 				return err
 			}
