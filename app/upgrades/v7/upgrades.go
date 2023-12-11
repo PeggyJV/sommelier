@@ -4,6 +4,8 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
+	icahostkeeper "github.com/cosmos/ibc-go/v6/modules/apps/27-interchain-accounts/host/keeper"
+	icahosttypes "github.com/cosmos/ibc-go/v6/modules/apps/27-interchain-accounts/host/types"
 	auctionkeeper "github.com/peggyjv/sommelier/v7/x/auction/keeper"
 	auctiontypes "github.com/peggyjv/sommelier/v7/x/auction/types"
 	cellarfeeskeeper "github.com/peggyjv/sommelier/v7/x/cellarfees/keeper"
@@ -17,10 +19,16 @@ func CreateUpgradeHandler(
 	configurator module.Configurator,
 	auctionKeeper auctionkeeper.Keeper,
 	cellarfeesKeeper cellarfeeskeeper.Keeper,
+	icaHostKeeper icahostkeeper.Keeper,
 	pubsubKeeper pubsubkeeper.Keeper,
 ) upgradetypes.UpgradeHandler {
 	return func(ctx sdk.Context, plan upgradetypes.Plan, fromVM module.VersionMap) (module.VersionMap, error) {
 		ctx.Logger().Info("v7 upgrade: entering handler")
+
+		// Now that we're on IBC V6, we can update the ICA host module to allow all message types rather than
+		// the list we specified in the v6 upgrade -- a default of HostEnabled: true and the string "*" for messages
+		icaParams := icahosttypes.DefaultParams()
+		icaHostKeeper.SetParams(ctx, icaParams)
 
 		// We must manually run InitGenesis for pubsub and auctions so we can adjust their values
 		// during the upgrade process. RunMigrations will migrate to the new cork version. Setting the consensus
@@ -33,11 +41,14 @@ func CreateUpgradeHandler(
 		ctx.Logger().Info("v7 upgrading: setting cellarfees default params")
 		cellarfeesKeeper.SetParams(ctx, cellarfeestypes.DefaultParams())
 
+		//TODO(bolten): verify that the default params are fine or if we need to customize them for auction and pubsub
 		ctx.Logger().Info("v7 upgrade: initializing auction genesis state")
 		auctionInitGenesis(ctx, auctionKeeper)
 
 		ctx.Logger().Info("v7 upgrade: initializing pubsub genesis state")
 		pubsubInitGenesis(ctx, pubsubKeeper)
+
+		//TODO(bolten): axelarcork module initialization
 
 		ctx.Logger().Info("v7 upgrade: running migrations and exiting handler")
 		return mm.RunMigrations(ctx, configurator, fromVM)

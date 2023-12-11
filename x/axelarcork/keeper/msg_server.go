@@ -96,7 +96,7 @@ func (k Keeper) RelayCork(c context.Context, msg *types.MsgRelayAxelarCorkReques
 			Recipient: params.ExecutorAccount,
 		},
 	}
-	bz, err := json.Marshal(axelarMemo)
+	memoBz, err := json.Marshal(axelarMemo)
 	if err != nil {
 		return nil, err
 	}
@@ -109,8 +109,8 @@ func (k Keeper) RelayCork(c context.Context, msg *types.MsgRelayAxelarCorkReques
 		params.GmpAccount,
 		clienttypes.ZeroHeight(),
 		uint64(ctx.BlockTime().Add(time.Duration(params.TimeoutDuration)).UnixNano()),
+		string(memoBz),
 	)
-	transferMsg.Memo = string(bz)
 	_, err = k.transferKeeper.Transfer(c, transferMsg)
 	if err != nil {
 		return nil, err
@@ -153,7 +153,7 @@ func (k Keeper) RelayProxyUpgrade(c context.Context, msg *types.MsgRelayAxelarPr
 			Recipient: params.ExecutorAccount,
 		},
 	}
-	bz, err := json.Marshal(axelarMemo)
+	memoBz, err := json.Marshal(axelarMemo)
 	if err != nil {
 		return nil, err
 	}
@@ -166,8 +166,8 @@ func (k Keeper) RelayProxyUpgrade(c context.Context, msg *types.MsgRelayAxelarPr
 		params.GmpAccount,
 		clienttypes.ZeroHeight(),
 		uint64(ctx.BlockTime().Add(time.Duration(params.TimeoutDuration)).UnixNano()),
+		string(memoBz),
 	)
-	transferMsg.Memo = string(bz)
 	_, err = k.transferKeeper.Transfer(c, transferMsg)
 	if err != nil {
 		return nil, err
@@ -186,6 +186,7 @@ func (k Keeper) BumpCorkGas(c context.Context, msg *types.MsgBumpAxelarCorkGasRe
 		return nil, types.ErrDisabled
 	}
 
+	memo := msg.MessageId
 	transferMsg := transfertypes.NewMsgTransfer(
 		params.IbcPort,
 		params.IbcChannel,
@@ -194,8 +195,8 @@ func (k Keeper) BumpCorkGas(c context.Context, msg *types.MsgBumpAxelarCorkGasRe
 		params.ExecutorAccount,
 		clienttypes.ZeroHeight(),
 		uint64(ctx.BlockTime().Add(time.Duration(params.TimeoutDuration)).UnixNano()),
+		memo,
 	)
-	transferMsg.Memo = msg.MessageId
 	_, err := k.transferKeeper.Transfer(c, transferMsg)
 	if err != nil {
 		return nil, err

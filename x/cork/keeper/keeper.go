@@ -4,6 +4,7 @@ import (
 	"bytes"
 
 	"github.com/cosmos/cosmos-sdk/codec"
+	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
 	"github.com/ethereum/go-ethereum/common"
@@ -15,7 +16,7 @@ const corkVoteThresholdStr = "0.67"
 
 // Keeper of the oracle store
 type Keeper struct {
-	storeKey      sdk.StoreKey
+	storeKey      storetypes.StoreKey
 	cdc           codec.BinaryCodec
 	paramSpace    paramtypes.Subspace
 	stakingKeeper types.StakingKeeper
@@ -24,7 +25,7 @@ type Keeper struct {
 
 // NewKeeper creates a new x/cork Keeper instance
 func NewKeeper(
-	cdc codec.BinaryCodec, key sdk.StoreKey, paramSpace paramtypes.Subspace,
+	cdc codec.BinaryCodec, key storetypes.StoreKey, paramSpace paramtypes.Subspace,
 	stakingKeeper types.StakingKeeper, gravityKeeper types.GravityKeeper,
 ) Keeper {
 	// set KeyTable if it has not already been set
