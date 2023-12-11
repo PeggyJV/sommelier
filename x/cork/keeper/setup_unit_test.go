@@ -38,15 +38,15 @@ func setupCorkKeeper(t *testing.T) (
 
 	// Mount the KV store with the x/cork store key
 	storeKey := sdk.NewKVStoreKey(types.StoreKey)
-	commitMultiStore.MountStoreWithDB(storeKey, sdk.StoreTypeIAVL, db)
+	commitMultiStore.MountStoreWithDB(storeKey, storetypes.StoreTypeIAVL, db)
 
 	// Mount Transient store
 	transientStoreKey := sdk.NewTransientStoreKey("transient" + types.StoreKey)
-	commitMultiStore.MountStoreWithDB(transientStoreKey, sdk.StoreTypeTransient, nil)
+	commitMultiStore.MountStoreWithDB(transientStoreKey, storetypes.StoreTypeTransient, nil)
 
 	// Mount Memory store
 	memStoreKey := storetypes.NewMemoryStoreKey("mem" + types.StoreKey)
-	commitMultiStore.MountStoreWithDB(memStoreKey, sdk.StoreTypeMemory, nil)
+	commitMultiStore.MountStoreWithDB(memStoreKey, storetypes.StoreTypeMemory, nil)
 
 	require.NoError(t, commitMultiStore.LoadLatestVersion())
 	protoCodec := codec.NewProtoCodec(codectypes.NewInterfaceRegistry())
@@ -79,7 +79,7 @@ func setupCorkKeeper(t *testing.T) (
 
 func initParamsKeeper(
 	appCodec codec.BinaryCodec, legacyAmino *codec.LegacyAmino,
-	key sdk.StoreKey, tkey sdk.StoreKey,
+	key storetypes.StoreKey, tkey storetypes.StoreKey,
 ) paramskeeper.Keeper {
 	paramsKeeper := paramskeeper.NewKeeper(appCodec, legacyAmino, key, tkey)
 	paramsKeeper.Subspace(types.ModuleName)
