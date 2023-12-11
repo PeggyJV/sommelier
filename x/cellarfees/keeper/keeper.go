@@ -132,5 +132,5 @@ func (k Keeper) GetAPY(ctx sdk.Context) sdk.Dec {
 	emission := k.GetEmission(ctx, remainingRewardsSupply)
 	annualRewards := emission.AmountOf(params.BaseCoinUnit).Mul(sdk.NewInt(int64(mintParams.BlocksPerYear)))
 
-	return annualRewards.ToDec().Quo(totalCoins.ToDec()).Quo(bondedRatio)
+	return sdk.NewDecFromInt(annualRewards).Quo(sdk.NewDecFromInt(totalCoins)).Quo(bondedRatio)
 }
