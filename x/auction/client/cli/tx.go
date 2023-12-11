@@ -5,12 +5,14 @@ import (
 	"io/ioutil"
 	"strings"
 
+	"cosmossdk.io/math"
+
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/client/tx"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/version"
-	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
+	govtypesv1beta1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
 	types "github.com/peggyjv/sommelier/v7/x/auction/types"
 	"github.com/spf13/cobra"
 )
@@ -89,7 +91,7 @@ Where proposal.json contains:
 			}
 
 			from := clientCtx.GetFromAddress()
-			msg, err := govtypes.NewMsgSubmitProposal(content, deposit, from)
+			msg, err := govtypesv1beta1.NewMsgSubmitProposal(content, deposit, from)
 			if err != nil {
 				return err
 			}
@@ -119,7 +121,7 @@ $ %s tx auction submit-bid 1 10000usomm 50000gravity0xdac17f958d2ee523a220620699
 				return err
 			}
 
-			auctionID, err := sdk.ParseUint(args[0])
+			auctionID, err := math.ParseUint(args[0])
 			if err != nil {
 				return err
 			}

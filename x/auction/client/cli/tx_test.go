@@ -29,7 +29,7 @@ func TestParseSetTokenPricesProposal(t *testing.T) {
 	contents, err := ioutil.ReadFile(okJSON.Name())
 	require.NoError(t, err)
 
-	err = encodingConfig.Marshaler.UnmarshalJSON(contents, &proposal)
+	err = encodingConfig.Codec.UnmarshalJSON(contents, &proposal)
 	require.NoError(t, err)
 
 	require.Equal(t, "My token proposal", proposal.Title)
