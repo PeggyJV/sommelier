@@ -38,7 +38,11 @@ func (s *IntegrationTestSuite) TestScheduledCork() {
 
 		submitProposalResponse, err := s.chain.sendMsgs(*proposerCtx, proposalMsg)
 		s.Require().NoError(err)
-		s.Require().Equal(uint32(5), submitProposalResponse.Code, "raw log: %s", submitProposalResponse.RawLog)
+		s.Require().Zero(submitProposalResponse.Code, "raw log: %s", submitProposalResponse.RawLog)
+		govQueryClient := govtypesv1beta1.NewQueryClient(proposerCtx)
+		proposalsQueryResponse, err := govQueryClient.Proposals(context.Background(), &govtypesv1beta1.QueryProposalsRequest{})
+		s.Require().NoError(err)
+		s.Require().Empty(proposalsQueryResponse.Proposals)
 		s.T().Log("proposal rejected as expected!")
 
 		// makes sure ethereum can be contacted and counter contract is working
@@ -90,8 +94,7 @@ func (s *IntegrationTestSuite) TestScheduledCork() {
 		s.Require().Zero(submitProposalResponse.Code, "raw log: %s", submitProposalResponse.RawLog)
 
 		s.T().Log("check proposal was submitted correctly")
-		govQueryClient := govtypesv1beta1.NewQueryClient(proposerCtx)
-		proposalsQueryResponse, err := govQueryClient.Proposals(context.Background(), &govtypesv1beta1.QueryProposalsRequest{})
+		proposalsQueryResponse, err = govQueryClient.Proposals(context.Background(), &govtypesv1beta1.QueryProposalsRequest{})
 		s.Require().NoError(err)
 		s.Require().NotEmpty(proposalsQueryResponse.Proposals)
 		s.Require().Equal(uint64(1), proposalsQueryResponse.Proposals[0].ProposalId, "not proposal id 1")
