@@ -330,11 +330,6 @@ func CreateTestEnv(t *testing.T) TestInput {
 	moduleAcct := accountKeeper.GetAccount(ctx, stakeAddr)
 	require.NotNil(t, moduleAcct)
 
-	router := baseapp.NewRouter()
-	router.AddRoute(bank.AppModule{}.Route())
-	router.AddRoute(staking.AppModule{}.Route())
-	router.AddRoute(distribution.AppModule{}.Route())
-
 	// Load default wasm config
 
 	govRouter := govtypesv1beta1.NewRouter().
