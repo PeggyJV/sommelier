@@ -477,7 +477,7 @@ func (s *StakingKeeperMock) GetLastValidatorPower(ctx sdk.Context, operator sdk.
 }
 
 // GetLastTotalPower implements the interface for staking keeper required by gravity
-func (s *StakingKeeperMock) GetLastTotalPower(ctx sdk.Context) (power sdk.Int) {
+func (s *StakingKeeperMock) GetLastTotalPower(ctx sdk.Context) (power math.Int) {
 	var total int64
 	for _, v := range s.ValidatorPower {
 		total += v
@@ -562,7 +562,7 @@ func (s *StakingKeeperMock) Slash(sdk.Context, sdk.ConsAddress, int64, int64, sd
 func (s *StakingKeeperMock) Jail(sdk.Context, sdk.ConsAddress) {}
 
 // PowerReduction satisfies the interface
-func (s *StakingKeeperMock) PowerReduction(sdk.Context) sdk.Int {
+func (s *StakingKeeperMock) PowerReduction(sdk.Context) math.Int {
 	return sdk.NewInt(0)
 }
 
@@ -570,7 +570,7 @@ func (s *StakingKeeperMock) PowerReduction(sdk.Context) sdk.Int {
 type AlwaysPanicStakingMock struct{}
 
 // GetLastTotalPower implements the interface for staking keeper required by gravity
-func (s AlwaysPanicStakingMock) GetLastTotalPower(ctx sdk.Context) (power sdk.Int) {
+func (s AlwaysPanicStakingMock) GetLastTotalPower(ctx sdk.Context) (power math.Int) {
 	panic("unexpected call")
 }
 
@@ -620,7 +620,7 @@ func (s AlwaysPanicStakingMock) Jail(sdk.Context, sdk.ConsAddress) {
 }
 
 // PowerReduction satisfies the interface
-func (s AlwaysPanicStakingMock) PowerReduction(sdk.Context) sdk.Int {
+func (s AlwaysPanicStakingMock) PowerReduction(sdk.Context) math.Int {
 	panic("unexpected call")
 }
 

@@ -9,6 +9,7 @@ import (
 	"strings"
 
 	errorsmod "cosmossdk.io/errors"
+	"cosmossdk.io/math"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/ethereum/go-ethereum/accounts/abi"
 	"github.com/ethereum/go-ethereum/common"
@@ -161,7 +162,7 @@ func PackDeployERC20(denom string, name string, symbol string, decimals uint8) [
 	})
 }
 
-func PackSendToCosmos(tokenContract common.Address, destination sdk.AccAddress, amount sdk.Int) []byte {
+func PackSendToCosmos(tokenContract common.Address, destination sdk.AccAddress, amount math.Int) []byte {
 	destinationBytes, _ := byteArrayToFixByteArray(destination.Bytes())
 	return packCall(gravitytypes.SendToCosmosABIJSON, "sendToCosmos", []interface{}{
 		tokenContract,
@@ -198,7 +199,7 @@ func PackLastValsetNonce() []byte {
 	return packCall(stateLastValsetNonceABIJSON, "state_lastValsetNonce", []interface{}{})
 }
 
-func UnpackEthUInt(bz []byte) sdk.Int {
+func UnpackEthUInt(bz []byte) math.Int {
 	output := big.NewInt(0)
 	output.SetBytes(bz)
 

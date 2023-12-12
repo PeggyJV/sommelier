@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"math/big"
 
+	"cosmossdk.io/math"
 	"github.com/tendermint/tendermint/libs/log"
 
 	"github.com/cosmos/cosmos-sdk/codec"
@@ -76,7 +77,7 @@ func (k Keeper) SetParams(ctx sdk.Context, params types.Params) {
 // Last highest reward supply //
 ////////////////////////////////
 
-func (k Keeper) GetLastRewardSupplyPeak(ctx sdk.Context) sdk.Int {
+func (k Keeper) GetLastRewardSupplyPeak(ctx sdk.Context) math.Int {
 	store := ctx.KVStore(k.storeKey)
 	b := store.Get(types.GetLastRewardSupplyPeakKey())
 	if b == nil {
@@ -86,7 +87,7 @@ func (k Keeper) GetLastRewardSupplyPeak(ctx sdk.Context) sdk.Int {
 	return sdk.NewIntFromBigInt((&amount).SetBytes(b))
 }
 
-func (k Keeper) SetLastRewardSupplyPeak(ctx sdk.Context, amount sdk.Int) {
+func (k Keeper) SetLastRewardSupplyPeak(ctx sdk.Context, amount math.Int) {
 	store := ctx.KVStore(k.storeKey)
 	b := amount.BigInt().Bytes()
 	store.Set(types.GetLastRewardSupplyPeakKey(), b)

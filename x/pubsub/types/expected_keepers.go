@@ -11,7 +11,7 @@ import (
 type StakingKeeper interface {
 	GetBondedValidatorsByPower(ctx sdk.Context) []stakingtypes.Validator
 	GetLastValidatorPower(ctx sdk.Context, operator sdk.ValAddress) int64
-	GetLastTotalPower(ctx sdk.Context) (power sdk.Int)
+	GetLastTotalPower(ctx sdk.Context) (power math.Int)
 	GetValidator(ctx sdk.Context, addr sdk.ValAddress) (validator stakingtypes.Validator, found bool)
 	IterateValidators(sdk.Context, func(index int64, validator stakingtypes.ValidatorI) (stop bool))
 	IterateBondedValidatorsByPower(sdk.Context, func(index int64, validator stakingtypes.ValidatorI) (stop bool))
@@ -20,7 +20,7 @@ type StakingKeeper interface {
 	ValidatorByConsAddr(sdk.Context, sdk.ConsAddress) stakingtypes.ValidatorI
 	Slash(sdk.Context, sdk.ConsAddress, int64, int64, sdk.Dec) math.Int
 	Jail(sdk.Context, sdk.ConsAddress)
-	PowerReduction(ctx sdk.Context) sdk.Int
+	PowerReduction(ctx sdk.Context) math.Int
 }
 
 // GravityKeeper defines the expected gravity keeper methods

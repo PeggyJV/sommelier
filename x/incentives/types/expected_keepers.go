@@ -3,6 +3,7 @@
 package types
 
 import (
+	"cosmossdk.io/math"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	distributiontypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
 	minttypes "github.com/cosmos/cosmos-sdk/x/mint/types"
@@ -31,6 +32,6 @@ type BankKeeper interface {
 // MintKeeper defines the expected mint keeper methods
 type MintKeeper interface {
 	GetParams(ctx sdk.Context) minttypes.Params
-	StakingTokenSupply(ctx sdk.Context) sdk.Int
+	StakingTokenSupply(ctx sdk.Context) math.Int
 	BondedRatio(ctx sdk.Context) sdk.Dec
 }

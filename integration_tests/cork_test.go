@@ -6,7 +6,7 @@ import (
 	"strings"
 
 	errorsmod "cosmossdk.io/errors"
-	sdk "github.com/cosmos/cosmos-sdk/types"
+	"cosmossdk.io/math"
 	"github.com/ethereum/go-ethereum"
 	"github.com/ethereum/go-ethereum/accounts/abi"
 	"github.com/ethereum/go-ethereum/common"
@@ -86,7 +86,7 @@ func ABIEncodedInc() []byte {
 	return abiEncodedCall
 }
 
-func (s *IntegrationTestSuite) getCurrentCount() (*sdk.Int, error) {
+func (s *IntegrationTestSuite) getCurrentCount() (*math.Int, error) {
 	ethClient, err := ethclient.Dial(fmt.Sprintf("http://%s", s.ethResource.GetHostPort("8545/tcp")))
 	if err != nil {
 		return nil, err
