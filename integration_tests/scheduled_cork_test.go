@@ -6,7 +6,7 @@ import (
 	"time"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
+	govtypesv1beta1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
 	"github.com/ethereum/go-ethereum/common"
 	gbtypes "github.com/peggyjv/gravity-bridge/module/v4/x/gravity/types"
 	"github.com/peggyjv/sommelier/v7/x/cork/types"
@@ -16,7 +16,7 @@ func (s *IntegrationTestSuite) TestScheduledCork() {
 	s.Run("Bring up chain, and schedule a cork call to ethereum", func() {
 		s.T().Log("submitting a scheduled cork porposal with unsupported cellar ID to verify rejection")
 		proposer := s.chain.proposer
-		proposerCtx, err := s.chain.clientContext("tcp://localhost:26657", proposer.keyring, "proposer", proposer.keyInfo.GetAddress())
+		proposerCtx, err := s.chain.clientContext("tcp://localhost:26657", proposer.keyring, "proposer", proposer.address())
 		s.Require().NoError(err)
 		invalidProposal := types.ScheduledCorkProposal{
 			Title:                 "invalid proposal",
@@ -24,7 +24,7 @@ func (s *IntegrationTestSuite) TestScheduledCork() {
 			TargetContractAddress: "0x0000000000000000000000000000000000000000",
 			ContractCallProtoJson: "{\"thing\": 1}",
 		}
-		proposalMsg, err := govtypes.NewMsgSubmitProposal(
+		proposalMsg, err := govtypesv1beta1.NewMsgSubmitProposal(
 			&invalidProposal,
 			sdk.Coins{
 				{
@@ -32,7 +32,7 @@ func (s *IntegrationTestSuite) TestScheduledCork() {
 					Amount: stakeAmount.Quo(sdk.NewInt(2)),
 				},
 			},
-			proposer.keyInfo.GetAddress(),
+			proposer.address(),
 		)
 		s.Require().NoError(err, "unable to create governance proposal")
 
@@ -51,7 +51,7 @@ func (s *IntegrationTestSuite) TestScheduledCork() {
 		s.Require().Eventuallyf(func() bool {
 			kb, err := val.keyring()
 			s.Require().NoError(err)
-			clientCtx, err := s.chain.clientContext("tcp://localhost:26657", &kb, "val", val.keyInfo.GetAddress())
+			clientCtx, err := s.chain.clientContext("tcp://localhost:26657", &kb, "val", val.address())
 			s.Require().NoError(err)
 
 			queryClient := types.NewQueryClient(clientCtx)
@@ -72,7 +72,7 @@ func (s *IntegrationTestSuite) TestScheduledCork() {
 				Ids: []string{counterContract.Hex()},
 			},
 		}
-		proposalMsg, err = govtypes.NewMsgSubmitProposal(
+		proposalMsg, err = govtypesv1beta1.NewMsgSubmitProposal(
 			&proposal,
 			sdk.Coins{
 				{
@@ -80,7 +80,7 @@ func (s *IntegrationTestSuite) TestScheduledCork() {
 					Amount: stakeAmount.Quo(sdk.NewInt(2)),
 				},
 			},
-			proposer.keyInfo.GetAddress(),
+			proposer.address(),
 		)
 		s.Require().NoError(err, "unable to create governance proposal")
 
@@ -90,21 +90,21 @@ func (s *IntegrationTestSuite) TestScheduledCork() {
 		s.Require().Zero(submitProposalResponse.Code, "raw log: %s", submitProposalResponse.RawLog)
 
 		s.T().Log("check proposal was submitted correctly")
-		govQueryClient := govtypes.NewQueryClient(proposerCtx)
-		proposalsQueryResponse, err := govQueryClient.Proposals(context.Background(), &govtypes.QueryProposalsRequest{})
+		govQueryClient := govtypesv1beta1.NewQueryClient(proposerCtx)
+		proposalsQueryResponse, err := govQueryClient.Proposals(context.Background(), &govtypesv1beta1.QueryProposalsRequest{})
 		s.Require().NoError(err)
 		s.Require().NotEmpty(proposalsQueryResponse.Proposals)
 		s.Require().Equal(uint64(1), proposalsQueryResponse.Proposals[0].ProposalId, "not proposal id 1")
-		s.Require().Equal(govtypes.StatusVotingPeriod, proposalsQueryResponse.Proposals[0].Status, "proposal not in voting period")
+		s.Require().Equal(govtypesv1beta1.StatusVotingPeriod, proposalsQueryResponse.Proposals[0].Status, "proposal not in voting period")
 
 		s.T().Log("vote for proposal allowing contract")
 		for _, val := range s.chain.validators {
 			kr, err := val.keyring()
 			s.Require().NoError(err)
-			clientCtx, err := s.chain.clientContext("tcp://localhost:26657", &kr, "val", val.keyInfo.GetAddress())
+			clientCtx, err := s.chain.clientContext("tcp://localhost:26657", &kr, "val", val.address())
 			s.Require().NoError(err)
 
-			voteMsg := govtypes.NewMsgVote(val.keyInfo.GetAddress(), 1, govtypes.OptionYes)
+			voteMsg := govtypesv1beta1.NewMsgVote(val.address(), 1, govtypesv1beta1.OptionYes)
 			voteResponse, err := s.chain.sendMsgs(*clientCtx, voteMsg)
 			s.Require().NoError(err)
 			s.Require().Zero(voteResponse.Code, "vote error: %s", voteResponse.RawLog)
@@ -112,9 +112,9 @@ func (s *IntegrationTestSuite) TestScheduledCork() {
 
 		s.T().Log("wait for proposal to be approved")
 		s.Require().Eventuallyf(func() bool {
-			proposalQueryResponse, err := govQueryClient.Proposal(context.Background(), &govtypes.QueryProposalRequest{ProposalId: 1})
+			proposalQueryResponse, err := govQueryClient.Proposal(context.Background(), &govtypesv1beta1.QueryProposalRequest{ProposalId: 1})
 			s.Require().NoError(err)
-			return govtypes.StatusPassed == proposalQueryResponse.Proposal.Status
+			return govtypesv1beta1.StatusPassed == proposalQueryResponse.Proposal.Status
 		}, time.Second*30, time.Second*5, "proposal was never accepted")
 
 		s.T().Log("verify that contract exists in allowed addresses")
@@ -122,7 +122,7 @@ func (s *IntegrationTestSuite) TestScheduledCork() {
 		s.Require().Eventuallyf(func() bool {
 			kb, err := val.keyring()
 			s.Require().NoError(err)
-			clientCtx, err := s.chain.clientContext("tcp://localhost:26657", &kb, "val", val.keyInfo.GetAddress())
+			clientCtx, err := s.chain.clientContext("tcp://localhost:26657", &kb, "val", val.address())
 			s.Require().NoError(err)
 
 			queryClient := types.NewQueryClient(clientCtx)
@@ -161,13 +161,13 @@ func (s *IntegrationTestSuite) TestScheduledCork() {
 		for i, orch := range s.chain.orchestrators {
 			i := i
 			orch := orch
-			clientCtx, err := s.chain.clientContext("tcp://localhost:26657", orch.keyring, "orch", orch.keyInfo.GetAddress())
+			clientCtx, err := s.chain.clientContext("tcp://localhost:26657", orch.keyring, "orch", orch.address())
 			s.Require().NoError(err)
 			corkMsg, err := types.NewMsgScheduleCorkRequest(
 				ABIEncodedInc(),
 				counterContract,
 				uint64(targetBlockHeight),
-				orch.keyInfo.GetAddress())
+				orch.address())
 			s.Require().NoError(err, "failed to construct cork")
 			response, err := s.chain.sendMsgs(*clientCtx, corkMsg)
 			s.Require().NoError(err, "failed to send cork to node %d", i)
@@ -191,7 +191,7 @@ func (s *IntegrationTestSuite) TestScheduledCork() {
 		s.Require().Eventuallyf(func() bool {
 			kb, err := val.keyring()
 			s.Require().NoError(err)
-			clientCtx, err := s.chain.clientContext("tcp://localhost:26657", &kb, "val", val.keyInfo.GetAddress())
+			clientCtx, err := s.chain.clientContext("tcp://localhost:26657", &kb, "val", val.address())
 			s.Require().NoError(err)
 
 			node, err := clientCtx.GetNode()
@@ -252,7 +252,7 @@ func (s *IntegrationTestSuite) TestScheduledCork() {
 			ContractCallProtoJson: "{\"cellar_id\":\"0x123801a7D398351b8bE11C439e05C5B3259aeC9B\",\"cellar_v1\":{\"some_fuction\":{\"function_args\":{}},\"block_height\":12345}}",
 			BlockHeight:           uint64(targetBlockHeight),
 		}
-		corkProposalMsg, err := govtypes.NewMsgSubmitProposal(
+		corkProposalMsg, err := govtypesv1beta1.NewMsgSubmitProposal(
 			&corkProposal,
 			sdk.Coins{
 				{
@@ -260,7 +260,7 @@ func (s *IntegrationTestSuite) TestScheduledCork() {
 					Amount: stakeAmount.Quo(sdk.NewInt(2)),
 				},
 			},
-			proposer.keyInfo.GetAddress(),
+			proposer.address(),
 		)
 		s.Require().NoError(err, "Unable to create governance proposal")
 
@@ -272,7 +272,7 @@ func (s *IntegrationTestSuite) TestScheduledCork() {
 		s.T().Log("Check proposal was submitted correctly")
 
 		s.Require().Eventually(func() bool {
-			proposalsQueryResponse, err := govQueryClient.Proposals(context.Background(), &govtypes.QueryProposalsRequest{})
+			proposalsQueryResponse, err := govQueryClient.Proposals(context.Background(), &govtypesv1beta1.QueryProposalsRequest{})
 			if err != nil {
 				s.T().Logf("error querying proposals: %e", err)
 				return false
@@ -280,7 +280,7 @@ func (s *IntegrationTestSuite) TestScheduledCork() {
 
 			s.Require().NotEmpty(proposalsQueryResponse.Proposals)
 			s.Require().Equal(uint64(2), proposalsQueryResponse.Proposals[1].ProposalId, "not proposal id 2")
-			s.Require().Equal(govtypes.StatusVotingPeriod, proposalsQueryResponse.Proposals[1].Status, "proposal not in voting period")
+			s.Require().Equal(govtypesv1beta1.StatusVotingPeriod, proposalsQueryResponse.Proposals[1].Status, "proposal not in voting period")
 
 			return true
 		}, time.Second*30, time.Second*5, "proposal submission was never found")
@@ -289,10 +289,10 @@ func (s *IntegrationTestSuite) TestScheduledCork() {
 		for _, val := range s.chain.validators {
 			kr, err := val.keyring()
 			s.Require().NoError(err)
-			localClientCtx, err := s.chain.clientContext("tcp://localhost:26657", &kr, "val", val.keyInfo.GetAddress())
+			localClientCtx, err := s.chain.clientContext("tcp://localhost:26657", &kr, "val", val.address())
 			s.Require().NoError(err)
 
-			voteMsg := govtypes.NewMsgVote(val.keyInfo.GetAddress(), 2, govtypes.OptionYes)
+			voteMsg := govtypesv1beta1.NewMsgVote(val.address(), 2, govtypesv1beta1.OptionYes)
 			voteResponse, err := s.chain.sendMsgs(*localClientCtx, voteMsg)
 			s.Require().NoError(err)
 			s.Require().Zero(voteResponse.Code, "Vote error: %s", voteResponse.RawLog)
@@ -300,8 +300,8 @@ func (s *IntegrationTestSuite) TestScheduledCork() {
 
 		s.T().Log("Waiting for proposal to be approved..")
 		s.Require().Eventually(func() bool {
-			proposalQueryResponse, _ := govQueryClient.Proposal(context.Background(), &govtypes.QueryProposalRequest{ProposalId: 2})
-			return govtypes.StatusPassed == proposalQueryResponse.Proposal.Status
+			proposalQueryResponse, _ := govQueryClient.Proposal(context.Background(), &govtypesv1beta1.QueryProposalRequest{ProposalId: 2})
+			return govtypesv1beta1.StatusPassed == proposalQueryResponse.Proposal.Status
 		}, time.Second*30, time.Second*5, "proposal was never accepted")
 		s.T().Log("Proposal approved!")
 	})

@@ -26,7 +26,7 @@ func (s *IntegrationTestSuite) TestCellarFees() {
 		ethClient, err := ethclient.Dial(fmt.Sprintf("http://%s", s.ethResource.GetHostPort("8545/tcp")))
 		s.Require().NoError(err)
 
-		clientCtx, err := s.chain.clientContext("tcp://localhost:26657", &kb, "val", val.keyInfo.GetAddress())
+		clientCtx, err := s.chain.clientContext("tcp://localhost:26657", &kb, "val", val.address())
 		s.Require().NoError(err)
 
 		auctionQueryClient := auctiontypes.NewQueryClient(clientCtx)
@@ -203,12 +203,12 @@ func (s *IntegrationTestSuite) TestCellarFees() {
 		orch := s.chain.orchestrators[0]
 		bidRequest1 := auctiontypes.MsgSubmitBidRequest{
 			AuctionId:              alphaAuctionID,
-			Signer:                 orch.keyInfo.GetAddress().String(),
+			Signer:                 orch.address().String(),
 			MaxBidInUsomm:          sdk.NewCoin(testDenom, sdk.NewIntFromUint64(300000)),
 			SaleTokenMinimumAmount: sdk.NewCoin(alphaFeeDenom, sdk.NewIntFromUint64(150000)),
 		}
 
-		orchClientCtx, err := s.chain.clientContext("tcp://localhost:26657", orch.keyring, "orch", orch.keyInfo.GetAddress())
+		orchClientCtx, err := s.chain.clientContext("tcp://localhost:26657", orch.keyring, "orch", orch.address())
 		s.Require().NoError(err, "Failed to create client for orchestrator")
 		_, err = s.chain.sendMsgs(*orchClientCtx, &bidRequest1)
 		s.Require().NoError(err, "Failed to submit bid")
@@ -267,7 +267,7 @@ func (s *IntegrationTestSuite) TestCellarFees() {
 		s.T().Log("Distribution rate is linear. Increasing the reward supply by bidding on the BETA auction")
 		bidRequest2 := auctiontypes.MsgSubmitBidRequest{
 			AuctionId:              betaAuctionID,
-			Signer:                 orch.keyInfo.GetAddress().String(),
+			Signer:                 orch.address().String(),
 			MaxBidInUsomm:          sdk.NewCoin(testDenom, sdk.NewIntFromUint64(1400000)),
 			SaleTokenMinimumAmount: sdk.NewCoin(betaFeeDenom, sdk.NewIntFromUint64(140000)),
 		}
@@ -301,7 +301,7 @@ func (s *IntegrationTestSuite) TestCellarFees() {
 
 		rewardRateBaseline := sdk.ZeroDec()
 		rewardsRes, err := distQueryClient.DelegationRewards(ctx, &disttypes.QueryDelegationRewardsRequest{
-			DelegatorAddress: val.keyInfo.GetAddress().String(),
+			DelegatorAddress: val.address().String(),
 			ValidatorAddress: "sommvaloper199sjfhaw3hempwzljw0lgwsm9kk6r8e5ef3hmp",
 		})
 		s.Require().NoError(err)
@@ -312,7 +312,7 @@ func (s *IntegrationTestSuite) TestCellarFees() {
 		time.Sleep(time.Second * 12)
 
 		rewardsRes, err = distQueryClient.DelegationRewards(ctx, &disttypes.QueryDelegationRewardsRequest{
-			DelegatorAddress: val.keyInfo.GetAddress().String(),
+			DelegatorAddress: val.address().String(),
 			ValidatorAddress: "sommvaloper199sjfhaw3hempwzljw0lgwsm9kk6r8e5ef3hmp",
 		})
 		s.Require().NoError(err)
