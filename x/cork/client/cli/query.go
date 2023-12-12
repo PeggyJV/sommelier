@@ -1,8 +1,7 @@
 package cli
 
 import (
-	"strconv"
-
+	"cosmossdk.io/math"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
@@ -134,14 +133,14 @@ func queryScheduledCorksByBlockHeight() *cobra.Command {
 				return err
 			}
 
-			height, err := strconv.Atoi(args[0])
+			height, err := math.ParseUint(args[0])
 			if err != nil {
 				return err
 			}
 
 			queryClient := types.NewQueryClient(ctx)
 			req := &types.QueryScheduledCorksByBlockHeightRequest{
-				BlockHeight: uint64(height),
+				BlockHeight: height.Uint64(),
 			}
 
 			res, err := queryClient.QueryScheduledCorksByBlockHeight(cmd.Context(), req)

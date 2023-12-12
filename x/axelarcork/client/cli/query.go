@@ -1,8 +1,6 @@
 package cli
 
 import (
-	"strconv"
-
 	"cosmossdk.io/math"
 
 	"github.com/cosmos/cosmos-sdk/client"
@@ -185,7 +183,7 @@ func queryScheduledCorksByBlockHeight() *cobra.Command {
 				return err
 			}
 
-			height, err := strconv.Atoi(args[0])
+			height, err := math.ParseUint(args[0])
 			if err != nil {
 				return err
 			}
@@ -197,7 +195,7 @@ func queryScheduledCorksByBlockHeight() *cobra.Command {
 			}
 
 			req := &types.QueryScheduledCorksByBlockHeightRequest{
-				BlockHeight: uint64(height),
+				BlockHeight: height.Uint64(),
 				ChainId:     chainID.Uint64(),
 			}
 
