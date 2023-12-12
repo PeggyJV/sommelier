@@ -3,6 +3,7 @@ package pubsub
 import (
 	"fmt"
 
+	errorsmod "cosmossdk.io/errors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	govtypesv1beta1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
@@ -39,7 +40,7 @@ func NewHandler(k keeper.Keeper) sdk.Handler {
 			return sdk.WrapServiceResult(ctx, res, err)
 		default:
 			errMsg := fmt.Sprintf("unrecognized %s message type: %T", types.ModuleName, msg)
-			return nil, sdkerrors.Wrap(sdkerrors.ErrUnknownRequest, errMsg)
+			return nil, errorsmod.Wrap(sdkerrors.ErrUnknownRequest, errMsg)
 		}
 	}
 }
@@ -58,7 +59,7 @@ func NewPubsubProposalHandler(k keeper.Keeper) govtypesv1beta1.Handler {
 			return keeper.HandleRemoveDefaultSubscriptionProposal(ctx, k, *c)
 		default:
 			errMsg := fmt.Sprintf("unrecognized %s proposal type: %T", types.ModuleName, c)
-			return sdkerrors.Wrap(sdkerrors.ErrUnknownRequest, errMsg)
+			return errorsmod.Wrap(sdkerrors.ErrUnknownRequest, errMsg)
 		}
 	}
 }

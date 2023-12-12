@@ -1,8 +1,8 @@
 package types
 
 import (
+	errorsmod "cosmossdk.io/errors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
 	"gopkg.in/yaml.v2"
 )
@@ -74,11 +74,11 @@ func (p *Params) ValidateBasic() error {
 func validateFeeAccrualAuctionThreshold(i interface{}) error {
 	threshold, ok := i.(uint64)
 	if !ok {
-		return sdkerrors.Wrapf(ErrInvalidFeeAccrualAuctionThreshold, "fee accrual auction threshold: %T", i)
+		return errorsmod.Wrapf(ErrInvalidFeeAccrualAuctionThreshold, "fee accrual auction threshold: %T", i)
 	}
 
 	if threshold == 0 {
-		return sdkerrors.Wrapf(ErrInvalidFeeAccrualAuctionThreshold, "fee accrual auction threshold cannot be zero")
+		return errorsmod.Wrapf(ErrInvalidFeeAccrualAuctionThreshold, "fee accrual auction threshold cannot be zero")
 	}
 
 	return nil
@@ -87,11 +87,11 @@ func validateFeeAccrualAuctionThreshold(i interface{}) error {
 func validateRewardEmissionPeriod(i interface{}) error {
 	emissionPeriod, ok := i.(uint64)
 	if !ok {
-		return sdkerrors.Wrapf(ErrInvalidRewardEmissionPeriod, "reward emission period: %T", i)
+		return errorsmod.Wrapf(ErrInvalidRewardEmissionPeriod, "reward emission period: %T", i)
 	}
 
 	if emissionPeriod == 0 {
-		return sdkerrors.Wrapf(ErrInvalidRewardEmissionPeriod, "reward emission period cannot be zero")
+		return errorsmod.Wrapf(ErrInvalidRewardEmissionPeriod, "reward emission period cannot be zero")
 	}
 
 	return nil
@@ -100,15 +100,15 @@ func validateRewardEmissionPeriod(i interface{}) error {
 func validateInitialPriceDecreaseRate(i interface{}) error {
 	rate, ok := i.(sdk.Dec)
 	if !ok {
-		return sdkerrors.Wrapf(ErrInvalidInitialPriceDecreaseRate, "initial price decrease rate: %T", i)
+		return errorsmod.Wrapf(ErrInvalidInitialPriceDecreaseRate, "initial price decrease rate: %T", i)
 	}
 
 	if rate == sdk.ZeroDec() {
-		return sdkerrors.Wrapf(ErrInvalidInitialPriceDecreaseRate, "initial price decrease rate cannot be zero, must be 0 < x < 1")
+		return errorsmod.Wrapf(ErrInvalidInitialPriceDecreaseRate, "initial price decrease rate cannot be zero, must be 0 < x < 1")
 	}
 
 	if rate == sdk.OneDec() {
-		return sdkerrors.Wrapf(ErrInvalidInitialPriceDecreaseRate, "initial price decrease rate cannot be one, must be 0 < x < 1")
+		return errorsmod.Wrapf(ErrInvalidInitialPriceDecreaseRate, "initial price decrease rate cannot be one, must be 0 < x < 1")
 	}
 
 	return nil
@@ -117,11 +117,11 @@ func validateInitialPriceDecreaseRate(i interface{}) error {
 func validatePriceDecreaseBlockInterval(i interface{}) error {
 	interval, ok := i.(uint64)
 	if !ok {
-		return sdkerrors.Wrapf(ErrInvalidPriceDecreaseBlockInterval, "price decrease block interval: %T", i)
+		return errorsmod.Wrapf(ErrInvalidPriceDecreaseBlockInterval, "price decrease block interval: %T", i)
 	}
 
 	if interval == 0 {
-		return sdkerrors.Wrapf(ErrInvalidPriceDecreaseBlockInterval, "price decrease block interval cannot be zero")
+		return errorsmod.Wrapf(ErrInvalidPriceDecreaseBlockInterval, "price decrease block interval cannot be zero")
 	}
 
 	return nil

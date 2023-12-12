@@ -10,8 +10,8 @@ import (
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/suite"
 
+	errorsmod "cosmossdk.io/errors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
 	"github.com/peggyjv/sommelier/v7/app/params"
 	moduletestutil "github.com/peggyjv/sommelier/v7/testutil"
@@ -283,7 +283,7 @@ func (suite *KeeperTestSuite) TestUnhappyPathsForBeginAuction() {
 				fundingModuleAccount:       "cork",
 				proceedsModuleAccount:      permissionedReciever.GetName(),
 			},
-			expectedError: sdkerrors.Wrapf(auctionTypes.ErrUnauthorizedFundingModule, "Module Account: cork"),
+			expectedError: errorsmod.Wrapf(auctionTypes.ErrUnauthorizedFundingModule, "Module Account: cork"),
 			runsBefore:    func() {},
 		},
 		{
@@ -296,7 +296,7 @@ func (suite *KeeperTestSuite) TestUnhappyPathsForBeginAuction() {
 				fundingModuleAccount:       permissionedFunder.GetName(),
 				proceedsModuleAccount:      "gravity",
 			},
-			expectedError: sdkerrors.Wrapf(auctionTypes.ErrUnauthorizedProceedsModule, "Module Account: gravity"),
+			expectedError: errorsmod.Wrapf(auctionTypes.ErrUnauthorizedProceedsModule, "Module Account: gravity"),
 			runsBefore:    func() {},
 		},
 		{
@@ -309,7 +309,7 @@ func (suite *KeeperTestSuite) TestUnhappyPathsForBeginAuction() {
 				fundingModuleAccount:       permissionedFunder.GetName(),
 				proceedsModuleAccount:      permissionedReciever.GetName(),
 			},
-			expectedError: sdkerrors.Wrapf(auctionTypes.ErrCouldNotFindSaleTokenPrice, "starting amount denom: anvil"),
+			expectedError: errorsmod.Wrapf(auctionTypes.ErrCouldNotFindSaleTokenPrice, "starting amount denom: anvil"),
 			runsBefore:    func() {},
 		},
 		{
@@ -322,7 +322,7 @@ func (suite *KeeperTestSuite) TestUnhappyPathsForBeginAuction() {
 				fundingModuleAccount:       permissionedFunder.GetName(),
 				proceedsModuleAccount:      permissionedReciever.GetName(),
 			},
-			expectedError: sdkerrors.Wrapf(auctionTypes.ErrLastSaleTokenPriceTooOld, "starting amount denom: %s", saleToken),
+			expectedError: errorsmod.Wrapf(auctionTypes.ErrLastSaleTokenPriceTooOld, "starting amount denom: %s", saleToken),
 			runsBefore: func() {
 				auctionKeeper.setTokenPrice(ctx, saleTokenPrice)
 			},
@@ -337,7 +337,7 @@ func (suite *KeeperTestSuite) TestUnhappyPathsForBeginAuction() {
 				fundingModuleAccount:       permissionedFunder.GetName(),
 				proceedsModuleAccount:      permissionedReciever.GetName(),
 			},
-			expectedError: sdkerrors.Wrap(auctionTypes.ErrCouldNotFindSommTokenPrice, params.BaseCoinUnit),
+			expectedError: errorsmod.Wrap(auctionTypes.ErrCouldNotFindSommTokenPrice, params.BaseCoinUnit),
 			runsBefore:    func() {},
 		},
 		{
@@ -350,7 +350,7 @@ func (suite *KeeperTestSuite) TestUnhappyPathsForBeginAuction() {
 				fundingModuleAccount:       permissionedFunder.GetName(),
 				proceedsModuleAccount:      permissionedReciever.GetName(),
 			},
-			expectedError: sdkerrors.Wrap(auctionTypes.ErrLastSommTokenPriceTooOld, params.BaseCoinUnit),
+			expectedError: errorsmod.Wrap(auctionTypes.ErrLastSommTokenPriceTooOld, params.BaseCoinUnit),
 			runsBefore: func() {
 				auctionKeeper.setTokenPrice(ctx, sommPrice)
 			},
@@ -365,7 +365,7 @@ func (suite *KeeperTestSuite) TestUnhappyPathsForBeginAuction() {
 				fundingModuleAccount:       permissionedFunder.GetName(),
 				proceedsModuleAccount:      permissionedReciever.GetName(),
 			},
-			expectedError: sdkerrors.Wrapf(auctionTypes.ErrInvalidInitialDecreaseRate, "Initial price decrease rate 0.000000000000000000"),
+			expectedError: errorsmod.Wrapf(auctionTypes.ErrInvalidInitialDecreaseRate, "Initial price decrease rate 0.000000000000000000"),
 			runsBefore:    func() {},
 		},
 		{
@@ -378,7 +378,7 @@ func (suite *KeeperTestSuite) TestUnhappyPathsForBeginAuction() {
 				fundingModuleAccount:       permissionedFunder.GetName(),
 				proceedsModuleAccount:      permissionedReciever.GetName(),
 			},
-			expectedError: sdkerrors.Wrapf(auctionTypes.ErrInvalidInitialDecreaseRate, "Initial price decrease rate 1.000000000000000000"),
+			expectedError: errorsmod.Wrapf(auctionTypes.ErrInvalidInitialDecreaseRate, "Initial price decrease rate 1.000000000000000000"),
 			runsBefore:    func() {},
 		},
 		{
@@ -391,7 +391,7 @@ func (suite *KeeperTestSuite) TestUnhappyPathsForBeginAuction() {
 				fundingModuleAccount:       permissionedFunder.GetName(),
 				proceedsModuleAccount:      permissionedReciever.GetName(),
 			},
-			expectedError: sdkerrors.Wrapf(auctionTypes.ErrCannotStartTwoAuctionsForSameDenomSimultaneously, "Denom: %s", auctionedSaleTokens.Denom),
+			expectedError: errorsmod.Wrapf(auctionTypes.ErrCannotStartTwoAuctionsForSameDenomSimultaneously, "Denom: %s", auctionedSaleTokens.Denom),
 			runsBefore: func() {
 				// Mock initial bank keeper fund transfer
 				suite.mockSendCoinsFromModuleToModule(ctx, permissionedFunder.GetName(), auctionTypes.ModuleName, sdk.NewCoins(auctionedSaleTokens))

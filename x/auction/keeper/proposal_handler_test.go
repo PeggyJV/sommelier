@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"testing"
 
+	errorsmod "cosmossdk.io/errors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	govTypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 	"github.com/peggyjv/sommelier/v7/app/params"
 	auctionTypes "github.com/peggyjv/sommelier/v7/x/auction/types"
@@ -71,7 +71,7 @@ func (suite *KeeperTestSuite) TestUnhappPathForProposalHandler() {
 				Description: "Description",
 				TokenPrices: []*auctionTypes.ProposedTokenPrice{},
 			},
-			expectedError: sdkerrors.Wrap(govTypes.ErrInvalidProposalContent, "proposal title cannot be blank"),
+			expectedError: errorsmod.Wrap(govTypes.ErrInvalidProposalContent, "proposal title cannot be blank"),
 		},
 		{
 			name: "Validate basic canary 2 -- cannot have non usomm & non gravity denom",
@@ -85,7 +85,7 @@ func (suite *KeeperTestSuite) TestUnhappPathForProposalHandler() {
 					},
 				},
 			},
-			expectedError: sdkerrors.Wrapf(auctionTypes.ErrInvalidTokenPriceDenom, "denom: weth"),
+			expectedError: errorsmod.Wrapf(auctionTypes.ErrInvalidTokenPriceDenom, "denom: weth"),
 		},
 		{
 			name: "Cannot attempt to update prices twice for a denom in one proposal",
@@ -103,7 +103,7 @@ func (suite *KeeperTestSuite) TestUnhappPathForProposalHandler() {
 					},
 				},
 			},
-			expectedError: sdkerrors.Wrapf(auctionTypes.ErrTokenPriceProposalAttemptsToUpdateTokenPriceMoreThanOnce, "denom: gravity0x761d38e5ddf6ccf6cf7c55759d5210750b5d60f3"),
+			expectedError: errorsmod.Wrapf(auctionTypes.ErrTokenPriceProposalAttemptsToUpdateTokenPriceMoreThanOnce, "denom: gravity0x761d38e5ddf6ccf6cf7c55759d5210750b5d60f3"),
 		},
 	}
 

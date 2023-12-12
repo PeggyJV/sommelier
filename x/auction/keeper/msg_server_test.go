@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"testing"
 
+	errorsmod "cosmossdk.io/errors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 
 	"github.com/peggyjv/sommelier/v7/app/params"
@@ -211,7 +211,7 @@ func (suite *KeeperTestSuite) TestUnhappyPathsForSubmitBid() {
 				MaxBidInUsomm:          sdk.NewCoin(params.BaseCoinUnit, sdk.NewInt(100)),
 				SaleTokenMinimumAmount: sdk.NewCoin(saleToken, sdk.NewInt(1)),
 			},
-			expectedError:     sdkerrors.Wrapf(auctionTypes.ErrAuctionNotFound, "Auction id: %d", uint32(420)),
+			expectedError:     errorsmod.Wrapf(auctionTypes.ErrAuctionNotFound, "Auction id: %d", uint32(420)),
 			runsBefore:        func() {},
 			submitBidResponse: &auctionTypes.MsgSubmitBidResponse{},
 		},
@@ -223,7 +223,7 @@ func (suite *KeeperTestSuite) TestUnhappyPathsForSubmitBid() {
 				MaxBidInUsomm:          sdk.NewCoin(params.BaseCoinUnit, sdk.NewInt(100)),
 				SaleTokenMinimumAmount: sdk.NewCoin("blemflarcks", sdk.NewInt(1)),
 			},
-			expectedError:     sdkerrors.Wrapf(auctionTypes.ErrBidAuctionDenomMismatch, "Bid denom: blemflarcks, Auction denom: %s", saleToken),
+			expectedError:     errorsmod.Wrapf(auctionTypes.ErrBidAuctionDenomMismatch, "Bid denom: blemflarcks, Auction denom: %s", saleToken),
 			runsBefore:        func() {},
 			submitBidResponse: &auctionTypes.MsgSubmitBidResponse{},
 		},
@@ -235,7 +235,7 @@ func (suite *KeeperTestSuite) TestUnhappyPathsForSubmitBid() {
 				MaxBidInUsomm:          sdk.NewCoin(params.BaseCoinUnit, sdk.NewInt(1000000)),
 				SaleTokenMinimumAmount: sdk.NewCoin(saleToken, sdk.NewInt(1000000)),
 			},
-			expectedError: sdkerrors.Wrapf(auctionTypes.ErrInsufficientBid, "minimum purchase price: 2000000, max bid: 1000000"),
+			expectedError: errorsmod.Wrapf(auctionTypes.ErrInsufficientBid, "minimum purchase price: 2000000, max bid: 1000000"),
 			runsBefore: func() {
 				suite.mockGetModuleAccount(ctx)
 				suite.mockGetBalance(ctx, authtypes.NewEmptyModuleAccount("mock").GetAddress(), saleToken, originalAuction.RemainingTokensForSale)
@@ -250,7 +250,7 @@ func (suite *KeeperTestSuite) TestUnhappyPathsForSubmitBid() {
 				MaxBidInUsomm:          sdk.NewCoin(params.BaseCoinUnit, sdk.NewInt(2)),
 				SaleTokenMinimumAmount: sdk.NewCoin(saleToken, sdk.NewInt(1)),
 			},
-			expectedError: sdkerrors.Wrapf(auctionTypes.ErrBidAmountIsTooSmall, "bid amount: 2, minimum amount in usomm: %s", fmt.Sprint(auctionTypes.DefaultParams().MinimumBidInUsomm)),
+			expectedError: errorsmod.Wrapf(auctionTypes.ErrBidAmountIsTooSmall, "bid amount: 2, minimum amount in usomm: %s", fmt.Sprint(auctionTypes.DefaultParams().MinimumBidInUsomm)),
 			runsBefore: func() {
 				suite.mockGetModuleAccount(ctx)
 				suite.mockGetBalance(ctx, authtypes.NewEmptyModuleAccount("mock").GetAddress(), saleToken, originalAuction.RemainingTokensForSale)
@@ -265,7 +265,7 @@ func (suite *KeeperTestSuite) TestUnhappyPathsForSubmitBid() {
 				MaxBidInUsomm:          sdk.NewCoin(params.BaseCoinUnit, sdk.NewInt(4000000)),
 				SaleTokenMinimumAmount: sdk.NewCoin(saleToken, sdk.NewInt(1000002)),
 			},
-			expectedError: sdkerrors.Wrapf(auctionTypes.ErrMinimumPurchaseAmountLargerThanTokensRemaining, "Minimum purchase: %s, amount remaining: %s", sdk.NewInt(1000002), originalAuction.RemainingTokensForSale.String()),
+			expectedError: errorsmod.Wrapf(auctionTypes.ErrMinimumPurchaseAmountLargerThanTokensRemaining, "Minimum purchase: %s, amount remaining: %s", sdk.NewInt(1000002), originalAuction.RemainingTokensForSale.String()),
 			runsBefore: func() {
 				suite.mockGetModuleAccount(ctx)
 				suite.mockGetBalance(ctx, authtypes.NewEmptyModuleAccount("mock").GetAddress(), saleToken, originalAuction.RemainingTokensForSale)
@@ -280,7 +280,7 @@ func (suite *KeeperTestSuite) TestUnhappyPathsForSubmitBid() {
 				MaxBidInUsomm:          sdk.NewCoin("cinnamonRollCoin", sdk.NewInt(2000000)),
 				SaleTokenMinimumAmount: sdk.NewCoin(saleToken, sdk.NewInt(1000000)),
 			},
-			expectedError: sdkerrors.Wrapf(auctionTypes.ErrBidMustBeInUsomm, "bid: %s", sdk.NewCoin("cinnamonRollCoin", sdk.NewInt(2000000)).String()),
+			expectedError: errorsmod.Wrapf(auctionTypes.ErrBidMustBeInUsomm, "bid: %s", sdk.NewCoin("cinnamonRollCoin", sdk.NewInt(2000000)).String()),
 			runsBefore: func() {
 				suite.mockGetModuleAccount(ctx)
 				suite.mockGetBalance(ctx, authtypes.NewEmptyModuleAccount("mock").GetAddress(), saleToken, originalAuction.RemainingTokensForSale)
@@ -295,7 +295,7 @@ func (suite *KeeperTestSuite) TestUnhappyPathsForSubmitBid() {
 				MaxBidInUsomm:          sdk.NewCoin(params.BaseCoinUnit, sdk.NewInt(2000000)),
 				SaleTokenMinimumAmount: sdk.NewCoin(saleToken, sdk.NewInt(0)),
 			},
-			expectedError: sdkerrors.Wrapf(auctionTypes.ErrMinimumAmountMustBePositive, "sale token amount: %s", sdk.NewCoin(saleToken, sdk.NewInt(0)).String()),
+			expectedError: errorsmod.Wrapf(auctionTypes.ErrMinimumAmountMustBePositive, "sale token amount: %s", sdk.NewCoin(saleToken, sdk.NewInt(0)).String()),
 			runsBefore: func() {
 				suite.mockGetModuleAccount(ctx)
 				suite.mockGetBalance(ctx, authtypes.NewEmptyModuleAccount("mock").GetAddress(), saleToken, originalAuction.RemainingTokensForSale)

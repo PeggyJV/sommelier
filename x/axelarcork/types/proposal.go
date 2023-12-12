@@ -6,7 +6,7 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	errorsmod "cosmossdk.io/errors"
 	govtypesv1beta1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
 	"github.com/ethereum/go-ethereum/common"
 )
@@ -148,15 +148,15 @@ func (m *AxelarScheduledCorkProposal) ValidateBasic() error {
 	}
 
 	if len(m.ContractCallProtoJson) == 0 {
-		return sdkerrors.Wrapf(ErrInvalidJSON, "cannot have empty contract call")
+		return errorsmod.Wrapf(ErrInvalidJSON, "cannot have empty contract call")
 	}
 
 	if !json.Valid([]byte(m.ContractCallProtoJson)) {
-		return sdkerrors.Wrapf(ErrInvalidJSON, "%s", m.ContractCallProtoJson)
+		return errorsmod.Wrapf(ErrInvalidJSON, "%s", m.ContractCallProtoJson)
 	}
 
 	if !common.IsHexAddress(m.TargetContractAddress) {
-		return sdkerrors.Wrapf(ErrInvalidEVMAddress, "%s", m.TargetContractAddress)
+		return errorsmod.Wrapf(ErrInvalidEVMAddress, "%s", m.TargetContractAddress)
 	}
 
 	return nil
@@ -190,7 +190,7 @@ func (m *AxelarCommunityPoolSpendProposal) ValidateBasic() error {
 	}
 
 	if !common.IsHexAddress(m.Recipient) {
-		return sdkerrors.Wrapf(ErrInvalidEVMAddress, "%s", m.Recipient)
+		return errorsmod.Wrapf(ErrInvalidEVMAddress, "%s", m.Recipient)
 	}
 
 	return nil
@@ -271,7 +271,7 @@ func (m *UpgradeAxelarProxyContractProposal) ValidateBasic() error {
 	}
 
 	if !common.IsHexAddress(m.NewProxyAddress) {
-		return sdkerrors.Wrapf(ErrInvalidEVMAddress, "%s", m.NewProxyAddress)
+		return errorsmod.Wrapf(ErrInvalidEVMAddress, "%s", m.NewProxyAddress)
 	}
 
 	return nil

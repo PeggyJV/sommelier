@@ -6,11 +6,11 @@ import (
 
 	"encoding/binary"
 
+	errorsmod "cosmossdk.io/errors"
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
 	"github.com/peggyjv/sommelier/v7/app/params"
@@ -186,33 +186,33 @@ func (k Keeper) BeginAuction(ctx sdk.Context,
 	proceedsModuleAccount string) error {
 	// Validate starting token balance
 	if !startingTokensForSale.IsPositive() {
-		return sdkerrors.Wrapf(types.ErrAuctionStartingAmountMustBePositve, "Starting tokens for sale: %s", startingTokensForSale.String())
+		return errorsmod.Wrapf(types.ErrAuctionStartingAmountMustBePositve, "Starting tokens for sale: %s", startingTokensForSale.String())
 	}
 
 	// Validate funding module
 	if _, ok := k.fundingModuleAccounts[fundingModuleAccount]; !ok {
-		return sdkerrors.Wrapf(types.ErrUnauthorizedFundingModule, "Module Account: %s", fundingModuleAccount)
+		return errorsmod.Wrapf(types.ErrUnauthorizedFundingModule, "Module Account: %s", fundingModuleAccount)
 	}
 
 	// Validate proceeds module
 	if _, ok := k.proceedsModuleAccounts[proceedsModuleAccount]; !ok {
-		return sdkerrors.Wrapf(types.ErrUnauthorizedProceedsModule, "Module Account: %s", proceedsModuleAccount)
+		return errorsmod.Wrapf(types.ErrUnauthorizedProceedsModule, "Module Account: %s", proceedsModuleAccount)
 	}
 
 	// Verify sale token price freshness is acceptable
 	lastSaleTokenPrice, found := k.GetTokenPrice(ctx, startingTokensForSale.Denom)
 	if !found {
-		return sdkerrors.Wrapf(types.ErrCouldNotFindSaleTokenPrice, "starting amount denom: %s", startingTokensForSale.Denom)
+		return errorsmod.Wrapf(types.ErrCouldNotFindSaleTokenPrice, "starting amount denom: %s", startingTokensForSale.Denom)
 	} else if k.tokenPriceTooOld(ctx, &lastSaleTokenPrice) {
-		return sdkerrors.Wrapf(types.ErrLastSaleTokenPriceTooOld, "starting amount denom: %s", startingTokensForSale.Denom)
+		return errorsmod.Wrapf(types.ErrLastSaleTokenPriceTooOld, "starting amount denom: %s", startingTokensForSale.Denom)
 	}
 
 	// Verify usomm token price freshness is acceptable
 	lastUsommTokenPrice, found := k.GetTokenPrice(ctx, params.BaseCoinUnit)
 	if !found {
-		return sdkerrors.Wrap(types.ErrCouldNotFindSommTokenPrice, params.BaseCoinUnit)
+		return errorsmod.Wrap(types.ErrCouldNotFindSommTokenPrice, params.BaseCoinUnit)
 	} else if k.tokenPriceTooOld(ctx, &lastUsommTokenPrice) {
-		return sdkerrors.Wrap(types.ErrLastSommTokenPriceTooOld, params.BaseCoinUnit)
+		return errorsmod.Wrap(types.ErrLastSommTokenPriceTooOld, params.BaseCoinUnit)
 	}
 
 	// Calculate usomm per sale token price
@@ -248,7 +248,7 @@ func (k Keeper) BeginAuction(ctx sdk.Context,
 	var err error = nil
 	k.IterateAuctions(ctx, types.GetActiveAuctionsPrefix(), func(auctionID uint32, auction types.Auction) (stop bool) {
 		if auction.StartingTokensForSale.Denom == startingTokensForSale.Denom {
-			err = sdkerrors.Wrapf(types.ErrCannotStartTwoAuctionsForSameDenomSimultaneously, "Denom: %s", auction.StartingTokensForSale.Denom)
+			err = errorsmod.Wrapf(types.ErrCannotStartTwoAuctionsForSameDenomSimultaneously, "Denom: %s", auction.StartingTokensForSale.Denom)
 			return true
 		}
 		return false

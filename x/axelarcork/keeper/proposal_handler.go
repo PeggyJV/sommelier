@@ -11,8 +11,8 @@ import (
 	transfertypes "github.com/cosmos/ibc-go/v6/modules/apps/transfer/types"
 	clienttypes "github.com/cosmos/ibc-go/v6/modules/core/02-client/types"
 
+	errorsmod "cosmossdk.io/errors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/peggyjv/sommelier/v7/x/axelarcork/types"
 )
@@ -83,7 +83,7 @@ func HandleScheduledCorkProposal(ctx sdk.Context, k Keeper, p types.AxelarSchedu
 	}
 
 	if !k.HasCellarID(ctx, config.Id, common.HexToAddress(p.TargetContractAddress)) {
-		return sdkerrors.Wrapf(types.ErrUnmanagedCellarAddress, "id: %s", p.TargetContractAddress)
+		return errorsmod.Wrapf(types.ErrUnmanagedCellarAddress, "id: %s", p.TargetContractAddress)
 	}
 
 	return nil

@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	errorsmod "cosmossdk.io/errors"
 	govtypesv1beta1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
 	"github.com/ethereum/go-ethereum/common"
 )
@@ -117,15 +117,15 @@ func (m *ScheduledCorkProposal) ValidateBasic() error {
 	}
 
 	if len(m.ContractCallProtoJson) == 0 {
-		return sdkerrors.Wrapf(ErrInvalidJSON, "cannot have empty contract call")
+		return errorsmod.Wrapf(ErrInvalidJSON, "cannot have empty contract call")
 	}
 
 	if !json.Valid([]byte(m.ContractCallProtoJson)) {
-		return sdkerrors.Wrapf(ErrInvalidJSON, "%s", m.ContractCallProtoJson)
+		return errorsmod.Wrapf(ErrInvalidJSON, "%s", m.ContractCallProtoJson)
 	}
 
 	if !common.IsHexAddress(m.TargetContractAddress) {
-		return sdkerrors.Wrapf(ErrInvalidEthereumAddress, "%s", m.TargetContractAddress)
+		return errorsmod.Wrapf(ErrInvalidEthereumAddress, "%s", m.TargetContractAddress)
 	}
 
 	return nil

@@ -1,7 +1,7 @@
 package types
 
 import (
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	errorsmod "cosmossdk.io/errors"
 	govtypesv1beta1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
 )
 
@@ -45,7 +45,7 @@ func (m *SetTokenPricesProposal) ValidateBasic() error {
 	}
 
 	if len(m.TokenPrices) == 0 {
-		return sdkerrors.Wrapf(ErrTokenPriceProposalMustHaveAtLeastOnePrice, "prices: %v", m.TokenPrices)
+		return errorsmod.Wrapf(ErrTokenPriceProposalMustHaveAtLeastOnePrice, "prices: %v", m.TokenPrices)
 	}
 
 	seenDenomPrices := []string{}
@@ -54,7 +54,7 @@ func (m *SetTokenPricesProposal) ValidateBasic() error {
 		// Check if this price proposal attempts to update the same denom price twice
 		for _, seenDenom := range seenDenomPrices {
 			if seenDenom == tokenPrice.Denom {
-				return sdkerrors.Wrapf(ErrTokenPriceProposalAttemptsToUpdateTokenPriceMoreThanOnce, "denom: %s", tokenPrice.Denom)
+				return errorsmod.Wrapf(ErrTokenPriceProposalAttemptsToUpdateTokenPriceMoreThanOnce, "denom: %s", tokenPrice.Denom)
 			}
 		}
 

@@ -3,8 +3,8 @@ package types
 import (
 	"testing"
 
+	errorsmod "cosmossdk.io/errors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 
 	"github.com/stretchr/testify/require"
@@ -66,7 +66,7 @@ func TestTokenPriceProposalValidate(t *testing.T) {
 				},
 			},
 			expPass: false,
-			err:     sdkerrors.Wrap(govtypes.ErrInvalidProposalContent, "proposal title cannot be blank"),
+			err:     errorsmod.Wrap(govtypes.ErrInvalidProposalContent, "proposal title cannot be blank"),
 		},
 		{
 			name: "Gov validate basic canary 2 -- description cannot be empty",
@@ -81,7 +81,7 @@ func TestTokenPriceProposalValidate(t *testing.T) {
 				},
 			},
 			expPass: false,
-			err:     sdkerrors.Wrap(govtypes.ErrInvalidProposalContent, "proposal description cannot be blank"),
+			err:     errorsmod.Wrap(govtypes.ErrInvalidProposalContent, "proposal description cannot be blank"),
 		},
 		{
 			name: "Token price proposal must have at least one token price",
@@ -91,7 +91,7 @@ func TestTokenPriceProposalValidate(t *testing.T) {
 				TokenPrices: []*ProposedTokenPrice{},
 			},
 			expPass: false,
-			err:     sdkerrors.Wrapf(ErrTokenPriceProposalMustHaveAtLeastOnePrice, "prices: %v", []*ProposedTokenPrice{}),
+			err:     errorsmod.Wrapf(ErrTokenPriceProposalMustHaveAtLeastOnePrice, "prices: %v", []*ProposedTokenPrice{}),
 		},
 		{
 			name: "Cannot have duplicate denoms in token price proposal",
@@ -110,7 +110,7 @@ func TestTokenPriceProposalValidate(t *testing.T) {
 				},
 			},
 			expPass: false,
-			err:     sdkerrors.Wrapf(ErrTokenPriceProposalAttemptsToUpdateTokenPriceMoreThanOnce, "denom: usomm"),
+			err:     errorsmod.Wrapf(ErrTokenPriceProposalAttemptsToUpdateTokenPriceMoreThanOnce, "denom: usomm"),
 		},
 		{
 			name: "Token price validate basic canary 1 -- cannot have empty denom",
@@ -125,7 +125,7 @@ func TestTokenPriceProposalValidate(t *testing.T) {
 				},
 			},
 			expPass: false,
-			err:     sdkerrors.Wrapf(ErrDenomCannotBeEmpty, "price denom: "),
+			err:     errorsmod.Wrapf(ErrDenomCannotBeEmpty, "price denom: "),
 		},
 		{
 			name: "Token price validate basic canary 2 -- price must be positive",
@@ -140,7 +140,7 @@ func TestTokenPriceProposalValidate(t *testing.T) {
 				},
 			},
 			expPass: false,
-			err:     sdkerrors.Wrapf(ErrPriceMustBePositive, "usd price: %s", sdk.MustNewDecFromStr("0.0").String()),
+			err:     errorsmod.Wrapf(ErrPriceMustBePositive, "usd price: %s", sdk.MustNewDecFromStr("0.0").String()),
 		},
 	}
 

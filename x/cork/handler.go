@@ -1,6 +1,7 @@
 package cork
 
 import (
+	errorsmod "cosmossdk.io/errors"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	govtypesv1beta1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
 
@@ -19,7 +20,7 @@ func NewHandler(k keeper.Keeper) sdk.Handler {
 			res, err := k.ScheduleCork(sdk.WrapSDKContext(ctx), msg)
 			return sdk.WrapServiceResult(ctx, res, err)
 		default:
-			return nil, sdkerrors.Wrapf(sdkerrors.ErrUnknownRequest, "unrecognized cork message type: %T", msg)
+			return nil, errorsmod.Wrapf(sdkerrors.ErrUnknownRequest, "unrecognized cork message type: %T", msg)
 		}
 	}
 }
@@ -35,7 +36,7 @@ func NewProposalHandler(k keeper.Keeper) govtypesv1beta1.Handler {
 			return keeper.HandleScheduledCorkProposal(ctx, k, *c)
 
 		default:
-			return sdkerrors.Wrapf(sdkerrors.ErrUnknownRequest, "unrecognized cork proposal content type: %T", c)
+			return errorsmod.Wrapf(sdkerrors.ErrUnknownRequest, "unrecognized cork proposal content type: %T", c)
 		}
 	}
 }
