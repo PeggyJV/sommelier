@@ -1,9 +1,9 @@
 package cli
 
 import (
+	"fmt"
 	"testing"
 
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/stretchr/testify/require"
 )
 
@@ -18,7 +18,7 @@ func TestQueryScheduledCorksByIDCmd(t *testing.T) {
 			args: []string{
 				"bad",
 			},
-			err: sdkerrors.New("", uint32(1), "invalid ID length, must be a keccak256 hash"),
+			err: fmt.Errorf("invalid ID length, must be a keccak256 hash"),
 		},
 	}
 
@@ -42,7 +42,7 @@ func TestQueryCorkResultCmd(t *testing.T) {
 			args: []string{
 				"bad",
 			},
-			err: sdkerrors.New("", uint32(1), "invalid ID length, must be a keccak256 hash"),
+			err: fmt.Errorf("invalid ID length, must be a keccak256 hash"),
 		},
 	}
 

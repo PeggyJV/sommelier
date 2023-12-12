@@ -1,9 +1,9 @@
 package cli
 
 import (
+	"fmt"
 	"testing"
 
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/stretchr/testify/require"
 )
 
@@ -18,7 +18,7 @@ func TestQueryParamsCmd(t *testing.T) {
 			args: []string{
 				"1",
 			},
-			err: sdkerrors.New("", uint32(1), "unknown command \"1\" for \"parameters\""),
+			err: fmt.Errorf("unknown command \"1\" for \"parameters\""),
 		},
 	}
 
@@ -40,7 +40,7 @@ func TestQueryActiveAuction(t *testing.T) {
 		{
 			name: "Insufficient args",
 			args: []string{},
-			err:  sdkerrors.New("", uint32(1), "accepts 1 arg(s), received 0"),
+			err:  fmt.Errorf("accepts 1 arg(s), received 0"),
 		},
 		{
 			name: "Too many args",
@@ -48,7 +48,7 @@ func TestQueryActiveAuction(t *testing.T) {
 				"1",
 				"2",
 			},
-			err: sdkerrors.New("", uint32(1), "accepts 1 arg(s), received 2"),
+			err: fmt.Errorf("accepts 1 arg(s), received 2"),
 		},
 	}
 
@@ -70,7 +70,7 @@ func TestQueryEndedAuction(t *testing.T) {
 		{
 			name: "Insufficient args",
 			args: []string{},
-			err:  sdkerrors.New("", uint32(1), "accepts 1 arg(s), received 0"),
+			err:  fmt.Errorf("accepts 1 arg(s), received 0"),
 		},
 		{
 			name: "Too many args",
@@ -78,7 +78,7 @@ func TestQueryEndedAuction(t *testing.T) {
 				"1",
 				"2",
 			},
-			err: sdkerrors.New("", uint32(1), "accepts 1 arg(s), received 2"),
+			err: fmt.Errorf("accepts 1 arg(s), received 2"),
 		},
 	}
 
@@ -102,7 +102,7 @@ func TestActiveAuctionsCmd(t *testing.T) {
 			args: []string{
 				"1",
 			},
-			err: sdkerrors.New("", uint32(1), "unknown command \"1\" for \"active-auctions\""),
+			err: fmt.Errorf("unknown command \"1\" for \"active-auctions\""),
 		},
 	}
 
@@ -126,7 +126,7 @@ func TestEndedAuctionsCmd(t *testing.T) {
 			args: []string{
 				"1",
 			},
-			err: sdkerrors.New("", uint32(1), "unknown command \"1\" for \"ended-auctions\""),
+			err: fmt.Errorf("unknown command \"1\" for \"ended-auctions\""),
 		},
 	}
 
@@ -148,7 +148,7 @@ func TestQueryActiveAuctionsByDenom(t *testing.T) {
 		{
 			name: "Insufficient args",
 			args: []string{},
-			err:  sdkerrors.New("", uint32(1), "accepts 1 arg(s), received 0"),
+			err:  fmt.Errorf("accepts 1 arg(s), received 0"),
 		},
 		{
 			name: "Too many args",
@@ -156,7 +156,7 @@ func TestQueryActiveAuctionsByDenom(t *testing.T) {
 				"1",
 				"2",
 			},
-			err: sdkerrors.New("", uint32(1), "accepts 1 arg(s), received 2"),
+			err: fmt.Errorf("accepts 1 arg(s), received 2"),
 		},
 	}
 
@@ -178,7 +178,7 @@ func TestQueryEndedAuctionsByDenom(t *testing.T) {
 		{
 			name: "Insufficient args",
 			args: []string{},
-			err:  sdkerrors.New("", uint32(1), "accepts 1 arg(s), received 0"),
+			err:  fmt.Errorf("accepts 1 arg(s), received 0"),
 		},
 		{
 			name: "Too many args",
@@ -186,7 +186,7 @@ func TestQueryEndedAuctionsByDenom(t *testing.T) {
 				"1",
 				"2",
 			},
-			err: sdkerrors.New("", uint32(1), "accepts 1 arg(s), received 2"),
+			err: fmt.Errorf("accepts 1 arg(s), received 2"),
 		},
 	}
 
@@ -210,7 +210,7 @@ func TestQueryBids(t *testing.T) {
 			args: []string{
 				"1",
 			},
-			err: sdkerrors.New("", uint32(1), "accepts 2 arg(s), received 1"),
+			err: fmt.Errorf("accepts 2 arg(s), received 1"),
 		},
 		{
 			name: "Too many args",
@@ -219,7 +219,7 @@ func TestQueryBids(t *testing.T) {
 				"2",
 				"3",
 			},
-			err: sdkerrors.New("", uint32(1), "accepts 2 arg(s), received 3"),
+			err: fmt.Errorf("accepts 2 arg(s), received 3"),
 		},
 	}
 
@@ -241,7 +241,7 @@ func TestQueryBidByAuction(t *testing.T) {
 		{
 			name: "Insufficient args",
 			args: []string{},
-			err:  sdkerrors.New("", uint32(1), "accepts 1 arg(s), received 0"),
+			err:  fmt.Errorf("accepts 1 arg(s), received 0"),
 		},
 		{
 			name: "Too many args",
@@ -249,7 +249,7 @@ func TestQueryBidByAuction(t *testing.T) {
 				"1",
 				"2",
 			},
-			err: sdkerrors.New("", uint32(1), "accepts 1 arg(s), received 2"),
+			err: fmt.Errorf("accepts 1 arg(s), received 2"),
 		},
 	}
 

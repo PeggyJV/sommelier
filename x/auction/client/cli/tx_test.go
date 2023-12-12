@@ -6,7 +6,6 @@ import (
 	"testing"
 
 	"github.com/cosmos/cosmos-sdk/simapp/params"
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/peggyjv/sommelier/v7/x/auction/types"
 
 	"github.com/cosmos/cosmos-sdk/testutil"
@@ -52,12 +51,12 @@ func TestSubmitBid(t *testing.T) {
 				"50000gravity0xdac17f958d2ee523a2206206994597c13d831ec7",
 				fmt.Sprintf("--%s=%s", "from", "cosmos16zrkzad482haunrn25ywvwy6fclh3vh7r0hcny"),
 			},
-			err: sdkerrors.New("", uint32(1), "cosmos16zrkzad482haunrn25ywvwy6fclh3vh7r0hcny.info: key not found"), // Expect key not found error since this is just a mock request
+			err: fmt.Errorf("cosmos16zrkzad482haunrn25ywvwy6fclh3vh7r0hcny.info: key not found"), // Expect key not found error since this is just a mock request
 		},
 		{
 			name: "Insufficient args",
 			args: []string{},
-			err:  sdkerrors.New("", uint32(1), "accepts 3 arg(s), received 0"),
+			err:  fmt.Errorf("accepts 3 arg(s), received 0"),
 		},
 		{
 			name: "Too many args",
@@ -67,7 +66,7 @@ func TestSubmitBid(t *testing.T) {
 				"3",
 				"4",
 			},
-			err: sdkerrors.New("", uint32(1), "accepts 3 arg(s), received 4"),
+			err: fmt.Errorf("accepts 3 arg(s), received 4"),
 		},
 		{
 			name: "Missing 'from' field",
@@ -76,7 +75,7 @@ func TestSubmitBid(t *testing.T) {
 				"10000usomm",
 				"50000gravity0xdac17f958d2ee523a2206206994597c13d831ec7",
 			},
-			err: sdkerrors.New("", uint32(1), "must include `--from` flag"),
+			err: fmt.Errorf("must include `--from` flag"),
 		},
 		{
 			name: "Invalid bid",
@@ -85,7 +84,7 @@ func TestSubmitBid(t *testing.T) {
 				"10000",
 				"50000gravity0xdac17f958d2ee523a2206206994597c13d831ec7",
 			},
-			err: sdkerrors.New("", uint32(1), "invalid decimal coin expression: 10000"),
+			err: fmt.Errorf("invalid decimal coin expression: 10000"),
 		},
 		{
 			name: "Invalid minimum amount",
@@ -94,7 +93,7 @@ func TestSubmitBid(t *testing.T) {
 				"10000usomm",
 				"50000",
 			},
-			err: sdkerrors.New("", uint32(1), "invalid decimal coin expression: 50000"),
+			err: fmt.Errorf("invalid decimal coin expression: 50000"),
 		},
 	}
 
