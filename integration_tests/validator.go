@@ -354,7 +354,7 @@ func (v *validator) address() sdk.AccAddress {
 		panic(err)
 	}
 
-	return sdk.AccAddress(addr)
+	return addr
 }
 
 func (v *validator) pubKey() cryptotypes.PubKey {

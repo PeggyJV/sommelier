@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"strings"
 
+	errorsmod "cosmossdk.io/errors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/ethereum/go-ethereum"
 	"github.com/ethereum/go-ethereum/accounts/abi"
 	"github.com/ethereum/go-ethereum/common"
@@ -61,7 +61,7 @@ const CounterABI = `
 func ABIEncodedGet() []byte {
 	encodedCall, err := abi.JSON(strings.NewReader(CounterABI))
 	if err != nil {
-		panic(sdkerrors.Wrap(err, "bad ABI definition in code"))
+		panic(errorsmod.Wrap(err, "bad ABI definition in code"))
 	}
 
 	abiEncodedCall, err := encodedCall.Pack("get")
@@ -75,7 +75,7 @@ func ABIEncodedGet() []byte {
 func ABIEncodedInc() []byte {
 	encodedCall, err := abi.JSON(strings.NewReader(CounterABI))
 	if err != nil {
-		panic(sdkerrors.Wrap(err, "bad ABI definition in code"))
+		panic(errorsmod.Wrap(err, "bad ABI definition in code"))
 	}
 
 	abiEncodedCall, err := encodedCall.Pack("inc")

@@ -8,8 +8,8 @@ import (
 	"math/big"
 	"strings"
 
+	errorsmod "cosmossdk.io/errors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/ethereum/go-ethereum/accounts/abi"
 	"github.com/ethereum/go-ethereum/common"
 	ethereumtypes "github.com/ethereum/go-ethereum/core/types"
@@ -143,11 +143,11 @@ const stateLastValsetNonceABIJSON = `[
 func packCall(abiString, method string, args []interface{}) []byte {
 	encodedCall, err := abi.JSON(strings.NewReader(abiString))
 	if err != nil {
-		panic(sdkerrors.Wrap(err, "bad ABI definition in code"))
+		panic(errorsmod.Wrap(err, "bad ABI definition in code"))
 	}
 	abiEncodedCall, err := encodedCall.Pack(method, args...)
 	if err != nil {
-		panic(sdkerrors.Wrap(err, "error packing calling"))
+		panic(errorsmod.Wrap(err, "error packing calling"))
 	}
 	return abiEncodedCall
 }
