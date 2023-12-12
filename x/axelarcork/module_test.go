@@ -65,11 +65,12 @@ func TestSendPacket_NoMemo(t *testing.T) {
 
 	// Expected mocks
 	gomock.InOrder(
-		setup.Mocks.ICS4WrapperMock.EXPECT().SendPacket(ctx, nil, packet).
-			Return(nil),
+		setup.Mocks.ICS4WrapperMock.EXPECT().SendPacket(ctx, nil, packet.SourcePort, packet.SourceChannel, packet.TimeoutHeight, packet.TimeoutTimestamp, packet.Data).
+			Return(1, nil),
 	)
 
-	require.NoError(t, acMiddleware.SendPacket(ctx, nil, packet))
+	_, err := acMiddleware.SendPacket(ctx, nil, packet.SourcePort, packet.SourceChannel, packet.TimeoutHeight, packet.TimeoutTimestamp, packet.Data)
+	require.NoError(t, err)
 }
 
 func TestSendPacket_NotAxelarChannel(t *testing.T) {
@@ -86,11 +87,12 @@ func TestSendPacket_NotAxelarChannel(t *testing.T) {
 
 	// Expected mocks
 	gomock.InOrder(
-		setup.Mocks.ICS4WrapperMock.EXPECT().SendPacket(ctx, nil, packet).
-			Return(nil),
+		setup.Mocks.ICS4WrapperMock.EXPECT().SendPacket(ctx, nil, packet.SourcePort, packet.SourceChannel, packet.TimeoutHeight, packet.TimeoutTimestamp, packet.Data).
+			Return(1, nil),
 	)
 
-	require.NoError(t, acMiddleware.SendPacket(ctx, nil, packet))
+	_, err := acMiddleware.SendPacket(ctx, nil, packet.SourcePort, packet.SourceChannel, packet.TimeoutHeight, packet.TimeoutTimestamp, packet.Data)
+	require.NoError(t, err)
 }
 
 func TestSendPacket_NotGMPReceiver(t *testing.T) {
@@ -106,11 +108,12 @@ func TestSendPacket_NotGMPReceiver(t *testing.T) {
 
 	// Expected mocks
 	gomock.InOrder(
-		setup.Mocks.ICS4WrapperMock.EXPECT().SendPacket(ctx, nil, packet).
-			Return(nil),
+		setup.Mocks.ICS4WrapperMock.EXPECT().SendPacket(ctx, nil, packet.SourcePort, packet.SourceChannel, packet.TimeoutHeight, packet.TimeoutTimestamp, packet.Data).
+			Return(1, nil),
 	)
 
-	require.NoError(t, acMiddleware.SendPacket(ctx, nil, packet))
+	_, err := acMiddleware.SendPacket(ctx, nil, packet.SourcePort, packet.SourceChannel, packet.TimeoutHeight, packet.TimeoutTimestamp, packet.Data)
+	require.NoError(t, err)
 }
 
 func TestSendPacket_EmptyPayload(t *testing.T) {
@@ -149,5 +152,6 @@ func TestSendPacket_EmptyPayload(t *testing.T) {
 	packet := transferPacket(t, tests.TestGMPAccount.String(), acBody)
 
 	// expect error for non-existent
-	require.Error(t, acMiddleware.SendPacket(ctx, nil, packet))
+	_, err := acMiddleware.SendPacket(ctx, nil, packet.SourcePort, packet.SourceChannel, packet.TimeoutHeight, packet.TimeoutTimestamp, packet.Data)
+	require.Error(t, err)
 }
