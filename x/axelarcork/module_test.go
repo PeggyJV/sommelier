@@ -2,6 +2,7 @@ package axelarcork_test
 
 import (
 	"encoding/json"
+	"fmt"
 	"testing"
 
 	transfertypes "github.com/cosmos/ibc-go/v6/modules/apps/transfer/types"
@@ -150,6 +151,12 @@ func TestSendPacket_EmptyPayload(t *testing.T) {
 		Fee:                nil,
 	}
 	packet := transferPacket(t, tests.TestGMPAccount.String(), acBody)
+
+	// Expected mocks
+	gomock.InOrder(
+		setup.Mocks.ICS4WrapperMock.EXPECT().SendPacket(ctx, nil, packet.SourcePort, packet.SourceChannel, packet.TimeoutHeight, packet.TimeoutTimestamp, packet.Data).
+			Return(uint64(0), fmt.Errorf("mock error")),
+	)
 
 	// expect error for non-existent
 	_, err := acMiddleware.SendPacket(ctx, nil, packet.SourcePort, packet.SourceChannel, packet.TimeoutHeight, packet.TimeoutTimestamp, packet.Data)
