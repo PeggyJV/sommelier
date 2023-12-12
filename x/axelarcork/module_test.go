@@ -66,7 +66,7 @@ func TestSendPacket_NoMemo(t *testing.T) {
 	// Expected mocks
 	gomock.InOrder(
 		setup.Mocks.ICS4WrapperMock.EXPECT().SendPacket(ctx, nil, packet.SourcePort, packet.SourceChannel, packet.TimeoutHeight, packet.TimeoutTimestamp, packet.Data).
-			Return(1, nil),
+			Return(uint64(1), nil),
 	)
 
 	_, err := acMiddleware.SendPacket(ctx, nil, packet.SourcePort, packet.SourceChannel, packet.TimeoutHeight, packet.TimeoutTimestamp, packet.Data)
@@ -88,7 +88,7 @@ func TestSendPacket_NotAxelarChannel(t *testing.T) {
 	// Expected mocks
 	gomock.InOrder(
 		setup.Mocks.ICS4WrapperMock.EXPECT().SendPacket(ctx, nil, packet.SourcePort, packet.SourceChannel, packet.TimeoutHeight, packet.TimeoutTimestamp, packet.Data).
-			Return(1, nil),
+			Return(uint64(1), nil),
 	)
 
 	_, err := acMiddleware.SendPacket(ctx, nil, packet.SourcePort, packet.SourceChannel, packet.TimeoutHeight, packet.TimeoutTimestamp, packet.Data)
@@ -109,7 +109,7 @@ func TestSendPacket_NotGMPReceiver(t *testing.T) {
 	// Expected mocks
 	gomock.InOrder(
 		setup.Mocks.ICS4WrapperMock.EXPECT().SendPacket(ctx, nil, packet.SourcePort, packet.SourceChannel, packet.TimeoutHeight, packet.TimeoutTimestamp, packet.Data).
-			Return(1, nil),
+			Return(uint64(1), nil),
 	)
 
 	_, err := acMiddleware.SendPacket(ctx, nil, packet.SourcePort, packet.SourceChannel, packet.TimeoutHeight, packet.TimeoutTimestamp, packet.Data)
