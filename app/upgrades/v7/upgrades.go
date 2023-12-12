@@ -25,6 +25,7 @@ func CreateUpgradeHandler(
 	return func(ctx sdk.Context, plan upgradetypes.Plan, fromVM module.VersionMap) (module.VersionMap, error) {
 		ctx.Logger().Info("v7 upgrade: entering handler")
 
+		// TODO(bolten): get a sanity check on this
 		// Now that we're on IBC V6, we can update the ICA host module to allow all message types rather than
 		// the list we specified in the v6 upgrade -- a default of HostEnabled: true and the string "*" for messages
 		icaParams := icahosttypes.DefaultParams()
