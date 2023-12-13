@@ -25,6 +25,23 @@ func (k Keeper) BeginBlocker(ctx sdk.Context) {
 	if err != nil {
 		panic(err)
 	}
+
+	cellarfeesParams := k.GetParams(ctx)
+
+	counters := k.GetFeeAccrualCounters(ctx)
+
+	for _, counter := range counters.Counters {
+
+		if counter.Count >= cellarfeesParams.FeeAccrualAuctionThreshold && (ctx.BlockHeader().Height%int64(cellarfeesParams.AuctionInterval) == 0) {
+			started := k.beginAuction(ctx, counter.Denom)
+			if started {
+				counters.ResetCounter(counter.Denom)
+			}
+		}
+
+	}
+	k.SetFeeAccrualCounters(ctx, counters)
+
 }
 
 // EndBlocker is called at the end of every block

@@ -19,6 +19,9 @@ message Params {
     [(gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec", (gogoproto.nullable) = false];
   // Number of blocks between auction price decreases
   uint64 price_decrease_block_interval = 4;
+  // The interval between starting auctions
+  uint64 auction_interval = 5;
+
 }
 
 
