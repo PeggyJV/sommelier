@@ -3,11 +3,18 @@ package integration_tests
 import (
 	"context"
 	"encoding/hex"
+	"fmt"
+	"strings"
 	"time"
 
+	errorsmod "cosmossdk.io/errors"
+	"cosmossdk.io/math"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	govtypesv1beta1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
+	"github.com/ethereum/go-ethereum"
+	"github.com/ethereum/go-ethereum/accounts/abi"
 	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/ethclient"
 	gbtypes "github.com/peggyjv/gravity-bridge/module/v4/x/gravity/types"
 	"github.com/peggyjv/sommelier/v7/x/cork/types"
 )
@@ -308,4 +315,98 @@ func (s *IntegrationTestSuite) TestScheduledCork() {
 		}, time.Second*30, time.Second*5, "proposal was never accepted")
 		s.T().Log("Proposal approved!")
 	})
+}
+
+const CounterABI = `
+  [
+    {
+      "inputs": [],
+      "name": "count",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "dec",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "get",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "inc",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    }
+  ]
+`
+
+func ABIEncodedGet() []byte {
+	encodedCall, err := abi.JSON(strings.NewReader(CounterABI))
+	if err != nil {
+		panic(errorsmod.Wrap(err, "bad ABI definition in code"))
+	}
+
+	abiEncodedCall, err := encodedCall.Pack("get")
+	if err != nil {
+		panic(err)
+	}
+
+	return abiEncodedCall
+}
+
+func ABIEncodedInc() []byte {
+	encodedCall, err := abi.JSON(strings.NewReader(CounterABI))
+	if err != nil {
+		panic(errorsmod.Wrap(err, "bad ABI definition in code"))
+	}
+
+	abiEncodedCall, err := encodedCall.Pack("inc")
+	if err != nil {
+		panic(err)
+	}
+
+	return abiEncodedCall
+}
+
+func (s *IntegrationTestSuite) getCurrentCount() (*math.Int, error) {
+	ethClient, err := ethclient.Dial(fmt.Sprintf("http://%s", s.ethResource.GetHostPort("8545/tcp")))
+	if err != nil {
+		return nil, err
+	}
+
+	bz, err := ethClient.CallContract(context.Background(), ethereum.CallMsg{
+		From: common.HexToAddress(s.chain.validators[0].ethereumKey.address),
+		To:   &counterContract,
+		Gas:  0,
+		Data: ABIEncodedGet(),
+	}, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	count := UnpackEthUInt(bz)
+
+	return &count, nil
 }
