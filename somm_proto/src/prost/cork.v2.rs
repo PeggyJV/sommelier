@@ -1,4 +1,4 @@
-#[derive(serde::Deserialize, serde::Serialize, Clone, PartialEq, ::prost::Message)]
+#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct Cork {
     /// call body containing the ABI encoded bytes to send to the contract
     #[prost(bytes = "vec", tag = "1")]
@@ -7,7 +7,7 @@ pub struct Cork {
     #[prost(string, tag = "2")]
     pub target_contract_address: ::prost::alloc::string::String,
 }
-#[derive(serde::Deserialize, serde::Serialize, Clone, PartialEq, ::prost::Message)]
+#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct ScheduledCork {
     #[prost(message, optional, tag = "1")]
     pub cork: ::core::option::Option<Cork>,
@@ -18,7 +18,7 @@ pub struct ScheduledCork {
     #[prost(bytes = "vec", tag = "4")]
     pub id: ::prost::alloc::vec::Vec<u8>,
 }
-#[derive(serde::Deserialize, serde::Serialize, Clone, PartialEq, ::prost::Message)]
+#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct CorkResult {
     #[prost(message, optional, tag = "1")]
     pub cork: ::core::option::Option<Cork>,
@@ -29,13 +29,13 @@ pub struct CorkResult {
     #[prost(string, tag = "4")]
     pub approval_percentage: ::prost::alloc::string::String,
 }
-#[derive(serde::Deserialize, serde::Serialize, Clone, PartialEq, ::prost::Message)]
+#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct CellarIdSet {
     #[prost(string, repeated, tag = "1")]
     pub ids: ::prost::alloc::vec::Vec<::prost::alloc::string::String>,
 }
 /// MsgScheduleCorkRequest - sdk.Msg for scheduling a cork request for on or after a specific block height
-#[derive(serde::Deserialize, serde::Serialize, Clone, PartialEq, ::prost::Message)]
+#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct MsgScheduleCorkRequest {
     /// the scheduled cork
     #[prost(message, optional, tag = "1")]
@@ -47,7 +47,7 @@ pub struct MsgScheduleCorkRequest {
     #[prost(string, tag = "3")]
     pub signer: ::prost::alloc::string::String,
 }
-#[derive(serde::Deserialize, serde::Serialize, Clone, PartialEq, ::prost::Message)]
+#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct MsgScheduleCorkResponse {
     /// cork ID
     #[prost(string, tag = "1")]
@@ -116,7 +116,7 @@ pub mod msg_client {
     }
 }
 /// GenesisState - all cork state that must be provided at genesis
-#[derive(serde::Deserialize, serde::Serialize, Clone, PartialEq, ::prost::Message)]
+#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct GenesisState {
     #[prost(message, optional, tag = "1")]
     pub params: ::core::option::Option<Params>,
@@ -130,7 +130,7 @@ pub struct GenesisState {
     pub cork_results: ::prost::alloc::vec::Vec<CorkResult>,
 }
 /// Params cork parameters
-#[derive(serde::Deserialize, serde::Serialize, Clone, PartialEq, ::prost::Message)]
+#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct Params {
     /// Deprecated
     /// VoteThreshold defines the percentage of bonded stake required to vote for a scheduled cork to be approved
@@ -138,79 +138,79 @@ pub struct Params {
     pub vote_threshold: ::prost::alloc::string::String,
 }
 /// QueryParamsRequest is the request type for the Query/Params gRPC method.
-#[derive(serde::Deserialize, serde::Serialize, Clone, PartialEq, ::prost::Message)]
+#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct QueryParamsRequest {}
 /// QueryParamsRequest is the response type for the Query/Params gRPC method.
-#[derive(serde::Deserialize, serde::Serialize, Clone, PartialEq, ::prost::Message)]
+#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct QueryParamsResponse {
     /// allocation parameters
     #[prost(message, optional, tag = "1")]
     pub params: ::core::option::Option<Params>,
 }
 /// QueryCellarIDsRequest is the request type for Query/QueryCellarIDs gRPC method.
-#[derive(serde::Deserialize, serde::Serialize, Clone, PartialEq, ::prost::Message)]
+#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct QueryCellarIDsRequest {}
 /// QueryCellarIDsResponse is the response type for Query/QueryCellars gRPC method.
-#[derive(serde::Deserialize, serde::Serialize, Clone, PartialEq, ::prost::Message)]
+#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct QueryCellarIDsResponse {
     #[prost(string, repeated, tag = "1")]
     pub cellar_ids: ::prost::alloc::vec::Vec<::prost::alloc::string::String>,
 }
 /// QueryScheduledCorksRequest
-#[derive(serde::Deserialize, serde::Serialize, Clone, PartialEq, ::prost::Message)]
+#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct QueryScheduledCorksRequest {}
 /// QueryScheduledCorksResponse
-#[derive(serde::Deserialize, serde::Serialize, Clone, PartialEq, ::prost::Message)]
+#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct QueryScheduledCorksResponse {
     #[prost(message, repeated, tag = "1")]
     pub corks: ::prost::alloc::vec::Vec<ScheduledCork>,
 }
 /// QueryScheduledBlockHeightsRequest
-#[derive(serde::Deserialize, serde::Serialize, Clone, PartialEq, ::prost::Message)]
+#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct QueryScheduledBlockHeightsRequest {}
 /// QueryScheduledBlockHeightsResponse
-#[derive(serde::Deserialize, serde::Serialize, Clone, PartialEq, ::prost::Message)]
+#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct QueryScheduledBlockHeightsResponse {
     #[prost(uint64, repeated, tag = "1")]
     pub block_heights: ::prost::alloc::vec::Vec<u64>,
 }
 /// QueryScheduledCorksByBlockHeightRequest
-#[derive(serde::Deserialize, serde::Serialize, Clone, PartialEq, ::prost::Message)]
+#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct QueryScheduledCorksByBlockHeightRequest {
     #[prost(uint64, tag = "1")]
     pub block_height: u64,
 }
 /// QueryScheduledCorksByBlockHeightResponse
-#[derive(serde::Deserialize, serde::Serialize, Clone, PartialEq, ::prost::Message)]
+#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct QueryScheduledCorksByBlockHeightResponse {
     #[prost(message, repeated, tag = "1")]
     pub corks: ::prost::alloc::vec::Vec<ScheduledCork>,
 }
 /// QueryScheduledCorksByIDRequest
-#[derive(serde::Deserialize, serde::Serialize, Clone, PartialEq, ::prost::Message)]
+#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct QueryScheduledCorksByIdRequest {
     #[prost(string, tag = "1")]
     pub id: ::prost::alloc::string::String,
 }
 /// QueryScheduledCorksByIDResponse
-#[derive(serde::Deserialize, serde::Serialize, Clone, PartialEq, ::prost::Message)]
+#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct QueryScheduledCorksByIdResponse {
     #[prost(message, repeated, tag = "1")]
     pub corks: ::prost::alloc::vec::Vec<ScheduledCork>,
 }
-#[derive(serde::Deserialize, serde::Serialize, Clone, PartialEq, ::prost::Message)]
+#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct QueryCorkResultRequest {
     #[prost(string, tag = "1")]
     pub id: ::prost::alloc::string::String,
 }
-#[derive(serde::Deserialize, serde::Serialize, Clone, PartialEq, ::prost::Message)]
+#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct QueryCorkResultResponse {
     #[prost(message, optional, tag = "1")]
     pub cork_result: ::core::option::Option<CorkResult>,
 }
-#[derive(serde::Deserialize, serde::Serialize, Clone, PartialEq, ::prost::Message)]
+#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct QueryCorkResultsRequest {}
-#[derive(serde::Deserialize, serde::Serialize, Clone, PartialEq, ::prost::Message)]
+#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct QueryCorkResultsResponse {
     #[prost(message, repeated, tag = "1")]
     pub cork_results: ::prost::alloc::vec::Vec<CorkResult>,
@@ -388,7 +388,7 @@ pub mod query_client {
         }
     }
 }
-#[derive(serde::Deserialize, serde::Serialize, Clone, PartialEq, ::prost::Message)]
+#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct AddManagedCellarIDsProposal {
     #[prost(string, tag = "1")]
     pub title: ::prost::alloc::string::String,
@@ -398,7 +398,7 @@ pub struct AddManagedCellarIDsProposal {
     pub cellar_ids: ::core::option::Option<CellarIdSet>,
 }
 /// AddManagedCellarIDsProposalWithDeposit is a specific definition for CLI commands
-#[derive(serde::Deserialize, serde::Serialize, Clone, PartialEq, ::prost::Message)]
+#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct AddManagedCellarIDsProposalWithDeposit {
     #[prost(string, tag = "1")]
     pub title: ::prost::alloc::string::String,
@@ -409,7 +409,7 @@ pub struct AddManagedCellarIDsProposalWithDeposit {
     #[prost(string, tag = "4")]
     pub deposit: ::prost::alloc::string::String,
 }
-#[derive(serde::Deserialize, serde::Serialize, Clone, PartialEq, ::prost::Message)]
+#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct RemoveManagedCellarIDsProposal {
     #[prost(string, tag = "1")]
     pub title: ::prost::alloc::string::String,
@@ -419,7 +419,7 @@ pub struct RemoveManagedCellarIDsProposal {
     pub cellar_ids: ::core::option::Option<CellarIdSet>,
 }
 /// RemoveManagedCellarIDsProposalWithDeposit is a specific definition for CLI commands
-#[derive(serde::Deserialize, serde::Serialize, Clone, PartialEq, ::prost::Message)]
+#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct RemoveManagedCellarIDsProposalWithDeposit {
     #[prost(string, tag = "1")]
     pub title: ::prost::alloc::string::String,
@@ -461,7 +461,7 @@ pub struct ScheduledCorkProposal {
     pub contract_call_proto_json: ::prost::alloc::string::String,
 }
 /// ScheduledCorkProposalWithDeposit is a specific definition for CLI commands
-#[derive(serde::Deserialize, serde::Serialize, Clone, PartialEq, ::prost::Message)]
+#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct ScheduledCorkProposalWithDeposit {
     #[prost(string, tag = "1")]
     pub title: ::prost::alloc::string::String,

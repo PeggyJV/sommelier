@@ -1,4 +1,4 @@
-#[derive(serde::Deserialize, serde::Serialize, Clone, PartialEq, ::prost::Message)]
+#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct AxelarCork {
     /// call body containing the ABI encoded bytes to send to the contract
     #[prost(bytes = "vec", tag = "1")]
@@ -14,7 +14,7 @@ pub struct AxelarCork {
     #[prost(uint64, tag = "4")]
     pub deadline: u64,
 }
-#[derive(serde::Deserialize, serde::Serialize, Clone, PartialEq, ::prost::Message)]
+#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct ScheduledAxelarCork {
     #[prost(message, optional, tag = "1")]
     pub cork: ::core::option::Option<AxelarCork>,
@@ -25,12 +25,12 @@ pub struct ScheduledAxelarCork {
     #[prost(string, tag = "4")]
     pub id: ::prost::alloc::string::String,
 }
-#[derive(serde::Deserialize, serde::Serialize, Clone, PartialEq, ::prost::Message)]
+#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct ScheduledAxelarCorks {
     #[prost(message, repeated, tag = "1")]
     pub scheduled_corks: ::prost::alloc::vec::Vec<ScheduledAxelarCork>,
 }
-#[derive(serde::Deserialize, serde::Serialize, Clone, PartialEq, ::prost::Message)]
+#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct AxelarCorkResult {
     #[prost(message, optional, tag = "1")]
     pub cork: ::core::option::Option<AxelarCork>,
@@ -41,19 +41,19 @@ pub struct AxelarCorkResult {
     #[prost(string, tag = "4")]
     pub approval_percentage: ::prost::alloc::string::String,
 }
-#[derive(serde::Deserialize, serde::Serialize, Clone, PartialEq, ::prost::Message)]
+#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct AxelarCorkResults {
     #[prost(message, repeated, tag = "1")]
     pub cork_results: ::prost::alloc::vec::Vec<AxelarCorkResult>,
 }
-#[derive(serde::Deserialize, serde::Serialize, Clone, PartialEq, ::prost::Message)]
+#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct CellarIdSet {
     #[prost(message, optional, tag = "1")]
     pub chain: ::core::option::Option<ChainConfiguration>,
     #[prost(string, repeated, tag = "2")]
     pub ids: ::prost::alloc::vec::Vec<::prost::alloc::string::String>,
 }
-#[derive(serde::Deserialize, serde::Serialize, Clone, PartialEq, ::prost::Message)]
+#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct ChainConfiguration {
     #[prost(string, tag = "1")]
     pub name: ::prost::alloc::string::String,
@@ -62,13 +62,13 @@ pub struct ChainConfiguration {
     #[prost(string, tag = "3")]
     pub proxy_address: ::prost::alloc::string::String,
 }
-#[derive(serde::Deserialize, serde::Serialize, Clone, PartialEq, ::prost::Message)]
+#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct ChainConfigurations {
     #[prost(message, repeated, tag = "1")]
     pub configurations: ::prost::alloc::vec::Vec<ChainConfiguration>,
 }
 /// Used to enforce strictly newer call ordering per contract
-#[derive(serde::Deserialize, serde::Serialize, Clone, PartialEq, ::prost::Message)]
+#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct AxelarContractCallNonce {
     #[prost(uint64, tag = "1")]
     pub chain_id: u64,
@@ -79,7 +79,7 @@ pub struct AxelarContractCallNonce {
 }
 /// Represents a proxy contract upgrade approved by governance with a delay in
 /// execution in case of an error.
-#[derive(serde::Deserialize, serde::Serialize, Clone, PartialEq, ::prost::Message)]
+#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct AxelarUpgradeData {
     #[prost(uint64, tag = "1")]
     pub chain_id: u64,
@@ -89,7 +89,7 @@ pub struct AxelarUpgradeData {
     pub executable_height_threshold: i64,
 }
 /// MsgScheduleCorkRequest - sdk.Msg for scheduling a cork request for on or after a specific block height
-#[derive(serde::Deserialize, serde::Serialize, Clone, PartialEq, ::prost::Message)]
+#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct MsgScheduleAxelarCorkRequest {
     /// the scheduled cork
     #[prost(message, optional, tag = "1")]
@@ -104,13 +104,13 @@ pub struct MsgScheduleAxelarCorkRequest {
     #[prost(string, tag = "4")]
     pub signer: ::prost::alloc::string::String,
 }
-#[derive(serde::Deserialize, serde::Serialize, Clone, PartialEq, ::prost::Message)]
+#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct MsgScheduleAxelarCorkResponse {
     /// cork ID
     #[prost(string, tag = "1")]
     pub id: ::prost::alloc::string::String,
 }
-#[derive(serde::Deserialize, serde::Serialize, Clone, PartialEq, ::prost::Message)]
+#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct MsgRelayAxelarCorkRequest {
     #[prost(string, tag = "1")]
     pub signer: ::prost::alloc::string::String,
@@ -123,9 +123,9 @@ pub struct MsgRelayAxelarCorkRequest {
     #[prost(string, tag = "5")]
     pub target_contract_address: ::prost::alloc::string::String,
 }
-#[derive(serde::Deserialize, serde::Serialize, Clone, PartialEq, ::prost::Message)]
+#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct MsgRelayAxelarCorkResponse {}
-#[derive(serde::Deserialize, serde::Serialize, Clone, PartialEq, ::prost::Message)]
+#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct MsgRelayAxelarProxyUpgradeRequest {
     #[prost(string, tag = "1")]
     pub signer: ::prost::alloc::string::String,
@@ -136,9 +136,9 @@ pub struct MsgRelayAxelarProxyUpgradeRequest {
     #[prost(uint64, tag = "4")]
     pub chain_id: u64,
 }
-#[derive(serde::Deserialize, serde::Serialize, Clone, PartialEq, ::prost::Message)]
+#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct MsgRelayAxelarProxyUpgradeResponse {}
-#[derive(serde::Deserialize, serde::Serialize, Clone, PartialEq, ::prost::Message)]
+#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct MsgBumpAxelarCorkGasRequest {
     #[prost(string, tag = "1")]
     pub signer: ::prost::alloc::string::String,
@@ -147,9 +147,9 @@ pub struct MsgBumpAxelarCorkGasRequest {
     #[prost(string, tag = "3")]
     pub message_id: ::prost::alloc::string::String,
 }
-#[derive(serde::Deserialize, serde::Serialize, Clone, PartialEq, ::prost::Message)]
+#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct MsgBumpAxelarCorkGasResponse {}
-#[derive(serde::Deserialize, serde::Serialize, Clone, PartialEq, ::prost::Message)]
+#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct MsgCancelAxelarCorkRequest {
     #[prost(string, tag = "1")]
     pub signer: ::prost::alloc::string::String,
@@ -158,7 +158,7 @@ pub struct MsgCancelAxelarCorkRequest {
     #[prost(string, tag = "3")]
     pub target_contract_address: ::prost::alloc::string::String,
 }
-#[derive(serde::Deserialize, serde::Serialize, Clone, PartialEq, ::prost::Message)]
+#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct MsgCancelAxelarCorkResponse {}
 #[doc = r" Generated client implementations."]
 pub mod msg_client {
@@ -266,7 +266,7 @@ pub mod msg_client {
     }
 }
 /// GenesisState - all cork state that must be provided at genesis
-#[derive(serde::Deserialize, serde::Serialize, Clone, PartialEq, ::prost::Message)]
+#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct GenesisState {
     #[prost(message, optional, tag = "1")]
     pub params: ::core::option::Option<Params>,
@@ -283,7 +283,7 @@ pub struct GenesisState {
     #[prost(message, repeated, tag = "7")]
     pub axelar_upgrade_data: ::prost::alloc::vec::Vec<AxelarUpgradeData>,
 }
-#[derive(serde::Deserialize, serde::Serialize, Clone, PartialEq, ::prost::Message)]
+#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct Params {
     #[prost(bool, tag = "1")]
     pub enabled: bool,
@@ -301,62 +301,62 @@ pub struct Params {
     pub cork_timeout_blocks: u64,
 }
 /// QueryParamsRequest is the request type for the Query/Params gRPC method.
-#[derive(serde::Deserialize, serde::Serialize, Clone, PartialEq, ::prost::Message)]
+#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct QueryParamsRequest {}
 /// QueryParamsRequest is the response type for the Query/Params gRPC method.
-#[derive(serde::Deserialize, serde::Serialize, Clone, PartialEq, ::prost::Message)]
+#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct QueryParamsResponse {
     /// allocation parameters
     #[prost(message, optional, tag = "1")]
     pub params: ::core::option::Option<Params>,
 }
 /// QueryCellarIDs is the request type for Query/QueryCellarIDs gRPC method.
-#[derive(serde::Deserialize, serde::Serialize, Clone, PartialEq, ::prost::Message)]
+#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct QueryCellarIDsRequest {}
 /// QueryCellarIDsResponse is the response type for Query/QueryCellarIDs gRPC method.
-#[derive(serde::Deserialize, serde::Serialize, Clone, PartialEq, ::prost::Message)]
+#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct QueryCellarIDsResponse {
     #[prost(message, repeated, tag = "1")]
     pub cellar_ids: ::prost::alloc::vec::Vec<CellarIdSet>,
 }
 /// QueryCellarIDsByChainIDRequest is the request type for Query/QueryCellarIDsByChainID gRPC method.
-#[derive(serde::Deserialize, serde::Serialize, Clone, PartialEq, ::prost::Message)]
+#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct QueryCellarIDsByChainIdRequest {
     #[prost(uint64, tag = "1")]
     pub chain_id: u64,
 }
 /// QueryCellarIDsByChainIDResponse is the response type for Query/QueryCellarIDsByChainID gRPC method.
-#[derive(serde::Deserialize, serde::Serialize, Clone, PartialEq, ::prost::Message)]
+#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct QueryCellarIDsByChainIdResponse {
     #[prost(string, repeated, tag = "1")]
     pub cellar_ids: ::prost::alloc::vec::Vec<::prost::alloc::string::String>,
 }
 /// QueryScheduledCorksRequest
-#[derive(serde::Deserialize, serde::Serialize, Clone, PartialEq, ::prost::Message)]
+#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct QueryScheduledCorksRequest {
     #[prost(uint64, tag = "1")]
     pub chain_id: u64,
 }
 /// QueryScheduledCorksResponse
-#[derive(serde::Deserialize, serde::Serialize, Clone, PartialEq, ::prost::Message)]
+#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct QueryScheduledCorksResponse {
     #[prost(message, repeated, tag = "1")]
     pub corks: ::prost::alloc::vec::Vec<ScheduledAxelarCork>,
 }
 /// QueryScheduledBlockHeightsRequest
-#[derive(serde::Deserialize, serde::Serialize, Clone, PartialEq, ::prost::Message)]
+#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct QueryScheduledBlockHeightsRequest {
     #[prost(uint64, tag = "1")]
     pub chain_id: u64,
 }
 /// QueryScheduledBlockHeightsResponse
-#[derive(serde::Deserialize, serde::Serialize, Clone, PartialEq, ::prost::Message)]
+#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct QueryScheduledBlockHeightsResponse {
     #[prost(uint64, repeated, tag = "1")]
     pub block_heights: ::prost::alloc::vec::Vec<u64>,
 }
 /// QueryScheduledCorksByBlockHeightRequest
-#[derive(serde::Deserialize, serde::Serialize, Clone, PartialEq, ::prost::Message)]
+#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct QueryScheduledCorksByBlockHeightRequest {
     #[prost(uint64, tag = "1")]
     pub block_height: u64,
@@ -364,13 +364,13 @@ pub struct QueryScheduledCorksByBlockHeightRequest {
     pub chain_id: u64,
 }
 /// QueryScheduledCorksByBlockHeightResponse
-#[derive(serde::Deserialize, serde::Serialize, Clone, PartialEq, ::prost::Message)]
+#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct QueryScheduledCorksByBlockHeightResponse {
     #[prost(message, repeated, tag = "1")]
     pub corks: ::prost::alloc::vec::Vec<ScheduledAxelarCork>,
 }
 /// QueryScheduledCorksByIDRequest
-#[derive(serde::Deserialize, serde::Serialize, Clone, PartialEq, ::prost::Message)]
+#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct QueryScheduledCorksByIdRequest {
     #[prost(string, tag = "1")]
     pub id: ::prost::alloc::string::String,
@@ -378,50 +378,50 @@ pub struct QueryScheduledCorksByIdRequest {
     pub chain_id: u64,
 }
 /// QueryScheduledCorksByIDResponse
-#[derive(serde::Deserialize, serde::Serialize, Clone, PartialEq, ::prost::Message)]
+#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct QueryScheduledCorksByIdResponse {
     #[prost(message, repeated, tag = "1")]
     pub corks: ::prost::alloc::vec::Vec<ScheduledAxelarCork>,
 }
-#[derive(serde::Deserialize, serde::Serialize, Clone, PartialEq, ::prost::Message)]
+#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct QueryCorkResultRequest {
     #[prost(string, tag = "1")]
     pub id: ::prost::alloc::string::String,
     #[prost(uint64, tag = "2")]
     pub chain_id: u64,
 }
-#[derive(serde::Deserialize, serde::Serialize, Clone, PartialEq, ::prost::Message)]
+#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct QueryCorkResultResponse {
     #[prost(message, optional, tag = "1")]
     pub cork_result: ::core::option::Option<AxelarCorkResult>,
 }
-#[derive(serde::Deserialize, serde::Serialize, Clone, PartialEq, ::prost::Message)]
+#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct QueryCorkResultsRequest {
     #[prost(uint64, tag = "1")]
     pub chain_id: u64,
 }
-#[derive(serde::Deserialize, serde::Serialize, Clone, PartialEq, ::prost::Message)]
+#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct QueryCorkResultsResponse {
     #[prost(message, repeated, tag = "1")]
     pub cork_results: ::prost::alloc::vec::Vec<AxelarCorkResult>,
 }
-#[derive(serde::Deserialize, serde::Serialize, Clone, PartialEq, ::prost::Message)]
+#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct QueryChainConfigurationsRequest {}
-#[derive(serde::Deserialize, serde::Serialize, Clone, PartialEq, ::prost::Message)]
+#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct QueryChainConfigurationsResponse {
     #[prost(message, repeated, tag = "1")]
     pub configurations: ::prost::alloc::vec::Vec<ChainConfiguration>,
 }
-#[derive(serde::Deserialize, serde::Serialize, Clone, PartialEq, ::prost::Message)]
+#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct QueryAxelarContractCallNoncesRequest {}
-#[derive(serde::Deserialize, serde::Serialize, Clone, PartialEq, ::prost::Message)]
+#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct QueryAxelarContractCallNoncesResponse {
     #[prost(message, repeated, tag = "1")]
     pub contract_call_nonces: ::prost::alloc::vec::Vec<AxelarContractCallNonce>,
 }
-#[derive(serde::Deserialize, serde::Serialize, Clone, PartialEq, ::prost::Message)]
+#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct QueryAxelarProxyUpgradeDataRequest {}
-#[derive(serde::Deserialize, serde::Serialize, Clone, PartialEq, ::prost::Message)]
+#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct QueryAxelarProxyUpgradeDataResponse {
     #[prost(message, repeated, tag = "1")]
     pub proxy_upgrade_data: ::prost::alloc::vec::Vec<AxelarUpgradeData>,
@@ -672,7 +672,7 @@ pub mod query_client {
         }
     }
 }
-#[derive(serde::Deserialize, serde::Serialize, Clone, PartialEq, ::prost::Message)]
+#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct ScheduleCorkEvent {
     #[prost(string, tag = "1")]
     pub signer: ::prost::alloc::string::String,
@@ -687,7 +687,7 @@ pub struct ScheduleCorkEvent {
 }
 // note: current plan is to accept either chain name or chain ID. if both and they dont match, error.
 
-#[derive(serde::Deserialize, serde::Serialize, Clone, PartialEq, ::prost::Message)]
+#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct AddAxelarManagedCellarIDsProposal {
     #[prost(string, tag = "1")]
     pub title: ::prost::alloc::string::String,
@@ -699,7 +699,7 @@ pub struct AddAxelarManagedCellarIDsProposal {
     pub cellar_ids: ::core::option::Option<CellarIdSet>,
 }
 /// AddManagedCellarIDsProposalWithDeposit is a specific definition for CLI commands
-#[derive(serde::Deserialize, serde::Serialize, Clone, PartialEq, ::prost::Message)]
+#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct AddAxelarManagedCellarIDsProposalWithDeposit {
     #[prost(string, tag = "1")]
     pub title: ::prost::alloc::string::String,
@@ -712,7 +712,7 @@ pub struct AddAxelarManagedCellarIDsProposalWithDeposit {
     #[prost(string, tag = "5")]
     pub deposit: ::prost::alloc::string::String,
 }
-#[derive(serde::Deserialize, serde::Serialize, Clone, PartialEq, ::prost::Message)]
+#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct RemoveAxelarManagedCellarIDsProposal {
     #[prost(string, tag = "1")]
     pub title: ::prost::alloc::string::String,
@@ -724,7 +724,7 @@ pub struct RemoveAxelarManagedCellarIDsProposal {
     pub cellar_ids: ::core::option::Option<CellarIdSet>,
 }
 /// RemoveManagedCellarIDsProposalWithDeposit is a specific definition for CLI commands
-#[derive(serde::Deserialize, serde::Serialize, Clone, PartialEq, ::prost::Message)]
+#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct RemoveAxelarManagedCellarIDsProposalWithDeposit {
     #[prost(string, tag = "1")]
     pub title: ::prost::alloc::string::String,
@@ -737,7 +737,7 @@ pub struct RemoveAxelarManagedCellarIDsProposalWithDeposit {
     #[prost(string, tag = "5")]
     pub deposit: ::prost::alloc::string::String,
 }
-#[derive(serde::Deserialize, serde::Serialize, Clone, PartialEq, ::prost::Message)]
+#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct AxelarScheduledCorkProposal {
     #[prost(string, tag = "1")]
     pub title: ::prost::alloc::string::String,
@@ -775,7 +775,7 @@ pub struct AxelarScheduledCorkProposal {
     pub deadline: u64,
 }
 /// ScheduledCorkProposalWithDeposit is a specific definition for CLI commands
-#[derive(serde::Deserialize, serde::Serialize, Clone, PartialEq, ::prost::Message)]
+#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct AxelarScheduledCorkProposalWithDeposit {
     #[prost(string, tag = "1")]
     pub title: ::prost::alloc::string::String,
@@ -794,7 +794,7 @@ pub struct AxelarScheduledCorkProposalWithDeposit {
     #[prost(string, tag = "8")]
     pub deposit: ::prost::alloc::string::String,
 }
-#[derive(serde::Deserialize, serde::Serialize, Clone, PartialEq, ::prost::Message)]
+#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct AxelarCommunityPoolSpendProposal {
     #[prost(string, tag = "1")]
     pub title: ::prost::alloc::string::String,
@@ -809,7 +809,7 @@ pub struct AxelarCommunityPoolSpendProposal {
 }
 /// This format of the community spend Ethereum proposal is specifically for
 /// the CLI to allow simple text serialization.
-#[derive(serde::Deserialize, serde::Serialize, Clone, PartialEq, ::prost::Message)]
+#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct AxelarCommunityPoolSpendProposalForCli {
     #[prost(string, tag = "1")]
     pub title: ::prost::alloc::string::String,
@@ -826,7 +826,7 @@ pub struct AxelarCommunityPoolSpendProposalForCli {
     #[prost(string, tag = "7")]
     pub deposit: ::prost::alloc::string::String,
 }
-#[derive(serde::Deserialize, serde::Serialize, Clone, PartialEq, ::prost::Message)]
+#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct AddChainConfigurationProposal {
     #[prost(string, tag = "1")]
     pub title: ::prost::alloc::string::String,
@@ -835,7 +835,7 @@ pub struct AddChainConfigurationProposal {
     #[prost(message, optional, tag = "3")]
     pub chain_configuration: ::core::option::Option<ChainConfiguration>,
 }
-#[derive(serde::Deserialize, serde::Serialize, Clone, PartialEq, ::prost::Message)]
+#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct AddChainConfigurationProposalWithDeposit {
     #[prost(string, tag = "1")]
     pub title: ::prost::alloc::string::String,
@@ -846,7 +846,7 @@ pub struct AddChainConfigurationProposalWithDeposit {
     #[prost(string, tag = "4")]
     pub deposit: ::prost::alloc::string::String,
 }
-#[derive(serde::Deserialize, serde::Serialize, Clone, PartialEq, ::prost::Message)]
+#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct RemoveChainConfigurationProposal {
     #[prost(string, tag = "1")]
     pub title: ::prost::alloc::string::String,
@@ -855,7 +855,7 @@ pub struct RemoveChainConfigurationProposal {
     #[prost(uint64, tag = "3")]
     pub chain_id: u64,
 }
-#[derive(serde::Deserialize, serde::Serialize, Clone, PartialEq, ::prost::Message)]
+#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct RemoveChainConfigurationProposalWithDeposit {
     #[prost(string, tag = "1")]
     pub title: ::prost::alloc::string::String,
@@ -866,7 +866,7 @@ pub struct RemoveChainConfigurationProposalWithDeposit {
     #[prost(string, tag = "4")]
     pub deposit: ::prost::alloc::string::String,
 }
-#[derive(serde::Deserialize, serde::Serialize, Clone, PartialEq, ::prost::Message)]
+#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct UpgradeAxelarProxyContractProposal {
     #[prost(string, tag = "1")]
     pub title: ::prost::alloc::string::String,
@@ -877,7 +877,7 @@ pub struct UpgradeAxelarProxyContractProposal {
     #[prost(string, tag = "4")]
     pub new_proxy_address: ::prost::alloc::string::String,
 }
-#[derive(serde::Deserialize, serde::Serialize, Clone, PartialEq, ::prost::Message)]
+#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct UpgradeAxelarProxyContractProposalWithDeposit {
     #[prost(string, tag = "1")]
     pub title: ::prost::alloc::string::String,
@@ -890,7 +890,7 @@ pub struct UpgradeAxelarProxyContractProposalWithDeposit {
     #[prost(string, tag = "5")]
     pub deposit: ::prost::alloc::string::String,
 }
-#[derive(serde::Deserialize, serde::Serialize, Clone, PartialEq, ::prost::Message)]
+#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct CancelAxelarProxyContractUpgradeProposal {
     #[prost(string, tag = "1")]
     pub title: ::prost::alloc::string::String,
@@ -899,7 +899,7 @@ pub struct CancelAxelarProxyContractUpgradeProposal {
     #[prost(uint64, tag = "3")]
     pub chain_id: u64,
 }
-#[derive(serde::Deserialize, serde::Serialize, Clone, PartialEq, ::prost::Message)]
+#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct CancelAxelarProxyContractUpgradeProposalWithDeposit {
     #[prost(string, tag = "1")]
     pub title: ::prost::alloc::string::String,
