@@ -286,9 +286,9 @@ func (k Keeper) GetScheduledBlockHeights(ctx sdk.Context, chainID uint64) []uint
 	return heights
 }
 
-//////////////////
+////////////////////////
 // AxelarCork Results //
-//////////////////
+////////////////////////
 
 func (k Keeper) SetAxelarCorkResult(ctx sdk.Context, chainID uint64, id []byte, corkResult types.AxelarCorkResult) {
 	bz := k.cdc.MustMarshal(&corkResult)

@@ -17,7 +17,6 @@ func InitGenesis(ctx sdk.Context, k Keeper, gs types.GenesisState) {
 	if senderAccount == nil {
 		panic(fmt.Sprintf("%s module account has not been set", types.ModuleName))
 	}
-
 	k.accountKeeper.SetModuleAccount(ctx, senderAccount)
 
 	for i, config := range gs.ChainConfigurations.Configurations {
@@ -88,6 +87,8 @@ func ExportGenesis(ctx sdk.Context, k Keeper) types.GenesisState {
 
 		return false
 	})
+
+	// TODO(bolten): export does not seem to include scheduled corks or cork results
 
 	k.IterateAxelarContractCallNonces(ctx, func(chainID uint64, contractAddress common.Address, nonce uint64) (stop bool) {
 		accn := &types.AxelarContractCallNonce{

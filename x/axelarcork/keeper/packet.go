@@ -59,6 +59,8 @@ func (k Keeper) ValidateAxelarPacket(ctx sdk.Context, sourceChannel string, data
 			return fmt.Errorf("nonce cannot be zero")
 		}
 
+		// TODO(bolten): is there any validation on the deadline worth doing?
+
 		blockHeight, winningCork, ok := k.GetWinningAxelarCork(ctx, chainConfig.Id, common.HexToAddress(targetContract))
 		if !ok {
 			return fmt.Errorf("no cork expected for chain %s:%d at address %s", chainConfig.Name, chainConfig.Id, axelarBody.DestinationAddress)
