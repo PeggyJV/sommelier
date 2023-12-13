@@ -88,8 +88,6 @@ func ExportGenesis(ctx sdk.Context, k Keeper) types.GenesisState {
 		return false
 	})
 
-	// TODO(bolten): export does not seem to include scheduled corks or cork results
-
 	k.IterateAxelarContractCallNonces(ctx, func(chainID uint64, contractAddress common.Address, nonce uint64) (stop bool) {
 		accn := &types.AxelarContractCallNonce{
 			ChainId:         chainID,
