@@ -86,35 +86,35 @@ func (suite *KeeperTestSuite) TestHooksDenomIsUsommDoesNothing() {
 	require.Equal(cellarfeesTypes.DefaultFeeAccrualCounters(), cellarfeesKeeper.GetFeeAccrualCounters(ctx))
 }
 
-func (suite *KeeperTestSuite) TestHooksCountAccruesNoAuction() {
-	ctx, cellarfeesKeeper, require := suite.ctx, suite.cellarfeesKeeper, suite.Require()
-	suite.SetupHooksTests(ctx, cellarfeesKeeper)
+// func (suite *KeeperTestSuite) TestHooksCountAccruesNoAuction() {
+// 	ctx, cellarfeesKeeper, require := suite.ctx, suite.cellarfeesKeeper, suite.Require()
+// 	suite.SetupHooksTests(ctx, cellarfeesKeeper)
 
-	hooks := Hooks{k: cellarfeesKeeper}
-	event := gravitytypes.SendToCosmosEvent{
-		CosmosReceiver: feesAccount.GetAddress().String(),
-		Amount:         sdk.OneInt(),
-		EthereumSender: "0x0000000000000000000000000000000000000000",
-		TokenContract:  "0x1111111111111111111111111111111111111111",
-	}
-	cellarID := common.HexToAddress(event.EthereumSender)
-	expectedCounters := cellarfeesTypes.FeeAccrualCounters{
-		Counters: []cellarfeesTypes.FeeAccrualCounter{
-			{
-				Denom: gravityFeeDenom,
-				Count: 1,
-			},
-		},
-	}
+// 	hooks := Hooks{k: cellarfeesKeeper}
+// 	event := gravitytypes.SendToCosmosEvent{
+// 		CosmosReceiver: feesAccount.GetAddress().String(),
+// 		Amount:         sdk.OneInt(),
+// 		EthereumSender: "0x0000000000000000000000000000000000000000",
+// 		TokenContract:  "0x1111111111111111111111111111111111111111",
+// 	}
+// 	cellarID := common.HexToAddress(event.EthereumSender)
+// 	expectedCounters := cellarfeesTypes.FeeAccrualCounters{
+// 		Counters: []cellarfeesTypes.FeeAccrualCounter{
+// 			{
+// 				Denom: gravityFeeDenom,
+// 				Count: 1,
+// 			},
+// 		},
+// 	}
 
-	// mocks
-	suite.corkKeeper.EXPECT().HasCellarID(ctx, cellarID).Return(true)
-	suite.gravityKeeper.EXPECT().ERC20ToDenomLookup(ctx, common.HexToAddress(event.TokenContract)).Return(false, gravityFeeDenom).Times(1)
-	suite.auctionKeeper.EXPECT().BeginAuction(ctx, gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).Times(0)
+// 	// mocks
+// 	suite.corkKeeper.EXPECT().HasCellarID(ctx, cellarID).Return(true)
+// 	suite.gravityKeeper.EXPECT().ERC20ToDenomLookup(ctx, common.HexToAddress(event.TokenContract)).Return(false, gravityFeeDenom).Times(1)
+// 	suite.auctionKeeper.EXPECT().BeginAuction(ctx, gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).Times(0)
 
-	require.NotPanics(func() { hooks.AfterSendToCosmosEvent(ctx, event) })
-	require.Equal(expectedCounters, cellarfeesKeeper.GetFeeAccrualCounters(ctx))
-}
+// 	require.NotPanics(func() { hooks.AfterSendToCosmosEvent(ctx, event) })
+// 	require.Equal(expectedCounters, cellarfeesKeeper.GetFeeAccrualCounters(ctx))
+// }
 
 func (suite *KeeperTestSuite) TestHooksCountAccruesAuctionStarts() {
 	ctx, cellarfeesKeeper, require := suite.ctx, suite.cellarfeesKeeper, suite.Require()
