@@ -10,22 +10,8 @@ import (
 // account. Emissions are a constant value based on the last peak supply of distributable fees so that the reward supply
 // will decrease linearly until exhausted.
 func (k Keeper) BeginBlocker(ctx sdk.Context) {
-	// Handle reward emissions
-	moduleAccount := k.GetFeesAccount(ctx)
-	remainingRewardsSupply := k.bankKeeper.GetBalance(ctx, moduleAccount.GetAddress(), params.BaseCoinUnit).Amount
 
-	if remainingRewardsSupply.IsZero() {
-		return
-	}
-
-	emission := k.GetEmission(ctx, remainingRewardsSupply)
-
-	// Send to fee collector for distribution
-	err := k.bankKeeper.SendCoinsFromModuleToModule(ctx, moduleAccount.GetName(), authtypes.FeeCollectorName, emission)
-	if err != nil {
-		panic(err)
-	}
-
+	// Handle fee auctions
 	cellarfeesParams := k.GetParams(ctx)
 
 	counters := k.GetFeeAccrualCounters(ctx)
@@ -41,6 +27,22 @@ func (k Keeper) BeginBlocker(ctx sdk.Context) {
 
 	}
 	k.SetFeeAccrualCounters(ctx, counters)
+
+	// Handle reward emissions
+	moduleAccount := k.GetFeesAccount(ctx)
+	remainingRewardsSupply := k.bankKeeper.GetBalance(ctx, moduleAccount.GetAddress(), params.BaseCoinUnit).Amount
+
+	if remainingRewardsSupply.IsZero() {
+		return
+	}
+
+	emission := k.GetEmission(ctx, remainingRewardsSupply)
+
+	// Send to fee collector for distribution
+	err := k.bankKeeper.SendCoinsFromModuleToModule(ctx, moduleAccount.GetName(), authtypes.FeeCollectorName, emission)
+	if err != nil {
+		panic(err)
+	}
 
 }
 
