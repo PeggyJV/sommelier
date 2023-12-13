@@ -42,6 +42,8 @@ func InitGenesis(ctx sdk.Context, k Keeper, gs types.GenesisState) {
 		k.SetScheduledAxelarCork(ctx, scheduledCork.Cork.ChainId, scheduledCork.BlockHeight, valAddr, *scheduledCork.Cork)
 	}
 
+	// TODO(bolten): not a huge risk since they can be re-sent, but the genesis state is missing WinningAxelarCorks
+
 	for _, n := range gs.AxelarContractCallNonces {
 		if _, found := k.GetChainConfigurationByID(ctx, n.ChainId); !found {
 			panic(fmt.Sprintf("chain configuration %d not found", n.ChainId))
