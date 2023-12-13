@@ -1,5 +1,5 @@
 /// represents a publisher, which are added via governance
-#[derive(serde::Deserialize, serde::Serialize, Clone, PartialEq, ::prost::Message)]
+#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct Publisher {
     /// account address of the publisher
     #[prost(string, tag = "1")]
@@ -12,7 +12,7 @@ pub struct Publisher {
     pub ca_cert: ::prost::alloc::string::String,
 }
 /// represents a subscriber, can be set or modified by the owner of the subscriber address
-#[derive(serde::Deserialize, serde::Serialize, Clone, PartialEq, ::prost::Message)]
+#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct Subscriber {
     /// unique key, account address representation of either an account or a validator
     #[prost(string, tag = "1")]
@@ -28,7 +28,7 @@ pub struct Subscriber {
 /// represents a publisher committing to sending messages for a specific subscription ID
 ///
 /// unique key is subscription_id and publisher_domain tuple
-#[derive(serde::Deserialize, serde::Serialize, Clone, PartialEq, ::prost::Message)]
+#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct PublisherIntent {
     /// arbitary string representing a subscription, max length of 128
     #[prost(string, tag = "1")]
@@ -53,7 +53,7 @@ pub struct PublisherIntent {
 ///
 /// unique key is subscription_id and subscriber_address tuple, a given subscriber can only subscribe to one publisher per
 /// subscription_id at a time
-#[derive(serde::Deserialize, serde::Serialize, Clone, PartialEq, ::prost::Message)]
+#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct SubscriberIntent {
     /// arbitary string representing a subscription, max length of 128
     #[prost(string, tag = "1")]
@@ -66,7 +66,7 @@ pub struct SubscriberIntent {
     pub publisher_domain: ::prost::alloc::string::String,
 }
 /// represents a default subscription voted in by governance that can be overridden by a subscriber
-#[derive(serde::Deserialize, serde::Serialize, Clone, PartialEq, ::prost::Message)]
+#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct DefaultSubscription {
     /// arbitary string representing a subscription, max length of 128
     #[prost(string, tag = "1")]
@@ -77,7 +77,7 @@ pub struct DefaultSubscription {
 }
 /// governance proposal to add a publisher, with domain, adress, and ca_cert the same as the Publisher type
 /// proof URL expected in the format: https://<domain>/<address>/cacert.pem and serving cacert.pem matching ca_cert
-#[derive(serde::Deserialize, serde::Serialize, Clone, PartialEq, ::prost::Message)]
+#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct AddPublisherProposal {
     #[prost(string, tag = "1")]
     pub title: ::prost::alloc::string::String,
@@ -92,7 +92,7 @@ pub struct AddPublisherProposal {
     #[prost(string, tag = "6")]
     pub ca_cert: ::prost::alloc::string::String,
 }
-#[derive(serde::Deserialize, serde::Serialize, Clone, PartialEq, ::prost::Message)]
+#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct AddPublisherProposalWithDeposit {
     #[prost(string, tag = "1")]
     pub title: ::prost::alloc::string::String,
@@ -112,7 +112,7 @@ pub struct AddPublisherProposalWithDeposit {
 /// governance proposal to remove a publisher (publishers can remove themselves, but this might be necessary in the
 /// event of a malicious publisher or a key compromise), since Publishers are unique by domain, it's the only
 /// necessary information to remove one
-#[derive(serde::Deserialize, serde::Serialize, Clone, PartialEq, ::prost::Message)]
+#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct RemovePublisherProposal {
     #[prost(string, tag = "1")]
     pub title: ::prost::alloc::string::String,
@@ -121,7 +121,7 @@ pub struct RemovePublisherProposal {
     #[prost(string, tag = "3")]
     pub domain: ::prost::alloc::string::String,
 }
-#[derive(serde::Deserialize, serde::Serialize, Clone, PartialEq, ::prost::Message)]
+#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct RemovePublisherProposalWithDeposit {
     #[prost(string, tag = "1")]
     pub title: ::prost::alloc::string::String,
@@ -134,7 +134,7 @@ pub struct RemovePublisherProposalWithDeposit {
 }
 /// set the default publisher for a given subscription ID
 /// these can be overridden by the client
-#[derive(serde::Deserialize, serde::Serialize, Clone, PartialEq, ::prost::Message)]
+#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct AddDefaultSubscriptionProposal {
     #[prost(string, tag = "1")]
     pub title: ::prost::alloc::string::String,
@@ -145,7 +145,7 @@ pub struct AddDefaultSubscriptionProposal {
     #[prost(string, tag = "4")]
     pub publisher_domain: ::prost::alloc::string::String,
 }
-#[derive(serde::Deserialize, serde::Serialize, Clone, PartialEq, ::prost::Message)]
+#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct AddDefaultSubscriptionProposalWithDeposit {
     #[prost(string, tag = "1")]
     pub title: ::prost::alloc::string::String,
@@ -159,7 +159,7 @@ pub struct AddDefaultSubscriptionProposalWithDeposit {
     pub deposit: ::prost::alloc::string::String,
 }
 /// remove a default subscription
-#[derive(serde::Deserialize, serde::Serialize, Clone, PartialEq, ::prost::Message)]
+#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct RemoveDefaultSubscriptionProposal {
     #[prost(string, tag = "1")]
     pub title: ::prost::alloc::string::String,
@@ -168,7 +168,7 @@ pub struct RemoveDefaultSubscriptionProposal {
     #[prost(string, tag = "3")]
     pub subscription_id: ::prost::alloc::string::String,
 }
-#[derive(serde::Deserialize, serde::Serialize, Clone, PartialEq, ::prost::Message)]
+#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct RemoveDefaultSubscriptionProposalWithDeposit {
     #[prost(string, tag = "1")]
     pub title: ::prost::alloc::string::String,
@@ -180,19 +180,7 @@ pub struct RemoveDefaultSubscriptionProposalWithDeposit {
     pub deposit: ::prost::alloc::string::String,
 }
 /// for a given PublisherIntent, whether or not it is pulled or pushed
-#[derive(
-    serde::Deserialize,
-    serde::Serialize,
-    Clone,
-    Copy,
-    Debug,
-    PartialEq,
-    Eq,
-    Hash,
-    PartialOrd,
-    Ord,
-    ::prost::Enumeration,
-)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, PartialOrd, Ord, ::prost::Enumeration)]
 #[repr(i32)]
 pub enum PublishMethod {
     /// subscribers should pull from the provided URL
@@ -201,19 +189,7 @@ pub enum PublishMethod {
     Push = 1,
 }
 /// for a given PublisherIntent, determines what types of subscribers may subscribe
-#[derive(
-    serde::Deserialize,
-    serde::Serialize,
-    Clone,
-    Copy,
-    Debug,
-    PartialEq,
-    Eq,
-    Hash,
-    PartialOrd,
-    Ord,
-    ::prost::Enumeration,
-)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, PartialOrd, Ord, ::prost::Enumeration)]
 #[repr(i32)]
 pub enum AllowedSubscribers {
     /// any valid account address
@@ -223,43 +199,43 @@ pub enum AllowedSubscribers {
     /// a specific list of account addresses
     List = 2,
 }
-#[derive(serde::Deserialize, serde::Serialize, Clone, PartialEq, ::prost::Message)]
+#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct MsgRemovePublisherRequest {
     #[prost(string, tag = "1")]
     pub publisher_domain: ::prost::alloc::string::String,
     #[prost(string, tag = "2")]
     pub signer: ::prost::alloc::string::String,
 }
-#[derive(serde::Deserialize, serde::Serialize, Clone, PartialEq, ::prost::Message)]
+#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct MsgRemovePublisherResponse {}
-#[derive(serde::Deserialize, serde::Serialize, Clone, PartialEq, ::prost::Message)]
+#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct MsgAddSubscriberRequest {
     #[prost(message, optional, tag = "1")]
     pub subscriber: ::core::option::Option<Subscriber>,
     #[prost(string, tag = "2")]
     pub signer: ::prost::alloc::string::String,
 }
-#[derive(serde::Deserialize, serde::Serialize, Clone, PartialEq, ::prost::Message)]
+#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct MsgAddSubscriberResponse {}
-#[derive(serde::Deserialize, serde::Serialize, Clone, PartialEq, ::prost::Message)]
+#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct MsgRemoveSubscriberRequest {
     #[prost(string, tag = "1")]
     pub subscriber_address: ::prost::alloc::string::String,
     #[prost(string, tag = "2")]
     pub signer: ::prost::alloc::string::String,
 }
-#[derive(serde::Deserialize, serde::Serialize, Clone, PartialEq, ::prost::Message)]
+#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct MsgRemoveSubscriberResponse {}
-#[derive(serde::Deserialize, serde::Serialize, Clone, PartialEq, ::prost::Message)]
+#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct MsgAddPublisherIntentRequest {
     #[prost(message, optional, tag = "1")]
     pub publisher_intent: ::core::option::Option<PublisherIntent>,
     #[prost(string, tag = "2")]
     pub signer: ::prost::alloc::string::String,
 }
-#[derive(serde::Deserialize, serde::Serialize, Clone, PartialEq, ::prost::Message)]
+#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct MsgAddPublisherIntentResponse {}
-#[derive(serde::Deserialize, serde::Serialize, Clone, PartialEq, ::prost::Message)]
+#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct MsgRemovePublisherIntentRequest {
     #[prost(string, tag = "1")]
     pub subscription_id: ::prost::alloc::string::String,
@@ -268,18 +244,18 @@ pub struct MsgRemovePublisherIntentRequest {
     #[prost(string, tag = "3")]
     pub signer: ::prost::alloc::string::String,
 }
-#[derive(serde::Deserialize, serde::Serialize, Clone, PartialEq, ::prost::Message)]
+#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct MsgRemovePublisherIntentResponse {}
-#[derive(serde::Deserialize, serde::Serialize, Clone, PartialEq, ::prost::Message)]
+#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct MsgAddSubscriberIntentRequest {
     #[prost(message, optional, tag = "1")]
     pub subscriber_intent: ::core::option::Option<SubscriberIntent>,
     #[prost(string, tag = "2")]
     pub signer: ::prost::alloc::string::String,
 }
-#[derive(serde::Deserialize, serde::Serialize, Clone, PartialEq, ::prost::Message)]
+#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct MsgAddSubscriberIntentResponse {}
-#[derive(serde::Deserialize, serde::Serialize, Clone, PartialEq, ::prost::Message)]
+#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct MsgRemoveSubscriberIntentRequest {
     #[prost(string, tag = "1")]
     pub subscription_id: ::prost::alloc::string::String,
@@ -288,7 +264,7 @@ pub struct MsgRemoveSubscriberIntentRequest {
     #[prost(string, tag = "3")]
     pub signer: ::prost::alloc::string::String,
 }
-#[derive(serde::Deserialize, serde::Serialize, Clone, PartialEq, ::prost::Message)]
+#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct MsgRemoveSubscriberIntentResponse {}
 #[doc = r" Generated client implementations."]
 pub mod msg_client {
@@ -439,150 +415,150 @@ pub mod msg_client {
     }
 }
 /// Params defines the parameters for the module.
-#[derive(serde::Deserialize, serde::Serialize, Clone, PartialEq, ::prost::Message)]
+#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct Params {}
-#[derive(serde::Deserialize, serde::Serialize, Clone, PartialEq, ::prost::Message)]
+#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct QueryParamsRequest {}
-#[derive(serde::Deserialize, serde::Serialize, Clone, PartialEq, ::prost::Message)]
+#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct QueryParamsResponse {
     #[prost(message, optional, tag = "1")]
     pub params: ::core::option::Option<Params>,
 }
-#[derive(serde::Deserialize, serde::Serialize, Clone, PartialEq, ::prost::Message)]
+#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct QueryPublisherRequest {
     #[prost(string, tag = "1")]
     pub publisher_domain: ::prost::alloc::string::String,
 }
-#[derive(serde::Deserialize, serde::Serialize, Clone, PartialEq, ::prost::Message)]
+#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct QueryPublisherResponse {
     #[prost(message, optional, tag = "1")]
     pub publisher: ::core::option::Option<Publisher>,
 }
-#[derive(serde::Deserialize, serde::Serialize, Clone, PartialEq, ::prost::Message)]
+#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct QueryPublishersRequest {}
-#[derive(serde::Deserialize, serde::Serialize, Clone, PartialEq, ::prost::Message)]
+#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct QueryPublishersResponse {
     #[prost(message, repeated, tag = "1")]
     pub publishers: ::prost::alloc::vec::Vec<Publisher>,
 }
-#[derive(serde::Deserialize, serde::Serialize, Clone, PartialEq, ::prost::Message)]
+#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct QuerySubscriberRequest {
     #[prost(string, tag = "1")]
     pub subscriber_address: ::prost::alloc::string::String,
 }
-#[derive(serde::Deserialize, serde::Serialize, Clone, PartialEq, ::prost::Message)]
+#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct QuerySubscriberResponse {
     #[prost(message, optional, tag = "1")]
     pub subscriber: ::core::option::Option<Subscriber>,
 }
-#[derive(serde::Deserialize, serde::Serialize, Clone, PartialEq, ::prost::Message)]
+#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct QuerySubscribersRequest {}
-#[derive(serde::Deserialize, serde::Serialize, Clone, PartialEq, ::prost::Message)]
+#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct QuerySubscribersResponse {
     #[prost(message, repeated, tag = "1")]
     pub subscribers: ::prost::alloc::vec::Vec<Subscriber>,
 }
-#[derive(serde::Deserialize, serde::Serialize, Clone, PartialEq, ::prost::Message)]
+#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct QueryPublisherIntentRequest {
     #[prost(string, tag = "1")]
     pub publisher_domain: ::prost::alloc::string::String,
     #[prost(string, tag = "2")]
     pub subscription_id: ::prost::alloc::string::String,
 }
-#[derive(serde::Deserialize, serde::Serialize, Clone, PartialEq, ::prost::Message)]
+#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct QueryPublisherIntentResponse {
     #[prost(message, optional, tag = "1")]
     pub publisher_intent: ::core::option::Option<PublisherIntent>,
 }
-#[derive(serde::Deserialize, serde::Serialize, Clone, PartialEq, ::prost::Message)]
+#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct QueryPublisherIntentsRequest {}
-#[derive(serde::Deserialize, serde::Serialize, Clone, PartialEq, ::prost::Message)]
+#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct QueryPublisherIntentsResponse {
     #[prost(message, repeated, tag = "1")]
     pub publisher_intents: ::prost::alloc::vec::Vec<PublisherIntent>,
 }
-#[derive(serde::Deserialize, serde::Serialize, Clone, PartialEq, ::prost::Message)]
+#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct QueryPublisherIntentsByPublisherDomainRequest {
     #[prost(string, tag = "1")]
     pub publisher_domain: ::prost::alloc::string::String,
 }
-#[derive(serde::Deserialize, serde::Serialize, Clone, PartialEq, ::prost::Message)]
+#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct QueryPublisherIntentsByPublisherDomainResponse {
     #[prost(message, repeated, tag = "1")]
     pub publisher_intents: ::prost::alloc::vec::Vec<PublisherIntent>,
 }
-#[derive(serde::Deserialize, serde::Serialize, Clone, PartialEq, ::prost::Message)]
+#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct QueryPublisherIntentsBySubscriptionIdRequest {
     #[prost(string, tag = "1")]
     pub subscription_id: ::prost::alloc::string::String,
 }
-#[derive(serde::Deserialize, serde::Serialize, Clone, PartialEq, ::prost::Message)]
+#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct QueryPublisherIntentsBySubscriptionIdResponse {
     #[prost(message, repeated, tag = "1")]
     pub publisher_intents: ::prost::alloc::vec::Vec<PublisherIntent>,
 }
-#[derive(serde::Deserialize, serde::Serialize, Clone, PartialEq, ::prost::Message)]
+#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct QuerySubscriberIntentRequest {
     #[prost(string, tag = "1")]
     pub subscriber_address: ::prost::alloc::string::String,
     #[prost(string, tag = "2")]
     pub subscription_id: ::prost::alloc::string::String,
 }
-#[derive(serde::Deserialize, serde::Serialize, Clone, PartialEq, ::prost::Message)]
+#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct QuerySubscriberIntentResponse {
     #[prost(message, optional, tag = "1")]
     pub subscriber_intent: ::core::option::Option<SubscriberIntent>,
 }
-#[derive(serde::Deserialize, serde::Serialize, Clone, PartialEq, ::prost::Message)]
+#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct QuerySubscriberIntentsRequest {}
-#[derive(serde::Deserialize, serde::Serialize, Clone, PartialEq, ::prost::Message)]
+#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct QuerySubscriberIntentsResponse {
     #[prost(message, repeated, tag = "1")]
     pub subscriber_intents: ::prost::alloc::vec::Vec<SubscriberIntent>,
 }
-#[derive(serde::Deserialize, serde::Serialize, Clone, PartialEq, ::prost::Message)]
+#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct QuerySubscriberIntentsBySubscriberAddressRequest {
     #[prost(string, tag = "1")]
     pub subscriber_address: ::prost::alloc::string::String,
 }
-#[derive(serde::Deserialize, serde::Serialize, Clone, PartialEq, ::prost::Message)]
+#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct QuerySubscriberIntentsBySubscriberAddressResponse {
     #[prost(message, repeated, tag = "1")]
     pub subscriber_intents: ::prost::alloc::vec::Vec<SubscriberIntent>,
 }
-#[derive(serde::Deserialize, serde::Serialize, Clone, PartialEq, ::prost::Message)]
+#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct QuerySubscriberIntentsBySubscriptionIdRequest {
     #[prost(string, tag = "1")]
     pub subscription_id: ::prost::alloc::string::String,
 }
-#[derive(serde::Deserialize, serde::Serialize, Clone, PartialEq, ::prost::Message)]
+#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct QuerySubscriberIntentsBySubscriptionIdResponse {
     #[prost(message, repeated, tag = "1")]
     pub subscriber_intents: ::prost::alloc::vec::Vec<SubscriberIntent>,
 }
-#[derive(serde::Deserialize, serde::Serialize, Clone, PartialEq, ::prost::Message)]
+#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct QuerySubscriberIntentsByPublisherDomainRequest {
     #[prost(string, tag = "1")]
     pub publisher_domain: ::prost::alloc::string::String,
 }
-#[derive(serde::Deserialize, serde::Serialize, Clone, PartialEq, ::prost::Message)]
+#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct QuerySubscriberIntentsByPublisherDomainResponse {
     #[prost(message, repeated, tag = "1")]
     pub subscriber_intents: ::prost::alloc::vec::Vec<SubscriberIntent>,
 }
-#[derive(serde::Deserialize, serde::Serialize, Clone, PartialEq, ::prost::Message)]
+#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct QueryDefaultSubscriptionRequest {
     #[prost(string, tag = "1")]
     pub subscription_id: ::prost::alloc::string::String,
 }
-#[derive(serde::Deserialize, serde::Serialize, Clone, PartialEq, ::prost::Message)]
+#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct QueryDefaultSubscriptionResponse {
     #[prost(message, optional, tag = "1")]
     pub default_subscription: ::core::option::Option<DefaultSubscription>,
 }
-#[derive(serde::Deserialize, serde::Serialize, Clone, PartialEq, ::prost::Message)]
+#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct QueryDefaultSubscriptionsRequest {}
-#[derive(serde::Deserialize, serde::Serialize, Clone, PartialEq, ::prost::Message)]
+#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct QueryDefaultSubscriptionsResponse {
     #[prost(message, repeated, tag = "1")]
     pub default_subscriptions: ::prost::alloc::vec::Vec<DefaultSubscription>,
@@ -892,7 +868,7 @@ pub mod query_client {
     }
 }
 /// GenesisState defines the pubsub module's genesis state.
-#[derive(serde::Deserialize, serde::Serialize, Clone, PartialEq, ::prost::Message)]
+#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct GenesisState {
     #[prost(message, optional, tag = "1")]
     pub params: ::core::option::Option<Params>,
