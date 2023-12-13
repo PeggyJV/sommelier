@@ -1,8 +1,8 @@
 package types
 
 import (
+	errorsmod "cosmossdk.io/errors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
 	"github.com/peggyjv/sommelier/v7/app/params"
 )
@@ -48,17 +48,17 @@ func (p *Params) ValidateBasic() error {
 func validateDistributionPerBlock(i interface{}) error {
 	coinsPerBlock, ok := i.(sdk.Coin)
 	if !ok {
-		return sdkerrors.Wrapf(ErrInvalidDistributionPerBlock, "invalid parameter type: %T", i)
+		return errorsmod.Wrapf(ErrInvalidDistributionPerBlock, "invalid parameter type: %T", i)
 	}
 
 	if coinsPerBlock.IsNil() {
-		return sdkerrors.Wrapf(ErrInvalidDistributionPerBlock, "distribution per block cannot be nil")
+		return errorsmod.Wrapf(ErrInvalidDistributionPerBlock, "distribution per block cannot be nil")
 	}
 	if coinsPerBlock.Amount.IsNegative() {
-		return sdkerrors.Wrapf(ErrInvalidDistributionPerBlock, "distribution per block cannot be negative")
+		return errorsmod.Wrapf(ErrInvalidDistributionPerBlock, "distribution per block cannot be negative")
 	}
 	if coinsPerBlock.Denom != params.BaseCoinUnit {
-		return sdkerrors.Wrapf(ErrInvalidDistributionPerBlock, "distribution per block denom must be %s, got %s", params.BaseCoinUnit, coinsPerBlock.Denom)
+		return errorsmod.Wrapf(ErrInvalidDistributionPerBlock, "distribution per block denom must be %s, got %s", params.BaseCoinUnit, coinsPerBlock.Denom)
 	}
 
 	return nil

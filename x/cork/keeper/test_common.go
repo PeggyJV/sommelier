@@ -5,6 +5,8 @@ import (
 	"testing"
 	"time"
 
+	"cosmossdk.io/math"
+
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/codec"
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
@@ -14,6 +16,7 @@ import (
 	ccrypto "github.com/cosmos/cosmos-sdk/crypto/types"
 	"github.com/cosmos/cosmos-sdk/std"
 	"github.com/cosmos/cosmos-sdk/store"
+	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	"github.com/cosmos/cosmos-sdk/x/auth"
@@ -32,8 +35,11 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/evidence"
 	"github.com/cosmos/cosmos-sdk/x/genutil"
 	"github.com/cosmos/cosmos-sdk/x/gov"
+	govclient "github.com/cosmos/cosmos-sdk/x/gov/client"
 	govkeeper "github.com/cosmos/cosmos-sdk/x/gov/keeper"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
+	govtypesv1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1"
+	govtypesv1beta1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
 	"github.com/cosmos/cosmos-sdk/x/mint"
 	"github.com/cosmos/cosmos-sdk/x/params"
 	paramsclient "github.com/cosmos/cosmos-sdk/x/params/client"
@@ -49,9 +55,9 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/upgrade"
 	upgradeclient "github.com/cosmos/cosmos-sdk/x/upgrade/client"
 	gethcommon "github.com/ethereum/go-ethereum/common"
-	"github.com/peggyjv/gravity-bridge/module/v3/x/gravity"
-	gravitykeeper "github.com/peggyjv/gravity-bridge/module/v3/x/gravity/keeper"
-	gravitytypes "github.com/peggyjv/gravity-bridge/module/v3/x/gravity/types"
+	"github.com/peggyjv/gravity-bridge/module/v4/x/gravity"
+	gravitykeeper "github.com/peggyjv/gravity-bridge/module/v4/x/gravity/keeper"
+	gravitytypes "github.com/peggyjv/gravity-bridge/module/v4/x/gravity/types"
 	"github.com/peggyjv/sommelier/v7/x/cork/types"
 	"github.com/stretchr/testify/require"
 	"github.com/tendermint/tendermint/libs/log"
@@ -70,7 +76,7 @@ var (
 		mint.AppModuleBasic{},
 		distribution.AppModuleBasic{},
 		gov.NewAppModuleBasic(
-			paramsclient.ProposalHandler, distrclient.ProposalHandler, upgradeclient.ProposalHandler, upgradeclient.CancelProposalHandler,
+			[]govclient.ProposalHandler{paramsclient.ProposalHandler, distrclient.ProposalHandler, upgradeclient.LegacyProposalHandler, upgradeclient.LegacyCancelProposalHandler},
 		),
 		params.AppModuleBasic{},
 		crisis.AppModuleBasic{},
@@ -223,16 +229,16 @@ func CreateTestEnv(t *testing.T) TestInput {
 	// Initialize memory database and mount stores on it
 	db := dbm.NewMemDB()
 	ms := store.NewCommitMultiStore(db)
-	ms.MountStoreWithDB(keyGravity, sdk.StoreTypeIAVL, db)
-	ms.MountStoreWithDB(keyAcc, sdk.StoreTypeIAVL, db)
-	ms.MountStoreWithDB(keyParams, sdk.StoreTypeIAVL, db)
-	ms.MountStoreWithDB(keyStaking, sdk.StoreTypeIAVL, db)
-	ms.MountStoreWithDB(keyBank, sdk.StoreTypeIAVL, db)
-	ms.MountStoreWithDB(keyDistro, sdk.StoreTypeIAVL, db)
-	ms.MountStoreWithDB(tkeyParams, sdk.StoreTypeTransient, db)
-	ms.MountStoreWithDB(keyGov, sdk.StoreTypeIAVL, db)
-	ms.MountStoreWithDB(keySlashing, sdk.StoreTypeIAVL, db)
-	ms.MountStoreWithDB(keycork, sdk.StoreTypeIAVL, db)
+	ms.MountStoreWithDB(keyGravity, storetypes.StoreTypeIAVL, db)
+	ms.MountStoreWithDB(keyAcc, storetypes.StoreTypeIAVL, db)
+	ms.MountStoreWithDB(keyParams, storetypes.StoreTypeIAVL, db)
+	ms.MountStoreWithDB(keyStaking, storetypes.StoreTypeIAVL, db)
+	ms.MountStoreWithDB(keyBank, storetypes.StoreTypeIAVL, db)
+	ms.MountStoreWithDB(keyDistro, storetypes.StoreTypeIAVL, db)
+	ms.MountStoreWithDB(tkeyParams, storetypes.StoreTypeTransient, db)
+	ms.MountStoreWithDB(keyGov, storetypes.StoreTypeIAVL, db)
+	ms.MountStoreWithDB(keySlashing, storetypes.StoreTypeIAVL, db)
+	ms.MountStoreWithDB(keycork, storetypes.StoreTypeIAVL, db)
 	err := ms.LoadLatestVersion()
 	require.Nil(t, err)
 
@@ -271,6 +277,7 @@ func CreateTestEnv(t *testing.T) TestInput {
 		getSubspace(paramsKeeper, authtypes.ModuleName),
 		authtypes.ProtoBaseAccount, // prototype
 		maccPerms,
+		"stake",
 	)
 
 	blockedAddr := make(map[string]bool, len(maccPerms))
@@ -290,7 +297,7 @@ func CreateTestEnv(t *testing.T) TestInput {
 	stakingKeeper := stakingkeeper.NewKeeper(marshaler, keyStaking, accountKeeper, bankKeeper, getSubspace(paramsKeeper, stakingtypes.ModuleName))
 	stakingKeeper.SetParams(ctx, TestingStakeParams)
 
-	distKeeper := distrkeeper.NewKeeper(marshaler, keyDistro, getSubspace(paramsKeeper, distrtypes.ModuleName), accountKeeper, bankKeeper, stakingKeeper, authtypes.FeeCollectorName, nil)
+	distKeeper := distrkeeper.NewKeeper(marshaler, keyDistro, getSubspace(paramsKeeper, distrtypes.ModuleName), accountKeeper, bankKeeper, stakingKeeper, authtypes.FeeCollectorName)
 	distKeeper.SetParams(ctx, distrtypes.DefaultParams())
 
 	// set genesis items required for distribution
@@ -323,25 +330,20 @@ func CreateTestEnv(t *testing.T) TestInput {
 	moduleAcct := accountKeeper.GetAccount(ctx, stakeAddr)
 	require.NotNil(t, moduleAcct)
 
-	router := baseapp.NewRouter()
-	router.AddRoute(bank.AppModule{}.Route())
-	router.AddRoute(staking.AppModule{}.Route())
-	router.AddRoute(distribution.AppModule{}.Route())
-
 	// Load default wasm config
 
-	govRouter := govtypes.NewRouter().
+	govRouter := govtypesv1beta1.NewRouter().
 		AddRoute(paramsproposal.RouterKey, params.NewParamChangeProposalHandler(paramsKeeper)).
-		AddRoute(govtypes.RouterKey, govtypes.ProposalHandler)
+		AddRoute(govtypes.RouterKey, govtypesv1beta1.ProposalHandler)
 
 	govKeeper := govkeeper.NewKeeper(
-		marshaler, keyGov, getSubspace(paramsKeeper, govtypes.ModuleName).WithKeyTable(govtypes.ParamKeyTable()), accountKeeper, bankKeeper, stakingKeeper, govRouter,
+		marshaler, keyGov, getSubspace(paramsKeeper, govtypes.ModuleName).WithKeyTable(govtypesv1.ParamKeyTable()), accountKeeper, bankKeeper, stakingKeeper, govRouter, baseapp.NewMsgServiceRouter(), govtypes.DefaultConfig(),
 	)
 
-	govKeeper.SetProposalID(ctx, govtypes.DefaultStartingProposalID)
-	govKeeper.SetDepositParams(ctx, govtypes.DefaultDepositParams())
-	govKeeper.SetVotingParams(ctx, govtypes.DefaultVotingParams())
-	govKeeper.SetTallyParams(ctx, govtypes.DefaultTallyParams())
+	govKeeper.SetProposalID(ctx, govtypesv1beta1.DefaultStartingProposalID)
+	govKeeper.SetDepositParams(ctx, govtypesv1.DefaultDepositParams())
+	govKeeper.SetVotingParams(ctx, govtypesv1.DefaultVotingParams())
+	govKeeper.SetTallyParams(ctx, govtypesv1.DefaultTallyParams())
 
 	slashingKeeper := slashingkeeper.NewKeeper(
 		marshaler,
@@ -475,7 +477,7 @@ func (s *StakingKeeperMock) GetLastValidatorPower(ctx sdk.Context, operator sdk.
 }
 
 // GetLastTotalPower implements the interface for staking keeper required by gravity
-func (s *StakingKeeperMock) GetLastTotalPower(ctx sdk.Context) (power sdk.Int) {
+func (s *StakingKeeperMock) GetLastTotalPower(ctx sdk.Context) (power math.Int) {
 	var total int64
 	for _, v := range s.ValidatorPower {
 		total += v
@@ -552,13 +554,15 @@ func (s *StakingKeeperMock) ValidatorQueueIterator(ctx sdk.Context, endTime time
 }
 
 // Slash satisfies the interface
-func (s *StakingKeeperMock) Slash(sdk.Context, sdk.ConsAddress, int64, int64, sdk.Dec) {}
+func (s *StakingKeeperMock) Slash(sdk.Context, sdk.ConsAddress, int64, int64, sdk.Dec) math.Int {
+	return sdk.NewInt(0)
+}
 
 // Jail satisfies the interface
 func (s *StakingKeeperMock) Jail(sdk.Context, sdk.ConsAddress) {}
 
 // PowerReduction satisfies the interface
-func (s *StakingKeeperMock) PowerReduction(sdk.Context) sdk.Int {
+func (s *StakingKeeperMock) PowerReduction(sdk.Context) math.Int {
 	return sdk.NewInt(0)
 }
 
@@ -566,7 +570,7 @@ func (s *StakingKeeperMock) PowerReduction(sdk.Context) sdk.Int {
 type AlwaysPanicStakingMock struct{}
 
 // GetLastTotalPower implements the interface for staking keeper required by gravity
-func (s AlwaysPanicStakingMock) GetLastTotalPower(ctx sdk.Context) (power sdk.Int) {
+func (s AlwaysPanicStakingMock) GetLastTotalPower(ctx sdk.Context) (power math.Int) {
 	panic("unexpected call")
 }
 
@@ -616,7 +620,7 @@ func (s AlwaysPanicStakingMock) Jail(sdk.Context, sdk.ConsAddress) {
 }
 
 // PowerReduction satisfies the interface
-func (s AlwaysPanicStakingMock) PowerReduction(sdk.Context) sdk.Int {
+func (s AlwaysPanicStakingMock) PowerReduction(sdk.Context) math.Int {
 	panic("unexpected call")
 }
 

@@ -16,12 +16,13 @@ import (
 
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
+	govtypesv1beta1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
 	"github.com/peggyjv/sommelier/v7/app/params"
 	auctiontypes "github.com/peggyjv/sommelier/v7/x/auction/types"
 	cellarfeestypes "github.com/peggyjv/sommelier/v7/x/cellarfees/types"
 	corktypes "github.com/peggyjv/sommelier/v7/x/cork/types"
 
-	gravitytypes "github.com/peggyjv/gravity-bridge/module/v3/x/gravity/types"
+	gravitytypes "github.com/peggyjv/gravity-bridge/module/v4/x/gravity/types"
 
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/ethclient"
@@ -160,20 +161,20 @@ func (s *IntegrationTestSuite) initNodes(nodeCount int) { //nolint:unused
 	val0ConfigDir := s.chain.validators[0].configDir()
 	for _, val := range s.chain.validators {
 		s.Require().NoError(
-			addGenesisAccount(val0ConfigDir, "", initBalanceStr, val.keyInfo.GetAddress()),
+			addGenesisAccount(val0ConfigDir, "", initBalanceStr, val.address()),
 		)
 	}
 
 	// add orchestrator accounts to genesis file
 	for _, orch := range s.chain.orchestrators {
 		s.Require().NoError(
-			addGenesisAccount(val0ConfigDir, "", initBalanceStr, orch.keyInfo.GetAddress()),
+			addGenesisAccount(val0ConfigDir, "", initBalanceStr, orch.address()),
 		)
 	}
 
 	// add proposer account to genesis file (so it can bid)
 	s.Require().NoError(
-		addGenesisAccount(val0ConfigDir, "", initBalanceStr, s.chain.proposer.keyInfo.GetAddress()),
+		addGenesisAccount(val0ConfigDir, "", initBalanceStr, s.chain.proposer.address()),
 	)
 
 	// copy the genesis file to the remaining validators
@@ -196,7 +197,7 @@ func (s *IntegrationTestSuite) initNodesWithMnemonics(mnemonics ...string) {
 	for _, val := range s.chain.validators {
 		// Fund the first validator with some funds to be used by auction module integration tests
 		s.Require().NoError(
-			addGenesisAccount(val0ConfigDir, "", initBalanceStr, val.keyInfo.GetAddress()),
+			addGenesisAccount(val0ConfigDir, "", initBalanceStr, val.address()),
 		)
 	}
 
@@ -204,13 +205,13 @@ func (s *IntegrationTestSuite) initNodesWithMnemonics(mnemonics ...string) {
 	for _, orch := range s.chain.orchestrators {
 		// Fund the first orchestrator with some funds to be used by auction module integration tests
 		s.Require().NoError(
-			addGenesisAccount(val0ConfigDir, "", initBalanceStr, orch.keyInfo.GetAddress()),
+			addGenesisAccount(val0ConfigDir, "", initBalanceStr, orch.address()),
 		)
 	}
 
 	// add proposer account to genesis file (so it can bid)
 	s.Require().NoError(
-		addGenesisAccount(val0ConfigDir, "", initBalanceStr, s.chain.proposer.keyInfo.GetAddress()),
+		addGenesisAccount(val0ConfigDir, "", initBalanceStr, s.chain.proposer.address()),
 	)
 
 	// copy the genesis file to the remaining validators
@@ -318,7 +319,7 @@ func (s *IntegrationTestSuite) initGenesis() {
 	s.Require().NoError(err)
 	appGenState[banktypes.ModuleName] = bz
 
-	var govGenState govtypes.GenesisState
+	var govGenState govtypesv1beta1.GenesisState
 	s.Require().NoError(cdc.UnmarshalJSON(appGenState[govtypes.ModuleName], &govGenState))
 
 	// set short voting period to allow gov proposals in tests

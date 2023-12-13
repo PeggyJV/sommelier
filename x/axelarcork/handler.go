@@ -1,10 +1,10 @@
 package axelarcork
 
 import (
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
-
+	errorsmod "cosmossdk.io/errors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	govtypesv1beta1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
 
 	"github.com/peggyjv/sommelier/v7/x/axelarcork/keeper"
 	"github.com/peggyjv/sommelier/v7/x/axelarcork/types"
@@ -28,13 +28,13 @@ func NewHandler(k keeper.Keeper) sdk.Handler {
 			res, err := k.BumpCorkGas(sdk.WrapSDKContext(ctx), msg)
 			return sdk.WrapServiceResult(ctx, res, err)
 		default:
-			return nil, sdkerrors.Wrapf(sdkerrors.ErrUnknownRequest, "unrecognized axelar cork message type: %T", msg)
+			return nil, errorsmod.Wrapf(sdkerrors.ErrUnknownRequest, "unrecognized axelar cork message type: %T", msg)
 		}
 	}
 }
 
-func NewProposalHandler(k keeper.Keeper) govtypes.Handler {
-	return func(ctx sdk.Context, content govtypes.Content) error {
+func NewProposalHandler(k keeper.Keeper) govtypesv1beta1.Handler {
+	return func(ctx sdk.Context, content govtypesv1beta1.Content) error {
 		switch c := content.(type) {
 		case *types.AddAxelarManagedCellarIDsProposal:
 			return keeper.HandleAddManagedCellarsProposal(ctx, k, *c)
@@ -54,7 +54,7 @@ func NewProposalHandler(k keeper.Keeper) govtypes.Handler {
 			return keeper.HandleCancelAxelarProxyContractUpgradeProposal(ctx, k, *c)
 
 		default:
-			return sdkerrors.Wrapf(sdkerrors.ErrUnknownRequest, "unrecognized axelar cork proposal content type: %T", c)
+			return errorsmod.Wrapf(sdkerrors.ErrUnknownRequest, "unrecognized axelar cork proposal content type: %T", c)
 		}
 	}
 }

@@ -8,14 +8,15 @@ import (
 	"math/big"
 	"strings"
 
+	errorsmod "cosmossdk.io/errors"
+	"cosmossdk.io/math"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/ethereum/go-ethereum/accounts/abi"
 	"github.com/ethereum/go-ethereum/common"
 	ethereumtypes "github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/ethereum/go-ethereum/ethclient"
-	gravitytypes "github.com/peggyjv/gravity-bridge/module/v3/x/gravity/types"
+	gravitytypes "github.com/peggyjv/gravity-bridge/module/v4/x/gravity/types"
 )
 
 type EthereumConfig struct {
@@ -143,11 +144,11 @@ const stateLastValsetNonceABIJSON = `[
 func packCall(abiString, method string, args []interface{}) []byte {
 	encodedCall, err := abi.JSON(strings.NewReader(abiString))
 	if err != nil {
-		panic(sdkerrors.Wrap(err, "bad ABI definition in code"))
+		panic(errorsmod.Wrap(err, "bad ABI definition in code"))
 	}
 	abiEncodedCall, err := encodedCall.Pack(method, args...)
 	if err != nil {
-		panic(sdkerrors.Wrap(err, "error packing calling"))
+		panic(errorsmod.Wrap(err, "error packing calling"))
 	}
 	return abiEncodedCall
 }
@@ -161,7 +162,7 @@ func PackDeployERC20(denom string, name string, symbol string, decimals uint8) [
 	})
 }
 
-func PackSendToCosmos(tokenContract common.Address, destination sdk.AccAddress, amount sdk.Int) []byte {
+func PackSendToCosmos(tokenContract common.Address, destination sdk.AccAddress, amount math.Int) []byte {
 	destinationBytes, _ := byteArrayToFixByteArray(destination.Bytes())
 	return packCall(gravitytypes.SendToCosmosABIJSON, "sendToCosmos", []interface{}{
 		tokenContract,
@@ -198,7 +199,7 @@ func PackLastValsetNonce() []byte {
 	return packCall(stateLastValsetNonceABIJSON, "state_lastValsetNonce", []interface{}{})
 }
 
-func UnpackEthUInt(bz []byte) sdk.Int {
+func UnpackEthUInt(bz []byte) math.Int {
 	output := big.NewInt(0)
 	output.SetBytes(bz)
 

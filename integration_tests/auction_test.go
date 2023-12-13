@@ -7,7 +7,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
-	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
+	govtypesv1beta1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
 	"github.com/peggyjv/sommelier/v7/x/auction/types"
 	cellarfees "github.com/peggyjv/sommelier/v7/x/cellarfees/types"
 )
@@ -17,7 +17,7 @@ func (s *IntegrationTestSuite) TestAuctionModule() {
 		val := s.chain.validators[0]
 		kb, err := val.keyring()
 		s.Require().NoError(err)
-		val0ClientCtx, err := s.chain.clientContext("tcp://localhost:26657", &kb, "val", val.keyInfo.GetAddress())
+		val0ClientCtx, err := s.chain.clientContext("tcp://localhost:26657", &kb, "val", val.address())
 		s.Require().NoError(err)
 		auctionQueryClient := types.NewQueryClient(val0ClientCtx)
 
@@ -33,10 +33,10 @@ func (s *IntegrationTestSuite) TestAuctionModule() {
 
 		s.T().Logf("Create governance proposal to update some token prices")
 		proposer := s.chain.proposer
-		proposerCtx, err := s.chain.clientContext("tcp://localhost:26657", proposer.keyring, "proposer", proposer.keyInfo.GetAddress())
+		proposerCtx, err := s.chain.clientContext("tcp://localhost:26657", proposer.keyring, "proposer", proposer.address())
 		s.Require().NoError(err)
 		orch := s.chain.orchestrators[0]
-		orchClientCtx, err := s.chain.clientContext("tcp://localhost:26657", orch.keyring, "orch", orch.keyInfo.GetAddress())
+		orchClientCtx, err := s.chain.clientContext("tcp://localhost:26657", orch.keyring, "orch", orch.address())
 		s.Require().NoError(err)
 
 		proposal := types.SetTokenPricesProposal{
@@ -61,7 +61,7 @@ func (s *IntegrationTestSuite) TestAuctionModule() {
 			},
 		}
 
-		proposalMsg, err := govtypes.NewMsgSubmitProposal(
+		proposalMsg, err := govtypesv1beta1.NewMsgSubmitProposal(
 			&proposal,
 			sdk.Coins{
 				{
@@ -69,7 +69,7 @@ func (s *IntegrationTestSuite) TestAuctionModule() {
 					Amount: stakeAmount.Quo(sdk.NewInt(2)),
 				},
 			},
-			proposer.keyInfo.GetAddress(),
+			proposer.address(),
 		)
 		s.Require().NoError(err, "Unable to create governance proposal")
 
@@ -79,10 +79,10 @@ func (s *IntegrationTestSuite) TestAuctionModule() {
 		s.Require().Zero(submitProposalResponse.Code, "raw log: %s", submitProposalResponse.RawLog)
 
 		s.T().Log("Check proposal was submitted correctly")
-		govQueryClient := govtypes.NewQueryClient(orchClientCtx)
+		govQueryClient := govtypesv1beta1.NewQueryClient(orchClientCtx)
 
 		s.Require().Eventually(func() bool {
-			proposalsQueryResponse, err := govQueryClient.Proposals(context.Background(), &govtypes.QueryProposalsRequest{})
+			proposalsQueryResponse, err := govQueryClient.Proposals(context.Background(), &govtypesv1beta1.QueryProposalsRequest{})
 			if err != nil {
 				s.T().Logf("error querying proposals: %e", err)
 				return false
@@ -90,7 +90,7 @@ func (s *IntegrationTestSuite) TestAuctionModule() {
 
 			s.Require().NotEmpty(proposalsQueryResponse.Proposals)
 			s.Require().Equal(uint64(1), proposalsQueryResponse.Proposals[0].ProposalId, "not proposal id 1")
-			s.Require().Equal(govtypes.StatusVotingPeriod, proposalsQueryResponse.Proposals[0].Status, "proposal not in voting period")
+			s.Require().Equal(govtypesv1beta1.StatusVotingPeriod, proposalsQueryResponse.Proposals[0].Status, "proposal not in voting period")
 
 			return true
 		}, time.Second*30, time.Second*5, "proposal submission was never found")
@@ -99,10 +99,10 @@ func (s *IntegrationTestSuite) TestAuctionModule() {
 		for _, val := range s.chain.validators {
 			kr, err := val.keyring()
 			s.Require().NoError(err)
-			localClientCtx, err := s.chain.clientContext("tcp://localhost:26657", &kr, "val", val.keyInfo.GetAddress())
+			localClientCtx, err := s.chain.clientContext("tcp://localhost:26657", &kr, "val", val.address())
 			s.Require().NoError(err)
 
-			voteMsg := govtypes.NewMsgVote(val.keyInfo.GetAddress(), 1, govtypes.OptionYes)
+			voteMsg := govtypesv1beta1.NewMsgVote(val.address(), 1, govtypesv1beta1.OptionYes)
 			voteResponse, err := s.chain.sendMsgs(*localClientCtx, voteMsg)
 			s.Require().NoError(err)
 			s.Require().Zero(voteResponse.Code, "Vote error: %s", voteResponse.RawLog)
@@ -110,8 +110,8 @@ func (s *IntegrationTestSuite) TestAuctionModule() {
 
 		s.T().Log("Waiting for proposal to be approved..")
 		s.Require().Eventually(func() bool {
-			proposalQueryResponse, _ := govQueryClient.Proposal(context.Background(), &govtypes.QueryProposalRequest{ProposalId: 1})
-			return govtypes.StatusPassed == proposalQueryResponse.Proposal.Status
+			proposalQueryResponse, _ := govQueryClient.Proposal(context.Background(), &govtypesv1beta1.QueryProposalRequest{ProposalId: 1})
+			return govtypesv1beta1.StatusPassed == proposalQueryResponse.Proposal.Status
 		}, time.Second*30, time.Second*5, "proposal was never accepted")
 		s.T().Log("Proposal approved!")
 
@@ -120,7 +120,7 @@ func (s *IntegrationTestSuite) TestAuctionModule() {
 		s.Require().NoError(err)
 		s.T().Logf("Auction module token balances before bids %v", balanceRes.Balances)
 
-		bidderAddress := proposer.keyInfo.GetAddress().String()
+		bidderAddress := proposer.address().String()
 		initialBidderBalanceRes, err := bankQueryClient.AllBalances(context.Background(), &banktypes.QueryAllBalancesRequest{Address: bidderAddress})
 		s.Require().NoError(err)
 		found, initialBidderSomm := balanceOfDenom(initialBidderBalanceRes.Balances, testDenom)

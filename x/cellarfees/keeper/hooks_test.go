@@ -4,7 +4,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/golang/mock/gomock"
-	gravitytypes "github.com/peggyjv/gravity-bridge/module/v3/x/gravity/types"
+	gravitytypes "github.com/peggyjv/gravity-bridge/module/v4/x/gravity/types"
 	auctionTypes "github.com/peggyjv/sommelier/v7/x/auction/types"
 	cellarfeesTypes "github.com/peggyjv/sommelier/v7/x/cellarfees/types"
 )

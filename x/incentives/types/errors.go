@@ -1,9 +1,9 @@
 package types
 
 import (
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	errorsmod "cosmossdk.io/errors"
 )
 
 var (
-	ErrInvalidDistributionPerBlock = sdkerrors.Register(ModuleName, 1, "invalid distribution per block")
+	ErrInvalidDistributionPerBlock = errorsmod.Register(ModuleName, 1, "invalid distribution per block")
 )

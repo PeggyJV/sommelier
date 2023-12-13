@@ -4,9 +4,11 @@ import (
 	"fmt"
 	"math/big"
 
+	"cosmossdk.io/math"
 	"github.com/tendermint/tendermint/libs/log"
 
 	"github.com/cosmos/cosmos-sdk/codec"
+	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
 	"github.com/peggyjv/sommelier/v7/app/params"
@@ -15,7 +17,7 @@ import (
 
 type Keeper struct {
 	cdc           codec.BinaryCodec
-	storeKey      sdk.StoreKey
+	storeKey      storetypes.StoreKey
 	paramSpace    paramtypes.Subspace
 	accountKeeper types.AccountKeeper
 	bankKeeper    types.BankKeeper
@@ -27,7 +29,7 @@ type Keeper struct {
 
 func NewKeeper(
 	cdc codec.BinaryCodec,
-	storeKey sdk.StoreKey,
+	storeKey storetypes.StoreKey,
 	paramSpace paramtypes.Subspace,
 	accountKeeper types.AccountKeeper,
 	bankKeeper types.BankKeeper,
@@ -75,7 +77,7 @@ func (k Keeper) SetParams(ctx sdk.Context, params types.Params) {
 // Last highest reward supply //
 ////////////////////////////////
 
-func (k Keeper) GetLastRewardSupplyPeak(ctx sdk.Context) sdk.Int {
+func (k Keeper) GetLastRewardSupplyPeak(ctx sdk.Context) math.Int {
 	store := ctx.KVStore(k.storeKey)
 	b := store.Get(types.GetLastRewardSupplyPeakKey())
 	if b == nil {
@@ -85,7 +87,7 @@ func (k Keeper) GetLastRewardSupplyPeak(ctx sdk.Context) sdk.Int {
 	return sdk.NewIntFromBigInt((&amount).SetBytes(b))
 }
 
-func (k Keeper) SetLastRewardSupplyPeak(ctx sdk.Context, amount sdk.Int) {
+func (k Keeper) SetLastRewardSupplyPeak(ctx sdk.Context, amount math.Int) {
 	store := ctx.KVStore(k.storeKey)
 	b := amount.BigInt().Bytes()
 	store.Set(types.GetLastRewardSupplyPeakKey(), b)
@@ -131,5 +133,5 @@ func (k Keeper) GetAPY(ctx sdk.Context) sdk.Dec {
 	emission := k.GetEmission(ctx, remainingRewardsSupply)
 	annualRewards := emission.AmountOf(params.BaseCoinUnit).Mul(sdk.NewInt(int64(mintParams.BlocksPerYear)))
 
-	return annualRewards.ToDec().Quo(totalCoins.ToDec()).Quo(bondedRatio)
+	return sdk.NewDecFromInt(annualRewards).Quo(sdk.NewDecFromInt(totalCoins)).Quo(bondedRatio)
 }

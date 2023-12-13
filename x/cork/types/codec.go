@@ -4,7 +4,7 @@ import (
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/msgservice"
-	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
+	govtypesv1beta1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
 )
 
 // RegisterInterfaces registers the cork proto files
@@ -14,7 +14,7 @@ func RegisterInterfaces(registry codectypes.InterfaceRegistry) {
 		&MsgScheduleCorkRequest{},
 	)
 
-	registry.RegisterImplementations((*govtypes.Content)(nil),
+	registry.RegisterImplementations((*govtypesv1beta1.Content)(nil),
 		&AddManagedCellarIDsProposal{},
 		&RemoveManagedCellarIDsProposal{},
 		&ScheduledCorkProposal{},

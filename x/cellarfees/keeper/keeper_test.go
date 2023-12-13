@@ -140,6 +140,6 @@ func (suite *KeeperTestSuite) TestGetAPY() {
 	suite.mintKeeper.EXPECT().StakingTokenSupply(ctx).Return(stakingTotalSupply)
 
 	expectedEmission := lastPeak.Quo(sdk.NewIntFromUint64(cellarfeesParams.RewardEmissionPeriod))
-	expected := expectedEmission.Mul(sdk.NewInt(int64(blocksPerYear))).ToDec().Quo(stakingTotalSupply.ToDec().Mul(bondedRatio))
+	expected := sdk.NewDecFromInt(expectedEmission.Mul(sdk.NewInt(int64(blocksPerYear)))).Quo(sdk.NewDecFromInt(stakingTotalSupply).Mul(bondedRatio))
 	require.Equal(expected, cellarfeesKeeper.GetAPY(ctx))
 }

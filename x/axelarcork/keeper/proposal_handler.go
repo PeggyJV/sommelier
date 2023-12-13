@@ -8,11 +8,11 @@ import (
 
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	distributiontypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
-	transfertypes "github.com/cosmos/ibc-go/v3/modules/apps/transfer/types"
-	clienttypes "github.com/cosmos/ibc-go/v3/modules/core/02-client/types"
+	transfertypes "github.com/cosmos/ibc-go/v6/modules/apps/transfer/types"
+	clienttypes "github.com/cosmos/ibc-go/v6/modules/core/02-client/types"
 
+	errorsmod "cosmossdk.io/errors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/peggyjv/sommelier/v7/x/axelarcork/types"
 )
@@ -83,7 +83,7 @@ func HandleScheduledCorkProposal(ctx sdk.Context, k Keeper, p types.AxelarSchedu
 	}
 
 	if !k.HasCellarID(ctx, config.Id, common.HexToAddress(p.TargetContractAddress)) {
-		return sdkerrors.Wrapf(types.ErrUnmanagedCellarAddress, "id: %s", p.TargetContractAddress)
+		return errorsmod.Wrapf(types.ErrUnmanagedCellarAddress, "id: %s", p.TargetContractAddress)
 	}
 
 	return nil
@@ -115,11 +115,12 @@ func HandleCommunityPoolSpendProposal(ctx sdk.Context, k Keeper, p types.AxelarC
 		Payload:            nil,
 		Type:               types.PureTokenTransfer,
 	}
-	bz, err := json.Marshal(axelarMemo)
+	memoBz, err := json.Marshal(axelarMemo)
 	if err != nil {
 		return err
 	}
 
+	memo := string(memoBz)
 	transferMsg := transfertypes.NewMsgTransfer(
 		params.IbcPort,
 		params.IbcChannel,
@@ -128,8 +129,8 @@ func HandleCommunityPoolSpendProposal(ctx sdk.Context, k Keeper, p types.AxelarC
 		p.Recipient,
 		clienttypes.ZeroHeight(),
 		uint64(ctx.BlockTime().Add(time.Duration(params.TimeoutDuration)).UnixNano()),
+		memo,
 	)
-	transferMsg.Memo = string(bz)
 	resp, err := k.transferKeeper.Transfer(ctx.Context(), transferMsg)
 	if err != nil {
 		return err

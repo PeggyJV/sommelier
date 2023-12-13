@@ -1,6 +1,7 @@
 package keeper
 
 import (
+	"cosmossdk.io/math"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	"github.com/peggyjv/sommelier/v7/app/params"
@@ -12,11 +13,11 @@ func (k Keeper) GetFeesAccount(ctx sdk.Context) authtypes.ModuleAccountI {
 	return k.accountKeeper.GetModuleAccount(ctx, types.ModuleName)
 }
 
-func (k Keeper) GetEmission(ctx sdk.Context, remainingRewardsSupply sdk.Int) sdk.Coins {
+func (k Keeper) GetEmission(ctx sdk.Context, remainingRewardsSupply math.Int) sdk.Coins {
 	previousSupplyPeak := k.GetLastRewardSupplyPeak(ctx)
 	cellarfeesParams := k.GetParams(ctx)
 
-	var emissionAmount sdk.Int
+	var emissionAmount math.Int
 	if remainingRewardsSupply.GT(previousSupplyPeak) {
 		k.SetLastRewardSupplyPeak(ctx, remainingRewardsSupply)
 		emissionAmount = remainingRewardsSupply.Quo(sdk.NewInt(int64(cellarfeesParams.RewardEmissionPeriod)))

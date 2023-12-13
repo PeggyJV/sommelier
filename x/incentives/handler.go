@@ -1,9 +1,9 @@
 package incentives
 
 import (
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-
+	errorsmod "cosmossdk.io/errors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
 	"github.com/peggyjv/sommelier/v7/x/incentives/keeper"
 )
@@ -14,7 +14,7 @@ func NewHandler(k keeper.Keeper) sdk.Handler {
 		_ = ctx.WithEventManager(sdk.NewEventManager())
 		switch msg := msg.(type) {
 		default:
-			return nil, sdkerrors.Wrapf(sdkerrors.ErrUnknownRequest, "unrecognized incentives message type: %T", msg)
+			return nil, errorsmod.Wrapf(sdkerrors.ErrUnknownRequest, "unrecognized incentives message type: %T", msg)
 		}
 	}
 }

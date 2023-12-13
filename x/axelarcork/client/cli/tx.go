@@ -5,11 +5,13 @@ import (
 	"os"
 	"strings"
 
+	"cosmossdk.io/math"
+
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/tx"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/version"
-	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
+	govtypesv1beta1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
 	"github.com/ethereum/go-ethereum/common"
 	types "github.com/peggyjv/sommelier/v7/x/axelarcork/types"
 	"github.com/spf13/cobra"
@@ -52,7 +54,7 @@ func CmdScheduleAxelarCork() *cobra.Command {
 
 			from := clientCtx.GetFromAddress()
 
-			chainID, err := sdk.ParseUint(args[0])
+			chainID, err := math.ParseUint(args[0])
 			if err != nil {
 				return err
 			}
@@ -62,7 +64,7 @@ func CmdScheduleAxelarCork() *cobra.Command {
 				return fmt.Errorf("contract address %s is invalid", contractAddr)
 			}
 
-			blockHeight, err := sdk.ParseUint(args[2])
+			blockHeight, err := math.ParseUint(args[2])
 			if err != nil {
 				return err
 			}
@@ -104,7 +106,7 @@ func CmdRelayAxelarCork() *cobra.Command {
 
 			from := clientCtx.GetFromAddress()
 
-			chainID, err := sdk.ParseUint(args[0])
+			chainID, err := math.ParseUint(args[0])
 			if err != nil {
 				return err
 			}
@@ -119,7 +121,7 @@ func CmdRelayAxelarCork() *cobra.Command {
 				return err
 			}
 
-			fee, err := sdk.ParseUint(args[3])
+			fee, err := math.ParseUint(args[3])
 			if err != nil {
 				return err
 			}
@@ -156,7 +158,7 @@ func CmdRelayAxelarProxyUpgrade() *cobra.Command {
 
 			from := clientCtx.GetFromAddress()
 
-			chainID, err := sdk.ParseUint(args[0])
+			chainID, err := math.ParseUint(args[0])
 			if err != nil {
 				return err
 			}
@@ -166,7 +168,7 @@ func CmdRelayAxelarProxyUpgrade() *cobra.Command {
 				return err
 			}
 
-			fee, err := sdk.ParseUint(args[3])
+			fee, err := math.ParseUint(args[3])
 			if err != nil {
 				return err
 			}
@@ -289,7 +291,7 @@ Where proposal.json contains:
 				&types.CellarIDSet{Ids: proposal.CellarIds.Ids})
 
 			from := clientCtx.GetFromAddress()
-			msg, err := govtypes.NewMsgSubmitProposal(content, deposit, from)
+			msg, err := govtypesv1beta1.NewMsgSubmitProposal(content, deposit, from)
 			if err != nil {
 				return err
 			}
@@ -359,7 +361,7 @@ Where proposal.json contains:
 				&types.CellarIDSet{Ids: proposal.CellarIds.Ids})
 
 			from := clientCtx.GetFromAddress()
-			msg, err := govtypes.NewMsgSubmitProposal(content, deposit, from)
+			msg, err := govtypesv1beta1.NewMsgSubmitProposal(content, deposit, from)
 			if err != nil {
 				return err
 			}
@@ -438,7 +440,7 @@ The contract_call_proto_json field must be the JSON representation of a Schedule
 			}
 			from := clientCtx.GetFromAddress()
 
-			msg, err := govtypes.NewMsgSubmitProposal(content, deposit, from)
+			msg, err := govtypesv1beta1.NewMsgSubmitProposal(content, deposit, from)
 			if err != nil {
 				return err
 			}
@@ -521,7 +523,7 @@ Where proposal.json contains:
 				amount,
 			)
 
-			msg, err := govtypes.NewMsgSubmitProposal(content, deposit, from)
+			msg, err := govtypesv1beta1.NewMsgSubmitProposal(content, deposit, from)
 			if err != nil {
 				return err
 			}
@@ -596,7 +598,7 @@ Where proposal.json contains:
 			)
 
 			from := clientCtx.GetFromAddress()
-			msg, err := govtypes.NewMsgSubmitProposal(content, deposit, from)
+			msg, err := govtypesv1beta1.NewMsgSubmitProposal(content, deposit, from)
 			if err != nil {
 				return err
 			}
@@ -664,7 +666,7 @@ Where proposal.json contains:
 				proposal.ChainId)
 
 			from := clientCtx.GetFromAddress()
-			msg, err := govtypes.NewMsgSubmitProposal(content, deposit, from)
+			msg, err := govtypesv1beta1.NewMsgSubmitProposal(content, deposit, from)
 			if err != nil {
 				return err
 			}
@@ -734,7 +736,7 @@ Where proposal.json contains:
 			)
 
 			from := clientCtx.GetFromAddress()
-			msg, err := govtypes.NewMsgSubmitProposal(content, deposit, from)
+			msg, err := govtypesv1beta1.NewMsgSubmitProposal(content, deposit, from)
 			if err != nil {
 				return err
 			}
@@ -802,7 +804,7 @@ Where proposal.json contains:
 			)
 
 			from := clientCtx.GetFromAddress()
-			msg, err := govtypes.NewMsgSubmitProposal(content, deposit, from)
+			msg, err := govtypesv1beta1.NewMsgSubmitProposal(content, deposit, from)
 			if err != nil {
 				return err
 			}

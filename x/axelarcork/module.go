@@ -11,7 +11,6 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	sim "github.com/cosmos/cosmos-sdk/types/simulation"
-	"github.com/gorilla/mux"
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
 	"github.com/peggyjv/sommelier/v7/x/axelarcork/client/cli"
 	"github.com/peggyjv/sommelier/v7/x/axelarcork/keeper"
@@ -52,10 +51,6 @@ func (AppModuleBasic) ValidateGenesis(cdc codec.JSONCodec, _ client.TxEncodingCo
 	}
 	return gs.Validate()
 }
-
-// RegisterRESTRoutes doesn't support legacy REST routes.
-// We don't want to support the legacy rest server here
-func (AppModuleBasic) RegisterRESTRoutes(_ client.Context, _ *mux.Router) {}
 
 // GetTxCmd returns the root tx command for the cork module.
 func (AppModuleBasic) GetTxCmd() *cobra.Command {

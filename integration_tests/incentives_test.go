@@ -9,7 +9,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/bech32"
 	disttypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
-	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
+	govtypesv1beta1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
 	minttypes "github.com/cosmos/cosmos-sdk/x/mint/types"
 	paramsproposal "github.com/cosmos/cosmos-sdk/x/params/types/proposal"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
@@ -23,16 +23,16 @@ func (s *IntegrationTestSuite) TestIncentives() {
 		defer cancel()
 
 		val := s.chain.validators[0]
-		s.T().Logf("validator %s", val.keyInfo.GetAddress().String())
+		s.T().Logf("validator %s", val.address().String())
 		kb, err := val.keyring()
 		s.Require().NoError(err)
 
-		_, bytes, err := bech32.DecodeAndConvert(val.keyInfo.GetAddress().String())
+		_, bytes, err := bech32.DecodeAndConvert(val.address().String())
 		s.Require().NoError(err)
 		valOperatorAddress, err := bech32.ConvertAndEncode("sommvaloper", bytes)
 		s.Require().NoError(err)
 
-		clientCtx, err := s.chain.clientContext("tcp://localhost:26657", &kb, "val", val.keyInfo.GetAddress())
+		clientCtx, err := s.chain.clientContext("tcp://localhost:26657", &kb, "val", val.address())
 		s.Require().NoError(err)
 
 		incentivesQueryClient := incentivestypes.NewQueryClient(clientCtx)
@@ -67,10 +67,10 @@ func (s *IntegrationTestSuite) TestIncentives() {
 
 		s.T().Log("submitting proposal to enable incentives")
 		proposer := s.chain.proposer
-		proposerCtx, err := s.chain.clientContext("tcp://localhost:26657", proposer.keyring, "proposer", proposer.keyInfo.GetAddress())
+		proposerCtx, err := s.chain.clientContext("tcp://localhost:26657", proposer.keyring, "proposer", proposer.address())
 		s.Require().NoError(err)
 		orch := s.chain.orchestrators[0]
-		orchClientCtx, err := s.chain.clientContext("tcp://localhost:26657", orch.keyring, "orch", orch.keyInfo.GetAddress())
+		orchClientCtx, err := s.chain.clientContext("tcp://localhost:26657", orch.keyring, "orch", orch.address())
 		s.Require().NoError(err)
 
 		// Collin: test takes about ~110 blocks to reach the cutoff check at the end on my machine.
@@ -95,7 +95,7 @@ func (s *IntegrationTestSuite) TestIncentives() {
 			},
 		}
 
-		proposalMsg, err := govtypes.NewMsgSubmitProposal(
+		proposalMsg, err := govtypesv1beta1.NewMsgSubmitProposal(
 			&proposal,
 			sdk.Coins{
 				{
@@ -103,7 +103,7 @@ func (s *IntegrationTestSuite) TestIncentives() {
 					Amount: stakeAmount.Quo(sdk.NewInt(2)),
 				},
 			},
-			proposer.keyInfo.GetAddress(),
+			proposer.address(),
 		)
 		s.Require().NoError(err, "Unable to create governance proposal")
 		submitProposalResponse, err := s.chain.sendMsgs(*proposerCtx, proposalMsg)
@@ -111,10 +111,10 @@ func (s *IntegrationTestSuite) TestIncentives() {
 		s.Require().Zero(submitProposalResponse.Code, "raw log: %s", submitProposalResponse.RawLog)
 
 		s.T().Log("check proposal was submitted correctly")
-		govQueryClient := govtypes.NewQueryClient(orchClientCtx)
+		govQueryClient := govtypesv1beta1.NewQueryClient(orchClientCtx)
 
 		s.Require().Eventually(func() bool {
-			proposalsQueryResponse, err := govQueryClient.Proposals(context.Background(), &govtypes.QueryProposalsRequest{})
+			proposalsQueryResponse, err := govQueryClient.Proposals(context.Background(), &govtypesv1beta1.QueryProposalsRequest{})
 			if err != nil {
 				s.T().Logf("error querying proposals: %e", err)
 				return false
@@ -122,7 +122,7 @@ func (s *IntegrationTestSuite) TestIncentives() {
 
 			s.Require().NotEmpty(proposalsQueryResponse.Proposals)
 			s.Require().Equal(uint64(1), proposalsQueryResponse.Proposals[0].ProposalId, "not proposal id 1")
-			s.Require().Equal(govtypes.StatusVotingPeriod, proposalsQueryResponse.Proposals[0].Status, "proposal not in voting period")
+			s.Require().Equal(govtypesv1beta1.StatusVotingPeriod, proposalsQueryResponse.Proposals[0].Status, "proposal not in voting period")
 
 			return true
 		}, time.Second*30, time.Second*5, "proposal submission was never found")
@@ -131,10 +131,10 @@ func (s *IntegrationTestSuite) TestIncentives() {
 		for _, val := range s.chain.validators {
 			kr, err := val.keyring()
 			s.Require().NoError(err)
-			localClientCtx, err := s.chain.clientContext("tcp://localhost:26657", &kr, "val", val.keyInfo.GetAddress())
+			localClientCtx, err := s.chain.clientContext("tcp://localhost:26657", &kr, "val", val.address())
 			s.Require().NoError(err)
 
-			voteMsg := govtypes.NewMsgVote(val.keyInfo.GetAddress(), 1, govtypes.OptionYes)
+			voteMsg := govtypesv1beta1.NewMsgVote(val.address(), 1, govtypesv1beta1.OptionYes)
 			voteResponse, err := s.chain.sendMsgs(*localClientCtx, voteMsg)
 			s.Require().NoError(err)
 			s.Require().Zero(voteResponse.Code, "Vote error: %s", voteResponse.RawLog)
@@ -142,8 +142,8 @@ func (s *IntegrationTestSuite) TestIncentives() {
 
 		s.T().Log("waiting for proposal to be approved..")
 		s.Require().Eventually(func() bool {
-			proposalQueryResponse, _ := govQueryClient.Proposal(context.Background(), &govtypes.QueryProposalRequest{ProposalId: 1})
-			return govtypes.StatusPassed == proposalQueryResponse.Proposal.Status
+			proposalQueryResponse, _ := govQueryClient.Proposal(context.Background(), &govtypesv1beta1.QueryProposalRequest{ProposalId: 1})
+			return govtypesv1beta1.StatusPassed == proposalQueryResponse.Proposal.Status
 		}, time.Second*30, time.Second*5, "proposal was never accepted")
 		s.T().Log("proposal approved!")
 
@@ -161,7 +161,7 @@ func (s *IntegrationTestSuite) TestIncentives() {
 		actualDistributionPerBlock := (afterAmount.Sub(beforeAmount)).Quo(sdk.NewDec(afterHeight - beforeHeight)).Mul(sdk.NewDec(int64(len(s.chain.validators))))
 		s.T().Logf("before: %s, after: %s, blocks %d-%d", beforeAmount.String(), afterAmount.String(), beforeHeight, afterHeight)
 		s.Require().True(afterAmount.GT(beforeAmount))
-		s.Require().Equal(expectedDistributionPerBlock.Amount.ToDec(), actualDistributionPerBlock)
+		s.Require().Equal(sdk.NewDecFromInt(expectedDistributionPerBlock.Amount), actualDistributionPerBlock)
 
 		s.T().Log("verifying APY query returns expected value")
 		mintParams, err := mintQueryClient.Params(ctx, &minttypes.QueryParamsRequest{})
@@ -170,7 +170,7 @@ func (s *IntegrationTestSuite) TestIncentives() {
 		s.Require().NoError(err)
 		tokensTotal := stakingPool.Pool.BondedTokens.Add(stakingPool.Pool.NotBondedTokens)
 		// assumes bonded ratio is 100%
-		expectedAPY := actualDistributionPerBlock.Mul(sdk.NewDec(int64(mintParams.Params.BlocksPerYear))).Quo(tokensTotal.ToDec())
+		expectedAPY := actualDistributionPerBlock.Mul(sdk.NewDec(int64(mintParams.Params.BlocksPerYear))).Quo(sdk.NewDecFromInt(tokensTotal))
 		incentivesAPYRes, err = incentivesQueryClient.QueryAPY(ctx, &incentivestypes.QueryAPYRequest{})
 		s.Require().NoError(err)
 		APY, err := sdk.NewDecFromStr(incentivesAPYRes.Apy[:10])

@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"strings"
 
-	sdk "github.com/cosmos/cosmos-sdk/types"
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	errorsmod "cosmossdk.io/errors"
+	"cosmossdk.io/math"
 	"github.com/ethereum/go-ethereum"
 	"github.com/ethereum/go-ethereum/accounts/abi"
 	"github.com/ethereum/go-ethereum/common"
@@ -61,7 +61,7 @@ const CounterABI = `
 func ABIEncodedGet() []byte {
 	encodedCall, err := abi.JSON(strings.NewReader(CounterABI))
 	if err != nil {
-		panic(sdkerrors.Wrap(err, "bad ABI definition in code"))
+		panic(errorsmod.Wrap(err, "bad ABI definition in code"))
 	}
 
 	abiEncodedCall, err := encodedCall.Pack("get")
@@ -75,7 +75,7 @@ func ABIEncodedGet() []byte {
 func ABIEncodedInc() []byte {
 	encodedCall, err := abi.JSON(strings.NewReader(CounterABI))
 	if err != nil {
-		panic(sdkerrors.Wrap(err, "bad ABI definition in code"))
+		panic(errorsmod.Wrap(err, "bad ABI definition in code"))
 	}
 
 	abiEncodedCall, err := encodedCall.Pack("inc")
@@ -86,7 +86,7 @@ func ABIEncodedInc() []byte {
 	return abiEncodedCall
 }
 
-func (s *IntegrationTestSuite) getCurrentCount() (*sdk.Int, error) {
+func (s *IntegrationTestSuite) getCurrentCount() (*math.Int, error) {
 	ethClient, err := ethclient.Dial(fmt.Sprintf("http://%s", s.ethResource.GetHostPort("8545/tcp")))
 	if err != nil {
 		return nil, err

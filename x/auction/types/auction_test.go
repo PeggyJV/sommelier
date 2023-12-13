@@ -3,6 +3,7 @@ package types
 import (
 	"testing"
 
+	errorsmod "cosmossdk.io/errors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/peggyjv/sommelier/v7/app/params"
@@ -57,7 +58,7 @@ func TestAuctionValidate(t *testing.T) {
 				ProceedsModuleAccount:      "someModule",
 			},
 			expPass: false,
-			err:     sdkerrors.Wrapf(ErrAuctionIDMustBeNonZero, "id: 0"),
+			err:     errorsmod.Wrapf(ErrAuctionIDMustBeNonZero, "id: 0"),
 		},
 		{
 			name: "Starting tokens for sale must be positive",
@@ -76,7 +77,7 @@ func TestAuctionValidate(t *testing.T) {
 				ProceedsModuleAccount:      "someModule",
 			},
 			expPass: false,
-			err:     sdkerrors.Wrapf(ErrAuctionStartingAmountMustBePositve, "Starting tokens for sale: %s", sdk.NewCoin("gravity0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48", sdk.NewIntFromUint64(0)).String()),
+			err:     errorsmod.Wrapf(ErrAuctionStartingAmountMustBePositve, "Starting tokens for sale: %s", sdk.NewCoin("gravity0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48", sdk.NewIntFromUint64(0)).String()),
 		},
 		{
 			name: "Starting tokens for sale cannot be usomm",
@@ -95,7 +96,7 @@ func TestAuctionValidate(t *testing.T) {
 				ProceedsModuleAccount:      "someModule",
 			},
 			expPass: false,
-			err:     sdkerrors.Wrapf(ErrCannotAuctionUsomm, "Starting denom tokens for sale: %s", params.BaseCoinUnit),
+			err:     errorsmod.Wrapf(ErrCannotAuctionUsomm, "Starting denom tokens for sale: %s", params.BaseCoinUnit),
 		},
 		{
 			name: "Start block must be positive",
@@ -114,7 +115,7 @@ func TestAuctionValidate(t *testing.T) {
 				ProceedsModuleAccount:      "someModule",
 			},
 			expPass: false,
-			err:     sdkerrors.Wrapf(ErrInvalidStartBlock, "start block: 0"),
+			err:     errorsmod.Wrapf(ErrInvalidStartBlock, "start block: 0"),
 		},
 		{
 			name: "Initial decrease rate cannot be <= 0",
@@ -133,7 +134,7 @@ func TestAuctionValidate(t *testing.T) {
 				ProceedsModuleAccount:      "someModule",
 			},
 			expPass: false,
-			err:     sdkerrors.Wrapf(ErrInvalidInitialDecreaseRate, "Initial price decrease rate %s", sdk.MustNewDecFromStr("0.0").String()),
+			err:     errorsmod.Wrapf(ErrInvalidInitialDecreaseRate, "Initial price decrease rate %s", sdk.MustNewDecFromStr("0.0").String()),
 		},
 		{
 			name: "Initial decrease rate cannot be >= 0",
@@ -152,7 +153,7 @@ func TestAuctionValidate(t *testing.T) {
 				ProceedsModuleAccount:      "someModule",
 			},
 			expPass: false,
-			err:     sdkerrors.Wrapf(ErrInvalidInitialDecreaseRate, "Initial price decrease rate %s", sdk.MustNewDecFromStr("1.0").String()),
+			err:     errorsmod.Wrapf(ErrInvalidInitialDecreaseRate, "Initial price decrease rate %s", sdk.MustNewDecFromStr("1.0").String()),
 		},
 		{
 			name: "Current decrease rate cannot be <= 0",
@@ -171,7 +172,7 @@ func TestAuctionValidate(t *testing.T) {
 				ProceedsModuleAccount:      "someModule",
 			},
 			expPass: false,
-			err:     sdkerrors.Wrapf(ErrInvalidCurrentDecreaseRate, "Current price decrease rate %s", sdk.MustNewDecFromStr("0.0").String()),
+			err:     errorsmod.Wrapf(ErrInvalidCurrentDecreaseRate, "Current price decrease rate %s", sdk.MustNewDecFromStr("0.0").String()),
 		},
 		{
 			name: "Current decrease rate cannot be >= 0",
@@ -190,7 +191,7 @@ func TestAuctionValidate(t *testing.T) {
 				ProceedsModuleAccount:      "someModule",
 			},
 			expPass: false,
-			err:     sdkerrors.Wrapf(ErrInvalidCurrentDecreaseRate, "Current price decrease rate %s", sdk.MustNewDecFromStr("1.0").String()),
+			err:     errorsmod.Wrapf(ErrInvalidCurrentDecreaseRate, "Current price decrease rate %s", sdk.MustNewDecFromStr("1.0").String()),
 		},
 		{
 			name: "Price decrease block interval cannot be 0",
@@ -209,7 +210,7 @@ func TestAuctionValidate(t *testing.T) {
 				ProceedsModuleAccount:      "someModule",
 			},
 			expPass: false,
-			err:     sdkerrors.Wrapf(ErrInvalidBlockDecreaseInterval, "price decrease block interval: 0"),
+			err:     errorsmod.Wrapf(ErrInvalidBlockDecreaseInterval, "price decrease block interval: 0"),
 		},
 		{
 			name: "Initial unit price in usomm must be positive",
@@ -228,7 +229,7 @@ func TestAuctionValidate(t *testing.T) {
 				ProceedsModuleAccount:      "someModule",
 			},
 			expPass: false,
-			err:     sdkerrors.Wrapf(ErrPriceMustBePositive, "initial unit price in usomm: %s", sdk.MustNewDecFromStr("0.0").String()),
+			err:     errorsmod.Wrapf(ErrPriceMustBePositive, "initial unit price in usomm: %s", sdk.MustNewDecFromStr("0.0").String()),
 		},
 		{
 			name: "Current unit price in usomm must be positive",
@@ -247,7 +248,7 @@ func TestAuctionValidate(t *testing.T) {
 				ProceedsModuleAccount:      "someModule",
 			},
 			expPass: false,
-			err:     sdkerrors.Wrapf(ErrPriceMustBePositive, "current unit price in usomm: %s", sdk.MustNewDecFromStr("0.0").String()),
+			err:     errorsmod.Wrapf(ErrPriceMustBePositive, "current unit price in usomm: %s", sdk.MustNewDecFromStr("0.0").String()),
 		},
 
 		{
@@ -267,7 +268,7 @@ func TestAuctionValidate(t *testing.T) {
 				ProceedsModuleAccount:      "someModule",
 			},
 			expPass: false,
-			err:     sdkerrors.Wrapf(ErrUnauthorizedFundingModule, "funding module account: "),
+			err:     errorsmod.Wrapf(ErrUnauthorizedFundingModule, "funding module account: "),
 		},
 		{
 			name: "Proceeds Module account cannot be empty",
@@ -286,7 +287,7 @@ func TestAuctionValidate(t *testing.T) {
 				ProceedsModuleAccount:      "",
 			},
 			expPass: false,
-			err:     sdkerrors.Wrapf(ErrUnauthorizedFundingModule, "proceeds module account: "),
+			err:     errorsmod.Wrapf(ErrUnauthorizedFundingModule, "proceeds module account: "),
 		},
 	}
 
@@ -337,7 +338,7 @@ func TestBidValidate(t *testing.T) {
 				TotalUsommPaid:            sdk.NewCoin("usomm", sdk.NewInt(100)),
 			},
 			expPass: false,
-			err:     sdkerrors.Wrapf(ErrBidIDMustBeNonZero, "id: 0"),
+			err:     errorsmod.Wrapf(ErrBidIDMustBeNonZero, "id: 0"),
 		},
 		{
 			name: "Auction ID cannot be 0",
@@ -352,7 +353,7 @@ func TestBidValidate(t *testing.T) {
 				TotalUsommPaid:            sdk.NewCoin("usomm", sdk.NewInt(100)),
 			},
 			expPass: false,
-			err:     sdkerrors.Wrapf(ErrAuctionIDMustBeNonZero, "id: 0"),
+			err:     errorsmod.Wrapf(ErrAuctionIDMustBeNonZero, "id: 0"),
 		},
 		{
 			name: "Bidder cannot be empty",
@@ -367,7 +368,7 @@ func TestBidValidate(t *testing.T) {
 				TotalUsommPaid:            sdk.NewCoin("usomm", sdk.NewInt(100)),
 			},
 			expPass: false,
-			err:     sdkerrors.Wrapf(ErrAddressExpected, "bidder: "),
+			err:     errorsmod.Wrapf(ErrAddressExpected, "bidder: "),
 		},
 		{
 			name: "Bidder must be a valid bech32 address",
@@ -382,7 +383,7 @@ func TestBidValidate(t *testing.T) {
 				TotalUsommPaid:            sdk.NewCoin("usomm", sdk.NewInt(100)),
 			},
 			expPass: false,
-			err:     sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "decoding bech32 failed: invalid bech32 string length 7"),
+			err:     errorsmod.Wrapf(sdkerrors.ErrInvalidAddress, "decoding bech32 failed: invalid bech32 string length 7"),
 		},
 		{
 			name: "Bid must be positive",
@@ -397,7 +398,7 @@ func TestBidValidate(t *testing.T) {
 				TotalUsommPaid:            sdk.NewCoin("usomm", sdk.NewInt(100)),
 			},
 			expPass: false,
-			err:     sdkerrors.Wrapf(ErrBidAmountMustBePositive, "bid amount in usomm: %s", sdk.NewCoin("usomm", sdk.NewInt(0)).String()),
+			err:     errorsmod.Wrapf(ErrBidAmountMustBePositive, "bid amount in usomm: %s", sdk.NewCoin("usomm", sdk.NewInt(0)).String()),
 		},
 		{
 			name: "Bid must be in usomm",
@@ -412,7 +413,7 @@ func TestBidValidate(t *testing.T) {
 				TotalUsommPaid:            sdk.NewCoin("usomm", sdk.NewInt(100)),
 			},
 			expPass: false,
-			err:     sdkerrors.Wrapf(ErrBidMustBeInUsomm, "bid: %s", sdk.NewCoin("usdc", sdk.NewInt(100)).String()),
+			err:     errorsmod.Wrapf(ErrBidMustBeInUsomm, "bid: %s", sdk.NewCoin("usdc", sdk.NewInt(100)).String()),
 		},
 		{
 			name: "Sale token must be gravity prefixed",
@@ -427,7 +428,7 @@ func TestBidValidate(t *testing.T) {
 				TotalUsommPaid:            sdk.NewCoin("usomm", sdk.NewInt(100)),
 			},
 			expPass: false,
-			err:     sdkerrors.Wrapf(ErrInvalidTokenBeingBidOn, "sale token: %s", sdk.NewCoin("usdc", sdk.NewInt(50)).String()),
+			err:     errorsmod.Wrapf(ErrInvalidTokenBeingBidOn, "sale token: %s", sdk.NewCoin("usdc", sdk.NewInt(50)).String()),
 		},
 		{
 			name: "Sale token amount must be positive",
@@ -442,7 +443,7 @@ func TestBidValidate(t *testing.T) {
 				TotalUsommPaid:            sdk.NewCoin("usomm", sdk.NewInt(100)),
 			},
 			expPass: false,
-			err:     sdkerrors.Wrapf(ErrMinimumAmountMustBePositive, "sale token amount: %s", sdk.NewCoin("gravity0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48", sdk.NewInt(0)).String()),
+			err:     errorsmod.Wrapf(ErrMinimumAmountMustBePositive, "sale token amount: %s", sdk.NewCoin("gravity0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48", sdk.NewInt(0)).String()),
 		},
 		{
 			name: "Sale token unit price must be in usomm",
@@ -457,7 +458,7 @@ func TestBidValidate(t *testing.T) {
 				TotalUsommPaid:            sdk.NewCoin("usomm", sdk.NewInt(100)),
 			},
 			expPass: false,
-			err:     sdkerrors.Wrapf(ErrBidUnitPriceInUsommMustBePositive, "sale token unit price: %s", sdk.MustNewDecFromStr("0.0").String()),
+			err:     errorsmod.Wrapf(ErrBidUnitPriceInUsommMustBePositive, "sale token unit price: %s", sdk.MustNewDecFromStr("0.0").String()),
 		},
 		{
 			name: "Total usomm paid denom must be usomm",
@@ -472,7 +473,7 @@ func TestBidValidate(t *testing.T) {
 				TotalUsommPaid:            sdk.NewCoin("usdc", sdk.NewInt(100)),
 			},
 			expPass: false,
-			err:     sdkerrors.Wrapf(ErrBidMustBeInUsomm, "payment denom: usdc"),
+			err:     errorsmod.Wrapf(ErrBidMustBeInUsomm, "payment denom: usdc"),
 		},
 	}
 
@@ -523,7 +524,7 @@ func TestTokenPriceValidate(t *testing.T) {
 				LastUpdatedBlock: uint64(321),
 			},
 			expPass: false,
-			err:     sdkerrors.Wrapf(ErrDenomCannotBeEmpty, "price denom: "),
+			err:     errorsmod.Wrapf(ErrDenomCannotBeEmpty, "price denom: "),
 		},
 		{
 			name: "Price must be positive",
@@ -533,7 +534,7 @@ func TestTokenPriceValidate(t *testing.T) {
 				LastUpdatedBlock: uint64(321),
 			},
 			expPass: false,
-			err:     sdkerrors.Wrapf(ErrPriceMustBePositive, "usd price: %s", sdk.MustNewDecFromStr("0.0").String()),
+			err:     errorsmod.Wrapf(ErrPriceMustBePositive, "usd price: %s", sdk.MustNewDecFromStr("0.0").String()),
 		},
 		{
 			name: "Last updated block cannot be 0",
@@ -543,7 +544,7 @@ func TestTokenPriceValidate(t *testing.T) {
 				LastUpdatedBlock: uint64(0),
 			},
 			expPass: false,
-			err:     sdkerrors.Wrapf(ErrInvalidLastUpdatedBlock, "block: 0"),
+			err:     errorsmod.Wrapf(ErrInvalidLastUpdatedBlock, "block: 0"),
 		},
 		{
 			name: "Token price must be usomm or gravity prefixed",
@@ -553,7 +554,7 @@ func TestTokenPriceValidate(t *testing.T) {
 				LastUpdatedBlock: uint64(321),
 			},
 			expPass: false,
-			err:     sdkerrors.Wrapf(ErrInvalidTokenPriceDenom, "denom: usdc"),
+			err:     errorsmod.Wrapf(ErrInvalidTokenPriceDenom, "denom: usdc"),
 		},
 	}
 
@@ -601,7 +602,7 @@ func TestProposedTokenPriceValidate(t *testing.T) {
 				UsdPrice: sdk.MustNewDecFromStr("0.0008"),
 			},
 			expPass: false,
-			err:     sdkerrors.Wrapf(ErrDenomCannotBeEmpty, "price denom: "),
+			err:     errorsmod.Wrapf(ErrDenomCannotBeEmpty, "price denom: "),
 		},
 		{
 			name: "Price must be positive",
@@ -610,7 +611,7 @@ func TestProposedTokenPriceValidate(t *testing.T) {
 				UsdPrice: sdk.MustNewDecFromStr("0.0"),
 			},
 			expPass: false,
-			err:     sdkerrors.Wrapf(ErrPriceMustBePositive, "usd price: %s", sdk.MustNewDecFromStr("0.0").String()),
+			err:     errorsmod.Wrapf(ErrPriceMustBePositive, "usd price: %s", sdk.MustNewDecFromStr("0.0").String()),
 		},
 		{
 			name: "Token price must be usomm or gravity prefixed",
@@ -619,7 +620,7 @@ func TestProposedTokenPriceValidate(t *testing.T) {
 				UsdPrice: sdk.MustNewDecFromStr("1.0"),
 			},
 			expPass: false,
-			err:     sdkerrors.Wrapf(ErrInvalidTokenPriceDenom, "denom: usdc"),
+			err:     errorsmod.Wrapf(ErrInvalidTokenPriceDenom, "denom: usdc"),
 		},
 	}
 

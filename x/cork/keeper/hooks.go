@@ -2,7 +2,7 @@ package keeper
 
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	gravitytypes "github.com/peggyjv/gravity-bridge/module/v3/x/gravity/types"
+	gravitytypes "github.com/peggyjv/gravity-bridge/module/v4/x/gravity/types"
 )
 
 type Hooks struct {

@@ -2,10 +2,11 @@ package axelarcork_test
 
 import (
 	"encoding/json"
+	"fmt"
 	"testing"
 
-	transfertypes "github.com/cosmos/ibc-go/v3/modules/apps/transfer/types"
-	channeltypes "github.com/cosmos/ibc-go/v3/modules/core/04-channel/types"
+	transfertypes "github.com/cosmos/ibc-go/v6/modules/apps/transfer/types"
+	channeltypes "github.com/cosmos/ibc-go/v6/modules/core/04-channel/types"
 	"github.com/golang/mock/gomock"
 	"github.com/peggyjv/sommelier/v7/x/axelarcork/tests"
 	"github.com/peggyjv/sommelier/v7/x/axelarcork/types"
@@ -65,11 +66,12 @@ func TestSendPacket_NoMemo(t *testing.T) {
 
 	// Expected mocks
 	gomock.InOrder(
-		setup.Mocks.ICS4WrapperMock.EXPECT().SendPacket(ctx, nil, packet).
-			Return(nil),
+		setup.Mocks.ICS4WrapperMock.EXPECT().SendPacket(ctx, nil, packet.SourcePort, packet.SourceChannel, packet.TimeoutHeight, packet.TimeoutTimestamp, packet.Data).
+			Return(uint64(1), nil),
 	)
 
-	require.NoError(t, acMiddleware.SendPacket(ctx, nil, packet))
+	_, err := acMiddleware.SendPacket(ctx, nil, packet.SourcePort, packet.SourceChannel, packet.TimeoutHeight, packet.TimeoutTimestamp, packet.Data)
+	require.NoError(t, err)
 }
 
 func TestSendPacket_NotAxelarChannel(t *testing.T) {
@@ -86,11 +88,12 @@ func TestSendPacket_NotAxelarChannel(t *testing.T) {
 
 	// Expected mocks
 	gomock.InOrder(
-		setup.Mocks.ICS4WrapperMock.EXPECT().SendPacket(ctx, nil, packet).
-			Return(nil),
+		setup.Mocks.ICS4WrapperMock.EXPECT().SendPacket(ctx, nil, packet.SourcePort, packet.SourceChannel, packet.TimeoutHeight, packet.TimeoutTimestamp, packet.Data).
+			Return(uint64(1), nil),
 	)
 
-	require.NoError(t, acMiddleware.SendPacket(ctx, nil, packet))
+	_, err := acMiddleware.SendPacket(ctx, nil, packet.SourcePort, packet.SourceChannel, packet.TimeoutHeight, packet.TimeoutTimestamp, packet.Data)
+	require.NoError(t, err)
 }
 
 func TestSendPacket_NotGMPReceiver(t *testing.T) {
@@ -106,11 +109,12 @@ func TestSendPacket_NotGMPReceiver(t *testing.T) {
 
 	// Expected mocks
 	gomock.InOrder(
-		setup.Mocks.ICS4WrapperMock.EXPECT().SendPacket(ctx, nil, packet).
-			Return(nil),
+		setup.Mocks.ICS4WrapperMock.EXPECT().SendPacket(ctx, nil, packet.SourcePort, packet.SourceChannel, packet.TimeoutHeight, packet.TimeoutTimestamp, packet.Data).
+			Return(uint64(1), nil),
 	)
 
-	require.NoError(t, acMiddleware.SendPacket(ctx, nil, packet))
+	_, err := acMiddleware.SendPacket(ctx, nil, packet.SourcePort, packet.SourceChannel, packet.TimeoutHeight, packet.TimeoutTimestamp, packet.Data)
+	require.NoError(t, err)
 }
 
 func TestSendPacket_EmptyPayload(t *testing.T) {
@@ -148,6 +152,13 @@ func TestSendPacket_EmptyPayload(t *testing.T) {
 	}
 	packet := transferPacket(t, tests.TestGMPAccount.String(), acBody)
 
+	// Expected mocks
+	gomock.InOrder(
+		setup.Mocks.ICS4WrapperMock.EXPECT().SendPacket(ctx, nil, packet.SourcePort, packet.SourceChannel, packet.TimeoutHeight, packet.TimeoutTimestamp, packet.Data).
+			Return(uint64(0), fmt.Errorf("mock error")),
+	)
+
 	// expect error for non-existent
-	require.Error(t, acMiddleware.SendPacket(ctx, nil, packet))
+	_, err := acMiddleware.SendPacket(ctx, nil, packet.SourcePort, packet.SourceChannel, packet.TimeoutHeight, packet.TimeoutTimestamp, packet.Data)
+	require.Error(t, err)
 }

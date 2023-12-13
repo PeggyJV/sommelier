@@ -6,28 +6,25 @@ import (
 	"fmt"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	transfertypes "github.com/cosmos/ibc-go/v3/modules/apps/transfer/types"
-	ibcexported "github.com/cosmos/ibc-go/v3/modules/core/exported"
+	transfertypes "github.com/cosmos/ibc-go/v6/modules/apps/transfer/types"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/peggyjv/sommelier/v7/x/axelarcork/types"
 )
 
-func (k Keeper) ValidateAxelarPacket(ctx sdk.Context, packet ibcexported.PacketI) error {
+func (k Keeper) ValidateAxelarPacket(ctx sdk.Context, sourceChannel string, data []byte) error {
 	params := k.GetParamSet(ctx)
 	if !params.Enabled {
 		return nil
 	}
 
 	// check if this is a call to axelar, exit early if this isn't axelar
-	channelID := packet.GetDestChannel()
-	if channelID != params.IbcChannel {
+	if sourceChannel != params.IbcChannel {
 		return nil
 	}
 
 	// Parse the data from the packet
 	var packetData transfertypes.FungibleTokenPacketData
-	packetDataBz := packet.GetData()
-	if err := json.Unmarshal(packetDataBz, &packetData); err != nil {
+	if err := json.Unmarshal(data, &packetData); err != nil {
 		return err
 	}
 

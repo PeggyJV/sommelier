@@ -6,8 +6,8 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
+	errorsmod "cosmossdk.io/errors"
+	govtypesv1beta1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
 	"github.com/ethereum/go-ethereum/common"
 )
 
@@ -23,39 +23,46 @@ const (
 	ProposalTypeCancelAxelarProxyContractUpgrade = "CancelAxelarProxyContractUpgrade"
 )
 
-var _ govtypes.Content = &AddAxelarManagedCellarIDsProposal{}
-var _ govtypes.Content = &RemoveAxelarManagedCellarIDsProposal{}
-var _ govtypes.Content = &AxelarScheduledCorkProposal{}
-var _ govtypes.Content = &AxelarCommunityPoolSpendProposal{}
-var _ govtypes.Content = &AddChainConfigurationProposal{}
-var _ govtypes.Content = &RemoveChainConfigurationProposal{}
-var _ govtypes.Content = &UpgradeAxelarProxyContractProposal{}
-var _ govtypes.Content = &CancelAxelarProxyContractUpgradeProposal{}
+var _ govtypesv1beta1.Content = &AddAxelarManagedCellarIDsProposal{}
+var _ govtypesv1beta1.Content = &RemoveAxelarManagedCellarIDsProposal{}
+var _ govtypesv1beta1.Content = &AxelarScheduledCorkProposal{}
+var _ govtypesv1beta1.Content = &AxelarCommunityPoolSpendProposal{}
+var _ govtypesv1beta1.Content = &AddChainConfigurationProposal{}
+var _ govtypesv1beta1.Content = &RemoveChainConfigurationProposal{}
+var _ govtypesv1beta1.Content = &UpgradeAxelarProxyContractProposal{}
+var _ govtypesv1beta1.Content = &CancelAxelarProxyContractUpgradeProposal{}
 
 func init() {
-	govtypes.RegisterProposalType(ProposalTypeAddManagedCellarIDs)
-	govtypes.RegisterProposalTypeCodec(&AddAxelarManagedCellarIDsProposal{}, "sommelier/AddAxelarManagedCellarIDsProposal")
+	// The RegisterProposalTypeCodec function was mysteriously removed by in 0.46.0 even though
+	// the claim was that the old API would be preserved in .../x/gov/types/v1beta1 so we have
+	// to interact with the codec directly.
+	//
+	// The PR that removed it: https://github.com/cosmos/cosmos-sdk/pull/11240
+	// This PR was later reverted, but RegisterProposalTypeCodec was still left out. Not sure if
+	// this was intentional or not.
+	govtypesv1beta1.RegisterProposalType(ProposalTypeAddManagedCellarIDs)
+	govtypesv1beta1.ModuleCdc.RegisterConcrete(&AddAxelarManagedCellarIDsProposal{}, "sommelier/AddAxelarManagedCellarIDsProposal", nil)
 
-	govtypes.RegisterProposalType(ProposalTypeRemoveManagedCellarIDs)
-	govtypes.RegisterProposalTypeCodec(&RemoveAxelarManagedCellarIDsProposal{}, "sommelier/RemoveAxelarManagedCellarIDsProposal")
+	govtypesv1beta1.RegisterProposalType(ProposalTypeRemoveManagedCellarIDs)
+	govtypesv1beta1.ModuleCdc.RegisterConcrete(&RemoveAxelarManagedCellarIDsProposal{}, "sommelier/RemoveAxelarManagedCellarIDsProposal", nil)
 
-	govtypes.RegisterProposalType(ProposalTypeScheduledCork)
-	govtypes.RegisterProposalTypeCodec(&AxelarScheduledCorkProposal{}, "sommelier/AxelarScheduledCorkProposal")
+	govtypesv1beta1.RegisterProposalType(ProposalTypeScheduledCork)
+	govtypesv1beta1.ModuleCdc.RegisterConcrete(&AxelarScheduledCorkProposal{}, "sommelier/AxelarScheduledCorkProposal", nil)
 
-	govtypes.RegisterProposalType(ProposalTypeAddChainConfiguration)
-	govtypes.RegisterProposalTypeCodec(&AddChainConfigurationProposal{}, "sommelier/AddAxelarChainConfigurationProposal")
+	govtypesv1beta1.RegisterProposalType(ProposalTypeAddChainConfiguration)
+	govtypesv1beta1.ModuleCdc.RegisterConcrete(&AddChainConfigurationProposal{}, "sommelier/AddAxelarChainConfigurationProposal", nil)
 
-	govtypes.RegisterProposalType(ProposalTypeRemoveChainConfiguration)
-	govtypes.RegisterProposalTypeCodec(&RemoveChainConfigurationProposal{}, "sommelier/RemoveAxelarChainConfigurationProposal")
+	govtypesv1beta1.RegisterProposalType(ProposalTypeRemoveChainConfiguration)
+	govtypesv1beta1.ModuleCdc.RegisterConcrete(&RemoveChainConfigurationProposal{}, "sommelier/RemoveAxelarChainConfigurationProposal", nil)
 
-	govtypes.RegisterProposalType(ProposalTypeCommunitySpend)
-	govtypes.RegisterProposalTypeCodec(&AxelarCommunityPoolSpendProposal{}, "sommelier/AxelarCommunitySpendProposal")
+	govtypesv1beta1.RegisterProposalType(ProposalTypeCommunitySpend)
+	govtypesv1beta1.ModuleCdc.RegisterConcrete(&AxelarCommunityPoolSpendProposal{}, "sommelier/AxelarCommunitySpendProposal", nil)
 
-	govtypes.RegisterProposalType(ProposalTypeUpgradeAxelarProxyContract)
-	govtypes.RegisterProposalTypeCodec(&UpgradeAxelarProxyContractProposal{}, "sommelier/UpgradeAxelarProxyContractProposal")
+	govtypesv1beta1.RegisterProposalType(ProposalTypeUpgradeAxelarProxyContract)
+	govtypesv1beta1.ModuleCdc.RegisterConcrete(&UpgradeAxelarProxyContractProposal{}, "sommelier/UpgradeAxelarProxyContractProposal", nil)
 
-	govtypes.RegisterProposalType(ProposalTypeCancelAxelarProxyContractUpgrade)
-	govtypes.RegisterProposalTypeCodec(&CancelAxelarProxyContractUpgradeProposal{}, "sommelier/CancelAxelarProxyContractUpgradeProposal")
+	govtypesv1beta1.RegisterProposalType(ProposalTypeCancelAxelarProxyContractUpgrade)
+	govtypesv1beta1.ModuleCdc.RegisterConcrete(&CancelAxelarProxyContractUpgradeProposal{}, "sommelier/CancelAxelarProxyContractUpgradeProposal", nil)
 }
 
 func NewAddManagedCellarIDsProposal(title string, description string, chainID uint64, cellarIds *CellarIDSet) *AddAxelarManagedCellarIDsProposal {
@@ -76,7 +83,7 @@ func (m *AddAxelarManagedCellarIDsProposal) ProposalType() string {
 }
 
 func (m *AddAxelarManagedCellarIDsProposal) ValidateBasic() error {
-	if err := govtypes.ValidateAbstract(m); err != nil {
+	if err := govtypesv1beta1.ValidateAbstract(m); err != nil {
 		return err
 	}
 
@@ -105,7 +112,7 @@ func (m *RemoveAxelarManagedCellarIDsProposal) ProposalType() string {
 }
 
 func (m *RemoveAxelarManagedCellarIDsProposal) ValidateBasic() error {
-	if err := govtypes.ValidateAbstract(m); err != nil {
+	if err := govtypesv1beta1.ValidateAbstract(m); err != nil {
 		return err
 	}
 
@@ -136,20 +143,20 @@ func (m *AxelarScheduledCorkProposal) ProposalType() string {
 }
 
 func (m *AxelarScheduledCorkProposal) ValidateBasic() error {
-	if err := govtypes.ValidateAbstract(m); err != nil {
+	if err := govtypesv1beta1.ValidateAbstract(m); err != nil {
 		return err
 	}
 
 	if len(m.ContractCallProtoJson) == 0 {
-		return sdkerrors.Wrapf(ErrInvalidJSON, "cannot have empty contract call")
+		return errorsmod.Wrapf(ErrInvalidJSON, "cannot have empty contract call")
 	}
 
 	if !json.Valid([]byte(m.ContractCallProtoJson)) {
-		return sdkerrors.Wrapf(ErrInvalidJSON, "%s", m.ContractCallProtoJson)
+		return errorsmod.Wrapf(ErrInvalidJSON, "%s", m.ContractCallProtoJson)
 	}
 
 	if !common.IsHexAddress(m.TargetContractAddress) {
-		return sdkerrors.Wrapf(ErrInvalidEVMAddress, "%s", m.TargetContractAddress)
+		return errorsmod.Wrapf(ErrInvalidEVMAddress, "%s", m.TargetContractAddress)
 	}
 
 	return nil
@@ -174,7 +181,7 @@ func (m *AxelarCommunityPoolSpendProposal) ProposalType() string {
 }
 
 func (m *AxelarCommunityPoolSpendProposal) ValidateBasic() error {
-	if err := govtypes.ValidateAbstract(m); err != nil {
+	if err := govtypesv1beta1.ValidateAbstract(m); err != nil {
 		return err
 	}
 
@@ -183,7 +190,7 @@ func (m *AxelarCommunityPoolSpendProposal) ValidateBasic() error {
 	}
 
 	if !common.IsHexAddress(m.Recipient) {
-		return sdkerrors.Wrapf(ErrInvalidEVMAddress, "%s", m.Recipient)
+		return errorsmod.Wrapf(ErrInvalidEVMAddress, "%s", m.Recipient)
 	}
 
 	return nil
@@ -206,7 +213,7 @@ func (m *AddChainConfigurationProposal) ProposalType() string {
 }
 
 func (m *AddChainConfigurationProposal) ValidateBasic() error {
-	if err := govtypes.ValidateAbstract(m); err != nil {
+	if err := govtypesv1beta1.ValidateAbstract(m); err != nil {
 		return err
 	}
 
@@ -234,7 +241,7 @@ func (m *RemoveChainConfigurationProposal) ProposalType() string {
 }
 
 func (m *RemoveChainConfigurationProposal) ValidateBasic() error {
-	if err := govtypes.ValidateAbstract(m); err != nil {
+	if err := govtypesv1beta1.ValidateAbstract(m); err != nil {
 		return err
 	}
 
@@ -259,12 +266,12 @@ func (m *UpgradeAxelarProxyContractProposal) ProposalType() string {
 }
 
 func (m *UpgradeAxelarProxyContractProposal) ValidateBasic() error {
-	if err := govtypes.ValidateAbstract(m); err != nil {
+	if err := govtypesv1beta1.ValidateAbstract(m); err != nil {
 		return err
 	}
 
 	if !common.IsHexAddress(m.NewProxyAddress) {
-		return sdkerrors.Wrapf(ErrInvalidEVMAddress, "%s", m.NewProxyAddress)
+		return errorsmod.Wrapf(ErrInvalidEVMAddress, "%s", m.NewProxyAddress)
 	}
 
 	return nil
@@ -287,7 +294,7 @@ func (m *CancelAxelarProxyContractUpgradeProposal) ProposalType() string {
 }
 
 func (m *CancelAxelarProxyContractUpgradeProposal) ValidateBasic() error {
-	if err := govtypes.ValidateAbstract(m); err != nil {
+	if err := govtypesv1beta1.ValidateAbstract(m); err != nil {
 		return err
 	}
 

@@ -3,6 +3,7 @@ package types
 import (
 	fmt "fmt"
 
+	errorsmod "cosmossdk.io/errors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
@@ -52,7 +53,7 @@ func (m *MsgAddPublisherIntentRequest) Type() string { return TypeMsgAddPublishe
 // ValidateBasic implements sdk.Msg
 func (m *MsgAddPublisherIntentRequest) ValidateBasic() error {
 	if _, err := sdk.AccAddressFromBech32(m.Signer); err != nil {
-		return sdkerrors.Wrap(sdkerrors.ErrInvalidAddress, err.Error())
+		return errorsmod.Wrap(sdkerrors.ErrInvalidAddress, err.Error())
 	}
 
 	if m.PublisherIntent == nil {
@@ -106,7 +107,7 @@ func (m *MsgAddSubscriberIntentRequest) Type() string { return TypeMsgAddSubscri
 // ValidateBasic implements sdk.Msg
 func (m *MsgAddSubscriberIntentRequest) ValidateBasic() error {
 	if _, err := sdk.AccAddressFromBech32(m.Signer); err != nil {
-		return sdkerrors.Wrap(sdkerrors.ErrInvalidAddress, err.Error())
+		return errorsmod.Wrap(sdkerrors.ErrInvalidAddress, err.Error())
 	}
 
 	if m.SubscriberIntent == nil {
@@ -160,7 +161,7 @@ func (m *MsgAddSubscriberRequest) Type() string { return TypeMsgAddSubscriberReq
 // ValidateBasic implements sdk.Msg
 func (m *MsgAddSubscriberRequest) ValidateBasic() error {
 	if _, err := sdk.AccAddressFromBech32(m.Signer); err != nil {
-		return sdkerrors.Wrap(sdkerrors.ErrInvalidAddress, err.Error())
+		return errorsmod.Wrap(sdkerrors.ErrInvalidAddress, err.Error())
 	}
 
 	if m.Subscriber == nil {
@@ -215,7 +216,7 @@ func (m *MsgRemovePublisherIntentRequest) Type() string { return TypeMsgRemovePu
 // ValidateBasic implements sdk.Msg
 func (m *MsgRemovePublisherIntentRequest) ValidateBasic() error {
 	if _, err := sdk.AccAddressFromBech32(m.Signer); err != nil {
-		return sdkerrors.Wrap(sdkerrors.ErrInvalidAddress, err.Error())
+		return errorsmod.Wrap(sdkerrors.ErrInvalidAddress, err.Error())
 	}
 
 	if err := ValidateSubscriptionID(m.SubscriptionId); err != nil {
@@ -274,7 +275,7 @@ func (m *MsgRemoveSubscriberIntentRequest) Type() string { return TypeMsgRemoveS
 // ValidateBasic implements sdk.Msg
 func (m *MsgRemoveSubscriberIntentRequest) ValidateBasic() error {
 	if _, err := sdk.AccAddressFromBech32(m.Signer); err != nil {
-		return sdkerrors.Wrap(sdkerrors.ErrInvalidAddress, err.Error())
+		return errorsmod.Wrap(sdkerrors.ErrInvalidAddress, err.Error())
 	}
 
 	if err := ValidateSubscriptionID(m.SubscriptionId); err != nil {
@@ -282,7 +283,7 @@ func (m *MsgRemoveSubscriberIntentRequest) ValidateBasic() error {
 	}
 
 	if _, err := sdk.AccAddressFromBech32(m.SubscriberAddress); err != nil {
-		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid subscriber address: %s", err.Error())
+		return errorsmod.Wrapf(sdkerrors.ErrInvalidAddress, "invalid subscriber address: %s", err.Error())
 	}
 
 	return nil
@@ -332,11 +333,11 @@ func (m *MsgRemoveSubscriberRequest) Type() string { return TypeMsgRemoveSubscri
 // ValidateBasic implements sdk.Msg
 func (m *MsgRemoveSubscriberRequest) ValidateBasic() error {
 	if _, err := sdk.AccAddressFromBech32(m.Signer); err != nil {
-		return sdkerrors.Wrap(sdkerrors.ErrInvalidAddress, err.Error())
+		return errorsmod.Wrap(sdkerrors.ErrInvalidAddress, err.Error())
 	}
 
 	if _, err := sdk.AccAddressFromBech32(m.SubscriberAddress); err != nil {
-		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid subscriber address: %s", err.Error())
+		return errorsmod.Wrapf(sdkerrors.ErrInvalidAddress, "invalid subscriber address: %s", err.Error())
 	}
 
 	return nil
@@ -386,7 +387,7 @@ func (m *MsgRemovePublisherRequest) Type() string { return TypeMsgRemovePublishe
 // ValidateBasic implements sdk.Msg
 func (m *MsgRemovePublisherRequest) ValidateBasic() error {
 	if _, err := sdk.AccAddressFromBech32(m.Signer); err != nil {
-		return sdkerrors.Wrap(sdkerrors.ErrInvalidAddress, err.Error())
+		return errorsmod.Wrap(sdkerrors.ErrInvalidAddress, err.Error())
 	}
 
 	if err := ValidateDomain(m.PublisherDomain); err != nil {
