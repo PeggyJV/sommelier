@@ -33,6 +33,11 @@ func (k Keeper) ValidateAxelarPacket(ctx sdk.Context, sourceChannel string, data
 		return nil
 	}
 
+	// reject if the axelar module account is not the sender
+	if packetData.Sender != k.GetSenderAccount(ctx).GetAddress().String() {
+		return fmt.Errorf("sender to Axelar GMP account is not axelarcork module account: %s", packetData.Sender)
+	}
+
 	// if the memo field is empty, we can pass the message along
 	if packetData.Memo == "" {
 		return nil
