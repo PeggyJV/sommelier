@@ -56,6 +56,7 @@ func setupCorkKeeper(t *testing.T) (
 
 	ctrl := gomock.NewController(t)
 	mockAccountKeeper := mocks.NewMockAccountKeeper(ctrl)
+	mockBankKeeper := mocks.NewMockBankKeeper(ctrl)
 	mockStakingKeeper := mocks.NewMockStakingKeeper(ctrl)
 	mockTransferKeeper := mocks.NewMockTransferKeeper(ctrl)
 	mockDistributionKeeper := mocks.NewMockDistributionKeeper(ctrl)
@@ -67,6 +68,7 @@ func setupCorkKeeper(t *testing.T) (
 		storeKey,
 		subSpace,
 		mockAccountKeeper,
+		mockBankKeeper,
 		mockStakingKeeper,
 		mockTransferKeeper,
 		mockDistributionKeeper,

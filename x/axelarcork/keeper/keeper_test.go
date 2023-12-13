@@ -38,6 +38,7 @@ type KeeperTestSuite struct {
 	ctx                sdk.Context
 	axelarcorkKeeper   Keeper
 	accountKeeper      *mocks.MockAccountKeeper
+	bankKeeper         *mocks.MockBankKeeper
 	stakingKeeper      *mocks.MockStakingKeeper
 	transferKeeper     *mocks.MockTransferKeeper
 	distributionKeeper *mocks.MockDistributionKeeper
@@ -63,6 +64,7 @@ func (suite *KeeperTestSuite) SetupTest() {
 	defer ctrl.Finish()
 
 	suite.accountKeeper = mocks.NewMockAccountKeeper(ctrl)
+	suite.bankKeeper = mocks.NewMockBankKeeper(ctrl)
 	suite.stakingKeeper = mocks.NewMockStakingKeeper(ctrl)
 	suite.transferKeeper = mocks.NewMockTransferKeeper(ctrl)
 	suite.distributionKeeper = mocks.NewMockDistributionKeeper(ctrl)
@@ -86,6 +88,7 @@ func (suite *KeeperTestSuite) SetupTest() {
 		key,
 		subSpace,
 		suite.accountKeeper,
+		suite.bankKeeper,
 		suite.stakingKeeper,
 		suite.transferKeeper,
 		suite.distributionKeeper,

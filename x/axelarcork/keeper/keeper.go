@@ -22,6 +22,7 @@ type Keeper struct {
 	cdc                codec.BinaryCodec
 	paramSpace         paramtypes.Subspace
 	accountKeeper      types.AccountKeeper
+	bankKeeper         types.BankKeeper
 	stakingKeeper      types.StakingKeeper
 	transferKeeper     types.TransferKeeper
 	distributionKeeper types.DistributionKeeper
@@ -33,7 +34,7 @@ type Keeper struct {
 // NewKeeper creates a new x/axelarcork Keeper instance
 func NewKeeper(
 	cdc codec.BinaryCodec, key storetypes.StoreKey, paramSpace paramtypes.Subspace,
-	accountKeeper types.AccountKeeper, stakingKeeper types.StakingKeeper,
+	accountKeeper types.AccountKeeper, bankKeeper types.BankKeeper, stakingKeeper types.StakingKeeper,
 	transferKeeper types.TransferKeeper, distributionKeeper types.DistributionKeeper,
 	wrapper types.ICS4Wrapper, gravityKeeper types.GravityKeeper,
 ) Keeper {
@@ -47,6 +48,7 @@ func NewKeeper(
 		cdc:                cdc,
 		paramSpace:         paramSpace,
 		accountKeeper:      accountKeeper,
+		bankKeeper:         bankKeeper,
 		stakingKeeper:      stakingKeeper,
 		transferKeeper:     transferKeeper,
 		distributionKeeper: distributionKeeper,

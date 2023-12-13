@@ -424,6 +424,7 @@ func NewSommelierApp(
 		keys[axelarcorktypes.StoreKey],
 		app.GetSubspace(axelarcorktypes.ModuleName),
 		app.AccountKeeper,
+		app.BankKeeper,
 		app.StakingKeeper,
 		app.TransferKeeper,
 		app.DistrKeeper,
