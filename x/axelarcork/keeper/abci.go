@@ -34,7 +34,7 @@ func (k Keeper) EndBlocker(ctx sdk.Context) {
 				"winning votes", winningScheduledVotes,
 				"chain id", config.Id)
 			for _, c := range winningScheduledVotes {
-				k.SetWinningAxelarCork(ctx, config.Id, uint64(ctx.BlockHeight()), c.Deadline, c)
+				k.SetWinningAxelarCork(ctx, config.Id, uint64(ctx.BlockHeight()), c)
 			}
 		}
 
@@ -43,7 +43,7 @@ func (k Keeper) EndBlocker(ctx sdk.Context) {
 			"chain id", config.Id)
 
 		timeoutHeight := uint64(ctx.BlockHeight()) - k.GetParamSet(ctx).CorkTimeoutBlocks
-		k.IterateWinningAxelarCorks(ctx, config.Id, func(_ common.Address, blockHeight uint64, deadline uint64, cork types.AxelarCork) (stop bool) {
+		k.IterateWinningAxelarCorks(ctx, config.Id, func(_ common.Address, blockHeight uint64, cork types.AxelarCork) (stop bool) {
 			if blockHeight >= timeoutHeight {
 				k.Logger(ctx).Info("deleting expired approved scheduled axelar cork",
 					"scheduled height", fmt.Sprintf("%d", blockHeight),
