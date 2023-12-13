@@ -21,9 +21,9 @@ const (
 	TypeMsgRelayAxelarProxyUpgradeRequest = "axelar_proxy_upgrade_relay"
 )
 
-////////////////////////////
+//////////////////////////////////
 // MsgScheduleAxelarCorkRequest //
-////////////////////////////
+//////////////////////////////////
 
 // NewMsgScheduleCorkRequest return a new MsgScheduleAxelarCorkRequest
 func NewMsgScheduleCorkRequest(chainID uint64, body []byte, address common.Address, deadline uint64, blockHeight uint64, signer sdk.AccAddress) (*MsgScheduleAxelarCorkRequest, error) {
@@ -73,9 +73,9 @@ func (m *MsgScheduleAxelarCorkRequest) MustGetSigner() sdk.AccAddress {
 	return addr
 }
 
-/////////////////////////
+///////////////////////////////
 // MsgRelayAxelarCorkRequest //
-/////////////////////////
+///////////////////////////////
 
 // Route implements sdk.Msg
 func (m *MsgRelayAxelarCorkRequest) Route() string { return ModuleName }
@@ -91,6 +91,10 @@ func (m *MsgRelayAxelarCorkRequest) ValidateBasic() error {
 
 	if m.TargetContractAddress == "" {
 		return fmt.Errorf("cannot relay a cork to an empty address")
+	}
+
+	if !common.IsHexAddress(m.TargetContractAddress) {
+		return errorsmod.Wrapf(ErrInvalidEVMAddress, "%s", m.TargetContractAddress)
 	}
 
 	return nil
@@ -115,9 +119,9 @@ func (m *MsgRelayAxelarCorkRequest) MustGetSigner() sdk.AccAddress {
 	return addr
 }
 
-///////////////////////////////
+///////////////////////////////////////
 // MsgRelayAxelarProxyUpgradeRequest //
-///////////////////////////////
+///////////////////////////////////////
 
 // Route implements sdk.Msg
 func (m *MsgRelayAxelarProxyUpgradeRequest) Route() string { return ModuleName }
@@ -155,9 +159,9 @@ func (m *MsgRelayAxelarProxyUpgradeRequest) MustGetSigner() sdk.AccAddress {
 	return addr
 }
 
-///////////////////////////
+/////////////////////////////////
 // MsgBumpAxelarCorkGasRequest //
-///////////////////////////
+/////////////////////////////////
 
 // Route implements sdk.Msg
 func (m *MsgBumpAxelarCorkGasRequest) Route() string { return ModuleName }
@@ -193,9 +197,9 @@ func (m *MsgBumpAxelarCorkGasRequest) MustGetSigner() sdk.AccAddress {
 	return addr
 }
 
-///////////////////////////
+////////////////////////////////
 // MsgCancelAxelarCorkRequest //
-///////////////////////////
+////////////////////////////////
 
 // Route implements sdk.Msg
 func (m *MsgCancelAxelarCorkRequest) Route() string { return ModuleName }
@@ -207,6 +211,14 @@ func (m *MsgCancelAxelarCorkRequest) Type() string { return TypeMsgBumpCorkGasRe
 func (m *MsgCancelAxelarCorkRequest) ValidateBasic() error {
 	if _, err := sdk.AccAddressFromBech32(m.Signer); err != nil {
 		return errorsmod.Wrap(sdkerrors.ErrInvalidAddress, err.Error())
+	}
+
+	if m.TargetContractAddress == "" {
+		return fmt.Errorf("cannot relay a cork to an empty address")
+	}
+
+	if !common.IsHexAddress(m.TargetContractAddress) {
+		return errorsmod.Wrapf(ErrInvalidEVMAddress, "%s", m.TargetContractAddress)
 	}
 
 	return nil
