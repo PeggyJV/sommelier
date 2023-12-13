@@ -12,6 +12,7 @@ import (
 
 func (suite *KeeperTestSuite) TestBeginBlockerZeroRewardsBalance() {
 	ctx, cellarfeesKeeper := suite.ctx, suite.cellarfeesKeeper
+	cellarfeesKeeper.SetFeeAccrualCounters(ctx, cellarfeesTypes.DefaultFeeAccrualCounters())
 
 	require := suite.Require()
 
