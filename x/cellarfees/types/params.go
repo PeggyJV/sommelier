@@ -17,6 +17,8 @@ const (
 	DefaultInitialPriceDecreaseRate string = "0.0000648"
 	// Blocks between each auction price decrease
 	DefaultPriceDecreaseBlockInterval uint64 = 10
+	// Blocks between each auction
+	DefaultAuctionInterval uint64 = 1000
 )
 
 // Parameter keys
@@ -25,6 +27,7 @@ var (
 	KeyRewardEmissionPeriod       = []byte("RewardEmissionPeriod")
 	KeyInitialPriceDecreaseRate   = []byte("InitialPriceDecreaseRate")
 	KeyPriceDecreaseBlockInterval = []byte("PriceDecreaseBlockInterval")
+	KeyAuctionInterval            = []byte("AuctionInterval")
 )
 
 var _ paramtypes.ParamSet = &Params{}
@@ -41,6 +44,7 @@ func DefaultParams() Params {
 		RewardEmissionPeriod:       DefaultRewardEmissionPeriod,
 		InitialPriceDecreaseRate:   sdk.MustNewDecFromStr(DefaultInitialPriceDecreaseRate),
 		PriceDecreaseBlockInterval: DefaultPriceDecreaseBlockInterval,
+		AuctionInterval:            DefaultAuctionInterval,
 	}
 }
 
@@ -51,6 +55,7 @@ func (p *Params) ParamSetPairs() paramtypes.ParamSetPairs {
 		paramtypes.NewParamSetPair(KeyRewardEmissionPeriod, &p.RewardEmissionPeriod, validateRewardEmissionPeriod),
 		paramtypes.NewParamSetPair(KeyInitialPriceDecreaseRate, &p.InitialPriceDecreaseRate, validateInitialPriceDecreaseRate),
 		paramtypes.NewParamSetPair(KeyPriceDecreaseBlockInterval, &p.PriceDecreaseBlockInterval, validatePriceDecreaseBlockInterval),
+		paramtypes.NewParamSetPair(KeyAuctionInterval, &p.AuctionInterval, validateAuctionInterval),
 	}
 }
 
@@ -122,6 +127,19 @@ func validatePriceDecreaseBlockInterval(i interface{}) error {
 
 	if interval == 0 {
 		return errorsmod.Wrapf(ErrInvalidPriceDecreaseBlockInterval, "price decrease block interval cannot be zero")
+	}
+
+	return nil
+}
+
+func validateAuctionInterval(i interface{}) error {
+	interval, ok := i.(uint64)
+	if !ok {
+		return errorsmod.Wrapf(ErrInvalidAuctionInterval, "auction interval: %T", i)
+	}
+
+	if interval == 0 {
+		return errorsmod.Wrapf(ErrInvalidAuctionInterval, "auction interval cannot be zero")
 	}
 
 	return nil

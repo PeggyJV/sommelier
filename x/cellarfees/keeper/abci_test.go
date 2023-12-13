@@ -9,6 +9,7 @@ import (
 
 func (suite *KeeperTestSuite) TestBeginBlockerZeroRewardsBalance() {
 	ctx, cellarfeesKeeper := suite.ctx, suite.cellarfeesKeeper
+
 	require := suite.Require()
 
 	params := cellarfeesTypes.DefaultParams()
@@ -26,6 +27,8 @@ func (suite *KeeperTestSuite) TestBeginBlockerZeroRewardsBalance() {
 
 func (suite *KeeperTestSuite) TestBeginBlockerWithRewardBalanceAndPreviousPeakZero() {
 	ctx, cellarfeesKeeper := suite.ctx, suite.cellarfeesKeeper
+	cellarfeesKeeper.SetFeeAccrualCounters(ctx, cellarfeesTypes.DefaultFeeAccrualCounters())
+
 	require := suite.Require()
 
 	params := cellarfeesTypes.DefaultParams()
@@ -48,6 +51,7 @@ func (suite *KeeperTestSuite) TestBeginBlockerWithRewardBalanceAndPreviousPeakZe
 
 func (suite *KeeperTestSuite) TestBeginBlockerWithRewardBalanceAndHigherPreviousPeak() {
 	ctx, cellarfeesKeeper := suite.ctx, suite.cellarfeesKeeper
+	cellarfeesKeeper.SetFeeAccrualCounters(ctx, cellarfeesTypes.DefaultFeeAccrualCounters())
 	require := suite.Require()
 
 	params := cellarfeesTypes.DefaultParams()
@@ -72,6 +76,8 @@ func (suite *KeeperTestSuite) TestBeginBlockerWithRewardBalanceAndHigherPrevious
 
 func (suite *KeeperTestSuite) TestBeginBlockerWithRewardBalanceAndLowerPreviousPeak() {
 	ctx, cellarfeesKeeper := suite.ctx, suite.cellarfeesKeeper
+	cellarfeesKeeper.SetFeeAccrualCounters(ctx, cellarfeesTypes.DefaultFeeAccrualCounters())
+
 	require := suite.Require()
 
 	params := cellarfeesTypes.DefaultParams()
@@ -97,6 +103,7 @@ func (suite *KeeperTestSuite) TestBeginBlockerWithRewardBalanceAndLowerPreviousP
 // If the emission calculation underflows to zero, it should be set to 1
 func (suite *KeeperTestSuite) TestBeginBlockerEmissionCalculationUnderflowsToZero() {
 	ctx, cellarfeesKeeper := suite.ctx, suite.cellarfeesKeeper
+	cellarfeesKeeper.SetFeeAccrualCounters(ctx, cellarfeesTypes.DefaultFeeAccrualCounters())
 	require := suite.Require()
 
 	params := cellarfeesTypes.DefaultParams()
@@ -118,6 +125,8 @@ func (suite *KeeperTestSuite) TestBeginBlockerEmissionCalculationUnderflowsToZer
 // If the calculated emission is greater than the remaining supply, it should be set to the remaining supply
 func (suite *KeeperTestSuite) TestBeginBlockerEmissionGreaterThanRewardSupply() {
 	ctx, cellarfeesKeeper := suite.ctx, suite.cellarfeesKeeper
+	cellarfeesKeeper.SetFeeAccrualCounters(ctx, cellarfeesTypes.DefaultFeeAccrualCounters())
+
 	require := suite.Require()
 	params := cellarfeesTypes.DefaultParams()
 	cellarfeesKeeper.SetParams(ctx, params)
