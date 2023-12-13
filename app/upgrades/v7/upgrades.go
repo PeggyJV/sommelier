@@ -151,6 +151,41 @@ func axelarcorkInitGenesis(ctx sdk.Context, axelarcorkKeeper axelarcorkkeeper.Ke
 	genesisState.Params.ExecutorAccount = "axelar1aythygn6z5thymj6tmzfwekzh05ewg3l7d6y89"
 	genesisState.Params.CorkTimeoutBlocks = 5000
 
+	genesisState.ChainConfigurations = axelarcorktypes.ChainConfigurations{
+		Configurations: []*axelarcorktypes.ChainConfiguration{
+			{
+				Name:         "arbitrum",
+				Id:           42161,
+				ProxyAddress: "0xEe75bA2C81C04DcA4b0ED6d1B7077c188FEde4d2",
+			},
+			{
+				Name:         "Avalanche",
+				Id:           43114,
+				ProxyAddress: "0xEe75bA2C81C04DcA4b0ED6d1B7077c188FEde4d2",
+			},
+			{
+				Name:         "base",
+				Id:           8453,
+				ProxyAddress: "0xEe75bA2C81C04DcA4b0ED6d1B7077c188FEde4d2",
+			},
+			{
+				Name:         "binance",
+				Id:           56,
+				ProxyAddress: "0xEe75bA2C81C04DcA4b0ED6d1B7077c188FEde4d2",
+			},
+			{
+				Name:         "optimism",
+				Id:           10,
+				ProxyAddress: "0xEe75bA2C81C04DcA4b0ED6d1B7077c188FEde4d2",
+			},
+			{
+				Name:         "Polygon",
+				Id:           137,
+				ProxyAddress: "0xEe75bA2C81C04DcA4b0ED6d1B7077c188FEde4d2",
+			},
+		},
+	}
+
 	axelarcorkkeeper.InitGenesis(ctx, axelarcorkKeeper, genesisState)
 }
 
