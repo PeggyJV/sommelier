@@ -16,9 +16,11 @@ func (k Keeper) BeginBlocker(ctx sdk.Context) {
 
 	counters := k.GetFeeAccrualCounters(ctx)
 
+	modulus := ctx.BlockHeader().Height % int64(cellarfeesParams.AuctionInterval)
+
 	for _, counter := range counters.Counters {
 
-		if counter.Count >= cellarfeesParams.FeeAccrualAuctionThreshold && (ctx.BlockHeader().Height%int64(cellarfeesParams.AuctionInterval) == 0) {
+		if counter.Count >= cellarfeesParams.FeeAccrualAuctionThreshold && modulus == 0 {
 			started := k.beginAuction(ctx, counter.Denom)
 			if started {
 				counters.ResetCounter(counter.Denom)
