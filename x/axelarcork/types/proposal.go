@@ -91,9 +91,9 @@ func (m *AddAxelarManagedCellarIDsProposal) ValidateBasic() error {
 		return fmt.Errorf("can't have an add prosoposal with no cellars")
 	}
 
-	for _, cellarId := range m.CellarIds.Ids {
-		if !common.IsHexAddress(cellarId) {
-			return errorsmod.Wrapf(ErrInvalidEVMAddress, "%s", cellarId)
+	for _, cellarID := range m.CellarIds.Ids {
+		if !common.IsHexAddress(cellarID) {
+			return errorsmod.Wrapf(ErrInvalidEVMAddress, "%s", cellarID)
 		}
 	}
 
