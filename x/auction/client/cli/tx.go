@@ -2,7 +2,7 @@ package cli
 
 import (
 	"fmt"
-	"io/ioutil"
+	"os"
 	"strings"
 
 	"cosmossdk.io/math"
@@ -66,7 +66,7 @@ Where proposal.json contains:
 			}
 
 			proposal := types.SetTokenPricesProposalWithDeposit{}
-			contents, err := ioutil.ReadFile(args[0])
+			contents, err := os.ReadFile(args[0])
 			if err != nil {
 				return err
 			}

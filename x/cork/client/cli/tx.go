@@ -2,7 +2,6 @@ package cli
 
 import (
 	"fmt"
-	"io/ioutil"
 	"os"
 	"strings"
 
@@ -207,7 +206,7 @@ The contract_call_proto_json field must be the JSON representation of a Schedule
 			}
 
 			proposal := types.ScheduledCorkProposalWithDeposit{}
-			contents, err := ioutil.ReadFile(args[0])
+			contents, err := os.ReadFile(args[0])
 			if err != nil {
 				return err
 			}

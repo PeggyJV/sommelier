@@ -1,7 +1,6 @@
 package cli
 
 import (
-	"io/ioutil"
 	"os"
 	"testing"
 
@@ -77,7 +76,7 @@ func TestParseSubmitScheduledCorkProposal(t *testing.T) {
 `)
 
 	proposal := types.ScheduledCorkProposalWithDeposit{}
-	contents, err := ioutil.ReadFile(okJSON.Name())
+	contents, err := os.ReadFile(okJSON.Name())
 	require.NoError(t, err)
 
 	err = encodingConfig.Codec.UnmarshalJSON(contents, &proposal)

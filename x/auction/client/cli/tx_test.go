@@ -2,7 +2,7 @@ package cli
 
 import (
 	"fmt"
-	"io/ioutil"
+	"os"
 	"testing"
 
 	"github.com/cosmos/cosmos-sdk/simapp/params"
@@ -25,7 +25,7 @@ func TestParseSetTokenPricesProposal(t *testing.T) {
 `)
 
 	proposal := types.SetTokenPricesProposalWithDeposit{}
-	contents, err := ioutil.ReadFile(okJSON.Name())
+	contents, err := os.ReadFile(okJSON.Name())
 	require.NoError(t, err)
 
 	err = encodingConfig.Codec.UnmarshalJSON(contents, &proposal)

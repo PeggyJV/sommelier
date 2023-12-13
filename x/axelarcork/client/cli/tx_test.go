@@ -1,7 +1,6 @@
 package cli
 
 import (
-	"io/ioutil"
 	"os"
 	"testing"
 
@@ -25,7 +24,7 @@ func TestParseAddManagedCellarsProposal(t *testing.T) {
 `)
 
 	proposal := types.AddAxelarManagedCellarIDsProposalWithDeposit{}
-	contents, err := ioutil.ReadFile(okJSON.Name())
+	contents, err := os.ReadFile(okJSON.Name())
 	require.NoError(t, err)
 
 	err = encodingConfig.Codec.UnmarshalJSON(contents, &proposal)
@@ -51,7 +50,7 @@ func TestParseRemoveManagedCellarsProposal(t *testing.T) {
 `)
 
 	proposal := types.RemoveAxelarManagedCellarIDsProposalWithDeposit{}
-	contents, err := ioutil.ReadFile(okJSON.Name())
+	contents, err := os.ReadFile(okJSON.Name())
 	require.NoError(t, err)
 
 	err = encodingConfig.Codec.UnmarshalJSON(contents, &proposal)
@@ -77,7 +76,7 @@ func TestParseSubmitScheduledCorkProposal(t *testing.T) {
 `)
 
 	proposal := types.AxelarScheduledCorkProposalWithDeposit{}
-	contents, err := ioutil.ReadFile(okJSON.Name())
+	contents, err := os.ReadFile(okJSON.Name())
 	require.NoError(t, err)
 
 	err = encodingConfig.Codec.UnmarshalJSON(contents, &proposal)

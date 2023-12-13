@@ -2,7 +2,7 @@ package cli
 
 import (
 	"fmt"
-	"io/ioutil"
+	"os"
 	"strings"
 
 	"github.com/spf13/cobra"
@@ -74,7 +74,7 @@ Where proposal.json contains:
 			}
 
 			proposal := types.AddPublisherProposalWithDeposit{}
-			contents, err := ioutil.ReadFile(args[0])
+			contents, err := os.ReadFile(args[0])
 			if err != nil {
 				return err
 			}
@@ -145,7 +145,7 @@ Where proposal.json contains:
 			}
 
 			proposal := types.RemovePublisherProposalWithDeposit{}
-			contents, err := ioutil.ReadFile(args[0])
+			contents, err := os.ReadFile(args[0])
 			if err != nil {
 				return err
 			}
@@ -214,7 +214,7 @@ Where proposal.json contains:
 			}
 
 			proposal := types.AddDefaultSubscriptionProposalWithDeposit{}
-			contents, err := ioutil.ReadFile(args[0])
+			contents, err := os.ReadFile(args[0])
 			if err != nil {
 				return err
 			}
@@ -283,7 +283,7 @@ Where proposal.json contains:
 			}
 
 			proposal := types.RemoveDefaultSubscriptionProposalWithDeposit{}
-			contents, err := ioutil.ReadFile(args[0])
+			contents, err := os.ReadFile(args[0])
 			if err != nil {
 				return err
 			}
@@ -510,7 +510,7 @@ $ %s tx pubsub add-subscriber somm1y6d5kasehecexf09ka6y0ggl0pxzt6dg6n8lw0 <path/
 			pushURL := ""
 
 			if len(args) == 3 {
-				caCertContent, err := ioutil.ReadFile(args[1])
+				caCertContent, err := os.ReadFile(args[1])
 				if err != nil {
 					return fmt.Errorf("cannot read CA cert: %s", err)
 				}
