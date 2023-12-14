@@ -192,6 +192,30 @@ func axelarcorkInitGenesis(ctx sdk.Context, axelarcorkKeeper axelarcorkkeeper.Ke
 		},
 	}
 
+	// InitGenesis reads through each chain configuration in order and sets the cellar ID set
+	// for it based on index, so this list must be of the same size and order as the respective
+	// chain configurations above
+	genesisState.CellarIds = []*axelarcorktypes.CellarIDSet{
+		{
+			Ids: []string{"0x438087f7c226A89762a791F187d7c3D4a0e95ae6"},
+		},
+		{
+			Ids: []string{},
+		},
+		{
+			Ids: []string{},
+		},
+		{
+			Ids: []string{},
+		},
+		{
+			Ids: []string{},
+		},
+		{
+			Ids: []string{},
+		},
+	}
+
 	if err := genesisState.Validate(); err != nil {
 		panic(fmt.Errorf("axelarcork genesis state invalid: %s", err))
 	}
