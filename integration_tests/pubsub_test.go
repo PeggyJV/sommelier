@@ -197,6 +197,14 @@ func (s *IntegrationTestSuite) TestPubsub() {
 			Signer: orch1.address().String(),
 		}
 
+		// subscriber 1 should not be able to add a subscriber intent for subscriber 0
+		_, err = s.chain.sendMsgs(*orch1ClientCtx, &addSubscriberIntent0Msg)
+		s.Require().NoError(err)
+		s.T().Log("AddSubscriberIntent for orch 0 submitted incorrectly, verifying none created")
+		subscriberIntentsResponse, err := pubsubQueryClient.QuerySubscriberIntents(context.Background(), &types.QuerySubscriberIntentsRequest{})
+		s.Require().NoError(err)
+		s.Require().Len(subscriberIntentsResponse.SubscriberIntents, 0)
+
 		_, err = s.chain.sendMsgs(*orch0ClientCtx, &addSubscriberIntent0Msg)
 		s.Require().NoError(err)
 		s.T().Log("AddSubscriberIntent for orch 0 submitted correctly")
@@ -206,7 +214,7 @@ func (s *IntegrationTestSuite) TestPubsub() {
 		s.T().Log("AddSubscriberIntent for orch 1 submitted correctly")
 
 		s.T().Log("Verifying SubscriberIntents added correctly")
-		subscriberIntentsResponse, err := pubsubQueryClient.QuerySubscriberIntents(context.Background(), &types.QuerySubscriberIntentsRequest{})
+		subscriberIntentsResponse, err = pubsubQueryClient.QuerySubscriberIntents(context.Background(), &types.QuerySubscriberIntentsRequest{})
 		s.Require().NoError(err)
 		s.Require().Len(subscriberIntentsResponse.SubscriberIntents, 2)
 
