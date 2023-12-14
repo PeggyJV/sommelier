@@ -71,9 +71,9 @@ func (s *IntegrationTestSuite) TestPubsub() {
 		s.Require().Equal(publisher.Domain, "example.com")
 
 		// set publisher intent for cellar
-		s.T().Log("Submitting PublisherIntent")
+		s.T().Log("Submitting AddPublisherIntent")
 		subscriptionID := fmt.Sprintf("1:%s", unusedGenesisContract.String())
-		publisherIntentMsg := types.MsgAddPublisherIntentRequest{
+		addPublisherIntentMsg := types.MsgAddPublisherIntentRequest{
 			PublisherIntent: &types.PublisherIntent{
 				SubscriptionId:     subscriptionID,
 				PublisherDomain:    publisher.Domain,
@@ -83,9 +83,9 @@ func (s *IntegrationTestSuite) TestPubsub() {
 			Signer: proposer.address().String(),
 		}
 
-		_, err = s.chain.sendMsgs(*proposerCtx, &publisherIntentMsg)
+		_, err = s.chain.sendMsgs(*proposerCtx, &addPublisherIntentMsg)
 		s.Require().NoError(err)
-		s.T().Log("PublisherIntent submitted successfully")
+		s.T().Log("AddPublisherIntent submitted successfully")
 
 		s.T().Log("Verifying PublisherIntent correctly added")
 		publisherIntentsResponse, err := pubsubQueryClient.QueryPublisherIntents(context.Background(), &types.QueryPublisherIntentsRequest{})
@@ -308,6 +308,23 @@ func (s *IntegrationTestSuite) TestPubsub() {
 		defaultSubscriptionsResponse, err = pubsubQueryClient.QueryDefaultSubscriptions(context.Background(), &types.QueryDefaultSubscriptionsRequest{})
 		s.Require().NoError(err)
 		s.Require().Len(defaultSubscriptionsResponse.DefaultSubscriptions, 0)
+
+		// remove publisher intent for cellar
+		s.T().Log("Removing PublisherIntent")
+		removePublisherIntentMsg := types.MsgRemovePublisherIntentRequest{
+			SubscriptionId:  subscriptionID,
+			PublisherDomain: publisher.Domain,
+			Signer:          proposer.address().String(),
+		}
+
+		_, err = s.chain.sendMsgs(*proposerCtx, &removePublisherIntentMsg)
+		s.Require().NoError(err)
+		s.T().Log("RemovePublisherIntent submitted successfully")
+
+		s.T().Log("Verifying PublisherIntent correctly removed")
+		publisherIntentsResponse, err = pubsubQueryClient.QueryPublisherIntents(context.Background(), &types.QueryPublisherIntentsRequest{})
+		s.Require().NoError(err)
+		s.Require().Len(publisherIntentsResponse.PublisherIntents, 0)
 
 		// remove publisher prop
 		s.T().Log("Creating RemovePublisherProposal")
