@@ -35,6 +35,10 @@ func (s *IntegrationTestSuite) TestPubsub() {
 
 		pubsubQueryClient := types.NewQueryClient(val0ClientCtx)
 
+		////////////////
+		// Happy path //
+		////////////////
+
 		// add publisher (controlled by proposer)
 		s.T().Log("Creating AddPublisherProposal")
 		addPublisherProp := types.AddPublisherProposal{
@@ -347,11 +351,172 @@ func (s *IntegrationTestSuite) TestPubsub() {
 		s.Require().NoError(err, "Unable to create governance proposal")
 
 		s.submitAndVoteForProposal(proposerCtx, orch0ClientCtx, propID, removePublisherPropMsg)
+		propID++
 
 		s.T().Log("Verifying Publisher correctly removed")
 		publishersResponse, err = pubsubQueryClient.QueryPublishers(context.Background(), &types.QueryPublishersRequest{})
 		s.Require().NoError(err)
 		s.Require().Len(publishersResponse.Publishers, 0)
+
+		////////////////////////////////////////////////
+		// Deleting a subscriber deletes child values //
+		////////////////////////////////////////////////
+
+		// for the purposes of the cascading deletion test, we recreate the state we had earlier in the test
+
+		// add the publisher
+		s.T().Log("Creating AddPublisherProposal")
+		s.Require().NoError(err, "Unable to create governance proposal")
+		s.submitAndVoteForProposal(proposerCtx, orch0ClientCtx, propID, addPublisherPropMsg)
+		propID++
+
+		s.T().Log("Verifying Publisher correctly added")
+		publishersResponse, err = pubsubQueryClient.QueryPublishers(context.Background(), &types.QueryPublishersRequest{})
+		s.Require().NoError(err)
+		s.Require().Len(publishersResponse.Publishers, 1)
+		publisher = publishersResponse.Publishers[0]
+		s.Require().Equal(publisher.Address, proposer.address().String())
+		s.Require().Equal(publisher.CaCert, PublisherCACert)
+		s.Require().Equal(publisher.Domain, "example.com")
+
+		// set publisher intent for cellar
+		_, err = s.chain.sendMsgs(*proposerCtx, &addPublisherIntentMsg)
+		s.Require().NoError(err)
+		s.T().Log("AddPublisherIntent submitted successfully")
+
+		s.T().Log("Verifying PublisherIntent correctly added")
+		publisherIntentsResponse, err = pubsubQueryClient.QueryPublisherIntents(context.Background(), &types.QueryPublisherIntentsRequest{})
+		s.Require().NoError(err)
+		s.Require().Len(publisherIntentsResponse.PublisherIntents, 1)
+		publisherIntent = publisherIntentsResponse.PublisherIntents[0]
+		s.Require().Equal(publisherIntent.SubscriptionId, subscriptionID)
+		s.Require().Equal(publisherIntent.PublisherDomain, publisher.Domain)
+		s.Require().Equal(publisherIntent.Method, types.PublishMethod_PUSH)
+		s.Require().Equal(publisherIntent.AllowedSubscribers, types.AllowedSubscribers_VALIDATORS)
+
+		// add default subscription prop
+		s.T().Log("Creating AddDefaultSubscriptionProposal")
+		s.Require().NoError(err, "Unable to create governance proposal")
+
+		s.submitAndVoteForProposal(proposerCtx, orch0ClientCtx, propID, addDefaultSubscriptionPropMsg)
+
+		s.T().Log("Verifying DefaultSubscription correctly added")
+		defaultSubscriptionsResponse, err = pubsubQueryClient.QueryDefaultSubscriptions(context.Background(), &types.QueryDefaultSubscriptionsRequest{})
+		s.Require().NoError(err)
+		s.Require().Len(defaultSubscriptionsResponse.DefaultSubscriptions, 1)
+		defaultSubscription = defaultSubscriptionsResponse.DefaultSubscriptions[0]
+		s.Require().Equal(defaultSubscription.SubscriptionId, subscriptionID)
+		s.Require().Equal(defaultSubscription.PublisherDomain, publisher.Domain)
+
+		// create subscribers
+		s.T().Log("Creating Subscriber for two orchestrators")
+
+		_, err = s.chain.sendMsgs(*orch0ClientCtx, &addSubscriber0Msg)
+		s.Require().NoError(err)
+		s.T().Log("AddSubscriber for orch 0 submitted correctly")
+
+		_, err = s.chain.sendMsgs(*orch1ClientCtx, &addSubscriber1Msg)
+		s.Require().NoError(err)
+		s.T().Log("AddSubscriber for orch 1 submitted correctly")
+
+		s.T().Log("Verifying Subscribers added correctly")
+		subscribersResponse, err = pubsubQueryClient.QuerySubscribers(context.Background(), &types.QuerySubscribersRequest{})
+		s.Require().NoError(err)
+		s.Require().Len(subscribersResponse.Subscribers, 2)
+
+		subscriber0 = subscribersResponse.Subscribers[0]
+		subscriber1 = subscribersResponse.Subscribers[1]
+		s.Require().Equal(subscriber0.Address, orch0.address().String())
+		s.Require().Equal(subscriber0.CaCert, SubscriberCACert)
+		s.Require().Equal(subscriber0.PushUrl, subscriber0PushURL)
+		s.Require().Equal(subscriber1.Address, orch1.address().String())
+		s.Require().Equal(subscriber1.CaCert, SubscriberCACert)
+		s.Require().Equal(subscriber1.PushUrl, subscriber1PushURL)
+
+		// subscribe to the cellar
+		s.T().Log("Creating SubscriberIntent for both orchestrators")
+
+		_, err = s.chain.sendMsgs(*orch0ClientCtx, &addSubscriberIntent0Msg)
+		s.Require().NoError(err)
+		s.T().Log("AddSubscriberIntent for orch 0 submitted correctly")
+
+		_, err = s.chain.sendMsgs(*orch1ClientCtx, &addSubscriberIntent1Msg)
+		s.Require().NoError(err)
+		s.T().Log("AddSubscriberIntent for orch 1 submitted correctly")
+
+		s.T().Log("Verifying SubscriberIntents added correctly")
+		subscriberIntentsResponse, err = pubsubQueryClient.QuerySubscriberIntents(context.Background(), &types.QuerySubscriberIntentsRequest{})
+		s.Require().NoError(err)
+		s.Require().Len(subscriberIntentsResponse.SubscriberIntents, 2)
+
+		subscriberIntent0 = subscriberIntentsResponse.SubscriberIntents[0]
+		subscriberIntent1 = subscriberIntentsResponse.SubscriberIntents[1]
+		s.Require().Equal(subscriberIntent0.SubscriptionId, subscriptionID)
+		s.Require().Equal(subscriberIntent0.SubscriberAddress, orch0.address().String())
+		s.Require().Equal(subscriberIntent0.PublisherDomain, publisher.Domain)
+		s.Require().Equal(subscriberIntent1.SubscriptionId, subscriptionID)
+		s.Require().Equal(subscriberIntent1.SubscriberAddress, orch1.address().String())
+		s.Require().Equal(subscriberIntent1.PublisherDomain, publisher.Domain)
+
+		// now we delete subscriber 0, which should also delete their publisher intents
+		s.T().Log("Removing Subscriber for orch 0")
+
+		_, err = s.chain.sendMsgs(*orch0ClientCtx, &removeSubscriber0Msg)
+		s.Require().NoError(err)
+		s.T().Log("RemoveSubscriber for orch 0 submitted correctly")
+
+		s.T().Log("Verifying Subscriber for orch 0 removed")
+		subscribersResponse, err = pubsubQueryClient.QuerySubscribers(context.Background(), &types.QuerySubscribersRequest{})
+		s.Require().NoError(err)
+		s.Require().Len(subscribersResponse.Subscribers, 1)
+		s.Require().Equal(subscribersResponse.Subscribers[0].Address, orch1.address().String())
+
+		// now check that there are no subscriber intents for the deleted subscriber 0, but there is still one for subscriber 1
+		subscriberIntentsByAddr0Response, err := pubsubQueryClient.QuerySubscriberIntentsBySubscriberAddress(context.Background(),
+			&types.QuerySubscriberIntentsBySubscriberAddressRequest{SubscriberAddress: orch0.address().String()})
+		s.Require().NoError(err)
+		s.Require().Len(subscriberIntentsByAddr0Response.SubscriberIntents, 0)
+		subscriberIntentsByAddr1Response, err := pubsubQueryClient.QuerySubscriberIntentsBySubscriberAddress(context.Background(),
+			&types.QuerySubscriberIntentsBySubscriberAddressRequest{SubscriberAddress: orch1.address().String()})
+		s.Require().NoError(err)
+		s.Require().Len(subscriberIntentsByAddr1Response.SubscriberIntents, 1)
+
+		///////////////////////////////////////////////
+		// Deleting a publisher deletes child values //
+		///////////////////////////////////////////////
+
+		// now we are going to delete this publisher, which will remove both its default subscriptions and its publisher intents
+		// as a side effect of deleting a publisher intent, it should delete the attached subscriber intents
+		// we will also use the self-deletion message here rather than a gov prop
+
+		s.T().Log("Creating RemovePublisher message")
+		removePublisherMsg := types.MsgRemovePublisherRequest{
+			PublisherDomain: publisher.Domain,
+			Signer:          proposer.address().String(),
+		}
+
+		_, err = s.chain.sendMsgs(*proposerCtx, &removePublisherMsg)
+		s.Require().NoError(err)
+		s.T().Log("RemovePublisher submitted correctly")
+
+		s.T().Log("Verifying all the child values have been removed with the publisher")
+		// now everything should be gone, the only thing that should be left is one subscriber value
+		publishersResponse, err = pubsubQueryClient.QueryPublishers(context.Background(), &types.QueryPublishersRequest{})
+		s.Require().NoError(err)
+		s.Require().Len(publishersResponse.Publishers, 0)
+		defaultSubscriptionsResponse, err = pubsubQueryClient.QueryDefaultSubscriptions(context.Background(), &types.QueryDefaultSubscriptionsRequest{})
+		s.Require().NoError(err)
+		s.Require().Len(defaultSubscriptionsResponse.DefaultSubscriptions, 0)
+		publisherIntentsResponse, err = pubsubQueryClient.QueryPublisherIntents(context.Background(), &types.QueryPublisherIntentsRequest{})
+		s.Require().NoError(err)
+		s.Require().Len(publisherIntentsResponse.PublisherIntents, 0)
+		subscriberIntentsResponse, err = pubsubQueryClient.QuerySubscriberIntents(context.Background(), &types.QuerySubscriberIntentsRequest{})
+		s.Require().NoError(err)
+		s.Require().Len(subscriberIntentsResponse.SubscriberIntents, 0)
+		subscribersResponse, err = pubsubQueryClient.QuerySubscribers(context.Background(), &types.QuerySubscribersRequest{})
+		s.Require().NoError(err)
+		s.Require().Len(subscribersResponse.Subscribers, 1)
+		s.Require().Equal(subscribersResponse.Subscribers[0].Address, orch1.address().String())
 	})
 }
 
