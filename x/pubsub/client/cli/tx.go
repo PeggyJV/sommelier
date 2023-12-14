@@ -327,8 +327,8 @@ func GetCmdAddPublisherPullIntent() *cobra.Command {
 		Short: "Add a publisher intent with a pull URL",
 		Long: strings.TrimSpace(
 			fmt.Sprintf(`Examples:
-$ %s tx pubsub add-publisher-pull-intent 0x123801a7D398351b8bE11C439e05C5B3259aeC9B sommelier.example.com "https://sommelier.example.com/pull" VALIDATORS --from=<key_or_address>
-$ %s tx pubsub add-publisher-pull-intent 0x123801a7D398351b8bE11C439e05C5B3259aeC9B sommelier.example.com "https://sommelier.example.com/pull" LIST somm1y6d5kasehecexf09ka6y0ggl0pxzt6dg6n8lw0,somm18ld4633yswcyjdklej3att6aw93nhlf7596qkk --from=<key_or_address>
+$ %s tx pubsub add-publisher-pull-intent 1:0x123801a7D398351b8bE11C439e05C5B3259aeC9B sommelier.example.com "https://sommelier.example.com/pull" VALIDATORS --from=<key_or_address>
+$ %s tx pubsub add-publisher-pull-intent 1:0x123801a7D398351b8bE11C439e05C5B3259aeC9B sommelier.example.com "https://sommelier.example.com/pull" LIST somm1y6d5kasehecexf09ka6y0ggl0pxzt6dg6n8lw0,somm18ld4633yswcyjdklej3att6aw93nhlf7596qkk --from=<key_or_address>
 `, version.AppName, version.AppName),
 		),
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -385,8 +385,8 @@ func GetCmdAddPublisherPushIntent() *cobra.Command {
 		Short: "Add a publisher intent that will push",
 		Long: strings.TrimSpace(
 			fmt.Sprintf(`Examples:
-$ %s tx pubsub add-publisher-push-intent 0x123801a7D398351b8bE11C439e05C5B3259aeC9B sommelier.example.com VALIDATORS --from=<key_or_address>
-$ %s tx pubsub add-publisher-push-intent 0x123801a7D398351b8bE11C439e05C5B3259aeC9B sommelier.example.com LIST somm1y6d5kasehecexf09ka6y0ggl0pxzt6dg6n8lw0,somm18ld4633yswcyjdklej3att6aw93nhlf7596qkk --from=<key_or_address>
+$ %s tx pubsub add-publisher-push-intent 1:0x123801a7D398351b8bE11C439e05C5B3259aeC9B sommelier.example.com VALIDATORS --from=<key_or_address>
+$ %s tx pubsub add-publisher-push-intent 1:0x123801a7D398351b8bE11C439e05C5B3259aeC9B sommelier.example.com LIST somm1y6d5kasehecexf09ka6y0ggl0pxzt6dg6n8lw0,somm18ld4633yswcyjdklej3att6aw93nhlf7596qkk --from=<key_or_address>
 `, version.AppName, version.AppName),
 		),
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -443,7 +443,7 @@ func GetCmdAddSubscriberIntent() *cobra.Command {
 		Short: "Add a subscriber intent",
 		Long: strings.TrimSpace(
 			fmt.Sprintf(`Examples:
-$ %s tx pubsub add-subscriber-intent 0x123801a7D398351b8bE11C439e05C5B3259aeC9B somm1y6d5kasehecexf09ka6y0ggl0pxzt6dg6n8lw0 pullpublisher.example.com --from=<key_or_address>
+$ %s tx pubsub add-subscriber-intent 1:0x123801a7D398351b8bE11C439e05C5B3259aeC9B somm1y6d5kasehecexf09ka6y0ggl0pxzt6dg6n8lw0 pullpublisher.example.com --from=<key_or_address>
 `, version.AppName),
 		),
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -544,7 +544,7 @@ func GetCmdRemovePublisherIntent() *cobra.Command {
 		Short: "Remove a publisher intent",
 		Long: strings.TrimSpace(
 			fmt.Sprintf(`Examples:
-$ %s tx pubsub remove-publisher-intent 0x123801a7D398351b8bE11C439e05C5B3259aeC9B pushpublisher.example.com --from=<key_or_address>
+$ %s tx pubsub remove-publisher-intent 1:0x123801a7D398351b8bE11C439e05C5B3259aeC9B pushpublisher.example.com --from=<key_or_address>
 `, version.AppName),
 		),
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -578,7 +578,7 @@ func GetCmdRemoveSubscriberIntent() *cobra.Command {
 		Short: "Remove a subcriber intent",
 		Long: strings.TrimSpace(
 			fmt.Sprintf(`Examples:
-$ %s tx pubsub remove-subscriber-intent 0x123801a7D398351b8bE11C439e05C5B3259aeC9B somm1y6d5kasehecexf09ka6y0ggl0pxzt6dg6n8lw0 --from=<key_or_address>
+$ %s tx pubsub remove-subscriber-intent 1:0x123801a7D398351b8bE11C439e05C5B3259aeC9B somm1y6d5kasehecexf09ka6y0ggl0pxzt6dg6n8lw0 --from=<key_or_address>
 `, version.AppName),
 		),
 		RunE: func(cmd *cobra.Command, args []string) error {

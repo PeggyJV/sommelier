@@ -109,6 +109,12 @@ func (k Keeper) DeletePublisher(ctx sdk.Context, publisherDomain string) {
 	for _, publisherIntent := range k.GetPublisherIntentsByPublisherDomain(ctx, publisherDomain) {
 		k.DeletePublisherIntent(ctx, publisherIntent.SubscriptionId, publisherIntent.PublisherDomain)
 	}
+
+	for _, defaultSubscription := range k.GetDefaultSubscriptions(ctx) {
+		if defaultSubscription.PublisherDomain == publisherDomain {
+			k.DeleteDefaultSubscription(ctx, defaultSubscription.SubscriptionId)
+		}
+	}
 }
 
 ////////////////
