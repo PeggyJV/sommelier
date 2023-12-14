@@ -171,7 +171,7 @@ func (suite *KeeperTestSuite) TestAuctionBeginWithSufficientFunds() {
 		Counters: []cellarfeesTypes.FeeAccrualCounter{
 			{
 				Denom: gravityFeeDenom,
-				Count: 2,
+				Count: 1,
 			},
 		},
 	})
@@ -232,7 +232,7 @@ func (suite *KeeperTestSuite) TestAuctionBeginWithInSufficientFunds() {
 		Counters: []cellarfeesTypes.FeeAccrualCounter{
 			{
 				Denom: gravityFeeDenom,
-				Count: 1,
+				Count: 0,
 			},
 		},
 	})
@@ -293,7 +293,7 @@ func (suite *KeeperTestSuite) TestAuctionBeginWithSufficientFundsWrongBlockHeigh
 		Counters: []cellarfeesTypes.FeeAccrualCounter{
 			{
 				Denom: gravityFeeDenom,
-				Count: 2,
+				Count: 1,
 			},
 		},
 	})
