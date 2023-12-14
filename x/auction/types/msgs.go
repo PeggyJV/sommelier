@@ -3,6 +3,7 @@ package types
 import (
 	"strings"
 
+	errorsmod "cosmossdk.io/errors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/peggyjv/sommelier/v7/app/params"
@@ -39,27 +40,27 @@ func (m *MsgSubmitBidRequest) Type() string { return TypeMsgSubmitBidRequest }
 // ValidateBasic implements sdk.Msg
 func (m *MsgSubmitBidRequest) ValidateBasic() error {
 	if m.AuctionId == 0 {
-		return sdkerrors.Wrapf(ErrAuctionIDMustBeNonZero, "id: %d", m.AuctionId)
+		return errorsmod.Wrapf(ErrAuctionIDMustBeNonZero, "id: %d", m.AuctionId)
 	}
 
 	if m.MaxBidInUsomm.Denom != params.BaseCoinUnit {
-		return sdkerrors.Wrapf(ErrBidMustBeInUsomm, "bid: %s", m.MaxBidInUsomm.String())
+		return errorsmod.Wrapf(ErrBidMustBeInUsomm, "bid: %s", m.MaxBidInUsomm.String())
 	}
 
 	if !m.MaxBidInUsomm.IsPositive() {
-		return sdkerrors.Wrapf(ErrBidAmountMustBePositive, "bid amount in usomm: %s", m.MaxBidInUsomm.String())
+		return errorsmod.Wrapf(ErrBidAmountMustBePositive, "bid amount in usomm: %s", m.MaxBidInUsomm.String())
 	}
 
 	if !strings.HasPrefix(m.SaleTokenMinimumAmount.Denom, "gravity0x") {
-		return sdkerrors.Wrapf(ErrInvalidTokenBeingBidOn, "sale token: %s", m.SaleTokenMinimumAmount.String())
+		return errorsmod.Wrapf(ErrInvalidTokenBeingBidOn, "sale token: %s", m.SaleTokenMinimumAmount.String())
 	}
 
 	if !m.SaleTokenMinimumAmount.IsPositive() {
-		return sdkerrors.Wrapf(ErrMinimumAmountMustBePositive, "sale token amount: %s", m.SaleTokenMinimumAmount.String())
+		return errorsmod.Wrapf(ErrMinimumAmountMustBePositive, "sale token amount: %s", m.SaleTokenMinimumAmount.String())
 	}
 
 	if _, err := sdk.AccAddressFromBech32(m.Signer); err != nil {
-		return sdkerrors.Wrap(sdkerrors.ErrInvalidAddress, err.Error())
+		return errorsmod.Wrap(sdkerrors.ErrInvalidAddress, err.Error())
 	}
 
 	return nil

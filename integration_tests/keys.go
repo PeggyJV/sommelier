@@ -23,8 +23,8 @@ func createMnemonic() (string, error) { //nolint:unused
 	return mnemonic, nil
 }
 
-func createMemoryKeyFromMnemonic(name string, mnemonic string, passphrase string, hdPath *hd.BIP44Params) (*keyring.Info, *keyring.Keyring, error) {
-	kb, err := keyring.New("testnet", keyring.BackendMemory, "", nil)
+func createMemoryKeyFromMnemonic(name string, mnemonic string, passphrase string, hdPath *hd.BIP44Params) (*keyring.Record, *keyring.Keyring, error) {
+	kb, err := keyring.New("testnet", keyring.BackendMemory, "", nil, cdc)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -46,7 +46,7 @@ func createMemoryKeyFromMnemonic(name string, mnemonic string, passphrase string
 		return nil, nil, err
 	}
 
-	return &account, &kb, nil
+	return account, &kb, nil
 }
 
 func ethereumKeyFromMnemonic(mnemonic string) (*ethereumKey, error) {

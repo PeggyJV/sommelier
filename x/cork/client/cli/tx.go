@@ -2,7 +2,6 @@ package cli
 
 import (
 	"fmt"
-	"io/ioutil"
 	"os"
 	"strings"
 
@@ -10,7 +9,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/client/tx"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/version"
-	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
+	govtypesv1beta1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
 	"github.com/ethereum/go-ethereum/common"
 	types "github.com/peggyjv/sommelier/v7/x/cork/types"
 	"github.com/spf13/cobra"
@@ -89,7 +88,7 @@ Where proposal.json contains:
 				&types.CellarIDSet{Ids: proposal.CellarIds})
 
 			from := clientCtx.GetFromAddress()
-			msg, err := govtypes.NewMsgSubmitProposal(content, deposit, from)
+			msg, err := govtypesv1beta1.NewMsgSubmitProposal(content, deposit, from)
 			if err != nil {
 				return err
 			}
@@ -159,7 +158,7 @@ Where proposal.json contains:
 				&types.CellarIDSet{Ids: proposal.CellarIds})
 
 			from := clientCtx.GetFromAddress()
-			msg, err := govtypes.NewMsgSubmitProposal(content, deposit, from)
+			msg, err := govtypesv1beta1.NewMsgSubmitProposal(content, deposit, from)
 			if err != nil {
 				return err
 			}
@@ -207,7 +206,7 @@ The contract_call_proto_json field must be the JSON representation of a Schedule
 			}
 
 			proposal := types.ScheduledCorkProposalWithDeposit{}
-			contents, err := ioutil.ReadFile(args[0])
+			contents, err := os.ReadFile(args[0])
 			if err != nil {
 				return err
 			}
@@ -230,7 +229,7 @@ The contract_call_proto_json field must be the JSON representation of a Schedule
 				return err
 			}
 			from := clientCtx.GetFromAddress()
-			msg, err := govtypes.NewMsgSubmitProposal(content, deposit, from)
+			msg, err := govtypesv1beta1.NewMsgSubmitProposal(content, deposit, from)
 			if err != nil {
 				return err
 			}

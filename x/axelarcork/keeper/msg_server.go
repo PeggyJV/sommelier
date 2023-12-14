@@ -8,11 +8,12 @@ import (
 	"strconv"
 	"time"
 
+	errorsmod "cosmossdk.io/errors"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	transfertypes "github.com/cosmos/ibc-go/v3/modules/apps/transfer/types"
-	clienttypes "github.com/cosmos/ibc-go/v3/modules/core/02-client/types"
+	transfertypes "github.com/cosmos/ibc-go/v6/modules/apps/transfer/types"
+	clienttypes "github.com/cosmos/ibc-go/v6/modules/core/02-client/types"
 	"github.com/ethereum/go-ethereum/common"
 
 	"github.com/peggyjv/sommelier/v7/x/axelarcork/types"
@@ -30,7 +31,7 @@ func (k Keeper) ScheduleCork(c context.Context, msg *types.MsgScheduleAxelarCork
 	signer := msg.MustGetSigner()
 	validatorAddr := k.gravityKeeper.GetOrchestratorValidatorAddress(ctx, signer)
 	if validatorAddr == nil {
-		return nil, sdkerrors.Wrapf(sdkerrors.ErrUnauthorized, "signer %s is not a delegate", signer.String())
+		return nil, errorsmod.Wrapf(sdkerrors.ErrUnauthorized, "signer %s is not a delegate", signer.String())
 	}
 
 	config, ok := k.GetChainConfigurationByID(ctx, msg.ChainId)
@@ -96,7 +97,7 @@ func (k Keeper) RelayCork(c context.Context, msg *types.MsgRelayAxelarCorkReques
 			Recipient: params.ExecutorAccount,
 		},
 	}
-	bz, err := json.Marshal(axelarMemo)
+	memoBz, err := json.Marshal(axelarMemo)
 	if err != nil {
 		return nil, err
 	}
@@ -109,8 +110,8 @@ func (k Keeper) RelayCork(c context.Context, msg *types.MsgRelayAxelarCorkReques
 		params.GmpAccount,
 		clienttypes.ZeroHeight(),
 		uint64(ctx.BlockTime().Add(time.Duration(params.TimeoutDuration)).UnixNano()),
+		string(memoBz),
 	)
-	transferMsg.Memo = string(bz)
 	_, err = k.transferKeeper.Transfer(c, transferMsg)
 	if err != nil {
 		return nil, err
@@ -153,7 +154,7 @@ func (k Keeper) RelayProxyUpgrade(c context.Context, msg *types.MsgRelayAxelarPr
 			Recipient: params.ExecutorAccount,
 		},
 	}
-	bz, err := json.Marshal(axelarMemo)
+	memoBz, err := json.Marshal(axelarMemo)
 	if err != nil {
 		return nil, err
 	}
@@ -166,8 +167,8 @@ func (k Keeper) RelayProxyUpgrade(c context.Context, msg *types.MsgRelayAxelarPr
 		params.GmpAccount,
 		clienttypes.ZeroHeight(),
 		uint64(ctx.BlockTime().Add(time.Duration(params.TimeoutDuration)).UnixNano()),
+		string(memoBz),
 	)
-	transferMsg.Memo = string(bz)
 	_, err = k.transferKeeper.Transfer(c, transferMsg)
 	if err != nil {
 		return nil, err
@@ -186,6 +187,7 @@ func (k Keeper) BumpCorkGas(c context.Context, msg *types.MsgBumpAxelarCorkGasRe
 		return nil, types.ErrDisabled
 	}
 
+	memo := msg.MessageId
 	transferMsg := transfertypes.NewMsgTransfer(
 		params.IbcPort,
 		params.IbcChannel,
@@ -194,8 +196,8 @@ func (k Keeper) BumpCorkGas(c context.Context, msg *types.MsgBumpAxelarCorkGasRe
 		params.ExecutorAccount,
 		clienttypes.ZeroHeight(),
 		uint64(ctx.BlockTime().Add(time.Duration(params.TimeoutDuration)).UnixNano()),
+		memo,
 	)
-	transferMsg.Memo = msg.MessageId
 	_, err := k.transferKeeper.Transfer(c, transferMsg)
 	if err != nil {
 		return nil, err

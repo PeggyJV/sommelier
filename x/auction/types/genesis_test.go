@@ -3,8 +3,8 @@ package types
 import (
 	"testing"
 
+	errorsmod "cosmossdk.io/errors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/stretchr/testify/require"
 )
 
@@ -130,7 +130,7 @@ func TestGenesisValidate(t *testing.T) {
 				LastBidId:     uint64(1),
 			},
 			expPass: false,
-			err:     sdkerrors.Wrapf(ErrAuctionIDMustBeNonZero, "id: 0"),
+			err:     errorsmod.Wrapf(ErrAuctionIDMustBeNonZero, "id: 0"),
 		},
 		{
 			name: "Validate basic canary -- Invalid bid",
@@ -180,7 +180,7 @@ func TestGenesisValidate(t *testing.T) {
 				LastBidId:     uint64(1),
 			},
 			expPass: false,
-			err:     sdkerrors.Wrapf(ErrBidIDMustBeNonZero, "id: 0"),
+			err:     errorsmod.Wrapf(ErrBidIDMustBeNonZero, "id: 0"),
 		},
 		{
 			name: "Validate basic canary -- Invalid token price",
@@ -230,7 +230,7 @@ func TestGenesisValidate(t *testing.T) {
 				LastBidId:     uint64(1),
 			},
 			expPass: false,
-			err:     sdkerrors.Wrapf(ErrInvalidTokenPriceDenom, "denom: usdc"),
+			err:     errorsmod.Wrapf(ErrInvalidTokenPriceDenom, "denom: usdc"),
 		},
 	}
 

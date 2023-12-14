@@ -100,7 +100,7 @@ fn compile_protos(out_dir: &Path, tmp_dir: &Path) {
     let mut config = prost_build::Config::default();
     config.out_dir(tmp_dir);
     config
-        .type_attribute(".", "#[derive(serde::Deserialize, serde::Serialize)]")
+        .type_attribute("ScheduledCorkProposal", "#[derive(serde::Deserialize, serde::Serialize)]")
         .compile_protos(&protos, &proto_include_paths)
         .unwrap();
 

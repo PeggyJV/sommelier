@@ -3,9 +3,10 @@ package cli
 import (
 	"fmt"
 
+	"cosmossdk.io/math"
+
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
-	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/peggyjv/sommelier/v7/x/auction/types"
 	"github.com/spf13/cobra"
 )
@@ -77,7 +78,7 @@ func queryActiveAuction() *cobra.Command {
 				return err
 			}
 
-			auctionID, err := sdk.ParseUint(args[0])
+			auctionID, err := math.ParseUint(args[0])
 			if err != nil {
 				return err
 			}
@@ -113,7 +114,7 @@ func queryEndedAuction() *cobra.Command {
 				return err
 			}
 
-			auctionID, err := sdk.ParseUint(args[0])
+			auctionID, err := math.ParseUint(args[0])
 			if err != nil {
 				return err
 			}
@@ -285,12 +286,12 @@ func queryBid() *cobra.Command {
 				return err
 			}
 
-			auctionID, err := sdk.ParseUint(args[0])
+			auctionID, err := math.ParseUint(args[0])
 			if err != nil {
 				return err
 			}
 
-			bidID, err := sdk.ParseUint(args[0])
+			bidID, err := math.ParseUint(args[0])
 			if err != nil {
 				return err
 			}
@@ -327,7 +328,7 @@ func queryBidsByAuction() *cobra.Command {
 				return err
 			}
 
-			auctionID, err := sdk.ParseUint(args[0])
+			auctionID, err := math.ParseUint(args[0])
 			if err != nil {
 				return err
 			}

@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"os"
 
-	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 	corktypes "github.com/peggyjv/sommelier/v7/x/cork/types"
 
 	"github.com/cosmos/cosmos-sdk/client"
@@ -22,8 +21,9 @@ import (
 	"github.com/cosmos/cosmos-sdk/types/tx/signing"
 	sdkTx "github.com/cosmos/cosmos-sdk/x/auth/tx"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
+	govtypesv1beta1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
-	gravitytypes "github.com/peggyjv/gravity-bridge/module/v3/x/gravity/types"
+	gravitytypes "github.com/peggyjv/gravity-bridge/module/v4/x/gravity/types"
 	"github.com/peggyjv/sommelier/v7/app"
 	"github.com/peggyjv/sommelier/v7/app/params"
 	tmrand "github.com/tendermint/tendermint/libs/rand"
@@ -149,14 +149,14 @@ func (c *chain) createAndInitProposerWithMnemonic(mnemonic string) error {
 	hdPath := hd.CreateHDPath(sdk.CoinType, 1, 0)
 
 	// create keys
-	info, kb, err := createMemoryKeyFromMnemonic("proposer", mnemonic, "", hdPath)
+	record, kb, err := createMemoryKeyFromMnemonic("proposer", mnemonic, "", hdPath)
 	if err != nil {
 		return err
 	}
 
 	proposer := proposer{}
 
-	proposer.keyInfo = *info
+	proposer.keyRecord = *record
 	proposer.mnemonic = mnemonic
 	proposer.keyring = kb
 
@@ -186,12 +186,12 @@ func (c *chain) createAndInitOrchestratorsWithMnemonics(mnemonics []string) erro
 		orchestrator := c.createOrchestrator(i)
 
 		// create keys
-		info, kb, err := createMemoryKeyFromMnemonic("orch", mnemonics[i], "", hdPath)
+		record, kb, err := createMemoryKeyFromMnemonic("orch", mnemonics[i], "", hdPath)
 		if err != nil {
 			return err
 		}
 
-		orchestrator.keyInfo = *info
+		orchestrator.keyRecord = *record
 		orchestrator.mnemonic = mnemonics[i]
 		orchestrator.keyring = kb
 
@@ -222,7 +222,7 @@ func (c *chain) clientContext(nodeURI string, kb *keyring.Keyring, fromName stri
 		&stakingtypes.MsgCreateValidator{},
 		&gravitytypes.MsgDelegateKeys{},
 	)
-	interfaceRegistry.RegisterImplementations((*govtypes.Content)(nil),
+	interfaceRegistry.RegisterImplementations((*govtypesv1beta1.Content)(nil),
 		&corktypes.AddManagedCellarIDsProposal{},
 		&corktypes.RemoveManagedCellarIDsProposal{},
 		&corktypes.ScheduledCorkProposal{},
@@ -278,7 +278,6 @@ func (c *chain) sendMsgs(clientCtx client.Context, msgs ...sdk.Msg) (*sdk.TxResp
 		WithSignMode(signing.SignMode_SIGN_MODE_DIRECT)
 
 	fromAddr := clientCtx.GetFromAddress()
-	fromName := clientCtx.GetFromName()
 
 	if err := txf.AccountRetriever().EnsureExists(clientCtx, fromAddr); err != nil {
 		return nil, err
@@ -300,29 +299,24 @@ func (c *chain) sendMsgs(clientCtx client.Context, msgs ...sdk.Msg) (*sdk.TxResp
 		}
 	}
 
-	txf.WithFees("246913560usomm")
+	txf = txf.WithFees("246913560usomm")
 
-	txb, err := tx.BuildUnsignedTx(txf, msgs...)
+	err := tx.GenerateOrBroadcastTxWithFactory(clientCtx, txf, msgs...)
 	if err != nil {
 		return nil, err
 	}
 
-	txb.SetFeeAmount(sdk.Coins{{Denom: "usomm", Amount: sdk.NewInt(feeAmount)}})
-
-	err = tx.Sign(txf, fromName, txb, false)
+	resBytes := []byte{}
+	_, err = clientCtx.Input.Read(resBytes)
 	if err != nil {
 		return nil, err
 	}
 
-	txBytes, err := clientCtx.TxConfig.TxEncoder()(txb.GetTx())
+	var res sdk.TxResponse
+	err = cdc.Unmarshal(resBytes, &res)
 	if err != nil {
 		return nil, err
 	}
 
-	res, err := clientCtx.BroadcastTx(txBytes)
-	if err != nil {
-		return nil, err
-	}
-
-	return res, nil
+	return &res, nil
 }

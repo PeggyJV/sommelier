@@ -7,6 +7,7 @@ import (
 	"net/url"
 	"strings"
 
+	errorsmod "cosmossdk.io/errors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
@@ -107,7 +108,7 @@ func (pi *PublisherIntent) ValidateBasic() error {
 
 		for _, allowedAddress := range pi.AllowedAddresses {
 			if err := ValidateAddress(allowedAddress); err != nil {
-				return sdkerrors.Wrap(sdkerrors.ErrInvalidAddress,
+				return errorsmod.Wrap(sdkerrors.ErrInvalidAddress,
 					fmt.Sprintf("allowed address entry %s is invalid: %s", allowedAddress, err.Error()))
 			}
 		}
@@ -171,7 +172,7 @@ func ValidateAddress(address string) error {
 	}
 
 	if _, err := sdk.AccAddressFromBech32(address); err != nil {
-		return sdkerrors.Wrap(sdkerrors.ErrInvalidAddress, fmt.Sprintf("invalid address: %s", err.Error()))
+		return errorsmod.Wrap(sdkerrors.ErrInvalidAddress, fmt.Sprintf("invalid address: %s", err.Error()))
 	}
 
 	return nil

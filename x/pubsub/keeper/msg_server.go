@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 
+	errorsmod "cosmossdk.io/errors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
@@ -17,22 +18,22 @@ func (k Keeper) AddPublisherIntent(c context.Context, msg *types.MsgAddPublisher
 	publisherIntent := msg.PublisherIntent
 
 	if err := publisherIntent.ValidateBasic(); err != nil {
-		return nil, sdkerrors.Wrapf(types.ErrInvalid, "invalid publisher intent: %s", err.Error())
+		return nil, errorsmod.Wrapf(types.ErrInvalid, "invalid publisher intent: %s", err.Error())
 	}
 
 	publisher, found := k.GetPublisher(ctx, publisherIntent.PublisherDomain)
 	if !found {
-		return nil, sdkerrors.Wrapf(sdkerrors.ErrNotFound, "no publisher found with domain: %s", publisherIntent.PublisherDomain)
+		return nil, errorsmod.Wrapf(sdkerrors.ErrNotFound, "no publisher found with domain: %s", publisherIntent.PublisherDomain)
 	}
 
 	signer := msg.MustGetSigner()
 	if signer.String() != publisher.Address {
-		return nil, sdkerrors.Wrapf(sdkerrors.ErrUnauthorized, "registered publisher address must be signer: %s", publisher.Address)
+		return nil, errorsmod.Wrapf(sdkerrors.ErrUnauthorized, "registered publisher address must be signer: %s", publisher.Address)
 	}
 
 	_, found = k.GetPublisherIntent(ctx, publisherIntent.SubscriptionId, publisherIntent.PublisherDomain)
 	if found {
-		return nil, sdkerrors.Wrapf(types.ErrAlreadyExists, "publisher already has intent for this subscription ID, must be removed first")
+		return nil, errorsmod.Wrapf(types.ErrAlreadyExists, "publisher already has intent for this subscription ID, must be removed first")
 	}
 
 	k.SetPublisherIntent(ctx, *publisherIntent)
@@ -61,7 +62,7 @@ func (k Keeper) AddSubscriberIntent(c context.Context, msg *types.MsgAddSubscrib
 	subscriberIntent := msg.SubscriberIntent
 
 	if err := subscriberIntent.ValidateBasic(); err != nil {
-		return nil, sdkerrors.Wrapf(types.ErrInvalid, "invalid subscriber intent: %s", err.Error())
+		return nil, errorsmod.Wrapf(types.ErrInvalid, "invalid subscriber intent: %s", err.Error())
 	}
 
 	subscriptionID := subscriberIntent.SubscriptionId
@@ -71,28 +72,28 @@ func (k Keeper) AddSubscriberIntent(c context.Context, msg *types.MsgAddSubscrib
 	signer := msg.MustGetSigner()
 	signerAddress := signer.String()
 	if signerAddress != subscriberIntent.SubscriberAddress {
-		return nil, sdkerrors.Wrapf(sdkerrors.ErrUnauthorized, "registered subscriber address must be signer: %s", subscriberIntent.SubscriberAddress)
+		return nil, errorsmod.Wrapf(sdkerrors.ErrUnauthorized, "registered subscriber address must be signer: %s", subscriberIntent.SubscriberAddress)
 	}
 
 	// ValidateBasic will confirm this is already correctly formatted
 	subscriberAccAddress, _ := sdk.AccAddressFromBech32(subscriberIntent.SubscriberAddress)
 	subscriber, found := k.GetSubscriber(ctx, subscriberAccAddress)
 	if !found {
-		return nil, sdkerrors.Wrapf(sdkerrors.ErrNotFound, "no subscriber found with address: %s", subscriberAddress)
+		return nil, errorsmod.Wrapf(sdkerrors.ErrNotFound, "no subscriber found with address: %s", subscriberAddress)
 	}
 
 	_, found = k.GetSubscriberIntent(ctx, subscriberIntent.SubscriptionId, subscriberAccAddress)
 	if found {
-		return nil, sdkerrors.Wrapf(types.ErrAlreadyExists, "subscriber already has intent for this subscription ID, must be removed first")
+		return nil, errorsmod.Wrapf(types.ErrAlreadyExists, "subscriber already has intent for this subscription ID, must be removed first")
 	}
 
 	publisherIntent, found := k.GetPublisherIntent(ctx, subscriptionID, publisherDomain)
 	if !found {
-		return nil, sdkerrors.Wrapf(sdkerrors.ErrNotFound, "no publisher intent for domain %s and subscription ID %s found", publisherDomain, subscriptionID)
+		return nil, errorsmod.Wrapf(sdkerrors.ErrNotFound, "no publisher intent for domain %s and subscription ID %s found", publisherDomain, subscriptionID)
 	}
 
 	if publisherIntent.Method == types.PublishMethod_PUSH && subscriber.PushUrl == "" {
-		return nil, sdkerrors.Wrapf(types.ErrInvalid, "publisher intent for subscription %s requires PushUrl set on subscriber", publisherIntent.SubscriptionId)
+		return nil, errorsmod.Wrapf(types.ErrInvalid, "publisher intent for subscription %s requires PushUrl set on subscriber", publisherIntent.SubscriptionId)
 	}
 
 	if publisherIntent.AllowedSubscribers == types.AllowedSubscribers_VALIDATORS {
@@ -106,7 +107,7 @@ func (k Keeper) AddSubscriberIntent(c context.Context, msg *types.MsgAddSubscrib
 		}
 
 		if validatorI == nil {
-			return nil, sdkerrors.Wrapf(sdkerrors.ErrUnauthorized, "publisher intent requires subscriber be a validator")
+			return nil, errorsmod.Wrapf(sdkerrors.ErrUnauthorized, "publisher intent requires subscriber be a validator")
 		}
 	} else if publisherIntent.AllowedSubscribers == types.AllowedSubscribers_LIST {
 		found := false
@@ -118,7 +119,7 @@ func (k Keeper) AddSubscriberIntent(c context.Context, msg *types.MsgAddSubscrib
 		}
 
 		if !found {
-			return nil, sdkerrors.Wrapf(sdkerrors.ErrUnauthorized, "publisher intent requires subscriber to be in authorized list")
+			return nil, errorsmod.Wrapf(sdkerrors.ErrUnauthorized, "publisher intent requires subscriber to be in authorized list")
 		}
 	}
 
@@ -149,19 +150,19 @@ func (k Keeper) AddSubscriber(c context.Context, msg *types.MsgAddSubscriberRequ
 	subscriber := msg.Subscriber
 
 	if err := subscriber.ValidateBasic(); err != nil {
-		return nil, sdkerrors.Wrapf(types.ErrInvalid, "invalid subscriber: %s", err.Error())
+		return nil, errorsmod.Wrapf(types.ErrInvalid, "invalid subscriber: %s", err.Error())
 	}
 
 	signer := msg.MustGetSigner()
 	if signer.String() != subscriber.Address {
-		return nil, sdkerrors.Wrapf(sdkerrors.ErrUnauthorized, "subscriber address must be signer: %s", subscriber.Address)
+		return nil, errorsmod.Wrapf(sdkerrors.ErrUnauthorized, "subscriber address must be signer: %s", subscriber.Address)
 	}
 
 	// ValidateBasic will confirm this is already correctly formatted
 	subscriberAccAddress, _ := sdk.AccAddressFromBech32(subscriber.Address)
 	_, found := k.GetSubscriber(ctx, subscriberAccAddress)
 	if found {
-		return nil, sdkerrors.Wrapf(types.ErrAlreadyExists, "subscriber already exists, must be removed first")
+		return nil, errorsmod.Wrapf(types.ErrAlreadyExists, "subscriber already exists, must be removed first")
 	}
 
 	k.SetSubscriber(ctx, subscriberAccAddress, *subscriber)
@@ -190,26 +191,26 @@ func (k Keeper) RemovePublisherIntent(c context.Context, msg *types.MsgRemovePub
 	publisherDomain := msg.PublisherDomain
 
 	if err := types.ValidateSubscriptionID(subscriptionID); err != nil {
-		return nil, sdkerrors.Wrapf(types.ErrInvalid, "invalid subscription ID: %s", err.Error())
+		return nil, errorsmod.Wrapf(types.ErrInvalid, "invalid subscription ID: %s", err.Error())
 	}
 
 	if err := types.ValidateDomain(publisherDomain); err != nil {
-		return nil, sdkerrors.Wrapf(types.ErrInvalid, "invalid publisher domain: %s", err.Error())
+		return nil, errorsmod.Wrapf(types.ErrInvalid, "invalid publisher domain: %s", err.Error())
 	}
 
 	publisher, found := k.GetPublisher(ctx, publisherDomain)
 	if !found {
-		return nil, sdkerrors.Wrapf(sdkerrors.ErrNotFound, "no publisher found with domain: %s", publisherDomain)
+		return nil, errorsmod.Wrapf(sdkerrors.ErrNotFound, "no publisher found with domain: %s", publisherDomain)
 	}
 
 	signer := msg.MustGetSigner()
 	if signer.String() != publisher.Address {
-		return nil, sdkerrors.Wrapf(sdkerrors.ErrUnauthorized, "registered publisher address must be signer: %s", publisher.Address)
+		return nil, errorsmod.Wrapf(sdkerrors.ErrUnauthorized, "registered publisher address must be signer: %s", publisher.Address)
 	}
 
 	_, found = k.GetPublisherIntent(ctx, subscriptionID, publisherDomain)
 	if !found {
-		return nil, sdkerrors.Wrapf(sdkerrors.ErrNotFound, "no publisher intent for domain %s and subscription ID %s found", publisherDomain, subscriptionID)
+		return nil, errorsmod.Wrapf(sdkerrors.ErrNotFound, "no publisher intent for domain %s and subscription ID %s found", publisherDomain, subscriptionID)
 	}
 
 	k.DeletePublisherIntent(ctx, subscriptionID, publisherDomain)
@@ -239,28 +240,28 @@ func (k Keeper) RemoveSubscriberIntent(c context.Context, msg *types.MsgRemoveSu
 	subscriberAddress := msg.SubscriberAddress
 
 	if err := types.ValidateSubscriptionID(subscriptionID); err != nil {
-		return nil, sdkerrors.Wrapf(types.ErrInvalid, "invalid subscription ID: %s", err.Error())
+		return nil, errorsmod.Wrapf(types.ErrInvalid, "invalid subscription ID: %s", err.Error())
 	}
 
 	if err := types.ValidateAddress(subscriberAddress); err != nil {
-		return nil, sdkerrors.Wrap(sdkerrors.ErrInvalidAddress, fmt.Sprintf("invalid subscriber address: %s", err.Error()))
+		return nil, errorsmod.Wrap(sdkerrors.ErrInvalidAddress, fmt.Sprintf("invalid subscriber address: %s", err.Error()))
 	}
 
 	// ValidateAddress will confirm this is already correctly formatted
 	subscriberAccAddress, _ := sdk.AccAddressFromBech32(subscriberAddress)
 	subscriber, found := k.GetSubscriber(ctx, subscriberAccAddress)
 	if !found {
-		return nil, sdkerrors.Wrapf(sdkerrors.ErrNotFound, "no subscriber found with address: %s", subscriberAddress)
+		return nil, errorsmod.Wrapf(sdkerrors.ErrNotFound, "no subscriber found with address: %s", subscriberAddress)
 	}
 
 	signer := msg.MustGetSigner()
 	if signer.String() != subscriber.Address {
-		return nil, sdkerrors.Wrapf(sdkerrors.ErrUnauthorized, "registered subscriber address must be signer: %s", subscriber.Address)
+		return nil, errorsmod.Wrapf(sdkerrors.ErrUnauthorized, "registered subscriber address must be signer: %s", subscriber.Address)
 	}
 
 	subscriberIntent, found := k.GetSubscriberIntent(ctx, subscriptionID, subscriberAccAddress)
 	if !found {
-		return nil, sdkerrors.Wrapf(sdkerrors.ErrNotFound, "no subscriber intent for address %s and subscription ID %s found", subscriberAddress, subscriptionID)
+		return nil, errorsmod.Wrapf(sdkerrors.ErrNotFound, "no subscriber intent for address %s and subscription ID %s found", subscriberAddress, subscriptionID)
 	}
 
 	k.DeleteSubscriberIntent(ctx, subscriptionID, subscriberAccAddress, subscriberIntent.PublisherDomain)
@@ -290,19 +291,19 @@ func (k Keeper) RemoveSubscriber(c context.Context, msg *types.MsgRemoveSubscrib
 	subscriberAddress := msg.SubscriberAddress
 
 	if err := types.ValidateAddress(subscriberAddress); err != nil {
-		return nil, sdkerrors.Wrap(sdkerrors.ErrInvalidAddress, fmt.Sprintf("invalid subscriber address: %s", err.Error()))
+		return nil, errorsmod.Wrap(sdkerrors.ErrInvalidAddress, fmt.Sprintf("invalid subscriber address: %s", err.Error()))
 	}
 
 	signer := msg.MustGetSigner()
 	if signer.String() != subscriberAddress {
-		return nil, sdkerrors.Wrapf(sdkerrors.ErrUnauthorized, "registered subscriber address must be signer: %s", subscriberAddress)
+		return nil, errorsmod.Wrapf(sdkerrors.ErrUnauthorized, "registered subscriber address must be signer: %s", subscriberAddress)
 	}
 
 	// ValidateAddress will confirm this is already correctly formatted
 	subscriberAccAddress, _ := sdk.AccAddressFromBech32(subscriberAddress)
 	_, found := k.GetSubscriber(ctx, subscriberAccAddress)
 	if !found {
-		return nil, sdkerrors.Wrapf(sdkerrors.ErrNotFound, "no subscriber found with address: %s", subscriberAddress)
+		return nil, errorsmod.Wrapf(sdkerrors.ErrNotFound, "no subscriber found with address: %s", subscriberAddress)
 	}
 
 	k.DeleteSubscriber(ctx, subscriberAccAddress)
@@ -330,17 +331,17 @@ func (k Keeper) RemovePublisher(c context.Context, msg *types.MsgRemovePublisher
 	publisherDomain := msg.PublisherDomain
 
 	if err := types.ValidateDomain(publisherDomain); err != nil {
-		return nil, sdkerrors.Wrapf(types.ErrInvalid, "invalid publisher domain: %s", err.Error())
+		return nil, errorsmod.Wrapf(types.ErrInvalid, "invalid publisher domain: %s", err.Error())
 	}
 
 	publisher, found := k.GetPublisher(ctx, publisherDomain)
 	if !found {
-		return nil, sdkerrors.Wrapf(sdkerrors.ErrNotFound, "no publisher found with domain: %s", publisherDomain)
+		return nil, errorsmod.Wrapf(sdkerrors.ErrNotFound, "no publisher found with domain: %s", publisherDomain)
 	}
 
 	signer := msg.MustGetSigner()
 	if signer.String() != publisher.Address {
-		return nil, sdkerrors.Wrapf(sdkerrors.ErrUnauthorized, "registered publisher address must be signer: %s", publisher.Address)
+		return nil, errorsmod.Wrapf(sdkerrors.ErrUnauthorized, "registered publisher address must be signer: %s", publisher.Address)
 	}
 
 	k.DeletePublisher(ctx, publisherDomain)

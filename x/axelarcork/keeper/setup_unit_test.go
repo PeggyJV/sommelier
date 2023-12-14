@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"github.com/peggyjv/sommelier/v7/x/axelarcork/tests/mocks"
+	"github.com/peggyjv/sommelier/v7/x/axelarcork/types"
 
 	"github.com/cosmos/cosmos-sdk/codec"
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
@@ -12,17 +13,14 @@ import (
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	paramskeeper "github.com/cosmos/cosmos-sdk/x/params/keeper"
-
-	"github.com/golang/mock/gomock"
-
-	"github.com/peggyjv/sommelier/v7/x/axelarcork/types"
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
-
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 	"github.com/tendermint/tendermint/libs/log"
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
 	tmdb "github.com/tendermint/tm-db"
+
+	"github.com/golang/mock/gomock"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 type mocksForCork struct {
@@ -38,15 +36,15 @@ func setupCorkKeeper(t *testing.T) (
 
 	// Mount the KV store with the x/cork store key
 	storeKey := sdk.NewKVStoreKey(types.StoreKey)
-	commitMultiStore.MountStoreWithDB(storeKey, sdk.StoreTypeIAVL, db)
+	commitMultiStore.MountStoreWithDB(storeKey, storetypes.StoreTypeIAVL, db)
 
 	// Mount Transient store
 	transientStoreKey := sdk.NewTransientStoreKey("transient" + types.StoreKey)
-	commitMultiStore.MountStoreWithDB(transientStoreKey, sdk.StoreTypeTransient, nil)
+	commitMultiStore.MountStoreWithDB(transientStoreKey, storetypes.StoreTypeTransient, nil)
 
 	// Mount Memory store
 	memStoreKey := storetypes.NewMemoryStoreKey("mem" + types.StoreKey)
-	commitMultiStore.MountStoreWithDB(memStoreKey, sdk.StoreTypeMemory, nil)
+	commitMultiStore.MountStoreWithDB(memStoreKey, storetypes.StoreTypeMemory, nil)
 
 	require.NoError(t, commitMultiStore.LoadLatestVersion())
 	protoCodec := codec.NewProtoCodec(codectypes.NewInterfaceRegistry())
@@ -86,7 +84,7 @@ func setupCorkKeeper(t *testing.T) (
 
 func initParamsKeeper(
 	appCodec codec.BinaryCodec, legacyAmino *codec.LegacyAmino,
-	key sdk.StoreKey, tkey sdk.StoreKey,
+	key storetypes.StoreKey, tkey storetypes.StoreKey,
 ) paramskeeper.Keeper {
 	paramsKeeper := paramskeeper.NewKeeper(appCodec, legacyAmino, key, tkey)
 	paramsKeeper.Subspace(types.ModuleName)

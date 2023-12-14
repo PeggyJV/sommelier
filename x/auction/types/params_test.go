@@ -3,8 +3,8 @@ package types
 import (
 	"testing"
 
+	errorsmod "cosmossdk.io/errors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/stretchr/testify/require"
 )
 
@@ -41,7 +41,7 @@ func TestParamsValidate(t *testing.T) {
 				AuctionPriceDecreaseAccelerationRate: sdk.MustNewDecFromStr("0.1"),
 			},
 			expPass: false,
-			err:     sdkerrors.Wrapf(ErrTokenPriceMaxBlockAgeMustBePositive, "value: 0"),
+			err:     errorsmod.Wrapf(ErrTokenPriceMaxBlockAgeMustBePositive, "value: 0"),
 		},
 		{
 			name: "Auction price decrease acceleration rate bounds check lower end",
@@ -52,7 +52,7 @@ func TestParamsValidate(t *testing.T) {
 				AuctionPriceDecreaseAccelerationRate: sdk.MustNewDecFromStr("-0.01"),
 			},
 			expPass: false,
-			err:     sdkerrors.Wrapf(ErrInvalidAuctionPriceDecreaseAccelerationRateParam, "auction price decrease acceleration rate must be between 0 and 1 inclusive (0%% to 100%%)"),
+			err:     errorsmod.Wrapf(ErrInvalidAuctionPriceDecreaseAccelerationRateParam, "auction price decrease acceleration rate must be between 0 and 1 inclusive (0%% to 100%%)"),
 		},
 		{
 			name: "Auction price decrease acceleration rate bounds check upper end",
@@ -63,7 +63,7 @@ func TestParamsValidate(t *testing.T) {
 				AuctionPriceDecreaseAccelerationRate: sdk.MustNewDecFromStr("1.1"),
 			},
 			expPass: false,
-			err:     sdkerrors.Wrapf(ErrInvalidAuctionPriceDecreaseAccelerationRateParam, "auction price decrease acceleration rate must be between 0 and 1 inclusive (0%% to 100%%)"),
+			err:     errorsmod.Wrapf(ErrInvalidAuctionPriceDecreaseAccelerationRateParam, "auction price decrease acceleration rate must be between 0 and 1 inclusive (0%% to 100%%)"),
 		},
 	}
 

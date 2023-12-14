@@ -1,4 +1,4 @@
-#[derive(serde::Deserialize, serde::Serialize, Clone, PartialEq, ::prost::Message)]
+#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct Auction {
     #[prost(uint32, tag = "1")]
     pub id: u32,
@@ -26,7 +26,7 @@ pub struct Auction {
     #[prost(string, tag = "12")]
     pub proceeds_module_account: ::prost::alloc::string::String,
 }
-#[derive(serde::Deserialize, serde::Serialize, Clone, PartialEq, ::prost::Message)]
+#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct Bid {
     #[prost(uint64, tag = "1")]
     pub id: u64,
@@ -50,7 +50,7 @@ pub struct Bid {
     pub block_height: u64,
 }
 /// USD price is the value for one non-fractional token (smallest unit of the token * 10^exponent)
-#[derive(serde::Deserialize, serde::Serialize, Clone, PartialEq, ::prost::Message)]
+#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct TokenPrice {
     #[prost(string, tag = "1")]
     pub denom: ::prost::alloc::string::String,
@@ -61,7 +61,7 @@ pub struct TokenPrice {
     #[prost(uint64, tag = "4")]
     pub last_updated_block: u64,
 }
-#[derive(serde::Deserialize, serde::Serialize, Clone, PartialEq, ::prost::Message)]
+#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct ProposedTokenPrice {
     #[prost(string, tag = "1")]
     pub denom: ::prost::alloc::string::String,
@@ -70,7 +70,7 @@ pub struct ProposedTokenPrice {
     #[prost(string, tag = "3")]
     pub usd_price: ::prost::alloc::string::String,
 }
-#[derive(serde::Deserialize, serde::Serialize, Clone, PartialEq, ::prost::Message)]
+#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct MsgSubmitBidRequest {
     #[prost(uint32, tag = "1")]
     pub auction_id: u32,
@@ -82,7 +82,7 @@ pub struct MsgSubmitBidRequest {
     pub sale_token_minimum_amount:
         ::core::option::Option<cosmos_sdk_proto::cosmos::base::v1beta1::Coin>,
 }
-#[derive(serde::Deserialize, serde::Serialize, Clone, PartialEq, ::prost::Message)]
+#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct MsgSubmitBidResponse {
     #[prost(message, optional, tag = "1")]
     pub bid: ::core::option::Option<Bid>,
@@ -148,7 +148,7 @@ pub mod msg_client {
         }
     }
 }
-#[derive(serde::Deserialize, serde::Serialize, Clone, PartialEq, ::prost::Message)]
+#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct GenesisState {
     #[prost(message, optional, tag = "1")]
     pub params: ::core::option::Option<Params>,
@@ -163,7 +163,7 @@ pub struct GenesisState {
     #[prost(uint64, tag = "6")]
     pub last_bid_id: u64,
 }
-#[derive(serde::Deserialize, serde::Serialize, Clone, PartialEq, ::prost::Message)]
+#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct Params {
     #[prost(uint64, tag = "1")]
     pub price_max_block_age: u64,
@@ -176,46 +176,46 @@ pub struct Params {
     #[prost(string, tag = "5")]
     pub auction_price_decrease_acceleration_rate: ::prost::alloc::string::String,
 }
-#[derive(serde::Deserialize, serde::Serialize, Clone, PartialEq, ::prost::Message)]
+#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct QueryParamsRequest {}
-#[derive(serde::Deserialize, serde::Serialize, Clone, PartialEq, ::prost::Message)]
+#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct QueryParamsResponse {
     #[prost(message, optional, tag = "1")]
     pub params: ::core::option::Option<Params>,
 }
-#[derive(serde::Deserialize, serde::Serialize, Clone, PartialEq, ::prost::Message)]
+#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct QueryActiveAuctionRequest {
     #[prost(uint32, tag = "1")]
     pub auction_id: u32,
 }
-#[derive(serde::Deserialize, serde::Serialize, Clone, PartialEq, ::prost::Message)]
+#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct QueryActiveAuctionResponse {
     #[prost(message, optional, tag = "1")]
     pub auction: ::core::option::Option<Auction>,
 }
-#[derive(serde::Deserialize, serde::Serialize, Clone, PartialEq, ::prost::Message)]
+#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct QueryEndedAuctionRequest {
     #[prost(uint32, tag = "1")]
     pub auction_id: u32,
 }
-#[derive(serde::Deserialize, serde::Serialize, Clone, PartialEq, ::prost::Message)]
+#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct QueryEndedAuctionResponse {
     #[prost(message, optional, tag = "1")]
     pub auction: ::core::option::Option<Auction>,
 }
-#[derive(serde::Deserialize, serde::Serialize, Clone, PartialEq, ::prost::Message)]
+#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct QueryActiveAuctionsRequest {}
-#[derive(serde::Deserialize, serde::Serialize, Clone, PartialEq, ::prost::Message)]
+#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct QueryActiveAuctionsResponse {
     #[prost(message, repeated, tag = "1")]
     pub auctions: ::prost::alloc::vec::Vec<Auction>,
 }
-#[derive(serde::Deserialize, serde::Serialize, Clone, PartialEq, ::prost::Message)]
+#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct QueryEndedAuctionsRequest {
     #[prost(message, optional, tag = "1")]
     pub pagination: ::core::option::Option<cosmos_sdk_proto::cosmos::base::query::v1beta1::PageRequest>,
 }
-#[derive(serde::Deserialize, serde::Serialize, Clone, PartialEq, ::prost::Message)]
+#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct QueryEndedAuctionsResponse {
     #[prost(message, repeated, tag = "1")]
     pub auctions: ::prost::alloc::vec::Vec<Auction>,
@@ -223,26 +223,26 @@ pub struct QueryEndedAuctionsResponse {
     pub pagination:
         ::core::option::Option<cosmos_sdk_proto::cosmos::base::query::v1beta1::PageResponse>,
 }
-#[derive(serde::Deserialize, serde::Serialize, Clone, PartialEq, ::prost::Message)]
+#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct QueryBidRequest {
     #[prost(uint64, tag = "1")]
     pub bid_id: u64,
     #[prost(uint32, tag = "2")]
     pub auction_id: u32,
 }
-#[derive(serde::Deserialize, serde::Serialize, Clone, PartialEq, ::prost::Message)]
+#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct QueryBidResponse {
     #[prost(message, optional, tag = "1")]
     pub bid: ::core::option::Option<Bid>,
 }
-#[derive(serde::Deserialize, serde::Serialize, Clone, PartialEq, ::prost::Message)]
+#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct QueryBidsByAuctionRequest {
     #[prost(uint32, tag = "1")]
     pub auction_id: u32,
     #[prost(message, optional, tag = "2")]
     pub pagination: ::core::option::Option<cosmos_sdk_proto::cosmos::base::query::v1beta1::PageRequest>,
 }
-#[derive(serde::Deserialize, serde::Serialize, Clone, PartialEq, ::prost::Message)]
+#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct QueryBidsByAuctionResponse {
     #[prost(message, repeated, tag = "1")]
     pub bids: ::prost::alloc::vec::Vec<Bid>,
@@ -396,7 +396,7 @@ pub mod query_client {
         }
     }
 }
-#[derive(serde::Deserialize, serde::Serialize, Clone, PartialEq, ::prost::Message)]
+#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct SetTokenPricesProposal {
     #[prost(string, tag = "1")]
     pub title: ::prost::alloc::string::String,
@@ -405,7 +405,7 @@ pub struct SetTokenPricesProposal {
     #[prost(message, repeated, tag = "3")]
     pub token_prices: ::prost::alloc::vec::Vec<ProposedTokenPrice>,
 }
-#[derive(serde::Deserialize, serde::Serialize, Clone, PartialEq, ::prost::Message)]
+#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct SetTokenPricesProposalWithDeposit {
     #[prost(string, tag = "1")]
     pub title: ::prost::alloc::string::String,

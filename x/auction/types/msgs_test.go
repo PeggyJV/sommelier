@@ -3,6 +3,7 @@ package types
 import (
 	"testing"
 
+	errorsmod "cosmossdk.io/errors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/stretchr/testify/require"
@@ -50,7 +51,7 @@ func TestMsgValidate(t *testing.T) {
 				Signer:                 cosmosAddress1,
 			},
 			expPass: false,
-			err:     sdkerrors.Wrapf(ErrAuctionIDMustBeNonZero, "id: 0"),
+			err:     errorsmod.Wrapf(ErrAuctionIDMustBeNonZero, "id: 0"),
 		},
 		{
 			name: "Bid must be in usomm",
@@ -61,7 +62,7 @@ func TestMsgValidate(t *testing.T) {
 				Signer:                 cosmosAddress1,
 			},
 			expPass: false,
-			err:     sdkerrors.Wrapf(ErrBidMustBeInUsomm, "bid: %s", sdk.NewCoin("usdc", sdk.NewInt(200))),
+			err:     errorsmod.Wrapf(ErrBidMustBeInUsomm, "bid: %s", sdk.NewCoin("usdc", sdk.NewInt(200))),
 		},
 		{
 			name: "Bid must be positive",
@@ -72,7 +73,7 @@ func TestMsgValidate(t *testing.T) {
 				Signer:                 cosmosAddress1,
 			},
 			expPass: false,
-			err:     sdkerrors.Wrapf(ErrBidAmountMustBePositive, "bid amount in usomm: %s", sdk.NewCoin("usomm", sdk.NewInt(0))),
+			err:     errorsmod.Wrapf(ErrBidAmountMustBePositive, "bid amount in usomm: %s", sdk.NewCoin("usomm", sdk.NewInt(0))),
 		},
 		{
 			name: "Sale token must be prefixed with gravity0x",
@@ -83,7 +84,7 @@ func TestMsgValidate(t *testing.T) {
 				Signer:                 cosmosAddress1,
 			},
 			expPass: false,
-			err:     sdkerrors.Wrapf(ErrInvalidTokenBeingBidOn, "sale token: %s", sdk.NewCoin("usdc", sdk.NewInt(1))),
+			err:     errorsmod.Wrapf(ErrInvalidTokenBeingBidOn, "sale token: %s", sdk.NewCoin("usdc", sdk.NewInt(1))),
 		},
 		{
 			name: "Sale token minimum amount must be positive",
@@ -94,7 +95,7 @@ func TestMsgValidate(t *testing.T) {
 				Signer:                 cosmosAddress1,
 			},
 			expPass: false,
-			err:     sdkerrors.Wrapf(ErrMinimumAmountMustBePositive, "sale token amount: %s", sdk.NewCoin("gravity0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48", sdk.NewInt(0))),
+			err:     errorsmod.Wrapf(ErrMinimumAmountMustBePositive, "sale token amount: %s", sdk.NewCoin("gravity0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48", sdk.NewInt(0))),
 		},
 		{
 			name: "Signer address must be in bech32 format",
@@ -105,7 +106,7 @@ func TestMsgValidate(t *testing.T) {
 				Signer:                 "zoidberg",
 			},
 			expPass: false,
-			err:     sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "decoding bech32 failed: invalid separator index -1"),
+			err:     errorsmod.Wrapf(sdkerrors.ErrInvalidAddress, "decoding bech32 failed: invalid separator index -1"),
 		},
 	}
 

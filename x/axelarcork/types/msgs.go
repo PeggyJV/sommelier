@@ -3,6 +3,7 @@ package types
 import (
 	"fmt"
 
+	errorsmod "cosmossdk.io/errors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/ethereum/go-ethereum/common"
@@ -47,7 +48,7 @@ func (m *MsgScheduleAxelarCorkRequest) Type() string { return TypeMsgScheduleCor
 // ValidateBasic implements sdk.Msg
 func (m *MsgScheduleAxelarCorkRequest) ValidateBasic() error {
 	if _, err := sdk.AccAddressFromBech32(m.Signer); err != nil {
-		return sdkerrors.Wrap(sdkerrors.ErrInvalidAddress, err.Error())
+		return errorsmod.Wrap(sdkerrors.ErrInvalidAddress, err.Error())
 	}
 
 	return m.Cork.ValidateBasic()
@@ -85,7 +86,7 @@ func (m *MsgRelayAxelarCorkRequest) Type() string { return TypeMsgRelayCorkReque
 // ValidateBasic implements sdk.Msg
 func (m *MsgRelayAxelarCorkRequest) ValidateBasic() error {
 	if _, err := sdk.AccAddressFromBech32(m.Signer); err != nil {
-		return sdkerrors.Wrap(sdkerrors.ErrInvalidAddress, err.Error())
+		return errorsmod.Wrap(sdkerrors.ErrInvalidAddress, err.Error())
 	}
 
 	if m.TargetContractAddress == "" {
@@ -129,7 +130,7 @@ func (m *MsgRelayAxelarProxyUpgradeRequest) Type() string {
 // ValidateBasic implements sdk.Msg
 func (m *MsgRelayAxelarProxyUpgradeRequest) ValidateBasic() error {
 	if _, err := sdk.AccAddressFromBech32(m.Signer); err != nil {
-		return sdkerrors.Wrap(sdkerrors.ErrInvalidAddress, err.Error())
+		return errorsmod.Wrap(sdkerrors.ErrInvalidAddress, err.Error())
 	}
 
 	return nil
@@ -167,7 +168,7 @@ func (m *MsgBumpAxelarCorkGasRequest) Type() string { return TypeMsgBumpCorkGasR
 // ValidateBasic implements sdk.Msg
 func (m *MsgBumpAxelarCorkGasRequest) ValidateBasic() error {
 	if _, err := sdk.AccAddressFromBech32(m.Signer); err != nil {
-		return sdkerrors.Wrap(sdkerrors.ErrInvalidAddress, err.Error())
+		return errorsmod.Wrap(sdkerrors.ErrInvalidAddress, err.Error())
 	}
 
 	return nil
@@ -205,7 +206,7 @@ func (m *MsgCancelAxelarCorkRequest) Type() string { return TypeMsgBumpCorkGasRe
 // ValidateBasic implements sdk.Msg
 func (m *MsgCancelAxelarCorkRequest) ValidateBasic() error {
 	if _, err := sdk.AccAddressFromBech32(m.Signer); err != nil {
-		return sdkerrors.Wrap(sdkerrors.ErrInvalidAddress, err.Error())
+		return errorsmod.Wrap(sdkerrors.ErrInvalidAddress, err.Error())
 	}
 
 	return nil

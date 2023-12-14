@@ -8,14 +8,16 @@ import (
 	context "context"
 	reflect "reflect"
 
+	math "cosmossdk.io/math"
 	types "github.com/cosmos/cosmos-sdk/types"
 	types0 "github.com/cosmos/cosmos-sdk/x/auth/types"
 	types1 "github.com/cosmos/cosmos-sdk/x/capability/types"
 	types2 "github.com/cosmos/cosmos-sdk/x/distribution/types"
 	types3 "github.com/cosmos/cosmos-sdk/x/staking/types"
-	types4 "github.com/cosmos/ibc-go/v3/modules/apps/transfer/types"
-	types5 "github.com/cosmos/ibc-go/v3/modules/core/04-channel/types"
-	exported "github.com/cosmos/ibc-go/v3/modules/core/exported"
+	types4 "github.com/cosmos/ibc-go/v6/modules/apps/transfer/types"
+	types5 "github.com/cosmos/ibc-go/v6/modules/core/02-client/types"
+	types6 "github.com/cosmos/ibc-go/v6/modules/core/04-channel/types"
+	exported "github.com/cosmos/ibc-go/v6/modules/core/exported"
 	gomock "github.com/golang/mock/gomock"
 )
 
@@ -119,18 +121,34 @@ func (m *MockICS4Wrapper) EXPECT() *MockICS4WrapperMockRecorder {
 	return m.recorder
 }
 
-// SendPacket mocks base method.
-func (m *MockICS4Wrapper) SendPacket(ctx types.Context, channelCap *types1.Capability, packet exported.PacketI) error {
+// GetAppVersion mocks base method.
+func (m *MockICS4Wrapper) GetAppVersion(ctx types.Context, portID, channelID string) (string, bool) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "SendPacket", ctx, channelCap, packet)
-	ret0, _ := ret[0].(error)
-	return ret0
+	ret := m.ctrl.Call(m, "GetAppVersion", ctx, portID, channelID)
+	ret0, _ := ret[0].(string)
+	ret1, _ := ret[1].(bool)
+	return ret0, ret1
+}
+
+// GetAppVersion indicates an expected call of GetAppVersion.
+func (mr *MockICS4WrapperMockRecorder) GetAppVersion(ctx, portID, channelID interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetAppVersion", reflect.TypeOf((*MockICS4Wrapper)(nil).GetAppVersion), ctx, portID, channelID)
+}
+
+// SendPacket mocks base method.
+func (m *MockICS4Wrapper) SendPacket(ctx types.Context, chanCap *types1.Capability, sourcePort, sourceChannel string, timeoutHeight types5.Height, timeoutTimestamp uint64, data []byte) (uint64, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "SendPacket", ctx, chanCap, sourcePort, sourceChannel, timeoutHeight, timeoutTimestamp, data)
+	ret0, _ := ret[0].(uint64)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
 }
 
 // SendPacket indicates an expected call of SendPacket.
-func (mr *MockICS4WrapperMockRecorder) SendPacket(ctx, channelCap, packet interface{}) *gomock.Call {
+func (mr *MockICS4WrapperMockRecorder) SendPacket(ctx, chanCap, sourcePort, sourceChannel, timeoutHeight, timeoutTimestamp, data interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SendPacket", reflect.TypeOf((*MockICS4Wrapper)(nil).SendPacket), ctx, channelCap, packet)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SendPacket", reflect.TypeOf((*MockICS4Wrapper)(nil).SendPacket), ctx, chanCap, sourcePort, sourceChannel, timeoutHeight, timeoutTimestamp, data)
 }
 
 // WriteAcknowledgement mocks base method.
@@ -171,10 +189,10 @@ func (m *MockChannelKeeper) EXPECT() *MockChannelKeeperMockRecorder {
 }
 
 // GetChannel mocks base method.
-func (m *MockChannelKeeper) GetChannel(ctx types.Context, portID, channelID string) (types5.Channel, bool) {
+func (m *MockChannelKeeper) GetChannel(ctx types.Context, portID, channelID string) (types6.Channel, bool) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetChannel", ctx, portID, channelID)
-	ret0, _ := ret[0].(types5.Channel)
+	ret0, _ := ret[0].(types6.Channel)
 	ret1, _ := ret[1].(bool)
 	return ret0, ret1
 }
@@ -329,9 +347,11 @@ func (mr *MockStakingKeeperMockRecorder) PowerReduction(ctx interface{}) *gomock
 }
 
 // Slash mocks base method.
-func (m *MockStakingKeeper) Slash(arg0 types.Context, arg1 types.ConsAddress, arg2, arg3 int64, arg4 types.Dec) {
+func (m *MockStakingKeeper) Slash(arg0 types.Context, arg1 types.ConsAddress, arg2, arg3 int64, arg4 types.Dec) math.Int {
 	m.ctrl.T.Helper()
-	m.ctrl.Call(m, "Slash", arg0, arg1, arg2, arg3, arg4)
+	ret := m.ctrl.Call(m, "Slash", arg0, arg1, arg2, arg3, arg4)
+	ret0, _ := ret[0].(math.Int)
+	return ret0
 }
 
 // Slash indicates an expected call of Slash.

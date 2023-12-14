@@ -4,7 +4,7 @@ import (
 	fmt "fmt"
 	"net/url"
 
-	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
+	govtypesv1beta1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
 )
 
 const (
@@ -14,10 +14,31 @@ const (
 	ProposalTypeRemoveDefaultSubscription = "RemoveDefaultSubscription"
 )
 
-var _ govtypes.Content = &AddPublisherProposal{}
-var _ govtypes.Content = &RemovePublisherProposal{}
-var _ govtypes.Content = &AddDefaultSubscriptionProposal{}
-var _ govtypes.Content = &RemoveDefaultSubscriptionProposal{}
+var _ govtypesv1beta1.Content = &AddPublisherProposal{}
+var _ govtypesv1beta1.Content = &RemovePublisherProposal{}
+var _ govtypesv1beta1.Content = &AddDefaultSubscriptionProposal{}
+var _ govtypesv1beta1.Content = &RemoveDefaultSubscriptionProposal{}
+
+func init() {
+	// The RegisterProposalTypeCodec function was mysteriously removed by in 0.46.0 even though
+	// the claim was that the old API would be preserved in .../x/gov/types/v1beta1 so we have
+	// to interact with the codec directly.
+	//
+	// The PR that removed it: https://github.com/cosmos/cosmos-sdk/pull/11240
+	// This PR was later reverted, but RegisterProposalTypeCodec was still left out. Not sure if
+	// this was intentional or not.
+	govtypesv1beta1.RegisterProposalType(ProposalTypeAddPublisher)
+	govtypesv1beta1.ModuleCdc.RegisterConcrete(&AddPublisherProposal{}, "sommelier/AddPublisherProposal", nil)
+
+	govtypesv1beta1.RegisterProposalType(ProposalTypeRemovePublisher)
+	govtypesv1beta1.ModuleCdc.RegisterConcrete(&RemovePublisherProposal{}, "sommelier/RemovePublisherProposal", nil)
+
+	govtypesv1beta1.RegisterProposalType(ProposalTypeAddDefaultSubscription)
+	govtypesv1beta1.ModuleCdc.RegisterConcrete(&AddDefaultSubscriptionProposal{}, "sommelier/AddDefaultSubscriptionProposal", nil)
+
+	govtypesv1beta1.RegisterProposalType(ProposalTypeRemoveDefaultSubscription)
+	govtypesv1beta1.ModuleCdc.RegisterConcrete(&RemoveDefaultSubscriptionProposal{}, "sommelier/RemoveDefaultSubscriptionProposal", nil)
+}
 
 //////////////////////////
 // AddPublisherProposal //
@@ -43,7 +64,7 @@ func (p *AddPublisherProposal) ProposalType() string {
 }
 
 func (p *AddPublisherProposal) ValidateBasic() error {
-	if err := govtypes.ValidateAbstract(p); err != nil {
+	if err := govtypesv1beta1.ValidateAbstract(p); err != nil {
 		return err
 	}
 
@@ -114,7 +135,7 @@ func (p *RemovePublisherProposal) ProposalType() string {
 }
 
 func (p *RemovePublisherProposal) ValidateBasic() error {
-	if err := govtypes.ValidateAbstract(p); err != nil {
+	if err := govtypesv1beta1.ValidateAbstract(p); err != nil {
 		return err
 	}
 
@@ -143,7 +164,7 @@ func (p *AddDefaultSubscriptionProposal) ProposalType() string {
 }
 
 func (p *AddDefaultSubscriptionProposal) ValidateBasic() error {
-	if err := govtypes.ValidateAbstract(p); err != nil {
+	if err := govtypesv1beta1.ValidateAbstract(p); err != nil {
 		return err
 	}
 
@@ -176,7 +197,7 @@ func (p *RemoveDefaultSubscriptionProposal) ProposalType() string {
 }
 
 func (p *RemoveDefaultSubscriptionProposal) ValidateBasic() error {
-	if err := govtypes.ValidateAbstract(p); err != nil {
+	if err := govtypesv1beta1.ValidateAbstract(p); err != nil {
 		return err
 	}
 

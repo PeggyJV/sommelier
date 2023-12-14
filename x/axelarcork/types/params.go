@@ -5,7 +5,7 @@ import (
 	"fmt"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	host "github.com/cosmos/ibc-go/v3/modules/core/24-host"
+	host "github.com/cosmos/ibc-go/v6/modules/core/24-host"
 	"github.com/ethereum/go-ethereum/common"
 
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"

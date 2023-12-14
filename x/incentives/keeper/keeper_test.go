@@ -97,6 +97,6 @@ func (suite *KeeperTestSuite) TestGetAPY() {
 		DistributionPerBlock:   distributionPerBlock,
 		IncentivesCutoffHeight: 1000,
 	})
-	expected := distributionPerBlock.Amount.Mul(sdk.NewInt(int64(blocksPerYear))).ToDec().Quo(stakingTotalSupply.ToDec().Mul(bondedRatio))
+	expected := sdk.NewDecFromInt(distributionPerBlock.Amount.Mul(sdk.NewInt(int64(blocksPerYear)))).Quo(sdk.NewDecFromInt(stakingTotalSupply).Mul(bondedRatio))
 	require.Equal(expected, incentivesKeeper.GetAPY(ctx))
 }

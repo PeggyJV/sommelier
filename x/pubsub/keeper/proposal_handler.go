@@ -1,6 +1,7 @@
 package keeper
 
 import (
+	errorsmod "cosmossdk.io/errors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/peggyjv/sommelier/v7/x/pubsub/types"
@@ -10,7 +11,7 @@ import (
 func HandleAddPublisherProposal(ctx sdk.Context, k Keeper, p types.AddPublisherProposal) error {
 	_, found := k.GetPublisher(ctx, p.Domain)
 	if found {
-		return sdkerrors.Wrapf(types.ErrAlreadyExists, "publisher already exists with domain: %s", p.Domain)
+		return errorsmod.Wrapf(types.ErrAlreadyExists, "publisher already exists with domain: %s", p.Domain)
 	}
 
 	publisher := types.Publisher{
@@ -28,7 +29,7 @@ func HandleAddPublisherProposal(ctx sdk.Context, k Keeper, p types.AddPublisherP
 func HandleRemovePublisherProposal(ctx sdk.Context, k Keeper, p types.RemovePublisherProposal) error {
 	_, found := k.GetPublisher(ctx, p.Domain)
 	if !found {
-		return sdkerrors.Wrapf(sdkerrors.ErrNotFound, "no publisher found with domain: %s", p.Domain)
+		return errorsmod.Wrapf(sdkerrors.ErrNotFound, "no publisher found with domain: %s", p.Domain)
 	}
 
 	k.DeletePublisher(ctx, p.Domain)
@@ -50,7 +51,7 @@ func HandleAddDefaultSubscriptionProposal(ctx sdk.Context, k Keeper, p types.Add
 func HandleRemoveDefaultSubscriptionProposal(ctx sdk.Context, k Keeper, p types.RemoveDefaultSubscriptionProposal) error {
 	_, found := k.GetDefaultSubscription(ctx, p.SubscriptionId)
 	if !found {
-		return sdkerrors.Wrapf(sdkerrors.ErrNotFound, "no default subscription found with id: %s", p.SubscriptionId)
+		return errorsmod.Wrapf(sdkerrors.ErrNotFound, "no default subscription found with id: %s", p.SubscriptionId)
 	}
 
 	k.DeleteDefaultSubscription(ctx, p.SubscriptionId)

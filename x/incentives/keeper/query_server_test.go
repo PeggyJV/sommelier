@@ -34,6 +34,6 @@ func (suite *KeeperTestSuite) TestQueriesHappyPath() {
 
 	APYResult, err := incentivesKeeper.QueryAPY(sdk.WrapSDKContext(ctx), &types.QueryAPYRequest{})
 	require.Nil(err)
-	expectedAPY := incentivesParams.DistributionPerBlock.Amount.Mul(sdk.NewInt(int64(blocksPerYear))).ToDec().Quo(stakingTotalSupply.ToDec()).Quo(bondedRatio)
+	expectedAPY := sdk.NewDecFromInt(incentivesParams.DistributionPerBlock.Amount.Mul(sdk.NewInt(int64(blocksPerYear)))).Quo(sdk.NewDecFromInt(stakingTotalSupply)).Quo(bondedRatio)
 	require.Equal(expectedAPY.String(), APYResult.Apy)
 }

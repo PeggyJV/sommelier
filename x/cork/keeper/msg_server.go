@@ -5,6 +5,7 @@ import (
 	"encoding/hex"
 	"fmt"
 
+	errorsmod "cosmossdk.io/errors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/ethereum/go-ethereum/common"
@@ -29,7 +30,7 @@ func (k Keeper) ScheduleCork(c context.Context, msg *types.MsgScheduleCorkReques
 	signer := msg.MustGetSigner()
 	validatorAddr := k.gravityKeeper.GetOrchestratorValidatorAddress(ctx, signer)
 	if validatorAddr == nil {
-		return nil, sdkerrors.Wrapf(sdkerrors.ErrUnauthorized, "signer %s is not a delegate", signer.String())
+		return nil, errorsmod.Wrapf(sdkerrors.ErrUnauthorized, "signer %s is not a delegate", signer.String())
 	}
 
 	if k.GetValidatorCorkCount(ctx, validatorAddr) >= k.GetParamSet(ctx).MaxCorksPerValidator {

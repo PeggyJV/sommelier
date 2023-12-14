@@ -4,8 +4,8 @@ import (
 	"context"
 	"fmt"
 
+	errorsmod "cosmossdk.io/errors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
 	"github.com/peggyjv/sommelier/v7/app/params"
 	"github.com/peggyjv/sommelier/v7/x/auction/types"
@@ -21,12 +21,12 @@ func (k Keeper) SubmitBid(c context.Context, msg *types.MsgSubmitBidRequest) (*t
 	// Verify auction
 	auction, found := k.GetActiveAuctionByID(ctx, msg.GetAuctionId())
 	if !found {
-		return &types.MsgSubmitBidResponse{}, sdkerrors.Wrapf(types.ErrAuctionNotFound, "Auction id: %d", msg.GetAuctionId())
+		return &types.MsgSubmitBidResponse{}, errorsmod.Wrapf(types.ErrAuctionNotFound, "Auction id: %d", msg.GetAuctionId())
 	}
 
 	// Verify auction coin type and bidder coin type are equal
 	if auction.GetStartingTokensForSale().Denom != msg.GetSaleTokenMinimumAmount().Denom {
-		return &types.MsgSubmitBidResponse{}, sdkerrors.Wrapf(types.ErrBidAuctionDenomMismatch, "Bid denom: %s, Auction denom: %s", msg.GetSaleTokenMinimumAmount().Denom, auction.GetStartingTokensForSale().Denom)
+		return &types.MsgSubmitBidResponse{}, errorsmod.Wrapf(types.ErrBidAuctionDenomMismatch, "Bid denom: %s, Auction denom: %s", msg.GetSaleTokenMinimumAmount().Denom, auction.GetStartingTokensForSale().Denom)
 	}
 
 	// Query our module address for funds
@@ -38,24 +38,24 @@ func (k Keeper) SubmitBid(c context.Context, msg *types.MsgSubmitBidRequest) (*t
 
 	// To prevent spamming of many small bids, check that minimum bid amount is satisfied (unless amount left in auction is < minimum bid req)**
 	minUsommBid := sdk.NewIntFromUint64(k.GetParamSet(ctx).MinimumBidInUsomm)
-	saleTokenBalanceValueInUsommRemaining := totalSaleTokenBalance.Amount.ToDec().Mul(auction.CurrentUnitPriceInUsomm)
+	saleTokenBalanceValueInUsommRemaining := sdk.NewDecFromInt(totalSaleTokenBalance.Amount).Mul(auction.CurrentUnitPriceInUsomm)
 
 	// **If remaining amount in auction is LT minUsommBid param, update minUsommBid to smallest possible value left in auction to prevent spamming in this edge case
-	if saleTokenBalanceValueInUsommRemaining.LT(minUsommBid.ToDec()) {
+	if saleTokenBalanceValueInUsommRemaining.LT(sdk.NewDecFromInt(minUsommBid)) {
 		minUsommBid = sdk.NewInt(saleTokenBalanceValueInUsommRemaining.TruncateInt64())
 	}
 
 	if maxBidInUsomm.LT(minUsommBid) {
-		return &types.MsgSubmitBidResponse{}, sdkerrors.Wrapf(types.ErrBidAmountIsTooSmall, "bid amount: %s, minimum amount in usomm: %s", maxBidInUsomm.String(), minUsommBid.String())
+		return &types.MsgSubmitBidResponse{}, errorsmod.Wrapf(types.ErrBidAmountIsTooSmall, "bid amount: %s, minimum amount in usomm: %s", maxBidInUsomm.String(), minUsommBid.String())
 	}
 
 	// Calculate minimum purchase price
 	// Note we round up, thus making the price more expensive to prevent this rounding from being exploited
-	minimumPurchasePriceInUsomm := sdk.NewInt(auction.CurrentUnitPriceInUsomm.Mul(minimumSaleTokenPurchaseAmount.ToDec()).Ceil().TruncateInt64())
+	minimumPurchasePriceInUsomm := sdk.NewInt(auction.CurrentUnitPriceInUsomm.Mul(sdk.NewDecFromInt(minimumSaleTokenPurchaseAmount)).Ceil().TruncateInt64())
 
 	// Verify minimum price is <= bid, note this also checks the max bid is enough to purchase at least one sale token
 	if minimumPurchasePriceInUsomm.GT(maxBidInUsomm) {
-		return &types.MsgSubmitBidResponse{}, sdkerrors.Wrapf(types.ErrInsufficientBid, "minimum purchase price: %s, max bid: %s", minimumPurchasePriceInUsomm.String(), maxBidInUsomm.String())
+		return &types.MsgSubmitBidResponse{}, errorsmod.Wrapf(types.ErrInsufficientBid, "minimum purchase price: %s, max bid: %s", minimumPurchasePriceInUsomm.String(), maxBidInUsomm.String())
 	}
 
 	// Start off fulfilled sale token amount at 0
@@ -63,7 +63,8 @@ func (k Keeper) SubmitBid(c context.Context, msg *types.MsgSubmitBidRequest) (*t
 
 	// See how many whole tokens of base denom can be purchased
 	// Round down, can't purchase fractional sale tokens
-	saleTokensToPurchase := msg.MaxBidInUsomm.Amount.ToDec().Quo(auction.CurrentUnitPriceInUsomm).TruncateInt()
+
+	saleTokensToPurchase := sdk.NewDecFromInt(msg.MaxBidInUsomm.Amount).Quo(auction.CurrentUnitPriceInUsomm).TruncateInt()
 
 	// Figure out how much of bid we can fulfill
 	if totalSaleTokenBalance.Amount.GTE(saleTokensToPurchase) {
@@ -73,11 +74,11 @@ func (k Keeper) SubmitBid(c context.Context, msg *types.MsgSubmitBidRequest) (*t
 		totalFulfilledSaleTokens.Amount = totalSaleTokenBalance.Amount
 
 	} else {
-		return &types.MsgSubmitBidResponse{}, sdkerrors.Wrapf(types.ErrMinimumPurchaseAmountLargerThanTokensRemaining, "Minimum purchase: %s, amount remaining: %s", minimumSaleTokenPurchaseAmount.String(), auction.RemainingTokensForSale.String())
+		return &types.MsgSubmitBidResponse{}, errorsmod.Wrapf(types.ErrMinimumPurchaseAmountLargerThanTokensRemaining, "Minimum purchase: %s, amount remaining: %s", minimumSaleTokenPurchaseAmount.String(), auction.RemainingTokensForSale.String())
 	}
 
 	// Round up to prevent exploitability; ensure you can't get more than you pay for
-	usommAmount := sdk.NewInt(totalFulfilledSaleTokens.Amount.ToDec().Mul(auction.CurrentUnitPriceInUsomm).Ceil().TruncateInt64())
+	usommAmount := sdk.NewInt(sdk.NewDecFromInt(totalFulfilledSaleTokens.Amount).Mul(auction.CurrentUnitPriceInUsomm).Ceil().TruncateInt64())
 	totalUsommPaid := sdk.NewCoin(params.BaseCoinUnit, usommAmount)
 
 	newBidID := k.GetLastBidID(ctx) + 1

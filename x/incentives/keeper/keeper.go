@@ -2,6 +2,7 @@ package keeper
 
 import (
 	"github.com/cosmos/cosmos-sdk/codec"
+	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
 	"github.com/peggyjv/sommelier/v7/x/incentives/types"
@@ -10,7 +11,7 @@ import (
 
 // Keeper of the incentives store
 type Keeper struct {
-	storeKey           sdk.StoreKey
+	storeKey           storetypes.StoreKey
 	cdc                codec.BinaryCodec
 	paramSpace         paramtypes.Subspace
 	DistributionKeeper types.DistributionKeeper
@@ -20,7 +21,7 @@ type Keeper struct {
 
 func NewKeeper(
 	cdc codec.BinaryCodec,
-	storeKey sdk.StoreKey,
+	storeKey storetypes.StoreKey,
 	paramSpace paramtypes.Subspace,
 	distributionKeeper types.DistributionKeeper,
 	bankKeeper types.BankKeeper,
@@ -77,5 +78,5 @@ func (k Keeper) GetAPY(ctx sdk.Context) sdk.Dec {
 	totalCoins := k.MintKeeper.StakingTokenSupply(ctx)
 	annualRewards := incentivesParams.DistributionPerBlock.Amount.Mul(sdk.NewInt(int64(mintParams.BlocksPerYear)))
 
-	return annualRewards.ToDec().Quo(totalCoins.ToDec()).Quo(bondedRatio)
+	return sdk.NewDecFromInt(annualRewards).Quo(sdk.NewDecFromInt(totalCoins)).Quo(bondedRatio)
 }
