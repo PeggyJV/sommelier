@@ -97,7 +97,7 @@ func (k Keeper) AddSubscriberIntent(c context.Context, msg *types.MsgAddSubscrib
 	}
 
 	if publisherIntent.AllowedSubscribers == types.AllowedSubscribers_VALIDATORS {
-		// TODO(bolten): this implementation ends up making the module sort of non-generic but is necessary to allow
+		// this implementation ends up making the module sort of non-generic but is necessary to allow
 		// orchestrator keys to manipulate subscriptions
 		var validatorI stakingtypes.ValidatorI
 		if validator := k.gravityKeeper.GetOrchestratorValidatorAddress(ctx, signer); validator == nil {
