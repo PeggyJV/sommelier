@@ -91,9 +91,9 @@ func ValidateProofURL(proofURL string, domain string, address string) error {
 	}
 
 	validProofURL := fmt.Sprintf("%s/%s/cacert.pem", domain, address)
-	validProofURLWithHttps := fmt.Sprintf("https://%s", validProofURL)
-	if proofURL != validProofURL && proofURL != validProofURLWithHttps {
-		return fmt.Errorf("invalid proof URL format, should be: %s", validProofURLWithHttps)
+	validProofURLWithHTTPS := fmt.Sprintf("https://%s", validProofURL)
+	if proofURL != validProofURL && proofURL != validProofURLWithHTTPS {
+		return fmt.Errorf("invalid proof URL format, should be: %s", validProofURLWithHTTPS)
 	}
 
 	return nil
