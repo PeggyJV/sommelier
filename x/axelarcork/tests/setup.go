@@ -42,6 +42,7 @@ func NewTestSetup(t *testing.T, ctl *gomock.Controller) *Setup {
 	initializer := newInitializer()
 
 	accountKeeperMock := mocks.NewMockAccountKeeper(ctl)
+	bankKeeperMock := mocks.NewMockBankKeeper(ctl)
 	transferKeeperMock := mocks.NewMockTransferKeeper(ctl)
 	stakingKeeper := mocks.NewMockStakingKeeper(ctl)
 	distributionKeeperMock := mocks.NewMockDistributionKeeper(ctl)
@@ -51,7 +52,7 @@ func NewTestSetup(t *testing.T, ctl *gomock.Controller) *Setup {
 
 	paramsKeeper := initializer.paramsKeeper()
 	acKeeper := initializer.axelarcorkKeeper(
-		paramsKeeper, accountKeeperMock, stakingKeeper, transferKeeperMock, distributionKeeperMock,
+		paramsKeeper, accountKeeperMock, bankKeeperMock, stakingKeeper, transferKeeperMock, distributionKeeperMock,
 		ics4WrapperMock, gravityKeeper)
 
 	require.NoError(t, initializer.StateStore.LoadLatestVersion())
@@ -69,6 +70,7 @@ func NewTestSetup(t *testing.T, ctl *gomock.Controller) *Setup {
 
 		Mocks: &testMocks{
 			AccountKeeperMock:      accountKeeperMock,
+			BankKeeperMock:         bankKeeperMock,
 			TransferKeeperMock:     transferKeeperMock,
 			DistributionKeeperMock: distributionKeeperMock,
 			IBCModuleMock:          ibcModuleMock,
@@ -95,6 +97,7 @@ type testKeepers struct {
 
 type testMocks struct {
 	AccountKeeperMock      *mocks.MockAccountKeeper
+	BankKeeperMock         *mocks.MockBankKeeper
 	TransferKeeperMock     *mocks.MockTransferKeeper
 	DistributionKeeperMock *mocks.MockDistributionKeeper
 	IBCModuleMock          *mocks.MockIBCModule
@@ -145,6 +148,7 @@ func (i initializer) paramsKeeper() paramskeeper.Keeper {
 func (i initializer) axelarcorkKeeper(
 	paramsKeeper paramskeeper.Keeper,
 	accountKeeper types.AccountKeeper,
+	bankKeeper types.BankKeeper,
 	stakingKeeper types.StakingKeeper,
 	transferKeeper types.TransferKeeper,
 	distributionKeeper types.DistributionKeeper,
@@ -160,6 +164,7 @@ func (i initializer) axelarcorkKeeper(
 		storeKey,
 		subspace,
 		accountKeeper,
+		bankKeeper,
 		stakingKeeper,
 		transferKeeper,
 		distributionKeeper,

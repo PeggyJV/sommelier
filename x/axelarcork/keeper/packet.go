@@ -28,9 +28,30 @@ func (k Keeper) ValidateAxelarPacket(ctx sdk.Context, sourceChannel string, data
 		return err
 	}
 
+	// decoding some bech32 strings so our comparisons are guaranteed to be accurate
+	gmpAccountAddr, err := sdk.AccAddressFromBech32(params.GmpAccount)
+	if err != nil {
+		return fmt.Errorf("GmpAccount parameter is an invalid address: %s", params.GmpAccount)
+	}
+
+	receiverAddr, err := sdk.AccAddressFromBech32(packetData.Receiver)
+	if err != nil {
+		return fmt.Errorf("receiver in IBC packet data is an invalid address: %s", packetData.Receiver)
+	}
+
+	senderAddr, err := sdk.AccAddressFromBech32(packetData.Sender)
+	if err != nil {
+		return fmt.Errorf("sender in IBC packet data is an invalid address: %s", packetData.Sender)
+	}
+
 	// if we are not sending to the axelar gmp management account, we can skip
-	if packetData.Receiver != params.GmpAccount {
+	if !receiverAddr.Equals(gmpAccountAddr) {
 		return nil
+	}
+
+	// reject if the axelar module account is not the sender
+	if !senderAddr.Equals(k.GetSenderAccount(ctx).GetAddress()) {
+		return fmt.Errorf("sender to Axelar GMP account is not axelarcork module account: %s", packetData.Sender)
 	}
 
 	// if the memo field is empty, we can pass the message along
@@ -49,7 +70,18 @@ func (k Keeper) ValidateAxelarPacket(ctx sdk.Context, sourceChannel string, data
 		return fmt.Errorf("configuration not found for chain %s", axelarBody.DestinationChain)
 	}
 
-	if chainConfig.ProxyAddress != axelarBody.DestinationAddress {
+	// decoding some EVM addresses here so our comparisons are guaranteed to be accurate
+	if !common.IsHexAddress(chainConfig.ProxyAddress) {
+		return fmt.Errorf("proxy address in chain config is not valid, chain ID %d, address %s", chainConfig.Id, chainConfig.ProxyAddress)
+	}
+	proxyAddr := common.HexToAddress(chainConfig.ProxyAddress)
+
+	if !common.IsHexAddress(axelarBody.DestinationAddress) {
+		return fmt.Errorf("axelar destination address is not a valid EVM address: %s", axelarBody.DestinationAddress)
+	}
+	axelarDestinationAddr := common.HexToAddress(axelarBody.DestinationAddress)
+
+	if !bytes.Equal(axelarDestinationAddr.Bytes(), proxyAddr.Bytes()) {
 		return fmt.Errorf("msg cannot bypass the proxy. expected addr %s, received %s", chainConfig.ProxyAddress, axelarBody.DestinationAddress)
 	}
 
@@ -58,6 +90,8 @@ func (k Keeper) ValidateAxelarPacket(ctx sdk.Context, sourceChannel string, data
 		if nonce == 0 {
 			return fmt.Errorf("nonce cannot be zero")
 		}
+
+		// TODO(bolten): is there any validation on the deadline worth doing?
 
 		blockHeight, winningCork, ok := k.GetWinningAxelarCork(ctx, chainConfig.Id, common.HexToAddress(targetContract))
 		if !ok {
