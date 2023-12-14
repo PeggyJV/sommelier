@@ -1,13 +1,19 @@
 package v7
 
 import (
+	"fmt"
+	"time"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
 	icahostkeeper "github.com/cosmos/ibc-go/v6/modules/apps/27-interchain-accounts/host/keeper"
 	icahosttypes "github.com/cosmos/ibc-go/v6/modules/apps/27-interchain-accounts/host/types"
+	ibctransfertypes "github.com/cosmos/ibc-go/v6/modules/apps/transfer/types"
 	auctionkeeper "github.com/peggyjv/sommelier/v7/x/auction/keeper"
 	auctiontypes "github.com/peggyjv/sommelier/v7/x/auction/types"
+	axelarcorkkeeper "github.com/peggyjv/sommelier/v7/x/axelarcork/keeper"
+	axelarcorktypes "github.com/peggyjv/sommelier/v7/x/axelarcork/types"
 	cellarfeeskeeper "github.com/peggyjv/sommelier/v7/x/cellarfees/keeper"
 	cellarfeestypes "github.com/peggyjv/sommelier/v7/x/cellarfees/types"
 	pubsubkeeper "github.com/peggyjv/sommelier/v7/x/pubsub/keeper"
@@ -18,6 +24,7 @@ func CreateUpgradeHandler(
 	mm *module.Manager,
 	configurator module.Configurator,
 	auctionKeeper auctionkeeper.Keeper,
+	axelarcorkKeeper axelarcorkkeeper.Keeper,
 	cellarfeesKeeper cellarfeeskeeper.Keeper,
 	icaHostKeeper icahostkeeper.Keeper,
 	pubsubKeeper pubsubkeeper.Keeper,
@@ -25,9 +32,9 @@ func CreateUpgradeHandler(
 	return func(ctx sdk.Context, plan upgradetypes.Plan, fromVM module.VersionMap) (module.VersionMap, error) {
 		ctx.Logger().Info("v7 upgrade: entering handler")
 
-		// TODO(bolten): get a sanity check on this
 		// Now that we're on IBC V6, we can update the ICA host module to allow all message types rather than
 		// the list we specified in the v6 upgrade -- a default of HostEnabled: true and the string "*" for messages
+		ctx.Logger().Info("v7 upgrade: setting ICA host params to allow all messages")
 		icaParams := icahosttypes.DefaultParams()
 		icaHostKeeper.SetParams(ctx, icaParams)
 
@@ -35,6 +42,7 @@ func CreateUpgradeHandler(
 		// during the upgrade process. RunMigrations will migrate to the new cork version. Setting the consensus
 		// version to 1 prevents RunMigrations from running InitGenesis itself.
 		fromVM[auctiontypes.ModuleName] = mm.Modules[auctiontypes.ModuleName].ConsensusVersion()
+		fromVM[axelarcorktypes.ModuleName] = mm.Modules[axelarcorktypes.ModuleName].ConsensusVersion()
 		fromVM[pubsubtypes.ModuleName] = mm.Modules[pubsubtypes.ModuleName].ConsensusVersion()
 
 		// Params values were introduced in this upgrade but no migration was necessary, so we initialize the
@@ -42,14 +50,14 @@ func CreateUpgradeHandler(
 		ctx.Logger().Info("v7 upgrading: setting cellarfees default params")
 		cellarfeesKeeper.SetParams(ctx, cellarfeestypes.DefaultParams())
 
-		//TODO(bolten): verify that the default params are fine or if we need to customize them for auction and pubsub
 		ctx.Logger().Info("v7 upgrade: initializing auction genesis state")
 		auctionInitGenesis(ctx, auctionKeeper)
 
+		ctx.Logger().Info("v7 upgrade: intializing axelarcork genesis state")
+		axelarcorkInitGenesis(ctx, axelarcorkKeeper)
+
 		ctx.Logger().Info("v7 upgrade: initializing pubsub genesis state")
 		pubsubInitGenesis(ctx, pubsubKeeper)
-
-		//TODO(bolten): axelarcork module initialization
 
 		ctx.Logger().Info("v7 upgrade: running migrations and exiting handler")
 		return mm.RunMigrations(ctx, configurator, fromVM)
@@ -65,8 +73,8 @@ func auctionInitGenesis(ctx sdk.Context, auctionKeeper auctionkeeper.Keeper) {
 	btc52WeekHigh := sdk.MustNewDecFromStr("44202.18")
 	oneDollar := sdk.MustNewDecFromStr("1.0")
 
-	// TODO(bolten): update LastUpdatedBlock to the upgrade height when finalized
-	var lastUpdatedBlock uint64 = 1
+	// Setting this to a block on 12/14/23 -- just means token price will get stale 4 days faster post-upgrade
+	var lastUpdatedBlock uint64 = 12187266
 
 	usommPrice := auctiontypes.TokenPrice{
 		Denom:            "usomm",
@@ -129,7 +137,89 @@ func auctionInitGenesis(ctx sdk.Context, auctionKeeper auctionkeeper.Keeper) {
 		&wbtcPrice,
 	}
 
+	if err := genesisState.Validate(); err != nil {
+		panic(fmt.Errorf("auction genesis state invalid: %s", err))
+	}
+
 	auctionkeeper.InitGenesis(ctx, auctionKeeper, genesisState)
+}
+
+// Initialize the Axelar cork module with the correct parameters.
+func axelarcorkInitGenesis(ctx sdk.Context, axelarcorkKeeper axelarcorkkeeper.Keeper) {
+	genesisState := axelarcorktypes.DefaultGenesisState()
+
+	genesisState.Params.Enabled = true
+	genesisState.Params.TimeoutDuration = uint64(6 * time.Hour)
+	genesisState.Params.IbcChannel = "channel-5"
+	genesisState.Params.IbcPort = ibctransfertypes.PortID
+	genesisState.Params.GmpAccount = "axelar1dv4u5k73pzqrxlzujxg3qp8kvc3pje7jtdvu72npnt5zhq05ejcsn5qme5s"
+	genesisState.Params.ExecutorAccount = "axelar1aythygn6z5thymj6tmzfwekzh05ewg3l7d6y89"
+	genesisState.Params.CorkTimeoutBlocks = 5000
+
+	genesisState.ChainConfigurations = axelarcorktypes.ChainConfigurations{
+		Configurations: []*axelarcorktypes.ChainConfiguration{
+			{
+				Name:         "arbitrum",
+				Id:           42161,
+				ProxyAddress: "0xEe75bA2C81C04DcA4b0ED6d1B7077c188FEde4d2",
+			},
+			{
+				Name:         "Avalanche",
+				Id:           43114,
+				ProxyAddress: "0xEe75bA2C81C04DcA4b0ED6d1B7077c188FEde4d2",
+			},
+			{
+				Name:         "base",
+				Id:           8453,
+				ProxyAddress: "0xEe75bA2C81C04DcA4b0ED6d1B7077c188FEde4d2",
+			},
+			{
+				Name:         "binance",
+				Id:           56,
+				ProxyAddress: "0xEe75bA2C81C04DcA4b0ED6d1B7077c188FEde4d2",
+			},
+			{
+				Name:         "optimism",
+				Id:           10,
+				ProxyAddress: "0xEe75bA2C81C04DcA4b0ED6d1B7077c188FEde4d2",
+			},
+			{
+				Name:         "Polygon",
+				Id:           137,
+				ProxyAddress: "0xEe75bA2C81C04DcA4b0ED6d1B7077c188FEde4d2",
+			},
+		},
+	}
+
+	// InitGenesis reads through each chain configuration in order and sets the cellar ID set
+	// for it based on index, so this list must be of the same size and order as the respective
+	// chain configurations above
+	genesisState.CellarIds = []*axelarcorktypes.CellarIDSet{
+		{
+			Ids: []string{"0x438087f7c226A89762a791F187d7c3D4a0e95ae6"}, // arbitrum test cellar
+		},
+		{
+			Ids: []string{},
+		},
+		{
+			Ids: []string{},
+		},
+		{
+			Ids: []string{},
+		},
+		{
+			Ids: []string{},
+		},
+		{
+			Ids: []string{},
+		},
+	}
+
+	if err := genesisState.Validate(); err != nil {
+		panic(fmt.Errorf("axelarcork genesis state invalid: %s", err))
+	}
+
+	axelarcorkkeeper.InitGenesis(ctx, axelarcorkKeeper, genesisState)
 }
 
 // Set up the initial pubsub state to mirror what is currently used in practice already, with 7seas as the
@@ -147,33 +237,35 @@ func pubsubInitGenesis(ctx sdk.Context, pubsubKeeper pubsubkeeper.Keeper) {
 	publishers := []*pubsubtypes.Publisher{&publisher}
 
 	cellars := []string{
-		"0x7bAD5DF5E11151Dc5Ee1a648800057C5c934c0d5", // Aave V2
-		"0x03df2A53Cbed19B824347D6a45d09016C2D1676a", // DeFi Stars
-		"0x6c51041A91C91C86f3F08a72cB4D3F67f1208897", // ETH Trend Growth
-		"0x6b7f87279982d919bbf85182ddeab179b366d8f2", // ETH-BTC Trend
-		"0x6e2dac3b9e9adc0cbbae2d0b9fd81952a8d33872", // ETH-BTC Momentum
-		"0xDBe19d1c3F21b1bB250ca7BDaE0687A97B5f77e6", // Fraximal
-		"0xC7b69E15D86C5c1581dacce3caCaF5b68cd6596F", // Real Yield 1INCH
-		"0x0274a704a6D9129F90A62dDC6f6024b33EcDad36", // Real Yield BTC
-		"0x18ea937aba6053bC232d9Ae2C42abE7a8a2Be440", // Real Yield ENS
-		"0xb5b29320d2Dde5BA5BAFA1EbcD270052070483ec", // Real Yield ETH
-		"0x4068BDD217a45F8F668EF19F1E3A1f043e4c4934", // Real Yield LINK
-		"0xcBf2250F33c4161e18D4A2FA47464520Af5216b5", // Real Yield SNX
-		"0x6A6AF5393DC23D7e3dB28D28Ef422DB7c40932B6", // Real Yield UNI
-		"0x97e6E0a40a3D02F12d1cEC30ebfbAE04e37C119E", // Real Yield USD
-		"0x3F07A84eCdf494310D397d24c1C78B041D2fa622", // Steady ETH
-		"0x4986fD36b6b16f49b43282Ee2e24C5cF90ed166d", // Steady BTC
-		"0x05641a27C82799AaF22b436F20A3110410f29652", // Steady MATIC
-		"0x6f069f711281618467dae7873541ecc082761b33", // Steady UNI
-		"0x0C190DEd9Be5f512Bd72827bdaD4003e9Cc7975C", // Turbo GHO
-		"0x5195222f69c5821f8095ec565E71e18aB6A2298f", // Turbo SOMM
-		"0xc7372Ab5dd315606dB799246E8aA112405abAeFf", // Turbo stETH (stETH deposit)
-		"0xfd6db5011b171B05E1Ea3b92f9EAcaEEb055e971", // Turbo stETH (WETH deposit)
-		"0xd33dAd974b938744dAC81fE00ac67cb5AA13958E", // Turbo swETH
+		"1:0x7bAD5DF5E11151Dc5Ee1a648800057C5c934c0d5",     // Aave V2
+		"1:0x03df2A53Cbed19B824347D6a45d09016C2D1676a",     // DeFi Stars
+		"1:0x6c51041A91C91C86f3F08a72cB4D3F67f1208897",     // ETH Trend Growth
+		"1:0x6b7f87279982d919Bbf85182DDeAB179B366D8f2",     // ETH-BTC Trend
+		"1:0x6E2dAc3b9E9ADc0CbbaE2D0B9Fd81952a8D33872",     // ETH-BTC Momentum
+		"1:0xDBe19d1c3F21b1bB250ca7BDaE0687A97B5f77e6",     // Fraximal
+		"1:0xC7b69E15D86C5c1581dacce3caCaF5b68cd6596F",     // Real Yield 1INCH
+		"1:0x0274a704a6D9129F90A62dDC6f6024b33EcDad36",     // Real Yield BTC
+		"1:0x18ea937aba6053bC232d9Ae2C42abE7a8a2Be440",     // Real Yield ENS
+		"1:0xb5b29320d2Dde5BA5BAFA1EbcD270052070483ec",     // Real Yield ETH
+		"1:0x4068BDD217a45F8F668EF19F1E3A1f043e4c4934",     // Real Yield LINK
+		"1:0xcBf2250F33c4161e18D4A2FA47464520Af5216b5",     // Real Yield SNX
+		"1:0x6A6AF5393DC23D7e3dB28D28Ef422DB7c40932B6",     // Real Yield UNI
+		"1:0x97e6E0a40a3D02F12d1cEC30ebfbAE04e37C119E",     // Real Yield USD
+		"1:0x3F07A84eCdf494310D397d24c1C78B041D2fa622",     // Steady ETH
+		"1:0x4986fD36b6b16f49b43282Ee2e24C5cF90ed166d",     // Steady BTC
+		"1:0x05641a27C82799AaF22b436F20A3110410f29652",     // Steady MATIC
+		"1:0x6F069F711281618467dAe7873541EcC082761B33",     // Steady UNI
+		"1:0x9a7b4980C6F0FCaa50CD5f288Ad7038f434c692e",     // Turbo EETH
+		"1:0x0C190DEd9Be5f512Bd72827bdaD4003e9Cc7975C",     // Turbo GHO
+		"1:0x5195222f69c5821f8095ec565E71e18aB6A2298f",     // Turbo SOMM
+		"1:0xc7372Ab5dd315606dB799246E8aA112405abAeFf",     // Turbo stETH (stETH deposit)
+		"1:0xfd6db5011b171B05E1Ea3b92f9EAcaEEb055e971",     // Turbo stETH (WETH deposit)
+		"1:0xd33dAd974b938744dAC81fE00ac67cb5AA13958E",     // Turbo swETH
+		"42161:0x438087f7c226A89762a791F187d7c3D4a0e95ae6", // Arbitrum test cellar
 	}
 
 	// Set 7seas publisher intents for existing cellars
-	publisherIntents := make([]*pubsubtypes.PublisherIntent, 23)
+	publisherIntents := make([]*pubsubtypes.PublisherIntent, 25)
 	for _, cellar := range cellars {
 		publisherIntents = append(publisherIntents, &pubsubtypes.PublisherIntent{
 			SubscriptionId:     cellar,
@@ -184,7 +276,7 @@ func pubsubInitGenesis(ctx sdk.Context, pubsubKeeper pubsubkeeper.Keeper) {
 	}
 
 	// Set default subscriptions for 7seas as the publisher for existing cellars
-	defaultSubscriptions := make([]*pubsubtypes.DefaultSubscription, 23)
+	defaultSubscriptions := make([]*pubsubtypes.DefaultSubscription, 25)
 	for _, cellar := range cellars {
 		defaultSubscriptions = append(defaultSubscriptions, &pubsubtypes.DefaultSubscription{
 			SubscriptionId:  cellar,
@@ -194,7 +286,7 @@ func pubsubInitGenesis(ctx sdk.Context, pubsubKeeper pubsubkeeper.Keeper) {
 
 	// Create subscribers and intents for existing validators
 	subscribers := createSubscribers()
-	subscriberIntents := make([]*pubsubtypes.SubscriberIntent, 805)
+	subscriberIntents := make([]*pubsubtypes.SubscriberIntent, 875)
 	for _, subscriber := range subscribers {
 		for _, cellar := range cellars {
 			subscriberIntents = append(subscriberIntents, &pubsubtypes.SubscriberIntent{
@@ -210,6 +302,10 @@ func pubsubInitGenesis(ctx sdk.Context, pubsubKeeper pubsubkeeper.Keeper) {
 	genesisState.DefaultSubscriptions = defaultSubscriptions
 	genesisState.Subscribers = subscribers
 	genesisState.SubscriberIntents = subscriberIntents
+
+	if err := genesisState.Validate(); err != nil {
+		panic(fmt.Errorf("pubsub genesis state invalid: %s", err))
+	}
 
 	pubsubkeeper.InitGenesis(ctx, pubsubKeeper, genesisState)
 }

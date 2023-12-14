@@ -4,6 +4,7 @@ import (
 	fmt "fmt"
 	"math/big"
 
+	errorsmod "cosmossdk.io/errors"
 	"github.com/ethereum/go-ethereum/accounts/abi"
 	"github.com/ethereum/go-ethereum/common"
 )
@@ -28,6 +29,10 @@ func (ccn AxelarContractCallNonce) ValidateBasic() error {
 
 	if ccn.ContractAddress == "" {
 		return fmt.Errorf("contract address cannot be empty")
+	}
+
+	if !common.IsHexAddress(ccn.ContractAddress) {
+		return errorsmod.Wrapf(ErrInvalidEVMAddress, "%s", ccn.ContractAddress)
 	}
 
 	if ccn.ChainId == 0 {

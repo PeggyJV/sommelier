@@ -120,11 +120,11 @@ jobs:
       fail-fast: false
       matrix:
         test_type: [
-          "Cork",
           "ScheduledCork",
-          "AuctionModule",
+          "Auction",
           "CellarFees",
           "Incentives",
+          "Pubsub",
         ]
     steps:
       - name: Set up Go 1.19
