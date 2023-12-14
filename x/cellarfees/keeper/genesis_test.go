@@ -51,6 +51,7 @@ func (suite *KeeperTestSuite) TestImportingPopulatedGenesis() {
 	testGenesis.Params.InitialPriceDecreaseRate = sdk.MustNewDecFromStr("0.01")
 	testGenesis.Params.PriceDecreaseBlockInterval = 10
 	testGenesis.Params.RewardEmissionPeriod = 600
+	testGenesis.Params.AuctionInterval = 1000
 
 	require.NotPanics(func() {
 		suite.accountKeeper.EXPECT().GetModuleAccount(ctx, feesAccount.GetName()).Return(feesAccount)
@@ -82,6 +83,7 @@ func (suite *KeeperTestSuite) TestExportingPopulatedGenesis() {
 	params.InitialPriceDecreaseRate = sdk.MustNewDecFromStr("0.01")
 	params.PriceDecreaseBlockInterval = 10
 	params.RewardEmissionPeriod = 600
+	params.AuctionInterval = 1000
 	cellarfeesKeeper.SetParams(ctx, params)
 	counters := cellarfeesTypes.FeeAccrualCounters{
 		Counters: []cellarfeesTypes.FeeAccrualCounter{

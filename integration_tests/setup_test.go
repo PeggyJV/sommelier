@@ -420,6 +420,7 @@ func (s *IntegrationTestSuite) initGenesis() {
 		RewardEmissionPeriod:       100,
 		InitialPriceDecreaseRate:   sdk.MustNewDecFromStr("0.05"),
 		PriceDecreaseBlockInterval: uint64(1000),
+		AuctionInterval:            50,
 	}
 	bz, err = cdc.MarshalJSON(&cellarfeesGenState)
 	s.Require().NoError(err)

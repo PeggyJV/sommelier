@@ -57,16 +57,8 @@ func (h Hooks) AfterSendToCosmosEvent(ctx sdk.Context, event gravitytypes.SendTo
 		return
 	}
 
-	cellarfeesParams := h.k.GetParams(ctx)
 	counters := h.k.GetFeeAccrualCounters(ctx)
 	count := counters.IncrementCounter(denom)
-	if count >= cellarfeesParams.FeeAccrualAuctionThreshold {
-		started := h.k.beginAuction(ctx, denom)
-		if started {
-			counters.ResetCounter(denom)
-		}
-	}
-
 	h.k.SetFeeAccrualCounters(ctx, counters)
 
 	ctx.EventManager().EmitEvents(
