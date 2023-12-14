@@ -71,7 +71,7 @@ func (k Keeper) AddSubscriberIntent(c context.Context, msg *types.MsgAddSubscrib
 
 	signer := msg.MustGetSigner()
 	signerAddress := signer.String()
-	if signerAddress != subscriberIntent.SubscriberAddress {
+	if signerAddress != subscriberAddress {
 		return nil, errorsmod.Wrapf(sdkerrors.ErrUnauthorized, "registered subscriber address must be signer: %s", subscriberIntent.SubscriberAddress)
 	}
 
