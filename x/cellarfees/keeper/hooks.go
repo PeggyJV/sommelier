@@ -59,6 +59,7 @@ func (h Hooks) AfterSendToCosmosEvent(ctx sdk.Context, event gravitytypes.SendTo
 
 	counters := h.k.GetFeeAccrualCounters(ctx)
 	count := counters.IncrementCounter(denom)
+	h.k.SetFeeAccrualCounters(ctx, counters)
 
 	ctx.EventManager().EmitEvents(
 		sdk.Events{
