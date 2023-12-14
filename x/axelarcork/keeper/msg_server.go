@@ -81,6 +81,13 @@ func (k Keeper) RelayCork(c context.Context, msg *types.MsgRelayAxelarCorkReques
 		return nil, fmt.Errorf("no cork on chain %d found for address %s", config.Id, msg.TargetContractAddress)
 	}
 
+	// transfer tokens to the module account
+	signer := msg.MustGetSigner()
+	err := k.bankKeeper.SendCoinsFromAccountToModule(ctx, signer, types.ModuleName, sdk.NewCoins(msg.Token))
+	if err != nil {
+		return nil, err
+	}
+
 	nonce := k.IncrementAxelarContractCallNonce(ctx, msg.ChainId, cork.TargetContractAddress)
 	payload, err := types.EncodeLogicCallArgs(msg.TargetContractAddress, nonce, cork.Deadline, cork.EncodedContractCall)
 	if err != nil {
@@ -106,7 +113,7 @@ func (k Keeper) RelayCork(c context.Context, msg *types.MsgRelayAxelarCorkReques
 		params.IbcPort,
 		params.IbcChannel,
 		msg.Token,
-		msg.Signer,
+		k.GetSenderAccount(ctx).GetAddress().String(),
 		params.GmpAccount,
 		clienttypes.ZeroHeight(),
 		uint64(ctx.BlockTime().Add(time.Duration(params.TimeoutDuration)).UnixNano()),
@@ -144,6 +151,13 @@ func (k Keeper) RelayProxyUpgrade(c context.Context, msg *types.MsgRelayAxelarPr
 		return nil, fmt.Errorf("proxy upgrade call is not executable until height %d", upgradeData.ExecutableHeightThreshold)
 	}
 
+	// transfer tokens to the module account
+	signer := msg.MustGetSigner()
+	err := k.bankKeeper.SendCoinsFromAccountToModule(ctx, signer, types.ModuleName, sdk.NewCoins(msg.Token))
+	if err != nil {
+		return nil, err
+	}
+
 	axelarMemo := types.AxelarBody{
 		DestinationChain:   config.Name,
 		DestinationAddress: config.ProxyAddress,
@@ -163,7 +177,7 @@ func (k Keeper) RelayProxyUpgrade(c context.Context, msg *types.MsgRelayAxelarPr
 		params.IbcPort,
 		params.IbcChannel,
 		msg.Token,
-		msg.Signer,
+		k.GetSenderAccount(ctx).GetAddress().String(),
 		params.GmpAccount,
 		clienttypes.ZeroHeight(),
 		uint64(ctx.BlockTime().Add(time.Duration(params.TimeoutDuration)).UnixNano()),

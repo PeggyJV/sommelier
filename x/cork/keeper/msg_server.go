@@ -19,18 +19,18 @@ var _ types.MsgServer = Keeper{}
 func (k Keeper) ScheduleCork(c context.Context, msg *types.MsgScheduleCorkRequest) (*types.MsgScheduleCorkResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
 
+	signer := msg.MustGetSigner()
+	validatorAddr := k.gravityKeeper.GetOrchestratorValidatorAddress(ctx, signer)
+	if validatorAddr == nil {
+		return nil, errorsmod.Wrapf(sdkerrors.ErrUnauthorized, "signer %s is not a delegate", signer.String())
+	}
+
 	if !k.HasCellarID(ctx, common.HexToAddress(msg.Cork.TargetContractAddress)) {
 		return nil, types.ErrUnmanagedCellarAddress
 	}
 
 	if msg.BlockHeight <= uint64(ctx.BlockHeight()) {
 		return nil, types.ErrSchedulingInThePast
-	}
-
-	signer := msg.MustGetSigner()
-	validatorAddr := k.gravityKeeper.GetOrchestratorValidatorAddress(ctx, signer)
-	if validatorAddr == nil {
-		return nil, errorsmod.Wrapf(sdkerrors.ErrUnauthorized, "signer %s is not a delegate", signer.String())
 	}
 
 	corkID := k.SetScheduledCork(ctx, msg.BlockHeight, validatorAddr, *msg.Cork)

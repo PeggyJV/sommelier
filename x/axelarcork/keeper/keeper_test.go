@@ -38,6 +38,7 @@ type KeeperTestSuite struct {
 	ctx                sdk.Context
 	axelarcorkKeeper   Keeper
 	accountKeeper      *mocks.MockAccountKeeper
+	bankKeeper         *mocks.MockBankKeeper
 	stakingKeeper      *mocks.MockStakingKeeper
 	transferKeeper     *mocks.MockTransferKeeper
 	distributionKeeper *mocks.MockDistributionKeeper
@@ -63,6 +64,7 @@ func (suite *KeeperTestSuite) SetupTest() {
 	defer ctrl.Finish()
 
 	suite.accountKeeper = mocks.NewMockAccountKeeper(ctrl)
+	suite.bankKeeper = mocks.NewMockBankKeeper(ctrl)
 	suite.stakingKeeper = mocks.NewMockStakingKeeper(ctrl)
 	suite.transferKeeper = mocks.NewMockTransferKeeper(ctrl)
 	suite.distributionKeeper = mocks.NewMockDistributionKeeper(ctrl)
@@ -86,6 +88,7 @@ func (suite *KeeperTestSuite) SetupTest() {
 		key,
 		subSpace,
 		suite.accountKeeper,
+		suite.bankKeeper,
 		suite.stakingKeeper,
 		suite.transferKeeper,
 		suite.distributionKeeper,
@@ -146,7 +149,7 @@ func (suite *KeeperTestSuite) TestSetGetDeleteScheduledCork() {
 	expectedID := expectedCork.IDHash(testHeight)
 	actualID := axelarcorkKeeper.SetScheduledAxelarCork(ctx, TestEVMChainID, testHeight, val, expectedCork)
 	require.Equal(expectedID, actualID)
-	actualCork, found := axelarcorkKeeper.GetScheduledAxelarCork(ctx, TestEVMChainID, testHeight, actualID, val, sampleCellarAddr, deadline)
+	actualCork, found := axelarcorkKeeper.GetScheduledAxelarCork(ctx, TestEVMChainID, testHeight, actualID, val, sampleCellarAddr)
 	require.True(found)
 	require.Equal(expectedCork, actualCork)
 
@@ -166,7 +169,7 @@ func (suite *KeeperTestSuite) TestSetGetDeleteScheduledCork() {
 	require.Equal(testHeight, actualCorks[0].BlockHeight)
 	require.Equal(hex.EncodeToString(expectedID), actualCorks[0].Id)
 
-	axelarcorkKeeper.DeleteScheduledAxelarCork(ctx, TestEVMChainID, testHeight, expectedID, sdk.ValAddress(val), sampleCellarAddr, deadline)
+	axelarcorkKeeper.DeleteScheduledAxelarCork(ctx, TestEVMChainID, testHeight, expectedID, sdk.ValAddress(val), sampleCellarAddr)
 	require.Empty(axelarcorkKeeper.GetScheduledAxelarCorks(ctx, TestEVMChainID))
 }
 

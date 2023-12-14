@@ -17,7 +17,6 @@ func InitGenesis(ctx sdk.Context, k Keeper, gs types.GenesisState) {
 	if senderAccount == nil {
 		panic(fmt.Sprintf("%s module account has not been set", types.ModuleName))
 	}
-
 	k.accountKeeper.SetModuleAccount(ctx, senderAccount)
 
 	for i, config := range gs.ChainConfigurations.Configurations {
@@ -42,6 +41,8 @@ func InitGenesis(ctx sdk.Context, k Keeper, gs types.GenesisState) {
 
 		k.SetScheduledAxelarCork(ctx, scheduledCork.Cork.ChainId, scheduledCork.BlockHeight, valAddr, *scheduledCork.Cork)
 	}
+
+	// TODO(bolten): not a huge risk since they can be re-sent, but the genesis state is missing WinningAxelarCorks
 
 	for _, n := range gs.AxelarContractCallNonces {
 		if _, found := k.GetChainConfigurationByID(ctx, n.ChainId); !found {
