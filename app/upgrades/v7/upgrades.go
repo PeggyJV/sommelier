@@ -50,7 +50,6 @@ func CreateUpgradeHandler(
 		ctx.Logger().Info("v7 upgrading: setting cellarfees default params")
 		cellarfeesKeeper.SetParams(ctx, cellarfeestypes.DefaultParams())
 
-		//TODO(bolten): verify that the default params are fine or if we need to customize them for auction and pubsub
 		ctx.Logger().Info("v7 upgrade: initializing auction genesis state")
 		auctionInitGenesis(ctx, auctionKeeper)
 
@@ -197,7 +196,7 @@ func axelarcorkInitGenesis(ctx sdk.Context, axelarcorkKeeper axelarcorkkeeper.Ke
 	// chain configurations above
 	genesisState.CellarIds = []*axelarcorktypes.CellarIDSet{
 		{
-			Ids: []string{"0x438087f7c226A89762a791F187d7c3D4a0e95ae6"},
+			Ids: []string{"0x438087f7c226A89762a791F187d7c3D4a0e95ae6"}, // arbitrum test cellar
 		},
 		{
 			Ids: []string{},

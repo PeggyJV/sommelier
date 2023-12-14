@@ -224,6 +224,8 @@ func (k Keeper) BeginAuction(ctx sdk.Context,
 	// determine how many usomm each sale token min unit costs
 	saleTokenPriceInUsomm := saleTokenMinUnitValue.Quo(usommMinUnitValue)
 
+	// TODO(bolten): we are not inspecting the MinimumSaleTokensUsdValue param and using it -- implement later?
+
 	auctionID := k.GetLastAuctionID(ctx) + 1
 	auction := types.Auction{
 		Id:                         auctionID,
