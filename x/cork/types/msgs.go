@@ -49,7 +49,7 @@ func (m *MsgScheduleCorkRequest) ValidateBasic() error {
 
 // GetSignBytes implements sdk.Msg
 func (m *MsgScheduleCorkRequest) GetSignBytes() []byte {
-	panic("amino support disabled")
+	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(m))
 }
 
 // GetSigners implements sdk.Msg

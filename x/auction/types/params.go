@@ -54,6 +54,10 @@ func (p *Params) ValidateBasic() error {
 		return err
 	}
 
+	if err := validateMinimumSaleTokensUSDValue(p.MinimumSaleTokensUsdValue); err != nil {
+		return err
+	}
+
 	if err := validateAuctionMaxBlockAge(p.AuctionMaxBlockAge); err != nil {
 		return err
 	}

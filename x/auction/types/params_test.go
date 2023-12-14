@@ -26,6 +26,7 @@ func TestParamsValidate(t *testing.T) {
 			params: Params{
 				PriceMaxBlockAge:                     uint64(1000),
 				MinimumBidInUsomm:                    uint64(500),
+				MinimumSaleTokensUsdValue:            sdk.MustNewDecFromStr("1.0"),
 				AuctionMaxBlockAge:                   uint64(100),
 				AuctionPriceDecreaseAccelerationRate: sdk.MustNewDecFromStr("0.1"),
 			},
@@ -37,6 +38,7 @@ func TestParamsValidate(t *testing.T) {
 			params: Params{
 				PriceMaxBlockAge:                     uint64(0),
 				MinimumBidInUsomm:                    uint64(500),
+				MinimumSaleTokensUsdValue:            sdk.MustNewDecFromStr("1.0"),
 				AuctionMaxBlockAge:                   uint64(100),
 				AuctionPriceDecreaseAccelerationRate: sdk.MustNewDecFromStr("0.1"),
 			},
@@ -48,6 +50,7 @@ func TestParamsValidate(t *testing.T) {
 			params: Params{
 				PriceMaxBlockAge:                     uint64(1000),
 				MinimumBidInUsomm:                    uint64(500),
+				MinimumSaleTokensUsdValue:            sdk.MustNewDecFromStr("1.0"),
 				AuctionMaxBlockAge:                   uint64(100),
 				AuctionPriceDecreaseAccelerationRate: sdk.MustNewDecFromStr("-0.01"),
 			},
@@ -59,6 +62,7 @@ func TestParamsValidate(t *testing.T) {
 			params: Params{
 				PriceMaxBlockAge:                     uint64(1000),
 				MinimumBidInUsomm:                    uint64(500),
+				MinimumSaleTokensUsdValue:            sdk.MustNewDecFromStr("1.0"),
 				AuctionMaxBlockAge:                   uint64(100),
 				AuctionPriceDecreaseAccelerationRate: sdk.MustNewDecFromStr("1.1"),
 			},

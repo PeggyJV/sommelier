@@ -846,6 +846,8 @@ github.com/peggyjv/gravity-bridge/module/v4 v4.0.0-20231130211750-e1fa9902c9d9 h
 github.com/peggyjv/gravity-bridge/module/v4 v4.0.0-20231130211750-e1fa9902c9d9/go.mod h1:biwoVDKWggMYtzuUZOuqaJD8B40XHrXg3zOJjeAhT78=
 github.com/peggyjv/gravity-bridge/module/v4 v4.0.0-20231211214131-bf2a31eb986f h1:xaVjypGpS3+VUXzEb2YFaTK632Id6jVWY1ViS4nljJs=
 github.com/peggyjv/gravity-bridge/module/v4 v4.0.0-20231211214131-bf2a31eb986f/go.mod h1:n8Jj3X+w6q0Xz19w8feRRl2sfIGV+3FGU4anzXBQGbA=
+github.com/peggyjv/gravity-bridge/module/v4 v4.0.0 h1:jH10FodlMxzGdbxAxeNpsql9qhYDlmwqciwOuwuU0LQ=
+github.com/peggyjv/gravity-bridge/module/v4 v4.0.0/go.mod h1:n8Jj3X+w6q0Xz19w8feRRl2sfIGV+3FGU4anzXBQGbA=
 github.com/pelletier/go-toml v1.2.0/go.mod h1:5z9KED0ma1S8pY6P1sdut58dfprrGBbd/94hg7ilaic=
 github.com/pelletier/go-toml v1.9.5 h1:4yBQzkHv+7BHq2PQUZF3Mx0IYxG7LsP222s7Agd3ve8=
 github.com/pelletier/go-toml v1.9.5/go.mod h1:u1nR/EPcESfeI/szUZKdtJ0xRNbUoANCkoOuaOx1Y+c=
