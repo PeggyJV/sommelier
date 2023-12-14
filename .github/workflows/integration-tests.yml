@@ -121,6 +121,7 @@ jobs:
       matrix:
         test_type: [
           "ScheduledCork",
+          "AxelarCork",
           "Auction",
           "CellarFees",
           "Incentives",
