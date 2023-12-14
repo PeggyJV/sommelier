@@ -59,7 +59,7 @@ func (s *IntegrationTestSuite) TestPubsub() {
 		s.Require().NoError(err, "Unable to create governance proposal")
 
 		s.submitAndVoteForProposal(proposerCtx, orch0ClientCtx, propID, addPublisherPropMsg)
-		propID += 1
+		propID++
 
 		s.T().Log("Verifying Publisher correctly added")
 		publishersResponse, err := pubsubQueryClient.QueryPublishers(context.Background(), &types.QueryPublishersRequest{})
@@ -85,7 +85,7 @@ func (s *IntegrationTestSuite) TestPubsub() {
 
 		_, err = s.chain.sendMsgs(*proposerCtx, &publisherIntentMsg)
 		s.Require().NoError(err)
-		s.T().Log("PublisherIntent submitted succesfully")
+		s.T().Log("PublisherIntent submitted successfully")
 
 		s.T().Log("Verifying PublisherIntent correctly added")
 		publisherIntentsResponse, err := pubsubQueryClient.QueryPublisherIntents(context.Background(), &types.QueryPublisherIntentsRequest{})
@@ -119,7 +119,7 @@ func (s *IntegrationTestSuite) TestPubsub() {
 		s.Require().NoError(err, "Unable to create governance proposal")
 
 		s.submitAndVoteForProposal(proposerCtx, orch0ClientCtx, propID, addDefaultSubscriptionPropMsg)
-		propID += 1
+		propID++
 
 		s.T().Log("Verifying DefaultSubscription correctly added")
 		defaultSubscriptionsResponse, err := pubsubQueryClient.QueryDefaultSubscriptions(context.Background(), &types.QueryDefaultSubscriptionsRequest{})
@@ -302,7 +302,7 @@ func (s *IntegrationTestSuite) TestPubsub() {
 		s.Require().NoError(err, "Unable to create governance proposal")
 
 		s.submitAndVoteForProposal(proposerCtx, orch0ClientCtx, propID, removeDefaultSubscriptionPropMsg)
-		propID += 1
+		propID++
 
 		s.T().Log("Verifying DefaultSubscription correctly removed")
 		defaultSubscriptionsResponse, err = pubsubQueryClient.QueryDefaultSubscriptions(context.Background(), &types.QueryDefaultSubscriptionsRequest{})
@@ -330,7 +330,6 @@ func (s *IntegrationTestSuite) TestPubsub() {
 		s.Require().NoError(err, "Unable to create governance proposal")
 
 		s.submitAndVoteForProposal(proposerCtx, orch0ClientCtx, propID, removePublisherPropMsg)
-		propID += 1
 
 		s.T().Log("Verifying Publisher correctly removed")
 		publishersResponse, err = pubsubQueryClient.QueryPublishers(context.Background(), &types.QueryPublishersRequest{})
