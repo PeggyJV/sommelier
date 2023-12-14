@@ -1,13 +1,18 @@
 package v7
 
 import (
+	"time"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
 	icahostkeeper "github.com/cosmos/ibc-go/v6/modules/apps/27-interchain-accounts/host/keeper"
 	icahosttypes "github.com/cosmos/ibc-go/v6/modules/apps/27-interchain-accounts/host/types"
+	ibctransfertypes "github.com/cosmos/ibc-go/v6/modules/apps/transfer/types"
 	auctionkeeper "github.com/peggyjv/sommelier/v7/x/auction/keeper"
 	auctiontypes "github.com/peggyjv/sommelier/v7/x/auction/types"
+	axelarcorkkeeper "github.com/peggyjv/sommelier/v7/x/axelarcork/keeper"
+	axelarcorktypes "github.com/peggyjv/sommelier/v7/x/axelarcork/types"
 	cellarfeeskeeper "github.com/peggyjv/sommelier/v7/x/cellarfees/keeper"
 	cellarfeestypes "github.com/peggyjv/sommelier/v7/x/cellarfees/types"
 	pubsubkeeper "github.com/peggyjv/sommelier/v7/x/pubsub/keeper"
@@ -18,6 +23,7 @@ func CreateUpgradeHandler(
 	mm *module.Manager,
 	configurator module.Configurator,
 	auctionKeeper auctionkeeper.Keeper,
+	axelarcorkKeeper axelarcorkkeeper.Keeper,
 	cellarfeesKeeper cellarfeeskeeper.Keeper,
 	icaHostKeeper icahostkeeper.Keeper,
 	pubsubKeeper pubsubkeeper.Keeper,
@@ -25,7 +31,6 @@ func CreateUpgradeHandler(
 	return func(ctx sdk.Context, plan upgradetypes.Plan, fromVM module.VersionMap) (module.VersionMap, error) {
 		ctx.Logger().Info("v7 upgrade: entering handler")
 
-		// TODO(bolten): get a sanity check on this
 		// Now that we're on IBC V6, we can update the ICA host module to allow all message types rather than
 		// the list we specified in the v6 upgrade -- a default of HostEnabled: true and the string "*" for messages
 		icaParams := icahosttypes.DefaultParams()
@@ -35,6 +40,7 @@ func CreateUpgradeHandler(
 		// during the upgrade process. RunMigrations will migrate to the new cork version. Setting the consensus
 		// version to 1 prevents RunMigrations from running InitGenesis itself.
 		fromVM[auctiontypes.ModuleName] = mm.Modules[auctiontypes.ModuleName].ConsensusVersion()
+		fromVM[axelarcorktypes.ModuleName] = mm.Modules[axelarcorktypes.ModuleName].ConsensusVersion()
 		fromVM[pubsubtypes.ModuleName] = mm.Modules[pubsubtypes.ModuleName].ConsensusVersion()
 
 		// Params values were introduced in this upgrade but no migration was necessary, so we initialize the
@@ -46,10 +52,11 @@ func CreateUpgradeHandler(
 		ctx.Logger().Info("v7 upgrade: initializing auction genesis state")
 		auctionInitGenesis(ctx, auctionKeeper)
 
+		ctx.Logger().Info("v7 upgrade: intializing axelarcork genesis state")
+		axelarcorkInitGenesis(ctx, axelarcorkKeeper)
+
 		ctx.Logger().Info("v7 upgrade: initializing pubsub genesis state")
 		pubsubInitGenesis(ctx, pubsubKeeper)
-
-		//TODO(bolten): axelarcork module initialization
 
 		ctx.Logger().Info("v7 upgrade: running migrations and exiting handler")
 		return mm.RunMigrations(ctx, configurator, fromVM)
@@ -130,6 +137,56 @@ func auctionInitGenesis(ctx sdk.Context, auctionKeeper auctionkeeper.Keeper) {
 	}
 
 	auctionkeeper.InitGenesis(ctx, auctionKeeper, genesisState)
+}
+
+// Initialize the Axelar cork module with the correct parameters.
+func axelarcorkInitGenesis(ctx sdk.Context, axelarcorkKeeper axelarcorkkeeper.Keeper) {
+	genesisState := axelarcorktypes.DefaultGenesisState()
+
+	genesisState.Params.Enabled = true
+	genesisState.Params.TimeoutDuration = uint64(6 * time.Hour)
+	genesisState.Params.IbcChannel = "channel-5"
+	genesisState.Params.IbcPort = ibctransfertypes.PortID
+	genesisState.Params.GmpAccount = "axelar1dv4u5k73pzqrxlzujxg3qp8kvc3pje7jtdvu72npnt5zhq05ejcsn5qme5s"
+	genesisState.Params.ExecutorAccount = "axelar1aythygn6z5thymj6tmzfwekzh05ewg3l7d6y89"
+	genesisState.Params.CorkTimeoutBlocks = 5000
+
+	genesisState.ChainConfigurations = axelarcorktypes.ChainConfigurations{
+		Configurations: []*axelarcorktypes.ChainConfiguration{
+			{
+				Name:         "arbitrum",
+				Id:           42161,
+				ProxyAddress: "0xEe75bA2C81C04DcA4b0ED6d1B7077c188FEde4d2",
+			},
+			{
+				Name:         "Avalanche",
+				Id:           43114,
+				ProxyAddress: "0xEe75bA2C81C04DcA4b0ED6d1B7077c188FEde4d2",
+			},
+			{
+				Name:         "base",
+				Id:           8453,
+				ProxyAddress: "0xEe75bA2C81C04DcA4b0ED6d1B7077c188FEde4d2",
+			},
+			{
+				Name:         "binance",
+				Id:           56,
+				ProxyAddress: "0xEe75bA2C81C04DcA4b0ED6d1B7077c188FEde4d2",
+			},
+			{
+				Name:         "optimism",
+				Id:           10,
+				ProxyAddress: "0xEe75bA2C81C04DcA4b0ED6d1B7077c188FEde4d2",
+			},
+			{
+				Name:         "Polygon",
+				Id:           137,
+				ProxyAddress: "0xEe75bA2C81C04DcA4b0ED6d1B7077c188FEde4d2",
+			},
+		},
+	}
+
+	axelarcorkkeeper.InitGenesis(ctx, axelarcorkKeeper, genesisState)
 }
 
 // Set up the initial pubsub state to mirror what is currently used in practice already, with 7seas as the
