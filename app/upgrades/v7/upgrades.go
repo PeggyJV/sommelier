@@ -73,8 +73,8 @@ func auctionInitGenesis(ctx sdk.Context, auctionKeeper auctionkeeper.Keeper) {
 	btc52WeekHigh := sdk.MustNewDecFromStr("44202.18")
 	oneDollar := sdk.MustNewDecFromStr("1.0")
 
-	// TODO(bolten): update LastUpdatedBlock to the upgrade height when finalized
-	var lastUpdatedBlock uint64 = 1
+	// Setting this to a block on 12/14/23 -- just means token price will get stale 4 days faster post-upgrade
+	var lastUpdatedBlock uint64 = 12187266
 
 	usommPrice := auctiontypes.TokenPrice{
 		Denom:            "usomm",
