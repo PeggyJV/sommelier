@@ -18,7 +18,7 @@ const (
 	// Blocks between each auction price decrease
 	DefaultPriceDecreaseBlockInterval uint64 = 10
 	// Blocks between each auction
-	DefaultAuctionInterval uint64 = 1000
+	DefaultAuctionInterval uint64 = 15000
 )
 
 // Parameter keys
