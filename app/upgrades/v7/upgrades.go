@@ -34,6 +34,7 @@ func CreateUpgradeHandler(
 
 		// Now that we're on IBC V6, we can update the ICA host module to allow all message types rather than
 		// the list we specified in the v6 upgrade -- a default of HostEnabled: true and the string "*" for messages
+		ctx.Logger().Info("v7 upgrade: setting ICA host params to allow all messages")
 		icaParams := icahosttypes.DefaultParams()
 		icaHostKeeper.SetParams(ctx, icaParams)
 
