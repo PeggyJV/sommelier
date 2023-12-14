@@ -12,7 +12,7 @@ import (
 	cellarfees "github.com/peggyjv/sommelier/v7/x/cellarfees/types"
 )
 
-func (s *IntegrationTestSuite) TestAuctionModule() {
+func (s *IntegrationTestSuite) TestAuction() {
 	s.Run("Bring up chain, test governance proposal to set token prices, submit some bids, and finish an auction", func() {
 		val := s.chain.validators[0]
 		kb, err := val.keyring()
