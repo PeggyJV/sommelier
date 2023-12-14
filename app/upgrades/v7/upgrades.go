@@ -1,6 +1,7 @@
 package v7
 
 import (
+	"fmt"
 	"time"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -136,6 +137,10 @@ func auctionInitGenesis(ctx sdk.Context, auctionKeeper auctionkeeper.Keeper) {
 		&wbtcPrice,
 	}
 
+	if err := genesisState.Validate(); err != nil {
+		panic(fmt.Errorf("auction genesis state invalid: %s", err))
+	}
+
 	auctionkeeper.InitGenesis(ctx, auctionKeeper, genesisState)
 }
 
@@ -184,6 +189,10 @@ func axelarcorkInitGenesis(ctx sdk.Context, axelarcorkKeeper axelarcorkkeeper.Ke
 				ProxyAddress: "0xEe75bA2C81C04DcA4b0ED6d1B7077c188FEde4d2",
 			},
 		},
+	}
+
+	if err := genesisState.Validate(); err != nil {
+		panic(fmt.Errorf("axelarcork genesis state invalid: %s", err))
 	}
 
 	axelarcorkkeeper.InitGenesis(ctx, axelarcorkKeeper, genesisState)
@@ -267,6 +276,10 @@ func pubsubInitGenesis(ctx sdk.Context, pubsubKeeper pubsubkeeper.Keeper) {
 	genesisState.DefaultSubscriptions = defaultSubscriptions
 	genesisState.Subscribers = subscribers
 	genesisState.SubscriberIntents = subscriberIntents
+
+	if err := genesisState.Validate(); err != nil {
+		panic(fmt.Errorf("pubsub genesis state invalid: %s", err))
+	}
 
 	pubsubkeeper.InitGenesis(ctx, pubsubKeeper, genesisState)
 }
