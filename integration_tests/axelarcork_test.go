@@ -2,6 +2,7 @@ package integration_tests
 
 import (
 	"context"
+	"encoding/hex"
 	"time"
 
 	"cosmossdk.io/math"
@@ -79,12 +80,96 @@ func (s *IntegrationTestSuite) TestAxelarCork() {
 		s.Require().Equal(chainConfig.ProxyAddress, proxyAddress)
 
 		// add managed cellar
-		s.T().Log("Creating AddAxelarManagedCellarIDsProposal")
+		s.T().Log("Creating AddAxelarManagedCellarIDsProposal for counter contract")
 		addAxelarManagedCellarIDsProp := types.AddAxelarManagedCellarIDsProposal{
-			Title:       "add an axelar cellar",
-			Description: "arbitrum test cellar",
+			Title:       "add the counter contract as axelar cellar",
+			Description: "arbitrum counter contract",
 			ChainId:     arbitrumChainId,
+			CellarIds: &types.CellarIDSet{
+				Ids: []string{
+					counterContract.Hex(),
+				},
+			},
 		}
+
+		addAxelarManagedCellarIDsPropMsg, err := govtypesv1beta1.NewMsgSubmitProposal(
+			&addAxelarManagedCellarIDsProp,
+			sdk.Coins{
+				{
+					Denom:  testDenom,
+					Amount: math.NewInt(2),
+				},
+			},
+			proposer.address(),
+		)
+		s.Require().NoError(err, "Unable to create AddAxelarManagedCellarIDsProposal")
+
+		s.submitAndVoteForAxelarProposal(proposerCtx, orch0ClientCtx, propID, addAxelarManagedCellarIDsPropMsg)
+		propID++
+
+		s.T().Log("Verifying CellarID correctly added")
+		cellarIDsResponse, err := axelarcorkQueryClient.QueryCellarIDsByChainID(context.Background(), &types.QueryCellarIDsByChainIDRequest{ChainId: arbitrumChainId})
+		s.Require().NoError(err)
+		s.Require().Len(cellarIDsResponse.CellarIds, 1)
+		s.Require().Equal(cellarIDsResponse.CellarIds[0], counterContract.Hex())
+
+		s.T().Log("Schedule an axelar cork for the future")
+		node, err := proposerCtx.GetNode()
+		s.Require().NoError(err)
+		status, err := node.Status(context.Background())
+		s.Require().NoError(err)
+		currentBlockHeight := status.SyncInfo.LatestBlockHeight
+		targetBlockHeight := currentBlockHeight + 15
+		deadline := uint64(time.Now().Unix() + int64(time.Hour.Seconds()))
+
+		s.T().Logf("Scheduling axelar cork calls for height %d", targetBlockHeight)
+		axelarCork := types.AxelarCork{
+			EncodedContractCall:   ABIEncodedInc(),
+			ChainId:               arbitrumChainId,
+			TargetContractAddress: counterContract.Hex(),
+			Deadline:              deadline,
+		}
+		axelarCorkID := axelarCork.IDHash(uint64(targetBlockHeight))
+		s.T().Logf("Axelar cork ID is %s", hex.EncodeToString(axelarCorkID))
+		for i, orch := range s.chain.orchestrators {
+			i := i
+			orch := orch
+			clientCtx, err := s.chain.clientContext("tcp://localhost:26657", orch.keyring, "orch", orch.address())
+			s.Require().NoError(err)
+			axelarCorkMsg, err := types.NewMsgScheduleAxelarCorkRequest(
+				arbitrumChainId,
+				ABIEncodedInc(),
+				counterContract,
+				deadline,
+				uint64(targetBlockHeight),
+				orch.address())
+			s.Require().NoError(err, "Failed to construct axelar cork")
+			response, err := s.chain.sendMsgs(*clientCtx, axelarCorkMsg)
+			s.Require().NoError(err, "Failed to send axelar cork to node %d", i)
+			if response.Code != 0 {
+				if response.Code != 32 {
+					s.T().Log(response)
+				}
+			}
+
+			s.T().Logf("Axelar cork msg for orch %d sent successfully", i)
+		}
+
+		s.T().Log("Verifying scheduled axelar corks were created")
+		scheduledCorksResponse, err := axelarcorkQueryClient.QueryScheduledCorks(context.Background(), &types.QueryScheduledCorksRequest{ChainId: arbitrumChainId})
+		s.Require().NoError(err)
+		s.Require().Len(scheduledCorksResponse.Corks, 4)
+		cork0 := scheduledCorksResponse.Corks[0]
+		//cork1 := scheduledCorksResponse.Corks[1]
+		//cork2 := scheduledCorksResponse.Corks[2]
+		//cork3 := scheduledCorksResponse.Corks[3]
+		s.Require().Equal(cork0.Cork.EncodedContractCall, ABIEncodedInc())
+		s.Require().Equal(cork0.Cork.ChainId, arbitrumChainId)
+		s.Require().Equal(cork0.Cork.TargetContractAddress, counterContract.Hex())
+		s.Require().Equal(cork0.Cork.Deadline, deadline)
+		s.Require().Equal(cork0.BlockHeight, targetBlockHeight)
+		s.Require().Equal(cork0.Id, axelarCorkID)
+		s.Require().Equal(cork0.Validator, val0.address())
 
 		// schedule a normal cork
 		// scheduled cork proposal
@@ -92,7 +177,6 @@ func (s *IntegrationTestSuite) TestAxelarCork() {
 		// upgrade proxy proposal
 		// upgrade but then cancel proxy proposal
 		// remove chain configuration
-
 	})
 }
 
