@@ -4,41 +4,88 @@ import (
 	"context"
 	"time"
 
+	"cosmossdk.io/math"
 	"github.com/cosmos/cosmos-sdk/client"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 	govtypesv1beta1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
+	"github.com/peggyjv/sommelier/v7/x/axelarcork/types"
 )
 
 func (s *IntegrationTestSuite) TestAxelarCork() {
 	s.Run("Test the axelarcork module", func() {
 		// Set up validator, orchestrator, proposer, query client
-		/*
-			val0 := s.chain.validators[0]
-			val0kb, err := val0.keyring()
-			s.Require().NoError(err)
-			val0ClientCtx, err := s.chain.clientContext("tcp://localhost:26657", &val0kb, "val", val0.address())
-			s.Require().NoError(err)
+		val0 := s.chain.validators[0]
+		val0kb, err := val0.keyring()
+		s.Require().NoError(err)
+		val0ClientCtx, err := s.chain.clientContext("tcp://localhost:26657", &val0kb, "val", val0.address())
+		s.Require().NoError(err)
 
-			orch0 := s.chain.orchestrators[0]
-			orch0ClientCtx, err := s.chain.clientContext("tcp://localhost:26657", orch0.keyring, "orch", orch0.address())
-			s.Require().NoError(err)
-			orch1 := s.chain.orchestrators[1]
-			orch1ClientCtx, err := s.chain.clientContext("tcp://localhost:26657", orch1.keyring, "orch", orch1.address())
-			s.Require().NoError(err)
+		orch0 := s.chain.orchestrators[0]
+		orch0ClientCtx, err := s.chain.clientContext("tcp://localhost:26657", orch0.keyring, "orch", orch0.address())
+		s.Require().NoError(err)
+		//orch1 := s.chain.orchestrators[1]
+		//orch1ClientCtx, err := s.chain.clientContext("tcp://localhost:26657", orch1.keyring, "orch", orch1.address())
+		//s.Require().NoError(err)
 
-			proposer := s.chain.proposer
-			proposerCtx, err := s.chain.clientContext("tcp://localhost:26657", proposer.keyring, "proposer", proposer.address())
-			s.Require().NoError(err)
-			propID := uint64(1)
+		proposer := s.chain.proposer
+		proposerCtx, err := s.chain.clientContext("tcp://localhost:26657", proposer.keyring, "proposer", proposer.address())
+		s.Require().NoError(err)
+		propID := uint64(1)
 
-			axelarcorkQueryClient := types.NewQueryClient(val0ClientCtx)
-		*/
+		axelarcorkQueryClient := types.NewQueryClient(val0ClientCtx)
 
 		////////////////
 		// Happy path //
 		////////////////
 
+		arbitrumChainName := "arbitrum"
+		arbitrumChainId := uint64(42161)
+		proxyAddress := "0xEe75bA2C81C04DcA4b0ED6d1B7077c188FEde4d2"
+
 		// add chain configuration
+		s.T().Log("Creating AddChainConfigurationProposal")
+		addChainConfigurationProp := types.AddChainConfigurationProposal{
+			Title:       "add a chain configuration",
+			Description: "adding an arbitrum chain config",
+			ChainConfiguration: &types.ChainConfiguration{
+				Name:         arbitrumChainName,
+				Id:           arbitrumChainId,
+				ProxyAddress: proxyAddress,
+			},
+		}
+
+		addChainConfigurationPropMsg, err := govtypesv1beta1.NewMsgSubmitProposal(
+			&addChainConfigurationProp,
+			sdk.Coins{
+				{
+					Denom:  testDenom,
+					Amount: math.NewInt(2),
+				},
+			},
+			proposer.address(),
+		)
+		s.Require().NoError(err, "Unable to create AddChainConfigurationProposal")
+
+		s.submitAndVoteForAxelarProposal(proposerCtx, orch0ClientCtx, propID, addChainConfigurationPropMsg)
+		propID++
+
+		s.T().Log("Verifying ChainConfiguration correctly added")
+		chainConfigurationsResponse, err := axelarcorkQueryClient.QueryChainConfigurations(context.Background(), &types.QueryChainConfigurationsRequest{})
+		s.Require().NoError(err)
+		s.Require().Len(chainConfigurationsResponse.Configurations, 1)
+		chainConfig := chainConfigurationsResponse.Configurations[0]
+		s.Require().Equal(chainConfig.Name, arbitrumChainName)
+		s.Require().Equal(chainConfig.Id, arbitrumChainId)
+		s.Require().Equal(chainConfig.ProxyAddress, proxyAddress)
+
 		// add managed cellar
+		s.T().Log("Creating AddAxelarManagedCellarIDsProposal")
+		addAxelarManagedCellarIDsProp := types.AddAxelarManagedCellarIDsProposal{
+			Title:       "add an axelar cellar",
+			Description: "arbitrum test cellar",
+			ChainId:     arbitrumChainId,
+		}
+
 		// schedule a normal cork
 		// scheduled cork proposal
 		// remove managed cellar
