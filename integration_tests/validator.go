@@ -357,6 +357,10 @@ func (v *validator) address() sdk.AccAddress {
 	return addr
 }
 
+func (v *validator) validatorAddress() sdk.ValAddress {
+	return nil
+}
+
 func (v *validator) pubKey() cryptotypes.PubKey {
 	pubKey, err := v.keyRecord.GetPubKey()
 	if err != nil {
