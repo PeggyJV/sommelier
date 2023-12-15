@@ -17,7 +17,10 @@ import (
 
 func (s *IntegrationTestSuite) TestAxelarCork() {
 	s.Run("Test the axelarcork module", func() {
-		// Set up validator, orchestrator, proposer, query client
+		///////////
+		// Setup //
+		///////////
+
 		val0 := s.chain.validators[0]
 		val0kb, err := val0.keyring()
 		s.Require().NoError(err)
@@ -27,9 +30,6 @@ func (s *IntegrationTestSuite) TestAxelarCork() {
 		orch0 := s.chain.orchestrators[0]
 		orch0ClientCtx, err := s.chain.clientContext("tcp://localhost:26657", orch0.keyring, "orch", orch0.address())
 		s.Require().NoError(err)
-		//orch1 := s.chain.orchestrators[1]
-		//orch1ClientCtx, err := s.chain.clientContext("tcp://localhost:26657", orch1.keyring, "orch", orch1.address())
-		//s.Require().NoError(err)
 
 		proposer := s.chain.proposer
 		proposerCtx, err := s.chain.clientContext("tcp://localhost:26657", proposer.keyring, "proposer", proposer.address())
@@ -45,15 +45,14 @@ func (s *IntegrationTestSuite) TestAxelarCork() {
 		axelarcorkQueryClient := types.NewQueryClient(val0ClientCtx)
 		govQueryClient := govtypesv1beta1.NewQueryClient(orch0ClientCtx)
 
-		////////////////
-		// Happy path //
-		////////////////
+		/////////////////////////////
+		// Add chain configuration //
+		/////////////////////////////
 
 		arbitrumChainName := "arbitrum"
 		arbitrumChainID := uint64(42161)
 		proxyAddress := "0xEe75bA2C81C04DcA4b0ED6d1B7077c188FEde4d2"
 
-		// add chain configuration
 		s.T().Log("Creating AddChainConfigurationProposal")
 		addChainConfigurationProp := types.AddChainConfigurationProposal{
 			Title:       "add a chain configuration",
@@ -89,7 +88,10 @@ func (s *IntegrationTestSuite) TestAxelarCork() {
 		s.Require().Equal(chainConfig.Id, arbitrumChainID)
 		s.Require().Equal(chainConfig.ProxyAddress, proxyAddress)
 
-		// add managed cellar
+		//////////////////
+		// Add a cellar //
+		//////////////////
+
 		s.T().Log("Creating AddAxelarManagedCellarIDsProposal for counter contract")
 		addAxelarManagedCellarIDsProp := types.AddAxelarManagedCellarIDsProposal{
 			Title:       "add the counter contract as axelar cellar",
@@ -122,6 +124,10 @@ func (s *IntegrationTestSuite) TestAxelarCork() {
 		s.Require().NoError(err)
 		s.Require().Len(cellarIDsResponse.CellarIds, 1)
 		s.Require().Equal(cellarIDsResponse.CellarIds[0], counterContract.Hex())
+
+		/////////////////////////////
+		// Schedule an Axelar cork //
+		/////////////////////////////
 
 		s.T().Log("Schedule an axelar cork for the future")
 		node, err := proposerCtx.GetNode()
@@ -234,10 +240,15 @@ func (s *IntegrationTestSuite) TestAxelarCork() {
 		s.Require().True(sdk.MustNewDecFromStr(corkResultResponse.CorkResult.ApprovalPercentage).GT(corkVoteThreshold))
 		s.Require().Equal(counterContract, common.HexToAddress(corkResultResponse.CorkResult.Cork.TargetContractAddress))
 
+		// the corks are deleted when it's converted into a WinningAxelarCork and is relayable
 		s.T().Log("Verifying scheduled axelar corks were deleted")
 		scheduledCorksByHeightResponse, err := axelarcorkQueryClient.QueryScheduledCorksByBlockHeight(context.Background(), &types.QueryScheduledCorksByBlockHeightRequest{BlockHeight: targetBlockHeight, ChainId: arbitrumChainID})
 		s.Require().NoError(err)
-		s.Require().Len(scheduledCorksByHeightResponse.Corks, 0)
+		s.Require().Empty(scheduledCorksByHeightResponse.Corks)
+
+		///////////////////////////////////////////////
+		// Create a governance scheduled Axelar cork //
+		///////////////////////////////////////////////
 
 		protoJSON := "{\"cellar_id\":\"0x123801a7D398351b8bE11C439e05C5B3259aeC9B\",\"cellar_v1\":{\"some_fuction\":{\"function_args\":{}},\"block_height\":12345}}"
 		s.T().Log("Creating AxelarScheduledCorkProposal for counter contract")
@@ -280,6 +291,10 @@ func (s *IntegrationTestSuite) TestAxelarCork() {
 		s.Require().Equal(propContent.Deadline, addAxelarScheduledCorkProp.Deadline)
 		propID++
 
+		//////////////////////////////////////
+		// Upgrade an Axelar proxy contract //
+		//////////////////////////////////////
+
 		s.T().Log("Creating UpgradeAxelarProxyContractProposal")
 		newProxyAddress := "0x438087f7c226A89762a791F187d7c3D4a0e95ae6"
 		upgradeAxelarProxyContractProp := types.UpgradeAxelarProxyContractProposal{
@@ -302,7 +317,7 @@ func (s *IntegrationTestSuite) TestAxelarCork() {
 		s.Require().NoError(err, "Unable to create UpgradeAxelarProxyContractProposal")
 
 		s.submitAndVoteForAxelarProposal(proposerCtx, orch0ClientCtx, propID, upgradeAxelarProxyContractPropMsg)
-		//propID++
+		propID++
 
 		s.T().Log("Verifying upgrade data added correctly")
 		node, err = val0ClientCtx.GetNode()
@@ -324,9 +339,102 @@ func (s *IntegrationTestSuite) TestAxelarCork() {
 		s.Require().NoError(err)
 		s.Require().Equal(encodedProxy, newProxyAddress)
 
-		// cancel proxy upgrade
-		// remove managed cellar
-		// remove chain configuration
+		/////////////////////////////////////////////
+		// Cancel an Axelar proxy contract upgrade //
+		/////////////////////////////////////////////
+
+		s.T().Log("Creating CancelAxelarProxyContractUpgradeProposal")
+		cancelAxelarProxyContractUpgradeProp := types.CancelAxelarProxyContractUpgradeProposal{
+			Title:       "cancel upgrade ofan axelar proxy contract",
+			Description: "arbitrum is not getting a new proxy",
+			ChainId:     arbitrumChainID,
+		}
+
+		cancelAxelarProxyContractUpgradePropMsg, err := govtypesv1beta1.NewMsgSubmitProposal(
+			&cancelAxelarProxyContractUpgradeProp,
+			sdk.Coins{
+				{
+					Denom:  testDenom,
+					Amount: math.NewInt(2),
+				},
+			},
+			proposer.address(),
+		)
+		s.Require().NoError(err, "Unable to create CancelAxelarProxyContractUpgradeProposal")
+
+		s.submitAndVoteForAxelarProposal(proposerCtx, orch0ClientCtx, propID, cancelAxelarProxyContractUpgradePropMsg)
+		propID++
+
+		s.T().Log("Verifying upgrade data removed correctly")
+		upgradeResponse, err = axelarcorkQueryClient.QueryAxelarProxyUpgradeData(context.Background(), &types.QueryAxelarProxyUpgradeDataRequest{})
+		s.Require().NoError(err)
+		s.Require().Empty(upgradeResponse.ProxyUpgradeData)
+
+		/////////////////////
+		// Remove a cellar //
+		/////////////////////
+
+		s.T().Log("Creating RemoveAxelarManagedCellarIDsProposal for counter contract")
+		removeAxelarManagedCellarIDsProp := types.RemoveAxelarManagedCellarIDsProposal{
+			Title:       "add the counter contract as axelar cellar",
+			Description: "arbitrum counter contract",
+			ChainId:     arbitrumChainID,
+			CellarIds: &types.CellarIDSet{
+				Ids: []string{
+					counterContract.Hex(),
+				},
+			},
+		}
+
+		removeAxelarManagedCellarIDsPropMsg, err := govtypesv1beta1.NewMsgSubmitProposal(
+			&removeAxelarManagedCellarIDsProp,
+			sdk.Coins{
+				{
+					Denom:  testDenom,
+					Amount: math.NewInt(2),
+				},
+			},
+			proposer.address(),
+		)
+		s.Require().NoError(err, "Unable to create RemoveAxelarManagedCellarIDsProposal")
+
+		s.submitAndVoteForAxelarProposal(proposerCtx, orch0ClientCtx, propID, removeAxelarManagedCellarIDsPropMsg)
+		propID++
+
+		s.T().Log("Verifying CellarID correctly added")
+		cellarIDsResponse, err = axelarcorkQueryClient.QueryCellarIDsByChainID(context.Background(), &types.QueryCellarIDsByChainIDRequest{ChainId: arbitrumChainID})
+		s.Require().NoError(err)
+		s.Require().Empty(cellarIDsResponse.CellarIds)
+
+		//////////////////////////////////
+		// Remove a chain configuration //
+		//////////////////////////////////
+
+		s.T().Log("Creating RemoveChainConfigurationProposal")
+		removeChainConfigurationProp := types.RemoveChainConfigurationProposal{
+			Title:       "add a chain configuration",
+			Description: "adding an arbitrum chain config",
+			ChainId:     arbitrumChainID,
+		}
+
+		removeChainConfigurationPropMsg, err := govtypesv1beta1.NewMsgSubmitProposal(
+			&removeChainConfigurationProp,
+			sdk.Coins{
+				{
+					Denom:  testDenom,
+					Amount: math.NewInt(2),
+				},
+			},
+			proposer.address(),
+		)
+		s.Require().NoError(err, "Unable to create RemoveChainConfigurationProposal")
+
+		s.submitAndVoteForAxelarProposal(proposerCtx, orch0ClientCtx, propID, removeChainConfigurationPropMsg)
+
+		s.T().Log("Verifying ChainConfiguration correctly added")
+		chainConfigurationsResponse, err = axelarcorkQueryClient.QueryChainConfigurations(context.Background(), &types.QueryChainConfigurationsRequest{})
+		s.Require().NoError(err)
+		s.Require().Empty(chainConfigurationsResponse.Configurations)
 	})
 }
 
