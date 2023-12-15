@@ -11,7 +11,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	govtypesv1beta1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
 	"github.com/ethereum/go-ethereum/common"
-	"github.com/golang/protobuf/proto"
+	"github.com/golang/protobuf/proto" //nolint:staticcheck
 	"github.com/peggyjv/sommelier/v7/x/axelarcork/types"
 )
 
@@ -40,7 +40,7 @@ func (s *IntegrationTestSuite) TestAxelarCork() {
 		for _, validator := range s.chain.validators {
 			sortedValidators = append(sortedValidators, validator.validatorAddress().String())
 		}
-		sort.Sort(sort.StringSlice(sortedValidators))
+		sort.Strings(sortedValidators)
 
 		axelarcorkQueryClient := types.NewQueryClient(val0ClientCtx)
 		govQueryClient := govtypesv1beta1.NewQueryClient(orch0ClientCtx)
@@ -200,7 +200,7 @@ func (s *IntegrationTestSuite) TestAxelarCork() {
 		s.Require().Equal(cork3.Id, axelarCorkIDHex)
 
 		corkValidators := []string{cork0.Validator, cork1.Validator, cork2.Validator, cork3.Validator}
-		sort.Sort(sort.StringSlice(corkValidators))
+		sort.Strings(corkValidators)
 		s.Require().Equal(corkValidators, sortedValidators)
 
 		s.T().Log("Waiting for scheduled height")
