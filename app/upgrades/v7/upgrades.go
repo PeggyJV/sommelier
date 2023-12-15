@@ -265,7 +265,7 @@ func pubsubInitGenesis(ctx sdk.Context, pubsubKeeper pubsubkeeper.Keeper) {
 	}
 
 	// Set 7seas publisher intents for existing cellars
-	publisherIntents := make([]*pubsubtypes.PublisherIntent, 25)
+	publisherIntents := make([]*pubsubtypes.PublisherIntent, 0, 25)
 	for _, cellar := range cellars {
 		publisherIntents = append(publisherIntents, &pubsubtypes.PublisherIntent{
 			SubscriptionId:     cellar,
@@ -276,7 +276,7 @@ func pubsubInitGenesis(ctx sdk.Context, pubsubKeeper pubsubkeeper.Keeper) {
 	}
 
 	// Set default subscriptions for 7seas as the publisher for existing cellars
-	defaultSubscriptions := make([]*pubsubtypes.DefaultSubscription, 25)
+	defaultSubscriptions := make([]*pubsubtypes.DefaultSubscription, 0, 25)
 	for _, cellar := range cellars {
 		defaultSubscriptions = append(defaultSubscriptions, &pubsubtypes.DefaultSubscription{
 			SubscriptionId:  cellar,
@@ -286,7 +286,7 @@ func pubsubInitGenesis(ctx sdk.Context, pubsubKeeper pubsubkeeper.Keeper) {
 
 	// Create subscribers and intents for existing validators
 	subscribers := createSubscribers()
-	subscriberIntents := make([]*pubsubtypes.SubscriberIntent, 875)
+	subscriberIntents := make([]*pubsubtypes.SubscriberIntent, 0, 875)
 	for _, subscriber := range subscribers {
 		for _, cellar := range cellars {
 			subscriberIntents = append(subscriberIntents, &pubsubtypes.SubscriberIntent{
@@ -318,7 +318,7 @@ func pubsubInitGenesis(ctx sdk.Context, pubsubKeeper pubsubkeeper.Keeper) {
 // leaving out made_in_block because I can't find their validator on-chain
 // blockhunters hadn't been merged, but verified and added here
 func createSubscribers() []*pubsubtypes.Subscriber {
-	subscribers := make([]*pubsubtypes.Subscriber, 35)
+	subscribers := make([]*pubsubtypes.Subscriber, 0, 35)
 
 	subscribers = append(subscribers, &pubsubtypes.Subscriber{
 		Address: "somm1s2q8avjykkztudpl8k60f0ns4v5mvnjp5t366c",
