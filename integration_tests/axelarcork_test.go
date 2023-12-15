@@ -264,7 +264,6 @@ func (s *IntegrationTestSuite) TestAxelarCork() {
 		s.Require().NoError(err, "Unable to create AxelarScheduledCorkProposal")
 
 		s.submitAndVoteForAxelarProposal(proposerCtx, orch0ClientCtx, propID, addAxelarScheduledCorkPropMsg)
-		//propID++
 
 		s.T().Log("Verifying the details of the AxelarScheduledCorkProposal proposal")
 		proposalResponse, err := govQueryClient.Proposal(context.Background(), &govtypesv1beta1.QueryProposalRequest{ProposalId: propID})
@@ -279,10 +278,54 @@ func (s *IntegrationTestSuite) TestAxelarCork() {
 		s.Require().Equal(propContent.TargetContractAddress, addAxelarScheduledCorkProp.TargetContractAddress)
 		s.Require().Equal(propContent.ContractCallProtoJson, addAxelarScheduledCorkProp.ContractCallProtoJson)
 		s.Require().Equal(propContent.Deadline, addAxelarScheduledCorkProp.Deadline)
+		propID++
 
+		s.T().Log("Creating UpgradeAxelarProxyContractProposal")
+		newProxyAddress := "0x438087f7c226A89762a791F187d7c3D4a0e95ae6"
+		upgradeAxelarProxyContractProp := types.UpgradeAxelarProxyContractProposal{
+			Title:           "upgrade an axelar proxy contract",
+			Description:     "arbitrum is getting a new proxy",
+			ChainId:         arbitrumChainID,
+			NewProxyAddress: newProxyAddress,
+		}
+
+		upgradeAxelarProxyContractPropMsg, err := govtypesv1beta1.NewMsgSubmitProposal(
+			&upgradeAxelarProxyContractProp,
+			sdk.Coins{
+				{
+					Denom:  testDenom,
+					Amount: math.NewInt(2),
+				},
+			},
+			proposer.address(),
+		)
+		s.Require().NoError(err, "Unable to create UpgradeAxelarProxyContractProposal")
+
+		s.submitAndVoteForAxelarProposal(proposerCtx, orch0ClientCtx, propID, upgradeAxelarProxyContractPropMsg)
+		//propID++
+
+		s.T().Log("Verifying upgrade data added correctly")
+		node, err = val0ClientCtx.GetNode()
+		s.Require().NoError(err)
+		status, err = node.Status(context.Background())
+		s.Require().NoError(err)
+
+		threshold := int64(types.DefaultExecutableHeightThreshold)
+		currentHeight := status.SyncInfo.LatestBlockHeight
+		upgradeResponse, err := axelarcorkQueryClient.QueryAxelarProxyUpgradeData(context.Background(), &types.QueryAxelarProxyUpgradeDataRequest{})
+		s.Require().NoError(err)
+		s.Require().Len(upgradeResponse.ProxyUpgradeData, 1)
+		upgradeData := upgradeResponse.ProxyUpgradeData[0]
+		s.Require().Equal(upgradeData.ChainId, arbitrumChainID)
+		// an approximation but timing is difficult
+		s.Require().Less(upgradeData.ExecutableHeightThreshold, currentHeight+threshold+5)
+		s.Require().Greater(upgradeData.ExecutableHeightThreshold, currentHeight+threshold-5)
+		encodedProxy, _, err := types.DecodeUpgradeArgs(upgradeData.Payload)
+		s.Require().NoError(err)
+		s.Require().Equal(encodedProxy, newProxyAddress)
+
+		// cancel proxy upgrade
 		// remove managed cellar
-		// upgrade proxy proposal
-		// upgrade but then cancel proxy proposal
 		// remove chain configuration
 	})
 }
