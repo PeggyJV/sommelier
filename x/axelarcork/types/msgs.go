@@ -38,6 +38,7 @@ func NewMsgScheduleAxelarCorkRequest(chainID uint64, body []byte, address common
 			TargetContractAddress: address.String(),
 			Deadline:              deadline,
 		},
+		ChainId:     chainID,
 		BlockHeight: blockHeight,
 		Signer:      signer.String(),
 	}, nil
