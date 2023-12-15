@@ -11,12 +11,16 @@ import (
 
 var (
 	_ sdk.Msg = &MsgScheduleAxelarCorkRequest{}
+	_ sdk.Msg = &MsgRelayAxelarCorkRequest{}
+	_ sdk.Msg = &MsgBumpAxelarCorkGasRequest{}
+	_ sdk.Msg = &MsgCancelAxelarCorkRequest{}
+	_ sdk.Msg = &MsgRelayAxelarCorkRequest{}
 )
 
 const (
-	TypeMsgScheduleCorkRequest            = "axelar_cork_schedule"
-	TypeMsgRelayCorkRequest               = "axelar_cork_relay"
-	TypeMsgBumpCorkGasRequest             = "axelar_cork_bump_gas"
+	TypeMsgScheduleAxelarCorkRequest      = "axelar_cork_schedule"
+	TypeMsgRelayAxelarCorkRequest         = "axelar_cork_relay"
+	TypeMsgBumpAxelarCorkGasRequest       = "axelar_cork_bump_gas"
 	TypeMsgCancelAxelarCorkRequest        = "axelar_cancel_cork"
 	TypeMsgRelayAxelarProxyUpgradeRequest = "axelar_proxy_upgrade_relay"
 )
@@ -25,8 +29,8 @@ const (
 // MsgScheduleAxelarCorkRequest //
 //////////////////////////////////
 
-// NewMsgScheduleCorkRequest return a new MsgScheduleAxelarCorkRequest
-func NewMsgScheduleCorkRequest(chainID uint64, body []byte, address common.Address, deadline uint64, blockHeight uint64, signer sdk.AccAddress) (*MsgScheduleAxelarCorkRequest, error) {
+// NewMsgScheduleAxelarCorkRequest return a new MsgScheduleAxelarCorkRequest
+func NewMsgScheduleAxelarCorkRequest(chainID uint64, body []byte, address common.Address, deadline uint64, blockHeight uint64, signer sdk.AccAddress) (*MsgScheduleAxelarCorkRequest, error) {
 	return &MsgScheduleAxelarCorkRequest{
 		Cork: &AxelarCork{
 			ChainId:               chainID,
@@ -43,12 +47,16 @@ func NewMsgScheduleCorkRequest(chainID uint64, body []byte, address common.Addre
 func (m *MsgScheduleAxelarCorkRequest) Route() string { return ModuleName }
 
 // Type implements sdk.Msg
-func (m *MsgScheduleAxelarCorkRequest) Type() string { return TypeMsgScheduleCorkRequest }
+func (m *MsgScheduleAxelarCorkRequest) Type() string { return TypeMsgScheduleAxelarCorkRequest }
 
 // ValidateBasic implements sdk.Msg
 func (m *MsgScheduleAxelarCorkRequest) ValidateBasic() error {
 	if _, err := sdk.AccAddressFromBech32(m.Signer); err != nil {
 		return errorsmod.Wrap(sdkerrors.ErrInvalidAddress, err.Error())
+	}
+
+	if m.BlockHeight == 0 {
+		return fmt.Errorf("block height must be greater than zero")
 	}
 
 	return m.Cork.ValidateBasic()
@@ -77,16 +85,39 @@ func (m *MsgScheduleAxelarCorkRequest) MustGetSigner() sdk.AccAddress {
 // MsgRelayAxelarCorkRequest //
 ///////////////////////////////
 
+// NewMsgRelayAxelarCorkRequest returns a new MsgRelayAxelarCorkRequest
+func NewMsgRelayAxelarCorkRequest(signer sdk.Address, token sdk.Coin, fee uint64, chainID uint64, address common.Address) (*MsgRelayAxelarCorkRequest, error) {
+	return &MsgRelayAxelarCorkRequest{
+		Signer:                signer.String(),
+		Token:                 token,
+		Fee:                   fee,
+		ChainId:               chainID,
+		TargetContractAddress: address.String(),
+	}, nil
+}
+
 // Route implements sdk.Msg
 func (m *MsgRelayAxelarCorkRequest) Route() string { return ModuleName }
 
 // Type implements sdk.Msg
-func (m *MsgRelayAxelarCorkRequest) Type() string { return TypeMsgRelayCorkRequest }
+func (m *MsgRelayAxelarCorkRequest) Type() string { return TypeMsgRelayAxelarCorkRequest }
 
 // ValidateBasic implements sdk.Msg
 func (m *MsgRelayAxelarCorkRequest) ValidateBasic() error {
 	if _, err := sdk.AccAddressFromBech32(m.Signer); err != nil {
 		return errorsmod.Wrap(sdkerrors.ErrInvalidAddress, err.Error())
+	}
+
+	if !m.Token.IsPositive() {
+		return fmt.Errorf("token amount must be positive")
+	}
+
+	if m.Fee == 0 {
+		return fmt.Errorf("fee must be greather than zero")
+	}
+
+	if m.ChainId == 0 {
+		return fmt.Errorf("chain ID must be greater than zero")
 	}
 
 	if m.TargetContractAddress == "" {
@@ -123,6 +154,16 @@ func (m *MsgRelayAxelarCorkRequest) MustGetSigner() sdk.AccAddress {
 // MsgRelayAxelarProxyUpgradeRequest //
 ///////////////////////////////////////
 
+// NewMsgRelayAxelarProxyUpgradeRequest returns a new MsgRelayAxelarProxyUpgradeRequest
+func NewMsgRelayAxelarProxyUpgradeRequest(signer sdk.AccAddress, token sdk.Coin, fee uint64, chainID uint64) (*MsgRelayAxelarProxyUpgradeRequest, error) {
+	return &MsgRelayAxelarProxyUpgradeRequest{
+		Signer:  signer.String(),
+		Token:   token,
+		Fee:     fee,
+		ChainId: chainID,
+	}, nil
+}
+
 // Route implements sdk.Msg
 func (m *MsgRelayAxelarProxyUpgradeRequest) Route() string { return ModuleName }
 
@@ -135,6 +176,18 @@ func (m *MsgRelayAxelarProxyUpgradeRequest) Type() string {
 func (m *MsgRelayAxelarProxyUpgradeRequest) ValidateBasic() error {
 	if _, err := sdk.AccAddressFromBech32(m.Signer); err != nil {
 		return errorsmod.Wrap(sdkerrors.ErrInvalidAddress, err.Error())
+	}
+
+	if !m.Token.IsPositive() {
+		return fmt.Errorf("token amount must be positive")
+	}
+
+	if m.Fee == 0 {
+		return fmt.Errorf("fee must be greather than zero")
+	}
+
+	if m.ChainId == 0 {
+		return fmt.Errorf("chain ID must be greater than zero")
 	}
 
 	return nil
@@ -163,16 +216,33 @@ func (m *MsgRelayAxelarProxyUpgradeRequest) MustGetSigner() sdk.AccAddress {
 // MsgBumpAxelarCorkGasRequest //
 /////////////////////////////////
 
+// NewMsgBumpAxelarCorkGasRequest returns a new MsgBumpAxelarCorkGasRequest
+func NewMsgBumpAxelarCorkGasRequest(signer sdk.AccAddress, token sdk.Coin, messageID string) (*MsgBumpAxelarCorkGasRequest, error) {
+	return &MsgBumpAxelarCorkGasRequest{
+		Signer:    signer.String(),
+		Token:     token,
+		MessageId: messageID,
+	}, nil
+}
+
 // Route implements sdk.Msg
 func (m *MsgBumpAxelarCorkGasRequest) Route() string { return ModuleName }
 
 // Type implements sdk.Msg
-func (m *MsgBumpAxelarCorkGasRequest) Type() string { return TypeMsgBumpCorkGasRequest }
+func (m *MsgBumpAxelarCorkGasRequest) Type() string { return TypeMsgBumpAxelarCorkGasRequest }
 
 // ValidateBasic implements sdk.Msg
 func (m *MsgBumpAxelarCorkGasRequest) ValidateBasic() error {
 	if _, err := sdk.AccAddressFromBech32(m.Signer); err != nil {
 		return errorsmod.Wrap(sdkerrors.ErrInvalidAddress, err.Error())
+	}
+
+	if !m.Token.IsPositive() {
+		return fmt.Errorf("token amount must be positive")
+	}
+
+	if m.MessageId == "" {
+		return fmt.Errorf("message ID must be present")
 	}
 
 	return nil
@@ -201,11 +271,20 @@ func (m *MsgBumpAxelarCorkGasRequest) MustGetSigner() sdk.AccAddress {
 // MsgCancelAxelarCorkRequest //
 ////////////////////////////////
 
+// NewMsgCancelAxelarCorkRequest returns a new MsgCancelAxelarCorkRequest
+func NewMsgCancelAxelarCorkRequest(signer sdk.AccAddress, chainID uint64, address common.Address) (*MsgCancelAxelarCorkRequest, error) {
+	return &MsgCancelAxelarCorkRequest{
+		Signer:                signer.String(),
+		ChainId:               chainID,
+		TargetContractAddress: address.String(),
+	}, nil
+}
+
 // Route implements sdk.Msg
 func (m *MsgCancelAxelarCorkRequest) Route() string { return ModuleName }
 
 // Type implements sdk.Msg
-func (m *MsgCancelAxelarCorkRequest) Type() string { return TypeMsgBumpCorkGasRequest }
+func (m *MsgCancelAxelarCorkRequest) Type() string { return TypeMsgCancelAxelarCorkRequest }
 
 // ValidateBasic implements sdk.Msg
 func (m *MsgCancelAxelarCorkRequest) ValidateBasic() error {
@@ -214,11 +293,15 @@ func (m *MsgCancelAxelarCorkRequest) ValidateBasic() error {
 	}
 
 	if m.TargetContractAddress == "" {
-		return fmt.Errorf("cannot relay a cork to an empty address")
+		return fmt.Errorf("cannot cancel a cork to an empty address")
 	}
 
 	if !common.IsHexAddress(m.TargetContractAddress) {
 		return errorsmod.Wrapf(ErrInvalidEVMAddress, "%s", m.TargetContractAddress)
+	}
+
+	if m.ChainId == 0 {
+		return fmt.Errorf("chain ID must be greater than zero")
 	}
 
 	return nil
