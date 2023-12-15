@@ -40,7 +40,7 @@ func (s *IntegrationTestSuite) TestAxelarCork() {
 		////////////////
 
 		arbitrumChainName := "arbitrum"
-		arbitrumChainId := uint64(42161)
+		arbitrumChainID := uint64(42161)
 		proxyAddress := "0xEe75bA2C81C04DcA4b0ED6d1B7077c188FEde4d2"
 
 		// add chain configuration
@@ -50,7 +50,7 @@ func (s *IntegrationTestSuite) TestAxelarCork() {
 			Description: "adding an arbitrum chain config",
 			ChainConfiguration: &types.ChainConfiguration{
 				Name:         arbitrumChainName,
-				Id:           arbitrumChainId,
+				Id:           arbitrumChainID,
 				ProxyAddress: proxyAddress,
 			},
 		}
@@ -76,7 +76,7 @@ func (s *IntegrationTestSuite) TestAxelarCork() {
 		s.Require().Len(chainConfigurationsResponse.Configurations, 1)
 		chainConfig := chainConfigurationsResponse.Configurations[0]
 		s.Require().Equal(chainConfig.Name, arbitrumChainName)
-		s.Require().Equal(chainConfig.Id, arbitrumChainId)
+		s.Require().Equal(chainConfig.Id, arbitrumChainID)
 		s.Require().Equal(chainConfig.ProxyAddress, proxyAddress)
 
 		// add managed cellar
@@ -84,7 +84,7 @@ func (s *IntegrationTestSuite) TestAxelarCork() {
 		addAxelarManagedCellarIDsProp := types.AddAxelarManagedCellarIDsProposal{
 			Title:       "add the counter contract as axelar cellar",
 			Description: "arbitrum counter contract",
-			ChainId:     arbitrumChainId,
+			ChainId:     arbitrumChainID,
 			CellarIds: &types.CellarIDSet{
 				Ids: []string{
 					counterContract.Hex(),
@@ -105,10 +105,10 @@ func (s *IntegrationTestSuite) TestAxelarCork() {
 		s.Require().NoError(err, "Unable to create AddAxelarManagedCellarIDsProposal")
 
 		s.submitAndVoteForAxelarProposal(proposerCtx, orch0ClientCtx, propID, addAxelarManagedCellarIDsPropMsg)
-		propID++
+		//propID++
 
 		s.T().Log("Verifying CellarID correctly added")
-		cellarIDsResponse, err := axelarcorkQueryClient.QueryCellarIDsByChainID(context.Background(), &types.QueryCellarIDsByChainIDRequest{ChainId: arbitrumChainId})
+		cellarIDsResponse, err := axelarcorkQueryClient.QueryCellarIDsByChainID(context.Background(), &types.QueryCellarIDsByChainIDRequest{ChainId: arbitrumChainID})
 		s.Require().NoError(err)
 		s.Require().Len(cellarIDsResponse.CellarIds, 1)
 		s.Require().Equal(cellarIDsResponse.CellarIds[0], counterContract.Hex())
@@ -125,7 +125,7 @@ func (s *IntegrationTestSuite) TestAxelarCork() {
 		s.T().Logf("Scheduling axelar cork calls for height %d", targetBlockHeight)
 		axelarCork := types.AxelarCork{
 			EncodedContractCall:   ABIEncodedInc(),
-			ChainId:               arbitrumChainId,
+			ChainId:               arbitrumChainID,
 			TargetContractAddress: counterContract.Hex(),
 			Deadline:              deadline,
 		}
@@ -137,7 +137,7 @@ func (s *IntegrationTestSuite) TestAxelarCork() {
 			clientCtx, err := s.chain.clientContext("tcp://localhost:26657", orch.keyring, "orch", orch.address())
 			s.Require().NoError(err)
 			axelarCorkMsg, err := types.NewMsgScheduleAxelarCorkRequest(
-				arbitrumChainId,
+				arbitrumChainID,
 				ABIEncodedInc(),
 				counterContract,
 				deadline,
@@ -156,7 +156,7 @@ func (s *IntegrationTestSuite) TestAxelarCork() {
 		}
 
 		s.T().Log("Verifying scheduled axelar corks were created")
-		scheduledCorksResponse, err := axelarcorkQueryClient.QueryScheduledCorks(context.Background(), &types.QueryScheduledCorksRequest{ChainId: arbitrumChainId})
+		scheduledCorksResponse, err := axelarcorkQueryClient.QueryScheduledCorks(context.Background(), &types.QueryScheduledCorksRequest{ChainId: arbitrumChainID})
 		s.Require().NoError(err)
 		s.Require().Len(scheduledCorksResponse.Corks, 4)
 		cork0 := scheduledCorksResponse.Corks[0]
@@ -164,7 +164,7 @@ func (s *IntegrationTestSuite) TestAxelarCork() {
 		//cork2 := scheduledCorksResponse.Corks[2]
 		//cork3 := scheduledCorksResponse.Corks[3]
 		s.Require().Equal(cork0.Cork.EncodedContractCall, ABIEncodedInc())
-		s.Require().Equal(cork0.Cork.ChainId, arbitrumChainId)
+		s.Require().Equal(cork0.Cork.ChainId, arbitrumChainID)
 		s.Require().Equal(cork0.Cork.TargetContractAddress, counterContract.Hex())
 		s.Require().Equal(cork0.Cork.Deadline, deadline)
 		s.Require().Equal(cork0.BlockHeight, targetBlockHeight)
