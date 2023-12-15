@@ -3,6 +3,7 @@ package integration_tests
 import (
 	"context"
 	"encoding/hex"
+	"sort"
 	"time"
 
 	"cosmossdk.io/math"
@@ -32,6 +33,12 @@ func (s *IntegrationTestSuite) TestAxelarCork() {
 		proposerCtx, err := s.chain.clientContext("tcp://localhost:26657", proposer.keyring, "proposer", proposer.address())
 		s.Require().NoError(err)
 		propID := uint64(1)
+
+		sortedValidators := make([]string, 4)
+		for i, validator := range s.chain.validators {
+			sortedValidators[i] = validator.validatorAddress().String()
+		}
+		sort.Sort(sort.StringSlice(sortedValidators))
 
 		axelarcorkQueryClient := types.NewQueryClient(val0ClientCtx)
 
@@ -161,16 +168,37 @@ func (s *IntegrationTestSuite) TestAxelarCork() {
 		s.Require().NoError(err)
 		s.Require().Len(scheduledCorksResponse.Corks, 4)
 		cork0 := scheduledCorksResponse.Corks[0]
-		//cork1 := scheduledCorksResponse.Corks[1]
-		//cork2 := scheduledCorksResponse.Corks[2]
-		//cork3 := scheduledCorksResponse.Corks[3]
+		cork1 := scheduledCorksResponse.Corks[1]
+		cork2 := scheduledCorksResponse.Corks[2]
+		cork3 := scheduledCorksResponse.Corks[3]
 		s.Require().Equal(cork0.Cork.EncodedContractCall, ABIEncodedInc())
 		s.Require().Equal(cork0.Cork.ChainId, arbitrumChainID)
 		s.Require().Equal(cork0.Cork.TargetContractAddress, counterContract.Hex())
 		s.Require().Equal(cork0.Cork.Deadline, deadline)
 		s.Require().Equal(cork0.BlockHeight, targetBlockHeight)
 		s.Require().Equal(cork0.Id, axelarCorkIDHex)
-		//s.Require().Equal(cork0.Validator, val0.address().String())
+		s.Require().Equal(cork1.Cork.EncodedContractCall, ABIEncodedInc())
+		s.Require().Equal(cork1.Cork.ChainId, arbitrumChainID)
+		s.Require().Equal(cork1.Cork.TargetContractAddress, counterContract.Hex())
+		s.Require().Equal(cork1.Cork.Deadline, deadline)
+		s.Require().Equal(cork1.BlockHeight, targetBlockHeight)
+		s.Require().Equal(cork1.Id, axelarCorkIDHex)
+		s.Require().Equal(cork2.Cork.EncodedContractCall, ABIEncodedInc())
+		s.Require().Equal(cork2.Cork.ChainId, arbitrumChainID)
+		s.Require().Equal(cork2.Cork.TargetContractAddress, counterContract.Hex())
+		s.Require().Equal(cork2.Cork.Deadline, deadline)
+		s.Require().Equal(cork2.BlockHeight, targetBlockHeight)
+		s.Require().Equal(cork2.Id, axelarCorkIDHex)
+		s.Require().Equal(cork3.Cork.EncodedContractCall, ABIEncodedInc())
+		s.Require().Equal(cork3.Cork.ChainId, arbitrumChainID)
+		s.Require().Equal(cork3.Cork.TargetContractAddress, counterContract.Hex())
+		s.Require().Equal(cork3.Cork.Deadline, deadline)
+		s.Require().Equal(cork3.BlockHeight, targetBlockHeight)
+		s.Require().Equal(cork3.Id, axelarCorkIDHex)
+
+		corkValidators := []string{cork0.Validator, cork1.Validator, cork2.Validator, cork3.Validator}
+		sort.Sort(sort.StringSlice(corkValidators))
+		s.Require().Equal(corkValidators, sortedValidators)
 
 		// schedule a normal cork
 		// scheduled cork proposal
