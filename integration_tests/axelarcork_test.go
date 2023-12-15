@@ -37,6 +37,15 @@ func (s *IntegrationTestSuite) TestAxelarCork() {
 		// Happy path //
 		////////////////
 
+		// add chain configuration
+		// add managed cellar
+		// schedule a normal cork
+		// scheduled cork proposal
+		// remove managed cellar
+		// upgrade proxy proposal
+		// upgrade but then cancel proxy proposal
+		// remove chain configuration
+
 	})
 }
 
