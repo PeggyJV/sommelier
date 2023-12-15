@@ -10,6 +10,8 @@ import (
 	"github.com/cosmos/cosmos-sdk/client"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	govtypesv1beta1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
+	"github.com/ethereum/go-ethereum/common"
+	"github.com/golang/protobuf/proto"
 	"github.com/peggyjv/sommelier/v7/x/axelarcork/types"
 )
 
@@ -34,13 +36,14 @@ func (s *IntegrationTestSuite) TestAxelarCork() {
 		s.Require().NoError(err)
 		propID := uint64(1)
 
-		sortedValidators := make([]string, 4)
-		for i, validator := range s.chain.validators {
-			sortedValidators[i] = validator.validatorAddress().String()
+		sortedValidators := make([]string, 0, 4)
+		for _, validator := range s.chain.validators {
+			sortedValidators = append(sortedValidators, validator.validatorAddress().String())
 		}
 		sort.Sort(sort.StringSlice(sortedValidators))
 
 		axelarcorkQueryClient := types.NewQueryClient(val0ClientCtx)
+		govQueryClient := govtypesv1beta1.NewQueryClient(orch0ClientCtx)
 
 		////////////////
 		// Happy path //
@@ -112,7 +115,7 @@ func (s *IntegrationTestSuite) TestAxelarCork() {
 		s.Require().NoError(err, "Unable to create AddAxelarManagedCellarIDsProposal")
 
 		s.submitAndVoteForAxelarProposal(proposerCtx, orch0ClientCtx, propID, addAxelarManagedCellarIDsPropMsg)
-		//propID++
+		propID++
 
 		s.T().Log("Verifying CellarID correctly added")
 		cellarIDsResponse, err := axelarcorkQueryClient.QueryCellarIDsByChainID(context.Background(), &types.QueryCellarIDsByChainIDRequest{ChainId: arbitrumChainID})
@@ -200,8 +203,83 @@ func (s *IntegrationTestSuite) TestAxelarCork() {
 		sort.Sort(sort.StringSlice(corkValidators))
 		s.Require().Equal(corkValidators, sortedValidators)
 
-		// schedule a normal cork
-		// scheduled cork proposal
+		s.T().Log("Waiting for scheduled height")
+		s.Require().Eventuallyf(func() bool {
+			node, err := val0ClientCtx.GetNode()
+			s.Require().NoError(err)
+			status, err := node.Status(context.Background())
+			s.Require().NoError(err)
+
+			currentHeight := status.SyncInfo.LatestBlockHeight
+			if currentHeight > int64(targetBlockHeight+1) {
+				return true
+			} else if currentHeight < int64(targetBlockHeight) {
+				scheduledCorksResponse, err := axelarcorkQueryClient.QueryScheduledCorks(context.Background(), &types.QueryScheduledCorksRequest{ChainId: arbitrumChainID})
+				if err != nil {
+					s.T().Logf("error: %s", err)
+					return false
+				}
+
+				// verify that the scheduled corks have not yet been consumed
+				s.Require().Len(scheduledCorksResponse.Corks, len(s.chain.validators))
+			}
+
+			return false
+		}, 3*time.Minute, 1*time.Second, "never reached scheduled height")
+
+		s.T().Log("Verifying axelar cork was approved")
+		corkResultResponse, err := axelarcorkQueryClient.QueryCorkResult(context.Background(), &types.QueryCorkResultRequest{Id: axelarCorkIDHex, ChainId: arbitrumChainID})
+		s.Require().NoError(err)
+		s.Require().True(corkResultResponse.CorkResult.Approved)
+		s.Require().True(sdk.MustNewDecFromStr(corkResultResponse.CorkResult.ApprovalPercentage).GT(corkVoteThreshold))
+		s.Require().Equal(counterContract, common.HexToAddress(corkResultResponse.CorkResult.Cork.TargetContractAddress))
+
+		s.T().Log("Verifying scheduled axelar corks were deleted")
+		scheduledCorksByHeightResponse, err := axelarcorkQueryClient.QueryScheduledCorksByBlockHeight(context.Background(), &types.QueryScheduledCorksByBlockHeightRequest{BlockHeight: targetBlockHeight, ChainId: arbitrumChainID})
+		s.Require().NoError(err)
+		s.Require().Len(scheduledCorksByHeightResponse.Corks, 0)
+
+		protoJSON := "{\"cellar_id\":\"0x123801a7D398351b8bE11C439e05C5B3259aeC9B\",\"cellar_v1\":{\"some_fuction\":{\"function_args\":{}},\"block_height\":12345}}"
+		s.T().Log("Creating AxelarScheduledCorkProposal for counter contract")
+		addAxelarScheduledCorkProp := types.AxelarScheduledCorkProposal{
+			Title:                 "schedule a cork to the counter contract",
+			Description:           "arbitrum counter contract scheduled cork",
+			BlockHeight:           targetBlockHeight,
+			ChainId:               arbitrumChainID,
+			TargetContractAddress: counterContract.Hex(),
+			ContractCallProtoJson: protoJSON,
+			Deadline:              deadline,
+		}
+
+		addAxelarScheduledCorkPropMsg, err := govtypesv1beta1.NewMsgSubmitProposal(
+			&addAxelarScheduledCorkProp,
+			sdk.Coins{
+				{
+					Denom:  testDenom,
+					Amount: math.NewInt(2),
+				},
+			},
+			proposer.address(),
+		)
+		s.Require().NoError(err, "Unable to create AxelarScheduledCorkProposal")
+
+		s.submitAndVoteForAxelarProposal(proposerCtx, orch0ClientCtx, propID, addAxelarScheduledCorkPropMsg)
+		//propID++
+
+		s.T().Log("Verifying the details of the AxelarScheduledCorkProposal proposal")
+		proposalResponse, err := govQueryClient.Proposal(context.Background(), &govtypesv1beta1.QueryProposalRequest{ProposalId: propID})
+		s.Require().NoError(err)
+		propContent := &types.AxelarScheduledCorkProposal{}
+		err = proto.Unmarshal(proposalResponse.Proposal.Content.Value, propContent)
+		s.Require().NoError(err, "couldn't unmarshal into proposal")
+		s.Require().Equal(propContent.Title, addAxelarScheduledCorkProp.Title)
+		s.Require().Equal(propContent.Description, addAxelarScheduledCorkProp.Description)
+		s.Require().Equal(propContent.BlockHeight, addAxelarScheduledCorkProp.BlockHeight)
+		s.Require().Equal(propContent.ChainId, addAxelarScheduledCorkProp.ChainId)
+		s.Require().Equal(propContent.TargetContractAddress, addAxelarScheduledCorkProp.TargetContractAddress)
+		s.Require().Equal(propContent.ContractCallProtoJson, addAxelarScheduledCorkProp.ContractCallProtoJson)
+		s.Require().Equal(propContent.Deadline, addAxelarScheduledCorkProp.Deadline)
+
 		// remove managed cellar
 		// upgrade proxy proposal
 		// upgrade but then cancel proxy proposal
