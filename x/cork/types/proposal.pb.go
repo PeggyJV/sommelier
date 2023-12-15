@@ -291,21 +291,20 @@ type ScheduledCorkProposal struct {
 	Description           string `protobuf:"bytes,2,opt,name=description,proto3" json:"description,omitempty"`
 	BlockHeight           uint64 `protobuf:"varint,3,opt,name=block_height,json=blockHeight,proto3" json:"block_height,omitempty"`
 	TargetContractAddress string `protobuf:"bytes,4,opt,name=target_contract_address,json=targetContractAddress,proto3" json:"target_contract_address,omitempty"`
-	//
 	// The JSON representation of a ScheduleRequest defined in the Steward protos
 	//
 	// Example: The following is the JSON form of a ScheduleRequest containing a steward.v2.cellar_v1.TrustPosition
 	// message, which maps to the `trustPosition(address)` function of the the V1 Cellar contract.
 	//
-	// {
-	//   "cellar_id": "0x1234567890000000000000000000000000000000",
-	//   "cellar_v1": {
-	//     "trust_position": {
-	//       "erc20_address": "0x1234567890000000000000000000000000000000"
-	//     }
-	//   },
-	//   "block_height": 1000000
-	// }
+	//	{
+	//	  "cellar_id": "0x1234567890000000000000000000000000000000",
+	//	  "cellar_v1": {
+	//	    "trust_position": {
+	//	      "erc20_address": "0x1234567890000000000000000000000000000000"
+	//	    }
+	//	  },
+	//	  "block_height": 1000000
+	//	}
 	//
 	// You can use the Steward CLI to generate the required JSON rather than constructing it by hand https://github.com/peggyjv/steward
 	ContractCallProtoJson string `protobuf:"bytes,5,opt,name=contract_call_proto_json,json=contractCallProtoJson,proto3" json:"contract_call_proto_json,omitempty"`

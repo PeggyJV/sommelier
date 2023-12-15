@@ -2,6 +2,7 @@ package keeper
 
 import (
 	"bytes"
+	"encoding/binary"
 
 	"github.com/cosmos/cosmos-sdk/codec"
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
@@ -297,6 +298,7 @@ func (k Keeper) GetApprovedScheduledCorks(ctx sdk.Context) (approvedCorks []type
 		}
 
 		k.DeleteScheduledCork(ctx, currentBlockHeight, id, val, addr)
+		k.DecrementValidatorCorkCount(ctx, val)
 
 		return false
 	})
@@ -357,4 +359,36 @@ func (k Keeper) HasCellarID(ctx sdk.Context, address common.Address) (found bool
 	}
 
 	return found
+}
+
+///////////////////////////
+// Validator Cork counts //
+///////////////////////////
+
+func (k Keeper) GetValidatorCorkCount(ctx sdk.Context, val sdk.ValAddress) (count uint64) {
+	store := ctx.KVStore(k.storeKey)
+	bz := store.Get(types.GetValidatorCorkCountKey(val))
+	if len(bz) == 0 {
+		return 0
+	}
+
+	return binary.BigEndian.Uint64(bz)
+}
+
+func (k Keeper) SetValidatorCorkCount(ctx sdk.Context, val sdk.ValAddress, count uint64) {
+	bz := make([]byte, 8)
+	binary.BigEndian.PutUint64(bz, count)
+	ctx.KVStore(k.storeKey).Set(types.GetValidatorCorkCountKey(val), bz)
+}
+
+func (k Keeper) IncrementValidatorCorkCount(ctx sdk.Context, val sdk.ValAddress) {
+	count := k.GetValidatorCorkCount(ctx, val)
+	k.SetValidatorCorkCount(ctx, val, count+1)
+}
+
+func (k Keeper) DecrementValidatorCorkCount(ctx sdk.Context, val sdk.ValAddress) {
+	count := k.GetValidatorCorkCount(ctx, val)
+	if count > 0 {
+		k.SetValidatorCorkCount(ctx, val, count-1)
+	}
 }
