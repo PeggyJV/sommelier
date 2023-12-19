@@ -181,6 +181,7 @@ func HandleUpgradeAxelarProxyContractProposal(ctx sdk.Context, k Keeper, p types
 	}
 
 	upgradeData := types.AxelarUpgradeData{
+		ChainId:                   p.ChainId,
 		Payload:                   payload,
 		ExecutableHeightThreshold: ctx.BlockHeight() + int64(types.DefaultExecutableHeightThreshold),
 	}

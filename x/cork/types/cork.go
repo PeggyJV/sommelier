@@ -20,12 +20,12 @@ func (c *Cork) InvalidationScope() tmbytes.HexBytes {
 
 func (c *Cork) IDHash(blockHeight uint64) []byte {
 	blockHeightBytes := sdk.Uint64ToBigEndian(blockHeight)
-
+	chainIDBytes := sdk.Uint64ToBigEndian(1) // corks are on eth mainnet
 	address := common.HexToAddress(c.TargetContractAddress)
 
 	return crypto.Keccak256Hash(
 		bytes.Join(
-			[][]byte{blockHeightBytes, address.Bytes(), c.EncodedContractCall},
+			[][]byte{blockHeightBytes, chainIDBytes, address.Bytes(), c.EncodedContractCall},
 			[]byte{},
 		)).Bytes()
 }

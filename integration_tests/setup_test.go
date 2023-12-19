@@ -19,6 +19,7 @@ import (
 	govtypesv1beta1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
 	"github.com/peggyjv/sommelier/v7/app/params"
 	auctiontypes "github.com/peggyjv/sommelier/v7/x/auction/types"
+	axelarcorktypes "github.com/peggyjv/sommelier/v7/x/axelarcork/types"
 	cellarfeestypes "github.com/peggyjv/sommelier/v7/x/cellarfees/types"
 	corktypes "github.com/peggyjv/sommelier/v7/x/cork/types"
 
@@ -36,6 +37,7 @@ import (
 	genutiltypes "github.com/cosmos/cosmos-sdk/x/genutil/types"
 	minttypes "github.com/cosmos/cosmos-sdk/x/mint/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
+	ibctransfertypes "github.com/cosmos/ibc-go/v6/modules/apps/transfer/types"
 	"github.com/ory/dockertest/v3"
 	"github.com/ory/dockertest/v3/docker"
 	"github.com/spf13/viper"
@@ -407,10 +409,24 @@ func (s *IntegrationTestSuite) initGenesis() {
 		FundingModuleAccount:       cellarfeestypes.ModuleName,
 		ProceedsModuleAccount:      cellarfeestypes.ModuleName,
 	})
-
 	bz, err = cdc.MarshalJSON(&auctionGenState)
 	s.Require().NoError(err)
 	appGenState[auctiontypes.ModuleName] = bz
+
+	axelarcorkGenState := axelarcorktypes.DefaultGenesisState()
+	s.Require().NoError(cdc.UnmarshalJSON(appGenState[axelarcorktypes.ModuleName], &axelarcorkGenState))
+	axelarcorkGenState.Params = &axelarcorktypes.Params{
+		Enabled:           true,
+		IbcChannel:        "channel-1",
+		IbcPort:           ibctransfertypes.PortID,
+		GmpAccount:        "axelar1dv4u5k73pzqrxlzujxg3qp8kvc3pje7jtdvu72npnt5zhq05ejcsn5qme5",
+		ExecutorAccount:   "axelar1zl3rxpp70lmte2xr6c4lgske2fyuj3hupcsvcd",
+		TimeoutDuration:   uint64(6 * time.Hour),
+		CorkTimeoutBlocks: 5000,
+	}
+	bz, err = cdc.MarshalJSON(&axelarcorkGenState)
+	s.Require().NoError(err)
+	appGenState[axelarcorktypes.ModuleName] = bz
 
 	// set cellarfees gen state
 	cellarfeesGenState := cellarfeestypes.DefaultGenesisState()

@@ -418,19 +418,6 @@ func NewSommelierApp(
 		app.AccountKeeper, app.BankKeeper, scopedTransferKeeper,
 	)
 
-	// create axelar cork keeper
-	app.AxelarCorkKeeper = axelarcorkkeeper.NewKeeper(
-		appCodec,
-		keys[axelarcorktypes.StoreKey],
-		app.GetSubspace(axelarcorktypes.ModuleName),
-		app.AccountKeeper,
-		app.BankKeeper,
-		app.StakingKeeper,
-		app.TransferKeeper,
-		app.DistrKeeper,
-		app.IBCKeeper.ChannelKeeper,
-		app.GravityKeeper,
-	)
 	transferModule := ibctransfer.NewAppModule(app.TransferKeeper)
 	transferIBCModule := ibctransfer.NewIBCModule(app.TransferKeeper)
 	var transferStack ibcporttypes.IBCModule = transferIBCModule
@@ -457,6 +444,20 @@ func NewSommelierApp(
 		app.DistrKeeper, sdk.DefaultPowerReduction,
 		app.ModuleAccountAddressesToNames([]string{cellarfeestypes.ModuleName}),
 		app.ModuleAccountAddressesToNames([]string{distrtypes.ModuleName}),
+	)
+
+	// create axelar cork keeper
+	app.AxelarCorkKeeper = axelarcorkkeeper.NewKeeper(
+		appCodec,
+		keys[axelarcorktypes.StoreKey],
+		app.GetSubspace(axelarcorktypes.ModuleName),
+		app.AccountKeeper,
+		app.BankKeeper,
+		app.StakingKeeper,
+		app.TransferKeeper,
+		app.DistrKeeper,
+		app.IBCKeeper.ChannelKeeper,
+		app.GravityKeeper,
 	)
 
 	app.CorkKeeper = corkkeeper.NewKeeper(

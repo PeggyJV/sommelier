@@ -10,12 +10,12 @@ import (
 
 func (c *AxelarCork) IDHash(blockHeight uint64) []byte {
 	blockHeightBytes := sdk.Uint64ToBigEndian(blockHeight)
-
+	chainIDBytes := sdk.Uint64ToBigEndian(c.ChainId)
 	address := common.HexToAddress(c.TargetContractAddress)
 
 	return crypto.Keccak256Hash(
 		bytes.Join(
-			[][]byte{blockHeightBytes, address.Bytes(), c.EncodedContractCall, sdk.Uint64ToBigEndian(c.Deadline)},
+			[][]byte{blockHeightBytes, chainIDBytes, address.Bytes(), c.EncodedContractCall},
 			[]byte{},
 		)).Bytes()
 }
