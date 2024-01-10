@@ -101,6 +101,7 @@ fn compile_protos(out_dir: &Path, tmp_dir: &Path) {
     config.out_dir(tmp_dir);
     config
         .type_attribute("ScheduledCorkProposal", "#[derive(serde::Deserialize, serde::Serialize)]")
+        .type_attribute("AxelarScheduledCorkProposal", "#[derive(serde::Deserialize, serde::Serialize)]")
         .compile_protos(&protos, &proto_include_paths)
         .unwrap();
 

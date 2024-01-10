@@ -136,6 +136,8 @@ pub struct Params {
     /// VoteThreshold defines the percentage of bonded stake required to vote for a scheduled cork to be approved
     #[prost(string, tag = "1")]
     pub vote_threshold: ::prost::alloc::string::String,
+    #[prost(uint64, tag = "2")]
+    pub max_corks_per_validator: u64,
 }
 /// QueryParamsRequest is the request type for the Query/Params gRPC method.
 #[derive(Clone, PartialEq, ::prost::Message)]
