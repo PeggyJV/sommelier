@@ -40,7 +40,7 @@ message AxelarCorkResults {
 }
 
 message CellarIDSet {
-  ChainConfiguration chain = 1;
+  uint64 chain_id = 1;
   repeated string ids = 2;
 }
 
@@ -62,7 +62,7 @@ message AxelarContractCallNonce {
 }
 
 // Represents a proxy contract upgrade approved by governance with a delay in
-// execution in case of an error. 
+// execution in case of an error.
 message AxelarUpgradeData {
     uint64 chain_id = 1;
     bytes payload = 2;

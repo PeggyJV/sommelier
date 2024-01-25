@@ -38,7 +38,7 @@ func CreateUpgradeHandler(
 		icaParams := icahosttypes.DefaultParams()
 		icaHostKeeper.SetParams(ctx, icaParams)
 
-		// We must manually run InitGenesis for pubsub and auctions so we can adjust their values
+		// We must manually run InitGenesis for auction, axelarcork, and pubsub so we can adjust their values
 		// during the upgrade process. RunMigrations will migrate to the new cork version. Setting the consensus
 		// version to 1 prevents RunMigrations from running InitGenesis itself.
 		fromVM[auctiontypes.ModuleName] = mm.Modules[auctiontypes.ModuleName].ConsensusVersion()
@@ -69,12 +69,12 @@ func auctionInitGenesis(ctx sdk.Context, auctionKeeper auctionkeeper.Keeper) {
 	genesisState := auctiontypes.DefaultGenesisState()
 
 	usomm52WeekLow := sdk.MustNewDecFromStr("0.079151")
-	eth52WeekHigh := sdk.MustNewDecFromStr("2359.89")
-	btc52WeekHigh := sdk.MustNewDecFromStr("44202.18")
+	eth52WeekHigh := sdk.MustNewDecFromStr("2618.33")
+	btc52WeekHigh := sdk.MustNewDecFromStr("46936.19")
 	oneDollar := sdk.MustNewDecFromStr("1.0")
 
-	// Setting this to a block on 12/14/23 -- just means token price will get stale 4 days faster post-upgrade
-	var lastUpdatedBlock uint64 = 12187266
+	// Setting this to a block on 1/25/24 -- just means token price will get stale 6 days faster post-upgrade
+	var lastUpdatedBlock uint64 = 12817014
 
 	usommPrice := auctiontypes.TokenPrice{
 		Denom:            "usomm",
@@ -191,27 +191,30 @@ func axelarcorkInitGenesis(ctx sdk.Context, axelarcorkKeeper axelarcorkkeeper.Ke
 		},
 	}
 
-	// InitGenesis reads through each chain configuration in order and sets the cellar ID set
-	// for it based on index, so this list must be of the same size and order as the respective
-	// chain configurations above
 	genesisState.CellarIds = []*axelarcorktypes.CellarIDSet{
 		{
-			Ids: []string{"0x438087f7c226A89762a791F187d7c3D4a0e95ae6"}, // arbitrum test cellar
+			ChainId: 42161, // arbitrum with test cellar
+			Ids:     []string{"0x438087f7c226A89762a791F187d7c3D4a0e95ae6"},
 		},
 		{
-			Ids: []string{},
+			ChainId: 43114, // Avalanche
+			Ids:     []string{},
 		},
 		{
-			Ids: []string{},
+			ChainId: 8453, // base
+			Ids:     []string{},
 		},
 		{
-			Ids: []string{},
+			ChainId: 56, // binance
+			Ids:     []string{},
 		},
 		{
-			Ids: []string{},
+			ChainId: 10, // optimism
+			Ids:     []string{},
 		},
 		{
-			Ids: []string{},
+			ChainId: 137, // Polygon
+			Ids:     []string{},
 		},
 	}
 

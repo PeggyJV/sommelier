@@ -24,6 +24,10 @@ func HandleAddManagedCellarsProposal(ctx sdk.Context, k Keeper, p types.AddAxela
 		return fmt.Errorf("chain by id %d not found", p.ChainId)
 	}
 
+	if err := p.CellarIds.ValidateBasic(); err != nil {
+		return err
+	}
+
 	cellarIDs := k.GetCellarIDs(ctx, config.Id)
 
 	for _, proposedCellarID := range p.CellarIds.Ids {
@@ -56,6 +60,10 @@ func HandleRemoveManagedCellarsProposal(ctx sdk.Context, k Keeper, p types.Remov
 		return fmt.Errorf("chain by id %d not found", p.ChainId)
 	}
 
+	if err := p.CellarIds.ValidateBasic(); err != nil {
+		return err
+	}
+
 	var outputCellarIDs types.CellarIDSet
 
 	for _, existingID := range k.GetCellarIDs(ctx, config.Id) {
@@ -70,6 +78,9 @@ func HandleRemoveManagedCellarsProposal(ctx sdk.Context, k Keeper, p types.Remov
 			outputCellarIDs.Ids = append(outputCellarIDs.Ids, existingID.Hex())
 		}
 	}
+	outputCellarIDs.ChainId = config.Id
+
+	// unlike for adding an ID, we don't need to re-sort because we're removing elements from an already sorted list
 	k.SetCellarIDs(ctx, config.Id, outputCellarIDs)
 
 	return nil

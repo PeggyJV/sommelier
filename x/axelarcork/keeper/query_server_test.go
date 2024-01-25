@@ -59,7 +59,7 @@ func (suite *KeeperTestSuite) TestQueriesHappyPath() {
 	axelarcorkKeeper.SetAxelarCorkResult(ctx, TestEVMChainID, id, corkResult)
 
 	ids := []string{"0x0000000000000000000000000000000000000000", "0x1111111111111111111111111111111111111111"}
-	axelarcorkKeeper.SetCellarIDs(ctx, TestEVMChainID, types.CellarIDSet{Ids: ids})
+	axelarcorkKeeper.SetCellarIDs(ctx, TestEVMChainID, types.CellarIDSet{ChainId: TestEVMChainID, Ids: ids})
 
 	nonce := types.AxelarContractCallNonce{
 		Nonce:           1,
@@ -113,7 +113,7 @@ func (suite *KeeperTestSuite) TestQueriesHappyPath() {
 
 	cellarIDsResult, err := axelarcorkKeeper.QueryCellarIDs(sdk.WrapSDKContext(ctx), &types.QueryCellarIDsRequest{})
 	require.Nil(err)
-	expectedCellarIDSet := []*types.CellarIDSet{{Ids: ids, Chain: &chainConfig}}
+	expectedCellarIDSet := []*types.CellarIDSet{{Ids: ids, ChainId: chainConfig.Id}}
 	require.Equal(expectedCellarIDSet, cellarIDsResult.CellarIds)
 
 	cellarIDsByChainIDResult, err := axelarcorkKeeper.QueryCellarIDsByChainID(sdk.WrapSDKContext(ctx), &types.QueryCellarIDsByChainIDRequest{ChainId: TestEVMChainID})

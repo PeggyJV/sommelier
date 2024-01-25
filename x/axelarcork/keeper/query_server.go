@@ -36,7 +36,7 @@ func (k Keeper) QueryCellarIDs(c context.Context, req *types.QueryCellarIDsReque
 		CellarIds: []*types.CellarIDSet{},
 	}
 	k.IterateChainConfigurations(ctx, func(config types.ChainConfiguration) (stop bool) {
-		set := types.CellarIDSet{Chain: &config, Ids: []string{}}
+		set := types.CellarIDSet{ChainId: config.Id, Ids: []string{}}
 		for _, id := range k.GetCellarIDs(ctx, config.Id) {
 			set.Ids = append(set.Ids, id.Hex())
 		}

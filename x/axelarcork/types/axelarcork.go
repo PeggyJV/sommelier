@@ -2,7 +2,9 @@ package types
 
 import (
 	"bytes"
+	"fmt"
 
+	errorsmod "cosmossdk.io/errors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/crypto"
@@ -46,6 +48,20 @@ func (c *AxelarCork) ValidateBasic() error {
 
 	if !common.IsHexAddress(c.TargetContractAddress) {
 		return ErrInvalidEVMAddress
+	}
+
+	return nil
+}
+
+func (c *CellarIDSet) ValidateBasic() error {
+	if c.ChainId == 0 {
+		return fmt.Errorf("chain ID must be non-zero")
+	}
+
+	for _, addr := range c.Ids {
+		if !common.IsHexAddress(addr) {
+			return errorsmod.Wrapf(ErrInvalidEVMAddress, "%s", addr)
+		}
 	}
 
 	return nil

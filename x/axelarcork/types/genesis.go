@@ -28,6 +28,12 @@ func (gs GenesisState) Validate() error {
 		}
 	}
 
+	for _, cids := range gs.CellarIds {
+		if err := cids.ValidateBasic(); err != nil {
+			return err
+		}
+	}
+
 	for _, sc := range gs.ScheduledCorks.ScheduledCorks {
 		if err := sc.Cork.ValidateBasic(); err != nil {
 			return err
