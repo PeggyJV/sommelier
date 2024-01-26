@@ -137,7 +137,7 @@ func HandleCommunityPoolSpendProposal(ctx sdk.Context, k Keeper, p types.AxelarC
 		params.IbcChannel,
 		p.Amount,
 		sender.String(),
-		p.Recipient,
+		params.GmpAccount,
 		clienttypes.ZeroHeight(),
 		uint64(ctx.BlockTime().Add(time.Duration(params.TimeoutDuration)).UnixNano()),
 		memo,
