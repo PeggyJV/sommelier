@@ -98,6 +98,7 @@ func (s *IntegrationTestSuite) TestAxelarCork() {
 			Description: "arbitrum counter contract",
 			ChainId:     arbitrumChainID,
 			CellarIds: &types.CellarIDSet{
+				ChainId: arbitrumChainID,
 				Ids: []string{
 					counterContract.Hex(),
 				},
@@ -380,6 +381,7 @@ func (s *IntegrationTestSuite) TestAxelarCork() {
 			Description: "arbitrum counter contract",
 			ChainId:     arbitrumChainID,
 			CellarIds: &types.CellarIDSet{
+				ChainId: arbitrumChainID,
 				Ids: []string{
 					counterContract.Hex(),
 				},
