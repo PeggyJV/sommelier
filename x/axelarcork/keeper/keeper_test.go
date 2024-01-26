@@ -115,7 +115,8 @@ func (suite *KeeperTestSuite) TestSetGetCellarIDsHappyPath() {
 	require := suite.Require()
 
 	cellarIDSet := types.CellarIDSet{
-		Ids: []string{sampleCellarHex},
+		ChainId: TestEVMChainID,
+		Ids:     []string{sampleCellarHex},
 	}
 	expected := []common.Address{}
 	for _, id := range cellarIDSet.Ids {

@@ -65,7 +65,7 @@ func init() {
 	govtypesv1beta1.ModuleCdc.RegisterConcrete(&CancelAxelarProxyContractUpgradeProposal{}, "sommelier/CancelAxelarProxyContractUpgradeProposal", nil)
 }
 
-func NewAddManagedCellarIDsProposal(title string, description string, chainID uint64, cellarIds *CellarIDSet) *AddAxelarManagedCellarIDsProposal {
+func NewAddAxelarManagedCellarIDsProposal(title string, description string, chainID uint64, cellarIds *CellarIDSet) *AddAxelarManagedCellarIDsProposal {
 	return &AddAxelarManagedCellarIDsProposal{
 		Title:       title,
 		Description: description,
@@ -87,20 +87,18 @@ func (m *AddAxelarManagedCellarIDsProposal) ValidateBasic() error {
 		return err
 	}
 
-	if len(m.CellarIds.Ids) == 0 {
-		return fmt.Errorf("can't have an add prosoposal with no cellars")
+	if err := m.CellarIds.ValidateBasic(); err != nil {
+		return err
 	}
 
-	for _, cellarID := range m.CellarIds.Ids {
-		if !common.IsHexAddress(cellarID) {
-			return errorsmod.Wrapf(ErrInvalidEVMAddress, "%s", cellarID)
-		}
+	if m.ChainId == 0 {
+		return fmt.Errorf("chain ID must be non-zero")
 	}
 
 	return nil
 }
 
-func NewRemoveManagedCellarIDsProposal(title string, description string, chainID uint64, cellarIds *CellarIDSet) *RemoveAxelarManagedCellarIDsProposal {
+func NewRemoveAxelarManagedCellarIDsProposal(title string, description string, chainID uint64, cellarIds *CellarIDSet) *RemoveAxelarManagedCellarIDsProposal {
 	return &RemoveAxelarManagedCellarIDsProposal{
 		Title:       title,
 		Description: description,
@@ -122,14 +120,18 @@ func (m *RemoveAxelarManagedCellarIDsProposal) ValidateBasic() error {
 		return err
 	}
 
-	if len(m.CellarIds.Ids) == 0 {
-		return fmt.Errorf("can't have a remove prosoposal with no cellars")
+	if err := m.CellarIds.ValidateBasic(); err != nil {
+		return err
+	}
+
+	if m.ChainId == 0 {
+		return fmt.Errorf("chain ID must be non-zero")
 	}
 
 	return nil
 }
 
-func NewAxelarScheduledCorkProposal(title string, description string, blockHeight uint64, chainID uint64, targetContractAddress string, contractCallProtoJSON string) *AxelarScheduledCorkProposal {
+func NewAxelarScheduledCorkProposal(title string, description string, blockHeight uint64, chainID uint64, targetContractAddress string, contractCallProtoJSON string, deadline uint64) *AxelarScheduledCorkProposal {
 	return &AxelarScheduledCorkProposal{
 		Title:                 title,
 		Description:           description,
@@ -137,6 +139,7 @@ func NewAxelarScheduledCorkProposal(title string, description string, blockHeigh
 		ChainId:               chainID,
 		TargetContractAddress: targetContractAddress,
 		ContractCallProtoJson: contractCallProtoJSON,
+		Deadline:              deadline,
 	}
 }
 
@@ -153,6 +156,18 @@ func (m *AxelarScheduledCorkProposal) ValidateBasic() error {
 		return err
 	}
 
+	if m.BlockHeight == 0 {
+		return fmt.Errorf("block height must be non-zero")
+	}
+
+	if m.ChainId == 0 {
+		return fmt.Errorf("chain ID must be non-zero")
+	}
+
+	if !common.IsHexAddress(m.TargetContractAddress) {
+		return errorsmod.Wrapf(ErrInvalidEVMAddress, "%s", m.TargetContractAddress)
+	}
+
 	if len(m.ContractCallProtoJson) == 0 {
 		return errorsmod.Wrapf(ErrInvalidJSON, "cannot have empty contract call")
 	}
@@ -161,8 +176,8 @@ func (m *AxelarScheduledCorkProposal) ValidateBasic() error {
 		return errorsmod.Wrapf(ErrInvalidJSON, "%s", m.ContractCallProtoJson)
 	}
 
-	if !common.IsHexAddress(m.TargetContractAddress) {
-		return errorsmod.Wrapf(ErrInvalidEVMAddress, "%s", m.TargetContractAddress)
+	if m.Deadline == 0 {
+		return fmt.Errorf("deadline must be non-zero")
 	}
 
 	return nil
@@ -191,12 +206,16 @@ func (m *AxelarCommunityPoolSpendProposal) ValidateBasic() error {
 		return err
 	}
 
-	if m.Amount.Amount.IsZero() {
-		return ErrValuelessSend
-	}
-
 	if !common.IsHexAddress(m.Recipient) {
 		return errorsmod.Wrapf(ErrInvalidEVMAddress, "%s", m.Recipient)
+	}
+
+	if m.ChainId == 0 {
+		return fmt.Errorf("chain ID must be non-zero")
+	}
+
+	if !m.Amount.Amount.IsPositive() {
+		return ErrValuelessSend
 	}
 
 	return nil
@@ -251,6 +270,10 @@ func (m *RemoveChainConfigurationProposal) ValidateBasic() error {
 		return err
 	}
 
+	if m.ChainId == 0 {
+		return fmt.Errorf("chain ID must be non-zero")
+	}
+
 	return nil
 }
 
@@ -274,6 +297,10 @@ func (m *UpgradeAxelarProxyContractProposal) ProposalType() string {
 func (m *UpgradeAxelarProxyContractProposal) ValidateBasic() error {
 	if err := govtypesv1beta1.ValidateAbstract(m); err != nil {
 		return err
+	}
+
+	if m.ChainId == 0 {
+		return fmt.Errorf("chain ID must be non-zero")
 	}
 
 	if !common.IsHexAddress(m.NewProxyAddress) {
@@ -302,6 +329,10 @@ func (m *CancelAxelarProxyContractUpgradeProposal) ProposalType() string {
 func (m *CancelAxelarProxyContractUpgradeProposal) ValidateBasic() error {
 	if err := govtypesv1beta1.ValidateAbstract(m); err != nil {
 		return err
+	}
+
+	if m.ChainId == 0 {
+		return fmt.Errorf("chain ID must be non-zero")
 	}
 
 	return nil

@@ -147,7 +147,7 @@ func (suite *KeeperTestSuite) TestGetWinningVotes() {
 	testHeight := uint64(ctx.BlockHeight())
 	params := types.DefaultParams()
 	params.VoteThreshold = sdk.ZeroDec()
-	corkKeeper.setParams(ctx, params)
+	corkKeeper.SetParams(ctx, params)
 	cork := types.Cork{
 		EncodedContractCall:   []byte("testcall"),
 		TargetContractAddress: sampleCellarHex,
@@ -223,6 +223,6 @@ func (suite *KeeperTestSuite) TestParamSet() {
 	require.Panics(func() { corkKeeper.GetParamSet(ctx) })
 
 	params := types.DefaultParams()
-	corkKeeper.setParams(ctx, params)
+	corkKeeper.SetParams(ctx, params)
 	require.Equal(params, corkKeeper.GetParamSet(ctx))
 }

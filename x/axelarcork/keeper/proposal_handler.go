@@ -24,6 +24,10 @@ func HandleAddManagedCellarsProposal(ctx sdk.Context, k Keeper, p types.AddAxela
 		return fmt.Errorf("chain by id %d not found", p.ChainId)
 	}
 
+	if err := p.CellarIds.ValidateBasic(); err != nil {
+		return err
+	}
+
 	cellarIDs := k.GetCellarIDs(ctx, config.Id)
 
 	for _, proposedCellarID := range p.CellarIds.Ids {
@@ -56,6 +60,10 @@ func HandleRemoveManagedCellarsProposal(ctx sdk.Context, k Keeper, p types.Remov
 		return fmt.Errorf("chain by id %d not found", p.ChainId)
 	}
 
+	if err := p.CellarIds.ValidateBasic(); err != nil {
+		return err
+	}
+
 	var outputCellarIDs types.CellarIDSet
 
 	for _, existingID := range k.GetCellarIDs(ctx, config.Id) {
@@ -70,6 +78,9 @@ func HandleRemoveManagedCellarsProposal(ctx sdk.Context, k Keeper, p types.Remov
 			outputCellarIDs.Ids = append(outputCellarIDs.Ids, existingID.Hex())
 		}
 	}
+	outputCellarIDs.ChainId = config.Id
+
+	// unlike for adding an ID, we don't need to re-sort because we're removing elements from an already sorted list
 	k.SetCellarIDs(ctx, config.Id, outputCellarIDs)
 
 	return nil
@@ -109,6 +120,7 @@ func HandleCommunityPoolSpendProposal(ctx sdk.Context, k Keeper, p types.AxelarC
 		return fmt.Errorf("chain by id %d not found", p.ChainId)
 	}
 
+	// TODO(bolten: is there really no fee necessary or executor to target?
 	axelarMemo := types.AxelarBody{
 		DestinationChain:   config.Name,
 		DestinationAddress: p.Recipient,
@@ -126,7 +138,7 @@ func HandleCommunityPoolSpendProposal(ctx sdk.Context, k Keeper, p types.AxelarC
 		params.IbcChannel,
 		p.Amount,
 		sender.String(),
-		p.Recipient,
+		params.GmpAccount,
 		clienttypes.ZeroHeight(),
 		uint64(ctx.BlockTime().Add(time.Duration(params.TimeoutDuration)).UnixNano()),
 		memo,

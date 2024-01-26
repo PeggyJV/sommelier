@@ -13,6 +13,7 @@ var (
 	KeyMinimumSaleTokensUSDValue            = []byte("MinimumSaleTokensUSDValue")
 	KeyAuctionMaxBlockAge                   = []byte("AuctionMaxBlockAge")
 	KeyAuctionPriceDecreaseAccelerationRate = []byte("AuctionPriceDecreaseAccelerationRate")
+	KeyMinimumAuctionHeight                 = []byte("MinimumAuctionHeight")
 )
 
 var _ paramtypes.ParamSet = &Params{}
@@ -30,6 +31,7 @@ func DefaultParams() Params {
 		MinimumSaleTokensUsdValue:            sdk.MustNewDecFromStr("1.0"),   // minimum value of sale tokens to consider starting an auction
 		AuctionMaxBlockAge:                   864000,                         // roughly 60 days based on 6 second blocks
 		AuctionPriceDecreaseAccelerationRate: sdk.MustNewDecFromStr("0.001"), // 0.1%
+		MinimumAuctionHeight:                 0,                              // do not run auctions before this block height
 	}
 }
 
@@ -41,6 +43,7 @@ func (p *Params) ParamSetPairs() paramtypes.ParamSetPairs {
 		paramtypes.NewParamSetPair(KeyMinimumSaleTokensUSDValue, &p.MinimumSaleTokensUsdValue, validateMinimumSaleTokensUSDValue),
 		paramtypes.NewParamSetPair(KeyAuctionMaxBlockAge, &p.AuctionMaxBlockAge, validateAuctionMaxBlockAge),
 		paramtypes.NewParamSetPair(KeyAuctionPriceDecreaseAccelerationRate, &p.AuctionPriceDecreaseAccelerationRate, validateAuctionPriceDecreaseAccelerationRate),
+		paramtypes.NewParamSetPair(KeyMinimumAuctionHeight, &p.MinimumAuctionHeight, validateMinimumAuctionHeight),
 	}
 }
 
@@ -123,6 +126,15 @@ func validateAuctionPriceDecreaseAccelerationRate(i interface{}) error {
 	if auctionPriceDecreaseAccelerationRate.LT(sdk.MustNewDecFromStr("0")) || auctionPriceDecreaseAccelerationRate.GT(sdk.MustNewDecFromStr("1.0")) {
 		// Acceleration rates could in theory be more than 100% if need be, but we are establishing this as a bound for now
 		return errorsmod.Wrapf(ErrInvalidAuctionPriceDecreaseAccelerationRateParam, "auction price decrease acceleration rate must be between 0 and 1 inclusive (0%% to 100%%)")
+	}
+
+	return nil
+}
+
+func validateMinimumAuctionHeight(i interface{}) error {
+	_, ok := i.(uint64)
+	if !ok {
+		return errorsmod.Wrapf(ErrInvalidMinimumAuctionHeightParam, "invalid minimum auction height parameter type: %T", i)
 	}
 
 	return nil

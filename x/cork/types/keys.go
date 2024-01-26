@@ -29,7 +29,7 @@ const (
 	CorkForAddressKeyPrefix // key for corks
 
 	// CommitPeriodStartKey - <prefix> -> int64(height)
-	CommitPeriodStartKey // key for commit period height start
+	CommitPeriodStartKey // key for commit period height start -- removed as of cork v2, left to preserve ID values
 
 	// LatestInvalidationNonceKey - <prefix> -> uint64(latestNonce)
 	LatestInvalidationNonceKey

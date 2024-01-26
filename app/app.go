@@ -1021,6 +1021,7 @@ func (app *SommelierApp) setupUpgradeHandlers() {
 			app.AuctionKeeper,
 			app.AxelarCorkKeeper,
 			app.CellarFeesKeeper,
+			app.CorkKeeper,
 			app.ICAHostKeeper,
 			app.PubsubKeeper,
 		),

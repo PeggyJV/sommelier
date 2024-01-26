@@ -5,11 +5,11 @@ import (
 	"encoding/pem"
 	"fmt"
 	"net/url"
-	"strings"
 
 	errorsmod "cosmossdk.io/errors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	"github.com/ethereum/go-ethereum/crypto"
 )
 
 const (
@@ -19,6 +19,10 @@ const (
 	MaxSubscriptionIDLength = 128
 	MaxAllowedSubscribers   = 256
 )
+
+func StringHash(inputString string) []byte {
+	return crypto.Keccak256Hash([]byte(inputString)).Bytes()
+}
 
 ///////////////////
 // ValidateBasic //
@@ -219,11 +223,6 @@ func ValidateSubscriptionID(subscriptionID string) error {
 
 	if len(subscriptionID) > MaxSubscriptionIDLength {
 		return fmt.Errorf("subscription ID over max length of %d: %d", MaxSubscriptionIDLength, len(subscriptionID))
-	}
-
-	// TODO(bolten): any other character limitations we should add here?
-	if strings.Contains(subscriptionID, "|") {
-		return fmt.Errorf("subscription IDs may not contain the pipe character '|'")
 	}
 
 	return nil

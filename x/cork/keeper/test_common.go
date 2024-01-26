@@ -382,7 +382,7 @@ func CreateTestEnv(t *testing.T) TestInput {
 		gravityKeeper,
 	)
 
-	k.setParams(ctx, TestingcorkParams)
+	k.SetParams(ctx, TestingcorkParams)
 
 	return TestInput{
 		corkKeeper:     k,

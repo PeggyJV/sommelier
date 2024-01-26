@@ -26,8 +26,6 @@ func MigrateStore(ctx sdk.Context, storeKey storetypes.StoreKey, cdc codec.Binar
 
 func removeCommitPeriod(store storetypes.KVStore) {
 	store.Delete([]byte{types.CommitPeriodStartKey})
-
-	// TODO(bolten): remove commit period param from old state -- in upgrade handler?
 }
 
 // wipe away all existing cork state during upgrade -- there shouldn't be in-transit corks

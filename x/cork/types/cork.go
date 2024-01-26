@@ -2,8 +2,11 @@ package types
 
 import (
 	"bytes"
+	"fmt"
 
+	errorsmod "cosmossdk.io/errors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/crypto"
 	tmbytes "github.com/tendermint/tendermint/libs/bytes"
@@ -52,6 +55,52 @@ func (c *Cork) ValidateBasic() error {
 
 	if !common.IsHexAddress(c.TargetContractAddress) {
 		return ErrInvalidEthereumAddress
+	}
+
+	return nil
+}
+
+func (s *ScheduledCork) ValidateBasic() error {
+	if err := s.Cork.ValidateBasic(); err != nil {
+		return err
+	}
+
+	if s.BlockHeight == 0 {
+		return fmt.Errorf("block height must be non-zero")
+	}
+
+	if _, err := sdk.ValAddressFromBech32(s.Validator); err != nil {
+		return errorsmod.Wrap(sdkerrors.ErrInvalidAddress, err.Error())
+	}
+
+	if len(s.Id) != 64 {
+		return fmt.Errorf("invalid ID length, must be a keccak256 hash")
+	}
+
+	return nil
+}
+
+func (c *CorkResult) ValidateBasic() error {
+	if err := c.Cork.ValidateBasic(); err != nil {
+		return err
+	}
+
+	if c.BlockHeight == 0 {
+		return fmt.Errorf("block height must be non-zero")
+	}
+
+	if _, err := sdk.NewDecFromStr(c.ApprovalPercentage); err != nil {
+		return fmt.Errorf("approval percentage must be a valid Dec")
+	}
+
+	return nil
+}
+
+func (c *CellarIDSet) ValidateBasic() error {
+	for _, addr := range c.Ids {
+		if !common.IsHexAddress(addr) {
+			return fmt.Errorf("invalid EVM address: %s", addr)
+		}
 	}
 
 	return nil
