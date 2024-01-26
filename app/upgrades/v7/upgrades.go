@@ -16,6 +16,8 @@ import (
 	axelarcorktypes "github.com/peggyjv/sommelier/v7/x/axelarcork/types"
 	cellarfeeskeeper "github.com/peggyjv/sommelier/v7/x/cellarfees/keeper"
 	cellarfeestypes "github.com/peggyjv/sommelier/v7/x/cellarfees/types"
+	corkkeeper "github.com/peggyjv/sommelier/v7/x/cork/keeper"
+	corktypes "github.com/peggyjv/sommelier/v7/x/cork/types"
 	pubsubkeeper "github.com/peggyjv/sommelier/v7/x/pubsub/keeper"
 	pubsubtypes "github.com/peggyjv/sommelier/v7/x/pubsub/types"
 )
@@ -26,6 +28,7 @@ func CreateUpgradeHandler(
 	auctionKeeper auctionkeeper.Keeper,
 	axelarcorkKeeper axelarcorkkeeper.Keeper,
 	cellarfeesKeeper cellarfeeskeeper.Keeper,
+	corkKeeper corkkeeper.Keeper,
 	icaHostKeeper icahostkeeper.Keeper,
 	pubsubKeeper pubsubkeeper.Keeper,
 ) upgradetypes.UpgradeHandler {
@@ -37,6 +40,11 @@ func CreateUpgradeHandler(
 		ctx.Logger().Info("v7 upgrade: setting ICA host params to allow all messages")
 		icaParams := icahosttypes.DefaultParams()
 		icaHostKeeper.SetParams(ctx, icaParams)
+
+		// Given that we've removed and added params in cork v2, we'll also set the cork v2 params to their defaults
+		ctx.Logger().Info("v7 upgrade: setting cork v2 params to defaults")
+		corkParams := corktypes.DefaultParams()
+		corkKeeper.SetParams(ctx, corkParams)
 
 		// We must manually run InitGenesis for auction, axelarcork, and pubsub so we can adjust their values
 		// during the upgrade process. RunMigrations will migrate to the new cork version. Setting the consensus

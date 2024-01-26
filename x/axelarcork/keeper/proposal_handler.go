@@ -120,6 +120,7 @@ func HandleCommunityPoolSpendProposal(ctx sdk.Context, k Keeper, p types.AxelarC
 		return fmt.Errorf("chain by id %d not found", p.ChainId)
 	}
 
+	// TODO(bolten: is there really no fee necessary or executor to target?
 	axelarMemo := types.AxelarBody{
 		DestinationChain:   config.Name,
 		DestinationAddress: p.Recipient,

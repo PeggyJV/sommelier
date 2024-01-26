@@ -12,7 +12,7 @@ func (suite *KeeperTestSuite) TestQueriesHappyPath() {
 	require := suite.Require()
 
 	params := types.DefaultParams()
-	corkKeeper.setParams(ctx, params)
+	corkKeeper.SetParams(ctx, params)
 
 	testHeight := uint64(ctx.BlockHeight())
 	cork := types.Cork{
