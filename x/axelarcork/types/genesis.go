@@ -35,13 +35,13 @@ func (gs GenesisState) Validate() error {
 	}
 
 	for _, sc := range gs.ScheduledCorks.ScheduledCorks {
-		if err := sc.Cork.ValidateBasic(); err != nil {
+		if err := sc.ValidateBasic(); err != nil {
 			return err
 		}
 	}
 
 	for _, cr := range gs.CorkResults.CorkResults {
-		if err := cr.Cork.ValidateBasic(); err != nil {
+		if err := cr.ValidateBasic(); err != nil {
 			return err
 		}
 	}
