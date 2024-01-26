@@ -50,4 +50,6 @@ var (
 	ErrTokenPriceExponentTooHigh                                = errorsmod.Register(ModuleName, 43, "token price exponent too high, maximum precision of 18")
 	ErrInvalidMinimumSaleTokensUSDValue                         = errorsmod.Register(ModuleName, 44, "invalid minimum sale tokens USD value")
 	ErrAuctionBelowMinimumUSDValue                              = errorsmod.Register(ModuleName, 45, "auction USD value below minimum")
+	ErrInvalidMinimumAuctionHeightParam                         = errorsmod.Register(ModuleName, 46, "invalid minimum auction height param")
+	ErrAuctionBelowMinimumHeight                                = errorsmod.Register(ModuleName, 47, "auction block height below minimum")
 )
