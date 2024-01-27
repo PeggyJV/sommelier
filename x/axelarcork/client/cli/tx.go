@@ -570,12 +570,19 @@ Where proposal.json contains:
   "chain_configuration": {
 	"name": "arbitrum",
 	"id": 42161,
-	"proxy_address": "0x0000000000000000000000000000000000000000"
+	"proxy_address": "0x0000000000000000000000000000000000000000",
+	"bridge_fees": [
+		{
+			"denom": "usomm",
+			"amount": "100000"
+		}
+	]
   },
   "deposit": "10000usomm"
 }
 
 Note that the "name" parameter should map to a "Chain Identifier" as defined by Axelar: https://docs.axelar.dev/dev/reference/mainnet-chain-names
+Bridge fees for a given source denom and destination chain can be calculated here: https://docs.axelar.dev/resources/mainnet#cross-chain-relayer-gas-fee
 `,
 				version.AppName,
 			),

@@ -2,6 +2,7 @@ syntax = "proto3";
 package axelarcork.v1;
 
 import "gogoproto/gogo.proto";
+import "cosmos/base/v1beta1/coin.proto";
 
 option go_package = "github.com/peggyjv/sommelier/v7/x/axelarcork/types";
 
@@ -45,9 +46,14 @@ message CellarIDSet {
 }
 
 message ChainConfiguration {
-  string name          = 1;
-  uint64 id            = 2;
-  string proxy_address = 3;
+  string name             = 1;
+  uint64 id               = 2;
+  string proxy_address    = 3;
+  // pure token transfers have a fixed fee deducted from the amount sent in the ICS-20 message depending
+	// on the asset and destination chain
+	// they can be calculated here: https://docs.axelar.dev/resources/mainnet#cross-chain-relayer-gas-fee
+  repeated cosmos.base.v1beta1.Coin bridge_fees = 4
+      [(gogoproto.nullable) = false, (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins"];
 }
 
 message ChainConfigurations {

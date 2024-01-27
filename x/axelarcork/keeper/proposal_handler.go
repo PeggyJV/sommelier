@@ -101,24 +101,30 @@ func HandleScheduledCorkProposal(ctx sdk.Context, k Keeper, p types.AxelarSchedu
 }
 
 func HandleCommunityPoolSpendProposal(ctx sdk.Context, k Keeper, p types.AxelarCommunityPoolSpendProposal) error {
+	params := k.GetParamSet(ctx)
+	config, ok := k.GetChainConfigurationByID(ctx, p.ChainId)
+	if !ok {
+		return fmt.Errorf("chain by id %d not found", p.ChainId)
+	}
+
+	feeFound, feeCoin := config.BridgeFees.Find(p.Amount.Denom)
+	if !feeFound {
+		return fmt.Errorf("no matching bridge fee for denom %s", p.Amount.Denom)
+	}
+
+	coinWithBridgeFee := p.Amount.Add(feeCoin)
 	feePool := k.distributionKeeper.GetFeePool(ctx)
 
 	// NOTE the community pool isn't a module account, however its coins
 	// are held in the distribution module account. Thus, the community pool
 	// must be reduced separately from the Axelar IBC calls
-	newPool, negative := feePool.CommunityPool.SafeSub(sdk.NewDecCoinsFromCoins(p.Amount))
+	newPool, negative := feePool.CommunityPool.SafeSub(sdk.NewDecCoinsFromCoins(coinWithBridgeFee))
 	if negative {
 		return distributiontypes.ErrBadDistribution
 	}
 
 	feePool.CommunityPool = newPool
 	sender := authtypes.NewModuleAddress(distributiontypes.ModuleName)
-
-	params := k.GetParamSet(ctx)
-	config, ok := k.GetChainConfigurationByID(ctx, p.ChainId)
-	if !ok {
-		return fmt.Errorf("chain by id %d not found", p.ChainId)
-	}
 
 	// TODO(bolten: is there really no fee necessary or executor to target?
 	axelarMemo := types.AxelarBody{
@@ -136,7 +142,7 @@ func HandleCommunityPoolSpendProposal(ctx sdk.Context, k Keeper, p types.AxelarC
 	transferMsg := transfertypes.NewMsgTransfer(
 		params.IbcPort,
 		params.IbcChannel,
-		p.Amount,
+		coinWithBridgeFee,
 		sender.String(),
 		params.GmpAccount,
 		clienttypes.ZeroHeight(),
@@ -151,7 +157,7 @@ func HandleCommunityPoolSpendProposal(ctx sdk.Context, k Keeper, p types.AxelarC
 	k.distributionKeeper.SetFeePool(ctx, feePool)
 	k.Logger(ctx).Info("transfer from the community pool issued to the axelar bridge",
 		"ibc sequence", resp,
-		"amount", p.Amount.String(),
+		"amount", coinWithBridgeFee.Amount.String(),
 		"recipient", p.Recipient,
 		"chain", config.Name,
 		"sender", sender.String(),

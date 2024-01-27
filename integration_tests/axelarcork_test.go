@@ -52,6 +52,7 @@ func (s *IntegrationTestSuite) TestAxelarCork() {
 		arbitrumChainName := "arbitrum"
 		arbitrumChainID := uint64(42161)
 		proxyAddress := "0xEe75bA2C81C04DcA4b0ED6d1B7077c188FEde4d2"
+		bridgeFees := sdk.NewCoins(sdk.NewCoin("usomm", sdk.NewIntFromUint64(33670000)))
 
 		s.T().Log("Creating AddChainConfigurationProposal")
 		addChainConfigurationProp := types.AddChainConfigurationProposal{
@@ -61,6 +62,7 @@ func (s *IntegrationTestSuite) TestAxelarCork() {
 				Name:         arbitrumChainName,
 				Id:           arbitrumChainID,
 				ProxyAddress: proxyAddress,
+				BridgeFees:   bridgeFees,
 			},
 		}
 
@@ -87,6 +89,7 @@ func (s *IntegrationTestSuite) TestAxelarCork() {
 		s.Require().Equal(chainConfig.Name, arbitrumChainName)
 		s.Require().Equal(chainConfig.Id, arbitrumChainID)
 		s.Require().Equal(chainConfig.ProxyAddress, proxyAddress)
+		s.Require().Equal(chainConfig.BridgeFees, bridgeFees)
 
 		//////////////////
 		// Add a cellar //

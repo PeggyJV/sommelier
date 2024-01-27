@@ -164,37 +164,22 @@ func axelarcorkInitGenesis(ctx sdk.Context, axelarcorkKeeper axelarcorkkeeper.Ke
 	genesisState.Params.ExecutorAccount = "axelar1aythygn6z5thymj6tmzfwekzh05ewg3l7d6y89"
 	genesisState.Params.CorkTimeoutBlocks = 5000
 
+	// pure token transfers have a fixed fee deducted from the amount sent in the ICS-20 message depending
+	// on the asset and destination chain
+	// they can be calculated here: https://docs.axelar.dev/resources/mainnet#cross-chain-relayer-gas-fee
 	genesisState.ChainConfigurations = axelarcorktypes.ChainConfigurations{
 		Configurations: []*axelarcorktypes.ChainConfiguration{
 			{
 				Name:         "arbitrum",
 				Id:           42161,
 				ProxyAddress: "0xEe75bA2C81C04DcA4b0ED6d1B7077c188FEde4d2",
+				BridgeFees:   sdk.NewCoins(sdk.NewCoin("usomm", sdk.NewIntFromUint64(33670000))),
 			},
 			{
 				Name:         "Avalanche",
 				Id:           43114,
 				ProxyAddress: "0xEe75bA2C81C04DcA4b0ED6d1B7077c188FEde4d2",
-			},
-			{
-				Name:         "base",
-				Id:           8453,
-				ProxyAddress: "0xEe75bA2C81C04DcA4b0ED6d1B7077c188FEde4d2",
-			},
-			{
-				Name:         "binance",
-				Id:           56,
-				ProxyAddress: "0xEe75bA2C81C04DcA4b0ED6d1B7077c188FEde4d2",
-			},
-			{
-				Name:         "optimism",
-				Id:           10,
-				ProxyAddress: "0xEe75bA2C81C04DcA4b0ED6d1B7077c188FEde4d2",
-			},
-			{
-				Name:         "Polygon",
-				Id:           137,
-				ProxyAddress: "0xEe75bA2C81C04DcA4b0ED6d1B7077c188FEde4d2",
+				BridgeFees:   sdk.NewCoins(sdk.NewCoin("usomm", sdk.NewIntFromUint64(10670000))),
 			},
 		},
 	}
@@ -206,22 +191,6 @@ func axelarcorkInitGenesis(ctx sdk.Context, axelarcorkKeeper axelarcorkkeeper.Ke
 		},
 		{
 			ChainId: 43114, // Avalanche
-			Ids:     []string{},
-		},
-		{
-			ChainId: 8453, // base
-			Ids:     []string{},
-		},
-		{
-			ChainId: 56, // binance
-			Ids:     []string{},
-		},
-		{
-			ChainId: 10, // optimism
-			Ids:     []string{},
-		},
-		{
-			ChainId: 137, // Polygon
 			Ids:     []string{},
 		},
 	}
