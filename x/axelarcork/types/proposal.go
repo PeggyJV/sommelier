@@ -214,7 +214,7 @@ func (m *AxelarCommunityPoolSpendProposal) ValidateBasic() error {
 		return fmt.Errorf("chain ID must be non-zero")
 	}
 
-	if !m.Amount.Amount.IsPositive() {
+	if !m.Amount.IsValid() || !m.Amount.IsPositive() {
 		return ErrValuelessSend
 	}
 

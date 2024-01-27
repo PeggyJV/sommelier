@@ -116,6 +116,10 @@ func (m *ScheduledCorkProposal) ValidateBasic() error {
 		return err
 	}
 
+	if m.BlockHeight == 0 {
+		return fmt.Errorf("block height must be non-zero")
+	}
+
 	if len(m.ContractCallProtoJson) == 0 {
 		return errorsmod.Wrapf(ErrInvalidJSON, "cannot have empty contract call")
 	}

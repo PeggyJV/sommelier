@@ -1,6 +1,8 @@
 package types
 
 import (
+	"fmt"
+
 	errorsmod "cosmossdk.io/errors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
@@ -42,6 +44,10 @@ func (m *MsgScheduleCorkRequest) Type() string { return TypeMsgScheduleCorkReque
 func (m *MsgScheduleCorkRequest) ValidateBasic() error {
 	if _, err := sdk.AccAddressFromBech32(m.Signer); err != nil {
 		return errorsmod.Wrap(sdkerrors.ErrInvalidAddress, err.Error())
+	}
+
+	if m.BlockHeight == 0 {
+		return fmt.Errorf("block height must be non-zero")
 	}
 
 	return m.Cork.ValidateBasic()

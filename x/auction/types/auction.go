@@ -15,7 +15,7 @@ func (a *Auction) ValidateBasic() error {
 		return errorsmod.Wrapf(ErrAuctionIDMustBeNonZero, "id: %d", a.Id)
 	}
 
-	if !a.StartingTokensForSale.IsPositive() {
+	if !a.StartingTokensForSale.IsValid() || !a.StartingTokensForSale.IsPositive() {
 		return errorsmod.Wrapf(ErrAuctionStartingAmountMustBePositve, "Starting tokens for sale: %s", a.StartingTokensForSale.String())
 	}
 
@@ -75,7 +75,7 @@ func (b *Bid) ValidateBasic() error {
 		return errorsmod.Wrap(sdkerrors.ErrInvalidAddress, err.Error())
 	}
 
-	if !b.MaxBidInUsomm.IsPositive() {
+	if !b.MaxBidInUsomm.IsValid() || !b.MaxBidInUsomm.IsPositive() {
 		return errorsmod.Wrapf(ErrBidAmountMustBePositive, "bid amount in usomm: %s", b.MaxBidInUsomm.String())
 	}
 
@@ -87,11 +87,11 @@ func (b *Bid) ValidateBasic() error {
 		return errorsmod.Wrapf(ErrInvalidTokenBeingBidOn, "sale token: %s", b.SaleTokenMinimumAmount.String())
 	}
 
-	if !b.SaleTokenMinimumAmount.IsPositive() {
+	if !b.SaleTokenMinimumAmount.IsValid() || !b.SaleTokenMinimumAmount.IsPositive() {
 		return errorsmod.Wrapf(ErrMinimumAmountMustBePositive, "sale token amount: %s", b.SaleTokenMinimumAmount.String())
 	}
 
-	if b.TotalFulfilledSaleTokens.Amount.IsNegative() {
+	if !b.TotalFulfilledSaleTokens.IsValid() {
 		return errorsmod.Wrapf(ErrBidFulfilledSaleTokenAmountMustBeNonNegative, "fulfilled sale token amount: %s", b.TotalFulfilledSaleTokens.String())
 	}
 
