@@ -26,7 +26,7 @@ const (
 	_ = byte(iota)
 
 	// CorkForAddressKeyPrefix - <prefix><val_address><address> -> <cork>
-	CorkForAddressKeyPrefix // key for corks
+	CorkForAddressKeyPrefix // key for corks -- removed as of cork v2, left to preserve ID values
 
 	// CommitPeriodStartKey - <prefix> -> int64(height)
 	CommitPeriodStartKey // key for commit period height start -- removed as of cork v2, left to preserve ID values
@@ -49,16 +49,6 @@ const (
 	// ValidatorCorkCountKey - <prefix><val_address> -> uint64(count)
 	ValidatorCorkCountKey
 )
-
-// GetCorkForValidatorAddressKey returns the key for a validators vote for a given address
-func GetCorkForValidatorAddressKey(val sdk.ValAddress, contract common.Address) []byte {
-	return append(GetCorkValidatorKeyPrefix(val), contract.Bytes()...)
-}
-
-// GetCorkValidatorKeyPrefix returns the key prefix for cork commits for a validator
-func GetCorkValidatorKeyPrefix(val sdk.ValAddress) []byte {
-	return append([]byte{CorkForAddressKeyPrefix}, val.Bytes()...)
-}
 
 func MakeCellarIDsKey() []byte {
 	return []byte{CellarIDsKey}
