@@ -46,17 +46,16 @@ func CreateUpgradeHandler(
 		corkParams := corktypes.DefaultParams()
 		corkKeeper.SetParams(ctx, corkParams)
 
-		// We must manually run InitGenesis for auction, axelarcork, and pubsub so we can adjust their values
+		// We must manually run InitGenesis for auction, axelarcork, cellarfees, and pubsub so we can adjust their values
 		// during the upgrade process. RunMigrations will migrate to the new cork version. Setting the consensus
 		// version to 1 prevents RunMigrations from running InitGenesis itself.
+		fromVM[cellarfeestypes.ModuleName] = mm.Modules[cellarfeestypes.ModuleName].ConsensusVersion()
 		fromVM[auctiontypes.ModuleName] = mm.Modules[auctiontypes.ModuleName].ConsensusVersion()
 		fromVM[axelarcorktypes.ModuleName] = mm.Modules[axelarcorktypes.ModuleName].ConsensusVersion()
 		fromVM[pubsubtypes.ModuleName] = mm.Modules[pubsubtypes.ModuleName].ConsensusVersion()
 
-		// Params values were introduced in this upgrade but no migration was necessary, so we initialize the
-		// new values to their defaults
-		ctx.Logger().Info("v7 upgrading: setting cellarfees default params")
-		cellarfeesKeeper.SetParams(ctx, cellarfeestypes.DefaultParams())
+		ctx.Logger().Info("v7 upgrading: initializing cellarfees genesis state")
+		cellarfeesInitGenesis(ctx, cellarfeesKeeper)
 
 		ctx.Logger().Info("v7 upgrade: initializing auction genesis state")
 		auctionInitGenesis(ctx, auctionKeeper)
@@ -70,6 +69,17 @@ func CreateUpgradeHandler(
 		ctx.Logger().Info("v7 upgrade: running migrations and exiting handler")
 		return mm.RunMigrations(ctx, configurator, fromVM)
 	}
+}
+
+// Initialize the cellarfees module with defaults
+func cellarfeesInitGenesis(ctx sdk.Context, cellarfeesKeeper cellarfeeskeeper.Keeper) {
+	genesisState := cellarfeestypes.DefaultGenesisState()
+
+	if err := genesisState.Validate(); err != nil {
+		panic(fmt.Errorf("cellarfees genesis state invalid: %s", err))
+	}
+
+	cellarfeesKeeper.InitGenesis(ctx, genesisState)
 }
 
 // Initialize the auction module with prices for some stablecoins and SOMM.

@@ -977,7 +977,7 @@ func (app *SommelierApp) setupUpgradeStoreLoaders() {
 
 	if upgradeInfo.Name == v7.UpgradeName {
 		storeUpgrades = &storetypes.StoreUpgrades{
-			Added: []string{auctiontypes.ModuleName, axelarcorktypes.ModuleName, pubsubtypes.ModuleName},
+			Added: []string{auctiontypes.ModuleName, axelarcorktypes.ModuleName, cellarfeestypes.ModuleName, pubsubtypes.ModuleName},
 		}
 	}
 
