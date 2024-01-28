@@ -462,7 +462,7 @@ func (s *IntegrationTestSuite) initGenesis() {
 	s.Require().NoError(cdc.UnmarshalJSON(appGenState[pubsubtypes.ModuleName], &pubsubGenState))
 	pubsubGenState.Publishers = []*pubsubtypes.Publisher{
 		{
-			Address: "somm14zsm5frvjuqxk3f9377altc6xq368dglhmkxmp",
+			Address: s.chain.proposer.address().String(),
 			Domain:  "example.com",
 			CaCert:  exampleCA,
 		},

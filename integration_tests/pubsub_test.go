@@ -35,6 +35,21 @@ func (s *IntegrationTestSuite) TestPubsub() {
 
 		pubsubQueryClient := types.NewQueryClient(val0ClientCtx)
 
+		// Removing the default publisher from the genesis state because it's useful for other tests but annoying for this one
+		s.T().Log("Creating RemovePublisher message")
+		removePublisherMsg := types.MsgRemovePublisherRequest{
+			PublisherDomain: "example.com",
+			Signer:          proposer.address().String(),
+		}
+
+		_, err = s.chain.sendMsgs(*proposerCtx, &removePublisherMsg)
+		s.Require().NoError(err)
+		s.T().Log("RemovePublisher submitted correctly")
+
+		publishersResponse, err := pubsubQueryClient.QueryPublishers(context.Background(), &types.QueryPublishersRequest{})
+		s.Require().NoError(err)
+		s.Require().Len(publishersResponse.Publishers, 0)
+
 		////////////////
 		// Happy path //
 		////////////////
@@ -44,9 +59,9 @@ func (s *IntegrationTestSuite) TestPubsub() {
 		addPublisherProp := types.AddPublisherProposal{
 			Title:       "add a publisher",
 			Description: "example publisher",
-			Domain:      "example.com",
+			Domain:      "new.example.com",
 			Address:     proposer.address().String(),
-			ProofUrl:    fmt.Sprintf("https://example.com/%s/cacert.pem", proposer.address().String()),
+			ProofUrl:    fmt.Sprintf("https://new.example.com/%s/cacert.pem", proposer.address().String()),
 			CaCert:      PublisherCACert,
 		}
 
@@ -66,13 +81,13 @@ func (s *IntegrationTestSuite) TestPubsub() {
 		propID++
 
 		s.T().Log("Verifying Publisher correctly added")
-		publishersResponse, err := pubsubQueryClient.QueryPublishers(context.Background(), &types.QueryPublishersRequest{})
+		publishersResponse, err = pubsubQueryClient.QueryPublishers(context.Background(), &types.QueryPublishersRequest{})
 		s.Require().NoError(err)
 		s.Require().Len(publishersResponse.Publishers, 1)
 		publisher := publishersResponse.Publishers[0]
 		s.Require().Equal(publisher.Address, proposer.address().String())
 		s.Require().Equal(publisher.CaCert, PublisherCACert)
-		s.Require().Equal(publisher.Domain, "example.com")
+		s.Require().Equal(publisher.Domain, "new.example.com")
 
 		// set publisher intent for cellar
 		s.T().Log("Submitting AddPublisherIntent")
@@ -135,7 +150,7 @@ func (s *IntegrationTestSuite) TestPubsub() {
 
 		// create subscribers
 		s.T().Log("Creating Subscriber for two orchestrators")
-		subscriber0PushURL := "https://steward.orch0.example.com:5734"
+		subscriber0PushURL := "https://steward.orch0.new.example.com:5734"
 		addSubscriber0Msg := types.MsgAddSubscriberRequest{
 			Subscriber: &types.Subscriber{
 				Address: orch0.address().String(),
@@ -145,7 +160,7 @@ func (s *IntegrationTestSuite) TestPubsub() {
 			Signer: orch0.address().String(),
 		}
 
-		subscriber1PushURL := "https://steward.orch1.example.com:5734"
+		subscriber1PushURL := "https://steward.orch1.new.example.com:5734"
 		addSubscriber1Msg := types.MsgAddSubscriberRequest{
 			Subscriber: &types.Subscriber{
 				Address: orch1.address().String(),
@@ -343,7 +358,7 @@ func (s *IntegrationTestSuite) TestPubsub() {
 		removePublisherProp := types.RemovePublisherProposal{
 			Title:       "remove a publisher",
 			Description: "example publisher is being removed",
-			Domain:      "example.com",
+			Domain:      "new.example.com",
 		}
 
 		removePublisherPropMsg, err := govtypesv1beta1.NewMsgSubmitProposal(
@@ -385,7 +400,7 @@ func (s *IntegrationTestSuite) TestPubsub() {
 		publisher = publishersResponse.Publishers[0]
 		s.Require().Equal(publisher.Address, proposer.address().String())
 		s.Require().Equal(publisher.CaCert, PublisherCACert)
-		s.Require().Equal(publisher.Domain, "example.com")
+		s.Require().Equal(publisher.Domain, "new.example.com")
 
 		// set publisher intent for cellar
 		_, err = s.chain.sendMsgs(*proposerCtx, &addPublisherIntentMsg)
@@ -498,7 +513,7 @@ func (s *IntegrationTestSuite) TestPubsub() {
 		// we will also use the self-deletion message here rather than a gov prop
 
 		s.T().Log("Creating RemovePublisher message")
-		removePublisherMsg := types.MsgRemovePublisherRequest{
+		removePublisherMsg = types.MsgRemovePublisherRequest{
 			PublisherDomain: publisher.Domain,
 			Signer:          proposer.address().String(),
 		}
