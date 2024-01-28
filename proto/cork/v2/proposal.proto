@@ -9,6 +9,7 @@ message AddManagedCellarIDsProposal {
   string title = 1;
   string description = 2;
   CellarIDSet cellar_ids = 3;
+  string publisher_domain = 4;
 }
 
 // AddManagedCellarIDsProposalWithDeposit is a specific definition for CLI commands
@@ -16,7 +17,8 @@ message AddManagedCellarIDsProposalWithDeposit {
   string title = 1;
   string description = 2;
   repeated string cellar_ids = 3;
-  string deposit = 4;
+  string publisher_domain = 4;
+  string deposit = 5;
 }
 
 message RemoveManagedCellarIDsProposal {

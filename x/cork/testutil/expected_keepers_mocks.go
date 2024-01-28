@@ -13,6 +13,7 @@ import (
 	common "github.com/ethereum/go-ethereum/common"
 	gomock "github.com/golang/mock/gomock"
 	types1 "github.com/peggyjv/gravity-bridge/module/v4/x/gravity/types"
+	types2 "github.com/peggyjv/sommelier/v7/x/pubsub/types"
 	bytes "github.com/tendermint/tendermint/libs/bytes"
 )
 
@@ -54,10 +55,10 @@ func (mr *MockStakingKeeperMockRecorder) GetBondedValidatorsByPower(ctx interfac
 }
 
 // GetLastTotalPower mocks base method.
-func (m *MockStakingKeeper) GetLastTotalPower(ctx types.Context) types.Int {
+func (m *MockStakingKeeper) GetLastTotalPower(ctx types.Context) math.Int {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetLastTotalPower", ctx)
-	ret0, _ := ret[0].(types.Int)
+	ret0, _ := ret[0].(math.Int)
 	return ret0
 }
 
@@ -130,10 +131,10 @@ func (mr *MockStakingKeeperMockRecorder) Jail(arg0, arg1 interface{}) *gomock.Ca
 }
 
 // PowerReduction mocks base method.
-func (m *MockStakingKeeper) PowerReduction(ctx types.Context) types.Int {
+func (m *MockStakingKeeper) PowerReduction(ctx types.Context) math.Int {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "PowerReduction", ctx)
-	ret0, _ := ret[0].(types.Int)
+	ret0, _ := ret[0].(math.Int)
 	return ret0
 }
 
@@ -286,4 +287,66 @@ func (m *MockGravityKeeper) SetOutgoingTx(ctx types.Context, outgoing types1.Out
 func (mr *MockGravityKeeperMockRecorder) SetOutgoingTx(ctx, outgoing interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SetOutgoingTx", reflect.TypeOf((*MockGravityKeeper)(nil).SetOutgoingTx), ctx, outgoing)
+}
+
+// MockPubsubKeeper is a mock of PubsubKeeper interface.
+type MockPubsubKeeper struct {
+	ctrl     *gomock.Controller
+	recorder *MockPubsubKeeperMockRecorder
+}
+
+// MockPubsubKeeperMockRecorder is the mock recorder for MockPubsubKeeper.
+type MockPubsubKeeperMockRecorder struct {
+	mock *MockPubsubKeeper
+}
+
+// NewMockPubsubKeeper creates a new mock instance.
+func NewMockPubsubKeeper(ctrl *gomock.Controller) *MockPubsubKeeper {
+	mock := &MockPubsubKeeper{ctrl: ctrl}
+	mock.recorder = &MockPubsubKeeperMockRecorder{mock}
+	return mock
+}
+
+// EXPECT returns an object that allows the caller to indicate expected use.
+func (m *MockPubsubKeeper) EXPECT() *MockPubsubKeeperMockRecorder {
+	return m.recorder
+}
+
+// DeleteDefaultSubscription mocks base method.
+func (m *MockPubsubKeeper) DeleteDefaultSubscription(ctx types.Context, subscriptionID string) {
+	m.ctrl.T.Helper()
+	m.ctrl.Call(m, "DeleteDefaultSubscription", ctx, subscriptionID)
+}
+
+// DeleteDefaultSubscription indicates an expected call of DeleteDefaultSubscription.
+func (mr *MockPubsubKeeperMockRecorder) DeleteDefaultSubscription(ctx, subscriptionID interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteDefaultSubscription", reflect.TypeOf((*MockPubsubKeeper)(nil).DeleteDefaultSubscription), ctx, subscriptionID)
+}
+
+// GetPublisher mocks base method.
+func (m *MockPubsubKeeper) GetPublisher(ctx types.Context, publisherDomain string) (types2.Publisher, bool) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetPublisher", ctx, publisherDomain)
+	ret0, _ := ret[0].(types2.Publisher)
+	ret1, _ := ret[1].(bool)
+	return ret0, ret1
+}
+
+// GetPublisher indicates an expected call of GetPublisher.
+func (mr *MockPubsubKeeperMockRecorder) GetPublisher(ctx, publisherDomain interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetPublisher", reflect.TypeOf((*MockPubsubKeeper)(nil).GetPublisher), ctx, publisherDomain)
+}
+
+// SetDefaultSubscription mocks base method.
+func (m *MockPubsubKeeper) SetDefaultSubscription(ctx types.Context, defaultSubscription types2.DefaultSubscription) {
+	m.ctrl.T.Helper()
+	m.ctrl.Call(m, "SetDefaultSubscription", ctx, defaultSubscription)
+}
+
+// SetDefaultSubscription indicates an expected call of SetDefaultSubscription.
+func (mr *MockPubsubKeeperMockRecorder) SetDefaultSubscription(ctx, defaultSubscription interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SetDefaultSubscription", reflect.TypeOf((*MockPubsubKeeper)(nil).SetDefaultSubscription), ctx, defaultSubscription)
 }

@@ -9,6 +9,7 @@ import (
 	errorsmod "cosmossdk.io/errors"
 	govtypesv1beta1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
 	"github.com/ethereum/go-ethereum/common"
+	pubsubtypes "github.com/peggyjv/sommelier/v7/x/pubsub/types"
 )
 
 const (
@@ -65,12 +66,13 @@ func init() {
 	govtypesv1beta1.ModuleCdc.RegisterConcrete(&CancelAxelarProxyContractUpgradeProposal{}, "sommelier/CancelAxelarProxyContractUpgradeProposal", nil)
 }
 
-func NewAddAxelarManagedCellarIDsProposal(title string, description string, chainID uint64, cellarIds *CellarIDSet) *AddAxelarManagedCellarIDsProposal {
+func NewAddAxelarManagedCellarIDsProposal(title string, description string, chainID uint64, cellarIds *CellarIDSet, publisherDomain string) *AddAxelarManagedCellarIDsProposal {
 	return &AddAxelarManagedCellarIDsProposal{
-		Title:       title,
-		Description: description,
-		CellarIds:   cellarIds,
-		ChainId:     chainID,
+		Title:           title,
+		Description:     description,
+		CellarIds:       cellarIds,
+		ChainId:         chainID,
+		PublisherDomain: publisherDomain,
 	}
 }
 
@@ -93,6 +95,10 @@ func (m *AddAxelarManagedCellarIDsProposal) ValidateBasic() error {
 
 	if m.ChainId == 0 {
 		return fmt.Errorf("chain ID must be non-zero")
+	}
+
+	if err := pubsubtypes.ValidateDomain(m.PublisherDomain); err != nil {
+		return err
 	}
 
 	return nil

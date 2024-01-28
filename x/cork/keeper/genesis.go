@@ -33,7 +33,7 @@ func InitGenesis(ctx sdk.Context, k Keeper, gs types.GenesisState) {
 func ExportGenesis(ctx sdk.Context, k Keeper) types.GenesisState {
 	var ids types.CellarIDSet
 	for _, id := range k.GetCellarIDs(ctx) {
-		ids.Ids = append(ids.Ids, id.Hex())
+		ids.Ids = append(ids.Ids, id.String())
 	}
 
 	return types.GenesisState{

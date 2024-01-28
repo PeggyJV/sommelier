@@ -12,6 +12,7 @@ import (
 	govtypesv1beta1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
 	"github.com/ethereum/go-ethereum/common"
 	types "github.com/peggyjv/sommelier/v7/x/cork/types"
+	pubsubtypes "github.com/peggyjv/sommelier/v7/x/pubsub/types"
 	"github.com/spf13/cobra"
 )
 
@@ -49,6 +50,7 @@ Where proposal.json contains:
   "title": "Dollary-doos LP Cellar Proposal",
   "description": "I have a hunch",
   "cellar_ids": ["0x123801a7D398351b8bE11C439e05C5B3259aeC9B", "0x456801a7D398351b8bE11C439e05C5B3259aeC9B"],
+  "publisher_domain": "example.com",
   "deposit": "10000usomm"
 }
 `,
@@ -82,10 +84,16 @@ Where proposal.json contains:
 				}
 			}
 
+			if err := pubsubtypes.ValidateDomain(proposal.PublisherDomain); err != nil {
+				return err
+			}
+
 			content := types.NewAddManagedCellarIDsProposal(
 				proposal.Title,
 				proposal.Description,
-				&types.CellarIDSet{Ids: proposal.CellarIds})
+				&types.CellarIDSet{Ids: proposal.CellarIds},
+				proposal.PublisherDomain,
+			)
 
 			from := clientCtx.GetFromAddress()
 			msg, err := govtypesv1beta1.NewMsgSubmitProposal(content, deposit, from)

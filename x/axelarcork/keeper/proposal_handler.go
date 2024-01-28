@@ -15,7 +15,12 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/peggyjv/sommelier/v7/x/axelarcork/types"
+	pubsubtypes "github.com/peggyjv/sommelier/v7/x/pubsub/types"
 )
+
+func NewAxelarSubscriptionID(chainID uint64, address common.Address) string {
+	return fmt.Sprintf("%d:%s", chainID, address.String())
+}
 
 // HandleAddManagedCellarsProposal is a handler for executing a passed community cellar addition proposal
 func HandleAddManagedCellarsProposal(ctx sdk.Context, k Keeper, p types.AddAxelarManagedCellarIDsProposal) error {
@@ -24,31 +29,43 @@ func HandleAddManagedCellarsProposal(ctx sdk.Context, k Keeper, p types.AddAxela
 		return fmt.Errorf("chain by id %d not found", p.ChainId)
 	}
 
+	_, publisherFound := k.pubsubKeeper.GetPublisher(ctx, p.PublisherDomain)
+	if !publisherFound {
+		return fmt.Errorf("not an approved publisher: %s", p.PublisherDomain)
+	}
+
 	if err := p.CellarIds.ValidateBasic(); err != nil {
 		return err
 	}
 
-	cellarIDs := k.GetCellarIDs(ctx, config.Id)
+	cellarAddresses := k.GetCellarIDs(ctx, config.Id)
 
 	for _, proposedCellarID := range p.CellarIds.Ids {
+		proposedCellarAddress := common.HexToAddress(proposedCellarID)
 		found := false
-		for _, id := range cellarIDs {
-			if id == common.HexToAddress(proposedCellarID) {
+		for _, id := range cellarAddresses {
+			if id == proposedCellarAddress {
 				found = true
 			}
 		}
 		if !found {
-			cellarIDs = append(cellarIDs, common.HexToAddress(proposedCellarID))
+			cellarAddresses = append(cellarAddresses, proposedCellarAddress)
+			subscriptionID := NewAxelarSubscriptionID(p.ChainId, proposedCellarAddress)
+			defaultSubscription := pubsubtypes.DefaultSubscription{
+				SubscriptionId:  subscriptionID,
+				PublisherDomain: p.PublisherDomain,
+			}
+			k.pubsubKeeper.SetDefaultSubscription(ctx, defaultSubscription)
 		}
 	}
 
-	idStrings := make([]string, len(cellarIDs))
-	for i, cid := range cellarIDs {
+	idStrings := make([]string, len(cellarAddresses))
+	for i, cid := range cellarAddresses {
 		idStrings[i] = cid.String()
 	}
 
 	sort.Strings(idStrings)
-	k.SetCellarIDs(ctx, config.Id, types.CellarIDSet{Ids: idStrings})
+	k.SetCellarIDs(ctx, config.Id, types.CellarIDSet{ChainId: config.Id, Ids: idStrings})
 
 	return nil
 }
@@ -75,13 +92,18 @@ func HandleRemoveManagedCellarsProposal(ctx sdk.Context, k Keeper, p types.Remov
 		}
 
 		if !found {
-			outputCellarIDs.Ids = append(outputCellarIDs.Ids, existingID.Hex())
+			outputCellarIDs.Ids = append(outputCellarIDs.Ids, existingID.String())
 		}
 	}
 	outputCellarIDs.ChainId = config.Id
 
 	// unlike for adding an ID, we don't need to re-sort because we're removing elements from an already sorted list
 	k.SetCellarIDs(ctx, config.Id, outputCellarIDs)
+
+	for _, cellarToDelete := range p.CellarIds.Ids {
+		subscriptionID := NewAxelarSubscriptionID(p.ChainId, common.HexToAddress(cellarToDelete))
+		k.pubsubKeeper.DeleteDefaultSubscription(ctx, subscriptionID)
+	}
 
 	return nil
 }
@@ -190,7 +212,7 @@ func HandleUpgradeAxelarProxyContractProposal(ctx sdk.Context, k Keeper, p types
 
 	cellars := []string{}
 	for _, c := range k.GetCellarIDs(ctx, p.ChainId) {
-		cellars = append(cellars, c.Hex())
+		cellars = append(cellars, c.String())
 	}
 
 	payload, err := types.EncodeUpgradeArgs(p.NewProxyAddress, cellars)

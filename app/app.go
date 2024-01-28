@@ -446,6 +446,11 @@ func NewSommelierApp(
 		app.ModuleAccountAddressesToNames([]string{distrtypes.ModuleName}),
 	)
 
+	app.PubsubKeeper = pubsubkeeper.NewKeeper(
+		appCodec, keys[pubsubtypes.StoreKey], app.GetSubspace(pubsubtypes.ModuleName),
+		app.StakingKeeper, app.GravityKeeper,
+	)
+
 	// create axelar cork keeper
 	app.AxelarCorkKeeper = axelarcorkkeeper.NewKeeper(
 		appCodec,
@@ -458,11 +463,12 @@ func NewSommelierApp(
 		app.DistrKeeper,
 		app.IBCKeeper.ChannelKeeper,
 		app.GravityKeeper,
+		app.PubsubKeeper,
 	)
 
 	app.CorkKeeper = corkkeeper.NewKeeper(
 		appCodec, keys[corktypes.StoreKey], app.GetSubspace(corktypes.ModuleName),
-		app.StakingKeeper, app.GravityKeeper,
+		app.StakingKeeper, app.GravityKeeper, app.PubsubKeeper,
 	)
 
 	app.AuctionKeeper = auctionkeeper.NewKeeper(
@@ -478,11 +484,6 @@ func NewSommelierApp(
 
 	app.IncentivesKeeper = incentiveskeeper.NewKeeper(
 		appCodec, keys[incentivestypes.StoreKey], app.GetSubspace(incentivestypes.ModuleName), app.DistrKeeper, app.BankKeeper, app.MintKeeper,
-	)
-
-	app.PubsubKeeper = pubsubkeeper.NewKeeper(
-		appCodec, keys[pubsubtypes.StoreKey], app.GetSubspace(pubsubtypes.ModuleName),
-		app.StakingKeeper, app.GravityKeeper,
 	)
 
 	app.IncentivesKeeper = incentiveskeeper.NewKeeper(

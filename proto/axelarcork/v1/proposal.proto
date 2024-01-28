@@ -8,19 +8,21 @@ import "cosmos/base/v1beta1/coin.proto";
 option go_package = "github.com/peggyjv/sommelier/v7/x/axelarcork/types";
 
 message AddAxelarManagedCellarIDsProposal {
-  string      title       = 1;
-  string      description = 2;
-  uint64      chain_id    = 3;
-  CellarIDSet cellar_ids  = 4;
+  string      title            = 1;
+  string      description      = 2;
+  uint64      chain_id         = 3;
+  CellarIDSet cellar_ids       = 4;
+  string      publisher_domain = 5;
 }
 
 // AddAxelarManagedCellarIDsProposalWithDeposit is a specific definition for CLI commands
 message AddAxelarManagedCellarIDsProposalWithDeposit {
-  string          title       = 1;
-  string          description = 2;
-  uint64          chain_id    = 3;
-  repeated string cellar_ids  = 4;
-  string          deposit     = 5;
+  string          title            = 1;
+  string          description      = 2;
+  uint64          chain_id         = 3;
+  repeated string cellar_ids       = 4;
+  string          publisher_domain = 5;
+  string          deposit          = 6;
 }
 
 message RemoveAxelarManagedCellarIDsProposal {

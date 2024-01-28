@@ -38,7 +38,7 @@ func (k Keeper) QueryCellarIDs(c context.Context, req *types.QueryCellarIDsReque
 	k.IterateChainConfigurations(ctx, func(config types.ChainConfiguration) (stop bool) {
 		set := types.CellarIDSet{ChainId: config.Id, Ids: []string{}}
 		for _, id := range k.GetCellarIDs(ctx, config.Id) {
-			set.Ids = append(set.Ids, id.Hex())
+			set.Ids = append(set.Ids, id.String())
 		}
 
 		response.CellarIds = append(response.CellarIds, &set)
@@ -62,7 +62,7 @@ func (k Keeper) QueryCellarIDsByChainID(c context.Context, req *types.QueryCella
 
 	response := &types.QueryCellarIDsByChainIDResponse{}
 	for _, id := range k.GetCellarIDs(ctx, config.Id) {
-		response.CellarIds = append(response.CellarIds, id.Hex())
+		response.CellarIds = append(response.CellarIds, id.String())
 	}
 
 	return response, nil
@@ -217,7 +217,7 @@ func (k Keeper) QueryAxelarContractCallNonces(c context.Context, req *types.Quer
 	k.IterateAxelarContractCallNonces(ctx, func(chainID uint64, address common.Address, nonce uint64) (stop bool) {
 		nonces = append(nonces, &types.AxelarContractCallNonce{
 			ChainId:         chainID,
-			ContractAddress: address.Hex(),
+			ContractAddress: address.String(),
 			Nonce:           nonce,
 		})
 
