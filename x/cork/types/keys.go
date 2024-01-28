@@ -2,6 +2,7 @@ package types
 
 import (
 	"bytes"
+	"encoding/binary"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/ethereum/go-ethereum/common"
@@ -77,4 +78,20 @@ func GetCorkResultKey(id []byte) []byte {
 
 func GetValidatorCorkCountKey(val sdk.ValAddress) []byte {
 	return append([]byte{ValidatorCorkCountKey}, val.Bytes()...)
+}
+
+// Legacy V1 keys
+
+func GetCorkForValidatorAddressKeyV1(val sdk.ValAddress, contract common.Address) []byte {
+	return append(GetCorkValidatorKeyPrefixV1(val), contract.Bytes()...)
+}
+
+func GetCorkValidatorKeyPrefixV1(val sdk.ValAddress) []byte {
+	return append([]byte{CorkForAddressKeyPrefix}, val.Bytes()...)
+}
+
+func GetScheduledCorkKeyV1(blockHeight uint64, val sdk.ValAddress, contract common.Address) []byte {
+	b := make([]byte, 8)
+	binary.BigEndian.PutUint64(b, blockHeight)
+	return bytes.Join([][]byte{{ScheduledCorkKeyPrefix}, b, val.Bytes(), contract.Bytes()}, []byte{})
 }
