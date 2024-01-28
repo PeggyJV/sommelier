@@ -424,7 +424,7 @@ func (s *IntegrationTestSuite) TestAxelarCork() {
 
 		s.T().Log("Verifying default subscription removed")
 		subscriptionID = fmt.Sprintf("%d:%s", arbitrumChainID, counterContract.String())
-		pubsubResponse, err = pubsubQueryClient.QueryDefaultSubscription(context.Background(), &pubsubtypes.QueryDefaultSubscriptionRequest{SubscriptionId: subscriptionID})
+		_, err = pubsubQueryClient.QueryDefaultSubscription(context.Background(), &pubsubtypes.QueryDefaultSubscriptionRequest{SubscriptionId: subscriptionID})
 		s.Require().Error(err)
 
 		//////////////////////////////////

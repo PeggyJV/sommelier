@@ -9,7 +9,6 @@ import (
 	errorsmod "cosmossdk.io/errors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/crypto"
 )
 
@@ -23,10 +22,6 @@ const (
 
 func StringHash(inputString string) []byte {
 	return crypto.Keccak256Hash([]byte(inputString)).Bytes()
-}
-
-func NewSubscriptionId(chainID uint64, address common.Address) string {
-	return fmt.Sprintf("%d:%s", chainID, address.String())
 }
 
 ///////////////////

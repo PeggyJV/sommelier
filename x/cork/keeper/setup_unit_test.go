@@ -76,6 +76,7 @@ func setupCorkKeeper(t *testing.T) (
 	return k, ctx, mocksForCork{
 		mockStakingKeeper: mockStakingKeeper,
 		mockGravityKeeper: mockGravityKeeper,
+		mockPubsubKeeper:  mockPubsubKeeper,
 		mockValidator:     mock.NewMockValidatorI(ctrl),
 	}, ctrl
 }

@@ -386,7 +386,7 @@ func (s *IntegrationTestSuite) TestScheduledCork() {
 
 		s.T().Log("verify default subscription was removed")
 		subscriptionID = fmt.Sprintf("1:%s", counterContract.String())
-		pubsubResponse, err = pubsubQueryClient.QueryDefaultSubscription(context.Background(), &pubsubtypes.QueryDefaultSubscriptionRequest{SubscriptionId: subscriptionID})
+		_, err = pubsubQueryClient.QueryDefaultSubscription(context.Background(), &pubsubtypes.QueryDefaultSubscriptionRequest{SubscriptionId: subscriptionID})
 		s.Require().Error(err)
 	})
 }
