@@ -48,8 +48,8 @@ pub struct AxelarCorkResults {
 }
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct CellarIdSet {
-    #[prost(message, optional, tag = "1")]
-    pub chain: ::core::option::Option<ChainConfiguration>,
+    #[prost(uint64, tag = "1")]
+    pub chain_id: u64,
     #[prost(string, repeated, tag = "2")]
     pub ids: ::prost::alloc::vec::Vec<::prost::alloc::string::String>,
 }
@@ -61,6 +61,11 @@ pub struct ChainConfiguration {
     pub id: u64,
     #[prost(string, tag = "3")]
     pub proxy_address: ::prost::alloc::string::String,
+    /// pure token transfers have a fixed fee deducted from the amount sent in the ICS-20 message depending
+    /// on the asset and destination chain
+    /// they can be calculated here: https://docs.axelar.dev/resources/mainnet#cross-chain-relayer-gas-fee
+    #[prost(message, repeated, tag = "4")]
+    pub bridge_fees: ::prost::alloc::vec::Vec<cosmos_sdk_proto::cosmos::base::v1beta1::Coin>,
 }
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct ChainConfigurations {
@@ -685,8 +690,6 @@ pub struct ScheduleCorkEvent {
     #[prost(uint64, tag = "5")]
     pub chain_id: u64,
 }
-// note: current plan is to accept either chain name or chain ID. if both and they dont match, error.
-
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct AddAxelarManagedCellarIDsProposal {
     #[prost(string, tag = "1")]
@@ -697,8 +700,10 @@ pub struct AddAxelarManagedCellarIDsProposal {
     pub chain_id: u64,
     #[prost(message, optional, tag = "4")]
     pub cellar_ids: ::core::option::Option<CellarIdSet>,
+    #[prost(string, tag = "5")]
+    pub publisher_domain: ::prost::alloc::string::String,
 }
-/// AddManagedCellarIDsProposalWithDeposit is a specific definition for CLI commands
+/// AddAxelarManagedCellarIDsProposalWithDeposit is a specific definition for CLI commands
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct AddAxelarManagedCellarIDsProposalWithDeposit {
     #[prost(string, tag = "1")]
@@ -707,9 +712,11 @@ pub struct AddAxelarManagedCellarIDsProposalWithDeposit {
     pub description: ::prost::alloc::string::String,
     #[prost(uint64, tag = "3")]
     pub chain_id: u64,
-    #[prost(message, optional, tag = "4")]
-    pub cellar_ids: ::core::option::Option<CellarIdSet>,
+    #[prost(string, repeated, tag = "4")]
+    pub cellar_ids: ::prost::alloc::vec::Vec<::prost::alloc::string::String>,
     #[prost(string, tag = "5")]
+    pub publisher_domain: ::prost::alloc::string::String,
+    #[prost(string, tag = "6")]
     pub deposit: ::prost::alloc::string::String,
 }
 #[derive(Clone, PartialEq, ::prost::Message)]
@@ -723,7 +730,7 @@ pub struct RemoveAxelarManagedCellarIDsProposal {
     #[prost(message, optional, tag = "4")]
     pub cellar_ids: ::core::option::Option<CellarIdSet>,
 }
-/// RemoveManagedCellarIDsProposalWithDeposit is a specific definition for CLI commands
+/// RemoveAxelarManagedCellarIDsProposalWithDeposit is a specific definition for CLI commands
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct RemoveAxelarManagedCellarIDsProposalWithDeposit {
     #[prost(string, tag = "1")]
@@ -732,8 +739,8 @@ pub struct RemoveAxelarManagedCellarIDsProposalWithDeposit {
     pub description: ::prost::alloc::string::String,
     #[prost(uint64, tag = "3")]
     pub chain_id: u64,
-    #[prost(message, optional, tag = "4")]
-    pub cellar_ids: ::core::option::Option<CellarIdSet>,
+    #[prost(string, repeated, tag = "4")]
+    pub cellar_ids: ::prost::alloc::vec::Vec<::prost::alloc::string::String>,
     #[prost(string, tag = "5")]
     pub deposit: ::prost::alloc::string::String,
 }
@@ -774,7 +781,7 @@ pub struct AxelarScheduledCorkProposal {
     #[prost(uint64, tag = "7")]
     pub deadline: u64,
 }
-/// ScheduledCorkProposalWithDeposit is a specific definition for CLI commands
+/// AxelarScheduledCorkProposalWithDeposit is a specific definition for CLI commands
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct AxelarScheduledCorkProposalWithDeposit {
     #[prost(string, tag = "1")]
@@ -807,7 +814,7 @@ pub struct AxelarCommunityPoolSpendProposal {
     #[prost(message, optional, tag = "5")]
     pub amount: ::core::option::Option<cosmos_sdk_proto::cosmos::base::v1beta1::Coin>,
 }
-/// This format of the community spend Ethereum proposal is specifically for
+/// This format of the Axelar community spend Ethereum proposal is specifically for
 /// the CLI to allow simple text serialization.
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct AxelarCommunityPoolSpendProposalForCli {
@@ -820,10 +827,8 @@ pub struct AxelarCommunityPoolSpendProposalForCli {
     #[prost(uint64, tag = "4")]
     pub chain_id: u64,
     #[prost(string, tag = "5")]
-    pub chain_name: ::prost::alloc::string::String,
-    #[prost(string, tag = "6")]
     pub amount: ::prost::alloc::string::String,
-    #[prost(string, tag = "7")]
+    #[prost(string, tag = "6")]
     pub deposit: ::prost::alloc::string::String,
 }
 #[derive(Clone, PartialEq, ::prost::Message)]

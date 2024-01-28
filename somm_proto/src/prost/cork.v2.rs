@@ -136,6 +136,8 @@ pub struct Params {
     /// VoteThreshold defines the percentage of bonded stake required to vote for a scheduled cork to be approved
     #[prost(string, tag = "1")]
     pub vote_threshold: ::prost::alloc::string::String,
+    #[prost(uint64, tag = "2")]
+    pub max_corks_per_validator: u64,
 }
 /// QueryParamsRequest is the request type for the Query/Params gRPC method.
 #[derive(Clone, PartialEq, ::prost::Message)]
@@ -396,6 +398,8 @@ pub struct AddManagedCellarIDsProposal {
     pub description: ::prost::alloc::string::String,
     #[prost(message, optional, tag = "3")]
     pub cellar_ids: ::core::option::Option<CellarIdSet>,
+    #[prost(string, tag = "4")]
+    pub publisher_domain: ::prost::alloc::string::String,
 }
 /// AddManagedCellarIDsProposalWithDeposit is a specific definition for CLI commands
 #[derive(Clone, PartialEq, ::prost::Message)]
@@ -407,6 +411,8 @@ pub struct AddManagedCellarIDsProposalWithDeposit {
     #[prost(string, repeated, tag = "3")]
     pub cellar_ids: ::prost::alloc::vec::Vec<::prost::alloc::string::String>,
     #[prost(string, tag = "4")]
+    pub publisher_domain: ::prost::alloc::string::String,
+    #[prost(string, tag = "5")]
     pub deposit: ::prost::alloc::string::String,
 }
 #[derive(Clone, PartialEq, ::prost::Message)]
