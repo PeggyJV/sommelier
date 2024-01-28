@@ -83,7 +83,7 @@ func auctionInitGenesis(ctx sdk.Context, auctionKeeper auctionkeeper.Keeper) {
 	btc52WeekHigh := sdk.MustNewDecFromStr("46936.19")
 	oneDollar := sdk.MustNewDecFromStr("1.0")
 
-	var lastUpdatedBlock uint64 = uint64(ctx.BlockHeight())
+	lastUpdatedBlock := uint64(ctx.BlockHeight())
 
 	usommPrice := auctiontypes.TokenPrice{
 		Denom:            "usomm",
