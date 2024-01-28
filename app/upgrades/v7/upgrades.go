@@ -161,7 +161,7 @@ func axelarcorkInitGenesis(ctx sdk.Context, axelarcorkKeeper axelarcorkkeeper.Ke
 	genesisState.Params.TimeoutDuration = uint64(6 * time.Hour)
 	genesisState.Params.IbcChannel = "channel-5"
 	genesisState.Params.IbcPort = ibctransfertypes.PortID
-	genesisState.Params.GmpAccount = "axelar1dv4u5k73pzqrxlzujxg3qp8kvc3pje7jtdvu72npnt5zhq05ejcsn5qme5s"
+	genesisState.Params.GmpAccount = "axelar1dv4u5k73pzqrxlzujxg3qp8kvc3pje7jtdvu72npnt5zhq05ejcsn5qme5"
 	genesisState.Params.ExecutorAccount = "axelar1aythygn6z5thymj6tmzfwekzh05ewg3l7d6y89"
 	genesisState.Params.CorkTimeoutBlocks = 5000
 
