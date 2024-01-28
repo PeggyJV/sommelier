@@ -744,7 +744,7 @@ pub struct RemoveAxelarManagedCellarIDsProposalWithDeposit {
     #[prost(string, tag = "5")]
     pub deposit: ::prost::alloc::string::String,
 }
-#[derive(Clone, PartialEq, ::prost::Message)]
+#[derive(serde::Deserialize, serde::Serialize, Clone, PartialEq, ::prost::Message)]
 pub struct AxelarScheduledCorkProposal {
     #[prost(string, tag = "1")]
     pub title: ::prost::alloc::string::String,
