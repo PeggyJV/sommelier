@@ -17,5 +17,9 @@ func NewMigrator(keeper Keeper) Migrator {
 
 // Migrate1to2 migrates from consensus version 1 to 2.
 func (m Migrator) Migrate1to2(ctx sdk.Context) error {
+	if err := v1.MigrateParamStore(ctx, m.keeper.paramSpace); err != nil {
+		return err
+	}
+
 	return v1.MigrateStore(ctx, m.keeper.storeKey, m.keeper.cdc)
 }

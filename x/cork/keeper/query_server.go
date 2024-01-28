@@ -34,7 +34,7 @@ func (k Keeper) QueryCellarIDs(c context.Context, req *types.QueryCellarIDsReque
 
 	response := &types.QueryCellarIDsResponse{}
 	for _, id := range k.GetCellarIDs(ctx) {
-		response.CellarIds = append(response.CellarIds, id.Hex())
+		response.CellarIds = append(response.CellarIds, id.String())
 	}
 
 	return response, nil

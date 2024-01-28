@@ -26,6 +26,9 @@ pub struct Params {
     /// Number of blocks between auction price decreases
     #[prost(uint64, tag = "4")]
     pub price_decrease_block_interval: u64,
+    /// The interval between starting auctions
+    #[prost(uint64, tag = "5")]
+    pub auction_interval: u64,
 }
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct QueryParamsRequest {}

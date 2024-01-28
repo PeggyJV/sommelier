@@ -14,6 +14,7 @@ import (
 	govtypesv1beta1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
 	"github.com/ethereum/go-ethereum/common"
 	types "github.com/peggyjv/sommelier/v7/x/axelarcork/types"
+	pubsubtypes "github.com/peggyjv/sommelier/v7/x/pubsub/types"
 	"github.com/spf13/cobra"
 )
 
@@ -251,6 +252,7 @@ Where proposal.json contains:
   "description": "I have a hunch",
   "chain_id": 42161,
   "cellar_ids": ["0x123801a7D398351b8bE11C439e05C5B3259aeC9B", "0x456801a7D398351b8bE11C439e05C5B3259aeC9B"],
+  "publisher_domain": "example.com",
   "deposit": "10000usomm"
 }
 `,
@@ -288,11 +290,17 @@ Where proposal.json contains:
 				}
 			}
 
+			if err := pubsubtypes.ValidateDomain(proposal.PublisherDomain); err != nil {
+				return err
+			}
+
 			content := types.NewAddAxelarManagedCellarIDsProposal(
 				proposal.Title,
 				proposal.Description,
 				proposal.ChainId,
-				&types.CellarIDSet{ChainId: proposal.ChainId, Ids: proposal.CellarIds})
+				&types.CellarIDSet{ChainId: proposal.ChainId, Ids: proposal.CellarIds},
+				proposal.PublisherDomain,
+			)
 
 			from := clientCtx.GetFromAddress()
 			msg, err := govtypesv1beta1.NewMsgSubmitProposal(content, deposit, from)
@@ -570,12 +578,19 @@ Where proposal.json contains:
   "chain_configuration": {
 	"name": "arbitrum",
 	"id": 42161,
-	"proxy_address": "0x0000000000000000000000000000000000000000"
+	"proxy_address": "0x0000000000000000000000000000000000000000",
+	"bridge_fees": [
+		{
+			"denom": "usomm",
+			"amount": "100000"
+		}
+	]
   },
   "deposit": "10000usomm"
 }
 
 Note that the "name" parameter should map to a "Chain Identifier" as defined by Axelar: https://docs.axelar.dev/dev/reference/mainnet-chain-names
+Bridge fees for a given source denom and destination chain can be calculated here: https://docs.axelar.dev/resources/mainnet#cross-chain-relayer-gas-fee
 `,
 				version.AppName,
 			),

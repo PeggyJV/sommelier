@@ -175,6 +175,8 @@ pub struct Params {
     pub auction_max_block_age: u64,
     #[prost(string, tag = "5")]
     pub auction_price_decrease_acceleration_rate: ::prost::alloc::string::String,
+    #[prost(uint64, tag = "6")]
+    pub minimum_auction_height: u64,
 }
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct QueryParamsRequest {}

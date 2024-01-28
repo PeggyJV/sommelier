@@ -3,6 +3,7 @@ package integration_tests
 import (
 	"context"
 	"encoding/hex"
+	"fmt"
 	"sort"
 	"time"
 
@@ -13,6 +14,7 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/golang/protobuf/proto" //nolint:staticcheck
 	"github.com/peggyjv/sommelier/v7/x/axelarcork/types"
+	pubsubtypes "github.com/peggyjv/sommelier/v7/x/pubsub/types"
 )
 
 func (s *IntegrationTestSuite) TestAxelarCork() {
@@ -43,6 +45,7 @@ func (s *IntegrationTestSuite) TestAxelarCork() {
 		sort.Strings(sortedValidators)
 
 		axelarcorkQueryClient := types.NewQueryClient(val0ClientCtx)
+		pubsubQueryClient := pubsubtypes.NewQueryClient(orch0ClientCtx)
 		govQueryClient := govtypesv1beta1.NewQueryClient(orch0ClientCtx)
 
 		/////////////////////////////
@@ -52,6 +55,7 @@ func (s *IntegrationTestSuite) TestAxelarCork() {
 		arbitrumChainName := "arbitrum"
 		arbitrumChainID := uint64(42161)
 		proxyAddress := "0xEe75bA2C81C04DcA4b0ED6d1B7077c188FEde4d2"
+		bridgeFees := sdk.NewCoins(sdk.NewCoin("usomm", sdk.NewIntFromUint64(33670000)))
 
 		s.T().Log("Creating AddChainConfigurationProposal")
 		addChainConfigurationProp := types.AddChainConfigurationProposal{
@@ -61,6 +65,7 @@ func (s *IntegrationTestSuite) TestAxelarCork() {
 				Name:         arbitrumChainName,
 				Id:           arbitrumChainID,
 				ProxyAddress: proxyAddress,
+				BridgeFees:   bridgeFees,
 			},
 		}
 
@@ -87,6 +92,7 @@ func (s *IntegrationTestSuite) TestAxelarCork() {
 		s.Require().Equal(chainConfig.Name, arbitrumChainName)
 		s.Require().Equal(chainConfig.Id, arbitrumChainID)
 		s.Require().Equal(chainConfig.ProxyAddress, proxyAddress)
+		s.Require().Equal(chainConfig.BridgeFees, bridgeFees)
 
 		//////////////////
 		// Add a cellar //
@@ -103,6 +109,7 @@ func (s *IntegrationTestSuite) TestAxelarCork() {
 					counterContract.Hex(),
 				},
 			},
+			PublisherDomain: "example.com",
 		}
 
 		addAxelarManagedCellarIDsPropMsg, err := govtypesv1beta1.NewMsgSubmitProposal(
@@ -125,6 +132,13 @@ func (s *IntegrationTestSuite) TestAxelarCork() {
 		s.Require().NoError(err)
 		s.Require().Len(cellarIDsResponse.CellarIds, 1)
 		s.Require().Equal(cellarIDsResponse.CellarIds[0], counterContract.Hex())
+
+		s.T().Log("Verifying default subscription created")
+		subscriptionID := fmt.Sprintf("%d:%s", arbitrumChainID, counterContract.String())
+		pubsubResponse, err := pubsubQueryClient.QueryDefaultSubscription(context.Background(), &pubsubtypes.QueryDefaultSubscriptionRequest{SubscriptionId: subscriptionID})
+		s.Require().NoError(err)
+		s.Require().Equal(pubsubResponse.DefaultSubscription.SubscriptionId, subscriptionID)
+		s.Require().Equal(pubsubResponse.DefaultSubscription.PublisherDomain, "example.com")
 
 		/////////////////////////////
 		// Schedule an Axelar cork //
@@ -403,10 +417,15 @@ func (s *IntegrationTestSuite) TestAxelarCork() {
 		s.submitAndVoteForAxelarProposal(proposerCtx, orch0ClientCtx, propID, removeAxelarManagedCellarIDsPropMsg)
 		propID++
 
-		s.T().Log("Verifying CellarID correctly added")
+		s.T().Log("Verifying CellarID correctly removed")
 		cellarIDsResponse, err = axelarcorkQueryClient.QueryCellarIDsByChainID(context.Background(), &types.QueryCellarIDsByChainIDRequest{ChainId: arbitrumChainID})
 		s.Require().NoError(err)
 		s.Require().Empty(cellarIDsResponse.CellarIds)
+
+		s.T().Log("Verifying default subscription removed")
+		subscriptionID = fmt.Sprintf("%d:%s", arbitrumChainID, counterContract.String())
+		_, err = pubsubQueryClient.QueryDefaultSubscription(context.Background(), &pubsubtypes.QueryDefaultSubscriptionRequest{SubscriptionId: subscriptionID})
+		s.Require().Error(err)
 
 		//////////////////////////////////
 		// Remove a chain configuration //

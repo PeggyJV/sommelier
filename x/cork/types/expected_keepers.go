@@ -8,7 +8,8 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 	"github.com/ethereum/go-ethereum/common"
-	"github.com/peggyjv/gravity-bridge/module/v4/x/gravity/types"
+	gravitytypes "github.com/peggyjv/gravity-bridge/module/v4/x/gravity/types"
+	pubsubtypes "github.com/peggyjv/sommelier/v7/x/pubsub/types"
 	tmbytes "github.com/tendermint/tendermint/libs/bytes"
 )
 
@@ -29,17 +30,23 @@ type StakingKeeper interface {
 
 // GravityKeeper defines the expected gravity keeper methods
 type GravityKeeper interface {
-	SetOutgoingTx(ctx sdk.Context, outgoing types.OutgoingTx)
+	SetOutgoingTx(ctx sdk.Context, outgoing gravitytypes.OutgoingTx)
 	CreateContractCallTx(
 		ctx sdk.Context,
 		invalidationNonce uint64,
 		invalidationScope tmbytes.HexBytes,
 		address common.Address,
 		payload []byte,
-		tokens []types.ERC20Token,
-		fees []types.ERC20Token) *types.ContractCallTx
+		tokens []gravitytypes.ERC20Token,
+		fees []gravitytypes.ERC20Token) *gravitytypes.ContractCallTx
 	GetOrchestratorValidatorAddress(ctx sdk.Context, orchAddr sdk.AccAddress) sdk.ValAddress
 	GetValidatorEthereumAddress(ctx sdk.Context, valAddr sdk.ValAddress) common.Address
 	GetEthereumOrchestratorAddress(ctx sdk.Context, ethAddr common.Address) sdk.AccAddress
 	SetOrchestratorValidatorAddress(ctx sdk.Context, val sdk.ValAddress, orchAddr sdk.AccAddress)
+}
+
+type PubsubKeeper interface {
+	GetPublisher(ctx sdk.Context, publisherDomain string) (publisher pubsubtypes.Publisher, found bool)
+	SetDefaultSubscription(ctx sdk.Context, defaultSubscription pubsubtypes.DefaultSubscription)
+	DeleteDefaultSubscription(ctx sdk.Context, subscriptionID string)
 }

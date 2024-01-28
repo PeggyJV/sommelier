@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"github.com/cosmos/cosmos-sdk/simapp/params"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/peggyjv/sommelier/v7/x/axelarcork/types"
 
 	"github.com/cosmos/cosmos-sdk/testutil"
@@ -20,6 +21,7 @@ func TestParseAddManagedCellarsProposal(t *testing.T) {
   "description": "I have a hunch",
   "chain_id": 42161,
   "cellar_ids": ["0x123801a7D398351b8bE11C439e05C5B3259aeC9B", "0x456801a7D398351b8bE11C439e05C5B3259aeC9B"],
+  "publisher_domain": "example.com",
   "deposit": "10000usomm"
 }
 `)
@@ -36,6 +38,7 @@ func TestParseAddManagedCellarsProposal(t *testing.T) {
 	require.Equal(t, uint64(42161), proposal.ChainId)
 	require.Equal(t, "0x123801a7D398351b8bE11C439e05C5B3259aeC9B", proposal.CellarIds[0])
 	require.Equal(t, "0x456801a7D398351b8bE11C439e05C5B3259aeC9B", proposal.CellarIds[1])
+	require.Equal(t, "example.com", proposal.PublisherDomain)
 	require.Equal(t, "10000usomm", proposal.Deposit)
 }
 
@@ -139,7 +142,13 @@ func TestParseAddChainConfigurationProposal(t *testing.T) {
   "chain_configuration": {
 	"name": "arbitrum",
 	"id": 42161,
-	"proxy_address": "0x0000000000000000000000000000000000000000"
+	"proxy_address": "0x0000000000000000000000000000000000000000",
+	"bridge_fees": [
+		{
+			"denom": "usomm",
+			"amount": "100000"
+		}
+	]
   },
   "deposit": "10000usomm"
 }
@@ -157,6 +166,8 @@ func TestParseAddChainConfigurationProposal(t *testing.T) {
 	require.Equal(t, "arbitrum", proposal.ChainConfiguration.Name)
 	require.Equal(t, uint64(42161), proposal.ChainConfiguration.Id)
 	require.Equal(t, "0x0000000000000000000000000000000000000000", proposal.ChainConfiguration.ProxyAddress)
+	require.Equal(t, "usomm", proposal.ChainConfiguration.BridgeFees[0].Denom)
+	require.Equal(t, sdk.NewInt(100000), proposal.ChainConfiguration.BridgeFees[0].Amount)
 	require.Equal(t, "10000usomm", proposal.Deposit)
 }
 

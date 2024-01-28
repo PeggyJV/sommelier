@@ -76,13 +76,14 @@ func CreateUpgradeHandler(
 func auctionInitGenesis(ctx sdk.Context, auctionKeeper auctionkeeper.Keeper) {
 	genesisState := auctiontypes.DefaultGenesisState()
 
+	genesisState.Params.MinimumAuctionHeight = 13020000 // roughly 2024-02-08 09:30 UTC
+
 	usomm52WeekLow := sdk.MustNewDecFromStr("0.079151")
 	eth52WeekHigh := sdk.MustNewDecFromStr("2618.33")
 	btc52WeekHigh := sdk.MustNewDecFromStr("46936.19")
 	oneDollar := sdk.MustNewDecFromStr("1.0")
 
-	// Setting this to a block on 1/25/24 -- just means token price will get stale 6 days faster post-upgrade
-	var lastUpdatedBlock uint64 = 12817014
+	lastUpdatedBlock := uint64(ctx.BlockHeight())
 
 	usommPrice := auctiontypes.TokenPrice{
 		Denom:            "usomm",
@@ -164,37 +165,22 @@ func axelarcorkInitGenesis(ctx sdk.Context, axelarcorkKeeper axelarcorkkeeper.Ke
 	genesisState.Params.ExecutorAccount = "axelar1aythygn6z5thymj6tmzfwekzh05ewg3l7d6y89"
 	genesisState.Params.CorkTimeoutBlocks = 5000
 
+	// pure token transfers have a fixed fee deducted from the amount sent in the ICS-20 message depending
+	// on the asset and destination chain
+	// they can be calculated here: https://docs.axelar.dev/resources/mainnet#cross-chain-relayer-gas-fee
 	genesisState.ChainConfigurations = axelarcorktypes.ChainConfigurations{
 		Configurations: []*axelarcorktypes.ChainConfiguration{
 			{
 				Name:         "arbitrum",
 				Id:           42161,
 				ProxyAddress: "0xEe75bA2C81C04DcA4b0ED6d1B7077c188FEde4d2",
+				BridgeFees:   sdk.NewCoins(sdk.NewCoin("usomm", sdk.NewIntFromUint64(33670000))),
 			},
 			{
 				Name:         "Avalanche",
 				Id:           43114,
 				ProxyAddress: "0xEe75bA2C81C04DcA4b0ED6d1B7077c188FEde4d2",
-			},
-			{
-				Name:         "base",
-				Id:           8453,
-				ProxyAddress: "0xEe75bA2C81C04DcA4b0ED6d1B7077c188FEde4d2",
-			},
-			{
-				Name:         "binance",
-				Id:           56,
-				ProxyAddress: "0xEe75bA2C81C04DcA4b0ED6d1B7077c188FEde4d2",
-			},
-			{
-				Name:         "optimism",
-				Id:           10,
-				ProxyAddress: "0xEe75bA2C81C04DcA4b0ED6d1B7077c188FEde4d2",
-			},
-			{
-				Name:         "Polygon",
-				Id:           137,
-				ProxyAddress: "0xEe75bA2C81C04DcA4b0ED6d1B7077c188FEde4d2",
+				BridgeFees:   sdk.NewCoins(sdk.NewCoin("usomm", sdk.NewIntFromUint64(10670000))),
 			},
 		},
 	}
@@ -206,22 +192,6 @@ func axelarcorkInitGenesis(ctx sdk.Context, axelarcorkKeeper axelarcorkkeeper.Ke
 		},
 		{
 			ChainId: 43114, // Avalanche
-			Ids:     []string{},
-		},
-		{
-			ChainId: 8453, // base
-			Ids:     []string{},
-		},
-		{
-			ChainId: 56, // binance
-			Ids:     []string{},
-		},
-		{
-			ChainId: 10, // optimism
-			Ids:     []string{},
-		},
-		{
-			ChainId: 137, // Polygon
 			Ids:     []string{},
 		},
 	}
@@ -254,6 +224,7 @@ func pubsubInitGenesis(ctx sdk.Context, pubsubKeeper pubsubkeeper.Keeper) {
 		"1:0x6b7f87279982d919Bbf85182DDeAB179B366D8f2",     // ETH-BTC Trend
 		"1:0x6E2dAc3b9E9ADc0CbbaE2D0B9Fd81952a8D33872",     // ETH-BTC Momentum
 		"1:0xDBe19d1c3F21b1bB250ca7BDaE0687A97B5f77e6",     // Fraximal
+		"1:0xcf4B531b4Cde95BD35d71926e09B2b54c564F5b6",     // Max Morpho ETH
 		"1:0xC7b69E15D86C5c1581dacce3caCaF5b68cd6596F",     // Real Yield 1INCH
 		"1:0x0274a704a6D9129F90A62dDC6f6024b33EcDad36",     // Real Yield BTC
 		"1:0x18ea937aba6053bC232d9Ae2C42abE7a8a2Be440",     // Real Yield ENS
@@ -266,12 +237,14 @@ func pubsubInitGenesis(ctx sdk.Context, pubsubKeeper pubsubkeeper.Keeper) {
 		"1:0x4986fD36b6b16f49b43282Ee2e24C5cF90ed166d",     // Steady BTC
 		"1:0x05641a27C82799AaF22b436F20A3110410f29652",     // Steady MATIC
 		"1:0x6F069F711281618467dAe7873541EcC082761B33",     // Steady UNI
+		"1:0x6a6731f1754e3088ea35c8ddfd55cFF4d0FA5052",     // Turbo CRVUSD
 		"1:0x9a7b4980C6F0FCaa50CD5f288Ad7038f434c692e",     // Turbo EETH
 		"1:0x0C190DEd9Be5f512Bd72827bdaD4003e9Cc7975C",     // Turbo GHO
 		"1:0x5195222f69c5821f8095ec565E71e18aB6A2298f",     // Turbo SOMM
 		"1:0xc7372Ab5dd315606dB799246E8aA112405abAeFf",     // Turbo stETH (stETH deposit)
 		"1:0xfd6db5011b171B05E1Ea3b92f9EAcaEEb055e971",     // Turbo stETH (WETH deposit)
 		"1:0xd33dAd974b938744dAC81fE00ac67cb5AA13958E",     // Turbo swETH
+		"1:0x991Fc0B9f027A80E2d642Eb260a41FfC14b2f450",     // Yield Maxi USD
 		"42161:0x438087f7c226A89762a791F187d7c3D4a0e95ae6", // Arbitrum test cellar
 	}
 

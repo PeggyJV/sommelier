@@ -17,6 +17,7 @@ import (
 	"github.com/ethereum/go-ethereum/ethclient"
 	gbtypes "github.com/peggyjv/gravity-bridge/module/v4/x/gravity/types"
 	"github.com/peggyjv/sommelier/v7/x/cork/types"
+	pubsubtypes "github.com/peggyjv/sommelier/v7/x/pubsub/types"
 )
 
 func (s *IntegrationTestSuite) TestScheduledCork() {
@@ -28,6 +29,7 @@ func (s *IntegrationTestSuite) TestScheduledCork() {
 		invalidProposal := types.ScheduledCorkProposal{
 			Title:                 "invalid proposal",
 			Description:           "proposal for cellar ID that doesn't exist",
+			BlockHeight:           100,
 			TargetContractAddress: "0x0000000000000000000000000000000000000000",
 			ContractCallProtoJson: "{\"thing\": 1}",
 		}
@@ -82,6 +84,7 @@ func (s *IntegrationTestSuite) TestScheduledCork() {
 			CellarIds: &types.CellarIDSet{
 				Ids: []string{counterContract.Hex()},
 			},
+			PublisherDomain: "example.com",
 		}
 		proposalMsg, err = govtypesv1beta1.NewMsgSubmitProposal(
 			&proposal,
@@ -152,6 +155,14 @@ func (s *IntegrationTestSuite) TestScheduledCork() {
 
 			return found
 		}, 10*time.Second, 2*time.Second, "did not find address in managed cellars")
+
+		s.T().Log("verify a default subscription was created")
+		pubsubQueryClient := pubsubtypes.NewQueryClient(proposerCtx)
+		subscriptionID := fmt.Sprintf("1:%s", counterContract.String())
+		pubsubResponse, err := pubsubQueryClient.QueryDefaultSubscription(context.Background(), &pubsubtypes.QueryDefaultSubscriptionRequest{SubscriptionId: subscriptionID})
+		s.Require().NoError(err)
+		s.Require().Equal(pubsubResponse.DefaultSubscription.SubscriptionId, subscriptionID)
+		s.Require().Equal(pubsubResponse.DefaultSubscription.PublisherDomain, "example.com")
 
 		s.T().Log("schedule a cork for the future")
 		node, err := proposerCtx.GetNode()
@@ -314,6 +325,69 @@ func (s *IntegrationTestSuite) TestScheduledCork() {
 			return govtypesv1beta1.StatusPassed == proposalQueryResponse.Proposal.Status
 		}, time.Second*30, time.Second*5, "proposal was never accepted")
 		s.T().Log("Proposal approved!")
+
+		s.T().Logf("create governance proposal to remove counter contract")
+		removalProposal := types.RemoveManagedCellarIDsProposal{
+			Title:       "add counter contract in test",
+			Description: "test description",
+			CellarIds: &types.CellarIDSet{
+				Ids: []string{counterContract.Hex()},
+			},
+		}
+		proposalMsg, err = govtypesv1beta1.NewMsgSubmitProposal(
+			&removalProposal,
+			sdk.Coins{
+				{
+					Denom:  testDenom,
+					Amount: stakeAmount.Quo(sdk.NewInt(2)),
+				},
+			},
+			proposer.address(),
+		)
+		s.Require().NoError(err, "unable to create governance proposal")
+
+		s.T().Log("submit proposal adding test cellar ID")
+		submitProposalResponse, err = s.chain.sendMsgs(*proposerCtx, proposalMsg)
+		s.Require().NoError(err)
+		s.Require().Zero(submitProposalResponse.Code, "raw log: %s", submitProposalResponse.RawLog)
+
+		s.T().Log("check proposal was submitted correctly")
+		proposalsQueryResponse, err = govQueryClient.Proposals(context.Background(), &govtypesv1beta1.QueryProposalsRequest{})
+		s.Require().NoError(err)
+		s.Require().NotEmpty(proposalsQueryResponse.Proposals)
+		s.Require().Equal(uint64(3), proposalsQueryResponse.Proposals[2].ProposalId, "not proposal id 3")
+		s.Require().Equal(govtypesv1beta1.StatusVotingPeriod, proposalsQueryResponse.Proposals[2].Status, "proposal not in voting period")
+
+		s.T().Log("vote for proposal allowing contract")
+		for _, val := range s.chain.validators {
+			kr, err := val.keyring()
+			s.Require().NoError(err)
+			clientCtx, err := s.chain.clientContext("tcp://localhost:26657", &kr, "val", val.address())
+			s.Require().NoError(err)
+
+			voteMsg := govtypesv1beta1.NewMsgVote(val.address(), 3, govtypesv1beta1.OptionYes)
+			voteResponse, err := s.chain.sendMsgs(*clientCtx, voteMsg)
+			s.Require().NoError(err)
+			s.Require().Zero(voteResponse.Code, "vote error: %s", voteResponse.RawLog)
+		}
+
+		s.T().Log("wait for proposal to be approved")
+		s.Require().Eventuallyf(func() bool {
+			proposalQueryResponse, err := govQueryClient.Proposal(context.Background(), &govtypesv1beta1.QueryProposalRequest{ProposalId: 3})
+			s.Require().NoError(err)
+			return govtypesv1beta1.StatusPassed == proposalQueryResponse.Proposal.Status
+		}, time.Second*30, time.Second*5, "proposal was never accepted")
+
+		s.T().Log("verify cellar ID was removed")
+		queryClient := types.NewQueryClient(proposerCtx)
+		cellarIDsResponse, err := queryClient.QueryCellarIDs(context.Background(), &types.QueryCellarIDsRequest{})
+		s.Require().NoError(err)
+		s.Require().NotContains(cellarIDsResponse.CellarIds, counterContract.String())
+
+		s.T().Log("verify default subscription was removed")
+		subscriptionID = fmt.Sprintf("1:%s", counterContract.String())
+		_, err = pubsubQueryClient.QueryDefaultSubscription(context.Background(), &pubsubtypes.QueryDefaultSubscriptionRequest{SubscriptionId: subscriptionID})
+		s.Require().Error(err)
 	})
 }
 

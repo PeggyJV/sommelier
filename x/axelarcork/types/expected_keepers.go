@@ -17,6 +17,7 @@ import (
 	clienttypes "github.com/cosmos/ibc-go/v6/modules/core/02-client/types"
 	channeltypes "github.com/cosmos/ibc-go/v6/modules/core/04-channel/types"
 	ibcexported "github.com/cosmos/ibc-go/v6/modules/core/exported"
+	pubsubtypes "github.com/peggyjv/sommelier/v7/x/pubsub/types"
 )
 
 // AccountKeeper defines the expected account keeper.
@@ -79,4 +80,10 @@ type DistributionKeeper interface {
 // GravityKeeper defines the expected gravity keeper methods
 type GravityKeeper interface {
 	GetOrchestratorValidatorAddress(ctx sdk.Context, orchAddr sdk.AccAddress) sdk.ValAddress
+}
+
+type PubsubKeeper interface {
+	GetPublisher(ctx sdk.Context, publisherDomain string) (publisher pubsubtypes.Publisher, found bool)
+	SetDefaultSubscription(ctx sdk.Context, defaultSubscription pubsubtypes.DefaultSubscription)
+	DeleteDefaultSubscription(ctx sdk.Context, subscriptionID string)
 }

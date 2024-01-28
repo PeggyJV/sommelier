@@ -22,12 +22,13 @@ type Keeper struct {
 	paramSpace    paramtypes.Subspace
 	stakingKeeper types.StakingKeeper
 	gravityKeeper types.GravityKeeper
+	pubsubKeeper  types.PubsubKeeper
 }
 
 // NewKeeper creates a new x/cork Keeper instance
 func NewKeeper(
 	cdc codec.BinaryCodec, key storetypes.StoreKey, paramSpace paramtypes.Subspace,
-	stakingKeeper types.StakingKeeper, gravityKeeper types.GravityKeeper,
+	stakingKeeper types.StakingKeeper, gravityKeeper types.GravityKeeper, pubsubKeeper types.PubsubKeeper,
 ) Keeper {
 	// set KeyTable if it has not already been set
 	if !paramSpace.HasKeyTable() {
@@ -40,6 +41,7 @@ func NewKeeper(
 		paramSpace:    paramSpace,
 		stakingKeeper: stakingKeeper,
 		gravityKeeper: gravityKeeper,
+		pubsubKeeper:  pubsubKeeper,
 	}
 }
 

@@ -17,13 +17,13 @@ import (
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 	govtypesv1beta1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
+	gravitytypes "github.com/peggyjv/gravity-bridge/module/v4/x/gravity/types"
 	"github.com/peggyjv/sommelier/v7/app/params"
 	auctiontypes "github.com/peggyjv/sommelier/v7/x/auction/types"
 	axelarcorktypes "github.com/peggyjv/sommelier/v7/x/axelarcork/types"
 	cellarfeestypes "github.com/peggyjv/sommelier/v7/x/cellarfees/types"
 	corktypes "github.com/peggyjv/sommelier/v7/x/cork/types"
-
-	gravitytypes "github.com/peggyjv/gravity-bridge/module/v4/x/gravity/types"
+	pubsubtypes "github.com/peggyjv/sommelier/v7/x/pubsub/types"
 
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/ethclient"
@@ -52,6 +52,21 @@ const (
 	initBalanceStr      = "210000000000usomm"
 	minGasPrice         = "2"
 	ethChainID     uint = 15
+	exampleCA           = `-----BEGIN CERTIFICATE-----
+MIICGzCCAaKgAwIBAgIUVYhZ4+pC7vQAf5FC6pssLk/eq5YwCgYIKoZIzj0EAwMw
+RTELMAkGA1UEBhMCQVUxEzARBgNVBAgMClNvbWUtU3RhdGUxITAfBgNVBAoMGElu
+dGVybmV0IFdpZGdpdHMgUHR5IEx0ZDAeFw0yMjAxMDUwNzIwMzFaFw0yNDAxMDUw
+NzIwMzFaMEUxCzAJBgNVBAYTAkFVMRMwEQYDVQQIDApTb21lLVN0YXRlMSEwHwYD
+VQQKDBhJbnRlcm5ldCBXaWRnaXRzIFB0eSBMdGQwdjAQBgcqhkjOPQIBBgUrgQQA
+IgNiAAQ3jwZd0Xe9w55UyAxRuc4F2u/LDdo7ykCZBO34neXpLR4GRRpx5VjFdHcX
+WjvM9j3DnWjptb1fe7TIKSSJRmW1skWkpktOthIPhfga9jBhU4WRUDloKk1tRuiI
+e8rRSlSjUzBRMB0GA1UdDgQWBBSTyTULHT9hNAA2Wg4dCtuTuIhiXTAfBgNVHSME
+GDAWgBSTyTULHT9hNAA2Wg4dCtuTuIhiXTAPBgNVHRMBAf8EBTADAQH/MAoGCCqG
+SM49BAMDA2cAMGQCMEd+Eg6lhStLkWEwmJJGN3Xdh9JmNsgsdff3mI3Y7UmHOB8K
+HOqHGS8ApZcunRauDAIwRtgceZpkS92KuP3QOUotAH/nnCzp7X1lVzGOSTBRTVYJ
+pohf4PJrfacqpi7PoXBk
+-----END CERTIFICATE-----
+`
 )
 
 var (
@@ -441,6 +456,20 @@ func (s *IntegrationTestSuite) initGenesis() {
 	bz, err = cdc.MarshalJSON(&cellarfeesGenState)
 	s.Require().NoError(err)
 	appGenState[cellarfeestypes.ModuleName] = bz
+
+	// set pubsub gen state
+	pubsubGenState := pubsubtypes.DefaultGenesisState()
+	s.Require().NoError(cdc.UnmarshalJSON(appGenState[pubsubtypes.ModuleName], &pubsubGenState))
+	pubsubGenState.Publishers = []*pubsubtypes.Publisher{
+		{
+			Address: s.chain.proposer.address().String(),
+			Domain:  "example.com",
+			CaCert:  exampleCA,
+		},
+	}
+	bz, err = cdc.MarshalJSON(&pubsubGenState)
+	s.Require().NoError(err)
+	appGenState[pubsubtypes.ModuleName] = bz
 
 	// generate genesis txs
 	genTxs := make([]json.RawMessage, len(s.chain.validators))

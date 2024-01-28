@@ -160,11 +160,6 @@ func (k Keeper) AddSubscriber(c context.Context, msg *types.MsgAddSubscriberRequ
 
 	// ValidateBasic will confirm this is already correctly formatted
 	subscriberAccAddress, _ := sdk.AccAddressFromBech32(subscriber.Address)
-	_, found := k.GetSubscriber(ctx, subscriberAccAddress)
-	if found {
-		return nil, errorsmod.Wrapf(types.ErrAlreadyExists, "subscriber already exists, must be removed first")
-	}
-
 	k.SetSubscriber(ctx, subscriberAccAddress, *subscriber)
 
 	ctx.EventManager().EmitEvents(

@@ -7,6 +7,7 @@ import (
 	errorsmod "cosmossdk.io/errors"
 	govtypesv1beta1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
 	"github.com/ethereum/go-ethereum/common"
+	pubsubtypes "github.com/peggyjv/sommelier/v7/x/pubsub/types"
 )
 
 const (
@@ -37,11 +38,12 @@ func init() {
 	govtypesv1beta1.ModuleCdc.RegisterConcrete(&ScheduledCorkProposal{}, "sommelier/ScheduledCorkProposal", nil)
 }
 
-func NewAddManagedCellarIDsProposal(title string, description string, cellarIds *CellarIDSet) *AddManagedCellarIDsProposal {
+func NewAddManagedCellarIDsProposal(title string, description string, cellarIds *CellarIDSet, publisherDomain string) *AddManagedCellarIDsProposal {
 	return &AddManagedCellarIDsProposal{
-		Title:       title,
-		Description: description,
-		CellarIds:   cellarIds,
+		Title:           title,
+		Description:     description,
+		CellarIds:       cellarIds,
+		PublisherDomain: publisherDomain,
 	}
 }
 
@@ -60,6 +62,10 @@ func (m *AddManagedCellarIDsProposal) ValidateBasic() error {
 
 	if len(m.CellarIds.Ids) == 0 {
 		return fmt.Errorf("can't have an add prosoposal with no cellars")
+	}
+
+	if err := pubsubtypes.ValidateDomain(m.PublisherDomain); err != nil {
+		return err
 	}
 
 	return nil
@@ -114,6 +120,10 @@ func (m *ScheduledCorkProposal) ProposalType() string {
 func (m *ScheduledCorkProposal) ValidateBasic() error {
 	if err := govtypesv1beta1.ValidateAbstract(m); err != nil {
 		return err
+	}
+
+	if m.BlockHeight == 0 {
+		return fmt.Errorf("block height must be non-zero")
 	}
 
 	if len(m.ContractCallProtoJson) == 0 {

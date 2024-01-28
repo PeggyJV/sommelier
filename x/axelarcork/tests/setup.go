@@ -49,11 +49,12 @@ func NewTestSetup(t *testing.T, ctl *gomock.Controller) *Setup {
 	ibcModuleMock := mocks.NewMockIBCModule(ctl)
 	ics4WrapperMock := mocks.NewMockICS4Wrapper(ctl)
 	gravityKeeper := mocks.NewMockGravityKeeper(ctl)
+	pubsubKeeper := mocks.NewMockPubsubKeeper(ctl)
 
 	paramsKeeper := initializer.paramsKeeper()
 	acKeeper := initializer.axelarcorkKeeper(
 		paramsKeeper, accountKeeperMock, bankKeeperMock, stakingKeeper, transferKeeperMock, distributionKeeperMock,
-		ics4WrapperMock, gravityKeeper)
+		ics4WrapperMock, gravityKeeper, pubsubKeeper)
 
 	require.NoError(t, initializer.StateStore.LoadLatestVersion())
 
@@ -154,6 +155,7 @@ func (i initializer) axelarcorkKeeper(
 	distributionKeeper types.DistributionKeeper,
 	ics4Wrapper porttypes.ICS4Wrapper,
 	gravityKeeper types.GravityKeeper,
+	pubsubKeeper types.PubsubKeeper,
 ) *keeper.Keeper {
 	storeKey := sdk.NewKVStoreKey(types.StoreKey)
 	i.StateStore.MountStoreWithDB(storeKey, storetypes.StoreTypeIAVL, i.DB)
@@ -170,6 +172,7 @@ func (i initializer) axelarcorkKeeper(
 		distributionKeeper,
 		ics4Wrapper,
 		gravityKeeper,
+		pubsubKeeper,
 	)
 
 	return &routerKeeper

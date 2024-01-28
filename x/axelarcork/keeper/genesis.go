@@ -96,7 +96,7 @@ func ExportGenesis(ctx sdk.Context, k Keeper) types.GenesisState {
 	k.IterateAxelarContractCallNonces(ctx, func(chainID uint64, contractAddress common.Address, nonce uint64) (stop bool) {
 		accn := &types.AxelarContractCallNonce{
 			ChainId:         chainID,
-			ContractAddress: contractAddress.Hex(),
+			ContractAddress: contractAddress.String(),
 			Nonce:           nonce,
 		}
 
