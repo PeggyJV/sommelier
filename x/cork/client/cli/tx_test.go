@@ -5,7 +5,7 @@ import (
 	"testing"
 
 	"github.com/cosmos/cosmos-sdk/simapp/params"
-	"github.com/peggyjv/sommelier/v7/x/cork/types"
+	types "github.com/peggyjv/sommelier/v7/x/cork/types/v2"
 
 	"github.com/cosmos/cosmos-sdk/testutil"
 	"github.com/stretchr/testify/require"

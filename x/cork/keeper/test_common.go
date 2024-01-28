@@ -58,7 +58,8 @@ import (
 	"github.com/peggyjv/gravity-bridge/module/v4/x/gravity"
 	gravitykeeper "github.com/peggyjv/gravity-bridge/module/v4/x/gravity/keeper"
 	gravitytypes "github.com/peggyjv/gravity-bridge/module/v4/x/gravity/types"
-	"github.com/peggyjv/sommelier/v7/x/cork/types"
+	corktypes "github.com/peggyjv/sommelier/v7/x/cork/types"
+	types "github.com/peggyjv/sommelier/v7/x/cork/types/v2"
 	pubsubkeeper "github.com/peggyjv/sommelier/v7/x/pubsub/keeper"
 	pubsubtypes "github.com/peggyjv/sommelier/v7/x/pubsub/types"
 	"github.com/stretchr/testify/require"
@@ -90,7 +91,7 @@ var (
 	)
 
 	// Ensure that StakingKeeperMock implements required interface
-	_ types.StakingKeeper = &StakingKeeperMock{}
+	_ corktypes.StakingKeeper = &StakingKeeperMock{}
 )
 
 var (
@@ -227,7 +228,7 @@ func CreateTestEnv(t *testing.T) TestInput {
 	tkeyParams := sdk.NewTransientStoreKey(paramstypes.TStoreKey)
 	keyGov := sdk.NewKVStoreKey(govtypes.StoreKey)
 	keySlashing := sdk.NewKVStoreKey(slashingtypes.StoreKey)
-	keycork := sdk.NewKVStoreKey(types.StoreKey)
+	keycork := sdk.NewKVStoreKey(corktypes.StoreKey)
 
 	// Initialize memory database and mount stores on it
 	db := dbm.NewMemDB()
@@ -271,7 +272,7 @@ func CreateTestEnv(t *testing.T) TestInput {
 		stakingtypes.BondedPoolName:    {authtypes.Burner, authtypes.Staking},
 		stakingtypes.NotBondedPoolName: {authtypes.Burner, authtypes.Staking},
 		govtypes.ModuleName:            {authtypes.Burner},
-		types.ModuleName:               {authtypes.Minter, authtypes.Burner},
+		corktypes.ModuleName:           {authtypes.Minter, authtypes.Burner},
 	}
 
 	accountKeeper := authkeeper.NewAccountKeeper(
@@ -637,9 +638,9 @@ func (s AlwaysPanicStakingMock) PowerReduction(sdk.Context) math.Int {
 }
 
 func fundModAccount(ctx sdk.Context, bankKeeper gravitytypes.BankKeeper, recipientMod string, amounts sdk.Coins) error {
-	if err := bankKeeper.MintCoins(ctx, types.ModuleName, amounts); err != nil {
+	if err := bankKeeper.MintCoins(ctx, corktypes.ModuleName, amounts); err != nil {
 		return err
 	}
 
-	return bankKeeper.SendCoinsFromModuleToModule(ctx, types.ModuleName, recipientMod, amounts)
+	return bankKeeper.SendCoinsFromModuleToModule(ctx, corktypes.ModuleName, recipientMod, amounts)
 }

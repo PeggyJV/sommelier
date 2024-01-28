@@ -7,7 +7,8 @@ import (
 	errorsmod "cosmossdk.io/errors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/ethereum/go-ethereum/common"
-	"github.com/peggyjv/sommelier/v7/x/cork/types"
+	corktypes "github.com/peggyjv/sommelier/v7/x/cork/types"
+	types "github.com/peggyjv/sommelier/v7/x/cork/types/v2"
 	pubsubtypes "github.com/peggyjv/sommelier/v7/x/pubsub/types"
 )
 
@@ -83,7 +84,7 @@ func HandleRemoveManagedCellarsProposal(ctx sdk.Context, k Keeper, p types.Remov
 // HandleScheduledCorkProposal is a handler for executing a passed scheduled cork proposal
 func HandleScheduledCorkProposal(ctx sdk.Context, k Keeper, p types.ScheduledCorkProposal) error {
 	if !k.HasCellarID(ctx, common.HexToAddress(p.TargetContractAddress)) {
-		return errorsmod.Wrapf(types.ErrUnmanagedCellarAddress, "id: %s", p.TargetContractAddress)
+		return errorsmod.Wrapf(corktypes.ErrUnmanagedCellarAddress, "id: %s", p.TargetContractAddress)
 	}
 
 	return nil

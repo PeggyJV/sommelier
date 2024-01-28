@@ -7,7 +7,7 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/peggyjv/sommelier/v7/x/cork/types"
+	types "github.com/peggyjv/sommelier/v7/x/cork/types/v2"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )

@@ -15,7 +15,8 @@ import (
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
 	"github.com/peggyjv/sommelier/v7/x/cork/client/cli"
 	"github.com/peggyjv/sommelier/v7/x/cork/keeper"
-	"github.com/peggyjv/sommelier/v7/x/cork/types"
+	corktypes "github.com/peggyjv/sommelier/v7/x/cork/types"
+	types "github.com/peggyjv/sommelier/v7/x/cork/types/v2"
 	"github.com/spf13/cobra"
 	abci "github.com/tendermint/tendermint/abci/types"
 )
@@ -31,7 +32,7 @@ type AppModuleBasic struct{}
 
 // Name returns the cork module's name
 func (AppModuleBasic) Name() string {
-	return types.ModuleName
+	return corktypes.ModuleName
 }
 
 // RegisterLegacyAminoCodec doesn't support amino
@@ -91,16 +92,18 @@ func NewAppModule(keeper keeper.Keeper, cdc codec.Codec) AppModule {
 }
 
 // Name returns the cork module's name.
-func (AppModule) Name() string { return types.ModuleName }
+func (AppModule) Name() string { return corktypes.ModuleName }
 
 // RegisterInvariants performs a no-op.
 func (AppModule) RegisterInvariants(_ sdk.InvariantRegistry) {}
 
 // Route returns the message routing key for the cork module.
-func (am AppModule) Route() sdk.Route { return sdk.NewRoute(types.RouterKey, NewHandler(am.keeper)) }
+func (am AppModule) Route() sdk.Route {
+	return sdk.NewRoute(corktypes.RouterKey, NewHandler(am.keeper))
+}
 
 // QuerierRoute returns the cork module's querier route name.
-func (AppModule) QuerierRoute() string { return types.QuerierRoute }
+func (AppModule) QuerierRoute() string { return corktypes.QuerierRoute }
 
 // LegacyQuerierHandler returns a nil Querier.
 func (am AppModule) LegacyQuerierHandler(_ *codec.LegacyAmino) sdk.Querier {
@@ -122,7 +125,7 @@ func (am AppModule) RegisterServices(cfg module.Configurator) {
 	types.RegisterQueryServer(cfg.QueryServer(), am.keeper)
 
 	m := keeper.NewMigrator(am.keeper)
-	if err := cfg.RegisterMigration(types.ModuleName, 1, m.Migrate1to2); err != nil {
+	if err := cfg.RegisterMigration(corktypes.ModuleName, 1, m.Migrate1to2); err != nil {
 		panic(fmt.Sprintf("failed to migrate x/cork from version 1 to 2: %v", err))
 	}
 }

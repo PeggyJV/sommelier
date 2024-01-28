@@ -17,7 +17,7 @@ import (
 	cellarfeeskeeper "github.com/peggyjv/sommelier/v7/x/cellarfees/keeper"
 	cellarfeestypes "github.com/peggyjv/sommelier/v7/x/cellarfees/types"
 	corkkeeper "github.com/peggyjv/sommelier/v7/x/cork/keeper"
-	corktypes "github.com/peggyjv/sommelier/v7/x/cork/types"
+	corktypes "github.com/peggyjv/sommelier/v7/x/cork/types/v2"
 	pubsubkeeper "github.com/peggyjv/sommelier/v7/x/pubsub/keeper"
 	pubsubtypes "github.com/peggyjv/sommelier/v7/x/pubsub/types"
 )
