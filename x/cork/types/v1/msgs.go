@@ -1,6 +1,7 @@
 package v1
 
 import (
+	errorsmod "cosmossdk.io/errors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/ethereum/go-ethereum/common"
@@ -41,7 +42,7 @@ func (m *MsgSubmitCorkRequest) Type() string { return TypeMsgSubmitCorkRequest }
 // ValidateBasic implements sdk.Msg
 func (m *MsgSubmitCorkRequest) ValidateBasic() error {
 	if _, err := sdk.AccAddressFromBech32(m.Signer); err != nil {
-		return sdkerrors.Wrap(sdkerrors.ErrInvalidAddress, err.Error())
+		return errorsmod.Wrap(sdkerrors.ErrInvalidAddress, err.Error())
 	}
 
 	return nil
@@ -91,7 +92,7 @@ func (m *MsgScheduleCorkRequest) Type() string { return TypeMsgScheduleCorkReque
 // ValidateBasic implements sdk.Msg
 func (m *MsgScheduleCorkRequest) ValidateBasic() error {
 	if _, err := sdk.AccAddressFromBech32(m.Signer); err != nil {
-		return sdkerrors.Wrap(sdkerrors.ErrInvalidAddress, err.Error())
+		return errorsmod.Wrap(sdkerrors.ErrInvalidAddress, err.Error())
 	}
 
 	return m.Cork.ValidateBasic()
