@@ -10,9 +10,8 @@ import (
 
 // Parameter keys
 var (
-	KeyVotePeriod           = []byte("voteperiod")
-	KeyVoteThreshold        = []byte("votethreshold")
-	KeyMaxCorksPerValidator = []byte("maxcorkspervalidator")
+	KeyVotePeriod    = []byte("voteperiod")
+	KeyVoteThreshold = []byte("votethreshold")
 )
 
 var _ paramtypes.ParamSet = &Params{}
@@ -25,28 +24,42 @@ func ParamKeyTable() paramtypes.KeyTable {
 // DefaultParams returns default oracle parameters
 func DefaultParams() Params {
 	return Params{
-		// Deprecated
-		VoteThreshold:        sdk.NewDecWithPrec(67, 2), // 67%
-		MaxCorksPerValidator: 1000,
+		VotePeriod:    5,
+		VoteThreshold: sdk.NewDecWithPrec(67, 2), // 67%
 	}
 }
 
 // ParamSetPairs returns the parameter set pairs.
 func (p *Params) ParamSetPairs() paramtypes.ParamSetPairs {
 	return paramtypes.ParamSetPairs{
+		paramtypes.NewParamSetPair(KeyVotePeriod, &p.VotePeriod, validateVotePeriod),
 		paramtypes.NewParamSetPair(KeyVoteThreshold, &p.VoteThreshold, validateVoteThreshold),
-		paramtypes.NewParamSetPair(KeyMaxCorksPerValidator, &p.MaxCorksPerValidator, validateMaxCorksPerValidator),
 	}
 }
 
 // ValidateBasic performs basic validation on oracle parameters.
 func (p *Params) ValidateBasic() error {
+	if err := validateVotePeriod(p.VotePeriod); err != nil {
+		return err
+	}
 	if err := validateVoteThreshold(p.VoteThreshold); err != nil {
 		return err
 	}
-	if err := validateMaxCorksPerValidator(p.MaxCorksPerValidator); err != nil {
-		return err
+	return nil
+}
+
+func validateVotePeriod(i interface{}) error {
+	votePeriod, ok := i.(int64)
+	if !ok {
+		return fmt.Errorf("invalid parameter type: %T", i)
 	}
+
+	if votePeriod < 4 || votePeriod > 100 {
+		return fmt.Errorf(
+			"vote period should be between 4 and 100 blocks: %d", votePeriod,
+		)
+	}
+
 	return nil
 }
 
@@ -60,21 +73,8 @@ func validateVoteThreshold(i interface{}) error {
 		return errors.New("vote threshold cannot be nil")
 	}
 
-	if voteThreshold.LT(sdk.ZeroDec()) || voteThreshold.GT(sdk.OneDec()) {
+	if voteThreshold.LTE(sdk.ZeroDec()) || voteThreshold.GT(sdk.OneDec()) {
 		return fmt.Errorf("vote threshold value must be within the 0% - 100% range, got: %s", voteThreshold)
-	}
-
-	return nil
-}
-
-func validateMaxCorksPerValidator(i interface{}) error {
-	maxCorksPerValidator, ok := i.(uint64)
-	if !ok {
-		return fmt.Errorf("invalid parameter type: %T", i)
-	}
-
-	if maxCorksPerValidator == 0 {
-		return errors.New("max corks per validator cannot be 0")
 	}
 
 	return nil

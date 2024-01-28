@@ -13,7 +13,7 @@ import (
 	"github.com/ethereum/go-ethereum/ethclient"
 	auctiontypes "github.com/peggyjv/sommelier/v7/x/auction/types"
 	cellarfeestypes "github.com/peggyjv/sommelier/v7/x/cellarfees/types"
-	corktypes "github.com/peggyjv/sommelier/v7/x/cork/types"
+	corktypes "github.com/peggyjv/sommelier/v7/x/cork/types/v2"
 )
 
 func (s *IntegrationTestSuite) TestCellarFees() {

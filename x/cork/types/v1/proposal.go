@@ -1,50 +1,34 @@
 package v1
 
 import (
-	"encoding/json"
 	"fmt"
 
-	errorsmod "cosmossdk.io/errors"
-	govtypesv1beta1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
-	"github.com/ethereum/go-ethereum/common"
+	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
 	corktypes "github.com/peggyjv/sommelier/v7/x/cork/types"
-	pubsubtypes "github.com/peggyjv/sommelier/v7/x/pubsub/types"
 )
 
 const (
 	ProposalTypeAddManagedCellarIDs    = "AddManagedCellarIDs"
 	ProposalTypeRemoveManagedCellarIDs = "RemoveManagedCellarIDs"
-	ProposalTypeScheduledCork          = "ScheduledCork"
 )
 
-var _ govtypesv1beta1.Content = &AddManagedCellarIDsProposal{}
-var _ govtypesv1beta1.Content = &RemoveManagedCellarIDsProposal{}
-var _ govtypesv1beta1.Content = &ScheduledCorkProposal{}
+var _ govtypes.Content = &AddManagedCellarIDsProposal{}
+var _ govtypes.Content = &RemoveManagedCellarIDsProposal{}
 
 func init() {
-	// The RegisterProposalTypeCodec function was mysteriously removed by in 0.46.0 even though
-	// the claim was that the old API would be preserved in .../x/gov/types/v1beta1 so we have
-	// to interact with the codec directly.
-	//
-	// The PR that removed it: https://github.com/cosmos/cosmos-sdk/pull/11240
-	// This PR was later reverted, but RegisterProposalTypeCodec was still left out. Not sure if
-	// this was intentional or not.
-	govtypesv1beta1.RegisterProposalType(ProposalTypeAddManagedCellarIDs)
-	govtypesv1beta1.ModuleCdc.RegisterConcrete(&AddManagedCellarIDsProposal{}, "sommelier/AddManagedCellarIDsProposal", nil)
+	govtypes.RegisterProposalType(ProposalTypeAddManagedCellarIDs)
+	govtypes.ModuleCdc.RegisterConcrete(&AddManagedCellarIDsProposal{}, "sommelier/AddManagedCellarIDsProposal", nil)
 
-	govtypesv1beta1.RegisterProposalType(ProposalTypeRemoveManagedCellarIDs)
-	govtypesv1beta1.ModuleCdc.RegisterConcrete(&RemoveManagedCellarIDsProposal{}, "sommelier/RemoveManagedCellarIDsProposal", nil)
+	govtypes.RegisterProposalType(ProposalTypeRemoveManagedCellarIDs)
+	govtypes.ModuleCdc.RegisterConcrete(&RemoveManagedCellarIDsProposal{}, "sommelier/RemoveManagedCellarIDsProposal", nil)
 
-	govtypesv1beta1.RegisterProposalType(ProposalTypeScheduledCork)
-	govtypesv1beta1.ModuleCdc.RegisterConcrete(&ScheduledCorkProposal{}, "sommelier/ScheduledCorkProposal", nil)
 }
 
-func NewAddManagedCellarIDsProposal(title string, description string, cellarIds *CellarIDSet, publisherDomain string) *AddManagedCellarIDsProposal {
+func NewAddManagedCellarIDsProposal(title string, description string, cellarIds *CellarIDSet) *AddManagedCellarIDsProposal {
 	return &AddManagedCellarIDsProposal{
-		Title:           title,
-		Description:     description,
-		CellarIds:       cellarIds,
-		PublisherDomain: publisherDomain,
+		Title:       title,
+		Description: description,
+		CellarIds:   cellarIds,
 	}
 }
 
@@ -57,16 +41,12 @@ func (m *AddManagedCellarIDsProposal) ProposalType() string {
 }
 
 func (m *AddManagedCellarIDsProposal) ValidateBasic() error {
-	if err := govtypesv1beta1.ValidateAbstract(m); err != nil {
+	if err := govtypes.ValidateAbstract(m); err != nil {
 		return err
 	}
 
 	if len(m.CellarIds.Ids) == 0 {
 		return fmt.Errorf("can't have an add prosoposal with no cellars")
-	}
-
-	if err := pubsubtypes.ValidateDomain(m.PublisherDomain); err != nil {
-		return err
 	}
 
 	return nil
@@ -89,54 +69,12 @@ func (m *RemoveManagedCellarIDsProposal) ProposalType() string {
 }
 
 func (m *RemoveManagedCellarIDsProposal) ValidateBasic() error {
-	if err := govtypesv1beta1.ValidateAbstract(m); err != nil {
+	if err := govtypes.ValidateAbstract(m); err != nil {
 		return err
 	}
 
 	if len(m.CellarIds.Ids) == 0 {
 		return fmt.Errorf("can't have a remove prosoposal with no cellars")
-	}
-
-	return nil
-}
-
-func NewScheduledCorkProposal(title string, description string, blockHeight uint64, targetContractAddress string, contractCallProtoJSON string) *ScheduledCorkProposal {
-	return &ScheduledCorkProposal{
-		Title:                 title,
-		Description:           description,
-		BlockHeight:           blockHeight,
-		TargetContractAddress: targetContractAddress,
-		ContractCallProtoJson: contractCallProtoJSON,
-	}
-}
-
-func (m *ScheduledCorkProposal) ProposalRoute() string {
-	return corktypes.RouterKey
-}
-
-func (m *ScheduledCorkProposal) ProposalType() string {
-	return ProposalTypeScheduledCork
-}
-
-func (m *ScheduledCorkProposal) ValidateBasic() error {
-	if err := govtypesv1beta1.ValidateAbstract(m); err != nil {
-		return err
-	}
-
-	if m.BlockHeight == 0 {
-		return fmt.Errorf("block height must be non-zero")
-	}
-
-	if len(m.ContractCallProtoJson) == 0 {
-		return errorsmod.Wrapf(corktypes.ErrInvalidJSON, "cannot have empty contract call")
-	}
-
-	if !json.Valid([]byte(m.ContractCallProtoJson)) {
-		return errorsmod.Wrapf(corktypes.ErrInvalidJSON, "%s", m.ContractCallProtoJson)
-	}
-
-	if !common.IsHexAddress(m.TargetContractAddress) {
-		return errorsmod.Wrapf(corktypes.ErrInvalidEthereumAddress, "%s", m.TargetContractAddress)
 	}
 
 	return nil

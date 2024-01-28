@@ -22,7 +22,8 @@ import (
 	auctiontypes "github.com/peggyjv/sommelier/v7/x/auction/types"
 	axelarcorktypes "github.com/peggyjv/sommelier/v7/x/axelarcork/types"
 	cellarfeestypes "github.com/peggyjv/sommelier/v7/x/cellarfees/types"
-	corktypes "github.com/peggyjv/sommelier/v7/x/cork/types"
+	corktypesunversioned "github.com/peggyjv/sommelier/v7/x/cork/types"
+	corktypes "github.com/peggyjv/sommelier/v7/x/cork/types/v2"
 	pubsubtypes "github.com/peggyjv/sommelier/v7/x/pubsub/types"
 
 	"github.com/ethereum/go-ethereum/common"
@@ -496,7 +497,7 @@ func (s *IntegrationTestSuite) initGenesis() {
 	appGenState[genutiltypes.ModuleName] = bz
 
 	var corkGenState corktypes.GenesisState
-	s.Require().NoError(cdc.UnmarshalJSON(appGenState[corktypes.ModuleName], &corkGenState))
+	s.Require().NoError(cdc.UnmarshalJSON(appGenState[corktypesunversioned.ModuleName], &corkGenState))
 
 	// we add the first validator address as a cellar so that it will trigger the cellarfees hook
 	// when we send test fees
@@ -505,7 +506,7 @@ func (s *IntegrationTestSuite) initGenesis() {
 	corkGenState.Params.VoteThreshold = corkVoteThreshold
 	bz, err = cdc.MarshalJSON(&corkGenState)
 	s.Require().NoError(err)
-	appGenState[corktypes.ModuleName] = bz
+	appGenState[corktypesunversioned.ModuleName] = bz
 
 	// set contract addr
 	var gravityGenState gravitytypes.GenesisState

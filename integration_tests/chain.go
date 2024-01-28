@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"os"
 
-	corktypes "github.com/peggyjv/sommelier/v7/x/cork/types"
+	corktypes "github.com/peggyjv/sommelier/v7/x/cork/types/v2"
 
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
