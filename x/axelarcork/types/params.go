@@ -6,7 +6,6 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	host "github.com/cosmos/ibc-go/v6/modules/core/24-host"
-	"github.com/ethereum/go-ethereum/common"
 
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
 )
@@ -130,7 +129,7 @@ func validateGMPAccount(i interface{}) error {
 		return errors.New("gmp account cannot be empty")
 	}
 
-	if _, err := sdk.AccAddressFromBech32(gmpAcc); err != nil {
+	if _, err := sdk.GetFromBech32(gmpAcc, "axelar"); err != nil {
 		return err
 	}
 
@@ -147,8 +146,8 @@ func validateExecutorAccount(i interface{}) error {
 		return errors.New("executor account cannot be empty")
 	}
 
-	if !common.IsHexAddress(execAcc) {
-		return errors.New("invalid executor account address")
+	if _, err := sdk.GetFromBech32(execAcc, "axelar"); err != nil {
+		return err
 	}
 
 	return nil
