@@ -24,10 +24,7 @@ func (k Keeper) EndBlocker(ctx sdk.Context) {
 		k.Logger(ctx).Info("tallying scheduled cork votes",
 			"height", fmt.Sprintf("%d", ctx.BlockHeight()),
 			"chain id", config.Id)
-		// TODO(bolten): might not be a necessary fix, but GetApprovedScheduledAxelarCorks is kind of
-		// unexpectedly destructive -- it deletes all of the validator submitted entries for scheduled
-		// corks and returns a list of the winning ones, which are then set using SetWinningAxelarCork
-		// here, but it seems like an odd side effect of a Get function to delete stuff
+
 		winningScheduledVotes := k.GetApprovedScheduledAxelarCorks(ctx, config.Id)
 		if len(winningScheduledVotes) > 0 {
 			k.Logger(ctx).Info("marking all winning scheduled cork votes as relayable",
