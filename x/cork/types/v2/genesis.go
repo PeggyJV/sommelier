@@ -1,6 +1,8 @@
-package types
+package v2
 
-const DefaultParamspace = ModuleName
+import types "github.com/peggyjv/sommelier/v7/x/cork/types"
+
+const DefaultParamspace = types.ModuleName
 
 // DefaultGenesisState get raw genesis raw message for testing
 func DefaultGenesisState() GenesisState {

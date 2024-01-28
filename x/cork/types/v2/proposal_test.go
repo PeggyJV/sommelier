@@ -1,9 +1,10 @@
-package types
+package v2
 
 import (
 	"testing"
 
 	errorsmod "cosmossdk.io/errors"
+	types "github.com/peggyjv/sommelier/v7/x/cork/types"
 	"github.com/stretchr/testify/require"
 )
 
@@ -36,7 +37,7 @@ func TestScheduledCorkProposalValidation(t *testing.T) {
 				TargetContractAddress: "0x01",
 			},
 			expPass: false,
-			err:     errorsmod.Wrapf(ErrInvalidEthereumAddress, "0x01"),
+			err:     errorsmod.Wrapf(types.ErrInvalidEthereumAddress, "0x01"),
 		},
 		{
 			name: "Empty proto JSON",
@@ -48,7 +49,7 @@ func TestScheduledCorkProposalValidation(t *testing.T) {
 				TargetContractAddress: "0x0000000000000000000000000000000000000000",
 			},
 			expPass: false,
-			err:     errorsmod.Wrap(ErrInvalidJSON, "cannot have empty contract call"),
+			err:     errorsmod.Wrap(types.ErrInvalidJSON, "cannot have empty contract call"),
 		},
 		{
 			name: "Invalid JSON",
@@ -60,7 +61,7 @@ func TestScheduledCorkProposalValidation(t *testing.T) {
 				TargetContractAddress: "0x0000000000000000000000000000000000000000",
 			},
 			expPass: false,
-			err:     errorsmod.Wrapf(ErrInvalidJSON, "[}"),
+			err:     errorsmod.Wrapf(types.ErrInvalidJSON, "[}"),
 		},
 	}
 

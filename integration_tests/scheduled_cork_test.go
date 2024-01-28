@@ -16,7 +16,7 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/ethclient"
 	gbtypes "github.com/peggyjv/gravity-bridge/module/v4/x/gravity/types"
-	"github.com/peggyjv/sommelier/v7/x/cork/types"
+	types "github.com/peggyjv/sommelier/v7/x/cork/types/v2"
 	pubsubtypes "github.com/peggyjv/sommelier/v7/x/pubsub/types"
 )
 

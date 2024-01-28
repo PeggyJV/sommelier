@@ -1,4 +1,4 @@
-package types
+package v1
 
 import (
 	"testing"
@@ -24,15 +24,24 @@ func TestParamsValidate(t *testing.T) {
 			expPass: false,
 		},
 		{
+			name: "invalid vote period",
+			params: Params{
+				VotePeriod: 0,
+			},
+			expPass: false,
+		},
+		{
 			name: "invalid vote threshold",
 			params: Params{
-				VoteThreshold: sdk.NewDec(-1),
+				VotePeriod:    5,
+				VoteThreshold: sdk.ZeroDec(),
 			},
 			expPass: false,
 		},
 		{
 			name: "nil vote threshold",
 			params: Params{
+				VotePeriod:    5,
 				VoteThreshold: sdk.Dec{},
 			},
 			expPass: false,

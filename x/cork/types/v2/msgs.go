@@ -1,4 +1,4 @@
-package types
+package v2
 
 import (
 	"fmt"
@@ -7,6 +7,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/ethereum/go-ethereum/common"
+	types "github.com/peggyjv/sommelier/v7/x/cork/types"
 )
 
 var (
@@ -35,7 +36,7 @@ func NewMsgScheduleCorkRequest(body []byte, address common.Address, blockHeight 
 }
 
 // Route implements sdk.Msg
-func (m *MsgScheduleCorkRequest) Route() string { return ModuleName }
+func (m *MsgScheduleCorkRequest) Route() string { return types.ModuleName }
 
 // Type implements sdk.Msg
 func (m *MsgScheduleCorkRequest) Type() string { return TypeMsgScheduleCorkRequest }

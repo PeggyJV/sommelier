@@ -1,4 +1,4 @@
-package types
+package v2
 
 import (
 	"github.com/cosmos/cosmos-sdk/codec"
@@ -12,7 +12,7 @@ import (
 // RegisterLegacyAminoCodec registers the vesting interfaces and concrete types on the
 // provided LegacyAmino codec. These types are used for Amino JSON serialization
 func RegisterLegacyAminoCodec(cdc *codec.LegacyAmino) {
-	cdc.RegisterConcrete(&MsgScheduleCorkRequest{}, "cork/MsgScheduleCorkRequest", nil)
+	cdc.RegisterConcrete(&MsgScheduleCorkRequest{}, "cork/v2/MsgScheduleCorkRequest", nil)
 }
 
 var (

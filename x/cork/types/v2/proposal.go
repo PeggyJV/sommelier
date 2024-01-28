@@ -1,4 +1,4 @@
-package types
+package v2
 
 import (
 	"encoding/json"
@@ -7,13 +7,14 @@ import (
 	errorsmod "cosmossdk.io/errors"
 	govtypesv1beta1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
 	"github.com/ethereum/go-ethereum/common"
+	types "github.com/peggyjv/sommelier/v7/x/cork/types"
 	pubsubtypes "github.com/peggyjv/sommelier/v7/x/pubsub/types"
 )
 
 const (
-	ProposalTypeAddManagedCellarIDs    = "AddManagedCellarIDs"
-	ProposalTypeRemoveManagedCellarIDs = "RemoveManagedCellarIDs"
-	ProposalTypeScheduledCork          = "ScheduledCork"
+	ProposalTypeAddManagedCellarIDs    = "v2/AddManagedCellarIDs"
+	ProposalTypeRemoveManagedCellarIDs = "v2/RemoveManagedCellarIDs"
+	ProposalTypeScheduledCork          = "v2/ScheduledCork"
 )
 
 var _ govtypesv1beta1.Content = &AddManagedCellarIDsProposal{}
@@ -29,13 +30,13 @@ func init() {
 	// This PR was later reverted, but RegisterProposalTypeCodec was still left out. Not sure if
 	// this was intentional or not.
 	govtypesv1beta1.RegisterProposalType(ProposalTypeAddManagedCellarIDs)
-	govtypesv1beta1.ModuleCdc.RegisterConcrete(&AddManagedCellarIDsProposal{}, "sommelier/AddManagedCellarIDsProposal", nil)
+	govtypesv1beta1.ModuleCdc.RegisterConcrete(&AddManagedCellarIDsProposal{}, "sommelier/v2/AddManagedCellarIDsProposal", nil)
 
 	govtypesv1beta1.RegisterProposalType(ProposalTypeRemoveManagedCellarIDs)
-	govtypesv1beta1.ModuleCdc.RegisterConcrete(&RemoveManagedCellarIDsProposal{}, "sommelier/RemoveManagedCellarIDsProposal", nil)
+	govtypesv1beta1.ModuleCdc.RegisterConcrete(&RemoveManagedCellarIDsProposal{}, "sommelier/v2/RemoveManagedCellarIDsProposal", nil)
 
 	govtypesv1beta1.RegisterProposalType(ProposalTypeScheduledCork)
-	govtypesv1beta1.ModuleCdc.RegisterConcrete(&ScheduledCorkProposal{}, "sommelier/ScheduledCorkProposal", nil)
+	govtypesv1beta1.ModuleCdc.RegisterConcrete(&ScheduledCorkProposal{}, "sommelier/v2/ScheduledCorkProposal", nil)
 }
 
 func NewAddManagedCellarIDsProposal(title string, description string, cellarIds *CellarIDSet, publisherDomain string) *AddManagedCellarIDsProposal {
@@ -48,7 +49,7 @@ func NewAddManagedCellarIDsProposal(title string, description string, cellarIds 
 }
 
 func (m *AddManagedCellarIDsProposal) ProposalRoute() string {
-	return RouterKey
+	return types.RouterKey
 }
 
 func (m *AddManagedCellarIDsProposal) ProposalType() string {
@@ -80,7 +81,7 @@ func NewRemoveManagedCellarIDsProposal(title string, description string, cellarI
 }
 
 func (m *RemoveManagedCellarIDsProposal) ProposalRoute() string {
-	return RouterKey
+	return types.RouterKey
 }
 
 func (m *RemoveManagedCellarIDsProposal) ProposalType() string {
@@ -110,7 +111,7 @@ func NewScheduledCorkProposal(title string, description string, blockHeight uint
 }
 
 func (m *ScheduledCorkProposal) ProposalRoute() string {
-	return RouterKey
+	return types.RouterKey
 }
 
 func (m *ScheduledCorkProposal) ProposalType() string {
@@ -127,15 +128,15 @@ func (m *ScheduledCorkProposal) ValidateBasic() error {
 	}
 
 	if len(m.ContractCallProtoJson) == 0 {
-		return errorsmod.Wrapf(ErrInvalidJSON, "cannot have empty contract call")
+		return errorsmod.Wrapf(types.ErrInvalidJSON, "cannot have empty contract call")
 	}
 
 	if !json.Valid([]byte(m.ContractCallProtoJson)) {
-		return errorsmod.Wrapf(ErrInvalidJSON, "%s", m.ContractCallProtoJson)
+		return errorsmod.Wrapf(types.ErrInvalidJSON, "%s", m.ContractCallProtoJson)
 	}
 
 	if !common.IsHexAddress(m.TargetContractAddress) {
-		return errorsmod.Wrapf(ErrInvalidEthereumAddress, "%s", m.TargetContractAddress)
+		return errorsmod.Wrapf(types.ErrInvalidEthereumAddress, "%s", m.TargetContractAddress)
 	}
 
 	return nil
