@@ -76,13 +76,14 @@ func CreateUpgradeHandler(
 func auctionInitGenesis(ctx sdk.Context, auctionKeeper auctionkeeper.Keeper) {
 	genesisState := auctiontypes.DefaultGenesisState()
 
+	genesisState.Params.MinimumAuctionHeight = 13020000 // roughly 2024-02-08 09:30 UTC
+
 	usomm52WeekLow := sdk.MustNewDecFromStr("0.079151")
 	eth52WeekHigh := sdk.MustNewDecFromStr("2618.33")
 	btc52WeekHigh := sdk.MustNewDecFromStr("46936.19")
 	oneDollar := sdk.MustNewDecFromStr("1.0")
 
-	// Setting this to a block on 1/25/24 -- just means token price will get stale 6 days faster post-upgrade
-	var lastUpdatedBlock uint64 = 12817014
+	var lastUpdatedBlock uint64 = uint64(ctx.BlockHeight())
 
 	usommPrice := auctiontypes.TokenPrice{
 		Denom:            "usomm",
