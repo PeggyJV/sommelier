@@ -56,8 +56,8 @@ func (k Keeper) EndBlocker(ctx sdk.Context) {
 		return false
 	})
 
-	// Sweep all axelarcork of the sender module account balances to the community pool. Because this account is
-	// the sender for transfers created by RelayCork calls, funds will not be returned to the caller if the IBC
+	// Sweep all axelarcork sender module account balances to the community pool. Because this account is the
+	// sender for transfers created by RelayCork calls, funds will not be returned to the caller if the IBC
 	// transfer fails or gas is refunded.
 	moduleAcct := k.accountKeeper.GetModuleAddress(types.ModuleName)
 	balances := k.bankKeeper.GetAllBalances(ctx, moduleAcct)
