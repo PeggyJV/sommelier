@@ -248,3 +248,23 @@ func (k Keeper) QueryAxelarProxyUpgradeData(c context.Context, req *types.QueryA
 
 	return &response, nil
 }
+
+func (k Keeper) QueryWinningAxelarCork(c context.Context, req *types.QueryWinningAxelarCorkRequest) (*types.QueryWinningAxelarCorkResponse, error) {
+	if req == nil {
+		return nil, status.Error(codes.InvalidArgument, "empty request")
+	}
+
+	ctx := sdk.UnwrapSDKContext(c)
+
+	response := types.QueryWinningAxelarCorkResponse{}
+
+	height, cork, found := k.GetWinningAxelarCork(ctx, req.ChainId, common.HexToAddress(req.ContractAddress))
+	if !found {
+		return &types.QueryWinningAxelarCorkResponse{}, status.Errorf(codes.NotFound, "No winning cork found for chain id: %d", req.GetChainId())
+	}
+
+	response.Cork = &cork
+	response.BlockHeight = height
+
+	return &response, nil
+}
