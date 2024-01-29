@@ -236,7 +236,7 @@ func (k Keeper) GetWinningAxelarCork(ctx sdk.Context, chainID uint64, contractAd
 	var c types.AxelarCork
 	found := false
 	k.IterateWinningAxelarCorks(ctx, chainID, func(contract common.Address, blockHeight uint64, cork types.AxelarCork) (stop bool) {
-		if contractAddr == contract {
+		if bytes.Equal(contractAddr.Bytes(), contract.Bytes()) {
 			bh = blockHeight
 			c = cork
 			found = true
