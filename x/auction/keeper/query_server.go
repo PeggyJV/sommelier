@@ -132,3 +132,25 @@ func (k Keeper) QueryBidsByAuction(c context.Context, request *types.QueryBidsBy
 
 	return &types.QueryBidsByAuctionResponse{Bids: bids, Pagination: *pageRes}, nil
 }
+
+// QueryTokenPrice implements QueryServer
+func (k Keeper) QueryTokenPrice(c context.Context, request *types.QueryTokenPriceRequest) (*types.QueryTokenPriceResponse, error) {
+	ctx := sdk.UnwrapSDKContext(c)
+
+	tokenPrice, found := k.GetTokenPrice(ctx, request.GetDenom())
+
+	if found {
+		return &types.QueryTokenPriceResponse{TokenPrice: &tokenPrice}, nil
+	}
+
+	return &types.QueryTokenPriceResponse{}, status.Errorf(codes.NotFound, "No token price found for denom: %s", request.GetDenom())
+}
+
+// QueryTokenPrices implements QueryServer
+func (k Keeper) QueryTokenPrices(c context.Context, _ *types.QueryTokenPricesRequest) (*types.QueryTokenPricesResponse, error) {
+	ctx := sdk.UnwrapSDKContext(c)
+
+	tokenPrices := k.GetTokenPrices(ctx)
+
+	return &types.QueryTokenPricesResponse{TokenPrices: tokenPrices}, nil
+}

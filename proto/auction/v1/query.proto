@@ -38,6 +38,14 @@ service Query {
   rpc QueryBidsByAuction(QueryBidsByAuctionRequest) returns (QueryBidsByAuctionResponse) {
     option (google.api.http).get = "/sommelier/auction/v1/auctions/{auction_id}/bids";
   }
+
+  rpc QueryTokenPrice(QueryTokenPriceRequest) returns (QueryTokenPriceResponse) {
+    option (google.api.http).get = "/sommelier/auction/v1/token_prices/{denom}";
+  }
+
+  rpc QueryTokenPrices(QueryTokenPricesRequest) returns (QueryTokenPricesResponse) {
+    option (google.api.http).get = "/sommelier/auction/v1/token_prices";
+  }
 }
 
 message QueryParamsRequest {}
@@ -95,3 +103,18 @@ message QueryBidsByAuctionResponse {
   repeated Bid bids = 1;
   cosmos.base.query.v1beta1.PageResponse pagination = 2 [ (gogoproto.nullable) = false ];
 }
+
+message QueryTokenPriceRequest {
+  string denom = 1;
+}
+
+message QueryTokenPriceResponse {
+  TokenPrice token_price = 1;
+}
+
+message QueryTokenPricesRequest {}
+
+message QueryTokenPricesResponse {
+  repeated TokenPrice token_prices = 1;
+}
+
