@@ -270,8 +270,8 @@ func TestQueryTokenPrice(t *testing.T) {
 	}{
 		{
 			name: "Insufficient args",
-			args: []string{			},
-			err: fmt.Errorf("accepts 1 arg(s), received 0"),
+			args: []string{},
+			err:  fmt.Errorf("accepts 1 arg(s), received 0"),
 		},
 		{
 			name: "Too many args",
