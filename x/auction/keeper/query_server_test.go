@@ -119,6 +119,24 @@ func (suite *KeeperTestSuite) TestHappyPathsForQueryServer() {
 	auctionKeeper.setLastAuctionID(ctx, uint32(3))
 	auctionKeeper.setLastBidID(ctx, uint64(4))
 
+    // Create some token prices 
+    tokenPrice1 := &auctionTypes.TokenPrice{
+        Denom: "Shmoo",
+        Exponent: uint64(6),
+        UsdPrice: sdk.MustNewDecFromStr("0.5"),
+        LastUpdatedBlock: uint64(1),
+    }
+    tokenPrice2 := &auctionTypes.TokenPrice{
+        Denom: "Weth",
+        Exponent: uint64(18),
+        UsdPrice: sdk.MustNewDecFromStr("2000"),
+        LastUpdatedBlock: uint64(1),
+    }
+    tokenPrices := []*auctionTypes.TokenPrice{tokenPrice1, tokenPrice2}
+
+    auctionKeeper.setTokenPrice(ctx, *tokenPrice1)
+    auctionKeeper.setTokenPrice(ctx, *tokenPrice2)
+
 	// -- Actually begin testing
 
 	// QueryParams
@@ -165,6 +183,16 @@ func (suite *KeeperTestSuite) TestHappyPathsForQueryServer() {
 	endedBidsResponse, err := auctionKeeper.QueryBidsByAuction(sdk.WrapSDKContext(ctx), &auctionTypes.QueryBidsByAuctionRequest{AuctionId: uint32(1)})
 	require.Nil(err)
 	require.Equal(&auctionTypes.QueryBidsByAuctionResponse{Bids: []*auctionTypes.Bid{bid0}, Pagination: query.PageResponse{Total: 1}}, endedBidsResponse)
+
+	// QueryTokenPrice
+    tokenPriceResponse, err := auctionKeeper.QueryTokenPrice(sdk.WrapSDKContext(ctx), &auctionTypes.QueryTokenPriceRequest{Denom: "Shmoo"})
+	require.Nil(err)
+	require.Equal(&auctionTypes.QueryTokenPriceResponse{TokenPrice: tokenPrice1}, tokenPriceResponse)
+
+	// QueryTokenPrices
+    tokenPricesResponse, err := auctionKeeper.QueryTokenPrices(sdk.WrapSDKContext(ctx), &auctionTypes.QueryTokenPricesRequest{})
+	require.Nil(err)
+	require.Equal(&auctionTypes.QueryTokenPricesResponse{TokenPrices: tokenPrices}, tokenPricesResponse)
 }
 
 // Unhappy path test for query server functions
@@ -203,4 +231,14 @@ func (suite *KeeperTestSuite) TestUnhappyPathsForQueryServer() {
 	bidsResponse, err := auctionKeeper.QueryBidsByAuction(sdk.WrapSDKContext(ctx), &auctionTypes.QueryBidsByAuctionRequest{AuctionId: uint32(1)})
 	require.NoError(err)
 	require.Zero(len(bidsResponse.Bids))
+
+	// QueryTokenPrice
+    tokenPriceResponse, err := auctionKeeper.QueryTokenPrice(sdk.WrapSDKContext(ctx), &auctionTypes.QueryTokenPriceRequest{Denom: "Shmoo"})
+    require.Equal(status.Errorf(codes.NotFound, "No token price found for denom: Shmoo"), err)
+	require.Equal(&auctionTypes.QueryTokenPriceResponse{}, tokenPriceResponse)
+
+	// QueryTokenPrices
+    tokenPricesResponse, err := auctionKeeper.QueryTokenPrices(sdk.WrapSDKContext(ctx), &auctionTypes.QueryTokenPricesRequest{})
+	require.NoError(err)
+	require.Equal(&auctionTypes.QueryTokenPricesResponse{}, tokenPricesResponse)
 }
