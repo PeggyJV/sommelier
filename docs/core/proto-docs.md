@@ -108,6 +108,8 @@
     - [QueryScheduledCorksByIDResponse](#axelarcork.v1.QueryScheduledCorksByIDResponse)
     - [QueryScheduledCorksRequest](#axelarcork.v1.QueryScheduledCorksRequest)
     - [QueryScheduledCorksResponse](#axelarcork.v1.QueryScheduledCorksResponse)
+    - [QueryWinningAxelarCorkRequest](#axelarcork.v1.QueryWinningAxelarCorkRequest)
+    - [QueryWinningAxelarCorkResponse](#axelarcork.v1.QueryWinningAxelarCorkResponse)
   
     - [Query](#axelarcork.v1.Query)
   
@@ -1790,6 +1792,38 @@ QueryScheduledCorksResponse
 
 
 
+
+<a name="axelarcork.v1.QueryWinningAxelarCorkRequest"></a>
+
+### QueryWinningAxelarCorkRequest
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `chain_id` | [uint64](#uint64) |  |  |
+| `contract_address` | [string](#string) |  |  |
+
+
+
+
+
+
+<a name="axelarcork.v1.QueryWinningAxelarCorkResponse"></a>
+
+### QueryWinningAxelarCorkResponse
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `cork` | [AxelarCork](#axelarcork.v1.AxelarCork) |  |  |
+| `block_height` | [uint64](#uint64) |  |  |
+
+
+
+
+
  <!-- end messages -->
 
  <!-- end enums -->
@@ -1816,6 +1850,7 @@ Query defines the gRPC query service for the cork module.
 | `QueryChainConfigurations` | [QueryChainConfigurationsRequest](#axelarcork.v1.QueryChainConfigurationsRequest) | [QueryChainConfigurationsResponse](#axelarcork.v1.QueryChainConfigurationsResponse) |  | GET|/sommelier/axelarcork/v1/chain_configurations|
 | `QueryAxelarContractCallNonces` | [QueryAxelarContractCallNoncesRequest](#axelarcork.v1.QueryAxelarContractCallNoncesRequest) | [QueryAxelarContractCallNoncesResponse](#axelarcork.v1.QueryAxelarContractCallNoncesResponse) |  | GET|/sommelier/axelarcork/v1/contract_call_nonces|
 | `QueryAxelarProxyUpgradeData` | [QueryAxelarProxyUpgradeDataRequest](#axelarcork.v1.QueryAxelarProxyUpgradeDataRequest) | [QueryAxelarProxyUpgradeDataResponse](#axelarcork.v1.QueryAxelarProxyUpgradeDataResponse) |  | GET|/sommelier/axelarcork/v1/proxy_upgrade_data|
+| `QueryWinningAxelarCork` | [QueryWinningAxelarCorkRequest](#axelarcork.v1.QueryWinningAxelarCorkRequest) | [QueryWinningAxelarCorkResponse](#axelarcork.v1.QueryWinningAxelarCorkResponse) |  | GET|/sommelier/axelarcork/v1/winning_cork|
 
  <!-- end services -->
 

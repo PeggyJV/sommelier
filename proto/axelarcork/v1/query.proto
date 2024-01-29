@@ -61,6 +61,10 @@ service Query {
   rpc QueryAxelarProxyUpgradeData(QueryAxelarProxyUpgradeDataRequest) returns (QueryAxelarProxyUpgradeDataResponse) {
     option (google.api.http).get = "/sommelier/axelarcork/v1/proxy_upgrade_data";
   }
+
+  rpc QueryWinningAxelarCork(QueryWinningAxelarCorkRequest) returns (QueryWinningAxelarCorkResponse) {
+    option (google.api.http).get = "/sommelier/axelarcork/v1/winning_cork";
+  }
 }
 
 // QueryParamsRequest is the request type for the Query/Params gRPC method.
@@ -165,5 +169,15 @@ message QueryAxelarProxyUpgradeDataRequest {}
 
 message QueryAxelarProxyUpgradeDataResponse {
   repeated AxelarUpgradeData proxy_upgrade_data = 1;
+}
+
+message QueryWinningAxelarCorkRequest {
+  uint64 chain_id   = 1;
+  string contract_address = 2;
+}
+
+message QueryWinningAxelarCorkResponse {
+  AxelarCork cork = 1;
+  uint64 block_height = 2;
 }
 
