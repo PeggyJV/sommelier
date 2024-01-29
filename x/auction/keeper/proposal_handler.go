@@ -17,6 +17,7 @@ func HandleSetTokenPricesProposal(ctx sdk.Context, k Keeper, p types.SetTokenPri
 		k.setTokenPrice(ctx, types.TokenPrice{
 			Denom:            tokenPrice.Denom,
 			UsdPrice:         tokenPrice.UsdPrice,
+			Exponent:         tokenPrice.Exponent,
 			LastUpdatedBlock: uint64(ctx.BlockHeight()),
 		})
 	}

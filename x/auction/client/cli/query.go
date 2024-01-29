@@ -31,6 +31,8 @@ func GetQueryCmd() *cobra.Command {
 		queryEndedAuctionsByDenom(),
 		queryBid(),
 		queryBidsByAuction(),
+		queryTokenPrice(),
+		queryTokenPrices(),
 	}...)
 
 	return auctionQueryCmd
@@ -339,6 +341,68 @@ func queryBidsByAuction() *cobra.Command {
 			}
 
 			res, err := queryClient.QueryBidsByAuction(cmd.Context(), req)
+			if err != nil {
+				return err
+			}
+
+			return ctx.PrintProto(res)
+		},
+	}
+
+	flags.AddQueryFlagsToCmd(cmd)
+
+	return cmd
+}
+
+func queryTokenPrice() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:     "token-price",
+		Aliases: []string{"tp"},
+		Args:    cobra.ExactArgs(1),
+		Short:   "query the price of a denom",
+		RunE: func(cmd *cobra.Command, args []string) error {
+			ctx, err := client.GetClientQueryContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			denom := args[0]
+
+			queryClient := types.NewQueryClient(ctx)
+			req := &types.QueryTokenPriceRequest{
+				Denom: denom,
+			}
+
+			res, err := queryClient.QueryTokenPrice(cmd.Context(), req)
+			if err != nil {
+				return err
+			}
+
+			return ctx.PrintProto(res)
+		},
+	}
+
+	flags.AddQueryFlagsToCmd(cmd)
+
+	return cmd
+}
+
+func queryTokenPrices() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:     "token-prices",
+		Aliases: []string{"tps"},
+		Args:    cobra.NoArgs,
+		Short:   "query all token prices",
+		RunE: func(cmd *cobra.Command, args []string) error {
+			ctx, err := client.GetClientQueryContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			queryClient := types.NewQueryClient(ctx)
+			req := &types.QueryTokenPricesRequest{}
+
+			res, err := queryClient.QueryTokenPrices(cmd.Context(), req)
 			if err != nil {
 				return err
 			}
