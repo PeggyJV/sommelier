@@ -39,9 +39,10 @@ func (k Keeper) EndBlocker(ctx sdk.Context) {
 			"height", fmt.Sprintf("%d", ctx.BlockHeight()),
 			"chain id", config.Id)
 
-		timeoutHeight := uint64(ctx.BlockHeight()) - k.GetParamSet(ctx).CorkTimeoutBlocks
+		currentHeight := uint64(ctx.BlockHeight())
 		k.IterateWinningAxelarCorks(ctx, config.Id, func(_ common.Address, blockHeight uint64, cork types.AxelarCork) (stop bool) {
-			if blockHeight >= timeoutHeight {
+			timeoutHeight := blockHeight + k.GetParamSet(ctx).CorkTimeoutBlocks
+			if currentHeight >= timeoutHeight {
 				k.Logger(ctx).Info("deleting expired approved scheduled axelar cork",
 					"scheduled height", fmt.Sprintf("%d", blockHeight),
 					"target contract address", cork.TargetContractAddress)
