@@ -220,7 +220,10 @@ var (
 	}
 
 	// module accounts that are allowed to receive tokens
-	allowedReceivingModAcc = map[string]bool{}
+	// incidentally this permission is also required to be able to send tokens from module accounts
+	allowedReceivingModAcc = map[string]bool{
+		axelarcorktypes.ModuleName: true,
+	}
 
 	_ simapp.App              = (*SommelierApp)(nil)
 	_ servertypes.Application = (*SommelierApp)(nil)

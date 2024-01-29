@@ -6,7 +6,6 @@ import (
 	"sort"
 	"time"
 
-	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	distributiontypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
 	transfertypes "github.com/cosmos/ibc-go/v6/modules/apps/transfer/types"
 	clienttypes "github.com/cosmos/ibc-go/v6/modules/core/02-client/types"
@@ -146,9 +145,13 @@ func HandleCommunityPoolSpendProposal(ctx sdk.Context, k Keeper, p types.AxelarC
 	}
 
 	feePool.CommunityPool = newPool
-	sender := authtypes.NewModuleAddress(distributiontypes.ModuleName)
 
-	// TODO(bolten: is there really no fee necessary or executor to target?
+	// since distribution is not an authorized sender, put them in the axelarcork module account
+	if err := k.bankKeeper.SendCoinsFromModuleToModule(ctx, distributiontypes.ModuleName, types.ModuleName, sdk.NewCoins(coinWithBridgeFee)); err != nil {
+		panic(err)
+	}
+	sender := k.GetSenderAccount(ctx)
+
 	axelarMemo := types.AxelarBody{
 		DestinationChain:   config.Name,
 		DestinationAddress: p.Recipient,
