@@ -63,6 +63,7 @@ func (k Keeper) ValidateAxelarPacket(ctx sdk.Context, sourceChannel string, data
 	if err := json.Unmarshal([]byte(packetData.Memo), &axelarBody); err != nil {
 		return err
 	}
+	payloadBytes := intsToBytes(axelarBody.Payload)
 
 	// get the destination chain configuration
 	chainConfig, ok := k.GetChainConfigurationByName(ctx, axelarBody.DestinationChain)
@@ -86,7 +87,7 @@ func (k Keeper) ValidateAxelarPacket(ctx sdk.Context, sourceChannel string, data
 	}
 
 	// Validate logic call
-	if targetContract, nonce, _, callData, err := types.DecodeLogicCallArgs(axelarBody.Payload); err == nil {
+	if targetContract, nonce, _, callData, err := types.DecodeLogicCallArgs(payloadBytes); err == nil {
 		if nonce == 0 {
 			return fmt.Errorf("nonce cannot be zero")
 		}
@@ -109,7 +110,7 @@ func (k Keeper) ValidateAxelarPacket(ctx sdk.Context, sourceChannel string, data
 	}
 
 	// Validate upgrade
-	if newProxyContract, targets, err := types.DecodeUpgradeArgs(axelarBody.Payload); err == nil {
+	if newProxyContract, targets, err := types.DecodeUpgradeArgs(payloadBytes); err == nil {
 		if !common.IsHexAddress(newProxyContract) {
 			return fmt.Errorf("invalid proxy address %s", newProxyContract)
 		}
@@ -129,8 +130,8 @@ func (k Keeper) ValidateAxelarPacket(ctx sdk.Context, sourceChannel string, data
 			return fmt.Errorf("no upgrade data expected for chain %s:%d", chainConfig.Name, chainConfig.Id)
 		}
 
-		if !bytes.Equal(upgradeData.Payload, axelarBody.Payload) {
-			return fmt.Errorf("upgrade data did not match expected data. received: %s, expected: %s", axelarBody.Payload, upgradeData.Payload)
+		if !bytes.Equal(upgradeData.Payload, payloadBytes) {
+			return fmt.Errorf("upgrade data did not match expected data. received: %s, expected: %s", payloadBytes, upgradeData.Payload)
 		}
 
 		// all checks have passed, delete the upgrade data from state
@@ -139,5 +140,13 @@ func (k Keeper) ValidateAxelarPacket(ctx sdk.Context, sourceChannel string, data
 		return nil
 	}
 
-	return fmt.Errorf("invalid payload: %s", axelarBody.Payload)
+	return fmt.Errorf("invalid payload: %s", payloadBytes)
+}
+
+func intsToBytes(payload []int) []byte {
+	bytePayload := make([]byte, len(payload))
+	for i, b := range payload {
+		bytePayload[i] = byte(b)
+	}
+	return bytePayload
 }
