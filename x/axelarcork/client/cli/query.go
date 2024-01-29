@@ -507,7 +507,7 @@ func queryWinningAxelarCorks() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:     "winning-axelar-corks [chain-id]",
 		Aliases: []string{"wacs"},
-		Args:    cobra.ExactArgs(2),
+		Args:    cobra.ExactArgs(1),
 		Short:   "query the winning corks for a given chain id",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx, err := client.GetClientQueryContext(cmd)
