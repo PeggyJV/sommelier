@@ -75,3 +75,9 @@ message AxelarUpgradeData {
     int64 executable_height_threshold = 3;
 }
 
+// Represents a cork that has received enough votes to be executed
+message WinningAxelarCork {  
+    AxelarCork cork = 1;
+    uint64 block_height = 2;
+}
+
