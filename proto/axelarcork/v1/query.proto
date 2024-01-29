@@ -63,7 +63,11 @@ service Query {
   }
 
   rpc QueryWinningAxelarCork(QueryWinningAxelarCorkRequest) returns (QueryWinningAxelarCorkResponse) {
-    option (google.api.http).get = "/sommelier/axelarcork/v1/winning_cork";
+    option (google.api.http).get = "/sommelier/axelarcork/v1/winning_axelar_corks/{chain_id}/{contract_address}";
+  }
+
+  rpc QueryWinningAxelarCorks(QueryWinningAxelarCorksRequest) returns (QueryWinningAxelarCorksResponse) {
+    option (google.api.http).get = "/sommelier/axelarcork/v1/winning_axelar_corks/{chain_id}";
   }
 }
 
@@ -179,5 +183,13 @@ message QueryWinningAxelarCorkRequest {
 message QueryWinningAxelarCorkResponse {
   AxelarCork cork = 1;
   uint64 block_height = 2;
+}
+
+message QueryWinningAxelarCorksRequest {
+  uint64 chain_id   = 1;
+}
+
+message QueryWinningAxelarCorksResponse {
+  repeated WinningAxelarCork winning_axelar_corks = 1;
 }
 

@@ -268,3 +268,26 @@ func (k Keeper) QueryWinningAxelarCork(c context.Context, req *types.QueryWinnin
 
 	return &response, nil
 }
+
+func (k Keeper) QueryWinningAxelarCorks(c context.Context, req *types.QueryWinningAxelarCorksRequest) (*types.QueryWinningAxelarCorksResponse, error) {
+	if req == nil {
+		return nil, status.Error(codes.InvalidArgument, "empty request")
+	}
+
+	ctx := sdk.UnwrapSDKContext(c)
+
+	response := types.QueryWinningAxelarCorksResponse{}
+
+	winning := []*types.WinningAxelarCork{}
+	k.IterateWinningAxelarCorks(ctx, req.ChainId, func(contract common.Address, blockHeight uint64, cork types.AxelarCork) (stop bool) {
+		winning = append(winning, &types.WinningAxelarCork{
+			Cork:        &cork,
+			BlockHeight: blockHeight,
+		})
+		return false
+	})
+
+	response.WinningAxelarCorks = winning
+
+	return &response, nil
+}

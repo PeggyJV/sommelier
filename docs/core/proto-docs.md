@@ -57,6 +57,7 @@
     - [ChainConfigurations](#axelarcork.v1.ChainConfigurations)
     - [ScheduledAxelarCork](#axelarcork.v1.ScheduledAxelarCork)
     - [ScheduledAxelarCorks](#axelarcork.v1.ScheduledAxelarCorks)
+    - [WinningAxelarCork](#axelarcork.v1.WinningAxelarCork)
   
 - [axelarcork/v1/event.proto](#axelarcork/v1/event.proto)
     - [ScheduleCorkEvent](#axelarcork.v1.ScheduleCorkEvent)
@@ -110,6 +111,8 @@
     - [QueryScheduledCorksResponse](#axelarcork.v1.QueryScheduledCorksResponse)
     - [QueryWinningAxelarCorkRequest](#axelarcork.v1.QueryWinningAxelarCorkRequest)
     - [QueryWinningAxelarCorkResponse](#axelarcork.v1.QueryWinningAxelarCorkResponse)
+    - [QueryWinningAxelarCorksRequest](#axelarcork.v1.QueryWinningAxelarCorksRequest)
+    - [QueryWinningAxelarCorksResponse](#axelarcork.v1.QueryWinningAxelarCorksResponse)
   
     - [Query](#axelarcork.v1.Query)
   
@@ -1022,6 +1025,22 @@ execution in case of an error.
 
 
 
+
+<a name="axelarcork.v1.WinningAxelarCork"></a>
+
+### WinningAxelarCork
+Represents a cork that has received enough votes to be executed
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `cork` | [AxelarCork](#axelarcork.v1.AxelarCork) |  |  |
+| `block_height` | [uint64](#uint64) |  |  |
+
+
+
+
+
  <!-- end messages -->
 
  <!-- end enums -->
@@ -1824,6 +1843,36 @@ QueryScheduledCorksResponse
 
 
 
+
+<a name="axelarcork.v1.QueryWinningAxelarCorksRequest"></a>
+
+### QueryWinningAxelarCorksRequest
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `chain_id` | [uint64](#uint64) |  |  |
+
+
+
+
+
+
+<a name="axelarcork.v1.QueryWinningAxelarCorksResponse"></a>
+
+### QueryWinningAxelarCorksResponse
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `winning_axelar_corks` | [WinningAxelarCork](#axelarcork.v1.WinningAxelarCork) | repeated |  |
+
+
+
+
+
  <!-- end messages -->
 
  <!-- end enums -->
@@ -1850,7 +1899,8 @@ Query defines the gRPC query service for the cork module.
 | `QueryChainConfigurations` | [QueryChainConfigurationsRequest](#axelarcork.v1.QueryChainConfigurationsRequest) | [QueryChainConfigurationsResponse](#axelarcork.v1.QueryChainConfigurationsResponse) |  | GET|/sommelier/axelarcork/v1/chain_configurations|
 | `QueryAxelarContractCallNonces` | [QueryAxelarContractCallNoncesRequest](#axelarcork.v1.QueryAxelarContractCallNoncesRequest) | [QueryAxelarContractCallNoncesResponse](#axelarcork.v1.QueryAxelarContractCallNoncesResponse) |  | GET|/sommelier/axelarcork/v1/contract_call_nonces|
 | `QueryAxelarProxyUpgradeData` | [QueryAxelarProxyUpgradeDataRequest](#axelarcork.v1.QueryAxelarProxyUpgradeDataRequest) | [QueryAxelarProxyUpgradeDataResponse](#axelarcork.v1.QueryAxelarProxyUpgradeDataResponse) |  | GET|/sommelier/axelarcork/v1/proxy_upgrade_data|
-| `QueryWinningAxelarCork` | [QueryWinningAxelarCorkRequest](#axelarcork.v1.QueryWinningAxelarCorkRequest) | [QueryWinningAxelarCorkResponse](#axelarcork.v1.QueryWinningAxelarCorkResponse) |  | GET|/sommelier/axelarcork/v1/winning_cork|
+| `QueryWinningAxelarCork` | [QueryWinningAxelarCorkRequest](#axelarcork.v1.QueryWinningAxelarCorkRequest) | [QueryWinningAxelarCorkResponse](#axelarcork.v1.QueryWinningAxelarCorkResponse) |  | GET|/sommelier/axelarcork/v1/winning_axelar_corks/{chain_id}/{contract_address}|
+| `QueryWinningAxelarCorks` | [QueryWinningAxelarCorksRequest](#axelarcork.v1.QueryWinningAxelarCorksRequest) | [QueryWinningAxelarCorksResponse](#axelarcork.v1.QueryWinningAxelarCorksResponse) |  | GET|/sommelier/axelarcork/v1/winning_axelar_corks/{chain_id}|
 
  <!-- end services -->
 
