@@ -147,7 +147,9 @@ func HandleCommunityPoolSpendProposal(ctx sdk.Context, k Keeper, p types.AxelarC
 	feePool.CommunityPool = newPool
 
 	// since distribution is not an authorized sender, put them in the axelarcork module account
-	k.bankKeeper.SendCoinsFromModuleToModule(ctx, distributiontypes.ModuleName, types.ModuleName, sdk.NewCoins(coinWithBridgeFee))
+	if err := k.bankKeeper.SendCoinsFromModuleToModule(ctx, distributiontypes.ModuleName, types.ModuleName, sdk.NewCoins(coinWithBridgeFee)); err != nil {
+		panic(err)
+	}
 	sender := k.GetSenderAccount(ctx)
 
 	axelarMemo := types.AxelarBody{
