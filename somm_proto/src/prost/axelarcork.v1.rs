@@ -93,6 +93,14 @@ pub struct AxelarUpgradeData {
     #[prost(int64, tag = "3")]
     pub executable_height_threshold: i64,
 }
+/// Represents a cork that has received enough votes to be executed
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct WinningAxelarCork {
+    #[prost(message, optional, tag = "1")]
+    pub cork: ::core::option::Option<AxelarCork>,
+    #[prost(uint64, tag = "2")]
+    pub block_height: u64,
+}
 /// MsgScheduleCorkRequest - sdk.Msg for scheduling a cork request for on or after a specific block height
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct MsgScheduleAxelarCorkRequest {
@@ -431,6 +439,30 @@ pub struct QueryAxelarProxyUpgradeDataResponse {
     #[prost(message, repeated, tag = "1")]
     pub proxy_upgrade_data: ::prost::alloc::vec::Vec<AxelarUpgradeData>,
 }
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct QueryWinningAxelarCorkRequest {
+    #[prost(uint64, tag = "1")]
+    pub chain_id: u64,
+    #[prost(string, tag = "2")]
+    pub contract_address: ::prost::alloc::string::String,
+}
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct QueryWinningAxelarCorkResponse {
+    #[prost(message, optional, tag = "1")]
+    pub cork: ::core::option::Option<AxelarCork>,
+    #[prost(uint64, tag = "2")]
+    pub block_height: u64,
+}
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct QueryWinningAxelarCorksRequest {
+    #[prost(uint64, tag = "1")]
+    pub chain_id: u64,
+}
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct QueryWinningAxelarCorksResponse {
+    #[prost(message, repeated, tag = "1")]
+    pub winning_axelar_corks: ::prost::alloc::vec::Vec<WinningAxelarCork>,
+}
 #[doc = r" Generated client implementations."]
 pub mod query_client {
     #![allow(unused_variables, dead_code, missing_docs)]
@@ -660,6 +692,38 @@ pub mod query_client {
             let codec = tonic::codec::ProstCodec::default();
             let path = http::uri::PathAndQuery::from_static(
                 "/axelarcork.v1.Query/QueryAxelarProxyUpgradeData",
+            );
+            self.inner.unary(request.into_request(), path, codec).await
+        }
+        pub async fn query_winning_axelar_cork(
+            &mut self,
+            request: impl tonic::IntoRequest<super::QueryWinningAxelarCorkRequest>,
+        ) -> Result<tonic::Response<super::QueryWinningAxelarCorkResponse>, tonic::Status> {
+            self.inner.ready().await.map_err(|e| {
+                tonic::Status::new(
+                    tonic::Code::Unknown,
+                    format!("Service was not ready: {}", e.into()),
+                )
+            })?;
+            let codec = tonic::codec::ProstCodec::default();
+            let path =
+                http::uri::PathAndQuery::from_static("/axelarcork.v1.Query/QueryWinningAxelarCork");
+            self.inner.unary(request.into_request(), path, codec).await
+        }
+        pub async fn query_winning_axelar_corks(
+            &mut self,
+            request: impl tonic::IntoRequest<super::QueryWinningAxelarCorksRequest>,
+        ) -> Result<tonic::Response<super::QueryWinningAxelarCorksResponse>, tonic::Status>
+        {
+            self.inner.ready().await.map_err(|e| {
+                tonic::Status::new(
+                    tonic::Code::Unknown,
+                    format!("Service was not ready: {}", e.into()),
+                )
+            })?;
+            let codec = tonic::codec::ProstCodec::default();
+            let path = http::uri::PathAndQuery::from_static(
+                "/axelarcork.v1.Query/QueryWinningAxelarCorks",
             );
             self.inner.unary(request.into_request(), path, codec).await
         }
