@@ -498,6 +498,9 @@ func (s *IntegrationTestSuite) TestAxelarCork() {
 		s.Require().Zero(sendResponse.Code, "raw log: %s", sendResponse.RawLog)
 		s.T().Log("Verifying distribution community pool balances includes the swept funds")
 
+		// Short delay to ensure a new block is queried
+		time.Sleep(10 * time.Second)
+
 		// Verify fund appear in the community pool
 		distributionCommunityPoolResponse, err = distributionQueryClient.CommunityPool(context.Background(), &distributiontypes.QueryCommunityPoolRequest{})
 		s.Require().NoError(err)
