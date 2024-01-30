@@ -68,6 +68,7 @@ HOqHGS8ApZcunRauDAIwRtgceZpkS92KuP3QOUotAH/nnCzp7X1lVzGOSTBRTVYJ
 pohf4PJrfacqpi7PoXBk
 -----END CERTIFICATE-----
 `
+	axelarSweepDenom = "sweep"
 )
 
 var (
@@ -319,7 +320,19 @@ func (s *IntegrationTestSuite) initGenesis() {
 				Exponent: 0,
 			},
 		},
-	})
+	},
+		banktypes.Metadata{
+			Description: "Test token for sweeping",
+			Display:     axelarSweepDenom,
+			Base:        axelarSweepDenom,
+			Name:        axelarSweepDenom,
+			DenomUnits: []*banktypes.DenomUnit{
+				{
+					Denom:    axelarSweepDenom,
+					Exponent: 0,
+				},
+			},
+		})
 
 	// Set up auction module with some coins to auction off
 	balance := banktypes.Balance{
@@ -330,8 +343,13 @@ func (s *IntegrationTestSuite) initGenesis() {
 		Address: authtypes.NewModuleAddress(disttypes.ModuleName).String(),
 		Coins:   sdk.NewCoins(sdk.NewCoin(params.BaseCoinUnit, sdk.NewInt(1000000000))),
 	}
+	orchSweepBalance := banktypes.Balance{
+		Address: s.chain.orchestrators[0].address().String(),
+		Coins:   sdk.NewCoins(sdk.NewCoin(axelarSweepDenom, sdk.NewInt(2000000000))),
+	}
 	bankGenState.Balances = append(bankGenState.Balances, balance)
 	bankGenState.Balances = append(bankGenState.Balances, distBalance)
+	bankGenState.Balances = append(bankGenState.Balances, orchSweepBalance)
 
 	bz, err := cdc.MarshalJSON(&bankGenState)
 	s.Require().NoError(err)

@@ -10,6 +10,9 @@ import (
 	"cosmossdk.io/math"
 	"github.com/cosmos/cosmos-sdk/client"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
+	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
+	distributiontypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
 	govtypesv1beta1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/golang/protobuf/proto" //nolint:staticcheck
@@ -456,6 +459,53 @@ func (s *IntegrationTestSuite) TestAxelarCork() {
 		chainConfigurationsResponse, err = axelarcorkQueryClient.QueryChainConfigurations(context.Background(), &types.QueryChainConfigurationsRequest{})
 		s.Require().NoError(err)
 		s.Require().Empty(chainConfigurationsResponse.Configurations)
+
+		//////////////////////////////////////////
+		// Test module account balance sweeping //
+		//////////////////////////////////////////
+
+		// Get the baseline balance of the distribution community pool, send funds to the axelarcork module account,
+		// verify they are received, and that the balance is zero on the next block.
+		s.T().Log("Querying distribution community pool balance")
+		distributionQueryClient := distributiontypes.NewQueryClient(orch0ClientCtx)
+		distributionCommunityPoolResponse, err := distributionQueryClient.CommunityPool(context.Background(), &distributiontypes.QueryCommunityPoolRequest{})
+		s.Require().NoError(err)
+		initialPool := distributionCommunityPoolResponse.Pool
+
+		// Send all of orchestrator's sweep denom and some usomm
+		s.T().Log("Querying orchestrator account balances")
+		bankQueryClient := banktypes.NewQueryClient(orch0ClientCtx)
+		orch0AccountResponse, err := bankQueryClient.AllBalances(context.Background(), &banktypes.QueryAllBalancesRequest{Address: orch0.address().String()})
+		s.Require().NoError(err)
+		orch0Balances := orch0AccountResponse.Balances
+		usommToSend := sdk.NewCoin(testDenom, math.NewInt(1000))
+		found, sweepDenomToSend := orch0Balances.Find(axelarSweepDenom)
+		s.Require().True(found, "orch0 doesn't have any sweep test denom funds")
+		orch0SweepFunds := sdk.Coins{
+			sweepDenomToSend,
+			usommToSend,
+		}
+
+		s.T().Log("Sending funds to axelarcork module account")
+		axelarcorkModuleAddress := authtypes.NewModuleAddress(types.ModuleName)
+		sendFundsToAxelarcorkMsg := banktypes.NewMsgSend(
+			orch0.address(),
+			axelarcorkModuleAddress,
+			orch0SweepFunds,
+		)
+		sendResponse, err := s.chain.sendMsgs(*orch0ClientCtx, sendFundsToAxelarcorkMsg)
+		s.Require().NoError(err)
+		s.Require().Zero(sendResponse.Code, "raw log: %s", sendResponse.RawLog)
+		s.T().Log("Verifying distribution community pool balances includes the swept funds")
+
+		// Short delay to ensure a new block is queried
+		time.Sleep(10 * time.Second)
+
+		// Verify fund appear in the community pool
+		distributionCommunityPoolResponse, err = distributionQueryClient.CommunityPool(context.Background(), &distributiontypes.QueryCommunityPoolRequest{})
+		s.Require().NoError(err)
+		poolAfterSweep := initialPool.Add(sdk.NewDecCoinsFromCoins(usommToSend)...).Add(sdk.NewDecCoinsFromCoins(sweepDenomToSend)...)
+		s.Require().Equal(poolAfterSweep, distributionCommunityPoolResponse.Pool)
 	})
 }
 

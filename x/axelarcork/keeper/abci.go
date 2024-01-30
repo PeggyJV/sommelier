@@ -5,6 +5,7 @@ import (
 
 	"github.com/ethereum/go-ethereum/common"
 
+	distributionTypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
 	"github.com/peggyjv/sommelier/v7/x/axelarcork/types"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -54,4 +55,30 @@ func (k Keeper) EndBlocker(ctx sdk.Context) {
 
 		return false
 	})
+
+	// Sweep all axelarcork sender module account balances to the community pool. Because this account is the
+	// sender for transfers created by RelayCork calls, funds will not be returned to the caller if the IBC
+	// transfer fails or gas is refunded.
+	moduleAcct := k.GetSenderAccount(ctx)
+	balances := k.bankKeeper.GetAllBalances(ctx, moduleAcct.GetAddress())
+	balancesForPool := sdk.Coins{}
+
+	for _, b := range balances {
+		if b.Amount.IsPositive() {
+			balancesForPool.Add(b)
+		}
+	}
+
+	if balancesForPool.Len() == 0 {
+		return
+	}
+
+	if err := k.bankKeeper.SendCoinsFromModuleToModule(ctx, types.ModuleName, distributionTypes.ModuleName, balancesForPool); err != nil {
+		panic(err)
+	}
+
+	feePool := k.distributionKeeper.GetFeePool(ctx)
+	feePool.CommunityPool = feePool.CommunityPool.Add(sdk.NewDecCoinsFromCoins(balancesForPool...)...)
+
+	k.distributionKeeper.SetFeePool(ctx, feePool)
 }
