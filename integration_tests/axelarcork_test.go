@@ -17,7 +17,6 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/golang/protobuf/proto" //nolint:staticcheck
 	"github.com/peggyjv/sommelier/v7/x/axelarcork/types"
-	axelarcorktypes "github.com/peggyjv/sommelier/v7/x/axelarcork/types"
 	pubsubtypes "github.com/peggyjv/sommelier/v7/x/pubsub/types"
 )
 
@@ -488,7 +487,7 @@ func (s *IntegrationTestSuite) TestAxelarCork() {
 		}
 
 		s.T().Log("Sending funds to axelarcork module account")
-		axelarcorkModuleAddress := authtypes.NewModuleAddress(axelarcorktypes.ModuleName)
+		axelarcorkModuleAddress := authtypes.NewModuleAddress(types.ModuleName)
 		sendFundsToAxelarcorkMsg := banktypes.NewMsgSend(
 			orch0.address(),
 			axelarcorkModuleAddress,
