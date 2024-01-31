@@ -2,6 +2,7 @@ package keeper
 
 import (
 	"fmt"
+	"sort"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/ethereum/go-ethereum/common"
@@ -24,6 +25,12 @@ func InitGenesis(ctx sdk.Context, k Keeper, gs types.GenesisState) {
 	}
 
 	for _, cellarIDSet := range gs.CellarIds {
+		cellarIDs := make([]string, 0)
+		for _, id := range cellarIDSet.Ids {
+			cellarIDs = append(cellarIDs, id)
+		}
+		sort.Strings(cellarIDs)
+		cellarIDSet.Ids = cellarIDs
 		k.SetCellarIDs(ctx, cellarIDSet.ChainId, *cellarIDSet)
 	}
 
@@ -82,9 +89,12 @@ func ExportGenesis(ctx sdk.Context, k Keeper) types.GenesisState {
 		cellarIDs := k.GetCellarIDs(ctx, config.Id)
 		var cellarIDSet types.CellarIDSet
 		cellarIDSet.ChainId = config.Id
+		cellarIDSetIDs := make([]string, 0, len(cellarIDs))
 		for _, id := range cellarIDs {
-			cellarIDSet.Ids = append(cellarIDSet.Ids, id.String())
+			cellarIDSetIDs = append(cellarIDSetIDs, id.String())
 		}
+		sort.Strings(cellarIDSetIDs)
+		cellarIDSet.Ids = cellarIDSetIDs
 		gs.CellarIds = append(gs.CellarIds, &cellarIDSet)
 
 		gs.ScheduledCorks.ScheduledCorks = append(gs.ScheduledCorks.ScheduledCorks, k.GetScheduledAxelarCorks(ctx, config.Id)...)

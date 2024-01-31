@@ -1,6 +1,8 @@
 package keeper
 
 import (
+	"sort"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	types "github.com/peggyjv/sommelier/v7/x/cork/types/v2"
 )
@@ -9,7 +11,12 @@ import (
 // and the keeper's address to pubkey map
 func InitGenesis(ctx sdk.Context, k Keeper, gs types.GenesisState) {
 	k.SetParams(ctx, gs.Params)
-	// Set the vote period at initialization
+	cellarIDs := make([]string, 0)
+	for _, id := range gs.CellarIds.Ids {
+		cellarIDs = append(cellarIDs, id)
+	}
+	sort.Strings(cellarIDs)
+	gs.CellarIds.Ids = cellarIDs
 	k.SetCellarIDs(ctx, gs.CellarIds)
 	k.SetLatestInvalidationNonce(ctx, gs.InvalidationNonce)
 
@@ -31,14 +38,18 @@ func InitGenesis(ctx sdk.Context, k Keeper, gs types.GenesisState) {
 // to a genesis file, which can be imported again
 // with InitGenesis
 func ExportGenesis(ctx sdk.Context, k Keeper) types.GenesisState {
-	var ids types.CellarIDSet
-	for _, id := range k.GetCellarIDs(ctx) {
-		ids.Ids = append(ids.Ids, id.String())
+	var cellarIDSet types.CellarIDSet
+	existingCellarIDs := k.GetCellarIDs(ctx)
+	cellarIDs := make([]string, 0)
+	for _, id := range existingCellarIDs {
+		cellarIDs = append(cellarIDs, id.String())
 	}
+	sort.Strings(cellarIDs)
+	cellarIDSet.Ids = cellarIDs
 
 	return types.GenesisState{
 		Params:            k.GetParamSet(ctx),
-		CellarIds:         ids,
+		CellarIds:         cellarIDSet,
 		InvalidationNonce: k.GetLatestInvalidationNonce(ctx),
 		ScheduledCorks:    k.GetScheduledCorks(ctx),
 		CorkResults:       k.GetCorkResults(ctx),
