@@ -116,9 +116,7 @@ func (k Keeper) GetFeeAccrualCounters(ctx sdk.Context) (counters types.FeeAccrua
 func (k Keeper) SetFeeAccrualCounters(ctx sdk.Context, counters types.FeeAccrualCounters) {
 	store := ctx.KVStore(k.storeKey)
 	counterSlice := make([]types.FeeAccrualCounter, 0, len(counters.Counters))
-	for _, counter := range counters.Counters {
-		counterSlice = append(counterSlice, counter)
-	}
+	counterSlice = append(counterSlice, counters.Counters...)
 	sort.Slice(counterSlice, func(i, j int) bool {
 		return strings.Compare(counterSlice[i].Denom, counterSlice[j].Denom) == -1
 	})

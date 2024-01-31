@@ -178,9 +178,7 @@ func (k Keeper) DeleteSubscriber(ctx sdk.Context, subscriberAddress sdk.AccAddre
 
 func (k Keeper) SetPublisherIntent(ctx sdk.Context, publisherIntent types.PublisherIntent) {
 	allowedAddressesSlice := make([]string, 0, len(publisherIntent.AllowedAddresses))
-	for _, address := range publisherIntent.AllowedAddresses {
-		allowedAddressesSlice = append(allowedAddressesSlice, address)
-	}
+	allowedAddressesSlice = append(allowedAddressesSlice, publisherIntent.AllowedAddresses...)
 	sort.Strings(allowedAddressesSlice)
 	publisherIntent.AllowedAddresses = allowedAddressesSlice
 	bz := k.cdc.MustMarshal(&publisherIntent)

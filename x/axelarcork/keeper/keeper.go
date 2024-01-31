@@ -406,9 +406,7 @@ func (k Keeper) SetCellarIDs(ctx sdk.Context, chainID uint64, c types.CellarIDSe
 	bz := k.cdc.MustMarshal(&c)
 	// always sort before writing to the store
 	cellarIDs := make([]string, 0, len(c.Ids))
-	for _, id := range c.Ids {
-		cellarIDs = append(cellarIDs, id)
-	}
+	cellarIDs = append(cellarIDs, c.Ids...)
 	sort.Strings(cellarIDs)
 	c.Ids = cellarIDs
 	ctx.KVStore(k.storeKey).Set(types.MakeCellarIDsKey(chainID), bz)
