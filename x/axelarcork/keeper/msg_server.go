@@ -24,7 +24,8 @@ var _ types.MsgServer = Keeper{}
 // ScheduleCork implements types.MsgServer
 func (k Keeper) ScheduleCork(c context.Context, msg *types.MsgScheduleAxelarCorkRequest) (*types.MsgScheduleAxelarCorkResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
-	if !k.GetParamSet(ctx).Enabled {
+	params := k.GetParamSet(ctx)
+	if !params.Enabled {
 		return nil, types.ErrDisabled
 	}
 
@@ -32,6 +33,11 @@ func (k Keeper) ScheduleCork(c context.Context, msg *types.MsgScheduleAxelarCork
 	validatorAddr := k.gravityKeeper.GetOrchestratorValidatorAddress(ctx, signer)
 	if validatorAddr == nil {
 		return nil, errorsmod.Wrapf(sdkerrors.ErrUnauthorized, "signer %s is not a delegate", signer.String())
+	}
+
+	validatorAxelarCorkCount := k.GetValidatorAxelarCorkCount(ctx, validatorAddr)
+	if validatorAxelarCorkCount >= types.MaxAxelarCorksPerValidator {
+		return nil, types.ErrValidatorAxelarCorkCapacityReached
 	}
 
 	config, ok := k.GetChainConfigurationByID(ctx, msg.ChainId)
@@ -48,6 +54,7 @@ func (k Keeper) ScheduleCork(c context.Context, msg *types.MsgScheduleAxelarCork
 	}
 
 	corkID := k.SetScheduledAxelarCork(ctx, config.Id, msg.BlockHeight, validatorAddr, *msg.Cork)
+	k.IncrementValidatorAxelarCorkCount(ctx, validatorAddr)
 
 	if err := ctx.EventManager().EmitTypedEvent(&types.ScheduleCorkEvent{
 		Signer:      signer.String(),

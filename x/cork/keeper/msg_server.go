@@ -25,6 +25,12 @@ func (k Keeper) ScheduleCork(c context.Context, msg *types.MsgScheduleCorkReques
 		return nil, errorsmod.Wrapf(sdkerrors.ErrUnauthorized, "signer %s is not a delegate", signer.String())
 	}
 
+	params := k.GetParamSet(ctx)
+	validatorCorkCount := k.GetValidatorCorkCount(ctx, validatorAddr)
+	if validatorCorkCount >= params.MaxCorksPerValidator {
+		return nil, corktypes.ErrValidatorCorkCapacityReached
+	}
+
 	if !k.HasCellarID(ctx, common.HexToAddress(msg.Cork.TargetContractAddress)) {
 		return nil, corktypes.ErrUnmanagedCellarAddress
 	}
