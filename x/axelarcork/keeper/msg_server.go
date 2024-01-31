@@ -97,7 +97,7 @@ func (k Keeper) RelayCork(c context.Context, msg *types.MsgRelayAxelarCorkReques
 	axelarMemo := types.AxelarBody{
 		DestinationChain:   config.Name,
 		DestinationAddress: config.ProxyAddress,
-		Payload:            bytesToInts(payload),
+		Payload:            payload,
 		Type:               types.PureMessage,
 		Fee: &types.Fee{
 			Amount:    strconv.FormatUint(msg.Fee, 10),
@@ -161,7 +161,7 @@ func (k Keeper) RelayProxyUpgrade(c context.Context, msg *types.MsgRelayAxelarPr
 	axelarMemo := types.AxelarBody{
 		DestinationChain:   config.Name,
 		DestinationAddress: config.ProxyAddress,
-		Payload:            bytesToInts(upgradeData.Payload),
+		Payload:            upgradeData.Payload,
 		Type:               types.PureMessage,
 		Fee: &types.Fee{
 			Amount:    strconv.FormatUint(msg.Fee, 10),
@@ -225,12 +225,4 @@ func (k Keeper) CancelScheduledCork(c context.Context, msg *types.MsgCancelAxela
 	// todo: implement
 
 	return &types.MsgCancelAxelarCorkResponse{}, nil
-}
-
-func bytesToInts(payload []byte) []int {
-	intPayload := make([]int, len(payload))
-	for i, b := range payload {
-		intPayload[i] = int(b)
-	}
-	return intPayload
 }

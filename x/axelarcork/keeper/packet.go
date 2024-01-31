@@ -63,7 +63,7 @@ func (k Keeper) ValidateAxelarPacket(ctx sdk.Context, sourceChannel string, data
 	if err := json.Unmarshal([]byte(packetData.Memo), &axelarBody); err != nil {
 		return err
 	}
-	payloadBytes := intsToBytes(axelarBody.Payload)
+	payloadBytes := axelarBody.Payload
 
 	// get the destination chain configuration
 	chainConfig, ok := k.GetChainConfigurationByName(ctx, axelarBody.DestinationChain)
@@ -143,12 +143,4 @@ func (k Keeper) ValidateAxelarPacket(ctx sdk.Context, sourceChannel string, data
 	}
 
 	return fmt.Errorf("invalid payload: %s", payloadBytes)
-}
-
-func intsToBytes(payload []int) []byte {
-	bytePayload := make([]byte, len(payload))
-	for i, b := range payload {
-		bytePayload[i] = byte(b)
-	}
-	return bytePayload
 }
