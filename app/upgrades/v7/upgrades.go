@@ -248,7 +248,10 @@ func pubsubInitGenesis(ctx sdk.Context, pubsubKeeper pubsubkeeper.Keeper) {
 		"1:0x05641a27C82799AaF22b436F20A3110410f29652",     // Steady MATIC
 		"1:0x6F069F711281618467dAe7873541EcC082761B33",     // Steady UNI
 		"1:0x6a6731f1754e3088ea35c8ddfd55cFF4d0FA5052",     // Turbo CRVUSD
+		"1:0x6c1edce139291Af5b84fB1e496c9747F83E876c9",     // Turbo DIVETH
 		"1:0x9a7b4980C6F0FCaa50CD5f288Ad7038f434c692e",     // Turbo EETH
+		"1:0xdAdC82e26b3739750E036dFd9dEfd3eD459b877A",     // Turbo EETH V2
+		"1:0x19B8D8FC682fC56FbB42653F68c7d48Dd3fe597E",     // Turbo ETHX
 		"1:0x0C190DEd9Be5f512Bd72827bdaD4003e9Cc7975C",     // Turbo GHO
 		"1:0x5195222f69c5821f8095ec565E71e18aB6A2298f",     // Turbo SOMM
 		"1:0xc7372Ab5dd315606dB799246E8aA112405abAeFf",     // Turbo stETH (stETH deposit)
@@ -259,7 +262,7 @@ func pubsubInitGenesis(ctx sdk.Context, pubsubKeeper pubsubkeeper.Keeper) {
 	}
 
 	// Set 7seas publisher intents for existing cellars
-	publisherIntents := make([]*pubsubtypes.PublisherIntent, 0, 28)
+	publisherIntents := make([]*pubsubtypes.PublisherIntent, 0, 31)
 	for _, cellar := range cellars {
 		publisherIntents = append(publisherIntents, &pubsubtypes.PublisherIntent{
 			SubscriptionId:     cellar,
@@ -270,7 +273,7 @@ func pubsubInitGenesis(ctx sdk.Context, pubsubKeeper pubsubkeeper.Keeper) {
 	}
 
 	// Set default subscriptions for 7seas as the publisher for existing cellars
-	defaultSubscriptions := make([]*pubsubtypes.DefaultSubscription, 0, 28)
+	defaultSubscriptions := make([]*pubsubtypes.DefaultSubscription, 0, 31)
 	for _, cellar := range cellars {
 		defaultSubscriptions = append(defaultSubscriptions, &pubsubtypes.DefaultSubscription{
 			SubscriptionId:  cellar,
@@ -280,7 +283,7 @@ func pubsubInitGenesis(ctx sdk.Context, pubsubKeeper pubsubkeeper.Keeper) {
 
 	// Create subscribers and intents for existing validators
 	subscribers := createSubscribers()
-	subscriberIntents := make([]*pubsubtypes.SubscriberIntent, 0, 980)
+	subscriberIntents := make([]*pubsubtypes.SubscriberIntent, 0, 1085)
 	for _, subscriber := range subscribers {
 		for _, cellar := range cellars {
 			subscriberIntents = append(subscriberIntents, &pubsubtypes.SubscriberIntent{
