@@ -3,6 +3,7 @@ package keeper
 import (
 	"bytes"
 	"fmt"
+	"sort"
 
 	"github.com/tendermint/tendermint/libs/log"
 
@@ -176,6 +177,12 @@ func (k Keeper) DeleteSubscriber(ctx sdk.Context, subscriberAddress sdk.AccAddre
 /////////////////////
 
 func (k Keeper) SetPublisherIntent(ctx sdk.Context, publisherIntent types.PublisherIntent) {
+	allowedAddressesSlice := make([]string, 0, len(publisherIntent.AllowedAddresses))
+	for _, address := range publisherIntent.AllowedAddresses {
+		allowedAddressesSlice = append(allowedAddressesSlice, address)
+	}
+	sort.Strings(allowedAddressesSlice)
+	publisherIntent.AllowedAddresses = allowedAddressesSlice
 	bz := k.cdc.MustMarshal(&publisherIntent)
 	ctx.KVStore(k.storeKey).Set(types.GetPublisherIntentByPublisherDomainKey(publisherIntent.PublisherDomain, publisherIntent.SubscriptionId), bz)
 	ctx.KVStore(k.storeKey).Set(types.GetPublisherIntentBySubscriptionIDKey(publisherIntent.SubscriptionId, publisherIntent.PublisherDomain), bz)
