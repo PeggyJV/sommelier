@@ -3,6 +3,7 @@ package keeper
 import (
 	"bytes"
 	"encoding/binary"
+	"sort"
 
 	"github.com/cosmos/cosmos-sdk/codec"
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
@@ -335,6 +336,13 @@ func (k Keeper) GetApprovedScheduledCorks(ctx sdk.Context) (approvedCorks []type
 
 func (k Keeper) SetCellarIDs(ctx sdk.Context, c types.CellarIDSet) {
 	bz := k.cdc.MustMarshal(&c)
+	// always sort before writing to the store
+	cellarIDs := make([]string, 0, len(c.Ids))
+	for _, id := range c.Ids {
+		cellarIDs = append(cellarIDs, id)
+	}
+	sort.Strings(cellarIDs)
+	c.Ids = cellarIDs
 	ctx.KVStore(k.storeKey).Set(corktypes.MakeCellarIDsKey(), bz)
 }
 

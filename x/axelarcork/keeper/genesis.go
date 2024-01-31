@@ -25,12 +25,6 @@ func InitGenesis(ctx sdk.Context, k Keeper, gs types.GenesisState) {
 	}
 
 	for _, cellarIDSet := range gs.CellarIds {
-		cellarIDs := make([]string, 0)
-		for _, id := range cellarIDSet.Ids {
-			cellarIDs = append(cellarIDs, id)
-		}
-		sort.Strings(cellarIDs)
-		cellarIDSet.Ids = cellarIDs
 		k.SetCellarIDs(ctx, cellarIDSet.ChainId, *cellarIDSet)
 	}
 

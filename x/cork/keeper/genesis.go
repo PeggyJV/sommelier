@@ -11,12 +11,6 @@ import (
 // and the keeper's address to pubkey map
 func InitGenesis(ctx sdk.Context, k Keeper, gs types.GenesisState) {
 	k.SetParams(ctx, gs.Params)
-	cellarIDs := make([]string, 0)
-	for _, id := range gs.CellarIds.Ids {
-		cellarIDs = append(cellarIDs, id)
-	}
-	sort.Strings(cellarIDs)
-	gs.CellarIds.Ids = cellarIDs
 	k.SetCellarIDs(ctx, gs.CellarIds)
 	k.SetLatestInvalidationNonce(ctx, gs.InvalidationNonce)
 

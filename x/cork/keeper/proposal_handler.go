@@ -2,7 +2,6 @@ package keeper
 
 import (
 	"fmt"
-	"sort"
 
 	errorsmod "cosmossdk.io/errors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -49,7 +48,6 @@ func HandleAddManagedCellarsProposal(ctx sdk.Context, k Keeper, p types.AddManag
 		idStrings[i] = cid.String()
 	}
 
-	sort.Strings(idStrings)
 	k.SetCellarIDs(ctx, types.CellarIDSet{Ids: idStrings})
 
 	return nil
