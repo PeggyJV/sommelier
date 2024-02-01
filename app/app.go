@@ -436,7 +436,7 @@ func NewSommelierApp(
 		app.AccountKeeper,
 		app.BankKeeper,
 		app.StakingKeeper,
-		app.TransferKeeper,
+		app.TransferKeeper, // will be nil, circular dependency avoided by calling SetTransferKeeper later
 		app.DistrKeeper,
 		app.IBCKeeper.ChannelKeeper,
 		app.GravityKeeper,
