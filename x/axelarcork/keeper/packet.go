@@ -2,6 +2,7 @@ package keeper
 
 import (
 	"bytes"
+	"encoding/hex"
 	"encoding/json"
 	"fmt"
 
@@ -12,13 +13,17 @@ import (
 )
 
 func (k Keeper) ValidateAxelarPacket(ctx sdk.Context, sourceChannel string, data []byte) error {
+	k.Logger(ctx).Info("checking IBC packet against Axelar middleware validations")
+
 	params := k.GetParamSet(ctx)
 	if !params.Enabled {
+		k.Logger(ctx).Info("Axelar not enabled")
 		return nil
 	}
 
 	// check if this is a call to axelar, exit early if this isn't axelar
 	if sourceChannel != params.IbcChannel {
+		k.Logger(ctx).Info("IBC source channel is not the axelar channel, skipping validation", "source channel", sourceChannel, "params channel", params.IbcChannel)
 		return nil
 	}
 
@@ -46,6 +51,7 @@ func (k Keeper) ValidateAxelarPacket(ctx sdk.Context, sourceChannel string, data
 
 	// if we are not sending to the axelar gmp management account, we can skip
 	if !bytes.Equal(receiverAddr, gmpAccountAddr) {
+		k.Logger(ctx).Info("Axelar receiver is not the GMP account", "receiver", hex.EncodeToString(receiverAddr), "gmp account", hex.EncodeToString(gmpAccountAddr))
 		return nil
 	}
 
@@ -56,6 +62,7 @@ func (k Keeper) ValidateAxelarPacket(ctx sdk.Context, sourceChannel string, data
 
 	// if the memo field is empty, we can pass the message along
 	if packetData.Memo == "" {
+		k.Logger(ctx).Error("Axelar GMP packet memo is empty")
 		return nil
 	}
 
@@ -106,6 +113,7 @@ func (k Keeper) ValidateAxelarPacket(ctx sdk.Context, sourceChannel string, data
 		}
 
 		// all checks have passed, delete the cork from state
+		k.Logger(ctx).Info("Axelar GMP message validated, deleting from state", "chain ID", chainConfig.Id, "block height", blockHeight, "contract", winningCork.TargetContractAddress)
 		k.DeleteWinningAxelarCorkByBlockheight(ctx, chainConfig.Id, blockHeight, winningCork)
 
 		return nil
@@ -137,6 +145,7 @@ func (k Keeper) ValidateAxelarPacket(ctx sdk.Context, sourceChannel string, data
 		}
 
 		// all checks have passed, delete the upgrade data from state
+		k.Logger(ctx).Info("Axelar GMP upgrade message validated, deleting from state", "chain ID", chainConfig.Id)
 		k.DeleteAxelarProxyUpgradeData(ctx, chainConfig.Id)
 
 		return nil
