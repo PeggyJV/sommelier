@@ -40,8 +40,11 @@ func (k Keeper) EndBlocker(ctx sdk.Context) {
 			"height", fmt.Sprintf("%d", ctx.BlockHeight()),
 			"chain id", config.Id)
 
+		// collect info about the highest block height cork for each contract while timing old ones out
 		currentHeight := uint64(ctx.BlockHeight())
-		k.IterateWinningAxelarCorks(ctx, config.Id, func(_ common.Address, blockHeight uint64, cork types.AxelarCork) (stop bool) {
+		latestAxelarCorks := make(map[string]types.WinningAxelarCork)
+		k.IterateWinningAxelarCorks(ctx, config.Id, func(contractAddress common.Address, blockHeight uint64, cork types.AxelarCork) (stop bool) {
+			deleted := false
 			timeoutHeight := blockHeight + k.GetParamSet(ctx).CorkTimeoutBlocks
 			if currentHeight >= timeoutHeight {
 				k.Logger(ctx).Info("deleting expired approved scheduled axelar cork",
@@ -49,7 +52,32 @@ func (k Keeper) EndBlocker(ctx sdk.Context) {
 					"target contract address", cork.TargetContractAddress)
 
 				k.DeleteWinningAxelarCorkByBlockheight(ctx, config.Id, blockHeight, cork)
+				deleted = true
 			}
+
+			if deleted {
+				return false
+			}
+
+			winningAxelarCork := types.WinningAxelarCork{Cork: &cork, BlockHeight: blockHeight}
+			contract := contractAddress.String()
+			latestAxelarCork, ok := latestAxelarCorks[contract]
+			if !ok || (ok && winningAxelarCork.BlockHeight > latestAxelarCork.BlockHeight) {
+				latestAxelarCorks[contract] = winningAxelarCork
+			}
+
+			return false
+		})
+
+		// iterate through winning corks again, and delete any that are older than the highest observed for a given contract
+		k.IterateWinningAxelarCorks(ctx, config.Id, func(contractAddress common.Address, blockHeight uint64, cork types.AxelarCork) (stop bool) {
+			contract := contractAddress.String()
+			latestAxelarCork, ok := latestAxelarCorks[contract]
+
+			if ok && latestAxelarCork.BlockHeight > blockHeight {
+				k.DeleteWinningAxelarCorkByBlockheight(ctx, config.Id, blockHeight, cork)
+			}
+
 			return false
 		})
 
