@@ -423,8 +423,6 @@ func NewSommelierApp(
 
 	transferModule := ibctransfer.NewAppModule(app.TransferKeeper)
 	transferIBCModule := ibctransfer.NewIBCModule(app.TransferKeeper)
-	var transferStack ibcporttypes.IBCModule = transferIBCModule
-	transferStack = axelarcork.NewIBCMiddleware(app.AxelarCorkKeeper, transferStack)
 
 	// Create the ICAHost Keeper
 	app.ICAHostKeeper = icahostkeeper.NewKeeper(
@@ -468,6 +466,9 @@ func NewSommelierApp(
 		app.GravityKeeper,
 		app.PubsubKeeper,
 	)
+
+	var transferStack ibcporttypes.IBCModule = transferIBCModule
+	transferStack = axelarcork.NewIBCMiddleware(app.AxelarCorkKeeper, transferStack)
 
 	app.CorkKeeper = corkkeeper.NewKeeper(
 		appCodec, keys[corktypes.StoreKey], app.GetSubspace(corktypes.ModuleName),
