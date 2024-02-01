@@ -3,7 +3,6 @@ package keeper
 import (
 	"encoding/json"
 	"fmt"
-	"sort"
 	"time"
 
 	distributiontypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
@@ -63,7 +62,6 @@ func HandleAddManagedCellarsProposal(ctx sdk.Context, k Keeper, p types.AddAxela
 		idStrings[i] = cid.String()
 	}
 
-	sort.Strings(idStrings)
 	k.SetCellarIDs(ctx, config.Id, types.CellarIDSet{ChainId: config.Id, Ids: idStrings})
 
 	return nil

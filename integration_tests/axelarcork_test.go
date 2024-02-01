@@ -496,16 +496,14 @@ func (s *IntegrationTestSuite) TestAxelarCork() {
 		sendResponse, err := s.chain.sendMsgs(*orch0ClientCtx, sendFundsToAxelarcorkMsg)
 		s.Require().NoError(err)
 		s.Require().Zero(sendResponse.Code, "raw log: %s", sendResponse.RawLog)
+
 		s.T().Log("Verifying distribution community pool balances includes the swept funds")
-
-		// Short delay to ensure a new block is queried
-		time.Sleep(10 * time.Second)
-
-		// Verify fund appear in the community pool
-		distributionCommunityPoolResponse, err = distributionQueryClient.CommunityPool(context.Background(), &distributiontypes.QueryCommunityPoolRequest{})
-		s.Require().NoError(err)
 		poolAfterSweep := initialPool.Add(sdk.NewDecCoinsFromCoins(usommToSend)...).Add(sdk.NewDecCoinsFromCoins(sweepDenomToSend)...)
-		s.Require().Equal(poolAfterSweep, distributionCommunityPoolResponse.Pool)
+		s.Require().Eventually(func() bool {
+			distributionCommunityPoolResponse, err := distributionQueryClient.CommunityPool(context.Background(), &distributiontypes.QueryCommunityPoolRequest{})
+			s.Require().NoError(err)
+			return poolAfterSweep.IsEqual(distributionCommunityPoolResponse.Pool)
+		}, time.Second*60, time.Second*5, "swept funds never reached community pool")
 	})
 }
 

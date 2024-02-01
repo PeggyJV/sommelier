@@ -5,6 +5,7 @@ import (
 	"encoding/binary"
 	"encoding/hex"
 	"reflect"
+	"sort"
 
 	"github.com/cosmos/cosmos-sdk/codec"
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
@@ -369,6 +370,7 @@ func (k Keeper) GetApprovedScheduledAxelarCorks(ctx sdk.Context, chainID uint64)
 		}
 
 		k.DeleteScheduledAxelarCork(ctx, chainID, currentBlockHeight, id, val, addr)
+		k.DecrementValidatorAxelarCorkCount(ctx, val)
 
 		return false
 	})
@@ -402,6 +404,11 @@ func (k Keeper) GetApprovedScheduledAxelarCorks(ctx sdk.Context, chainID uint64)
 
 func (k Keeper) SetCellarIDs(ctx sdk.Context, chainID uint64, c types.CellarIDSet) {
 	bz := k.cdc.MustMarshal(&c)
+	// always sort before writing to the store
+	cellarIDs := make([]string, 0, len(c.Ids))
+	cellarIDs = append(cellarIDs, c.Ids...)
+	sort.Strings(cellarIDs)
+	c.Ids = cellarIDs
 	ctx.KVStore(k.storeKey).Set(types.MakeCellarIDsKey(chainID), bz)
 }
 
@@ -521,6 +528,38 @@ func (k Keeper) IterateAxelarProxyUpgradeData(ctx sdk.Context, cb func(chainID u
 		if cb(chainID, upgradeData) {
 			break
 		}
+	}
+}
+
+///////////////////////////
+// Validator Cork counts //
+///////////////////////////
+
+func (k Keeper) GetValidatorAxelarCorkCount(ctx sdk.Context, val sdk.ValAddress) (count uint64) {
+	store := ctx.KVStore(k.storeKey)
+	bz := store.Get(types.GetValidatorAxelarCorkCountKey(val))
+	if len(bz) == 0 {
+		return 0
+	}
+
+	return binary.BigEndian.Uint64(bz)
+}
+
+func (k Keeper) SetValidatorAxelarCorkCount(ctx sdk.Context, val sdk.ValAddress, count uint64) {
+	bz := make([]byte, 8)
+	binary.BigEndian.PutUint64(bz, count)
+	ctx.KVStore(k.storeKey).Set(types.GetValidatorAxelarCorkCountKey(val), bz)
+}
+
+func (k Keeper) IncrementValidatorAxelarCorkCount(ctx sdk.Context, val sdk.ValAddress) {
+	count := k.GetValidatorAxelarCorkCount(ctx, val)
+	k.SetValidatorAxelarCorkCount(ctx, val, count+1)
+}
+
+func (k Keeper) DecrementValidatorAxelarCorkCount(ctx sdk.Context, val sdk.ValAddress) {
+	count := k.GetValidatorAxelarCorkCount(ctx, val)
+	if count > 0 {
+		k.SetValidatorAxelarCorkCount(ctx, val, count-1)
 	}
 }
 

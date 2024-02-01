@@ -61,24 +61,18 @@ func (k Keeper) EndBlocker(ctx sdk.Context) {
 	// transfer fails or gas is refunded.
 	moduleAcct := k.GetSenderAccount(ctx)
 	balances := k.bankKeeper.GetAllBalances(ctx, moduleAcct.GetAddress())
-	balancesForPool := sdk.Coins{}
 
-	for _, b := range balances {
-		if b.Amount.IsPositive() {
-			balancesForPool.Add(b)
-		}
-	}
-
-	if balancesForPool.Len() == 0 {
+	if balances.IsZero() {
 		return
 	}
 
-	if err := k.bankKeeper.SendCoinsFromModuleToModule(ctx, types.ModuleName, distributionTypes.ModuleName, balancesForPool); err != nil {
+	k.Logger(ctx).Info("sweeping funds from axelarcork module account to community pool", "coins", balances.String())
+	if err := k.bankKeeper.SendCoinsFromModuleToModule(ctx, types.ModuleName, distributionTypes.ModuleName, balances); err != nil {
 		panic(err)
 	}
 
 	feePool := k.distributionKeeper.GetFeePool(ctx)
-	feePool.CommunityPool = feePool.CommunityPool.Add(sdk.NewDecCoinsFromCoins(balancesForPool...)...)
+	feePool.CommunityPool = feePool.CommunityPool.Add(sdk.NewDecCoinsFromCoins(balances...)...)
 
 	k.distributionKeeper.SetFeePool(ctx, feePool)
 }

@@ -2,11 +2,32 @@ package types
 
 import (
 	"bytes"
+	"encoding/json"
 	"testing"
 
 	"github.com/ethereum/go-ethereum/accounts/abi"
 	"github.com/stretchr/testify/require"
 )
+
+func TestEncodingMetadata(t *testing.T) {
+	axelarMemo := AxelarBody{
+		DestinationChain:   "arbitrum",
+		DestinationAddress: "0xEe75bA2C81C04DcA4b0ED6d1B7077c188FEde4d2",
+		Payload:            []byte("1234"),
+		Type:               PureMessage,
+		Fee: &Fee{
+			Amount:    "100",
+			Recipient: "axelar1aythygn6z5thymj6tmzfwekzh05ewg3l7d6y89",
+		},
+	}
+
+	memoBz, err := json.Marshal(axelarMemo)
+	require.NoError(t, err)
+
+	var body AxelarBody
+	err = json.Unmarshal(memoBz, &body)
+	require.NoError(t, err)
+}
 
 func TestEncodingDecodingLogicCalls(t *testing.T) {
 	targetContract := "0x1111111111111111111111111111111111111111"

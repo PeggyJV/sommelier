@@ -11,6 +11,8 @@ import (
 	"github.com/ethereum/go-ethereum/crypto"
 )
 
+const MaxAxelarCorksPerValidator uint64 = 1000
+
 func (c *AxelarCork) IDHash(blockHeight uint64) []byte {
 	blockHeightBytes := sdk.Uint64ToBigEndian(blockHeight)
 	chainIDBytes := sdk.Uint64ToBigEndian(c.ChainId)

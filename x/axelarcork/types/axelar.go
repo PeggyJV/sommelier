@@ -10,7 +10,7 @@ const (
 type AxelarBody struct {
 	DestinationChain   string `json:"destination_chain"`
 	DestinationAddress string `json:"destination_address"`
-	Payload            []int  `json:"payload"`
+	Payload            []byte `json:"payload"`
 	Type               int64  `json:"type"`
 	Fee                *Fee   `json:"fee"`
 }

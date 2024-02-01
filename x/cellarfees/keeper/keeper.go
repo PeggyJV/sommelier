@@ -3,6 +3,8 @@ package keeper
 import (
 	"fmt"
 	"math/big"
+	"sort"
+	"strings"
 
 	"cosmossdk.io/math"
 	"github.com/tendermint/tendermint/libs/log"
@@ -113,6 +115,12 @@ func (k Keeper) GetFeeAccrualCounters(ctx sdk.Context) (counters types.FeeAccrua
 
 func (k Keeper) SetFeeAccrualCounters(ctx sdk.Context, counters types.FeeAccrualCounters) {
 	store := ctx.KVStore(k.storeKey)
+	counterSlice := make([]types.FeeAccrualCounter, 0, len(counters.Counters))
+	counterSlice = append(counterSlice, counters.Counters...)
+	sort.Slice(counterSlice, func(i, j int) bool {
+		return strings.Compare(counterSlice[i].Denom, counterSlice[j].Denom) == -1
+	})
+	counters.Counters = counterSlice
 	b := k.cdc.MustMarshal(&counters)
 	store.Set(types.GetFeeAccrualCountersKey(), b)
 }
