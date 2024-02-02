@@ -167,12 +167,12 @@ func CmdRelayAxelarProxyUpgrade() *cobra.Command {
 				return err
 			}
 
-			token, err := sdk.ParseCoinNormalized(args[2])
+			token, err := sdk.ParseCoinNormalized(args[1])
 			if err != nil {
 				return err
 			}
 
-			fee, err := math.ParseUint(args[3])
+			fee, err := math.ParseUint(args[2])
 			if err != nil {
 				return err
 			}
