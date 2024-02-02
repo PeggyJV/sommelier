@@ -172,7 +172,7 @@ func HandleCommunityPoolSpendProposal(ctx sdk.Context, k Keeper, p types.AxelarC
 		uint64(ctx.BlockTime().Add(time.Duration(params.TimeoutDuration)).UnixNano()),
 		memo,
 	)
-	resp, err := k.transferKeeper.Transfer(ctx, transferMsg)
+	resp, err := k.transferKeeper.Transfer(sdk.WrapSDKContext(ctx), transferMsg)
 	if err != nil {
 		return err
 	}
