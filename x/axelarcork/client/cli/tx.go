@@ -151,7 +151,7 @@ func CmdRelayAxelarCork() *cobra.Command {
 func CmdRelayAxelarProxyUpgrade() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "relay-axelar-proxy-upgrade [chain-id] [token] [fee]",
-		Args:  cobra.ExactArgs(4),
+		Args:  cobra.ExactArgs(3),
 		Short: "Relay a proxy contract upgrade call",
 
 		RunE: func(cmd *cobra.Command, args []string) error {
