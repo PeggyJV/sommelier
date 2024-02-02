@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/binary"
 	"encoding/hex"
+	"fmt"
 	"reflect"
 	"sort"
 
@@ -11,11 +12,17 @@ import (
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
+	capabilitytypes "github.com/cosmos/cosmos-sdk/x/capability/types"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
+	clienttypes "github.com/cosmos/ibc-go/v6/modules/core/02-client/types"
+	porttypes "github.com/cosmos/ibc-go/v6/modules/core/05-port/types"
+	"github.com/cosmos/ibc-go/v6/modules/core/exported"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/peggyjv/sommelier/v7/x/axelarcork/types"
 	"github.com/tendermint/tendermint/libs/log"
 )
+
+var _ porttypes.ICS4Wrapper = &Keeper{}
 
 // Keeper of the oracle store
 type Keeper struct {
@@ -64,6 +71,11 @@ func NewKeeper(
 // Logger returns a module-specific logger.
 func (k Keeper) Logger(ctx sdk.Context) log.Logger {
 	return ctx.Logger().With("module", "x/"+types.ModuleName)
+}
+
+// SetTransferKeeper sets the transferKeeper
+func (k *Keeper) SetTransferKeeper(transferKeeper types.TransferKeeper) {
+	k.transferKeeper = transferKeeper
 }
 
 ////////////
@@ -569,4 +581,25 @@ func (k Keeper) DecrementValidatorAxelarCorkCount(ctx sdk.Context, val sdk.ValAd
 
 func (k Keeper) GetSenderAccount(ctx sdk.Context) authtypes.ModuleAccountI {
 	return k.accountKeeper.GetModuleAccount(ctx, types.ModuleName)
+}
+
+///////////////////////////
+// ICS4Wrapper functions //
+///////////////////////////
+
+func (k Keeper) SendPacket(ctx sdk.Context, chanCap *capabilitytypes.Capability, sourcePort string, sourceChannel string, timeoutHeight clienttypes.Height, timeoutTimestamp uint64, data []byte) (sequence uint64, err error) {
+	if err := k.ValidateAxelarPacket(ctx, sourceChannel, data); err != nil {
+		k.Logger(ctx).Error(fmt.Sprintf("ICS20 packet send was denied: %s", err.Error()))
+		// based on the default implementation of SendPacket in ibc-go, we return 0 for the sequence on error conditions
+		return 0, err
+	}
+	return k.Ics4Wrapper.SendPacket(ctx, chanCap, sourcePort, sourceChannel, timeoutHeight, timeoutTimestamp, data)
+}
+
+func (k Keeper) WriteAcknowledgement(ctx sdk.Context, chanCap *capabilitytypes.Capability, packet exported.PacketI, ack exported.Acknowledgement) error {
+	return k.Ics4Wrapper.WriteAcknowledgement(ctx, chanCap, packet, ack)
+}
+
+func (k Keeper) GetAppVersion(ctx sdk.Context, portID string, channelID string) (string, bool) {
+	return k.Ics4Wrapper.GetAppVersion(ctx, portID, channelID)
 }

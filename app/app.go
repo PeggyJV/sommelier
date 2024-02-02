@@ -414,32 +414,6 @@ func NewSommelierApp(
 		scopedIBCKeeper,
 	)
 
-	// Create Transfer Keepers
-	app.TransferKeeper = ibctransferkeeper.NewKeeper(
-		appCodec, keys[ibctransfertypes.StoreKey], app.GetSubspace(ibctransfertypes.ModuleName),
-		app.IBCKeeper.ChannelKeeper, app.IBCKeeper.ChannelKeeper, &app.IBCKeeper.PortKeeper,
-		app.AccountKeeper, app.BankKeeper, scopedTransferKeeper,
-	)
-
-	transferModule := ibctransfer.NewAppModule(app.TransferKeeper)
-	transferIBCModule := ibctransfer.NewIBCModule(app.TransferKeeper)
-	var transferStack ibcporttypes.IBCModule = transferIBCModule
-	transferStack = axelarcork.NewIBCMiddleware(app.AxelarCorkKeeper, transferStack)
-
-	// Create the ICAHost Keeper
-	app.ICAHostKeeper = icahostkeeper.NewKeeper(
-		appCodec,
-		app.keys[icahosttypes.StoreKey],
-		app.GetSubspace(icahosttypes.SubModuleName),
-		app.IBCKeeper.ChannelKeeper,
-		app.IBCKeeper.ChannelKeeper,
-		&app.IBCKeeper.PortKeeper,
-		app.AccountKeeper,
-		scopedICAHostKeeper,
-		bApp.MsgServiceRouter(),
-	)
-	icaHostIBCModule := icahost.NewIBCModule(app.ICAHostKeeper)
-
 	// todo: check if default power reduction is appropriate
 	app.GravityKeeper = gravitykeeper.NewKeeper(
 		appCodec, keys[gravitytypes.StoreKey], app.GetSubspace(gravitytypes.ModuleName),
@@ -462,12 +436,48 @@ func NewSommelierApp(
 		app.AccountKeeper,
 		app.BankKeeper,
 		app.StakingKeeper,
-		app.TransferKeeper,
+		app.TransferKeeper, // will be nil, circular dependency avoided by calling SetTransferKeeper later
 		app.DistrKeeper,
 		app.IBCKeeper.ChannelKeeper,
 		app.GravityKeeper,
 		app.PubsubKeeper,
 	)
+
+	// Create Transfer Keepers
+	app.TransferKeeper = ibctransferkeeper.NewKeeper(
+		appCodec,
+		keys[ibctransfertypes.StoreKey],
+		app.GetSubspace(ibctransfertypes.ModuleName),
+		// replacing channelkeeper as ICS4 Middleware for Axelar packet validation
+		app.AxelarCorkKeeper,
+		app.IBCKeeper.ChannelKeeper,
+		&app.IBCKeeper.PortKeeper,
+		app.AccountKeeper,
+		app.BankKeeper,
+		scopedTransferKeeper,
+	)
+
+	app.AxelarCorkKeeper.SetTransferKeeper(app.TransferKeeper)
+
+	transferModule := ibctransfer.NewAppModule(app.TransferKeeper)
+	transferIBCModule := ibctransfer.NewIBCModule(app.TransferKeeper)
+
+	// Create the ICAHost Keeper
+	app.ICAHostKeeper = icahostkeeper.NewKeeper(
+		appCodec,
+		app.keys[icahosttypes.StoreKey],
+		app.GetSubspace(icahosttypes.SubModuleName),
+		app.IBCKeeper.ChannelKeeper,
+		app.IBCKeeper.ChannelKeeper,
+		&app.IBCKeeper.PortKeeper,
+		app.AccountKeeper,
+		scopedICAHostKeeper,
+		bApp.MsgServiceRouter(),
+	)
+	icaHostIBCModule := icahost.NewIBCModule(app.ICAHostKeeper)
+
+	var transferStack ibcporttypes.IBCModule = transferIBCModule
+	transferStack = axelarcork.NewIBCMiddleware(&app.AxelarCorkKeeper, transferStack)
 
 	app.CorkKeeper = corkkeeper.NewKeeper(
 		appCodec, keys[corktypes.StoreKey], app.GetSubspace(corktypes.ModuleName),

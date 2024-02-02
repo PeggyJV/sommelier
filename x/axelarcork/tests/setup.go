@@ -179,5 +179,5 @@ func (i initializer) axelarcorkKeeper(
 }
 
 func (i initializer) axelarMiddleware(app porttypes.IBCModule, k *keeper.Keeper) axelarcork.IBCMiddleware {
-	return axelarcork.NewIBCMiddleware(*k, app)
+	return axelarcork.NewIBCMiddleware(k, app)
 }
