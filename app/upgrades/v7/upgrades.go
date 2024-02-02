@@ -109,7 +109,7 @@ func cellarfeesInitGenesis(ctx sdk.Context, cellarfeesKeeper cellarfeeskeeper.Ke
 func auctionInitGenesis(ctx sdk.Context, auctionKeeper auctionkeeper.Keeper) {
 	genesisState := auctiontypes.DefaultGenesisState()
 
-	genesisState.Params.MinimumAuctionHeight = 13110800 // roughly 2024-02-14 02:20 UTC
+	genesisState.Params.MinimumAuctionHeight = 13110000 // roughly 2024-02-14 01:00 UTC
 
 	usomm52WeekLow := sdk.MustNewDecFromStr("0.079151")
 	eth52WeekHigh := sdk.MustNewDecFromStr("2618.33")
