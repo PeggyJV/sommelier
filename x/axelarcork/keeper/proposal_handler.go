@@ -148,7 +148,8 @@ func HandleCommunityPoolSpendProposal(ctx sdk.Context, k Keeper, p types.AxelarC
 	if err := k.bankKeeper.SendCoinsFromModuleToModule(ctx, distributiontypes.ModuleName, types.ModuleName, sdk.NewCoins(coinWithBridgeFee)); err != nil {
 		panic(err)
 	}
-	sender := k.GetSenderAccount(ctx)
+
+	sender := k.GetSenderAccount(ctx).GetAddress().String()
 
 	axelarMemo := types.AxelarBody{
 		DestinationChain:   config.Name,
@@ -166,7 +167,7 @@ func HandleCommunityPoolSpendProposal(ctx sdk.Context, k Keeper, p types.AxelarC
 		params.IbcPort,
 		params.IbcChannel,
 		coinWithBridgeFee,
-		sender.String(),
+		sender,
 		params.GmpAccount,
 		clienttypes.ZeroHeight(),
 		uint64(ctx.BlockTime().Add(time.Duration(params.TimeoutDuration)).UnixNano()),
@@ -183,7 +184,7 @@ func HandleCommunityPoolSpendProposal(ctx sdk.Context, k Keeper, p types.AxelarC
 		"amount", coinWithBridgeFee.Amount.String(),
 		"recipient", p.Recipient,
 		"chain", config.Name,
-		"sender", sender.String(),
+		"sender", sender,
 		"timeout duration", params.TimeoutDuration,
 	)
 
