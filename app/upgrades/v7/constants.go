@@ -3,6 +3,14 @@ package v7
 // UpgradeName defines the on-chain upgrade name for the Sommelier v7 upgrade
 const UpgradeName = "v7"
 
+// Fee denominations
+const (
+	usdcDenom = "gravity0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48"
+	fraxDenom = "gravity0x853d955aCEf822Db058eb8505911ED77F175b99e"
+	wethDenom = "gravity0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2"
+	wbtcDenom = "gravity0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599"
+)
+
 // 7seas domain
 const SevenSeasDomain = "sevenseas.capital"
 

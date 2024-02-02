@@ -75,6 +75,29 @@ func CreateUpgradeHandler(
 func cellarfeesInitGenesis(ctx sdk.Context, cellarfeesKeeper cellarfeeskeeper.Keeper) {
 	genesisState := cellarfeestypes.DefaultGenesisState()
 
+	counters := cellarfeestypes.FeeAccrualCounters{
+		Counters: []cellarfeestypes.FeeAccrualCounter{
+			{
+				Denom: fraxDenom,
+				Count: 2,
+			},
+			{
+				Denom: usdcDenom,
+				Count: 2,
+			},
+			{
+				Denom: wbtcDenom,
+				Count: 2,
+			},
+			{
+				Denom: wethDenom,
+				Count: 2,
+			},
+		},
+	}
+
+	genesisState.FeeAccrualCounters = counters
+
 	if err := genesisState.Validate(); err != nil {
 		panic(fmt.Errorf("cellarfees genesis state invalid: %s", err))
 	}
@@ -86,7 +109,7 @@ func cellarfeesInitGenesis(ctx sdk.Context, cellarfeesKeeper cellarfeeskeeper.Ke
 func auctionInitGenesis(ctx sdk.Context, auctionKeeper auctionkeeper.Keeper) {
 	genesisState := auctiontypes.DefaultGenesisState()
 
-	genesisState.Params.MinimumAuctionHeight = 13020000 // roughly 2024-02-08 09:30 UTC
+	genesisState.Params.MinimumAuctionHeight = 13110000 // roughly 2024-02-14 01:00 UTC
 
 	usomm52WeekLow := sdk.MustNewDecFromStr("0.079151")
 	eth52WeekHigh := sdk.MustNewDecFromStr("2618.33")
@@ -104,7 +127,7 @@ func auctionInitGenesis(ctx sdk.Context, auctionKeeper auctionkeeper.Keeper) {
 
 	// setting stables to 1 dollar
 	usdcPrice := auctiontypes.TokenPrice{
-		Denom:            "gravity0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+		Denom:            usdcDenom,
 		UsdPrice:         oneDollar,
 		Exponent:         6,
 		LastUpdatedBlock: lastUpdatedBlock,
@@ -125,7 +148,7 @@ func auctionInitGenesis(ctx sdk.Context, auctionKeeper auctionkeeper.Keeper) {
 	}
 
 	fraxPrice := auctiontypes.TokenPrice{
-		Denom:            "gravity0x853d955aCEf822Db058eb8505911ED77F175b99e",
+		Denom:            fraxDenom,
 		UsdPrice:         oneDollar,
 		Exponent:         18,
 		LastUpdatedBlock: lastUpdatedBlock,
@@ -133,14 +156,14 @@ func auctionInitGenesis(ctx sdk.Context, auctionKeeper auctionkeeper.Keeper) {
 
 	// setting non-stables
 	wethPrice := auctiontypes.TokenPrice{
-		Denom:            "gravity0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
+		Denom:            wethDenom,
 		UsdPrice:         eth52WeekHigh,
 		Exponent:         18,
 		LastUpdatedBlock: lastUpdatedBlock,
 	}
 
 	wbtcPrice := auctiontypes.TokenPrice{
-		Denom:            "gravity0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599",
+		Denom:            wbtcDenom,
 		UsdPrice:         btc52WeekHigh,
 		Exponent:         8,
 		LastUpdatedBlock: lastUpdatedBlock,
