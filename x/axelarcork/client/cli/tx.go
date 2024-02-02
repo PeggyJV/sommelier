@@ -151,7 +151,7 @@ func CmdRelayAxelarCork() *cobra.Command {
 func CmdRelayAxelarProxyUpgrade() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "relay-axelar-proxy-upgrade [chain-id] [token] [fee]",
-		Args:  cobra.ExactArgs(4),
+		Args:  cobra.ExactArgs(3),
 		Short: "Relay a proxy contract upgrade call",
 
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -167,12 +167,12 @@ func CmdRelayAxelarProxyUpgrade() *cobra.Command {
 				return err
 			}
 
-			token, err := sdk.ParseCoinNormalized(args[2])
+			token, err := sdk.ParseCoinNormalized(args[1])
 			if err != nil {
 				return err
 			}
 
-			fee, err := math.ParseUint(args[3])
+			fee, err := math.ParseUint(args[2])
 			if err != nil {
 				return err
 			}
@@ -258,7 +258,7 @@ Where proposal.json contains:
   "chain_id": 42161,
   "cellar_ids": ["0x123801a7D398351b8bE11C439e05C5B3259aeC9B", "0x456801a7D398351b8bE11C439e05C5B3259aeC9B"],
   "publisher_domain": "example.com",
-  "deposit": "10000usomm"
+  "deposit": "10000000usomm"
 }
 `,
 				version.AppName,
@@ -340,7 +340,7 @@ Where proposal.json contains:
   "description": "I don't trust them",
   "chain_id": 42161,
   "cellar_ids": ["0x123801a7D398351b8bE11C439e05C5B3259aeC9B", "0x456801a7D398351b8bE11C439e05C5B3259aeC9B"],
-  "deposit": "10000usomm"
+  "deposit": "10000000usomm"
 }
 `,
 				version.AppName,
@@ -419,7 +419,7 @@ Where proposal.json contains:
   "target_contract_address": "0x123801a7D398351b8bE11C439e05C5B3259aeC9B",
   "contract_call_proto_json": "{\"cellar_id\":\"0x123801a7D398351b8bE11C439e05C5B3259aeC9B\",\"<cellar_type_name>\":{\"some_fuction\":{\"function_args\":{}},\"block_height\":12345}}",
   "deadline": 1706225320,
-  "deposit": "10000usomm"
+  "deposit": "10000000usomm"
 }
 
 The contract_call_proto_json field must be the JSON representation of a ScheduleRequest, which is defined in Steward's protos. For more information, see the Steward API docs at https://github.com/peggyjv/steward.
@@ -477,7 +477,7 @@ The contract_call_proto_json field must be the JSON representation of a Schedule
 func CmdSubmitAxelarCommunityPoolSpendProposal() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "axelar-community-pool-spend [proposal-file]",
-		Args:  cobra.ExactArgs(2),
+		Args:  cobra.ExactArgs(1),
 		Short: "Submit an Axelar community pool spend proposal",
 		Long: strings.TrimSpace(
 			fmt.Sprintf(`Submit an Axelar community pool spend proposal along with an initial deposit.
@@ -496,7 +496,7 @@ Where proposal.json contains:
 	"recipient": "0x0000000000000000000000000000000000000000",
 	"chain_id": 42161,
 	"amount": "20000usomm",
-	"deposit": "10000usomm"
+	"deposit": "10000000usomm"
 }
 `,
 				version.AppName,
@@ -591,7 +591,7 @@ Where proposal.json contains:
 		}
 	]
   },
-  "deposit": "10000usomm"
+  "deposit": "10000000usomm"
 }
 
 Note that the "name" parameter should map to a "Chain Identifier" as defined by Axelar: https://docs.axelar.dev/dev/reference/mainnet-chain-names
@@ -663,7 +663,7 @@ Where proposal.json contains:
   "title": "Remove Arbitrum chain config",
   "description": "not using Arbitrum any more",
   "chain_id": 42161,
-  "deposit": "10000usomm"
+  "deposit": "10000000usomm"
 }
 `,
 				version.AppName,
@@ -732,7 +732,7 @@ Where proposal.json contains:
   "description": "New features",
   "chain_id": 1000,
   "new_proxy_address": "0x1234567890123456789012345678901234567890",
-  "deposit": "10000usomm"
+  "deposit": "10000000usomm"
 }
 `,
 				version.AppName,
@@ -805,7 +805,7 @@ Where proposal.json contains:
   "title": "Cancel Upgrade Axelar Proxy Contract Proposal",
   "description": "Cancel the new features",
   "chain_id": 1000,
-  "deposit": "10000usomm"
+  "deposit": "10000000usomm"
 }
 `,
 				version.AppName,
