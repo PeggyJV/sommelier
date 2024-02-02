@@ -193,6 +193,11 @@ func HandleCommunityPoolSpendProposal(ctx sdk.Context, k Keeper, p types.AxelarC
 
 // HandleAddChainConfigurationProposal is a handler for executing a passed chain configuration addition proposal
 func HandleAddChainConfigurationProposal(ctx sdk.Context, k Keeper, p types.AddChainConfigurationProposal) error {
+	err := p.ChainConfiguration.ValidateBasic()
+	if err != nil {
+		return err
+	}
+
 	k.SetChainConfiguration(ctx, p.ChainConfiguration.Id, *p.ChainConfiguration)
 
 	return nil
@@ -200,6 +205,11 @@ func HandleAddChainConfigurationProposal(ctx sdk.Context, k Keeper, p types.AddC
 
 // HandleRemoveChainConfigurationProposal is a handler for executing a passed chain configuration removal proposal
 func HandleRemoveChainConfigurationProposal(ctx sdk.Context, k Keeper, p types.RemoveChainConfigurationProposal) error {
+	_, ok := k.GetChainConfigurationByID(ctx, p.ChainId)
+	if !ok {
+		return fmt.Errorf("chain by id %d not found", p.ChainId)
+	}
+
 	k.DeleteChainConfigurationByID(ctx, p.ChainId)
 
 	return nil
