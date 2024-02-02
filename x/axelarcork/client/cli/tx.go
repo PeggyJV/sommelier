@@ -477,7 +477,7 @@ The contract_call_proto_json field must be the JSON representation of a Schedule
 func CmdSubmitAxelarCommunityPoolSpendProposal() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "axelar-community-pool-spend [proposal-file]",
-		Args:  cobra.ExactArgs(2),
+		Args:  cobra.ExactArgs(1),
 		Short: "Submit an Axelar community pool spend proposal",
 		Long: strings.TrimSpace(
 			fmt.Sprintf(`Submit an Axelar community pool spend proposal along with an initial deposit.
