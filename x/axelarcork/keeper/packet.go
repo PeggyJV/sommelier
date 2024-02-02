@@ -65,7 +65,7 @@ func (k Keeper) ValidateAxelarPacket(ctx sdk.Context, sourceChannel string, data
 	if err := json.Unmarshal([]byte(packetData.Memo), &axelarBody); err != nil {
 		return err
 	}
-	payloadBytes := axelarBody.Payload	
+	payloadBytes := axelarBody.Payload
 
 	// get the destination chain configuration
 	chainConfig, ok := k.GetChainConfigurationByName(ctx, axelarBody.DestinationChain)
@@ -84,10 +84,6 @@ func (k Keeper) ValidateAxelarPacket(ctx sdk.Context, sourceChannel string, data
 	}
 	axelarDestinationAddr := common.HexToAddress(axelarBody.DestinationAddress)
 
-	if !bytes.Equal(axelarDestinationAddr.Bytes(), proxyAddr.Bytes()) {
-		return fmt.Errorf("msg cannot bypass the proxy. expected addr %s, received %s", chainConfig.ProxyAddress, axelarBody.DestinationAddress)
-	}
-    
 	if axelarBody.Type == types.PureTokenTransfer {
 		if len(payloadBytes) != 0 {
 			return fmt.Errorf("payload must be empty for pure token transfer")
@@ -95,7 +91,11 @@ func (k Keeper) ValidateAxelarPacket(ctx sdk.Context, sourceChannel string, data
 
 		return nil
 	}
-    
+
+	if !bytes.Equal(axelarDestinationAddr.Bytes(), proxyAddr.Bytes()) {
+		return fmt.Errorf("msg cannot bypass the proxy. expected addr %s, received %s", chainConfig.ProxyAddress, axelarBody.DestinationAddress)
+	}
+
 	// Validate logic call
 	if targetContract, nonce, deadline, callData, err := types.DecodeLogicCallArgs(payloadBytes); err == nil {
 		if nonce == 0 {
