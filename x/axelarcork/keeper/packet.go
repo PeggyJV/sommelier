@@ -146,5 +146,9 @@ func (k Keeper) ValidateAxelarPacket(ctx sdk.Context, sourceChannel string, data
 		return nil
 	}
 
+	if axelarBody.Type == types.PureTokenTransfer {
+		return nil
+	}
+
 	return fmt.Errorf("invalid payload: %s", payloadBytes)
 }
