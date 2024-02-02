@@ -44,6 +44,7 @@ func (k Keeper) EndBlocker(ctx sdk.Context) {
 		currentHeight := uint64(ctx.BlockHeight())
 		latestAxelarCorks := make(map[string]types.WinningAxelarCork)
 		k.IterateWinningAxelarCorks(ctx, config.Id, func(contractAddress common.Address, blockHeight uint64, cork types.AxelarCork) (stop bool) {
+			deleted := false
 			timeoutHeight := blockHeight + k.GetParamSet(ctx).CorkTimeoutBlocks
 			if currentHeight >= timeoutHeight {
 				k.Logger(ctx).Info("deleting expired approved scheduled axelar cork",
@@ -51,6 +52,10 @@ func (k Keeper) EndBlocker(ctx sdk.Context) {
 					"target contract address", cork.TargetContractAddress)
 
 				k.DeleteWinningAxelarCorkByBlockheight(ctx, config.Id, blockHeight, cork)
+				deleted = true
+			}
+
+			if deleted {
 				return false
 			}
 
