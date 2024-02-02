@@ -67,6 +67,15 @@ func (k Keeper) ValidateAxelarPacket(ctx sdk.Context, sourceChannel string, data
 	}
 	payloadBytes := axelarBody.Payload
 
+	// shortcircuit for pure token transfer
+	if axelarBody.Type == types.PureTokenTransfer {
+		if len(payloadBytes) != 0 {
+			return fmt.Errorf("payload must be empty for pure token transfer")
+		}
+
+		return nil
+	}
+
 	// get the destination chain configuration
 	chainConfig, ok := k.GetChainConfigurationByName(ctx, axelarBody.DestinationChain)
 	if !ok {
@@ -143,10 +152,6 @@ func (k Keeper) ValidateAxelarPacket(ctx sdk.Context, sourceChannel string, data
 		k.Logger(ctx).Info("Axelar GMP upgrade message validated, deleting from state", "chain ID", chainConfig.Id)
 		k.DeleteAxelarProxyUpgradeData(ctx, chainConfig.Id)
 
-		return nil
-	}
-
-	if axelarBody.Type == types.PureTokenTransfer {
 		return nil
 	}
 
