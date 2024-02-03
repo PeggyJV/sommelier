@@ -30,6 +30,10 @@ service Query {
     option (google.api.http).get = "/sommelier/pubsub/v1/subscribers";
   }
 
+  rpc QueryValidatorSubscribers(QueryValidatorSubscribersRequest) returns (QueryValidatorSubscribersResponse) {
+    option (google.api.http).get = "/sommelier/pubsub/v1/validator_subscribers";
+  }
+
   rpc QueryPublisherIntent(QueryPublisherIntentRequest) returns (QueryPublisherIntentResponse) {
     option (google.api.http).get = "/sommelier/pubsub/v1/publisher_intents/{publisher_domain}/{subscription_id}";
   }
@@ -106,6 +110,12 @@ message QuerySubscriberResponse {
 message QuerySubscribersRequest {}
 
 message QuerySubscribersResponse {
+  repeated Subscriber subscribers = 1;
+}
+
+message QueryValidatorSubscribersRequest {}
+
+message QueryValidatorSubscribersResponse {
   repeated Subscriber subscribers = 1;
 }
 
