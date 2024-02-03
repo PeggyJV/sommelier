@@ -170,7 +170,8 @@ func (k Keeper) GetValidatorSubscribers(ctx sdk.Context) (subscribers []*types.S
 	for _, subscriber := range allSubscribers {
 		subscriberAddress, err := sdk.AccAddressFromBech32(subscriber.Address)
 		if err != nil {
-			panic(fmt.Errorf("subscriber address %s not valid bech32 but in state", subscriberAddress))
+			ctx.Logger().Error("subscriber address %s not valid bech32 but in state", subscriber.Address)
+			continue
 		}
 		var validatorI stakingtypes.ValidatorI
 		if validator := k.gravityKeeper.GetOrchestratorValidatorAddress(ctx, subscriberAddress); validator == nil {
