@@ -11,6 +11,7 @@ import (
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
+	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 	"github.com/peggyjv/sommelier/v7/x/pubsub/types"
 )
 
@@ -160,6 +161,29 @@ func (k Keeper) GetSubscribers(ctx sdk.Context) (subscribers []*types.Subscriber
 		subscribers = append(subscribers, &subscriber)
 		return false
 	})
+
+	return
+}
+
+func (k Keeper) GetValidatorSubscribers(ctx sdk.Context) (subscribers []*types.Subscriber) {
+	allSubscribers := k.GetSubscribers(ctx)
+	for _, subscriber := range allSubscribers {
+		subscriberAddress, err := sdk.AccAddressFromBech32(subscriber.Address)
+		if err != nil {
+			ctx.Logger().Error("subscriber address %s not valid bech32 but in state", subscriber.Address)
+			continue
+		}
+		var validatorI stakingtypes.ValidatorI
+		if validator := k.gravityKeeper.GetOrchestratorValidatorAddress(ctx, subscriberAddress); validator == nil {
+			validatorI = k.stakingKeeper.Validator(ctx, sdk.ValAddress(subscriberAddress))
+		} else {
+			validatorI = k.stakingKeeper.Validator(ctx, validator)
+		}
+
+		if validatorI != nil {
+			subscribers = append(subscribers, subscriber)
+		}
+	}
 
 	return
 }
