@@ -78,15 +78,15 @@ func cellarfeesInitGenesis(ctx sdk.Context, cellarfeesKeeper cellarfeeskeeper.Ke
 	counters := cellarfeestypes.FeeAccrualCounters{
 		Counters: []cellarfeestypes.FeeAccrualCounter{
 			{
+				Denom: wbtcDenom,
+				Count: 2,
+			},
+			{
 				Denom: fraxDenom,
 				Count: 2,
 			},
 			{
 				Denom: usdcDenom,
-				Count: 2,
-			},
-			{
-				Denom: wbtcDenom,
 				Count: 2,
 			},
 			{
