@@ -9,11 +9,6 @@ import (
 
 // HandleAddPublisherProposal is a handler for executing a passed community publisher addition proposal
 func HandleAddPublisherProposal(ctx sdk.Context, k Keeper, p types.AddPublisherProposal) error {
-	_, found := k.GetPublisher(ctx, p.Domain)
-	if found {
-		return errorsmod.Wrapf(types.ErrAlreadyExists, "publisher already exists with domain: %s", p.Domain)
-	}
-
 	publisher := types.Publisher{
 		Domain:  p.Domain,
 		Address: p.Address,
