@@ -3,7 +3,7 @@ package cork.v2;
 
 import "cork/v2/cork.proto";
 
-option go_package = "github.com/peggyjv/sommelier/v7/x/cork/types";
+option go_package = "github.com/peggyjv/sommelier/v7/x/cork/types/v2";
 
 // MsgService defines the msgs that the cork module handles
 service Msg {
