@@ -2,10 +2,6 @@ version: v1
 deps:
   - buf.build/cosmos/gogo-proto
   - buf.build/googleapis/googleapis
-build:
-  excludes: 
-    - google
-    - gogoproto
 lint:
   use:
     - DEFAULT
@@ -18,15 +14,11 @@ lint:
     - PACKAGE_VERSION_SUFFIX
     - RPC_REQUEST_STANDARD_NAME
   ignore:
-    - gogoproto/
-    - google/
     - tendermint/
     - cosmos_proto/
 breaking:
   use:
     - FILE
   ignore:
-    - gogoproto
-    - google
     - tendermint
     - cosmos_proto
