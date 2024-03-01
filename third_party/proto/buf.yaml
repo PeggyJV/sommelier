@@ -1,9 +1,11 @@
+version: v1
+deps:
+  - buf.build/cosmos/gogo-proto
+  - buf.build/googleapis/googleapis
 build:
-  roots:
-    - proto
-    - third_party/proto
-  excludes:
-    - third_party/proto/google/protobuf
+  excludes: 
+    - google
+    - gogoproto
 lint:
   use:
     - DEFAULT
@@ -16,15 +18,15 @@ lint:
     - PACKAGE_VERSION_SUFFIX
     - RPC_REQUEST_STANDARD_NAME
   ignore:
-    - tendermint
-    - gogoproto
-    - cosmos_proto
-    - google
+    - gogoproto/
+    - google/
+    - tendermint/
+    - cosmos_proto/
 breaking:
   use:
     - FILE
   ignore:
-    - tendermint
     - gogoproto
-    - cosmos_proto
     - google
+    - tendermint
+    - cosmos_proto

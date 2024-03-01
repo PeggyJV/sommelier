@@ -9,7 +9,7 @@ BUILDDIR ?= $(CURDIR)/build
 TEST_DOCKER_REPO=jackzampolin/sommtest
 HTTPS_GIT := https://github.com/peggyjv/sommelier.git
 DOCKER := $(shell which docker)
-DOCKER_BUF := $(DOCKER) run --rm -v $(CURDIR):/workspace --workdir /workspace bufbuild/buf
+DOCKER_BUF := $(DOCKER) run --rm -v $(CURDIR):/workspace --workdir /workspace bufbuild/buf:1.29.0
 
 export GO111MODULE = on
 
@@ -212,23 +212,25 @@ test-docker-push: test-docker
 ###                           Protobuf                                    ###
 ###############################################################################
 
+PROTO_BUILD_IMAGE=ghcr.io/cosmos/proto-builder:0.8
+
 proto-all: proto-format proto-lint proto-gen
 
 proto-gen:
 	@echo "Generating Protobuf files"
-	$(DOCKER) run --rm -v $(CURDIR):/workspace --workdir /workspace tendermintdev/sdk-proto-gen sh ./scripts/protocgen.sh
+	$(DOCKER) run --rm -v $(CURDIR):/workspace --workdir /workspace $(PROTO_BUILD_IMAGE) sh ./scripts/protocgen.sh
 
 proto-format:
 	@echo "Formatting Protobuf files"
 	$(DOCKER) run --rm -v $(CURDIR):/workspace \
-	--workdir /workspace tendermintdev/docker-build-proto \
+	--workdir /workspace $PROTO_BUILD_IMAGE \
 	find ./ -not -path "./third_party/*" -name *.proto -exec .clang-format -i {} \;
 
 proto-swagger-gen:
 	@./scripts/protoc-swagger-gen.sh
 
 proto-lint:
-	@$(DOCKER_BUF) check lint --error-format=json
+	@$(DOCKER_BUF) lint --error-format=json
 
 proto-check-breaking:
 	@$(DOCKER_BUF) check breaking --against-input $(HTTPS_GIT)#branch=main
