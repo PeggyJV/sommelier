@@ -48,7 +48,7 @@ type GravityKeeper interface {
 type AuctionKeeper interface {
 	GetActiveAuctions(ctx sdk.Context) []*auctiontypes.Auction
 	GetTokenPrice(ctx sdk.Context, denom string) (auctiontypes.TokenPrice, bool)
-	GetTokenPrices(ctx sdk.Context) []auctiontypes.TokenPrice
+	GetTokenPrices(ctx sdk.Context) []*auctiontypes.TokenPrice
 	BeginAuction(ctx sdk.Context,
 		startingTokensForSale sdk.Coin,
 		initialPriceDecreaseRate sdk.Dec,

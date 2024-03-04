@@ -66,7 +66,7 @@ func (k Keeper) QueryFeeTokenBalance(c context.Context, req *types.QueryFeeToken
 		return nil, status.Error(codes.NotFound, "token price not found")
 	}
 
-	totalUsdValue, err := k.GetBalanceUsdValue(ctx, balance, tokenPrice).Float64()
+	totalUsdValue, err := k.GetBalanceUsdValue(ctx, balance, &tokenPrice).Float64()
 	if err != nil {
 		return nil, status.Error(codes.Internal, "failed to convert usd value to float")
 	}
