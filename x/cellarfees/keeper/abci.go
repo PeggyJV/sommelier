@@ -12,23 +12,6 @@ import (
 func (k Keeper) BeginBlocker(ctx sdk.Context) {
 
 	// Handle fee auctions
-	cellarfeesParams := k.GetParams(ctx)
-
-	counters := k.GetFeeAccrualCounters(ctx)
-
-	modulus := ctx.BlockHeader().Height % int64(cellarfeesParams.AuctionInterval)
-
-	for _, counter := range counters.Counters {
-
-		if counter.Count >= cellarfeesParams.FeeAccrualAuctionThreshold && modulus == 0 {
-			started := k.beginAuction(ctx, counter.Denom)
-			if started {
-				counters.ResetCounter(counter.Denom)
-			}
-		}
-
-	}
-	k.SetFeeAccrualCounters(ctx, counters)
 
 	// Handle reward emissions
 	moduleAccount := k.GetFeesAccount(ctx)

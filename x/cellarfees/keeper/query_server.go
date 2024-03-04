@@ -4,7 +4,7 @@ import (
 	"context"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/peggyjv/sommelier/v7/x/cellarfees/types"
+	types "github.com/peggyjv/sommelier/v7/x/cellarfees/types/v2"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
@@ -37,14 +37,6 @@ func (k Keeper) QueryLastRewardSupplyPeak(c context.Context, req *types.QueryLas
 	}
 
 	return &types.QueryLastRewardSupplyPeakResponse{LastRewardSupplyPeak: k.GetLastRewardSupplyPeak(sdk.UnwrapSDKContext(c))}, nil
-}
-
-func (k Keeper) QueryFeeAccrualCounters(c context.Context, req *types.QueryFeeAccrualCountersRequest) (*types.QueryFeeAccrualCountersResponse, error) {
-	if req == nil {
-		return nil, status.Error(codes.InvalidArgument, "empty request")
-	}
-
-	return &types.QueryFeeAccrualCountersResponse{FeeAccrualCounters: k.GetFeeAccrualCounters(sdk.UnwrapSDKContext(c))}, nil
 }
 
 func (k Keeper) QueryAPY(c context.Context, _ *types.QueryAPYRequest) (*types.QueryAPYResponse, error) {

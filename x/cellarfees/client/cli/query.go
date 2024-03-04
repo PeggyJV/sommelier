@@ -5,24 +5,24 @@ import (
 	"fmt"
 
 	// "strings"
-
 	"github.com/spf13/cobra"
 
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 
 	// "github.com/cosmos/cosmos-sdk/client/flags"
-	// sdk "github.com/cosmos/cosmos-sdk/types"
+	// sdk "github.com/cosmos/cosmos-sdk/v2.
 
-	"github.com/peggyjv/sommelier/v7/x/cellarfees/types"
+	cellarfeestypes "github.com/peggyjv/sommelier/v7/x/cellarfees/types"
+	types "github.com/peggyjv/sommelier/v7/x/cellarfees/types/v2"
 )
 
 // GetQueryCmd returns the cli query commands for this module
 func GetQueryCmd(queryRoute string) *cobra.Command {
 	// Group cellarfees queries under a subcommand
 	cmd := &cobra.Command{
-		Use:                        types.ModuleName,
-		Short:                      fmt.Sprintf("Querying commands for the %s module", types.ModuleName),
+		Use:                        cellarfeestypes.ModuleName,
+		Short:                      fmt.Sprintf("Querying commands for the %s module", cellarfeestypes.ModuleName),
 		DisableFlagParsing:         true,
 		SuggestionsMinimumDistance: 2,
 		RunE:                       client.ValidateCmd,
@@ -30,7 +30,6 @@ func GetQueryCmd(queryRoute string) *cobra.Command {
 
 	cmd.AddCommand(CmdQueryParams())
 	cmd.AddCommand(CmdQueryModuleAccounts())
-	cmd.AddCommand(CmdQueryFeeAccrualCounters())
 	cmd.AddCommand(CmdQueryLastRewardSupplyPeak())
 	cmd.AddCommand(CmdQueryAPY())
 
@@ -100,32 +99,6 @@ func CmdQueryLastRewardSupplyPeak() *cobra.Command {
 
 			res, err := queryClient.QueryLastRewardSupplyPeak(
 				context.Background(), &types.QueryLastRewardSupplyPeakRequest{})
-			if err != nil {
-				return err
-			}
-
-			return clientCtx.PrintProto(res)
-		},
-	}
-
-	flags.AddQueryFlagsToCmd(cmd)
-
-	return cmd
-}
-
-func CmdQueryFeeAccrualCounters() *cobra.Command {
-	cmd := &cobra.Command{
-		Use:     "fee-accrual-counters",
-		Aliases: []string{"fac"},
-		Short:   "shows the number of fee accruals per denom since the last respective auction",
-		Args:    cobra.NoArgs,
-		RunE: func(cmd *cobra.Command, args []string) error {
-			clientCtx := client.GetClientContextFromCmd(cmd)
-
-			queryClient := types.NewQueryClient(clientCtx)
-
-			res, err := queryClient.QueryFeeAccrualCounters(
-				context.Background(), &types.QueryFeeAccrualCountersRequest{})
 			if err != nil {
 				return err
 			}

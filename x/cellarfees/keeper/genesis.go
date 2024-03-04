@@ -4,19 +4,19 @@ import (
 	"fmt"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/peggyjv/sommelier/v7/x/cellarfees/types"
+	cellarfeestypes "github.com/peggyjv/sommelier/v7/x/cellarfees/types"
+	types "github.com/peggyjv/sommelier/v7/x/cellarfees/types/v2"
 )
 
 // InitGenesis initializes the module's state from a provided genesis
 // state.
 func (k Keeper) InitGenesis(ctx sdk.Context, gs types.GenesisState) {
 	k.SetParams(ctx, gs.Params)
-	k.SetFeeAccrualCounters(ctx, gs.FeeAccrualCounters)
 	k.SetLastRewardSupplyPeak(ctx, gs.LastRewardSupplyPeak)
 
 	feesAccount := k.GetFeesAccount(ctx)
 	if feesAccount == nil {
-		panic(fmt.Sprintf("%s module account has not been set", types.ModuleName))
+		panic(fmt.Sprintf("%s module account has not been set", cellarfeestypes.ModuleName))
 	}
 }
 
@@ -24,7 +24,6 @@ func (k Keeper) InitGenesis(ctx sdk.Context, gs types.GenesisState) {
 func (k Keeper) ExportGenesis(ctx sdk.Context) types.GenesisState {
 	return types.GenesisState{
 		Params:               k.GetParams(ctx),
-		FeeAccrualCounters:   k.GetFeeAccrualCounters(ctx),
 		LastRewardSupplyPeak: k.GetLastRewardSupplyPeak(ctx),
 	}
 }

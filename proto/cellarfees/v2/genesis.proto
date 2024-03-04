@@ -1,16 +1,16 @@
 syntax = "proto3";
-package cellarfees.v1;
+package cellarfees.v2;
 
 import "gogoproto/gogo.proto";
-import "cellarfees/v1/params.proto";
-import "cellarfees/v1/cellarfees.proto";
+import "cellarfees/v2/params.proto";
 
-option go_package = "github.com/peggyjv/sommelier/v7/x/cellarfees/types/v1";
+option go_package = "github.com/peggyjv/sommelier/v7/x/cellarfees/types/v2";
 
 // GenesisState defines the cellarfees module's genesis state.
 message GenesisState {
+  reserved 2; // deleted fee accrual counters field
+
   Params params = 1 [(gogoproto.nullable) = false];
-  FeeAccrualCounters fee_accrual_counters = 2 [(gogoproto.nullable) = false];
   string last_reward_supply_peak = 3
     [(gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int", (gogoproto.nullable) = false];
 }
