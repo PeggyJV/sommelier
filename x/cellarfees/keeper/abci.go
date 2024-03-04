@@ -10,9 +10,6 @@ import (
 // account. Emissions are a constant value based on the last peak supply of distributable fees so that the reward supply
 // will decrease linearly until exhausted.
 func (k Keeper) BeginBlocker(ctx sdk.Context) {
-
-	// Handle fee auctions
-
 	// Handle reward emissions
 	moduleAccount := k.GetFeesAccount(ctx)
 	remainingRewardsSupply := k.bankKeeper.GetBalance(ctx, moduleAccount.GetAddress(), params.BaseCoinUnit).Amount
@@ -29,6 +26,28 @@ func (k Keeper) BeginBlocker(ctx sdk.Context) {
 		panic(err)
 	}
 
+	// Handle fee auctions
+	params := k.GetParams(ctx)
+
+	if uint64(ctx.BlockHeight())%params.AuctionInterval != 0 {
+		return
+	}
+
+	tokenPrices := k.auctionKeeper.GetTokenPrices(ctx)
+
+	for _, tokenPrice := range tokenPrices {
+		balance := k.GetFeeBalance(ctx, tokenPrice.Denom)
+
+		if balance.IsZero() {
+			continue
+		}
+
+		usdValue := k.GetBalanceUsdValue(ctx, balance, tokenPrice)
+
+		if usdValue.GTE(params.AuctionThresholdUsdValue) {
+			k.beginAuction(ctx, tokenPrice.Denom)
+		}
+	}
 }
 
 // EndBlocker is called at the end of every block
