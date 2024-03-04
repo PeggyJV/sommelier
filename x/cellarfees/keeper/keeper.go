@@ -24,7 +24,6 @@ type Keeper struct {
 	bankKeeper    cellarfeestypes.BankKeeper
 	mintKeeper    cellarfeestypes.MintKeeper
 	corkKeeper    cellarfeestypes.CorkKeeper
-	gravityKeeper cellarfeestypes.GravityKeeper
 	auctionKeeper cellarfeestypes.AuctionKeeper
 }
 
@@ -36,7 +35,6 @@ func NewKeeper(
 	bankKeeper cellarfeestypes.BankKeeper,
 	mintKeeper cellarfeestypes.MintKeeper,
 	corkKeeper cellarfeestypes.CorkKeeper,
-	gravityKeeper cellarfeestypes.GravityKeeper,
 	auctionKeeper cellarfeestypes.AuctionKeeper,
 ) Keeper {
 	if !paramSpace.HasKeyTable() {
@@ -51,7 +49,6 @@ func NewKeeper(
 		bankKeeper:    bankKeeper,
 		mintKeeper:    mintKeeper,
 		corkKeeper:    corkKeeper,
-		gravityKeeper: gravityKeeper,
 		auctionKeeper: auctionKeeper,
 	}
 }

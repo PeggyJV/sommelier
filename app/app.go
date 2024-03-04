@@ -488,7 +488,7 @@ func NewSommelierApp(
 
 	app.CellarFeesKeeper = cellarfeeskeeper.NewKeeper(
 		appCodec, keys[cellarfeestypes.StoreKey], app.GetSubspace(cellarfeestypes.ModuleName),
-		app.AccountKeeper, app.BankKeeper, app.MintKeeper, app.CorkKeeper, app.GravityKeeper, app.AuctionKeeper,
+		app.AccountKeeper, app.BankKeeper, app.MintKeeper, app.CorkKeeper, app.AuctionKeeper,
 	)
 
 	app.IncentivesKeeper = incentiveskeeper.NewKeeper(
@@ -502,7 +502,6 @@ func NewSommelierApp(
 	app.GravityKeeper = *app.GravityKeeper.SetHooks(
 		gravitytypes.NewMultiGravityHooks(
 			app.CorkKeeper.Hooks(),
-			app.CellarFeesKeeper.Hooks(),
 		))
 
 	// register the proposal types
@@ -574,7 +573,7 @@ func NewSommelierApp(
 		authzmodule.NewAppModule(appCodec, app.AuthzKeeper, app.AccountKeeper, app.BankKeeper, app.interfaceRegistry),
 		cork.NewAppModule(app.CorkKeeper, appCodec),
 		incentives.NewAppModule(app.IncentivesKeeper, app.DistrKeeper, app.BankKeeper, app.MintKeeper, appCodec),
-		cellarfees.NewAppModule(app.CellarFeesKeeper, appCodec, app.AccountKeeper, app.BankKeeper, app.MintKeeper, app.CorkKeeper, app.GravityKeeper, app.AuctionKeeper),
+		cellarfees.NewAppModule(app.CellarFeesKeeper, appCodec, app.AccountKeeper, app.BankKeeper, app.MintKeeper, app.CorkKeeper, app.AuctionKeeper),
 		auction.NewAppModule(app.AuctionKeeper, app.BankKeeper, app.AccountKeeper, appCodec),
 		pubsub.NewAppModule(appCodec, app.PubsubKeeper, app.StakingKeeper, app.GravityKeeper),
 	)
@@ -709,7 +708,7 @@ func NewSommelierApp(
 		cork.NewAppModule(app.CorkKeeper, appCodec),
 		axelarcork.NewAppModule(app.AxelarCorkKeeper, appCodec),
 		incentives.NewAppModule(app.IncentivesKeeper, app.DistrKeeper, app.BankKeeper, app.MintKeeper, appCodec),
-		cellarfees.NewAppModule(app.CellarFeesKeeper, appCodec, app.AccountKeeper, app.BankKeeper, app.MintKeeper, app.CorkKeeper, app.GravityKeeper, app.AuctionKeeper),
+		cellarfees.NewAppModule(app.CellarFeesKeeper, appCodec, app.AccountKeeper, app.BankKeeper, app.MintKeeper, app.CorkKeeper, app.AuctionKeeper),
 		auction.NewAppModule(app.AuctionKeeper, app.BankKeeper, app.AccountKeeper, appCodec),
 		pubsub.NewAppModule(appCodec, app.PubsubKeeper, app.StakingKeeper, app.GravityKeeper),
 	)
@@ -965,7 +964,7 @@ func (app *SommelierApp) setupUpgradeStoreLoaders() {
 
 	var storeUpgrades *storetypes.StoreUpgrades = nil
 
-    // TODO: Add v8 store loader when writing upgrade handler
+	// TODO: Add v8 store loader when writing upgrade handler
 
 	if storeUpgrades != nil {
 		app.SetStoreLoader(upgradetypes.UpgradeStoreLoader(upgradeInfo.Height, storeUpgrades))
@@ -973,5 +972,5 @@ func (app *SommelierApp) setupUpgradeStoreLoaders() {
 }
 
 func (app *SommelierApp) setupUpgradeHandlers() {
-    // TODO: Add v8 upgrade handler	
+	// TODO: Add v8 upgrade handler
 }
