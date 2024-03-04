@@ -39,11 +39,6 @@ type CorkKeeper interface {
 	HasCellarID(ctx sdk.Context, address common.Address) (found bool)
 }
 
-// GravityKeeper defines the expected gravity keeper methods
-type GravityKeeper interface {
-	ERC20ToDenomLookup(ctx sdk.Context, tokenContract common.Address) (bool, string)
-}
-
 // AuctionKeeper defines the expected auction keeper methods
 type AuctionKeeper interface {
 	GetActiveAuctions(ctx sdk.Context) []*auctiontypes.Auction
