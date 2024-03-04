@@ -8,8 +8,5 @@ option go_package = "github.com/peggyjv/sommelier/v7/x/cellarfees/types/v2";
 
 message FeeTokenBalance {
     cosmos.base.v1beta1.Coin balance = 1 [ (gogoproto.nullable) = false ];
-    string usd_value = 2 [
-        (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
-        (gogoproto.nullable) = false
-    ];
+    double usd_value = 2;
 }

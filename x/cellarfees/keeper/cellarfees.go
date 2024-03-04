@@ -5,6 +5,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	"github.com/peggyjv/sommelier/v7/app/params"
+	auctiontypes "github.com/peggyjv/sommelier/v7/x/auction/types"
 	"github.com/peggyjv/sommelier/v7/x/cellarfees/types"
 )
 
@@ -37,4 +38,16 @@ func (k Keeper) GetEmission(ctx sdk.Context, remainingRewardsSupply math.Int) sd
 	}
 
 	return sdk.NewCoins(sdk.NewCoin(params.BaseCoinUnit, emissionAmount))
+}
+
+func (k Keeper) GetFeeBalance(ctx sdk.Context, denom string) sdk.Coin {
+	feesAddr := k.GetFeesAccount(ctx).GetAddress()
+
+	return k.bankKeeper.GetBalance(ctx, feesAddr, denom)
+}
+
+func (k Keeper) GetBalanceUsdValue(ctx sdk.Context, balance sdk.Coin, tokenPrice auctiontypes.TokenPrice) sdk.Dec {
+	unitAmount := sdk.NewDecFromInt(balance.Amount).Quo(sdk.NewDec(10).Power(tokenPrice.Exponent))
+
+	return tokenPrice.UsdPrice.Mul(unitAmount)
 }

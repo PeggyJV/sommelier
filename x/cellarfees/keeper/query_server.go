@@ -44,3 +44,70 @@ func (k Keeper) QueryAPY(c context.Context, _ *types.QueryAPYRequest) (*types.Qu
 		Apy: k.GetAPY(sdk.UnwrapSDKContext(c)).String(),
 	}, nil
 }
+
+func (k Keeper) QueryFeeTokenBalance(c context.Context, req *types.QueryFeeTokenBalanceRequest) (*types.QueryFeeTokenBalanceResponse, error) {
+	ctx := sdk.UnwrapSDKContext(c)
+	if req == nil {
+		return nil, status.Error(codes.InvalidArgument, "empty request")
+	}
+
+	if req.Denom == "" {
+		return nil, status.Error(codes.InvalidArgument, "denom cannot be empty")
+	}
+
+	_, found := k.bankKeeper.GetDenomMetaData(ctx, req.Denom)
+	if !found {
+		return nil, status.Error(codes.NotFound, "denom not found")
+	}
+
+	balance := k.GetFeeBalance(ctx, req.Denom)
+	tokenPrice, found := k.auctionKeeper.GetTokenPrice(ctx, req.Denom)
+	if !found {
+		return nil, status.Error(codes.NotFound, "token price not found")
+	}
+
+	totalUsdValue, err := k.GetBalanceUsdValue(ctx, balance, tokenPrice).Float64()
+	if err != nil {
+		return nil, status.Error(codes.Internal, "failed to convert usd value to float")
+	}
+
+	feeTokenBalance := types.FeeTokenBalance{
+		Balance:  balance,
+		UsdValue: totalUsdValue,
+	}
+
+	return &types.QueryFeeTokenBalanceResponse{
+		Balance: &feeTokenBalance,
+	}, nil
+}
+
+func (k Keeper) QueryFeeTokenBalances(c context.Context, _ *types.QueryFeeTokenBalancesRequest) (*types.QueryFeeTokenBalancesResponse, error) {
+	ctx := sdk.UnwrapSDKContext(c)
+	feeBalances := make([]*types.FeeTokenBalance, 0)
+
+	// because we can't get a USD value without a corresponding TokenPrice set in the auction module,
+	// this exclude fee token balances that don't have one yet.
+	for _, tokenPrice := range k.auctionKeeper.GetTokenPrices(ctx) {
+		balance := k.GetFeeBalance(ctx, tokenPrice.Denom)
+
+		if balance.IsZero() {
+			continue
+		}
+
+		totalUsdValue, err := k.GetBalanceUsdValue(ctx, balance, tokenPrice).Float64()
+		if err != nil {
+			return nil, status.Error(codes.Internal, "failed to convert usd value to float")
+		}
+
+		feeTokenBalance := types.FeeTokenBalance{
+			Balance:  balance,
+			UsdValue: totalUsdValue,
+		}
+
+		feeBalances = append(feeBalances, &feeTokenBalance)
+	}
+
+	return &types.QueryFeeTokenBalancesResponse{
+		Balances: feeBalances,
+	}, nil
+}
