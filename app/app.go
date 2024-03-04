@@ -96,10 +96,6 @@ import (
 	gravitykeeper "github.com/peggyjv/gravity-bridge/module/v4/x/gravity/keeper"
 	gravitytypes "github.com/peggyjv/gravity-bridge/module/v4/x/gravity/types"
 	appParams "github.com/peggyjv/sommelier/v7/app/params"
-	v4 "github.com/peggyjv/sommelier/v7/app/upgrades/v4"
-	v5 "github.com/peggyjv/sommelier/v7/app/upgrades/v5"
-	v6 "github.com/peggyjv/sommelier/v7/app/upgrades/v6"
-	v7 "github.com/peggyjv/sommelier/v7/app/upgrades/v7"
 	"github.com/peggyjv/sommelier/v7/x/auction"
 	auctionclient "github.com/peggyjv/sommelier/v7/x/auction/client"
 	auctionkeeper "github.com/peggyjv/sommelier/v7/x/auction/keeper"
@@ -969,30 +965,7 @@ func (app *SommelierApp) setupUpgradeStoreLoaders() {
 
 	var storeUpgrades *storetypes.StoreUpgrades = nil
 
-	if upgradeInfo.Name == v4.UpgradeName {
-		storeUpgrades = &storetypes.StoreUpgrades{
-			Added:   []string{corktypes.ModuleName, cellarfeestypes.ModuleName},
-			Deleted: []string{"allocation"},
-		}
-	}
-
-	if upgradeInfo.Name == v5.UpgradeName {
-		storeUpgrades = &storetypes.StoreUpgrades{
-			Added: []string{incentivestypes.ModuleName},
-		}
-	}
-
-	if upgradeInfo.Name == v6.UpgradeName {
-		storeUpgrades = &storetypes.StoreUpgrades{
-			Added: []string{icahosttypes.SubModuleName},
-		}
-	}
-
-	if upgradeInfo.Name == v7.UpgradeName {
-		storeUpgrades = &storetypes.StoreUpgrades{
-			Added: []string{auctiontypes.ModuleName, axelarcorktypes.ModuleName, cellarfeestypes.ModuleName, pubsubtypes.ModuleName},
-		}
-	}
+    // TODO: Add v8 store loader when writing upgrade handler
 
 	if storeUpgrades != nil {
 		app.SetStoreLoader(upgradetypes.UpgradeStoreLoader(upgradeInfo.Height, storeUpgrades))
@@ -1000,44 +973,5 @@ func (app *SommelierApp) setupUpgradeStoreLoaders() {
 }
 
 func (app *SommelierApp) setupUpgradeHandlers() {
-	app.UpgradeKeeper.SetUpgradeHandler(
-		v4.UpgradeName,
-		v4.CreateUpgradeHandler(
-			app.mm,
-			app.configurator,
-			app.AccountKeeper,
-			app.BankKeeper,
-		),
-	)
-
-	app.UpgradeKeeper.SetUpgradeHandler(
-		v5.UpgradeName,
-		v5.CreateUpgradeHandler(
-			app.mm,
-			app.configurator,
-			app.IncentivesKeeper,
-		),
-	)
-
-	app.UpgradeKeeper.SetUpgradeHandler(
-		v6.UpgradeName,
-		v6.CreateUpgradeHandler(
-			app.mm,
-			app.configurator,
-		),
-	)
-
-	app.UpgradeKeeper.SetUpgradeHandler(
-		v7.UpgradeName,
-		v7.CreateUpgradeHandler(
-			app.mm,
-			app.configurator,
-			app.AuctionKeeper,
-			app.AxelarCorkKeeper,
-			app.CellarFeesKeeper,
-			app.CorkKeeper,
-			app.ICAHostKeeper,
-			app.PubsubKeeper,
-		),
-	)
+    // TODO: Add v8 upgrade handler	
 }
