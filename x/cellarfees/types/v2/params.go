@@ -19,6 +19,9 @@ const (
 	DefaultPriceDecreaseBlockInterval uint64 = 10
 	// Blocks between each auction
 	DefaultAuctionInterval uint64 = 15000
+	// Minimum USD value of a token's fees balance to trigger an auction
+	// $10,000
+	DefaultAuctionThresholdUsdValue = "10000.00"
 )
 
 // Parameter keys
@@ -27,6 +30,7 @@ var (
 	KeyInitialPriceDecreaseRate   = []byte("InitialPriceDecreaseRate")
 	KeyPriceDecreaseBlockInterval = []byte("PriceDecreaseBlockInterval")
 	KeyAuctionInterval            = []byte("AuctionInterval")
+	KeyAuctionThresholdUsdValue   = []byte("AuctionThresholdUsdValue")
 )
 
 var _ paramtypes.ParamSet = &Params{}
@@ -43,6 +47,7 @@ func DefaultParams() Params {
 		InitialPriceDecreaseRate:   sdk.MustNewDecFromStr(DefaultInitialPriceDecreaseRate),
 		PriceDecreaseBlockInterval: DefaultPriceDecreaseBlockInterval,
 		AuctionInterval:            DefaultAuctionInterval,
+		AuctionThresholdUsdValue:   sdk.MustNewDecFromStr(DefaultAuctionThresholdUsdValue),
 	}
 }
 
@@ -53,6 +58,7 @@ func (p *Params) ParamSetPairs() paramtypes.ParamSetPairs {
 		paramtypes.NewParamSetPair(KeyInitialPriceDecreaseRate, &p.InitialPriceDecreaseRate, validateInitialPriceDecreaseRate),
 		paramtypes.NewParamSetPair(KeyPriceDecreaseBlockInterval, &p.PriceDecreaseBlockInterval, validatePriceDecreaseBlockInterval),
 		paramtypes.NewParamSetPair(KeyAuctionInterval, &p.AuctionInterval, validateAuctionInterval),
+		paramtypes.NewParamSetPair(KeyAuctionThresholdUsdValue, &p.AuctionThresholdUsdValue, validateAuctionThresholdUsdValue),
 	}
 }
 
@@ -121,6 +127,19 @@ func validateAuctionInterval(i interface{}) error {
 
 	if interval == 0 {
 		return errorsmod.Wrapf(types.ErrInvalidAuctionInterval, "auction interval cannot be zero")
+	}
+
+	return nil
+}
+
+func validateAuctionThresholdUsdValue(i interface{}) error {
+	threshold, ok := i.(sdk.Dec)
+	if !ok {
+		return errorsmod.Wrapf(types.ErrInvalidAuctionThresholdUsdValue, "auction threshold USD value: %T", i)
+	}
+
+	if !threshold.IsPositive() {
+		return errorsmod.Wrapf(types.ErrInvalidAuctionThresholdUsdValue, "auction threshold USD value must be greater than zero")
 	}
 
 	return nil
