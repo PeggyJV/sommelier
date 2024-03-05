@@ -1,3 +1,5 @@
+//go:build exclude
+
 package v6
 
 import (
