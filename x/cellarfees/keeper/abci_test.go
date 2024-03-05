@@ -2,25 +2,24 @@ package keeper
 
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/ethereum/go-ethereum/common"
 	"github.com/golang/mock/gomock"
-	gravitytypes "github.com/peggyjv/gravity-bridge/module/v4/x/gravity/types"
 	appParams "github.com/peggyjv/sommelier/v7/app/params"
 	auctionTypes "github.com/peggyjv/sommelier/v7/x/auction/types"
-	cellarfeesTypes "github.com/peggyjv/sommelier/v7/x/cellarfees/types"
+	auctiontypes "github.com/peggyjv/sommelier/v7/x/auction/types"
+	cellarfeestypes "github.com/peggyjv/sommelier/v7/x/cellarfees/types"
+	cellarfeestypesv2 "github.com/peggyjv/sommelier/v7/x/cellarfees/types/v2"
 )
 
 func (suite *KeeperTestSuite) TestBeginBlockerZeroRewardsBalance() {
 	ctx, cellarfeesKeeper := suite.ctx, suite.cellarfeesKeeper
-	cellarfeesKeeper.SetFeeAccrualCounters(ctx, cellarfeesTypes.DefaultFeeAccrualCounters())
 
 	require := suite.Require()
 
-	params := cellarfeesTypes.DefaultParams()
+	params := cellarfeestypesv2.DefaultParams()
 	cellarfeesKeeper.SetParams(ctx, params)
 
 	// mocks
-	suite.accountKeeper.EXPECT().GetModuleAccount(ctx, cellarfeesTypes.ModuleName).Return(feesAccount)
+	suite.accountKeeper.EXPECT().GetModuleAccount(ctx, cellarfeestypes.ModuleName).Return(feesAccount)
 	suite.bankKeeper.EXPECT().GetBalance(ctx, feesAccount.GetAddress(), appParams.BaseCoinUnit).Return(sdk.NewCoin(appParams.BaseCoinUnit, sdk.ZeroInt()))
 	suite.bankKeeper.EXPECT().SendCoinsFromModuleToModule(ctx, gomock.Any(), gomock.Any(), gomock.Any()).Times(0)
 
@@ -31,15 +30,14 @@ func (suite *KeeperTestSuite) TestBeginBlockerZeroRewardsBalance() {
 
 func (suite *KeeperTestSuite) TestBeginBlockerWithRewardBalanceAndPreviousPeakZero() {
 	ctx, cellarfeesKeeper := suite.ctx, suite.cellarfeesKeeper
-	cellarfeesKeeper.SetFeeAccrualCounters(ctx, cellarfeesTypes.DefaultFeeAccrualCounters())
 
 	require := suite.Require()
 
-	params := cellarfeesTypes.DefaultParams()
+	params := cellarfeestypesv2.DefaultParams()
 	cellarfeesKeeper.SetParams(ctx, params)
 
 	// mocks
-	suite.accountKeeper.EXPECT().GetModuleAccount(ctx, cellarfeesTypes.ModuleName).Return(feesAccount)
+	suite.accountKeeper.EXPECT().GetModuleAccount(ctx, cellarfeestypes.ModuleName).Return(feesAccount)
 
 	rewardSupply := sdk.NewCoin(appParams.BaseCoinUnit, sdk.NewInt(1000000))
 	emissionPeriod := sdk.NewInt(int64(params.RewardEmissionPeriod))
@@ -55,14 +53,13 @@ func (suite *KeeperTestSuite) TestBeginBlockerWithRewardBalanceAndPreviousPeakZe
 
 func (suite *KeeperTestSuite) TestBeginBlockerWithRewardBalanceAndHigherPreviousPeak() {
 	ctx, cellarfeesKeeper := suite.ctx, suite.cellarfeesKeeper
-	cellarfeesKeeper.SetFeeAccrualCounters(ctx, cellarfeesTypes.DefaultFeeAccrualCounters())
 	require := suite.Require()
 
-	params := cellarfeesTypes.DefaultParams()
+	params := cellarfeestypesv2.DefaultParams()
 	cellarfeesKeeper.SetParams(ctx, params)
 
 	// mocks
-	suite.accountKeeper.EXPECT().GetModuleAccount(ctx, cellarfeesTypes.ModuleName).Return(feesAccount)
+	suite.accountKeeper.EXPECT().GetModuleAccount(ctx, cellarfeestypes.ModuleName).Return(feesAccount)
 
 	rewardSupply := sdk.NewCoin(appParams.BaseCoinUnit, sdk.NewInt(1000000))
 	emissionPeriod := sdk.NewInt(int64(params.RewardEmissionPeriod))
@@ -80,15 +77,14 @@ func (suite *KeeperTestSuite) TestBeginBlockerWithRewardBalanceAndHigherPrevious
 
 func (suite *KeeperTestSuite) TestBeginBlockerWithRewardBalanceAndLowerPreviousPeak() {
 	ctx, cellarfeesKeeper := suite.ctx, suite.cellarfeesKeeper
-	cellarfeesKeeper.SetFeeAccrualCounters(ctx, cellarfeesTypes.DefaultFeeAccrualCounters())
 
 	require := suite.Require()
 
-	params := cellarfeesTypes.DefaultParams()
+	params := cellarfeestypesv2.DefaultParams()
 	cellarfeesKeeper.SetParams(ctx, params)
 
 	// mocks
-	suite.accountKeeper.EXPECT().GetModuleAccount(ctx, cellarfeesTypes.ModuleName).Return(feesAccount)
+	suite.accountKeeper.EXPECT().GetModuleAccount(ctx, cellarfeestypes.ModuleName).Return(feesAccount)
 
 	rewardSupply := sdk.NewCoin(appParams.BaseCoinUnit, sdk.NewInt(1000000))
 	emissionPeriod := sdk.NewInt(int64(params.RewardEmissionPeriod))
@@ -107,15 +103,14 @@ func (suite *KeeperTestSuite) TestBeginBlockerWithRewardBalanceAndLowerPreviousP
 // If the emission calculation underflows to zero, it should be set to 1
 func (suite *KeeperTestSuite) TestBeginBlockerEmissionCalculationUnderflowsToZero() {
 	ctx, cellarfeesKeeper := suite.ctx, suite.cellarfeesKeeper
-	cellarfeesKeeper.SetFeeAccrualCounters(ctx, cellarfeesTypes.DefaultFeeAccrualCounters())
 	require := suite.Require()
 
-	params := cellarfeesTypes.DefaultParams()
+	params := cellarfeestypesv2.DefaultParams()
 	cellarfeesKeeper.SetParams(ctx, params)
 	cellarfeesKeeper.SetLastRewardSupplyPeak(ctx, sdk.ZeroInt())
 
 	// mocks
-	suite.accountKeeper.EXPECT().GetModuleAccount(ctx, cellarfeesTypes.ModuleName).Return(feesAccount)
+	suite.accountKeeper.EXPECT().GetModuleAccount(ctx, cellarfeestypes.ModuleName).Return(feesAccount)
 
 	rewardSupply := sdk.NewCoin(appParams.BaseCoinUnit, sdk.NewInt(1))
 	suite.bankKeeper.EXPECT().GetBalance(ctx, feesAccount.GetAddress(), appParams.BaseCoinUnit).Return(sdk.NewCoin(appParams.BaseCoinUnit, rewardSupply.Amount))
@@ -129,15 +124,14 @@ func (suite *KeeperTestSuite) TestBeginBlockerEmissionCalculationUnderflowsToZer
 // If the calculated emission is greater than the remaining supply, it should be set to the remaining supply
 func (suite *KeeperTestSuite) TestBeginBlockerEmissionGreaterThanRewardSupply() {
 	ctx, cellarfeesKeeper := suite.ctx, suite.cellarfeesKeeper
-	cellarfeesKeeper.SetFeeAccrualCounters(ctx, cellarfeesTypes.DefaultFeeAccrualCounters())
 
 	require := suite.Require()
-	params := cellarfeesTypes.DefaultParams()
+	params := cellarfeestypesv2.DefaultParams()
 	cellarfeesKeeper.SetParams(ctx, params)
 	cellarfeesKeeper.SetLastRewardSupplyPeak(ctx, sdk.NewInt(1000000))
 
 	// mocks
-	suite.accountKeeper.EXPECT().GetModuleAccount(ctx, cellarfeesTypes.ModuleName).Return(feesAccount)
+	suite.accountKeeper.EXPECT().GetModuleAccount(ctx, cellarfeestypes.ModuleName).Return(feesAccount)
 
 	rewardSupply := sdk.NewCoin(appParams.BaseCoinUnit, sdk.NewInt(1))
 	suite.bankKeeper.EXPECT().GetBalance(ctx, feesAccount.GetAddress(), appParams.BaseCoinUnit).Return(sdk.NewCoin(appParams.BaseCoinUnit, rewardSupply.Amount))
@@ -148,184 +142,74 @@ func (suite *KeeperTestSuite) TestBeginBlockerEmissionGreaterThanRewardSupply() 
 	require.NotPanics(func() { cellarfeesKeeper.BeginBlocker(ctx) })
 }
 
-func (suite *KeeperTestSuite) TestAuctionBeginWithSufficientFunds() {
+func (suite *KeeperTestSuite) TestHandleFeeAuctionsHappyPath() {
 	ctx, cellarfeesKeeper := suite.ctx, suite.cellarfeesKeeper
-	cellarfeesKeeper.SetFeeAccrualCounters(ctx, cellarfeesTypes.DefaultFeeAccrualCounters())
-	suite.SetupHooksTests(ctx, cellarfeesKeeper)
+	params := cellarfeestypesv2.DefaultParams()
 
-	require := suite.Require()
-	params := cellarfeesTypes.DefaultParams()
 	params.AuctionInterval = 1
+	params.AuctionThresholdUsdValue = sdk.MustNewDecFromStr("100.00")
+
 	cellarfeesKeeper.SetParams(ctx, params)
-	cellarfeesKeeper.SetLastRewardSupplyPeak(ctx, sdk.NewInt(1000000))
 
-	hooks := Hooks{k: cellarfeesKeeper}
-	event := gravitytypes.SendToCosmosEvent{
-		CosmosReceiver: feesAccount.GetAddress().String(),
-		Amount:         sdk.NewInt(2),
-		EthereumSender: "0x0000000000000000000000000000000000000000",
-		TokenContract:  "0x1111111111111111111111111111111111111111",
-	}
-	cellarID := common.HexToAddress(event.EthereumSender)
-	cellarfeesKeeper.SetFeeAccrualCounters(ctx, cellarfeesTypes.FeeAccrualCounters{
-		Counters: []cellarfeesTypes.FeeAccrualCounter{
-			{
-				Denom: gravityFeeDenom,
-				Count: 1,
-			},
+	denom1 := "denom1"
+	denom2 := "denom2"
+	denom3 := "denom3"
+	amount1 := sdk.NewInt(1000000)
+	amount2 := sdk.NewInt(2000000000000)
+	amount3 := sdk.NewInt(3000000000000000000)
+	balance1 := sdk.NewCoin(denom1, amount1)
+	balance2 := sdk.NewCoin(denom2, amount2)
+	balance3 := sdk.NewCoin(denom3, amount3)
+	price1 := sdk.NewDec(100)
+	price2 := sdk.NewDec(50)
+	price3 := sdk.NewDec(33)
+	tokenPrices := []*auctiontypes.TokenPrice{
+		{
+			Exponent: 6,
+			Denom:    denom1,
+			UsdPrice: price1,
 		},
-	})
-	expectedCounters := cellarfeesTypes.FeeAccrualCounters{
-		Counters: []cellarfeesTypes.FeeAccrualCounter{
-			{
-				Denom: gravityFeeDenom,
-				Count: 0,
-			},
+		{
+			Exponent: 12,
+			Denom:    denom2,
+			UsdPrice: price2,
+		},
+		{
+			Exponent: 18,
+			Denom:    denom3,
+			UsdPrice: price3,
 		},
 	}
 
-	suite.corkKeeper.EXPECT().HasCellarID(ctx, cellarID).Return(true)
-	suite.gravityKeeper.EXPECT().ERC20ToDenomLookup(ctx, common.HexToAddress(event.TokenContract)).Return(false, gravityFeeDenom)
-	suite.accountKeeper.EXPECT().GetModuleAccount(ctx, cellarfeesTypes.ModuleName).Return(feesAccount)
+	suite.auctionKeeper.EXPECT().GetTokenPrices(ctx).Return(tokenPrices)
+	suite.accountKeeper.EXPECT().GetModuleAccount(ctx, cellarfeestypes.ModuleName).Return(feesAccount).Times(len(tokenPrices) * 2)
+	suite.bankKeeper.EXPECT().GetBalance(ctx, feesAccount.GetAddress(), denom1).Return(balance1).Times(2)
+	suite.bankKeeper.EXPECT().GetBalance(ctx, feesAccount.GetAddress(), denom2).Return(balance2).Times(2)
+	suite.bankKeeper.EXPECT().GetBalance(ctx, feesAccount.GetAddress(), denom3).Return(balance3).Times(2)
 
-	require.NotPanics(func() { hooks.AfterSendToCosmosEvent(ctx, event) })
+	// retreiving module account
+	suite.accountKeeper.EXPECT().GetModuleAccount(ctx, cellarfeestypes.ModuleName).Return(feesAccount)
 
-	// mocks
-	suite.accountKeeper.EXPECT().GetModuleAccount(ctx, cellarfeesTypes.ModuleName).Return(feesAccount)
-
-	suite.bankKeeper.EXPECT().GetBalance(ctx, feesAccount.GetAddress(), appParams.BaseCoinUnit).Return(sdk.NewCoin(gravityFeeDenom, sdk.NewInt(0)))
-
-	suite.bankKeeper.EXPECT().GetBalance(ctx, feesAccount.GetAddress(), gravityFeeDenom).Return(sdk.NewCoin(gravityFeeDenom, event.Amount))
-
-	expectedEmission := sdk.NewCoin(appParams.BaseCoinUnit, event.Amount)
-	suite.bankKeeper.EXPECT().SendCoinsFromModuleToModule(ctx, gomock.Any(), gomock.Any(), sdk.NewCoins(expectedEmission)).Times(1)
+	// no active auctions
 	suite.auctionKeeper.EXPECT().GetActiveAuctions(ctx).Return([]*auctionTypes.Auction{})
-	suite.bankKeeper.EXPECT().GetBalance(ctx, feesAccount.GetAddress(), gravityFeeDenom).Return(sdk.NewCoin(gravityFeeDenom, event.Amount))
-	suite.auctionKeeper.EXPECT().BeginAuction(ctx, gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).Return(nil).Times(1)
-
-	require.NotPanics(func() { cellarfeesKeeper.BeginBlocker(ctx) })
-
-	require.Equal(expectedCounters, cellarfeesKeeper.GetFeeAccrualCounters(ctx))
-
-}
-
-func (suite *KeeperTestSuite) TestAuctionBeginWithInSufficientFunds() {
-	ctx, cellarfeesKeeper := suite.ctx, suite.cellarfeesKeeper
-	cellarfeesKeeper.SetFeeAccrualCounters(ctx, cellarfeesTypes.DefaultFeeAccrualCounters())
-	suite.SetupHooksTests(ctx, cellarfeesKeeper)
-
-	require := suite.Require()
-	params := cellarfeesTypes.DefaultParams()
-	params.AuctionInterval = 1
-	cellarfeesKeeper.SetParams(ctx, params)
-	cellarfeesKeeper.SetLastRewardSupplyPeak(ctx, sdk.NewInt(1000000))
-
-	hooks := Hooks{k: cellarfeesKeeper}
-	event := gravitytypes.SendToCosmosEvent{
-		CosmosReceiver: feesAccount.GetAddress().String(),
-		Amount:         sdk.NewInt(1),
-		EthereumSender: "0x0000000000000000000000000000000000000000",
-		TokenContract:  "0x1111111111111111111111111111111111111111",
+	suite.auctionKeeper.EXPECT().BeginAuction(ctx, balance1, params.InitialPriceDecreaseRate, params.PriceDecreaseBlockInterval, cellarfeestypes.ModuleName, cellarfeestypes.ModuleName).Return(nil)
+	expectedAuction1 := auctionTypes.Auction{
+		Id:                         1,
+		StartingTokensForSale:      balance1,
+		InitialPriceDecreaseRate:   params.InitialPriceDecreaseRate,
+		CurrentPriceDecreaseRate:   params.InitialPriceDecreaseRate,
+		StartBlock:                 uint64(ctx.BlockHeight()),
+		EndBlock:                   0,
+		PriceDecreaseBlockInterval: params.PriceDecreaseBlockInterval,
+		InitialUnitPriceInUsomm:    price1,
+		CurrentUnitPriceInUsomm:    price1,
+		FundingModuleAccount:       cellarfeestypes.ModuleName,
+		ProceedsModuleAccount:      cellarfeestypes.ModuleName,
 	}
-	cellarID := common.HexToAddress(event.EthereumSender)
-	cellarfeesKeeper.SetFeeAccrualCounters(ctx, cellarfeesTypes.FeeAccrualCounters{
-		Counters: []cellarfeesTypes.FeeAccrualCounter{
-			{
-				Denom: gravityFeeDenom,
-				Count: 0,
-			},
-		},
-	})
-	expectedCounters := cellarfeesTypes.FeeAccrualCounters{
-		Counters: []cellarfeesTypes.FeeAccrualCounter{
-			{
-				Denom: gravityFeeDenom,
-				Count: 1,
-			},
-		},
-	}
+	suite.auctionKeeper.EXPECT().GetActiveAuctions(ctx).Return([]*auctionTypes.Auction{&expectedAuction1})
+	suite.auctionKeeper.EXPECT().BeginAuction(ctx, balance2, params.InitialPriceDecreaseRate, params.PriceDecreaseBlockInterval, cellarfeestypes.ModuleName, cellarfeestypes.ModuleName).Return(nil)
 
-	suite.corkKeeper.EXPECT().HasCellarID(ctx, cellarID).Return(true)
-	suite.gravityKeeper.EXPECT().ERC20ToDenomLookup(ctx, common.HexToAddress(event.TokenContract)).Return(false, gravityFeeDenom)
-	suite.accountKeeper.EXPECT().GetModuleAccount(ctx, cellarfeesTypes.ModuleName).Return(feesAccount)
+	// we only set expected calls for two auctions because the third token price is $99, so no auction should be started.
 
-	require.NotPanics(func() { hooks.AfterSendToCosmosEvent(ctx, event) })
-
-	// mocks
-	suite.accountKeeper.EXPECT().GetModuleAccount(ctx, cellarfeesTypes.ModuleName).Return(feesAccount)
-
-	suite.bankKeeper.EXPECT().GetBalance(ctx, feesAccount.GetAddress(), appParams.BaseCoinUnit).Return(sdk.NewCoin(gravityFeeDenom, sdk.NewInt(0)))
-
-	suite.bankKeeper.EXPECT().GetBalance(ctx, feesAccount.GetAddress(), gravityFeeDenom).Return(sdk.NewCoin(gravityFeeDenom, event.Amount))
-
-	expectedEmission := sdk.NewCoin(appParams.BaseCoinUnit, event.Amount)
-	suite.bankKeeper.EXPECT().SendCoinsFromModuleToModule(ctx, gomock.Any(), gomock.Any(), sdk.NewCoins(expectedEmission)).Times(1)
-	suite.auctionKeeper.EXPECT().GetActiveAuctions(ctx).Return([]*auctionTypes.Auction{})
-	suite.bankKeeper.EXPECT().GetBalance(ctx, feesAccount.GetAddress(), gravityFeeDenom).Return(sdk.NewCoin(gravityFeeDenom, event.Amount))
-	suite.auctionKeeper.EXPECT().BeginAuction(ctx, gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).Return(nil).Times(1)
-
-	require.NotPanics(func() { cellarfeesKeeper.BeginBlocker(ctx) })
-
-	require.Equal(expectedCounters, cellarfeesKeeper.GetFeeAccrualCounters(ctx))
-
-}
-
-func (suite *KeeperTestSuite) TestAuctionBeginWithSufficientFundsWrongBlockHeight() {
-	ctx, cellarfeesKeeper := suite.ctx, suite.cellarfeesKeeper
-	cellarfeesKeeper.SetFeeAccrualCounters(ctx, cellarfeesTypes.DefaultFeeAccrualCounters())
-	suite.SetupHooksTests(ctx, cellarfeesKeeper)
-
-	require := suite.Require()
-	params := cellarfeesTypes.DefaultParams()
-	params.AuctionInterval = 1000
-	cellarfeesKeeper.SetParams(ctx, params)
-	cellarfeesKeeper.SetLastRewardSupplyPeak(ctx, sdk.NewInt(1000000))
-
-	hooks := Hooks{k: cellarfeesKeeper}
-	event := gravitytypes.SendToCosmosEvent{
-		CosmosReceiver: feesAccount.GetAddress().String(),
-		Amount:         sdk.NewInt(2),
-		EthereumSender: "0x0000000000000000000000000000000000000000",
-		TokenContract:  "0x1111111111111111111111111111111111111111",
-	}
-	cellarID := common.HexToAddress(event.EthereumSender)
-	cellarfeesKeeper.SetFeeAccrualCounters(ctx, cellarfeesTypes.FeeAccrualCounters{
-		Counters: []cellarfeesTypes.FeeAccrualCounter{
-			{
-				Denom: gravityFeeDenom,
-				Count: 1,
-			},
-		},
-	})
-	expectedCounters := cellarfeesTypes.FeeAccrualCounters{
-		Counters: []cellarfeesTypes.FeeAccrualCounter{
-			{
-				Denom: gravityFeeDenom,
-				Count: 2,
-			},
-		},
-	}
-
-	suite.corkKeeper.EXPECT().HasCellarID(ctx, cellarID).Return(true)
-	suite.gravityKeeper.EXPECT().ERC20ToDenomLookup(ctx, common.HexToAddress(event.TokenContract)).Return(false, gravityFeeDenom)
-	suite.accountKeeper.EXPECT().GetModuleAccount(ctx, cellarfeesTypes.ModuleName).Return(feesAccount)
-
-	require.NotPanics(func() { hooks.AfterSendToCosmosEvent(ctx, event) })
-
-	// mocks
-	suite.accountKeeper.EXPECT().GetModuleAccount(ctx, cellarfeesTypes.ModuleName).Return(feesAccount)
-
-	suite.bankKeeper.EXPECT().GetBalance(ctx, feesAccount.GetAddress(), appParams.BaseCoinUnit).Return(sdk.NewCoin(gravityFeeDenom, sdk.NewInt(0)))
-
-	suite.bankKeeper.EXPECT().GetBalance(ctx, feesAccount.GetAddress(), gravityFeeDenom).Return(sdk.NewCoin(gravityFeeDenom, event.Amount))
-
-	expectedEmission := sdk.NewCoin(appParams.BaseCoinUnit, event.Amount)
-	suite.bankKeeper.EXPECT().SendCoinsFromModuleToModule(ctx, gomock.Any(), gomock.Any(), sdk.NewCoins(expectedEmission)).Times(1)
-	suite.auctionKeeper.EXPECT().GetActiveAuctions(ctx).Return([]*auctionTypes.Auction{})
-	suite.bankKeeper.EXPECT().GetBalance(ctx, feesAccount.GetAddress(), gravityFeeDenom).Return(sdk.NewCoin(gravityFeeDenom, event.Amount))
-
-	require.NotPanics(func() { cellarfeesKeeper.BeginBlocker(ctx) })
-
-	require.Equal(expectedCounters, cellarfeesKeeper.GetFeeAccrualCounters(ctx))
-
+	cellarfeesKeeper.handleFeeAuctions(ctx)
 }

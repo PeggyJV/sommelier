@@ -87,7 +87,8 @@ func (k Keeper) QueryFeeTokenBalances(c context.Context, _ *types.QueryFeeTokenB
 
 	// because we can't get a USD value without a corresponding TokenPrice set in the auction module,
 	// this exclude fee token balances that don't have one yet.
-	for _, tokenPrice := range k.auctionKeeper.GetTokenPrices(ctx) {
+	tokenPrices := k.auctionKeeper.GetTokenPrices(ctx)
+	for _, tokenPrice := range tokenPrices {
 		balance := k.GetFeeBalance(ctx, tokenPrice.Denom)
 
 		if balance.IsZero() {

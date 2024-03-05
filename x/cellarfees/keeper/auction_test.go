@@ -4,7 +4,8 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/golang/mock/gomock"
 	auctionTypes "github.com/peggyjv/sommelier/v7/x/auction/types"
-	cellarfeesTypes "github.com/peggyjv/sommelier/v7/x/cellarfees/types"
+	cellarfeestypes "github.com/peggyjv/sommelier/v7/x/cellarfees/types"
+	cellarfeestypesv2 "github.com/peggyjv/sommelier/v7/x/cellarfees/types/v2"
 )
 
 const feeDenom = "testdenom"
@@ -13,13 +14,13 @@ func (suite *KeeperTestSuite) TestHappyPathBeginAuction() {
 	ctx, cellarfeesKeeper := suite.ctx, suite.cellarfeesKeeper
 	require := suite.Require()
 
-	params := cellarfeesTypes.DefaultParams()
+	params := cellarfeestypesv2.DefaultParams()
 	cellarfeesKeeper.SetParams(ctx, params)
 
 	fees := sdk.NewCoin(feeDenom, sdk.NewInt(1000000))
 
 	// retreiving module account
-	suite.accountKeeper.EXPECT().GetModuleAccount(ctx, cellarfeesTypes.ModuleName).Return(feesAccount)
+	suite.accountKeeper.EXPECT().GetModuleAccount(ctx, cellarfeestypes.ModuleName).Return(feesAccount)
 
 	// no active auctions
 	suite.auctionKeeper.EXPECT().GetActiveAuctions(ctx).Return([]*auctionTypes.Auction{})
@@ -37,13 +38,13 @@ func (suite *KeeperTestSuite) TestAuctionFeeBalanceZeroDoesNotStartAuction() {
 	ctx, cellarfeesKeeper := suite.ctx, suite.cellarfeesKeeper
 	require := suite.Require()
 
-	params := cellarfeesTypes.DefaultParams()
+	params := cellarfeestypesv2.DefaultParams()
 	cellarfeesKeeper.SetParams(ctx, params)
 
 	fees := sdk.NewCoin(feeDenom, sdk.NewInt(0))
 
 	// retreiving module account
-	suite.accountKeeper.EXPECT().GetModuleAccount(ctx, cellarfeesTypes.ModuleName).Return(feesAccount)
+	suite.accountKeeper.EXPECT().GetModuleAccount(ctx, cellarfeestypes.ModuleName).Return(feesAccount)
 
 	// no active auctions
 	suite.auctionKeeper.EXPECT().GetActiveAuctions(ctx).Return([]*auctionTypes.Auction{})
@@ -58,13 +59,13 @@ func (suite *KeeperTestSuite) TestAuctionUnauthorizedFundingModule() {
 	ctx, cellarfeesKeeper := suite.ctx, suite.cellarfeesKeeper
 	require := suite.Require()
 
-	params := cellarfeesTypes.DefaultParams()
+	params := cellarfeestypesv2.DefaultParams()
 	cellarfeesKeeper.SetParams(ctx, params)
 
 	fees := sdk.NewCoin(feeDenom, sdk.NewInt(1000000))
 
 	// retreiving module account
-	suite.accountKeeper.EXPECT().GetModuleAccount(ctx, cellarfeesTypes.ModuleName).Return(feesAccount)
+	suite.accountKeeper.EXPECT().GetModuleAccount(ctx, cellarfeestypes.ModuleName).Return(feesAccount)
 
 	// no active auctions
 	suite.auctionKeeper.EXPECT().GetActiveAuctions(ctx).Return([]*auctionTypes.Auction{})
@@ -82,13 +83,13 @@ func (suite *KeeperTestSuite) TestAuctionUnauthorizedProceedsModule() {
 	ctx, cellarfeesKeeper := suite.ctx, suite.cellarfeesKeeper
 	require := suite.Require()
 
-	params := cellarfeesTypes.DefaultParams()
+	params := cellarfeestypesv2.DefaultParams()
 	cellarfeesKeeper.SetParams(ctx, params)
 
 	fees := sdk.NewCoin(feeDenom, sdk.NewInt(1000000))
 
 	// retreiving module account
-	suite.accountKeeper.EXPECT().GetModuleAccount(ctx, cellarfeesTypes.ModuleName).Return(feesAccount)
+	suite.accountKeeper.EXPECT().GetModuleAccount(ctx, cellarfeestypes.ModuleName).Return(feesAccount)
 
 	// no active auctions
 	suite.auctionKeeper.EXPECT().GetActiveAuctions(ctx).Return([]*auctionTypes.Auction{})
@@ -106,13 +107,13 @@ func (suite *KeeperTestSuite) TestAuctionNonPanicError() {
 	ctx, cellarfeesKeeper := suite.ctx, suite.cellarfeesKeeper
 	require := suite.Require()
 
-	params := cellarfeesTypes.DefaultParams()
+	params := cellarfeestypesv2.DefaultParams()
 	cellarfeesKeeper.SetParams(ctx, params)
 
 	fees := sdk.NewCoin(feeDenom, sdk.NewInt(1000000))
 
 	// retreiving module account
-	suite.accountKeeper.EXPECT().GetModuleAccount(ctx, cellarfeesTypes.ModuleName).Return(feesAccount)
+	suite.accountKeeper.EXPECT().GetModuleAccount(ctx, cellarfeestypes.ModuleName).Return(feesAccount)
 
 	// no active auctions
 	suite.auctionKeeper.EXPECT().GetActiveAuctions(ctx).Return([]*auctionTypes.Auction{})
@@ -130,7 +131,7 @@ func (suite *KeeperTestSuite) TestAuctionAlreadyActive() {
 	ctx, cellarfeesKeeper := suite.ctx, suite.cellarfeesKeeper
 	require := suite.Require()
 
-	params := cellarfeesTypes.DefaultParams()
+	params := cellarfeestypesv2.DefaultParams()
 	cellarfeesKeeper.SetParams(ctx, params)
 
 	fees := sdk.NewCoin(feeDenom, sdk.NewInt(1000000))

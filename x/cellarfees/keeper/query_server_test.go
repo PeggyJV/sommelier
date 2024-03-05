@@ -2,10 +2,15 @@ package keeper
 
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	minttypes "github.com/cosmos/cosmos-sdk/x/mint/types"
 	"github.com/golang/mock/gomock"
 	"github.com/peggyjv/sommelier/v7/app/params"
-	cellarfeesTypes "github.com/peggyjv/sommelier/v7/x/cellarfees/types"
+	auctiontypes "github.com/peggyjv/sommelier/v7/x/auction/types"
+	cellarfeestypes "github.com/peggyjv/sommelier/v7/x/cellarfees/types"
+	cellarfeestypesv2 "github.com/peggyjv/sommelier/v7/x/cellarfees/types/v2"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
 func (suite *KeeperTestSuite) TestQueriesHappyPath() {
@@ -13,47 +18,27 @@ func (suite *KeeperTestSuite) TestQueriesHappyPath() {
 	require := suite.Require()
 
 	// mock
-	suite.accountKeeper.EXPECT().GetModuleAccount(ctx, cellarfeesTypes.ModuleName).Return(feesAccount)
+	suite.accountKeeper.EXPECT().GetModuleAccount(ctx, cellarfeestypes.ModuleName).Return(feesAccount)
 
-	cellarfeesParams := cellarfeesTypes.DefaultParams()
+	cellarfeesParams := cellarfeestypesv2.DefaultParams()
 	cellarfeesKeeper.SetParams(ctx, cellarfeesParams)
 
 	expectedLastRewardSupplyPeakAmount := sdk.NewInt(25000)
 	cellarfeesKeeper.SetLastRewardSupplyPeak(ctx, expectedLastRewardSupplyPeakAmount)
-
-	expectedFeeAccrualCounters := cellarfeesTypes.FeeAccrualCounters{
-		Counters: []cellarfeesTypes.FeeAccrualCounter{
-			{
-				Denom: "denom1",
-				Count: 2,
-			},
-			{
-				Denom: "denom2",
-				Count: 0,
-			},
-		},
-	}
-	cellarfeesKeeper.SetFeeAccrualCounters(ctx, expectedFeeAccrualCounters)
-
 	// QueryParams
-	paramsResponse, err := cellarfeesKeeper.QueryParams(sdk.WrapSDKContext(ctx), &cellarfeesTypes.QueryParamsRequest{})
+	paramsResponse, err := cellarfeesKeeper.QueryParams(sdk.WrapSDKContext(ctx), &cellarfeestypesv2.QueryParamsRequest{})
 	require.Nil(err)
-	require.Equal(&cellarfeesTypes.QueryParamsResponse{Params: cellarfeesParams}, paramsResponse)
+	require.Equal(&cellarfeestypesv2.QueryParamsResponse{Params: cellarfeesParams}, paramsResponse)
 
 	// QueryModuleAccounts
-	moduleAccountsResponse, err := cellarfeesKeeper.QueryModuleAccounts(sdk.WrapSDKContext(ctx), &cellarfeesTypes.QueryModuleAccountsRequest{})
+	moduleAccountsResponse, err := cellarfeesKeeper.QueryModuleAccounts(sdk.WrapSDKContext(ctx), &cellarfeestypesv2.QueryModuleAccountsRequest{})
 	require.Nil(err)
-	require.Equal(&cellarfeesTypes.QueryModuleAccountsResponse{FeesAddress: feesAccount.GetAddress().String()}, moduleAccountsResponse)
+	require.Equal(&cellarfeestypesv2.QueryModuleAccountsResponse{FeesAddress: feesAccount.GetAddress().String()}, moduleAccountsResponse)
 
 	// QueryLastRewardSupplyPeak
-	lastRewardSupplyPeakResponse, err := cellarfeesKeeper.QueryLastRewardSupplyPeak(sdk.WrapSDKContext(ctx), &cellarfeesTypes.QueryLastRewardSupplyPeakRequest{})
+	lastRewardSupplyPeakResponse, err := cellarfeesKeeper.QueryLastRewardSupplyPeak(sdk.WrapSDKContext(ctx), &cellarfeestypesv2.QueryLastRewardSupplyPeakRequest{})
 	require.Nil(err)
-	require.Equal(&cellarfeesTypes.QueryLastRewardSupplyPeakResponse{LastRewardSupplyPeak: expectedLastRewardSupplyPeakAmount}, lastRewardSupplyPeakResponse)
-
-	// QueryFeeAccrualCounters
-	feeAccrualCountersResponse, err := cellarfeesKeeper.QueryFeeAccrualCounters(sdk.WrapSDKContext(ctx), &cellarfeesTypes.QueryFeeAccrualCountersRequest{})
-	require.Nil(err)
-	require.Equal(&cellarfeesTypes.QueryFeeAccrualCountersResponse{FeeAccrualCounters: expectedFeeAccrualCounters}, feeAccrualCountersResponse)
+	require.Equal(&cellarfeestypesv2.QueryLastRewardSupplyPeakResponse{LastRewardSupplyPeak: expectedLastRewardSupplyPeakAmount}, lastRewardSupplyPeakResponse)
 
 	// QueryAPY
 	blocksPerYear := 365 * 6
@@ -74,9 +59,83 @@ func (suite *KeeperTestSuite) TestQueriesHappyPath() {
 	suite.mintKeeper.EXPECT().BondedRatio(ctx).Return(bondedRatio)
 	suite.mintKeeper.EXPECT().StakingTokenSupply(ctx).Return(stakingTotalSupply)
 
-	APYResult, err := cellarfeesKeeper.QueryAPY(sdk.WrapSDKContext(ctx), &cellarfeesTypes.QueryAPYRequest{})
+	APYResult, err := cellarfeesKeeper.QueryAPY(sdk.WrapSDKContext(ctx), &cellarfeestypesv2.QueryAPYRequest{})
 	require.Nil(err)
 	require.Equal("0.004380000000000000", APYResult.Apy)
+
+	// QueryFeeTokenBalance
+	denom := "testdenom"
+	amount := sdk.NewInt(1000000)
+	suite.bankKeeper.EXPECT().GetDenomMetaData(ctx, denom).Return(banktypes.Metadata{}, true)
+	suite.accountKeeper.EXPECT().GetModuleAccount(ctx, cellarfeestypes.ModuleName).Return(feesAccount).Times(1)
+	suite.auctionKeeper.EXPECT().GetTokenPrice(ctx, denom).Return(auctiontypes.TokenPrice{
+		Exponent: 6,
+		UsdPrice: sdk.NewDec(100),
+	}, true)
+	suite.bankKeeper.EXPECT().GetBalance(ctx, feesAccount.GetAddress(), denom).Return(sdk.NewCoin(denom, amount))
+
+	expectedFeeTokenBalance := cellarfeestypesv2.FeeTokenBalance{
+		Balance:  sdk.NewCoin(denom, amount),
+		UsdValue: 100.00,
+	}
+	feeTokenBalanceResponse, err := cellarfeesKeeper.QueryFeeTokenBalance(sdk.WrapSDKContext(ctx), &cellarfeestypesv2.QueryFeeTokenBalanceRequest{
+		Denom: denom,
+	})
+	require.Nil(err)
+	require.Equal(&expectedFeeTokenBalance, feeTokenBalanceResponse.Balance)
+
+	// QueryFeeTokenBalances
+	suite.SetupTest()
+	ctx, cellarfeesKeeper = suite.ctx, suite.cellarfeesKeeper
+	denom1 := "testdenom1"
+	denom2 := "testdenom2"
+	denom3 := "testdenom3"
+	amount1 := sdk.NewInt(1000000)
+	amount2 := sdk.NewInt(2000000)
+	amount3 := sdk.NewInt(3000000)
+	balance1 := sdk.NewCoin(denom1, amount1)
+	balance2 := sdk.NewCoin(denom2, amount2)
+	balance3 := sdk.NewCoin(denom3, amount3)
+	tokenPrice1 := auctiontypes.TokenPrice{
+		Exponent: 6,
+		UsdPrice: sdk.NewDec(100),
+		Denom:    denom1,
+	}
+	tokenPrice2 := auctiontypes.TokenPrice{
+		Exponent: 12,
+		UsdPrice: sdk.NewDec(50),
+		Denom:    denom2,
+	}
+	tokenPrice3 := auctiontypes.TokenPrice{
+		Exponent: 18,
+		UsdPrice: sdk.NewDec(25),
+		Denom:    denom3,
+	}
+	tokenPrices := []*auctiontypes.TokenPrice{&tokenPrice1, &tokenPrice2, &tokenPrice3}
+	suite.accountKeeper.EXPECT().GetModuleAccount(ctx, cellarfeestypes.ModuleName).Return(feesAccount).Times(3)
+	suite.bankKeeper.EXPECT().GetBalance(ctx, feesAccount.GetAddress(), denom1).Return(balance1)
+	suite.bankKeeper.EXPECT().GetBalance(ctx, feesAccount.GetAddress(), denom2).Return(balance2)
+	suite.bankKeeper.EXPECT().GetBalance(ctx, feesAccount.GetAddress(), denom3).Return(balance3)
+	suite.auctionKeeper.EXPECT().GetTokenPrices(ctx).Return(tokenPrices)
+
+	expectedFeeTokenBalances := []*cellarfeestypesv2.FeeTokenBalance{
+		{
+			Balance:  balance1,
+			UsdValue: cellarfeesKeeper.GetBalanceUsdValue(ctx, balance1, &tokenPrice1).MustFloat64(),
+		},
+		{
+			Balance:  balance2,
+			UsdValue: cellarfeesKeeper.GetBalanceUsdValue(ctx, balance2, &tokenPrice2).MustFloat64(),
+		},
+		{
+			Balance:  balance3,
+			UsdValue: cellarfeesKeeper.GetBalanceUsdValue(ctx, balance3, &tokenPrice3).MustFloat64(),
+		},
+	}
+
+	feeTokenBalancesResponse, err := cellarfeesKeeper.QueryFeeTokenBalances(sdk.WrapSDKContext(ctx), &cellarfeestypesv2.QueryFeeTokenBalancesRequest{})
+	require.Nil(err)
+	require.Equal(expectedFeeTokenBalances, feeTokenBalancesResponse.Balances)
 }
 
 func (suite *KeeperTestSuite) TestQueriesUnhappyPath() {
@@ -98,8 +157,30 @@ func (suite *KeeperTestSuite) TestQueriesUnhappyPath() {
 	require.Nil(lastRewardSupplyPeakResponse)
 	require.NotNil(err)
 
-	// QueryFeeAccrualCounters
-	feeAccrualCountersResponse, err := cellarfeesKeeper.QueryFeeAccrualCounters(sdk.WrapSDKContext(ctx), nil)
-	require.Nil(feeAccrualCountersResponse)
+	// QueryFeeTokenBalance
+	feeTokenBalanceResponse, err := cellarfeesKeeper.QueryFeeTokenBalance(sdk.WrapSDKContext(ctx), nil)
+	require.Nil(feeTokenBalanceResponse)
 	require.NotNil(err)
+	require.Equal(status.Code(err), codes.InvalidArgument)
+
+	feeTokenBalanceResponse, err = cellarfeesKeeper.QueryFeeTokenBalance(sdk.WrapSDKContext(ctx), &cellarfeestypesv2.QueryFeeTokenBalanceRequest{})
+	require.Nil(feeTokenBalanceResponse)
+	require.NotNil(err)
+	require.Equal(status.Code(err), codes.InvalidArgument)
+
+	denom := "testdenom"
+	suite.bankKeeper.EXPECT().GetDenomMetaData(ctx, denom).Return(banktypes.Metadata{}, false)
+	feeTokenBalanceResponse, err = cellarfeesKeeper.QueryFeeTokenBalance(sdk.WrapSDKContext(ctx), &cellarfeestypesv2.QueryFeeTokenBalanceRequest{Denom: "testdenom"})
+	require.Nil(feeTokenBalanceResponse)
+	require.NotNil(err)
+	require.Equal(status.Code(err), codes.NotFound)
+
+	suite.bankKeeper.EXPECT().GetDenomMetaData(ctx, denom).Return(banktypes.Metadata{}, true)
+	suite.accountKeeper.EXPECT().GetModuleAccount(ctx, gomock.Any()).Return(feesAccount)
+	suite.bankKeeper.EXPECT().GetBalance(ctx, feesAccount.GetAddress(), denom).Return(sdk.NewCoin(denom, sdk.NewInt(1000000)))
+	suite.auctionKeeper.EXPECT().GetTokenPrice(ctx, denom).Return(auctiontypes.TokenPrice{}, false)
+	feeTokenBalanceResponse, err = cellarfeesKeeper.QueryFeeTokenBalance(sdk.WrapSDKContext(ctx), &cellarfeestypesv2.QueryFeeTokenBalanceRequest{Denom: denom})
+	require.Nil(feeTokenBalanceResponse)
+	require.NotNil(err)
+	require.Equal(status.Code(err), codes.NotFound)
 }

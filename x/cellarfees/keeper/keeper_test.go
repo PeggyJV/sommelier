@@ -15,7 +15,8 @@ import (
 	cellarfeestestutil "github.com/peggyjv/sommelier/v7/x/cellarfees/testutil"
 
 	moduletestutil "github.com/peggyjv/sommelier/v7/testutil"
-	cellarfeesTypes "github.com/peggyjv/sommelier/v7/x/cellarfees/types"
+	cellarfeestypes "github.com/peggyjv/sommelier/v7/x/cellarfees/types"
+	cellarfeestypesv2 "github.com/peggyjv/sommelier/v7/x/cellarfees/types/v2"
 	"github.com/stretchr/testify/suite"
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
 	tmtime "github.com/tendermint/tendermint/types/time"
@@ -34,16 +35,15 @@ type KeeperTestSuite struct {
 	bankKeeper       *cellarfeestestutil.MockBankKeeper
 	mintKeeper       *cellarfeestestutil.MockMintKeeper
 	corkKeeper       *cellarfeestestutil.MockCorkKeeper
-	gravityKeeper    *cellarfeestestutil.MockGravityKeeper
 	auctionKeeper    *cellarfeestestutil.MockAuctionKeeper
 
-	queryClient cellarfeesTypes.QueryClient
+	queryClient cellarfeestypesv2.QueryClient
 
 	encCfg moduletestutil.TestEncodingConfig
 }
 
 func (suite *KeeperTestSuite) SetupTest() {
-	key := sdk.NewKVStoreKey(cellarfeesTypes.StoreKey)
+	key := sdk.NewKVStoreKey(cellarfeestypes.StoreKey)
 	tkey := sdk.NewTransientStoreKey("transient_test")
 	testCtx := testutil.DefaultContext(key, tkey)
 	ctx := testCtx.WithBlockHeader(tmproto.Header{Height: 5, Time: tmtime.Now()})
@@ -57,7 +57,6 @@ func (suite *KeeperTestSuite) SetupTest() {
 	suite.mintKeeper = cellarfeestestutil.NewMockMintKeeper(ctrl)
 	suite.accountKeeper = cellarfeestestutil.NewMockAccountKeeper(ctrl)
 	suite.corkKeeper = cellarfeestestutil.NewMockCorkKeeper(ctrl)
-	suite.gravityKeeper = cellarfeestestutil.NewMockGravityKeeper(ctrl)
 	suite.auctionKeeper = cellarfeestestutil.NewMockAuctionKeeper(ctrl)
 	suite.ctx = ctx
 
@@ -68,8 +67,8 @@ func (suite *KeeperTestSuite) SetupTest() {
 		tkey,
 	)
 
-	params.Subspace(cellarfeesTypes.ModuleName)
-	subSpace, found := params.GetSubspace(cellarfeesTypes.ModuleName)
+	params.Subspace(cellarfeestypes.ModuleName)
+	subSpace, found := params.GetSubspace(cellarfeestypes.ModuleName)
 	suite.Assertions.True(found)
 
 	suite.cellarfeesKeeper = NewKeeper(
@@ -80,15 +79,14 @@ func (suite *KeeperTestSuite) SetupTest() {
 		suite.bankKeeper,
 		suite.mintKeeper,
 		suite.corkKeeper,
-		suite.gravityKeeper,
 		suite.auctionKeeper,
 	)
 
-	cellarfeesTypes.RegisterInterfaces(encCfg.InterfaceRegistry)
+	cellarfeestypesv2.RegisterInterfaces(encCfg.InterfaceRegistry)
 
 	queryHelper := baseapp.NewQueryServerTestHelper(ctx, encCfg.InterfaceRegistry)
-	cellarfeesTypes.RegisterQueryServer(queryHelper, suite.cellarfeesKeeper)
-	queryClient := cellarfeesTypes.NewQueryClient(queryHelper)
+	cellarfeestypesv2.RegisterQueryServer(queryHelper, suite.cellarfeesKeeper)
+	queryClient := cellarfeestypesv2.NewQueryClient(queryHelper)
 
 	suite.queryClient = queryClient
 	suite.encCfg = encCfg
@@ -96,16 +94,6 @@ func (suite *KeeperTestSuite) SetupTest() {
 
 func TestKeeperTestSuite(t *testing.T) {
 	suite.Run(t, new(KeeperTestSuite))
-}
-
-func (suite *KeeperTestSuite) TestKeeperGettingSettingFeeAccrualCounters() {
-	ctx, cellarfeesKeeper := suite.ctx, suite.cellarfeesKeeper
-	require := suite.Require()
-
-	expected := cellarfeesTypes.DefaultFeeAccrualCounters()
-	cellarfeesKeeper.SetFeeAccrualCounters(ctx, expected)
-
-	require.Equal(expected, cellarfeesKeeper.GetFeeAccrualCounters(ctx))
 }
 
 func (suite *KeeperTestSuite) TestKeeperGettingSettingLastRewardSupplyPeak() {
@@ -127,7 +115,7 @@ func (suite *KeeperTestSuite) TestGetAPY() {
 	lastPeak := sdk.NewInt(10_000_000)
 
 	cellarfeesKeeper.SetLastRewardSupplyPeak(ctx, lastPeak)
-	cellarfeesParams := cellarfeesTypes.DefaultParams()
+	cellarfeesParams := cellarfeestypesv2.DefaultParams()
 	cellarfeesParams.RewardEmissionPeriod = 10
 	cellarfeesKeeper.SetParams(ctx, cellarfeesParams)
 	suite.mintKeeper.EXPECT().GetParams(ctx).Return(minttypes.Params{
