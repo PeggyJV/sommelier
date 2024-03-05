@@ -22,6 +22,7 @@ import (
 	auctiontypes "github.com/peggyjv/sommelier/v7/x/auction/types"
 	axelarcorktypes "github.com/peggyjv/sommelier/v7/x/axelarcork/types"
 	cellarfeestypes "github.com/peggyjv/sommelier/v7/x/cellarfees/types"
+	cellarfeestypesv2 "github.com/peggyjv/sommelier/v7/x/cellarfees/types/v2"
 	corktypesunversioned "github.com/peggyjv/sommelier/v7/x/cork/types"
 	corktypes "github.com/peggyjv/sommelier/v7/x/cork/types/v2"
 	pubsubtypes "github.com/peggyjv/sommelier/v7/x/pubsub/types"
@@ -69,6 +70,7 @@ pohf4PJrfacqpi7PoXBk
 -----END CERTIFICATE-----
 `
 	axelarSweepDenom = "sweep"
+	ibcDenom         = "ibc/1"
 )
 
 var (
@@ -79,7 +81,7 @@ var (
 	gravityContract       = common.HexToAddress("0x04C89607413713Ec9775E14b954286519d836FEf")
 	counterContract       = common.HexToAddress("0x0000000000000000000000000000000000000000")
 	alphaERC20Contract    = common.HexToAddress("0x0000000000000000000000000000000000000000")
-	betaERC20Contract     = common.HexToAddress("0x0000000000000000000000000000000000000000")
+	alphaERC20Denom       = fmt.Sprintf("gravity%s", alphaERC20Contract.Hex())
 	unusedGenesisContract = common.HexToAddress("0x0000000000000000000000000000000000000001")
 
 	alphaFeeDenom = ""
@@ -408,19 +410,12 @@ func (s *IntegrationTestSuite) initGenesis() {
 
 	// Add an auction for integration testing of the auction module
 	alphaFeeDenom = fmt.Sprintf("gravity%s", alphaERC20Contract.Hex())
-	betaFeeDenom = fmt.Sprintf("gravity%s", betaERC20Contract.Hex())
 	var auctionGenState auctiontypes.GenesisState
 	s.Require().NoError(cdc.UnmarshalJSON(appGenState[auctiontypes.ModuleName], &auctionGenState))
 	auctionGenState.TokenPrices = append(auctionGenState.TokenPrices, &auctiontypes.TokenPrice{
 		Denom:            alphaFeeDenom,
 		Exponent:         6,
 		UsdPrice:         sdk.MustNewDecFromStr("1.0"),
-		LastUpdatedBlock: 0,
-	})
-	auctionGenState.TokenPrices = append(auctionGenState.TokenPrices, &auctiontypes.TokenPrice{
-		Denom:            betaFeeDenom,
-		Exponent:         6,
-		UsdPrice:         sdk.MustNewDecFromStr("5.0"),
 		LastUpdatedBlock: 0,
 	})
 	auctionGenState.TokenPrices = append(auctionGenState.TokenPrices, &auctiontypes.TokenPrice{
@@ -463,14 +458,14 @@ func (s *IntegrationTestSuite) initGenesis() {
 	appGenState[axelarcorktypes.ModuleName] = bz
 
 	// set cellarfees gen state
-	cellarfeesGenState := cellarfeestypes.DefaultGenesisState()
+	cellarfeesGenState := cellarfeestypesv2.DefaultGenesisState()
 	s.Require().NoError(cdc.UnmarshalJSON(appGenState[cellarfeestypes.ModuleName], &cellarfeesGenState))
-	cellarfeesGenState.Params = cellarfeestypes.Params{
-		FeeAccrualAuctionThreshold: 2,
+	cellarfeesGenState.Params = cellarfeestypesv2.Params{
 		RewardEmissionPeriod:       100,
 		InitialPriceDecreaseRate:   sdk.MustNewDecFromStr("0.05"),
 		PriceDecreaseBlockInterval: uint64(1000),
 		AuctionInterval:            50,
+		AuctionThresholdUsdValue:   sdk.MustNewDecFromStr("100.00"),
 	}
 	bz, err = cdc.MarshalJSON(&cellarfeesGenState)
 	s.Require().NoError(err)

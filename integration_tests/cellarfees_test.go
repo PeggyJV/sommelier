@@ -8,11 +8,9 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	disttypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
-	"github.com/ethereum/go-ethereum"
-	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/ethclient"
 	auctiontypes "github.com/peggyjv/sommelier/v7/x/auction/types"
-	cellarfeestypes "github.com/peggyjv/sommelier/v7/x/cellarfees/types"
+	cellarfeestypesv2 "github.com/peggyjv/sommelier/v7/x/cellarfees/types/v2"
 	corktypes "github.com/peggyjv/sommelier/v7/x/cork/types/v2"
 )
 
@@ -31,7 +29,7 @@ func (s *IntegrationTestSuite) TestCellarFees() {
 
 		auctionQueryClient := auctiontypes.NewQueryClient(clientCtx)
 		bankQueryClient := banktypes.NewQueryClient(clientCtx)
-		cellarfeesQueryClient := cellarfeestypes.NewQueryClient(clientCtx)
+		cellarfeesQueryClient := cellarfeestypesv2.NewQueryClient(clientCtx)
 		corkQueryClient := corktypes.NewQueryClient(clientCtx)
 		distQueryClient := disttypes.NewQueryClient(clientCtx)
 
@@ -52,7 +50,7 @@ func (s *IntegrationTestSuite) TestCellarFees() {
 		ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
 		defer cancel()
 
-		acctsRes, err := cellarfeesQueryClient.QueryModuleAccounts(ctx, &cellarfeestypes.QueryModuleAccountsRequest{})
+		acctsRes, err := cellarfeesQueryClient.QueryModuleAccounts(ctx, &cellarfeestypesv2.QueryModuleAccountsRequest{})
 		s.Require().NoError(err, "Failed to query module accounts")
 
 		feesAddress := acctsRes.FeesAddress
@@ -63,116 +61,6 @@ func (s *IntegrationTestSuite) TestCellarFees() {
 		})
 		s.Require().NoError(err, "Failed to query fee balance of denom %s", alphaERC20Contract.Hex())
 		s.Require().Zero(balanceRes.Balance.Amount.Uint64())
-		balanceRes, err = bankQueryClient.Balance(ctx, &banktypes.QueryBalanceRequest{
-			Address: feesAddress,
-			Denom:   fmt.Sprintf("gravity%s", betaERC20Contract.Hex()),
-		})
-		s.Require().NoError(err, "Failed to query fee balance of denom %s", betaERC20Contract.Hex())
-		s.Require().Zero(balanceRes.Balance.Amount.Uint64())
-
-		s.T().Logf("Approving Gravity to spend Alpha ERC20")
-		approveData := PackApproveERC20(gravityContract)
-		err = SendEthTransaction(ethClient, &val.ethereumKey, alphaERC20Contract, approveData)
-		s.Require().NoError(err, "Error approving spending ALPHA balance for the gravity contract on behalf of the first validator")
-
-		s.T().Logf("Approving Gravity to spend Beta ERC20")
-		approveData = PackApproveERC20(gravityContract)
-		err = SendEthTransaction(ethClient, &val.ethereumKey, betaERC20Contract, approveData)
-		s.Require().NoError(err, "Error approving spending BETA balance for the gravity contract on behalf of the first validator")
-
-		s.T().Logf("Waiting for allowance confirmations..")
-		data := PackAllowance(common.HexToAddress(ethereumSender), gravityContract)
-		s.Require().Eventually(func() bool {
-			res, _ := ethClient.CallContract(context.Background(), ethereum.CallMsg{
-				From: common.HexToAddress(ethereumSender),
-				To:   &alphaERC20Contract,
-				Gas:  0,
-				Data: data,
-			}, nil)
-
-			allowance := UnpackEthUInt(res).BigInt()
-			s.T().Logf("Allowance: %v", allowance)
-
-			return sdk.NewIntFromBigInt(allowance).GT(sdk.ZeroInt())
-		}, time.Second*10, time.Second, "AlphaERC20 allowance not found")
-
-		data = PackAllowance(common.HexToAddress(ethereumSender), gravityContract)
-		s.Require().Eventually(func() bool {
-			res, _ := ethClient.CallContract(context.Background(), ethereum.CallMsg{
-				From: common.HexToAddress(ethereumSender),
-				To:   &betaERC20Contract,
-				Gas:  0,
-				Data: data,
-			}, nil)
-
-			allowance := UnpackEthUInt(res).BigInt()
-			s.T().Logf("Allowance: %v", allowance)
-
-			return sdk.NewIntFromBigInt(allowance).GT(sdk.ZeroInt())
-		}, time.Second*10, time.Second, "BetaERC20 allowance not found")
-
-		s.T().Log("Sending ALPHA fees to cellarfees module account")
-		acc, err := sdk.AccAddressFromBech32(feesAddress)
-		s.Require().NoError(err, "Failed to derive fees account address from bech32 string: %s", feesAddress)
-		sendData := PackSendToCosmos(alphaERC20Contract, acc, sdk.NewInt(50000))
-		err = SendEthTransaction(ethClient, &val.ethereumKey, gravityContract, sendData)
-		s.Require().NoError(err, "Failed to send fees transaction to Cosmos")
-
-		s.T().Log("Sending BETA fees to cellarfees module account")
-		acc, err = sdk.AccAddressFromBech32(feesAddress)
-		s.Require().NoError(err, "Failed to derive fees account address from bech32 string: %s", feesAddress)
-		sendData = PackSendToCosmos(betaERC20Contract, acc, sdk.NewInt(20000))
-		err = SendEthTransaction(ethClient, &val.ethereumKey, gravityContract, sendData)
-		s.Require().NoError(err, "Failed to send fees transaction to Cosmos")
-
-		s.T().Log("Waiting for fees to be received...")
-		s.Require().Eventually(func() bool {
-			res, err := bankQueryClient.Balance(context.Background(),
-				&banktypes.QueryBalanceRequest{
-					Address: feesAddress,
-					Denom:   alphaFeeDenom,
-				})
-			s.Require().NoError(err)
-			s.T().Logf("fee balance: %s", res.Balance)
-
-			return res.Balance.Amount.GT(sdk.ZeroInt())
-		}, time.Second*60, time.Second*6, "ALPHA Fees never received by cellarfees account")
-
-		s.Require().Eventually(func() bool {
-			res, err := bankQueryClient.Balance(context.Background(),
-				&banktypes.QueryBalanceRequest{
-					Address: feesAddress,
-					Denom:   betaFeeDenom,
-				})
-			s.Require().NoError(err)
-			s.T().Logf("fee balance: %s", res.Balance)
-
-			return res.Balance.Amount.GT(sdk.ZeroInt())
-		}, time.Second*60, time.Second*6, "BETA Fees never received by cellarfees account")
-
-		s.T().Log("Fees received! Confirming no auction gets started yet...")
-		for i := 0; i < 10; i++ {
-			res, _ := auctionQueryClient.QueryActiveAuctions(ctx, &auctiontypes.QueryActiveAuctionsRequest{})
-			if res == nil {
-				continue
-			}
-
-			for _, auction := range res.Auctions {
-				s.Require().NotEqual(auction.StartingTokensForSale.Denom, alphaFeeDenom)
-				s.Require().NotEqual(auction.StartingTokensForSale.Denom, betaFeeDenom)
-			}
-
-			time.Sleep(time.Second)
-		}
-
-		s.T().Log("Sending ERC20 fees a second time")
-		sendData = PackSendToCosmos(alphaERC20Contract, acc, sdk.NewInt(100000))
-		err = SendEthTransaction(ethClient, &val.ethereumKey, gravityContract, sendData)
-		s.Require().NoError(err, "Failed to send fees transaction to Cosmos")
-
-		sendData = PackSendToCosmos(betaERC20Contract, acc, sdk.NewInt(120000))
-		err = SendEthTransaction(ethClient, &val.ethereumKey, gravityContract, sendData)
-		s.Require().NoError(err, "Failed to send fees transaction to Cosmos")
 
 		s.T().Log("Waiting for auctions to start")
 		alphaAuctionID, betaAuctionID := uint32(0), uint32(0)
