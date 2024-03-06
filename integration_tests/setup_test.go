@@ -85,7 +85,6 @@ var (
 	unusedGenesisContract = common.HexToAddress("0x0000000000000000000000000000000000000001")
 
 	alphaFeeDenom = ""
-	betaFeeDenom  = ""
 
 	// 67%
 	corkVoteThreshold = sdk.NewDecWithPrec(67, 2)
@@ -676,12 +675,6 @@ func (s *IntegrationTestSuite) runEthContainer() {
 				// this is not the last contract deployed
 				continue
 			}
-			if strings.HasPrefix(s, "betaERC20 contract deployed at") {
-				strSpl := strings.Split(s, "-")
-				betaERC20Contract = common.HexToAddress(strings.ReplaceAll(strSpl[1], " ", ""))
-				// this is not the last contract deployed
-				continue
-			}
 			if strings.HasPrefix(s, "counter contract deployed at") {
 				strSpl := strings.Split(s, "-")
 				counterContract = common.HexToAddress(strings.ReplaceAll(strSpl[1], " ", ""))
@@ -692,7 +685,6 @@ func (s *IntegrationTestSuite) runEthContainer() {
 	}, time.Minute*5, time.Second*10, "unable to retrieve gravity address from logs")
 	s.T().Logf("gravity contract deployed at %s", gravityContract.String())
 	s.T().Logf("alphaERC20 contract deployed at %s", alphaERC20Contract.String())
-	s.T().Logf("betaERC20 contract deployed at %s", betaERC20Contract.String())
 	s.T().Logf("counter contract deployed at %s", counterContract.String())
 	s.T().Logf("started Ethereum container: %s", s.ethResource.Container.ID)
 }

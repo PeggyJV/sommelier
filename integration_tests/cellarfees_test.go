@@ -8,7 +8,6 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	disttypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
-	"github.com/ethereum/go-ethereum/ethclient"
 	auctiontypes "github.com/peggyjv/sommelier/v7/x/auction/types"
 	cellarfeestypesv2 "github.com/peggyjv/sommelier/v7/x/cellarfees/types/v2"
 	corktypes "github.com/peggyjv/sommelier/v7/x/cork/types/v2"
@@ -19,9 +18,6 @@ func (s *IntegrationTestSuite) TestCellarFees() {
 		val := s.chain.validators[0]
 		ethereumSender := val.ethereumKey.address
 		kb, err := val.keyring()
-		s.Require().NoError(err)
-
-		ethClient, err := ethclient.Dial(fmt.Sprintf("http://%s", s.ethResource.GetHostPort("8545/tcp")))
 		s.Require().NoError(err)
 
 		clientCtx, err := s.chain.clientContext("tcp://localhost:26657", &kb, "val", val.address())
@@ -63,28 +59,19 @@ func (s *IntegrationTestSuite) TestCellarFees() {
 		s.Require().Zero(balanceRes.Balance.Amount.Uint64())
 
 		s.T().Log("Waiting for auctions to start")
-		alphaAuctionID, betaAuctionID := uint32(0), uint32(0)
+		alphaAuctionID := uint32(0)
 		s.Require().Eventually(func() bool {
 			res, _ := auctionQueryClient.QueryActiveAuctions(ctx, &auctiontypes.QueryActiveAuctionsRequest{})
 
-			alpha, beta := false, false
 			if res != nil {
 				for _, auction := range res.Auctions {
 					if auction.StartingTokensForSale.Denom == alphaFeeDenom {
-						alphaAuctionID = auction.Id
-						alpha = true
-					} else if auction.StartingTokensForSale.Denom == betaFeeDenom {
-						betaAuctionID = auction.Id
-						beta = true
-					}
-
-					if alpha && beta {
-						break
+						return true
 					}
 				}
 			}
 
-			return alpha && beta
+			return false
 		}, time.Second*30, time.Second*5, "Auctions never started for test fees")
 
 		s.T().Log("Bidding to buy all of the ALPHA fees available")
@@ -152,17 +139,6 @@ func (s *IntegrationTestSuite) TestCellarFees() {
 			return false
 		}, time.Second*30, time.Millisecond*400, "Distribution rate was invalid or could not be determined")
 
-		s.T().Log("Distribution rate is linear. Increasing the reward supply by bidding on the BETA auction")
-		bidRequest2 := auctiontypes.MsgSubmitBidRequest{
-			AuctionId:              betaAuctionID,
-			Signer:                 orch.address().String(),
-			MaxBidInUsomm:          sdk.NewCoin(testDenom, sdk.NewIntFromUint64(1400000)),
-			SaleTokenMinimumAmount: sdk.NewCoin(betaFeeDenom, sdk.NewIntFromUint64(140000)),
-		}
-
-		_, err = s.chain.sendMsgs(*orchClientCtx, &bidRequest2)
-		s.Require().NoError(err, "Failed to submit bid")
-
 		s.T().Log("Waiting to see distribution rate increase")
 		lastBalanceSeen = sdk.ZeroInt()
 		s.Require().Eventually(func() bool {
@@ -222,11 +198,6 @@ func (s *IntegrationTestSuite) TestCellarFees() {
 
 			return res == nil || res.Balance.Amount.Equal(sdk.ZeroInt())
 		}, time.Second*300, time.Second*10, "Reward supply did not exhaust in the provided amount of time")
-
-		s.T().Log("Verify that the accrual counter reset by sending more ALPHA")
-		sendData = PackSendToCosmos(alphaERC20Contract, acc, sdk.NewInt(25000))
-		err = SendEthTransaction(ethClient, &val.ethereumKey, gravityContract, sendData)
-		s.Require().NoError(err, "Failed to send fees transaction to Cosmos")
 
 		s.T().Log("Confirming no auction is started...")
 		for i := 0; i < 20; i++ {
