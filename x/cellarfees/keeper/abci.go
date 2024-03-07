@@ -4,6 +4,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	"github.com/peggyjv/sommelier/v7/app/params"
+	"github.com/peggyjv/sommelier/v7/x/cellarfees/types"
 )
 
 // BeginBlocker emits rewards each block they are available by sending them to the distribution module's fee collector
@@ -28,6 +29,7 @@ func (k Keeper) handleRewardEmission(ctx sdk.Context) {
 	emission := k.GetEmission(ctx, remainingRewardsSupply)
 
 	// Send to fee collector for distribution
+	ctx.Logger().Info("Sending rewards to fee collector", "module", types.ModuleName)
 	err := k.bankKeeper.SendCoinsFromModuleToModule(ctx, moduleAccount.GetName(), authtypes.FeeCollectorName, emission)
 	if err != nil {
 		panic(err)

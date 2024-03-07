@@ -51,7 +51,7 @@ import (
 
 const (
 	testDenom           = "usomm"
-	initBalanceStr      = "210000000000usomm"
+	initBalanceStr      = "210000000000usomm,1ibc/1"
 	minGasPrice         = "2"
 	ethChainID     uint = 15
 	exampleCA           = `-----BEGIN CERTIFICATE-----
@@ -70,6 +70,7 @@ pohf4PJrfacqpi7PoXBk
 -----END CERTIFICATE-----
 `
 	axelarSweepDenom = "sweep"
+	gravityDenom     = "gravity0x0000000000000000000000000000000000000000"
 	ibcDenom         = "ibc/1"
 )
 
@@ -81,10 +82,7 @@ var (
 	gravityContract       = common.HexToAddress("0x04C89607413713Ec9775E14b954286519d836FEf")
 	counterContract       = common.HexToAddress("0x0000000000000000000000000000000000000000")
 	alphaERC20Contract    = common.HexToAddress("0x0000000000000000000000000000000000000000")
-	alphaERC20Denom       = fmt.Sprintf("gravity%s", alphaERC20Contract.Hex())
 	unusedGenesisContract = common.HexToAddress("0x0000000000000000000000000000000000000001")
-
-	alphaFeeDenom = ""
 
 	// 67%
 	corkVoteThreshold = sdk.NewDecWithPrec(67, 2)
@@ -336,7 +334,7 @@ func (s *IntegrationTestSuite) initGenesis() {
 		})
 
 	// Set up auction module with some coins to auction off
-	balance := banktypes.Balance{
+	auctionBalance := banktypes.Balance{
 		Address: authtypes.NewModuleAddress(auctiontypes.ModuleName).String(),
 		Coins:   sdk.NewCoins(sdk.NewCoin("gravity0x3506424f91fd33084466f402d5d97f05f8e3b4af", sdk.NewInt(5000000000))),
 	}
@@ -348,9 +346,17 @@ func (s *IntegrationTestSuite) initGenesis() {
 		Address: s.chain.orchestrators[0].address().String(),
 		Coins:   sdk.NewCoins(sdk.NewCoin(axelarSweepDenom, sdk.NewInt(2000000000))),
 	}
-	bankGenState.Balances = append(bankGenState.Balances, balance)
+	feesBalance := banktypes.Balance{
+		Address: authtypes.NewModuleAddress(cellarfeestypes.ModuleName).String(),
+		Coins: sdk.NewCoins(
+			sdk.NewCoin(gravityDenom, sdk.NewInt(100000000000000)),
+			sdk.NewCoin(ibcDenom, sdk.NewInt(99999999)),
+		),
+	}
+	bankGenState.Balances = append(bankGenState.Balances, auctionBalance)
 	bankGenState.Balances = append(bankGenState.Balances, distBalance)
 	bankGenState.Balances = append(bankGenState.Balances, orchSweepBalance)
+	bankGenState.Balances = append(bankGenState.Balances, feesBalance)
 
 	bz, err := cdc.MarshalJSON(&bankGenState)
 	s.Require().NoError(err)
@@ -408,19 +414,12 @@ func (s *IntegrationTestSuite) initGenesis() {
 	s.Require().NoError(cdc.UnmarshalJSON(appGenState[genutiltypes.ModuleName], &genUtilGenState))
 
 	// Add an auction for integration testing of the auction module
-	alphaFeeDenom = fmt.Sprintf("gravity%s", alphaERC20Contract.Hex())
 	var auctionGenState auctiontypes.GenesisState
 	s.Require().NoError(cdc.UnmarshalJSON(appGenState[auctiontypes.ModuleName], &auctionGenState))
 	auctionGenState.TokenPrices = append(auctionGenState.TokenPrices, &auctiontypes.TokenPrice{
-		Denom:            alphaFeeDenom,
-		Exponent:         6,
-		UsdPrice:         sdk.MustNewDecFromStr("1.0"),
-		LastUpdatedBlock: 0,
-	})
-	auctionGenState.TokenPrices = append(auctionGenState.TokenPrices, &auctiontypes.TokenPrice{
 		Denom:            testDenom,
 		Exponent:         6,
-		UsdPrice:         sdk.MustNewDecFromStr("0.5"),
+		UsdPrice:         sdk.MustNewDecFromStr("1.0"),
 		LastUpdatedBlock: 0,
 	})
 	auctionGenState.Auctions = append(auctionGenState.Auctions, &auctiontypes.Auction{
@@ -437,6 +436,7 @@ func (s *IntegrationTestSuite) initGenesis() {
 		FundingModuleAccount:       cellarfeestypes.ModuleName,
 		ProceedsModuleAccount:      cellarfeestypes.ModuleName,
 	})
+	auctionGenState.LastAuctionId = 1
 	bz, err = cdc.MarshalJSON(&auctionGenState)
 	s.Require().NoError(err)
 	appGenState[auctiontypes.ModuleName] = bz

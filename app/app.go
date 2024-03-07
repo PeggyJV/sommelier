@@ -219,6 +219,7 @@ var (
 	// incidentally this permission is also required to be able to send tokens from module accounts
 	allowedReceivingModAcc = map[string]bool{
 		axelarcorktypes.ModuleName: true,
+		cellarfeestypes.ModuleName: true,
 	}
 
 	_ simapp.App              = (*SommelierApp)(nil)
