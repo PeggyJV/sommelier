@@ -1,8 +1,6 @@
 package types
 
 import (
-	"strings"
-
 	errorsmod "cosmossdk.io/errors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
@@ -53,10 +51,6 @@ func (m *MsgSubmitBidRequest) ValidateBasic() error {
 
 	if !m.SaleTokenMinimumAmount.IsValid() || !m.SaleTokenMinimumAmount.IsPositive() {
 		return errorsmod.Wrapf(ErrMinimumAmountMustBePositive, "sale token amount: %s", m.SaleTokenMinimumAmount.String())
-	}
-
-	if !strings.HasPrefix(m.SaleTokenMinimumAmount.Denom, "gravity0x") {
-		return errorsmod.Wrapf(ErrInvalidTokenBeingBidOn, "sale token: %s", m.SaleTokenMinimumAmount.String())
 	}
 
 	if _, err := sdk.AccAddressFromBech32(m.Signer); err != nil {
