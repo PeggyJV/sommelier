@@ -64,7 +64,7 @@ func (suite *KeeperTestSuite) TestQueriesHappyPath() {
 	require.Equal("0.004380000000000000", APYResult.Apy)
 
 	// QueryFeeTokenBalance
-	denom := "testdenom"
+	denom := feeDenom
 	amount := sdk.NewInt(1000000)
 	suite.bankKeeper.EXPECT().GetDenomMetaData(ctx, denom).Return(banktypes.Metadata{}, true)
 	suite.accountKeeper.EXPECT().GetModuleAccount(ctx, cellarfeestypes.ModuleName).Return(feesAccount).Times(1)
@@ -168,9 +168,9 @@ func (suite *KeeperTestSuite) TestQueriesUnhappyPath() {
 	require.NotNil(err)
 	require.Equal(status.Code(err), codes.InvalidArgument)
 
-	denom := "testdenom"
+	denom := feeDenom
 	suite.bankKeeper.EXPECT().GetDenomMetaData(ctx, denom).Return(banktypes.Metadata{}, false)
-	feeTokenBalanceResponse, err = cellarfeesKeeper.QueryFeeTokenBalance(sdk.WrapSDKContext(ctx), &cellarfeestypesv2.QueryFeeTokenBalanceRequest{Denom: "testdenom"})
+	feeTokenBalanceResponse, err = cellarfeesKeeper.QueryFeeTokenBalance(sdk.WrapSDKContext(ctx), &cellarfeestypesv2.QueryFeeTokenBalanceRequest{Denom: denom})
 	require.Nil(feeTokenBalanceResponse)
 	require.NotNil(err)
 	require.Equal(status.Code(err), codes.NotFound)

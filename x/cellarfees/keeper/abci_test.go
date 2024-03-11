@@ -4,7 +4,6 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/golang/mock/gomock"
 	appParams "github.com/peggyjv/sommelier/v7/app/params"
-	auctionTypes "github.com/peggyjv/sommelier/v7/x/auction/types"
 	auctiontypes "github.com/peggyjv/sommelier/v7/x/auction/types"
 	cellarfeestypes "github.com/peggyjv/sommelier/v7/x/cellarfees/types"
 	cellarfeestypesv2 "github.com/peggyjv/sommelier/v7/x/cellarfees/types/v2"
@@ -191,9 +190,9 @@ func (suite *KeeperTestSuite) TestHandleFeeAuctionsHappyPath() {
 	suite.accountKeeper.EXPECT().GetModuleAccount(ctx, cellarfeestypes.ModuleName).Return(feesAccount)
 
 	// no active auctions
-	suite.auctionKeeper.EXPECT().GetActiveAuctions(ctx).Return([]*auctionTypes.Auction{})
+	suite.auctionKeeper.EXPECT().GetActiveAuctions(ctx).Return([]*auctiontypes.Auction{})
 	suite.auctionKeeper.EXPECT().BeginAuction(ctx, balance1, params.InitialPriceDecreaseRate, params.PriceDecreaseBlockInterval, cellarfeestypes.ModuleName, cellarfeestypes.ModuleName).Return(nil)
-	expectedAuction1 := auctionTypes.Auction{
+	expectedAuction1 := auctiontypes.Auction{
 		Id:                         1,
 		StartingTokensForSale:      balance1,
 		InitialPriceDecreaseRate:   params.InitialPriceDecreaseRate,
@@ -206,7 +205,7 @@ func (suite *KeeperTestSuite) TestHandleFeeAuctionsHappyPath() {
 		FundingModuleAccount:       cellarfeestypes.ModuleName,
 		ProceedsModuleAccount:      cellarfeestypes.ModuleName,
 	}
-	suite.auctionKeeper.EXPECT().GetActiveAuctions(ctx).Return([]*auctionTypes.Auction{&expectedAuction1})
+	suite.auctionKeeper.EXPECT().GetActiveAuctions(ctx).Return([]*auctiontypes.Auction{&expectedAuction1})
 	suite.auctionKeeper.EXPECT().BeginAuction(ctx, balance2, params.InitialPriceDecreaseRate, params.PriceDecreaseBlockInterval, cellarfeestypes.ModuleName, cellarfeestypes.ModuleName).Return(nil)
 
 	// we only set expected calls for two auctions because the third token price is $99, so no auction should be started.
