@@ -49,7 +49,11 @@ func (k Keeper) handleFeeAuctions(ctx sdk.Context) {
 			continue
 		}
 
-		balance := k.GetFeeBalance(ctx, tokenPrice.Denom)
+		balance, found := k.GetFeeBalance(ctx, tokenPrice.Denom)
+
+		if !found {
+			continue
+		}
 
 		if balance.IsZero() {
 			continue

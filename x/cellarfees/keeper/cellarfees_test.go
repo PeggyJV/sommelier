@@ -38,8 +38,9 @@ func (suite *KeeperTestSuite) TestGetFeeBalance() {
 	suite.accountKeeper.EXPECT().GetModuleAccount(ctx, cellarfeestypes.ModuleName).Return(&account)
 	suite.bankKeeper.EXPECT().GetBalance(ctx, account.GetAddress(), expectedDenom).Return(expectedBalance)
 
-	balance := cellarfeesKeeper.GetFeeBalance(ctx, expectedDenom)
+	balance, found := cellarfeesKeeper.GetFeeBalance(ctx, expectedDenom)
 
+	require.True(found)
 	require.Equal(expectedBalance, balance)
 }
 

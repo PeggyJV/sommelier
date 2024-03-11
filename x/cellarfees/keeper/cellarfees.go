@@ -40,10 +40,16 @@ func (k Keeper) GetEmission(ctx sdk.Context, remainingRewardsSupply math.Int) sd
 	return sdk.NewCoins(sdk.NewCoin(params.BaseCoinUnit, emissionAmount))
 }
 
-func (k Keeper) GetFeeBalance(ctx sdk.Context, denom string) sdk.Coin {
+func (k Keeper) GetFeeBalance(ctx sdk.Context, denom string) (sdk.Coin, bool) {
 	feesAddr := k.GetFeesAccount(ctx).GetAddress()
 
-	return k.bankKeeper.GetBalance(ctx, feesAddr, denom)
+	for _, balance := range k.bankKeeper.GetAllBalances(ctx, feesAddr) {
+		if balance.Denom == denom {
+			return balance, true
+		}
+	}
+
+	return sdk.Coin{}, false
 }
 
 func (k Keeper) GetBalanceUsdValue(ctx sdk.Context, balance sdk.Coin, tokenPrice *auctiontypes.TokenPrice) sdk.Dec {

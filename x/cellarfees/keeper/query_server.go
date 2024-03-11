@@ -25,7 +25,6 @@ func (k Keeper) QueryModuleAccounts(c context.Context, req *types.QueryModuleAcc
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "empty request")
 	}
-
 	return &types.QueryModuleAccountsResponse{
 		FeesAddress: k.GetFeesAccount(sdk.UnwrapSDKContext(c)).GetAddress().String(),
 	}, nil
@@ -55,12 +54,11 @@ func (k Keeper) QueryFeeTokenBalance(c context.Context, req *types.QueryFeeToken
 		return nil, status.Error(codes.InvalidArgument, "denom cannot be empty")
 	}
 
-	_, found := k.bankKeeper.GetDenomMetaData(ctx, req.Denom)
+	balance, found := k.GetFeeBalance(ctx, req.Denom)
 	if !found {
-		return nil, status.Error(codes.NotFound, "denom not found")
+		return nil, status.Error(codes.NotFound, "fee token balance not found")
 	}
 
-	balance := k.GetFeeBalance(ctx, req.Denom)
 	tokenPrice, found := k.auctionKeeper.GetTokenPrice(ctx, req.Denom)
 	if !found {
 		return nil, status.Error(codes.NotFound, "token price not found")
@@ -89,7 +87,10 @@ func (k Keeper) QueryFeeTokenBalances(c context.Context, _ *types.QueryFeeTokenB
 	// this exclude fee token balances that don't have one yet.
 	tokenPrices := k.auctionKeeper.GetTokenPrices(ctx)
 	for _, tokenPrice := range tokenPrices {
-		balance := k.GetFeeBalance(ctx, tokenPrice.Denom)
+		balance, found := k.GetFeeBalance(ctx, tokenPrice.Denom)
+		if !found {
+			continue
+		}
 
 		if balance.IsZero() {
 			continue
