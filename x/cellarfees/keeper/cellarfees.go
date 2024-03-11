@@ -52,7 +52,7 @@ func (k Keeper) GetFeeBalance(ctx sdk.Context, denom string) (sdk.Coin, bool) {
 	return sdk.Coin{}, false
 }
 
-func (k Keeper) GetBalanceUsdValue(ctx sdk.Context, balance sdk.Coin, tokenPrice *auctiontypes.TokenPrice) sdk.Dec {
+func (k Keeper) GetBalanceUsdValue(ctx sdk.Context, balance sdk.Coin, tokenPrice auctiontypes.TokenPrice) sdk.Dec {
 	unitAmount := sdk.NewDecFromInt(balance.Amount).Quo(sdk.NewDec(10).Power(tokenPrice.Exponent))
 
 	return tokenPrice.UsdPrice.Mul(unitAmount)

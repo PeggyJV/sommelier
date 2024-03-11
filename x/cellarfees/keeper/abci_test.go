@@ -155,7 +155,7 @@ func (suite *KeeperTestSuite) TestHandleFeeAuctionsHappyPath() {
 	denom3 := "denom3"
 	amount1 := sdk.NewInt(1000000)
 	amount2 := sdk.NewInt(2000000000000)
-	amount3 := sdk.NewInt(3000000000000000000)
+	amount3 := sdk.NewInt(3000000000000000)
 	balance1 := sdk.NewCoin(denom1, amount1)
 	balance2 := sdk.NewCoin(denom2, amount2)
 	balance3 := sdk.NewCoin(denom3, amount3)
@@ -180,8 +180,11 @@ func (suite *KeeperTestSuite) TestHandleFeeAuctionsHappyPath() {
 		},
 	}
 
-	suite.auctionKeeper.EXPECT().GetTokenPrices(ctx).Return(tokenPrices)
+	suite.auctionKeeper.EXPECT().GetTokenPrice(ctx, denom1).Return(*tokenPrices[0], true)
+	suite.auctionKeeper.EXPECT().GetTokenPrice(ctx, denom2).Return(*tokenPrices[1], true)
+	suite.auctionKeeper.EXPECT().GetTokenPrice(ctx, denom3).Return(*tokenPrices[2], true)
 	suite.accountKeeper.EXPECT().GetModuleAccount(ctx, cellarfeestypes.ModuleName).Return(feesAccount).Times(len(tokenPrices) * 2)
+	suite.bankKeeper.EXPECT().GetAllBalances(ctx, feesAccount.GetAddress()).Return(sdk.NewCoins(balance1)).Times(2)
 	suite.bankKeeper.EXPECT().GetBalance(ctx, feesAccount.GetAddress(), denom1).Return(balance1).Times(2)
 	suite.bankKeeper.EXPECT().GetBalance(ctx, feesAccount.GetAddress(), denom2).Return(balance2).Times(2)
 	suite.bankKeeper.EXPECT().GetBalance(ctx, feesAccount.GetAddress(), denom3).Return(balance3).Times(2)

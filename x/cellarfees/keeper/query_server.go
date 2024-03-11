@@ -64,7 +64,7 @@ func (k Keeper) QueryFeeTokenBalance(c context.Context, req *types.QueryFeeToken
 		return nil, status.Error(codes.NotFound, "token price not found")
 	}
 
-	totalUsdValue, err := k.GetBalanceUsdValue(ctx, balance, &tokenPrice).Float64()
+	totalUsdValue, err := k.GetBalanceUsdValue(ctx, balance, tokenPrice).Float64()
 	if err != nil {
 		return nil, status.Error(codes.Internal, "failed to convert usd value to float")
 	}
@@ -83,16 +83,14 @@ func (k Keeper) QueryFeeTokenBalances(c context.Context, _ *types.QueryFeeTokenB
 	ctx := sdk.UnwrapSDKContext(c)
 	feeBalances := make([]*types.FeeTokenBalance, 0)
 
-	// because we can't get a USD value without a corresponding TokenPrice set in the auction module,
-	// this exclude fee token balances that don't have one yet.
-	tokenPrices := k.auctionKeeper.GetTokenPrices(ctx)
-	for _, tokenPrice := range tokenPrices {
-		balance, found := k.GetFeeBalance(ctx, tokenPrice.Denom)
-		if !found {
+	balances := k.bankKeeper.GetAllBalances(ctx, k.GetFeesAccount(ctx).GetAddress())
+	for _, balance := range balances {
+		if balance.IsZero() {
 			continue
 		}
 
-		if balance.IsZero() {
+		tokenPrice, found := k.auctionKeeper.GetTokenPrice(ctx, balance.Denom)
+		if !found {
 			continue
 		}
 

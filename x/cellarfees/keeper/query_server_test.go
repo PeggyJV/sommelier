@@ -72,7 +72,7 @@ func (suite *KeeperTestSuite) TestQueriesHappyPath() {
 		Exponent: 6,
 		UsdPrice: sdk.NewDec(100),
 	}, true)
-	suite.bankKeeper.EXPECT().GetBalance(ctx, feesAccount.GetAddress(), denom).Return(sdk.NewCoin(denom, amount))
+	suite.bankKeeper.EXPECT().GetAllBalances(ctx, feesAccount.GetAddress()).Return(sdk.Coins{sdk.NewCoin(denom, amount)})
 
 	expectedFeeTokenBalance := cellarfeestypesv2.FeeTokenBalance{
 		Balance:  sdk.NewCoin(denom, amount),
@@ -113,23 +113,26 @@ func (suite *KeeperTestSuite) TestQueriesHappyPath() {
 	}
 	tokenPrices := []*auctiontypes.TokenPrice{&tokenPrice1, &tokenPrice2, &tokenPrice3}
 	suite.accountKeeper.EXPECT().GetModuleAccount(ctx, cellarfeestypes.ModuleName).Return(feesAccount).Times(3)
+	suite.bankKeeper.EXPECT().GetAllBalances(ctx, feesAccount.GetAddress()).Return(sdk.Coins{balance1, balance2, balance3}).Times(3)
 	suite.bankKeeper.EXPECT().GetBalance(ctx, feesAccount.GetAddress(), denom1).Return(balance1)
 	suite.bankKeeper.EXPECT().GetBalance(ctx, feesAccount.GetAddress(), denom2).Return(balance2)
 	suite.bankKeeper.EXPECT().GetBalance(ctx, feesAccount.GetAddress(), denom3).Return(balance3)
-	suite.auctionKeeper.EXPECT().GetTokenPrices(ctx).Return(tokenPrices)
+	suite.auctionKeeper.EXPECT().GetTokenPrice(ctx, denom1).Return(*tokenPrices[0], true)
+	suite.auctionKeeper.EXPECT().GetTokenPrice(ctx, denom2).Return(*tokenPrices[1], true)
+	suite.auctionKeeper.EXPECT().GetTokenPrice(ctx, denom3).Return(*tokenPrices[2], true)
 
 	expectedFeeTokenBalances := []*cellarfeestypesv2.FeeTokenBalance{
 		{
 			Balance:  balance1,
-			UsdValue: cellarfeesKeeper.GetBalanceUsdValue(ctx, balance1, &tokenPrice1).MustFloat64(),
+			UsdValue: cellarfeesKeeper.GetBalanceUsdValue(ctx, balance1, tokenPrice1).MustFloat64(),
 		},
 		{
 			Balance:  balance2,
-			UsdValue: cellarfeesKeeper.GetBalanceUsdValue(ctx, balance2, &tokenPrice2).MustFloat64(),
+			UsdValue: cellarfeesKeeper.GetBalanceUsdValue(ctx, balance2, tokenPrice2).MustFloat64(),
 		},
 		{
 			Balance:  balance3,
-			UsdValue: cellarfeesKeeper.GetBalanceUsdValue(ctx, balance3, &tokenPrice3).MustFloat64(),
+			UsdValue: cellarfeesKeeper.GetBalanceUsdValue(ctx, balance3, tokenPrice3).MustFloat64(),
 		},
 	}
 
@@ -158,6 +161,10 @@ func (suite *KeeperTestSuite) TestQueriesUnhappyPath() {
 	require.NotNil(err)
 
 	// QueryFeeTokenBalance
+	denom := feeDenom
+	suite.accountKeeper.EXPECT().GetModuleAccount(ctx, cellarfeestypes.ModuleName).Return(feesAccount)
+	suite.bankKeeper.EXPECT().GetAllBalances(ctx, feesAccount.GetAddress()).Return(sdk.Coins{sdk.NewCoin(denom, sdk.NewInt(1000000))})
+	suite.auctionKeeper.EXPECT().GetTokenPrice(ctx, denom).Return(auctiontypes.TokenPrice{}, false).Times(2)
 	feeTokenBalanceResponse, err := cellarfeesKeeper.QueryFeeTokenBalance(sdk.WrapSDKContext(ctx), nil)
 	require.Nil(feeTokenBalanceResponse)
 	require.NotNil(err)
@@ -168,17 +175,13 @@ func (suite *KeeperTestSuite) TestQueriesUnhappyPath() {
 	require.NotNil(err)
 	require.Equal(status.Code(err), codes.InvalidArgument)
 
-	denom := feeDenom
-	suite.bankKeeper.EXPECT().GetDenomMetaData(ctx, denom).Return(banktypes.Metadata{}, false)
 	feeTokenBalanceResponse, err = cellarfeesKeeper.QueryFeeTokenBalance(sdk.WrapSDKContext(ctx), &cellarfeestypesv2.QueryFeeTokenBalanceRequest{Denom: denom})
 	require.Nil(feeTokenBalanceResponse)
 	require.NotNil(err)
 	require.Equal(status.Code(err), codes.NotFound)
 
-	suite.bankKeeper.EXPECT().GetDenomMetaData(ctx, denom).Return(banktypes.Metadata{}, true)
 	suite.accountKeeper.EXPECT().GetModuleAccount(ctx, gomock.Any()).Return(feesAccount)
-	suite.bankKeeper.EXPECT().GetBalance(ctx, feesAccount.GetAddress(), denom).Return(sdk.NewCoin(denom, sdk.NewInt(1000000)))
-	suite.auctionKeeper.EXPECT().GetTokenPrice(ctx, denom).Return(auctiontypes.TokenPrice{}, false)
+	suite.bankKeeper.EXPECT().GetAllBalances(ctx, feesAccount.GetAddress()).Return(sdk.Coins{sdk.NewCoin(denom, sdk.NewInt(1000000))})
 	feeTokenBalanceResponse, err = cellarfeesKeeper.QueryFeeTokenBalance(sdk.WrapSDKContext(ctx), &cellarfeestypesv2.QueryFeeTokenBalanceRequest{Denom: denom})
 	require.Nil(feeTokenBalanceResponse)
 	require.NotNil(err)

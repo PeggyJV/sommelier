@@ -43,19 +43,18 @@ func (k Keeper) handleFeeAuctions(ctx sdk.Context) {
 		return
 	}
 
-	for _, tokenPrice := range k.auctionKeeper.GetTokenPrices(ctx) {
+	for _, balance := range k.bankKeeper.GetAllBalances(ctx, k.GetFeesAccount(ctx).GetAddress()) {
 		// skip usomm
-		if tokenPrice.Denom == paramstypes.BaseCoinUnit {
-			continue
-		}
-
-		balance, found := k.GetFeeBalance(ctx, tokenPrice.Denom)
-
-		if !found {
+		if balance.Denom == paramstypes.BaseCoinUnit {
 			continue
 		}
 
 		if balance.IsZero() {
+			continue
+		}
+
+		tokenPrice, found := k.auctionKeeper.GetTokenPrice(ctx, balance.Denom)
+		if !found {
 			continue
 		}
 

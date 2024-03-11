@@ -30,18 +30,18 @@ func (suite *KeeperTestSuite) TestGetFeeBalance() {
 	require := suite.Require()
 
 	expectedDenom := "testdenom"
-	expectedBalance := sdk.NewCoin(expectedDenom, sdk.NewInt(1000000))
+	expectedBalances := sdk.Coins{sdk.NewCoin(expectedDenom, sdk.NewInt(1000000))}
 	account := accounttypes.ModuleAccount{
 		Name:        cellarfeestypes.ModuleName,
 		BaseAccount: accounttypes.NewBaseAccountWithAddress(sdk.MustAccAddressFromBech32("somm1hqf42j6zxfnth4xpdse05wpnjjrgc864vwujxx")),
 	}
 	suite.accountKeeper.EXPECT().GetModuleAccount(ctx, cellarfeestypes.ModuleName).Return(&account)
-	suite.bankKeeper.EXPECT().GetBalance(ctx, account.GetAddress(), expectedDenom).Return(expectedBalance)
+	suite.bankKeeper.EXPECT().GetAllBalances(ctx, account.GetAddress()).Return(expectedBalances)
 
 	balance, found := cellarfeesKeeper.GetFeeBalance(ctx, expectedDenom)
 
 	require.True(found)
-	require.Equal(expectedBalance, balance)
+	require.Equal(expectedBalances[0], balance)
 }
 
 func (suite *KeeperTestSuite) TestGetBalanceUsdValue() {
@@ -50,7 +50,7 @@ func (suite *KeeperTestSuite) TestGetBalanceUsdValue() {
 
 	balance := sdk.NewCoin("testdenom", sdk.NewInt(1000000))
 	usdPrice := sdk.NewDec(100)
-	tokenPrice := &auctiontypes.TokenPrice{
+	tokenPrice := auctiontypes.TokenPrice{
 		Exponent: 6,
 		UsdPrice: usdPrice,
 	}
