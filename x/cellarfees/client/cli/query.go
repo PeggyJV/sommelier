@@ -32,6 +32,8 @@ func GetQueryCmd(queryRoute string) *cobra.Command {
 	cmd.AddCommand(CmdQueryModuleAccounts())
 	cmd.AddCommand(CmdQueryLastRewardSupplyPeak())
 	cmd.AddCommand(CmdQueryAPY())
+	cmd.AddCommand(CmdQueryFeeTokenBalance())
+	cmd.AddCommand(CmdQueryFeeTokenBalances())
 
 	return cmd
 }
@@ -127,6 +129,68 @@ func CmdQueryAPY() *cobra.Command {
 			req := &types.QueryAPYRequest{}
 
 			res, err := queryClient.QueryAPY(cmd.Context(), req)
+			if err != nil {
+				return err
+			}
+
+			return ctx.PrintProto(res)
+		},
+	}
+
+	flags.AddQueryFlagsToCmd(cmd)
+
+	return cmd
+}
+
+func CmdQueryFeeTokenBalance() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:     "fee-token-balance",
+		Aliases: []string{"ftb"},
+		Args:    cobra.ExactArgs(1),
+		Short:   "query a fee tokens balance and its USD value in the cellarfees module",
+		RunE: func(cmd *cobra.Command, _ []string) error {
+			ctx, err := client.GetClientQueryContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			args := cmd.Flags().Args()
+
+			queryClient := types.NewQueryClient(ctx)
+			req := &types.QueryFeeTokenBalanceRequest{
+				Denom: args[0],
+			}
+
+			res, err := queryClient.QueryFeeTokenBalance(cmd.Context(), req)
+			if err != nil {
+				return err
+			}
+
+			return ctx.PrintProto(res)
+		},
+	}
+
+	flags.AddQueryFlagsToCmd(cmd)
+
+	return cmd
+}
+
+func CmdQueryFeeTokenBalances() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:     "fee-token-balances",
+		Aliases: []string{"ftbs"},
+		Args:    cobra.NoArgs,
+		Short:   "query all fee token balances and their USD values in the cellarfees module",
+		RunE: func(cmd *cobra.Command, _ []string) error {
+			ctx, err := client.GetClientQueryContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			queryClient := types.NewQueryClient(ctx)
+			req := &types.QueryFeeTokenBalancesRequest{}
+
+			res, err := queryClient.QueryFeeTokenBalances(cmd.Context(), req)
 			if err != nil {
 				return err
 			}
