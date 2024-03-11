@@ -3,7 +3,7 @@ package keeper
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
-	"github.com/peggyjv/sommelier/v7/app/params"
+	paramstypes "github.com/peggyjv/sommelier/v7/app/params"
 	"github.com/peggyjv/sommelier/v7/x/cellarfees/types"
 )
 
@@ -20,7 +20,7 @@ func (k Keeper) EndBlocker(ctx sdk.Context) {}
 
 func (k Keeper) handleRewardEmission(ctx sdk.Context) {
 	moduleAccount := k.GetFeesAccount(ctx)
-	remainingRewardsSupply := k.bankKeeper.GetBalance(ctx, moduleAccount.GetAddress(), params.BaseCoinUnit).Amount
+	remainingRewardsSupply := k.bankKeeper.GetBalance(ctx, moduleAccount.GetAddress(), paramstypes.BaseCoinUnit).Amount
 
 	if remainingRewardsSupply.IsZero() {
 		return
@@ -44,6 +44,11 @@ func (k Keeper) handleFeeAuctions(ctx sdk.Context) {
 	}
 
 	for _, tokenPrice := range k.auctionKeeper.GetTokenPrices(ctx) {
+		// skip usomm
+		if tokenPrice.Denom == paramstypes.BaseCoinUnit {
+			continue
+		}
+
 		balance := k.GetFeeBalance(ctx, tokenPrice.Denom)
 
 		if balance.IsZero() {

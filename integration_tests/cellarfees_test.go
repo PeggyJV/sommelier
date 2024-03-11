@@ -294,7 +294,7 @@ func (s *IntegrationTestSuite) TestCellarFees() {
 				bankQueryClient = banktypes.NewQueryClient(clientCtx)
 			}
 
-			return res == nil || res.Balance.Amount.Equal(sdk.ZeroInt())
+			return res != nil && res.Balance.Amount.IsZero()
 		}, time.Second*300, time.Second*10, "Reward supply did not exhaust in the provided amount of time")
 
 		s.T().Log("Confirming no auction is started...")
