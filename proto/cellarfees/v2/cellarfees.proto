@@ -6,6 +6,8 @@ import "gogoproto/gogo.proto";
 
 option go_package = "github.com/peggyjv/sommelier/v7/x/cellarfees/types/v2";
 
+// Collin: This type should never be saved to state in case of indeterminism around how
+// Go interprets floating point numbers. This is only meant to be used for query results.
 message FeeTokenBalance {
     cosmos.base.v1beta1.Coin balance = 1 [ (gogoproto.nullable) = false ];
     double usd_value = 2;
