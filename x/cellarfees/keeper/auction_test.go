@@ -25,13 +25,10 @@ func (suite *KeeperTestSuite) TestHappyPathBeginAuction() {
 	// no active auctions
 	suite.auctionKeeper.EXPECT().GetActiveAuctions(ctx).Return([]*auctionTypes.Auction{})
 
-	// nonzero fee balance
-	suite.bankKeeper.EXPECT().GetBalance(ctx, feesAccount.GetAddress(), feeDenom).Return(fees)
-
 	// begin auction doesn't error
 	suite.auctionKeeper.EXPECT().BeginAuction(ctx, fees, gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).Return(nil)
 
-	require.True(cellarfeesKeeper.beginAuction(ctx, feeDenom))
+	require.True(cellarfeesKeeper.beginAuction(ctx, fees))
 }
 
 func (suite *KeeperTestSuite) TestAuctionFeeBalanceZeroDoesNotStartAuction() {
@@ -49,10 +46,7 @@ func (suite *KeeperTestSuite) TestAuctionFeeBalanceZeroDoesNotStartAuction() {
 	// no active auctions
 	suite.auctionKeeper.EXPECT().GetActiveAuctions(ctx).Return([]*auctionTypes.Auction{})
 
-	// zero fee balance
-	suite.bankKeeper.EXPECT().GetBalance(ctx, feesAccount.GetAddress(), feeDenom).Return(fees)
-
-	require.False(cellarfeesKeeper.beginAuction(ctx, feeDenom))
+	require.False(cellarfeesKeeper.beginAuction(ctx, fees))
 }
 
 func (suite *KeeperTestSuite) TestAuctionUnauthorizedFundingModule() {
@@ -70,13 +64,10 @@ func (suite *KeeperTestSuite) TestAuctionUnauthorizedFundingModule() {
 	// no active auctions
 	suite.auctionKeeper.EXPECT().GetActiveAuctions(ctx).Return([]*auctionTypes.Auction{})
 
-	// nonzero fee balance
-	suite.bankKeeper.EXPECT().GetBalance(ctx, feesAccount.GetAddress(), feeDenom).Return(fees)
-
 	// begin auction errors
 	suite.auctionKeeper.EXPECT().BeginAuction(ctx, fees, gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).Return(auctionTypes.ErrUnauthorizedFundingModule)
 
-	require.Panics(func() { cellarfeesKeeper.beginAuction(ctx, feeDenom) })
+	require.Panics(func() { cellarfeesKeeper.beginAuction(ctx, fees) })
 }
 
 func (suite *KeeperTestSuite) TestAuctionUnauthorizedProceedsModule() {
@@ -94,13 +85,10 @@ func (suite *KeeperTestSuite) TestAuctionUnauthorizedProceedsModule() {
 	// no active auctions
 	suite.auctionKeeper.EXPECT().GetActiveAuctions(ctx).Return([]*auctionTypes.Auction{})
 
-	// nonzero fee balance
-	suite.bankKeeper.EXPECT().GetBalance(ctx, feesAccount.GetAddress(), feeDenom).Return(fees)
-
 	// begin auction errors
 	suite.auctionKeeper.EXPECT().BeginAuction(ctx, fees, gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).Return(auctionTypes.ErrUnauthorizedProceedsModule)
 
-	require.Panics(func() { cellarfeesKeeper.beginAuction(ctx, feeDenom) })
+	require.Panics(func() { cellarfeesKeeper.beginAuction(ctx, fees) })
 }
 
 func (suite *KeeperTestSuite) TestAuctionNonPanicError() {
@@ -118,13 +106,10 @@ func (suite *KeeperTestSuite) TestAuctionNonPanicError() {
 	// no active auctions
 	suite.auctionKeeper.EXPECT().GetActiveAuctions(ctx).Return([]*auctionTypes.Auction{})
 
-	// nonzero fee balance
-	suite.bankKeeper.EXPECT().GetBalance(ctx, feesAccount.GetAddress(), feeDenom).Return(fees)
-
 	// begin auction errors
 	suite.auctionKeeper.EXPECT().BeginAuction(ctx, fees, gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).Return(auctionTypes.ErrDenomCannotBeEmpty)
 
-	require.False(cellarfeesKeeper.beginAuction(ctx, feeDenom))
+	require.False(cellarfeesKeeper.beginAuction(ctx, fees))
 }
 
 func (suite *KeeperTestSuite) TestAuctionAlreadyActive() {
@@ -142,5 +127,5 @@ func (suite *KeeperTestSuite) TestAuctionAlreadyActive() {
 	}
 	suite.auctionKeeper.EXPECT().GetActiveAuctions(ctx).Return([]*auctionTypes.Auction{&testAuction})
 
-	require.False(cellarfeesKeeper.beginAuction(ctx, feeDenom))
+	require.False(cellarfeesKeeper.beginAuction(ctx, fees))
 }

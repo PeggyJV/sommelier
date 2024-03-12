@@ -66,7 +66,7 @@ func (k Keeper) handleFeeAuctions(ctx sdk.Context) {
 		usdValue := k.GetBalanceUsdValue(ctx, balance, tokenPrice)
 
 		if usdValue.GTE(params.AuctionThresholdUsdValue) {
-			k.beginAuction(ctx, tokenPrice.Denom)
+			k.beginAuction(ctx, balance)
 		}
 	}
 }
