@@ -28,6 +28,11 @@ func (k Keeper) handleRewardEmission(ctx sdk.Context) {
 
 	emission := k.GetEmission(ctx, remainingRewardsSupply)
 
+	// sanity check. the upcoming bank keeper call will error causing a panic if this is zero
+	if emission.IsZero() {
+		return
+	}
+
 	// Send to fee collector for distribution
 	ctx.Logger().Info("Sending rewards to fee collector", "module", types.ModuleName)
 	err := k.bankKeeper.SendCoinsFromModuleToModule(ctx, moduleAccount.GetName(), authtypes.FeeCollectorName, emission)

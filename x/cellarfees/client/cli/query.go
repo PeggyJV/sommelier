@@ -4,17 +4,13 @@ import (
 	"context"
 	"fmt"
 
-	// "strings"
 	"github.com/spf13/cobra"
 
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 
-	// "github.com/cosmos/cosmos-sdk/client/flags"
-	// sdk "github.com/cosmos/cosmos-sdk/v2.
-
 	cellarfeestypes "github.com/peggyjv/sommelier/v7/x/cellarfees/types"
-	types "github.com/peggyjv/sommelier/v7/x/cellarfees/types/v2"
+	cellarfeestypesv2 "github.com/peggyjv/sommelier/v7/x/cellarfees/types/v2"
 )
 
 // GetQueryCmd returns the cli query commands for this module
@@ -46,9 +42,9 @@ func CmdQueryParams() *cobra.Command {
 		RunE: func(cmd *cobra.Command, args []string) error {
 			clientCtx := client.GetClientContextFromCmd(cmd)
 
-			queryClient := types.NewQueryClient(clientCtx)
+			queryClient := cellarfeestypesv2.NewQueryClient(clientCtx)
 
-			res, err := queryClient.QueryParams(context.Background(), &types.QueryParamsRequest{})
+			res, err := queryClient.QueryParams(context.Background(), &cellarfeestypesv2.QueryParamsRequest{})
 			if err != nil {
 				return err
 			}
@@ -71,10 +67,10 @@ func CmdQueryModuleAccounts() *cobra.Command {
 		RunE: func(cmd *cobra.Command, args []string) error {
 			clientCtx := client.GetClientContextFromCmd(cmd)
 
-			queryClient := types.NewQueryClient(clientCtx)
+			queryClient := cellarfeestypesv2.NewQueryClient(clientCtx)
 
 			res, err := queryClient.QueryModuleAccounts(
-				context.Background(), &types.QueryModuleAccountsRequest{})
+				context.Background(), &cellarfeestypesv2.QueryModuleAccountsRequest{})
 			if err != nil {
 				return err
 			}
@@ -97,10 +93,10 @@ func CmdQueryLastRewardSupplyPeak() *cobra.Command {
 		RunE: func(cmd *cobra.Command, args []string) error {
 			clientCtx := client.GetClientContextFromCmd(cmd)
 
-			queryClient := types.NewQueryClient(clientCtx)
+			queryClient := cellarfeestypesv2.NewQueryClient(clientCtx)
 
 			res, err := queryClient.QueryLastRewardSupplyPeak(
-				context.Background(), &types.QueryLastRewardSupplyPeakRequest{})
+				context.Background(), &cellarfeestypesv2.QueryLastRewardSupplyPeakRequest{})
 			if err != nil {
 				return err
 			}
@@ -125,8 +121,8 @@ func CmdQueryAPY() *cobra.Command {
 				return err
 			}
 
-			queryClient := types.NewQueryClient(ctx)
-			req := &types.QueryAPYRequest{}
+			queryClient := cellarfeestypesv2.NewQueryClient(ctx)
+			req := &cellarfeestypesv2.QueryAPYRequest{}
 
 			res, err := queryClient.QueryAPY(cmd.Context(), req)
 			if err != nil {
@@ -147,7 +143,7 @@ func CmdQueryFeeTokenBalance() *cobra.Command {
 		Use:     "fee-token-balance",
 		Aliases: []string{"ftb"},
 		Args:    cobra.ExactArgs(1),
-		Short:   "query a fee tokens balance and its USD value in the cellarfees module",
+		Short:   "query a fee token's balance and it's USD value in the cellarfees module",
 		RunE: func(cmd *cobra.Command, _ []string) error {
 			ctx, err := client.GetClientQueryContext(cmd)
 			if err != nil {
@@ -156,8 +152,8 @@ func CmdQueryFeeTokenBalance() *cobra.Command {
 
 			args := cmd.Flags().Args()
 
-			queryClient := types.NewQueryClient(ctx)
-			req := &types.QueryFeeTokenBalanceRequest{
+			queryClient := cellarfeestypesv2.NewQueryClient(ctx)
+			req := &cellarfeestypesv2.QueryFeeTokenBalanceRequest{
 				Denom: args[0],
 			}
 
@@ -187,8 +183,8 @@ func CmdQueryFeeTokenBalances() *cobra.Command {
 				return err
 			}
 
-			queryClient := types.NewQueryClient(ctx)
-			req := &types.QueryFeeTokenBalancesRequest{}
+			queryClient := cellarfeestypesv2.NewQueryClient(ctx)
+			req := &cellarfeestypesv2.QueryFeeTokenBalancesRequest{}
 
 			res, err := queryClient.QueryFeeTokenBalances(cmd.Context(), req)
 			if err != nil {
