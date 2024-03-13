@@ -1,26 +1,26 @@
 syntax = "proto3";
 
-package addressmap.v1;
+package addresses.v1;
 
-import "addressmap/v1/addressmap.proto";
+import "addresses/v1/addresses.proto";
 import "gogoproto/gogo.proto";
 import "google/api/annotations.proto";
 import "cosmos/base/query/v1beta1/pagination.proto";
 
 
-option go_package = "github.com/peggyjv/sommelier/v7/x/addressmap/types/v1";
+option go_package = "github.com/peggyjv/sommelier/v7/x/addresses/types/v1";
 
 service Query {
     rpc QueryAddressMappings(QueryAddressMappingsRequest) returns (QueryAddressMappingsResponse) {
-        option (google.api.http).get = "/sommelier/addressmap/v1/address_mappings";
+        option (google.api.http).get = "/sommelier/addresses/v1/address_mappings";
     }
 
     rpc QueryAddressMappingByEVMAddress(QueryAddressMappingByEVMAddressRequest) returns (QueryAddressMappingByEVMAddressResponse) {
-        option (google.api.http).get = "/sommelier/addressmap/v1/address_mappings/evm/{evm_address}";
+        option (google.api.http).get = "/sommelier/addresses/v1/address_mappings/evm/{evm_address}";
     }
 
     rpc QueryAddressMappingByCosmosAddress(QueryAddressMappingByCosmosAddressRequest) returns (QueryAddressMappingByCosmosAddressResponse) {
-        option (google.api.http).get = "/sommelier/addressmap/v1/address_mappings/cosmos/{cosmos_address}";
+        option (google.api.http).get = "/sommelier/addresses/v1/address_mappings/cosmos/{cosmos_address}";
     }
 }
 

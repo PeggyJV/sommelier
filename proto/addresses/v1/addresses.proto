@@ -1,7 +1,7 @@
 syntax = "proto3";
-package addressmap.v1;
+package addresses.v1;
 
-option go_package = "github.com/peggyjv/sommelier/v7/x/addressmap/types/v1";
+option go_package = "github.com/peggyjv/sommelier/v7/x/addresses/types/v1";
 
 message AddressMapping {
     string cosmos_address = 1;
