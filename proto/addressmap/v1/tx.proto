@@ -1,0 +1,22 @@
+syntax = "proto3";
+package addressmap.v1;
+
+option go_package = "github.com/peggyjv/sommelier/v7/x/addressmap/types/v1";
+
+service Msg {
+    // Adds a mapping between the cosmos address of the sender and the provided EVM address
+    rpc AddAddressMapping (MsgSetAddressMappingRequest) returns (MsgSetAddressMappingResponse);
+    // Removes the mapping containing the cosmos address of the sender
+    rpc RemoveAddressMapping (MsgRemoveAddressMappingRequest) returns (MsgRemoveAddressMappingResponse);
+}
+
+message MsgAddAddressMappingRequest {
+    string evm_address = 1;
+}
+
+message MsgAddAddressMappingResponse {}
+
+message MsgRemoveAddressMappingRequest {}
+
+message MsgRemoveAddressMappingResponse {}
+

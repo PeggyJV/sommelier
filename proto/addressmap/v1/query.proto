@@ -1,0 +1,50 @@
+syntax = "proto3";
+
+package addressmap.v1;
+
+import "addressmap/v1/addressmap.proto";
+import "gogoproto/gogo.proto";
+import "google/api/annotations.proto";
+import "cosmos/base/query/v1beta1/pagination.proto";
+
+
+option go_package = "github.com/peggyjv/sommelier/v7/x/addressmap/types/v1";
+
+service Query {
+    rpc QueryAddressMappings(QueryAddressMappingsRequest) returns (QueryAddressMappingsResponse) {
+        option (google.api.http).get = "/sommelier/addressmap/v1/address_mappings/{?pagination.limit,pagination.offset,pagination.count_total}";
+    }
+
+    rpc QueryAddressMappingByEVMAddress(QueryAddressMappingByEVMAddressRequest) returns (QueryAddressMappingByEVMAddressResponse) {
+        option (google.api.http).get = "/sommelier/addressmap/v1/address_mappings/evm/{evm_address}";
+    }
+
+    rpc QueryAddressMappingByCosmosAddress(QueryAddressMappingByCosmosAddressRequest) returns (QueryAddressMappingByCosmosAddressResponse) {
+        option (google.api.http).get = "/sommelier/addressmap/v1/address_mappings/cosmos/{cosmos_address}";
+    }
+}
+
+message QueryAddressMappingsRequest {
+    cosmos.base.query.v1beta1.PageRequest pagination = 1 [ (gogoproto.nullable) = false ];
+}
+
+message QueryAddressMappingsResponse {
+    repeated AddressMapping address_mappings = 1;
+    cosmos.base.query.v1beta1.PageResponse pagination = 2 [ (gogoproto.nullable) = false ];
+}
+
+message QueryAddressMappingByEVMAddressRequest {
+    string evm_address = 1;
+}
+
+message QueryAddressMappingByEVMAddressResponse {
+    AddressMapping address_mapping = 1;
+}
+
+message QueryAddressMappingByCosmosAddressRequest {
+    string cosmos_address = 1;
+}
+
+message QueryAddressMappingByCosmosAddressResponse {
+    AddressMapping address_mapping = 1;
+}
