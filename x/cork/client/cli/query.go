@@ -3,9 +3,9 @@ package cli
 import (
 	"fmt"
 
-	"cosmossdk.io/math"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
+	"github.com/peggyjv/sommelier/internal"
 	types "github.com/peggyjv/sommelier/v7/x/cork/types/v2"
 	"github.com/spf13/cobra"
 )
@@ -134,14 +134,14 @@ func queryScheduledCorksByBlockHeight() *cobra.Command {
 				return err
 			}
 
-			height, err := math.ParseUint(args[0])
+			height, err := internal.ParseUint64(args[0])
 			if err != nil {
 				return err
 			}
 
 			queryClient := types.NewQueryClient(ctx)
 			req := &types.QueryScheduledCorksByBlockHeightRequest{
-				BlockHeight: height.Uint64(),
+				BlockHeight: height,
 			}
 
 			res, err := queryClient.QueryScheduledCorksByBlockHeight(cmd.Context(), req)

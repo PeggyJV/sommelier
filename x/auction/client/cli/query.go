@@ -3,11 +3,10 @@ package cli
 import (
 	"fmt"
 
-	"cosmossdk.io/math"
-
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/peggyjv/sommelier/v7/x/auction/types"
+	"github.com/peggyjv/sommelier/internal"
 	"github.com/spf13/cobra"
 )
 
@@ -80,14 +79,14 @@ func queryActiveAuction() *cobra.Command {
 				return err
 			}
 
-			auctionID, err := math.ParseUint(args[0])
+			auctionID, err := internal.ParseUint32(args[0])
 			if err != nil {
 				return err
 			}
 
 			queryClient := types.NewQueryClient(ctx)
 			req := &types.QueryActiveAuctionRequest{
-				AuctionId: uint32(auctionID.Uint64()),
+				AuctionId: auctionID,
 			}
 
 			res, err := queryClient.QueryActiveAuction(cmd.Context(), req)
@@ -116,14 +115,14 @@ func queryEndedAuction() *cobra.Command {
 				return err
 			}
 
-			auctionID, err := math.ParseUint(args[0])
+			auctionID, err := internal.ParseUint32(args[0])
 			if err != nil {
 				return err
 			}
 
 			queryClient := types.NewQueryClient(ctx)
 			req := &types.QueryEndedAuctionRequest{
-				AuctionId: uint32(auctionID.Uint64()),
+				AuctionId: auctionID,
 			}
 
 			res, err := queryClient.QueryEndedAuction(cmd.Context(), req)
@@ -288,20 +287,20 @@ func queryBid() *cobra.Command {
 				return err
 			}
 
-			auctionID, err := math.ParseUint(args[0])
+			auctionID, err := internal.ParseUint32(args[0])
 			if err != nil {
 				return err
 			}
 
-			bidID, err := math.ParseUint(args[0])
+			bidID, err := internal.ParseUint64(args[0])
 			if err != nil {
 				return err
 			}
 
 			queryClient := types.NewQueryClient(ctx)
 			req := &types.QueryBidRequest{
-				AuctionId: uint32(auctionID.Uint64()),
-				BidId:     bidID.Uint64(),
+				AuctionId: auctionID,
+				BidId:     bidID,
 			}
 
 			res, err := queryClient.QueryBid(cmd.Context(), req)
@@ -330,14 +329,14 @@ func queryBidsByAuction() *cobra.Command {
 				return err
 			}
 
-			auctionID, err := math.ParseUint(args[0])
+			auctionID, err := internal.ParseUint32(args[0])
 			if err != nil {
 				return err
 			}
 
 			queryClient := types.NewQueryClient(ctx)
 			req := &types.QueryBidsByAuctionRequest{
-				AuctionId: uint32(auctionID.Uint64()),
+				AuctionId: auctionID,
 			}
 
 			res, err := queryClient.QueryBidsByAuction(cmd.Context(), req)
