@@ -4,7 +4,7 @@ package addressmap.v1;
 option go_package = "github.com/peggyjv/sommelier/v7/x/addressmap/types/v1";
 
 message AddressMapping {
-  string cosmos_address = 1;
-  string evm_address = 2;
+    string cosmos_address = 1;
+    string evm_address = 2;
 }
 

@@ -12,7 +12,7 @@ option go_package = "github.com/peggyjv/sommelier/v7/x/addressmap/types/v1";
 
 service Query {
     rpc QueryAddressMappings(QueryAddressMappingsRequest) returns (QueryAddressMappingsResponse) {
-        option (google.api.http).get = "/sommelier/addressmap/v1/address_mappings/{?pagination.limit,pagination.offset,pagination.count_total}";
+        option (google.api.http).get = "/sommelier/addressmap/v1/address_mappings";
     }
 
     rpc QueryAddressMappingByEVMAddress(QueryAddressMappingByEVMAddressRequest) returns (QueryAddressMappingByEVMAddressResponse) {
