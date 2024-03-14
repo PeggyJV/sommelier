@@ -12,7 +12,7 @@ import (
 )
 
 // Happy path test for proposal handler
-func (suite *KeeperTestSuite) TestHappPathForProposalHandler() {
+func (suite *KeeperTestSuite) TestHappyPathForProposalHandler() {
 	ctx, auctionKeeper := suite.ctx, suite.auctionKeeper
 	require := suite.Require()
 
@@ -55,7 +55,7 @@ func (suite *KeeperTestSuite) TestHappPathForProposalHandler() {
 }
 
 // Unhappy path test for proposal handler
-func (suite *KeeperTestSuite) TestUnhappPathForProposalHandler() {
+func (suite *KeeperTestSuite) TestUnhappyPathForProposalHandler() {
 	ctx, auctionKeeper := suite.ctx, suite.auctionKeeper
 	require := suite.Require()
 
