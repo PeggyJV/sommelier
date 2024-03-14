@@ -16,17 +16,14 @@ type (
 	Keeper struct {
 		cdc        codec.BinaryCodec
 		storeKey   storetypes.StoreKey
-		memKey     storetypes.StoreKey
 		paramstore paramtypes.Subspace
 	}
 )
 
 func NewKeeper(
 	cdc codec.BinaryCodec,
-	storeKey,
-	memKey storetypes.StoreKey,
+	key storetypes.StoreKey,
 	ps paramtypes.Subspace,
-
 ) *Keeper {
 	// set KeyTable if it has not already been set
 	if !ps.HasKeyTable() {
@@ -35,14 +32,29 @@ func NewKeeper(
 
 	return &Keeper{
 		cdc:        cdc,
-		storeKey:   storeKey,
-		memKey:     memKey,
+		storeKey:   key,
 		paramstore: ps,
 	}
 }
 
 func (k Keeper) Logger(ctx sdk.Context) log.Logger {
 	return ctx.Logger().With("module", fmt.Sprintf("x/%s", types.ModuleName))
+}
+
+////////////
+// Params //
+////////////
+
+// GetParamSet returns the vote period from the parameters
+func (k Keeper) GetParamSet(ctx sdk.Context) types.Params {
+	var p types.Params
+	k.paramstore.GetParamSet(ctx, &p)
+	return p
+}
+
+// setParams sets the parameters in the store
+func (k Keeper) setParams(ctx sdk.Context, params types.Params) {
+	k.paramstore.SetParamSet(ctx, &params)
 }
 
 ///////////////////////

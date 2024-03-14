@@ -1,4 +1,4 @@
-package v1
+package types
 
 // this line is used by starport scaffolding # genesis/types/import
 
@@ -8,14 +8,21 @@ const DefaultIndex uint64 = 1
 // DefaultGenesis returns the default genesis state
 func DefaultGenesis() *GenesisState {
 	return &GenesisState{
-		// this line is used by starport scaffolding # genesis/types/default
+		Params:          DefaultParams(),
+		AddressMappings: []*AddressMapping{},
 	}
 }
 
 // Validate performs basic genesis state validation returning an error upon any
 // failure.
 func (gs GenesisState) Validate() error {
-	// this line is used by starport scaffolding # genesis/types/validate
+	gs.Params.ValidateBasic()
+
+	for _, mapping := range gs.AddressMappings {
+		if err := mapping.ValidateBasic(); err != nil {
+			return err
+		}
+	}
 
 	return nil
 }

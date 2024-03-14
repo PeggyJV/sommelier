@@ -3,14 +3,19 @@ syntax = "proto3";
 package addresses.v1;
 
 import "addresses/v1/addresses.proto";
+import "addresses/v1/genesis.proto";
 import "gogoproto/gogo.proto";
 import "google/api/annotations.proto";
 import "cosmos/base/query/v1beta1/pagination.proto";
 
 
-option go_package = "github.com/peggyjv/sommelier/v7/x/addresses/types/v1";
+option go_package = "github.com/peggyjv/sommelier/v7/x/addresses/types";
 
 service Query {
+    rpc QueryParams(QueryParamsRequest) returns (QueryParamsResponse) {
+        option (google.api.http).get = "/sommelier/addresses/v1/params";
+    }
+
     rpc QueryAddressMappings(QueryAddressMappingsRequest) returns (QueryAddressMappingsResponse) {
         option (google.api.http).get = "/sommelier/addresses/v1/address_mappings";
     }
@@ -22,6 +27,12 @@ service Query {
     rpc QueryAddressMappingByCosmosAddress(QueryAddressMappingByCosmosAddressRequest) returns (QueryAddressMappingByCosmosAddressResponse) {
         option (google.api.http).get = "/sommelier/addresses/v1/address_mappings/cosmos/{cosmos_address}";
     }
+}
+
+message QueryParamsRequest {}
+
+message QueryParamsResponse {
+    Params params = 1;
 }
 
 message QueryAddressMappingsRequest {

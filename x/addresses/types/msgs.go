@@ -1,11 +1,10 @@
-package v1
+package types
 
 import (
 	errorsmod "cosmossdk.io/errors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/ethereum/go-ethereum/common"
-	"github.com/peggyjv/sommelier/v7/x/addresses/types"
 )
 
 var (
@@ -31,7 +30,7 @@ func NewMsgAddAddressMapping(evmAddres common.Address, signer sdk.AccAddress) (*
 }
 
 // Route implements sdk.Msg
-func (m *MsgAddAddressMapping) Route() string { return types.ModuleName }
+func (m *MsgAddAddressMapping) Route() string { return ModuleName }
 
 // Type implements sdk.Msg
 func (m *MsgAddAddressMapping) Type() string { return TypeMsgAddAddressMapping }
@@ -43,7 +42,7 @@ func (m *MsgAddAddressMapping) ValidateBasic() error {
 	}
 
 	if !common.IsHexAddress(m.EvmAddress) {
-		return errorsmod.Wrapf(types.ErrInvalidEvmAddress, "%s is not a valid hex address", m.EvmAddress)
+		return errorsmod.Wrapf(ErrInvalidEvmAddress, "%s is not a valid hex address", m.EvmAddress)
 	}
 
 	return nil
@@ -51,7 +50,7 @@ func (m *MsgAddAddressMapping) ValidateBasic() error {
 
 // GetSignBytes implements sdk.Msg
 func (m *MsgAddAddressMapping) GetSignBytes() []byte {
-	return sdk.MustSortJSON(types.ModuleCdc.MustMarshalJSON(m))
+	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(m))
 }
 
 // GetSigners implements sdk.Msg
@@ -80,7 +79,7 @@ func NewMsgRemoveAddressMapping(evmAddres common.Address, signer sdk.AccAddress)
 }
 
 // Route implements sdk.Msg
-func (m *MsgRemoveAddressMapping) Route() string { return types.ModuleName }
+func (m *MsgRemoveAddressMapping) Route() string { return ModuleName }
 
 // Type implements sdk.Msg
 func (m *MsgRemoveAddressMapping) Type() string { return TypeMsgRemoveAddressMapping }
@@ -96,7 +95,7 @@ func (m *MsgRemoveAddressMapping) ValidateBasic() error {
 
 // GetSignBytes implements sdk.Msg
 func (m *MsgRemoveAddressMapping) GetSignBytes() []byte {
-	return sdk.MustSortJSON(types.ModuleCdc.MustMarshalJSON(m))
+	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(m))
 }
 
 // GetSigners implements sdk.Msg
