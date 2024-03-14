@@ -8,3 +8,4 @@ import "addresses/v1/addresses.proto";
 message GenesisState {
     repeated AddressMapping address_mappings = 1;
 }
+

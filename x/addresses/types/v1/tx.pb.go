@@ -27,22 +27,23 @@ var _ = math.Inf
 // proto package needs to be updated.
 const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
-type MsgAddAddressMappingRequest struct {
+type MsgAddAddressMapping struct {
 	EvmAddress string `protobuf:"bytes,1,opt,name=evm_address,json=evmAddress,proto3" json:"evm_address,omitempty"`
+	Signer     string `protobuf:"bytes,2,opt,name=signer,proto3" json:"signer,omitempty"`
 }
 
-func (m *MsgAddAddressMappingRequest) Reset()         { *m = MsgAddAddressMappingRequest{} }
-func (m *MsgAddAddressMappingRequest) String() string { return proto.CompactTextString(m) }
-func (*MsgAddAddressMappingRequest) ProtoMessage()    {}
-func (*MsgAddAddressMappingRequest) Descriptor() ([]byte, []int) {
+func (m *MsgAddAddressMapping) Reset()         { *m = MsgAddAddressMapping{} }
+func (m *MsgAddAddressMapping) String() string { return proto.CompactTextString(m) }
+func (*MsgAddAddressMapping) ProtoMessage()    {}
+func (*MsgAddAddressMapping) Descriptor() ([]byte, []int) {
 	return fileDescriptor_dbc33d4b2b06ba95, []int{0}
 }
-func (m *MsgAddAddressMappingRequest) XXX_Unmarshal(b []byte) error {
+func (m *MsgAddAddressMapping) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *MsgAddAddressMappingRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *MsgAddAddressMapping) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_MsgAddAddressMappingRequest.Marshal(b, m, deterministic)
+		return xxx_messageInfo_MsgAddAddressMapping.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -52,21 +53,28 @@ func (m *MsgAddAddressMappingRequest) XXX_Marshal(b []byte, deterministic bool) 
 		return b[:n], nil
 	}
 }
-func (m *MsgAddAddressMappingRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MsgAddAddressMappingRequest.Merge(m, src)
+func (m *MsgAddAddressMapping) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgAddAddressMapping.Merge(m, src)
 }
-func (m *MsgAddAddressMappingRequest) XXX_Size() int {
+func (m *MsgAddAddressMapping) XXX_Size() int {
 	return m.Size()
 }
-func (m *MsgAddAddressMappingRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_MsgAddAddressMappingRequest.DiscardUnknown(m)
+func (m *MsgAddAddressMapping) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgAddAddressMapping.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_MsgAddAddressMappingRequest proto.InternalMessageInfo
+var xxx_messageInfo_MsgAddAddressMapping proto.InternalMessageInfo
 
-func (m *MsgAddAddressMappingRequest) GetEvmAddress() string {
+func (m *MsgAddAddressMapping) GetEvmAddress() string {
 	if m != nil {
 		return m.EvmAddress
+	}
+	return ""
+}
+
+func (m *MsgAddAddressMapping) GetSigner() string {
+	if m != nil {
+		return m.Signer
 	}
 	return ""
 }
@@ -107,21 +115,22 @@ func (m *MsgAddAddressMappingResponse) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_MsgAddAddressMappingResponse proto.InternalMessageInfo
 
-type MsgRemoveAddressMappingRequest struct {
+type MsgRemoveAddressMapping struct {
+	Signer string `protobuf:"bytes,1,opt,name=signer,proto3" json:"signer,omitempty"`
 }
 
-func (m *MsgRemoveAddressMappingRequest) Reset()         { *m = MsgRemoveAddressMappingRequest{} }
-func (m *MsgRemoveAddressMappingRequest) String() string { return proto.CompactTextString(m) }
-func (*MsgRemoveAddressMappingRequest) ProtoMessage()    {}
-func (*MsgRemoveAddressMappingRequest) Descriptor() ([]byte, []int) {
+func (m *MsgRemoveAddressMapping) Reset()         { *m = MsgRemoveAddressMapping{} }
+func (m *MsgRemoveAddressMapping) String() string { return proto.CompactTextString(m) }
+func (*MsgRemoveAddressMapping) ProtoMessage()    {}
+func (*MsgRemoveAddressMapping) Descriptor() ([]byte, []int) {
 	return fileDescriptor_dbc33d4b2b06ba95, []int{2}
 }
-func (m *MsgRemoveAddressMappingRequest) XXX_Unmarshal(b []byte) error {
+func (m *MsgRemoveAddressMapping) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *MsgRemoveAddressMappingRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *MsgRemoveAddressMapping) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_MsgRemoveAddressMappingRequest.Marshal(b, m, deterministic)
+		return xxx_messageInfo_MsgRemoveAddressMapping.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -131,17 +140,24 @@ func (m *MsgRemoveAddressMappingRequest) XXX_Marshal(b []byte, deterministic boo
 		return b[:n], nil
 	}
 }
-func (m *MsgRemoveAddressMappingRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MsgRemoveAddressMappingRequest.Merge(m, src)
+func (m *MsgRemoveAddressMapping) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgRemoveAddressMapping.Merge(m, src)
 }
-func (m *MsgRemoveAddressMappingRequest) XXX_Size() int {
+func (m *MsgRemoveAddressMapping) XXX_Size() int {
 	return m.Size()
 }
-func (m *MsgRemoveAddressMappingRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_MsgRemoveAddressMappingRequest.DiscardUnknown(m)
+func (m *MsgRemoveAddressMapping) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgRemoveAddressMapping.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_MsgRemoveAddressMappingRequest proto.InternalMessageInfo
+var xxx_messageInfo_MsgRemoveAddressMapping proto.InternalMessageInfo
+
+func (m *MsgRemoveAddressMapping) GetSigner() string {
+	if m != nil {
+		return m.Signer
+	}
+	return ""
+}
 
 type MsgRemoveAddressMappingResponse struct {
 }
@@ -180,33 +196,34 @@ func (m *MsgRemoveAddressMappingResponse) XXX_DiscardUnknown() {
 var xxx_messageInfo_MsgRemoveAddressMappingResponse proto.InternalMessageInfo
 
 func init() {
-	proto.RegisterType((*MsgAddAddressMappingRequest)(nil), "addresses.v1.MsgAddAddressMappingRequest")
+	proto.RegisterType((*MsgAddAddressMapping)(nil), "addresses.v1.MsgAddAddressMapping")
 	proto.RegisterType((*MsgAddAddressMappingResponse)(nil), "addresses.v1.MsgAddAddressMappingResponse")
-	proto.RegisterType((*MsgRemoveAddressMappingRequest)(nil), "addresses.v1.MsgRemoveAddressMappingRequest")
+	proto.RegisterType((*MsgRemoveAddressMapping)(nil), "addresses.v1.MsgRemoveAddressMapping")
 	proto.RegisterType((*MsgRemoveAddressMappingResponse)(nil), "addresses.v1.MsgRemoveAddressMappingResponse")
 }
 
 func init() { proto.RegisterFile("addresses/v1/tx.proto", fileDescriptor_dbc33d4b2b06ba95) }
 
 var fileDescriptor_dbc33d4b2b06ba95 = []byte{
-	// 266 bytes of a gzipped FileDescriptorProto
+	// 279 bytes of a gzipped FileDescriptorProto
 	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xe2, 0x12, 0x4d, 0x4c, 0x49, 0x29,
 	0x4a, 0x2d, 0x2e, 0x4e, 0x2d, 0xd6, 0x2f, 0x33, 0xd4, 0x2f, 0xa9, 0xd0, 0x2b, 0x28, 0xca, 0x2f,
-	0xc9, 0x17, 0xe2, 0x81, 0x0b, 0xeb, 0x95, 0x19, 0x2a, 0xd9, 0x71, 0x49, 0xfb, 0x16, 0xa7, 0x3b,
-	0xa6, 0xa4, 0x38, 0x42, 0x44, 0x7d, 0x13, 0x0b, 0x0a, 0x32, 0xf3, 0xd2, 0x83, 0x52, 0x0b, 0x4b,
-	0x53, 0x8b, 0x4b, 0x84, 0xe4, 0xb9, 0xb8, 0x53, 0xcb, 0x72, 0xe3, 0xa1, 0x5a, 0x24, 0x18, 0x15,
-	0x18, 0x35, 0x38, 0x83, 0xb8, 0x52, 0xcb, 0x72, 0xa1, 0xca, 0x95, 0xe4, 0xb8, 0x64, 0xb0, 0xeb,
-	0x2f, 0x2e, 0xc8, 0xcf, 0x2b, 0x4e, 0x55, 0x52, 0xe0, 0x92, 0xf3, 0x2d, 0x4e, 0x0f, 0x4a, 0xcd,
-	0xcd, 0x2f, 0x4b, 0xc5, 0x6a, 0x85, 0x92, 0x22, 0x97, 0x3c, 0x4e, 0x15, 0x10, 0x43, 0x8c, 0x9e,
-	0x31, 0x72, 0x31, 0xfb, 0x16, 0xa7, 0x0b, 0x65, 0x71, 0x09, 0x62, 0xd8, 0x24, 0xa4, 0xa9, 0x87,
-	0xec, 0x21, 0x3d, 0x3c, 0xbe, 0x91, 0xd2, 0x22, 0x46, 0x29, 0xc4, 0x4e, 0xa1, 0x62, 0x2e, 0x11,
-	0x6c, 0x6e, 0x12, 0xd2, 0xc1, 0x30, 0x03, 0x8f, 0xe7, 0xa4, 0x74, 0x89, 0x54, 0x0d, 0xb1, 0xd4,
-	0xc9, 0xef, 0xc4, 0x23, 0x39, 0xc6, 0x0b, 0x8f, 0xe4, 0x18, 0x1f, 0x3c, 0x92, 0x63, 0x9c, 0xf0,
-	0x58, 0x8e, 0xe1, 0xc2, 0x63, 0x39, 0x86, 0x1b, 0x8f, 0xe5, 0x18, 0xa2, 0x4c, 0xd2, 0x33, 0x4b,
-	0x32, 0x4a, 0x93, 0xf4, 0x92, 0xf3, 0x73, 0xf5, 0x0b, 0x52, 0xd3, 0xd3, 0x2b, 0xb3, 0xca, 0xf4,
-	0x8b, 0xf3, 0x73, 0x73, 0x53, 0x73, 0x32, 0x53, 0x8b, 0xf4, 0xcb, 0xcc, 0xf5, 0x2b, 0xf4, 0x11,
-	0xd1, 0x5d, 0x52, 0x59, 0x00, 0x8e, 0xf4, 0x24, 0x36, 0x70, 0x94, 0x1b, 0x03, 0x02, 0x00, 0x00,
-	0xff, 0xff, 0x98, 0xd6, 0x54, 0xe5, 0x0b, 0x02, 0x00, 0x00,
+	0xc9, 0x17, 0xe2, 0x81, 0x0b, 0xeb, 0x95, 0x19, 0x2a, 0xf9, 0x73, 0x89, 0xf8, 0x16, 0xa7, 0x3b,
+	0xa6, 0xa4, 0x38, 0x42, 0x44, 0x7d, 0x13, 0x0b, 0x0a, 0x32, 0xf3, 0xd2, 0x85, 0xe4, 0xb9, 0xb8,
+	0x53, 0xcb, 0x72, 0xe3, 0xa1, 0x6a, 0x25, 0x18, 0x15, 0x18, 0x35, 0x38, 0x83, 0xb8, 0x52, 0xcb,
+	0x72, 0xa1, 0xea, 0x84, 0xc4, 0xb8, 0xd8, 0x8a, 0x33, 0xd3, 0xf3, 0x52, 0x8b, 0x24, 0x98, 0xc0,
+	0x72, 0x50, 0x9e, 0x92, 0x1c, 0x97, 0x0c, 0x36, 0x03, 0x83, 0x52, 0x8b, 0x0b, 0xf2, 0xf3, 0x8a,
+	0x53, 0x95, 0x0c, 0xb9, 0xc4, 0x7d, 0x8b, 0xd3, 0x83, 0x52, 0x73, 0xf3, 0xcb, 0x52, 0xd1, 0xec,
+	0x44, 0x18, 0xc9, 0x88, 0x62, 0xa4, 0x22, 0x97, 0x3c, 0x0e, 0x2d, 0x30, 0x53, 0x8d, 0x6e, 0x30,
+	0x72, 0x31, 0xfb, 0x16, 0xa7, 0x0b, 0x25, 0x73, 0x09, 0x62, 0xfa, 0x45, 0x49, 0x0f, 0xd9, 0xcb,
+	0x7a, 0xd8, 0x9c, 0x27, 0xa5, 0x45, 0x58, 0x0d, 0xcc, 0x32, 0xa1, 0x1c, 0x2e, 0x11, 0xac, 0xee,
+	0x57, 0xc5, 0x30, 0x03, 0x9b, 0x32, 0x29, 0x5d, 0xa2, 0x94, 0xc1, 0x6c, 0x73, 0xf2, 0x3b, 0xf1,
+	0x48, 0x8e, 0xf1, 0xc2, 0x23, 0x39, 0xc6, 0x07, 0x8f, 0xe4, 0x18, 0x27, 0x3c, 0x96, 0x63, 0xb8,
+	0xf0, 0x58, 0x8e, 0xe1, 0xc6, 0x63, 0x39, 0x86, 0x28, 0x93, 0xf4, 0xcc, 0x92, 0x8c, 0xd2, 0x24,
+	0xbd, 0xe4, 0xfc, 0x5c, 0xfd, 0x82, 0xd4, 0xf4, 0xf4, 0xca, 0xac, 0x32, 0xfd, 0xe2, 0xfc, 0xdc,
+	0xdc, 0xd4, 0x9c, 0xcc, 0xd4, 0x22, 0xfd, 0x32, 0x73, 0xfd, 0x0a, 0x7d, 0x44, 0x12, 0x28, 0xa9,
+	0x2c, 0x00, 0x27, 0x84, 0x24, 0x36, 0x70, 0x32, 0x30, 0x06, 0x04, 0x00, 0x00, 0xff, 0xff, 0x27,
+	0x72, 0x09, 0x80, 0x1f, 0x02, 0x00, 0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -222,9 +239,9 @@ const _ = grpc.SupportPackageIsVersion4
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
 type MsgClient interface {
 	// Adds a mapping between the cosmos address of the sender and the provided EVM address
-	AddAddressMapping(ctx context.Context, in *MsgAddAddressMappingRequest, opts ...grpc.CallOption) (*MsgAddAddressMappingResponse, error)
+	AddAddressMapping(ctx context.Context, in *MsgAddAddressMapping, opts ...grpc.CallOption) (*MsgAddAddressMappingResponse, error)
 	// Removes the mapping containing the cosmos address of the sender
-	RemoveAddressMapping(ctx context.Context, in *MsgRemoveAddressMappingRequest, opts ...grpc.CallOption) (*MsgRemoveAddressMappingResponse, error)
+	RemoveAddressMapping(ctx context.Context, in *MsgRemoveAddressMapping, opts ...grpc.CallOption) (*MsgRemoveAddressMappingResponse, error)
 }
 
 type msgClient struct {
@@ -235,7 +252,7 @@ func NewMsgClient(cc grpc1.ClientConn) MsgClient {
 	return &msgClient{cc}
 }
 
-func (c *msgClient) AddAddressMapping(ctx context.Context, in *MsgAddAddressMappingRequest, opts ...grpc.CallOption) (*MsgAddAddressMappingResponse, error) {
+func (c *msgClient) AddAddressMapping(ctx context.Context, in *MsgAddAddressMapping, opts ...grpc.CallOption) (*MsgAddAddressMappingResponse, error) {
 	out := new(MsgAddAddressMappingResponse)
 	err := c.cc.Invoke(ctx, "/addresses.v1.Msg/AddAddressMapping", in, out, opts...)
 	if err != nil {
@@ -244,7 +261,7 @@ func (c *msgClient) AddAddressMapping(ctx context.Context, in *MsgAddAddressMapp
 	return out, nil
 }
 
-func (c *msgClient) RemoveAddressMapping(ctx context.Context, in *MsgRemoveAddressMappingRequest, opts ...grpc.CallOption) (*MsgRemoveAddressMappingResponse, error) {
+func (c *msgClient) RemoveAddressMapping(ctx context.Context, in *MsgRemoveAddressMapping, opts ...grpc.CallOption) (*MsgRemoveAddressMappingResponse, error) {
 	out := new(MsgRemoveAddressMappingResponse)
 	err := c.cc.Invoke(ctx, "/addresses.v1.Msg/RemoveAddressMapping", in, out, opts...)
 	if err != nil {
@@ -256,19 +273,19 @@ func (c *msgClient) RemoveAddressMapping(ctx context.Context, in *MsgRemoveAddre
 // MsgServer is the server API for Msg service.
 type MsgServer interface {
 	// Adds a mapping between the cosmos address of the sender and the provided EVM address
-	AddAddressMapping(context.Context, *MsgAddAddressMappingRequest) (*MsgAddAddressMappingResponse, error)
+	AddAddressMapping(context.Context, *MsgAddAddressMapping) (*MsgAddAddressMappingResponse, error)
 	// Removes the mapping containing the cosmos address of the sender
-	RemoveAddressMapping(context.Context, *MsgRemoveAddressMappingRequest) (*MsgRemoveAddressMappingResponse, error)
+	RemoveAddressMapping(context.Context, *MsgRemoveAddressMapping) (*MsgRemoveAddressMappingResponse, error)
 }
 
 // UnimplementedMsgServer can be embedded to have forward compatible implementations.
 type UnimplementedMsgServer struct {
 }
 
-func (*UnimplementedMsgServer) AddAddressMapping(ctx context.Context, req *MsgAddAddressMappingRequest) (*MsgAddAddressMappingResponse, error) {
+func (*UnimplementedMsgServer) AddAddressMapping(ctx context.Context, req *MsgAddAddressMapping) (*MsgAddAddressMappingResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method AddAddressMapping not implemented")
 }
-func (*UnimplementedMsgServer) RemoveAddressMapping(ctx context.Context, req *MsgRemoveAddressMappingRequest) (*MsgRemoveAddressMappingResponse, error) {
+func (*UnimplementedMsgServer) RemoveAddressMapping(ctx context.Context, req *MsgRemoveAddressMapping) (*MsgRemoveAddressMappingResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method RemoveAddressMapping not implemented")
 }
 
@@ -277,7 +294,7 @@ func RegisterMsgServer(s grpc1.Server, srv MsgServer) {
 }
 
 func _Msg_AddAddressMapping_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(MsgAddAddressMappingRequest)
+	in := new(MsgAddAddressMapping)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -289,13 +306,13 @@ func _Msg_AddAddressMapping_Handler(srv interface{}, ctx context.Context, dec fu
 		FullMethod: "/addresses.v1.Msg/AddAddressMapping",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MsgServer).AddAddressMapping(ctx, req.(*MsgAddAddressMappingRequest))
+		return srv.(MsgServer).AddAddressMapping(ctx, req.(*MsgAddAddressMapping))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _Msg_RemoveAddressMapping_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(MsgRemoveAddressMappingRequest)
+	in := new(MsgRemoveAddressMapping)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -307,7 +324,7 @@ func _Msg_RemoveAddressMapping_Handler(srv interface{}, ctx context.Context, dec
 		FullMethod: "/addresses.v1.Msg/RemoveAddressMapping",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MsgServer).RemoveAddressMapping(ctx, req.(*MsgRemoveAddressMappingRequest))
+		return srv.(MsgServer).RemoveAddressMapping(ctx, req.(*MsgRemoveAddressMapping))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -329,7 +346,7 @@ var _Msg_serviceDesc = grpc.ServiceDesc{
 	Metadata: "addresses/v1/tx.proto",
 }
 
-func (m *MsgAddAddressMappingRequest) Marshal() (dAtA []byte, err error) {
+func (m *MsgAddAddressMapping) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -339,16 +356,23 @@ func (m *MsgAddAddressMappingRequest) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *MsgAddAddressMappingRequest) MarshalTo(dAtA []byte) (int, error) {
+func (m *MsgAddAddressMapping) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *MsgAddAddressMappingRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *MsgAddAddressMapping) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
 	_ = l
+	if len(m.Signer) > 0 {
+		i -= len(m.Signer)
+		copy(dAtA[i:], m.Signer)
+		i = encodeVarintTx(dAtA, i, uint64(len(m.Signer)))
+		i--
+		dAtA[i] = 0x12
+	}
 	if len(m.EvmAddress) > 0 {
 		i -= len(m.EvmAddress)
 		copy(dAtA[i:], m.EvmAddress)
@@ -382,7 +406,7 @@ func (m *MsgAddAddressMappingResponse) MarshalToSizedBuffer(dAtA []byte) (int, e
 	return len(dAtA) - i, nil
 }
 
-func (m *MsgRemoveAddressMappingRequest) Marshal() (dAtA []byte, err error) {
+func (m *MsgRemoveAddressMapping) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -392,16 +416,23 @@ func (m *MsgRemoveAddressMappingRequest) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *MsgRemoveAddressMappingRequest) MarshalTo(dAtA []byte) (int, error) {
+func (m *MsgRemoveAddressMapping) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *MsgRemoveAddressMappingRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *MsgRemoveAddressMapping) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
 	_ = l
+	if len(m.Signer) > 0 {
+		i -= len(m.Signer)
+		copy(dAtA[i:], m.Signer)
+		i = encodeVarintTx(dAtA, i, uint64(len(m.Signer)))
+		i--
+		dAtA[i] = 0xa
+	}
 	return len(dAtA) - i, nil
 }
 
@@ -439,13 +470,17 @@ func encodeVarintTx(dAtA []byte, offset int, v uint64) int {
 	dAtA[offset] = uint8(v)
 	return base
 }
-func (m *MsgAddAddressMappingRequest) Size() (n int) {
+func (m *MsgAddAddressMapping) Size() (n int) {
 	if m == nil {
 		return 0
 	}
 	var l int
 	_ = l
 	l = len(m.EvmAddress)
+	if l > 0 {
+		n += 1 + l + sovTx(uint64(l))
+	}
+	l = len(m.Signer)
 	if l > 0 {
 		n += 1 + l + sovTx(uint64(l))
 	}
@@ -461,12 +496,16 @@ func (m *MsgAddAddressMappingResponse) Size() (n int) {
 	return n
 }
 
-func (m *MsgRemoveAddressMappingRequest) Size() (n int) {
+func (m *MsgRemoveAddressMapping) Size() (n int) {
 	if m == nil {
 		return 0
 	}
 	var l int
 	_ = l
+	l = len(m.Signer)
+	if l > 0 {
+		n += 1 + l + sovTx(uint64(l))
+	}
 	return n
 }
 
@@ -485,7 +524,7 @@ func sovTx(x uint64) (n int) {
 func sozTx(x uint64) (n int) {
 	return sovTx(uint64((x << 1) ^ uint64((int64(x) >> 63))))
 }
-func (m *MsgAddAddressMappingRequest) Unmarshal(dAtA []byte) error {
+func (m *MsgAddAddressMapping) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -508,10 +547,10 @@ func (m *MsgAddAddressMappingRequest) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: MsgAddAddressMappingRequest: wiretype end group for non-group")
+			return fmt.Errorf("proto: MsgAddAddressMapping: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: MsgAddAddressMappingRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: MsgAddAddressMapping: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
@@ -545,6 +584,38 @@ func (m *MsgAddAddressMappingRequest) Unmarshal(dAtA []byte) error {
 				return io.ErrUnexpectedEOF
 			}
 			m.EvmAddress = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Signer", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTx
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthTx
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthTx
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Signer = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
@@ -617,7 +688,7 @@ func (m *MsgAddAddressMappingResponse) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *MsgRemoveAddressMappingRequest) Unmarshal(dAtA []byte) error {
+func (m *MsgRemoveAddressMapping) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -640,12 +711,44 @@ func (m *MsgRemoveAddressMappingRequest) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: MsgRemoveAddressMappingRequest: wiretype end group for non-group")
+			return fmt.Errorf("proto: MsgRemoveAddressMapping: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: MsgRemoveAddressMappingRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: MsgRemoveAddressMapping: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Signer", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTx
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthTx
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthTx
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Signer = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
 			skippy, err := skipTx(dAtA[iNdEx:])

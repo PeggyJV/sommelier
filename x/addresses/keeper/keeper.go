@@ -1,0 +1,115 @@
+package keeper
+
+import (
+	"fmt"
+
+	"github.com/cosmos/cosmos-sdk/codec"
+	storetypes "github.com/cosmos/cosmos-sdk/store/types"
+	sdk "github.com/cosmos/cosmos-sdk/types"
+	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
+	"github.com/tendermint/tendermint/libs/log"
+
+	"github.com/peggyjv/sommelier/v7/x/addresses/types"
+)
+
+type (
+	Keeper struct {
+		cdc        codec.BinaryCodec
+		storeKey   storetypes.StoreKey
+		memKey     storetypes.StoreKey
+		paramstore paramtypes.Subspace
+	}
+)
+
+func NewKeeper(
+	cdc codec.BinaryCodec,
+	storeKey,
+	memKey storetypes.StoreKey,
+	ps paramtypes.Subspace,
+
+) *Keeper {
+	// set KeyTable if it has not already been set
+	if !ps.HasKeyTable() {
+		ps = ps.WithKeyTable(types.ParamKeyTable())
+	}
+
+	return &Keeper{
+		cdc:        cdc,
+		storeKey:   storeKey,
+		memKey:     memKey,
+		paramstore: ps,
+	}
+}
+
+func (k Keeper) Logger(ctx sdk.Context) log.Logger {
+	return ctx.Logger().With("module", fmt.Sprintf("x/%s", types.ModuleName))
+}
+
+///////////////////////
+/// AddressMappings ///
+///////////////////////
+
+// SetAddressMapping stores the mapping between the cosmos and evm addresses
+func (k Keeper) SetAddressMapping(ctx sdk.Context, cosmosAddr []byte, evmAddr []byte) {
+	k.SetCosmosToEvmMapping(ctx, cosmosAddr, evmAddr)
+	k.SetEvmToCosmosMapping(ctx, evmAddr, cosmosAddr)
+}
+
+func (k Keeper) SetCosmosToEvmMapping(ctx sdk.Context, cosmosAddr []byte, evmAddr []byte) {
+	store := ctx.KVStore(k.storeKey)
+	store.Set(types.GetCosmosToEvmMapKey(cosmosAddr), evmAddr)
+}
+
+func (k Keeper) SetEvmToCosmosMapping(ctx sdk.Context, evmAddr []byte, cosmosAddr []byte) {
+	store := ctx.KVStore(k.storeKey)
+	store.Set(types.GetEvmToCosmosMapKey(evmAddr), cosmosAddr)
+}
+
+// DeleteAddressMapping deletes the mapping between the cosmos and evm addresses
+func (k Keeper) DeleteAddressMapping(ctx sdk.Context, cosmosAddr []byte) {
+	if cosmosAddr == nil {
+		return
+	}
+
+	evmAddr := k.GetEvmAddressByCosmosAddress(ctx, cosmosAddr)
+	if evmAddr == nil {
+		return
+	}
+
+	k.DeleteEvmToCosmosMapping(ctx, evmAddr)
+	k.DeleteCosmosToEvmMapping(ctx, cosmosAddr)
+}
+
+func (k Keeper) DeleteCosmosToEvmMapping(ctx sdk.Context, cosmosAddr []byte) {
+	store := ctx.KVStore(k.storeKey)
+	store.Delete(types.GetCosmosToEvmMapKey(cosmosAddr))
+}
+
+func (k Keeper) DeleteEvmToCosmosMapping(ctx sdk.Context, evmAddr []byte) {
+	store := ctx.KVStore(k.storeKey)
+	store.Delete(types.GetEvmToCosmosMapKey(evmAddr))
+}
+
+func (k Keeper) GetCosmosAddressByEvmAddress(ctx sdk.Context, evmAddr []byte) []byte {
+	store := ctx.KVStore(k.storeKey)
+	return store.Get(types.GetEvmToCosmosMapKey(evmAddr))
+}
+
+func (k Keeper) GetEvmAddressByCosmosAddress(ctx sdk.Context, cosmosAddr []byte) []byte {
+	store := ctx.KVStore(k.storeKey)
+	return store.Get(types.GetCosmosToEvmMapKey(cosmosAddr))
+}
+
+// IterateAddressMappings iterates over all Cosmos to EVM address mappings
+func (k Keeper) IterateAddressMappings(ctx sdk.Context, cb func(cosmosAddr []byte, evmAddr []byte) (stop bool)) {
+	store := ctx.KVStore(k.storeKey)
+	iterator := sdk.KVStorePrefixIterator(store, types.GetCosmosToEvmMapPrefix())
+	defer iterator.Close()
+	for ; iterator.Valid(); iterator.Next() {
+		cosmosAddr := iterator.Key()[1:]
+		evmAddr := iterator.Value()
+		if cb(cosmosAddr, evmAddr) {
+			break
+		}
+	}
+}

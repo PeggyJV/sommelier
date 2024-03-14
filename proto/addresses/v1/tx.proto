@@ -5,18 +5,21 @@ option go_package = "github.com/peggyjv/sommelier/v7/x/addresses/types/v1";
 
 service Msg {
     // Adds a mapping between the cosmos address of the sender and the provided EVM address
-    rpc AddAddressMapping (MsgAddAddressMappingRequest) returns (MsgAddAddressMappingResponse);
+    rpc AddAddressMapping (MsgAddAddressMapping) returns (MsgAddAddressMappingResponse);
     // Removes the mapping containing the cosmos address of the sender
-    rpc RemoveAddressMapping (MsgRemoveAddressMappingRequest) returns (MsgRemoveAddressMappingResponse);
+    rpc RemoveAddressMapping (MsgRemoveAddressMapping) returns (MsgRemoveAddressMappingResponse);
 }
 
-message MsgAddAddressMappingRequest {
+message MsgAddAddressMapping {
     string evm_address = 1;
+    string signer = 2;
 }
 
 message MsgAddAddressMappingResponse {}
 
-message MsgRemoveAddressMappingRequest {}
+message MsgRemoveAddressMapping {
+    string signer = 1;
+}
 
 message MsgRemoveAddressMappingResponse {}
 
