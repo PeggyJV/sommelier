@@ -26,7 +26,10 @@ func (k Keeper) AddAddressMapping(c context.Context, req *types.MsgAddAddressMap
 
 	evmAddr := common.HexToAddress(req.EvmAddress).Bytes()
 
-	k.SetAddressMapping(ctx, signer.Bytes(), evmAddr)
+	err = k.SetAddressMapping(ctx, signer.Bytes(), evmAddr)
+	if err != nil {
+		return &types.MsgAddAddressMappingResponse{}, status.Errorf(codes.Internal, "failed to set address mapping: %s", err)
+	}
 
 	return &types.MsgAddAddressMappingResponse{}, nil
 }
@@ -39,7 +42,10 @@ func (k Keeper) RemoveAddressMapping(c context.Context, req *types.MsgRemoveAddr
 		return &types.MsgRemoveAddressMappingResponse{}, status.Errorf(codes.InvalidArgument, "invalid signer address %s", req.GetSigner())
 	}
 
-	k.DeleteAddressMapping(ctx, signer.Bytes())
+	err = k.DeleteAddressMapping(ctx, signer.Bytes())
+	if err != nil {
+		return &types.MsgRemoveAddressMappingResponse{}, status.Errorf(codes.Internal, "failed to remove address mapping: %s", err)
+	}
 
 	return &types.MsgRemoveAddressMappingResponse{}, nil
 }

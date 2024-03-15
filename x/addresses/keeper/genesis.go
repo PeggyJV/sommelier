@@ -45,5 +45,8 @@ func ExportGenesis(ctx sdk.Context, k Keeper) types.GenesisState {
 		return false
 	})
 
-	return types.GenesisState{AddressMappings: mappings}
+	return types.GenesisState{
+		Params:          k.GetParamSet(ctx),
+		AddressMappings: mappings,
+	}
 }

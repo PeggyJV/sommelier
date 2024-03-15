@@ -134,4 +134,7 @@ func (suite *KeeperTestSuite) TestSetGetDeleteAddressMappings() {
 	require.Nil(cosmosResult)
 	evmResult = addressesKeeper.GetEvmAddressByCosmosAddress(ctx, cosmosAddr)
 	require.Nil(evmResult)
+
+	// Invalid input
+	addressesKeeper.SetAddressMapping(ctx, nil, evmAddr)
 }
