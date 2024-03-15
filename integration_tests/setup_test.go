@@ -19,6 +19,7 @@ import (
 	govtypesv1beta1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
 	gravitytypes "github.com/peggyjv/gravity-bridge/module/v4/x/gravity/types"
 	"github.com/peggyjv/sommelier/v7/app/params"
+	addressestypes "github.com/peggyjv/sommelier/v7/x/addresses/types"
 	auctiontypes "github.com/peggyjv/sommelier/v7/x/auction/types"
 	axelarcorktypes "github.com/peggyjv/sommelier/v7/x/axelarcork/types"
 	cellarfeestypes "github.com/peggyjv/sommelier/v7/x/cellarfees/types"
@@ -489,6 +490,11 @@ func (s *IntegrationTestSuite) initGenesis() {
 	bz, err = cdc.MarshalJSON(&pubsubGenState)
 	s.Require().NoError(err)
 	appGenState[pubsubtypes.ModuleName] = bz
+
+    // set addresses gen state
+    addressesGenState := addressestypes.DefaultGenesis()
+    s.Require().NoError(cdc.UnmarshalJSON(appGenState[addressestypes.ModuleName], &addressesGenState))
+    appGenState[addressestypes.ModuleName] = cdc.MustMarshalJSON(&addressesGenState)
 
 	// generate genesis txs
 	genTxs := make([]json.RawMessage, len(s.chain.validators))
