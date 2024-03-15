@@ -14,7 +14,7 @@ func DefaultGenesisState() GenesisState {
 // Validate performs basic genesis state validation returning an error upon any
 // failure.
 func (gs GenesisState) Validate() error {
-	gs.Params.ValidateBasic()
+	// gs.Params.ValidateBasic()
 
 	for _, mapping := range gs.AddressMappings {
 		if err := mapping.ValidateBasic(); err != nil {

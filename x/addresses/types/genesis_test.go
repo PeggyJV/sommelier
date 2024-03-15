@@ -26,13 +26,11 @@ func TestGenesisState_Validate(t *testing.T) {
 	}
 
 	for _, tc := range testCases {
-		t.Run(tc.desc, func(t *testing.T) {
-			err := tc.genState.Validate()
-			if tc.valid {
-				require.NoError(t, err)
-			} else {
-				require.Error(t, err)
-			}
-		})
+		err := tc.genState.Validate()
+		if tc.valid {
+			require.NoError(t, err)
+		} else {
+			require.Error(t, err)
+		}
 	}
 }
