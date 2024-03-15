@@ -21,8 +21,9 @@ import (
 )
 
 const (
-	cosmosAddrString = "cosmos154d0p9xhrruhxvazumej9nq29afeura2alje4u"
-	evmAddrString    = "0x1111111111111111111111111111111111111111"
+	cosmosAddrString        = "cosmos154d0p9xhrruhxvazumej9nq29afeura2alje4u"
+	cosmosAddrStringInvalid = "cosmos154d0p9xhrruhxvazumej9nq29afeura2alje41"
+	evmAddrString           = "0x1111111111111111111111111111111111111111"
 )
 
 type KeeperTestSuite struct {

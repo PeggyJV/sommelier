@@ -8,7 +8,7 @@ import (
 
 func TestGenesisState_Validate(t *testing.T) {
 	def := DefaultGenesisState()
-	for _, tc := range []struct {
+	testCases := []struct {
 		desc     string
 		genState *GenesisState
 		valid    bool
@@ -23,7 +23,9 @@ func TestGenesisState_Validate(t *testing.T) {
 			genState: &GenesisState{},
 			valid:    true,
 		},
-	} {
+	}
+
+	for _, tc := range testCases {
 		t.Run(tc.desc, func(t *testing.T) {
 			err := tc.genState.Validate()
 			if tc.valid {

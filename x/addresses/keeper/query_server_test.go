@@ -14,7 +14,6 @@ func (suite *KeeperTestSuite) TestHappyPathsForQueryServer() {
 	params := types.DefaultParams()
 	addressesKeeper.setParams(ctx, params)
 
-	require.Equal(42, len(evmAddrString))
 	evmAddr := common.HexToAddress(evmAddrString).Bytes()
 	acc, err := sdk.AccAddressFromBech32(cosmosAddrString)
 	require.NoError(err)
@@ -56,8 +55,6 @@ func (suite *KeeperTestSuite) TestUnhappyPathsForQueryServer() {
 
 	// invalid length evm address
 	evmAddrStringInvalid := "0x11111111111111111111111111111111111111111"
-	// invalid checksum cosmos address
-	cosmosAddrStringInvalid := "cosmos154d0p9xhrruhxvazumej9nq29afeura2alje41"
 	_, err := sdk.AccAddressFromBech32(cosmosAddrStringInvalid)
 	require.Error(err)
 

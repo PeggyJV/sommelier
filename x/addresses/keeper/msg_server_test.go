@@ -48,8 +48,6 @@ func (suite *KeeperTestSuite) TestUnhappyPathsForMsgServer() {
 	// Test AddAddressMapping
 	// too long evm address
 	evmAddrStringInvalid := "0x11111111111111111111111111111111111111111"
-	/// invalid checksum cosmos address
-	cosmosAddrStringInvalid := "cosmos154d0p9xhrruhxvazumej9nq29afeura2alje41"
 	_, err := sdk.AccAddressFromBech32(cosmosAddrStringInvalid)
 	require.Error(err)
 
@@ -72,8 +70,6 @@ func (suite *KeeperTestSuite) TestUnhappyPathsForMsgServer() {
 	require.Nil(result)
 
 	// Test RemoveAddressMapping
-	// invalid checksum
-	cosmosAddrStringInvalid = "cosmos154d0p9xhrruhxvazumej9nq29afeura2alje41"
 	_, err = sdk.AccAddressFromBech32(cosmosAddrStringInvalid)
 	require.Error(err)
 
