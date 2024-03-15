@@ -7,7 +7,7 @@ import (
 )
 
 func TestGenesisState_Validate(t *testing.T) {
-	def := DefaultGenesis()
+	def := DefaultGenesisState()
 	for _, tc := range []struct {
 		desc     string
 		genState *GenesisState

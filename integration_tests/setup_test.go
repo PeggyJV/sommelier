@@ -491,10 +491,10 @@ func (s *IntegrationTestSuite) initGenesis() {
 	s.Require().NoError(err)
 	appGenState[pubsubtypes.ModuleName] = bz
 
-    // set addresses gen state
-    addressesGenState := addressestypes.DefaultGenesis()
-    s.Require().NoError(cdc.UnmarshalJSON(appGenState[addressestypes.ModuleName], &addressesGenState))
-    appGenState[addressestypes.ModuleName] = cdc.MustMarshalJSON(&addressesGenState)
+	// set addresses gen state
+	addressesGenState := addressestypes.DefaultGenesisState()
+	s.Require().NoError(cdc.UnmarshalJSON(appGenState[addressestypes.ModuleName], &addressesGenState))
+	appGenState[addressestypes.ModuleName] = cdc.MustMarshalJSON(&addressesGenState)
 
 	// generate genesis txs
 	genTxs := make([]json.RawMessage, len(s.chain.validators))
