@@ -24,7 +24,7 @@ func (k Keeper) AddAddressMapping(c context.Context, req *types.MsgAddAddressMap
 		return &types.MsgAddAddressMappingResponse{}, status.Errorf(codes.InvalidArgument, "invalid EVM address %s", req.EvmAddress)
 	}
 
-	evmAddr := common.Hex2Bytes(req.EvmAddress)
+	evmAddr := common.HexToAddress(req.EvmAddress).Bytes()
 
 	k.SetAddressMapping(ctx, signer.Bytes(), evmAddr)
 

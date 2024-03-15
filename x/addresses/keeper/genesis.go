@@ -27,7 +27,7 @@ func InitGenesis(ctx sdk.Context, k Keeper, gs types.GenesisState) {
 			panic(fmt.Sprintf("invalid EVM address %s", mapping.EvmAddress))
 		}
 
-		evmAddr := common.Hex2Bytes(mapping.EvmAddress)
+		evmAddr := common.HexToAddress(mapping.EvmAddress).Bytes()
 
 		k.SetAddressMapping(ctx, cosmosAcc.Bytes(), evmAddr)
 	}
@@ -35,12 +35,13 @@ func InitGenesis(ctx sdk.Context, k Keeper, gs types.GenesisState) {
 
 // ExportGenesis returns the module's exported genesis.
 func ExportGenesis(ctx sdk.Context, k Keeper) types.GenesisState {
-	var mappings []*types.AddressMapping
+	mappings := []*types.AddressMapping{}
 	k.IterateAddressMappings(ctx, func(cosmosAddr []byte, evmAddr []byte) bool {
 		mappings = append(mappings, &types.AddressMapping{
 			CosmosAddress: sdk.AccAddress(cosmosAddr).String(),
-			EvmAddress:    common.Bytes2Hex(evmAddr),
+			EvmAddress:    common.BytesToAddress(evmAddr).Hex(),
 		})
+
 		return false
 	})
 

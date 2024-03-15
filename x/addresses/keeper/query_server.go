@@ -37,7 +37,11 @@ func (k Keeper) QueryAddressMappings(c context.Context, request *types.QueryAddr
 		prefixStore,
 		&request.Pagination,
 		func(key []byte, value []byte, accumulate bool) (bool, error) {
-			cosmosAddr := sdk.MustBech32ifyAddressBytes(sdk.GetConfig().GetBech32AccountAddrPrefix(), key)
+			cosmosAddr, err := sdk.Bech32ifyAddressBytes(sdk.GetConfig().GetBech32AccountAddrPrefix(), key)
+			if err != nil {
+				return false, err
+			}
+
 			evmAddr := common.BytesToAddress(value).Hex()
 			mapping := types.AddressMapping{
 				CosmosAddress: cosmosAddr,
@@ -52,7 +56,9 @@ func (k Keeper) QueryAddressMappings(c context.Context, request *types.QueryAddr
 	)
 
 	if err != nil {
-		return nil, status.Error(codes.Internal, err.Error())
+		// this shouldn't be possible if the msg server is doing proper validation
+		k.Logger(ctx).Error("failed to paginate cosmos to evm address mappings", "error", err)
+		return nil, status.Error(codes.Internal, "error during pagination")
 	}
 
 	return &types.QueryAddressMappingsResponse{AddressMappings: mappings, Pagination: *pageRes}, nil
@@ -68,8 +74,8 @@ func (k Keeper) QueryAddressMappingByCosmosAddress(c context.Context, request *t
 
 	rawEvmAddr := k.GetEvmAddressByCosmosAddress(ctx, cosmosAddr)
 
-	if rawEvmAddr == nil {
-		return &types.QueryAddressMappingByCosmosAddressResponse{}, status.Errorf(codes.NotFound, "no EVM address mappings for cosmos address %s", request.GetCosmosAddress())
+	if rawEvmAddr == nil || len(rawEvmAddr) == 0 {
+		return &types.QueryAddressMappingByCosmosAddressResponse{}, status.Errorf(codes.NotFound, "no EVM address mapping for cosmos address %s", request.GetCosmosAddress())
 	}
 
 	evmAddr := common.BytesToAddress(rawEvmAddr)
@@ -87,7 +93,7 @@ func (k Keeper) QueryAddressMappingByEVMAddress(c context.Context, request *type
 		return &types.QueryAddressMappingByEVMAddressResponse{}, status.Errorf(codes.InvalidArgument, "invalid EVM address %s", request.GetEvmAddress())
 	}
 
-	evmAddr := common.Hex2Bytes(request.GetEvmAddress())
+	evmAddr := common.HexToAddress(request.GetEvmAddress()).Bytes()
 	rawCosmosAddr := k.GetCosmosAddressByEvmAddress(ctx, evmAddr)
 
 	if rawCosmosAddr == nil {
@@ -97,6 +103,7 @@ func (k Keeper) QueryAddressMappingByEVMAddress(c context.Context, request *type
 	prefix := sdk.GetConfig().GetBech32AccountAddrPrefix()
 	cosmosAddr, err := sdk.Bech32ifyAddressBytes(prefix, rawCosmosAddr)
 	if err != nil {
+		// this shouldn't happen if msg server is doing proper validation
 		return &types.QueryAddressMappingByEVMAddressResponse{}, status.Errorf(codes.Internal, "failed to convert cosmos address to bech32: %s", err)
 	}
 

@@ -592,7 +592,7 @@ func NewSommelierApp(
 		cellarfees.NewAppModule(app.CellarFeesKeeper, appCodec, app.AccountKeeper, app.BankKeeper, app.MintKeeper, app.CorkKeeper, app.GravityKeeper, app.AuctionKeeper),
 		auction.NewAppModule(app.AuctionKeeper, app.BankKeeper, app.AccountKeeper, appCodec),
 		pubsub.NewAppModule(appCodec, app.PubsubKeeper, app.StakingKeeper, app.GravityKeeper),
-		addresses.NewAppModule(appCodec, app.AddressesKeeper, app.AccountKeeper),
+		addresses.NewAppModule(appCodec, app.AddressesKeeper),
 	)
 
 	// During begin block slashing happens after distr.BeginBlocker so that
@@ -731,7 +731,7 @@ func NewSommelierApp(
 		cellarfees.NewAppModule(app.CellarFeesKeeper, appCodec, app.AccountKeeper, app.BankKeeper, app.MintKeeper, app.CorkKeeper, app.GravityKeeper, app.AuctionKeeper),
 		auction.NewAppModule(app.AuctionKeeper, app.BankKeeper, app.AccountKeeper, appCodec),
 		pubsub.NewAppModule(appCodec, app.PubsubKeeper, app.StakingKeeper, app.GravityKeeper),
-		addresses.NewAppModule(appCodec, app.AddressesKeeper, app.AccountKeeper),
+		addresses.NewAppModule(appCodec, app.AddressesKeeper),
 	)
 
 	app.sm.RegisterStoreDecoders()

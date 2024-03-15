@@ -72,7 +72,7 @@ func (m *MsgAddAddressMapping) MustGetSigner() sdk.AccAddress {
 /////////////////////////////
 
 // NewMsgRemoveAddressMapping return a new MsgRemoveAddressMapping
-func NewMsgRemoveAddressMapping(evmAddres common.Address, signer sdk.AccAddress) (*MsgRemoveAddressMapping, error) {
+func NewMsgRemoveAddressMapping(signer sdk.AccAddress) (*MsgRemoveAddressMapping, error) {
 	return &MsgRemoveAddressMapping{
 		Signer: signer.String(),
 	}, nil

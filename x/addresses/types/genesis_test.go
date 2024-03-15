@@ -7,6 +7,7 @@ import (
 )
 
 func TestGenesisState_Validate(t *testing.T) {
+	def := DefaultGenesis()
 	for _, tc := range []struct {
 		desc     string
 		genState *GenesisState
@@ -14,7 +15,7 @@ func TestGenesisState_Validate(t *testing.T) {
 	}{
 		{
 			desc:     "default is valid",
-			genState: DefaultGenesis(),
+			genState: &def,
 			valid:    true,
 		},
 		{
