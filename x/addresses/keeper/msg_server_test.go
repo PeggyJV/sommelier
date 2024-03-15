@@ -11,9 +11,6 @@ func (suite *KeeperTestSuite) TestHappyPathsForMsgServer() {
 	require := suite.Require()
 
 	// Test AddAddressMapping
-	evmAddrString := "0x1111111111111111111111111111111111111111"
-	require.Equal(42, len(evmAddrString))
-	cosmosAddrString := "cosmos154d0p9xhrruhxvazumej9nq29afeura2alje4u"
 	_, err := sdk.AccAddressFromBech32(cosmosAddrString)
 	require.NoError(err)
 
@@ -50,22 +47,21 @@ func (suite *KeeperTestSuite) TestUnhappyPathsForMsgServer() {
 
 	// Test AddAddressMapping
 	// too long evm address
-	evmAddrString := "0x11111111111111111111111111111111111111111"
+	evmAddrStringInvalid := "0x11111111111111111111111111111111111111111"
 	/// invalid checksum cosmos address
-	cosmosAddrString := "cosmos154d0p9xhrruhxvazumej9nq29afeura2alje41"
-	_, err := sdk.AccAddressFromBech32(cosmosAddrString)
+	cosmosAddrStringInvalid := "cosmos154d0p9xhrruhxvazumej9nq29afeura2alje41"
+	_, err := sdk.AccAddressFromBech32(cosmosAddrStringInvalid)
 	require.Error(err)
 
-	_, err = addressesKeeper.AddAddressMapping(sdk.WrapSDKContext(ctx), &types.MsgAddAddressMapping{Signer: cosmosAddrString, EvmAddress: evmAddrString})
+	_, err = addressesKeeper.AddAddressMapping(sdk.WrapSDKContext(ctx), &types.MsgAddAddressMapping{Signer: cosmosAddrStringInvalid, EvmAddress: evmAddrString})
 	require.Error(err)
 	require.Contains(err.Error(), "invalid signer address")
 
-	cosmosAddrString = "cosmos154d0p9xhrruhxvazumej9nq29afeura2alje4u"
 	_, err = sdk.AccAddressFromBech32(cosmosAddrString)
 	require.NoError(err)
 	evmAddr := common.HexToAddress(evmAddrString).Bytes()
 
-	_, err = addressesKeeper.AddAddressMapping(sdk.WrapSDKContext(ctx), &types.MsgAddAddressMapping{Signer: cosmosAddrString, EvmAddress: evmAddrString})
+	_, err = addressesKeeper.AddAddressMapping(sdk.WrapSDKContext(ctx), &types.MsgAddAddressMapping{Signer: cosmosAddrString, EvmAddress: evmAddrStringInvalid})
 	require.Error(err)
 	require.Contains(err.Error(), "invalid EVM address")
 
@@ -77,11 +73,11 @@ func (suite *KeeperTestSuite) TestUnhappyPathsForMsgServer() {
 
 	// Test RemoveAddressMapping
 	// invalid checksum
-	cosmosAddrString = "cosmos154d0p9xhrruhxvazumej9nq29afeura2alje41"
-	_, err = sdk.AccAddressFromBech32(cosmosAddrString)
+	cosmosAddrStringInvalid = "cosmos154d0p9xhrruhxvazumej9nq29afeura2alje41"
+	_, err = sdk.AccAddressFromBech32(cosmosAddrStringInvalid)
 	require.Error(err)
 
-	_, err = addressesKeeper.RemoveAddressMapping(sdk.WrapSDKContext(ctx), &types.MsgRemoveAddressMapping{Signer: cosmosAddrString})
+	_, err = addressesKeeper.RemoveAddressMapping(sdk.WrapSDKContext(ctx), &types.MsgRemoveAddressMapping{Signer: cosmosAddrStringInvalid})
 	require.Error(err)
 	require.Contains(err.Error(), "invalid signer address")
 }

@@ -24,6 +24,6 @@ func (suite *KeeperTestSuite) TestGenesisValidation() {
 	require.Error(genesis.Validate())
 
 	genesis.AddressMappings = types.DefaultGenesisState().AddressMappings
-	genesis.AddressMappings = append(genesis.AddressMappings, &types.AddressMapping{CosmosAddress: "cosmos1l8n6v5f4j5s8j5l8n6v5f4j5s8j5l8n6v5f4j", EvmAddress: "zzzz"})
+	genesis.AddressMappings = append(genesis.AddressMappings, &types.AddressMapping{CosmosAddress: cosmosAddrString, EvmAddress: "zzzz"})
 	require.Error(genesis.Validate())
 }

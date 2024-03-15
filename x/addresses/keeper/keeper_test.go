@@ -20,6 +20,11 @@ import (
 	tmtime "github.com/tendermint/tendermint/types/time"
 )
 
+const (
+	cosmosAddrString = "cosmos154d0p9xhrruhxvazumej9nq29afeura2alje4u"
+	evmAddrString    = "0x1111111111111111111111111111111111111111"
+)
+
 type KeeperTestSuite struct {
 	suite.Suite
 
@@ -94,7 +99,6 @@ func (suite *KeeperTestSuite) TestSetGetDeleteAddressMappings() {
 	require.Equal(42, len(evmAddrString))
 	evmAddr := common.HexToAddress(evmAddrString).Bytes()
 
-	cosmosAddrString := "cosmos154d0p9xhrruhxvazumej9nq29afeura2alje4u"
 	acc, err := sdk.AccAddressFromBech32(cosmosAddrString)
 	require.NoError(err)
 

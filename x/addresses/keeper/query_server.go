@@ -74,7 +74,7 @@ func (k Keeper) QueryAddressMappingByCosmosAddress(c context.Context, request *t
 
 	rawEvmAddr := k.GetEvmAddressByCosmosAddress(ctx, cosmosAddr)
 
-	if rawEvmAddr == nil || len(rawEvmAddr) == 0 {
+	if len(rawEvmAddr) == 0 {
 		return &types.QueryAddressMappingByCosmosAddressResponse{}, status.Errorf(codes.NotFound, "no EVM address mapping for cosmos address %s", request.GetCosmosAddress())
 	}
 
@@ -96,7 +96,7 @@ func (k Keeper) QueryAddressMappingByEVMAddress(c context.Context, request *type
 	evmAddr := common.HexToAddress(request.GetEvmAddress()).Bytes()
 	rawCosmosAddr := k.GetCosmosAddressByEvmAddress(ctx, evmAddr)
 
-	if rawCosmosAddr == nil {
+	if len(rawCosmosAddr) == 0 {
 		return &types.QueryAddressMappingByEVMAddressResponse{}, status.Errorf(codes.NotFound, "no cosmos address mapping for EVM address %s", request.GetEvmAddress())
 	}
 

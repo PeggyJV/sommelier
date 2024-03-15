@@ -14,10 +14,8 @@ func (suite *KeeperTestSuite) TestHappyPathsForQueryServer() {
 	params := types.DefaultParams()
 	addressesKeeper.setParams(ctx, params)
 
-	evmAddrString := "0x1111111111111111111111111111111111111111"
 	require.Equal(42, len(evmAddrString))
 	evmAddr := common.HexToAddress(evmAddrString).Bytes()
-	cosmosAddrString := "cosmos154d0p9xhrruhxvazumej9nq29afeura2alje4u"
 	acc, err := sdk.AccAddressFromBech32(cosmosAddrString)
 	require.NoError(err)
 
@@ -57,10 +55,10 @@ func (suite *KeeperTestSuite) TestUnhappyPathsForQueryServer() {
 	addressesKeeper.setParams(ctx, params)
 
 	// invalid length evm address
-	evmAddrString := "0x11111111111111111111111111111111111111111"
+	evmAddrStringInvalid := "0x11111111111111111111111111111111111111111"
 	// invalid checksum cosmos address
-	cosmosAddrString := "cosmos154d0p9xhrruhxvazumej9nq29afeura2alje41"
-	_, err := sdk.AccAddressFromBech32(cosmosAddrString)
+	cosmosAddrStringInvalid := "cosmos154d0p9xhrruhxvazumej9nq29afeura2alje41"
+	_, err := sdk.AccAddressFromBech32(cosmosAddrStringInvalid)
 	require.Error(err)
 
 	// Test QueryParams
@@ -69,23 +67,21 @@ func (suite *KeeperTestSuite) TestUnhappyPathsForQueryServer() {
 	require.Equal(&params, queryParams.Params)
 
 	// Test QueryAddressMappingByEvmAddress
-	_, err = addressesKeeper.QueryAddressMappingByEVMAddress(sdk.WrapSDKContext(ctx), &types.QueryAddressMappingByEVMAddressRequest{EvmAddress: evmAddrString})
+	_, err = addressesKeeper.QueryAddressMappingByEVMAddress(sdk.WrapSDKContext(ctx), &types.QueryAddressMappingByEVMAddressRequest{EvmAddress: evmAddrStringInvalid})
 	require.Error(err)
 	require.Contains(err.Error(), "invalid EVM address")
 
 	// valid evm address
-	evmAddrString = "0x1111111111111111111111111111111111111111"
 	_, err = addressesKeeper.QueryAddressMappingByEVMAddress(sdk.WrapSDKContext(ctx), &types.QueryAddressMappingByEVMAddressRequest{EvmAddress: evmAddrString})
 	require.Error(err)
 	require.Contains(err.Error(), "no cosmos address mapping for EVM address")
 
 	// Test QueryAddressMappingByCosmosAddress
-	_, err = addressesKeeper.QueryAddressMappingByCosmosAddress(sdk.WrapSDKContext(ctx), &types.QueryAddressMappingByCosmosAddressRequest{CosmosAddress: cosmosAddrString})
+	_, err = addressesKeeper.QueryAddressMappingByCosmosAddress(sdk.WrapSDKContext(ctx), &types.QueryAddressMappingByCosmosAddressRequest{CosmosAddress: cosmosAddrStringInvalid})
 	require.Error(err)
 	require.Contains(err.Error(), "failed to parse cosmos address")
 
 	// valid cosmos address
-	cosmosAddrString = "cosmos154d0p9xhrruhxvazumej9nq29afeura2alje4u"
 	_, err = addressesKeeper.QueryAddressMappingByCosmosAddress(sdk.WrapSDKContext(ctx), &types.QueryAddressMappingByCosmosAddressRequest{CosmosAddress: cosmosAddrString})
 	require.Error(err)
 	require.Contains(err.Error(), "no EVM address mapping for cosmos address")
