@@ -2,6 +2,7 @@ package keeper
 
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	query "github.com/cosmos/cosmos-sdk/types/query"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/peggyjv/sommelier/v7/x/addresses/types"
 )
@@ -43,6 +44,50 @@ func (suite *KeeperTestSuite) TestHappyPathsForQueryServer() {
 	require.Len(addressMappings.AddressMappings, 1)
 	require.Equal(cosmosAddrString, addressMappings.AddressMappings[0].CosmosAddress)
 	require.Equal(evmAddrString, addressMappings.AddressMappings[0].EvmAddress)
+
+	// Test QueryAddressMappings with pagination
+	addressMappings, err = addressesKeeper.QueryAddressMappings(sdk.WrapSDKContext(ctx), &types.QueryAddressMappingsRequest{Pagination: query.PageRequest{Limit: 1}})
+	require.NoError(err)
+	require.Len(addressMappings.AddressMappings, 1)
+	require.Equal(cosmosAddrString, addressMappings.AddressMappings[0].CosmosAddress)
+	require.Equal(evmAddrString, addressMappings.AddressMappings[0].EvmAddress)
+
+	evmAddrString2 := "0x2222222222222222222222222222222222222222"
+	// keys stored in ascending order, so this one will be stored before the previous value (cosmos15...)
+	cosmosAddrString2 := "cosmos1y6d5kasehecexf09ka6y0ggl0pxzt6dgk0gnl9"
+	evmAddr2 := common.HexToAddress(evmAddrString2).Bytes()
+	acc2, err := sdk.AccAddressFromBech32(cosmosAddrString2)
+	require.NoError(err)
+
+	cosmosAddr2 := acc2.Bytes()
+
+	addressesKeeper.SetAddressMapping(ctx, cosmosAddr2, evmAddr2)
+
+	addressMappings, err = addressesKeeper.QueryAddressMappings(sdk.WrapSDKContext(ctx), &types.QueryAddressMappingsRequest{Pagination: query.PageRequest{Limit: 1, Offset: 1}})
+	require.NoError(err)
+	require.Len(addressMappings.AddressMappings, 1)
+	require.Equal(cosmosAddrString, addressMappings.AddressMappings[0].CosmosAddress)
+	require.Equal(evmAddrString, addressMappings.AddressMappings[0].EvmAddress)
+
+	addressMappings, err = addressesKeeper.QueryAddressMappings(sdk.WrapSDKContext(ctx), &types.QueryAddressMappingsRequest{Pagination: query.PageRequest{Limit: 1}})
+	require.NoError(err)
+	require.Len(addressMappings.AddressMappings, 1)
+	require.Equal(cosmosAddrString2, addressMappings.AddressMappings[0].CosmosAddress)
+	require.Equal(evmAddrString2, addressMappings.AddressMappings[0].EvmAddress)
+
+	addressMappings, err = addressesKeeper.QueryAddressMappings(sdk.WrapSDKContext(ctx), &types.QueryAddressMappingsRequest{Pagination: query.PageRequest{Key: addressMappings.Pagination.NextKey}})
+	require.NoError(err)
+	require.Len(addressMappings.AddressMappings, 1)
+	require.Equal(cosmosAddrString, addressMappings.AddressMappings[0].CosmosAddress)
+	require.Equal(evmAddrString, addressMappings.AddressMappings[0].EvmAddress)
+
+	addressMappings, err = addressesKeeper.QueryAddressMappings(sdk.WrapSDKContext(ctx), &types.QueryAddressMappingsRequest{Pagination: query.PageRequest{Limit: 2}})
+	require.NoError(err)
+	require.Len(addressMappings.AddressMappings, 2)
+	require.Equal(cosmosAddrString, addressMappings.AddressMappings[1].CosmosAddress)
+	require.Equal(evmAddrString, addressMappings.AddressMappings[1].EvmAddress)
+	require.Equal(cosmosAddrString2, addressMappings.AddressMappings[0].CosmosAddress)
+	require.Equal(evmAddrString2, addressMappings.AddressMappings[0].EvmAddress)
 }
 
 // Unhappy path test for query server functions
