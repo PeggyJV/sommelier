@@ -1,16 +1,16 @@
 syntax = "proto3";
-package cellarfees.v1;
+package cellarfees.v2;
 
 import "gogoproto/gogo.proto";
 
-option go_package = "github.com/peggyjv/sommelier/v7/x/cellarfees/types/v1";
+option go_package = "github.com/peggyjv/sommelier/v7/x/cellarfees/types/v2";
 
 // Params defines the parameters for the module.
 message Params {
+  reserved 1; // deleted fee accrual threshold field
+
   option (gogoproto.goproto_stringer) = false;
 
-  // The number of fee accruals after which an auction should be started
-  uint64 fee_accrual_auction_threshold = 1;
   // Emission rate factor. Specifically, the number of blocks over which to distribute
   // some amount of staking rewards.
   uint64 reward_emission_period = 2;
@@ -21,7 +21,9 @@ message Params {
   uint64 price_decrease_block_interval = 4;
   // The interval between starting auctions
   uint64 auction_interval = 5;
-
+  // A fee token's total USD value threshold, based on it's auction.v1.TokenPrice, above which an auction is triggered
+  string auction_threshold_usd_value = 6
+    [(gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec", (gogoproto.nullable) = false];
 }
 
 

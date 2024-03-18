@@ -4,6 +4,7 @@ import (
 	"cosmossdk.io/math"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/auth/types"
+	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	minttypes "github.com/cosmos/cosmos-sdk/x/mint/types"
 	"github.com/ethereum/go-ethereum/common"
 	auctiontypes "github.com/peggyjv/sommelier/v7/x/auction/types"
@@ -21,6 +22,7 @@ type AccountKeeper interface {
 type BankKeeper interface {
 	GetAllBalances(ctx sdk.Context, addr sdk.AccAddress) sdk.Coins
 	GetBalance(ctx sdk.Context, addr sdk.AccAddress, denom string) sdk.Coin
+	GetDenomMetaData(ctx sdk.Context, denom string) (banktypes.Metadata, bool)
 	LockedCoins(ctx sdk.Context, addr sdk.AccAddress) sdk.Coins
 	SpendableCoins(ctx sdk.Context, addr sdk.AccAddress) sdk.Coins
 
@@ -37,14 +39,11 @@ type CorkKeeper interface {
 	HasCellarID(ctx sdk.Context, address common.Address) (found bool)
 }
 
-// GravityKeeper defines the expected gravity keeper methods
-type GravityKeeper interface {
-	ERC20ToDenomLookup(ctx sdk.Context, tokenContract common.Address) (bool, string)
-}
-
 // AuctionKeeper defines the expected auction keeper methods
 type AuctionKeeper interface {
 	GetActiveAuctions(ctx sdk.Context) []*auctiontypes.Auction
+	GetTokenPrice(ctx sdk.Context, denom string) (auctiontypes.TokenPrice, bool)
+	GetTokenPrices(ctx sdk.Context) []*auctiontypes.TokenPrice
 	BeginAuction(ctx sdk.Context,
 		startingTokensForSale sdk.Coin,
 		initialPriceDecreaseRate sdk.Dec,

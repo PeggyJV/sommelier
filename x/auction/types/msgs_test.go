@@ -76,17 +76,6 @@ func TestMsgValidate(t *testing.T) {
 			err:     errorsmod.Wrapf(ErrBidAmountMustBePositive, "bid amount in usomm: %s", sdk.NewCoin("usomm", sdk.NewInt(0))),
 		},
 		{
-			name: "Sale token must be prefixed with gravity0x",
-			msgSubmitBidRequest: MsgSubmitBidRequest{
-				AuctionId:              uint32(1),
-				MaxBidInUsomm:          sdk.NewCoin("usomm", sdk.NewInt(200)),
-				SaleTokenMinimumAmount: sdk.NewCoin("usdc", sdk.NewInt(1)),
-				Signer:                 cosmosAddress1,
-			},
-			expPass: false,
-			err:     errorsmod.Wrapf(ErrInvalidTokenBeingBidOn, "sale token: %s", sdk.NewCoin("usdc", sdk.NewInt(1))),
-		},
-		{
 			name: "Sale token minimum amount must be positive",
 			msgSubmitBidRequest: MsgSubmitBidRequest{
 				AuctionId:              uint32(1),

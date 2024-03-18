@@ -3,7 +3,7 @@ package cellarfees.v1;
 
 import "gogoproto/gogo.proto";
 
-option go_package = "github.com/peggyjv/sommelier/v7/x/cellarfees/types";
+option go_package = "github.com/peggyjv/sommelier/v7/x/cellarfees/types/v1";
 
 message FeeAccrualCounter {
     string denom = 1;

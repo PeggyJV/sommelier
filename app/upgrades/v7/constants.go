@@ -1,3 +1,5 @@
+//go:build exclude
+
 package v7
 
 // UpgradeName defines the on-chain upgrade name for the Sommelier v7 upgrade
