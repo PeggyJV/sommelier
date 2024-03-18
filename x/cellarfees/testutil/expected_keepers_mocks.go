@@ -7,12 +7,14 @@ package mock_types
 import (
 	reflect "reflect"
 
+	math "cosmossdk.io/math"
 	types "github.com/cosmos/cosmos-sdk/types"
 	types0 "github.com/cosmos/cosmos-sdk/x/auth/types"
-	types1 "github.com/cosmos/cosmos-sdk/x/mint/types"
+	types1 "github.com/cosmos/cosmos-sdk/x/bank/types"
+	types2 "github.com/cosmos/cosmos-sdk/x/mint/types"
 	common "github.com/ethereum/go-ethereum/common"
 	gomock "github.com/golang/mock/gomock"
-	types2 "github.com/peggyjv/sommelier/v7/x/auction/types"
+	types3 "github.com/peggyjv/sommelier/v7/x/auction/types"
 )
 
 // MockAccountKeeper is a mock of AccountKeeper interface.
@@ -145,6 +147,21 @@ func (mr *MockBankKeeperMockRecorder) GetBalance(ctx, addr, denom interface{}) *
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetBalance", reflect.TypeOf((*MockBankKeeper)(nil).GetBalance), ctx, addr, denom)
 }
 
+// GetDenomMetaData mocks base method.
+func (m *MockBankKeeper) GetDenomMetaData(ctx types.Context, denom string) (types1.Metadata, bool) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetDenomMetaData", ctx, denom)
+	ret0, _ := ret[0].(types1.Metadata)
+	ret1, _ := ret[1].(bool)
+	return ret0, ret1
+}
+
+// GetDenomMetaData indicates an expected call of GetDenomMetaData.
+func (mr *MockBankKeeperMockRecorder) GetDenomMetaData(ctx, denom interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetDenomMetaData", reflect.TypeOf((*MockBankKeeper)(nil).GetDenomMetaData), ctx, denom)
+}
+
 // LockedCoins mocks base method.
 func (m *MockBankKeeper) LockedCoins(ctx types.Context, addr types.AccAddress) types.Coins {
 	m.ctrl.T.Helper()
@@ -266,44 +283,6 @@ func (mr *MockCorkKeeperMockRecorder) HasCellarID(ctx, address interface{}) *gom
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "HasCellarID", reflect.TypeOf((*MockCorkKeeper)(nil).HasCellarID), ctx, address)
 }
 
-// MockGravityKeeper is a mock of GravityKeeper interface.
-type MockGravityKeeper struct {
-	ctrl     *gomock.Controller
-	recorder *MockGravityKeeperMockRecorder
-}
-
-// MockGravityKeeperMockRecorder is the mock recorder for MockGravityKeeper.
-type MockGravityKeeperMockRecorder struct {
-	mock *MockGravityKeeper
-}
-
-// NewMockGravityKeeper creates a new mock instance.
-func NewMockGravityKeeper(ctrl *gomock.Controller) *MockGravityKeeper {
-	mock := &MockGravityKeeper{ctrl: ctrl}
-	mock.recorder = &MockGravityKeeperMockRecorder{mock}
-	return mock
-}
-
-// EXPECT returns an object that allows the caller to indicate expected use.
-func (m *MockGravityKeeper) EXPECT() *MockGravityKeeperMockRecorder {
-	return m.recorder
-}
-
-// ERC20ToDenomLookup mocks base method.
-func (m *MockGravityKeeper) ERC20ToDenomLookup(ctx types.Context, tokenContract common.Address) (bool, string) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "ERC20ToDenomLookup", ctx, tokenContract)
-	ret0, _ := ret[0].(bool)
-	ret1, _ := ret[1].(string)
-	return ret0, ret1
-}
-
-// ERC20ToDenomLookup indicates an expected call of ERC20ToDenomLookup.
-func (mr *MockGravityKeeperMockRecorder) ERC20ToDenomLookup(ctx, tokenContract interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ERC20ToDenomLookup", reflect.TypeOf((*MockGravityKeeper)(nil).ERC20ToDenomLookup), ctx, tokenContract)
-}
-
 // MockAuctionKeeper is a mock of AuctionKeeper interface.
 type MockAuctionKeeper struct {
 	ctrl     *gomock.Controller
@@ -342,10 +321,10 @@ func (mr *MockAuctionKeeperMockRecorder) BeginAuction(ctx, startingTokensForSale
 }
 
 // GetActiveAuctions mocks base method.
-func (m *MockAuctionKeeper) GetActiveAuctions(ctx types.Context) []*types2.Auction {
+func (m *MockAuctionKeeper) GetActiveAuctions(ctx types.Context) []*types3.Auction {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetActiveAuctions", ctx)
-	ret0, _ := ret[0].([]*types2.Auction)
+	ret0, _ := ret[0].([]*types3.Auction)
 	return ret0
 }
 
@@ -353,6 +332,35 @@ func (m *MockAuctionKeeper) GetActiveAuctions(ctx types.Context) []*types2.Aucti
 func (mr *MockAuctionKeeperMockRecorder) GetActiveAuctions(ctx interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetActiveAuctions", reflect.TypeOf((*MockAuctionKeeper)(nil).GetActiveAuctions), ctx)
+}
+
+// GetTokenPrice mocks base method.
+func (m *MockAuctionKeeper) GetTokenPrice(ctx types.Context, denom string) (types3.TokenPrice, bool) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetTokenPrice", ctx, denom)
+	ret0, _ := ret[0].(types3.TokenPrice)
+	ret1, _ := ret[1].(bool)
+	return ret0, ret1
+}
+
+// GetTokenPrice indicates an expected call of GetTokenPrice.
+func (mr *MockAuctionKeeperMockRecorder) GetTokenPrice(ctx, denom interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetTokenPrice", reflect.TypeOf((*MockAuctionKeeper)(nil).GetTokenPrice), ctx, denom)
+}
+
+// GetTokenPrices mocks base method.
+func (m *MockAuctionKeeper) GetTokenPrices(ctx types.Context) []*types3.TokenPrice {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetTokenPrices", ctx)
+	ret0, _ := ret[0].([]*types3.TokenPrice)
+	return ret0
+}
+
+// GetTokenPrices indicates an expected call of GetTokenPrices.
+func (mr *MockAuctionKeeperMockRecorder) GetTokenPrices(ctx interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetTokenPrices", reflect.TypeOf((*MockAuctionKeeper)(nil).GetTokenPrices), ctx)
 }
 
 // MockMintKeeper is a mock of MintKeeper interface.
@@ -393,10 +401,10 @@ func (mr *MockMintKeeperMockRecorder) BondedRatio(ctx interface{}) *gomock.Call 
 }
 
 // GetParams mocks base method.
-func (m *MockMintKeeper) GetParams(ctx types.Context) types1.Params {
+func (m *MockMintKeeper) GetParams(ctx types.Context) types2.Params {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetParams", ctx)
-	ret0, _ := ret[0].(types1.Params)
+	ret0, _ := ret[0].(types2.Params)
 	return ret0
 }
 
@@ -407,10 +415,10 @@ func (mr *MockMintKeeperMockRecorder) GetParams(ctx interface{}) *gomock.Call {
 }
 
 // StakingTokenSupply mocks base method.
-func (m *MockMintKeeper) StakingTokenSupply(ctx types.Context) types.Int {
+func (m *MockMintKeeper) StakingTokenSupply(ctx types.Context) math.Int {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "StakingTokenSupply", ctx)
-	ret0, _ := ret[0].(types.Int)
+	ret0, _ := ret[0].(math.Int)
 	return ret0
 }
 

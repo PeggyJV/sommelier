@@ -1,14 +1,14 @@
-package types
+package v2
 
 import (
 	errorsmod "cosmossdk.io/errors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
+	"github.com/peggyjv/sommelier/v7/x/cellarfees/types"
 	"gopkg.in/yaml.v2"
 )
 
 const (
-	DefaultFeeAccrualAuctionThreshold uint64 = 2
 	// Rough number of blocks in 28 days, the time it takes to unbond
 	DefaultRewardEmissionPeriod uint64 = 403200
 	// Initial rate at which an auction should decrease the price of the relevant coin from it's starting price.
@@ -19,15 +19,18 @@ const (
 	DefaultPriceDecreaseBlockInterval uint64 = 10
 	// Blocks between each auction
 	DefaultAuctionInterval uint64 = 15000
+	// Minimum USD value of a token's fees balance to trigger an auction
+	// $10,000
+	DefaultAuctionThresholdUsdValue = "10000.00"
 )
 
 // Parameter keys
 var (
-	KeyFeeAccrualAuctionThreshold = []byte("FeeAccrualAuctionThreshold")
 	KeyRewardEmissionPeriod       = []byte("RewardEmissionPeriod")
 	KeyInitialPriceDecreaseRate   = []byte("InitialPriceDecreaseRate")
 	KeyPriceDecreaseBlockInterval = []byte("PriceDecreaseBlockInterval")
 	KeyAuctionInterval            = []byte("AuctionInterval")
+	KeyAuctionThresholdUsdValue   = []byte("AuctionThresholdUsdValue")
 )
 
 var _ paramtypes.ParamSet = &Params{}
@@ -40,30 +43,27 @@ func ParamKeyTable() paramtypes.KeyTable {
 // DefaultParams returns default cellarfees parameters
 func DefaultParams() Params {
 	return Params{
-		FeeAccrualAuctionThreshold: DefaultFeeAccrualAuctionThreshold,
 		RewardEmissionPeriod:       DefaultRewardEmissionPeriod,
 		InitialPriceDecreaseRate:   sdk.MustNewDecFromStr(DefaultInitialPriceDecreaseRate),
 		PriceDecreaseBlockInterval: DefaultPriceDecreaseBlockInterval,
 		AuctionInterval:            DefaultAuctionInterval,
+		AuctionThresholdUsdValue:   sdk.MustNewDecFromStr(DefaultAuctionThresholdUsdValue),
 	}
 }
 
 // ParamSetPairs returns the parameter set pairs.
 func (p *Params) ParamSetPairs() paramtypes.ParamSetPairs {
 	return paramtypes.ParamSetPairs{
-		paramtypes.NewParamSetPair(KeyFeeAccrualAuctionThreshold, &p.FeeAccrualAuctionThreshold, validateFeeAccrualAuctionThreshold),
 		paramtypes.NewParamSetPair(KeyRewardEmissionPeriod, &p.RewardEmissionPeriod, validateRewardEmissionPeriod),
 		paramtypes.NewParamSetPair(KeyInitialPriceDecreaseRate, &p.InitialPriceDecreaseRate, validateInitialPriceDecreaseRate),
 		paramtypes.NewParamSetPair(KeyPriceDecreaseBlockInterval, &p.PriceDecreaseBlockInterval, validatePriceDecreaseBlockInterval),
 		paramtypes.NewParamSetPair(KeyAuctionInterval, &p.AuctionInterval, validateAuctionInterval),
+		paramtypes.NewParamSetPair(KeyAuctionThresholdUsdValue, &p.AuctionThresholdUsdValue, validateAuctionThresholdUsdValue),
 	}
 }
 
 // ValidateBasic performs basic validation on cellarfees parameters.
 func (p *Params) ValidateBasic() error {
-	if err := validateFeeAccrualAuctionThreshold(p.FeeAccrualAuctionThreshold); err != nil {
-		return err
-	}
 	if err := validateRewardEmissionPeriod(p.RewardEmissionPeriod); err != nil {
 		return err
 	}
@@ -76,27 +76,14 @@ func (p *Params) ValidateBasic() error {
 	return nil
 }
 
-func validateFeeAccrualAuctionThreshold(i interface{}) error {
-	threshold, ok := i.(uint64)
-	if !ok {
-		return errorsmod.Wrapf(ErrInvalidFeeAccrualAuctionThreshold, "fee accrual auction threshold: %T", i)
-	}
-
-	if threshold == 0 {
-		return errorsmod.Wrapf(ErrInvalidFeeAccrualAuctionThreshold, "fee accrual auction threshold cannot be zero")
-	}
-
-	return nil
-}
-
 func validateRewardEmissionPeriod(i interface{}) error {
 	emissionPeriod, ok := i.(uint64)
 	if !ok {
-		return errorsmod.Wrapf(ErrInvalidRewardEmissionPeriod, "reward emission period: %T", i)
+		return errorsmod.Wrapf(types.ErrInvalidRewardEmissionPeriod, "reward emission period: %T", i)
 	}
 
 	if emissionPeriod == 0 {
-		return errorsmod.Wrapf(ErrInvalidRewardEmissionPeriod, "reward emission period cannot be zero")
+		return errorsmod.Wrapf(types.ErrInvalidRewardEmissionPeriod, "reward emission period cannot be zero")
 	}
 
 	return nil
@@ -105,15 +92,15 @@ func validateRewardEmissionPeriod(i interface{}) error {
 func validateInitialPriceDecreaseRate(i interface{}) error {
 	rate, ok := i.(sdk.Dec)
 	if !ok {
-		return errorsmod.Wrapf(ErrInvalidInitialPriceDecreaseRate, "initial price decrease rate: %T", i)
+		return errorsmod.Wrapf(types.ErrInvalidInitialPriceDecreaseRate, "initial price decrease rate: %T", i)
 	}
 
 	if rate == sdk.ZeroDec() {
-		return errorsmod.Wrapf(ErrInvalidInitialPriceDecreaseRate, "initial price decrease rate cannot be zero, must be 0 < x < 1")
+		return errorsmod.Wrapf(types.ErrInvalidInitialPriceDecreaseRate, "initial price decrease rate cannot be zero, must be 0 < x < 1")
 	}
 
 	if rate == sdk.OneDec() {
-		return errorsmod.Wrapf(ErrInvalidInitialPriceDecreaseRate, "initial price decrease rate cannot be one, must be 0 < x < 1")
+		return errorsmod.Wrapf(types.ErrInvalidInitialPriceDecreaseRate, "initial price decrease rate cannot be one, must be 0 < x < 1")
 	}
 
 	return nil
@@ -122,11 +109,11 @@ func validateInitialPriceDecreaseRate(i interface{}) error {
 func validatePriceDecreaseBlockInterval(i interface{}) error {
 	interval, ok := i.(uint64)
 	if !ok {
-		return errorsmod.Wrapf(ErrInvalidPriceDecreaseBlockInterval, "price decrease block interval: %T", i)
+		return errorsmod.Wrapf(types.ErrInvalidPriceDecreaseBlockInterval, "price decrease block interval: %T", i)
 	}
 
 	if interval == 0 {
-		return errorsmod.Wrapf(ErrInvalidPriceDecreaseBlockInterval, "price decrease block interval cannot be zero")
+		return errorsmod.Wrapf(types.ErrInvalidPriceDecreaseBlockInterval, "price decrease block interval cannot be zero")
 	}
 
 	return nil
@@ -135,11 +122,24 @@ func validatePriceDecreaseBlockInterval(i interface{}) error {
 func validateAuctionInterval(i interface{}) error {
 	interval, ok := i.(uint64)
 	if !ok {
-		return errorsmod.Wrapf(ErrInvalidAuctionInterval, "auction interval: %T", i)
+		return errorsmod.Wrapf(types.ErrInvalidAuctionInterval, "auction interval: %T", i)
 	}
 
 	if interval == 0 {
-		return errorsmod.Wrapf(ErrInvalidAuctionInterval, "auction interval cannot be zero")
+		return errorsmod.Wrapf(types.ErrInvalidAuctionInterval, "auction interval cannot be zero")
+	}
+
+	return nil
+}
+
+func validateAuctionThresholdUsdValue(i interface{}) error {
+	threshold, ok := i.(sdk.Dec)
+	if !ok {
+		return errorsmod.Wrapf(types.ErrInvalidAuctionThresholdUsdValue, "auction threshold USD value: %T", i)
+	}
+
+	if !threshold.IsPositive() {
+		return errorsmod.Wrapf(types.ErrInvalidAuctionThresholdUsdValue, "auction threshold USD value must be greater than zero")
 	}
 
 	return nil

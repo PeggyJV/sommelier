@@ -15,6 +15,7 @@ import (
 	"github.com/peggyjv/sommelier/v7/x/cellarfees/client/cli"
 	"github.com/peggyjv/sommelier/v7/x/cellarfees/keeper"
 	"github.com/peggyjv/sommelier/v7/x/cellarfees/types"
+	typesv2 "github.com/peggyjv/sommelier/v7/x/cellarfees/types/v2"
 	"github.com/spf13/cobra"
 	abci "github.com/tendermint/tendermint/abci/types"
 )
@@ -38,13 +39,13 @@ func (AppModuleBasic) RegisterLegacyAminoCodec(cdc *codec.LegacyAmino) {}
 // DefaultGenesis returns default genesis state as raw bytes for the cellarfees
 // module.
 func (AppModuleBasic) DefaultGenesis(cdc codec.JSONCodec) json.RawMessage {
-	gs := types.DefaultGenesisState()
+	gs := typesv2.DefaultGenesisState()
 	return cdc.MustMarshalJSON(&gs)
 }
 
 // ValidateGenesis performs genesis state validation for the cellarfees module.
 func (AppModuleBasic) ValidateGenesis(cdc codec.JSONCodec, _ client.TxEncodingConfig, bz json.RawMessage) error {
-	var gs types.GenesisState
+	var gs typesv2.GenesisState
 	if err := cdc.UnmarshalJSON(bz, &gs); err != nil {
 		return err
 	}
@@ -64,12 +65,12 @@ func (AppModuleBasic) GetQueryCmd() *cobra.Command {
 // RegisterGRPCGatewayRoutes registers the gRPC Gateway routes for the cellarfees module.
 // also implements AppModuleBasic
 func (AppModuleBasic) RegisterGRPCGatewayRoutes(clientCtx client.Context, mux *runtime.ServeMux) {
-	types.RegisterQueryHandlerClient(context.Background(), mux, types.NewQueryClient(clientCtx))
+	typesv2.RegisterQueryHandlerClient(context.Background(), mux, typesv2.NewQueryClient(clientCtx))
 }
 
 // RegisterInterfaces implements AppModuleBasic
 func (b AppModuleBasic) RegisterInterfaces(registry codectypes.InterfaceRegistry) {
-	types.RegisterInterfaces(registry)
+	typesv2.RegisterInterfaces(registry)
 }
 
 // AppModule implements an application module for the cellarfees module.
@@ -81,13 +82,12 @@ type AppModule struct {
 	bankKeeper    types.BankKeeper
 	mintKeeper    types.MintKeeper
 	corkKeeper    types.CorkKeeper
-	gravityKeeper types.GravityKeeper
 	auctionKeeper types.AuctionKeeper
 }
 
 // NewAppModule creates a new AppModule object
 func NewAppModule(keeper keeper.Keeper, cdc codec.Codec, accountKeeper types.AccountKeeper, bankKeeper types.BankKeeper,
-	mintKeeper types.MintKeeper, corkKeeper types.CorkKeeper, gravityKeeper types.GravityKeeper, auctionKeeper types.AuctionKeeper) AppModule {
+	mintKeeper types.MintKeeper, corkKeeper types.CorkKeeper, auctionKeeper types.AuctionKeeper) AppModule {
 	return AppModule{
 		AppModuleBasic: AppModuleBasic{},
 		keeper:         keeper,
@@ -96,7 +96,6 @@ func NewAppModule(keeper keeper.Keeper, cdc codec.Codec, accountKeeper types.Acc
 		bankKeeper:     bankKeeper,
 		mintKeeper:     mintKeeper,
 		corkKeeper:     corkKeeper,
-		gravityKeeper:  gravityKeeper,
 		auctionKeeper:  auctionKeeper,
 	}
 }
@@ -130,12 +129,12 @@ func (am AppModule) WeightedOperations(simState module.SimulationState) []sim.We
 // RegisterServices registers module services.
 func (am AppModule) RegisterServices(cfg module.Configurator) {
 	//types.RegisterMsgServer(cfg.MsgServer(), am.keeper)
-	types.RegisterQueryServer(cfg.QueryServer(), am.keeper)
+	typesv2.RegisterQueryServer(cfg.QueryServer(), am.keeper)
 }
 
 // InitGenesis performs genesis initialization for the cellarfees module.
 func (am AppModule) InitGenesis(ctx sdk.Context, cdc codec.JSONCodec, data json.RawMessage) []abci.ValidatorUpdate {
-	var genesisState types.GenesisState
+	var genesisState typesv2.GenesisState
 	cdc.MustUnmarshalJSON(data, &genesisState)
 	am.keeper.InitGenesis(ctx, genesisState)
 
