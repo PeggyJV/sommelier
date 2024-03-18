@@ -13,8 +13,8 @@ var (
 )
 
 const (
-	TypeMsgAddAddressMapping    = "submit_bid"
-	TypeMsgRemoveAddressMapping = "remove_bid"
+	TypeMsgAddAddressMapping    = "add_address_mapping"
+	TypeMsgRemoveAddressMapping = "remove_address_mapping"
 )
 
 //////////////////////////

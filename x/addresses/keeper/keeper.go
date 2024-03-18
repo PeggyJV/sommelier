@@ -65,12 +65,12 @@ func (k Keeper) setParams(ctx sdk.Context, params types.Params) {
 // SetAddressMapping stores the mapping between the cosmos and evm addresses
 func (k Keeper) SetAddressMapping(ctx sdk.Context, cosmosAddr []byte, evmAddr []byte) error {
 	// sanity check, shouldn't be possible with proper validation in the message handler
-	if cosmosAddr == nil {
-		return errorsmod.Wrapf(types.ErrNilCosmosAddress, "cosmos address cannot be nil")
+	if len(cosmosAddr) == 0 {
+		return errorsmod.Wrap(types.ErrNilCosmosAddress, "cosmos address cannot be empty")
 	}
 
-	if evmAddr == nil {
-		return errorsmod.Wrapf(types.ErrNilEvmAddress, "evm address cannot be nil")
+	if len(evmAddr) == 0 {
+		return errorsmod.Wrap(types.ErrNilEvmAddress, "evm address cannot be empty")
 	}
 
 	k.setCosmosToEvmMapping(ctx, cosmosAddr, evmAddr)
@@ -92,13 +92,13 @@ func (k Keeper) setEvmToCosmosMapping(ctx sdk.Context, evmAddr []byte, cosmosAdd
 // DeleteAddressMapping deletes the mapping between the cosmos and evm addresses
 func (k Keeper) DeleteAddressMapping(ctx sdk.Context, cosmosAddr []byte) error {
 	// sanity check, shouldn't be possible with proper validation in the message handler
-	if cosmosAddr == nil {
-		return errorsmod.Wrapf(types.ErrNilCosmosAddress, "cosmos address cannot be nil")
+	if len(cosmosAddr) == 0 {
+		return errorsmod.Wrap(types.ErrNilCosmosAddress, "cosmos address cannot be empty")
 	}
 
 	evmAddr := k.GetEvmAddressByCosmosAddress(ctx, cosmosAddr)
-	if evmAddr == nil {
-		return errorsmod.Wrapf(types.ErrNilEvmAddress, "evm address cannot be nil")
+	if len(evmAddr) == 0 {
+		return errorsmod.Wrap(types.ErrNilEvmAddress, "evm address cannot be empty")
 	}
 
 	k.deleteEvmToCosmosMapping(ctx, evmAddr)
