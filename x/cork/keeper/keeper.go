@@ -5,6 +5,7 @@ import (
 	"encoding/binary"
 	"sort"
 
+	"github.com/cometbft/cometbft/libs/log"
 	"github.com/cosmos/cosmos-sdk/codec"
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -12,7 +13,6 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	corktypes "github.com/peggyjv/sommelier/v7/x/cork/types"
 	types "github.com/peggyjv/sommelier/v7/x/cork/types/v2"
-	"github.com/tendermint/tendermint/libs/log"
 )
 
 const corkVoteThresholdStr = "0.67"

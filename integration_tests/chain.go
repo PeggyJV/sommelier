@@ -6,6 +6,8 @@ import (
 
 	corktypes "github.com/peggyjv/sommelier/v7/x/cork/types/v2"
 
+	tmrand "github.com/cometbft/cometbft/libs/rand"
+	rpchttp "github.com/cometbft/cometbft/rpc/client/http"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/client/tx"
@@ -16,7 +18,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/crypto/keys/ed25519"
 	"github.com/cosmos/cosmos-sdk/crypto/keys/secp256k1"
 	cryptotypes "github.com/cosmos/cosmos-sdk/crypto/types"
-	"github.com/cosmos/cosmos-sdk/simapp"
+	"github.com/cosmos/cosmos-sdk/testutil/sims"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/tx/signing"
 	sdkTx "github.com/cosmos/cosmos-sdk/x/auth/tx"
@@ -26,8 +28,6 @@ import (
 	gravitytypes "github.com/peggyjv/gravity-bridge/module/v4/x/gravity/types"
 	"github.com/peggyjv/sommelier/v7/app"
 	"github.com/peggyjv/sommelier/v7/app/params"
-	tmrand "github.com/tendermint/tendermint/libs/rand"
-	rpchttp "github.com/tendermint/tendermint/rpc/client/http"
 )
 
 const (
@@ -238,8 +238,8 @@ func (c *chain) clientContext(nodeURI string, kb *keyring.Keyring, fromName stri
 		TxConfig:          txCfg,
 		Amino:             amino,
 	}
-	simapp.ModuleBasics.RegisterLegacyAminoCodec(encodingConfig.Amino)
-	simapp.ModuleBasics.RegisterInterfaces(encodingConfig.InterfaceRegistry)
+	sims.ModuleBasics.RegisterLegacyAminoCodec(encodingConfig.Amino)
+	sims.ModuleBasics.RegisterInterfaces(encodingConfig.InterfaceRegistry)
 
 	rpcClient, err := rpchttp.New(nodeURI, "/websocket")
 	if err != nil {

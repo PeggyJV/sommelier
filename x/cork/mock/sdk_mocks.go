@@ -14,11 +14,11 @@ package mock
 import (
 	reflect "reflect"
 
+	crypto "github.com/cometbft/cometbft/proto/tendermint/crypto"
 	cryptotypes "github.com/cosmos/cosmos-sdk/crypto/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 	gomock "github.com/golang/mock/gomock"
-	crypto "github.com/tendermint/tendermint/proto/tendermint/crypto"
 )
 
 // MockDelegationI is a mock of DelegationI interface.

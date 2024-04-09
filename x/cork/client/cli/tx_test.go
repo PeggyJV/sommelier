@@ -4,7 +4,6 @@ import (
 	"os"
 	"testing"
 
-	"github.com/cosmos/cosmos-sdk/simapp/params"
 	types "github.com/peggyjv/sommelier/v7/x/cork/types/v2"
 
 	"github.com/cosmos/cosmos-sdk/testutil"
@@ -12,7 +11,7 @@ import (
 )
 
 func TestParseAddManagedCellarsProposal(t *testing.T) {
-	encodingConfig := params.MakeTestEncodingConfig()
+	encodingConfig := testutil.TestEncodingConfig()
 
 	okJSON := testutil.WriteToNewTempFile(t, `
 {
@@ -40,7 +39,7 @@ func TestParseAddManagedCellarsProposal(t *testing.T) {
 }
 
 func TestParseRemoveManagedCellarsProposal(t *testing.T) {
-	encodingConfig := params.MakeTestEncodingConfig()
+	encodingConfig := testutil.TestEncodingConfig()
 
 	okJSON := testutil.WriteToNewTempFile(t, `
 {
@@ -66,7 +65,7 @@ func TestParseRemoveManagedCellarsProposal(t *testing.T) {
 }
 
 func TestParseSubmitScheduledCorkProposal(t *testing.T) {
-	encodingConfig := params.MakeTestEncodingConfig()
+	encodingConfig := testutil.TestEncodingConfig()
 
 	okJSON := testutil.WriteToNewTempFile(t, `
 {

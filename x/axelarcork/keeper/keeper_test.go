@@ -6,6 +6,8 @@ import (
 
 	"github.com/peggyjv/sommelier/v7/x/axelarcork/tests/mocks"
 
+	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
+	tmtime "github.com/cometbft/cometbft/types/time"
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/testutil"
@@ -18,8 +20,6 @@ import (
 	moduletestutil "github.com/peggyjv/sommelier/v7/testutil"
 	"github.com/peggyjv/sommelier/v7/x/axelarcork/types"
 	"github.com/stretchr/testify/suite"
-	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
-	tmtime "github.com/tendermint/tendermint/types/time"
 )
 
 const (

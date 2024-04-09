@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"math/rand"
 
+	abci "github.com/cometbft/cometbft/abci/types"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/codec"
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
@@ -16,7 +17,6 @@ import (
 	"github.com/peggyjv/sommelier/v7/x/incentives/keeper"
 	"github.com/peggyjv/sommelier/v7/x/incentives/types"
 	"github.com/spf13/cobra"
-	abci "github.com/tendermint/tendermint/abci/types"
 )
 
 var (
