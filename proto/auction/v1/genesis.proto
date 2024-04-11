@@ -6,6 +6,7 @@ import "auction/v1/auction.proto";
 import "gogoproto/gogo.proto";
 
 option go_package = "github.com/peggyjv/sommelier/v7/x/auction/types";
+option (gogoproto.messagename_all) = true;
 
 message GenesisState {
   Params params = 1 [ (gogoproto.nullable) = false ];

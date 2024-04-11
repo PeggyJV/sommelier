@@ -211,14 +211,15 @@ test-docker-push: test-docker
 ###############################################################################
 ###                           Protobuf                                    ###
 ###############################################################################
-
-PROTO_BUILD_IMAGE=ghcr.io/cosmos/proto-builder:0.8
+protoVer=0.13.1
+protoImageName=ghcr.io/cosmos/proto-builder:$(protoVer)
+protoImage=$(DOCKER) run --rm -v $(CURDIR):/workspace --workdir /workspace $(protoImageName)
 
 proto-all: proto-format proto-lint proto-gen
 
 proto-gen:
 	@echo "Generating Protobuf files"
-	$(DOCKER) run --rm -v $(CURDIR):/workspace --workdir /workspace $(PROTO_BUILD_IMAGE) sh ./scripts/protocgen.sh
+	@$(protoImage) sh ./scripts/protocgen.sh
 
 proto-format:
 	@echo "Formatting Protobuf files"

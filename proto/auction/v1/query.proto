@@ -9,6 +9,7 @@ import "cosmos_proto/cosmos.proto";
 import "cosmos/base/query/v1beta1/pagination.proto";
 
 option go_package = "github.com/peggyjv/sommelier/v7/x/auction/types";
+option (gogoproto.messagename_all) = true;
 
 service Query {
   rpc QueryParams(QueryParamsRequest) returns (QueryParamsResponse) {

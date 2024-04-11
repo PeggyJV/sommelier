@@ -4,6 +4,7 @@ package pubsub.v1;
 import "gogoproto/gogo.proto";
 
 option go_package = "github.com/peggyjv/sommelier/v7/x/pubsub/types";
+option (gogoproto.messagename_all) = true;
 
 // Params defines the parameters for the module.
 message Params {

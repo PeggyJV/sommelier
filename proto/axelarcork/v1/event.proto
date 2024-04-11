@@ -4,6 +4,7 @@ package axelarcork.v1;
 import "gogoproto/gogo.proto";
 
 option go_package = "github.com/peggyjv/sommelier/v7/x/axelarcork/types";
+option (gogoproto.messagename_all) = true;
 
 message ScheduleCorkEvent {
   string signer       = 1;

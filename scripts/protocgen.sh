@@ -4,10 +4,11 @@ set -eo pipefail
 
 ROOT=$(git rev-parse --show-toplevel 2>/dev/null)
 
-cd $ROOT/proto
 echo "generating proto and gRPC gateway files..."
-buf generate --template buf.gen.gogo.yaml
+cd $ROOT/proto
+buf mod update
 cd ..
+buf generate
 
 # move proto files to the right places
 xpath=$(head -n 1 go.mod | sed 's/^module //')

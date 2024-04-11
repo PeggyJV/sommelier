@@ -7,6 +7,7 @@ import "cellarfees/v2/params.proto";
 import "cellarfees/v2/cellarfees.proto";
 
 option go_package = "github.com/peggyjv/sommelier/v7/x/cellarfees/types/v2";
+option (gogoproto.messagename_all) = true;
 
 service Query {
   rpc QueryParams(QueryParamsRequest) returns (QueryParamsResponse) {

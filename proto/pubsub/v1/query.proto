@@ -8,6 +8,7 @@ import "pubsub/v1/params.proto";
 import "pubsub/v1/pubsub.proto";
 
 option go_package = "github.com/peggyjv/sommelier/v7/x/pubsub/types";
+option (gogoproto.messagename_all) = true;
 
 service Query {
   rpc Params(QueryParamsRequest) returns (QueryParamsResponse) {
