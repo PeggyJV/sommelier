@@ -13,14 +13,6 @@ var _ govtypesv1beta1.Content = &SetTokenPricesProposal{}
 
 func init() {
 	govtypesv1beta1.RegisterProposalType(ProposalTypeSetTokenPrices)
-	// The RegisterProposalTypeCodec function was mysteriously removed by in 0.46.0 even though
-	// the claim was that the old API would be preserved in .../x/gov/types/v1beta1 so we have
-	// to interact with the codec directly.
-	//
-	// The PR that removed it: https://github.com/cosmos/cosmos-sdk/pull/11240
-	// This PR was later reverted, but RegisterProposalTypeCodec was still left out. Not sure if
-	// this was intentional or not.
-	govtypesv1beta1.ModuleCdc.RegisterConcrete(&SetTokenPricesProposal{}, "sommelier/SetTokenPricesProposal", nil)
 }
 
 func NewSetTokenPricesProposal(title string, description string, proposedTokenPrices []*ProposedTokenPrice) *SetTokenPricesProposal {

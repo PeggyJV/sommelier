@@ -17,10 +17,8 @@ var _ govtypes.Content = &RemoveManagedCellarIDsProposal{}
 
 func init() {
 	govtypes.RegisterProposalType(ProposalTypeAddManagedCellarIDs)
-	govtypes.ModuleCdc.RegisterConcrete(&AddManagedCellarIDsProposal{}, "sommelier/AddManagedCellarIDsProposal", nil)
 
 	govtypes.RegisterProposalType(ProposalTypeRemoveManagedCellarIDs)
-	govtypes.ModuleCdc.RegisterConcrete(&RemoveManagedCellarIDsProposal{}, "sommelier/RemoveManagedCellarIDsProposal", nil)
 
 }
 

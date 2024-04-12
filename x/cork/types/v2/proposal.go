@@ -30,13 +30,10 @@ func init() {
 	// This PR was later reverted, but RegisterProposalTypeCodec was still left out. Not sure if
 	// this was intentional or not.
 	govtypesv1beta1.RegisterProposalType(ProposalTypeAddManagedCellarIDs)
-	govtypesv1beta1.ModuleCdc.RegisterConcrete(&AddManagedCellarIDsProposal{}, "sommelier/v2/AddManagedCellarIDsProposal", nil)
 
 	govtypesv1beta1.RegisterProposalType(ProposalTypeRemoveManagedCellarIDs)
-	govtypesv1beta1.ModuleCdc.RegisterConcrete(&RemoveManagedCellarIDsProposal{}, "sommelier/v2/RemoveManagedCellarIDsProposal", nil)
 
 	govtypesv1beta1.RegisterProposalType(ProposalTypeScheduledCork)
-	govtypesv1beta1.ModuleCdc.RegisterConcrete(&ScheduledCorkProposal{}, "sommelier/v2/ScheduledCorkProposal", nil)
 }
 
 func NewAddManagedCellarIDsProposal(title string, description string, cellarIds *CellarIDSet, publisherDomain string) *AddManagedCellarIDsProposal {

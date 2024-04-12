@@ -216,9 +216,11 @@ protoImageName=ghcr.io/cosmos/proto-builder:$(protoVer)
 protoImage=$(DOCKER) run --rm -v $(CURDIR):/workspace --workdir /workspace $(protoImageName)
 
 proto-all: proto-format proto-lint proto-gen
-
+	
 proto-gen:
 	@echo "Generating Protobuf files"
+	# todo: figure out why this old method was failing
+	# $(DOCKER) run --rm -v $(CURDIR):/workspace --workdir /workspace tendermintdev/sdk-proto-gen:v0.1 sh ./contrib/local/protocgen.sh
 	@$(protoImage) sh ./scripts/protocgen.sh
 
 proto-format:

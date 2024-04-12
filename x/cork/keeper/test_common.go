@@ -40,14 +40,12 @@ import (
 	govclient "github.com/cosmos/cosmos-sdk/x/gov/client"
 	govkeeper "github.com/cosmos/cosmos-sdk/x/gov/keeper"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
-	govtypesv1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1"
 	govtypesv1beta1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
 	"github.com/cosmos/cosmos-sdk/x/mint"
 	"github.com/cosmos/cosmos-sdk/x/params"
 	paramsclient "github.com/cosmos/cosmos-sdk/x/params/client"
 	paramskeeper "github.com/cosmos/cosmos-sdk/x/params/keeper"
 	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
-	paramsproposal "github.com/cosmos/cosmos-sdk/x/params/types/proposal"
 	"github.com/cosmos/cosmos-sdk/x/slashing"
 	slashingkeeper "github.com/cosmos/cosmos-sdk/x/slashing/keeper"
 	slashingtypes "github.com/cosmos/cosmos-sdk/x/slashing/types"
@@ -276,11 +274,11 @@ func CreateTestEnv(t *testing.T) TestInput {
 
 	accountKeeper := authkeeper.NewAccountKeeper(
 		marshaler,
-		keyAcc, // target store
-		getSubspace(paramsKeeper, authtypes.ModuleName),
+		keyAcc,                     // target store
 		authtypes.ProtoBaseAccount, // prototype
 		maccPerms,
 		"stake",
+		govtypes.ModuleName,
 	)
 
 	blockedAddr := make(map[string]bool, len(maccPerms))
@@ -292,15 +290,15 @@ func CreateTestEnv(t *testing.T) TestInput {
 		marshaler,
 		keyBank,
 		accountKeeper,
-		getSubspace(paramsKeeper, banktypes.ModuleName),
 		blockedAddr,
+		govtypes.ModuleName,
 	)
 	bankKeeper.SetParams(ctx, banktypes.Params{DefaultSendEnabled: true})
 
-	stakingKeeper := stakingkeeper.NewKeeper(marshaler, keyStaking, accountKeeper, bankKeeper, getSubspace(paramsKeeper, stakingtypes.ModuleName))
+	stakingKeeper := stakingkeeper.NewKeeper(marshaler, keyStaking, accountKeeper, bankKeeper, govtypes.ModuleName)
 	stakingKeeper.SetParams(ctx, TestingStakeParams)
 
-	distKeeper := distrkeeper.NewKeeper(marshaler, keyDistro, getSubspace(paramsKeeper, distrtypes.ModuleName), accountKeeper, bankKeeper, stakingKeeper, authtypes.FeeCollectorName)
+	distKeeper := distrkeeper.NewKeeper(marshaler, keyDistro, accountKeeper, bankKeeper, stakingKeeper, authtypes.FeeCollectorName, govtypes.ModuleName)
 	distKeeper.SetParams(ctx, distrtypes.DefaultParams())
 
 	// set genesis items required for distribution
@@ -334,25 +332,26 @@ func CreateTestEnv(t *testing.T) TestInput {
 	require.NotNil(t, moduleAcct)
 
 	// Load default wasm config
-
-	govRouter := govtypesv1beta1.NewRouter().
-		AddRoute(paramsproposal.RouterKey, params.NewParamChangeProposalHandler(paramsKeeper)).
-		AddRoute(govtypes.RouterKey, govtypesv1beta1.ProposalHandler)
-
+	router := baseapp.NewMsgServiceRouter()
 	govKeeper := govkeeper.NewKeeper(
-		marshaler, keyGov, getSubspace(paramsKeeper, govtypes.ModuleName).WithKeyTable(govtypesv1.ParamKeyTable()), accountKeeper, bankKeeper, stakingKeeper, govRouter, baseapp.NewMsgServiceRouter(), govtypes.DefaultConfig(),
+		marshaler,
+		keyGov,
+		accountKeeper,
+		bankKeeper,
+		stakingKeeper,
+		router,
+		govtypes.DefaultConfig(),
+		govtypes.ModuleName,
 	)
 
 	govKeeper.SetProposalID(ctx, govtypesv1beta1.DefaultStartingProposalID)
-	govKeeper.SetDepositParams(ctx, govtypesv1.DefaultDepositParams())
-	govKeeper.SetVotingParams(ctx, govtypesv1.DefaultVotingParams())
-	govKeeper.SetTallyParams(ctx, govtypesv1.DefaultTallyParams())
 
 	slashingKeeper := slashingkeeper.NewKeeper(
 		marshaler,
+		cdc,
 		keySlashing,
-		&stakingKeeper,
-		getSubspace(paramsKeeper, slashingtypes.ModuleName).WithKeyTable(slashingtypes.ParamKeyTable()),
+		stakingKeeper,
+		govtypes.ModuleName,
 	)
 
 	gravityKeeper := gravitykeeper.NewKeeper(
@@ -377,7 +376,7 @@ func CreateTestEnv(t *testing.T) TestInput {
 		gravityKeeper,
 	)
 
-	stakingKeeper = *stakingKeeper.SetHooks(
+	stakingKeeper.SetHooks(
 		stakingtypes.NewMultiStakingHooks(
 			distKeeper.Hooks(),
 			slashingKeeper.Hooks(),
@@ -401,10 +400,10 @@ func CreateTestEnv(t *testing.T) TestInput {
 		GravityKeeper:  gravityKeeper,
 		AccountKeeper:  accountKeeper,
 		BankKeeper:     bankKeeper,
-		StakingKeeper:  stakingKeeper,
+		StakingKeeper:  *stakingKeeper,
 		SlashingKeeper: slashingKeeper,
 		DistKeeper:     distKeeper,
-		GovKeeper:      govKeeper,
+		GovKeeper:      *govKeeper,
 		Context:        ctx,
 		Marshaler:      marshaler,
 		LegacyAmino:    cdc,
