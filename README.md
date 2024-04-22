@@ -19,7 +19,7 @@ For more information you can check out the [Sommelier Documentation](https://som
 We have active, helpful communities on Twitter, Discord, and Telegram.
 
 * [Twitter](https://twitter.com/sommfinance)
-* [Discord](https://discord.gg/gZzaPmDzUq)
+* [Discord](https://discord.gg/sommfinance)
 * [Telegram](https://t.me/getsomm)
 
 ## Sommelier
