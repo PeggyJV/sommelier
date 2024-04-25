@@ -4,18 +4,20 @@ package incentives.v1;
 import "gogoproto/gogo.proto";
 import "google/api/annotations.proto";
 import "incentives/v1/genesis.proto";
+import "cosmos/query/v1/query.proto";
 
 option go_package = "github.com/peggyjv/sommelier/v7/x/incentives/types";
-option (gogoproto.messagename_all) = true;
 
 // Query defines the gRPC query service for the cork module.
 service Query {
     // QueryParams queries the allocation module parameters.
     rpc QueryParams(QueryParamsRequest) returns (QueryParamsResponse) {
+      option (cosmos.query.v1.module_query_safe) = true;
       option (google.api.http).get = "/sommelier/incentives/v1/params";
     }
     // QueryAPY queries the APY returned from the incentives module.
     rpc QueryAPY(QueryAPYRequest) returns (QueryAPYResponse) {
+      option (cosmos.query.v1.module_query_safe) = true;
       option (google.api.http).get = "/sommelier/incentives/v1/apy";
     }
 }

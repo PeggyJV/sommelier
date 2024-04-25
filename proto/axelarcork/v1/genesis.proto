@@ -5,7 +5,6 @@ import "axelarcork/v1/axelarcork.proto";
 import "gogoproto/gogo.proto";
 
 option go_package = "github.com/peggyjv/sommelier/v7/x/axelarcork/types";
-option (gogoproto.messagename_all) = true;
 
 // GenesisState - all cork state that must be provided at genesis
 message GenesisState {

@@ -327,6 +327,7 @@ func NewSommelierApp(
 		evidencetypes.StoreKey,
 		ibctransfertypes.StoreKey,
 		icahosttypes.StoreKey,
+        //icaexported.StoreKey,
 		capabilitytypes.StoreKey,
 		gravitytypes.StoreKey,
 		feegrant.StoreKey,

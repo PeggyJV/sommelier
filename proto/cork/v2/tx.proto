@@ -6,7 +6,6 @@ import "cosmos/msg/v1/msg.proto";
 import "gogoproto/gogo.proto";
 
 option go_package = "github.com/peggyjv/sommelier/v7/x/cork/types/v2";
-option (gogoproto.messagename_all) = true;
 
 // MsgService defines the msgs that the cork module handles
 service Msg {

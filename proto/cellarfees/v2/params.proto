@@ -4,7 +4,6 @@ package cellarfees.v2;
 import "gogoproto/gogo.proto";
 
 option go_package = "github.com/peggyjv/sommelier/v7/x/cellarfees/types/v2";
-option (gogoproto.messagename_all) = true;
 
 // Params defines the parameters for the module.
 message Params {

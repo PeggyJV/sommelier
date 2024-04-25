@@ -6,7 +6,6 @@ import "cosmos_proto/cosmos.proto";
 import "gogoproto/gogo.proto";
 
 option go_package = "github.com/peggyjv/sommelier/v7/x/auction/types";
-option (gogoproto.messagename_all) = true;
 
 message Auction {
   uint32 id = 1;
