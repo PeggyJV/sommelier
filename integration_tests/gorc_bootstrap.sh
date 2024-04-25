@@ -7,4 +7,4 @@ gorc --config=/root/gorc/config.toml keys cosmos recover orch-key "$ORCH_MNEMONI
 gorc --config=/root/gorc/config.toml keys eth import orch-eth-key $ETH_PRIV_KEY
 
 # start gorc orchestrator
-gorc --config=/root/gorc/config.toml orchestrator start --cosmos-key=orch-key --ethereum-key=orch-eth-key
+RUST_LOG=info gorc --config=/root/gorc/config.toml orchestrator start --cosmos-key=orch-key --ethereum-key=orch-eth-key

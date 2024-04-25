@@ -592,6 +592,7 @@ func (s *IntegrationTestSuite) initValidatorConfigs() {
 		appCfgPath := filepath.Join(val.configDir(), "config", "app.toml")
 
 		appConfig := srvconfig.DefaultConfig()
+        appConfig.GRPC.Address = "0.0.0.0:9090"
 		appConfig.API.Enable = true
 		appConfig.Pruning = "nothing"
 		appConfig.MinGasPrices = fmt.Sprintf("%s%s", minGasPrice, testDenom)
