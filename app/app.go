@@ -327,7 +327,7 @@ func NewSommelierApp(
 		evidencetypes.StoreKey,
 		ibctransfertypes.StoreKey,
 		icahosttypes.StoreKey,
-        //icaexported.StoreKey,
+		//icaexported.StoreKey,
 		capabilitytypes.StoreKey,
 		gravitytypes.StoreKey,
 		feegrant.StoreKey,
@@ -540,6 +540,8 @@ func NewSommelierApp(
 		govtypes.DefaultConfig(),
 		authority,
 	)
+
+	app.GovKeeper.SetLegacyRouter(govRouter)
 
 	// Create static IBC router, add transfer route, then set and seal it
 	ibcRouter := ibcporttypes.NewRouter()

@@ -367,6 +367,9 @@ e2e_build_images: e2e_clean_slate
 e2e_clean_slate:
 	@./clean_slate.sh
 
+e2e_test: e2e_clean_slate
+	@E2E_SKIP_CLEANUP=true integration_tests/integration_tests.test -test.failfast -test.v -test.run IntegrationTestSuite || make -s fail
+
 e2e_basic: e2e_clean_slate
 	@integration_tests/integration_tests.test -test.run TestBasicChain -test.failfast -test.v || make -s fail
 
