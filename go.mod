@@ -22,7 +22,7 @@ require (
 	github.com/grpc-ecosystem/grpc-gateway v1.16.0
 	github.com/miguelmota/go-ethereum-hdwallet v0.1.1
 	github.com/ory/dockertest/v3 v3.10.0
-	github.com/peggyjv/gravity-bridge/module/v4 v4.0.2-0.20240411161244-671ead5f8c68
+	github.com/peggyjv/gravity-bridge/module/v4 v4.0.2-0.20240507144821-c36490e18116
 	github.com/rakyll/statik v0.1.7
 	github.com/regen-network/cosmos-proto v0.3.1
 	github.com/spf13/cast v1.6.0
