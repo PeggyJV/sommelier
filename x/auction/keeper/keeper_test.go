@@ -17,11 +17,11 @@ import (
 	moduletestutil "github.com/peggyjv/sommelier/v7/testutil"
 	auctionTypes "github.com/peggyjv/sommelier/v7/x/auction/types"
 
+	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
+	tmtime "github.com/cometbft/cometbft/types/time"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	paramskeeper "github.com/cosmos/cosmos-sdk/x/params/keeper"
 	auctiontestutil "github.com/peggyjv/sommelier/v7/x/auction/testutil"
-	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
-	tmtime "github.com/tendermint/tendermint/types/time"
 )
 
 var (

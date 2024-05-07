@@ -14,12 +14,12 @@ import (
 	"github.com/peggyjv/sommelier/v7/app/params"
 	cellarfeestestutil "github.com/peggyjv/sommelier/v7/x/cellarfees/testutil"
 
+	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
+	tmtime "github.com/cometbft/cometbft/types/time"
 	moduletestutil "github.com/peggyjv/sommelier/v7/testutil"
 	cellarfeestypes "github.com/peggyjv/sommelier/v7/x/cellarfees/types"
 	cellarfeestypesv2 "github.com/peggyjv/sommelier/v7/x/cellarfees/types/v2"
 	"github.com/stretchr/testify/suite"
-	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
-	tmtime "github.com/tendermint/tendermint/types/time"
 )
 
 var (

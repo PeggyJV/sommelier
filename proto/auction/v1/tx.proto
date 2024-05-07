@@ -3,16 +3,21 @@ package auction.v1;
 
 import "auction/v1/auction.proto";
 import "cosmos/base/v1beta1/coin.proto";
+import "cosmos/msg/v1/msg.proto";
 import "cosmos_proto/cosmos.proto";
 import "gogoproto/gogo.proto";
 
 option go_package = "github.com/peggyjv/sommelier/v7/x/auction/types";
 
 service Msg {
+  option (cosmos.msg.v1.service) = true;
+
   rpc SubmitBid (MsgSubmitBidRequest) returns (MsgSubmitBidResponse);
 }
 
 message MsgSubmitBidRequest {
+  option (cosmos.msg.v1.signer) = "signer";
+
   uint32 auction_id = 1;
   string signer = 2;
   cosmos.base.v1beta1.Coin max_bid_in_usomm = 3 [ (gogoproto.nullable) = false ];

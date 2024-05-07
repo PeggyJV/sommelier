@@ -42,28 +42,20 @@ func init() {
 	// This PR was later reverted, but RegisterProposalTypeCodec was still left out. Not sure if
 	// this was intentional or not.
 	govtypesv1beta1.RegisterProposalType(ProposalTypeAddManagedCellarIDs)
-	govtypesv1beta1.ModuleCdc.RegisterConcrete(&AddAxelarManagedCellarIDsProposal{}, "sommelier/AddAxelarManagedCellarIDsProposal", nil)
 
 	govtypesv1beta1.RegisterProposalType(ProposalTypeRemoveManagedCellarIDs)
-	govtypesv1beta1.ModuleCdc.RegisterConcrete(&RemoveAxelarManagedCellarIDsProposal{}, "sommelier/RemoveAxelarManagedCellarIDsProposal", nil)
 
 	govtypesv1beta1.RegisterProposalType(ProposalTypeScheduledCork)
-	govtypesv1beta1.ModuleCdc.RegisterConcrete(&AxelarScheduledCorkProposal{}, "sommelier/AxelarScheduledCorkProposal", nil)
 
 	govtypesv1beta1.RegisterProposalType(ProposalTypeAddChainConfiguration)
-	govtypesv1beta1.ModuleCdc.RegisterConcrete(&AddChainConfigurationProposal{}, "sommelier/AddAxelarChainConfigurationProposal", nil)
 
 	govtypesv1beta1.RegisterProposalType(ProposalTypeRemoveChainConfiguration)
-	govtypesv1beta1.ModuleCdc.RegisterConcrete(&RemoveChainConfigurationProposal{}, "sommelier/RemoveAxelarChainConfigurationProposal", nil)
 
 	govtypesv1beta1.RegisterProposalType(ProposalTypeCommunitySpend)
-	govtypesv1beta1.ModuleCdc.RegisterConcrete(&AxelarCommunityPoolSpendProposal{}, "sommelier/AxelarCommunitySpendProposal", nil)
 
 	govtypesv1beta1.RegisterProposalType(ProposalTypeUpgradeAxelarProxyContract)
-	govtypesv1beta1.ModuleCdc.RegisterConcrete(&UpgradeAxelarProxyContractProposal{}, "sommelier/UpgradeAxelarProxyContractProposal", nil)
 
 	govtypesv1beta1.RegisterProposalType(ProposalTypeCancelAxelarProxyContractUpgrade)
-	govtypesv1beta1.ModuleCdc.RegisterConcrete(&CancelAxelarProxyContractUpgradeProposal{}, "sommelier/CancelAxelarProxyContractUpgradeProposal", nil)
 }
 
 func NewAddAxelarManagedCellarIDsProposal(title string, description string, chainID uint64, cellarIds *CellarIDSet, publisherDomain string) *AddAxelarManagedCellarIDsProposal {

@@ -211,14 +211,17 @@ test-docker-push: test-docker
 ###############################################################################
 ###                           Protobuf                                    ###
 ###############################################################################
-
-PROTO_BUILD_IMAGE=ghcr.io/cosmos/proto-builder:0.8
+protoVer=0.13.1
+protoImageName=ghcr.io/cosmos/proto-builder:$(protoVer)
+protoImage=$(DOCKER) run --rm -v $(CURDIR):/workspace --workdir /workspace $(protoImageName)
 
 proto-all: proto-format proto-lint proto-gen
-
+	
 proto-gen:
 	@echo "Generating Protobuf files"
-	$(DOCKER) run --rm -v $(CURDIR):/workspace --workdir /workspace $(PROTO_BUILD_IMAGE) sh ./scripts/protocgen.sh
+	# todo: figure out why this old method was failing
+	# $(DOCKER) run --rm -v $(CURDIR):/workspace --workdir /workspace tendermintdev/sdk-proto-gen:v0.1 sh ./contrib/local/protocgen.sh
+	@$(protoImage) sh ./scripts/protocgen.sh
 
 proto-format:
 	@echo "Formatting Protobuf files"
@@ -363,6 +366,9 @@ e2e_build_images: e2e_clean_slate
 
 e2e_clean_slate:
 	@./clean_slate.sh
+
+e2e_test: e2e_clean_slate
+	@E2E_SKIP_CLEANUP=true integration_tests/integration_tests.test -test.failfast -test.v -test.run IntegrationTestSuite || make -s fail
 
 e2e_basic: e2e_clean_slate
 	@integration_tests/integration_tests.test -test.run TestBasicChain -test.failfast -test.v || make -s fail

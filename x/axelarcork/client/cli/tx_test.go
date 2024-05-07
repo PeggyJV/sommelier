@@ -4,7 +4,6 @@ import (
 	"os"
 	"testing"
 
-	"github.com/cosmos/cosmos-sdk/simapp/params"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/peggyjv/sommelier/v7/x/axelarcork/types"
 
@@ -13,7 +12,7 @@ import (
 )
 
 func TestParseAddManagedCellarsProposal(t *testing.T) {
-	encodingConfig := params.MakeTestEncodingConfig()
+	encodingConfig := testutil.TestEncodingConfig()
 
 	okJSON := testutil.WriteToNewTempFile(t, `
 {
@@ -43,7 +42,7 @@ func TestParseAddManagedCellarsProposal(t *testing.T) {
 }
 
 func TestParseRemoveManagedCellarsProposal(t *testing.T) {
-	encodingConfig := params.MakeTestEncodingConfig()
+	encodingConfig := testutil.TestEncodingConfig()
 
 	okJSON := testutil.WriteToNewTempFile(t, `
 {
@@ -71,7 +70,7 @@ func TestParseRemoveManagedCellarsProposal(t *testing.T) {
 }
 
 func TestParseSubmitScheduledCorkProposal(t *testing.T) {
-	encodingConfig := params.MakeTestEncodingConfig()
+	encodingConfig := testutil.TestEncodingConfig()
 
 	okJSON := testutil.WriteToNewTempFile(t, `
 {
@@ -104,7 +103,7 @@ func TestParseSubmitScheduledCorkProposal(t *testing.T) {
 }
 
 func TestParseAxelarCommunityPoolSpendProposal(t *testing.T) {
-	encodingConfig := params.MakeTestEncodingConfig()
+	encodingConfig := testutil.TestEncodingConfig()
 
 	okJSON := testutil.WriteToNewTempFile(t, `
 {
@@ -133,7 +132,7 @@ func TestParseAxelarCommunityPoolSpendProposal(t *testing.T) {
 }
 
 func TestParseAddChainConfigurationProposal(t *testing.T) {
-	encodingConfig := params.MakeTestEncodingConfig()
+	encodingConfig := testutil.TestEncodingConfig()
 
 	okJSON := testutil.WriteToNewTempFile(t, `
 {
@@ -172,7 +171,7 @@ func TestParseAddChainConfigurationProposal(t *testing.T) {
 }
 
 func TestParseRemoveChainConfigurationProposal(t *testing.T) {
-	encodingConfig := params.MakeTestEncodingConfig()
+	encodingConfig := testutil.TestEncodingConfig()
 
 	okJSON := testutil.WriteToNewTempFile(t, `
 {
@@ -197,7 +196,7 @@ func TestParseRemoveChainConfigurationProposal(t *testing.T) {
 }
 
 func TestParseUpgradeAxelarProxyContractProposal(t *testing.T) {
-	encodingConfig := params.MakeTestEncodingConfig()
+	encodingConfig := testutil.TestEncodingConfig()
 
 	okJSON := testutil.WriteToNewTempFile(t, `
 {
@@ -224,7 +223,7 @@ func TestParseUpgradeAxelarProxyContractProposal(t *testing.T) {
 }
 
 func TestParseCancelAxelarProxyContractUpgradeProposal(t *testing.T) {
-	encodingConfig := params.MakeTestEncodingConfig()
+	encodingConfig := testutil.TestEncodingConfig()
 
 	okJSON := testutil.WriteToNewTempFile(t, `
 {

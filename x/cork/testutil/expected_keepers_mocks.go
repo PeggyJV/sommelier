@@ -8,13 +8,13 @@ import (
 	reflect "reflect"
 
 	math "cosmossdk.io/math"
+	bytes "github.com/cometbft/cometbft/libs/bytes"
 	types "github.com/cosmos/cosmos-sdk/types"
 	types0 "github.com/cosmos/cosmos-sdk/x/staking/types"
 	common "github.com/ethereum/go-ethereum/common"
 	gomock "github.com/golang/mock/gomock"
 	types1 "github.com/peggyjv/gravity-bridge/module/v4/x/gravity/types"
 	types2 "github.com/peggyjv/sommelier/v7/x/pubsub/types"
-	bytes "github.com/tendermint/tendermint/libs/bytes"
 )
 
 // MockStakingKeeper is a mock of StakingKeeper interface.

@@ -8,7 +8,7 @@ import (
 	fmt "fmt"
 	types "github.com/cosmos/cosmos-sdk/types"
 	_ "github.com/cosmos/gogoproto/gogoproto"
-	proto "github.com/gogo/protobuf/proto"
+	proto "github.com/cosmos/gogoproto/proto"
 	io "io"
 	math "math"
 	math_bits "math/bits"
@@ -25,6 +25,8 @@ var _ = math.Inf
 // proto package needs to be updated.
 const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
+// Collin: This type should never be saved to state in case of indeterminism around how
+// Go interprets floating point numbers. This is only meant to be used for query results.
 type FeeTokenBalance struct {
 	Balance  types.Coin `protobuf:"bytes,1,opt,name=balance,proto3" json:"balance"`
 	UsdValue float64    `protobuf:"fixed64,2,opt,name=usd_value,json=usdValue,proto3" json:"usd_value,omitempty"`

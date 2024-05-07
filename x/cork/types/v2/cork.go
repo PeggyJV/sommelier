@@ -5,12 +5,12 @@ import (
 	"fmt"
 
 	errorsmod "cosmossdk.io/errors"
+	tmbytes "github.com/cometbft/cometbft/libs/bytes"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/crypto"
 	corktypes "github.com/peggyjv/sommelier/v7/x/cork/types"
-	tmbytes "github.com/tendermint/tendermint/libs/bytes"
 )
 
 func (c *Cork) InvalidationScope() tmbytes.HexBytes {

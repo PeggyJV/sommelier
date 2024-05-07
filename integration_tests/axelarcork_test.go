@@ -21,8 +21,7 @@ import (
 )
 
 func (s *IntegrationTestSuite) TestAxelarCork() {
-	s.Run("Test the axelarcork module", func() {
-		///////////
+	s.Run("Test the axelarcork module", func() { ///////////
 		// Setup //
 		///////////
 
@@ -191,13 +190,26 @@ func (s *IntegrationTestSuite) TestAxelarCork() {
 		}
 
 		s.T().Log("Verifying scheduled axelar corks were created")
-		scheduledCorksResponse, err := axelarcorkQueryClient.QueryScheduledCorks(context.Background(), &types.QueryScheduledCorksRequest{ChainId: arbitrumChainID})
-		s.Require().NoError(err)
-		s.Require().Len(scheduledCorksResponse.Corks, 4)
-		cork0 := scheduledCorksResponse.Corks[0]
-		cork1 := scheduledCorksResponse.Corks[1]
-		cork2 := scheduledCorksResponse.Corks[2]
-		cork3 := scheduledCorksResponse.Corks[3]
+		corks := []*types.ScheduledAxelarCork{}
+		s.Require().Eventually(func() bool {
+			res, err := axelarcorkQueryClient.QueryScheduledCorks(context.Background(), &types.QueryScheduledCorksRequest{ChainId: arbitrumChainID})
+			if err != nil {
+				return false
+			}
+
+			if len(res.Corks) == 4 {
+				corks = res.Corks
+				return true
+			}
+
+			return false
+		}, time.Second*30, time.Second*5, "scheduled corks never created")
+
+		s.T().Log("Checking that corks have expected values")
+		cork0 := corks[0]
+		cork1 := corks[1]
+		cork2 := corks[2]
+		cork3 := corks[3]
 		s.Require().Equal(cork0.Cork.EncodedContractCall, ABIEncodedInc())
 		s.Require().Equal(cork0.Cork.ChainId, arbitrumChainID)
 		s.Require().Equal(cork0.Cork.TargetContractAddress, counterContract.Hex())
@@ -523,11 +535,11 @@ func (s *IntegrationTestSuite) submitAndVoteForAxelarProposal(proposerCtx *clien
 			return false
 		}
 
-		s.Require().NotEmpty(proposalsQueryResponse.Proposals)
-		s.Require().Equal(propID, proposalsQueryResponse.Proposals[propID-1].ProposalId, "not proposal id %d", propID)
-		s.Require().Equal(govtypesv1beta1.StatusVotingPeriod, proposalsQueryResponse.Proposals[propID-1].Status, "proposal not in voting period")
+		foundProps := len(proposalsQueryResponse.Proposals) > 0
+		expectedID := propID == proposalsQueryResponse.Proposals[propID-1].ProposalId
+		inVotingPeriod := govtypesv1beta1.StatusVotingPeriod == proposalsQueryResponse.Proposals[propID-1].Status
 
-		return true
+		return foundProps && expectedID && inVotingPeriod
 	}, time.Second*30, time.Second*5, "proposal submission was never found")
 
 	s.T().Log("Vote for proposal")
