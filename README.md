@@ -20,7 +20,7 @@ We have active, helpful communities on Twitter, Discord, and Telegram.
 
 * [Twitter](https://twitter.com/sommfinance)
 * [Discord](https://discord.gg/gZzaPmDzUq)
-* [Telegram](https://t.me/peggyvaults)
+* [Telegram](https://t.me/getsomm)
 
 ## Sommelier
 
