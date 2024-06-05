@@ -268,7 +268,7 @@ Where proposal.json contains:
 
 {
   "title": "Remove this default subscription",
-  "description": "Remove the defeault for this subscription ID",
+  "description": "Remove the default for this subscription ID",
   "subscription_id": "0x123801a7D398351b8bE11C439e05C5B3259aeC9B",
   "deposit": "10000000usomm"
 }
