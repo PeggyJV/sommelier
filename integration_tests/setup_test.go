@@ -422,6 +422,12 @@ func (s *IntegrationTestSuite) initGenesis() {
 		UsdPrice:         sdk.MustNewDecFromStr("1.0"),
 		LastUpdatedBlock: 0,
 	})
+	// For authz bid test. This token price gets set to 1.0 for the TestAuction test via proposal
+	auctionGenState.TokenPrices = append(auctionGenState.TokenPrices, &auctiontypes.TokenPrice{
+		Denom:    "gravity0x3506424f91fd33084466f402d5d97f05f8e3b4af",
+		Exponent: 6,
+		UsdPrice: sdk.MustNewDecFromStr("2.0"),
+	})
 	auctionGenState.Auctions = append(auctionGenState.Auctions, &auctiontypes.Auction{
 		Id:                         uint32(1),
 		StartingTokensForSale:      sdk.NewCoin("gravity0x3506424f91fd33084466f402d5d97f05f8e3b4af", sdk.NewInt(5000000000)),

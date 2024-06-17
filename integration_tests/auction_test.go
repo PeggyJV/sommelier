@@ -6,6 +6,7 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
+	authztypes "github.com/cosmos/cosmos-sdk/x/authz"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	govtypesv1beta1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
 	"github.com/peggyjv/sommelier/v7/x/auction/types"
@@ -300,6 +301,121 @@ func (s *IntegrationTestSuite) TestAuction() {
 		s.T().Log("Ended auction stored correctly!")
 
 		s.T().Log("--Test completed successfully--")
+	})
+}
+
+func (s *IntegrationTestSuite) TestAuctionAuthzBid() {
+	s.Run("Bring up chain, test governance proposal to set token prices, submit some bids, and finish an auction", func() {
+		val := s.chain.validators[0]
+		kb, err := val.keyring()
+		s.Require().NoError(err)
+		val0ClientCtx, err := s.chain.clientContext("tcp://localhost:26657", &kb, "val", val.address())
+		s.Require().NoError(err)
+		auctionQueryClient := types.NewQueryClient(val0ClientCtx)
+		authzQueryClient := authztypes.NewQueryClient(val0ClientCtx)
+
+		// Verify auction created for testing exists
+		auctionQuery := types.QueryActiveAuctionRequest{
+			AuctionId: uint32(1),
+		}
+		s.T().Log("Verifying expected auction exists ...")
+		auctionResponse, err := auctionQueryClient.QueryActiveAuction(context.Background(), &auctionQuery)
+		s.Require().NoError(err)
+		s.Require().Equal(auctionResponse.Auction.Id, uint32(1))
+		s.T().Log("Expected auction found!")
+
+		// Create grant for orch1 to submit bid on behalf of bidder
+		bidder := s.chain.proposer
+		bidderCtx, err := s.chain.clientContext("tcp://localhost:26657", bidder.keyring, "proposer", bidder.address())
+		s.Require().NoError(err)
+		orch := s.chain.orchestrators[0]
+		orchClientCtx, err := s.chain.clientContext("tcp://localhost:26657", orch.keyring, "orch", orch.address())
+		s.Require().NoError(err)
+
+		typeURL := "/auction.v1.MsgSubmitBidRequest"
+		authorization := authztypes.NewGenericAuthorization(typeURL)
+		grantMsg, err := authztypes.NewMsgGrant(bidder.address(), orch.address(), authorization, nil)
+		s.Require().NoError(err)
+
+		// Submit grant tx
+		s.T().Logf("Bidder: %s, Delegate: %s", bidder.address().String(), orch.address().String())
+		_, err = s.chain.sendMsgs(*bidderCtx, grantMsg)
+		s.Require().NoError(err)
+
+		// Check if grant was created
+		s.T().Log("Checking if grant was created")
+		s.Require().Eventually(func() bool {
+			grants, err := authzQueryClient.Grants(context.Background(), &authztypes.QueryGrantsRequest{Grantee: orch.address().String(), Granter: bidder.address().String(), MsgTypeUrl: typeURL})
+			if err != nil {
+				return false
+			}
+
+			return len(grants.Grants) > 0
+		}, time.Second*30, time.Second*5, "grant was never created")
+
+		bankQueryClient := banktypes.NewQueryClient(val0ClientCtx)
+		balanceRes, err := bankQueryClient.AllBalances(context.Background(), &banktypes.QueryAllBalancesRequest{Address: authtypes.NewModuleAddress(types.ModuleName).String()})
+		s.Require().NoError(err)
+		s.T().Logf("Auction module token balances before bids %v", balanceRes.Balances)
+
+		bidderAddress := bidder.address().String()
+		initialBidderBalanceRes, err := bankQueryClient.AllBalances(context.Background(), &banktypes.QueryAllBalancesRequest{Address: bidderAddress})
+		s.Require().NoError(err)
+		found, _ := balanceOfDenom(initialBidderBalanceRes.Balances, testDenom)
+		s.Require().True(found)
+		found, _ = balanceOfDenom(initialBidderBalanceRes.Balances, "gravity0x3506424f91fd33084466f402d5d97f05f8e3b4af")
+		s.Require().False(found, "gravity denom should not yet be present in bidder balances")
+
+		s.T().Logf("Bidder balances before bids %v", initialBidderBalanceRes.Balances)
+		s.T().Log("Submitting first bid for auction")
+		bidRequest1 := types.MsgSubmitBidRequest{
+			AuctionId:              uint32(1),
+			Signer:                 bidderAddress,
+			MaxBidInUsomm:          sdk.NewCoin("usomm", sdk.NewIntFromUint64(5000000000)),
+			SaleTokenMinimumAmount: sdk.NewCoin("gravity0x3506424f91fd33084466f402d5d97f05f8e3b4af", sdk.NewIntFromUint64(1)),
+		}
+		execRequest := authztypes.NewMsgExec(orch.address(), []sdk.Msg{&bidRequest1})
+
+		_, err = s.chain.sendMsgs(*orchClientCtx, &execRequest)
+		s.Require().NoError(err)
+		s.T().Log("Bid submmitted successfully!")
+
+		s.T().Log("Verifying auction updated as expected.")
+		// Verify auction updated as expected
+		expectedAuction := types.Auction{
+			Id:                         uint32(1),
+			StartingTokensForSale:      sdk.NewCoin("gravity0x3506424f91fd33084466f402d5d97f05f8e3b4af", sdk.NewInt(5000000000)),
+			StartBlock:                 uint64(1),
+			EndBlock:                   uint64(0),
+			InitialPriceDecreaseRate:   sdk.MustNewDecFromStr("0.05"),
+			CurrentPriceDecreaseRate:   sdk.MustNewDecFromStr("0.05"),
+			PriceDecreaseBlockInterval: uint64(1000),
+			InitialUnitPriceInUsomm:    sdk.MustNewDecFromStr("2"),
+			CurrentUnitPriceInUsomm:    sdk.MustNewDecFromStr("2"),
+			RemainingTokensForSale:     sdk.NewCoin("gravity0x3506424f91fd33084466f402d5d97f05f8e3b4af", sdk.NewInt(2500000000)),
+			FundingModuleAccount:       cellarfees.ModuleName,
+			ProceedsModuleAccount:      cellarfees.ModuleName,
+		}
+		s.Require().Eventually(func() bool {
+			auctionResponse, err = auctionQueryClient.QueryActiveAuction(context.Background(), &auctionQuery)
+			s.T().Logf("auctionResponse: %v", auctionResponse)
+			if err != nil {
+				return false
+			}
+
+			return expectedAuction.RemainingTokensForSale.Amount.Equal(auctionResponse.Auction.RemainingTokensForSale.Amount)
+		}, time.Second*30, time.Second*5, "auction was never updated")
+
+		// Verify user has funds debited and purchase credited
+		s.T().Log("Verifying user funds debited and credited appropriately.")
+		balanceRes, err = bankQueryClient.AllBalances(context.Background(), &banktypes.QueryAllBalancesRequest{Address: bidderAddress})
+		s.Require().NoError(err)
+		s.T().Logf("Bidder token balances after first bid %v", balanceRes.Balances)
+
+		found, _ = balanceOfDenom(balanceRes.Balances, "gravity0x3506424f91fd33084466f402d5d97f05f8e3b4af")
+		s.Require().True(found, "gravity denom balance not present in bidder wallet")
+
+		s.T().Log("Bidder received gravity tokens!")
 	})
 }
 

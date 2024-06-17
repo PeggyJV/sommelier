@@ -391,6 +391,9 @@ e2e_incentives_test: e2e_clean_slate
 e2e_pubsub_test: e2e_clean_slate
 	@E2E_SKIP_CLEANUP=true integration_tests/integration_tests.test -test.failfast -test.v -test.run IntegrationTestSuite -testify.m TestPubsub || make -s fail
 
+e2e_auction_authz_bid_test: e2e_clean_slate
+	@E2E_SKIP_CLEANUP=true integration_tests/integration_tests.test -test.failfast -test.v -test.run IntegrationTestSuite -testify.m TestAuctionAuthzBid || make -s fail
+
 fail:
 	@echo 'test failed; dumping container logs into ./testlogs for review'
 	@docker logs ethereum > testlogs/ethereum.log 2>&1 || true
