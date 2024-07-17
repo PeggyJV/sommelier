@@ -390,7 +390,7 @@ pub mod query_client {
         }
     }
 }
-#[derive(serde::Deserialize, serde::Serialize, Clone, PartialEq, ::prost::Message)]
+#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct AddManagedCellarIDsProposal {
     #[prost(string, tag = "1")]
     pub title: ::prost::alloc::string::String,
@@ -402,7 +402,7 @@ pub struct AddManagedCellarIDsProposal {
     pub publisher_domain: ::prost::alloc::string::String,
 }
 /// AddManagedCellarIDsProposalWithDeposit is a specific definition for CLI commands
-#[derive(Clone, PartialEq, ::prost::Message)]
+#[derive(serde::Deserialize, serde::Serialize, Clone, PartialEq, ::prost::Message)]
 pub struct AddManagedCellarIDsProposalWithDeposit {
     #[prost(string, tag = "1")]
     pub title: ::prost::alloc::string::String,

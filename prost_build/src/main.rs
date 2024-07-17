@@ -103,8 +103,9 @@ fn compile_protos(out_dir: &Path, tmp_dir: &Path) {
         .type_attribute("ScheduledCorkProposal", "#[derive(serde::Deserialize, serde::Serialize)]")
         .type_attribute("AxelarScheduledCorkProposal", "#[derive(serde::Deserialize, serde::Serialize)]")
         .type_attribute("AddPublisherProposal", "#[derive(serde::Deserialize, serde::Serialize)]")
-        .type_attribute("AddManagedCellarIDsProposal", "#[derive(serde::Deserialize, serde::Serialize)]")
-        .type_attribute("CellarIdSet", "#[derive(serde::Deserialize, serde::Serialize)]")
+        .type_attribute("AddManagedCellarIDsProposalWithDeposit", "#[derive(serde::Deserialize, serde::Serialize)]")
+        .type_attribute("AddAxelarManagedCellarIDsProposalWithDeposit", "#[derive(serde::Deserialize, serde::Serialize)]")
+        .type_attribute("axelar_cork::CellarIdSet", "#[derive(serde::Deserialize, serde::Serialize)]")
         .compile_protos(&protos, &proto_include_paths)
         .unwrap();
 

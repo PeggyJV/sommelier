@@ -46,7 +46,7 @@ pub struct AxelarCorkResults {
     #[prost(message, repeated, tag = "1")]
     pub cork_results: ::prost::alloc::vec::Vec<AxelarCorkResult>,
 }
-#[derive(Clone, PartialEq, ::prost::Message)]
+#[derive(serde::Deserialize, serde::Serialize, Clone, PartialEq, ::prost::Message)]
 pub struct CellarIdSet {
     #[prost(uint64, tag = "1")]
     pub chain_id: u64,
@@ -768,7 +768,7 @@ pub struct AddAxelarManagedCellarIDsProposal {
     pub publisher_domain: ::prost::alloc::string::String,
 }
 /// AddAxelarManagedCellarIDsProposalWithDeposit is a specific definition for CLI commands
-#[derive(Clone, PartialEq, ::prost::Message)]
+#[derive(serde::Deserialize, serde::Serialize, Clone, PartialEq, ::prost::Message)]
 pub struct AddAxelarManagedCellarIDsProposalWithDeposit {
     #[prost(string, tag = "1")]
     pub title: ::prost::alloc::string::String,
