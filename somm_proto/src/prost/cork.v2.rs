@@ -29,7 +29,7 @@ pub struct CorkResult {
     #[prost(string, tag = "4")]
     pub approval_percentage: ::prost::alloc::string::String,
 }
-#[derive(Clone, PartialEq, ::prost::Message)]
+#[derive(serde::Deserialize, serde::Serialize, Clone, PartialEq, ::prost::Message)]
 pub struct CellarIdSet {
     #[prost(string, repeated, tag = "1")]
     pub ids: ::prost::alloc::vec::Vec<::prost::alloc::string::String>,
@@ -390,7 +390,7 @@ pub mod query_client {
         }
     }
 }
-#[derive(Clone, PartialEq, ::prost::Message)]
+#[derive(serde::Deserialize, serde::Serialize, Clone, PartialEq, ::prost::Message)]
 pub struct AddManagedCellarIDsProposal {
     #[prost(string, tag = "1")]
     pub title: ::prost::alloc::string::String,
