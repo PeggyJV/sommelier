@@ -177,6 +177,10 @@ pub struct Params {
     pub auction_price_decrease_acceleration_rate: ::prost::alloc::string::String,
     #[prost(uint64, tag = "6")]
     pub minimum_auction_height: u64,
+    /// value between 0 and 1 the determines the % of somm received from bids that
+    /// gets burned
+    #[prost(string, tag = "7")]
+    pub somm_burn_ratio: ::prost::alloc::string::String,
 }
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct QueryParamsRequest {}
