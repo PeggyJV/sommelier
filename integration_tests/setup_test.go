@@ -403,8 +403,6 @@ func (s *IntegrationTestSuite) initGenesis() {
 	distGenState := disttypes.DefaultGenesisState()
 	s.Require().NoError(cdc.UnmarshalJSON(appGenState[minttypes.ModuleName], &mintGenState))
 	distGenState.Params.CommunityTax = sdk.ZeroDec()
-	distGenState.Params.BaseProposerReward = sdk.ZeroDec()
-	distGenState.Params.BonusProposerReward = sdk.ZeroDec()
 	distGenState.FeePool.CommunityPool = sdk.NewDecCoins(sdk.NewDecCoin(params.BaseCoinUnit, sdk.NewInt(1000000000)))
 	bz, err = cdc.MarshalJSON(distGenState)
 	s.Require().NoError(err)
