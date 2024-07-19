@@ -276,12 +276,6 @@ func (s *IntegrationTestSuite) TestAuction() {
 		endedAuctionResponse, err := auctionQueryClient.QueryEndedAuction(context.Background(), &types.QueryEndedAuctionRequest{AuctionId: uint32(1)})
 		s.Require().NoError(err)
 
-		node, err = orchClientCtx.GetNode()
-		s.Require().NoError(err)
-		status, err = node.Status(context.Background())
-		s.Require().NoError(err)
-		currentBlockHeight = status.SyncInfo.LatestBlockHeight
-
 		expectedEndedAuction := types.Auction{
 			Id:                         uint32(1),
 			StartingTokensForSale:      sdk.NewCoin("gravity0x3506424f91fd33084466f402d5d97f05f8e3b4af", sdk.NewInt(5000000000)),

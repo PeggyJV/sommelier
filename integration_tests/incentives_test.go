@@ -210,13 +210,16 @@ func (s *IntegrationTestSuite) queryValidatorRewards(ctx context.Context, valOpe
 	return rewardsRes.Rewards.Rewards.AmountOf(params.BaseCoinUnit)
 }
 
-func (s *IntegrationTestSuite) getCurrentHeight(clientCtx *client.Context) int64 {
+func (s *IntegrationTestSuite) getCurrentHeight(clientCtx *client.Context) (int64, error) {
 	node, err := clientCtx.GetNode()
-	s.Require().NoError(err)
+	if err != nil {
+		return 0, err
+	}
 	status, err := node.Status(context.Background())
-	s.Require().NoError(err)
-
-	return status.SyncInfo.LatestBlockHeight
+	if err != nil {
+		return 0, err
+	}
+	return status.SyncInfo.LatestBlockHeight, nil
 }
 
 func (s *IntegrationTestSuite) getRewardAmountAndHeight(ctx context.Context, distQueryClient disttypes.QueryClient, operatorAddress string, clientCtx *client.Context) (sdk.Dec, int64) {
@@ -224,9 +227,15 @@ func (s *IntegrationTestSuite) getRewardAmountAndHeight(ctx context.Context, dis
 	var height int64
 
 	s.Require().Eventually(func() bool {
-		initialHeight := s.getCurrentHeight(clientCtx)
+		initialHeight, err := s.getCurrentHeight(clientCtx)
+		if err != nil {
+			return false
+		}
 		amount = s.queryValidatorRewards(ctx, operatorAddress, distQueryClient)
-		height = s.getCurrentHeight(clientCtx)
+		height, err = s.getCurrentHeight(clientCtx)
+		if err != nil {
+			return false
+		}
 		return initialHeight == height
 	}, time.Second*30, time.Second*1, "failed to reliably determine height of reward sample")
 
