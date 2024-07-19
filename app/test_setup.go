@@ -3,11 +3,11 @@ package app
 import (
 	"encoding/json"
 
-	abci "github.com/tendermint/tendermint/abci/types"
-	"github.com/tendermint/tendermint/libs/log"
-	dbm "github.com/tendermint/tm-db"
+	dbm "github.com/cometbft/cometbft-db"
+	abci "github.com/cometbft/cometbft/abci/types"
+	"github.com/cometbft/cometbft/libs/log"
 
-	"github.com/cosmos/cosmos-sdk/simapp"
+	"github.com/cosmos/cosmos-sdk/testutil/sims"
 )
 
 // Setup initializes a new SimApp. A Nop logger is set in SimApp.
@@ -24,7 +24,7 @@ func Setup(isCheckTx bool) *SommelierApp {
 		app.InitChain(
 			abci.RequestInitChain{
 				Validators:      []abci.ValidatorUpdate{},
-				ConsensusParams: simapp.DefaultConsensusParams,
+				ConsensusParams: sims.DefaultConsensusParams,
 				AppStateBytes:   stateBytes,
 			},
 		)
@@ -36,7 +36,7 @@ func Setup(isCheckTx bool) *SommelierApp {
 func setup(withGenesis bool, invCheckPeriod uint) (*SommelierApp, GenesisState) {
 	db := dbm.NewMemDB()
 	encCdc := MakeEncodingConfig()
-	app := NewSommelierApp(log.NewNopLogger(), db, nil, true, map[int64]bool{}, DefaultNodeHome, invCheckPeriod, encCdc, simapp.EmptyAppOptions{})
+	app := NewSommelierApp(log.NewNopLogger(), db, nil, true, map[int64]bool{}, DefaultNodeHome, invCheckPeriod, encCdc, sims.EmptyAppOptions{})
 	if withGenesis {
 		return app, NewDefaultGenesisState()
 	}

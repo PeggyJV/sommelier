@@ -16,18 +16,22 @@ import (
 
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
-	govtypesv1beta1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
+	gravitytypes "github.com/peggyjv/gravity-bridge/module/v4/x/gravity/types"
 	"github.com/peggyjv/sommelier/v7/app/params"
 	auctiontypes "github.com/peggyjv/sommelier/v7/x/auction/types"
 	axelarcorktypes "github.com/peggyjv/sommelier/v7/x/axelarcork/types"
 	cellarfeestypes "github.com/peggyjv/sommelier/v7/x/cellarfees/types"
-	corktypes "github.com/peggyjv/sommelier/v7/x/cork/types"
-
-	gravitytypes "github.com/peggyjv/gravity-bridge/module/v4/x/gravity/types"
+	cellarfeestypesv2 "github.com/peggyjv/sommelier/v7/x/cellarfees/types/v2"
+	corktypesunversioned "github.com/peggyjv/sommelier/v7/x/cork/types"
+	corktypes "github.com/peggyjv/sommelier/v7/x/cork/types/v2"
+	pubsubtypes "github.com/peggyjv/sommelier/v7/x/pubsub/types"
 
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/ethclient"
 
+	tmconfig "github.com/cometbft/cometbft/config"
+	tmjson "github.com/cometbft/cometbft/libs/json"
+	rpchttp "github.com/cometbft/cometbft/rpc/client/http"
 	"github.com/cosmos/cosmos-sdk/server"
 	srvconfig "github.com/cosmos/cosmos-sdk/server/config"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -35,23 +39,39 @@ import (
 	crisistypes "github.com/cosmos/cosmos-sdk/x/crisis/types"
 	disttypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
 	genutiltypes "github.com/cosmos/cosmos-sdk/x/genutil/types"
+	govtypesv1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1"
 	minttypes "github.com/cosmos/cosmos-sdk/x/mint/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
-	ibctransfertypes "github.com/cosmos/ibc-go/v6/modules/apps/transfer/types"
+	ibctransfertypes "github.com/cosmos/ibc-go/v7/modules/apps/transfer/types"
 	"github.com/ory/dockertest/v3"
 	"github.com/ory/dockertest/v3/docker"
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/suite"
-	tmconfig "github.com/tendermint/tendermint/config"
-	tmjson "github.com/tendermint/tendermint/libs/json"
-	rpchttp "github.com/tendermint/tendermint/rpc/client/http"
 )
 
 const (
 	testDenom           = "usomm"
-	initBalanceStr      = "210000000000usomm"
+	initBalanceStr      = "210000000000usomm,1ibc/1"
 	minGasPrice         = "2"
 	ethChainID     uint = 15
+	exampleCA           = `-----BEGIN CERTIFICATE-----
+MIICGzCCAaKgAwIBAgIUVYhZ4+pC7vQAf5FC6pssLk/eq5YwCgYIKoZIzj0EAwMw
+RTELMAkGA1UEBhMCQVUxEzARBgNVBAgMClNvbWUtU3RhdGUxITAfBgNVBAoMGElu
+dGVybmV0IFdpZGdpdHMgUHR5IEx0ZDAeFw0yMjAxMDUwNzIwMzFaFw0yNDAxMDUw
+NzIwMzFaMEUxCzAJBgNVBAYTAkFVMRMwEQYDVQQIDApTb21lLVN0YXRlMSEwHwYD
+VQQKDBhJbnRlcm5ldCBXaWRnaXRzIFB0eSBMdGQwdjAQBgcqhkjOPQIBBgUrgQQA
+IgNiAAQ3jwZd0Xe9w55UyAxRuc4F2u/LDdo7ykCZBO34neXpLR4GRRpx5VjFdHcX
+WjvM9j3DnWjptb1fe7TIKSSJRmW1skWkpktOthIPhfga9jBhU4WRUDloKk1tRuiI
+e8rRSlSjUzBRMB0GA1UdDgQWBBSTyTULHT9hNAA2Wg4dCtuTuIhiXTAfBgNVHSME
+GDAWgBSTyTULHT9hNAA2Wg4dCtuTuIhiXTAPBgNVHRMBAf8EBTADAQH/MAoGCCqG
+SM49BAMDA2cAMGQCMEd+Eg6lhStLkWEwmJJGN3Xdh9JmNsgsdff3mI3Y7UmHOB8K
+HOqHGS8ApZcunRauDAIwRtgceZpkS92KuP3QOUotAH/nnCzp7X1lVzGOSTBRTVYJ
+pohf4PJrfacqpi7PoXBk
+-----END CERTIFICATE-----
+`
+	axelarSweepDenom = "sweep"
+	gravityDenom     = "gravity0x0000000000000000000000000000000000000000"
+	ibcDenom         = "ibc/1"
 )
 
 var (
@@ -62,11 +82,7 @@ var (
 	gravityContract       = common.HexToAddress("0x04C89607413713Ec9775E14b954286519d836FEf")
 	counterContract       = common.HexToAddress("0x0000000000000000000000000000000000000000")
 	alphaERC20Contract    = common.HexToAddress("0x0000000000000000000000000000000000000000")
-	betaERC20Contract     = common.HexToAddress("0x0000000000000000000000000000000000000000")
 	unusedGenesisContract = common.HexToAddress("0x0000000000000000000000000000000000000001")
-
-	alphaFeeDenom = ""
-	betaFeeDenom  = ""
 
 	// 67%
 	corkVoteThreshold = sdk.NewDecWithPrec(67, 2)
@@ -303,10 +319,22 @@ func (s *IntegrationTestSuite) initGenesis() {
 				Exponent: 0,
 			},
 		},
-	})
+	},
+		banktypes.Metadata{
+			Description: "Test token for sweeping",
+			Display:     axelarSweepDenom,
+			Base:        axelarSweepDenom,
+			Name:        axelarSweepDenom,
+			DenomUnits: []*banktypes.DenomUnit{
+				{
+					Denom:    axelarSweepDenom,
+					Exponent: 0,
+				},
+			},
+		})
 
 	// Set up auction module with some coins to auction off
-	balance := banktypes.Balance{
+	auctionBalance := banktypes.Balance{
 		Address: authtypes.NewModuleAddress(auctiontypes.ModuleName).String(),
 		Coins:   sdk.NewCoins(sdk.NewCoin("gravity0x3506424f91fd33084466f402d5d97f05f8e3b4af", sdk.NewInt(5000000000))),
 	}
@@ -314,19 +342,32 @@ func (s *IntegrationTestSuite) initGenesis() {
 		Address: authtypes.NewModuleAddress(disttypes.ModuleName).String(),
 		Coins:   sdk.NewCoins(sdk.NewCoin(params.BaseCoinUnit, sdk.NewInt(1000000000))),
 	}
-	bankGenState.Balances = append(bankGenState.Balances, balance)
+	orchSweepBalance := banktypes.Balance{
+		Address: s.chain.orchestrators[0].address().String(),
+		Coins:   sdk.NewCoins(sdk.NewCoin(axelarSweepDenom, sdk.NewInt(2000000000))),
+	}
+	feesBalance := banktypes.Balance{
+		Address: authtypes.NewModuleAddress(cellarfeestypes.ModuleName).String(),
+		Coins: sdk.NewCoins(
+			sdk.NewCoin(gravityDenom, sdk.NewInt(100000000000000)),
+			sdk.NewCoin(ibcDenom, sdk.NewInt(99999999)),
+		),
+	}
+	bankGenState.Balances = append(bankGenState.Balances, auctionBalance)
 	bankGenState.Balances = append(bankGenState.Balances, distBalance)
+	bankGenState.Balances = append(bankGenState.Balances, orchSweepBalance)
+	bankGenState.Balances = append(bankGenState.Balances, feesBalance)
 
 	bz, err := cdc.MarshalJSON(&bankGenState)
 	s.Require().NoError(err)
 	appGenState[banktypes.ModuleName] = bz
 
-	var govGenState govtypesv1beta1.GenesisState
+	var govGenState govtypesv1.GenesisState
 	s.Require().NoError(cdc.UnmarshalJSON(appGenState[govtypes.ModuleName], &govGenState))
 
 	// set short voting period to allow gov proposals in tests
-	govGenState.VotingParams.VotingPeriod = time.Second * 20
-	govGenState.DepositParams.MinDeposit = sdk.Coins{{Denom: testDenom, Amount: sdk.OneInt()}}
+	*govGenState.Params.VotingPeriod = time.Second * 20
+	govGenState.Params.MinDeposit = sdk.Coins{{Denom: testDenom, Amount: sdk.OneInt()}}
 	bz, err = cdc.MarshalJSON(&govGenState)
 	s.Require().NoError(err)
 	appGenState[govtypes.ModuleName] = bz
@@ -362,8 +403,6 @@ func (s *IntegrationTestSuite) initGenesis() {
 	distGenState := disttypes.DefaultGenesisState()
 	s.Require().NoError(cdc.UnmarshalJSON(appGenState[minttypes.ModuleName], &mintGenState))
 	distGenState.Params.CommunityTax = sdk.ZeroDec()
-	distGenState.Params.BaseProposerReward = sdk.ZeroDec()
-	distGenState.Params.BonusProposerReward = sdk.ZeroDec()
 	distGenState.FeePool.CommunityPool = sdk.NewDecCoins(sdk.NewDecCoin(params.BaseCoinUnit, sdk.NewInt(1000000000)))
 	bz, err = cdc.MarshalJSON(distGenState)
 	s.Require().NoError(err)
@@ -373,26 +412,12 @@ func (s *IntegrationTestSuite) initGenesis() {
 	s.Require().NoError(cdc.UnmarshalJSON(appGenState[genutiltypes.ModuleName], &genUtilGenState))
 
 	// Add an auction for integration testing of the auction module
-	alphaFeeDenom = fmt.Sprintf("gravity%s", alphaERC20Contract.Hex())
-	betaFeeDenom = fmt.Sprintf("gravity%s", betaERC20Contract.Hex())
 	var auctionGenState auctiontypes.GenesisState
 	s.Require().NoError(cdc.UnmarshalJSON(appGenState[auctiontypes.ModuleName], &auctionGenState))
 	auctionGenState.TokenPrices = append(auctionGenState.TokenPrices, &auctiontypes.TokenPrice{
-		Denom:            alphaFeeDenom,
-		Exponent:         6,
-		UsdPrice:         sdk.MustNewDecFromStr("1.0"),
-		LastUpdatedBlock: 0,
-	})
-	auctionGenState.TokenPrices = append(auctionGenState.TokenPrices, &auctiontypes.TokenPrice{
-		Denom:            betaFeeDenom,
-		Exponent:         6,
-		UsdPrice:         sdk.MustNewDecFromStr("5.0"),
-		LastUpdatedBlock: 0,
-	})
-	auctionGenState.TokenPrices = append(auctionGenState.TokenPrices, &auctiontypes.TokenPrice{
 		Denom:            testDenom,
 		Exponent:         6,
-		UsdPrice:         sdk.MustNewDecFromStr("0.5"),
+		UsdPrice:         sdk.MustNewDecFromStr("1.0"),
 		LastUpdatedBlock: 0,
 	})
 	auctionGenState.Auctions = append(auctionGenState.Auctions, &auctiontypes.Auction{
@@ -409,6 +434,7 @@ func (s *IntegrationTestSuite) initGenesis() {
 		FundingModuleAccount:       cellarfeestypes.ModuleName,
 		ProceedsModuleAccount:      cellarfeestypes.ModuleName,
 	})
+	auctionGenState.LastAuctionId = 1
 	bz, err = cdc.MarshalJSON(&auctionGenState)
 	s.Require().NoError(err)
 	appGenState[auctiontypes.ModuleName] = bz
@@ -429,18 +455,32 @@ func (s *IntegrationTestSuite) initGenesis() {
 	appGenState[axelarcorktypes.ModuleName] = bz
 
 	// set cellarfees gen state
-	cellarfeesGenState := cellarfeestypes.DefaultGenesisState()
+	cellarfeesGenState := cellarfeestypesv2.DefaultGenesisState()
 	s.Require().NoError(cdc.UnmarshalJSON(appGenState[cellarfeestypes.ModuleName], &cellarfeesGenState))
-	cellarfeesGenState.Params = cellarfeestypes.Params{
-		FeeAccrualAuctionThreshold: 2,
+	cellarfeesGenState.Params = cellarfeestypesv2.Params{
 		RewardEmissionPeriod:       100,
 		InitialPriceDecreaseRate:   sdk.MustNewDecFromStr("0.05"),
 		PriceDecreaseBlockInterval: uint64(1000),
 		AuctionInterval:            50,
+		AuctionThresholdUsdValue:   sdk.MustNewDecFromStr("100.00"),
 	}
 	bz, err = cdc.MarshalJSON(&cellarfeesGenState)
 	s.Require().NoError(err)
 	appGenState[cellarfeestypes.ModuleName] = bz
+
+	// set pubsub gen state
+	pubsubGenState := pubsubtypes.DefaultGenesisState()
+	s.Require().NoError(cdc.UnmarshalJSON(appGenState[pubsubtypes.ModuleName], &pubsubGenState))
+	pubsubGenState.Publishers = []*pubsubtypes.Publisher{
+		{
+			Address: s.chain.proposer.address().String(),
+			Domain:  "example.com",
+			CaCert:  exampleCA,
+		},
+	}
+	bz, err = cdc.MarshalJSON(&pubsubGenState)
+	s.Require().NoError(err)
+	appGenState[pubsubtypes.ModuleName] = bz
 
 	// generate genesis txs
 	genTxs := make([]json.RawMessage, len(s.chain.validators))
@@ -467,7 +507,7 @@ func (s *IntegrationTestSuite) initGenesis() {
 	appGenState[genutiltypes.ModuleName] = bz
 
 	var corkGenState corktypes.GenesisState
-	s.Require().NoError(cdc.UnmarshalJSON(appGenState[corktypes.ModuleName], &corkGenState))
+	s.Require().NoError(cdc.UnmarshalJSON(appGenState[corktypesunversioned.ModuleName], &corkGenState))
 
 	// we add the first validator address as a cellar so that it will trigger the cellarfees hook
 	// when we send test fees
@@ -476,7 +516,7 @@ func (s *IntegrationTestSuite) initGenesis() {
 	corkGenState.Params.VoteThreshold = corkVoteThreshold
 	bz, err = cdc.MarshalJSON(&corkGenState)
 	s.Require().NoError(err)
-	appGenState[corktypes.ModuleName] = bz
+	appGenState[corktypesunversioned.ModuleName] = bz
 
 	// set contract addr
 	var gravityGenState gravitytypes.GenesisState
@@ -550,6 +590,7 @@ func (s *IntegrationTestSuite) initValidatorConfigs() {
 		appCfgPath := filepath.Join(val.configDir(), "config", "app.toml")
 
 		appConfig := srvconfig.DefaultConfig()
+		appConfig.GRPC.Address = "0.0.0.0:9090"
 		appConfig.API.Enable = true
 		appConfig.Pruning = "nothing"
 		appConfig.MinGasPrices = fmt.Sprintf("%s%s", minGasPrice, testDenom)
@@ -633,12 +674,6 @@ func (s *IntegrationTestSuite) runEthContainer() {
 				// this is not the last contract deployed
 				continue
 			}
-			if strings.HasPrefix(s, "betaERC20 contract deployed at") {
-				strSpl := strings.Split(s, "-")
-				betaERC20Contract = common.HexToAddress(strings.ReplaceAll(strSpl[1], " ", ""))
-				// this is not the last contract deployed
-				continue
-			}
 			if strings.HasPrefix(s, "counter contract deployed at") {
 				strSpl := strings.Split(s, "-")
 				counterContract = common.HexToAddress(strings.ReplaceAll(strSpl[1], " ", ""))
@@ -649,7 +684,6 @@ func (s *IntegrationTestSuite) runEthContainer() {
 	}, time.Minute*5, time.Second*10, "unable to retrieve gravity address from logs")
 	s.T().Logf("gravity contract deployed at %s", gravityContract.String())
 	s.T().Logf("alphaERC20 contract deployed at %s", alphaERC20Contract.String())
-	s.T().Logf("betaERC20 contract deployed at %s", betaERC20Contract.String())
 	s.T().Logf("counter contract deployed at %s", counterContract.String())
 	s.T().Logf("started Ethereum container: %s", s.ethResource.Container.ID)
 }

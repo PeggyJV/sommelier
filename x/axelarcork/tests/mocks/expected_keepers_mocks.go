@@ -15,11 +15,12 @@ import (
 	types2 "github.com/cosmos/cosmos-sdk/x/capability/types"
 	types3 "github.com/cosmos/cosmos-sdk/x/distribution/types"
 	types4 "github.com/cosmos/cosmos-sdk/x/staking/types"
-	types5 "github.com/cosmos/ibc-go/v6/modules/apps/transfer/types"
-	types6 "github.com/cosmos/ibc-go/v6/modules/core/02-client/types"
-	types7 "github.com/cosmos/ibc-go/v6/modules/core/04-channel/types"
-	exported "github.com/cosmos/ibc-go/v6/modules/core/exported"
+	types5 "github.com/cosmos/ibc-go/v7/modules/apps/transfer/types"
+	types6 "github.com/cosmos/ibc-go/v7/modules/core/02-client/types"
+	types7 "github.com/cosmos/ibc-go/v7/modules/core/04-channel/types"
+	exported "github.com/cosmos/ibc-go/v7/modules/core/exported"
 	gomock "github.com/golang/mock/gomock"
+	types8 "github.com/peggyjv/sommelier/v7/x/pubsub/types"
 )
 
 // MockAccountKeeper is a mock of AccountKeeper interface.
@@ -619,4 +620,66 @@ func (m *MockGravityKeeper) GetOrchestratorValidatorAddress(ctx types.Context, o
 func (mr *MockGravityKeeperMockRecorder) GetOrchestratorValidatorAddress(ctx, orchAddr interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetOrchestratorValidatorAddress", reflect.TypeOf((*MockGravityKeeper)(nil).GetOrchestratorValidatorAddress), ctx, orchAddr)
+}
+
+// MockPubsubKeeper is a mock of PubsubKeeper interface.
+type MockPubsubKeeper struct {
+	ctrl     *gomock.Controller
+	recorder *MockPubsubKeeperMockRecorder
+}
+
+// MockPubsubKeeperMockRecorder is the mock recorder for MockPubsubKeeper.
+type MockPubsubKeeperMockRecorder struct {
+	mock *MockPubsubKeeper
+}
+
+// NewMockPubsubKeeper creates a new mock instance.
+func NewMockPubsubKeeper(ctrl *gomock.Controller) *MockPubsubKeeper {
+	mock := &MockPubsubKeeper{ctrl: ctrl}
+	mock.recorder = &MockPubsubKeeperMockRecorder{mock}
+	return mock
+}
+
+// EXPECT returns an object that allows the caller to indicate expected use.
+func (m *MockPubsubKeeper) EXPECT() *MockPubsubKeeperMockRecorder {
+	return m.recorder
+}
+
+// DeleteDefaultSubscription mocks base method.
+func (m *MockPubsubKeeper) DeleteDefaultSubscription(ctx types.Context, subscriptionID string) {
+	m.ctrl.T.Helper()
+	m.ctrl.Call(m, "DeleteDefaultSubscription", ctx, subscriptionID)
+}
+
+// DeleteDefaultSubscription indicates an expected call of DeleteDefaultSubscription.
+func (mr *MockPubsubKeeperMockRecorder) DeleteDefaultSubscription(ctx, subscriptionID interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteDefaultSubscription", reflect.TypeOf((*MockPubsubKeeper)(nil).DeleteDefaultSubscription), ctx, subscriptionID)
+}
+
+// GetPublisher mocks base method.
+func (m *MockPubsubKeeper) GetPublisher(ctx types.Context, publisherDomain string) (types8.Publisher, bool) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetPublisher", ctx, publisherDomain)
+	ret0, _ := ret[0].(types8.Publisher)
+	ret1, _ := ret[1].(bool)
+	return ret0, ret1
+}
+
+// GetPublisher indicates an expected call of GetPublisher.
+func (mr *MockPubsubKeeperMockRecorder) GetPublisher(ctx, publisherDomain interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetPublisher", reflect.TypeOf((*MockPubsubKeeper)(nil).GetPublisher), ctx, publisherDomain)
+}
+
+// SetDefaultSubscription mocks base method.
+func (m *MockPubsubKeeper) SetDefaultSubscription(ctx types.Context, defaultSubscription types8.DefaultSubscription) {
+	m.ctrl.T.Helper()
+	m.ctrl.Call(m, "SetDefaultSubscription", ctx, defaultSubscription)
+}
+
+// SetDefaultSubscription indicates an expected call of SetDefaultSubscription.
+func (mr *MockPubsubKeeperMockRecorder) SetDefaultSubscription(ctx, defaultSubscription interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SetDefaultSubscription", reflect.TypeOf((*MockPubsubKeeper)(nil).SetDefaultSubscription), ctx, defaultSubscription)
 }

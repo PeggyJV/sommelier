@@ -22,15 +22,11 @@ const (
 	LastRewardSupplyPeakKey
 
 	// key for storing fee accrual counts
+	// DEPRECATED
 	FeeAccrualCountersKey
 )
 
 // GetLastRewardSupplyPeakKey returns the key prefix
 func GetLastRewardSupplyPeakKey() []byte {
 	return []byte{LastRewardSupplyPeakKey}
-}
-
-// GetFeeAccrualCountersKey returns the key prefix
-func GetFeeAccrualCountersKey() []byte {
-	return []byte{FeeAccrualCountersKey}
 }

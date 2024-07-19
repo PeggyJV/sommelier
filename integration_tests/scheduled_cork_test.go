@@ -16,18 +16,23 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/ethclient"
 	gbtypes "github.com/peggyjv/gravity-bridge/module/v4/x/gravity/types"
-	"github.com/peggyjv/sommelier/v7/x/cork/types"
+	types "github.com/peggyjv/sommelier/v7/x/cork/types/v2"
+	pubsubtypes "github.com/peggyjv/sommelier/v7/x/pubsub/types"
 )
 
 func (s *IntegrationTestSuite) TestScheduledCork() {
 	s.Run("Bring up chain, and schedule a cork call to ethereum", func() {
 		s.T().Log("submitting a scheduled cork porposal with unsupported cellar ID to verify rejection")
 		proposer := s.chain.proposer
+		orch0 := s.chain.orchestrators[0]
+		orch0Ctx, err := s.chain.clientContext("tcp://localhost:26657", orch0.keyring, "orch", s.chain.orchestrators[0].address())
+		s.Require().NoError(err)
 		proposerCtx, err := s.chain.clientContext("tcp://localhost:26657", proposer.keyring, "proposer", proposer.address())
 		s.Require().NoError(err)
 		invalidProposal := types.ScheduledCorkProposal{
 			Title:                 "invalid proposal",
 			Description:           "proposal for cellar ID that doesn't exist",
+			BlockHeight:           100,
 			TargetContractAddress: "0x0000000000000000000000000000000000000000",
 			ContractCallProtoJson: "{\"thing\": 1}",
 		}
@@ -43,7 +48,7 @@ func (s *IntegrationTestSuite) TestScheduledCork() {
 		)
 		s.Require().NoError(err, "unable to create governance proposal")
 
-		submitProposalResponse, err := s.chain.sendMsgs(*proposerCtx, proposalMsg)
+		submitProposalResponse, err := s.chain.sendMsgs(*orch0Ctx, proposalMsg)
 		s.Require().NoError(err)
 		s.Require().Zero(submitProposalResponse.Code, "raw log: %s", submitProposalResponse.RawLog)
 		govQueryClient := govtypesv1beta1.NewQueryClient(proposerCtx)
@@ -82,6 +87,7 @@ func (s *IntegrationTestSuite) TestScheduledCork() {
 			CellarIds: &types.CellarIDSet{
 				Ids: []string{counterContract.Hex()},
 			},
+			PublisherDomain: "example.com",
 		}
 		proposalMsg, err = govtypesv1beta1.NewMsgSubmitProposal(
 			&proposal,
@@ -101,11 +107,16 @@ func (s *IntegrationTestSuite) TestScheduledCork() {
 		s.Require().Zero(submitProposalResponse.Code, "raw log: %s", submitProposalResponse.RawLog)
 
 		s.T().Log("check proposal was submitted correctly")
-		proposalsQueryResponse, err = govQueryClient.Proposals(context.Background(), &govtypesv1beta1.QueryProposalsRequest{})
-		s.Require().NoError(err)
-		s.Require().NotEmpty(proposalsQueryResponse.Proposals)
-		s.Require().Equal(uint64(1), proposalsQueryResponse.Proposals[0].ProposalId, "not proposal id 1")
-		s.Require().Equal(govtypesv1beta1.StatusVotingPeriod, proposalsQueryResponse.Proposals[0].Status, "proposal not in voting period")
+		s.Require().Eventually(func() bool {
+			proposalsQueryResponse, err = govQueryClient.Proposals(context.Background(), &govtypesv1beta1.QueryProposalsRequest{})
+			if err != nil {
+				return false
+			}
+			if len(proposalsQueryResponse.Proposals) == 0 {
+				return false
+			}
+			return govtypesv1beta1.StatusVotingPeriod == proposalsQueryResponse.Proposals[0].Status
+		}, time.Second*30, time.Second*5, "proposal submission was never found")
 
 		s.T().Log("vote for proposal allowing contract")
 		for _, val := range s.chain.validators {
@@ -153,6 +164,14 @@ func (s *IntegrationTestSuite) TestScheduledCork() {
 			return found
 		}, 10*time.Second, 2*time.Second, "did not find address in managed cellars")
 
+		s.T().Log("verify a default subscription was created")
+		pubsubQueryClient := pubsubtypes.NewQueryClient(proposerCtx)
+		subscriptionID := fmt.Sprintf("1:%s", counterContract.String())
+		pubsubResponse, err := pubsubQueryClient.QueryDefaultSubscription(context.Background(), &pubsubtypes.QueryDefaultSubscriptionRequest{SubscriptionId: subscriptionID})
+		s.Require().NoError(err)
+		s.Require().Equal(pubsubResponse.DefaultSubscription.SubscriptionId, subscriptionID)
+		s.Require().Equal(pubsubResponse.DefaultSubscription.PublisherDomain, "example.com")
+
 		s.T().Log("schedule a cork for the future")
 		node, err := proposerCtx.GetNode()
 		s.Require().NoError(err)
@@ -192,9 +211,14 @@ func (s *IntegrationTestSuite) TestScheduledCork() {
 
 		s.T().Log("verify scheduled corks were created")
 		corkQueryClient := types.NewQueryClient(proposerCtx)
-		res, err := corkQueryClient.QueryScheduledCorksByBlockHeight(context.Background(), &types.QueryScheduledCorksByBlockHeightRequest{BlockHeight: uint64(targetBlockHeight)})
-		s.Require().NoError(err, "failed to query scheduled corks by height")
-		s.Require().Len(res.Corks, 4)
+
+		s.Require().Eventually(func() bool {
+			res, err := corkQueryClient.QueryScheduledCorksByBlockHeight(context.Background(), &types.QueryScheduledCorksByBlockHeightRequest{BlockHeight: uint64(targetBlockHeight)})
+			if err != nil {
+				return false
+			}
+			return len(res.Corks) == 4
+		}, 10*time.Second, 1*time.Second, "scheduled corks were not created")
 
 		s.T().Log("wait for scheduled height")
 		gbClient := gbtypes.NewQueryClient(proposerCtx)
@@ -234,7 +258,7 @@ func (s *IntegrationTestSuite) TestScheduledCork() {
 		s.Require().Equal(counterContract, common.HexToAddress(resultRes.CorkResult.Cork.TargetContractAddress))
 
 		s.T().Log("verify scheduled corks were deleted")
-		res, err = corkQueryClient.QueryScheduledCorksByBlockHeight(context.Background(), &types.QueryScheduledCorksByBlockHeightRequest{BlockHeight: uint64(targetBlockHeight)})
+		res, err := corkQueryClient.QueryScheduledCorksByBlockHeight(context.Background(), &types.QueryScheduledCorksByBlockHeightRequest{BlockHeight: uint64(targetBlockHeight)})
 		s.Require().NoError(err, "failed to query scheduled corks by height")
 		s.Require().Len(res.Corks, 0)
 
@@ -314,6 +338,75 @@ func (s *IntegrationTestSuite) TestScheduledCork() {
 			return govtypesv1beta1.StatusPassed == proposalQueryResponse.Proposal.Status
 		}, time.Second*30, time.Second*5, "proposal was never accepted")
 		s.T().Log("Proposal approved!")
+
+		s.T().Logf("create governance proposal to remove counter contract")
+		removalProposal := types.RemoveManagedCellarIDsProposal{
+			Title:       "add counter contract in test",
+			Description: "test description",
+			CellarIds: &types.CellarIDSet{
+				Ids: []string{counterContract.Hex()},
+			},
+		}
+		proposalMsg, err = govtypesv1beta1.NewMsgSubmitProposal(
+			&removalProposal,
+			sdk.Coins{
+				{
+					Denom:  testDenom,
+					Amount: stakeAmount.Quo(sdk.NewInt(2)),
+				},
+			},
+			proposer.address(),
+		)
+		s.Require().NoError(err, "unable to create governance proposal")
+
+		s.T().Log("submit proposal adding test cellar ID")
+		submitProposalResponse, err = s.chain.sendMsgs(*proposerCtx, proposalMsg)
+		s.Require().NoError(err)
+		s.Require().Zero(submitProposalResponse.Code, "raw log: %s", submitProposalResponse.RawLog)
+
+		s.T().Log("check proposal was submitted correctly")
+		s.Require().Eventually(func() bool {
+			proposalsQueryResponse, err = govQueryClient.Proposals(context.Background(), &govtypesv1beta1.QueryProposalsRequest{})
+			if err != nil {
+				return false
+			}
+			if len(proposalsQueryResponse.Proposals) == 0 {
+				return false
+			}
+			s.Require().Equal(uint64(3), proposalsQueryResponse.Proposals[2].ProposalId, "not proposal id 3")
+			return govtypesv1beta1.StatusVotingPeriod == proposalsQueryResponse.Proposals[2].Status
+		}, time.Second*30, time.Second*5, "proposal submission was never found")
+
+		s.T().Log("vote for proposal allowing contract")
+		for _, val := range s.chain.validators {
+			kr, err := val.keyring()
+			s.Require().NoError(err)
+			clientCtx, err := s.chain.clientContext("tcp://localhost:26657", &kr, "val", val.address())
+			s.Require().NoError(err)
+
+			voteMsg := govtypesv1beta1.NewMsgVote(val.address(), 3, govtypesv1beta1.OptionYes)
+			voteResponse, err := s.chain.sendMsgs(*clientCtx, voteMsg)
+			s.Require().NoError(err)
+			s.Require().Zero(voteResponse.Code, "vote error: %s", voteResponse.RawLog)
+		}
+
+		s.T().Log("wait for proposal to be approved")
+		s.Require().Eventuallyf(func() bool {
+			proposalQueryResponse, err := govQueryClient.Proposal(context.Background(), &govtypesv1beta1.QueryProposalRequest{ProposalId: 3})
+			s.Require().NoError(err)
+			return govtypesv1beta1.StatusPassed == proposalQueryResponse.Proposal.Status
+		}, time.Second*30, time.Second*5, "proposal was never accepted")
+
+		s.T().Log("verify cellar ID was removed")
+		queryClient := types.NewQueryClient(proposerCtx)
+		cellarIDsResponse, err := queryClient.QueryCellarIDs(context.Background(), &types.QueryCellarIDsRequest{})
+		s.Require().NoError(err)
+		s.Require().NotContains(cellarIDsResponse.CellarIds, counterContract.String())
+
+		s.T().Log("verify default subscription was removed")
+		subscriptionID = fmt.Sprintf("1:%s", counterContract.String())
+		_, err = pubsubQueryClient.QueryDefaultSubscription(context.Background(), &pubsubtypes.QueryDefaultSubscriptionRequest{SubscriptionId: subscriptionID})
+		s.Require().Error(err)
 	})
 }
 

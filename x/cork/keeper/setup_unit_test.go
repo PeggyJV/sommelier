@@ -18,15 +18,16 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
+	tmdb "github.com/cometbft/cometbft-db"
+	"github.com/cometbft/cometbft/libs/log"
+	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
-	"github.com/tendermint/tendermint/libs/log"
-	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
-	tmdb "github.com/tendermint/tm-db"
 )
 
 type mocksForCork struct {
 	mockStakingKeeper *mock.MockStakingKeeper
 	mockGravityKeeper *mock.MockGravityKeeper
+	mockPubsubKeeper  *mock.MockPubsubKeeper
 	mockValidator     *mock.MockValidatorI
 }
 
@@ -59,6 +60,7 @@ func setupCorkKeeper(t *testing.T) (
 	ctrl := gomock.NewController(t)
 	mockStakingKeeper := mock.NewMockStakingKeeper(ctrl)
 	mockGravityKeeper := mock.NewMockGravityKeeper(ctrl)
+	mockPubsubKeeper := mock.NewMockPubsubKeeper(ctrl)
 
 	k := NewKeeper(
 		protoCodec,
@@ -66,6 +68,7 @@ func setupCorkKeeper(t *testing.T) (
 		subSpace,
 		mockStakingKeeper,
 		mockGravityKeeper,
+		mockPubsubKeeper,
 	)
 
 	ctx := sdk.NewContext(commitMultiStore, tmproto.Header{}, false, log.NewNopLogger())
@@ -73,6 +76,7 @@ func setupCorkKeeper(t *testing.T) (
 	return k, ctx, mocksForCork{
 		mockStakingKeeper: mockStakingKeeper,
 		mockGravityKeeper: mockGravityKeeper,
+		mockPubsubKeeper:  mockPubsubKeeper,
 		mockValidator:     mock.NewMockValidatorI(ctrl),
 	}, ctrl
 }

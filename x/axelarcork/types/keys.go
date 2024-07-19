@@ -49,6 +49,9 @@ const (
 
 	// AxelarProxyUpgradeDataPrefix - <prefix><chain_id> -> <payload>
 	AxelarProxyUpgradeDataPrefix
+
+	// ValidatorAxelarCorkCountKey - <prefix><val_address> -> uint64(count)
+	ValidatorAxelarCorkCountKey
 )
 
 // GetCorkValidatorKeyPrefix returns the key prefix for cork commits for a validator
@@ -117,4 +120,8 @@ func GetAxelarProxyUpgradeDataKey(chainID uint64) []byte {
 	cid := make([]byte, 8)
 	binary.BigEndian.PutUint64(cid, chainID)
 	return bytes.Join([][]byte{{AxelarProxyUpgradeDataPrefix}, cid}, []byte{})
+}
+
+func GetValidatorAxelarCorkCountKey(val sdk.ValAddress) []byte {
+	return append([]byte{ValidatorAxelarCorkCountKey}, val.Bytes()...)
 }

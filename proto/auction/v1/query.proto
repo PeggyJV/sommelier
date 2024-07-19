@@ -6,37 +6,55 @@ import "google/api/annotations.proto";
 import "auction/v1/genesis.proto";
 import "auction/v1/auction.proto";
 import "cosmos_proto/cosmos.proto";
+import "cosmos/query/v1/query.proto";
 import "cosmos/base/query/v1beta1/pagination.proto";
 
 option go_package = "github.com/peggyjv/sommelier/v7/x/auction/types";
 
 service Query {
   rpc QueryParams(QueryParamsRequest) returns (QueryParamsResponse) {
+    option (cosmos.query.v1.module_query_safe) = true;
     option (google.api.http).get = "/sommelier/auction/v1/params";
   }
 
   rpc QueryActiveAuction(QueryActiveAuctionRequest) returns (QueryActiveAuctionResponse) {
+    option (cosmos.query.v1.module_query_safe) = true;
     option (google.api.http).get = "/sommelier/auction/v1/active_auctions/{auction_id}";
   }
 
   rpc QueryEndedAuction(QueryEndedAuctionRequest) returns (QueryEndedAuctionResponse) {
+    option (cosmos.query.v1.module_query_safe) = true;
     option (google.api.http).get = "/sommelier/auction/v1/ended_auctions/{auction_id}";
   }
 
   rpc QueryActiveAuctions(QueryActiveAuctionsRequest) returns (QueryActiveAuctionsResponse) {
+    option (cosmos.query.v1.module_query_safe) = true;
     option (google.api.http).get = "/sommelier/auction/v1/active_auctions";
   }
 
   rpc QueryEndedAuctions(QueryEndedAuctionsRequest) returns (QueryEndedAuctionsResponse) {
+    option (cosmos.query.v1.module_query_safe) = true;
     option (google.api.http).get = "/sommelier/auction/v1/ended_auctions";
   }
 
   rpc QueryBid(QueryBidRequest) returns (QueryBidResponse) {
+    option (cosmos.query.v1.module_query_safe) = true;
     option (google.api.http).get = "/sommelier/auction/v1/auctions/{auction_id}/bids/{bid_id}";
   }
 
   rpc QueryBidsByAuction(QueryBidsByAuctionRequest) returns (QueryBidsByAuctionResponse) {
+    option (cosmos.query.v1.module_query_safe) = true;
     option (google.api.http).get = "/sommelier/auction/v1/auctions/{auction_id}/bids";
+  }
+
+  rpc QueryTokenPrice(QueryTokenPriceRequest) returns (QueryTokenPriceResponse) {
+    option (cosmos.query.v1.module_query_safe) = true;
+    option (google.api.http).get = "/sommelier/auction/v1/token_prices/{denom}";
+  }
+
+  rpc QueryTokenPrices(QueryTokenPricesRequest) returns (QueryTokenPricesResponse) {
+    option (cosmos.query.v1.module_query_safe) = true;
+    option (google.api.http).get = "/sommelier/auction/v1/token_prices";
   }
 }
 
@@ -95,3 +113,18 @@ message QueryBidsByAuctionResponse {
   repeated Bid bids = 1;
   cosmos.base.query.v1beta1.PageResponse pagination = 2 [ (gogoproto.nullable) = false ];
 }
+
+message QueryTokenPriceRequest {
+  string denom = 1;
+}
+
+message QueryTokenPriceResponse {
+  TokenPrice token_price = 1;
+}
+
+message QueryTokenPricesRequest {}
+
+message QueryTokenPricesResponse {
+  repeated TokenPrice token_prices = 1;
+}
+

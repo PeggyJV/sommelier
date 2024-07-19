@@ -23,7 +23,7 @@ func TestAuctionValidate(t *testing.T) {
 		err     error
 	}{
 		{
-			name: "Happy path",
+			name: "Happy path 1",
 			auction: Auction{
 				Id:                         uint32(1),
 				StartingTokensForSale:      sdk.NewCoin("gravity0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48", sdk.NewIntFromUint64(1000)),
@@ -35,6 +35,25 @@ func TestAuctionValidate(t *testing.T) {
 				InitialUnitPriceInUsomm:    sdk.MustNewDecFromStr("20.0"),
 				CurrentUnitPriceInUsomm:    sdk.MustNewDecFromStr("20.0"),
 				RemainingTokensForSale:     sdk.NewCoin("gravity0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48", sdk.NewIntFromUint64(900)),
+				FundingModuleAccount:       "someModule",
+				ProceedsModuleAccount:      "someModule",
+			},
+			expPass: true,
+			err:     nil,
+		},
+		{
+			name: "Happy path 2",
+			auction: Auction{
+				Id:                         uint32(1),
+				StartingTokensForSale:      sdk.NewCoin("ibc/1", sdk.NewIntFromUint64(1000)),
+				StartBlock:                 uint64(200),
+				EndBlock:                   uint64(0),
+				InitialPriceDecreaseRate:   sdk.MustNewDecFromStr("0.05"),
+				CurrentPriceDecreaseRate:   sdk.MustNewDecFromStr("0.05"),
+				PriceDecreaseBlockInterval: uint64(10),
+				InitialUnitPriceInUsomm:    sdk.MustNewDecFromStr("20.0"),
+				CurrentUnitPriceInUsomm:    sdk.MustNewDecFromStr("20.0"),
+				RemainingTokensForSale:     sdk.NewCoin("ibc/1", sdk.NewIntFromUint64(900)),
 				FundingModuleAccount:       "someModule",
 				ProceedsModuleAccount:      "someModule",
 			},
@@ -311,7 +330,7 @@ func TestBidValidate(t *testing.T) {
 		err     error
 	}{
 		{
-			name: "Happy path",
+			name: "Happy path 1",
 			bid: Bid{
 				Id:                        uint64(1),
 				AuctionId:                 uint32(1),
@@ -319,6 +338,21 @@ func TestBidValidate(t *testing.T) {
 				MaxBidInUsomm:             sdk.NewCoin("usomm", sdk.NewInt(100)),
 				SaleTokenMinimumAmount:    sdk.NewCoin("gravity0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48", sdk.NewInt(50)),
 				TotalFulfilledSaleTokens:  sdk.NewCoin("gravity0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48", sdk.NewInt(50)),
+				SaleTokenUnitPriceInUsomm: sdk.MustNewDecFromStr("2.0"),
+				TotalUsommPaid:            sdk.NewCoin("usomm", sdk.NewInt(100)),
+			},
+			expPass: true,
+			err:     nil,
+		},
+		{
+			name: "Happy path 2",
+			bid: Bid{
+				Id:                        uint64(1),
+				AuctionId:                 uint32(1),
+				Bidder:                    cosmosAddress2,
+				MaxBidInUsomm:             sdk.NewCoin("usomm", sdk.NewInt(100)),
+				SaleTokenMinimumAmount:    sdk.NewCoin("ibc/1", sdk.NewInt(50)),
+				TotalFulfilledSaleTokens:  sdk.NewCoin("ibc/1", sdk.NewInt(50)),
 				SaleTokenUnitPriceInUsomm: sdk.MustNewDecFromStr("2.0"),
 				TotalUsommPaid:            sdk.NewCoin("usomm", sdk.NewInt(100)),
 			},
@@ -416,21 +450,6 @@ func TestBidValidate(t *testing.T) {
 			err:     errorsmod.Wrapf(ErrBidMustBeInUsomm, "bid: %s", sdk.NewCoin("usdc", sdk.NewInt(100)).String()),
 		},
 		{
-			name: "Sale token must be gravity prefixed",
-			bid: Bid{
-				Id:                        uint64(1),
-				AuctionId:                 uint32(1),
-				Bidder:                    cosmosAddress2,
-				MaxBidInUsomm:             sdk.NewCoin("usomm", sdk.NewInt(100)),
-				SaleTokenMinimumAmount:    sdk.NewCoin("usdc", sdk.NewInt(50)),
-				TotalFulfilledSaleTokens:  sdk.NewCoin("gravity0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48", sdk.NewInt(50)),
-				SaleTokenUnitPriceInUsomm: sdk.MustNewDecFromStr("2.0"),
-				TotalUsommPaid:            sdk.NewCoin("usomm", sdk.NewInt(100)),
-			},
-			expPass: false,
-			err:     errorsmod.Wrapf(ErrInvalidTokenBeingBidOn, "sale token: %s", sdk.NewCoin("usdc", sdk.NewInt(50)).String()),
-		},
-		{
 			name: "Sale token amount must be positive",
 			bid: Bid{
 				Id:                        uint64(1),
@@ -517,6 +536,16 @@ func TestTokenPriceValidate(t *testing.T) {
 			err:     nil,
 		},
 		{
+			name: "Happy path -- ibc denom",
+			tokenPrice: TokenPrice{
+				Denom:            "ibc/1",
+				UsdPrice:         sdk.MustNewDecFromStr("0.001"),
+				LastUpdatedBlock: uint64(321),
+			},
+			expPass: true,
+			err:     nil,
+		},
+		{
 			name: "Denom cannot be empty",
 			tokenPrice: TokenPrice{
 				Denom:            "",
@@ -545,16 +574,6 @@ func TestTokenPriceValidate(t *testing.T) {
 			},
 			expPass: false,
 			err:     errorsmod.Wrapf(ErrInvalidLastUpdatedBlock, "block: 0"),
-		},
-		{
-			name: "Token price must be usomm or gravity prefixed",
-			tokenPrice: TokenPrice{
-				Denom:            "usdc",
-				UsdPrice:         sdk.MustNewDecFromStr("1.0"),
-				LastUpdatedBlock: uint64(321),
-			},
-			expPass: false,
-			err:     errorsmod.Wrapf(ErrInvalidTokenPriceDenom, "denom: usdc"),
 		},
 	}
 
@@ -596,6 +615,15 @@ func TestProposedTokenPriceValidate(t *testing.T) {
 			err:     nil,
 		},
 		{
+			name: "Happy path -- ibc denom",
+			proposedTokenPrice: ProposedTokenPrice{
+				Denom:    "ibc/1",
+				UsdPrice: sdk.MustNewDecFromStr("0.001"),
+			},
+			expPass: true,
+			err:     nil,
+		},
+		{
 			name: "Denom cannot be empty",
 			proposedTokenPrice: ProposedTokenPrice{
 				Denom:    "",
@@ -612,15 +640,6 @@ func TestProposedTokenPriceValidate(t *testing.T) {
 			},
 			expPass: false,
 			err:     errorsmod.Wrapf(ErrPriceMustBePositive, "usd price: %s", sdk.MustNewDecFromStr("0.0").String()),
-		},
-		{
-			name: "Token price must be usomm or gravity prefixed",
-			proposedTokenPrice: ProposedTokenPrice{
-				Denom:    "usdc",
-				UsdPrice: sdk.MustNewDecFromStr("1.0"),
-			},
-			expPass: false,
-			err:     errorsmod.Wrapf(ErrInvalidTokenPriceDenom, "denom: usdc"),
 		},
 	}
 

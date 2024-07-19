@@ -6,6 +6,8 @@ import (
 
 	"github.com/peggyjv/sommelier/v7/x/axelarcork/tests/mocks"
 
+	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
+	tmtime "github.com/cometbft/cometbft/types/time"
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/testutil"
@@ -18,8 +20,6 @@ import (
 	moduletestutil "github.com/peggyjv/sommelier/v7/testutil"
 	"github.com/peggyjv/sommelier/v7/x/axelarcork/types"
 	"github.com/stretchr/testify/suite"
-	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
-	tmtime "github.com/tendermint/tendermint/types/time"
 )
 
 const (
@@ -44,6 +44,7 @@ type KeeperTestSuite struct {
 	distributionKeeper *mocks.MockDistributionKeeper
 	ics4wrapper        *mocks.MockICS4Wrapper
 	gravityKeeper      *mocks.MockGravityKeeper
+	pubsubKeeper       *mocks.MockPubsubKeeper
 
 	validator *mocks.MockValidatorI
 
@@ -69,6 +70,8 @@ func (suite *KeeperTestSuite) SetupTest() {
 	suite.transferKeeper = mocks.NewMockTransferKeeper(ctrl)
 	suite.distributionKeeper = mocks.NewMockDistributionKeeper(ctrl)
 	suite.ics4wrapper = mocks.NewMockICS4Wrapper(ctrl)
+	suite.gravityKeeper = mocks.NewMockGravityKeeper(ctrl)
+	suite.pubsubKeeper = mocks.NewMockPubsubKeeper(ctrl)
 	suite.validator = mocks.NewMockValidatorI(ctrl)
 	suite.ctx = ctx
 
@@ -94,6 +97,7 @@ func (suite *KeeperTestSuite) SetupTest() {
 		suite.distributionKeeper,
 		suite.ics4wrapper,
 		suite.gravityKeeper,
+		suite.pubsubKeeper,
 	)
 
 	//types.RegisterInterfaces(encCfg.InterfaceRegistry)
@@ -115,7 +119,8 @@ func (suite *KeeperTestSuite) TestSetGetCellarIDsHappyPath() {
 	require := suite.Require()
 
 	cellarIDSet := types.CellarIDSet{
-		Ids: []string{sampleCellarHex},
+		ChainId: TestEVMChainID,
+		Ids:     []string{sampleCellarHex},
 	}
 	expected := []common.Address{}
 	for _, id := range cellarIDSet.Ids {

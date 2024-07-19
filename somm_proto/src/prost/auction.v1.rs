@@ -175,6 +175,12 @@ pub struct Params {
     pub auction_max_block_age: u64,
     #[prost(string, tag = "5")]
     pub auction_price_decrease_acceleration_rate: ::prost::alloc::string::String,
+    #[prost(uint64, tag = "6")]
+    pub minimum_auction_height: u64,
+    /// value between 0 and 1 the determines the % of somm received from bids that
+    /// gets burned
+    #[prost(string, tag = "7")]
+    pub somm_burn_ratio: ::prost::alloc::string::String,
 }
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct QueryParamsRequest {}
@@ -249,6 +255,23 @@ pub struct QueryBidsByAuctionResponse {
     #[prost(message, optional, tag = "2")]
     pub pagination:
         ::core::option::Option<cosmos_sdk_proto::cosmos::base::query::v1beta1::PageResponse>,
+}
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct QueryTokenPriceRequest {
+    #[prost(string, tag = "1")]
+    pub denom: ::prost::alloc::string::String,
+}
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct QueryTokenPriceResponse {
+    #[prost(message, optional, tag = "1")]
+    pub token_price: ::core::option::Option<TokenPrice>,
+}
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct QueryTokenPricesRequest {}
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct QueryTokenPricesResponse {
+    #[prost(message, repeated, tag = "1")]
+    pub token_prices: ::prost::alloc::vec::Vec<TokenPrice>,
 }
 #[doc = r" Generated client implementations."]
 pub mod query_client {
@@ -380,6 +403,34 @@ pub mod query_client {
             })?;
             let codec = tonic::codec::ProstCodec::default();
             let path = http::uri::PathAndQuery::from_static("/auction.v1.Query/QueryBidsByAuction");
+            self.inner.unary(request.into_request(), path, codec).await
+        }
+        pub async fn query_token_price(
+            &mut self,
+            request: impl tonic::IntoRequest<super::QueryTokenPriceRequest>,
+        ) -> Result<tonic::Response<super::QueryTokenPriceResponse>, tonic::Status> {
+            self.inner.ready().await.map_err(|e| {
+                tonic::Status::new(
+                    tonic::Code::Unknown,
+                    format!("Service was not ready: {}", e.into()),
+                )
+            })?;
+            let codec = tonic::codec::ProstCodec::default();
+            let path = http::uri::PathAndQuery::from_static("/auction.v1.Query/QueryTokenPrice");
+            self.inner.unary(request.into_request(), path, codec).await
+        }
+        pub async fn query_token_prices(
+            &mut self,
+            request: impl tonic::IntoRequest<super::QueryTokenPricesRequest>,
+        ) -> Result<tonic::Response<super::QueryTokenPricesResponse>, tonic::Status> {
+            self.inner.ready().await.map_err(|e| {
+                tonic::Status::new(
+                    tonic::Code::Unknown,
+                    format!("Service was not ready: {}", e.into()),
+                )
+            })?;
+            let codec = tonic::codec::ProstCodec::default();
+            let path = http::uri::PathAndQuery::from_static("/auction.v1.Query/QueryTokenPrices");
             self.inner.unary(request.into_request(), path, codec).await
         }
     }

@@ -34,6 +34,8 @@ func GetQueryCmd() *cobra.Command {
 		queryChainConfigurations(),
 		queryAxelarContractCallNonces(),
 		queryAxelayProxyUpgradeData(),
+		queryWinningAxelarCork(),
+		queryWinningAxelarCorks(),
 	}...)
 
 	return corkQueryCmd
@@ -448,6 +450,83 @@ func queryAxelayProxyUpgradeData() *cobra.Command {
 			req := &types.QueryAxelarProxyUpgradeDataRequest{}
 
 			res, err := queryClient.QueryAxelarProxyUpgradeData(cmd.Context(), req)
+			if err != nil {
+				return err
+			}
+
+			return ctx.PrintProto(res)
+		},
+	}
+
+	flags.AddQueryFlagsToCmd(cmd)
+
+	return cmd
+}
+
+func queryWinningAxelarCork() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:     "winning-axelar-cork [chain-id] [contract-address]",
+		Aliases: []string{"wac"},
+		Args:    cobra.ExactArgs(2),
+		Short:   "query the winning cork for a given chain and contract",
+		RunE: func(cmd *cobra.Command, args []string) error {
+			ctx, err := client.GetClientQueryContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			queryClient := types.NewQueryClient(ctx)
+
+			chainID, err := math.ParseUint(args[0])
+			if err != nil {
+				return err
+			}
+
+			contract := args[1]
+
+			req := &types.QueryWinningAxelarCorkRequest{
+				ChainId:         chainID.Uint64(),
+				ContractAddress: contract,
+			}
+
+			res, err := queryClient.QueryWinningAxelarCork(cmd.Context(), req)
+			if err != nil {
+				return err
+			}
+
+			return ctx.PrintProto(res)
+		},
+	}
+
+	flags.AddQueryFlagsToCmd(cmd)
+
+	return cmd
+}
+
+func queryWinningAxelarCorks() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:     "winning-axelar-corks [chain-id]",
+		Aliases: []string{"wacs"},
+		Args:    cobra.ExactArgs(1),
+		Short:   "query the winning corks for a given chain id",
+		RunE: func(cmd *cobra.Command, args []string) error {
+			ctx, err := client.GetClientQueryContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			queryClient := types.NewQueryClient(ctx)
+
+			chainID, err := math.ParseUint(args[0])
+			if err != nil {
+				return err
+			}
+
+			req := &types.QueryWinningAxelarCorksRequest{
+				ChainId: chainID.Uint64(),
+			}
+
+			res, err := queryClient.QueryWinningAxelarCorks(cmd.Context(), req)
 			if err != nil {
 				return err
 			}

@@ -2,13 +2,15 @@ syntax = "proto3";
 package cork.v2;
 
 import "cork/v2/cork.proto";
+import "gogoproto/gogo.proto";
 
-option go_package = "github.com/peggyjv/sommelier/v7/x/cork/types";
+option go_package = "github.com/peggyjv/sommelier/v7/x/cork/types/v2";
 
 message AddManagedCellarIDsProposal {
   string title = 1;
   string description = 2;
   CellarIDSet cellar_ids = 3;
+  string publisher_domain = 4;
 }
 
 // AddManagedCellarIDsProposalWithDeposit is a specific definition for CLI commands
@@ -16,7 +18,8 @@ message AddManagedCellarIDsProposalWithDeposit {
   string title = 1;
   string description = 2;
   repeated string cellar_ids = 3;
-  string deposit = 4;
+  string publisher_domain = 4;
+  string deposit = 5;
 }
 
 message RemoveManagedCellarIDsProposal {

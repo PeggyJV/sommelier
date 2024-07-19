@@ -9,8 +9,8 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/ethereum/go-ethereum/common"
-
-	"github.com/peggyjv/sommelier/v7/x/cork/types"
+	corktypes "github.com/peggyjv/sommelier/v7/x/cork/types"
+	types "github.com/peggyjv/sommelier/v7/x/cork/types/v2"
 )
 
 var _ types.MsgServer = Keeper{}
@@ -25,12 +25,18 @@ func (k Keeper) ScheduleCork(c context.Context, msg *types.MsgScheduleCorkReques
 		return nil, errorsmod.Wrapf(sdkerrors.ErrUnauthorized, "signer %s is not a delegate", signer.String())
 	}
 
+	params := k.GetParamSet(ctx)
+	validatorCorkCount := k.GetValidatorCorkCount(ctx, validatorAddr)
+	if validatorCorkCount >= params.MaxCorksPerValidator {
+		return nil, corktypes.ErrValidatorCorkCapacityReached
+	}
+
 	if !k.HasCellarID(ctx, common.HexToAddress(msg.Cork.TargetContractAddress)) {
-		return nil, types.ErrUnmanagedCellarAddress
+		return nil, corktypes.ErrUnmanagedCellarAddress
 	}
 
 	if msg.BlockHeight <= uint64(ctx.BlockHeight()) {
-		return nil, types.ErrSchedulingInThePast
+		return nil, corktypes.ErrSchedulingInThePast
 	}
 
 	corkID := k.SetScheduledCork(ctx, msg.BlockHeight, validatorAddr, *msg.Cork)
@@ -40,14 +46,14 @@ func (k Keeper) ScheduleCork(c context.Context, msg *types.MsgScheduleCorkReques
 		sdk.Events{
 			sdk.NewEvent(
 				sdk.EventTypeMessage,
-				sdk.NewAttribute(sdk.AttributeKeyModule, types.AttributeValueCategory),
+				sdk.NewAttribute(sdk.AttributeKeyModule, corktypes.AttributeValueCategory),
 			),
 			sdk.NewEvent(
-				types.EventTypeCork,
-				sdk.NewAttribute(types.AttributeKeySigner, signer.String()),
-				sdk.NewAttribute(types.AttributeKeyValidator, validatorAddr.String()),
-				sdk.NewAttribute(types.AttributeKeyCork, msg.Cork.String()),
-				sdk.NewAttribute(types.AttributeKeyBlockHeight, fmt.Sprintf("%d", msg.BlockHeight)),
+				corktypes.EventTypeCork,
+				sdk.NewAttribute(corktypes.AttributeKeySigner, signer.String()),
+				sdk.NewAttribute(corktypes.AttributeKeyValidator, validatorAddr.String()),
+				sdk.NewAttribute(corktypes.AttributeKeyCork, msg.Cork.String()),
+				sdk.NewAttribute(corktypes.AttributeKeyBlockHeight, fmt.Sprintf("%d", msg.BlockHeight)),
 			),
 		},
 	)

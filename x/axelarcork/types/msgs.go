@@ -56,6 +56,10 @@ func (m *MsgScheduleAxelarCorkRequest) ValidateBasic() error {
 		return errorsmod.Wrap(sdkerrors.ErrInvalidAddress, err.Error())
 	}
 
+	if m.ChainId == 0 {
+		return fmt.Errorf("chain ID must be non-zero")
+	}
+
 	if m.BlockHeight == 0 {
 		return fmt.Errorf("block height must be greater than zero")
 	}
@@ -109,7 +113,7 @@ func (m *MsgRelayAxelarCorkRequest) ValidateBasic() error {
 		return errorsmod.Wrap(sdkerrors.ErrInvalidAddress, err.Error())
 	}
 
-	if !m.Token.IsPositive() {
+	if !m.Token.IsValid() || !m.Token.IsPositive() {
 		return fmt.Errorf("token amount must be positive")
 	}
 
@@ -179,7 +183,7 @@ func (m *MsgRelayAxelarProxyUpgradeRequest) ValidateBasic() error {
 		return errorsmod.Wrap(sdkerrors.ErrInvalidAddress, err.Error())
 	}
 
-	if !m.Token.IsPositive() {
+	if !m.Token.IsValid() || !m.Token.IsPositive() {
 		return fmt.Errorf("token amount must be positive")
 	}
 
@@ -238,7 +242,7 @@ func (m *MsgBumpAxelarCorkGasRequest) ValidateBasic() error {
 		return errorsmod.Wrap(sdkerrors.ErrInvalidAddress, err.Error())
 	}
 
-	if !m.Token.IsPositive() {
+	if !m.Token.IsValid() || !m.Token.IsPositive() {
 		return fmt.Errorf("token amount must be positive")
 	}
 

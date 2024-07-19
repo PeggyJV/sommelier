@@ -3,6 +3,7 @@ package auction.v1;
 
 import "cosmos_proto/cosmos.proto";
 import "auction/v1/auction.proto";
+import "gogoproto/gogo.proto";
 
 option go_package = "github.com/peggyjv/sommelier/v7/x/auction/types";
 

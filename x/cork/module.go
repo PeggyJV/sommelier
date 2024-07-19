@@ -3,8 +3,9 @@ package cork
 import (
 	"context"
 	"encoding/json"
-	"math/rand"
+	"fmt"
 
+	abci "github.com/cometbft/cometbft/abci/types"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/codec"
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
@@ -14,9 +15,9 @@ import (
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
 	"github.com/peggyjv/sommelier/v7/x/cork/client/cli"
 	"github.com/peggyjv/sommelier/v7/x/cork/keeper"
-	"github.com/peggyjv/sommelier/v7/x/cork/types"
+	corktypes "github.com/peggyjv/sommelier/v7/x/cork/types"
+	types "github.com/peggyjv/sommelier/v7/x/cork/types/v2"
 	"github.com/spf13/cobra"
-	abci "github.com/tendermint/tendermint/abci/types"
 )
 
 var (
@@ -30,7 +31,7 @@ type AppModuleBasic struct{}
 
 // Name returns the cork module's name
 func (AppModuleBasic) Name() string {
-	return types.ModuleName
+	return corktypes.ModuleName
 }
 
 // RegisterLegacyAminoCodec doesn't support amino
@@ -90,21 +91,13 @@ func NewAppModule(keeper keeper.Keeper, cdc codec.Codec) AppModule {
 }
 
 // Name returns the cork module's name.
-func (AppModule) Name() string { return types.ModuleName }
+func (AppModule) Name() string { return corktypes.ModuleName }
 
 // RegisterInvariants performs a no-op.
 func (AppModule) RegisterInvariants(_ sdk.InvariantRegistry) {}
 
-// Route returns the message routing key for the cork module.
-func (am AppModule) Route() sdk.Route { return sdk.NewRoute(types.RouterKey, NewHandler(am.keeper)) }
-
 // QuerierRoute returns the cork module's querier route name.
-func (AppModule) QuerierRoute() string { return types.QuerierRoute }
-
-// LegacyQuerierHandler returns a nil Querier.
-func (am AppModule) LegacyQuerierHandler(_ *codec.LegacyAmino) sdk.Querier {
-	return nil
-}
+func (AppModule) QuerierRoute() string { return corktypes.QuerierRoute }
 
 // ConsensusVersion implements AppModule/ConsensusVersion.
 func (AppModule) ConsensusVersion() uint64 {
@@ -119,6 +112,11 @@ func (am AppModule) WeightedOperations(simState module.SimulationState) []sim.We
 func (am AppModule) RegisterServices(cfg module.Configurator) {
 	types.RegisterMsgServer(cfg.MsgServer(), am.keeper)
 	types.RegisterQueryServer(cfg.QueryServer(), am.keeper)
+
+	m := keeper.NewMigrator(am.keeper)
+	if err := cfg.RegisterMigration(corktypes.ModuleName, 1, m.Migrate1to2); err != nil {
+		panic(fmt.Sprintf("failed to migrate x/cork from version 1 to 2: %v", err))
+	}
 }
 
 // InitGenesis performs genesis initialization for the cork module.
@@ -156,12 +154,7 @@ func (AppModule) GenerateGenesisState(simState *module.SimulationState) {
 
 // ProposalContents returns all the cork content functions used to
 // simulate governance proposals.
-func (am AppModule) ProposalContents(_ module.SimulationState) []sim.WeightedProposalContent {
-	return nil
-}
-
-// RandomizedParams creates randomized cork param changes for the simulator.
-func (AppModule) RandomizedParams(r *rand.Rand) []sim.ParamChange {
+func (am AppModule) ProposalContents(_ module.SimulationState) []sim.WeightedProposalMsg {
 	return nil
 }
 

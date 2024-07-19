@@ -7,7 +7,7 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/peggyjv/sommelier/v7/x/cork/types"
+	types "github.com/peggyjv/sommelier/v7/x/cork/types/v2"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
@@ -34,7 +34,7 @@ func (k Keeper) QueryCellarIDs(c context.Context, req *types.QueryCellarIDsReque
 
 	response := &types.QueryCellarIDsResponse{}
 	for _, id := range k.GetCellarIDs(ctx) {
-		response.CellarIds = append(response.CellarIds, id.Hex())
+		response.CellarIds = append(response.CellarIds, id.String())
 	}
 
 	return response, nil

@@ -24,5 +24,9 @@ func (cc ChainConfiguration) ValidateBasic() error {
 		return fmt.Errorf("chain name cannot be empty")
 	}
 
+	if !cc.BridgeFees.IsValid() {
+		return fmt.Errorf("bridge fee coins must be valid")
+	}
+
 	return nil
 }

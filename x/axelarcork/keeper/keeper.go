@@ -4,17 +4,25 @@ import (
 	"bytes"
 	"encoding/binary"
 	"encoding/hex"
+	"fmt"
 	"reflect"
+	"sort"
 
+	"github.com/cometbft/cometbft/libs/log"
 	"github.com/cosmos/cosmos-sdk/codec"
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
+	capabilitytypes "github.com/cosmos/cosmos-sdk/x/capability/types"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
+	clienttypes "github.com/cosmos/ibc-go/v7/modules/core/02-client/types"
+	porttypes "github.com/cosmos/ibc-go/v7/modules/core/05-port/types"
+	"github.com/cosmos/ibc-go/v7/modules/core/exported"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/peggyjv/sommelier/v7/x/axelarcork/types"
-	"github.com/tendermint/tendermint/libs/log"
 )
+
+var _ porttypes.ICS4Wrapper = &Keeper{}
 
 // Keeper of the oracle store
 type Keeper struct {
@@ -27,6 +35,7 @@ type Keeper struct {
 	transferKeeper     types.TransferKeeper
 	distributionKeeper types.DistributionKeeper
 	gravityKeeper      types.GravityKeeper
+	pubsubKeeper       types.PubsubKeeper
 
 	Ics4Wrapper types.ICS4Wrapper
 }
@@ -36,7 +45,7 @@ func NewKeeper(
 	cdc codec.BinaryCodec, key storetypes.StoreKey, paramSpace paramtypes.Subspace,
 	accountKeeper types.AccountKeeper, bankKeeper types.BankKeeper, stakingKeeper types.StakingKeeper,
 	transferKeeper types.TransferKeeper, distributionKeeper types.DistributionKeeper,
-	wrapper types.ICS4Wrapper, gravityKeeper types.GravityKeeper,
+	wrapper types.ICS4Wrapper, gravityKeeper types.GravityKeeper, pubsubKeeper types.PubsubKeeper,
 ) Keeper {
 	// set KeyTable if it has not already been set
 	if !paramSpace.HasKeyTable() {
@@ -53,6 +62,7 @@ func NewKeeper(
 		transferKeeper:     transferKeeper,
 		distributionKeeper: distributionKeeper,
 		gravityKeeper:      gravityKeeper,
+		pubsubKeeper:       pubsubKeeper,
 
 		Ics4Wrapper: wrapper,
 	}
@@ -61,6 +71,11 @@ func NewKeeper(
 // Logger returns a module-specific logger.
 func (k Keeper) Logger(ctx sdk.Context) log.Logger {
 	return ctx.Logger().With("module", "x/"+types.ModuleName)
+}
+
+// SetTransferKeeper sets the transferKeeper
+func (k *Keeper) SetTransferKeeper(transferKeeper types.TransferKeeper) {
+	k.transferKeeper = transferKeeper
 }
 
 ////////////
@@ -234,7 +249,7 @@ func (k Keeper) GetWinningAxelarCork(ctx sdk.Context, chainID uint64, contractAd
 	var c types.AxelarCork
 	found := false
 	k.IterateWinningAxelarCorks(ctx, chainID, func(contract common.Address, blockHeight uint64, cork types.AxelarCork) (stop bool) {
-		if contractAddr == contract {
+		if bytes.Equal(contractAddr.Bytes(), contract.Bytes()) {
 			bh = blockHeight
 			c = cork
 			found = true
@@ -367,6 +382,7 @@ func (k Keeper) GetApprovedScheduledAxelarCorks(ctx sdk.Context, chainID uint64)
 		}
 
 		k.DeleteScheduledAxelarCork(ctx, chainID, currentBlockHeight, id, val, addr)
+		k.DecrementValidatorAxelarCorkCount(ctx, val)
 
 		return false
 	})
@@ -400,6 +416,11 @@ func (k Keeper) GetApprovedScheduledAxelarCorks(ctx sdk.Context, chainID uint64)
 
 func (k Keeper) SetCellarIDs(ctx sdk.Context, chainID uint64, c types.CellarIDSet) {
 	bz := k.cdc.MustMarshal(&c)
+	// always sort before writing to the store
+	cellarIDs := make([]string, 0, len(c.Ids))
+	cellarIDs = append(cellarIDs, c.Ids...)
+	sort.Strings(cellarIDs)
+	c.Ids = cellarIDs
 	ctx.KVStore(k.storeKey).Set(types.MakeCellarIDsKey(chainID), bz)
 }
 
@@ -522,10 +543,63 @@ func (k Keeper) IterateAxelarProxyUpgradeData(ctx sdk.Context, cb func(chainID u
 	}
 }
 
+///////////////////////////
+// Validator Cork counts //
+///////////////////////////
+
+func (k Keeper) GetValidatorAxelarCorkCount(ctx sdk.Context, val sdk.ValAddress) (count uint64) {
+	store := ctx.KVStore(k.storeKey)
+	bz := store.Get(types.GetValidatorAxelarCorkCountKey(val))
+	if len(bz) == 0 {
+		return 0
+	}
+
+	return binary.BigEndian.Uint64(bz)
+}
+
+func (k Keeper) SetValidatorAxelarCorkCount(ctx sdk.Context, val sdk.ValAddress, count uint64) {
+	bz := make([]byte, 8)
+	binary.BigEndian.PutUint64(bz, count)
+	ctx.KVStore(k.storeKey).Set(types.GetValidatorAxelarCorkCountKey(val), bz)
+}
+
+func (k Keeper) IncrementValidatorAxelarCorkCount(ctx sdk.Context, val sdk.ValAddress) {
+	count := k.GetValidatorAxelarCorkCount(ctx, val)
+	k.SetValidatorAxelarCorkCount(ctx, val, count+1)
+}
+
+func (k Keeper) DecrementValidatorAxelarCorkCount(ctx sdk.Context, val sdk.ValAddress) {
+	count := k.GetValidatorAxelarCorkCount(ctx, val)
+	if count > 0 {
+		k.SetValidatorAxelarCorkCount(ctx, val, count-1)
+	}
+}
+
 /////////////////////
 // Module Accounts //
 /////////////////////
 
 func (k Keeper) GetSenderAccount(ctx sdk.Context) authtypes.ModuleAccountI {
 	return k.accountKeeper.GetModuleAccount(ctx, types.ModuleName)
+}
+
+///////////////////////////
+// ICS4Wrapper functions //
+///////////////////////////
+
+func (k Keeper) SendPacket(ctx sdk.Context, chanCap *capabilitytypes.Capability, sourcePort string, sourceChannel string, timeoutHeight clienttypes.Height, timeoutTimestamp uint64, data []byte) (sequence uint64, err error) {
+	if err := k.ValidateAxelarPacket(ctx, sourceChannel, data); err != nil {
+		k.Logger(ctx).Error(fmt.Sprintf("ICS20 packet send was denied: %s", err.Error()))
+		// based on the default implementation of SendPacket in ibc-go, we return 0 for the sequence on error conditions
+		return 0, err
+	}
+	return k.Ics4Wrapper.SendPacket(ctx, chanCap, sourcePort, sourceChannel, timeoutHeight, timeoutTimestamp, data)
+}
+
+func (k Keeper) WriteAcknowledgement(ctx sdk.Context, chanCap *capabilitytypes.Capability, packet exported.PacketI, ack exported.Acknowledgement) error {
+	return k.Ics4Wrapper.WriteAcknowledgement(ctx, chanCap, packet, ack)
+}
+
+func (k Keeper) GetAppVersion(ctx sdk.Context, portID string, channelID string) (string, bool) {
+	return k.Ics4Wrapper.GetAppVersion(ctx, portID, channelID)
 }

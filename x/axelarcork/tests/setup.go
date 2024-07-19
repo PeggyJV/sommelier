@@ -3,6 +3,9 @@ package tests
 import (
 	"testing"
 
+	tmdb "github.com/cometbft/cometbft-db"
+	"github.com/cometbft/cometbft/libs/log"
+	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
 	"github.com/cosmos/cosmos-sdk/codec"
 	cdctypes "github.com/cosmos/cosmos-sdk/codec/types"
 	"github.com/cosmos/cosmos-sdk/store"
@@ -11,16 +14,13 @@ import (
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	paramskeeper "github.com/cosmos/cosmos-sdk/x/params/keeper"
 	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
-	porttypes "github.com/cosmos/ibc-go/v6/modules/core/05-port/types"
+	porttypes "github.com/cosmos/ibc-go/v7/modules/core/05-port/types"
 	"github.com/golang/mock/gomock"
 	"github.com/peggyjv/sommelier/v7/x/axelarcork"
 	"github.com/peggyjv/sommelier/v7/x/axelarcork/keeper"
 	"github.com/peggyjv/sommelier/v7/x/axelarcork/tests/mocks"
 	"github.com/peggyjv/sommelier/v7/x/axelarcork/types"
 	"github.com/stretchr/testify/require"
-	"github.com/tendermint/tendermint/libs/log"
-	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
-	tmdb "github.com/tendermint/tm-db"
 )
 
 var TestGMPAccount = authtypes.NewModuleAddress("test-gmp-account")
@@ -49,11 +49,12 @@ func NewTestSetup(t *testing.T, ctl *gomock.Controller) *Setup {
 	ibcModuleMock := mocks.NewMockIBCModule(ctl)
 	ics4WrapperMock := mocks.NewMockICS4Wrapper(ctl)
 	gravityKeeper := mocks.NewMockGravityKeeper(ctl)
+	pubsubKeeper := mocks.NewMockPubsubKeeper(ctl)
 
 	paramsKeeper := initializer.paramsKeeper()
 	acKeeper := initializer.axelarcorkKeeper(
 		paramsKeeper, accountKeeperMock, bankKeeperMock, stakingKeeper, transferKeeperMock, distributionKeeperMock,
-		ics4WrapperMock, gravityKeeper)
+		ics4WrapperMock, gravityKeeper, pubsubKeeper)
 
 	require.NoError(t, initializer.StateStore.LoadLatestVersion())
 
@@ -154,6 +155,7 @@ func (i initializer) axelarcorkKeeper(
 	distributionKeeper types.DistributionKeeper,
 	ics4Wrapper porttypes.ICS4Wrapper,
 	gravityKeeper types.GravityKeeper,
+	pubsubKeeper types.PubsubKeeper,
 ) *keeper.Keeper {
 	storeKey := sdk.NewKVStoreKey(types.StoreKey)
 	i.StateStore.MountStoreWithDB(storeKey, storetypes.StoreTypeIAVL, i.DB)
@@ -170,11 +172,12 @@ func (i initializer) axelarcorkKeeper(
 		distributionKeeper,
 		ics4Wrapper,
 		gravityKeeper,
+		pubsubKeeper,
 	)
 
 	return &routerKeeper
 }
 
 func (i initializer) axelarMiddleware(app porttypes.IBCModule, k *keeper.Keeper) axelarcork.IBCMiddleware {
-	return axelarcork.NewIBCMiddleware(*k, app)
+	return axelarcork.NewIBCMiddleware(k, app)
 }

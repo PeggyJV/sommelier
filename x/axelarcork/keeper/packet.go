@@ -2,25 +2,25 @@ package keeper
 
 import (
 	"bytes"
+	"encoding/hex"
 	"encoding/json"
 	"fmt"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	transfertypes "github.com/cosmos/ibc-go/v6/modules/apps/transfer/types"
+	transfertypes "github.com/cosmos/ibc-go/v7/modules/apps/transfer/types"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/peggyjv/sommelier/v7/x/axelarcork/types"
 )
 
 func (k Keeper) ValidateAxelarPacket(ctx sdk.Context, sourceChannel string, data []byte) error {
 	params := k.GetParamSet(ctx)
-	if !params.Enabled {
-		return nil
-	}
 
 	// check if this is a call to axelar, exit early if this isn't axelar
 	if sourceChannel != params.IbcChannel {
 		return nil
 	}
+
+	k.Logger(ctx).Info("checking IBC packet against Axelar middleware validations")
 
 	// Parse the data from the packet
 	var packetData transfertypes.FungibleTokenPacketData
@@ -29,12 +29,12 @@ func (k Keeper) ValidateAxelarPacket(ctx sdk.Context, sourceChannel string, data
 	}
 
 	// decoding some bech32 strings so our comparisons are guaranteed to be accurate
-	gmpAccountAddr, err := sdk.AccAddressFromBech32(params.GmpAccount)
+	gmpAccountAddr, err := sdk.GetFromBech32(params.GmpAccount, "axelar")
 	if err != nil {
 		return fmt.Errorf("GmpAccount parameter is an invalid address: %s", params.GmpAccount)
 	}
 
-	receiverAddr, err := sdk.AccAddressFromBech32(packetData.Receiver)
+	receiverAddr, err := sdk.GetFromBech32(packetData.Receiver, "axelar")
 	if err != nil {
 		return fmt.Errorf("receiver in IBC packet data is an invalid address: %s", packetData.Receiver)
 	}
@@ -45,7 +45,8 @@ func (k Keeper) ValidateAxelarPacket(ctx sdk.Context, sourceChannel string, data
 	}
 
 	// if we are not sending to the axelar gmp management account, we can skip
-	if !receiverAddr.Equals(gmpAccountAddr) {
+	if !bytes.Equal(receiverAddr, gmpAccountAddr) {
+		k.Logger(ctx).Info("Axelar receiver is not the GMP account, allowing packet", "receiver", hex.EncodeToString(receiverAddr), "gmp account", hex.EncodeToString(gmpAccountAddr))
 		return nil
 	}
 
@@ -56,6 +57,7 @@ func (k Keeper) ValidateAxelarPacket(ctx sdk.Context, sourceChannel string, data
 
 	// if the memo field is empty, we can pass the message along
 	if packetData.Memo == "" {
+		k.Logger(ctx).Error("Axelar GMP packet memo is empty")
 		return nil
 	}
 
@@ -63,6 +65,7 @@ func (k Keeper) ValidateAxelarPacket(ctx sdk.Context, sourceChannel string, data
 	if err := json.Unmarshal([]byte(packetData.Memo), &axelarBody); err != nil {
 		return err
 	}
+	payloadBytes := axelarBody.Payload
 
 	// get the destination chain configuration
 	chainConfig, ok := k.GetChainConfigurationByName(ctx, axelarBody.DestinationChain)
@@ -81,17 +84,27 @@ func (k Keeper) ValidateAxelarPacket(ctx sdk.Context, sourceChannel string, data
 	}
 	axelarDestinationAddr := common.HexToAddress(axelarBody.DestinationAddress)
 
+	if axelarBody.Type == types.PureTokenTransfer {
+		if len(payloadBytes) != 0 {
+			return fmt.Errorf("payload must be empty for pure token transfer")
+		}
+
+		return nil
+	}
+
 	if !bytes.Equal(axelarDestinationAddr.Bytes(), proxyAddr.Bytes()) {
 		return fmt.Errorf("msg cannot bypass the proxy. expected addr %s, received %s", chainConfig.ProxyAddress, axelarBody.DestinationAddress)
 	}
 
 	// Validate logic call
-	if targetContract, nonce, _, callData, err := types.DecodeLogicCallArgs(axelarBody.Payload); err == nil {
+	if targetContract, nonce, deadline, callData, err := types.DecodeLogicCallArgs(payloadBytes); err == nil {
 		if nonce == 0 {
 			return fmt.Errorf("nonce cannot be zero")
 		}
 
-		// TODO(bolten): is there any validation on the deadline worth doing?
+		if deadline == 0 {
+			return fmt.Errorf("deadline cannot be zero")
+		}
 
 		blockHeight, winningCork, ok := k.GetWinningAxelarCork(ctx, chainConfig.Id, common.HexToAddress(targetContract))
 		if !ok {
@@ -103,13 +116,14 @@ func (k Keeper) ValidateAxelarPacket(ctx sdk.Context, sourceChannel string, data
 		}
 
 		// all checks have passed, delete the cork from state
+		k.Logger(ctx).Info("Axelar GMP message validated, deleting from state", "chain ID", chainConfig.Id, "block height", blockHeight, "contract", winningCork.TargetContractAddress)
 		k.DeleteWinningAxelarCorkByBlockheight(ctx, chainConfig.Id, blockHeight, winningCork)
 
 		return nil
 	}
 
 	// Validate upgrade
-	if newProxyContract, targets, err := types.DecodeUpgradeArgs(axelarBody.Payload); err == nil {
+	if newProxyContract, targets, err := types.DecodeUpgradeArgs(payloadBytes); err == nil {
 		if !common.IsHexAddress(newProxyContract) {
 			return fmt.Errorf("invalid proxy address %s", newProxyContract)
 		}
@@ -129,15 +143,16 @@ func (k Keeper) ValidateAxelarPacket(ctx sdk.Context, sourceChannel string, data
 			return fmt.Errorf("no upgrade data expected for chain %s:%d", chainConfig.Name, chainConfig.Id)
 		}
 
-		if !bytes.Equal(upgradeData.Payload, axelarBody.Payload) {
-			return fmt.Errorf("upgrade data did not match expected data. received: %s, expected: %s", axelarBody.Payload, upgradeData.Payload)
+		if !bytes.Equal(upgradeData.Payload, payloadBytes) {
+			return fmt.Errorf("upgrade data did not match expected data. received: %s, expected: %s", payloadBytes, upgradeData.Payload)
 		}
 
 		// all checks have passed, delete the upgrade data from state
+		k.Logger(ctx).Info("Axelar GMP upgrade message validated, deleting from state", "chain ID", chainConfig.Id)
 		k.DeleteAxelarProxyUpgradeData(ctx, chainConfig.Id)
 
 		return nil
 	}
 
-	return fmt.Errorf("invalid payload: %s", axelarBody.Payload)
+	return fmt.Errorf("invalid payload: %s", payloadBytes)
 }

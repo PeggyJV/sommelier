@@ -7,6 +7,7 @@ import (
 	"encoding/binary"
 
 	errorsmod "cosmossdk.io/errors"
+	"github.com/cometbft/cometbft/libs/log"
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
@@ -15,7 +16,6 @@ import (
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
 	"github.com/peggyjv/sommelier/v7/app/params"
 	"github.com/peggyjv/sommelier/v7/x/auction/types"
-	"github.com/tendermint/tendermint/libs/log"
 )
 
 // Keeper of the auction store
@@ -184,6 +184,13 @@ func (k Keeper) BeginAuction(ctx sdk.Context,
 	priceDecreaseBlockInterval uint64,
 	fundingModuleAccount string,
 	proceedsModuleAccount string) error {
+
+	paramSet := k.GetParamSet(ctx)
+	currentHeight := uint64(ctx.BlockHeight())
+	if currentHeight <= paramSet.MinimumAuctionHeight {
+		return errorsmod.Wrapf(types.ErrAuctionBelowMinimumHeight, "Current height: %d, Minimum height: %d", currentHeight, paramSet.MinimumAuctionHeight)
+	}
+
 	// Validate starting token balance
 	if !startingTokensForSale.IsPositive() {
 		return errorsmod.Wrapf(types.ErrAuctionStartingAmountMustBePositve, "Starting tokens for sale: %s", startingTokensForSale.String())
@@ -224,7 +231,11 @@ func (k Keeper) BeginAuction(ctx sdk.Context,
 	// determine how many usomm each sale token min unit costs
 	saleTokenPriceInUsomm := saleTokenMinUnitValue.Quo(usommMinUnitValue)
 
-	// TODO(bolten): we are not inspecting the MinimumSaleTokensUsdValue param and using it -- implement later?
+	// TODO(bolten): we should consider uncommenting this, but it would require fixing a bunch of unit tests
+	// saleTokenValueInUSD := saleTokenMinUnitValue.Mul(sdk.NewDecFromInt(startingTokensForSale.Amount))
+	// if saleTokenValueInUSD.LT(paramSet.MinimumSaleTokensUsdValue) {
+	// 	return errorsmod.Wrapf(types.ErrAuctionBelowMinimumUSDValue, "sale tokens USD value: %s, minimum USD value: %s", saleTokenValueInUSD, paramSet.MinimumSaleTokensUsdValue)
+	// }
 
 	auctionID := k.GetLastAuctionID(ctx) + 1
 	auction := types.Auction{

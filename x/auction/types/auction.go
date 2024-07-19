@@ -1,12 +1,9 @@
 package types
 
 import (
-	"strings"
-
 	errorsmod "cosmossdk.io/errors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-	gravitytypes "github.com/peggyjv/gravity-bridge/module/v4/x/gravity/types"
 	"github.com/peggyjv/sommelier/v7/app/params"
 )
 
@@ -15,7 +12,7 @@ func (a *Auction) ValidateBasic() error {
 		return errorsmod.Wrapf(ErrAuctionIDMustBeNonZero, "id: %d", a.Id)
 	}
 
-	if !a.StartingTokensForSale.IsPositive() {
+	if !a.StartingTokensForSale.IsValid() || !a.StartingTokensForSale.IsPositive() {
 		return errorsmod.Wrapf(ErrAuctionStartingAmountMustBePositve, "Starting tokens for sale: %s", a.StartingTokensForSale.String())
 	}
 
@@ -75,7 +72,7 @@ func (b *Bid) ValidateBasic() error {
 		return errorsmod.Wrap(sdkerrors.ErrInvalidAddress, err.Error())
 	}
 
-	if !b.MaxBidInUsomm.IsPositive() {
+	if !b.MaxBidInUsomm.IsValid() || !b.MaxBidInUsomm.IsPositive() {
 		return errorsmod.Wrapf(ErrBidAmountMustBePositive, "bid amount in usomm: %s", b.MaxBidInUsomm.String())
 	}
 
@@ -83,15 +80,11 @@ func (b *Bid) ValidateBasic() error {
 		return errorsmod.Wrapf(ErrBidMustBeInUsomm, "bid: %s", b.MaxBidInUsomm.String())
 	}
 
-	if !strings.HasPrefix(b.SaleTokenMinimumAmount.Denom, gravitytypes.GravityDenomPrefix) {
-		return errorsmod.Wrapf(ErrInvalidTokenBeingBidOn, "sale token: %s", b.SaleTokenMinimumAmount.String())
-	}
-
-	if !b.SaleTokenMinimumAmount.IsPositive() {
+	if !b.SaleTokenMinimumAmount.IsValid() || !b.SaleTokenMinimumAmount.IsPositive() {
 		return errorsmod.Wrapf(ErrMinimumAmountMustBePositive, "sale token amount: %s", b.SaleTokenMinimumAmount.String())
 	}
 
-	if b.TotalFulfilledSaleTokens.Amount.IsNegative() {
+	if !b.TotalFulfilledSaleTokens.IsValid() {
 		return errorsmod.Wrapf(ErrBidFulfilledSaleTokenAmountMustBeNonNegative, "fulfilled sale token amount: %s", b.TotalFulfilledSaleTokens.String())
 	}
 
@@ -123,10 +116,6 @@ func (t *TokenPrice) ValidateBasic() error {
 		return errorsmod.Wrapf(ErrInvalidLastUpdatedBlock, "block: %d", t.LastUpdatedBlock)
 	}
 
-	if !strings.HasPrefix(t.Denom, gravitytypes.GravityDenomPrefix) && t.Denom != params.BaseCoinUnit {
-		return errorsmod.Wrapf(ErrInvalidTokenPriceDenom, "denom: %s", t.Denom)
-	}
-
 	if t.Exponent > 18 {
 		return errorsmod.Wrapf(ErrTokenPriceExponentTooHigh, "exponent: %d", t.Exponent)
 	}
@@ -141,10 +130,6 @@ func (t *ProposedTokenPrice) ValidateBasic() error {
 
 	if !t.UsdPrice.IsPositive() {
 		return errorsmod.Wrapf(ErrPriceMustBePositive, "usd price: %s", t.UsdPrice.String())
-	}
-
-	if !strings.HasPrefix(t.Denom, gravitytypes.GravityDenomPrefix) && t.Denom != params.BaseCoinUnit {
-		return errorsmod.Wrapf(ErrInvalidTokenPriceDenom, "denom: %s", t.Denom)
 	}
 
 	if t.Exponent > 18 {

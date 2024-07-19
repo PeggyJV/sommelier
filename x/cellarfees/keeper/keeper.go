@@ -5,38 +5,37 @@ import (
 	"math/big"
 
 	"cosmossdk.io/math"
-	"github.com/tendermint/tendermint/libs/log"
+	"github.com/cometbft/cometbft/libs/log"
 
 	"github.com/cosmos/cosmos-sdk/codec"
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
 	"github.com/peggyjv/sommelier/v7/app/params"
-	"github.com/peggyjv/sommelier/v7/x/cellarfees/types"
+	cellarfeestypes "github.com/peggyjv/sommelier/v7/x/cellarfees/types"
+	types "github.com/peggyjv/sommelier/v7/x/cellarfees/types/v2"
 )
 
 type Keeper struct {
 	cdc           codec.BinaryCodec
 	storeKey      storetypes.StoreKey
 	paramSpace    paramtypes.Subspace
-	accountKeeper types.AccountKeeper
-	bankKeeper    types.BankKeeper
-	mintKeeper    types.MintKeeper
-	corkKeeper    types.CorkKeeper
-	gravityKeeper types.GravityKeeper
-	auctionKeeper types.AuctionKeeper
+	accountKeeper cellarfeestypes.AccountKeeper
+	bankKeeper    cellarfeestypes.BankKeeper
+	mintKeeper    cellarfeestypes.MintKeeper
+	corkKeeper    cellarfeestypes.CorkKeeper
+	auctionKeeper cellarfeestypes.AuctionKeeper
 }
 
 func NewKeeper(
 	cdc codec.BinaryCodec,
 	storeKey storetypes.StoreKey,
 	paramSpace paramtypes.Subspace,
-	accountKeeper types.AccountKeeper,
-	bankKeeper types.BankKeeper,
-	mintKeeper types.MintKeeper,
-	corkKeeper types.CorkKeeper,
-	gravityKeeper types.GravityKeeper,
-	auctionKeeper types.AuctionKeeper,
+	accountKeeper cellarfeestypes.AccountKeeper,
+	bankKeeper cellarfeestypes.BankKeeper,
+	mintKeeper cellarfeestypes.MintKeeper,
+	corkKeeper cellarfeestypes.CorkKeeper,
+	auctionKeeper cellarfeestypes.AuctionKeeper,
 ) Keeper {
 	if !paramSpace.HasKeyTable() {
 		paramSpace = paramSpace.WithKeyTable(types.ParamKeyTable())
@@ -50,13 +49,12 @@ func NewKeeper(
 		bankKeeper:    bankKeeper,
 		mintKeeper:    mintKeeper,
 		corkKeeper:    corkKeeper,
-		gravityKeeper: gravityKeeper,
 		auctionKeeper: auctionKeeper,
 	}
 }
 
 func (k Keeper) Logger(ctx sdk.Context) log.Logger {
-	return ctx.Logger().With("module", fmt.Sprintf("x/%s", types.ModuleName))
+	return ctx.Logger().With("module", fmt.Sprintf("x/%s", cellarfeestypes.ModuleName))
 }
 
 ////////////
@@ -79,7 +77,7 @@ func (k Keeper) SetParams(ctx sdk.Context, params types.Params) {
 
 func (k Keeper) GetLastRewardSupplyPeak(ctx sdk.Context) math.Int {
 	store := ctx.KVStore(k.storeKey)
-	b := store.Get(types.GetLastRewardSupplyPeakKey())
+	b := store.Get(cellarfeestypes.GetLastRewardSupplyPeakKey())
 	if b == nil {
 		panic("Last highest reward supply should not have been nil")
 	}
@@ -90,31 +88,7 @@ func (k Keeper) GetLastRewardSupplyPeak(ctx sdk.Context) math.Int {
 func (k Keeper) SetLastRewardSupplyPeak(ctx sdk.Context, amount math.Int) {
 	store := ctx.KVStore(k.storeKey)
 	b := amount.BigInt().Bytes()
-	store.Set(types.GetLastRewardSupplyPeakKey(), b)
-}
-
-//////////////////////////
-// Fee accrual counters //
-//////////////////////////
-
-func (k Keeper) GetFeeAccrualCounters(ctx sdk.Context) (counters types.FeeAccrualCounters) {
-	store := ctx.KVStore(k.storeKey)
-	b := store.Get(types.GetFeeAccrualCountersKey())
-	if b == nil {
-		panic("Fee accrual counters is nil, it should have been set by InitGenesis")
-	}
-	if len(b) == 0 {
-		return types.DefaultFeeAccrualCounters()
-	}
-
-	k.cdc.MustUnmarshal(b, &counters)
-	return
-}
-
-func (k Keeper) SetFeeAccrualCounters(ctx sdk.Context, counters types.FeeAccrualCounters) {
-	store := ctx.KVStore(k.storeKey)
-	b := k.cdc.MustMarshal(&counters)
-	store.Set(types.GetFeeAccrualCountersKey(), b)
+	store.Set(cellarfeestypes.GetLastRewardSupplyPeakKey(), b)
 }
 
 ////////////

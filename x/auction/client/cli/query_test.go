@@ -261,3 +261,57 @@ func TestQueryBidByAuction(t *testing.T) {
 		require.Equal(t, tc.err.Error(), err.Error())
 	}
 }
+
+func TestQueryTokenPrice(t *testing.T) {
+	testCases := []struct {
+		name string
+		args []string
+		err  error
+	}{
+		{
+			name: "Insufficient args",
+			args: []string{},
+			err:  fmt.Errorf("accepts 1 arg(s), received 0"),
+		},
+		{
+			name: "Too many args",
+			args: []string{
+				"1",
+				"2",
+			},
+			err: fmt.Errorf("accepts 1 arg(s), received 2"),
+		},
+	}
+
+	for _, tc := range testCases {
+		cmd := *queryTokenPrice()
+		cmd.SetArgs(tc.args)
+		err := cmd.Execute()
+
+		require.Equal(t, tc.err.Error(), err.Error())
+	}
+}
+
+func TestQueryTokenPrices(t *testing.T) {
+	testCases := []struct {
+		name string
+		args []string
+		err  error
+	}{
+		{
+			name: "Too many args",
+			args: []string{
+				"1",
+			},
+			err: fmt.Errorf("unknown command \"1\" for \"token-prices\""),
+		},
+	}
+
+	for _, tc := range testCases {
+		cmd := *queryTokenPrices()
+		cmd.SetArgs(tc.args)
+		err := cmd.Execute()
+
+		require.Equal(t, tc.err.Error(), err.Error())
+	}
+}

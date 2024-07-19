@@ -7,6 +7,9 @@ import (
 	"github.com/peggyjv/sommelier/v7/x/axelarcork/tests/mocks"
 	"github.com/peggyjv/sommelier/v7/x/axelarcork/types"
 
+	tmdb "github.com/cometbft/cometbft-db"
+	"github.com/cometbft/cometbft/libs/log"
+	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
 	"github.com/cosmos/cosmos-sdk/codec"
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	"github.com/cosmos/cosmos-sdk/store"
@@ -14,9 +17,6 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	paramskeeper "github.com/cosmos/cosmos-sdk/x/params/keeper"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
-	"github.com/tendermint/tendermint/libs/log"
-	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
-	tmdb "github.com/tendermint/tm-db"
 
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
@@ -62,6 +62,7 @@ func setupCorkKeeper(t *testing.T) (
 	mockDistributionKeeper := mocks.NewMockDistributionKeeper(ctrl)
 	mockICS4wrapper := mocks.NewMockICS4Wrapper(ctrl)
 	mockGravityKeeper := mocks.NewMockGravityKeeper(ctrl)
+	mockPubsubKeeper := mocks.NewMockPubsubKeeper(ctrl)
 
 	k := NewKeeper(
 		protoCodec,
@@ -74,6 +75,7 @@ func setupCorkKeeper(t *testing.T) (
 		mockDistributionKeeper,
 		mockICS4wrapper,
 		mockGravityKeeper,
+		mockPubsubKeeper,
 	)
 
 	ctx := sdk.NewContext(commitMultiStore, tmproto.Header{}, false, log.NewNopLogger())

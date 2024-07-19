@@ -3,21 +3,25 @@ package integration_tests
 import (
 	"context"
 	"encoding/hex"
+	"fmt"
 	"sort"
 	"time"
 
 	"cosmossdk.io/math"
 	"github.com/cosmos/cosmos-sdk/client"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
+	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
+	distributiontypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
 	govtypesv1beta1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/golang/protobuf/proto" //nolint:staticcheck
 	"github.com/peggyjv/sommelier/v7/x/axelarcork/types"
+	pubsubtypes "github.com/peggyjv/sommelier/v7/x/pubsub/types"
 )
 
 func (s *IntegrationTestSuite) TestAxelarCork() {
-	s.Run("Test the axelarcork module", func() {
-		///////////
+	s.Run("Test the axelarcork module", func() { ///////////
 		// Setup //
 		///////////
 
@@ -43,6 +47,7 @@ func (s *IntegrationTestSuite) TestAxelarCork() {
 		sort.Strings(sortedValidators)
 
 		axelarcorkQueryClient := types.NewQueryClient(val0ClientCtx)
+		pubsubQueryClient := pubsubtypes.NewQueryClient(orch0ClientCtx)
 		govQueryClient := govtypesv1beta1.NewQueryClient(orch0ClientCtx)
 
 		/////////////////////////////
@@ -52,6 +57,7 @@ func (s *IntegrationTestSuite) TestAxelarCork() {
 		arbitrumChainName := "arbitrum"
 		arbitrumChainID := uint64(42161)
 		proxyAddress := "0xEe75bA2C81C04DcA4b0ED6d1B7077c188FEde4d2"
+		bridgeFees := sdk.NewCoins(sdk.NewCoin("usomm", sdk.NewIntFromUint64(33670000)))
 
 		s.T().Log("Creating AddChainConfigurationProposal")
 		addChainConfigurationProp := types.AddChainConfigurationProposal{
@@ -61,6 +67,7 @@ func (s *IntegrationTestSuite) TestAxelarCork() {
 				Name:         arbitrumChainName,
 				Id:           arbitrumChainID,
 				ProxyAddress: proxyAddress,
+				BridgeFees:   bridgeFees,
 			},
 		}
 
@@ -87,6 +94,7 @@ func (s *IntegrationTestSuite) TestAxelarCork() {
 		s.Require().Equal(chainConfig.Name, arbitrumChainName)
 		s.Require().Equal(chainConfig.Id, arbitrumChainID)
 		s.Require().Equal(chainConfig.ProxyAddress, proxyAddress)
+		s.Require().Equal(chainConfig.BridgeFees, bridgeFees)
 
 		//////////////////
 		// Add a cellar //
@@ -98,10 +106,12 @@ func (s *IntegrationTestSuite) TestAxelarCork() {
 			Description: "arbitrum counter contract",
 			ChainId:     arbitrumChainID,
 			CellarIds: &types.CellarIDSet{
+				ChainId: arbitrumChainID,
 				Ids: []string{
 					counterContract.Hex(),
 				},
 			},
+			PublisherDomain: "example.com",
 		}
 
 		addAxelarManagedCellarIDsPropMsg, err := govtypesv1beta1.NewMsgSubmitProposal(
@@ -124,6 +134,13 @@ func (s *IntegrationTestSuite) TestAxelarCork() {
 		s.Require().NoError(err)
 		s.Require().Len(cellarIDsResponse.CellarIds, 1)
 		s.Require().Equal(cellarIDsResponse.CellarIds[0], counterContract.Hex())
+
+		s.T().Log("Verifying default subscription created")
+		subscriptionID := fmt.Sprintf("%d:%s", arbitrumChainID, counterContract.String())
+		pubsubResponse, err := pubsubQueryClient.QueryDefaultSubscription(context.Background(), &pubsubtypes.QueryDefaultSubscriptionRequest{SubscriptionId: subscriptionID})
+		s.Require().NoError(err)
+		s.Require().Equal(pubsubResponse.DefaultSubscription.SubscriptionId, subscriptionID)
+		s.Require().Equal(pubsubResponse.DefaultSubscription.PublisherDomain, "example.com")
 
 		/////////////////////////////
 		// Schedule an Axelar cork //
@@ -173,13 +190,26 @@ func (s *IntegrationTestSuite) TestAxelarCork() {
 		}
 
 		s.T().Log("Verifying scheduled axelar corks were created")
-		scheduledCorksResponse, err := axelarcorkQueryClient.QueryScheduledCorks(context.Background(), &types.QueryScheduledCorksRequest{ChainId: arbitrumChainID})
-		s.Require().NoError(err)
-		s.Require().Len(scheduledCorksResponse.Corks, 4)
-		cork0 := scheduledCorksResponse.Corks[0]
-		cork1 := scheduledCorksResponse.Corks[1]
-		cork2 := scheduledCorksResponse.Corks[2]
-		cork3 := scheduledCorksResponse.Corks[3]
+		corks := []*types.ScheduledAxelarCork{}
+		s.Require().Eventually(func() bool {
+			res, err := axelarcorkQueryClient.QueryScheduledCorks(context.Background(), &types.QueryScheduledCorksRequest{ChainId: arbitrumChainID})
+			if err != nil {
+				return false
+			}
+
+			if len(res.Corks) == 4 {
+				corks = res.Corks
+				return true
+			}
+
+			return false
+		}, time.Second*30, time.Second*5, "scheduled corks never created")
+
+		s.T().Log("Checking that corks have expected values")
+		cork0 := corks[0]
+		cork1 := corks[1]
+		cork2 := corks[2]
+		cork3 := corks[3]
 		s.Require().Equal(cork0.Cork.EncodedContractCall, ABIEncodedInc())
 		s.Require().Equal(cork0.Cork.ChainId, arbitrumChainID)
 		s.Require().Equal(cork0.Cork.TargetContractAddress, counterContract.Hex())
@@ -380,6 +410,7 @@ func (s *IntegrationTestSuite) TestAxelarCork() {
 			Description: "arbitrum counter contract",
 			ChainId:     arbitrumChainID,
 			CellarIds: &types.CellarIDSet{
+				ChainId: arbitrumChainID,
 				Ids: []string{
 					counterContract.Hex(),
 				},
@@ -401,10 +432,15 @@ func (s *IntegrationTestSuite) TestAxelarCork() {
 		s.submitAndVoteForAxelarProposal(proposerCtx, orch0ClientCtx, propID, removeAxelarManagedCellarIDsPropMsg)
 		propID++
 
-		s.T().Log("Verifying CellarID correctly added")
+		s.T().Log("Verifying CellarID correctly removed")
 		cellarIDsResponse, err = axelarcorkQueryClient.QueryCellarIDsByChainID(context.Background(), &types.QueryCellarIDsByChainIDRequest{ChainId: arbitrumChainID})
 		s.Require().NoError(err)
 		s.Require().Empty(cellarIDsResponse.CellarIds)
+
+		s.T().Log("Verifying default subscription removed")
+		subscriptionID = fmt.Sprintf("%d:%s", arbitrumChainID, counterContract.String())
+		_, err = pubsubQueryClient.QueryDefaultSubscription(context.Background(), &pubsubtypes.QueryDefaultSubscriptionRequest{SubscriptionId: subscriptionID})
+		s.Require().Error(err)
 
 		//////////////////////////////////
 		// Remove a chain configuration //
@@ -435,6 +471,51 @@ func (s *IntegrationTestSuite) TestAxelarCork() {
 		chainConfigurationsResponse, err = axelarcorkQueryClient.QueryChainConfigurations(context.Background(), &types.QueryChainConfigurationsRequest{})
 		s.Require().NoError(err)
 		s.Require().Empty(chainConfigurationsResponse.Configurations)
+
+		//////////////////////////////////////////
+		// Test module account balance sweeping //
+		//////////////////////////////////////////
+
+		// Get the baseline balance of the distribution community pool, send funds to the axelarcork module account,
+		// verify they are received, and that the balance is zero on the next block.
+		s.T().Log("Querying distribution community pool balance")
+		distributionQueryClient := distributiontypes.NewQueryClient(orch0ClientCtx)
+		distributionCommunityPoolResponse, err := distributionQueryClient.CommunityPool(context.Background(), &distributiontypes.QueryCommunityPoolRequest{})
+		s.Require().NoError(err)
+		initialPool := distributionCommunityPoolResponse.Pool
+
+		// Send all of orchestrator's sweep denom and some usomm
+		s.T().Log("Querying orchestrator account balances")
+		bankQueryClient := banktypes.NewQueryClient(orch0ClientCtx)
+		orch0AccountResponse, err := bankQueryClient.AllBalances(context.Background(), &banktypes.QueryAllBalancesRequest{Address: orch0.address().String()})
+		s.Require().NoError(err)
+		orch0Balances := orch0AccountResponse.Balances
+		usommToSend := sdk.NewCoin(testDenom, math.NewInt(1000))
+		found, sweepDenomToSend := orch0Balances.Find(axelarSweepDenom)
+		s.Require().True(found, "orch0 doesn't have any sweep test denom funds")
+		orch0SweepFunds := sdk.Coins{
+			sweepDenomToSend,
+			usommToSend,
+		}
+
+		s.T().Log("Sending funds to axelarcork module account")
+		axelarcorkModuleAddress := authtypes.NewModuleAddress(types.ModuleName)
+		sendFundsToAxelarcorkMsg := banktypes.NewMsgSend(
+			orch0.address(),
+			axelarcorkModuleAddress,
+			orch0SweepFunds,
+		)
+		sendResponse, err := s.chain.sendMsgs(*orch0ClientCtx, sendFundsToAxelarcorkMsg)
+		s.Require().NoError(err)
+		s.Require().Zero(sendResponse.Code, "raw log: %s", sendResponse.RawLog)
+
+		s.T().Log("Verifying distribution community pool balances includes the swept funds")
+		poolAfterSweep := initialPool.Add(sdk.NewDecCoinsFromCoins(usommToSend)...).Add(sdk.NewDecCoinsFromCoins(sweepDenomToSend)...)
+		s.Require().Eventually(func() bool {
+			distributionCommunityPoolResponse, err := distributionQueryClient.CommunityPool(context.Background(), &distributiontypes.QueryCommunityPoolRequest{})
+			s.Require().NoError(err)
+			return poolAfterSweep.IsEqual(distributionCommunityPoolResponse.Pool)
+		}, time.Second*60, time.Second*5, "swept funds never reached community pool")
 	})
 }
 
@@ -454,11 +535,11 @@ func (s *IntegrationTestSuite) submitAndVoteForAxelarProposal(proposerCtx *clien
 			return false
 		}
 
-		s.Require().NotEmpty(proposalsQueryResponse.Proposals)
-		s.Require().Equal(propID, proposalsQueryResponse.Proposals[propID-1].ProposalId, "not proposal id %d", propID)
-		s.Require().Equal(govtypesv1beta1.StatusVotingPeriod, proposalsQueryResponse.Proposals[propID-1].Status, "proposal not in voting period")
+		foundProps := len(proposalsQueryResponse.Proposals) > 0
+		expectedID := propID == proposalsQueryResponse.Proposals[propID-1].ProposalId
+		inVotingPeriod := govtypesv1beta1.StatusVotingPeriod == proposalsQueryResponse.Proposals[propID-1].Status
 
-		return true
+		return foundProps && expectedID && inVotingPeriod
 	}, time.Second*30, time.Second*5, "proposal submission was never found")
 
 	s.T().Log("Vote for proposal")

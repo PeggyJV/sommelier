@@ -2,6 +2,7 @@ package types
 
 import (
 	"bytes"
+	"encoding/binary"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/ethereum/go-ethereum/common"
@@ -26,10 +27,10 @@ const (
 	_ = byte(iota)
 
 	// CorkForAddressKeyPrefix - <prefix><val_address><address> -> <cork>
-	CorkForAddressKeyPrefix // key for corks
+	CorkForAddressKeyPrefix // key for corks -- removed as of cork v2, left to preserve ID values
 
 	// CommitPeriodStartKey - <prefix> -> int64(height)
-	CommitPeriodStartKey // key for commit period height start
+	CommitPeriodStartKey // key for commit period height start -- removed as of cork v2, left to preserve ID values
 
 	// LatestInvalidationNonceKey - <prefix> -> uint64(latestNonce)
 	LatestInvalidationNonceKey
@@ -49,16 +50,6 @@ const (
 	// ValidatorCorkCountKey - <prefix><val_address> -> uint64(count)
 	ValidatorCorkCountKey
 )
-
-// GetCorkForValidatorAddressKey returns the key for a validators vote for a given address
-func GetCorkForValidatorAddressKey(val sdk.ValAddress, contract common.Address) []byte {
-	return append(GetCorkValidatorKeyPrefix(val), contract.Bytes()...)
-}
-
-// GetCorkValidatorKeyPrefix returns the key prefix for cork commits for a validator
-func GetCorkValidatorKeyPrefix(val sdk.ValAddress) []byte {
-	return append([]byte{CorkForAddressKeyPrefix}, val.Bytes()...)
-}
 
 func MakeCellarIDsKey() []byte {
 	return []byte{CellarIDsKey}
@@ -87,4 +78,20 @@ func GetCorkResultKey(id []byte) []byte {
 
 func GetValidatorCorkCountKey(val sdk.ValAddress) []byte {
 	return append([]byte{ValidatorCorkCountKey}, val.Bytes()...)
+}
+
+// Legacy V1 keys
+
+func GetCorkForValidatorAddressKeyV1(val sdk.ValAddress, contract common.Address) []byte {
+	return append(GetCorkValidatorKeyPrefixV1(val), contract.Bytes()...)
+}
+
+func GetCorkValidatorKeyPrefixV1(val sdk.ValAddress) []byte {
+	return append([]byte{CorkForAddressKeyPrefix}, val.Bytes()...)
+}
+
+func GetScheduledCorkKeyV1(blockHeight uint64, val sdk.ValAddress, contract common.Address) []byte {
+	b := make([]byte, 8)
+	binary.BigEndian.PutUint64(b, blockHeight)
+	return bytes.Join([][]byte{{ScheduledCorkKeyPrefix}, b, val.Bytes(), contract.Bytes()}, []byte{})
 }

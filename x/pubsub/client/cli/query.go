@@ -26,6 +26,7 @@ func GetQueryCmd(queryRoute string) *cobra.Command {
 		CmdQueryPublishers(),
 		CmdQuerySubscriber(),
 		CmdQuerySubscribers(),
+		CmdQueryValidatorSubscribers(),
 		CmdQueryPublisherIntent(),
 		CmdQueryPublisherIntents(),
 		CmdQueryPublisherIntentsByPublisherDomain(),
@@ -173,6 +174,34 @@ func CmdQuerySubscribers() *cobra.Command {
 			req := &types.QuerySubscribersRequest{}
 
 			res, err := queryClient.QuerySubscribers(cmd.Context(), req)
+			if err != nil {
+				return err
+			}
+
+			return ctx.PrintProto(res)
+		},
+	}
+
+	flags.AddQueryFlagsToCmd(cmd)
+
+	return cmd
+}
+
+func CmdQueryValidatorSubscribers() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "validator-subscribers",
+		Args:  cobra.NoArgs,
+		Short: "Query subscribers who are validators",
+		RunE: func(cmd *cobra.Command, args []string) error {
+			ctx, err := client.GetClientQueryContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			queryClient := types.NewQueryClient(ctx)
+			req := &types.QueryValidatorSubscribersRequest{}
+
+			res, err := queryClient.QueryValidatorSubscribers(cmd.Context(), req)
 			if err != nil {
 				return err
 			}

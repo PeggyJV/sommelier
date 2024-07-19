@@ -8,19 +8,21 @@ import (
 	"cosmossdk.io/math"
 
 	"github.com/cosmos/cosmos-sdk/client"
+	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/client/tx"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/version"
 	govtypesv1beta1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
 	"github.com/ethereum/go-ethereum/common"
 	types "github.com/peggyjv/sommelier/v7/x/axelarcork/types"
+	pubsubtypes "github.com/peggyjv/sommelier/v7/x/pubsub/types"
 	"github.com/spf13/cobra"
 )
 
 // GetTxCmd returns the transaction commands for this module
 func GetTxCmd() *cobra.Command {
 	corkTxCmd := &cobra.Command{
-		Use:                        "axelar-cork",
+		Use:                        "axelarcork",
 		Short:                      "AxelarCork transaction subcommands",
 		DisableFlagParsing:         true,
 		SuggestionsMinimumDistance: 2,
@@ -89,6 +91,7 @@ func CmdScheduleAxelarCork() *cobra.Command {
 		},
 	}
 
+	flags.AddTxFlagsToCmd(cmd)
 	return cmd
 }
 
@@ -141,13 +144,14 @@ func CmdRelayAxelarCork() *cobra.Command {
 		},
 	}
 
+	flags.AddTxFlagsToCmd(cmd)
 	return cmd
 }
 
 func CmdRelayAxelarProxyUpgrade() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "relay-axelar-proxy-upgrade [chain-id] [token] [fee]",
-		Args:  cobra.ExactArgs(4),
+		Args:  cobra.ExactArgs(3),
 		Short: "Relay a proxy contract upgrade call",
 
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -163,12 +167,12 @@ func CmdRelayAxelarProxyUpgrade() *cobra.Command {
 				return err
 			}
 
-			token, err := sdk.ParseCoinNormalized(args[2])
+			token, err := sdk.ParseCoinNormalized(args[1])
 			if err != nil {
 				return err
 			}
 
-			fee, err := math.ParseUint(args[3])
+			fee, err := math.ParseUint(args[2])
 			if err != nil {
 				return err
 			}
@@ -187,12 +191,13 @@ func CmdRelayAxelarProxyUpgrade() *cobra.Command {
 		},
 	}
 
+	flags.AddTxFlagsToCmd(cmd)
 	return cmd
 }
 
 func CmdBumpAxelarCorkGas() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "bump-axelar-cork [token] [message-id]",
+		Use:   "bump-axelar-cork-gas [token] [message-id]",
 		Args:  cobra.ExactArgs(2),
 		Short: "Add gas for an Axelar cork that is stuck relaying",
 
@@ -224,6 +229,7 @@ func CmdBumpAxelarCorkGas() *cobra.Command {
 		},
 	}
 
+	flags.AddTxFlagsToCmd(cmd)
 	return cmd
 }
 
@@ -231,27 +237,28 @@ func CmdBumpAxelarCorkGas() *cobra.Command {
 // Proposals //
 ///////////////
 
-// GetCmdSubmitAddCellarIDProposal implements the command to submit a cellar id addition proposal
-func GetCmdSubmitAddCellarIDProposal() *cobra.Command {
-
+// GetCmdSubmitAddAxelarCellarIDProposal implements the command to submit a cellar id addition proposal
+func GetCmdSubmitAddAxelarCellarIDProposal() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "add-cellar-id [proposal-file]",
+		Use:   "add-axelar-cellar-id [proposal-file]",
 		Args:  cobra.ExactArgs(1),
-		Short: "Submit a cellar id addition proposal",
+		Short: "Submit an Axelar cellar ID addition proposal",
 		Long: strings.TrimSpace(
-			fmt.Sprintf(`Submit a cellar addition proposal along with an initial deposit.
+			fmt.Sprintf(`Submit an Axelar cellar addition proposal along with an initial deposit.
 The proposal details must be supplied via a JSON file.
 
 Example:
-$ %s tx gov submit-proposal add-cellar-id <path/to/proposal.json> --from=<key_or_address>
+$ %s tx gov submit-proposal add-axelar-cellar-id <path/to/proposal.json> --from=<key_or_address>
 
 Where proposal.json contains:
 
 {
-  "title": "Dollary-doos LP Cellar Proposal",
+  "title": "Dollary-doos LP Arbitrum Cellar Proposal",
   "description": "I have a hunch",
+  "chain_id": 42161,
   "cellar_ids": ["0x123801a7D398351b8bE11C439e05C5B3259aeC9B", "0x456801a7D398351b8bE11C439e05C5B3259aeC9B"],
-  "deposit": "10000usomm"
+  "publisher_domain": "example.com",
+  "deposit": "10000000usomm"
 }
 `,
 				version.AppName,
@@ -278,17 +285,27 @@ Where proposal.json contains:
 				return err
 			}
 
-			for _, id := range proposal.CellarIds.Ids {
+			if proposal.ChainId == 0 {
+				return fmt.Errorf("chain ID must be non-zero")
+			}
+
+			for _, id := range proposal.CellarIds {
 				if !common.IsHexAddress(id) {
-					return fmt.Errorf("%s is not a valid ethereum address", id)
+					return fmt.Errorf("%s is not a valid EVM address", id)
 				}
 			}
 
-			content := types.NewAddManagedCellarIDsProposal(
+			if err := pubsubtypes.ValidateDomain(proposal.PublisherDomain); err != nil {
+				return err
+			}
+
+			content := types.NewAddAxelarManagedCellarIDsProposal(
 				proposal.Title,
 				proposal.Description,
 				proposal.ChainId,
-				&types.CellarIDSet{Ids: proposal.CellarIds.Ids})
+				&types.CellarIDSet{ChainId: proposal.ChainId, Ids: proposal.CellarIds},
+				proposal.PublisherDomain,
+			)
 
 			from := clientCtx.GetFromAddress()
 			msg, err := govtypesv1beta1.NewMsgSubmitProposal(content, deposit, from)
@@ -299,29 +316,31 @@ Where proposal.json contains:
 			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), msg)
 		},
 	}
+
 	return cmd
 }
 
-// GetCmdSubmitRemoveCellarIDProposal implements the command to submit a cellar id removal proposal
-func GetCmdSubmitRemoveCellarIDProposal() *cobra.Command {
+// GetCmdSubmitRemoveAxelarCellarIDProposal implements the command to submit a cellar id removal proposal
+func GetCmdSubmitRemoveAxelarCellarIDProposal() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "remove-cellar-id [proposal-file]",
+		Use:   "remove-axelar-cellar-id [proposal-file]",
 		Args:  cobra.ExactArgs(1),
-		Short: "Submit a cellar id removal proposal",
+		Short: "Submit an Axelar cellar ID removal proposal",
 		Long: strings.TrimSpace(
-			fmt.Sprintf(`Submit a cellar removal proposal along with an initial deposit.
+			fmt.Sprintf(`Submit an Axelar cellar removal proposal along with an initial deposit.
 The proposal details must be supplied via a JSON file.
 
 Example:
-$ %s tx gov submit-proposal remove-cellar-id <path/to/proposal.json> --from=<key_or_address>
+$ %s tx gov submit-proposal remove-axelar-cellar-id <path/to/proposal.json> --from=<key_or_address>
 
 Where proposal.json contains:
 
 {
-  "title": "Dollary-doos LP Cellar Removal Proposal",
+  "title": "Dollary-doos LP Arbitrum Cellar Removal Proposal",
   "description": "I don't trust them",
+  "chain_id": 42161,
   "cellar_ids": ["0x123801a7D398351b8bE11C439e05C5B3259aeC9B", "0x456801a7D398351b8bE11C439e05C5B3259aeC9B"],
-  "deposit": "10000usomm"
+  "deposit": "10000000usomm"
 }
 `,
 				version.AppName,
@@ -348,17 +367,21 @@ Where proposal.json contains:
 				return err
 			}
 
-			for _, id := range proposal.CellarIds.Ids {
+			if proposal.ChainId == 0 {
+				return fmt.Errorf("chain ID must be non-zero")
+			}
+
+			for _, id := range proposal.CellarIds {
 				if !common.IsHexAddress(id) {
-					return fmt.Errorf("%s is not a valid ethereum address", id)
+					return fmt.Errorf("%s is not a valid EVM address", id)
 				}
 			}
 
-			content := types.NewRemoveManagedCellarIDsProposal(
+			content := types.NewRemoveAxelarManagedCellarIDsProposal(
 				proposal.Title,
 				proposal.Description,
 				proposal.ChainId,
-				&types.CellarIDSet{Ids: proposal.CellarIds.Ids})
+				&types.CellarIDSet{ChainId: proposal.ChainId, Ids: proposal.CellarIds})
 
 			from := clientCtx.GetFromAddress()
 			msg, err := govtypesv1beta1.NewMsgSubmitProposal(content, deposit, from)
@@ -378,23 +401,25 @@ func GetCmdSubmitScheduledAxelarCorkProposal() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "schedule-axelar-cork [proposal-file]",
 		Args:  cobra.ExactArgs(1),
-		Short: "Submit a scheduled cork proposal",
+		Short: "Submit a scheduled Axelar cork proposal",
 		Long: strings.TrimSpace(
-			fmt.Sprintf(`Submit a scheduled cork proposal along with an initial deposit.
+			fmt.Sprintf(`Submit an Axelar scheduled cork proposal along with an initial deposit.
 The proposal details must be supplied via a JSON file.
 
 Example:
-$ %s tx gov submit-proposal schedule-cork <path/to/proposal.json> --from=<key_or_address>
+$ %s tx gov submit-proposal schedule-axelar-cork <path/to/proposal.json> --from=<key_or_address>
 
 Where proposal.json contains:
 
 {
-  "title": "Dollary-doos LP Scheduled AxelarCork Proposal",
+  "title": "Dollary-doos LP Arbitrum Scheduled AxelarCork Proposal",
   "description": "I trust them, approve cork",
   "block_height": 100000,
+  "chain_id": 42161,
   "target_contract_address": "0x123801a7D398351b8bE11C439e05C5B3259aeC9B",
   "contract_call_proto_json": "{\"cellar_id\":\"0x123801a7D398351b8bE11C439e05C5B3259aeC9B\",\"<cellar_type_name>\":{\"some_fuction\":{\"function_args\":{}},\"block_height\":12345}}",
-  "deposit": "10000usomm"
+  "deadline": 1706225320,
+  "deposit": "10000000usomm"
 }
 
 The contract_call_proto_json field must be the JSON representation of a ScheduleRequest, which is defined in Steward's protos. For more information, see the Steward API docs at https://github.com/peggyjv/steward.
@@ -423,10 +448,6 @@ The contract_call_proto_json field must be the JSON representation of a Schedule
 				return err
 			}
 
-			if !common.IsHexAddress(proposal.TargetContractAddress) {
-				return fmt.Errorf("%s is not a valid contract address", proposal.TargetContractAddress)
-			}
-
 			content := types.NewAxelarScheduledCorkProposal(
 				proposal.Title,
 				proposal.Description,
@@ -434,6 +455,7 @@ The contract_call_proto_json field must be the JSON representation of a Schedule
 				proposal.ChainId,
 				proposal.TargetContractAddress,
 				proposal.ContractCallProtoJson,
+				proposal.Deadline,
 			)
 			if err := content.ValidateBasic(); err != nil {
 				return err
@@ -452,29 +474,29 @@ The contract_call_proto_json field must be the JSON representation of a Schedule
 	return cmd
 }
 
-func CmdSubmitAxelarCommunityPoolEthereumSpendProposal() *cobra.Command {
+func CmdSubmitAxelarCommunityPoolSpendProposal() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "axelar-community-pool-spend [proposal-file]",
-		Args:  cobra.ExactArgs(2),
-		Short: "Submit a community pool spend proposal",
+		Args:  cobra.ExactArgs(1),
+		Short: "Submit an Axelar community pool spend proposal",
 		Long: strings.TrimSpace(
-			fmt.Sprintf(`Submit a community pool spend proposal along with an initial deposit.
+			fmt.Sprintf(`Submit an Axelar community pool spend proposal along with an initial deposit.
 The proposal details must be supplied via a JSON file. The funds from the community pool
 will be bridged to the target EVM via Axelar to the supplied recipient address. Only one denomination
 of Cosmos token can be sent. Fees will be removed from the balance by Axelar automatically.
 
 Example:
-$ %s tx gov submit-proposal community-pool-spend <path/to/proposal.json> --from=<key_or_address>
+$ %s tx gov submit-proposal axelar-community-pool-spend <path/to/proposal.json> --from=<key_or_address>
 
 Where proposal.json contains:
 
 {
-	"title": "Community Pool Ethereum Spend",
-	"description": "Bridge me some tokens to Ethereum!",
+	"title": "Community Pool Axelar Spend",
+	"description": "Bridge me some tokens to Arbitrum!",
 	"recipient": "0x0000000000000000000000000000000000000000",
-	"chain_name": "Avalanche",
-	"amount": "20000stake",
-	"deposit": "1000stake"
+	"chain_id": 42161,
+	"amount": "20000usomm",
+	"deposit": "10000000usomm"
 }
 `,
 				version.AppName,
@@ -486,26 +508,31 @@ Where proposal.json contains:
 				return err
 			}
 
-			proposal, err := ParseCommunityPoolSpendProposal(clientCtx.Codec, args[0])
+			proposal := types.AxelarCommunityPoolSpendProposalForCLI{}
+			contents, err := os.ReadFile(args[0])
 			if err != nil {
 				return err
 			}
 
-			if len(proposal.Title) == 0 {
-				return fmt.Errorf("title is empty")
+			if err = clientCtx.Codec.UnmarshalJSON(contents, &proposal); err != nil {
+				return err
 			}
 
-			if len(proposal.Description) == 0 {
-				return fmt.Errorf("description is empty")
+			if proposal.ChainId == 0 {
+				return fmt.Errorf("chain ID must be non-zero")
 			}
 
 			if !common.IsHexAddress(proposal.Recipient) {
-				return fmt.Errorf("recipient is not a valid Ethereum address")
+				return fmt.Errorf("recipient is not a valid EVM address")
 			}
 
 			amount, err := sdk.ParseCoinNormalized(proposal.Amount)
 			if err != nil {
 				return err
+			}
+
+			if !amount.IsPositive() {
+				return fmt.Errorf("amount must be positive")
 			}
 
 			deposit, err := sdk.ParseCoinsNormalized(proposal.Deposit)
@@ -537,31 +564,38 @@ Where proposal.json contains:
 
 // GetCmdSubmitAddChainConfigurationProposal implements the command to submit a cellar id addition proposal
 func GetCmdSubmitAddChainConfigurationProposal() *cobra.Command {
-
 	cmd := &cobra.Command{
-		Use:   "add-chain-config [proposal-file]",
+		Use:   "add-axelar-chain-config [proposal-file]",
 		Args:  cobra.ExactArgs(1),
-		Short: "Submit a chain configuration addition proposal",
+		Short: "Submit an Axelar chain configuration addition proposal",
 		Long: strings.TrimSpace(
-			fmt.Sprintf(`Submit a chain configuration addition proposal along with an initial deposit.
+			fmt.Sprintf(`Submit an Axelar chain configuration addition proposal along with an initial deposit.
 The proposal details must be supplied via a JSON file.
 
 Example:
-$ %s tx gov submit-proposal add-chain-config <path/to/proposal.json> --from=<key_or_address>
+$ %s tx gov submit-proposal add-axelar-chain-config <path/to/proposal.json> --from=<key_or_address>
 
 Where proposal.json contains:
 
 {
-  "title": "Enable Fake EVM proposal",
-  "description": "Fake it 'til you make it'",
-  "chain_congifuration": {
-	"name": "FakeEVM",
-	"id": 1000,
-	"vote_threshold": "0.333",
-	"proxy_address": "0x1234..."
+  "title": "Enable Arbitrum proposal",
+  "description": "allow cellars to be used on Arbitrum",
+  "chain_configuration": {
+	"name": "arbitrum",
+	"id": 42161,
+	"proxy_address": "0x0000000000000000000000000000000000000000",
+	"bridge_fees": [
+		{
+			"denom": "usomm",
+			"amount": "100000"
+		}
+	]
   },
-  "deposit": "10000usomm"
+  "deposit": "10000000usomm"
 }
+
+Note that the "name" parameter should map to a "Chain Identifier" as defined by Axelar: https://docs.axelar.dev/dev/reference/mainnet-chain-names
+Bridge fees for a given source denom and destination chain can be calculated here: https://docs.axelar.dev/resources/mainnet#cross-chain-relayer-gas-fee
 `,
 				version.AppName,
 			),
@@ -613,23 +647,23 @@ Where proposal.json contains:
 // GetCmdSubmitRemoveChainConfigurationProposal implements the command to submit a chain configuration removal proposal
 func GetCmdSubmitRemoveChainConfigurationProposal() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "remove-chain-configuration [proposal-file]",
+		Use:   "remove-axelar-chain-config [proposal-file]",
 		Args:  cobra.ExactArgs(1),
-		Short: "Submit a chain configuration removal proposal",
+		Short: "Submit an Axelear chain configuration removal proposal",
 		Long: strings.TrimSpace(
-			fmt.Sprintf(`Submit a chain configuration removal proposal along with an initial deposit.
+			fmt.Sprintf(`Submit an Axelar chain configuration removal proposal along with an initial deposit.
 The proposal details must be supplied via a JSON file.
 
 Example:
-$ %s tx gov submit-proposal remove-chain-configuration <path/to/proposal.json> --from=<key_or_address>
+$ %s tx gov submit-proposal remove-axelar-chain-config <path/to/proposal.json> --from=<key_or_address>
 
 Where proposal.json contains:
 
 {
-  "title": "Dollary-doos LP Cellar Removal Proposal",
-  "description": "I don't trust them",
-  "chain_id": 1000,
-  "deposit": "10000usomm"
+  "title": "Remove Arbitrum chain config",
+  "description": "not using Arbitrum any more",
+  "chain_id": 42161,
+  "deposit": "10000000usomm"
 }
 `,
 				version.AppName,
@@ -663,7 +697,8 @@ Where proposal.json contains:
 			content := types.NewRemoveChainConfigurationProposal(
 				proposal.Title,
 				proposal.Description,
-				proposal.ChainId)
+				proposal.ChainId,
+			)
 
 			from := clientCtx.GetFromAddress()
 			msg, err := govtypesv1beta1.NewMsgSubmitProposal(content, deposit, from)
@@ -697,7 +732,7 @@ Where proposal.json contains:
   "description": "New features",
   "chain_id": 1000,
   "new_proxy_address": "0x1234567890123456789012345678901234567890",
-  "deposit": "10000usomm"
+  "deposit": "10000000usomm"
 }
 `,
 				version.AppName,
@@ -726,6 +761,10 @@ Where proposal.json contains:
 
 			if proposal.ChainId == 0 {
 				return fmt.Errorf("chain ID cannot be zero")
+			}
+
+			if !common.IsHexAddress(proposal.NewProxyAddress) {
+				return fmt.Errorf("new proxy address is not a valid EVM address")
 			}
 
 			content := types.NewUpgradeAxelarProxyContractProposal(
@@ -763,10 +802,10 @@ $ %s tx gov submit-proposal cancel-axelar-proxy-contract-upgrade <path/to/propos
 Where proposal.json contains:
 
 {
-  "title": "Upgrade Axelar Proxy Contract Proposal",
-  "description": "New features",
+  "title": "Cancel Upgrade Axelar Proxy Contract Proposal",
+  "description": "Cancel the new features",
   "chain_id": 1000,
-  "deposit": "10000usomm"
+  "deposit": "10000000usomm"
 }
 `,
 				version.AppName,

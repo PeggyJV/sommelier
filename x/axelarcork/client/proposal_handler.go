@@ -6,10 +6,10 @@ import (
 )
 
 var (
-	AddProposalHandler                        = govclient.NewProposalHandler(cli.GetCmdSubmitAddCellarIDProposal)
-	RemoveProposalHandler                     = govclient.NewProposalHandler(cli.GetCmdSubmitRemoveCellarIDProposal)
+	AddProposalHandler                        = govclient.NewProposalHandler(cli.GetCmdSubmitAddAxelarCellarIDProposal)
+	RemoveProposalHandler                     = govclient.NewProposalHandler(cli.GetCmdSubmitRemoveAxelarCellarIDProposal)
 	ScheduledCorkProposalHandler              = govclient.NewProposalHandler(cli.GetCmdSubmitScheduledAxelarCorkProposal)
-	CommunityPoolEthereumSpendProposalHandler = govclient.NewProposalHandler(cli.CmdSubmitAxelarCommunityPoolEthereumSpendProposal)
+	CommunityPoolEthereumSpendProposalHandler = govclient.NewProposalHandler(cli.CmdSubmitAxelarCommunityPoolSpendProposal)
 	AddChainConfigurationHandler              = govclient.NewProposalHandler(cli.GetCmdSubmitAddChainConfigurationProposal)
 	RemoveChainConfigurationHandler           = govclient.NewProposalHandler(cli.GetCmdSubmitRemoveChainConfigurationProposal)
 	UpgradeAxelarProxyContractHandler         = govclient.NewProposalHandler(cli.GetCmdSubmitUpgradeAxelarProxyContractProposal)

@@ -3,19 +3,22 @@ package keeper
 import (
 	"encoding/json"
 	"fmt"
-	"sort"
 	"time"
 
-	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	distributiontypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
-	transfertypes "github.com/cosmos/ibc-go/v6/modules/apps/transfer/types"
-	clienttypes "github.com/cosmos/ibc-go/v6/modules/core/02-client/types"
+	transfertypes "github.com/cosmos/ibc-go/v7/modules/apps/transfer/types"
+	clienttypes "github.com/cosmos/ibc-go/v7/modules/core/02-client/types"
 
 	errorsmod "cosmossdk.io/errors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/peggyjv/sommelier/v7/x/axelarcork/types"
+	pubsubtypes "github.com/peggyjv/sommelier/v7/x/pubsub/types"
 )
+
+func NewAxelarSubscriptionID(chainID uint64, address common.Address) string {
+	return fmt.Sprintf("%d:%s", chainID, address.String())
+}
 
 // HandleAddManagedCellarsProposal is a handler for executing a passed community cellar addition proposal
 func HandleAddManagedCellarsProposal(ctx sdk.Context, k Keeper, p types.AddAxelarManagedCellarIDsProposal) error {
@@ -24,27 +27,42 @@ func HandleAddManagedCellarsProposal(ctx sdk.Context, k Keeper, p types.AddAxela
 		return fmt.Errorf("chain by id %d not found", p.ChainId)
 	}
 
-	cellarIDs := k.GetCellarIDs(ctx, config.Id)
+	_, publisherFound := k.pubsubKeeper.GetPublisher(ctx, p.PublisherDomain)
+	if !publisherFound {
+		return fmt.Errorf("not an approved publisher: %s", p.PublisherDomain)
+	}
+
+	if err := p.CellarIds.ValidateBasic(); err != nil {
+		return err
+	}
+
+	cellarAddresses := k.GetCellarIDs(ctx, config.Id)
 
 	for _, proposedCellarID := range p.CellarIds.Ids {
+		proposedCellarAddress := common.HexToAddress(proposedCellarID)
 		found := false
-		for _, id := range cellarIDs {
-			if id == common.HexToAddress(proposedCellarID) {
+		for _, id := range cellarAddresses {
+			if id == proposedCellarAddress {
 				found = true
 			}
 		}
 		if !found {
-			cellarIDs = append(cellarIDs, common.HexToAddress(proposedCellarID))
+			cellarAddresses = append(cellarAddresses, proposedCellarAddress)
+			subscriptionID := NewAxelarSubscriptionID(p.ChainId, proposedCellarAddress)
+			defaultSubscription := pubsubtypes.DefaultSubscription{
+				SubscriptionId:  subscriptionID,
+				PublisherDomain: p.PublisherDomain,
+			}
+			k.pubsubKeeper.SetDefaultSubscription(ctx, defaultSubscription)
 		}
 	}
 
-	idStrings := make([]string, len(cellarIDs))
-	for i, cid := range cellarIDs {
+	idStrings := make([]string, len(cellarAddresses))
+	for i, cid := range cellarAddresses {
 		idStrings[i] = cid.String()
 	}
 
-	sort.Strings(idStrings)
-	k.SetCellarIDs(ctx, config.Id, types.CellarIDSet{Ids: idStrings})
+	k.SetCellarIDs(ctx, config.Id, types.CellarIDSet{ChainId: config.Id, Ids: idStrings})
 
 	return nil
 }
@@ -54,6 +72,10 @@ func HandleRemoveManagedCellarsProposal(ctx sdk.Context, k Keeper, p types.Remov
 	config, ok := k.GetChainConfigurationByID(ctx, p.ChainId)
 	if !ok {
 		return fmt.Errorf("chain by id %d not found", p.ChainId)
+	}
+
+	if err := p.CellarIds.ValidateBasic(); err != nil {
+		return err
 	}
 
 	var outputCellarIDs types.CellarIDSet
@@ -67,10 +89,18 @@ func HandleRemoveManagedCellarsProposal(ctx sdk.Context, k Keeper, p types.Remov
 		}
 
 		if !found {
-			outputCellarIDs.Ids = append(outputCellarIDs.Ids, existingID.Hex())
+			outputCellarIDs.Ids = append(outputCellarIDs.Ids, existingID.String())
 		}
 	}
+	outputCellarIDs.ChainId = config.Id
+
+	// unlike for adding an ID, we don't need to re-sort because we're removing elements from an already sorted list
 	k.SetCellarIDs(ctx, config.Id, outputCellarIDs)
+
+	for _, cellarToDelete := range p.CellarIds.Ids {
+		subscriptionID := NewAxelarSubscriptionID(p.ChainId, common.HexToAddress(cellarToDelete))
+		k.pubsubKeeper.DeleteDefaultSubscription(ctx, subscriptionID)
+	}
 
 	return nil
 }
@@ -90,24 +120,36 @@ func HandleScheduledCorkProposal(ctx sdk.Context, k Keeper, p types.AxelarSchedu
 }
 
 func HandleCommunityPoolSpendProposal(ctx sdk.Context, k Keeper, p types.AxelarCommunityPoolSpendProposal) error {
-	feePool := k.distributionKeeper.GetFeePool(ctx)
-
-	// NOTE the community pool isn't a module account, however its coins
-	// are held in the distribution module account. Thus, the community pool
-	// must be reduced separately from the Axelar IBC calls
-	newPool, negative := feePool.CommunityPool.SafeSub(sdk.NewDecCoinsFromCoins(p.Amount))
-	if negative {
-		return distributiontypes.ErrBadDistribution
-	}
-
-	feePool.CommunityPool = newPool
-	sender := authtypes.NewModuleAddress(distributiontypes.ModuleName)
-
 	params := k.GetParamSet(ctx)
 	config, ok := k.GetChainConfigurationByID(ctx, p.ChainId)
 	if !ok {
 		return fmt.Errorf("chain by id %d not found", p.ChainId)
 	}
+
+	feeFound, feeCoin := config.BridgeFees.Find(p.Amount.Denom)
+	if !feeFound {
+		return fmt.Errorf("no matching bridge fee for denom %s", p.Amount.Denom)
+	}
+
+	coinWithBridgeFee := p.Amount.Add(feeCoin)
+	feePool := k.distributionKeeper.GetFeePool(ctx)
+
+	// NOTE the community pool isn't a module account, however its coins
+	// are held in the distribution module account. Thus, the community pool
+	// must be reduced separately from the Axelar IBC calls
+	newPool, negative := feePool.CommunityPool.SafeSub(sdk.NewDecCoinsFromCoins(coinWithBridgeFee))
+	if negative {
+		return distributiontypes.ErrBadDistribution
+	}
+
+	feePool.CommunityPool = newPool
+
+	// since distribution is not an authorized sender, put them in the axelarcork module account
+	if err := k.bankKeeper.SendCoinsFromModuleToModule(ctx, distributiontypes.ModuleName, types.ModuleName, sdk.NewCoins(coinWithBridgeFee)); err != nil {
+		panic(err)
+	}
+
+	sender := k.GetSenderAccount(ctx).GetAddress().String()
 
 	axelarMemo := types.AxelarBody{
 		DestinationChain:   config.Name,
@@ -124,14 +166,14 @@ func HandleCommunityPoolSpendProposal(ctx sdk.Context, k Keeper, p types.AxelarC
 	transferMsg := transfertypes.NewMsgTransfer(
 		params.IbcPort,
 		params.IbcChannel,
-		p.Amount,
-		sender.String(),
-		p.Recipient,
+		coinWithBridgeFee,
+		sender,
+		params.GmpAccount,
 		clienttypes.ZeroHeight(),
 		uint64(ctx.BlockTime().Add(time.Duration(params.TimeoutDuration)).UnixNano()),
 		memo,
 	)
-	resp, err := k.transferKeeper.Transfer(ctx.Context(), transferMsg)
+	resp, err := k.transferKeeper.Transfer(sdk.WrapSDKContext(ctx), transferMsg)
 	if err != nil {
 		return err
 	}
@@ -139,10 +181,10 @@ func HandleCommunityPoolSpendProposal(ctx sdk.Context, k Keeper, p types.AxelarC
 	k.distributionKeeper.SetFeePool(ctx, feePool)
 	k.Logger(ctx).Info("transfer from the community pool issued to the axelar bridge",
 		"ibc sequence", resp,
-		"amount", p.Amount.String(),
+		"amount", coinWithBridgeFee.Amount.String(),
 		"recipient", p.Recipient,
 		"chain", config.Name,
-		"sender", sender.String(),
+		"sender", sender,
 		"timeout duration", params.TimeoutDuration,
 	)
 
@@ -151,6 +193,11 @@ func HandleCommunityPoolSpendProposal(ctx sdk.Context, k Keeper, p types.AxelarC
 
 // HandleAddChainConfigurationProposal is a handler for executing a passed chain configuration addition proposal
 func HandleAddChainConfigurationProposal(ctx sdk.Context, k Keeper, p types.AddChainConfigurationProposal) error {
+	err := p.ChainConfiguration.ValidateBasic()
+	if err != nil {
+		return err
+	}
+
 	k.SetChainConfiguration(ctx, p.ChainConfiguration.Id, *p.ChainConfiguration)
 
 	return nil
@@ -158,6 +205,11 @@ func HandleAddChainConfigurationProposal(ctx sdk.Context, k Keeper, p types.AddC
 
 // HandleRemoveChainConfigurationProposal is a handler for executing a passed chain configuration removal proposal
 func HandleRemoveChainConfigurationProposal(ctx sdk.Context, k Keeper, p types.RemoveChainConfigurationProposal) error {
+	_, ok := k.GetChainConfigurationByID(ctx, p.ChainId)
+	if !ok {
+		return fmt.Errorf("chain by id %d not found", p.ChainId)
+	}
+
 	k.DeleteChainConfigurationByID(ctx, p.ChainId)
 
 	return nil
@@ -172,7 +224,7 @@ func HandleUpgradeAxelarProxyContractProposal(ctx sdk.Context, k Keeper, p types
 
 	cellars := []string{}
 	for _, c := range k.GetCellarIDs(ctx, p.ChainId) {
-		cellars = append(cellars, c.Hex())
+		cellars = append(cellars, c.String())
 	}
 
 	payload, err := types.EncodeUpgradeArgs(p.NewProxyAddress, cellars)

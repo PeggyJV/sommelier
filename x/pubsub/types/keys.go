@@ -20,39 +20,37 @@ const (
 	QuerierRoute = ModuleName
 )
 
-// note that we are using "|" as a delimiter for variable length keys as it's not a valid character for either...
-// it's not strictly necessary for e.g. the SubscriberKeyPrefix since all the fields are fixed, but keeping them all
-// consistent makes it easier to read and reason about
+// variable length string fields being stored under these keys are hashed to provide a fixed size key
 const (
 	_ = byte(iota)
 
-	// PublisherPrefix - <prefix>|<publisher_domain> -> Publisher
+	// PublisherPrefix - <prefix>|<publisher_domain_hash> -> Publisher
 	PublisherKeyPrefix
 
-	// SubscriberPrefix - <prefix>|<subscriber_address> -> Subscriber
+	// SubscriberPrefix - <prefix>|<subscriber_address_bytes> -> Subscriber
 	SubscriberKeyPrefix
 
-	// PublisherIntentByPublisherDomainKeyPrefix - <prefix>|<publisher_domain>|<subscription_id> -> PublisherIntent
+	// PublisherIntentByPublisherDomainKeyPrefix - <prefix>|<publisher_domain_hash>|<subscription_id_hash> -> PublisherIntent
 	PublisherIntentByPublisherDomainKeyPrefix
 
-	// PublisherIntentBySubscriptionIDKeyPrefix - <prefix>|<subscription_id>|<publisher_domain> -> PublisherIntent
+	// PublisherIntentBySubscriptionIDKeyPrefix - <prefix>|<subscription_id_hash>|<publisher_domain_hash> -> PublisherIntent
 	PublisherIntentBySubscriptionIDKeyPrefix
 
-	// SubscriberIntentBySubscriberAddressKeyPrefix - <prefix>|<subscriber_address>|<subscription_id> -> SubscriberIntent
+	// SubscriberIntentBySubscriberAddressKeyPrefix - <prefix>|<subscriber_address_bytes>|<subscription_id_hash> -> SubscriberIntent
 	SubscriberIntentBySubscriberAddressKeyPrefix
 
-	// SubscriberIntentBySubscriptionIDKeyPrefix - <prefix>|<subscription_id>|<subscriber_address> -> SubscriberIntent
+	// SubscriberIntentBySubscriptionIDKeyPrefix - <prefix>|<subscription_id_hash>|<subscriber_address_bytes> -> SubscriberIntent
 	SubscriberIntentBySubscriptionIDKeyPrefix
 
-	// SubscriberIntentByPublisherDomainKeyPrefix - <prefix>|<publisher_domain>|<subscriber_address>|<subscription_id> -> SubscriberIntent
+	// SubscriberIntentByPublisherDomainKeyPrefix - <prefix>|<publisher_domain_hash>|<subscriber_address_bytes>|<subscription_id_hash> -> SubscriberIntent
 	SubscriberIntentByPublisherDomainKeyPrefix
 
-	// DefaultSubscriptionKeyPrefix - <prefix>|<subscription_id> -> DefaultSubscription
+	// DefaultSubscriptionKeyPrefix - <prefix>|<subscription_id_hash> -> DefaultSubscription
 	DefaultSubscriptionKeyPrefix
 )
 
 func delimiter() []byte {
-	return []byte("|")
+	return []byte{}
 }
 
 // GetPublishersPrefix returns a prefix for iterating all Publishers
@@ -62,7 +60,7 @@ func GetPublishersPrefix() []byte {
 
 // GetPublisherKey returns the key for a Publisher
 func GetPublisherKey(publisherDomain string) []byte {
-	return bytes.Join([][]byte{{PublisherKeyPrefix}, []byte(publisherDomain)}, delimiter())
+	return bytes.Join([][]byte{{PublisherKeyPrefix}, StringHash(publisherDomain)}, delimiter())
 }
 
 // GetSubscribersPrefix returns a prefix for iterating all Subscribers
@@ -83,24 +81,24 @@ func GetPublisherIntentsPrefix() []byte {
 
 // GetPublisherIntentsByPublisherDomainPrefix returns a prefix for all PublisherIntents indexed by publisher domain
 func GetPublisherIntentsByPublisherDomainPrefix(publisherDomain string) []byte {
-	key := bytes.Join([][]byte{{PublisherIntentByPublisherDomainKeyPrefix}, []byte(publisherDomain)}, delimiter())
+	key := bytes.Join([][]byte{{PublisherIntentByPublisherDomainKeyPrefix}, StringHash(publisherDomain)}, delimiter())
 	return append(key, delimiter()...)
 }
 
 // GetPublisherIntentsBySubscriptionIDPrefix returns a prefix for all PublisherIntents indexed by subscription ID
 func GetPublisherIntentsBySubscriptionIDPrefix(subscriptionID string) []byte {
-	key := bytes.Join([][]byte{{PublisherIntentBySubscriptionIDKeyPrefix}, []byte(subscriptionID)}, delimiter())
+	key := bytes.Join([][]byte{{PublisherIntentBySubscriptionIDKeyPrefix}, StringHash(subscriptionID)}, delimiter())
 	return append(key, delimiter()...)
 }
 
 // GetPublisherIntentByPublisherDomainKey returns the key for a PublisherIntent indexed by domain
 func GetPublisherIntentByPublisherDomainKey(publisherDomain string, subscriptionID string) []byte {
-	return bytes.Join([][]byte{{PublisherIntentByPublisherDomainKeyPrefix}, []byte(publisherDomain), []byte(subscriptionID)}, delimiter())
+	return bytes.Join([][]byte{{PublisherIntentByPublisherDomainKeyPrefix}, StringHash(publisherDomain), StringHash(subscriptionID)}, delimiter())
 }
 
 // GetPublisherIntentBySubscriptionIDKey returns the key for a PublisherIntent indexed by subscription ID
 func GetPublisherIntentBySubscriptionIDKey(subsciptionID string, publisherDomain string) []byte {
-	key := bytes.Join([][]byte{{PublisherIntentBySubscriptionIDKeyPrefix}, []byte(subsciptionID), []byte(publisherDomain)}, delimiter())
+	key := bytes.Join([][]byte{{PublisherIntentBySubscriptionIDKeyPrefix}, StringHash(subsciptionID), StringHash(publisherDomain)}, delimiter())
 	return append(key, delimiter()...)
 }
 
@@ -118,29 +116,29 @@ func GetSubscriberIntentsBySubscriberAddressPrefix(subscriberAddress sdk.AccAddr
 
 // GetSubscriberIntentsBySubscriptionIDPrefix returns a prefix for all SubscriberIntents indexed by subscription ID
 func GetSubscriberIntentsBySubscriptionIDPrefix(subscriptionID string) []byte {
-	key := bytes.Join([][]byte{{SubscriberIntentBySubscriptionIDKeyPrefix}, []byte(subscriptionID)}, delimiter())
+	key := bytes.Join([][]byte{{SubscriberIntentBySubscriptionIDKeyPrefix}, StringHash(subscriptionID)}, delimiter())
 	return append(key, delimiter()...)
 }
 
 // GetSubscriberIntentsByPublisherDomainPrefix returns a prefix for all SubscriberIntents indexed by publisher domain
 func GetSubscriberIntentsByPublisherDomainPrefix(publisherDomain string) []byte {
-	key := bytes.Join([][]byte{{SubscriberIntentByPublisherDomainKeyPrefix}, []byte(publisherDomain)}, delimiter())
+	key := bytes.Join([][]byte{{SubscriberIntentByPublisherDomainKeyPrefix}, StringHash(publisherDomain)}, delimiter())
 	return append(key, delimiter()...)
 }
 
 // GetSubscriberIntentBySubscriberAddressKey returns the key for a SubscriberIntent indexed by address
 func GetSubscriberIntentBySubscriberAddressKey(subscriberAddress sdk.AccAddress, subscriptionID string) []byte {
-	return bytes.Join([][]byte{{SubscriberIntentBySubscriberAddressKeyPrefix}, subscriberAddress.Bytes(), []byte(subscriptionID)}, delimiter())
+	return bytes.Join([][]byte{{SubscriberIntentBySubscriberAddressKeyPrefix}, subscriberAddress.Bytes(), StringHash(subscriptionID)}, delimiter())
 }
 
 // GetSubscriberIntentBySubscriptionIDKey returns the key for a SubscriberIntent indexed by subscription ID
 func GetSubscriberIntentBySubscriptionIDKey(subscriptionID string, subscriberAddress sdk.AccAddress) []byte {
-	return bytes.Join([][]byte{{SubscriberIntentBySubscriptionIDKeyPrefix}, []byte(subscriptionID), subscriberAddress.Bytes()}, delimiter())
+	return bytes.Join([][]byte{{SubscriberIntentBySubscriptionIDKeyPrefix}, StringHash(subscriptionID), subscriberAddress.Bytes()}, delimiter())
 }
 
 // GetSubscriberIntentByPublisherDomainKey returns the key for a SubscriberIntent indexed by publisher domain
 func GetSubscriberIntentByPublisherDomainKey(publisherDomain string, subscriberAddress sdk.AccAddress, subscriptionID string) []byte {
-	return bytes.Join([][]byte{{SubscriberIntentByPublisherDomainKeyPrefix}, []byte(publisherDomain), subscriberAddress.Bytes(), []byte(subscriptionID)}, delimiter())
+	return bytes.Join([][]byte{{SubscriberIntentByPublisherDomainKeyPrefix}, StringHash(publisherDomain), subscriberAddress.Bytes(), StringHash(subscriptionID)}, delimiter())
 }
 
 // GetDefaultSubscriptionPrefix returns a prefix for iterating all DefaultSubscripions
@@ -150,5 +148,5 @@ func GetDefaultSubscriptionPrefix() []byte {
 
 // GetDefaultSubscriptionKey returns the key for a DefaultSubscription
 func GetDefaultSubscriptionKey(subsciptionID string) []byte {
-	return bytes.Join([][]byte{{DefaultSubscriptionKeyPrefix}, []byte(subsciptionID)}, delimiter())
+	return bytes.Join([][]byte{{DefaultSubscriptionKeyPrefix}, StringHash(subsciptionID)}, delimiter())
 }

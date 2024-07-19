@@ -2,6 +2,7 @@ package keeper
 
 import (
 	"fmt"
+	"sort"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/ethereum/go-ethereum/common"
@@ -19,9 +20,12 @@ func InitGenesis(ctx sdk.Context, k Keeper, gs types.GenesisState) {
 	}
 	k.accountKeeper.SetModuleAccount(ctx, senderAccount)
 
-	for i, config := range gs.ChainConfigurations.Configurations {
+	for _, config := range gs.ChainConfigurations.Configurations {
 		k.SetChainConfiguration(ctx, config.Id, *config)
-		k.SetCellarIDs(ctx, config.Id, *gs.CellarIds[i])
+	}
+
+	for _, cellarIDSet := range gs.CellarIds {
+		k.SetCellarIDs(ctx, cellarIDSet.ChainId, *cellarIDSet)
 	}
 
 	for _, corkResult := range gs.CorkResults.CorkResults {
@@ -43,7 +47,6 @@ func InitGenesis(ctx sdk.Context, k Keeper, gs types.GenesisState) {
 	}
 
 	// TODO(bolten): not a huge risk since they can be re-sent, but the genesis state is missing WinningAxelarCorks
-
 	for _, n := range gs.AxelarContractCallNonces {
 		if _, found := k.GetChainConfigurationByID(ctx, n.ChainId); !found {
 			panic(fmt.Sprintf("chain configuration %d not found", n.ChainId))
@@ -79,9 +82,13 @@ func ExportGenesis(ctx sdk.Context, k Keeper) types.GenesisState {
 
 		cellarIDs := k.GetCellarIDs(ctx, config.Id)
 		var cellarIDSet types.CellarIDSet
+		cellarIDSet.ChainId = config.Id
+		cellarIDSetIDs := make([]string, 0, len(cellarIDs))
 		for _, id := range cellarIDs {
-			cellarIDSet.Ids = append(cellarIDSet.Ids, id.String())
+			cellarIDSetIDs = append(cellarIDSetIDs, id.String())
 		}
+		sort.Strings(cellarIDSetIDs)
+		cellarIDSet.Ids = cellarIDSetIDs
 		gs.CellarIds = append(gs.CellarIds, &cellarIDSet)
 
 		gs.ScheduledCorks.ScheduledCorks = append(gs.ScheduledCorks.ScheduledCorks, k.GetScheduledAxelarCorks(ctx, config.Id)...)
@@ -93,7 +100,7 @@ func ExportGenesis(ctx sdk.Context, k Keeper) types.GenesisState {
 	k.IterateAxelarContractCallNonces(ctx, func(chainID uint64, contractAddress common.Address, nonce uint64) (stop bool) {
 		accn := &types.AxelarContractCallNonce{
 			ChainId:         chainID,
-			ContractAddress: contractAddress.Hex(),
+			ContractAddress: contractAddress.String(),
 			Nonce:           nonce,
 		}
 
