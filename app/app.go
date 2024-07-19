@@ -827,7 +827,7 @@ func (app *SommelierApp) ModuleAccountAddrs() map[string]bool {
 	return modAccAddrs
 }
 
-// ModuleAccountNames returns a map of module account address to module name
+// ModuleAccountAddressesToNames returns a map of module account address to module name
 func (app *SommelierApp) ModuleAccountAddressesToNames(moduleAccounts []string) map[string]string {
 	modAccNames := make(map[string]string)
 	for _, acc := range moduleAccounts {
