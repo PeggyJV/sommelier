@@ -77,7 +77,7 @@ pub struct DefaultSubscription {
 }
 /// governance proposal to add a publisher, with domain, adress, and ca_cert the same as the Publisher type
 /// proof URL expected in the format: https://<domain>/<address>/cacert.pem and serving cacert.pem matching ca_cert
-#[derive(Clone, PartialEq, ::prost::Message)]
+#[derive(serde::Deserialize, serde::Serialize, Clone, PartialEq, ::prost::Message)]
 pub struct AddPublisherProposal {
     #[prost(string, tag = "1")]
     pub title: ::prost::alloc::string::String,
