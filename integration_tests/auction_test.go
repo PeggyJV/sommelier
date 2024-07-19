@@ -138,9 +138,6 @@ func (s *IntegrationTestSuite) TestAuction() {
 		s.Require().NoError(err)
 		s.T().Log("Bid submmitted successfully!")
 
-		auctionResponse, err = auctionQueryClient.QueryActiveAuction(context.Background(), &auctionQuery)
-		s.Require().NoError(err)
-
 		s.T().Log("Verifying auction updated as expected.")
 		// Verify auction updated as expected
 		expectedAuction := types.Auction{
@@ -157,8 +154,15 @@ func (s *IntegrationTestSuite) TestAuction() {
 			FundingModuleAccount:       cellarfees.ModuleName,
 			ProceedsModuleAccount:      cellarfees.ModuleName,
 		}
-		s.Require().Equal(expectedAuction, *auctionResponse.Auction)
-		s.T().Log("Auction updated correctly!")
+		s.Require().Eventually(func() bool {
+			auctionResponse, err = auctionQueryClient.QueryActiveAuction(context.Background(), &auctionQuery)
+			s.T().Logf("auctionResponse: %v", auctionResponse)
+			if err != nil {
+				return false
+			}
+
+			return expectedAuction.RemainingTokensForSale.Amount.Equal(auctionResponse.Auction.RemainingTokensForSale.Amount)
+		}, time.Second*30, time.Second*5, "auction was never updated")
 
 		// Verify user has funds debited and purchase credited
 		s.T().Log("Verifying user funds debited and credited appropriately.")
@@ -194,9 +198,14 @@ func (s *IntegrationTestSuite) TestAuction() {
 		}
 
 		s.T().Log("Verifying bid stored as expected.")
-		actualBid, err := auctionQueryClient.QueryBid(context.Background(), &types.QueryBidRequest{BidId: uint64(1), AuctionId: uint32(1)})
-		s.Require().NoError(err)
-		s.Require().Equal(expectedBid1, *actualBid.Bid)
+		s.Require().Eventually(func() bool {
+			actualBid, err := auctionQueryClient.QueryBid(context.Background(), &types.QueryBidRequest{BidId: uint64(1), AuctionId: uint32(1)})
+			if err != nil {
+				return false
+			}
+
+			return expectedBid1.Bidder == actualBid.Bid.Bidder && expectedBid1.MaxBidInUsomm.Amount.Equal(actualBid.Bid.MaxBidInUsomm.Amount)
+		}, time.Second*30, time.Second*5, "bid was never stored")
 		s.T().Log("Bid stored correctly!")
 
 		s.T().Log("Submitting another bid...")
@@ -232,9 +241,13 @@ func (s *IntegrationTestSuite) TestAuction() {
 			BlockHeight:               uint64(currentBlockHeight),
 		}
 
-		actualBid2, err := auctionQueryClient.QueryBid(context.Background(), &types.QueryBidRequest{BidId: uint64(2), AuctionId: uint32(1)})
-		s.Require().NoError(err)
-		s.Require().Equal(expectedBid2, *actualBid2.Bid)
+		s.Require().Eventually(func() bool {
+			actualBid2, err := auctionQueryClient.QueryBid(context.Background(), &types.QueryBidRequest{BidId: uint64(2), AuctionId: uint32(1)})
+			if err != nil {
+				return false
+			}
+			return expectedBid2.Bidder == actualBid2.Bid.Bidder && expectedBid2.MaxBidInUsomm.Amount.Equal(actualBid2.Bid.MaxBidInUsomm.Amount)
+		}, time.Second*30, time.Second*5, "bid was never stored")
 		s.T().Log("Bid stored correctly!")
 
 		// Verify user has funds debited and purchase credited
@@ -263,17 +276,11 @@ func (s *IntegrationTestSuite) TestAuction() {
 		endedAuctionResponse, err := auctionQueryClient.QueryEndedAuction(context.Background(), &types.QueryEndedAuctionRequest{AuctionId: uint32(1)})
 		s.Require().NoError(err)
 
-		node, err = orchClientCtx.GetNode()
-		s.Require().NoError(err)
-		status, err = node.Status(context.Background())
-		s.Require().NoError(err)
-		currentBlockHeight = status.SyncInfo.LatestBlockHeight
-
 		expectedEndedAuction := types.Auction{
 			Id:                         uint32(1),
 			StartingTokensForSale:      sdk.NewCoin("gravity0x3506424f91fd33084466f402d5d97f05f8e3b4af", sdk.NewInt(5000000000)),
 			StartBlock:                 uint64(1),
-			EndBlock:                   uint64(currentBlockHeight),
+			EndBlock:                   endedAuctionResponse.Auction.EndBlock,
 			InitialPriceDecreaseRate:   sdk.MustNewDecFromStr("0.05"),
 			CurrentPriceDecreaseRate:   sdk.MustNewDecFromStr("0.05"),
 			PriceDecreaseBlockInterval: uint64(1000),

@@ -3,6 +3,8 @@ package keeper
 import (
 	"testing"
 
+	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
+	tmtime "github.com/cometbft/cometbft/types/time"
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/testutil"
@@ -13,10 +15,9 @@ import (
 	"github.com/golang/mock/gomock"
 	moduletestutil "github.com/peggyjv/sommelier/v7/testutil"
 	corktestutil "github.com/peggyjv/sommelier/v7/x/cork/testutil"
-	"github.com/peggyjv/sommelier/v7/x/cork/types"
+	corktypes "github.com/peggyjv/sommelier/v7/x/cork/types"
+	types "github.com/peggyjv/sommelier/v7/x/cork/types/v2"
 	"github.com/stretchr/testify/suite"
-	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
-	tmtime "github.com/tendermint/tendermint/types/time"
 )
 
 var (
@@ -40,7 +41,7 @@ type KeeperTestSuite struct {
 }
 
 func (suite *KeeperTestSuite) SetupTest() {
-	key := sdk.NewKVStoreKey(types.StoreKey)
+	key := sdk.NewKVStoreKey(corktypes.StoreKey)
 	tkey := sdk.NewTransientStoreKey("transient_test")
 	testCtx := testutil.DefaultContext(key, tkey)
 	ctx := testCtx.WithBlockHeader(tmproto.Header{Height: 5, Time: tmtime.Now()})
@@ -63,8 +64,8 @@ func (suite *KeeperTestSuite) SetupTest() {
 		tkey,
 	)
 
-	params.Subspace(types.ModuleName)
-	subSpace, found := params.GetSubspace(types.ModuleName)
+	params.Subspace(corktypes.ModuleName)
+	subSpace, found := params.GetSubspace(corktypes.ModuleName)
 	suite.Assertions.True(found)
 
 	suite.corkKeeper = NewKeeper(

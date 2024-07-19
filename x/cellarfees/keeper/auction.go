@@ -7,21 +7,19 @@ import (
 )
 
 // Attempts to start an auction for the provided denom
-func (k Keeper) beginAuction(ctx sdk.Context, denom string) (started bool) {
+func (k Keeper) beginAuction(ctx sdk.Context, balance sdk.Coin) bool {
 	activeAuctions := k.auctionKeeper.GetActiveAuctions(ctx)
 
 	// Don't start an auction if the denom has an active one
 	for _, auction := range activeAuctions {
-		if denom == auction.StartingTokensForSale.Denom {
+		if balance.Denom == auction.StartingTokensForSale.Denom {
 			return false
 		}
 	}
 
-	// We auction the entire balance in the cellarfees module account
 	cellarfeesParams := k.GetParams(ctx)
-	balance := k.bankKeeper.GetBalance(ctx, k.GetFeesAccount(ctx).GetAddress(), denom)
 	if balance.IsZero() {
-		k.Logger(ctx).Error("Attempted to begin auction for denom %s with a zero balance.", denom)
+		k.Logger(ctx).Error("Attempted to begin auction for denom %s with a zero balance.", balance.Denom)
 		return false
 	}
 

@@ -3,14 +3,16 @@ package keeper
 import (
 	"bytes"
 	"encoding/binary"
+	"sort"
 
+	"github.com/cometbft/cometbft/libs/log"
 	"github.com/cosmos/cosmos-sdk/codec"
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
 	"github.com/ethereum/go-ethereum/common"
-	"github.com/peggyjv/sommelier/v7/x/cork/types"
-	"github.com/tendermint/tendermint/libs/log"
+	corktypes "github.com/peggyjv/sommelier/v7/x/cork/types"
+	types "github.com/peggyjv/sommelier/v7/x/cork/types/v2"
 )
 
 const corkVoteThresholdStr = "0.67"
@@ -20,15 +22,15 @@ type Keeper struct {
 	storeKey      storetypes.StoreKey
 	cdc           codec.BinaryCodec
 	paramSpace    paramtypes.Subspace
-	stakingKeeper types.StakingKeeper
-	gravityKeeper types.GravityKeeper
-	pubsubKeeper  types.PubsubKeeper
+	stakingKeeper corktypes.StakingKeeper
+	gravityKeeper corktypes.GravityKeeper
+	pubsubKeeper  corktypes.PubsubKeeper
 }
 
 // NewKeeper creates a new x/cork Keeper instance
 func NewKeeper(
 	cdc codec.BinaryCodec, key storetypes.StoreKey, paramSpace paramtypes.Subspace,
-	stakingKeeper types.StakingKeeper, gravityKeeper types.GravityKeeper, pubsubKeeper types.PubsubKeeper,
+	stakingKeeper corktypes.StakingKeeper, gravityKeeper corktypes.GravityKeeper, pubsubKeeper corktypes.PubsubKeeper,
 ) Keeper {
 	// set KeyTable if it has not already been set
 	if !paramSpace.HasKeyTable() {
@@ -47,7 +49,7 @@ func NewKeeper(
 
 // Logger returns a module-specific logger.
 func (k Keeper) Logger(ctx sdk.Context) log.Logger {
-	return ctx.Logger().With("module", "x/"+types.ModuleName)
+	return ctx.Logger().With("module", "x/"+corktypes.ModuleName)
 }
 
 /////////////////////
@@ -57,7 +59,7 @@ func (k Keeper) Logger(ctx sdk.Context) log.Logger {
 func (k Keeper) SetScheduledCork(ctx sdk.Context, blockHeight uint64, val sdk.ValAddress, cork types.Cork) []byte {
 	id := cork.IDHash(blockHeight)
 	bz := k.cdc.MustMarshal(&cork)
-	ctx.KVStore(k.storeKey).Set(types.GetScheduledCorkKey(blockHeight, id, val, common.HexToAddress(cork.TargetContractAddress)), bz)
+	ctx.KVStore(k.storeKey).Set(corktypes.GetScheduledCorkKey(blockHeight, id, val, common.HexToAddress(cork.TargetContractAddress)), bz)
 	return id
 }
 
@@ -66,7 +68,7 @@ func (k Keeper) SetScheduledCork(ctx sdk.Context, blockHeight uint64, val sdk.Va
 func (k Keeper) GetScheduledCork(ctx sdk.Context, blockHeight uint64, id []byte, val sdk.ValAddress, contract common.Address) (types.Cork, bool) {
 	store := ctx.KVStore(k.storeKey)
 
-	bz := store.Get(types.GetScheduledCorkKey(blockHeight, id, val, contract))
+	bz := store.Get(corktypes.GetScheduledCorkKey(blockHeight, id, val, contract))
 	if len(bz) == 0 {
 		return types.Cork{}, false
 	}
@@ -79,16 +81,16 @@ func (k Keeper) GetScheduledCork(ctx sdk.Context, blockHeight uint64, id []byte,
 // DeleteScheduledCork deletes the scheduled cork for a given validator
 // CONTRACT: must provide the validator address here not the delegate address
 func (k Keeper) DeleteScheduledCork(ctx sdk.Context, blockHeight uint64, id []byte, val sdk.ValAddress, contract common.Address) {
-	ctx.KVStore(k.storeKey).Delete(types.GetScheduledCorkKey(blockHeight, id, val, contract))
+	ctx.KVStore(k.storeKey).Delete(corktypes.GetScheduledCorkKey(blockHeight, id, val, contract))
 }
 
 // IterateScheduledCorks iterates over all scheduled corks in the store
 func (k Keeper) IterateScheduledCorks(ctx sdk.Context, cb func(val sdk.ValAddress, blockHeight uint64, id []byte, cel common.Address, cork types.Cork) (stop bool)) {
-	k.IterateScheduledCorksByPrefix(ctx, types.GetScheduledCorkKeyPrefix(), cb)
+	k.IterateScheduledCorksByPrefix(ctx, corktypes.GetScheduledCorkKeyPrefix(), cb)
 }
 
 func (k Keeper) IterateScheduledCorksByBlockHeight(ctx sdk.Context, blockHeight uint64, cb func(val sdk.ValAddress, blockHeight uint64, id []byte, cel common.Address, cork types.Cork) (stop bool)) {
-	k.IterateScheduledCorksByPrefix(ctx, types.GetScheduledCorkKeyByBlockHeightPrefix(blockHeight), cb)
+	k.IterateScheduledCorksByPrefix(ctx, corktypes.GetScheduledCorkKeyByBlockHeightPrefix(blockHeight), cb)
 }
 
 func (k Keeper) IterateScheduledCorksByPrefix(ctx sdk.Context, prefix []byte, cb func(val sdk.ValAddress, blockHeight uint64, id []byte, cel common.Address, cork types.Cork) (stop bool)) {
@@ -202,13 +204,13 @@ func (k Keeper) SetParams(ctx sdk.Context, params types.Params) {
 
 func (k Keeper) GetLatestInvalidationNonce(ctx sdk.Context) uint64 {
 	store := ctx.KVStore(k.storeKey)
-	bz := store.Get([]byte{types.LatestInvalidationNonceKey})
+	bz := store.Get([]byte{corktypes.LatestInvalidationNonceKey})
 	return sdk.BigEndianToUint64(bz)
 }
 
 func (k Keeper) SetLatestInvalidationNonce(ctx sdk.Context, invalidationNonce uint64) {
 	store := ctx.KVStore(k.storeKey)
-	store.Set([]byte{types.LatestInvalidationNonceKey}, sdk.Uint64ToBigEndian(invalidationNonce))
+	store.Set([]byte{corktypes.LatestInvalidationNonceKey}, sdk.Uint64ToBigEndian(invalidationNonce))
 }
 
 func (k Keeper) IncrementInvalidationNonce(ctx sdk.Context) uint64 {
@@ -223,12 +225,12 @@ func (k Keeper) IncrementInvalidationNonce(ctx sdk.Context) uint64 {
 
 func (k Keeper) SetCorkResult(ctx sdk.Context, id []byte, corkResult types.CorkResult) {
 	bz := k.cdc.MustMarshal(&corkResult)
-	ctx.KVStore(k.storeKey).Set(types.GetCorkResultKey(id), bz)
+	ctx.KVStore(k.storeKey).Set(corktypes.GetCorkResultKey(id), bz)
 }
 
 func (k Keeper) GetCorkResult(ctx sdk.Context, id []byte) (types.CorkResult, bool) {
 	store := ctx.KVStore(k.storeKey)
-	bz := store.Get(types.GetCorkResultKey(id))
+	bz := store.Get(corktypes.GetCorkResultKey(id))
 	if len(bz) == 0 {
 		return types.CorkResult{}, false
 	}
@@ -239,13 +241,13 @@ func (k Keeper) GetCorkResult(ctx sdk.Context, id []byte) (types.CorkResult, boo
 }
 
 func (k Keeper) DeleteCorkResult(ctx sdk.Context, id []byte) {
-	ctx.KVStore(k.storeKey).Delete(types.GetCorkResultKey(id))
+	ctx.KVStore(k.storeKey).Delete(corktypes.GetCorkResultKey(id))
 }
 
 // IterateCorksResult iterates over all cork results in the store
 func (k Keeper) IterateCorkResults(ctx sdk.Context, cb func(id []byte, blockHeight uint64, approved bool, approvalPercentage string, corkResult types.CorkResult) (stop bool)) {
 	store := ctx.KVStore(k.storeKey)
-	iter := sdk.KVStorePrefixIterator(store, types.GetCorkResultPrefix())
+	iter := sdk.KVStorePrefixIterator(store, corktypes.GetCorkResultPrefix())
 	defer iter.Close()
 
 	for ; iter.Valid(); iter.Next() {
@@ -334,12 +336,17 @@ func (k Keeper) GetApprovedScheduledCorks(ctx sdk.Context) (approvedCorks []type
 
 func (k Keeper) SetCellarIDs(ctx sdk.Context, c types.CellarIDSet) {
 	bz := k.cdc.MustMarshal(&c)
-	ctx.KVStore(k.storeKey).Set(types.MakeCellarIDsKey(), bz)
+	// always sort before writing to the store
+	cellarIDs := make([]string, 0, len(c.Ids))
+	cellarIDs = append(cellarIDs, c.Ids...)
+	sort.Strings(cellarIDs)
+	c.Ids = cellarIDs
+	ctx.KVStore(k.storeKey).Set(corktypes.MakeCellarIDsKey(), bz)
 }
 
 func (k Keeper) GetCellarIDs(ctx sdk.Context) (cellars []common.Address) {
 	store := ctx.KVStore(k.storeKey)
-	bz := store.Get(types.MakeCellarIDsKey())
+	bz := store.Get(corktypes.MakeCellarIDsKey())
 
 	var cids types.CellarIDSet
 	k.cdc.MustUnmarshal(bz, &cids)
@@ -369,7 +376,7 @@ func (k Keeper) HasCellarID(ctx sdk.Context, address common.Address) (found bool
 
 func (k Keeper) GetValidatorCorkCount(ctx sdk.Context, val sdk.ValAddress) (count uint64) {
 	store := ctx.KVStore(k.storeKey)
-	bz := store.Get(types.GetValidatorCorkCountKey(val))
+	bz := store.Get(corktypes.GetValidatorCorkCountKey(val))
 	if len(bz) == 0 {
 		return 0
 	}
@@ -380,7 +387,7 @@ func (k Keeper) GetValidatorCorkCount(ctx sdk.Context, val sdk.ValAddress) (coun
 func (k Keeper) SetValidatorCorkCount(ctx sdk.Context, val sdk.ValAddress, count uint64) {
 	bz := make([]byte, 8)
 	binary.BigEndian.PutUint64(bz, count)
-	ctx.KVStore(k.storeKey).Set(types.GetValidatorCorkCountKey(val), bz)
+	ctx.KVStore(k.storeKey).Set(corktypes.GetValidatorCorkCountKey(val), bz)
 }
 
 func (k Keeper) IncrementValidatorCorkCount(ctx sdk.Context, val sdk.ValAddress) {

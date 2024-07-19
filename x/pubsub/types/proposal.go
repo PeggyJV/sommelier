@@ -28,16 +28,12 @@ func init() {
 	// This PR was later reverted, but RegisterProposalTypeCodec was still left out. Not sure if
 	// this was intentional or not.
 	govtypesv1beta1.RegisterProposalType(ProposalTypeAddPublisher)
-	govtypesv1beta1.ModuleCdc.RegisterConcrete(&AddPublisherProposal{}, "sommelier/AddPublisherProposal", nil)
 
 	govtypesv1beta1.RegisterProposalType(ProposalTypeRemovePublisher)
-	govtypesv1beta1.ModuleCdc.RegisterConcrete(&RemovePublisherProposal{}, "sommelier/RemovePublisherProposal", nil)
 
 	govtypesv1beta1.RegisterProposalType(ProposalTypeAddDefaultSubscription)
-	govtypesv1beta1.ModuleCdc.RegisterConcrete(&AddDefaultSubscriptionProposal{}, "sommelier/AddDefaultSubscriptionProposal", nil)
 
 	govtypesv1beta1.RegisterProposalType(ProposalTypeRemoveDefaultSubscription)
-	govtypesv1beta1.ModuleCdc.RegisterConcrete(&RemoveDefaultSubscriptionProposal{}, "sommelier/RemoveDefaultSubscriptionProposal", nil)
 }
 
 //////////////////////////

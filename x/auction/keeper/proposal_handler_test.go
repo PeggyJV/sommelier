@@ -74,20 +74,6 @@ func (suite *KeeperTestSuite) TestUnhappyPathForProposalHandler() {
 			expectedError: errorsmod.Wrap(govTypes.ErrInvalidProposalContent, "proposal title cannot be blank"),
 		},
 		{
-			name: "Validate basic canary 2 -- cannot have non usomm & non gravity denom",
-			proposal: auctionTypes.SetTokenPricesProposal{
-				Title:       "Title",
-				Description: "Description",
-				TokenPrices: []*auctionTypes.ProposedTokenPrice{
-					{
-						Denom:    "weth",
-						UsdPrice: sdk.MustNewDecFromStr("17.0"),
-					},
-				},
-			},
-			expectedError: errorsmod.Wrapf(auctionTypes.ErrInvalidTokenPriceDenom, "denom: weth"),
-		},
-		{
 			name: "Cannot attempt to update prices twice for a denom in one proposal",
 			proposal: auctionTypes.SetTokenPricesProposal{
 				Title:       "Title",

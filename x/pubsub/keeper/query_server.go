@@ -73,6 +73,12 @@ func (k Keeper) QuerySubscribers(c context.Context, _ *types.QuerySubscribersReq
 	}, nil
 }
 
+func (k Keeper) QueryValidatorSubscribers(c context.Context, _ *types.QueryValidatorSubscribersRequest) (*types.QueryValidatorSubscribersResponse, error) {
+	return &types.QueryValidatorSubscribersResponse{
+		Subscribers: k.GetValidatorSubscribers(sdk.UnwrapSDKContext(c)),
+	}, nil
+}
+
 func (k Keeper) QueryPublisherIntent(c context.Context, req *types.QueryPublisherIntentRequest) (*types.QueryPublisherIntentResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "empty request")

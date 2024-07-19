@@ -51,6 +51,20 @@ func TestGenesisValidate(t *testing.T) {
 						FundingModuleAccount:       "someModule",
 						ProceedsModuleAccount:      "someModule",
 					},
+					{
+						Id:                         uint32(2),
+						StartingTokensForSale:      sdk.NewCoin("ibc/1", sdk.NewIntFromUint64(1000)),
+						StartBlock:                 uint64(200),
+						EndBlock:                   uint64(0),
+						InitialPriceDecreaseRate:   sdk.MustNewDecFromStr("0.05"),
+						CurrentPriceDecreaseRate:   sdk.MustNewDecFromStr("0.05"),
+						PriceDecreaseBlockInterval: uint64(10),
+						InitialUnitPriceInUsomm:    sdk.MustNewDecFromStr("20.0"),
+						CurrentUnitPriceInUsomm:    sdk.MustNewDecFromStr("20.0"),
+						RemainingTokensForSale:     sdk.NewCoin("ibc/1", sdk.NewIntFromUint64(900)),
+						FundingModuleAccount:       "someModule",
+						ProceedsModuleAccount:      "someModule",
+					},
 				},
 				Bids: []*Bid{
 					{
@@ -122,6 +136,11 @@ func TestGenesisValidate(t *testing.T) {
 					},
 					{
 						Denom:            "gravity0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+						UsdPrice:         sdk.MustNewDecFromStr("0.032"),
+						LastUpdatedBlock: uint64(321),
+					},
+					{
+						Denom:            "ibc/1",
 						UsdPrice:         sdk.MustNewDecFromStr("0.032"),
 						LastUpdatedBlock: uint64(321),
 					},
@@ -218,7 +237,7 @@ func TestGenesisValidate(t *testing.T) {
 					{
 						Denom:            "usdc",
 						UsdPrice:         sdk.MustNewDecFromStr("0.0008"),
-						LastUpdatedBlock: uint64(123),
+						LastUpdatedBlock: uint64(0),
 					},
 					{
 						Denom:            "gravity0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
@@ -230,7 +249,7 @@ func TestGenesisValidate(t *testing.T) {
 				LastBidId:     uint64(1),
 			},
 			expPass: false,
-			err:     errorsmod.Wrapf(ErrInvalidTokenPriceDenom, "denom: usdc"),
+			err:     errorsmod.Wrapf(ErrInvalidLastUpdatedBlock, "block: 0"),
 		},
 	}
 

@@ -11,7 +11,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/version"
 	govtypesv1beta1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
 	"github.com/ethereum/go-ethereum/common"
-	types "github.com/peggyjv/sommelier/v7/x/cork/types"
+	types "github.com/peggyjv/sommelier/v7/x/cork/types/v2"
 	pubsubtypes "github.com/peggyjv/sommelier/v7/x/pubsub/types"
 	"github.com/spf13/cobra"
 )
@@ -51,7 +51,7 @@ Where proposal.json contains:
   "description": "I have a hunch",
   "cellar_ids": ["0x123801a7D398351b8bE11C439e05C5B3259aeC9B", "0x456801a7D398351b8bE11C439e05C5B3259aeC9B"],
   "publisher_domain": "example.com",
-  "deposit": "10000usomm"
+  "deposit": "10000000usomm"
 }
 `,
 				version.AppName,
@@ -127,7 +127,7 @@ Where proposal.json contains:
   "title": "Dollary-doos LP Cellar Removal Proposal",
   "description": "I don't trust them",
   "cellar_ids": ["0x123801a7D398351b8bE11C439e05C5B3259aeC9B", "0x456801a7D398351b8bE11C439e05C5B3259aeC9B"],
-  "deposit": "10000usomm"
+  "deposit": "10000000usomm"
 }
 `,
 				version.AppName,
@@ -199,7 +199,7 @@ Where proposal.json contains:
   "block_height": 100000,
   "target_contract_address": "0x123801a7D398351b8bE11C439e05C5B3259aeC9B",
   "contract_call_proto_json": "{\"cellar_id\":\"0x123801a7D398351b8bE11C439e05C5B3259aeC9B\",\"<cellar_type_name>\":{\"some_fuction\":{\"function_args\":{}},\"block_height\":12345}}",
-  "deposit": "10000usomm"
+  "deposit": "10000000usomm"
 }
 
 The contract_call_proto_json field must be the JSON representation of a ScheduleRequest, which is defined in Steward's protos. For more information, see the Steward API docs at https://github.com/peggyjv/steward.

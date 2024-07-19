@@ -77,7 +77,7 @@ pub struct DefaultSubscription {
 }
 /// governance proposal to add a publisher, with domain, adress, and ca_cert the same as the Publisher type
 /// proof URL expected in the format: https://<domain>/<address>/cacert.pem and serving cacert.pem matching ca_cert
-#[derive(Clone, PartialEq, ::prost::Message)]
+#[derive(serde::Deserialize, serde::Serialize, Clone, PartialEq, ::prost::Message)]
 pub struct AddPublisherProposal {
     #[prost(string, tag = "1")]
     pub title: ::prost::alloc::string::String,
@@ -459,6 +459,13 @@ pub struct QuerySubscribersResponse {
     pub subscribers: ::prost::alloc::vec::Vec<Subscriber>,
 }
 #[derive(Clone, PartialEq, ::prost::Message)]
+pub struct QueryValidatorSubscribersRequest {}
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct QueryValidatorSubscribersResponse {
+    #[prost(message, repeated, tag = "1")]
+    pub subscribers: ::prost::alloc::vec::Vec<Subscriber>,
+}
+#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct QueryPublisherIntentRequest {
     #[prost(string, tag = "1")]
     pub publisher_domain: ::prost::alloc::string::String,
@@ -664,6 +671,22 @@ pub mod query_client {
             })?;
             let codec = tonic::codec::ProstCodec::default();
             let path = http::uri::PathAndQuery::from_static("/pubsub.v1.Query/QuerySubscribers");
+            self.inner.unary(request.into_request(), path, codec).await
+        }
+        pub async fn query_validator_subscribers(
+            &mut self,
+            request: impl tonic::IntoRequest<super::QueryValidatorSubscribersRequest>,
+        ) -> Result<tonic::Response<super::QueryValidatorSubscribersResponse>, tonic::Status>
+        {
+            self.inner.ready().await.map_err(|e| {
+                tonic::Status::new(
+                    tonic::Code::Unknown,
+                    format!("Service was not ready: {}", e.into()),
+                )
+            })?;
+            let codec = tonic::codec::ProstCodec::default();
+            let path =
+                http::uri::PathAndQuery::from_static("/pubsub.v1.Query/QueryValidatorSubscribers");
             self.inner.unary(request.into_request(), path, codec).await
         }
         pub async fn query_publisher_intent(

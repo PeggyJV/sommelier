@@ -7,6 +7,7 @@ import (
 	"encoding/binary"
 
 	errorsmod "cosmossdk.io/errors"
+	"github.com/cometbft/cometbft/libs/log"
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
@@ -15,7 +16,6 @@ import (
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
 	"github.com/peggyjv/sommelier/v7/app/params"
 	"github.com/peggyjv/sommelier/v7/x/auction/types"
-	"github.com/tendermint/tendermint/libs/log"
 )
 
 // Keeper of the auction store

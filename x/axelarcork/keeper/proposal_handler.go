@@ -3,13 +3,11 @@ package keeper
 import (
 	"encoding/json"
 	"fmt"
-	"sort"
 	"time"
 
-	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	distributiontypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
-	transfertypes "github.com/cosmos/ibc-go/v6/modules/apps/transfer/types"
-	clienttypes "github.com/cosmos/ibc-go/v6/modules/core/02-client/types"
+	transfertypes "github.com/cosmos/ibc-go/v7/modules/apps/transfer/types"
+	clienttypes "github.com/cosmos/ibc-go/v7/modules/core/02-client/types"
 
 	errorsmod "cosmossdk.io/errors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -64,7 +62,6 @@ func HandleAddManagedCellarsProposal(ctx sdk.Context, k Keeper, p types.AddAxela
 		idStrings[i] = cid.String()
 	}
 
-	sort.Strings(idStrings)
 	k.SetCellarIDs(ctx, config.Id, types.CellarIDSet{ChainId: config.Id, Ids: idStrings})
 
 	return nil
@@ -146,9 +143,14 @@ func HandleCommunityPoolSpendProposal(ctx sdk.Context, k Keeper, p types.AxelarC
 	}
 
 	feePool.CommunityPool = newPool
-	sender := authtypes.NewModuleAddress(distributiontypes.ModuleName)
 
-	// TODO(bolten: is there really no fee necessary or executor to target?
+	// since distribution is not an authorized sender, put them in the axelarcork module account
+	if err := k.bankKeeper.SendCoinsFromModuleToModule(ctx, distributiontypes.ModuleName, types.ModuleName, sdk.NewCoins(coinWithBridgeFee)); err != nil {
+		panic(err)
+	}
+
+	sender := k.GetSenderAccount(ctx).GetAddress().String()
+
 	axelarMemo := types.AxelarBody{
 		DestinationChain:   config.Name,
 		DestinationAddress: p.Recipient,
@@ -165,13 +167,13 @@ func HandleCommunityPoolSpendProposal(ctx sdk.Context, k Keeper, p types.AxelarC
 		params.IbcPort,
 		params.IbcChannel,
 		coinWithBridgeFee,
-		sender.String(),
+		sender,
 		params.GmpAccount,
 		clienttypes.ZeroHeight(),
 		uint64(ctx.BlockTime().Add(time.Duration(params.TimeoutDuration)).UnixNano()),
 		memo,
 	)
-	resp, err := k.transferKeeper.Transfer(ctx.Context(), transferMsg)
+	resp, err := k.transferKeeper.Transfer(sdk.WrapSDKContext(ctx), transferMsg)
 	if err != nil {
 		return err
 	}
@@ -182,7 +184,7 @@ func HandleCommunityPoolSpendProposal(ctx sdk.Context, k Keeper, p types.AxelarC
 		"amount", coinWithBridgeFee.Amount.String(),
 		"recipient", p.Recipient,
 		"chain", config.Name,
-		"sender", sender.String(),
+		"sender", sender,
 		"timeout duration", params.TimeoutDuration,
 	)
 
@@ -191,6 +193,11 @@ func HandleCommunityPoolSpendProposal(ctx sdk.Context, k Keeper, p types.AxelarC
 
 // HandleAddChainConfigurationProposal is a handler for executing a passed chain configuration addition proposal
 func HandleAddChainConfigurationProposal(ctx sdk.Context, k Keeper, p types.AddChainConfigurationProposal) error {
+	err := p.ChainConfiguration.ValidateBasic()
+	if err != nil {
+		return err
+	}
+
 	k.SetChainConfiguration(ctx, p.ChainConfiguration.Id, *p.ChainConfiguration)
 
 	return nil
@@ -198,6 +205,11 @@ func HandleAddChainConfigurationProposal(ctx sdk.Context, k Keeper, p types.AddC
 
 // HandleRemoveChainConfigurationProposal is a handler for executing a passed chain configuration removal proposal
 func HandleRemoveChainConfigurationProposal(ctx sdk.Context, k Keeper, p types.RemoveChainConfigurationProposal) error {
+	_, ok := k.GetChainConfigurationByID(ctx, p.ChainId)
+	if !ok {
+		return fmt.Errorf("chain by id %d not found", p.ChainId)
+	}
+
 	k.DeleteChainConfigurationByID(ctx, p.ChainId)
 
 	return nil

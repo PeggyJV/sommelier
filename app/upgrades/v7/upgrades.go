@@ -1,3 +1,6 @@
+//go:build exclude
+// +build exclude
+
 package v7
 
 import (
@@ -7,9 +10,9 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
-	icahostkeeper "github.com/cosmos/ibc-go/v6/modules/apps/27-interchain-accounts/host/keeper"
-	icahosttypes "github.com/cosmos/ibc-go/v6/modules/apps/27-interchain-accounts/host/types"
-	ibctransfertypes "github.com/cosmos/ibc-go/v6/modules/apps/transfer/types"
+	icahostkeeper "github.com/cosmos/ibc-go/v7/modules/apps/27-interchain-accounts/host/keeper"
+	icahosttypes "github.com/cosmos/ibc-go/v7/modules/apps/27-interchain-accounts/host/types"
+	ibctransfertypes "github.com/cosmos/ibc-go/v7/modules/apps/transfer/types"
 	auctionkeeper "github.com/peggyjv/sommelier/v7/x/auction/keeper"
 	auctiontypes "github.com/peggyjv/sommelier/v7/x/auction/types"
 	axelarcorkkeeper "github.com/peggyjv/sommelier/v7/x/axelarcork/keeper"
@@ -17,7 +20,7 @@ import (
 	cellarfeeskeeper "github.com/peggyjv/sommelier/v7/x/cellarfees/keeper"
 	cellarfeestypes "github.com/peggyjv/sommelier/v7/x/cellarfees/types"
 	corkkeeper "github.com/peggyjv/sommelier/v7/x/cork/keeper"
-	corktypes "github.com/peggyjv/sommelier/v7/x/cork/types"
+	corktypes "github.com/peggyjv/sommelier/v7/x/cork/types/v2"
 	pubsubkeeper "github.com/peggyjv/sommelier/v7/x/pubsub/keeper"
 	pubsubtypes "github.com/peggyjv/sommelier/v7/x/pubsub/types"
 )
@@ -46,17 +49,16 @@ func CreateUpgradeHandler(
 		corkParams := corktypes.DefaultParams()
 		corkKeeper.SetParams(ctx, corkParams)
 
-		// We must manually run InitGenesis for auction, axelarcork, and pubsub so we can adjust their values
+		// We must manually run InitGenesis for auction, axelarcork, cellarfees, and pubsub so we can adjust their values
 		// during the upgrade process. RunMigrations will migrate to the new cork version. Setting the consensus
 		// version to 1 prevents RunMigrations from running InitGenesis itself.
+		fromVM[cellarfeestypes.ModuleName] = mm.Modules[cellarfeestypes.ModuleName].ConsensusVersion()
 		fromVM[auctiontypes.ModuleName] = mm.Modules[auctiontypes.ModuleName].ConsensusVersion()
 		fromVM[axelarcorktypes.ModuleName] = mm.Modules[axelarcorktypes.ModuleName].ConsensusVersion()
 		fromVM[pubsubtypes.ModuleName] = mm.Modules[pubsubtypes.ModuleName].ConsensusVersion()
 
-		// Params values were introduced in this upgrade but no migration was necessary, so we initialize the
-		// new values to their defaults
-		ctx.Logger().Info("v7 upgrading: setting cellarfees default params")
-		cellarfeesKeeper.SetParams(ctx, cellarfeestypes.DefaultParams())
+		ctx.Logger().Info("v7 upgrading: initializing cellarfees genesis state")
+		cellarfeesInitGenesis(ctx, cellarfeesKeeper)
 
 		ctx.Logger().Info("v7 upgrade: initializing auction genesis state")
 		auctionInitGenesis(ctx, auctionKeeper)
@@ -72,11 +74,45 @@ func CreateUpgradeHandler(
 	}
 }
 
+// Initialize the cellarfees module with defaults
+func cellarfeesInitGenesis(ctx sdk.Context, cellarfeesKeeper cellarfeeskeeper.Keeper) {
+	genesisState := cellarfeestypes.DefaultGenesisState()
+
+	counters := cellarfeestypes.FeeAccrualCounters{
+		Counters: []cellarfeestypes.FeeAccrualCounter{
+			{
+				Denom: wbtcDenom,
+				Count: 2,
+			},
+			{
+				Denom: fraxDenom,
+				Count: 2,
+			},
+			{
+				Denom: usdcDenom,
+				Count: 2,
+			},
+			{
+				Denom: wethDenom,
+				Count: 2,
+			},
+		},
+	}
+
+	genesisState.FeeAccrualCounters = counters
+
+	if err := genesisState.Validate(); err != nil {
+		panic(fmt.Errorf("cellarfees genesis state invalid: %s", err))
+	}
+
+	cellarfeesKeeper.InitGenesis(ctx, genesisState)
+}
+
 // Initialize the auction module with prices for some stablecoins and SOMM.
 func auctionInitGenesis(ctx sdk.Context, auctionKeeper auctionkeeper.Keeper) {
 	genesisState := auctiontypes.DefaultGenesisState()
 
-	genesisState.Params.MinimumAuctionHeight = 13020000 // roughly 2024-02-08 09:30 UTC
+	genesisState.Params.MinimumAuctionHeight = 13110000 // roughly 2024-02-14 01:00 UTC
 
 	usomm52WeekLow := sdk.MustNewDecFromStr("0.079151")
 	eth52WeekHigh := sdk.MustNewDecFromStr("2618.33")
@@ -94,7 +130,7 @@ func auctionInitGenesis(ctx sdk.Context, auctionKeeper auctionkeeper.Keeper) {
 
 	// setting stables to 1 dollar
 	usdcPrice := auctiontypes.TokenPrice{
-		Denom:            "gravity0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+		Denom:            usdcDenom,
 		UsdPrice:         oneDollar,
 		Exponent:         6,
 		LastUpdatedBlock: lastUpdatedBlock,
@@ -115,7 +151,7 @@ func auctionInitGenesis(ctx sdk.Context, auctionKeeper auctionkeeper.Keeper) {
 	}
 
 	fraxPrice := auctiontypes.TokenPrice{
-		Denom:            "gravity0x853d955aCEf822Db058eb8505911ED77F175b99e",
+		Denom:            fraxDenom,
 		UsdPrice:         oneDollar,
 		Exponent:         18,
 		LastUpdatedBlock: lastUpdatedBlock,
@@ -123,14 +159,14 @@ func auctionInitGenesis(ctx sdk.Context, auctionKeeper auctionkeeper.Keeper) {
 
 	// setting non-stables
 	wethPrice := auctiontypes.TokenPrice{
-		Denom:            "gravity0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
+		Denom:            wethDenom,
 		UsdPrice:         eth52WeekHigh,
 		Exponent:         18,
 		LastUpdatedBlock: lastUpdatedBlock,
 	}
 
 	wbtcPrice := auctiontypes.TokenPrice{
-		Denom:            "gravity0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599",
+		Denom:            wbtcDenom,
 		UsdPrice:         btc52WeekHigh,
 		Exponent:         8,
 		LastUpdatedBlock: lastUpdatedBlock,
@@ -238,7 +274,10 @@ func pubsubInitGenesis(ctx sdk.Context, pubsubKeeper pubsubkeeper.Keeper) {
 		"1:0x05641a27C82799AaF22b436F20A3110410f29652",     // Steady MATIC
 		"1:0x6F069F711281618467dAe7873541EcC082761B33",     // Steady UNI
 		"1:0x6a6731f1754e3088ea35c8ddfd55cFF4d0FA5052",     // Turbo CRVUSD
+		"1:0x6c1edce139291Af5b84fB1e496c9747F83E876c9",     // Turbo DIVETH
 		"1:0x9a7b4980C6F0FCaa50CD5f288Ad7038f434c692e",     // Turbo EETH
+		"1:0xdAdC82e26b3739750E036dFd9dEfd3eD459b877A",     // Turbo EETH V2
+		"1:0x19B8D8FC682fC56FbB42653F68c7d48Dd3fe597E",     // Turbo ETHX
 		"1:0x0C190DEd9Be5f512Bd72827bdaD4003e9Cc7975C",     // Turbo GHO
 		"1:0x5195222f69c5821f8095ec565E71e18aB6A2298f",     // Turbo SOMM
 		"1:0xc7372Ab5dd315606dB799246E8aA112405abAeFf",     // Turbo stETH (stETH deposit)
@@ -249,7 +288,7 @@ func pubsubInitGenesis(ctx sdk.Context, pubsubKeeper pubsubkeeper.Keeper) {
 	}
 
 	// Set 7seas publisher intents for existing cellars
-	publisherIntents := make([]*pubsubtypes.PublisherIntent, 0, 28)
+	publisherIntents := make([]*pubsubtypes.PublisherIntent, 0, 31)
 	for _, cellar := range cellars {
 		publisherIntents = append(publisherIntents, &pubsubtypes.PublisherIntent{
 			SubscriptionId:     cellar,
@@ -260,7 +299,7 @@ func pubsubInitGenesis(ctx sdk.Context, pubsubKeeper pubsubkeeper.Keeper) {
 	}
 
 	// Set default subscriptions for 7seas as the publisher for existing cellars
-	defaultSubscriptions := make([]*pubsubtypes.DefaultSubscription, 0, 28)
+	defaultSubscriptions := make([]*pubsubtypes.DefaultSubscription, 0, 31)
 	for _, cellar := range cellars {
 		defaultSubscriptions = append(defaultSubscriptions, &pubsubtypes.DefaultSubscription{
 			SubscriptionId:  cellar,
@@ -270,7 +309,7 @@ func pubsubInitGenesis(ctx sdk.Context, pubsubKeeper pubsubkeeper.Keeper) {
 
 	// Create subscribers and intents for existing validators
 	subscribers := createSubscribers()
-	subscriberIntents := make([]*pubsubtypes.SubscriberIntent, 0, 980)
+	subscriberIntents := make([]*pubsubtypes.SubscriberIntent, 0, 1085)
 	for _, subscriber := range subscribers {
 		for _, cellar := range cellars {
 			subscriberIntents = append(subscriberIntents, &pubsubtypes.SubscriberIntent{

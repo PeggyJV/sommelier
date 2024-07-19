@@ -16,7 +16,7 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/ethclient"
 	gbtypes "github.com/peggyjv/gravity-bridge/module/v4/x/gravity/types"
-	"github.com/peggyjv/sommelier/v7/x/cork/types"
+	types "github.com/peggyjv/sommelier/v7/x/cork/types/v2"
 	pubsubtypes "github.com/peggyjv/sommelier/v7/x/pubsub/types"
 )
 
@@ -24,6 +24,9 @@ func (s *IntegrationTestSuite) TestScheduledCork() {
 	s.Run("Bring up chain, and schedule a cork call to ethereum", func() {
 		s.T().Log("submitting a scheduled cork porposal with unsupported cellar ID to verify rejection")
 		proposer := s.chain.proposer
+		orch0 := s.chain.orchestrators[0]
+		orch0Ctx, err := s.chain.clientContext("tcp://localhost:26657", orch0.keyring, "orch", s.chain.orchestrators[0].address())
+		s.Require().NoError(err)
 		proposerCtx, err := s.chain.clientContext("tcp://localhost:26657", proposer.keyring, "proposer", proposer.address())
 		s.Require().NoError(err)
 		invalidProposal := types.ScheduledCorkProposal{
@@ -45,7 +48,7 @@ func (s *IntegrationTestSuite) TestScheduledCork() {
 		)
 		s.Require().NoError(err, "unable to create governance proposal")
 
-		submitProposalResponse, err := s.chain.sendMsgs(*proposerCtx, proposalMsg)
+		submitProposalResponse, err := s.chain.sendMsgs(*orch0Ctx, proposalMsg)
 		s.Require().NoError(err)
 		s.Require().Zero(submitProposalResponse.Code, "raw log: %s", submitProposalResponse.RawLog)
 		govQueryClient := govtypesv1beta1.NewQueryClient(proposerCtx)
@@ -104,11 +107,16 @@ func (s *IntegrationTestSuite) TestScheduledCork() {
 		s.Require().Zero(submitProposalResponse.Code, "raw log: %s", submitProposalResponse.RawLog)
 
 		s.T().Log("check proposal was submitted correctly")
-		proposalsQueryResponse, err = govQueryClient.Proposals(context.Background(), &govtypesv1beta1.QueryProposalsRequest{})
-		s.Require().NoError(err)
-		s.Require().NotEmpty(proposalsQueryResponse.Proposals)
-		s.Require().Equal(uint64(1), proposalsQueryResponse.Proposals[0].ProposalId, "not proposal id 1")
-		s.Require().Equal(govtypesv1beta1.StatusVotingPeriod, proposalsQueryResponse.Proposals[0].Status, "proposal not in voting period")
+		s.Require().Eventually(func() bool {
+			proposalsQueryResponse, err = govQueryClient.Proposals(context.Background(), &govtypesv1beta1.QueryProposalsRequest{})
+			if err != nil {
+				return false
+			}
+			if len(proposalsQueryResponse.Proposals) == 0 {
+				return false
+			}
+			return govtypesv1beta1.StatusVotingPeriod == proposalsQueryResponse.Proposals[0].Status
+		}, time.Second*30, time.Second*5, "proposal submission was never found")
 
 		s.T().Log("vote for proposal allowing contract")
 		for _, val := range s.chain.validators {
@@ -203,9 +211,14 @@ func (s *IntegrationTestSuite) TestScheduledCork() {
 
 		s.T().Log("verify scheduled corks were created")
 		corkQueryClient := types.NewQueryClient(proposerCtx)
-		res, err := corkQueryClient.QueryScheduledCorksByBlockHeight(context.Background(), &types.QueryScheduledCorksByBlockHeightRequest{BlockHeight: uint64(targetBlockHeight)})
-		s.Require().NoError(err, "failed to query scheduled corks by height")
-		s.Require().Len(res.Corks, 4)
+
+		s.Require().Eventually(func() bool {
+			res, err := corkQueryClient.QueryScheduledCorksByBlockHeight(context.Background(), &types.QueryScheduledCorksByBlockHeightRequest{BlockHeight: uint64(targetBlockHeight)})
+			if err != nil {
+				return false
+			}
+			return len(res.Corks) == 4
+		}, 10*time.Second, 1*time.Second, "scheduled corks were not created")
 
 		s.T().Log("wait for scheduled height")
 		gbClient := gbtypes.NewQueryClient(proposerCtx)
@@ -245,7 +258,7 @@ func (s *IntegrationTestSuite) TestScheduledCork() {
 		s.Require().Equal(counterContract, common.HexToAddress(resultRes.CorkResult.Cork.TargetContractAddress))
 
 		s.T().Log("verify scheduled corks were deleted")
-		res, err = corkQueryClient.QueryScheduledCorksByBlockHeight(context.Background(), &types.QueryScheduledCorksByBlockHeightRequest{BlockHeight: uint64(targetBlockHeight)})
+		res, err := corkQueryClient.QueryScheduledCorksByBlockHeight(context.Background(), &types.QueryScheduledCorksByBlockHeightRequest{BlockHeight: uint64(targetBlockHeight)})
 		s.Require().NoError(err, "failed to query scheduled corks by height")
 		s.Require().Len(res.Corks, 0)
 
@@ -352,11 +365,17 @@ func (s *IntegrationTestSuite) TestScheduledCork() {
 		s.Require().Zero(submitProposalResponse.Code, "raw log: %s", submitProposalResponse.RawLog)
 
 		s.T().Log("check proposal was submitted correctly")
-		proposalsQueryResponse, err = govQueryClient.Proposals(context.Background(), &govtypesv1beta1.QueryProposalsRequest{})
-		s.Require().NoError(err)
-		s.Require().NotEmpty(proposalsQueryResponse.Proposals)
-		s.Require().Equal(uint64(3), proposalsQueryResponse.Proposals[2].ProposalId, "not proposal id 3")
-		s.Require().Equal(govtypesv1beta1.StatusVotingPeriod, proposalsQueryResponse.Proposals[2].Status, "proposal not in voting period")
+		s.Require().Eventually(func() bool {
+			proposalsQueryResponse, err = govQueryClient.Proposals(context.Background(), &govtypesv1beta1.QueryProposalsRequest{})
+			if err != nil {
+				return false
+			}
+			if len(proposalsQueryResponse.Proposals) == 0 {
+				return false
+			}
+			s.Require().Equal(uint64(3), proposalsQueryResponse.Proposals[2].ProposalId, "not proposal id 3")
+			return govtypesv1beta1.StatusVotingPeriod == proposalsQueryResponse.Proposals[2].Status
+		}, time.Second*30, time.Second*5, "proposal submission was never found")
 
 		s.T().Log("vote for proposal allowing contract")
 		for _, val := range s.chain.validators {

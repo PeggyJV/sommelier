@@ -6,71 +6,93 @@ import "google/api/annotations.proto";
 import "cosmos/base/query/v1beta1/pagination.proto";
 import "pubsub/v1/params.proto";
 import "pubsub/v1/pubsub.proto";
+import "cosmos/query/v1/query.proto";
 
 option go_package = "github.com/peggyjv/sommelier/v7/x/pubsub/types";
 
 service Query {
   rpc Params(QueryParamsRequest) returns (QueryParamsResponse) {
+    option (cosmos.query.v1.module_query_safe) = true;
     option (google.api.http).get = "/sommelier/pubsub/v1/params";
   }
 
   rpc QueryPublisher(QueryPublisherRequest) returns (QueryPublisherResponse) {
+    option (cosmos.query.v1.module_query_safe) = true;
     option (google.api.http).get = "/sommelier/pubsub/v1/publishers/{publisher_domain}";
   }
 
   rpc QueryPublishers(QueryPublishersRequest) returns (QueryPublishersResponse) {
+    option (cosmos.query.v1.module_query_safe) = true;
     option (google.api.http).get = "/sommelier/pubsub/v1/publishers";
   }
 
   rpc QuerySubscriber(QuerySubscriberRequest) returns (QuerySubscriberResponse) {
+    option (cosmos.query.v1.module_query_safe) = true;
     option (google.api.http).get = "/sommelier/pubsub/v1/subscribers/{subscriber_address}";
   }
 
   rpc QuerySubscribers(QuerySubscribersRequest) returns (QuerySubscribersResponse) {
+    option (cosmos.query.v1.module_query_safe) = true;
     option (google.api.http).get = "/sommelier/pubsub/v1/subscribers";
   }
 
+  rpc QueryValidatorSubscribers(QueryValidatorSubscribersRequest) returns (QueryValidatorSubscribersResponse) {
+    option (cosmos.query.v1.module_query_safe) = true;
+    option (google.api.http).get = "/sommelier/pubsub/v1/validator_subscribers";
+  }
+
   rpc QueryPublisherIntent(QueryPublisherIntentRequest) returns (QueryPublisherIntentResponse) {
+    option (cosmos.query.v1.module_query_safe) = true;
     option (google.api.http).get = "/sommelier/pubsub/v1/publisher_intents/{publisher_domain}/{subscription_id}";
   }
 
   rpc QueryPublisherIntents(QueryPublisherIntentsRequest) returns (QueryPublisherIntentsResponse) {
+    option (cosmos.query.v1.module_query_safe) = true;
     option (google.api.http).get = "/sommelier/pubsub/v1/publisher_intents";
   }
 
   rpc QueryPublisherIntentsByPublisherDomain(QueryPublisherIntentsByPublisherDomainRequest) returns (QueryPublisherIntentsByPublisherDomainResponse) {
+    option (cosmos.query.v1.module_query_safe) = true;
     option (google.api.http).get = "/sommelier/pubsub/v1/publisher_intents/{publisher_domain}";
   }
 
   rpc QueryPublisherIntentsBySubscriptionID(QueryPublisherIntentsBySubscriptionIDRequest) returns (QueryPublisherIntentsBySubscriptionIDResponse) {
+    option (cosmos.query.v1.module_query_safe) = true;
     option (google.api.http).get = "/sommelier/pubsub/v1/publisher_intents_by_subscription_id/{subscription_id}";
   }
 
   rpc QuerySubscriberIntent(QuerySubscriberIntentRequest) returns (QuerySubscriberIntentResponse) {
+    option (cosmos.query.v1.module_query_safe) = true;
     option (google.api.http).get = "/sommelier/pubsub/v1/subscriber_intents/{subscriber_address}/{subscription_id}";
   }
 
   rpc QuerySubscriberIntents(QuerySubscriberIntentsRequest) returns (QuerySubscriberIntentsResponse) {
+    option (cosmos.query.v1.module_query_safe) = true;
     option (google.api.http).get = "/sommelier/pubsub/v1/subscriber_intents";
   }
 
   rpc QuerySubscriberIntentsBySubscriberAddress(QuerySubscriberIntentsBySubscriberAddressRequest) returns (QuerySubscriberIntentsBySubscriberAddressResponse) {
+    option (cosmos.query.v1.module_query_safe) = true;
     option (google.api.http).get = "/sommelier/pubsub/v1/subscriber_intents/{subscriber_address}";
   }
 
   rpc QuerySubscriberIntentsBySubscriptionID(QuerySubscriberIntentsBySubscriptionIDRequest) returns (QuerySubscriberIntentsBySubscriptionIDResponse) {
+    option (cosmos.query.v1.module_query_safe) = true;
     option (google.api.http).get = "/sommelier/pubsub/v1/subscriber_intents_by_subscription_id/{subscription_id}";
   }
 
   rpc QuerySubscriberIntentsByPublisherDomain(QuerySubscriberIntentsByPublisherDomainRequest) returns (QuerySubscriberIntentsByPublisherDomainResponse) {
+    option (cosmos.query.v1.module_query_safe) = true;
     option (google.api.http).get = "/sommelier/pubsub/v1/subscriber_intents_by_publisher_domain/{publisher_domain}";
   }
 
   rpc QueryDefaultSubscription(QueryDefaultSubscriptionRequest) returns (QueryDefaultSubscriptionResponse) {
+    option (cosmos.query.v1.module_query_safe) = true;
     option (google.api.http).get = "/sommelier/pubsub/v1/default_subscriptions/{subscription_id}";
   }
 
   rpc QueryDefaultSubscriptions(QueryDefaultSubscriptionsRequest) returns (QueryDefaultSubscriptionsResponse) {
+    option (cosmos.query.v1.module_query_safe) = true;
     option (google.api.http).get = "/sommelier/pubsub/v1/default_subscriptions";
   }
 }
@@ -106,6 +128,12 @@ message QuerySubscriberResponse {
 message QuerySubscribersRequest {}
 
 message QuerySubscribersResponse {
+  repeated Subscriber subscribers = 1;
+}
+
+message QueryValidatorSubscribersRequest {}
+
+message QueryValidatorSubscribersResponse {
   repeated Subscriber subscribers = 1;
 }
 

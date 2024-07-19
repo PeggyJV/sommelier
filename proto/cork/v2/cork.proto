@@ -1,7 +1,9 @@
 syntax = "proto3";
 package cork.v2;
 
-option go_package = "github.com/peggyjv/sommelier/v7/x/cork/types";
+import "gogoproto/gogo.proto";
+
+option go_package = "github.com/peggyjv/sommelier/v7/x/cork/types/v2";
 
 message Cork {
   // call body containing the ABI encoded bytes to send to the contract

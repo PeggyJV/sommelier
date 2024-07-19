@@ -3,13 +3,15 @@ package keeper
 import (
 	"bytes"
 	"fmt"
+	"sort"
 
-	"github.com/tendermint/tendermint/libs/log"
+	"github.com/cometbft/cometbft/libs/log"
 
 	"github.com/cosmos/cosmos-sdk/codec"
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
+	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 	"github.com/peggyjv/sommelier/v7/x/pubsub/types"
 )
 
@@ -163,6 +165,29 @@ func (k Keeper) GetSubscribers(ctx sdk.Context) (subscribers []*types.Subscriber
 	return
 }
 
+func (k Keeper) GetValidatorSubscribers(ctx sdk.Context) (subscribers []*types.Subscriber) {
+	allSubscribers := k.GetSubscribers(ctx)
+	for _, subscriber := range allSubscribers {
+		subscriberAddress, err := sdk.AccAddressFromBech32(subscriber.Address)
+		if err != nil {
+			ctx.Logger().Error("subscriber address %s not valid bech32 but in state", subscriber.Address)
+			continue
+		}
+		var validatorI stakingtypes.ValidatorI
+		if validator := k.gravityKeeper.GetOrchestratorValidatorAddress(ctx, subscriberAddress); validator == nil {
+			validatorI = k.stakingKeeper.Validator(ctx, sdk.ValAddress(subscriberAddress))
+		} else {
+			validatorI = k.stakingKeeper.Validator(ctx, validator)
+		}
+
+		if validatorI != nil {
+			subscribers = append(subscribers, subscriber)
+		}
+	}
+
+	return
+}
+
 func (k Keeper) DeleteSubscriber(ctx sdk.Context, subscriberAddress sdk.AccAddress) {
 	ctx.KVStore(k.storeKey).Delete(types.GetSubscriberKey(subscriberAddress))
 
@@ -176,6 +201,10 @@ func (k Keeper) DeleteSubscriber(ctx sdk.Context, subscriberAddress sdk.AccAddre
 /////////////////////
 
 func (k Keeper) SetPublisherIntent(ctx sdk.Context, publisherIntent types.PublisherIntent) {
+	allowedAddressesSlice := make([]string, 0, len(publisherIntent.AllowedAddresses))
+	allowedAddressesSlice = append(allowedAddressesSlice, publisherIntent.AllowedAddresses...)
+	sort.Strings(allowedAddressesSlice)
+	publisherIntent.AllowedAddresses = allowedAddressesSlice
 	bz := k.cdc.MustMarshal(&publisherIntent)
 	ctx.KVStore(k.storeKey).Set(types.GetPublisherIntentByPublisherDomainKey(publisherIntent.PublisherDomain, publisherIntent.SubscriptionId), bz)
 	ctx.KVStore(k.storeKey).Set(types.GetPublisherIntentBySubscriptionIDKey(publisherIntent.SubscriptionId, publisherIntent.PublisherDomain), bz)

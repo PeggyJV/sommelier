@@ -9,8 +9,9 @@ import (
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
-	v1types "github.com/peggyjv/sommelier/v7/x/cork/migrations/v1/types"
-	"github.com/peggyjv/sommelier/v7/x/cork/types"
+	corktypes "github.com/peggyjv/sommelier/v7/x/cork/types"
+	v1types "github.com/peggyjv/sommelier/v7/x/cork/types/v1"
+	types "github.com/peggyjv/sommelier/v7/x/cork/types/v2"
 )
 
 func MigrateStore(ctx sdk.Context, storeKey storetypes.StoreKey, cdc codec.BinaryCodec) error {
@@ -36,17 +37,17 @@ func MigrateParamStore(ctx sdk.Context, subspace paramstypes.Subspace) error {
 }
 
 func removeCommitPeriod(store storetypes.KVStore) {
-	store.Delete([]byte{v1types.CommitPeriodStartKey})
+	store.Delete([]byte{corktypes.CommitPeriodStartKey})
 }
 
 // wipe away all existing cork state during upgrade -- there shouldn't be in-transit corks
 // during the upgrade
 func removeOldCorks(store storetypes.KVStore, cdc codec.BinaryCodec) {
 	var validatorCorks []*v1types.ValidatorCork
-	iter := sdk.KVStorePrefixIterator(store, []byte{v1types.CorkForAddressKeyPrefix})
+	iter := sdk.KVStorePrefixIterator(store, []byte{corktypes.CorkForAddressKeyPrefix})
 	defer iter.Close()
 	for ; iter.Valid(); iter.Next() {
-		keyBytes := bytes.NewBuffer(bytes.TrimPrefix(iter.Key(), []byte{v1types.CorkForAddressKeyPrefix}))
+		keyBytes := bytes.NewBuffer(bytes.TrimPrefix(iter.Key(), []byte{corktypes.CorkForAddressKeyPrefix}))
 		val := sdk.ValAddress(keyBytes.Next(20))
 
 		var cork v1types.Cork
@@ -58,14 +59,14 @@ func removeOldCorks(store storetypes.KVStore, cdc codec.BinaryCodec) {
 	}
 
 	for _, validatorCork := range validatorCorks {
-		store.Delete(v1types.GetCorkForValidatorAddressKey(
+		store.Delete(corktypes.GetCorkForValidatorAddressKeyV1(
 			sdk.ValAddress(validatorCork.Validator),
 			common.HexToAddress(validatorCork.Cork.TargetContractAddress),
 		))
 	}
 
 	var scheduledCorks []*v1types.ScheduledCork
-	iter = sdk.KVStorePrefixIterator(store, []byte{v1types.ScheduledCorkKeyPrefix})
+	iter = sdk.KVStorePrefixIterator(store, []byte{corktypes.ScheduledCorkKeyPrefix})
 	defer iter.Close()
 	for ; iter.Valid(); iter.Next() {
 		var cork v1types.Cork
@@ -83,7 +84,7 @@ func removeOldCorks(store storetypes.KVStore, cdc codec.BinaryCodec) {
 	}
 
 	for _, scheduledCork := range scheduledCorks {
-		store.Delete(v1types.GetScheduledCorkKey(
+		store.Delete(corktypes.GetScheduledCorkKeyV1(
 			scheduledCork.BlockHeight,
 			sdk.ValAddress(scheduledCork.Validator),
 			common.HexToAddress(scheduledCork.Cork.TargetContractAddress),

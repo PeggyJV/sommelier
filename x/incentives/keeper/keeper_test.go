@@ -3,6 +3,8 @@ package keeper
 import (
 	"testing"
 
+	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
+	tmtime "github.com/cometbft/cometbft/types/time"
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/testutil"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -14,8 +16,6 @@ import (
 	incentivestestutil "github.com/peggyjv/sommelier/v7/x/incentives/testutil"
 	incentivesTypes "github.com/peggyjv/sommelier/v7/x/incentives/types"
 	"github.com/stretchr/testify/suite"
-	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
-	tmtime "github.com/tendermint/tendermint/types/time"
 )
 
 type KeeperTestSuite struct {
