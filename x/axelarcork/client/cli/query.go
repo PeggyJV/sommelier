@@ -3,10 +3,9 @@ package cli
 import (
 	"fmt"
 
-	"cosmossdk.io/math"
-
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
+	"github.com/peggyjv/sommelier/internal"
 	"github.com/peggyjv/sommelier/v7/x/axelarcork/types"
 	"github.com/spf13/cobra"
 )
@@ -112,13 +111,13 @@ func queryCellarIDsByChainID() *cobra.Command {
 				return err
 			}
 
-			chainID, err := math.ParseUint(args[0])
+			chainID, err := internal.ParseUint64(args[0])
 			if err != nil {
 				return err
 			}
 
 			req := &types.QueryCellarIDsByChainIDRequest{
-				ChainId: chainID.Uint64(),
+				ChainId: chainID,
 			}
 
 			queryClient := types.NewQueryClient(ctx)
@@ -151,13 +150,13 @@ func queryScheduledCorks() *cobra.Command {
 
 			queryClient := types.NewQueryClient(ctx)
 
-			chainID, err := math.ParseUint(args[0])
+			chainID, err := internal.ParseUint64(args[0])
 			if err != nil {
 				return err
 			}
 
 			req := &types.QueryScheduledCorksRequest{
-				ChainId: chainID.Uint64(),
+				ChainId: chainID,
 			}
 
 			res, err := queryClient.QueryScheduledCorks(cmd.Context(), req)
@@ -186,20 +185,20 @@ func queryScheduledCorksByBlockHeight() *cobra.Command {
 				return err
 			}
 
-			height, err := math.ParseUint(args[0])
+			height, err := internal.ParseUint64(args[0])
 			if err != nil {
 				return err
 			}
 
 			queryClient := types.NewQueryClient(ctx)
-			chainID, err := math.ParseUint(args[0])
+			chainID, err := internal.ParseUint64(args[0])
 			if err != nil {
 				return err
 			}
 
 			req := &types.QueryScheduledCorksByBlockHeightRequest{
-				BlockHeight: height.Uint64(),
-				ChainId:     chainID.Uint64(),
+				BlockHeight: height,
+				ChainId:     chainID,
 			}
 
 			res, err := queryClient.QueryScheduledCorksByBlockHeight(cmd.Context(), req)
@@ -229,13 +228,13 @@ func queryScheduledBlockHeights() *cobra.Command {
 			}
 
 			queryClient := types.NewQueryClient(ctx)
-			chainID, err := math.ParseUint(args[0])
+			chainID, err := internal.ParseUint64(args[0])
 			if err != nil {
 				return err
 			}
 
 			req := &types.QueryScheduledBlockHeightsRequest{
-				ChainId: chainID.Uint64(),
+				ChainId: chainID,
 			}
 
 			res, err := queryClient.QueryScheduledBlockHeights(cmd.Context(), req)
@@ -272,14 +271,14 @@ func queryScheduledCorksByID() *cobra.Command {
 			}
 
 			queryClient := types.NewQueryClient(ctx)
-			chainID, err := math.ParseUint(args[0])
+			chainID, err := internal.ParseUint64(args[0])
 			if err != nil {
 				return err
 			}
 
 			req := &types.QueryScheduledCorksByIDRequest{
 				Id:      id,
-				ChainId: chainID.Uint64(),
+				ChainId: chainID,
 			}
 			res, err := queryClient.QueryScheduledCorksByID(cmd.Context(), req)
 			if err != nil {
@@ -314,14 +313,14 @@ func queryCorkResult() *cobra.Command {
 			}
 
 			queryClient := types.NewQueryClient(ctx)
-			chainID, err := math.ParseUint(args[1])
+			chainID, err := internal.ParseUint64(args[1])
 			if err != nil {
 				return err
 			}
 
 			req := &types.QueryCorkResultRequest{
 				Id:      corkID,
-				ChainId: chainID.Uint64(),
+				ChainId: chainID,
 			}
 
 			res, err := queryClient.QueryCorkResult(cmd.Context(), req)
@@ -351,13 +350,13 @@ func queryCorkResults() *cobra.Command {
 			}
 
 			queryClient := types.NewQueryClient(ctx)
-			chainID, err := math.ParseUint(args[0])
+			chainID, err := internal.ParseUint64(args[0])
 			if err != nil {
 				return err
 			}
 
 			req := &types.QueryCorkResultsRequest{
-				ChainId: chainID.Uint64(),
+				ChainId: chainID,
 			}
 
 			res, err := queryClient.QueryCorkResults(cmd.Context(), req)
@@ -477,7 +476,7 @@ func queryWinningAxelarCork() *cobra.Command {
 
 			queryClient := types.NewQueryClient(ctx)
 
-			chainID, err := math.ParseUint(args[0])
+			chainID, err := internal.ParseUint64(args[0])
 			if err != nil {
 				return err
 			}
@@ -485,7 +484,7 @@ func queryWinningAxelarCork() *cobra.Command {
 			contract := args[1]
 
 			req := &types.QueryWinningAxelarCorkRequest{
-				ChainId:         chainID.Uint64(),
+				ChainId:         chainID,
 				ContractAddress: contract,
 			}
 
@@ -517,13 +516,13 @@ func queryWinningAxelarCorks() *cobra.Command {
 
 			queryClient := types.NewQueryClient(ctx)
 
-			chainID, err := math.ParseUint(args[0])
+			chainID, err := internal.ParseUint64(args[0])
 			if err != nil {
 				return err
 			}
 
 			req := &types.QueryWinningAxelarCorksRequest{
-				ChainId: chainID.Uint64(),
+				ChainId: chainID,
 			}
 
 			res, err := queryClient.QueryWinningAxelarCorks(cmd.Context(), req)

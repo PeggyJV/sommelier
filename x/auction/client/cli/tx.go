@@ -5,14 +5,13 @@ import (
 	"os"
 	"strings"
 
-	"cosmossdk.io/math"
-
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/client/tx"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/version"
 	govtypesv1beta1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
+	"github.com/peggyjv/sommelier/internal"
 	types "github.com/peggyjv/sommelier/v7/x/auction/types"
 	"github.com/spf13/cobra"
 )
@@ -121,7 +120,7 @@ $ %s tx auction submit-bid 1 10000usomm 50000gravity0xdac17f958d2ee523a220620699
 				return err
 			}
 
-			auctionID, err := math.ParseUint(args[0])
+			auctionID, err := internal.ParseUint32(args[0])
 			if err != nil {
 				return err
 			}
@@ -141,7 +140,7 @@ $ %s tx auction submit-bid 1 10000usomm 50000gravity0xdac17f958d2ee523a220620699
 				return fmt.Errorf("must include `--from` flag")
 			}
 
-			msg, err := types.NewMsgSubmitBidRequest(uint32(auctionID.Uint64()), maxBidInUsomm, saleTokenMinimumAmount, bidder)
+			msg, err := types.NewMsgSubmitBidRequest(auctionID, maxBidInUsomm, saleTokenMinimumAmount, bidder)
 			if err != nil {
 				return err
 			}

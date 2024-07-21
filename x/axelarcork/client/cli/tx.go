@@ -5,8 +5,6 @@ import (
 	"os"
 	"strings"
 
-	"cosmossdk.io/math"
-
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/client/tx"
@@ -14,6 +12,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/version"
 	govtypesv1beta1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
 	"github.com/ethereum/go-ethereum/common"
+	"github.com/peggyjv/sommelier/internal"
 	types "github.com/peggyjv/sommelier/v7/x/axelarcork/types"
 	pubsubtypes "github.com/peggyjv/sommelier/v7/x/pubsub/types"
 	"github.com/spf13/cobra"
@@ -56,7 +55,7 @@ func CmdScheduleAxelarCork() *cobra.Command {
 
 			from := clientCtx.GetFromAddress()
 
-			chainID, err := math.ParseUint(args[0])
+			chainID, err := internal.ParseUint64(args[0])
 			if err != nil {
 				return err
 			}
@@ -66,7 +65,7 @@ func CmdScheduleAxelarCork() *cobra.Command {
 				return fmt.Errorf("contract address %s is invalid", contractAddr)
 			}
 
-			blockHeight, err := math.ParseUint(args[2])
+			blockHeight, err := internal.ParseUint64(args[2])
 			if err != nil {
 				return err
 			}
@@ -76,11 +75,11 @@ func CmdScheduleAxelarCork() *cobra.Command {
 			scheduleCorkMsg := types.MsgScheduleAxelarCorkRequest{
 				Cork: &types.AxelarCork{
 					EncodedContractCall:   contractCallBz,
-					ChainId:               chainID.Uint64(),
+					ChainId:               chainID,
 					TargetContractAddress: contractAddr,
 				},
-				ChainId:     chainID.Uint64(),
-				BlockHeight: blockHeight.Uint64(),
+				ChainId:     chainID,
+				BlockHeight: blockHeight,
 				Signer:      from.String(),
 			}
 			if err := scheduleCorkMsg.ValidateBasic(); err != nil {
@@ -109,7 +108,7 @@ func CmdRelayAxelarCork() *cobra.Command {
 
 			from := clientCtx.GetFromAddress()
 
-			chainID, err := math.ParseUint(args[0])
+			chainID, err := internal.ParseUint64(args[0])
 			if err != nil {
 				return err
 			}
@@ -124,7 +123,7 @@ func CmdRelayAxelarCork() *cobra.Command {
 				return err
 			}
 
-			fee, err := math.ParseUint(args[3])
+			fee, err := internal.ParseUint64(args[3])
 			if err != nil {
 				return err
 			}
@@ -132,8 +131,8 @@ func CmdRelayAxelarCork() *cobra.Command {
 			relayCorkMsg := types.MsgRelayAxelarCorkRequest{
 				Signer:                from.String(),
 				Token:                 token,
-				Fee:                   fee.Uint64(),
-				ChainId:               chainID.Uint64(),
+				Fee:                   fee,
+				ChainId:               chainID,
 				TargetContractAddress: contractAddr,
 			}
 			if err := relayCorkMsg.ValidateBasic(); err != nil {
@@ -162,7 +161,7 @@ func CmdRelayAxelarProxyUpgrade() *cobra.Command {
 
 			from := clientCtx.GetFromAddress()
 
-			chainID, err := math.ParseUint(args[0])
+			chainID, err := internal.ParseUint64(args[0])
 			if err != nil {
 				return err
 			}
@@ -172,7 +171,7 @@ func CmdRelayAxelarProxyUpgrade() *cobra.Command {
 				return err
 			}
 
-			fee, err := math.ParseUint(args[2])
+			fee, err := internal.ParseUint64(args[2])
 			if err != nil {
 				return err
 			}
@@ -180,8 +179,8 @@ func CmdRelayAxelarProxyUpgrade() *cobra.Command {
 			relayProxyUpgradeMsg := types.MsgRelayAxelarProxyUpgradeRequest{
 				Signer:  from.String(),
 				Token:   token,
-				Fee:     fee.Uint64(),
-				ChainId: chainID.Uint64(),
+				Fee:     fee,
+				ChainId: chainID,
 			}
 			if err := relayProxyUpgradeMsg.ValidateBasic(); err != nil {
 				return err
