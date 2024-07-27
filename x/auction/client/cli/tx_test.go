@@ -5,15 +5,15 @@ import (
 	"os"
 	"testing"
 
-	"github.com/cosmos/cosmos-sdk/testutil"
 	"github.com/peggyjv/sommelier/v7/x/auction/types"
 
 	"github.com/cosmos/cosmos-sdk/testutil"
+	moduletestutil "github.com/cosmos/cosmos-sdk/types/module/testutil"
 	"github.com/stretchr/testify/require"
 )
 
 func TestParseSetTokenPricesProposal(t *testing.T) {
-	encodingConfig := testutil.TestEncodingConfig()
+	encodingConfig := moduletestutil.MakeTestEncodingConfig()
 
 	okJSON := testutil.WriteToNewTempFile(t, `
 {
@@ -33,7 +33,7 @@ func TestParseSetTokenPricesProposal(t *testing.T) {
 
 	require.Equal(t, "My token proposal", proposal.Title)
 	require.Equal(t, "Contains a usomm price update", proposal.Description)
-	require.Equal(t, "denom:\"usomm\" exponent:\"6\" usd_price:\"4200000000000000000\" ", proposal.TokenPrices[0].String())
+	require.Equal(t, "denom:\"usomm\" exponent:6 usd_price:\"4200000000000000000\" ", proposal.TokenPrices[0].String())
 	require.Equal(t, "10000usomm", proposal.Deposit)
 }
 
