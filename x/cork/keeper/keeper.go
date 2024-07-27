@@ -244,7 +244,7 @@ func (k Keeper) DeleteCorkResult(ctx sdk.Context, id []byte) {
 	ctx.KVStore(k.storeKey).Delete(corktypes.GetCorkResultKey(id))
 }
 
-// IterateCorksResult iterates over all cork results in the store
+// IterateCorkResults iterates over all cork results in the store
 func (k Keeper) IterateCorkResults(ctx sdk.Context, cb func(id []byte, blockHeight uint64, approved bool, approvalPercentage string, corkResult types.CorkResult) (stop bool)) {
 	store := ctx.KVStore(k.storeKey)
 	iter := sdk.KVStorePrefixIterator(store, corktypes.GetCorkResultPrefix())

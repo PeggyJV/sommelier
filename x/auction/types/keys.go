@@ -58,7 +58,7 @@ func GetEndedAuctionsPrefix() []byte {
 	return []byte{EndedAuctionsPrefix}
 }
 
-// GetEndedAuctionsKey returns the key for an ended auction
+// GetEndedAuctionKey returns the key for an ended auction
 func GetEndedAuctionKey(id uint32) []byte {
 	b := make([]byte, 4)
 	binary.BigEndian.PutUint32(b, id)

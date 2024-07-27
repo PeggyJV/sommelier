@@ -324,7 +324,7 @@ func (k Keeper) DeleteAxelarCorkResult(ctx sdk.Context, chainID uint64, id []byt
 	ctx.KVStore(k.storeKey).Delete(types.GetAxelarCorkResultKey(chainID, id))
 }
 
-// IterateCorksResult iterates over all cork results by chain ID
+// IterateAxelarCorkResults iterates over all cork results by chain ID
 func (k Keeper) IterateAxelarCorkResults(ctx sdk.Context, chainID uint64, cb func(id []byte, blockHeight uint64, approved bool, approvalPercentage string, corkResult types.AxelarCorkResult) (stop bool)) {
 	store := ctx.KVStore(k.storeKey)
 	iter := sdk.KVStorePrefixIterator(store, types.GetAxelarCorkResultPrefix(chainID))
