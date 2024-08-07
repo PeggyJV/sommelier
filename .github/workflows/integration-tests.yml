@@ -126,6 +126,7 @@ jobs:
           "CellarFees",
           "Incentives",
           "Pubsub",
+          "Addresses",
         ]
     steps:
       - name: Set up Go 1.22

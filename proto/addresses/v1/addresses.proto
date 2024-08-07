@@ -1,0 +1,10 @@
+syntax = "proto3";
+package addresses.v1;
+
+option go_package = "github.com/peggyjv/sommelier/v7/x/addresses/types";
+
+message AddressMapping {
+    string cosmos_address = 1;
+    string evm_address = 2;
+}
+
