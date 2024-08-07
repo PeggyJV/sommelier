@@ -5,31 +5,38 @@ import "gogoproto/gogo.proto";
 import "google/api/annotations.proto";
 import "cellarfees/v2/params.proto";
 import "cellarfees/v2/cellarfees.proto";
+import "cosmos/query/v1/query.proto";
 
 option go_package = "github.com/peggyjv/sommelier/v7/x/cellarfees/types/v2";
 
 service Query {
   rpc QueryParams(QueryParamsRequest) returns (QueryParamsResponse) {
+    option (cosmos.query.v1.module_query_safe) = true;
     option (google.api.http).get = "/sommelier/cellarfees/v2/params";
   }
 
   rpc QueryModuleAccounts(QueryModuleAccountsRequest) returns (QueryModuleAccountsResponse) {
+    option (cosmos.query.v1.module_query_safe) = true;
     option (google.api.http).get = "/sommelier/cellarfees/v2/module_accounts";
   }
 
   rpc QueryLastRewardSupplyPeak(QueryLastRewardSupplyPeakRequest) returns (QueryLastRewardSupplyPeakResponse) {
+    option (cosmos.query.v1.module_query_safe) = true;
     option (google.api.http).get = "/sommelier/cellarfees/v2/last_reward_supply_peak";
   }
 
   rpc QueryAPY(QueryAPYRequest) returns (QueryAPYResponse) {
+    option (cosmos.query.v1.module_query_safe) = true;
     option (google.api.http).get = "/sommelier/cellarfees/v2/apy";
   }
 
   rpc QueryFeeTokenBalances(QueryFeeTokenBalancesRequest) returns (QueryFeeTokenBalancesResponse) {
+    option (cosmos.query.v1.module_query_safe) = true;
     option (google.api.http).get = "/sommelier/cellarfees/v2/fee_token_balances";
   }
     
   rpc QueryFeeTokenBalance(QueryFeeTokenBalanceRequest) returns (QueryFeeTokenBalanceResponse) {
+    option (cosmos.query.v1.module_query_safe) = true;
     option (google.api.http).get = "/sommelier/cellarfees/v2/fee_token_balances/{denom}";
   }
 }

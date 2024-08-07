@@ -8,18 +8,18 @@ import (
 	"reflect"
 	"sort"
 
+	"github.com/cometbft/cometbft/libs/log"
 	"github.com/cosmos/cosmos-sdk/codec"
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	capabilitytypes "github.com/cosmos/cosmos-sdk/x/capability/types"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
-	clienttypes "github.com/cosmos/ibc-go/v6/modules/core/02-client/types"
-	porttypes "github.com/cosmos/ibc-go/v6/modules/core/05-port/types"
-	"github.com/cosmos/ibc-go/v6/modules/core/exported"
+	clienttypes "github.com/cosmos/ibc-go/v7/modules/core/02-client/types"
+	porttypes "github.com/cosmos/ibc-go/v7/modules/core/05-port/types"
+	"github.com/cosmos/ibc-go/v7/modules/core/exported"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/peggyjv/sommelier/v7/x/axelarcork/types"
-	"github.com/tendermint/tendermint/libs/log"
 )
 
 var _ porttypes.ICS4Wrapper = &Keeper{}
@@ -324,7 +324,7 @@ func (k Keeper) DeleteAxelarCorkResult(ctx sdk.Context, chainID uint64, id []byt
 	ctx.KVStore(k.storeKey).Delete(types.GetAxelarCorkResultKey(chainID, id))
 }
 
-// IterateCorksResult iterates over all cork results by chain ID
+// IterateAxelarCorkResults iterates over all cork results by chain ID
 func (k Keeper) IterateAxelarCorkResults(ctx sdk.Context, chainID uint64, cb func(id []byte, blockHeight uint64, approved bool, approvalPercentage string, corkResult types.AxelarCorkResult) (stop bool)) {
 	store := ctx.KVStore(k.storeKey)
 	iter := sdk.KVStorePrefixIterator(store, types.GetAxelarCorkResultPrefix(chainID))

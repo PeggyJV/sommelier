@@ -5,6 +5,7 @@ import (
 	"encoding/binary"
 	"sort"
 
+	"github.com/cometbft/cometbft/libs/log"
 	"github.com/cosmos/cosmos-sdk/codec"
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -12,7 +13,6 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	corktypes "github.com/peggyjv/sommelier/v7/x/cork/types"
 	types "github.com/peggyjv/sommelier/v7/x/cork/types/v2"
-	"github.com/tendermint/tendermint/libs/log"
 )
 
 const corkVoteThresholdStr = "0.67"
@@ -244,7 +244,7 @@ func (k Keeper) DeleteCorkResult(ctx sdk.Context, id []byte) {
 	ctx.KVStore(k.storeKey).Delete(corktypes.GetCorkResultKey(id))
 }
 
-// IterateCorksResult iterates over all cork results in the store
+// IterateCorkResults iterates over all cork results in the store
 func (k Keeper) IterateCorkResults(ctx sdk.Context, cb func(id []byte, blockHeight uint64, approved bool, approvalPercentage string, corkResult types.CorkResult) (stop bool)) {
 	store := ctx.KVStore(k.storeKey)
 	iter := sdk.KVStorePrefixIterator(store, corktypes.GetCorkResultPrefix())

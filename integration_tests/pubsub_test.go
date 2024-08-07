@@ -46,9 +46,14 @@ func (s *IntegrationTestSuite) TestPubsub() {
 		s.Require().NoError(err)
 		s.T().Log("RemovePublisher submitted correctly")
 
-		publishersResponse, err := pubsubQueryClient.QueryPublishers(context.Background(), &types.QueryPublishersRequest{})
-		s.Require().NoError(err)
-		s.Require().Len(publishersResponse.Publishers, 0)
+		s.Require().Eventually(func() bool {
+			publishersResponse, err := pubsubQueryClient.QueryPublishers(context.Background(), &types.QueryPublishersRequest{})
+			if err != nil {
+				return false
+			}
+
+			return len(publishersResponse.Publishers) == 0
+		}, time.Second*30, time.Second*5, "publisher was never removed")
 
 		////////////////
 		// Happy path //
@@ -81,13 +86,20 @@ func (s *IntegrationTestSuite) TestPubsub() {
 		propID++
 
 		s.T().Log("Verifying Publisher correctly added")
-		publishersResponse, err = pubsubQueryClient.QueryPublishers(context.Background(), &types.QueryPublishersRequest{})
-		s.Require().NoError(err)
-		s.Require().Len(publishersResponse.Publishers, 1)
-		publisher := publishersResponse.Publishers[0]
-		s.Require().Equal(publisher.Address, proposer.address().String())
-		s.Require().Equal(publisher.CaCert, PublisherCACert)
-		s.Require().Equal(publisher.Domain, "new.example.com")
+		var publisher *types.Publisher
+		s.Require().Eventually(func() bool {
+			publishersResponse, err := pubsubQueryClient.QueryPublishers(context.Background(), &types.QueryPublishersRequest{})
+			if err != nil {
+				return false
+			}
+			if len(publishersResponse.Publishers) != 1 {
+				return false
+			}
+			publisher = publishersResponse.Publishers[0]
+			return publisher.Address == proposer.address().String() &&
+				publisher.CaCert == PublisherCACert &&
+				publisher.Domain == "new.example.com"
+		}, time.Second*30, time.Second*5, "publisher was never added")
 
 		// set publisher intent for cellar
 		s.T().Log("Submitting AddPublisherIntent")
@@ -107,14 +119,21 @@ func (s *IntegrationTestSuite) TestPubsub() {
 		s.T().Log("AddPublisherIntent submitted successfully")
 
 		s.T().Log("Verifying PublisherIntent correctly added")
-		publisherIntentsResponse, err := pubsubQueryClient.QueryPublisherIntents(context.Background(), &types.QueryPublisherIntentsRequest{})
-		s.Require().NoError(err)
-		s.Require().Len(publisherIntentsResponse.PublisherIntents, 1)
-		publisherIntent := publisherIntentsResponse.PublisherIntents[0]
-		s.Require().Equal(publisherIntent.SubscriptionId, subscriptionID)
-		s.Require().Equal(publisherIntent.PublisherDomain, publisher.Domain)
-		s.Require().Equal(publisherIntent.Method, types.PublishMethod_PUSH)
-		s.Require().Equal(publisherIntent.AllowedSubscribers, types.AllowedSubscribers_VALIDATORS)
+		s.Require().Eventually(func() bool {
+			publisherIntentsResponse, err := pubsubQueryClient.QueryPublisherIntents(context.Background(), &types.QueryPublisherIntentsRequest{})
+			if err != nil {
+				return false
+			}
+			if len(publisherIntentsResponse.PublisherIntents) != 1 {
+				return false
+			}
+
+			publisherIntent := publisherIntentsResponse.PublisherIntents[0]
+			return publisherIntent.SubscriptionId == subscriptionID &&
+				publisherIntent.PublisherDomain == publisher.Domain &&
+				publisherIntent.Method == types.PublishMethod_PUSH &&
+				publisherIntent.AllowedSubscribers == types.AllowedSubscribers_VALIDATORS
+		}, time.Second*30, time.Second*5, "publisher intent was never added")
 
 		// add default subscription prop
 		s.T().Log("Creating AddDefaultSubscriptionProposal")
@@ -141,12 +160,18 @@ func (s *IntegrationTestSuite) TestPubsub() {
 		propID++
 
 		s.T().Log("Verifying DefaultSubscription correctly added")
-		defaultSubscriptionsResponse, err := pubsubQueryClient.QueryDefaultSubscriptions(context.Background(), &types.QueryDefaultSubscriptionsRequest{})
-		s.Require().NoError(err)
-		s.Require().Len(defaultSubscriptionsResponse.DefaultSubscriptions, 1)
-		defaultSubscription := defaultSubscriptionsResponse.DefaultSubscriptions[0]
-		s.Require().Equal(defaultSubscription.SubscriptionId, subscriptionID)
-		s.Require().Equal(defaultSubscription.PublisherDomain, publisher.Domain)
+		s.Require().Eventually(func() bool {
+			defaultSubscriptionsResponse, err := pubsubQueryClient.QueryDefaultSubscriptions(context.Background(), &types.QueryDefaultSubscriptionsRequest{})
+			if err != nil {
+				return false
+			}
+			if len(defaultSubscriptionsResponse.DefaultSubscriptions) != 1 {
+				return false
+			}
+			defaultSubscription := defaultSubscriptionsResponse.DefaultSubscriptions[0]
+			return defaultSubscription.SubscriptionId == subscriptionID &&
+				defaultSubscription.PublisherDomain == publisher.Domain
+		}, time.Second*30, time.Second*5, "default subscription was never added")
 
 		// create subscribers
 		s.T().Log("Creating Subscriber for two orchestrators")
@@ -179,12 +204,18 @@ func (s *IntegrationTestSuite) TestPubsub() {
 		s.T().Log("AddSubscriber for orch 1 submitted correctly")
 
 		s.T().Log("Verifying Subscribers added correctly")
-		subscribersResponse, err := pubsubQueryClient.QuerySubscribers(context.Background(), &types.QuerySubscribersRequest{})
-		s.Require().NoError(err)
-		s.Require().Len(subscribersResponse.Subscribers, 2)
+		var subscriber0, subscriber1 *types.Subscriber
+		var subscribersResponse *types.QuerySubscribersResponse
+		s.Require().Eventually(func() bool {
+			subscribersResponse, err = pubsubQueryClient.QuerySubscribers(context.Background(), &types.QuerySubscribersRequest{})
+			if err != nil {
+				return false
+			}
+			return len(subscribersResponse.Subscribers) == 2
+		}, time.Second*30, time.Second*5, "subscribers were never added")
 
-		subscriber0 := subscribersResponse.Subscribers[0]
-		subscriber1 := subscribersResponse.Subscribers[1]
+		subscriber0 = subscribersResponse.Subscribers[0]
+		subscriber1 = subscribersResponse.Subscribers[1]
 		s.Require().Equal(subscriber0.Address, orch0.address().String())
 		s.Require().Equal(subscriber0.CaCert, SubscriberCACert)
 		s.Require().Equal(subscriber0.PushUrl, subscriber0PushURL)
@@ -218,6 +249,7 @@ func (s *IntegrationTestSuite) TestPubsub() {
 		s.T().Log("AddSubscriberIntent for orch 0 submitted incorrectly, verifying none created")
 		subscriberIntentsResponse, err := pubsubQueryClient.QuerySubscriberIntents(context.Background(), &types.QuerySubscriberIntentsRequest{})
 		s.Require().NoError(err)
+		time.Sleep(10 * time.Second)
 		s.Require().Len(subscriberIntentsResponse.SubscriberIntents, 0)
 
 		_, err = s.chain.sendMsgs(*orch0ClientCtx, &addSubscriberIntent0Msg)
@@ -229,6 +261,7 @@ func (s *IntegrationTestSuite) TestPubsub() {
 		s.T().Log("AddSubscriberIntent for orch 1 submitted correctly")
 
 		s.T().Log("Verifying SubscriberIntents added correctly")
+		time.Sleep(10 * time.Second)
 		subscriberIntentsResponse, err = pubsubQueryClient.QuerySubscriberIntents(context.Background(), &types.QuerySubscriberIntentsRequest{})
 		s.Require().NoError(err)
 		s.Require().Len(subscriberIntentsResponse.SubscriberIntents, 2)
@@ -255,6 +288,7 @@ func (s *IntegrationTestSuite) TestPubsub() {
 		s.T().Log("RemoveSubscriberIntent for orch 0 submitted correctly")
 
 		s.T().Log("Verifying SubscriberIntent for orch 0 removed")
+		time.Sleep(10 * time.Second)
 		subscriberIntentsResponse, err = pubsubQueryClient.QuerySubscriberIntents(context.Background(), &types.QuerySubscriberIntentsRequest{})
 		s.Require().NoError(err)
 		s.Require().Len(subscriberIntentsResponse.SubscriberIntents, 1)
@@ -272,6 +306,7 @@ func (s *IntegrationTestSuite) TestPubsub() {
 		s.T().Log("RemoveSubscriberIntent for orch 1 submitted correctly")
 
 		s.T().Log("Verifying SubscriberIntent for orch 1 removed")
+		time.Sleep(10 * time.Second)
 		subscriberIntentsResponse, err = pubsubQueryClient.QuerySubscriberIntents(context.Background(), &types.QuerySubscriberIntentsRequest{})
 		s.Require().NoError(err)
 		s.Require().Len(subscriberIntentsResponse.SubscriberIntents, 0)
@@ -288,6 +323,7 @@ func (s *IntegrationTestSuite) TestPubsub() {
 		s.T().Log("RemoveSubscriber for orch 0 submitted correctly")
 
 		s.T().Log("Verifying Subscriber for orch 0 removed")
+		time.Sleep(10 * time.Second)
 		subscribersResponse, err = pubsubQueryClient.QuerySubscribers(context.Background(), &types.QuerySubscribersRequest{})
 		s.Require().NoError(err)
 		s.Require().Len(subscribersResponse.Subscribers, 1)
@@ -304,6 +340,7 @@ func (s *IntegrationTestSuite) TestPubsub() {
 		s.T().Log("RemoveSubscriber for orch 1 submitted correctly")
 
 		s.T().Log("Verifying Subscriber for orch 1 removed")
+		time.Sleep(10 * time.Second)
 		subscribersResponse, err = pubsubQueryClient.QuerySubscribers(context.Background(), &types.QuerySubscribersRequest{})
 		s.Require().NoError(err)
 		s.Require().Len(subscribersResponse.Subscribers, 0)
@@ -332,7 +369,8 @@ func (s *IntegrationTestSuite) TestPubsub() {
 		propID++
 
 		s.T().Log("Verifying DefaultSubscription correctly removed")
-		defaultSubscriptionsResponse, err = pubsubQueryClient.QueryDefaultSubscriptions(context.Background(), &types.QueryDefaultSubscriptionsRequest{})
+		time.Sleep(10 * time.Second)
+		defaultSubscriptionsResponse, err := pubsubQueryClient.QueryDefaultSubscriptions(context.Background(), &types.QueryDefaultSubscriptionsRequest{})
 		s.Require().NoError(err)
 		s.Require().Len(defaultSubscriptionsResponse.DefaultSubscriptions, 0)
 
@@ -349,7 +387,8 @@ func (s *IntegrationTestSuite) TestPubsub() {
 		s.T().Log("RemovePublisherIntent submitted successfully")
 
 		s.T().Log("Verifying PublisherIntent correctly removed")
-		publisherIntentsResponse, err = pubsubQueryClient.QueryPublisherIntents(context.Background(), &types.QueryPublisherIntentsRequest{})
+		time.Sleep(10 * time.Second)
+		publisherIntentsResponse, err := pubsubQueryClient.QueryPublisherIntents(context.Background(), &types.QueryPublisherIntentsRequest{})
 		s.Require().NoError(err)
 		s.Require().Len(publisherIntentsResponse.PublisherIntents, 0)
 
@@ -377,7 +416,8 @@ func (s *IntegrationTestSuite) TestPubsub() {
 		propID++
 
 		s.T().Log("Verifying Publisher correctly removed")
-		publishersResponse, err = pubsubQueryClient.QueryPublishers(context.Background(), &types.QueryPublishersRequest{})
+		time.Sleep(10 * time.Second)
+		publishersResponse, err := pubsubQueryClient.QueryPublishers(context.Background(), &types.QueryPublishersRequest{})
 		s.Require().NoError(err)
 		s.Require().Len(publishersResponse.Publishers, 0)
 
@@ -394,6 +434,7 @@ func (s *IntegrationTestSuite) TestPubsub() {
 		propID++
 
 		s.T().Log("Verifying Publisher correctly added")
+		time.Sleep(10 * time.Second)
 		publishersResponse, err = pubsubQueryClient.QueryPublishers(context.Background(), &types.QueryPublishersRequest{})
 		s.Require().NoError(err)
 		s.Require().Len(publishersResponse.Publishers, 1)
@@ -408,10 +449,11 @@ func (s *IntegrationTestSuite) TestPubsub() {
 		s.T().Log("AddPublisherIntent submitted successfully")
 
 		s.T().Log("Verifying PublisherIntent correctly added")
+		time.Sleep(10 * time.Second)
 		publisherIntentsResponse, err = pubsubQueryClient.QueryPublisherIntents(context.Background(), &types.QueryPublisherIntentsRequest{})
 		s.Require().NoError(err)
 		s.Require().Len(publisherIntentsResponse.PublisherIntents, 1)
-		publisherIntent = publisherIntentsResponse.PublisherIntents[0]
+		publisherIntent := publisherIntentsResponse.PublisherIntents[0]
 		s.Require().Equal(publisherIntent.SubscriptionId, subscriptionID)
 		s.Require().Equal(publisherIntent.PublisherDomain, publisher.Domain)
 		s.Require().Equal(publisherIntent.Method, types.PublishMethod_PUSH)
@@ -424,10 +466,11 @@ func (s *IntegrationTestSuite) TestPubsub() {
 		s.submitAndVoteForProposal(proposerCtx, orch0ClientCtx, propID, addDefaultSubscriptionPropMsg)
 
 		s.T().Log("Verifying DefaultSubscription correctly added")
+		time.Sleep(10 * time.Second)
 		defaultSubscriptionsResponse, err = pubsubQueryClient.QueryDefaultSubscriptions(context.Background(), &types.QueryDefaultSubscriptionsRequest{})
 		s.Require().NoError(err)
 		s.Require().Len(defaultSubscriptionsResponse.DefaultSubscriptions, 1)
-		defaultSubscription = defaultSubscriptionsResponse.DefaultSubscriptions[0]
+		defaultSubscription := defaultSubscriptionsResponse.DefaultSubscriptions[0]
 		s.Require().Equal(defaultSubscription.SubscriptionId, subscriptionID)
 		s.Require().Equal(defaultSubscription.PublisherDomain, publisher.Domain)
 
@@ -443,6 +486,7 @@ func (s *IntegrationTestSuite) TestPubsub() {
 		s.T().Log("AddSubscriber for orch 1 submitted correctly")
 
 		s.T().Log("Verifying Subscribers added correctly")
+		time.Sleep(10 * time.Second)
 		subscribersResponse, err = pubsubQueryClient.QuerySubscribers(context.Background(), &types.QuerySubscribersRequest{})
 		s.Require().NoError(err)
 		s.Require().Len(subscribersResponse.Subscribers, 2)
@@ -468,6 +512,7 @@ func (s *IntegrationTestSuite) TestPubsub() {
 		s.T().Log("AddSubscriberIntent for orch 1 submitted correctly")
 
 		s.T().Log("Verifying SubscriberIntents added correctly")
+		time.Sleep(10 * time.Second)
 		subscriberIntentsResponse, err = pubsubQueryClient.QuerySubscriberIntents(context.Background(), &types.QuerySubscriberIntentsRequest{})
 		s.Require().NoError(err)
 		s.Require().Len(subscriberIntentsResponse.SubscriberIntents, 2)
@@ -489,6 +534,7 @@ func (s *IntegrationTestSuite) TestPubsub() {
 		s.T().Log("RemoveSubscriber for orch 0 submitted correctly")
 
 		s.T().Log("Verifying Subscriber for orch 0 removed")
+		time.Sleep(10 * time.Second)
 		subscribersResponse, err = pubsubQueryClient.QuerySubscribers(context.Background(), &types.QuerySubscribersRequest{})
 		s.Require().NoError(err)
 		s.Require().Len(subscribersResponse.Subscribers, 1)
@@ -523,6 +569,7 @@ func (s *IntegrationTestSuite) TestPubsub() {
 		s.T().Log("RemovePublisher submitted correctly")
 
 		s.T().Log("Verifying all the child values have been removed with the publisher")
+		time.Sleep(10 * time.Second)
 		// now everything should be gone, the only thing that should be left is one subscriber value
 		publishersResponse, err = pubsubQueryClient.QueryPublishers(context.Background(), &types.QueryPublishersRequest{})
 		s.Require().NoError(err)

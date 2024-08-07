@@ -5,6 +5,7 @@ import "gogoproto/gogo.proto";
 import "google/api/annotations.proto";
 import "axelarcork/v1/genesis.proto";
 import "axelarcork/v1/axelarcork.proto";
+import "cosmos/query/v1/query.proto";
 
 option go_package = "github.com/peggyjv/sommelier/v7/x/axelarcork/types";
 
@@ -12,61 +13,75 @@ option go_package = "github.com/peggyjv/sommelier/v7/x/axelarcork/types";
 service Query {
   // QueryParams queries the axelar cork module parameters.
   rpc QueryParams(QueryParamsRequest) returns (QueryParamsResponse) {
+    option (cosmos.query.v1.module_query_safe) = true;
     option (google.api.http).get = "/sommelier/cork/v1/params";
   }
   // QueryCellarIDs queries approved cellar ids of all supported chains
   rpc QueryCellarIDs(QueryCellarIDsRequest) returns (QueryCellarIDsResponse) {
+    option (cosmos.query.v1.module_query_safe) = true;
     option (google.api.http).get = "/sommelier/axelarcork/v1/cellar_ids";
   }
   // QueryCellarIDsByChainID returns all cellars and current tick ranges
   rpc QueryCellarIDsByChainID(QueryCellarIDsByChainIDRequest) returns (QueryCellarIDsByChainIDResponse) {
+    option (cosmos.query.v1.module_query_safe) = true;
     option (google.api.http).get = "/sommelier/axelarcork/v1/cellar_ids_by_chain_id";
   }
   // QueryScheduledCorks returns all scheduled corks
   rpc QueryScheduledCorks(QueryScheduledCorksRequest) returns (QueryScheduledCorksResponse) {
+    option (cosmos.query.v1.module_query_safe) = true;
     option (google.api.http).get = "/sommelier/axelarcork/v1/scheduled_corks";
   }
   // QueryScheduledBlockHeights returns all scheduled block heights
   rpc QueryScheduledBlockHeights(QueryScheduledBlockHeightsRequest) returns (QueryScheduledBlockHeightsResponse) {
+    option (cosmos.query.v1.module_query_safe) = true;
     option (google.api.http).get = "/sommelier/axelarcork/v1/scheduled_block_heights";
   }
 
   // QueryScheduledCorks returns all scheduled corks at a block height
   rpc QueryScheduledCorksByBlockHeight(QueryScheduledCorksByBlockHeightRequest)
       returns (QueryScheduledCorksByBlockHeightResponse) {
+    option (cosmos.query.v1.module_query_safe) = true;
     option (google.api.http).get = "/sommelier/axelarcork/v1/scheduled_corks_by_block_height/{block_height}";
   }
 
   // QueryScheduledCorks returns all scheduled corks with the specified ID
   rpc QueryScheduledCorksByID(QueryScheduledCorksByIDRequest) returns (QueryScheduledCorksByIDResponse) {
+    option (cosmos.query.v1.module_query_safe) = true;
     option (google.api.http).get = "/sommelier/axelarcork/v1/scheduled_corks_by_id/{id}";
   }
 
   rpc QueryCorkResult(QueryCorkResultRequest) returns (QueryCorkResultResponse) {
+    option (cosmos.query.v1.module_query_safe) = true;
     option (google.api.http).get = "/sommelier/axelarcork/v1/cork_results/{id}";
   }
 
   rpc QueryCorkResults(QueryCorkResultsRequest) returns (QueryCorkResultsResponse) {
+    option (cosmos.query.v1.module_query_safe) = true;
     option (google.api.http).get = "/sommelier/axelarcork/v1/cork_results";
   }
 
   rpc QueryChainConfigurations(QueryChainConfigurationsRequest) returns (QueryChainConfigurationsResponse) {
+    option (cosmos.query.v1.module_query_safe) = true;
     option (google.api.http).get = "/sommelier/axelarcork/v1/chain_configurations";
   }
 
   rpc QueryAxelarContractCallNonces(QueryAxelarContractCallNoncesRequest) returns (QueryAxelarContractCallNoncesResponse) {
+    option (cosmos.query.v1.module_query_safe) = true;
     option (google.api.http).get = "/sommelier/axelarcork/v1/contract_call_nonces";
   }
 
   rpc QueryAxelarProxyUpgradeData(QueryAxelarProxyUpgradeDataRequest) returns (QueryAxelarProxyUpgradeDataResponse) {
+    option (cosmos.query.v1.module_query_safe) = true;
     option (google.api.http).get = "/sommelier/axelarcork/v1/proxy_upgrade_data";
   }
 
   rpc QueryWinningAxelarCork(QueryWinningAxelarCorkRequest) returns (QueryWinningAxelarCorkResponse) {
+    option (cosmos.query.v1.module_query_safe) = true;
     option (google.api.http).get = "/sommelier/axelarcork/v1/winning_axelar_corks/{chain_id}/{contract_address}";
   }
 
   rpc QueryWinningAxelarCorks(QueryWinningAxelarCorksRequest) returns (QueryWinningAxelarCorksResponse) {
+    option (cosmos.query.v1.module_query_safe) = true;
     option (google.api.http).get = "/sommelier/axelarcork/v1/winning_axelar_corks/{chain_id}";
   }
 }

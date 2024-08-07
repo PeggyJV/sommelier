@@ -5,15 +5,15 @@ import (
 	"os"
 	"testing"
 
-	"github.com/cosmos/cosmos-sdk/simapp/params"
 	"github.com/peggyjv/sommelier/v7/x/auction/types"
 
 	"github.com/cosmos/cosmos-sdk/testutil"
+	moduletestutil "github.com/cosmos/cosmos-sdk/types/module/testutil"
 	"github.com/stretchr/testify/require"
 )
 
 func TestParseSetTokenPricesProposal(t *testing.T) {
-	encodingConfig := params.MakeTestEncodingConfig()
+	encodingConfig := moduletestutil.MakeTestEncodingConfig()
 
 	okJSON := testutil.WriteToNewTempFile(t, `
 {

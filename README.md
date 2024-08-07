@@ -14,13 +14,6 @@ For more information you can check out the [Sommelier Documentation](https://som
 [![LoC](https://tokei.rs/b1/github/peggyjv/sommelier)](https://github.com/peggyjv/sommelier)
 [![GolangCI](https://golangci.com/badges/github.com/peggyjv/sommelier.svg)](https://golangci.com/r/github.com/peggyjv/sommelier)
 
-## Talk to us!
-
-We have active, helpful communities on Twitter, Discord, and Telegram.
-
-* [Twitter](https://twitter.com/sommfinance)
-* [Discord](https://discord.gg/gZzaPmDzUq)
-* [Telegram](https://t.me/peggyvaults)
 
 ## Sommelier
 

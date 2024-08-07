@@ -3,8 +3,8 @@ package axelarcork
 import (
 	"context"
 	"encoding/json"
-	"math/rand"
 
+	abci "github.com/cometbft/cometbft/abci/types"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/codec"
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
@@ -16,7 +16,6 @@ import (
 	"github.com/peggyjv/sommelier/v7/x/axelarcork/keeper"
 	"github.com/peggyjv/sommelier/v7/x/axelarcork/types"
 	"github.com/spf13/cobra"
-	abci "github.com/tendermint/tendermint/abci/types"
 )
 
 var (
@@ -63,7 +62,7 @@ func (AppModuleBasic) GetQueryCmd() *cobra.Command {
 }
 
 // RegisterGRPCGatewayRoutes registers the gRPC Gateway routes for the cork module.
-// also implements app modeul basic
+// also implements app module basic
 func (AppModuleBasic) RegisterGRPCGatewayRoutes(clientCtx client.Context, mux *runtime.ServeMux) {
 	types.RegisterQueryHandlerClient(context.Background(), mux, types.NewQueryClient(clientCtx))
 }
@@ -95,16 +94,8 @@ func (AppModule) Name() string { return types.ModuleName }
 // RegisterInvariants performs a no-op.
 func (AppModule) RegisterInvariants(_ sdk.InvariantRegistry) {}
 
-// Route returns the message routing key for the cork module.
-func (am AppModule) Route() sdk.Route { return sdk.NewRoute(types.RouterKey, NewHandler(am.keeper)) }
-
 // QuerierRoute returns the cork module's querier route name.
 func (AppModule) QuerierRoute() string { return types.QuerierRoute }
-
-// LegacyQuerierHandler returns a nil Querier.
-func (am AppModule) LegacyQuerierHandler(_ *codec.LegacyAmino) sdk.Querier {
-	return nil
-}
 
 // ConsensusVersion implements AppModule/ConsensusVersion.
 func (AppModule) ConsensusVersion() uint64 {
@@ -156,12 +147,7 @@ func (AppModule) GenerateGenesisState(simState *module.SimulationState) {
 
 // ProposalContents returns all the cork content functions used to
 // simulate governance proposals.
-func (am AppModule) ProposalContents(_ module.SimulationState) []sim.WeightedProposalContent {
-	return nil
-}
-
-// RandomizedParams creates randomized cork param changes for the simulator.
-func (AppModule) RandomizedParams(r *rand.Rand) []sim.ParamChange {
+func (am AppModule) ProposalContents(_ module.SimulationState) []sim.WeightedProposalMsg {
 	return nil
 }
 

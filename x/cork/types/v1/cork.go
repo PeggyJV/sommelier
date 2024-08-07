@@ -3,10 +3,10 @@ package v1
 import (
 	"bytes"
 
+	tmbytes "github.com/cometbft/cometbft/libs/bytes"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/crypto"
 	corktypes "github.com/peggyjv/sommelier/v7/x/cork/types"
-	tmbytes "github.com/tendermint/tendermint/libs/bytes"
 )
 
 func (c *Cork) InvalidationScope() tmbytes.HexBytes {
