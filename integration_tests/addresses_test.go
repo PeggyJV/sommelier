@@ -70,5 +70,13 @@ func (s *IntegrationTestSuite) TestAddresses() {
 
 			return len(queryRes.AddressMappings) == 0
 		}, 20*time.Second, 4*time.Second, "address mapping not deleted")
+
+		_, err = addressesQueryClient.QueryAddressMappingByEVMAddress(context.Background(), &types.QueryAddressMappingByEVMAddressRequest{EvmAddress: evmAddress.Hex()})
+		s.Require().Error(err)
+		s.Require().Contains(err.Error(), "code = NotFound")
+
+		_, err = addressesQueryClient.QueryAddressMappingByCosmosAddress(context.Background(), &types.QueryAddressMappingByCosmosAddressRequest{CosmosAddress: cosmosAddress.String()})
+		s.Require().Error(err)
+		s.Require().Contains(err.Error(), "code = NotFound")
 	})
 }
