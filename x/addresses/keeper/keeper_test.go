@@ -15,9 +15,9 @@ import (
 	moduletestutil "github.com/peggyjv/sommelier/v7/testutil"
 	addressTypes "github.com/peggyjv/sommelier/v7/x/addresses/types"
 
+	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
+	tmtime "github.com/cometbft/cometbft/types/time"
 	paramskeeper "github.com/cosmos/cosmos-sdk/x/params/keeper"
-	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
-	tmtime "github.com/tendermint/tendermint/types/time"
 )
 
 const (
