@@ -2,6 +2,7 @@ package integration_tests
 
 import (
 	"context"
+	"time"
 
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/peggyjv/sommelier/v7/x/addresses/types"
@@ -32,10 +33,15 @@ func (s *IntegrationTestSuite) TestAddresses() {
 		s.Require().NoError(err)
 
 		s.T().Log("Testing queries return expected addresses")
-		queryRes, err := addressesQueryClient.QueryAddressMappings(context.Background(), &types.QueryAddressMappingsRequest{})
-		s.Require().NoError(err)
-		s.Require().Len(queryRes.AddressMappings, 1, "There should be one address mapping")
-		s.Require().Equal(evmAddress.Hex(), queryRes.AddressMappings[0].EvmAddress, "EVM address does not match")
+		s.Require().Eventually(func() bool {
+			queryRes, err := addressesQueryClient.QueryAddressMappings(context.Background(), &types.QueryAddressMappingsRequest{})
+			if err != nil {
+				s.T().Logf("Error querying address mappings: %s", err)
+				return false
+			}
+
+			return len(queryRes.AddressMappings) == 1 && evmAddress.Hex() == queryRes.AddressMappings[0].EvmAddress
+		}, 20*time.Second, 4*time.Second, "address mapping never found")
 
 		queryByEvmRes, err := addressesQueryClient.QueryAddressMappingByEVMAddress(context.Background(), &types.QueryAddressMappingByEVMAddressRequest{EvmAddress: evmAddress.Hex()})
 		s.Require().NoError(err)
@@ -55,8 +61,14 @@ func (s *IntegrationTestSuite) TestAddresses() {
 		s.Require().NoError(err)
 
 		s.T().Log("Testing mappings query returns no addresses")
-		queryRes, err = addressesQueryClient.QueryAddressMappings(context.Background(), &types.QueryAddressMappingsRequest{})
-		s.Require().NoError(err)
-		s.Require().Len(queryRes.AddressMappings, 0, "There should be no address mappings")
+		s.Require().Eventually(func() bool {
+			queryRes, err := addressesQueryClient.QueryAddressMappings(context.Background(), &types.QueryAddressMappingsRequest{})
+			if err != nil {
+				s.T().Logf("Error querying address mappings: %s", err)
+				return false
+			}
+
+			return len(queryRes.AddressMappings) == 0
+		}, 20*time.Second, 4*time.Second, "address mapping not deleted")
 	})
 }
