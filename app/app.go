@@ -489,6 +489,7 @@ func NewSommelierApp(
 		scopedICAHostKeeper,
 		bApp.MsgServiceRouter(),
 	)
+	app.ICAHostKeeper.WithQueryRouter(app.GRPCQueryRouter())
 	icaHostIBCModule := icahost.NewIBCModule(app.ICAHostKeeper)
 
 	var transferStack ibcporttypes.IBCModule = transferIBCModule
