@@ -23,10 +23,16 @@ const (
 
 // NewMsgAddAddressMapping return a new MsgAddAddressMapping
 func NewMsgAddAddressMapping(evmAddres common.Address, signer sdk.AccAddress) (*MsgAddAddressMapping, error) {
-	return &MsgAddAddressMapping{
+	msg := &MsgAddAddressMapping{
 		EvmAddress: evmAddres.Hex(),
 		Signer:     signer.String(),
-	}, nil
+	}
+
+	if err := msg.ValidateBasic(); err != nil {
+		return nil, err
+	}
+
+	return msg, nil
 }
 
 // Route implements sdk.Msg
@@ -73,9 +79,15 @@ func (m *MsgAddAddressMapping) MustGetSigner() sdk.AccAddress {
 
 // NewMsgRemoveAddressMapping return a new MsgRemoveAddressMapping
 func NewMsgRemoveAddressMapping(signer sdk.AccAddress) (*MsgRemoveAddressMapping, error) {
-	return &MsgRemoveAddressMapping{
+	msg := &MsgRemoveAddressMapping{
 		Signer: signer.String(),
-	}, nil
+	}
+
+	if err := msg.ValidateBasic(); err != nil {
+		return nil, err
+	}
+
+	return msg, nil
 }
 
 // Route implements sdk.Msg
