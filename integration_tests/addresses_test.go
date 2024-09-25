@@ -124,6 +124,7 @@ func (s *IntegrationTestSuite) TestAddresses() {
 		nonExistentAddress := s.chain.orchestrators[2].address()
 		orch2 := s.chain.orchestrators[2]
 		orch2ClientCtx, err := s.chain.clientContext("tcp://localhost:26657", orch2.keyring, "orch", orch2.address())
+		s.Require().NoError(err)
 		removeNonExistentMsg, err := types.NewMsgRemoveAddressMapping(nonExistentAddress)
 		s.Require().NoError(err)
 
