@@ -69,6 +69,17 @@ func (suite *KeeperTestSuite) TestUnhappyPathsForMsgServer() {
 	result = addressesKeeper.GetEvmAddressByCosmosAddress(ctx, sdk.AccAddress(result).Bytes())
 	require.Nil(result)
 
+	// Test adding a mapping for an already mapped Cosmos address
+	_, err = addressesKeeper.AddAddressMapping(sdk.WrapSDKContext(ctx), &types.MsgAddAddressMapping{Signer: cosmosAddrString, EvmAddress: evmAddrString})
+	require.NoError(err)
+
+	_, err = addressesKeeper.AddAddressMapping(sdk.WrapSDKContext(ctx), &types.MsgAddAddressMapping{Signer: cosmosAddrString, EvmAddress: "0x2222222222222222222222222222222222222222"})
+	require.NoError(err)
+
+	// Test removing a non-existent mapping
+	_, err = addressesKeeper.RemoveAddressMapping(sdk.WrapSDKContext(ctx), &types.MsgRemoveAddressMapping{Signer: "cosmos1y6d5kasehecexf09ka6y0ggl0pxzt6dgk0gnl9"})
+	require.NoError(err)
+
 	// Test RemoveAddressMapping
 	_, err = sdk.AccAddressFromBech32(cosmosAddrStringInvalid)
 	require.Error(err)

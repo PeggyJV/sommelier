@@ -1,6 +1,9 @@
 package keeper
 
 import (
+	"fmt"
+	"strings"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	query "github.com/cosmos/cosmos-sdk/types/query"
 	"github.com/ethereum/go-ethereum/common"
@@ -127,4 +130,36 @@ func (suite *KeeperTestSuite) TestUnhappyPathsForQueryServer() {
 	_, err = addressesKeeper.QueryAddressMappingByCosmosAddress(sdk.WrapSDKContext(ctx), &types.QueryAddressMappingByCosmosAddressRequest{CosmosAddress: cosmosAddrString})
 	require.Error(err)
 	require.Contains(err.Error(), "no EVM address mapping for cosmos address")
+
+	// Test QueryAddressMappings with invalid pagination
+	_, err = addressesKeeper.QueryAddressMappings(sdk.WrapSDKContext(ctx), &types.QueryAddressMappingsRequest{Pagination: query.PageRequest{Limit: 0, Offset: 1}})
+	require.NoError(err)
+
+	// Test QueryAddressMappings with no results
+	addressMappings, err := addressesKeeper.QueryAddressMappings(sdk.WrapSDKContext(ctx), &types.QueryAddressMappingsRequest{})
+	require.NoError(err)
+	require.Len(addressMappings.AddressMappings, 0)
+}
+
+// Edge cases test for query server functions
+func (suite *KeeperTestSuite) TestQueryServerEdgeCases() {
+	ctx, addressesKeeper := suite.ctx, suite.addressesKeeper
+	require := suite.Require()
+
+	// Test with maximum number of address mappings
+	for i := 0; i < 1000; i++ {
+		cosmosAddr := sdk.AccAddress([]byte(fmt.Sprintf("cosmos%d", i)))
+		evmAddr := common.HexToAddress(fmt.Sprintf("0x%040d", i))
+		addressesKeeper.SetAddressMapping(ctx, cosmosAddr, evmAddr.Bytes())
+	}
+
+	addressMappings, err := addressesKeeper.QueryAddressMappings(sdk.WrapSDKContext(ctx), &types.QueryAddressMappingsRequest{Pagination: query.PageRequest{Limit: 1000}})
+	require.NoError(err)
+	require.Len(addressMappings.AddressMappings, 1000)
+
+	// Test with very long Cosmos address (edge case, might not be valid in practice)
+	longCosmosAddr := "cosmos" + strings.Repeat("1", 100)
+	_, err = addressesKeeper.QueryAddressMappingByCosmosAddress(sdk.WrapSDKContext(ctx), &types.QueryAddressMappingByCosmosAddressRequest{CosmosAddress: longCosmosAddr})
+	require.Error(err)
+	require.Contains(err.Error(), "failed to parse cosmos address")
 }

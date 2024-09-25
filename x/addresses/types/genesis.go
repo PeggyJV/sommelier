@@ -1,5 +1,7 @@
 package types
 
+import fmt "fmt"
+
 // DefaultIndex is the default global index
 const DefaultIndex uint64 = 1
 
@@ -14,12 +16,22 @@ func DefaultGenesisState() GenesisState {
 // Validate performs basic genesis state validation returning an error upon any
 // failure.
 func (gs GenesisState) Validate() error {
-	// gs.Params.ValidateBasic()
+	if err := gs.Params.ValidateBasic(); err != nil {
+		return err
+	}
 
+	seenMappings := make(map[string]string)
 	for _, mapping := range gs.AddressMappings {
 		if err := mapping.ValidateBasic(); err != nil {
 			return err
 		}
+
+		// Check for duplicate mappings
+		key := mapping.CosmosAddress + "|" + mapping.EvmAddress
+		if _, exists := seenMappings[key]; exists {
+			return fmt.Errorf("duplicate address mapping found: %s", key)
+		}
+		seenMappings[key] = ""
 	}
 
 	return nil

@@ -97,8 +97,9 @@ func (k Keeper) DeleteAddressMapping(ctx sdk.Context, cosmosAddr []byte) error {
 	}
 
 	evmAddr := k.GetEvmAddressByCosmosAddress(ctx, cosmosAddr)
+
 	if len(evmAddr) == 0 {
-		return errorsmod.Wrap(types.ErrNilEvmAddress, "evm address cannot be empty")
+		return nil
 	}
 
 	k.deleteEvmToCosmosMapping(ctx, evmAddr)

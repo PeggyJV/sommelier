@@ -13,6 +13,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	moduletestutil "github.com/peggyjv/sommelier/v7/testutil"
+	"github.com/peggyjv/sommelier/v7/x/addresses/types"
 	addressTypes "github.com/peggyjv/sommelier/v7/x/addresses/types"
 
 	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
@@ -106,7 +107,8 @@ func (suite *KeeperTestSuite) TestSetGetDeleteAddressMappings() {
 	cosmosAddr := acc.Bytes()
 
 	// Set
-	addressesKeeper.SetAddressMapping(ctx, cosmosAddr, evmAddr)
+	err = addressesKeeper.SetAddressMapping(ctx, cosmosAddr, evmAddr)
+	require.NoError(err)
 
 	// Get
 	cosmosResult := addressesKeeper.GetCosmosAddressByEvmAddress(ctx, evmAddr)
@@ -127,14 +129,58 @@ func (suite *KeeperTestSuite) TestSetGetDeleteAddressMappings() {
 		return false
 	})
 
-	// Delete
-	addressesKeeper.DeleteAddressMapping(ctx, cosmosAddr)
-
-	cosmosResult = addressesKeeper.GetCosmosAddressByEvmAddress(ctx, evmAddr)
-	require.Nil(cosmosResult)
-	evmResult = addressesKeeper.GetEvmAddressByCosmosAddress(ctx, cosmosAddr)
-	require.Nil(evmResult)
-
 	// Invalid input
-	addressesKeeper.SetAddressMapping(ctx, nil, evmAddr)
+	err = addressesKeeper.SetAddressMapping(ctx, nil, evmAddr)
+	require.Error(err)
+
+	// Test setting multiple mappings
+	evmAddr2 := common.HexToAddress("0x2222222222222222222222222222222222222222").Bytes()
+	cosmosAddr2, _ := sdk.AccAddressFromBech32("cosmos1y6d5kasehecexf09ka6y0ggl0pxzt6dgk0gnl9")
+
+	err = addressesKeeper.SetAddressMapping(ctx, cosmosAddr2, evmAddr2)
+	require.NoError(err)
+
+	// Verify second mapping exists
+	result := addressesKeeper.GetCosmosAddressByEvmAddress(ctx, evmAddr2)
+	require.Equal(cosmosAddr2.Bytes(), result)
+
+	result = addressesKeeper.GetEvmAddressByCosmosAddress(ctx, cosmosAddr2)
+	require.Equal(evmAddr2, result)
+
+	// Test deleting one mapping
+	err = addressesKeeper.DeleteAddressMapping(ctx, cosmosAddr)
+	require.NoError(err)
+
+	// Verify the deleted mapping is gone but the other remains
+	result = addressesKeeper.GetCosmosAddressByEvmAddress(ctx, evmAddr)
+	require.Nil(result)
+	result = addressesKeeper.GetEvmAddressByCosmosAddress(ctx, cosmosAddr)
+	require.Nil(result)
+
+	result = addressesKeeper.GetCosmosAddressByEvmAddress(ctx, evmAddr2)
+	require.Equal(cosmosAddr2.Bytes(), result)
+	result = addressesKeeper.GetEvmAddressByCosmosAddress(ctx, cosmosAddr2)
+	require.Equal(evmAddr2, result)
+
+	// Test IterateAddressMappings
+	var mappings2 []*types.AddressMapping
+	addressesKeeper.IterateAddressMappings(ctx, func(cosmosAddr []byte, evmAddr []byte) bool {
+		mappings2 = append(mappings2, &types.AddressMapping{
+			CosmosAddress: sdk.AccAddress(cosmosAddr).String(),
+			EvmAddress:    common.BytesToAddress(evmAddr).Hex(),
+		})
+		return false
+	})
+	require.Len(mappings2, 1)
+	require.Equal(cosmosAddr2.String(), mappings2[0].CosmosAddress)
+	require.Equal(common.BytesToAddress(evmAddr2).Hex(), mappings2[0].EvmAddress)
+
+	// Delete second mapping
+	err = addressesKeeper.DeleteAddressMapping(ctx, cosmosAddr2)
+	require.NoError(err)
+
+	cosmosResult = addressesKeeper.GetCosmosAddressByEvmAddress(ctx, evmAddr2)
+	require.Nil(cosmosResult)
+	evmResult = addressesKeeper.GetEvmAddressByCosmosAddress(ctx, cosmosAddr2)
+	require.Nil(evmResult)
 }

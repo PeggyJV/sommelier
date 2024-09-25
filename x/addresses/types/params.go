@@ -28,6 +28,6 @@ func (p *Params) ParamSetPairs() paramtypes.ParamSetPairs {
 }
 
 // Validate validates the set of params
-// func (p Params) ValidateBasic() error {
-//     return nil
-// }
+func (p Params) ValidateBasic() error {
+	return nil
+}
