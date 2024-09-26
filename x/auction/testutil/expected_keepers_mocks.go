@@ -166,6 +166,14 @@ func (m *MockBankKeeper) SendCoinsFromModuleToModule(ctx types.Context, senderMo
 	return ret0
 }
 
+// BurnCoins mocks base method.
+func (m *MockBankKeeper) BurnCoins(ctx types.Context, moduleName string, amt types.Coins) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "BurnCoins", ctx, moduleName, amt)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
 // SendCoinsFromModuleToModule indicates an expected call of SendCoinsFromModuleToModule.
 func (mr *MockBankKeeperMockRecorder) SendCoinsFromModuleToModule(ctx, senderModule, recipientModule, amt interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()

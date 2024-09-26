@@ -14,6 +14,7 @@ var (
 	KeyAuctionMaxBlockAge                   = []byte("AuctionMaxBlockAge")
 	KeyAuctionPriceDecreaseAccelerationRate = []byte("AuctionPriceDecreaseAccelerationRate")
 	KeyMinimumAuctionHeight                 = []byte("MinimumAuctionHeight")
+	KeyAuctionBurnRate                      = []byte("AuctionBurnRate")
 )
 
 var _ paramtypes.ParamSet = &Params{}
@@ -32,6 +33,7 @@ func DefaultParams() Params {
 		AuctionMaxBlockAge:                   864000,                         // roughly 60 days based on 6 second blocks
 		AuctionPriceDecreaseAccelerationRate: sdk.MustNewDecFromStr("0.001"), // 0.1%
 		MinimumAuctionHeight:                 0,                              // do not run auctions before this block height
+		AuctionBurnRate:                      sdk.MustNewDecFromStr("0.5"),   // 50%
 	}
 }
 
@@ -44,6 +46,7 @@ func (p *Params) ParamSetPairs() paramtypes.ParamSetPairs {
 		paramtypes.NewParamSetPair(KeyAuctionMaxBlockAge, &p.AuctionMaxBlockAge, validateAuctionMaxBlockAge),
 		paramtypes.NewParamSetPair(KeyAuctionPriceDecreaseAccelerationRate, &p.AuctionPriceDecreaseAccelerationRate, validateAuctionPriceDecreaseAccelerationRate),
 		paramtypes.NewParamSetPair(KeyMinimumAuctionHeight, &p.MinimumAuctionHeight, validateMinimumAuctionHeight),
+		paramtypes.NewParamSetPair(KeyAuctionBurnRate, &p.AuctionBurnRate, validateAuctionBurnRate),
 	}
 }
 
@@ -66,6 +69,10 @@ func (p *Params) ValidateBasic() error {
 	}
 
 	if err := validateAuctionPriceDecreaseAccelerationRate(p.AuctionPriceDecreaseAccelerationRate); err != nil {
+		return err
+	}
+
+	if err := validateAuctionBurnRate(p.AuctionBurnRate); err != nil {
 		return err
 	}
 
@@ -135,6 +142,19 @@ func validateMinimumAuctionHeight(i interface{}) error {
 	_, ok := i.(uint64)
 	if !ok {
 		return errorsmod.Wrapf(ErrInvalidMinimumAuctionHeightParam, "invalid minimum auction height parameter type: %T", i)
+	}
+
+	return nil
+}
+
+func validateAuctionBurnRate(i interface{}) error {
+	auctionBurnRate, ok := i.(sdk.Dec)
+	if !ok {
+		return errorsmod.Wrapf(ErrInvalidAuctionBurnRateParam, "invalid auction burn rate parameter type: %T", i)
+	}
+
+	if auctionBurnRate.LT(sdk.MustNewDecFromStr("0")) || auctionBurnRate.GT(sdk.MustNewDecFromStr("1.0")) {
+		return errorsmod.Wrapf(ErrInvalidAuctionBurnRateParam, "auction burn rate must be between 0 and 1 inclusive (0%% to 100%%)")
 	}
 
 	return nil

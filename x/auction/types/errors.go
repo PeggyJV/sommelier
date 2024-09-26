@@ -52,4 +52,5 @@ var (
 	ErrAuctionBelowMinimumUSDValue                              = errorsmod.Register(ModuleName, 45, "auction USD value below minimum")
 	ErrInvalidMinimumAuctionHeightParam                         = errorsmod.Register(ModuleName, 46, "invalid minimum auction height param")
 	ErrAuctionBelowMinimumHeight                                = errorsmod.Register(ModuleName, 47, "auction block height below minimum")
+	ErrInvalidAuctionBurnRateParam                              = errorsmod.Register(ModuleName, 48, "invalid auction burn rate param")
 )
