@@ -13,7 +13,6 @@ import (
 const (
 	evmAddress1    = "0x1111111111111111111111111111111111111111"
 	cosmosAddress1 = "cosmos154d0p9xhrruhxvazumej9nq29afeura2alje4u"
-	evmAddress2    = "0x2222222222222222222222222222222222222222"
 	cosmosAddress2 = "cosmos1y6d5kasehecexf09ka6y0ggl0pxzt6dgk0gnl9"
 )
 
@@ -90,13 +89,16 @@ func TestMsgAddAddressMappingValidate(t *testing.T) {
 	}
 
 	for _, tc := range testCases {
-		err := tc.msgAddAddressMapping.ValidateBasic()
-		if tc.expPass {
-			require.NoError(t, err, tc.name)
-		} else {
-			require.Error(t, err, tc.name)
-			require.Equal(t, tc.err.Error(), err.Error(), tc.name)
-		}
+		tc := tc // create a local copy
+		t.Run(tc.name, func(t *testing.T) {
+			err := tc.msgAddAddressMapping.ValidateBasic()
+			if tc.expPass {
+				require.NoError(t, err, tc.name)
+			} else {
+				require.Error(t, err, tc.name)
+				require.Equal(t, tc.err.Error(), err.Error(), tc.name)
+			}
+		})
 	}
 }
 
@@ -151,13 +153,16 @@ func TestMsgRemoveAddressMappingValidate(t *testing.T) {
 	}
 
 	for _, tc := range testCases {
-		err := tc.msgRemoveAddressMapping.ValidateBasic()
-		if tc.expPass {
-			require.NoError(t, err, tc.name)
-		} else {
-			require.Error(t, err, tc.name)
-			require.Equal(t, tc.err.Error(), err.Error(), tc.name)
-		}
+		tc := tc // create a local copy
+		t.Run(tc.name, func(t *testing.T) {
+			err := tc.msgRemoveAddressMapping.ValidateBasic()
+			if tc.expPass {
+				require.NoError(t, err, tc.name)
+			} else {
+				require.Error(t, err, tc.name)
+				require.Equal(t, tc.err.Error(), err.Error(), tc.name)
+			}
+		})
 	}
 }
 

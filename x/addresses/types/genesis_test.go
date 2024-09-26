@@ -82,6 +82,7 @@ func TestGenesisState_Validate(t *testing.T) {
 	}
 
 	for _, tc := range testCases {
+		tc := tc // create a local copy
 		t.Run(tc.desc, func(t *testing.T) {
 			err := tc.genState.Validate()
 			if tc.valid {
@@ -120,6 +121,7 @@ func TestValidateGenesis(t *testing.T) {
 	}
 
 	for _, tc := range testCases {
+		tc := tc // create a local copy
 		t.Run(tc.desc, func(t *testing.T) {
 			err := tc.genState.Validate()
 			if tc.valid {
@@ -186,6 +188,7 @@ func TestGenesisState_ValidateAddressMappings(t *testing.T) {
 	}
 
 	for _, tc := range testCases {
+		tc := tc // create a local copy
 		t.Run(tc.desc, func(t *testing.T) {
 			genState := GenesisState{
 				Params:          DefaultParams(),

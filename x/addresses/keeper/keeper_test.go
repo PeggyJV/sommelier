@@ -14,7 +14,6 @@ import (
 
 	moduletestutil "github.com/peggyjv/sommelier/v7/testutil"
 	"github.com/peggyjv/sommelier/v7/x/addresses/types"
-	addressTypes "github.com/peggyjv/sommelier/v7/x/addresses/types"
 
 	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
 	tmtime "github.com/cometbft/cometbft/types/time"
@@ -33,13 +32,13 @@ type KeeperTestSuite struct {
 	ctx             sdk.Context
 	addressesKeeper Keeper
 
-	queryClient addressTypes.QueryClient
+	queryClient types.QueryClient
 
 	encCfg moduletestutil.TestEncodingConfig
 }
 
 func (suite *KeeperTestSuite) SetupTest() {
-	key := sdk.NewKVStoreKey(addressTypes.StoreKey)
+	key := sdk.NewKVStoreKey(types.StoreKey)
 	tkey := sdk.NewTransientStoreKey("transient_test")
 	testCtx := testutil.DefaultContext(key, tkey)
 	ctx := testCtx.WithBlockHeader(tmproto.Header{Height: 5, Time: tmtime.Now()})
@@ -58,8 +57,8 @@ func (suite *KeeperTestSuite) SetupTest() {
 		tkey,
 	)
 
-	params.Subspace(addressTypes.ModuleName)
-	subSpace, found := params.GetSubspace(addressTypes.ModuleName)
+	params.Subspace(types.ModuleName)
+	subSpace, found := params.GetSubspace(types.ModuleName)
 	suite.Assertions.True(found)
 
 	suite.addressesKeeper = *NewKeeper(
@@ -68,11 +67,11 @@ func (suite *KeeperTestSuite) SetupTest() {
 		subSpace,
 	)
 
-	addressTypes.RegisterInterfaces(encCfg.InterfaceRegistry)
+	types.RegisterInterfaces(encCfg.InterfaceRegistry)
 
 	queryHelper := baseapp.NewQueryServerTestHelper(ctx, encCfg.InterfaceRegistry)
-	addressTypes.RegisterQueryServer(queryHelper, suite.addressesKeeper)
-	queryClient := addressTypes.NewQueryClient(queryHelper)
+	types.RegisterQueryServer(queryHelper, suite.addressesKeeper)
+	queryClient := types.NewQueryClient(queryHelper)
 
 	suite.queryClient = queryClient
 	suite.encCfg = encCfg
@@ -86,7 +85,7 @@ func (suite *KeeperTestSuite) TestSetGetDeleteParams() {
 	ctx, addressesKeeper := suite.ctx, suite.addressesKeeper
 	require := suite.Require()
 
-	params := addressTypes.DefaultParams()
+	params := types.DefaultParams()
 	addressesKeeper.setParams(ctx, params)
 
 	retrievedParams := addressesKeeper.GetParamSet(ctx)
@@ -118,9 +117,9 @@ func (suite *KeeperTestSuite) TestSetGetDeleteAddressMappings() {
 	require.Equal(evmAddr, evmResult)
 
 	// Iterate
-	var mappings []*addressTypes.AddressMapping
+	var mappings []*types.AddressMapping
 	addressesKeeper.IterateAddressMappings(ctx, func(cosmosAddr []byte, evmAddr []byte) (stop bool) {
-		mapping := addressTypes.AddressMapping{
+		mapping := types.AddressMapping{
 			CosmosAddress: sdk.MustBech32ifyAddressBytes("cosmos", cosmosAddr),
 			EvmAddress:    common.BytesToAddress(evmAddr).Hex(),
 		}
