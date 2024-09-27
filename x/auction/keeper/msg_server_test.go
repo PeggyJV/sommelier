@@ -121,7 +121,11 @@ func (suite *KeeperTestSuite) TestHappyPathSubmitBidAndFulfillFully() {
 
 	// Mock out final keeper calls necessary to finish the auction due to bid draining the available supply
 	suite.mockGetBalance(ctx, authtypes.NewModuleAddress(auctionTypes.ModuleName), saleToken, sdk.NewCoin(saleToken, sdk.NewInt(0)))
+
 	totalUsommExpected := sdk.NewCoin(params.BaseCoinUnit, sdk.NewInt(20000000000))
+	totalBurnExpected := sdk.NewCoin(params.BaseCoinUnit, totalUsommExpected.Amount.Quo(sdk.NewInt(2)))
+	totalUsommExpected = sdk.NewCoin(params.BaseCoinUnit, totalUsommExpected.Amount.Sub(totalBurnExpected.Amount))
+	suite.mockBurnCoins(ctx, auctionTypes.ModuleName, sdk.NewCoins(totalBurnExpected))
 	suite.mockSendCoinsFromModuleToModule(ctx, auctionTypes.ModuleName, permissionedReciever.GetName(), sdk.NewCoins(totalUsommExpected))
 
 	// Submit the partially fulfillable bid now

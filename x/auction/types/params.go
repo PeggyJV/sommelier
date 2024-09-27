@@ -107,6 +107,10 @@ func validateMinimumSaleTokensUSDValue(i interface{}) error {
 		return errorsmod.Wrapf(ErrInvalidMinimumSaleTokensUSDValue, "invalid minimum sale tokens USD value parameter type: %T", i)
 	}
 
+	if minimumSaleTokensUsdValue.IsNil() {
+		return errorsmod.Wrap(ErrInvalidMinimumSaleTokensUSDValue, "minimum sale tokens USD value cannot be nil")
+	}
+
 	if minimumSaleTokensUsdValue.LT(sdk.MustNewDecFromStr("1.0")) {
 		// Setting this to a minimum of 1.0 USD to ensure we can realistically charge a non-fractional usomm value
 		return errorsmod.Wrapf(ErrInvalidMinimumSaleTokensUSDValue, "minimum sale tokens USD value must be at least 1.0")
@@ -128,6 +132,10 @@ func validateAuctionPriceDecreaseAccelerationRate(i interface{}) error {
 	auctionPriceDecreaseAccelerationRate, ok := i.(sdk.Dec)
 	if !ok {
 		return errorsmod.Wrapf(ErrInvalidAuctionPriceDecreaseAccelerationRateParam, "invalid auction price decrease acceleration rate parameter type: %T", i)
+	}
+
+	if auctionPriceDecreaseAccelerationRate.IsNil() {
+		return errorsmod.Wrap(ErrInvalidAuctionPriceDecreaseAccelerationRateParam, "auction price decrease acceleration rate cannot be nil")
 	}
 
 	if auctionPriceDecreaseAccelerationRate.LT(sdk.MustNewDecFromStr("0")) || auctionPriceDecreaseAccelerationRate.GT(sdk.MustNewDecFromStr("1.0")) {
@@ -153,7 +161,11 @@ func validateAuctionBurnRate(i interface{}) error {
 		return errorsmod.Wrapf(ErrInvalidAuctionBurnRateParam, "invalid auction burn rate parameter type: %T", i)
 	}
 
-	if auctionBurnRate.LT(sdk.MustNewDecFromStr("0")) || auctionBurnRate.GT(sdk.MustNewDecFromStr("1.0")) {
+	if auctionBurnRate.IsNil() {
+		return errorsmod.Wrap(ErrInvalidAuctionBurnRateParam, "auction burn rate cannot be nil")
+	}
+
+	if auctionBurnRate.LT(sdk.ZeroDec()) || auctionBurnRate.GT(sdk.OneDec()) {
 		return errorsmod.Wrapf(ErrInvalidAuctionBurnRateParam, "auction burn rate must be between 0 and 1 inclusive (0%% to 100%%)")
 	}
 

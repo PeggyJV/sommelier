@@ -29,6 +29,7 @@ func TestParamsValidate(t *testing.T) {
 				MinimumSaleTokensUsdValue:            sdk.MustNewDecFromStr("1.0"),
 				AuctionMaxBlockAge:                   uint64(100),
 				AuctionPriceDecreaseAccelerationRate: sdk.MustNewDecFromStr("0.1"),
+				AuctionBurnRate:                      sdk.MustNewDecFromStr("0.1"),
 			},
 			expPass: true,
 			err:     nil,
@@ -41,6 +42,7 @@ func TestParamsValidate(t *testing.T) {
 				MinimumSaleTokensUsdValue:            sdk.MustNewDecFromStr("1.0"),
 				AuctionMaxBlockAge:                   uint64(100),
 				AuctionPriceDecreaseAccelerationRate: sdk.MustNewDecFromStr("0.1"),
+				AuctionBurnRate:                      sdk.MustNewDecFromStr("0.1"),
 			},
 			expPass: false,
 			err:     errorsmod.Wrapf(ErrTokenPriceMaxBlockAgeMustBePositive, "value: 0"),
@@ -53,6 +55,7 @@ func TestParamsValidate(t *testing.T) {
 				MinimumSaleTokensUsdValue:            sdk.MustNewDecFromStr("1.0"),
 				AuctionMaxBlockAge:                   uint64(100),
 				AuctionPriceDecreaseAccelerationRate: sdk.MustNewDecFromStr("-0.01"),
+				AuctionBurnRate:                      sdk.MustNewDecFromStr("0.1"),
 			},
 			expPass: false,
 			err:     errorsmod.Wrapf(ErrInvalidAuctionPriceDecreaseAccelerationRateParam, "auction price decrease acceleration rate must be between 0 and 1 inclusive (0%% to 100%%)"),
@@ -65,6 +68,7 @@ func TestParamsValidate(t *testing.T) {
 				MinimumSaleTokensUsdValue:            sdk.MustNewDecFromStr("1.0"),
 				AuctionMaxBlockAge:                   uint64(100),
 				AuctionPriceDecreaseAccelerationRate: sdk.MustNewDecFromStr("1.1"),
+				AuctionBurnRate:                      sdk.MustNewDecFromStr("0.1"),
 			},
 			expPass: false,
 			err:     errorsmod.Wrapf(ErrInvalidAuctionPriceDecreaseAccelerationRateParam, "auction price decrease acceleration rate must be between 0 and 1 inclusive (0%% to 100%%)"),
@@ -80,5 +84,94 @@ func TestParamsValidate(t *testing.T) {
 			require.Error(t, err, tc.name)
 			require.Equal(t, tc.err.Error(), err.Error())
 		}
+	}
+}
+
+func TestParamsValidateBasicUnhappyPath(t *testing.T) {
+	testCases := []struct {
+		name   string
+		params Params
+		expErr error
+	}{
+		{
+			name: "Invalid minimum sale tokens USD value",
+			params: Params{
+				PriceMaxBlockAge:                     uint64(1000),
+				MinimumBidInUsomm:                    uint64(500),
+				MinimumSaleTokensUsdValue:            sdk.MustNewDecFromStr("0.5"),
+				AuctionMaxBlockAge:                   uint64(100),
+				AuctionPriceDecreaseAccelerationRate: sdk.MustNewDecFromStr("0.1"),
+				AuctionBurnRate:                      sdk.MustNewDecFromStr("0.1"),
+			},
+			expErr: ErrInvalidMinimumSaleTokensUSDValue,
+		},
+		{
+			name: "Invalid auction burn rate (negative)",
+			params: Params{
+				PriceMaxBlockAge:                     uint64(1000),
+				MinimumBidInUsomm:                    uint64(500),
+				MinimumSaleTokensUsdValue:            sdk.MustNewDecFromStr("1.0"),
+				AuctionMaxBlockAge:                   uint64(100),
+				AuctionPriceDecreaseAccelerationRate: sdk.MustNewDecFromStr("0.1"),
+				AuctionBurnRate:                      sdk.MustNewDecFromStr("-0.1"),
+			},
+			expErr: ErrInvalidAuctionBurnRateParam,
+		},
+		{
+			name: "Invalid auction burn rate (greater than 1)",
+			params: Params{
+				PriceMaxBlockAge:                     uint64(1000),
+				MinimumBidInUsomm:                    uint64(500),
+				MinimumSaleTokensUsdValue:            sdk.MustNewDecFromStr("1.0"),
+				AuctionMaxBlockAge:                   uint64(100),
+				AuctionPriceDecreaseAccelerationRate: sdk.MustNewDecFromStr("0.1"),
+				AuctionBurnRate:                      sdk.MustNewDecFromStr("1.1"),
+			},
+			expErr: ErrInvalidAuctionBurnRateParam,
+		},
+		{
+			name: "Nil MinimumSaleTokensUsdValue",
+			params: Params{
+				PriceMaxBlockAge:                     uint64(1000),
+				MinimumBidInUsomm:                    uint64(500),
+				MinimumSaleTokensUsdValue:            sdk.Dec{},
+				AuctionMaxBlockAge:                   uint64(100),
+				AuctionPriceDecreaseAccelerationRate: sdk.MustNewDecFromStr("0.1"),
+				AuctionBurnRate:                      sdk.MustNewDecFromStr("0.1"),
+			},
+			expErr: ErrInvalidMinimumSaleTokensUSDValue,
+		},
+		{
+			name: "Nil AuctionPriceDecreaseAccelerationRate",
+			params: Params{
+				PriceMaxBlockAge:                     uint64(1000),
+				MinimumBidInUsomm:                    uint64(500),
+				MinimumSaleTokensUsdValue:            sdk.MustNewDecFromStr("1.0"),
+				AuctionMaxBlockAge:                   uint64(100),
+				AuctionPriceDecreaseAccelerationRate: sdk.Dec{},
+				AuctionBurnRate:                      sdk.MustNewDecFromStr("0.1"),
+			},
+			expErr: ErrInvalidAuctionPriceDecreaseAccelerationRateParam,
+		},
+		{
+			name: "Nil AuctionBurnRate",
+			params: Params{
+				PriceMaxBlockAge:                     uint64(1000),
+				MinimumBidInUsomm:                    uint64(500),
+				MinimumSaleTokensUsdValue:            sdk.MustNewDecFromStr("1.0"),
+				AuctionMaxBlockAge:                   uint64(100),
+				AuctionPriceDecreaseAccelerationRate: sdk.MustNewDecFromStr("0.1"),
+				AuctionBurnRate:                      sdk.Dec{},
+			},
+			expErr: ErrInvalidAuctionBurnRateParam,
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			err := tc.params.ValidateBasic()
+			require.Error(t, err)
+			require.ErrorIs(t, err, tc.expErr)
+		})
 	}
 }
