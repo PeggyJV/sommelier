@@ -77,6 +77,7 @@ func TestParamsValidate(t *testing.T) {
 
 	for _, tc := range testCases {
 		err := tc.params.ValidateBasic()
+		tc := tc
 		if tc.expPass {
 			require.NoError(t, err, tc.name)
 			require.Nil(t, err)
@@ -168,6 +169,7 @@ func TestParamsValidateBasicUnhappyPath(t *testing.T) {
 	}
 
 	for _, tc := range testCases {
+		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			err := tc.params.ValidateBasic()
 			require.Error(t, err)
