@@ -73,6 +73,58 @@ func TestParamsValidate(t *testing.T) {
 			expPass: false,
 			err:     errorsmod.Wrapf(ErrInvalidAuctionPriceDecreaseAccelerationRateParam, "auction price decrease acceleration rate must be between 0 and 1 inclusive (0%% to 100%%)"),
 		},
+		{
+			name: "Auction burn rate lower bound (0)",
+			params: Params{
+				PriceMaxBlockAge:                     uint64(1000),
+				MinimumBidInUsomm:                    uint64(500),
+				MinimumSaleTokensUsdValue:            sdk.MustNewDecFromStr("1.0"),
+				AuctionMaxBlockAge:                   uint64(100),
+				AuctionPriceDecreaseAccelerationRate: sdk.MustNewDecFromStr("0.1"),
+				AuctionBurnRate:                      sdk.ZeroDec(),
+			},
+			expPass: true,
+			err:     nil,
+		},
+		{
+			name: "Auction burn rate upper bound (1)",
+			params: Params{
+				PriceMaxBlockAge:                     uint64(1000),
+				MinimumBidInUsomm:                    uint64(500),
+				MinimumSaleTokensUsdValue:            sdk.MustNewDecFromStr("1.0"),
+				AuctionMaxBlockAge:                   uint64(100),
+				AuctionPriceDecreaseAccelerationRate: sdk.MustNewDecFromStr("0.1"),
+				AuctionBurnRate:                      sdk.OneDec(),
+			},
+			expPass: true,
+			err:     nil,
+		},
+		{
+			name: "Auction burn rate slightly below lower bound",
+			params: Params{
+				PriceMaxBlockAge:                     uint64(1000),
+				MinimumBidInUsomm:                    uint64(500),
+				MinimumSaleTokensUsdValue:            sdk.MustNewDecFromStr("1.0"),
+				AuctionMaxBlockAge:                   uint64(100),
+				AuctionPriceDecreaseAccelerationRate: sdk.MustNewDecFromStr("0.1"),
+				AuctionBurnRate:                      sdk.MustNewDecFromStr("-0.000000000000000001"),
+			},
+			expPass: false,
+			err:     errorsmod.Wrapf(ErrInvalidAuctionBurnRateParam, "auction burn rate must be between 0 and 1 inclusive (0%% to 100%%)"),
+		},
+		{
+			name: "Auction burn rate slightly above upper bound",
+			params: Params{
+				PriceMaxBlockAge:                     uint64(1000),
+				MinimumBidInUsomm:                    uint64(500),
+				MinimumSaleTokensUsdValue:            sdk.MustNewDecFromStr("1.0"),
+				AuctionMaxBlockAge:                   uint64(100),
+				AuctionPriceDecreaseAccelerationRate: sdk.MustNewDecFromStr("0.1"),
+				AuctionBurnRate:                      sdk.MustNewDecFromStr("1.000000000000000001"),
+			},
+			expPass: false,
+			err:     errorsmod.Wrapf(ErrInvalidAuctionBurnRateParam, "auction burn rate must be between 0 and 1 inclusive (0%% to 100%%)"),
+		},
 	}
 
 	for _, tc := range testCases {
