@@ -29,4 +29,8 @@ message Params {
     (gogoproto.nullable) = false
   ];
   uint64 minimum_auction_height = 6;
+  string auction_burn_rate = 7 [
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+    (gogoproto.nullable) = false
+  ];
 }

@@ -216,8 +216,10 @@ func (suite *KeeperTestSuite) TestHappyPathFinishAuction() {
 		TotalUsommPaid:           amountPaid2,
 	})
 
-	// Second transfer to return proceeds from bids
-	totalUsommExpected := sdk.NewCoin(params.BaseCoinUnit, amountPaid1.Amount.Add(amountPaid2.Amount))
+	// Burn and send remaining proceeds from bids
+	totalBurnExpected := sdk.NewCoin(params.BaseCoinUnit, amountPaid1.Amount.Add(amountPaid2.Amount).Quo(sdk.NewInt(2)))
+	suite.mockBurnCoins(ctx, auctionTypes.ModuleName, sdk.NewCoins(totalBurnExpected))
+	totalUsommExpected := sdk.NewCoin(params.BaseCoinUnit, amountPaid1.Amount.Add(amountPaid2.Amount).Sub(totalBurnExpected.Amount))
 	suite.mockSendCoinsFromModuleToModule(ctx, auctionTypes.ModuleName, permissionedReciever.GetName(), sdk.NewCoins(totalUsommExpected))
 
 	// Change active auction tokens remaining before finishing auction to pretend tokens were sold

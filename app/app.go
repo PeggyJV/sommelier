@@ -221,7 +221,7 @@ var (
 		cellarfeestypes.ModuleName:     nil,
 		incentivestypes.ModuleName:     nil,
 		axelarcorktypes.ModuleName:     nil,
-		auctiontypes.ModuleName:        nil,
+		auctiontypes.ModuleName:        {authtypes.Burner},
 		pubsubtypes.ModuleName:         nil,
 		addressestypes.ModuleName:      nil,
 	}

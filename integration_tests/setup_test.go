@@ -415,6 +415,7 @@ func (s *IntegrationTestSuite) initGenesis() {
 	// Add an auction for integration testing of the auction module
 	var auctionGenState auctiontypes.GenesisState
 	s.Require().NoError(cdc.UnmarshalJSON(appGenState[auctiontypes.ModuleName], &auctionGenState))
+	auctionGenState.Params = auctiontypes.DefaultParams()
 	auctionGenState.TokenPrices = append(auctionGenState.TokenPrices, &auctiontypes.TokenPrice{
 		Denom:            testDenom,
 		Exponent:         6,
