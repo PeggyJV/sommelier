@@ -106,6 +106,7 @@ import (
 	gravitykeeper "github.com/peggyjv/gravity-bridge/module/v4/x/gravity/keeper"
 	gravitytypes "github.com/peggyjv/gravity-bridge/module/v4/x/gravity/types"
 	appParams "github.com/peggyjv/sommelier/v7/app/params"
+	v8 "github.com/peggyjv/sommelier/v7/app/upgrades/v8"
 	"github.com/peggyjv/sommelier/v7/x/auction"
 	auctionclient "github.com/peggyjv/sommelier/v7/x/auction/client"
 	auctionkeeper "github.com/peggyjv/sommelier/v7/x/auction/keeper"
@@ -1008,7 +1009,10 @@ func (app *SommelierApp) setupUpgradeStoreLoaders() {
 
 	var storeUpgrades *storetypes.StoreUpgrades = nil
 
-	// TODO: Add v8 store loader when writing upgrade handler
+	if upgradeInfo.Name == v8.UpgradeName {
+		// Is this correct?
+		storeUpgrades = &storetypes.StoreUpgrades{}
+	}
 
 	if storeUpgrades != nil {
 		app.SetStoreLoader(upgradetypes.UpgradeStoreLoader(upgradeInfo.Height, storeUpgrades))
@@ -1016,5 +1020,12 @@ func (app *SommelierApp) setupUpgradeStoreLoaders() {
 }
 
 func (app *SommelierApp) setupUpgradeHandlers() {
-	// TODO: Add v8 upgrade handler
+	// TODO: Add v8 upgrade handle
+	app.UpgradeKeeper.SetUpgradeHandler(
+		v8.UpgradeName,
+		v8.CreateUpgradeHandler(
+			app.mm,
+			app.configurator,
+		),
+	)
 }
