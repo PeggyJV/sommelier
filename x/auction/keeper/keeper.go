@@ -325,11 +325,25 @@ func (k Keeper) FinishAuction(ctx sdk.Context, auction *types.Auction) error {
 		usommProceeds = usommProceeds.Add(bid.TotalUsommPaid.Amount)
 	}
 
-	usommProceedsCoin := sdk.NewCoin(params.BaseCoinUnit, usommProceeds)
-
-	// Send proceeds to their appropriate destination module
+	// Send proceeds to their appropriate destination
 	if usommProceeds.IsPositive() {
-		if err := k.bankKeeper.SendCoinsFromModuleToModule(ctx, types.ModuleName, auction.ProceedsModuleAccount, sdk.Coins{usommProceedsCoin}); err != nil {
+		burnRate := k.GetParamSet(ctx).AuctionBurnRate
+		finalUsommProceeds := usommProceeds
+
+		if burnRate.GT(sdk.ZeroDec()) {
+			// Burn portion of USOMM in proceeds
+			auctionBurn := sdk.NewDecFromInt(usommProceeds).Mul(burnRate).TruncateInt()
+			auctionBurnCoins := sdk.NewCoin(params.BaseCoinUnit, auctionBurn)
+			if err := k.bankKeeper.BurnCoins(ctx, types.ModuleName, sdk.NewCoins(auctionBurnCoins)); err != nil {
+				return err
+			}
+
+			finalUsommProceeds = finalUsommProceeds.Sub(auctionBurn)
+		}
+
+		// Send remaining USOMM to proceeds module
+		finalUsommProceedsCoin := sdk.NewCoin(params.BaseCoinUnit, finalUsommProceeds)
+		if err := k.bankKeeper.SendCoinsFromModuleToModule(ctx, types.ModuleName, auction.ProceedsModuleAccount, sdk.Coins{finalUsommProceedsCoin}); err != nil {
 			return err
 		}
 	}

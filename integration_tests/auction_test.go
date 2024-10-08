@@ -21,6 +21,11 @@ func (s *IntegrationTestSuite) TestAuction() {
 		s.Require().NoError(err)
 		auctionQueryClient := types.NewQueryClient(val0ClientCtx)
 
+		// Query the total supply of usomm before the auction
+		bankQueryClient := banktypes.NewQueryClient(val0ClientCtx)
+		supplyRes, err := bankQueryClient.SupplyOf(context.Background(), &banktypes.QuerySupplyOfRequest{Denom: testDenom})
+		s.Require().NoError(err)
+
 		// Verify auction created for testing exists
 		auctionQuery := types.QueryActiveAuctionRequest{
 			AuctionId: uint32(1),
@@ -115,7 +120,6 @@ func (s *IntegrationTestSuite) TestAuction() {
 		}, time.Second*30, time.Second*5, "proposal was never accepted")
 		s.T().Log("Proposal approved!")
 
-		bankQueryClient := banktypes.NewQueryClient(val0ClientCtx)
 		balanceRes, err := bankQueryClient.AllBalances(context.Background(), &banktypes.QueryAllBalancesRequest{Address: authtypes.NewModuleAddress(types.ModuleName).String()})
 		s.Require().NoError(err)
 		s.T().Logf("Auction module token balances before bids %v", balanceRes.Balances)
@@ -292,6 +296,37 @@ func (s *IntegrationTestSuite) TestAuction() {
 		}
 		s.Require().Equal(expectedEndedAuction, *endedAuctionResponse.Auction)
 		s.T().Log("Ended auction stored correctly!")
+
+		s.T().Log("Verifying cellarfees module account balance...")
+		cellarfeesModuleAddress := authtypes.NewModuleAddress(cellarfees.ModuleName).String()
+		cellarfeesBalanceRes, err := bankQueryClient.AllBalances(context.Background(), &banktypes.QueryAllBalancesRequest{Address: cellarfeesModuleAddress})
+		s.Require().NoError(err)
+
+		totalSommPaid := expectedBid1.TotalUsommPaid.Amount.Add(expectedBid2.TotalUsommPaid.Amount)
+		// default burn rate is 0.5 so 50% of the SOMM paid to the cellarfees module account
+		expectedCellarfeesSomm := totalSommPaid.Quo(sdk.NewInt(2))
+
+		found, cellarfeesSommBalance := balanceOfDenom(cellarfeesBalanceRes.Balances, testDenom)
+		s.Require().True(found, "SOMM balance not present in cellarfees module account")
+		s.Require().GreaterOrEqual(expectedCellarfeesSomm.Int64(), cellarfeesSommBalance.Amount.Int64(), "Cellarfees module account should have 50% or less of the SOMM received from the auction (less if distributions have occurred)")
+		s.T().Log("Cellarfees module account balance verified correctly!")
+
+		s.T().Log("Verifying total supply of usomm has been reduced...")
+
+		// Calculate the expected burn amount (50% of total SOMM paid in auction)
+		expectedBurnAmount := totalSommPaid.Quo(sdk.NewInt(2))
+
+		// Calculate the expected new total supply
+		expectedNewSupply := supplyRes.Amount.Amount.Sub(expectedBurnAmount)
+
+		// Query the actual new total supply
+		newSupplyRes, err := bankQueryClient.SupplyOf(context.Background(), &banktypes.QuerySupplyOfRequest{Denom: testDenom})
+		s.Require().NoError(err)
+
+		// Verify that the new supply matches the expected new supply
+		s.Require().Equal(expectedNewSupply.Int64(), newSupplyRes.Amount.Amount.Int64(), "Total supply of usomm should be reduced by the amount burnt")
+
+		s.T().Log("Total supply of usomm has been correctly reduced!")
 
 		s.T().Log("--Test completed successfully--")
 	})
