@@ -106,6 +106,9 @@ import (
 	gravitykeeper "github.com/peggyjv/gravity-bridge/module/v4/x/gravity/keeper"
 	gravitytypes "github.com/peggyjv/gravity-bridge/module/v4/x/gravity/types"
 	appParams "github.com/peggyjv/sommelier/v7/app/params"
+	"github.com/peggyjv/sommelier/v7/x/addresses"
+	addresseskeeper "github.com/peggyjv/sommelier/v7/x/addresses/keeper"
+	addressestypes "github.com/peggyjv/sommelier/v7/x/addresses/types"
 	"github.com/peggyjv/sommelier/v7/x/auction"
 	auctionclient "github.com/peggyjv/sommelier/v7/x/auction/client"
 	auctionkeeper "github.com/peggyjv/sommelier/v7/x/auction/keeper"
@@ -201,6 +204,7 @@ var (
 		incentives.AppModuleBasic{},
 		auction.AppModuleBasic{},
 		pubsub.AppModuleBasic{},
+		addresses.AppModuleBasic{},
 	)
 
 	// module account permissions
@@ -219,6 +223,7 @@ var (
 		axelarcorktypes.ModuleName:     nil,
 		auctiontypes.ModuleName:        {authtypes.Burner},
 		pubsubtypes.ModuleName:         nil,
+		addressestypes.ModuleName:      nil,
 	}
 
 	// module accounts that are allowed to receive tokens
@@ -276,6 +281,7 @@ type SommelierApp struct {
 	IncentivesKeeper incentiveskeeper.Keeper
 	AuctionKeeper    auctionkeeper.Keeper
 	PubsubKeeper     pubsubkeeper.Keeper
+	AddressesKeeper  addresseskeeper.Keeper
 
 	// make capability scoped keepers public for test purposes (IBC only)
 	ScopedAxelarCorkKeeper capabilitykeeper.ScopedKeeper
@@ -343,6 +349,7 @@ func NewSommelierApp(
 		auctiontypes.StoreKey,
 		cellarfeestypes.StoreKey,
 		pubsubtypes.StoreKey,
+		addressestypes.StoreKey,
 	)
 	tkeys := sdk.NewTransientStoreKeys(paramstypes.TStoreKey)
 	memKeys := sdk.NewMemoryStoreKeys(capabilitytypes.MemStoreKey)
@@ -524,6 +531,10 @@ func NewSommelierApp(
 			app.CorkKeeper.Hooks(),
 		))
 
+	app.AddressesKeeper = *addresseskeeper.NewKeeper(
+		appCodec, keys[addressestypes.StoreKey], app.GetSubspace(addressestypes.ModuleName),
+	)
+
 	// register the proposal types
 	govRouter := govtypesv1beta1.NewRouter()
 	govRouter.AddRoute(govtypes.RouterKey, govtypesv1beta1.ProposalHandler).
@@ -604,6 +615,7 @@ func NewSommelierApp(
 		cellarfees.NewAppModule(app.CellarFeesKeeper, appCodec, app.AccountKeeper, app.BankKeeper, app.MintKeeper, app.CorkKeeper, app.AuctionKeeper),
 		auction.NewAppModule(app.AuctionKeeper, app.BankKeeper, app.AccountKeeper, appCodec),
 		pubsub.NewAppModule(appCodec, app.PubsubKeeper, app.StakingKeeper, app.GravityKeeper),
+		addresses.NewAppModule(appCodec, app.AddressesKeeper),
 	)
 
 	// During begin block slashing happens after distr.BeginBlocker so that
@@ -638,6 +650,7 @@ func NewSommelierApp(
 		cellarfeestypes.ModuleName,
 		auctiontypes.ModuleName,
 		pubsubtypes.ModuleName,
+		addressestypes.ModuleName,
 	)
 
 	// NOTE gov must come before staking
@@ -668,6 +681,7 @@ func NewSommelierApp(
 		cellarfeestypes.ModuleName,
 		auctiontypes.ModuleName,
 		pubsubtypes.ModuleName,
+		addressestypes.ModuleName,
 	)
 
 	// NOTE: The genutils module must occur after staking so that pools are
@@ -706,6 +720,7 @@ func NewSommelierApp(
 		cellarfeestypes.ModuleName,
 		auctiontypes.ModuleName,
 		pubsubtypes.ModuleName,
+		addressestypes.ModuleName,
 	)
 
 	app.mm.RegisterInvariants(&app.CrisisKeeper)
@@ -741,6 +756,7 @@ func NewSommelierApp(
 		cellarfees.NewAppModule(app.CellarFeesKeeper, appCodec, app.AccountKeeper, app.BankKeeper, app.MintKeeper, app.CorkKeeper, app.AuctionKeeper),
 		auction.NewAppModule(app.AuctionKeeper, app.BankKeeper, app.AccountKeeper, appCodec),
 		pubsub.NewAppModule(appCodec, app.PubsubKeeper, app.StakingKeeper, app.GravityKeeper),
+		addresses.NewAppModule(appCodec, app.AddressesKeeper),
 	)
 
 	app.sm.RegisterStoreDecoders()
@@ -992,6 +1008,7 @@ func initParamsKeeper(appCodec codec.BinaryCodec, legacyAmino *codec.LegacyAmino
 	paramsKeeper.Subspace(incentivestypes.ModuleName)
 	paramsKeeper.Subspace(auctiontypes.ModuleName)
 	paramsKeeper.Subspace(pubsubtypes.ModuleName)
+	paramsKeeper.Subspace(addressestypes.ModuleName)
 
 	return paramsKeeper
 }

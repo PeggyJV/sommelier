@@ -1,0 +1,67 @@
+syntax = "proto3";
+
+package addresses.v1;
+
+import "addresses/v1/addresses.proto";
+import "addresses/v1/genesis.proto";
+import "gogoproto/gogo.proto";
+import "google/api/annotations.proto";
+import "cosmos/base/query/v1beta1/pagination.proto";
+import "cosmos/query/v1/query.proto";
+
+option go_package = "github.com/peggyjv/sommelier/v7/x/addresses/types";
+
+service Query {
+    rpc QueryParams(QueryParamsRequest) returns (QueryParamsResponse) {
+        option (cosmos.query.v1.module_query_safe) = true;
+        option (google.api.http).get = "/sommelier/addresses/v1/params";
+    }
+
+    rpc QueryAddressMappings(QueryAddressMappingsRequest) returns (QueryAddressMappingsResponse) {
+        option (cosmos.query.v1.module_query_safe) = true;
+        option (google.api.http).get = "/sommelier/addresses/v1/address_mappings";
+    }
+
+    rpc QueryAddressMappingByEVMAddress(QueryAddressMappingByEVMAddressRequest) returns (QueryAddressMappingByEVMAddressResponse) {
+        option (cosmos.query.v1.module_query_safe) = true;
+        option (google.api.http).get = "/sommelier/addresses/v1/address_mappings/evm/{evm_address}";
+    }
+
+    rpc QueryAddressMappingByCosmosAddress(QueryAddressMappingByCosmosAddressRequest) returns (QueryAddressMappingByCosmosAddressResponse) {
+        option (cosmos.query.v1.module_query_safe) = true;
+        option (google.api.http).get = "/sommelier/addresses/v1/address_mappings/cosmos/{cosmos_address}";
+    }
+}
+
+message QueryParamsRequest {}
+
+message QueryParamsResponse {
+    Params params = 1;
+}
+
+message QueryAddressMappingsRequest {
+    cosmos.base.query.v1beta1.PageRequest pagination = 1 [ (gogoproto.nullable) = false ];
+}
+
+message QueryAddressMappingsResponse {
+    repeated AddressMapping address_mappings = 1;
+    cosmos.base.query.v1beta1.PageResponse pagination = 2 [ (gogoproto.nullable) = false ];
+}
+
+message QueryAddressMappingByEVMAddressRequest {
+    string evm_address = 1;
+}
+
+message QueryAddressMappingByEVMAddressResponse {
+    string cosmos_address = 1;
+    string evm_address = 2;
+}
+
+message QueryAddressMappingByCosmosAddressRequest {
+    string cosmos_address = 1;
+}
+
+message QueryAddressMappingByCosmosAddressResponse {
+    string cosmos_address = 1;
+    string evm_address = 2;
+}

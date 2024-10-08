@@ -2230,6 +2230,7 @@ func _Query_QueryDefaultSubscriptions_Handler(srv interface{}, ctx context.Conte
 	return interceptor(ctx, in, info, handler)
 }
 
+var Query_serviceDesc = _Query_serviceDesc
 var _Query_serviceDesc = grpc.ServiceDesc{
 	ServiceName: "pubsub.v1.Query",
 	HandlerType: (*QueryServer)(nil),
