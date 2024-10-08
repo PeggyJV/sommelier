@@ -1,0 +1,15 @@
+syntax = "proto3";
+package addresses.v1;
+
+option go_package = "github.com/peggyjv/sommelier/v7/x/addresses/types";
+
+import "addresses/v1/addresses.proto";
+import "gogoproto/gogo.proto";
+import "google/api/annotations.proto";
+
+message GenesisState {
+    Params params = 1 [ (gogoproto.nullable) = false ];
+    repeated AddressMapping address_mappings = 2;
+}
+
+message Params {}

@@ -14,6 +14,7 @@ var (
 	KeyAuctionMaxBlockAge                   = []byte("AuctionMaxBlockAge")
 	KeyAuctionPriceDecreaseAccelerationRate = []byte("AuctionPriceDecreaseAccelerationRate")
 	KeyMinimumAuctionHeight                 = []byte("MinimumAuctionHeight")
+	KeyAuctionBurnRate                      = []byte("AuctionBurnRate")
 )
 
 var _ paramtypes.ParamSet = &Params{}
@@ -32,6 +33,7 @@ func DefaultParams() Params {
 		AuctionMaxBlockAge:                   864000,                         // roughly 60 days based on 6 second blocks
 		AuctionPriceDecreaseAccelerationRate: sdk.MustNewDecFromStr("0.001"), // 0.1%
 		MinimumAuctionHeight:                 0,                              // do not run auctions before this block height
+		AuctionBurnRate:                      sdk.MustNewDecFromStr("0.5"),   // 50%
 	}
 }
 
@@ -44,6 +46,7 @@ func (p *Params) ParamSetPairs() paramtypes.ParamSetPairs {
 		paramtypes.NewParamSetPair(KeyAuctionMaxBlockAge, &p.AuctionMaxBlockAge, validateAuctionMaxBlockAge),
 		paramtypes.NewParamSetPair(KeyAuctionPriceDecreaseAccelerationRate, &p.AuctionPriceDecreaseAccelerationRate, validateAuctionPriceDecreaseAccelerationRate),
 		paramtypes.NewParamSetPair(KeyMinimumAuctionHeight, &p.MinimumAuctionHeight, validateMinimumAuctionHeight),
+		paramtypes.NewParamSetPair(KeyAuctionBurnRate, &p.AuctionBurnRate, validateAuctionBurnRate),
 	}
 }
 
@@ -66,6 +69,10 @@ func (p *Params) ValidateBasic() error {
 	}
 
 	if err := validateAuctionPriceDecreaseAccelerationRate(p.AuctionPriceDecreaseAccelerationRate); err != nil {
+		return err
+	}
+
+	if err := validateAuctionBurnRate(p.AuctionBurnRate); err != nil {
 		return err
 	}
 
@@ -100,6 +107,10 @@ func validateMinimumSaleTokensUSDValue(i interface{}) error {
 		return errorsmod.Wrapf(ErrInvalidMinimumSaleTokensUSDValue, "invalid minimum sale tokens USD value parameter type: %T", i)
 	}
 
+	if minimumSaleTokensUsdValue.IsNil() {
+		return errorsmod.Wrap(ErrInvalidMinimumSaleTokensUSDValue, "minimum sale tokens USD value cannot be nil")
+	}
+
 	if minimumSaleTokensUsdValue.LT(sdk.MustNewDecFromStr("1.0")) {
 		// Setting this to a minimum of 1.0 USD to ensure we can realistically charge a non-fractional usomm value
 		return errorsmod.Wrapf(ErrInvalidMinimumSaleTokensUSDValue, "minimum sale tokens USD value must be at least 1.0")
@@ -123,6 +134,10 @@ func validateAuctionPriceDecreaseAccelerationRate(i interface{}) error {
 		return errorsmod.Wrapf(ErrInvalidAuctionPriceDecreaseAccelerationRateParam, "invalid auction price decrease acceleration rate parameter type: %T", i)
 	}
 
+	if auctionPriceDecreaseAccelerationRate.IsNil() {
+		return errorsmod.Wrap(ErrInvalidAuctionPriceDecreaseAccelerationRateParam, "auction price decrease acceleration rate cannot be nil")
+	}
+
 	if auctionPriceDecreaseAccelerationRate.LT(sdk.MustNewDecFromStr("0")) || auctionPriceDecreaseAccelerationRate.GT(sdk.MustNewDecFromStr("1.0")) {
 		// Acceleration rates could in theory be more than 100% if need be, but we are establishing this as a bound for now
 		return errorsmod.Wrapf(ErrInvalidAuctionPriceDecreaseAccelerationRateParam, "auction price decrease acceleration rate must be between 0 and 1 inclusive (0%% to 100%%)")
@@ -135,6 +150,23 @@ func validateMinimumAuctionHeight(i interface{}) error {
 	_, ok := i.(uint64)
 	if !ok {
 		return errorsmod.Wrapf(ErrInvalidMinimumAuctionHeightParam, "invalid minimum auction height parameter type: %T", i)
+	}
+
+	return nil
+}
+
+func validateAuctionBurnRate(i interface{}) error {
+	auctionBurnRate, ok := i.(sdk.Dec)
+	if !ok {
+		return errorsmod.Wrapf(ErrInvalidAuctionBurnRateParam, "invalid auction burn rate parameter type: %T", i)
+	}
+
+	if auctionBurnRate.IsNil() {
+		return errorsmod.Wrap(ErrInvalidAuctionBurnRateParam, "auction burn rate cannot be nil")
+	}
+
+	if auctionBurnRate.LT(sdk.ZeroDec()) || auctionBurnRate.GT(sdk.OneDec()) {
+		return errorsmod.Wrapf(ErrInvalidAuctionBurnRateParam, "auction burn rate must be between 0 and 1 inclusive (0%% to 100%%)")
 	}
 
 	return nil

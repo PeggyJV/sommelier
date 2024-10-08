@@ -18,6 +18,7 @@ import (
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 	gravitytypes "github.com/peggyjv/gravity-bridge/module/v4/x/gravity/types"
 	"github.com/peggyjv/sommelier/v7/app/params"
+	addressestypes "github.com/peggyjv/sommelier/v7/x/addresses/types"
 	auctiontypes "github.com/peggyjv/sommelier/v7/x/auction/types"
 	axelarcorktypes "github.com/peggyjv/sommelier/v7/x/axelarcork/types"
 	cellarfeestypes "github.com/peggyjv/sommelier/v7/x/cellarfees/types"
@@ -414,6 +415,7 @@ func (s *IntegrationTestSuite) initGenesis() {
 	// Add an auction for integration testing of the auction module
 	var auctionGenState auctiontypes.GenesisState
 	s.Require().NoError(cdc.UnmarshalJSON(appGenState[auctiontypes.ModuleName], &auctionGenState))
+	auctionGenState.Params = auctiontypes.DefaultParams()
 	auctionGenState.TokenPrices = append(auctionGenState.TokenPrices, &auctiontypes.TokenPrice{
 		Denom:            testDenom,
 		Exponent:         6,
@@ -481,6 +483,11 @@ func (s *IntegrationTestSuite) initGenesis() {
 	bz, err = cdc.MarshalJSON(&pubsubGenState)
 	s.Require().NoError(err)
 	appGenState[pubsubtypes.ModuleName] = bz
+
+	// set addresses gen state
+	addressesGenState := addressestypes.DefaultGenesisState()
+	s.Require().NoError(cdc.UnmarshalJSON(appGenState[addressestypes.ModuleName], &addressesGenState))
+	appGenState[addressestypes.ModuleName] = cdc.MustMarshalJSON(&addressesGenState)
 
 	// generate genesis txs
 	genTxs := make([]json.RawMessage, len(s.chain.validators))

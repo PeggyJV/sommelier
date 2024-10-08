@@ -26,3 +26,7 @@ func (suite *KeeperTestSuite) mockSendCoinsFromAccountToModule(ctx sdk.Context, 
 func (suite *KeeperTestSuite) mockSendCoinsFromModuleToAccount(ctx sdk.Context, senderModule string, receiverAcct sdk.AccAddress, amt sdk.Coins) {
 	suite.bankKeeper.EXPECT().SendCoinsFromModuleToAccount(ctx, senderModule, receiverAcct, amt).Return(nil)
 }
+
+func (suite *KeeperTestSuite) mockBurnCoins(ctx sdk.Context, moduleName string, amt sdk.Coins) {
+	suite.bankKeeper.EXPECT().BurnCoins(ctx, moduleName, amt).Return(nil)
+}

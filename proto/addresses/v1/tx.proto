@@ -1,0 +1,33 @@
+syntax = "proto3";
+package addresses.v1;
+
+import "cosmos/msg/v1/msg.proto";
+
+option go_package = "github.com/peggyjv/sommelier/v7/x/addresses/types";
+
+service Msg {
+    option (cosmos.msg.v1.service) = true;
+
+    // Adds a mapping between the cosmos address of the sender and the provided EVM address
+    rpc AddAddressMapping (MsgAddAddressMapping) returns (MsgAddAddressMappingResponse);
+    // Removes the mapping containing the cosmos address of the sender
+    rpc RemoveAddressMapping (MsgRemoveAddressMapping) returns (MsgRemoveAddressMappingResponse);
+}
+
+message MsgAddAddressMapping {
+    option (cosmos.msg.v1.signer) = "signer";
+
+    string evm_address = 1;
+    string signer = 2;
+}
+
+message MsgAddAddressMappingResponse {}
+
+message MsgRemoveAddressMapping {
+    option (cosmos.msg.v1.signer) = "signer";
+
+    string signer = 1;
+}
+
+message MsgRemoveAddressMappingResponse {}
+

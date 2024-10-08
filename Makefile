@@ -211,12 +211,12 @@ test-docker-push: test-docker
 ###############################################################################
 ###                           Protobuf                                    ###
 ###############################################################################
-protoVer=0.13.1
+protoVer=0.15.1
 protoImageName=ghcr.io/cosmos/proto-builder:$(protoVer)
 protoImage=$(DOCKER) run --rm -v $(CURDIR):/workspace --workdir /workspace $(protoImageName)
 
 proto-all: proto-format proto-lint proto-gen
-	
+
 proto-gen:
 	@echo "Generating Protobuf files"
 	# todo: figure out why this old method was failing
@@ -390,6 +390,9 @@ e2e_incentives_test: e2e_clean_slate
 
 e2e_pubsub_test: e2e_clean_slate
 	@E2E_SKIP_CLEANUP=true integration_tests/integration_tests.test -test.failfast -test.v -test.run IntegrationTestSuite -testify.m TestPubsub || make -s fail
+
+e2e_addresses_test: e2e_clean_slate
+	@E2E_SKIP_CLEANUP=true integration_tests/integration_tests.test -test.failfast -test.v -test.run IntegrationTestSuite -testify.m TestAddresses || make -s fail
 
 fail:
 	@echo 'test failed; dumping container logs into ./testlogs for review'
