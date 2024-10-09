@@ -3,6 +3,7 @@ package cellarfees
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 
 	abci "github.com/cometbft/cometbft/abci/types"
 	"github.com/cosmos/cosmos-sdk/client"
@@ -110,7 +111,7 @@ func (AppModule) QuerierRoute() string { return types.QuerierRoute }
 
 // ConsensusVersion implements AppModule/ConsensusVersion.
 func (AppModule) ConsensusVersion() uint64 {
-	return 1
+	return 2
 }
 
 func (am AppModule) WeightedOperations(simState module.SimulationState) []sim.WeightedOperation {
@@ -121,6 +122,11 @@ func (am AppModule) WeightedOperations(simState module.SimulationState) []sim.We
 func (am AppModule) RegisterServices(cfg module.Configurator) {
 	//types.RegisterMsgServer(cfg.MsgServer(), am.keeper)
 	typesv2.RegisterQueryServer(cfg.QueryServer(), am.keeper)
+
+	migrator := keeper.NewMigrator(am.keeper)
+	if err := cfg.RegisterMigration(types.ModuleName, 1, migrator.Migrate1to2); err != nil {
+		panic(fmt.Sprintf("failed to migrate x/cellarfees from version 1 to 2: %v", err))
+	}
 }
 
 // InitGenesis performs genesis initialization for the cellarfees module.

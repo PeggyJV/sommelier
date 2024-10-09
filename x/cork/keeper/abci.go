@@ -6,7 +6,7 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	gravitytypes "github.com/peggyjv/gravity-bridge/module/v4/x/gravity/types"
+	gravitytypes "github.com/peggyjv/gravity-bridge/module/v5/x/gravity/types"
 	types "github.com/peggyjv/sommelier/v7/x/cork/types/v2"
 )
 

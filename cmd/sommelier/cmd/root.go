@@ -27,7 +27,7 @@ import (
 	"github.com/spf13/cast"
 	"github.com/spf13/cobra"
 
-	bridgecmd "github.com/peggyjv/gravity-bridge/module/v4/cmd/gravity/cmd"
+	bridgecmd "github.com/peggyjv/gravity-bridge/module/v5/cmd/gravity/cmd"
 	"github.com/peggyjv/sommelier/v7/app"
 	"github.com/peggyjv/sommelier/v7/app/params"
 )

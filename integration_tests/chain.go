@@ -42,8 +42,8 @@ import (
 	upgradeclient "github.com/cosmos/cosmos-sdk/x/upgrade/client"
 	ibctransfer "github.com/cosmos/ibc-go/v7/modules/apps/transfer"
 	ibc "github.com/cosmos/ibc-go/v7/modules/core"
-	gravityclient "github.com/peggyjv/gravity-bridge/module/v4/x/gravity/client"
-	gravitytypes "github.com/peggyjv/gravity-bridge/module/v4/x/gravity/types"
+	gravityclient "github.com/peggyjv/gravity-bridge/module/v5/x/gravity/client"
+	gravitytypes "github.com/peggyjv/gravity-bridge/module/v5/x/gravity/types"
 	"github.com/peggyjv/sommelier/v7/app"
 	"github.com/peggyjv/sommelier/v7/app/params"
 )

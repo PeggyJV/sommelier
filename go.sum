@@ -1412,8 +1412,8 @@ github.com/pascaldekloe/goe v0.1.0 h1:cBOtyMzM9HTpWjXfbbunk26uA6nG3a8n06Wieeh0Mw
 github.com/pascaldekloe/goe v0.1.0/go.mod h1:lzWF7FIEvWOWxwDKqyGYQf6ZUaNfKdP144TG7ZOy1lc=
 github.com/paulbellamy/ratecounter v0.2.0/go.mod h1:Hfx1hDpSGoqxkVVpBi/IlYD7kChlfo5C6hzIHwPqfFE=
 github.com/pborman/uuid v1.2.0/go.mod h1:X/NO0urCmaxf9VXbdlT7C2Yzkj2IKimNn4k+gtPdI/k=
-github.com/peggyjv/gravity-bridge/module/v4 v4.0.2-0.20240507144821-c36490e18116 h1:WmtdxpmEWGv4hWpTZfFAR8SIFeoBlOjvkN4pixwYMZk=
-github.com/peggyjv/gravity-bridge/module/v4 v4.0.2-0.20240507144821-c36490e18116/go.mod h1:tlA4IAHXoDRK8zgQ2PP111hBkHOZLcH6tgz2Kh/EBoI=
+github.com/peggyjv/gravity-bridge/module/v5 v5.0.0-20241009165118-198cad613f2f h1:UAzrovsM6zdTIPsAfMjLjyzOXUJdMrBTJThSL0mO5TA=
+github.com/peggyjv/gravity-bridge/module/v5 v5.0.0-20241009165118-198cad613f2f/go.mod h1:/vcYmGnfzHn2d7Ptxq1PLLC3gpuMJz46r2tZXFSCC6k=
 github.com/pelletier/go-toml v1.2.0/go.mod h1:5z9KED0ma1S8pY6P1sdut58dfprrGBbd/94hg7ilaic=
 github.com/pelletier/go-toml/v2 v2.1.0 h1:FnwAJ4oYMvbT/34k9zzHuZNrhlz48GB3/s6at6/MHO4=
 github.com/pelletier/go-toml/v2 v2.1.0/go.mod h1:tJU2Z3ZkXwnxa4DPO899bsyIoywizdUvyaeZurnPPDc=

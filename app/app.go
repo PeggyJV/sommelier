@@ -101,11 +101,12 @@ import (
 	icaexported "github.com/cosmos/ibc-go/v7/modules/core/exported"
 	ibckeeper "github.com/cosmos/ibc-go/v7/modules/core/keeper"
 	"github.com/gorilla/mux"
-	"github.com/peggyjv/gravity-bridge/module/v4/x/gravity"
-	gravityclient "github.com/peggyjv/gravity-bridge/module/v4/x/gravity/client"
-	gravitykeeper "github.com/peggyjv/gravity-bridge/module/v4/x/gravity/keeper"
-	gravitytypes "github.com/peggyjv/gravity-bridge/module/v4/x/gravity/types"
+	"github.com/peggyjv/gravity-bridge/module/v5/x/gravity"
+	gravityclient "github.com/peggyjv/gravity-bridge/module/v5/x/gravity/client"
+	gravitykeeper "github.com/peggyjv/gravity-bridge/module/v5/x/gravity/keeper"
+	gravitytypes "github.com/peggyjv/gravity-bridge/module/v5/x/gravity/types"
 	appParams "github.com/peggyjv/sommelier/v7/app/params"
+	v8 "github.com/peggyjv/sommelier/v7/app/upgrades/v8"
 	"github.com/peggyjv/sommelier/v7/x/addresses"
 	addresseskeeper "github.com/peggyjv/sommelier/v7/x/addresses/keeper"
 	addressestypes "github.com/peggyjv/sommelier/v7/x/addresses/types"
@@ -1025,7 +1026,12 @@ func (app *SommelierApp) setupUpgradeStoreLoaders() {
 
 	var storeUpgrades *storetypes.StoreUpgrades = nil
 
-	// TODO: Add v8 store loader when writing upgrade handler
+	if upgradeInfo.Name == v8.UpgradeName {
+		// Is this correct?
+		storeUpgrades = &storetypes.StoreUpgrades{
+			Added: []string{addressestypes.ModuleName},
+		}
+	}
 
 	if storeUpgrades != nil {
 		app.SetStoreLoader(upgradetypes.UpgradeStoreLoader(upgradeInfo.Height, storeUpgrades))
@@ -1033,5 +1039,12 @@ func (app *SommelierApp) setupUpgradeStoreLoaders() {
 }
 
 func (app *SommelierApp) setupUpgradeHandlers() {
-	// TODO: Add v8 upgrade handler
+	// TODO: Add v8 upgrade handle
+	app.UpgradeKeeper.SetUpgradeHandler(
+		v8.UpgradeName,
+		v8.CreateUpgradeHandler(
+			app.mm,
+			app.configurator,
+		),
+	)
 }
