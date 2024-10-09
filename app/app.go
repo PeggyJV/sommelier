@@ -101,10 +101,10 @@ import (
 	icaexported "github.com/cosmos/ibc-go/v7/modules/core/exported"
 	ibckeeper "github.com/cosmos/ibc-go/v7/modules/core/keeper"
 	"github.com/gorilla/mux"
-	"github.com/peggyjv/gravity-bridge/module/v4/x/gravity"
-	gravityclient "github.com/peggyjv/gravity-bridge/module/v4/x/gravity/client"
-	gravitykeeper "github.com/peggyjv/gravity-bridge/module/v4/x/gravity/keeper"
-	gravitytypes "github.com/peggyjv/gravity-bridge/module/v4/x/gravity/types"
+	"github.com/peggyjv/gravity-bridge/module/v5/x/gravity"
+	gravityclient "github.com/peggyjv/gravity-bridge/module/v5/x/gravity/client"
+	gravitykeeper "github.com/peggyjv/gravity-bridge/module/v5/x/gravity/keeper"
+	gravitytypes "github.com/peggyjv/gravity-bridge/module/v5/x/gravity/types"
 	appParams "github.com/peggyjv/sommelier/v7/app/params"
 	v8 "github.com/peggyjv/sommelier/v7/app/upgrades/v8"
 	"github.com/peggyjv/sommelier/v7/x/addresses"
@@ -1028,7 +1028,9 @@ func (app *SommelierApp) setupUpgradeStoreLoaders() {
 
 	if upgradeInfo.Name == v8.UpgradeName {
 		// Is this correct?
-		storeUpgrades = &storetypes.StoreUpgrades{}
+		storeUpgrades = &storetypes.StoreUpgrades{
+			Added: []string{addressestypes.ModuleName},
+		}
 	}
 
 	if storeUpgrades != nil {

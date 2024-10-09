@@ -16,7 +16,7 @@ import (
 
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
-	gravitytypes "github.com/peggyjv/gravity-bridge/module/v4/x/gravity/types"
+	gravitytypes "github.com/peggyjv/gravity-bridge/module/v5/x/gravity/types"
 	"github.com/peggyjv/sommelier/v7/app/params"
 	addressestypes "github.com/peggyjv/sommelier/v7/x/addresses/types"
 	auctiontypes "github.com/peggyjv/sommelier/v7/x/auction/types"

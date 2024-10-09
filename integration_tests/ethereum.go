@@ -16,7 +16,7 @@ import (
 	ethereumtypes "github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/ethereum/go-ethereum/ethclient"
-	gravitytypes "github.com/peggyjv/gravity-bridge/module/v4/x/gravity/types"
+	gravitytypes "github.com/peggyjv/gravity-bridge/module/v5/x/gravity/types"
 )
 
 type EthereumConfig struct {
