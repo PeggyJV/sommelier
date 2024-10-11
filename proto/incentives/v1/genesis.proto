@@ -18,4 +18,8 @@ message Params {
     // IncentivesCutoffHeight defines the block height after which the incentives module will stop sending coins to the distribution module from
     // the community pool
     uint64 incentives_cutoff_height = 2;
+    // ValidatorDistributionPerBlock defines the coin to be sent to the distribution module from the community pool every block
+    cosmos.base.v1beta1.Coin validator_distribution_per_block = 3 [(gogoproto.nullable) = false];
+    // ValidatorIncentivesCutoffHeight defines the block height after which the validator incentives will be stopped
+    uint64 validator_incentives_cutoff_height = 4;
 }
