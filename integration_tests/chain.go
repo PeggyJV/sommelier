@@ -184,7 +184,7 @@ func (c *chain) createAndInitProposerWithMnemonic(mnemonic string) error {
 }
 
 func (c *chain) createAndInitOrchestrators(count int) error { //nolint:unused
-	mnemonics := make([]string, count)
+	mnemonics := make([]string, 0, count)
 	for i := 0; i < count; i++ {
 		mnemonic, err := createMnemonic()
 		if err != nil {
