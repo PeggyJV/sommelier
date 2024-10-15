@@ -106,7 +106,7 @@ func (AppModule) QuerierRoute() string { return types.QuerierRoute }
 
 // ConsensusVersion implements AppModule/ConsensusVersion.
 func (AppModule) ConsensusVersion() uint64 {
-	return 1
+	return 2
 }
 
 func (am AppModule) WeightedOperations(simState module.SimulationState) []sim.WeightedOperation {
@@ -135,8 +135,8 @@ func (am AppModule) ExportGenesis(ctx sdk.Context, cdc codec.JSONCodec) json.Raw
 }
 
 // BeginBlock returns the begin blocker for the incentives module.
-func (am AppModule) BeginBlock(ctx sdk.Context, _ abci.RequestBeginBlock) {
-	am.keeper.BeginBlocker(ctx)
+func (am AppModule) BeginBlock(ctx sdk.Context, req abci.RequestBeginBlock) {
+	am.keeper.BeginBlocker(ctx, req)
 }
 
 // EndBlock returns the end blocker for the incentives module.

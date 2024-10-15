@@ -1,6 +1,7 @@
 package keeper
 
 import (
+	abci "github.com/cometbft/cometbft/abci/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	distributionTypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
 	"github.com/peggyjv/sommelier/v7/app/params"
@@ -17,20 +18,20 @@ func (suite *KeeperTestSuite) TestEndBlockerIncentivesDisabledDoesNothing() {
 	// By not mocking any other calls, the test will panic and fail if an unmocked keeper function is called,
 	// implying that the function isn't exiting early as designed.
 
-	require.NotPanics(func() { incentivesKeeper.BeginBlocker(ctx) })
+	require.NotPanics(func() { incentivesKeeper.BeginBlocker(ctx, abci.RequestBeginBlock{}) })
 	require.NotPanics(func() { incentivesKeeper.EndBlocker(ctx) })
 
 	incentivesParams.DistributionPerBlock = sdk.NewCoin(params.BaseCoinUnit, sdk.OneInt())
 	incentivesKeeper.SetParams(ctx, incentivesParams)
 
-	require.NotPanics(func() { incentivesKeeper.BeginBlocker(ctx) })
+	require.NotPanics(func() { incentivesKeeper.BeginBlocker(ctx, abci.RequestBeginBlock{}) })
 	require.NotPanics(func() { incentivesKeeper.EndBlocker(ctx) })
 
 	incentivesParams.DistributionPerBlock = sdk.NewCoin(params.BaseCoinUnit, sdk.ZeroInt())
 	incentivesParams.IncentivesCutoffHeight = 1500
 	incentivesKeeper.SetParams(ctx, incentivesParams)
 
-	require.NotPanics(func() { incentivesKeeper.BeginBlocker(ctx) })
+	require.NotPanics(func() { incentivesKeeper.BeginBlocker(ctx, abci.RequestBeginBlock{}) })
 	require.NotPanics(func() { incentivesKeeper.EndBlocker(ctx) })
 }
 
@@ -53,6 +54,6 @@ func (suite *KeeperTestSuite) TestEndBlockerInsufficientCommunityPoolBalance() {
 	// By not mocking the bank SendModuleToModule call, the test will panic and fail if the community pool balance
 	// check branch isn't taken as intended.
 
-	require.NotPanics(func() { incentivesKeeper.BeginBlocker(ctx) })
+	require.NotPanics(func() { incentivesKeeper.BeginBlocker(ctx, abci.RequestBeginBlock{}) })
 	require.NotPanics(func() { incentivesKeeper.EndBlocker(ctx) })
 }
