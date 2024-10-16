@@ -8,56 +8,38 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
+// BeginBlocker defines distribution rewards for validators
+//
+// 1) Subtract the total distribution from the community pool
+// 2) Get a list of qualifying validators sorted by descending power
+// 3) Allocate tokens to qualifying validators proportionally to their power with a cap
+// 4) Add the remaining coins back to the community pool
 func (k Keeper) BeginBlocker(ctx sdk.Context, req abci.RequestBeginBlock) {
 	incentivesParams := k.GetParamSet(ctx)
-	cutoffHeight := incentivesParams.ValidatorIncentivesCutoffHeight
-	distPerBlock := incentivesParams.ValidatorDistributionPerBlock
-	if uint64(ctx.BlockHeight()) >= cutoffHeight || distPerBlock.IsZero() {
+	if uint64(ctx.BlockHeight()) >= incentivesParams.ValidatorIncentivesCutoffHeight || incentivesParams.ValidatorDistributionPerBlock.IsZero() {
 		return
 	}
 
-	voterInfos := GetSortedVoterInfosByPower(req.LastCommitInfo.GetVotes())
-	totalPower := int64(0)
-	for _, voterInfo := range voterInfos {
-		totalPower += voterInfo.Validator.Power
-	}
-
-	// Limit the number of voter info
-	// TODO: Make this a function that can be unit tested
-	setSizeLimit := incentivesParams.ValidatorIncentivesSetSizeLimit
-	if uint64(len(voterInfos)) > setSizeLimit {
-		voterInfos = voterInfos[:setSizeLimit]
-	}
-
-	distPerBlockDec := sdk.NewDec(distPerBlock.Amount.Int64())
-	validatorMaxPortionFraction := sdk.MustNewDecFromStr("0.1")
-	apportionments, remaining, err := getApportionments(setSizeLimit, distPerBlockDec, validatorMaxPortionFraction)
-	if err != nil {
-		ctx.Logger().Error("Error getting apportionments. Are params properly validated?", "error", err)
-		return
-	}
-
-	// Distribute rewards to each validator
+	// Rewards come from the community pool
+	totalDistribution := sdk.NewDecCoinsFromCoins(incentivesParams.ValidatorDistributionPerBlock)
 	feePool := k.DistributionKeeper.GetFeePool(ctx)
-	newPool, negative := feePool.CommunityPool.SafeSub(sdk.NewDecCoinsFromCoins(distPerBlock))
+	newPool, negative := feePool.CommunityPool.SafeSub(totalDistribution)
 	if negative {
-		k.Logger(ctx).Error("Insufficient coins in community to distribute", "community pool", feePool.CommunityPool)
+		k.Logger(ctx).Error("Insufficient coins in community to distribute to validators", "community pool", feePool.CommunityPool)
 		return
 	}
 
-	for i, voterInfo := range voterInfos {
-		recipient := sdk.AccAddress(voterInfo.Validator.Address)
-		amount := apportionments[i].TruncateInt()
-		if amount.IsZero() {
-			continue
-		}
+	// Get a list of qualifying validators sorted by descending power
+	valInfos := k.getValidatorInfos(ctx, req)
+	sortedValInfos := sortValidatorInfosByPower(valInfos)
+	qualifyingVoters := sortedValInfos[:incentivesParams.ValidatorIncentivesSetSizeLimit]
 
-		err := k.BankKeeper.SendCoinsFromModuleToAccount(ctx, distributiontypes.ModuleName, recipient, sdk.NewCoins(sdk.NewCoin(distPerBlock.Denom, amount)))
-		if err != nil {
-			panic(err)
-		}
-	}
+	// Allocate tokens to qualifying validators proportionally to their power with a cap
+	totalPower := getTotalPower(&qualifyingVoters)
+	remaining := k.AllocateTokens(ctx, totalPower, totalDistribution, qualifyingVoters, incentivesParams.ValidatorIncentivesMaxFraction)
 
+	// Add the remaining coins back to the community pool
+	newPool = newPool.Add(remaining...)
 	feePool.CommunityPool = newPool
 	k.DistributionKeeper.SetFeePool(ctx, feePool)
 }

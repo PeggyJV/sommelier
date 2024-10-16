@@ -1,69 +1,98 @@
 package keeper
 
 import (
-	"fmt"
 	"sort"
+
+	"cosmossdk.io/math"
 
 	abci "github.com/cometbft/cometbft/abci/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
+	"github.com/peggyjv/sommelier/v7/x/incentives/types"
 )
 
-type VoterInfo struct {
-	Validator *abci.Validator
+type ValidatorInfo struct {
+	Validator stakingtypes.ValidatorI
+	Power     int64
 }
 
-// GetSortedVoterInfosByPower returns the previous block's voter information by validator power in descending order
-func GetSortedVoterInfosByPower(votes []abci.VoteInfo) []VoterInfo {
-	voterInfos := []VoterInfo{}
-	for i := range votes {
-		if !votes[i].SignedLastBlock {
-			continue
-		}
-
-		voterInfos = append(voterInfos, VoterInfo{
-			Validator: &votes[i].Validator,
-		})
-	}
-
-	// Sort voteInfos by descending Power
-	sort.Slice(voterInfos, func(i, j int) bool {
-		return voterInfos[i].Validator.Power > voterInfos[j].Validator.Power
+// sortValidatorInfosByPower sorts the validator information by power in descending order
+func sortValidatorInfosByPower(valInfos []ValidatorInfo) []ValidatorInfo {
+	sort.Slice(valInfos, func(i, j int) bool {
+		return valInfos[i].Power > valInfos[j].Power
 	})
 
-	return voterInfos
+	return valInfos
 }
 
-// GetApportionments returns a slice of fractions of the passed in value that sums to the value approximately, and
-// a remaining value. The sum of the returned slice plus the remaining value will equal the original value.
-func getApportionments(numPortions uint64, value sdk.Dec, maxPortionFraction sdk.Dec) ([]sdk.Dec, sdk.Dec, error) {
-	// We error check for sanity, even though the arguments should only be coming from validated Param values
-	if numPortions == 0 {
-		return make([]sdk.Dec, 0), value, nil
+// GetTotalPower returns the total power of the passed in validatorInfos
+func getTotalPower(valInfos *[]ValidatorInfo) int64 {
+	totalPower := int64(0)
+	for _, valInfo := range *valInfos {
+		totalPower += valInfo.Power
 	}
 
-	if value.IsNegative() {
-		value = sdk.ZeroDec()
-	}
+	return totalPower
+}
 
-	if maxPortionFraction.IsNegative() {
-		return nil, sdk.ZeroDec(), fmt.Errorf("max portion cannot be negative")
-	} else if maxPortionFraction.GT(sdk.OneDec()) {
-		return nil, sdk.ZeroDec(), fmt.Errorf("max portion must be less than or equal to one")
-	}
-
-	remainingValue := value
-	apportionments := make([]sdk.Dec, numPortions)
-
-	for i := 0; i < len(apportionments); i++ {
-		if remainingValue.IsZero() || maxPortionFraction.IsZero() {
-			apportionments[i] = sdk.ZeroDec()
+// getValidatorInfos returns the validator information for the voters in the last block
+func (k Keeper) getValidatorInfos(ctx sdk.Context, req abci.RequestBeginBlock) []ValidatorInfo {
+	validatorInfos := []ValidatorInfo{}
+	for _, vote := range req.LastCommitInfo.GetVotes() {
+		if !vote.SignedLastBlock {
 			continue
 		}
 
-		portion := remainingValue.Mul(maxPortionFraction)
-		apportionments[i] = portion
-		remainingValue = remainingValue.Sub(portion)
+		validator := k.StakingKeeper.ValidatorByConsAddr(ctx, vote.Validator.Address)
+		validatorInfos = append(validatorInfos, ValidatorInfo{
+			Validator: validator,
+			Power:     vote.Validator.Power,
+		})
+	}
+	return validatorInfos
+}
+
+// AllocateTokens performs reward distribution to the provided validators proportionally to their power with a cap
+func (k Keeper) AllocateTokens(ctx sdk.Context, totalPreviousPower int64, totalDistribution sdk.DecCoins, qualifyingVoters []ValidatorInfo, maxFraction sdk.Dec) sdk.DecCoins {
+	remaining := totalDistribution
+
+	for _, valInfo := range qualifyingVoters {
+		validator := valInfo.Validator
+		powerFraction := math.LegacyNewDec(valInfo.Power).QuoInt64(totalPreviousPower)
+
+		// Cap at the max fraction
+		if powerFraction.GT(maxFraction) {
+			powerFraction = maxFraction
+		}
+
+		reward := totalDistribution.MulDecTruncate(powerFraction)
+
+		k.AllocateTokensToValidator(ctx, validator, reward)
+		remaining = remaining.Sub(reward)
 	}
 
-	return apportionments, remainingValue, nil
+	return remaining
+}
+
+// AllocateTokensToValidator allocates tokens to a particular validator.
+// All tokens go to the validator.
+func (k Keeper) AllocateTokensToValidator(ctx sdk.Context, val stakingtypes.ValidatorI, tokens sdk.DecCoins) {
+	// Update validator rewards
+	ctx.EventManager().EmitEvent(
+		sdk.NewEvent(
+			types.EventTypeIncentivesRewards,
+			sdk.NewAttribute(sdk.AttributeKeyAmount, tokens.String()),
+			sdk.NewAttribute(types.AttributeKeyValidator, val.GetOperator().String()),
+		),
+	)
+
+	// Update current rewards
+	currentRewards := k.DistributionKeeper.GetValidatorCurrentRewards(ctx, val.GetOperator())
+	currentRewards.Rewards = currentRewards.Rewards.Add(tokens...)
+	k.DistributionKeeper.SetValidatorCurrentRewards(ctx, val.GetOperator(), currentRewards)
+
+	// Update outstanding rewards
+	outstanding := k.DistributionKeeper.GetValidatorOutstandingRewards(ctx, val.GetOperator())
+	outstanding.Rewards = outstanding.Rewards.Add(tokens...)
+	k.DistributionKeeper.SetValidatorOutstandingRewards(ctx, val.GetOperator(), outstanding)
 }
