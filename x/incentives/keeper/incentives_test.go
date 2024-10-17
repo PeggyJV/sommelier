@@ -1,235 +1,361 @@
 package keeper
 
 import (
-	"testing"
-
+	abci "github.com/cometbft/cometbft/abci/types"
+	"github.com/cosmos/cosmos-sdk/crypto/keys/ed25519"
+	ccrypto "github.com/cosmos/cosmos-sdk/crypto/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/stretchr/testify/require"
+	distributiontypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
+	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
+	"github.com/peggyjv/sommelier/v7/x/incentives/types"
 )
 
-func TestGetApportionments(t *testing.T) {
-	tests := []struct {
-		name        string
-		numPortions uint64
-		value       sdk.Dec
-		maxPortion  sdk.Dec
-		want        []sdk.Dec
-		wantErr     bool
-	}{
-		{
-			name:        "Negative value",
-			numPortions: 10,
-			value:       sdk.NewDec(-100),
-			maxPortion:  sdk.MustNewDecFromStr("0.1"),
-			wantErr:     true,
-		},
-		{
-			name:        "Zero length slice",
-			numPortions: 0,
-			value:       sdk.NewDec(100),
-			maxPortion:  sdk.MustNewDecFromStr("0.1"),
-			want:        make([]sdk.Dec, 0),
-		},
-		{
-			name:        "Zero value",
-			numPortions: 10,
-			value:       sdk.NewDec(0),
-			maxPortion:  sdk.MustNewDecFromStr("0.1"),
-			want:        []sdk.Dec{sdk.ZeroDec(), sdk.ZeroDec(), sdk.ZeroDec(), sdk.ZeroDec(), sdk.ZeroDec(), sdk.ZeroDec(), sdk.ZeroDec(), sdk.ZeroDec(), sdk.ZeroDec(), sdk.ZeroDec()},
-		},
-		{
-			name:        "Max portion",
-			numPortions: 10,
-			value:       sdk.NewDec(100),
-			maxPortion:  sdk.OneDec(),
-			want:        []sdk.Dec{sdk.NewDec(100), sdk.ZeroDec(), sdk.ZeroDec(), sdk.ZeroDec(), sdk.ZeroDec(), sdk.ZeroDec(), sdk.ZeroDec(), sdk.ZeroDec(), sdk.ZeroDec(), sdk.ZeroDec()},
-		},
-		{
-			name:        "Max portion is zero",
-			numPortions: 10,
-			value:       sdk.NewDec(100),
-			maxPortion:  sdk.ZeroDec(),
-			want:        []sdk.Dec{sdk.ZeroDec(), sdk.ZeroDec(), sdk.ZeroDec(), sdk.ZeroDec(), sdk.ZeroDec(), sdk.ZeroDec(), sdk.ZeroDec(), sdk.ZeroDec(), sdk.ZeroDec(), sdk.ZeroDec()},
-		},
-		{
-			name:        "Max portion is negative",
-			numPortions: 10,
-			value:       sdk.NewDec(100),
-			maxPortion:  sdk.MustNewDecFromStr("-0.1"),
-			wantErr:     true,
-		},
-		{
-			name:        "Max portion greater than 1",
-			numPortions: 10,
-			value:       sdk.NewDec(100),
-			maxPortion:  sdk.NewDec(2),
-			wantErr:     true,
-		},
-		{
-			name:        "Specific distribution with 50 portions with 5% max portion",
-			numPortions: 50,
-			value:       sdk.NewDec(100),
-			maxPortion:  sdk.MustNewDecFromStr("0.05"),
-			want: []sdk.Dec{
-				sdk.MustNewDecFromStr("5"),
-				sdk.MustNewDecFromStr("4.75"),
-				sdk.MustNewDecFromStr("4.5125"),
-				sdk.MustNewDecFromStr("4.286875"),
-				sdk.MustNewDecFromStr("4.07253125"),
-				sdk.MustNewDecFromStr("3.868904688"),
-				sdk.MustNewDecFromStr("3.675459453"),
-				sdk.MustNewDecFromStr("3.49168648"),
-				sdk.MustNewDecFromStr("3.317102156"),
-				sdk.MustNewDecFromStr("3.151247049"),
-				sdk.MustNewDecFromStr("2.993684696"),
-				sdk.MustNewDecFromStr("2.844000461"),
-				sdk.MustNewDecFromStr("2.701800438"),
-				sdk.MustNewDecFromStr("2.566710416"),
-				sdk.MustNewDecFromStr("2.438374896"),
-				sdk.MustNewDecFromStr("2.316456151"),
-				sdk.MustNewDecFromStr("2.200633343"),
-				sdk.MustNewDecFromStr("2.090601676"),
-				sdk.MustNewDecFromStr("1.986071592"),
-				sdk.MustNewDecFromStr("1.886768013"),
-				sdk.MustNewDecFromStr("1.792429612"),
-				sdk.MustNewDecFromStr("1.702808131"),
-				sdk.MustNewDecFromStr("1.617667725"),
-				sdk.MustNewDecFromStr("1.536784339"),
-				sdk.MustNewDecFromStr("1.459945122"),
-				sdk.MustNewDecFromStr("1.386947866"),
-				sdk.MustNewDecFromStr("1.317600472"),
-				sdk.MustNewDecFromStr("1.251720449"),
-				sdk.MustNewDecFromStr("1.189134426"),
-				sdk.MustNewDecFromStr("1.129677705"),
-				sdk.MustNewDecFromStr("1.07319382"),
-				sdk.MustNewDecFromStr("1.019534129"),
-				sdk.MustNewDecFromStr("0.9685574223"),
-				sdk.MustNewDecFromStr("0.9201295512"),
-				sdk.MustNewDecFromStr("0.8741230736"),
-				sdk.MustNewDecFromStr("0.8304169199"),
-				sdk.MustNewDecFromStr("0.7888960739"),
-				sdk.MustNewDecFromStr("0.7494512702"),
-				sdk.MustNewDecFromStr("0.7119787067"),
-				sdk.MustNewDecFromStr("0.6763797714"),
-				sdk.MustNewDecFromStr("0.6425607828"),
-				sdk.MustNewDecFromStr("0.6104327437"),
-				sdk.MustNewDecFromStr("0.5799111065"),
-				sdk.MustNewDecFromStr("0.5509155512"),
-				sdk.MustNewDecFromStr("0.5233697736"),
-				sdk.MustNewDecFromStr("0.4972012849"),
-				sdk.MustNewDecFromStr("0.4723412207"),
-				sdk.MustNewDecFromStr("0.4487241597"),
-				sdk.MustNewDecFromStr("0.4262879517"),
-				sdk.MustNewDecFromStr("0.4049735541"),
-			},
-		},
-		{
-			name:        "Specific distribution with 50 portions with 10% max portion",
-			numPortions: 50,
-			value:       sdk.NewDec(100),
-			maxPortion:  sdk.MustNewDecFromStr("0.1"),
-			want: []sdk.Dec{
-				sdk.MustNewDecFromStr("10"),
-				sdk.MustNewDecFromStr("9"),
-				sdk.MustNewDecFromStr("8.1"),
-				sdk.MustNewDecFromStr("7.29"),
-				sdk.MustNewDecFromStr("6.561"),
-				sdk.MustNewDecFromStr("5.9049"),
-				sdk.MustNewDecFromStr("5.31441"),
-				sdk.MustNewDecFromStr("4.782969"),
-				sdk.MustNewDecFromStr("4.3046721"),
-				sdk.MustNewDecFromStr("3.87420489"),
-				sdk.MustNewDecFromStr("3.486784401"),
-				sdk.MustNewDecFromStr("3.138105961"),
-				sdk.MustNewDecFromStr("2.824295365"),
-				sdk.MustNewDecFromStr("2.541865828"),
-				sdk.MustNewDecFromStr("2.287679245"),
-				sdk.MustNewDecFromStr("2.058911321"),
-				sdk.MustNewDecFromStr("1.853020189"),
-				sdk.MustNewDecFromStr("1.66771817"),
-				sdk.MustNewDecFromStr("1.500946353"),
-				sdk.MustNewDecFromStr("1.350851718"),
-				sdk.MustNewDecFromStr("1.215766546"),
-				sdk.MustNewDecFromStr("1.094189891"),
-				sdk.MustNewDecFromStr("0.9847709022"),
-				sdk.MustNewDecFromStr("0.886293812"),
-				sdk.MustNewDecFromStr("0.7976644308"),
-				sdk.MustNewDecFromStr("0.7178979877"),
-				sdk.MustNewDecFromStr("0.6461081889"),
-				sdk.MustNewDecFromStr("0.58149737"),
-				sdk.MustNewDecFromStr("0.523347633"),
-				sdk.MustNewDecFromStr("0.4710128697"),
-				sdk.MustNewDecFromStr("0.4239115828"),
-				sdk.MustNewDecFromStr("0.3815204245"),
-				sdk.MustNewDecFromStr("0.343368382"),
-				sdk.MustNewDecFromStr("0.3090315438"),
-				sdk.MustNewDecFromStr("0.2781283894"),
-				sdk.MustNewDecFromStr("0.2503155505"),
-				sdk.MustNewDecFromStr("0.2252839954"),
-				sdk.MustNewDecFromStr("0.2027555959"),
-				sdk.MustNewDecFromStr("0.1824800363"),
-				sdk.MustNewDecFromStr("0.1642320327"),
-				sdk.MustNewDecFromStr("0.1478088294"),
-				sdk.MustNewDecFromStr("0.1330279465"),
-				sdk.MustNewDecFromStr("0.1197251518"),
-				sdk.MustNewDecFromStr("0.1077526366"),
-				sdk.MustNewDecFromStr("0.09697737298"),
-				sdk.MustNewDecFromStr("0.08727963568"),
-				sdk.MustNewDecFromStr("0.07855167211"),
-				sdk.MustNewDecFromStr("0.0706965049"),
-				sdk.MustNewDecFromStr("0.06362685441"),
-				sdk.MustNewDecFromStr("0.05726416897"),
+var (
+	// ConsPrivKeys generate ed25519 ConsPrivKeys to be used for validator operator keys
+	ConsPrivKeys = []ccrypto.PrivKey{
+		ed25519.GenPrivKey(),
+		ed25519.GenPrivKey(),
+		ed25519.GenPrivKey(),
+		ed25519.GenPrivKey(),
+		ed25519.GenPrivKey(),
+	}
+
+	// ConsPubKeys holds the consensus public keys to be used for validator operator keys
+	ConsPubKeys = []ccrypto.PubKey{
+		ConsPrivKeys[0].PubKey(),
+		ConsPrivKeys[1].PubKey(),
+		ConsPrivKeys[2].PubKey(),
+		ConsPrivKeys[3].PubKey(),
+		ConsPrivKeys[4].PubKey(),
+	}
+)
+
+func getMockValidators(suite *KeeperTestSuite) ([]*stakingtypes.Validator, error) {
+	validator1, err := stakingtypes.NewValidator(sdk.ValAddress([]byte("val1val1val1val1val1")), ConsPubKeys[0], stakingtypes.Description{})
+	suite.Require().NoError(err)
+	validator2, err := stakingtypes.NewValidator(sdk.ValAddress([]byte("val2val2val2val2val2")), ConsPubKeys[1], stakingtypes.Description{})
+	suite.Require().NoError(err)
+	validator3, err := stakingtypes.NewValidator(sdk.ValAddress([]byte("val3val3val3val3val3")), ConsPubKeys[2], stakingtypes.Description{})
+	suite.Require().NoError(err)
+	return []*stakingtypes.Validator{&validator1, &validator2, &validator3}, nil
+}
+
+func (suite *KeeperTestSuite) TestGetValidatorInfos() {
+	ctx, incentivesKeeper := suite.ctx, suite.incentivesKeeper
+
+	// Create mock validators
+	validators, err := getMockValidators(suite)
+	suite.Require().NoError(err)
+	validator1, validator2, validator3 := validators[0], validators[1], validators[2]
+
+	consAddr1, err := validator1.GetConsAddr()
+	suite.Require().NoError(err)
+	consAddr2, err := validator2.GetConsAddr()
+	suite.Require().NoError(err)
+	consAddr3, err := validator3.GetConsAddr()
+	suite.Require().NoError(err)
+
+	// Create mock RequestBeginBlock
+	req := abci.RequestBeginBlock{
+		LastCommitInfo: abci.CommitInfo{
+			Votes: []abci.VoteInfo{
+				{
+					Validator:       abci.Validator{Address: consAddr1, Power: 10},
+					SignedLastBlock: true,
+				},
+				{
+					Validator:       abci.Validator{Address: consAddr2, Power: 20},
+					SignedLastBlock: true,
+				},
+				{
+					Validator:       abci.Validator{Address: consAddr3, Power: 30},
+					SignedLastBlock: false,
+				},
 			},
 		},
 	}
 
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			tt := tt
-			got, remaining, err := getApportionments(tt.numPortions, tt.value, tt.maxPortion)
-			if tt.wantErr {
-				require.Error(t, err)
-			} else {
-				require.NoError(t, err)
+	// Set up expectations for the mock StakingKeeper
+	suite.stakingKeeper.EXPECT().ValidatorByConsAddr(ctx, consAddr1).Return(validator1)
+	suite.stakingKeeper.EXPECT().ValidatorByConsAddr(ctx, consAddr2).Return(validator2)
 
-				// Correct number of portions
-				require.Equal(t, tt.numPortions, uint(len(got)))
+	// Call the function being tested
+	validatorInfos := incentivesKeeper.getValidatorInfos(ctx, req)
 
-				// We round before comparing to avoid floating point precision issues.
-				// Check that the values returned in the slice line up with the expected values.
-				for i, value := range got {
-					// Correct apportionment values
-					require.Equal(t, roundToPrecision(tt.want[i], 6), roundToPrecision(value, 6))
+	// Assert the results
+	suite.Require().Len(validatorInfos, 2)
+	suite.Require().Equal(validator1, validatorInfos[0].Validator)
+	suite.Require().Equal(int64(10), validatorInfos[0].Power)
+	suite.Require().Equal(validator2, validatorInfos[1].Validator)
+	suite.Require().Equal(int64(20), validatorInfos[1].Power)
+}
 
-					// No negative apportionments
-					require.True(t, value.GTE(sdk.ZeroDec()))
-				}
+func (suite *KeeperTestSuite) TestGetValidatorInfosNoSigners() {
+	ctx, incentivesKeeper := suite.ctx, suite.incentivesKeeper
 
-				// Non-negative remaining value
-				require.True(t, remaining.GTE(sdk.ZeroDec()))
+	// Create mock RequestBeginBlock with no signers
+	req := abci.RequestBeginBlock{
+		LastCommitInfo: abci.CommitInfo{
+			Votes: []abci.VoteInfo{
+				{
+					Validator:       abci.Validator{Address: []byte("val1"), Power: 10},
+					SignedLastBlock: false,
+				},
+				{
+					Validator:       abci.Validator{Address: []byte("val2"), Power: 20},
+					SignedLastBlock: false,
+				},
+			},
+		},
+	}
 
-				// Sum of apportionments plus remaining equals the original value
-				gotSum := sdk.ZeroDec()
-				for _, g := range got {
-					gotSum = gotSum.Add(g)
-				}
-				require.True(t, gotSum.LTE(tt.value))
-				require.Equal(t, tt.value, gotSum.Add(remaining))
+	// Call the function being tested
+	validatorInfos := incentivesKeeper.getValidatorInfos(ctx, req)
 
-				// Test that each value is greater than or equal to the next
-				for i := 0; i < len(got)-1; i++ {
-					if i == len(got)-1 {
-						break
-					}
+	// Assert the results
+	suite.Require().Len(validatorInfos, 0)
+}
 
-					require.True(t, got[i].GTE(got[i+1]), "Value at index %d should be greater than or equal to value at index %d", i, i+1)
-				}
-			}
-		})
+func (suite *KeeperTestSuite) TestSortValidatorInfosByPower() {
+	// Create a slice of ValidatorInfo with unsorted power
+	valInfos := []ValidatorInfo{
+		{Power: 30},
+		{Power: 10},
+		{Power: 50},
+		{Power: 20},
+		{Power: 40},
+	}
+
+	// Sort the validator infos
+	sortedValInfos := sortValidatorInfosByPower(valInfos)
+
+	// Assert the results
+	suite.Require().Len(sortedValInfos, 5)
+	suite.Require().Equal(int64(50), sortedValInfos[0].Power)
+	suite.Require().Equal(int64(40), sortedValInfos[1].Power)
+	suite.Require().Equal(int64(30), sortedValInfos[2].Power)
+	suite.Require().Equal(int64(20), sortedValInfos[3].Power)
+	suite.Require().Equal(int64(10), sortedValInfos[4].Power)
+}
+
+func (suite *KeeperTestSuite) TestTruncateVoters() {
+	// Create a slice of ValidatorInfo
+	valInfos := []ValidatorInfo{
+		{Power: 30},
+		{Power: 10},
+		{Power: 50},
+		{Power: 20},
+		{Power: 40},
+	}
+
+	// Get the truncated voters
+	truncatedVoters := truncateVoters(valInfos, 3)
+
+	// Assert the results
+	suite.Require().Len(truncatedVoters, 3)
+	suite.Require().Equal(int64(30), truncatedVoters[0].Power)
+	suite.Require().Equal(int64(10), truncatedVoters[1].Power)
+	suite.Require().Equal(int64(50), truncatedVoters[2].Power)
+}
+
+func (suite *KeeperTestSuite) TestSortValidatorInfosByPowerEmptySlice() {
+	// Create an empty slice of ValidatorInfo
+	var valInfos []ValidatorInfo
+
+	// Sort the validator infos
+	sortedValInfos := sortValidatorInfosByPower(valInfos)
+
+	// Assert the results
+	suite.Require().Len(sortedValInfos, 0)
+}
+
+func (suite *KeeperTestSuite) TestGetTotalPower() {
+	// Create a slice of ValidatorInfo
+	valInfos := []ValidatorInfo{
+		{Power: 30},
+		{Power: 10},
+		{Power: 50},
+		{Power: 20},
+		{Power: 40},
+	}
+
+	// Get the total power
+	totalPower := getTotalPower(&valInfos)
+
+	// Assert the result
+	suite.Require().Equal(int64(150), totalPower)
+}
+
+func (suite *KeeperTestSuite) TestGetTotalPowerEmptySlice() {
+	// Create an empty slice of ValidatorInfo
+	var valInfos []ValidatorInfo
+
+	// Get the total power
+	totalPower := getTotalPower(&valInfos)
+
+	// Assert the result
+	suite.Require().Equal(int64(0), totalPower)
+}
+
+func (suite *KeeperTestSuite) TestAllocateTokensToValidator() {
+	ctx, incentivesKeeper := suite.ctx, suite.incentivesKeeper
+
+	// Create a mock validator
+	valAddr := sdk.ValAddress([]byte("validatorvalidatorva"))
+	validator, err := stakingtypes.NewValidator(valAddr, ConsPubKeys[0], stakingtypes.Description{})
+	suite.Require().NoError(err)
+
+	// Create mock tokens to allocate
+	tokens := sdk.NewDecCoins(sdk.NewDecCoin("usom", sdk.NewInt(100)))
+
+	// Set up expectations for the mock DistributionKeeper
+	currentRewards := distributiontypes.ValidatorCurrentRewards{Rewards: sdk.DecCoins{}}
+	outstandingRewards := distributiontypes.ValidatorOutstandingRewards{Rewards: sdk.DecCoins{}}
+
+	suite.distributionKeeper.EXPECT().
+		GetValidatorCurrentRewards(ctx, valAddr).
+		Return(currentRewards)
+	suite.distributionKeeper.EXPECT().
+		SetValidatorCurrentRewards(ctx, valAddr, distributiontypes.ValidatorCurrentRewards{Rewards: tokens})
+	suite.distributionKeeper.EXPECT().
+		GetValidatorOutstandingRewards(ctx, valAddr).
+		Return(outstandingRewards)
+	suite.distributionKeeper.EXPECT().
+		SetValidatorOutstandingRewards(ctx, valAddr, distributiontypes.ValidatorOutstandingRewards{Rewards: tokens})
+
+	// Call the function being tested
+	incentivesKeeper.AllocateTokensToValidator(ctx, validator, tokens)
+
+	// Verify that the event was emitted
+	events := ctx.EventManager().Events()
+	suite.Require().Len(events, 1)
+	event := events[0]
+	suite.Require().Equal(types.EventTypeIncentivesRewards, event.Type)
+	suite.Require().Len(event.Attributes, 2)
+	suite.Require().Equal(sdk.AttributeKeyAmount, string(event.Attributes[0].Key))
+	suite.Require().Equal(tokens.String(), string(event.Attributes[0].Value))
+	suite.Require().Equal(types.AttributeKeyValidator, string(event.Attributes[1].Key))
+	suite.Require().Equal(valAddr.String(), string(event.Attributes[1].Value))
+}
+
+func (suite *KeeperTestSuite) TestAllocateTokensToValidatorWithExistingRewards() {
+	ctx, incentivesKeeper := suite.ctx, suite.incentivesKeeper
+
+	// Create a mock validator
+	valAddr := sdk.ValAddress([]byte("validatorvalidatorva"))
+	validator, err := stakingtypes.NewValidator(valAddr, ConsPubKeys[0], stakingtypes.Description{})
+	suite.Require().NoError(err)
+
+	// Create mock tokens to allocate
+	existingRewards := sdk.NewDecCoins(sdk.NewDecCoin("usom", sdk.NewInt(50)))
+	newTokens := sdk.NewDecCoins(sdk.NewDecCoin("usom", sdk.NewInt(100)))
+	expectedTotalRewards := existingRewards.Add(newTokens...)
+
+	// Set up expectations for the mock DistributionKeeper
+	currentRewards := distributiontypes.ValidatorCurrentRewards{Rewards: existingRewards}
+	outstandingRewards := distributiontypes.ValidatorOutstandingRewards{Rewards: existingRewards}
+
+	suite.distributionKeeper.EXPECT().
+		GetValidatorCurrentRewards(ctx, valAddr).
+		Return(currentRewards)
+	suite.distributionKeeper.EXPECT().
+		SetValidatorCurrentRewards(ctx, valAddr, distributiontypes.ValidatorCurrentRewards{Rewards: expectedTotalRewards})
+	suite.distributionKeeper.EXPECT().
+		GetValidatorOutstandingRewards(ctx, valAddr).
+		Return(outstandingRewards)
+	suite.distributionKeeper.EXPECT().
+		SetValidatorOutstandingRewards(ctx, valAddr, distributiontypes.ValidatorOutstandingRewards{Rewards: expectedTotalRewards})
+
+	// Call the function being tested
+	incentivesKeeper.AllocateTokensToValidator(ctx, validator, newTokens)
+
+	// Verify that the event was emitted
+	events := ctx.EventManager().Events()
+	suite.Require().Len(events, 1)
+	event := events[0]
+	suite.Require().Equal(types.EventTypeIncentivesRewards, event.Type)
+	suite.Require().Len(event.Attributes, 2)
+	suite.Require().Equal(sdk.AttributeKeyAmount, string(event.Attributes[0].Key))
+	suite.Require().Equal(newTokens.String(), string(event.Attributes[0].Value))
+	suite.Require().Equal(types.AttributeKeyValidator, string(event.Attributes[1].Key))
+	suite.Require().Equal(valAddr.String(), string(event.Attributes[1].Value))
+}
+
+func (suite *KeeperTestSuite) TestAllocateTokens() {
+	ctx, incentivesKeeper := suite.ctx, suite.incentivesKeeper
+
+	// Create mock validators
+	validators, err := getMockValidators(suite)
+	suite.Require().NoError(err)
+	validator1, validator2, validator3 := validators[0], validators[1], validators[2]
+
+	// Set up qualifying voters
+	qualifyingVoters := []ValidatorInfo{
+		{Validator: validator1, Power: 30},
+		{Validator: validator2, Power: 20},
+		{Validator: validator3, Power: 10},
+	}
+
+	totalPreviousPower := int64(60)
+	totalDistribution := sdk.NewDecCoins(sdk.NewDecCoin("usom", sdk.NewInt(100)))
+	maxFraction := sdk.NewDecWithPrec(5, 1) // 0.5
+
+	// Set up expectations for the mock DistributionKeeper
+	totalExpectedRewards := sdk.NewDecCoins()
+	for _, voter := range qualifyingVoters {
+		powerFraction := sdk.NewDecFromInt(sdk.NewInt(voter.Power)).QuoInt64(totalPreviousPower)
+		expectedReward := totalDistribution.MulDecTruncate(powerFraction)
+		if powerFraction.GT(maxFraction) {
+			expectedReward = totalDistribution.MulDecTruncate(maxFraction)
+		}
+
+		totalExpectedRewards = totalExpectedRewards.Add(expectedReward...)
+
+		suite.distributionKeeper.EXPECT().
+			GetValidatorCurrentRewards(ctx, voter.Validator.GetOperator()).
+			Return(distributiontypes.ValidatorCurrentRewards{Rewards: sdk.DecCoins{}})
+		suite.distributionKeeper.EXPECT().
+			SetValidatorCurrentRewards(ctx, voter.Validator.GetOperator(), distributiontypes.ValidatorCurrentRewards{Rewards: expectedReward})
+		suite.distributionKeeper.EXPECT().
+			GetValidatorOutstandingRewards(ctx, voter.Validator.GetOperator()).
+			Return(distributiontypes.ValidatorOutstandingRewards{Rewards: sdk.DecCoins{}})
+		suite.distributionKeeper.EXPECT().
+			SetValidatorOutstandingRewards(ctx, voter.Validator.GetOperator(), distributiontypes.ValidatorOutstandingRewards{Rewards: expectedReward})
+	}
+
+	// Call the function being tested
+	remaining := incentivesKeeper.AllocateTokens(ctx, totalPreviousPower, totalDistribution, qualifyingVoters, maxFraction)
+
+	// Verify that the sum of remaining and distributed rewards equals totalDistribution
+	totalAllocated := remaining.Add(totalExpectedRewards...)
+	suite.Require().Equal(totalDistribution, totalAllocated, "Sum of remaining and distributed rewards should equal total distribution")
+
+	// Verify that events were emitted
+	events := ctx.EventManager().Events()
+	suite.Require().Len(events, 3) // One event for each validator
+	for i, event := range events {
+		suite.Require().Equal(types.EventTypeIncentivesRewards, event.Type)
+		suite.Require().Len(event.Attributes, 2)
+		suite.Require().Equal(sdk.AttributeKeyAmount, string(event.Attributes[0].Key))
+		suite.Require().Equal(types.AttributeKeyValidator, string(event.Attributes[1].Key))
+		suite.Require().Equal(qualifyingVoters[i].Validator.GetOperator().String(), string(event.Attributes[1].Value))
 	}
 }
 
-func roundToPrecision(d sdk.Dec, precision uint64) sdk.Dec {
-	multiplier := sdk.NewDec(10).Power(precision)
-	return d.Mul(multiplier).RoundInt().ToLegacyDec().Quo(multiplier)
+func (suite *KeeperTestSuite) TestAllocateTokensNoQualifyingVoters() {
+	ctx, incentivesKeeper := suite.ctx, suite.incentivesKeeper
+
+	totalPreviousPower := int64(100)
+	totalDistribution := sdk.NewDecCoins(sdk.NewDecCoin("usom", sdk.NewInt(100)))
+	maxFraction := sdk.NewDecWithPrec(5, 1) // 0.5
+
+	// Call the function being tested with empty qualifyingVoters
+	remaining := incentivesKeeper.AllocateTokens(ctx, totalPreviousPower, totalDistribution, []ValidatorInfo{}, maxFraction)
+
+	// Verify that all tokens remain unallocated
+	suite.Require().Equal(totalDistribution, remaining, "All tokens should remain unallocated when there are no qualifying voters")
+
+	// Verify that no events were emitted
+	events := ctx.EventManager().Events()
+	suite.Require().Len(events, 0, "No events should be emitted when there are no qualifying voters")
 }

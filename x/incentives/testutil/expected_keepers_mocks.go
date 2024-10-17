@@ -7,9 +7,11 @@ package mock_types
 import (
 	reflect "reflect"
 
+	math "cosmossdk.io/math"
 	types "github.com/cosmos/cosmos-sdk/types"
 	types0 "github.com/cosmos/cosmos-sdk/x/distribution/types"
 	types1 "github.com/cosmos/cosmos-sdk/x/mint/types"
+	types2 "github.com/cosmos/cosmos-sdk/x/staking/types"
 	gomock "github.com/golang/mock/gomock"
 )
 
@@ -50,6 +52,48 @@ func (mr *MockDistributionKeeperMockRecorder) GetFeePool(ctx interface{}) *gomoc
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetFeePool", reflect.TypeOf((*MockDistributionKeeper)(nil).GetFeePool), ctx)
 }
 
+// GetValidatorAccumulatedCommission mocks base method.
+func (m *MockDistributionKeeper) GetValidatorAccumulatedCommission(ctx types.Context, valAddr types.ValAddress) types0.ValidatorAccumulatedCommission {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetValidatorAccumulatedCommission", ctx, valAddr)
+	ret0, _ := ret[0].(types0.ValidatorAccumulatedCommission)
+	return ret0
+}
+
+// GetValidatorAccumulatedCommission indicates an expected call of GetValidatorAccumulatedCommission.
+func (mr *MockDistributionKeeperMockRecorder) GetValidatorAccumulatedCommission(ctx, valAddr interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetValidatorAccumulatedCommission", reflect.TypeOf((*MockDistributionKeeper)(nil).GetValidatorAccumulatedCommission), ctx, valAddr)
+}
+
+// GetValidatorCurrentRewards mocks base method.
+func (m *MockDistributionKeeper) GetValidatorCurrentRewards(ctx types.Context, valAddr types.ValAddress) types0.ValidatorCurrentRewards {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetValidatorCurrentRewards", ctx, valAddr)
+	ret0, _ := ret[0].(types0.ValidatorCurrentRewards)
+	return ret0
+}
+
+// GetValidatorCurrentRewards indicates an expected call of GetValidatorCurrentRewards.
+func (mr *MockDistributionKeeperMockRecorder) GetValidatorCurrentRewards(ctx, valAddr interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetValidatorCurrentRewards", reflect.TypeOf((*MockDistributionKeeper)(nil).GetValidatorCurrentRewards), ctx, valAddr)
+}
+
+// GetValidatorOutstandingRewards mocks base method.
+func (m *MockDistributionKeeper) GetValidatorOutstandingRewards(ctx types.Context, valAddr types.ValAddress) types0.ValidatorOutstandingRewards {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetValidatorOutstandingRewards", ctx, valAddr)
+	ret0, _ := ret[0].(types0.ValidatorOutstandingRewards)
+	return ret0
+}
+
+// GetValidatorOutstandingRewards indicates an expected call of GetValidatorOutstandingRewards.
+func (mr *MockDistributionKeeperMockRecorder) GetValidatorOutstandingRewards(ctx, valAddr interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetValidatorOutstandingRewards", reflect.TypeOf((*MockDistributionKeeper)(nil).GetValidatorOutstandingRewards), ctx, valAddr)
+}
+
 // SetFeePool mocks base method.
 func (m *MockDistributionKeeper) SetFeePool(ctx types.Context, feePool types0.FeePool) {
 	m.ctrl.T.Helper()
@@ -60,6 +104,42 @@ func (m *MockDistributionKeeper) SetFeePool(ctx types.Context, feePool types0.Fe
 func (mr *MockDistributionKeeperMockRecorder) SetFeePool(ctx, feePool interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SetFeePool", reflect.TypeOf((*MockDistributionKeeper)(nil).SetFeePool), ctx, feePool)
+}
+
+// SetValidatorAccumulatedCommission mocks base method.
+func (m *MockDistributionKeeper) SetValidatorAccumulatedCommission(ctx types.Context, valAddr types.ValAddress, commission types0.ValidatorAccumulatedCommission) {
+	m.ctrl.T.Helper()
+	m.ctrl.Call(m, "SetValidatorAccumulatedCommission", ctx, valAddr, commission)
+}
+
+// SetValidatorAccumulatedCommission indicates an expected call of SetValidatorAccumulatedCommission.
+func (mr *MockDistributionKeeperMockRecorder) SetValidatorAccumulatedCommission(ctx, valAddr, commission interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SetValidatorAccumulatedCommission", reflect.TypeOf((*MockDistributionKeeper)(nil).SetValidatorAccumulatedCommission), ctx, valAddr, commission)
+}
+
+// SetValidatorCurrentRewards mocks base method.
+func (m *MockDistributionKeeper) SetValidatorCurrentRewards(ctx types.Context, valAddr types.ValAddress, rewards types0.ValidatorCurrentRewards) {
+	m.ctrl.T.Helper()
+	m.ctrl.Call(m, "SetValidatorCurrentRewards", ctx, valAddr, rewards)
+}
+
+// SetValidatorCurrentRewards indicates an expected call of SetValidatorCurrentRewards.
+func (mr *MockDistributionKeeperMockRecorder) SetValidatorCurrentRewards(ctx, valAddr, rewards interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SetValidatorCurrentRewards", reflect.TypeOf((*MockDistributionKeeper)(nil).SetValidatorCurrentRewards), ctx, valAddr, rewards)
+}
+
+// SetValidatorOutstandingRewards mocks base method.
+func (m *MockDistributionKeeper) SetValidatorOutstandingRewards(ctx types.Context, valAddr types.ValAddress, rewards types0.ValidatorOutstandingRewards) {
+	m.ctrl.T.Helper()
+	m.ctrl.Call(m, "SetValidatorOutstandingRewards", ctx, valAddr, rewards)
+}
+
+// SetValidatorOutstandingRewards indicates an expected call of SetValidatorOutstandingRewards.
+func (mr *MockDistributionKeeperMockRecorder) SetValidatorOutstandingRewards(ctx, valAddr, rewards interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SetValidatorOutstandingRewards", reflect.TypeOf((*MockDistributionKeeper)(nil).SetValidatorOutstandingRewards), ctx, valAddr, rewards)
 }
 
 // MockBankKeeper is a mock of BankKeeper interface.
@@ -249,10 +329,10 @@ func (mr *MockMintKeeperMockRecorder) GetParams(ctx interface{}) *gomock.Call {
 }
 
 // StakingTokenSupply mocks base method.
-func (m *MockMintKeeper) StakingTokenSupply(ctx types.Context) types.Int {
+func (m *MockMintKeeper) StakingTokenSupply(ctx types.Context) math.Int {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "StakingTokenSupply", ctx)
-	ret0, _ := ret[0].(types.Int)
+	ret0, _ := ret[0].(math.Int)
 	return ret0
 }
 
@@ -260,4 +340,41 @@ func (m *MockMintKeeper) StakingTokenSupply(ctx types.Context) types.Int {
 func (mr *MockMintKeeperMockRecorder) StakingTokenSupply(ctx interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "StakingTokenSupply", reflect.TypeOf((*MockMintKeeper)(nil).StakingTokenSupply), ctx)
+}
+
+// MockStakingKeeper is a mock of StakingKeeper interface.
+type MockStakingKeeper struct {
+	ctrl     *gomock.Controller
+	recorder *MockStakingKeeperMockRecorder
+}
+
+// MockStakingKeeperMockRecorder is the mock recorder for MockStakingKeeper.
+type MockStakingKeeperMockRecorder struct {
+	mock *MockStakingKeeper
+}
+
+// NewMockStakingKeeper creates a new mock instance.
+func NewMockStakingKeeper(ctrl *gomock.Controller) *MockStakingKeeper {
+	mock := &MockStakingKeeper{ctrl: ctrl}
+	mock.recorder = &MockStakingKeeperMockRecorder{mock}
+	return mock
+}
+
+// EXPECT returns an object that allows the caller to indicate expected use.
+func (m *MockStakingKeeper) EXPECT() *MockStakingKeeperMockRecorder {
+	return m.recorder
+}
+
+// ValidatorByConsAddr mocks base method.
+func (m *MockStakingKeeper) ValidatorByConsAddr(ctx types.Context, consAddr types.ConsAddress) types2.ValidatorI {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ValidatorByConsAddr", ctx, consAddr)
+	ret0, _ := ret[0].(types2.ValidatorI)
+	return ret0
+}
+
+// ValidatorByConsAddr indicates an expected call of ValidatorByConsAddr.
+func (mr *MockStakingKeeperMockRecorder) ValidatorByConsAddr(ctx, consAddr interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ValidatorByConsAddr", reflect.TypeOf((*MockStakingKeeper)(nil).ValidatorByConsAddr), ctx, consAddr)
 }

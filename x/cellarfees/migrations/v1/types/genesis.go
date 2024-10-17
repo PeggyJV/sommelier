@@ -4,6 +4,7 @@ import (
 	"sort"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	types "github.com/peggyjv/sommelier/v7/x/cellarfees/types"
 )
 
 const DefaultParamspace = ModuleName
@@ -37,7 +38,7 @@ func (gs GenesisState) Validate() error {
 	}
 
 	if gs.LastRewardSupplyPeak.LT(sdk.ZeroInt()) {
-		return ErrInvalidLastRewardSupplyPeak.Wrap("last reward supply peak cannot be less than zero!")
+		return types.ErrInvalidLastRewardSupplyPeak.Wrap("last reward supply peak cannot be less than zero!")
 	}
 
 	return nil

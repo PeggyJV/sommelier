@@ -125,6 +125,7 @@ jobs:
           "Auction",
           "CellarFees",
           "Incentives",
+          "ValidatorIncentives",
           "Pubsub",
           "Addresses",
         ]

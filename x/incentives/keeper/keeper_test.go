@@ -26,6 +26,7 @@ type KeeperTestSuite struct {
 	distributionKeeper *incentivestestutil.MockDistributionKeeper
 	bankKeeper         *incentivestestutil.MockBankKeeper
 	mintKeeper         *incentivestestutil.MockMintKeeper
+	stakingKeeper      *incentivestestutil.MockStakingKeeper
 
 	encCfg moduletestutil.TestEncodingConfig
 }
@@ -44,6 +45,7 @@ func (suite *KeeperTestSuite) SetupTest() {
 	suite.distributionKeeper = incentivestestutil.NewMockDistributionKeeper(ctrl)
 	suite.bankKeeper = incentivestestutil.NewMockBankKeeper(ctrl)
 	suite.mintKeeper = incentivestestutil.NewMockMintKeeper(ctrl)
+	suite.stakingKeeper = incentivestestutil.NewMockStakingKeeper(ctrl)
 	suite.ctx = ctx
 
 	params := paramskeeper.NewKeeper(
@@ -64,6 +66,7 @@ func (suite *KeeperTestSuite) SetupTest() {
 		suite.distributionKeeper,
 		suite.bankKeeper,
 		suite.mintKeeper,
+		suite.stakingKeeper,
 	)
 
 	suite.encCfg = encCfg
@@ -93,10 +96,10 @@ func (suite *KeeperTestSuite) TestGetAPY() {
 	require.Equal(sdk.ZeroDec(), incentivesKeeper.GetAPY(ctx))
 
 	// incentives enabled
-	incentivesKeeper.SetParams(ctx, incentivesTypes.Params{
-		DistributionPerBlock:   distributionPerBlock,
-		IncentivesCutoffHeight: 1000,
-	})
+	params := incentivesKeeper.GetParamSet(ctx)
+	params.DistributionPerBlock = distributionPerBlock
+	params.IncentivesCutoffHeight = 1000
+	incentivesKeeper.SetParams(ctx, params)
 	expected := sdk.NewDecFromInt(distributionPerBlock.Amount.Mul(sdk.NewInt(int64(blocksPerYear)))).Quo(sdk.NewDecFromInt(stakingTotalSupply).Mul(bondedRatio))
 	require.Equal(expected, incentivesKeeper.GetAPY(ctx))
 }

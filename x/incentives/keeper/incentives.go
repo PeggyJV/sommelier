@@ -52,6 +52,15 @@ func (k Keeper) getValidatorInfos(ctx sdk.Context, req abci.RequestBeginBlock) [
 	return validatorInfos
 }
 
+// truncateVoters returns the first maxSize validatorInfos
+func truncateVoters(validatorInfos []ValidatorInfo, maxSize uint64) []ValidatorInfo {
+	if len(validatorInfos) > int(maxSize) {
+		return validatorInfos[:maxSize]
+	}
+
+	return validatorInfos
+}
+
 // AllocateTokens performs reward distribution to the provided validators proportionally to their power with a cap
 func (k Keeper) AllocateTokens(ctx sdk.Context, totalPreviousPower int64, totalDistribution sdk.DecCoins, qualifyingVoters []ValidatorInfo, maxFraction sdk.Dec) sdk.DecCoins {
 	remaining := totalDistribution
