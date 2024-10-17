@@ -32,7 +32,7 @@ func (k Keeper) BeginBlocker(ctx sdk.Context, req abci.RequestBeginBlock) {
 	// Get a list of qualifying validators sorted by descending power
 	valInfos := k.getValidatorInfos(ctx, req)
 	sortedValInfos := sortValidatorInfosByPower(valInfos)
-	qualifyingVoters := sortedValInfos[:incentivesParams.ValidatorIncentivesSetSizeLimit]
+	qualifyingVoters := truncateVoters(sortedValInfos, incentivesParams.ValidatorIncentivesSetSizeLimit)
 
 	// Allocate tokens to qualifying validators proportionally to their power with a cap
 	totalPower := getTotalPower(&qualifyingVoters)
