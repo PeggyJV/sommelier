@@ -124,8 +124,7 @@ func (suite *KeeperTestSuite) TestBeginBlockerSuccess() {
 	suite.distributionKeeper.EXPECT().GetFeePool(ctx).Return(pool)
 
 	// Mock validators
-	validators, err := getMockValidators(suite)
-	require.NoError(err)
+	validators := suite.getMockValidators()
 	validator1, validator2 := validators[0], validators[1]
 
 	consAddr1, err := validator1.GetConsAddr()

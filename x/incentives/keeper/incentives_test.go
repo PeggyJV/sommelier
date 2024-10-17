@@ -30,22 +30,21 @@ var (
 	}
 )
 
-func getMockValidators(suite *KeeperTestSuite) ([]*stakingtypes.Validator, error) {
+func (suite *KeeperTestSuite) getMockValidators() []*stakingtypes.Validator {
 	validator1, err := stakingtypes.NewValidator(sdk.ValAddress([]byte("val1val1val1val1val1")), ConsPubKeys[0], stakingtypes.Description{})
 	suite.Require().NoError(err)
 	validator2, err := stakingtypes.NewValidator(sdk.ValAddress([]byte("val2val2val2val2val2")), ConsPubKeys[1], stakingtypes.Description{})
 	suite.Require().NoError(err)
 	validator3, err := stakingtypes.NewValidator(sdk.ValAddress([]byte("val3val3val3val3val3")), ConsPubKeys[2], stakingtypes.Description{})
 	suite.Require().NoError(err)
-	return []*stakingtypes.Validator{&validator1, &validator2, &validator3}, nil
+	return []*stakingtypes.Validator{&validator1, &validator2, &validator3}
 }
 
 func (suite *KeeperTestSuite) TestGetValidatorInfos() {
 	ctx, incentivesKeeper := suite.ctx, suite.incentivesKeeper
 
 	// Create mock validators
-	validators, err := getMockValidators(suite)
-	suite.Require().NoError(err)
+	validators := suite.getMockValidators()
 	validator1, validator2, validator3 := validators[0], validators[1], validators[2]
 
 	consAddr1, err := validator1.GetConsAddr()
@@ -232,10 +231,10 @@ func (suite *KeeperTestSuite) TestAllocateTokensToValidator() {
 	event := events[0]
 	suite.Require().Equal(types.EventTypeIncentivesRewards, event.Type)
 	suite.Require().Len(event.Attributes, 2)
-	suite.Require().Equal(sdk.AttributeKeyAmount, string(event.Attributes[0].Key))
-	suite.Require().Equal(tokens.String(), string(event.Attributes[0].Value))
-	suite.Require().Equal(types.AttributeKeyValidator, string(event.Attributes[1].Key))
-	suite.Require().Equal(valAddr.String(), string(event.Attributes[1].Value))
+	suite.Require().Equal(sdk.AttributeKeyAmount, event.Attributes[0].Key)
+	suite.Require().Equal(tokens.String(), event.Attributes[0].Value)
+	suite.Require().Equal(types.AttributeKeyValidator, event.Attributes[1].Key)
+	suite.Require().Equal(valAddr.String(), event.Attributes[1].Value)
 }
 
 func (suite *KeeperTestSuite) TestAllocateTokensToValidatorWithExistingRewards() {
@@ -275,18 +274,17 @@ func (suite *KeeperTestSuite) TestAllocateTokensToValidatorWithExistingRewards()
 	event := events[0]
 	suite.Require().Equal(types.EventTypeIncentivesRewards, event.Type)
 	suite.Require().Len(event.Attributes, 2)
-	suite.Require().Equal(sdk.AttributeKeyAmount, string(event.Attributes[0].Key))
-	suite.Require().Equal(newTokens.String(), string(event.Attributes[0].Value))
-	suite.Require().Equal(types.AttributeKeyValidator, string(event.Attributes[1].Key))
-	suite.Require().Equal(valAddr.String(), string(event.Attributes[1].Value))
+	suite.Require().Equal(sdk.AttributeKeyAmount, event.Attributes[0].Key)
+	suite.Require().Equal(newTokens.String(), event.Attributes[0].Value)
+	suite.Require().Equal(types.AttributeKeyValidator, event.Attributes[1].Key)
+	suite.Require().Equal(valAddr.String(), event.Attributes[1].Value)
 }
 
 func (suite *KeeperTestSuite) TestAllocateTokens() {
 	ctx, incentivesKeeper := suite.ctx, suite.incentivesKeeper
 
 	// Create mock validators
-	validators, err := getMockValidators(suite)
-	suite.Require().NoError(err)
+	validators := suite.getMockValidators()
 	validator1, validator2, validator3 := validators[0], validators[1], validators[2]
 
 	// Set up qualifying voters
@@ -336,9 +334,9 @@ func (suite *KeeperTestSuite) TestAllocateTokens() {
 	for i, event := range events {
 		suite.Require().Equal(types.EventTypeIncentivesRewards, event.Type)
 		suite.Require().Len(event.Attributes, 2)
-		suite.Require().Equal(sdk.AttributeKeyAmount, string(event.Attributes[0].Key))
-		suite.Require().Equal(types.AttributeKeyValidator, string(event.Attributes[1].Key))
-		suite.Require().Equal(qualifyingVoters[i].Validator.GetOperator().String(), string(event.Attributes[1].Value))
+		suite.Require().Equal(sdk.AttributeKeyAmount, event.Attributes[0].Key)
+		suite.Require().Equal(types.AttributeKeyValidator, event.Attributes[1].Key)
+		suite.Require().Equal(qualifyingVoters[i].Validator.GetOperator().String(), event.Attributes[1].Value)
 	}
 }
 
