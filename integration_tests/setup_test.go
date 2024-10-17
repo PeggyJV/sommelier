@@ -534,11 +534,8 @@ func (s *IntegrationTestSuite) initGenesis() {
 	s.Require().NoError(err)
 	appGenState[gravitytypes.ModuleName] = bz
 
-	// incentivesGenState := incentivestypes.DefaultGenesisState()
-	// s.Require().NoError(cdc.UnmarshalJSON(appGenState[gravitytypes.ModuleName], &gravityGenState))
-	// bz, err = cdc.MarshalJSON(&incentivesGenState)
-	// s.Require().NoError(err)
-	// appGenState[incentivestypes.ModuleName] = bz
+	// set incentives gen state
+	s.Require().NoError(s.setIncentivesGenState(appGenState))
 
 	// serialize genesis state
 	bz, err = json.MarshalIndent(appGenState, "", "  ")

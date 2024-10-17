@@ -227,7 +227,7 @@ func queryScheduledCorksByID() *cobra.Command {
 
 func queryCorkResult() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:     "cork-result",
+		Use:     "cork-result [cork-id]",
 		Aliases: []string{"cr"},
 		Args:    cobra.ExactArgs(1),
 		Short:   "query cork result from the chain",
