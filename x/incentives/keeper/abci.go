@@ -16,12 +16,12 @@ import (
 // 4) Add the remaining coins back to the community pool
 func (k Keeper) BeginBlocker(ctx sdk.Context, req abci.RequestBeginBlock) {
 	incentivesParams := k.GetParamSet(ctx)
-	if uint64(ctx.BlockHeight()) >= incentivesParams.ValidatorIncentivesCutoffHeight || incentivesParams.ValidatorDistributionPerBlock.IsZero() {
+	if uint64(ctx.BlockHeight()) >= incentivesParams.ValidatorIncentivesCutoffHeight || incentivesParams.ValidatorMaxDistributionPerBlock.IsZero() {
 		return
 	}
 
 	// Rewards come from the community pool
-	totalDistribution := sdk.NewDecCoinsFromCoins(incentivesParams.ValidatorDistributionPerBlock)
+	totalDistribution := sdk.NewDecCoinsFromCoins(incentivesParams.ValidatorMaxDistributionPerBlock)
 	feePool := k.DistributionKeeper.GetFeePool(ctx)
 	newPool, negative := feePool.CommunityPool.SafeSub(totalDistribution)
 	if negative {

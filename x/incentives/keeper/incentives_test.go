@@ -229,7 +229,7 @@ func (suite *KeeperTestSuite) TestAllocateTokensToValidator() {
 	events := ctx.EventManager().Events()
 	suite.Require().Len(events, 1)
 	event := events[0]
-	suite.Require().Equal(types.EventTypeIncentivesRewards, event.Type)
+	suite.Require().Equal(types.EventTypeValidatorIncentivesReward, event.Type)
 	suite.Require().Len(event.Attributes, 2)
 	suite.Require().Equal(sdk.AttributeKeyAmount, event.Attributes[0].Key)
 	suite.Require().Equal(tokens.String(), event.Attributes[0].Value)
@@ -272,7 +272,7 @@ func (suite *KeeperTestSuite) TestAllocateTokensToValidatorWithExistingRewards()
 	events := ctx.EventManager().Events()
 	suite.Require().Len(events, 1)
 	event := events[0]
-	suite.Require().Equal(types.EventTypeIncentivesRewards, event.Type)
+	suite.Require().Equal(types.EventTypeValidatorIncentivesReward, event.Type)
 	suite.Require().Len(event.Attributes, 2)
 	suite.Require().Equal(sdk.AttributeKeyAmount, event.Attributes[0].Key)
 	suite.Require().Equal(newTokens.String(), event.Attributes[0].Value)
@@ -329,14 +329,21 @@ func (suite *KeeperTestSuite) TestAllocateTokens() {
 	suite.Require().Equal(totalDistribution, totalAllocated, "Sum of remaining and distributed rewards should equal total distribution")
 
 	// Verify that events were emitted
+	totalEvents := len(qualifyingVoters) + 1 // One event for each validator plus one for the total distribution
 	events := ctx.EventManager().Events()
-	suite.Require().Len(events, 3) // One event for each validator
+	suite.Require().Len(events, totalEvents)
 	for i, event := range events {
-		suite.Require().Equal(types.EventTypeIncentivesRewards, event.Type)
-		suite.Require().Len(event.Attributes, 2)
-		suite.Require().Equal(sdk.AttributeKeyAmount, event.Attributes[0].Key)
-		suite.Require().Equal(types.AttributeKeyValidator, event.Attributes[1].Key)
-		suite.Require().Equal(qualifyingVoters[i].Validator.GetOperator().String(), event.Attributes[1].Value)
+		if i == totalEvents-1 {
+			suite.Require().Equal(types.EventTypeTotalValidatorIncentivesRewards, event.Type)
+			suite.Require().Equal(totalDistribution.Sub(remaining).String(), event.Attributes[0].Value)
+			continue
+		} else {
+			suite.Require().Equal(types.EventTypeValidatorIncentivesReward, event.Type)
+			suite.Require().Len(event.Attributes, 2)
+			suite.Require().Equal(sdk.AttributeKeyAmount, event.Attributes[0].Key)
+			suite.Require().Equal(types.AttributeKeyValidator, event.Attributes[1].Key)
+			suite.Require().Equal(qualifyingVoters[i].Validator.GetOperator().String(), event.Attributes[1].Value)
+		}
 	}
 }
 

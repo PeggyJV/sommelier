@@ -80,6 +80,16 @@ func (k Keeper) AllocateTokens(ctx sdk.Context, totalPreviousPower int64, totalD
 		remaining = remaining.Sub(reward)
 	}
 
+	// Only emit the total distribution reward event if there are qualifying voters
+	if len(qualifyingVoters) > 0 {
+		ctx.EventManager().EmitEvent(
+			sdk.NewEvent(
+				types.EventTypeTotalValidatorIncentivesRewards,
+				sdk.NewAttribute(sdk.AttributeKeyAmount, totalDistribution.Sub(remaining).String()),
+			),
+		)
+	}
+
 	return remaining
 }
 
@@ -89,7 +99,7 @@ func (k Keeper) AllocateTokensToValidator(ctx sdk.Context, val stakingtypes.Vali
 	// Update validator rewards
 	ctx.EventManager().EmitEvent(
 		sdk.NewEvent(
-			types.EventTypeIncentivesRewards,
+			types.EventTypeValidatorIncentivesReward,
 			sdk.NewAttribute(sdk.AttributeKeyAmount, tokens.String()),
 			sdk.NewAttribute(types.AttributeKeyValidator, val.GetOperator().String()),
 		),

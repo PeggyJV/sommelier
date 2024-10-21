@@ -65,7 +65,7 @@ func (suite *KeeperTestSuite) TestBeginBlockerIncentivesDisabled() {
 
 	incentivesParams := incentivesTypes.DefaultParams()
 	incentivesParams.ValidatorIncentivesCutoffHeight = 100
-	incentivesParams.ValidatorDistributionPerBlock = sdk.NewCoin(params.BaseCoinUnit, sdk.NewInt(1000))
+	incentivesParams.ValidatorMaxDistributionPerBlock = sdk.NewCoin(params.BaseCoinUnit, sdk.NewInt(1000))
 	incentivesKeeper.SetParams(ctx, incentivesParams)
 
 	// Set block height above cutoff
@@ -76,7 +76,7 @@ func (suite *KeeperTestSuite) TestBeginBlockerIncentivesDisabled() {
 	require.NotPanics(func() { incentivesKeeper.BeginBlocker(ctx, abci.RequestBeginBlock{}) })
 
 	incentivesParams.ValidatorIncentivesCutoffHeight = 200
-	incentivesParams.ValidatorDistributionPerBlock = sdk.NewCoin(params.BaseCoinUnit, sdk.ZeroInt())
+	incentivesParams.ValidatorMaxDistributionPerBlock = sdk.NewCoin(params.BaseCoinUnit, sdk.ZeroInt())
 	incentivesKeeper.SetParams(ctx, incentivesParams)
 
 	require.NotPanics(func() { incentivesKeeper.BeginBlocker(ctx, abci.RequestBeginBlock{}) })
@@ -88,7 +88,7 @@ func (suite *KeeperTestSuite) TestBeginBlockerInsufficientCommunityPoolBalance()
 
 	incentivesParams := incentivesTypes.DefaultParams()
 	incentivesParams.ValidatorIncentivesCutoffHeight = 100
-	incentivesParams.ValidatorDistributionPerBlock = sdk.NewCoin(params.BaseCoinUnit, sdk.NewInt(1000))
+	incentivesParams.ValidatorMaxDistributionPerBlock = sdk.NewCoin(params.BaseCoinUnit, sdk.NewInt(1000))
 	incentivesKeeper.SetParams(ctx, incentivesParams)
 
 	// Set block height below cutoff
@@ -111,7 +111,7 @@ func (suite *KeeperTestSuite) TestBeginBlockerSuccess() {
 
 	incentivesParams := incentivesTypes.DefaultParams()
 	incentivesParams.ValidatorIncentivesCutoffHeight = 100
-	incentivesParams.ValidatorDistributionPerBlock = sdk.NewCoin(params.BaseCoinUnit, sdk.NewInt(1000))
+	incentivesParams.ValidatorMaxDistributionPerBlock = sdk.NewCoin(params.BaseCoinUnit, sdk.NewInt(1000))
 	incentivesKeeper.SetParams(ctx, incentivesParams)
 
 	// Set block height below cutoff

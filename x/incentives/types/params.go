@@ -9,12 +9,12 @@ import (
 
 // Parameter keys
 var (
-	KeyDistributionPerBlock            = []byte("DistributionPerBlock")
-	KeyIncentivesCutoffHeight          = []byte("IncentivesCutoffHeight")
-	KeyValidatorDistributionPerBlock   = []byte("ValidatorDistributionPerBlock")
-	KeyValidatorIncentivesCutoffHeight = []byte("ValidatorIncentivesCutoffHeight")
-	KeyValidatorIncentivesMaxFraction  = []byte("ValidatorIncentivesMaxFraction")
-	KeyValidatorIncentivesSetSizeLimit = []byte("ValidatorIncentivesSetSizeLimit")
+	KeyDistributionPerBlock             = []byte("DistributionPerBlock")
+	KeyIncentivesCutoffHeight           = []byte("IncentivesCutoffHeight")
+	KeyValidatorMaxDistributionPerBlock = []byte("ValidatorMaxDistributionPerBlock")
+	KeyValidatorIncentivesCutoffHeight  = []byte("ValidatorIncentivesCutoffHeight")
+	KeyValidatorIncentivesMaxFraction   = []byte("ValidatorIncentivesMaxFraction")
+	KeyValidatorIncentivesSetSizeLimit  = []byte("ValidatorIncentivesSetSizeLimit")
 )
 
 var _ paramtypes.ParamSet = &Params{}
@@ -29,11 +29,11 @@ func DefaultParams() Params {
 	return Params{
 		DistributionPerBlock: sdk.NewCoin(params.BaseCoinUnit, sdk.ZeroInt()),
 		// Anything lower than or equal to current height is "off"
-		IncentivesCutoffHeight:          0,
-		ValidatorDistributionPerBlock:   sdk.NewCoin(params.BaseCoinUnit, sdk.ZeroInt()),
-		ValidatorIncentivesCutoffHeight: 0,
-		ValidatorIncentivesMaxFraction:  sdk.MustNewDecFromStr("0.1"),
-		ValidatorIncentivesSetSizeLimit: 50,
+		IncentivesCutoffHeight:           0,
+		ValidatorMaxDistributionPerBlock: sdk.NewCoin(params.BaseCoinUnit, sdk.ZeroInt()),
+		ValidatorIncentivesCutoffHeight:  0,
+		ValidatorIncentivesMaxFraction:   sdk.MustNewDecFromStr("0.1"),
+		ValidatorIncentivesSetSizeLimit:  50,
 	}
 }
 
@@ -42,7 +42,7 @@ func (p *Params) ParamSetPairs() paramtypes.ParamSetPairs {
 	return paramtypes.ParamSetPairs{
 		paramtypes.NewParamSetPair(KeyDistributionPerBlock, &p.DistributionPerBlock, validateDistributionPerBlock),
 		paramtypes.NewParamSetPair(KeyIncentivesCutoffHeight, &p.IncentivesCutoffHeight, validateIncentivesCutoffHeight),
-		paramtypes.NewParamSetPair(KeyValidatorDistributionPerBlock, &p.ValidatorDistributionPerBlock, validateValidatorDistributionPerBlock),
+		paramtypes.NewParamSetPair(KeyValidatorMaxDistributionPerBlock, &p.ValidatorMaxDistributionPerBlock, validateValidatorMaxDistributionPerBlock),
 		paramtypes.NewParamSetPair(KeyValidatorIncentivesCutoffHeight, &p.ValidatorIncentivesCutoffHeight, validateValidatorIncentivesCutoffHeight),
 		paramtypes.NewParamSetPair(KeyValidatorIncentivesMaxFraction, &p.ValidatorIncentivesMaxFraction, validateValidatorIncentivesMaxFraction),
 		paramtypes.NewParamSetPair(KeyValidatorIncentivesSetSizeLimit, &p.ValidatorIncentivesSetSizeLimit, validateValidatorIncentivesSetSizeLimit),
@@ -82,9 +82,9 @@ func validateIncentivesCutoffHeight(_ interface{}) error {
 	return nil
 }
 
-func validateValidatorDistributionPerBlock(i interface{}) error {
+func validateValidatorMaxDistributionPerBlock(i interface{}) error {
 	if err := validateDistributionPerBlock(i); err != nil {
-		return errorsmod.Wrapf(ErrInvalidValidatorDistributionPerBlock, "invalid parameter type: %T", i)
+		return errorsmod.Wrapf(ErrInvalidValidatorMaxDistributionPerBlock, "invalid parameter type: %T", i)
 	}
 
 	return nil

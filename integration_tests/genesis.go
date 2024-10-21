@@ -119,7 +119,7 @@ func (s *IntegrationTestSuite) setIncentivesGenState(appGenState map[string]json
 	}
 
 	incentivesGenState.Params.ValidatorIncentivesCutoffHeight = 0
-	incentivesGenState.Params.ValidatorDistributionPerBlock = sdk.NewCoin(params.BaseCoinUnit, sdk.NewInt(0))
+	incentivesGenState.Params.ValidatorMaxDistributionPerBlock = sdk.NewCoin(params.BaseCoinUnit, sdk.NewInt(0))
 
 	appGenState[incentivestypes.ModuleName] = cdc.MustMarshalJSON(&incentivesGenState)
 	return nil

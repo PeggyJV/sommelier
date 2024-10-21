@@ -290,7 +290,7 @@ func (s *IntegrationTestSuite) TestValidatorIncentives() {
 			},
 			{
 				Subspace: "incentives",
-				Key:      "ValidatorDistributionPerBlock",
+				Key:      "ValidatorMaxDistributionPerBlock",
 				Value:    fmt.Sprintf("{\"denom\":\"%s\",\"amount\":\"%d\"}", params.BaseCoinUnit, 1000000),
 			},
 		},
