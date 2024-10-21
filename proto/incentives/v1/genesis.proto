@@ -18,4 +18,12 @@ message Params {
     // IncentivesCutoffHeight defines the block height after which the incentives module will stop sending coins to the distribution module from
     // the community pool
     uint64 incentives_cutoff_height = 2;
+    // ValidatorMaxDistributionPerBlock defines the maximum coins to be sent directly to voters in the last block from the community pool every block. Leftover coins remain in the community pool.
+    cosmos.base.v1beta1.Coin validator_max_distribution_per_block = 3 [(gogoproto.nullable) = false];
+    // ValidatorIncentivesCutoffHeight defines the block height after which the validator incentives will be stopped
+    uint64 validator_incentives_cutoff_height = 4;
+    // ValidatorIncentivesMaxFraction defines the maximum fraction of the validator distribution per block that can be sent to a single validator
+    string validator_incentives_max_fraction = 5 [(gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec", (gogoproto.nullable) = false];
+    // ValidatorIncentivesSetSizeLimit defines the max number of validators to apportion the validator distribution per block to
+    uint64 validator_incentives_set_size_limit = 6;
 }

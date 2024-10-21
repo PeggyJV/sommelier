@@ -7,12 +7,19 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	distributiontypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
 	minttypes "github.com/cosmos/cosmos-sdk/x/mint/types"
+	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 )
 
 // DistributionKeeper defines the expected distribution keeper methods
 type DistributionKeeper interface {
 	GetFeePool(ctx sdk.Context) (feePool distributiontypes.FeePool)
 	SetFeePool(ctx sdk.Context, feePool distributiontypes.FeePool)
+	GetValidatorOutstandingRewards(ctx sdk.Context, valAddr sdk.ValAddress) (rewards distributiontypes.ValidatorOutstandingRewards)
+	SetValidatorOutstandingRewards(ctx sdk.Context, valAddr sdk.ValAddress, rewards distributiontypes.ValidatorOutstandingRewards)
+	GetValidatorCurrentRewards(ctx sdk.Context, valAddr sdk.ValAddress) (rewards distributiontypes.ValidatorCurrentRewards)
+	SetValidatorCurrentRewards(ctx sdk.Context, valAddr sdk.ValAddress, rewards distributiontypes.ValidatorCurrentRewards)
+	GetValidatorAccumulatedCommission(ctx sdk.Context, valAddr sdk.ValAddress) (commission distributiontypes.ValidatorAccumulatedCommission)
+	SetValidatorAccumulatedCommission(ctx sdk.Context, valAddr sdk.ValAddress, commission distributiontypes.ValidatorAccumulatedCommission)
 }
 
 // BankKeeper defines the expected interface needed to retrieve account balances.
@@ -34,4 +41,8 @@ type MintKeeper interface {
 	GetParams(ctx sdk.Context) minttypes.Params
 	StakingTokenSupply(ctx sdk.Context) math.Int
 	BondedRatio(ctx sdk.Context) sdk.Dec
+}
+
+type StakingKeeper interface {
+	ValidatorByConsAddr(ctx sdk.Context, consAddr sdk.ConsAddress) stakingtypes.ValidatorI
 }

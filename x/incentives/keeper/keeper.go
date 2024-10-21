@@ -17,6 +17,7 @@ type Keeper struct {
 	DistributionKeeper types.DistributionKeeper
 	BankKeeper         types.BankKeeper
 	MintKeeper         types.MintKeeper
+	StakingKeeper      types.StakingKeeper
 }
 
 func NewKeeper(
@@ -26,6 +27,7 @@ func NewKeeper(
 	distributionKeeper types.DistributionKeeper,
 	bankKeeper types.BankKeeper,
 	mintKeeper types.MintKeeper,
+	stakingKeeper types.StakingKeeper,
 ) Keeper {
 	if !paramSpace.HasKeyTable() {
 		paramSpace = paramSpace.WithKeyTable(types.ParamKeyTable())
@@ -38,6 +40,7 @@ func NewKeeper(
 		DistributionKeeper: distributionKeeper,
 		BankKeeper:         bankKeeper,
 		MintKeeper:         mintKeeper,
+		StakingKeeper:      stakingKeeper,
 	}
 }
 
