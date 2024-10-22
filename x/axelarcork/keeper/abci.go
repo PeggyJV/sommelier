@@ -1,6 +1,7 @@
 package keeper
 
 import (
+	"encoding/hex"
 	"fmt"
 
 	"github.com/ethereum/go-ethereum/common"
@@ -33,6 +34,18 @@ func (k Keeper) EndBlocker(ctx sdk.Context) {
 				"chain id", config.Id)
 			for _, c := range winningScheduledVotes {
 				k.SetWinningAxelarCork(ctx, config.Id, uint64(ctx.BlockHeight()), c)
+
+				ctx.EventManager().EmitEvents(
+					sdk.Events{
+						sdk.NewEvent(
+							types.EventTypeAxelarCorkApproved,
+							sdk.NewAttribute(sdk.AttributeKeyModule, types.AttributeValueCategory),
+							sdk.NewAttribute(types.AttributeKeyCork, c.String()),
+							sdk.NewAttribute(types.AttributeKeyBlockHeight, fmt.Sprintf("%d", ctx.BlockHeight())),
+							sdk.NewAttribute(types.AttributeKeyCorkId, hex.EncodeToString(c.IDHash(uint64(ctx.BlockHeight())))),
+						),
+					},
+				)
 			}
 		}
 
