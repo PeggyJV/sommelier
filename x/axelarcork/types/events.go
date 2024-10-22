@@ -6,7 +6,7 @@ const (
 
 	AttributeKeyCork        = "cork"
 	AttributeKeyBlockHeight = "block_height"
-	AttributeKeyCorkId      = "cork_id"
+	AttributeKeyCorkID      = "cork_id"
 
 	AttributeValueCategory = ModuleName
 )

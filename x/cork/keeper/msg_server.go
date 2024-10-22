@@ -60,7 +60,7 @@ func (k Keeper) ScheduleCork(c context.Context, msg *types.MsgScheduleCorkReques
 				sdk.NewAttribute(corktypes.AttributeKeyValidator, validatorAddr.String()),
 				sdk.NewAttribute(corktypes.AttributeKeyCork, msg.Cork.String()),
 				sdk.NewAttribute(corktypes.AttributeKeyBlockHeight, fmt.Sprintf("%d", msg.BlockHeight)),
-				sdk.NewAttribute(corktypes.AttributeKeyCorkId, hex.EncodeToString(corkID)),
+				sdk.NewAttribute(corktypes.AttributeKeyCorkID, hex.EncodeToString(corkID)),
 				sdk.NewAttribute(gravitytypes.AttributeKeyContractCallInvalidationScope, fmt.Sprint(invalidationScope)),
 				sdk.NewAttribute(gravitytypes.AttributeKeyContractCallInvalidationNonce, fmt.Sprint(invalidationNonce)),
 			),

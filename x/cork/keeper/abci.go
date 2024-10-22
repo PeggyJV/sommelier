@@ -39,7 +39,7 @@ func (k Keeper) submitContractCall(ctx sdk.Context, cork v2types.Cork) {
 				sdk.NewAttribute(sdk.AttributeKeyModule, types.AttributeValueCategory),
 				sdk.NewAttribute(types.AttributeKeyCork, cork.String()),
 				sdk.NewAttribute(types.AttributeKeyBlockHeight, fmt.Sprintf("%d", ctx.BlockHeight())),
-				sdk.NewAttribute(types.AttributeKeyCorkId, hex.EncodeToString(cork.IDHash(uint64(ctx.BlockHeight())))),
+				sdk.NewAttribute(types.AttributeKeyCorkID, hex.EncodeToString(cork.IDHash(uint64(ctx.BlockHeight())))),
 				sdk.NewAttribute(gravitytypes.AttributeKeyContractCallInvalidationScope, fmt.Sprint(invalidationScope)),
 				sdk.NewAttribute(gravitytypes.AttributeKeyContractCallInvalidationNonce, fmt.Sprint(invalidationNonce)),
 			),

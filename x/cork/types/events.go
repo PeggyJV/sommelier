@@ -13,7 +13,7 @@ const (
 	AttributeKeyCommitPeriodStart = "commit_period_start"
 	AttributeKeyCommitPeriodEnd   = "commit_period_end"
 	AttributeKeyBlockHeight       = "block_height"
-	AttributeKeyCorkId            = "cork_id"
+	AttributeKeyCorkID            = "cork_id"
 
 	AttributeValueCategory = ModuleName
 )

@@ -42,7 +42,7 @@ func (k Keeper) EndBlocker(ctx sdk.Context) {
 							sdk.NewAttribute(sdk.AttributeKeyModule, types.AttributeValueCategory),
 							sdk.NewAttribute(types.AttributeKeyCork, c.String()),
 							sdk.NewAttribute(types.AttributeKeyBlockHeight, fmt.Sprintf("%d", ctx.BlockHeight())),
-							sdk.NewAttribute(types.AttributeKeyCorkId, hex.EncodeToString(c.IDHash(uint64(ctx.BlockHeight())))),
+							sdk.NewAttribute(types.AttributeKeyCorkID, hex.EncodeToString(c.IDHash(uint64(ctx.BlockHeight())))),
 						),
 					},
 				)
