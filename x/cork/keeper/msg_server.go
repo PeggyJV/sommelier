@@ -9,6 +9,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/ethereum/go-ethereum/common"
+	gravitytypes "github.com/peggyjv/gravity-bridge/module/v5/x/gravity/types"
 	corktypes "github.com/peggyjv/sommelier/v8/x/cork/types"
 	types "github.com/peggyjv/sommelier/v8/x/cork/types/v2"
 )
@@ -42,6 +43,10 @@ func (k Keeper) ScheduleCork(c context.Context, msg *types.MsgScheduleCorkReques
 	corkID := k.SetScheduledCork(ctx, msg.BlockHeight, validatorAddr, *msg.Cork)
 	k.IncrementValidatorCorkCount(ctx, validatorAddr)
 
+	invalidationScope := msg.Cork.InvalidationScope()
+	// If the vote succeeds, the current invalidation nonce will be incremented
+	invalidationNonce := k.GetLatestInvalidationNonce(ctx) + 1
+
 	ctx.EventManager().EmitEvents(
 		sdk.Events{
 			sdk.NewEvent(
@@ -50,10 +55,14 @@ func (k Keeper) ScheduleCork(c context.Context, msg *types.MsgScheduleCorkReques
 			),
 			sdk.NewEvent(
 				corktypes.EventTypeCork,
+				sdk.NewAttribute(sdk.AttributeKeyModule, corktypes.AttributeValueCategory),
 				sdk.NewAttribute(corktypes.AttributeKeySigner, signer.String()),
 				sdk.NewAttribute(corktypes.AttributeKeyValidator, validatorAddr.String()),
 				sdk.NewAttribute(corktypes.AttributeKeyCork, msg.Cork.String()),
 				sdk.NewAttribute(corktypes.AttributeKeyBlockHeight, fmt.Sprintf("%d", msg.BlockHeight)),
+				sdk.NewAttribute(corktypes.AttributeKeyCorkId, hex.EncodeToString(corkID)),
+				sdk.NewAttribute(gravitytypes.AttributeKeyContractCallInvalidationScope, fmt.Sprint(invalidationScope)),
+				sdk.NewAttribute(gravitytypes.AttributeKeyContractCallInvalidationNonce, fmt.Sprint(invalidationNonce)),
 			),
 		},
 	)
