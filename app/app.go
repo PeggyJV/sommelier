@@ -1023,7 +1023,6 @@ func (app *SommelierApp) setupUpgradeStoreLoaders() {
 	var storeUpgrades *storetypes.StoreUpgrades = nil
 
 	if upgradeInfo.Name == v8.UpgradeName {
-		// Is this correct?
 		storeUpgrades = &storetypes.StoreUpgrades{
 			Added: []string{addressestypes.ModuleName},
 		}
