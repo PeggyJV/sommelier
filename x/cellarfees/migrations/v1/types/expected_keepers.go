@@ -6,7 +6,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/auth/types"
 	minttypes "github.com/cosmos/cosmos-sdk/x/mint/types"
 	"github.com/ethereum/go-ethereum/common"
-	auctiontypes "github.com/peggyjv/sommelier/v7/x/auction/types"
+	auctiontypes "github.com/peggyjv/sommelier/v8/x/auction/types"
 )
 
 // AccountKeeper defines the expected account keeper.

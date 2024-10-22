@@ -6,11 +6,11 @@ import "gogoproto/gogo.proto";
 import "pubsub/v1/pubsub.proto";
 import "cosmos/query/v1/query.proto";
 
-option go_package = "github.com/peggyjv/sommelier/v7/x/pubsub/types";
+option go_package = "github.com/peggyjv/sommelier/v8/x/pubsub/types";
 
 service Msg {
     option (cosmos.msg.v1.service) = true;
-    
+
     rpc RemovePublisher (MsgRemovePublisherRequest) returns (MsgRemovePublisherResponse);
     rpc AddSubscriber (MsgAddSubscriberRequest) returns (MsgAddSubscriberResponse);
     rpc RemoveSubscriber (MsgRemoveSubscriberRequest) returns (MsgRemoveSubscriberResponse);

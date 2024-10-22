@@ -5,7 +5,7 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/ethereum/go-ethereum/common"
-	"github.com/peggyjv/sommelier/v7/x/addresses/types"
+	"github.com/peggyjv/sommelier/v8/x/addresses/types"
 )
 
 // InitGenesis initializes the module's state from a provided genesis

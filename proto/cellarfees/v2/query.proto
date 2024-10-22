@@ -7,7 +7,7 @@ import "cellarfees/v2/params.proto";
 import "cellarfees/v2/cellarfees.proto";
 import "cosmos/query/v1/query.proto";
 
-option go_package = "github.com/peggyjv/sommelier/v7/x/cellarfees/types/v2";
+option go_package = "github.com/peggyjv/sommelier/v8/x/cellarfees/types/v2";
 
 service Query {
   rpc QueryParams(QueryParamsRequest) returns (QueryParamsResponse) {
@@ -34,7 +34,7 @@ service Query {
     option (cosmos.query.v1.module_query_safe) = true;
     option (google.api.http).get = "/sommelier/cellarfees/v2/fee_token_balances";
   }
-    
+
   rpc QueryFeeTokenBalance(QueryFeeTokenBalanceRequest) returns (QueryFeeTokenBalanceResponse) {
     option (cosmos.query.v1.module_query_safe) = true;
     option (google.api.http).get = "/sommelier/cellarfees/v2/fee_token_balances/{denom}";
@@ -69,7 +69,7 @@ message QueryAPYResponse {
 message QueryFeeTokenBalancesRequest {}
 
 message QueryFeeTokenBalancesResponse {
-    repeated FeeTokenBalance balances = 1;    
+    repeated FeeTokenBalance balances = 1;
 }
 
 message QueryFeeTokenBalanceRequest {
@@ -77,5 +77,5 @@ message QueryFeeTokenBalanceRequest {
 }
 
 message QueryFeeTokenBalanceResponse {
-    FeeTokenBalance balance = 1;    
+    FeeTokenBalance balance = 1;
 }

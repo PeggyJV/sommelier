@@ -9,7 +9,7 @@ import "cosmos_proto/cosmos.proto";
 import "cosmos/query/v1/query.proto";
 import "cosmos/base/query/v1beta1/pagination.proto";
 
-option go_package = "github.com/peggyjv/sommelier/v7/x/auction/types";
+option go_package = "github.com/peggyjv/sommelier/v8/x/auction/types";
 
 service Query {
   rpc QueryParams(QueryParamsRequest) returns (QueryParamsResponse) {

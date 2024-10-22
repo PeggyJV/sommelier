@@ -6,9 +6,9 @@ import (
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
-	v1types "github.com/peggyjv/sommelier/v7/x/cellarfees/migrations/v1/types"
-	"github.com/peggyjv/sommelier/v7/x/cellarfees/types"
-	v2types "github.com/peggyjv/sommelier/v7/x/cellarfees/types/v2"
+	v1types "github.com/peggyjv/sommelier/v8/x/cellarfees/migrations/v1/types"
+	"github.com/peggyjv/sommelier/v8/x/cellarfees/types"
+	v2types "github.com/peggyjv/sommelier/v8/x/cellarfees/types/v2"
 )
 
 func MigrateStore(ctx sdk.Context, storeKey storetypes.StoreKey, cdc codec.BinaryCodec, paramSubspace paramstypes.Subspace) error {

@@ -6,7 +6,7 @@ import (
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
 	"gopkg.in/yaml.v2"
 
-	types "github.com/peggyjv/sommelier/v7/x/cellarfees/types"
+	types "github.com/peggyjv/sommelier/v8/x/cellarfees/types"
 )
 
 const (

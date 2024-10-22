@@ -7,7 +7,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	distributiontypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
-	"github.com/peggyjv/sommelier/v7/x/incentives/types"
+	"github.com/peggyjv/sommelier/v8/x/incentives/types"
 )
 
 var (

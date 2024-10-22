@@ -7,7 +7,7 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
-	"github.com/peggyjv/sommelier/v7/x/axelarcork/types"
+	"github.com/peggyjv/sommelier/v8/x/axelarcork/types"
 	"github.com/spf13/cobra"
 )
 

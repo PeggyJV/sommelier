@@ -4,7 +4,7 @@ import (
 	"sort"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	types "github.com/peggyjv/sommelier/v7/x/cellarfees/types"
+	types "github.com/peggyjv/sommelier/v8/x/cellarfees/types"
 )
 
 const DefaultParamspace = ModuleName

@@ -3,7 +3,7 @@ package pubsub.v1;
 
 import "gogoproto/gogo.proto";
 
-option go_package = "github.com/peggyjv/sommelier/v7/x/pubsub/types";
+option go_package = "github.com/peggyjv/sommelier/v8/x/pubsub/types";
 
 // represents a publisher, which are added via governance
 message Publisher {

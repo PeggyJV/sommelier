@@ -12,9 +12,9 @@ import (
 	"github.com/cosmos/cosmos-sdk/types/module"
 	sim "github.com/cosmos/cosmos-sdk/types/simulation"
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
-	"github.com/peggyjv/sommelier/v7/x/incentives/client/cli"
-	"github.com/peggyjv/sommelier/v7/x/incentives/keeper"
-	"github.com/peggyjv/sommelier/v7/x/incentives/types"
+	"github.com/peggyjv/sommelier/v8/x/incentives/client/cli"
+	"github.com/peggyjv/sommelier/v8/x/incentives/keeper"
+	"github.com/peggyjv/sommelier/v8/x/incentives/types"
 	"github.com/spf13/cobra"
 )
 

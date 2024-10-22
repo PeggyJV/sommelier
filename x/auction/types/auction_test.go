@@ -6,7 +6,7 @@ import (
 	errorsmod "cosmossdk.io/errors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-	"github.com/peggyjv/sommelier/v7/app/params"
+	"github.com/peggyjv/sommelier/v8/app/params"
 	"github.com/stretchr/testify/require"
 )
 

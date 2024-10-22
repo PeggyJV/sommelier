@@ -58,10 +58,10 @@ import (
 	"github.com/peggyjv/gravity-bridge/module/v5/x/gravity"
 	gravitykeeper "github.com/peggyjv/gravity-bridge/module/v5/x/gravity/keeper"
 	gravitytypes "github.com/peggyjv/gravity-bridge/module/v5/x/gravity/types"
-	corktypes "github.com/peggyjv/sommelier/v7/x/cork/types"
-	types "github.com/peggyjv/sommelier/v7/x/cork/types/v2"
-	pubsubkeeper "github.com/peggyjv/sommelier/v7/x/pubsub/keeper"
-	pubsubtypes "github.com/peggyjv/sommelier/v7/x/pubsub/types"
+	corktypes "github.com/peggyjv/sommelier/v8/x/cork/types"
+	types "github.com/peggyjv/sommelier/v8/x/cork/types/v2"
+	pubsubkeeper "github.com/peggyjv/sommelier/v8/x/pubsub/keeper"
+	pubsubtypes "github.com/peggyjv/sommelier/v8/x/pubsub/types"
 	"github.com/stretchr/testify/require"
 )
 

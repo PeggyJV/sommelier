@@ -6,8 +6,8 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
-	"github.com/peggyjv/sommelier/v7/app/params"
-	auctionTypes "github.com/peggyjv/sommelier/v7/x/auction/types"
+	"github.com/peggyjv/sommelier/v8/app/params"
+	auctionTypes "github.com/peggyjv/sommelier/v8/x/auction/types"
 )
 
 // Happy path test for query server functions

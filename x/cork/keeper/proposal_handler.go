@@ -6,9 +6,9 @@ import (
 	errorsmod "cosmossdk.io/errors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/ethereum/go-ethereum/common"
-	corktypes "github.com/peggyjv/sommelier/v7/x/cork/types"
-	types "github.com/peggyjv/sommelier/v7/x/cork/types/v2"
-	pubsubtypes "github.com/peggyjv/sommelier/v7/x/pubsub/types"
+	corktypes "github.com/peggyjv/sommelier/v8/x/cork/types"
+	types "github.com/peggyjv/sommelier/v8/x/cork/types/v2"
+	pubsubtypes "github.com/peggyjv/sommelier/v8/x/pubsub/types"
 )
 
 func NewEthereumSubscriptionID(address common.Address) string {

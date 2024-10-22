@@ -17,7 +17,7 @@ import (
 	clienttypes "github.com/cosmos/ibc-go/v7/modules/core/02-client/types"
 	channeltypes "github.com/cosmos/ibc-go/v7/modules/core/04-channel/types"
 	ibcexported "github.com/cosmos/ibc-go/v7/modules/core/exported"
-	pubsubtypes "github.com/peggyjv/sommelier/v7/x/pubsub/types"
+	pubsubtypes "github.com/peggyjv/sommelier/v8/x/pubsub/types"
 )
 
 // AccountKeeper defines the expected account keeper.

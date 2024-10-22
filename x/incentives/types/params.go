@@ -4,7 +4,7 @@ import (
 	errorsmod "cosmossdk.io/errors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
-	"github.com/peggyjv/sommelier/v7/app/params"
+	"github.com/peggyjv/sommelier/v8/app/params"
 )
 
 // Parameter keys

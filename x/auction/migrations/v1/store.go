@@ -3,7 +3,7 @@ package v1
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
-	"github.com/peggyjv/sommelier/v7/x/auction/types"
+	"github.com/peggyjv/sommelier/v8/x/auction/types"
 )
 
 func MigrateParamStore(ctx sdk.Context, subspace paramstypes.Subspace) error {

@@ -6,7 +6,7 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 
 	distributionTypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
-	"github.com/peggyjv/sommelier/v7/x/axelarcork/types"
+	"github.com/peggyjv/sommelier/v8/x/axelarcork/types"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )

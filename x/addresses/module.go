@@ -16,9 +16,9 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	sim "github.com/cosmos/cosmos-sdk/types/simulation"
-	"github.com/peggyjv/sommelier/v7/x/addresses/client/cli"
-	"github.com/peggyjv/sommelier/v7/x/addresses/keeper"
-	"github.com/peggyjv/sommelier/v7/x/addresses/types"
+	"github.com/peggyjv/sommelier/v8/x/addresses/client/cli"
+	"github.com/peggyjv/sommelier/v8/x/addresses/keeper"
+	"github.com/peggyjv/sommelier/v8/x/addresses/types"
 )
 
 var (

@@ -8,7 +8,7 @@ import (
 	abci "github.com/cometbft/cometbft/abci/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
-	"github.com/peggyjv/sommelier/v7/x/incentives/types"
+	"github.com/peggyjv/sommelier/v8/x/incentives/types"
 )
 
 type ValidatorInfo struct {

@@ -2,7 +2,7 @@ package keeper
 
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/peggyjv/sommelier/v7/x/axelarcork/types"
+	"github.com/peggyjv/sommelier/v8/x/axelarcork/types"
 )
 
 func (k Keeper) GetChainConfigurationByID(ctx sdk.Context, chainID uint64) (types.ChainConfiguration, bool) {

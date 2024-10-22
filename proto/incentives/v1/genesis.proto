@@ -4,7 +4,7 @@ package incentives.v1;
 import "gogoproto/gogo.proto";
 import "cosmos/base/v1beta1/coin.proto";
 
-option go_package = "github.com/peggyjv/sommelier/v7/x/incentives/types";
+option go_package = "github.com/peggyjv/sommelier/v8/x/incentives/types";
 
 message GenesisState {
     Params params = 1 [ (gogoproto.nullable) = false ];

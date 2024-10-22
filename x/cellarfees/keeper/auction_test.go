@@ -3,9 +3,9 @@ package keeper
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/golang/mock/gomock"
-	auctionTypes "github.com/peggyjv/sommelier/v7/x/auction/types"
-	cellarfeestypes "github.com/peggyjv/sommelier/v7/x/cellarfees/types"
-	cellarfeestypesv2 "github.com/peggyjv/sommelier/v7/x/cellarfees/types/v2"
+	auctionTypes "github.com/peggyjv/sommelier/v8/x/auction/types"
+	cellarfeestypes "github.com/peggyjv/sommelier/v8/x/cellarfees/types"
+	cellarfeestypesv2 "github.com/peggyjv/sommelier/v8/x/cellarfees/types/v2"
 )
 
 const feeDenom = "testdenom"

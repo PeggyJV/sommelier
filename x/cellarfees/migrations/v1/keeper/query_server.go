@@ -4,7 +4,7 @@ import (
 	"context"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/peggyjv/sommelier/v7/x/cellarfees/migrations/v1/types"
+	"github.com/peggyjv/sommelier/v8/x/cellarfees/migrations/v1/types"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )

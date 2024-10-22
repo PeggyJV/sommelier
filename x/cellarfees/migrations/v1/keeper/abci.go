@@ -3,7 +3,7 @@ package keeper
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
-	"github.com/peggyjv/sommelier/v7/app/params"
+	"github.com/peggyjv/sommelier/v8/app/params"
 )
 
 // BeginBlocker emits rewards each block they are available by sending them to the distribution module's fee collector

@@ -16,10 +16,10 @@ import (
 	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
 	porttypes "github.com/cosmos/ibc-go/v7/modules/core/05-port/types"
 	"github.com/golang/mock/gomock"
-	"github.com/peggyjv/sommelier/v7/x/axelarcork"
-	"github.com/peggyjv/sommelier/v7/x/axelarcork/keeper"
-	"github.com/peggyjv/sommelier/v7/x/axelarcork/tests/mocks"
-	"github.com/peggyjv/sommelier/v7/x/axelarcork/types"
+	"github.com/peggyjv/sommelier/v8/x/axelarcork"
+	"github.com/peggyjv/sommelier/v8/x/axelarcork/keeper"
+	"github.com/peggyjv/sommelier/v8/x/axelarcork/tests/mocks"
+	"github.com/peggyjv/sommelier/v8/x/axelarcork/types"
 	"github.com/stretchr/testify/require"
 )
 

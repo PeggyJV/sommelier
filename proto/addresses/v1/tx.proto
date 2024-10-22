@@ -3,7 +3,7 @@ package addresses.v1;
 
 import "cosmos/msg/v1/msg.proto";
 
-option go_package = "github.com/peggyjv/sommelier/v7/x/addresses/types";
+option go_package = "github.com/peggyjv/sommelier/v8/x/addresses/types";
 
 service Msg {
     option (cosmos.msg.v1.service) = true;

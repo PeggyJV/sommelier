@@ -2,7 +2,7 @@ package keeper
 
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	v1 "github.com/peggyjv/sommelier/v7/x/auction/migrations/v1"
+	v1 "github.com/peggyjv/sommelier/v8/x/auction/migrations/v1"
 )
 
 // Migrator is a struct for handling in-place store migrations.
