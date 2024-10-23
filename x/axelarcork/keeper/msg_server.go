@@ -131,6 +131,15 @@ func (k Keeper) RelayCork(c context.Context, msg *types.MsgRelayAxelarCorkReques
 		return nil, err
 	}
 
+	ctx.EventManager().EmitEvents(
+		sdk.Events{
+			sdk.NewEvent(types.EventTypeAxelarCorkRelayCalled,
+				sdk.NewAttribute(types.AttributeKeyCork, cork.String()),
+				sdk.NewAttribute(types.AttributeKeyDeadline, fmt.Sprintf("%d", cork.Deadline)),
+			),
+		},
+	)
+
 	return &types.MsgRelayAxelarCorkResponse{}, nil
 }
 
