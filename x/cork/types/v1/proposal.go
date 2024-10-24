@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
-	corktypes "github.com/peggyjv/sommelier/v7/x/cork/types"
+	corktypes "github.com/peggyjv/sommelier/v8/x/cork/types"
 )
 
 const (

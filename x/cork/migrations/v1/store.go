@@ -9,9 +9,9 @@ import (
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
-	corktypes "github.com/peggyjv/sommelier/v7/x/cork/types"
-	v1types "github.com/peggyjv/sommelier/v7/x/cork/types/v1"
-	types "github.com/peggyjv/sommelier/v7/x/cork/types/v2"
+	corktypes "github.com/peggyjv/sommelier/v8/x/cork/types"
+	v1types "github.com/peggyjv/sommelier/v8/x/cork/types/v1"
+	types "github.com/peggyjv/sommelier/v8/x/cork/types/v2"
 )
 
 func MigrateStore(ctx sdk.Context, storeKey storetypes.StoreKey, cdc codec.BinaryCodec) error {

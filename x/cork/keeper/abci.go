@@ -1,33 +1,49 @@
 package keeper
 
 import (
+	"encoding/hex"
 	"fmt"
 
 	"github.com/ethereum/go-ethereum/common"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	gravitytypes "github.com/peggyjv/gravity-bridge/module/v4/x/gravity/types"
-	types "github.com/peggyjv/sommelier/v7/x/cork/types/v2"
+	gravitytypes "github.com/peggyjv/gravity-bridge/module/v5/x/gravity/types"
+	"github.com/peggyjv/sommelier/v8/x/cork/types"
+	v2types "github.com/peggyjv/sommelier/v8/x/cork/types/v2"
 )
 
 // BeginBlocker is called at the beginning of every block
 func (k Keeper) BeginBlocker(ctx sdk.Context) {}
 
-func (k Keeper) submitContractCall(ctx sdk.Context, cork types.Cork) {
+func (k Keeper) submitContractCall(ctx sdk.Context, cork v2types.Cork) {
 	k.Logger(ctx).Info("setting outgoing tx for contract call",
 		"address", cork.TargetContractAddress,
 		"encoded contract call", cork.EncodedContractCall)
 	// increment invalidation nonce
 	invalidationNonce := k.IncrementInvalidationNonce(ctx)
+	invalidationScope := cork.InvalidationScope()
 	// submit contract call to bridge
 	k.gravityKeeper.CreateContractCallTx(
 		ctx,
 		invalidationNonce,
-		cork.InvalidationScope(),
+		invalidationScope,
 		common.HexToAddress(cork.TargetContractAddress),
 		cork.EncodedContractCall,
 		[]gravitytypes.ERC20Token{}, // tokens are always zero
 		[]gravitytypes.ERC20Token{},
+	)
+
+	ctx.EventManager().EmitEvents(
+		sdk.Events{
+			sdk.NewEvent(types.EventTypeSubmittedContractCall,
+				sdk.NewAttribute(sdk.AttributeKeyModule, types.AttributeValueCategory),
+				sdk.NewAttribute(types.AttributeKeyCork, cork.String()),
+				sdk.NewAttribute(types.AttributeKeyBlockHeight, fmt.Sprintf("%d", ctx.BlockHeight())),
+				sdk.NewAttribute(types.AttributeKeyCorkID, hex.EncodeToString(cork.IDHash(uint64(ctx.BlockHeight())))),
+				sdk.NewAttribute(gravitytypes.AttributeKeyContractCallInvalidationScope, fmt.Sprint(invalidationScope)),
+				sdk.NewAttribute(gravitytypes.AttributeKeyContractCallInvalidationNonce, fmt.Sprint(invalidationNonce)),
+			),
+		},
 	)
 }
 

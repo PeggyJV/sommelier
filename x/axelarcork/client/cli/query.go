@@ -7,7 +7,7 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
-	"github.com/peggyjv/sommelier/v7/x/axelarcork/types"
+	"github.com/peggyjv/sommelier/v8/x/axelarcork/types"
 	"github.com/spf13/cobra"
 )
 
@@ -297,7 +297,7 @@ func queryScheduledCorksByID() *cobra.Command {
 
 func queryCorkResult() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:     "cork-result [chain-id] [cork-id]",
+		Use:     "cork-result [cork-id] [chain-id]",
 		Aliases: []string{"cr"},
 		Args:    cobra.ExactArgs(2),
 		Short:   "query cork result from the chain",

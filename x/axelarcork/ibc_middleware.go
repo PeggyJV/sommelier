@@ -7,7 +7,7 @@ import (
 	"github.com/cosmos/ibc-go/v7/modules/core/04-channel/types"
 	porttypes "github.com/cosmos/ibc-go/v7/modules/core/05-port/types"
 	"github.com/cosmos/ibc-go/v7/modules/core/exported"
-	"github.com/peggyjv/sommelier/v7/x/axelarcork/keeper"
+	"github.com/peggyjv/sommelier/v8/x/axelarcork/keeper"
 )
 
 var _ porttypes.Middleware = &IBCMiddleware{}

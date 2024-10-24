@@ -9,8 +9,8 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 	"github.com/ethereum/go-ethereum/common"
-	gravitytypes "github.com/peggyjv/gravity-bridge/module/v4/x/gravity/types"
-	pubsubtypes "github.com/peggyjv/sommelier/v7/x/pubsub/types"
+	gravitytypes "github.com/peggyjv/gravity-bridge/module/v5/x/gravity/types"
+	pubsubtypes "github.com/peggyjv/sommelier/v8/x/pubsub/types"
 )
 
 // StakingKeeper defines the expected staking keeper methods

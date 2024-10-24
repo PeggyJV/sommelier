@@ -3,7 +3,7 @@ package keeper
 import (
 	"testing"
 
-	"github.com/peggyjv/sommelier/v7/x/pubsub/types"
+	"github.com/peggyjv/sommelier/v8/x/pubsub/types"
 	"github.com/stretchr/testify/require"
 )
 

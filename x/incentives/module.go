@@ -3,6 +3,7 @@ package incentives
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 
 	abci "github.com/cometbft/cometbft/abci/types"
 	"github.com/cosmos/cosmos-sdk/client"
@@ -12,9 +13,9 @@ import (
 	"github.com/cosmos/cosmos-sdk/types/module"
 	sim "github.com/cosmos/cosmos-sdk/types/simulation"
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
-	"github.com/peggyjv/sommelier/v7/x/incentives/client/cli"
-	"github.com/peggyjv/sommelier/v7/x/incentives/keeper"
-	"github.com/peggyjv/sommelier/v7/x/incentives/types"
+	"github.com/peggyjv/sommelier/v8/x/incentives/client/cli"
+	"github.com/peggyjv/sommelier/v8/x/incentives/keeper"
+	"github.com/peggyjv/sommelier/v8/x/incentives/types"
 	"github.com/spf13/cobra"
 )
 
@@ -106,7 +107,7 @@ func (AppModule) QuerierRoute() string { return types.QuerierRoute }
 
 // ConsensusVersion implements AppModule/ConsensusVersion.
 func (AppModule) ConsensusVersion() uint64 {
-	return 1
+	return 2
 }
 
 func (am AppModule) WeightedOperations(simState module.SimulationState) []sim.WeightedOperation {
@@ -116,6 +117,11 @@ func (am AppModule) WeightedOperations(simState module.SimulationState) []sim.We
 // RegisterServices registers module services.
 func (am AppModule) RegisterServices(cfg module.Configurator) {
 	types.RegisterQueryServer(cfg.QueryServer(), am.keeper)
+
+	migrator := keeper.NewMigrator(am.keeper)
+	if err := cfg.RegisterMigration(types.ModuleName, 1, migrator.Migrate1to2); err != nil {
+		panic(fmt.Sprintf("failed to migrate x/incentives from version 1 to 2: %v", err))
+	}
 }
 
 // InitGenesis performs genesis initialization for the incentives module.
@@ -135,8 +141,8 @@ func (am AppModule) ExportGenesis(ctx sdk.Context, cdc codec.JSONCodec) json.Raw
 }
 
 // BeginBlock returns the begin blocker for the incentives module.
-func (am AppModule) BeginBlock(ctx sdk.Context, _ abci.RequestBeginBlock) {
-	am.keeper.BeginBlocker(ctx)
+func (am AppModule) BeginBlock(ctx sdk.Context, req abci.RequestBeginBlock) {
+	am.keeper.BeginBlocker(ctx, req)
 }
 
 // EndBlock returns the end blocker for the incentives module.

@@ -11,9 +11,9 @@ import (
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	disttypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
 	govtypesv1beta1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
-	auctiontypes "github.com/peggyjv/sommelier/v7/x/auction/types"
-	cellarfeestypes "github.com/peggyjv/sommelier/v7/x/cellarfees/types"
-	cellarfeestypesv2 "github.com/peggyjv/sommelier/v7/x/cellarfees/types/v2"
+	auctiontypes "github.com/peggyjv/sommelier/v8/x/auction/types"
+	cellarfeestypes "github.com/peggyjv/sommelier/v8/x/cellarfees/types"
+	cellarfeestypesv2 "github.com/peggyjv/sommelier/v8/x/cellarfees/types/v2"
 )
 
 func (s *IntegrationTestSuite) TestCellarFees() {

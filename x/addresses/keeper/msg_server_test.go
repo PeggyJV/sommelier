@@ -3,7 +3,7 @@ package keeper
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/ethereum/go-ethereum/common"
-	"github.com/peggyjv/sommelier/v7/x/addresses/types"
+	"github.com/peggyjv/sommelier/v8/x/addresses/types"
 )
 
 func (suite *KeeperTestSuite) TestHappyPathsForMsgServer() {

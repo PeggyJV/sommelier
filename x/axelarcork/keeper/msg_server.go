@@ -16,7 +16,7 @@ import (
 	clienttypes "github.com/cosmos/ibc-go/v7/modules/core/02-client/types"
 	"github.com/ethereum/go-ethereum/common"
 
-	"github.com/peggyjv/sommelier/v7/x/axelarcork/types"
+	"github.com/peggyjv/sommelier/v8/x/axelarcork/types"
 )
 
 var _ types.MsgServer = Keeper{}
@@ -130,6 +130,15 @@ func (k Keeper) RelayCork(c context.Context, msg *types.MsgRelayAxelarCorkReques
 	if err != nil {
 		return nil, err
 	}
+
+	ctx.EventManager().EmitEvents(
+		sdk.Events{
+			sdk.NewEvent(types.EventTypeAxelarCorkRelayCalled,
+				sdk.NewAttribute(types.AttributeKeyCork, cork.String()),
+				sdk.NewAttribute(types.AttributeKeyDeadline, fmt.Sprintf("%d", cork.Deadline)),
+			),
+		},
+	)
 
 	return &types.MsgRelayAxelarCorkResponse{}, nil
 }

@@ -11,8 +11,8 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
 	"github.com/ethereum/go-ethereum/common"
-	corktypes "github.com/peggyjv/sommelier/v7/x/cork/types"
-	types "github.com/peggyjv/sommelier/v7/x/cork/types/v2"
+	corktypes "github.com/peggyjv/sommelier/v8/x/cork/types"
+	types "github.com/peggyjv/sommelier/v8/x/cork/types/v2"
 )
 
 const corkVoteThresholdStr = "0.67"

@@ -12,6 +12,8 @@ import (
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	"github.com/cosmos/cosmos-sdk/x/genutil"
 	genutiltypes "github.com/cosmos/cosmos-sdk/x/genutil/types"
+	"github.com/peggyjv/sommelier/v8/app/params"
+	incentivestypes "github.com/peggyjv/sommelier/v8/x/incentives/types"
 )
 
 func getGenDoc(path string) (*tmtypes.GenesisDoc, error) {
@@ -107,4 +109,18 @@ func addGenesisAccount(path, moniker, amountStr string, accAddr sdk.AccAddress) 
 
 	genDoc.AppState = appStateJSON
 	return genutil.ExportGenesisFile(genDoc, genFile)
+}
+
+func (s *IntegrationTestSuite) setIncentivesGenState(appGenState map[string]json.RawMessage) error {
+	incentivesGenState := incentivestypes.DefaultGenesisState()
+	err := cdc.UnmarshalJSON(appGenState[incentivestypes.ModuleName], &incentivesGenState)
+	if err != nil {
+		return fmt.Errorf("failed to unmarshal incentives genesis state: %w", err)
+	}
+
+	incentivesGenState.Params.ValidatorIncentivesCutoffHeight = 0
+	incentivesGenState.Params.ValidatorMaxDistributionPerBlock = sdk.NewCoin(params.BaseCoinUnit, sdk.NewInt(0))
+
+	appGenState[incentivestypes.ModuleName] = cdc.MustMarshalJSON(&incentivesGenState)
+	return nil
 }

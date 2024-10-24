@@ -13,8 +13,8 @@ import (
 
 	"github.com/golang/mock/gomock"
 
-	"github.com/peggyjv/sommelier/v7/x/cork/mock"
-	"github.com/peggyjv/sommelier/v7/x/cork/types"
+	"github.com/peggyjv/sommelier/v8/x/cork/mock"
+	"github.com/peggyjv/sommelier/v8/x/cork/types"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 

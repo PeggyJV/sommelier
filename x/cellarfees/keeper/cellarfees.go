@@ -4,9 +4,9 @@ import (
 	"cosmossdk.io/math"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
-	"github.com/peggyjv/sommelier/v7/app/params"
-	auctiontypes "github.com/peggyjv/sommelier/v7/x/auction/types"
-	"github.com/peggyjv/sommelier/v7/x/cellarfees/types"
+	"github.com/peggyjv/sommelier/v8/app/params"
+	auctiontypes "github.com/peggyjv/sommelier/v8/x/auction/types"
+	"github.com/peggyjv/sommelier/v8/x/cellarfees/types"
 )
 
 // Getter for module account that holds the fee pool funds

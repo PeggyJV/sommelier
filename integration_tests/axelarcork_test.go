@@ -16,8 +16,8 @@ import (
 	govtypesv1beta1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/golang/protobuf/proto" //nolint:staticcheck
-	"github.com/peggyjv/sommelier/v7/x/axelarcork/types"
-	pubsubtypes "github.com/peggyjv/sommelier/v7/x/pubsub/types"
+	"github.com/peggyjv/sommelier/v8/x/axelarcork/types"
+	pubsubtypes "github.com/peggyjv/sommelier/v8/x/pubsub/types"
 )
 
 func (s *IntegrationTestSuite) TestAxelarCork() {

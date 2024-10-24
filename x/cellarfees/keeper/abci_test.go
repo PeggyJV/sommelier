@@ -3,10 +3,10 @@ package keeper
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/golang/mock/gomock"
-	appParams "github.com/peggyjv/sommelier/v7/app/params"
-	auctiontypes "github.com/peggyjv/sommelier/v7/x/auction/types"
-	cellarfeestypes "github.com/peggyjv/sommelier/v7/x/cellarfees/types"
-	cellarfeestypesv2 "github.com/peggyjv/sommelier/v7/x/cellarfees/types/v2"
+	appParams "github.com/peggyjv/sommelier/v8/app/params"
+	auctiontypes "github.com/peggyjv/sommelier/v8/x/auction/types"
+	cellarfeestypes "github.com/peggyjv/sommelier/v8/x/cellarfees/types"
+	cellarfeestypesv2 "github.com/peggyjv/sommelier/v8/x/cellarfees/types/v2"
 )
 
 func (suite *KeeperTestSuite) TestBeginBlockerZeroRewardsBalance() {

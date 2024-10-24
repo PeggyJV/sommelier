@@ -3,6 +3,7 @@ package auction
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 
 	abci "github.com/cometbft/cometbft/abci/types"
 	"github.com/cosmos/cosmos-sdk/client"
@@ -12,9 +13,9 @@ import (
 	"github.com/cosmos/cosmos-sdk/types/module"
 	sim "github.com/cosmos/cosmos-sdk/types/simulation"
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
-	"github.com/peggyjv/sommelier/v7/x/auction/client/cli"
-	"github.com/peggyjv/sommelier/v7/x/auction/keeper"
-	"github.com/peggyjv/sommelier/v7/x/auction/types"
+	"github.com/peggyjv/sommelier/v8/x/auction/client/cli"
+	"github.com/peggyjv/sommelier/v8/x/auction/keeper"
+	"github.com/peggyjv/sommelier/v8/x/auction/types"
 	"github.com/spf13/cobra"
 )
 
@@ -103,7 +104,7 @@ func (AppModule) QuerierRoute() string { return types.QuerierRoute }
 
 // ConsensusVersion implements AppModule/ConsensusVersion.
 func (AppModule) ConsensusVersion() uint64 {
-	return 1
+	return 2
 }
 
 func (am AppModule) WeightedOperations(simState module.SimulationState) []sim.WeightedOperation {
@@ -114,6 +115,12 @@ func (am AppModule) WeightedOperations(simState module.SimulationState) []sim.We
 func (am AppModule) RegisterServices(cfg module.Configurator) {
 	types.RegisterMsgServer(cfg.MsgServer(), am.keeper)
 	types.RegisterQueryServer(cfg.QueryServer(), am.keeper)
+
+	// Register the migration handler for version 1 to 2
+	migrator := keeper.NewMigrator(am.keeper)
+	if err := cfg.RegisterMigration(types.ModuleName, 1, migrator.Migrate1to2); err != nil {
+		panic(fmt.Sprintf("failed to migrate x/auction from version 1 to 2: %v", err))
+	}
 }
 
 // InitGenesis performs genesis initialization for the auction module.

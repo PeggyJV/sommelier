@@ -1,6 +1,6 @@
 package v2
 
-import types "github.com/peggyjv/sommelier/v7/x/cork/types"
+import types "github.com/peggyjv/sommelier/v8/x/cork/types"
 
 const DefaultParamspace = types.ModuleName
 

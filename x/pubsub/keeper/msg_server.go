@@ -8,7 +8,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
-	"github.com/peggyjv/sommelier/v7/x/pubsub/types"
+	"github.com/peggyjv/sommelier/v8/x/pubsub/types"
 )
 
 var _ types.MsgServer = Keeper{}

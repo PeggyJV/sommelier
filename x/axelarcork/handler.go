@@ -6,8 +6,8 @@ import (
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	govtypesv1beta1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
 
-	"github.com/peggyjv/sommelier/v7/x/axelarcork/keeper"
-	"github.com/peggyjv/sommelier/v7/x/axelarcork/types"
+	"github.com/peggyjv/sommelier/v8/x/axelarcork/keeper"
+	"github.com/peggyjv/sommelier/v8/x/axelarcork/types"
 )
 
 // NewHandler returns a handler for "axelarcork" type messages.

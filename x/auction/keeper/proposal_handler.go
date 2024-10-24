@@ -3,7 +3,7 @@ package keeper
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	"github.com/peggyjv/sommelier/v7/x/auction/types"
+	"github.com/peggyjv/sommelier/v8/x/auction/types"
 )
 
 // HandleSetTokenPricesProposal is a handler for executing a passed community token price update proposal

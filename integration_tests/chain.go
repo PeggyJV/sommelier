@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"os"
 
-	corktypes "github.com/peggyjv/sommelier/v7/x/cork/types/v2"
+	corktypes "github.com/peggyjv/sommelier/v8/x/cork/types/v2"
 
 	tmrand "github.com/cometbft/cometbft/libs/rand"
 	rpchttp "github.com/cometbft/cometbft/rpc/client/http"
@@ -42,10 +42,10 @@ import (
 	upgradeclient "github.com/cosmos/cosmos-sdk/x/upgrade/client"
 	ibctransfer "github.com/cosmos/ibc-go/v7/modules/apps/transfer"
 	ibc "github.com/cosmos/ibc-go/v7/modules/core"
-	gravityclient "github.com/peggyjv/gravity-bridge/module/v4/x/gravity/client"
-	gravitytypes "github.com/peggyjv/gravity-bridge/module/v4/x/gravity/types"
-	"github.com/peggyjv/sommelier/v7/app"
-	"github.com/peggyjv/sommelier/v7/app/params"
+	gravityclient "github.com/peggyjv/gravity-bridge/module/v5/x/gravity/client"
+	gravitytypes "github.com/peggyjv/gravity-bridge/module/v5/x/gravity/types"
+	"github.com/peggyjv/sommelier/v8/app"
+	"github.com/peggyjv/sommelier/v8/app/params"
 )
 
 const (
