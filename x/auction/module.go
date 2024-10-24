@@ -119,7 +119,7 @@ func (am AppModule) RegisterServices(cfg module.Configurator) {
 	// Register the migration handler for version 1 to 2
 	migrator := keeper.NewMigrator(am.keeper)
 	if err := cfg.RegisterMigration(types.ModuleName, 1, migrator.Migrate1to2); err != nil {
-		panic(fmt.Errorf("failed to register migration handler: %w", err))
+		panic(fmt.Sprintf("failed to migrate x/auction from version 1 to 2: %v", err))
 	}
 }
 
