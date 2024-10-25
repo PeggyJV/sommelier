@@ -76,9 +76,8 @@ func ExportGenesis(ctx sdk.Context, k Keeper) types.GenesisState {
 
 	ps := k.GetParamSet(ctx)
 	gs.Params = &ps
-	gs.ScheduledCorks.ScheduledCorks = make([]*types.ScheduledAxelarCork, 0)
-	gs.CorkResults.CorkResults = make([]*types.AxelarCorkResult, 0)
-
+	gs.ScheduledCorks = &types.ScheduledAxelarCorks{ScheduledCorks: make([]*types.ScheduledAxelarCork, 0)}
+	gs.CorkResults = &types.AxelarCorkResults{CorkResults: make([]*types.AxelarCorkResult, 0)}
 	k.IterateChainConfigurations(ctx, func(config types.ChainConfiguration) (stop bool) {
 		gs.ChainConfigurations.Configurations = append(gs.ChainConfigurations.Configurations, &config)
 
