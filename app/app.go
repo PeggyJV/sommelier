@@ -122,6 +122,7 @@ import (
 	"github.com/peggyjv/sommelier/v8/x/cellarfees"
 	cellarfeeskeeper "github.com/peggyjv/sommelier/v8/x/cellarfees/keeper"
 	cellarfeeskeeperv1 "github.com/peggyjv/sommelier/v8/x/cellarfees/migrations/v1/keeper"
+	cellarfeestypesv1 "github.com/peggyjv/sommelier/v8/x/cellarfees/migrations/v1/types"
 	cellarfeestypes "github.com/peggyjv/sommelier/v8/x/cellarfees/types"
 	"github.com/peggyjv/sommelier/v8/x/cork"
 	corkclient "github.com/peggyjv/sommelier/v8/x/cork/client"
@@ -1074,10 +1075,7 @@ func (app *SommelierApp) setupUpgradeHandlers() {
 	}
 
 	baseAppLegacySS := app.ParamsKeeper.Subspace(baseapp.Paramspace).WithKeyTable(paramstypes.ConsensusParamsKeyTable())
-	cellarfeesLegacySS, found := app.ParamsKeeper.GetSubspace(cellarfeestypes.ModuleName)
-	if !found {
-		panic("cellarfees legacy subspace not found")
-	}
+	cellarfeesLegacySS := paramstypes.NewSubspace(app.appCodec, app.legacyAmino, app.GetKey(cellarfeestypes.StoreKey), app.tkeys[paramstypes.TStoreKey], cellarfeestypes.ModuleName).WithKeyTable(cellarfeestypesv1.ParamKeyTable())
 
 	cellarfeesLegacyKeeper := cellarfeeskeeperv1.NewKeeper(
 		app.appCodec,

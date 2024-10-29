@@ -41,7 +41,6 @@ func NewKeeper(
 	auctionKeeper v1types.AuctionKeeper,
 ) Keeper {
 	if !paramSpace.HasKeyTable() {
-		panic("WE'RE MAKING DA KEY TABLE MAYN")
 		paramSpace = paramSpace.WithKeyTable(v1types.ParamKeyTable())
 	}
 
