@@ -66,6 +66,7 @@ import (
 	govclient "github.com/cosmos/cosmos-sdk/x/gov/client"
 	govkeeper "github.com/cosmos/cosmos-sdk/x/gov/keeper"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
+	govtypesv1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1"
 	govtypesv1beta1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
 	"github.com/cosmos/cosmos-sdk/x/mint"
 	mintkeeper "github.com/cosmos/cosmos-sdk/x/mint/keeper"
@@ -1038,6 +1039,37 @@ func (app *SommelierApp) setupUpgradeStoreLoaders() {
 }
 
 func (app *SommelierApp) setupUpgradeHandlers() {
+	// Set param key table for params module migration
+	for _, subspace := range app.ParamsKeeper.GetSubspaces() {
+		subspace := subspace
+		found := true
+		var keyTable paramstypes.KeyTable
+		switch subspace.Name() {
+		case authtypes.ModuleName:
+			keyTable = authtypes.ParamKeyTable() //nolint: staticcheck // deprecated but required for upgrade
+		case banktypes.ModuleName:
+			keyTable = banktypes.ParamKeyTable() //nolint: staticcheck // deprecated but required for upgrade
+		case stakingtypes.ModuleName:
+			keyTable = stakingtypes.ParamKeyTable()
+		case minttypes.ModuleName:
+			keyTable = minttypes.ParamKeyTable() //nolint: staticcheck // deprecated but required for upgrade
+		case distrtypes.ModuleName:
+			keyTable = distrtypes.ParamKeyTable() //nolint: staticcheck // deprecated but required for upgrade
+		case slashingtypes.ModuleName:
+			keyTable = slashingtypes.ParamKeyTable() //nolint: staticcheck // deprecated but required for upgrade
+		case govtypes.ModuleName:
+			keyTable = govtypesv1.ParamKeyTable() //nolint: staticcheck // deprecated but required for upgrade
+		case crisistypes.ModuleName:
+			keyTable = crisistypes.ParamKeyTable() //nolint: staticcheck // deprecated but required for upgrade
+		default:
+			// subspace not handled
+			found = false
+		}
+		if found && !subspace.HasKeyTable() {
+			subspace.WithKeyTable(keyTable)
+		}
+	}
+
 	baseAppLegacySS := app.ParamsKeeper.Subspace(baseapp.Paramspace).WithKeyTable(paramstypes.ConsensusParamsKeyTable())
 
 	// TODO: Add v8 upgrade handle
@@ -1048,6 +1080,7 @@ func (app *SommelierApp) setupUpgradeHandlers() {
 			app.configurator,
 			&baseAppLegacySS,
 			&app.ConsensusParamsKeeper,
+			app.IBCKeeper,
 		),
 	)
 }
