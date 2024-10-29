@@ -12,6 +12,7 @@ import (
 	ibckeeper "github.com/cosmos/ibc-go/v7/modules/core/keeper"
 	ibctmmigrations "github.com/cosmos/ibc-go/v7/modules/light-clients/07-tendermint/migrations"
 	cellarfeeskeeper "github.com/peggyjv/sommelier/v8/x/cellarfees/keeper"
+	cellarfeestypesv1 "github.com/peggyjv/sommelier/v8/x/cellarfees/migrations/v1/types"
 	cellarfeestypesv2 "github.com/peggyjv/sommelier/v8/x/cellarfees/types/v2"
 )
 
@@ -40,9 +41,14 @@ func CreateUpgradeHandler(
 		baseapp.MigrateParams(ctx, baseAppLegacySS, consensusParamsKeeper)
 
 		// cellarfees params migration
+		oldParams := &cellarfeestypesv1.Params{}
 		newParams := &cellarfeestypesv2.Params{}
-		cellarfeesLegacySS.GetParamSet(ctx, newParams)
+		cellarfeesLegacySS.GetParamSet(ctx, oldParams)
 		newParams.AuctionThresholdUsdValue = cellarfeestypesv2.DefaultParams().AuctionThresholdUsdValue
+		newParams.AuctionInterval = oldParams.AuctionInterval
+		newParams.InitialPriceDecreaseRate = oldParams.InitialPriceDecreaseRate
+		newParams.PriceDecreaseBlockInterval = oldParams.PriceDecreaseBlockInterval
+		newParams.RewardEmissionPeriod = oldParams.RewardEmissionPeriod
 
 		err := newParams.ValidateBasic()
 		if err != nil {
@@ -50,12 +56,6 @@ func CreateUpgradeHandler(
 		}
 
 		cellarfeesKeeper.SetParams(ctx, *newParams)
-
-		// Log params
-		changedParams := cellarfeesKeeper.GetParams(ctx)
-		ctx.Logger().Info("v8 upgrade: cellarfees params", "params", changedParams)
-
-		panic("stopping here for testing")
 
 		// explicitly update the IBC 02-client params, adding the localhost client type
 		params := ibcKeeper.ClientKeeper.GetParams(ctx)
