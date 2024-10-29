@@ -1071,7 +1071,10 @@ func (app *SommelierApp) setupUpgradeHandlers() {
 	}
 
 	baseAppLegacySS := app.ParamsKeeper.Subspace(baseapp.Paramspace).WithKeyTable(paramstypes.ConsensusParamsKeyTable())
-	cellarfeesLegacySS := app.ParamsKeeper.Subspace(cellarfeestypes.ModuleName)
+	cellarfeesLegacySS, found := app.ParamsKeeper.GetSubspace(cellarfeestypes.ModuleName)
+	if !found {
+		panic("cellarfees legacy subspace not found")
+	}
 
 	// TODO: Add v8 upgrade handle
 	app.UpgradeKeeper.SetUpgradeHandler(
