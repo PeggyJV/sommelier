@@ -121,7 +121,6 @@ import (
 	axelarcorktypes "github.com/peggyjv/sommelier/v8/x/axelarcork/types"
 	"github.com/peggyjv/sommelier/v8/x/cellarfees"
 	cellarfeeskeeper "github.com/peggyjv/sommelier/v8/x/cellarfees/keeper"
-	cellarfeeskeeperv1 "github.com/peggyjv/sommelier/v8/x/cellarfees/migrations/v1/keeper"
 	cellarfeestypesv1 "github.com/peggyjv/sommelier/v8/x/cellarfees/migrations/v1/types"
 	cellarfeestypes "github.com/peggyjv/sommelier/v8/x/cellarfees/types"
 	"github.com/peggyjv/sommelier/v8/x/cork"
@@ -1075,19 +1074,7 @@ func (app *SommelierApp) setupUpgradeHandlers() {
 	}
 
 	baseAppLegacySS := app.ParamsKeeper.Subspace(baseapp.Paramspace).WithKeyTable(paramstypes.ConsensusParamsKeyTable())
-	cellarfeesLegacySS := paramstypes.NewSubspace(app.appCodec, app.legacyAmino, app.GetKey(cellarfeestypes.StoreKey), app.tkeys[paramstypes.TStoreKey], cellarfeestypes.ModuleName).WithKeyTable(cellarfeestypesv1.ParamKeyTable())
-
-	cellarfeesLegacyKeeper := cellarfeeskeeperv1.NewKeeper(
-		app.appCodec,
-		app.GetKey(cellarfeestypes.StoreKey),
-		cellarfeesLegacySS,
-		nil,
-		nil,
-		nil,
-		nil,
-		nil,
-		nil,
-	)
+	cellarfeesLegacySS := app.ParamsKeeper.Subspace(cellarfeestypes.ModuleName).WithKeyTable(cellarfeestypesv1.ParamKeyTable())
 
 	// TODO: Add v8 upgrade handle
 	app.UpgradeKeeper.SetUpgradeHandler(
@@ -1097,7 +1084,7 @@ func (app *SommelierApp) setupUpgradeHandlers() {
 			app.configurator,
 			&baseAppLegacySS,
 			&app.ConsensusParamsKeeper,
-			&cellarfeesLegacyKeeper,
+			&cellarfeesLegacySS,
 			&app.CellarFeesKeeper,
 			app.IBCKeeper,
 			app.appCodec,

@@ -1,8 +1,11 @@
 package v8
 
 import (
+	"bytes"
+
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/codec"
+	"github.com/cosmos/cosmos-sdk/store/prefix"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	consensusparamkeeper "github.com/cosmos/cosmos-sdk/x/consensus/keeper"
@@ -12,8 +15,8 @@ import (
 	ibckeeper "github.com/cosmos/ibc-go/v7/modules/core/keeper"
 	ibctmmigrations "github.com/cosmos/ibc-go/v7/modules/light-clients/07-tendermint/migrations"
 	cellarfeeskeeper "github.com/peggyjv/sommelier/v8/x/cellarfees/keeper"
-	cellarfeeskeeperv1 "github.com/peggyjv/sommelier/v8/x/cellarfees/migrations/v1/keeper"
-	cellarfeestypesv2 "github.com/peggyjv/sommelier/v8/x/cellarfees/types/v2"
+	cellarfeestypesv1 "github.com/peggyjv/sommelier/v8/x/cellarfees/migrations/v1/types"
+	cellarfeestypes "github.com/peggyjv/sommelier/v8/x/cellarfees/types/v2"
 )
 
 func CreateUpgradeHandler(
@@ -21,7 +24,7 @@ func CreateUpgradeHandler(
 	configurator module.Configurator,
 	baseAppLegacySS *paramstypes.Subspace,
 	consensusParamsKeeper *consensusparamkeeper.Keeper,
-	cellarfeesLegacyKeeper *cellarfeeskeeperv1.Keeper,
+	cellarfeesLegacySS *paramstypes.Subspace,
 	cellarfeesKeeper *cellarfeeskeeper.Keeper,
 	ibcKeeper *ibckeeper.Keeper,
 	cdc codec.BinaryCodec,
@@ -41,20 +44,21 @@ func CreateUpgradeHandler(
 		baseapp.MigrateParams(ctx, baseAppLegacySS, consensusParamsKeeper)
 
 		// cellarfees params migration
-		newParams := &cellarfeestypesv2.Params{}
-		oldParams := cellarfeesLegacyKeeper.GetParams(ctx)
-		newParams.AuctionThresholdUsdValue = cellarfeestypesv2.DefaultParams().AuctionThresholdUsdValue
-		newParams.AuctionInterval = oldParams.AuctionInterval
-		newParams.InitialPriceDecreaseRate = oldParams.InitialPriceDecreaseRate
-		newParams.PriceDecreaseBlockInterval = oldParams.PriceDecreaseBlockInterval
-		newParams.RewardEmissionPeriod = oldParams.RewardEmissionPeriod
 
-		err := newParams.ValidateBasic()
-		if err != nil {
-			return nil, err
+		// delete the old param key
+		store := prefix.NewStore(ctx.KVStore(sdk.NewKVStoreKey("params")), append([]byte("params"), '/'))
+		store.Delete(bytes.Join([][]byte{[]byte("cellarfees"), {byte('/')}, cellarfeestypesv1.KeyFeeAccrualAuctionThreshold}, []byte{}))
+
+		oldParams := cellarfeestypesv1.Params{}
+		cellarfeesLegacySS.GetParamSet(ctx, &oldParams)
+		newParams := cellarfeestypes.Params{
+			AuctionInterval:            oldParams.AuctionInterval,
+			RewardEmissionPeriod:       oldParams.RewardEmissionPeriod,
+			PriceDecreaseBlockInterval: oldParams.PriceDecreaseBlockInterval,
+			InitialPriceDecreaseRate:   oldParams.InitialPriceDecreaseRate,
+			AuctionThresholdUsdValue:   cellarfeestypes.DefaultParams().AuctionThresholdUsdValue,
 		}
-
-		cellarfeesKeeper.SetParams(ctx, *newParams)
+		cellarfeesKeeper.SetParams(ctx, newParams)
 
 		// explicitly update the IBC 02-client params, adding the localhost client type
 		params := ibcKeeper.ClientKeeper.GetParams(ctx)
