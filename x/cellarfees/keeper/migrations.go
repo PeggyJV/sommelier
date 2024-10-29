@@ -27,7 +27,7 @@ func (m Migrator) Migrate1to2(ctx sdk.Context) error {
 		return err
 	}
 
-	m.keeper.paramSpace.WithKeyTable(v2types.ParamKeyTable()).SetParamSet(ctx, newParams)
+	m.keeper.paramSpace.SetParamSet(ctx, newParams)
 
 	ctx.Logger().Info("cellarfees v1 to v2: Params migration complete")
 
