@@ -41,12 +41,6 @@ func (k Keeper) AddPublisherIntent(c context.Context, msg *types.MsgAddPublisher
 	ctx.EventManager().EmitEvents(
 		sdk.Events{
 			sdk.NewEvent(
-				sdk.EventTypeMessage,
-				sdk.NewAttribute(sdk.AttributeKeyModule, types.AttributeValueCategory),
-				sdk.NewAttribute(sdk.AttributeKeyAction, types.EventTypeAddPublisherIntent),
-				sdk.NewAttribute(sdk.AttributeKeySender, msg.Signer),
-			),
-			sdk.NewEvent(
 				types.EventTypeAddPublisherIntent,
 				sdk.NewAttribute(types.AttributeKeySubscriptionID, publisherIntent.SubscriptionId),
 				sdk.NewAttribute(types.AttributeKeyPublisherDomain, publisherIntent.PublisherDomain),
@@ -128,12 +122,6 @@ func (k Keeper) AddSubscriberIntent(c context.Context, msg *types.MsgAddSubscrib
 	ctx.EventManager().EmitEvents(
 		sdk.Events{
 			sdk.NewEvent(
-				sdk.EventTypeMessage,
-				sdk.NewAttribute(sdk.AttributeKeyModule, types.AttributeValueCategory),
-				sdk.NewAttribute(sdk.AttributeKeyAction, types.EventTypeAddSubscriberIntent),
-				sdk.NewAttribute(sdk.AttributeKeySender, msg.Signer),
-			),
-			sdk.NewEvent(
 				types.EventTypeAddSubscriberIntent,
 				sdk.NewAttribute(types.AttributeKeySubscriptionID, subscriberIntent.SubscriptionId),
 				sdk.NewAttribute(types.AttributeKeySubscriberAddress, subscriberIntent.SubscriberAddress),
@@ -164,12 +152,6 @@ func (k Keeper) AddSubscriber(c context.Context, msg *types.MsgAddSubscriberRequ
 
 	ctx.EventManager().EmitEvents(
 		sdk.Events{
-			sdk.NewEvent(
-				sdk.EventTypeMessage,
-				sdk.NewAttribute(sdk.AttributeKeyModule, types.AttributeValueCategory),
-				sdk.NewAttribute(sdk.AttributeKeyAction, types.EventTypeAddSubscriber),
-				sdk.NewAttribute(sdk.AttributeKeySender, msg.Signer),
-			),
 			sdk.NewEvent(
 				types.EventTypeAddSubscriber,
 				sdk.NewAttribute(types.AttributeKeySubscriberAddress, subscriber.Address),
@@ -212,12 +194,6 @@ func (k Keeper) RemovePublisherIntent(c context.Context, msg *types.MsgRemovePub
 
 	ctx.EventManager().EmitEvents(
 		sdk.Events{
-			sdk.NewEvent(
-				sdk.EventTypeMessage,
-				sdk.NewAttribute(sdk.AttributeKeyModule, types.AttributeValueCategory),
-				sdk.NewAttribute(sdk.AttributeKeyAction, types.EventTypeRemovePublisherIntent),
-				sdk.NewAttribute(sdk.AttributeKeySender, msg.Signer),
-			),
 			sdk.NewEvent(
 				types.EventTypeRemovePublisherIntent,
 				sdk.NewAttribute(types.AttributeKeySubscriptionID, subscriptionID),
@@ -264,12 +240,6 @@ func (k Keeper) RemoveSubscriberIntent(c context.Context, msg *types.MsgRemoveSu
 	ctx.EventManager().EmitEvents(
 		sdk.Events{
 			sdk.NewEvent(
-				sdk.EventTypeMessage,
-				sdk.NewAttribute(sdk.AttributeKeyModule, types.AttributeValueCategory),
-				sdk.NewAttribute(sdk.AttributeKeyAction, types.EventTypeRemoveSubscriberIntent),
-				sdk.NewAttribute(sdk.AttributeKeySender, msg.Signer),
-			),
-			sdk.NewEvent(
 				types.EventTypeRemoveSubscriberIntent,
 				sdk.NewAttribute(types.AttributeKeySubscriptionID, subscriptionID),
 				sdk.NewAttribute(types.AttributeKeySubscriberAddress, subscriberAddress),
@@ -306,12 +276,6 @@ func (k Keeper) RemoveSubscriber(c context.Context, msg *types.MsgRemoveSubscrib
 	ctx.EventManager().EmitEvents(
 		sdk.Events{
 			sdk.NewEvent(
-				sdk.EventTypeMessage,
-				sdk.NewAttribute(sdk.AttributeKeyModule, types.AttributeValueCategory),
-				sdk.NewAttribute(sdk.AttributeKeyAction, types.EventTypeRemoveSubscriber),
-				sdk.NewAttribute(sdk.AttributeKeySender, msg.Signer),
-			),
-			sdk.NewEvent(
 				types.EventTypeRemoveSubscriber,
 				sdk.NewAttribute(types.AttributeKeySubscriptionID, subscriberAddress),
 			),
@@ -343,12 +307,6 @@ func (k Keeper) RemovePublisher(c context.Context, msg *types.MsgRemovePublisher
 
 	ctx.EventManager().EmitEvents(
 		sdk.Events{
-			sdk.NewEvent(
-				sdk.EventTypeMessage,
-				sdk.NewAttribute(sdk.AttributeKeyModule, types.AttributeValueCategory),
-				sdk.NewAttribute(sdk.AttributeKeyAction, types.EventTypeRemovePublisher),
-				sdk.NewAttribute(sdk.AttributeKeySender, msg.Signer),
-			),
 			sdk.NewEvent(
 				types.EventTypeRemovePublisher,
 				sdk.NewAttribute(types.AttributeKeyPublisherDomain, publisherDomain),

@@ -50,10 +50,6 @@ func (k Keeper) ScheduleCork(c context.Context, msg *types.MsgScheduleCorkReques
 	ctx.EventManager().EmitEvents(
 		sdk.Events{
 			sdk.NewEvent(
-				sdk.EventTypeMessage,
-				sdk.NewAttribute(sdk.AttributeKeyModule, corktypes.AttributeValueCategory),
-			),
-			sdk.NewEvent(
 				corktypes.EventTypeCork,
 				sdk.NewAttribute(sdk.AttributeKeyModule, corktypes.AttributeValueCategory),
 				sdk.NewAttribute(corktypes.AttributeKeySigner, signer.String()),
