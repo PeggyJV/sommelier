@@ -9,6 +9,9 @@ import (
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
 	ibcexported "github.com/cosmos/ibc-go/v7/modules/core/exported"
 	ibckeeper "github.com/cosmos/ibc-go/v7/modules/core/keeper"
+	cellarfeeskeeper "github.com/peggyjv/sommelier/v8/x/cellarfees/keeper"
+	cellarfeestypesv1 "github.com/peggyjv/sommelier/v8/x/cellarfees/migrations/v1/types"
+	cellarfeestypesv2 "github.com/peggyjv/sommelier/v8/x/cellarfees/types/v2"
 )
 
 func CreateUpgradeHandler(
@@ -16,6 +19,8 @@ func CreateUpgradeHandler(
 	configurator module.Configurator,
 	baseAppLegacySS *paramstypes.Subspace,
 	consensusParamsKeeper *consensusparamkeeper.Keeper,
+	cellarfeesLegacySS *paramstypes.Subspace,
+	cellarfeesKeeper *cellarfeeskeeper.Keeper,
 	ibcKeeper *ibckeeper.Keeper,
 ) upgradetypes.UpgradeHandler {
 	return func(ctx sdk.Context, plan upgradetypes.Plan, vm module.VersionMap) (module.VersionMap, error) {
@@ -23,6 +28,23 @@ func CreateUpgradeHandler(
 
 		// new x/consensus module params migration
 		baseapp.MigrateParams(ctx, baseAppLegacySS, consensusParamsKeeper)
+
+		// cellarfees params migration
+		oldParams := &cellarfeestypesv1.Params{}
+		cellarfeesLegacySS.GetParamSet(ctx, oldParams)
+		newParams := &cellarfeestypesv2.Params{}
+		newParams.AuctionThresholdUsdValue = cellarfeestypesv2.DefaultParams().AuctionThresholdUsdValue
+		newParams.AuctionInterval = oldParams.AuctionInterval
+		newParams.InitialPriceDecreaseRate = oldParams.InitialPriceDecreaseRate
+		newParams.PriceDecreaseBlockInterval = oldParams.PriceDecreaseBlockInterval
+		newParams.RewardEmissionPeriod = oldParams.RewardEmissionPeriod
+
+		err := newParams.ValidateBasic()
+		if err != nil {
+			return nil, err
+		}
+
+		cellarfeesKeeper.SetParams(ctx, *newParams)
 
 		// explicitly update the IBC 02-client params, adding the localhost client type
 		params := ibcKeeper.ClientKeeper.GetParams(ctx)

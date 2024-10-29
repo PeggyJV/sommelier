@@ -121,6 +121,7 @@ import (
 	axelarcorktypes "github.com/peggyjv/sommelier/v8/x/axelarcork/types"
 	"github.com/peggyjv/sommelier/v8/x/cellarfees"
 	cellarfeeskeeper "github.com/peggyjv/sommelier/v8/x/cellarfees/keeper"
+	cellarfeestypesv1 "github.com/peggyjv/sommelier/v8/x/cellarfees/migrations/v1/types"
 	cellarfeestypes "github.com/peggyjv/sommelier/v8/x/cellarfees/types"
 	"github.com/peggyjv/sommelier/v8/x/cork"
 	corkclient "github.com/peggyjv/sommelier/v8/x/cork/client"
@@ -1071,6 +1072,7 @@ func (app *SommelierApp) setupUpgradeHandlers() {
 	}
 
 	baseAppLegacySS := app.ParamsKeeper.Subspace(baseapp.Paramspace).WithKeyTable(paramstypes.ConsensusParamsKeyTable())
+	cellarfeesLegacySS := app.ParamsKeeper.Subspace(cellarfeestypes.ModuleName).WithKeyTable(cellarfeestypesv1.ParamKeyTable())
 
 	// TODO: Add v8 upgrade handle
 	app.UpgradeKeeper.SetUpgradeHandler(
@@ -1080,6 +1082,8 @@ func (app *SommelierApp) setupUpgradeHandlers() {
 			app.configurator,
 			&baseAppLegacySS,
 			&app.ConsensusParamsKeeper,
+			&cellarfeesLegacySS,
+			&app.CellarFeesKeeper,
 			app.IBCKeeper,
 		),
 	)
