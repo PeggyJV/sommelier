@@ -12,7 +12,7 @@ import (
 	ibckeeper "github.com/cosmos/ibc-go/v7/modules/core/keeper"
 	ibctmmigrations "github.com/cosmos/ibc-go/v7/modules/light-clients/07-tendermint/migrations"
 	cellarfeeskeeper "github.com/peggyjv/sommelier/v8/x/cellarfees/keeper"
-	cellarfeestypesv1 "github.com/peggyjv/sommelier/v8/x/cellarfees/migrations/v1/types"
+	cellarfeeskeeperv1 "github.com/peggyjv/sommelier/v8/x/cellarfees/migrations/v1/keeper"
 	cellarfeestypesv2 "github.com/peggyjv/sommelier/v8/x/cellarfees/types/v2"
 )
 
@@ -21,7 +21,7 @@ func CreateUpgradeHandler(
 	configurator module.Configurator,
 	baseAppLegacySS *paramstypes.Subspace,
 	consensusParamsKeeper *consensusparamkeeper.Keeper,
-	cellarfeesLegacySS *paramstypes.Subspace,
+	cellarfeesLegacyKeeper *cellarfeeskeeperv1.Keeper,
 	cellarfeesKeeper *cellarfeeskeeper.Keeper,
 	ibcKeeper *ibckeeper.Keeper,
 	cdc codec.BinaryCodec,
@@ -41,9 +41,8 @@ func CreateUpgradeHandler(
 		baseapp.MigrateParams(ctx, baseAppLegacySS, consensusParamsKeeper)
 
 		// cellarfees params migration
-		oldParams := &cellarfeestypesv1.Params{}
 		newParams := &cellarfeestypesv2.Params{}
-		cellarfeesLegacySS.GetParamSet(ctx, oldParams)
+		oldParams := cellarfeesLegacyKeeper.GetParams(ctx)
 		newParams.AuctionThresholdUsdValue = cellarfeestypesv2.DefaultParams().AuctionThresholdUsdValue
 		newParams.AuctionInterval = oldParams.AuctionInterval
 		newParams.InitialPriceDecreaseRate = oldParams.InitialPriceDecreaseRate

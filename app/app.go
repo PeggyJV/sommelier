@@ -121,6 +121,7 @@ import (
 	axelarcorktypes "github.com/peggyjv/sommelier/v8/x/axelarcork/types"
 	"github.com/peggyjv/sommelier/v8/x/cellarfees"
 	cellarfeeskeeper "github.com/peggyjv/sommelier/v8/x/cellarfees/keeper"
+	cellarfeeskeeperv1 "github.com/peggyjv/sommelier/v8/x/cellarfees/migrations/v1/keeper"
 	cellarfeestypes "github.com/peggyjv/sommelier/v8/x/cellarfees/types"
 	"github.com/peggyjv/sommelier/v8/x/cork"
 	corkclient "github.com/peggyjv/sommelier/v8/x/cork/client"
@@ -1078,6 +1079,18 @@ func (app *SommelierApp) setupUpgradeHandlers() {
 		panic("cellarfees legacy subspace not found")
 	}
 
+	cellarfeesLegacyKeeper := cellarfeeskeeperv1.NewKeeper(
+		app.appCodec,
+		app.GetKey(cellarfeestypes.StoreKey),
+		cellarfeesLegacySS,
+		nil,
+		nil,
+		nil,
+		nil,
+		nil,
+		nil,
+	)
+
 	// TODO: Add v8 upgrade handle
 	app.UpgradeKeeper.SetUpgradeHandler(
 		v8.UpgradeName,
@@ -1086,7 +1099,7 @@ func (app *SommelierApp) setupUpgradeHandlers() {
 			app.configurator,
 			&baseAppLegacySS,
 			&app.ConsensusParamsKeeper,
-			&cellarfeesLegacySS,
+			&cellarfeesLegacyKeeper,
 			&app.CellarFeesKeeper,
 			app.IBCKeeper,
 			app.appCodec,
