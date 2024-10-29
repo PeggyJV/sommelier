@@ -1061,6 +1061,8 @@ func (app *SommelierApp) setupUpgradeHandlers() {
 			keyTable = govtypesv1.ParamKeyTable() //nolint: staticcheck // deprecated but required for upgrade
 		case crisistypes.ModuleName:
 			keyTable = crisistypes.ParamKeyTable() //nolint: staticcheck // deprecated but required for upgrade
+		case ibctransfertypes.ModuleName:
+			keyTable = ibctransfertypes.ParamKeyTable()
 		default:
 			// subspace not handled
 			found = false
@@ -1087,6 +1089,8 @@ func (app *SommelierApp) setupUpgradeHandlers() {
 			&cellarfeesLegacySS,
 			&app.CellarFeesKeeper,
 			app.IBCKeeper,
+			app.appCodec,
+			app.IBCKeeper.ClientKeeper,
 		),
 	)
 }

@@ -2,6 +2,7 @@ package v8
 
 import (
 	"github.com/cosmos/cosmos-sdk/baseapp"
+	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	consensusparamkeeper "github.com/cosmos/cosmos-sdk/x/consensus/keeper"
@@ -9,6 +10,7 @@ import (
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
 	ibcexported "github.com/cosmos/ibc-go/v7/modules/core/exported"
 	ibckeeper "github.com/cosmos/ibc-go/v7/modules/core/keeper"
+	ibctmmigrations "github.com/cosmos/ibc-go/v7/modules/light-clients/07-tendermint/migrations"
 	cellarfeeskeeper "github.com/peggyjv/sommelier/v8/x/cellarfees/keeper"
 	cellarfeestypesv1 "github.com/peggyjv/sommelier/v8/x/cellarfees/migrations/v1/types"
 	cellarfeestypesv2 "github.com/peggyjv/sommelier/v8/x/cellarfees/types/v2"
@@ -22,9 +24,18 @@ func CreateUpgradeHandler(
 	cellarfeesLegacySS *paramstypes.Subspace,
 	cellarfeesKeeper *cellarfeeskeeper.Keeper,
 	ibcKeeper *ibckeeper.Keeper,
+	cdc codec.BinaryCodec,
+	clientKeeper ibctmmigrations.ClientKeeper,
 ) upgradetypes.UpgradeHandler {
 	return func(ctx sdk.Context, plan upgradetypes.Plan, vm module.VersionMap) (module.VersionMap, error) {
 		ctx.Logger().Info("v8 upgrade: entering handler and running migrations")
+
+		// Include this when migrating to ibc-go v7 (optional)
+		// source: https://github.com/cosmos/ibc-go/blob/v7.2.0/docs/migrations/v6-to-v7.md
+		// prune expired tendermint consensus states to save storage space
+		if _, err := ibctmmigrations.PruneExpiredConsensusStates(ctx, cdc, clientKeeper); err != nil {
+			return nil, err
+		}
 
 		// new x/consensus module params migration
 		baseapp.MigrateParams(ctx, baseAppLegacySS, consensusParamsKeeper)
