@@ -1024,7 +1024,11 @@ func (app *SommelierApp) setupUpgradeStoreLoaders() {
 
 	if upgradeInfo.Name == v8.UpgradeName {
 		storeUpgrades = &storetypes.StoreUpgrades{
-			Added: []string{addressestypes.ModuleName},
+			Added: []string{
+				addressestypes.ModuleName,
+				consensusparamtypes.ModuleName,
+				crisistypes.ModuleName,
+			},
 		}
 	}
 
@@ -1034,12 +1038,16 @@ func (app *SommelierApp) setupUpgradeStoreLoaders() {
 }
 
 func (app *SommelierApp) setupUpgradeHandlers() {
+	baseAppLegacySS := app.ParamsKeeper.Subspace(baseapp.Paramspace).WithKeyTable(paramstypes.ConsensusParamsKeyTable())
+
 	// TODO: Add v8 upgrade handle
 	app.UpgradeKeeper.SetUpgradeHandler(
 		v8.UpgradeName,
 		v8.CreateUpgradeHandler(
 			app.mm,
 			app.configurator,
+			&baseAppLegacySS,
+			&app.ConsensusParamsKeeper,
 		),
 	)
 }
