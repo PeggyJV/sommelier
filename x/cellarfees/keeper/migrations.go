@@ -19,8 +19,6 @@ func NewMigrator(keeper Keeper, legacySubspace paramtypes.Subspace) Migrator {
 
 // Migrate1to2 migrates from consensus version 1 to 2.
 func (m Migrator) Migrate1to2(ctx sdk.Context) error {
-	ctx.Logger().Info("cellarfees v1 to v2: Params migration complete")
-
 	v1.MigrateStore(ctx, m.keeper.storeKey, m.keeper.cdc, m.legacySubspace)
 
 	return nil
