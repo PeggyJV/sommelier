@@ -1,7 +1,8 @@
 package keeper
 
 import (
-	"cosmossdk.io/math"
+	"fmt"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
 	v1 "github.com/peggyjv/sommelier/v8/x/cellarfees/migrations/v1"
@@ -21,14 +22,13 @@ func NewMigrator(keeper Keeper, legacySubspace paramtypes.Subspace) Migrator {
 
 // Migrate1to2 migrates from consensus version 1 to 2.
 func (m Migrator) Migrate1to2(ctx sdk.Context) error {
-	// We hardcode the params here because it's unclear how to read the old params during upgrade
-	// when the newest param proto has a field removed
+	currentParams := m.keeper.GetParamSetIfExists(ctx)
 	params := v2.Params{
-		AuctionInterval:            15000,
-		InitialPriceDecreaseRate:   math.LegacyMustNewDecFromStr("0.000064800000000000"),
-		PriceDecreaseBlockInterval: 10,
-		RewardEmissionPeriod:       403200,
-		AuctionThresholdUsdValue:   v2.DefaultParams().AuctionThresholdUsdValue,
+		AuctionInterval:            currentParams.AuctionInterval,
+		InitialPriceDecreaseRate:   currentParams.InitialPriceDecreaseRate,
+		PriceDecreaseBlockInterval: currentParams.PriceDecreaseBlockInterval,
+		RewardEmissionPeriod:       currentParams.RewardEmissionPeriod,
+		AuctionThresholdUsdValue:   sdk.MustNewDecFromStr(v2.DefaultAuctionThresholdUsdValue),
 	}
 
 	if err := params.ValidateBasic(); err != nil {
@@ -36,6 +36,8 @@ func (m Migrator) Migrate1to2(ctx sdk.Context) error {
 	}
 
 	m.keeper.SetParams(ctx, params)
+
+	panic(fmt.Sprintf("cellarfees: it worked %v", params))
 
 	v1.MigrateStore(ctx, m.keeper.storeKey, m.keeper.cdc, m.legacySubspace)
 

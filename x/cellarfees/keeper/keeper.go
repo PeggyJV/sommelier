@@ -67,6 +67,12 @@ func (k Keeper) GetParams(ctx sdk.Context) types.Params {
 	return p
 }
 
+func (k Keeper) GetParamSetIfExists(ctx sdk.Context) types.Params {
+	var p types.Params
+	k.paramSpace.GetParamSetIfExists(ctx, &p)
+	return p
+}
+
 func (k Keeper) SetParams(ctx sdk.Context, params types.Params) {
 	k.paramSpace.SetParamSet(ctx, &params)
 }

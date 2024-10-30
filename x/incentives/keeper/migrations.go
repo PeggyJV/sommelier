@@ -28,7 +28,5 @@ func (m Migrator) Migrate1to2(ctx sdk.Context) error {
 
 	m.keeper.SetParams(ctx, params)
 
-	panic("it worked")
-
 	return nil
 }
