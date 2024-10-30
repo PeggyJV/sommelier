@@ -31,6 +31,10 @@ func (m Migrator) Migrate1to2(ctx sdk.Context) error {
 		AuctionThresholdUsdValue:   v2.DefaultParams().AuctionThresholdUsdValue,
 	}
 
+	if err := params.ValidateBasic(); err != nil {
+		return err
+	}
+
 	m.keeper.SetParams(ctx, params)
 
 	v1.MigrateStore(ctx, m.keeper.storeKey, m.keeper.cdc, m.legacySubspace)

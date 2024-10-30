@@ -17,10 +17,18 @@ func NewMigrator(keeper Keeper) Migrator {
 
 // Migrate1to2 migrates from consensus version 1 to 2.
 func (m Migrator) Migrate1to2(ctx sdk.Context) error {
-	currentParams := m.keeper.GetParamSet(ctx)
+	currentParams := m.keeper.GetParamSetIfExists(ctx)
 	params := types.DefaultParams()
 	params.IncentivesCutoffHeight = currentParams.IncentivesCutoffHeight
 	params.DistributionPerBlock = currentParams.DistributionPerBlock
-	m.keeper.paramSpace.SetParamSet(ctx, &params)
+
+	if err := params.ValidateBasic(); err != nil {
+		return err
+	}
+
+	m.keeper.SetParams(ctx, params)
+
+	panic("it worked")
+
 	return nil
 }
