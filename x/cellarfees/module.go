@@ -12,6 +12,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	sim "github.com/cosmos/cosmos-sdk/types/simulation"
+	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
 	"github.com/peggyjv/sommelier/v8/x/cellarfees/client/cli"
 	"github.com/peggyjv/sommelier/v8/x/cellarfees/keeper"
@@ -83,11 +84,14 @@ type AppModule struct {
 	mintKeeper    types.MintKeeper
 	corkKeeper    types.CorkKeeper
 	auctionKeeper types.AuctionKeeper
+
+	// legacy subspace used for v1 -> v2 migration
+	legacySubspace paramtypes.Subspace
 }
 
 // NewAppModule creates a new AppModule object
 func NewAppModule(keeper keeper.Keeper, cdc codec.Codec, accountKeeper types.AccountKeeper, bankKeeper types.BankKeeper,
-	mintKeeper types.MintKeeper, corkKeeper types.CorkKeeper, auctionKeeper types.AuctionKeeper) AppModule {
+	mintKeeper types.MintKeeper, corkKeeper types.CorkKeeper, auctionKeeper types.AuctionKeeper, legacySubspace paramtypes.Subspace) AppModule {
 	return AppModule{
 		AppModuleBasic: AppModuleBasic{},
 		keeper:         keeper,
@@ -97,6 +101,7 @@ func NewAppModule(keeper keeper.Keeper, cdc codec.Codec, accountKeeper types.Acc
 		mintKeeper:     mintKeeper,
 		corkKeeper:     corkKeeper,
 		auctionKeeper:  auctionKeeper,
+		legacySubspace: legacySubspace,
 	}
 }
 
@@ -123,7 +128,7 @@ func (am AppModule) RegisterServices(cfg module.Configurator) {
 	//types.RegisterMsgServer(cfg.MsgServer(), am.keeper)
 	typesv2.RegisterQueryServer(cfg.QueryServer(), am.keeper)
 
-	migrator := keeper.NewMigrator(am.keeper)
+	migrator := keeper.NewMigrator(am.keeper, am.legacySubspace)
 	if err := cfg.RegisterMigration(types.ModuleName, 1, migrator.Migrate1to2); err != nil {
 		panic(fmt.Sprintf("failed to migrate x/cellarfees from version 1 to 2: %v", err))
 	}

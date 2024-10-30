@@ -610,7 +610,7 @@ func NewSommelierApp(
 		authzmodule.NewAppModule(appCodec, app.AuthzKeeper, app.AccountKeeper, app.BankKeeper, app.interfaceRegistry),
 		cork.NewAppModule(app.CorkKeeper, appCodec),
 		incentives.NewAppModule(app.IncentivesKeeper, app.DistrKeeper, app.BankKeeper, app.MintKeeper, appCodec),
-		cellarfees.NewAppModule(app.CellarFeesKeeper, appCodec, app.AccountKeeper, app.BankKeeper, app.MintKeeper, app.CorkKeeper, app.AuctionKeeper),
+		cellarfees.NewAppModule(app.CellarFeesKeeper, appCodec, app.AccountKeeper, app.BankKeeper, app.MintKeeper, app.CorkKeeper, app.AuctionKeeper, app.ParamsKeeper.Subspace(cellarfeestypes.ModuleName)),
 		auction.NewAppModule(app.AuctionKeeper, app.BankKeeper, app.AccountKeeper, appCodec),
 		pubsub.NewAppModule(appCodec, app.PubsubKeeper, app.StakingKeeper, app.GravityKeeper),
 		addresses.NewAppModule(appCodec, app.AddressesKeeper),
@@ -751,7 +751,7 @@ func NewSommelierApp(
 		authzmodule.NewAppModule(appCodec, app.AuthzKeeper, app.AccountKeeper, app.BankKeeper, app.interfaceRegistry),
 		cork.NewAppModule(app.CorkKeeper, appCodec),
 		incentives.NewAppModule(app.IncentivesKeeper, app.DistrKeeper, app.BankKeeper, app.MintKeeper, appCodec),
-		cellarfees.NewAppModule(app.CellarFeesKeeper, appCodec, app.AccountKeeper, app.BankKeeper, app.MintKeeper, app.CorkKeeper, app.AuctionKeeper),
+		cellarfees.NewAppModule(app.CellarFeesKeeper, appCodec, app.AccountKeeper, app.BankKeeper, app.MintKeeper, app.CorkKeeper, app.AuctionKeeper, app.ParamsKeeper.Subspace(cellarfeestypes.ModuleName)),
 		auction.NewAppModule(app.AuctionKeeper, app.BankKeeper, app.AccountKeeper, appCodec),
 		pubsub.NewAppModule(appCodec, app.PubsubKeeper, app.StakingKeeper, app.GravityKeeper),
 		addresses.NewAppModule(appCodec, app.AddressesKeeper),
@@ -1073,10 +1073,6 @@ func (app *SommelierApp) setupUpgradeHandlers() {
 	}
 
 	baseAppLegacySS := app.ParamsKeeper.Subspace(baseapp.Paramspace).WithKeyTable(paramstypes.ConsensusParamsKeyTable())
-	cellarfeesLegacySS, found := app.ParamsKeeper.GetSubspace(cellarfeestypes.ModuleName)
-	if !found {
-		panic("cellarfees subspace not found")
-	}
 
 	// TODO: Add v8 upgrade handle
 	app.UpgradeKeeper.SetUpgradeHandler(
@@ -1086,8 +1082,6 @@ func (app *SommelierApp) setupUpgradeHandlers() {
 			app.configurator,
 			&baseAppLegacySS,
 			&app.ConsensusParamsKeeper,
-			&cellarfeesLegacySS,
-			&app.CellarFeesKeeper,
 			app.IBCKeeper,
 			app.appCodec,
 			app.IBCKeeper.ClientKeeper,
