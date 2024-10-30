@@ -17,16 +17,28 @@ func NewMigrator(keeper Keeper) Migrator {
 
 // Migrate1to2 migrates from consensus version 1 to 2.
 func (m Migrator) Migrate1to2(ctx sdk.Context) error {
-	currentParams := m.keeper.GetParamSetIfExists(ctx)
-	params := types.DefaultParams()
-	params.IncentivesCutoffHeight = currentParams.IncentivesCutoffHeight
-	params.DistributionPerBlock = currentParams.DistributionPerBlock
+	ctx.Logger().Info("incentives v1 to v2: New params")
 
-	if err := params.ValidateBasic(); err != nil {
-		return err
+	// New params
+	subspace := m.keeper.paramSpace
+
+	if !subspace.Has(ctx, types.KeyValidatorIncentivesCutoffHeight) {
+		subspace.Set(ctx, types.KeyValidatorIncentivesCutoffHeight, types.DefaultParams().ValidatorIncentivesCutoffHeight)
 	}
 
-	m.keeper.SetParams(ctx, params)
+	if !subspace.Has(ctx, types.KeyValidatorMaxDistributionPerBlock) {
+		subspace.Set(ctx, types.KeyValidatorMaxDistributionPerBlock, types.DefaultParams().ValidatorMaxDistributionPerBlock)
+	}
+
+	if !subspace.Has(ctx, types.KeyValidatorIncentivesMaxFraction) {
+		subspace.Set(ctx, types.KeyValidatorIncentivesMaxFraction, types.DefaultParams().ValidatorIncentivesMaxFraction)
+	}
+
+	if !subspace.Has(ctx, types.KeyValidatorIncentivesSetSizeLimit) {
+		subspace.Set(ctx, types.KeyValidatorIncentivesSetSizeLimit, types.DefaultParams().ValidatorIncentivesSetSizeLimit)
+	}
+
+	ctx.Logger().Info("incentives v1 to v2: Params migration complete")
 
 	return nil
 }

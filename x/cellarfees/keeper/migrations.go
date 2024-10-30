@@ -1,8 +1,6 @@
 package keeper
 
 import (
-	"fmt"
-
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
 	v1 "github.com/peggyjv/sommelier/v8/x/cellarfees/migrations/v1"
@@ -36,8 +34,6 @@ func (m Migrator) Migrate1to2(ctx sdk.Context) error {
 	}
 
 	m.keeper.SetParams(ctx, params)
-
-	panic(fmt.Sprintf("cellarfees: it worked %v", params))
 
 	v1.MigrateStore(ctx, m.keeper.storeKey, m.keeper.cdc, m.legacySubspace)
 
