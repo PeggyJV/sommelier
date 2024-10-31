@@ -72,7 +72,6 @@ func MigrateAuctionAccountPermissions(ctx sdk.Context, accountKeeper *authkeeper
 	newAcct.AccountNumber = oldAcctI.GetAccountNumber()
 	newAcct.Address = oldAcctI.GetAddress().String()
 	newAcct.Sequence = oldAcctI.GetSequence()
-	newAcct.Permissions = oldAcctI.GetPermissions()
 	newAcct.Name = oldAcctI.GetName()
 	newAcctI := (accountKeeper.NewAccount(ctx, newAcct)).(authtypes.ModuleAccountI)
 
