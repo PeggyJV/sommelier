@@ -1,6 +1,8 @@
 package v8
 
 import (
+	"fmt"
+
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -30,15 +32,9 @@ func CreateUpgradeHandler(
 		ctx.Logger().Info("v8 upgrade: entering handler and running migrations")
 
 		// add burner permission to auction account
-		newAcct := authtypes.NewEmptyModuleAccount(auctiontypes.ModuleName, authtypes.Burner)
-		oldAcctI := accountKeeper.GetModuleAccount(ctx, auctiontypes.ModuleName)
-		newAcct.AccountNumber = oldAcctI.GetAccountNumber()
-		newAcct.Address = oldAcctI.GetAddress().String()
-		newAcct.Sequence = oldAcctI.GetSequence()
-		newAcct.Permissions = oldAcctI.GetPermissions()
-		newAcct.Name = oldAcctI.GetName()
-		newAcctI := (accountKeeper.NewAccount(ctx, newAcct)).(authtypes.ModuleAccountI)
-		accountKeeper.SetModuleAccount(ctx, newAcctI)
+		if err := MigrateAuctionAccountPermissions(ctx, accountKeeper); err != nil {
+			return nil, err
+		}
 
 		// Include this when migrating to ibc-go v7 (optional)
 		// source: https://github.com/cosmos/ibc-go/blob/v7.2.0/docs/migrations/v6-to-v7.md
@@ -57,4 +53,24 @@ func CreateUpgradeHandler(
 
 		return mm.RunMigrations(ctx, configurator, vm)
 	}
+}
+
+func MigrateAuctionAccountPermissions(ctx sdk.Context, accountKeeper *authkeeper.AccountKeeper) error {
+	oldAcctI := accountKeeper.GetModuleAccount(ctx, auctiontypes.ModuleName)
+
+	if oldAcctI == nil {
+		return fmt.Errorf("module account not found")
+	}
+
+	newAcct := authtypes.NewEmptyModuleAccount(auctiontypes.ModuleName, authtypes.Burner)
+	newAcct.AccountNumber = oldAcctI.GetAccountNumber()
+	newAcct.Address = oldAcctI.GetAddress().String()
+	newAcct.Sequence = oldAcctI.GetSequence()
+	newAcct.Permissions = oldAcctI.GetPermissions()
+	newAcct.Name = oldAcctI.GetName()
+	newAcctI := (accountKeeper.NewAccount(ctx, newAcct)).(authtypes.ModuleAccountI)
+
+	accountKeeper.SetModuleAccount(ctx, newAcctI)
+
+	return nil
 }
