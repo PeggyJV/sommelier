@@ -1085,6 +1085,7 @@ func (app *SommelierApp) setupUpgradeHandlers() {
 			app.IBCKeeper,
 			app.appCodec,
 			app.IBCKeeper.ClientKeeper,
+			&app.AccountKeeper,
 		),
 	)
 }
