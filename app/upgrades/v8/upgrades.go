@@ -31,11 +31,6 @@ func CreateUpgradeHandler(
 	return func(ctx sdk.Context, plan upgradetypes.Plan, vm module.VersionMap) (module.VersionMap, error) {
 		ctx.Logger().Info("v8 upgrade: entering handler and running migrations")
 
-		// add burner permission to auction account
-		if err := MigrateAuctionAccountPermissions(ctx, accountKeeper); err != nil {
-			return nil, err
-		}
-
 		// Include this when migrating to ibc-go v7 (optional)
 		// source: https://github.com/cosmos/ibc-go/blob/v7.2.0/docs/migrations/v6-to-v7.md
 		// prune expired tendermint consensus states to save storage space
@@ -51,11 +46,22 @@ func CreateUpgradeHandler(
 		params.AllowedClients = append(params.AllowedClients, ibcexported.Localhost)
 		ibcKeeper.ClientKeeper.SetParams(ctx, params)
 
-		return mm.RunMigrations(ctx, configurator, vm)
+		vm, err := mm.RunMigrations(ctx, configurator, vm)
+		if err != nil {
+			return nil, err
+		}
+
+		// add burner permission to auction account
+		if err := MigrateAuctionAccountPermissions(ctx, accountKeeper); err != nil {
+			return nil, err
+		}
+
+		return vm, nil
 	}
 }
 
 func MigrateAuctionAccountPermissions(ctx sdk.Context, accountKeeper *authkeeper.AccountKeeper) error {
+	ctx.Logger().Info("Migrating auction account permissions")
 	oldAcctI := accountKeeper.GetModuleAccount(ctx, auctiontypes.ModuleName)
 
 	if oldAcctI == nil {
@@ -71,6 +77,8 @@ func MigrateAuctionAccountPermissions(ctx sdk.Context, accountKeeper *authkeeper
 	newAcctI := (accountKeeper.NewAccount(ctx, newAcct)).(authtypes.ModuleAccountI)
 
 	accountKeeper.SetModuleAccount(ctx, newAcctI)
+
+	ctx.Logger().Info("Auction account permissions migrated")
 
 	return nil
 }
