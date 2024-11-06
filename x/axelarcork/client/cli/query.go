@@ -176,9 +176,9 @@ func queryScheduledCorks() *cobra.Command {
 
 func queryScheduledCorksByBlockHeight() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:     "scheduled-corks-by-block-height [chain-id]",
+		Use:     "scheduled-corks-by-block-height [chain-id] [block-height]",
 		Aliases: []string{"scbbh"},
-		Args:    cobra.ExactArgs(1),
+		Args:    cobra.ExactArgs(2),
 		Short:   "query scheduled corks from the chain by block height",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx, err := client.GetClientQueryContext(cmd)
@@ -186,13 +186,13 @@ func queryScheduledCorksByBlockHeight() *cobra.Command {
 				return err
 			}
 
-			height, err := math.ParseUint(args[0])
+			queryClient := types.NewQueryClient(ctx)
+			chainID, err := math.ParseUint(args[0])
 			if err != nil {
 				return err
 			}
 
-			queryClient := types.NewQueryClient(ctx)
-			chainID, err := math.ParseUint(args[0])
+			height, err := math.ParseUint(args[1])
 			if err != nil {
 				return err
 			}
@@ -254,7 +254,7 @@ func queryScheduledBlockHeights() *cobra.Command {
 
 func queryScheduledCorksByID() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:     "scheduled-corks-by-id [chain-id]",
+		Use:     "scheduled-corks-by-id [chain-id] [id]",
 		Aliases: []string{"scbi"},
 		Args:    cobra.ExactArgs(1),
 		Short:   "query scheduled corks by their cork ID",
@@ -265,16 +265,16 @@ func queryScheduledCorksByID() *cobra.Command {
 				return err
 			}
 
-			id := args[0]
-			// the length of a keccak256 hash string
-			if len(id) != 64 {
-				return fmt.Errorf("invalid ID length, must be a keccak256 hash")
-			}
-
 			queryClient := types.NewQueryClient(ctx)
 			chainID, err := math.ParseUint(args[0])
 			if err != nil {
 				return err
+			}
+
+			id := args[1]
+			// the length of a keccak256 hash string
+			if len(id) != 64 {
+				return fmt.Errorf("invalid ID length, must be a keccak256 hash")
 			}
 
 			req := &types.QueryScheduledCorksByIDRequest{

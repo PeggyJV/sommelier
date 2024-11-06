@@ -74,8 +74,11 @@ func InitGenesis(ctx sdk.Context, k Keeper, gs types.GenesisState) {
 func ExportGenesis(ctx sdk.Context, k Keeper) types.GenesisState {
 	var gs types.GenesisState
 
+	// Initialize all pointer fields
 	ps := k.GetParamSet(ctx)
 	gs.Params = &ps
+	gs.CorkResults = &types.AxelarCorkResults{}
+	gs.ScheduledCorks = &types.ScheduledAxelarCorks{}
 
 	k.IterateChainConfigurations(ctx, func(config types.ChainConfiguration) (stop bool) {
 		gs.ChainConfigurations.Configurations = append(gs.ChainConfigurations.Configurations, &config)
