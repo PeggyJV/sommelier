@@ -2,20 +2,40 @@ package keeper
 
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
 	v1 "github.com/peggyjv/sommelier/v8/x/cellarfees/migrations/v1"
+	v2 "github.com/peggyjv/sommelier/v8/x/cellarfees/types/v2"
 )
 
 // Migrator is a struct for handling in-place store migrations.
 type Migrator struct {
-	keeper Keeper
+	keeper         Keeper
+	legacySubspace paramtypes.Subspace
 }
 
 // NewMigrator returns a new Migrator.
-func NewMigrator(keeper Keeper) Migrator {
-	return Migrator{keeper: keeper}
+func NewMigrator(keeper Keeper, legacySubspace paramtypes.Subspace) Migrator {
+	return Migrator{keeper: keeper, legacySubspace: legacySubspace}
 }
 
 // Migrate1to2 migrates from consensus version 1 to 2.
 func (m Migrator) Migrate1to2(ctx sdk.Context) error {
-	return v1.MigrateStore(ctx, m.keeper.storeKey, m.keeper.cdc, m.keeper.paramSpace)
+	currentParams := m.keeper.GetParamSetIfExists(ctx)
+	params := v2.Params{
+		AuctionInterval:            currentParams.AuctionInterval,
+		InitialPriceDecreaseRate:   currentParams.InitialPriceDecreaseRate,
+		PriceDecreaseBlockInterval: currentParams.PriceDecreaseBlockInterval,
+		RewardEmissionPeriod:       currentParams.RewardEmissionPeriod,
+		AuctionThresholdUsdValue:   sdk.MustNewDecFromStr(v2.DefaultAuctionThresholdUsdValue),
+	}
+
+	if err := params.ValidateBasic(); err != nil {
+		return err
+	}
+
+	m.keeper.SetParams(ctx, params)
+
+	v1.MigrateStore(ctx, m.keeper.storeKey, m.keeper.cdc, m.legacySubspace)
+
+	return nil
 }

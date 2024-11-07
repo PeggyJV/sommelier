@@ -315,6 +315,7 @@ func (s *IntegrationTestSuite) TestAuction() {
 
 		// Calculate the expected burn amount (50% of total SOMM paid in auction)
 		expectedBurnAmount := totalSommPaid.Quo(sdk.NewInt(2))
+		s.Require().NotZero(expectedBurnAmount.Int64(), "Expected burn amount should not be zero")
 
 		// Calculate the expected new total supply
 		expectedNewSupply := supplyRes.Amount.Amount.Sub(expectedBurnAmount)
@@ -325,6 +326,10 @@ func (s *IntegrationTestSuite) TestAuction() {
 
 		// Verify that the new supply matches the expected new supply
 		s.Require().Equal(expectedNewSupply.Int64(), newSupplyRes.Amount.Amount.Int64(), "Total supply of usomm should be reduced by the amount burnt")
+
+		// Get auction module account
+		auctionModuleAccount := authtypes.NewModuleAddress(types.ModuleName)
+		s.T().Logf("Auction module account: %s", auctionModuleAccount.String())
 
 		s.T().Log("Total supply of usomm has been correctly reduced!")
 
