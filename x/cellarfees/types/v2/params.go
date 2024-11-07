@@ -73,6 +73,13 @@ func (p *Params) ValidateBasic() error {
 	if err := validatePriceDecreaseBlockInterval(p.PriceDecreaseBlockInterval); err != nil {
 		return err
 	}
+	if err := validateAuctionInterval(p.AuctionInterval); err != nil {
+		return err
+	}
+	if err := validateAuctionThresholdUsdValue(p.AuctionThresholdUsdValue); err != nil {
+		return err
+	}
+
 	return nil
 }
 
@@ -95,12 +102,12 @@ func validateInitialPriceDecreaseRate(i interface{}) error {
 		return errorsmod.Wrapf(types.ErrInvalidInitialPriceDecreaseRate, "initial price decrease rate: %T", i)
 	}
 
-	if rate == sdk.ZeroDec() {
-		return errorsmod.Wrapf(types.ErrInvalidInitialPriceDecreaseRate, "initial price decrease rate cannot be zero, must be 0 < x < 1")
+	if rate.LTE(sdk.ZeroDec()) {
+		return errorsmod.Wrapf(types.ErrInvalidInitialPriceDecreaseRate, "initial price decrease rate cannot be zero or negative,must be 0 < x < 1")
 	}
 
-	if rate == sdk.OneDec() {
-		return errorsmod.Wrapf(types.ErrInvalidInitialPriceDecreaseRate, "initial price decrease rate cannot be one, must be 0 < x < 1")
+	if rate.GTE(sdk.OneDec()) {
+		return errorsmod.Wrapf(types.ErrInvalidInitialPriceDecreaseRate, "initial price decrease rate cannot be one or greater, must be 0 < x < 1")
 	}
 
 	return nil
