@@ -579,7 +579,7 @@ pub mod query_client {
             );
             self.inner.unary(request.into_request(), path, codec).await
         }
-        #[doc = " QueryScheduledCorks returns all scheduled corks at a block height"]
+        #[doc = " QueryScheduledCorksByBlockHeight returns all scheduled corks at a block height"]
         pub async fn query_scheduled_corks_by_block_height(
             &mut self,
             request: impl tonic::IntoRequest<super::QueryScheduledCorksByBlockHeightRequest>,
@@ -597,7 +597,7 @@ pub mod query_client {
             );
             self.inner.unary(request.into_request(), path, codec).await
         }
-        #[doc = " QueryScheduledCorks returns all scheduled corks with the specified ID"]
+        #[doc = " QueryScheduledCorksByID returns all scheduled corks with the specified ID"]
         pub async fn query_scheduled_corks_by_id(
             &mut self,
             request: impl tonic::IntoRequest<super::QueryScheduledCorksByIdRequest>,

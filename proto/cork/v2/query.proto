@@ -32,13 +32,13 @@ service Query {
     option (google.api.http).get = "/sommelier/cork/v2/scheduled_block_heights";
   }
 
-  // QueryScheduledCorks returns all scheduled corks at a block height
+  // QueryScheduledCorksByBlockHeight returns all scheduled corks at a block height
   rpc QueryScheduledCorksByBlockHeight(QueryScheduledCorksByBlockHeightRequest) returns (QueryScheduledCorksByBlockHeightResponse) {
     option (cosmos.query.v1.module_query_safe) = true;
     option (google.api.http).get = "/sommelier/cork/v2/scheduled_corks_by_block_height/{block_height}";
   }
 
-  // QueryScheduledCorks returns all scheduled corks with the specified ID
+  // QueryScheduledCorksByID returns all scheduled corks with the specified ID
   rpc QueryScheduledCorksByID(QueryScheduledCorksByIDRequest) returns (QueryScheduledCorksByIDResponse) {
     option (cosmos.query.v1.module_query_safe) = true;
     option (google.api.http).get = "/sommelier/cork/v2/scheduled_corks_by_id/{id}";
