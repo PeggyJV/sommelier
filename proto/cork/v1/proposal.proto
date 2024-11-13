@@ -1,0 +1,35 @@
+syntax = "proto3";
+package cork.v1;
+
+import "cork/v1/cork.proto";
+import "gogoproto/gogo.proto";
+
+option go_package = "github.com/peggyjv/sommelier/v8/x/cork/types/v1";
+
+message AddManagedCellarIDsProposal {
+  string title = 1;
+  string description = 2;
+  CellarIDSet cellar_ids = 3;
+}
+
+// AddManagedCellarIDsProposalWithDeposit is a specific definition for CLI commands
+message AddManagedCellarIDsProposalWithDeposit {
+  string title = 1;
+  string description = 2;
+  repeated string cellar_ids = 3;
+  string deposit = 4;
+}
+
+message RemoveManagedCellarIDsProposal {
+  string title = 1;
+  string description = 2;
+  CellarIDSet cellar_ids = 3;
+}
+
+// RemoveManagedCellarIDsProposalWithDeposit is a specific definition for CLI commands
+message RemoveManagedCellarIDsProposalWithDeposit {
+  string title = 1;
+  string description = 2;
+  repeated string cellar_ids = 3;
+  string deposit = 4;
+}

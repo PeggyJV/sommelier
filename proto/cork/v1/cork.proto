@@ -1,0 +1,26 @@
+syntax = "proto3";
+package cork.v1;
+
+option go_package = "github.com/peggyjv/sommelier/v8/x/cork/types/v1";
+
+message Cork {
+  // call body containing the ABI encoded bytes to send to the contract
+  bytes encoded_contract_call = 1;
+  // address of the contract to send the call
+  string target_contract_address = 2;
+}
+
+message ValidatorCork {
+  Cork cork = 1;
+  string validator = 2;
+}
+
+message ScheduledCork {
+  Cork cork = 1;
+  uint64 block_height = 2;
+  string validator = 3;
+}
+
+message CellarIDSet {
+  repeated string ids = 1;
+}
