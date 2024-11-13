@@ -7,6 +7,7 @@ import "gogoproto/gogo.proto";
 option go_package = "github.com/peggyjv/sommelier/v8/x/cork/types/v1";
 
 message AddManagedCellarIDsProposal {
+  option (gogoproto.messagename) = true;
   string title = 1;
   string description = 2;
   CellarIDSet cellar_ids = 3;
@@ -14,6 +15,7 @@ message AddManagedCellarIDsProposal {
 
 // AddManagedCellarIDsProposalWithDeposit is a specific definition for CLI commands
 message AddManagedCellarIDsProposalWithDeposit {
+  option (gogoproto.messagename) = true;
   string title = 1;
   string description = 2;
   repeated string cellar_ids = 3;
@@ -21,6 +23,7 @@ message AddManagedCellarIDsProposalWithDeposit {
 }
 
 message RemoveManagedCellarIDsProposal {
+  option (gogoproto.messagename) = true;
   string title = 1;
   string description = 2;
   CellarIDSet cellar_ids = 3;
@@ -28,6 +31,7 @@ message RemoveManagedCellarIDsProposal {
 
 // RemoveManagedCellarIDsProposalWithDeposit is a specific definition for CLI commands
 message RemoveManagedCellarIDsProposalWithDeposit {
+  option (gogoproto.messagename) = true;
   string title = 1;
   string description = 2;
   repeated string cellar_ids = 3;
