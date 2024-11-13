@@ -16,6 +16,7 @@ import (
 	"github.com/peggyjv/sommelier/v8/x/cork/client/cli"
 	"github.com/peggyjv/sommelier/v8/x/cork/keeper"
 	corktypes "github.com/peggyjv/sommelier/v8/x/cork/types"
+	v1types "github.com/peggyjv/sommelier/v8/x/cork/types/v1"
 	types "github.com/peggyjv/sommelier/v8/x/cork/types/v2"
 	"github.com/spf13/cobra"
 )
@@ -71,6 +72,7 @@ func (AppModuleBasic) RegisterGRPCGatewayRoutes(clientCtx client.Context, mux *r
 
 // RegisterInterfaces implements app module basic
 func (b AppModuleBasic) RegisterInterfaces(registry codectypes.InterfaceRegistry) {
+	v1types.RegisterInterfaces(registry)
 	types.RegisterInterfaces(registry)
 }
 
