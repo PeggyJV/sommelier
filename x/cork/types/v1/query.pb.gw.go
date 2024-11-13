@@ -2,7 +2,7 @@
 // source: cork/v1/query.proto
 
 /*
-Package types is a reverse proxy.
+Package v1 is a reverse proxy.
 
 It translates gRPC into RESTful JSON APIs.
 */

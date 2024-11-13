@@ -72,8 +72,8 @@ func (AppModuleBasic) RegisterGRPCGatewayRoutes(clientCtx client.Context, mux *r
 
 // RegisterInterfaces implements app module basic
 func (b AppModuleBasic) RegisterInterfaces(registry codectypes.InterfaceRegistry) {
-	v1types.RegisterInterfaces(registry)
 	types.RegisterInterfaces(registry)
+	v1types.RegisterInterfaces(registry)
 }
 
 // AppModule implements an application module for the cork module.
