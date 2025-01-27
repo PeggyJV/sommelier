@@ -14,7 +14,7 @@ RUN go mod download
 COPY . .
 
 # build Sommelier
-RUN make install
+RUN make install -j1
 
 # Final image
 FROM alpine:edge
