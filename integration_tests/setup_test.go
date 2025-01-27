@@ -16,16 +16,16 @@ import (
 
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
-	gravitytypes "github.com/peggyjv/gravity-bridge/module/v5/x/gravity/types"
-	"github.com/peggyjv/sommelier/v8/app/params"
-	addressestypes "github.com/peggyjv/sommelier/v8/x/addresses/types"
-	auctiontypes "github.com/peggyjv/sommelier/v8/x/auction/types"
-	axelarcorktypes "github.com/peggyjv/sommelier/v8/x/axelarcork/types"
-	cellarfeestypes "github.com/peggyjv/sommelier/v8/x/cellarfees/types"
-	cellarfeestypesv2 "github.com/peggyjv/sommelier/v8/x/cellarfees/types/v2"
-	corktypesunversioned "github.com/peggyjv/sommelier/v8/x/cork/types"
-	corktypes "github.com/peggyjv/sommelier/v8/x/cork/types/v2"
-	pubsubtypes "github.com/peggyjv/sommelier/v8/x/pubsub/types"
+	gravitytypes "github.com/peggyjv/gravity-bridge/module/v6/x/gravity/types"
+	"github.com/peggyjv/sommelier/v9/app/params"
+	addressestypes "github.com/peggyjv/sommelier/v9/x/addresses/types"
+	auctiontypes "github.com/peggyjv/sommelier/v9/x/auction/types"
+	axelarcorktypes "github.com/peggyjv/sommelier/v9/x/axelarcork/types"
+	cellarfeestypes "github.com/peggyjv/sommelier/v9/x/cellarfees/types"
+	cellarfeestypesv2 "github.com/peggyjv/sommelier/v9/x/cellarfees/types/v2"
+	corktypesunversioned "github.com/peggyjv/sommelier/v9/x/cork/types"
+	corktypes "github.com/peggyjv/sommelier/v9/x/cork/types/v2"
+	pubsubtypes "github.com/peggyjv/sommelier/v9/x/pubsub/types"
 
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/ethclient"
@@ -70,9 +70,11 @@ HOqHGS8ApZcunRauDAIwRtgceZpkS92KuP3QOUotAH/nnCzp7X1lVzGOSTBRTVYJ
 pohf4PJrfacqpi7PoXBk
 -----END CERTIFICATE-----
 `
+	overflowDenom    = "overflow"
 	axelarSweepDenom = "sweep"
 	gravityDenom     = "gravity0x0000000000000000000000000000000000000000"
 	ibcDenom         = "ibc/1"
+	proceedsAddress  = "somm1rvu9w27sstm2z7jgyq7kll0hfj4fdhsgnw0tat"
 )
 
 var (
@@ -332,7 +334,20 @@ func (s *IntegrationTestSuite) initGenesis() {
 					Exponent: 0,
 				},
 			},
-		})
+		},
+		banktypes.Metadata{
+			Description: "Overflow amount for axelarcork module account",
+			Display:     overflowDenom,
+			Base:        overflowDenom,
+			Name:        overflowDenom,
+			DenomUnits: []*banktypes.DenomUnit{
+				{
+					Denom:    overflowDenom,
+					Exponent: 0,
+				},
+			},
+		},
+	)
 
 	// Set up auction module with some coins to auction off
 	auctionBalance := banktypes.Balance{
@@ -354,10 +369,18 @@ func (s *IntegrationTestSuite) initGenesis() {
 			sdk.NewCoin(ibcDenom, sdk.NewInt(99999999)),
 		),
 	}
+	// Cause an overflow during sweep
+	overflowAmount, ok := sdk.NewIntFromString("92000000000000000000000000000000000000000000000000000000000000000000000000000")
+	s.Require().True(ok)
+	axelarcorkBalance := banktypes.Balance{
+		Address: authtypes.NewModuleAddress(axelarcorktypes.ModuleName).String(),
+		Coins:   sdk.NewCoins(sdk.NewCoin(overflowDenom, overflowAmount)),
+	}
 	bankGenState.Balances = append(bankGenState.Balances, auctionBalance)
 	bankGenState.Balances = append(bankGenState.Balances, distBalance)
 	bankGenState.Balances = append(bankGenState.Balances, orchSweepBalance)
 	bankGenState.Balances = append(bankGenState.Balances, feesBalance)
+	bankGenState.Balances = append(bankGenState.Balances, axelarcorkBalance)
 
 	bz, err := cdc.MarshalJSON(&bankGenState)
 	s.Require().NoError(err)
@@ -465,6 +488,7 @@ func (s *IntegrationTestSuite) initGenesis() {
 		PriceDecreaseBlockInterval: uint64(1000),
 		AuctionInterval:            50,
 		AuctionThresholdUsdValue:   sdk.MustNewDecFromStr("100.00"),
+		ProceedsPortion:            sdk.MustNewDecFromStr("0.0"),
 	}
 	bz, err = cdc.MarshalJSON(&cellarfeesGenState)
 	s.Require().NoError(err)

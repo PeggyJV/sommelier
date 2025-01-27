@@ -12,8 +12,8 @@ import (
 	errorsmod "cosmossdk.io/errors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/ethereum/go-ethereum/common"
-	"github.com/peggyjv/sommelier/v8/x/axelarcork/types"
-	pubsubtypes "github.com/peggyjv/sommelier/v8/x/pubsub/types"
+	"github.com/peggyjv/sommelier/v9/x/axelarcork/types"
+	pubsubtypes "github.com/peggyjv/sommelier/v9/x/pubsub/types"
 )
 
 func NewAxelarSubscriptionID(chainID uint64, address common.Address) string {

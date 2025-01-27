@@ -12,8 +12,8 @@ import (
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	"github.com/cosmos/cosmos-sdk/x/genutil"
 	genutiltypes "github.com/cosmos/cosmos-sdk/x/genutil/types"
-	"github.com/peggyjv/sommelier/v8/app/params"
-	incentivestypes "github.com/peggyjv/sommelier/v8/x/incentives/types"
+	"github.com/peggyjv/sommelier/v9/app/params"
+	incentivestypes "github.com/peggyjv/sommelier/v9/x/incentives/types"
 )
 
 func getGenDoc(path string) (*tmtypes.GenesisDoc, error) {

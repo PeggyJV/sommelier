@@ -11,9 +11,9 @@ import (
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
-	"github.com/peggyjv/sommelier/v8/app/params"
-	cellarfeestypes "github.com/peggyjv/sommelier/v8/x/cellarfees/types"
-	types "github.com/peggyjv/sommelier/v8/x/cellarfees/types/v2"
+	"github.com/peggyjv/sommelier/v9/app/params"
+	cellarfeestypes "github.com/peggyjv/sommelier/v9/x/cellarfees/types"
+	types "github.com/peggyjv/sommelier/v9/x/cellarfees/types/v2"
 )
 
 type Keeper struct {

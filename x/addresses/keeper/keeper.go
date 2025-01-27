@@ -10,7 +10,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
 
-	"github.com/peggyjv/sommelier/v8/x/addresses/types"
+	"github.com/peggyjv/sommelier/v9/x/addresses/types"
 )
 
 type (

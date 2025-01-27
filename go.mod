@@ -1,4 +1,4 @@
-module github.com/peggyjv/sommelier/v8
+module github.com/peggyjv/sommelier/v9
 
 go 1.22
 
@@ -7,11 +7,11 @@ toolchain go1.22.1
 require (
 	cosmossdk.io/api v0.3.1
 	cosmossdk.io/errors v1.0.1
-	cosmossdk.io/math v1.3.0
+	cosmossdk.io/math v1.4.0
 	github.com/cometbft/cometbft v0.37.5
 	github.com/cometbft/cometbft-db v0.11.0
 	github.com/cosmos/cosmos-proto v1.0.0-beta.5
-	github.com/cosmos/cosmos-sdk v0.47.14
+	github.com/cosmos/cosmos-sdk v0.47.15
 	github.com/cosmos/go-bip39 v1.0.0
 	github.com/cosmos/gogoproto v1.7.0
 	github.com/cosmos/ibc-go/v7 v7.8.0
@@ -23,9 +23,8 @@ require (
 	github.com/grpc-ecosystem/grpc-gateway v1.16.0
 	github.com/miguelmota/go-ethereum-hdwallet v0.1.1
 	github.com/ory/dockertest/v3 v3.10.0
-	github.com/peggyjv/gravity-bridge/module/v5 v5.0.0-20241023135054-397d3b1298c8
+	github.com/peggyjv/gravity-bridge/module/v6 v6.0.0
 	github.com/rakyll/statik v0.1.7
-	github.com/regen-network/cosmos-proto v0.3.1
 	github.com/spf13/cast v1.6.0
 	github.com/spf13/cobra v1.8.0
 	github.com/spf13/viper v1.18.2

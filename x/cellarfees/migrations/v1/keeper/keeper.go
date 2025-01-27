@@ -13,8 +13,8 @@ import (
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
-	"github.com/peggyjv/sommelier/v8/app/params"
-	v1types "github.com/peggyjv/sommelier/v8/x/cellarfees/migrations/v1/types"
+	"github.com/peggyjv/sommelier/v9/app/params"
+	v1types "github.com/peggyjv/sommelier/v9/x/cellarfees/migrations/v1/types"
 )
 
 type Keeper struct {

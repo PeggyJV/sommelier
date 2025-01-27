@@ -4,7 +4,7 @@ package cork.v1;
 import "cork/v1/cork.proto";
 import "gogoproto/gogo.proto";
 
-option go_package = "github.com/peggyjv/sommelier/v8/x/cork/types/v1";
+option go_package = "github.com/peggyjv/sommelier/v9/x/cork/types/v1";
 
 message AddManagedCellarIDsProposal {
   option (gogoproto.messagename) = true;

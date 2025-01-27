@@ -7,8 +7,8 @@ import (
 	errorsmod "cosmossdk.io/errors"
 	govtypesv1beta1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
 	"github.com/ethereum/go-ethereum/common"
-	types "github.com/peggyjv/sommelier/v8/x/cork/types"
-	pubsubtypes "github.com/peggyjv/sommelier/v8/x/pubsub/types"
+	types "github.com/peggyjv/sommelier/v9/x/cork/types"
+	pubsubtypes "github.com/peggyjv/sommelier/v9/x/pubsub/types"
 )
 
 const (

@@ -2,7 +2,7 @@ package app
 
 import (
 	"github.com/cosmos/cosmos-sdk/std"
-	"github.com/peggyjv/sommelier/v8/app/params"
+	"github.com/peggyjv/sommelier/v9/app/params"
 )
 
 // MakeEncodingConfig creates an EncodingConfig for testing. This function

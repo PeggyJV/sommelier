@@ -104,37 +104,38 @@ import (
 	solomachine "github.com/cosmos/ibc-go/v7/modules/light-clients/06-solomachine"
 	ibctm "github.com/cosmos/ibc-go/v7/modules/light-clients/07-tendermint"
 	"github.com/gorilla/mux"
-	"github.com/peggyjv/gravity-bridge/module/v5/x/gravity"
-	gravityclient "github.com/peggyjv/gravity-bridge/module/v5/x/gravity/client"
-	gravitykeeper "github.com/peggyjv/gravity-bridge/module/v5/x/gravity/keeper"
-	gravitytypes "github.com/peggyjv/gravity-bridge/module/v5/x/gravity/types"
-	appParams "github.com/peggyjv/sommelier/v8/app/params"
-	v8 "github.com/peggyjv/sommelier/v8/app/upgrades/v8"
-	"github.com/peggyjv/sommelier/v8/x/addresses"
-	addresseskeeper "github.com/peggyjv/sommelier/v8/x/addresses/keeper"
-	addressestypes "github.com/peggyjv/sommelier/v8/x/addresses/types"
-	"github.com/peggyjv/sommelier/v8/x/auction"
-	auctionclient "github.com/peggyjv/sommelier/v8/x/auction/client"
-	auctionkeeper "github.com/peggyjv/sommelier/v8/x/auction/keeper"
-	auctiontypes "github.com/peggyjv/sommelier/v8/x/auction/types"
-	"github.com/peggyjv/sommelier/v8/x/axelarcork"
-	axelarcorkclient "github.com/peggyjv/sommelier/v8/x/axelarcork/client"
-	axelarcorkkeeper "github.com/peggyjv/sommelier/v8/x/axelarcork/keeper"
-	axelarcorktypes "github.com/peggyjv/sommelier/v8/x/axelarcork/types"
-	"github.com/peggyjv/sommelier/v8/x/cellarfees"
-	cellarfeeskeeper "github.com/peggyjv/sommelier/v8/x/cellarfees/keeper"
-	cellarfeestypes "github.com/peggyjv/sommelier/v8/x/cellarfees/types"
-	"github.com/peggyjv/sommelier/v8/x/cork"
-	corkclient "github.com/peggyjv/sommelier/v8/x/cork/client"
-	corkkeeper "github.com/peggyjv/sommelier/v8/x/cork/keeper"
-	corktypes "github.com/peggyjv/sommelier/v8/x/cork/types"
-	"github.com/peggyjv/sommelier/v8/x/incentives"
-	incentiveskeeper "github.com/peggyjv/sommelier/v8/x/incentives/keeper"
-	incentivestypes "github.com/peggyjv/sommelier/v8/x/incentives/types"
-	"github.com/peggyjv/sommelier/v8/x/pubsub"
-	pubsubclient "github.com/peggyjv/sommelier/v8/x/pubsub/client"
-	pubsubkeeper "github.com/peggyjv/sommelier/v8/x/pubsub/keeper"
-	pubsubtypes "github.com/peggyjv/sommelier/v8/x/pubsub/types"
+	"github.com/peggyjv/gravity-bridge/module/v6/x/gravity"
+	gravityclient "github.com/peggyjv/gravity-bridge/module/v6/x/gravity/client"
+	gravitykeeper "github.com/peggyjv/gravity-bridge/module/v6/x/gravity/keeper"
+	gravitytypes "github.com/peggyjv/gravity-bridge/module/v6/x/gravity/types"
+	appParams "github.com/peggyjv/sommelier/v9/app/params"
+	v8 "github.com/peggyjv/sommelier/v9/app/upgrades/v8"
+	v9 "github.com/peggyjv/sommelier/v9/app/upgrades/v9"
+	"github.com/peggyjv/sommelier/v9/x/addresses"
+	addresseskeeper "github.com/peggyjv/sommelier/v9/x/addresses/keeper"
+	addressestypes "github.com/peggyjv/sommelier/v9/x/addresses/types"
+	"github.com/peggyjv/sommelier/v9/x/auction"
+	auctionclient "github.com/peggyjv/sommelier/v9/x/auction/client"
+	auctionkeeper "github.com/peggyjv/sommelier/v9/x/auction/keeper"
+	auctiontypes "github.com/peggyjv/sommelier/v9/x/auction/types"
+	"github.com/peggyjv/sommelier/v9/x/axelarcork"
+	axelarcorkclient "github.com/peggyjv/sommelier/v9/x/axelarcork/client"
+	axelarcorkkeeper "github.com/peggyjv/sommelier/v9/x/axelarcork/keeper"
+	axelarcorktypes "github.com/peggyjv/sommelier/v9/x/axelarcork/types"
+	"github.com/peggyjv/sommelier/v9/x/cellarfees"
+	cellarfeeskeeper "github.com/peggyjv/sommelier/v9/x/cellarfees/keeper"
+	cellarfeestypes "github.com/peggyjv/sommelier/v9/x/cellarfees/types"
+	"github.com/peggyjv/sommelier/v9/x/cork"
+	corkclient "github.com/peggyjv/sommelier/v9/x/cork/client"
+	corkkeeper "github.com/peggyjv/sommelier/v9/x/cork/keeper"
+	corktypes "github.com/peggyjv/sommelier/v9/x/cork/types"
+	"github.com/peggyjv/sommelier/v9/x/incentives"
+	incentiveskeeper "github.com/peggyjv/sommelier/v9/x/incentives/keeper"
+	incentivestypes "github.com/peggyjv/sommelier/v9/x/incentives/types"
+	"github.com/peggyjv/sommelier/v9/x/pubsub"
+	pubsubclient "github.com/peggyjv/sommelier/v9/x/pubsub/client"
+	pubsubkeeper "github.com/peggyjv/sommelier/v9/x/pubsub/keeper"
+	pubsubtypes "github.com/peggyjv/sommelier/v9/x/pubsub/types"
 	"github.com/rakyll/statik/fs"
 
 	// unnamed import of statik for swagger UI support
@@ -226,7 +227,7 @@ var (
 		gravitytypes.ModuleName:        {authtypes.Minter, authtypes.Burner},
 		cellarfeestypes.ModuleName:     nil,
 		incentivestypes.ModuleName:     nil,
-		axelarcorktypes.ModuleName:     nil,
+		axelarcorktypes.ModuleName:     {authtypes.Burner},
 		auctiontypes.ModuleName:        {authtypes.Burner},
 		pubsubtypes.ModuleName:         nil,
 		addressestypes.ModuleName:      nil,
@@ -1090,6 +1091,14 @@ func (app *SommelierApp) setupUpgradeHandlers() {
 			app.appCodec,
 			app.IBCKeeper.ClientKeeper,
 			&app.AccountKeeper,
+		),
+	)
+
+	app.UpgradeKeeper.SetUpgradeHandler(
+		v9.UpgradeName,
+		v9.CreateUpgradeHandler(
+			app.mm,
+			app.configurator,
 		),
 	)
 }

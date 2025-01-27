@@ -8,8 +8,8 @@ import (
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	govtypesv1beta1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
-	"github.com/peggyjv/sommelier/v8/x/auction/types"
-	cellarfees "github.com/peggyjv/sommelier/v8/x/cellarfees/types"
+	"github.com/peggyjv/sommelier/v9/x/auction/types"
+	cellarfees "github.com/peggyjv/sommelier/v9/x/cellarfees/types"
 )
 
 func (s *IntegrationTestSuite) TestAuction() {

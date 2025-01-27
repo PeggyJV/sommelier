@@ -5,7 +5,7 @@ import "cosmos_proto/cosmos.proto";
 import "auction/v1/auction.proto";
 import "gogoproto/gogo.proto";
 
-option go_package = "github.com/peggyjv/sommelier/v8/x/auction/types";
+option go_package = "github.com/peggyjv/sommelier/v9/x/auction/types";
 
 message SetTokenPricesProposal {
   string title = 1;

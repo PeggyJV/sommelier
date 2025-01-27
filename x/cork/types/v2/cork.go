@@ -10,7 +10,7 @@ import (
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/crypto"
-	corktypes "github.com/peggyjv/sommelier/v8/x/cork/types"
+	corktypes "github.com/peggyjv/sommelier/v9/x/cork/types"
 )
 
 func (c *Cork) InvalidationScope() tmbytes.HexBytes {

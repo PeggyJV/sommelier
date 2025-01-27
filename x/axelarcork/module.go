@@ -12,9 +12,9 @@ import (
 	"github.com/cosmos/cosmos-sdk/types/module"
 	sim "github.com/cosmos/cosmos-sdk/types/simulation"
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
-	"github.com/peggyjv/sommelier/v8/x/axelarcork/client/cli"
-	"github.com/peggyjv/sommelier/v8/x/axelarcork/keeper"
-	"github.com/peggyjv/sommelier/v8/x/axelarcork/types"
+	"github.com/peggyjv/sommelier/v9/x/axelarcork/client/cli"
+	"github.com/peggyjv/sommelier/v9/x/axelarcork/keeper"
+	"github.com/peggyjv/sommelier/v9/x/axelarcork/types"
 	"github.com/spf13/cobra"
 )
 
@@ -99,7 +99,7 @@ func (AppModule) QuerierRoute() string { return types.QuerierRoute }
 
 // ConsensusVersion implements AppModule/ConsensusVersion.
 func (AppModule) ConsensusVersion() uint64 {
-	return 1
+	return 2
 }
 
 func (am AppModule) WeightedOperations(simState module.SimulationState) []sim.WeightedOperation {
@@ -110,6 +110,11 @@ func (am AppModule) WeightedOperations(simState module.SimulationState) []sim.We
 func (am AppModule) RegisterServices(cfg module.Configurator) {
 	types.RegisterMsgServer(cfg.MsgServer(), am.keeper)
 	types.RegisterQueryServer(cfg.QueryServer(), am.keeper)
+
+	// RegisterUpgradeHandler registers the no-op upgrade handler
+	cfg.RegisterMigration(types.ModuleName, 1, func(ctx sdk.Context) error {
+		return nil
+	})
 }
 
 // InitGenesis performs genesis initialization for the cork module.

@@ -14,4 +14,5 @@ var (
 	ErrInvalidLastRewardSupplyPeak       = errorsmod.Register(ModuleName, 7, "invalid last reward supply peak")
 	ErrInvalidAuctionInterval            = errorsmod.Register(ModuleName, 8, "invalid interval blocks between auctions")
 	ErrInvalidAuctionThresholdUsdValue   = errorsmod.Register(ModuleName, 9, "invalid auction threshold USD value")
+	ErrInvalidProceedsPortion            = errorsmod.Register(ModuleName, 10, "invalid proceeds portion")
 )

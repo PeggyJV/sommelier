@@ -2,8 +2,8 @@ package keeper
 
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	auctiontypes "github.com/peggyjv/sommelier/v8/x/auction/types"
-	"github.com/peggyjv/sommelier/v8/x/cellarfees/types"
+	auctiontypes "github.com/peggyjv/sommelier/v9/x/auction/types"
+	"github.com/peggyjv/sommelier/v9/x/cellarfees/types"
 )
 
 // Attempts to start an auction for the provided denom

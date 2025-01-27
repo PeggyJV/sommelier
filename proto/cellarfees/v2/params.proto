@@ -3,7 +3,7 @@ package cellarfees.v2;
 
 import "gogoproto/gogo.proto";
 
-option go_package = "github.com/peggyjv/sommelier/v8/x/cellarfees/types/v2";
+option go_package = "github.com/peggyjv/sommelier/v9/x/cellarfees/types/v2";
 
 // Params defines the parameters for the module.
 message Params {
@@ -23,6 +23,9 @@ message Params {
   uint64 auction_interval = 5;
   // A fee token's total USD value threshold, based on it's auction.v1.TokenPrice, above which an auction is triggered
   string auction_threshold_usd_value = 6
+    [(gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec", (gogoproto.nullable) = false];
+  // Proceeds portion of the auction
+  string proceeds_portion = 7
     [(gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec", (gogoproto.nullable) = false];
 }
 

@@ -16,9 +16,9 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	sim "github.com/cosmos/cosmos-sdk/types/simulation"
-	"github.com/peggyjv/sommelier/v8/x/pubsub/client/cli"
-	"github.com/peggyjv/sommelier/v8/x/pubsub/keeper"
-	"github.com/peggyjv/sommelier/v8/x/pubsub/types"
+	"github.com/peggyjv/sommelier/v9/x/pubsub/client/cli"
+	"github.com/peggyjv/sommelier/v9/x/pubsub/keeper"
+	"github.com/peggyjv/sommelier/v9/x/pubsub/types"
 )
 
 var (

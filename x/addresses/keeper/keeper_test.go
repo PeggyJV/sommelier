@@ -12,8 +12,8 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	moduletestutil "github.com/peggyjv/sommelier/v8/testutil"
-	"github.com/peggyjv/sommelier/v8/x/addresses/types"
+	moduletestutil "github.com/peggyjv/sommelier/v9/testutil"
+	"github.com/peggyjv/sommelier/v9/x/addresses/types"
 
 	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
 	tmtime "github.com/cometbft/cometbft/types/time"

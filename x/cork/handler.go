@@ -7,8 +7,8 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	"github.com/peggyjv/sommelier/v8/x/cork/keeper"
-	types "github.com/peggyjv/sommelier/v8/x/cork/types/v2"
+	"github.com/peggyjv/sommelier/v9/x/cork/keeper"
+	types "github.com/peggyjv/sommelier/v9/x/cork/types/v2"
 )
 
 // NewHandler returns a handler for "cork" type messages.

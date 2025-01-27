@@ -2,7 +2,7 @@ package keeper
 
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	cellarfeestypesv2 "github.com/peggyjv/sommelier/v8/x/cellarfees/types/v2"
+	cellarfeestypesv2 "github.com/peggyjv/sommelier/v9/x/cellarfees/types/v2"
 )
 
 func (suite *KeeperTestSuite) TestImportingEmptyGenesis() {
@@ -38,6 +38,7 @@ func (suite *KeeperTestSuite) TestImportingPopulatedGenesis() {
 	testGenesis.Params.RewardEmissionPeriod = 600
 	testGenesis.Params.AuctionInterval = 1000
 	testGenesis.Params.AuctionThresholdUsdValue = sdk.NewDec(1000000)
+	testGenesis.Params.ProceedsPortion = sdk.MustNewDecFromStr("0.5")
 
 	require.NotPanics(func() {
 		suite.accountKeeper.EXPECT().GetModuleAccount(ctx, feesAccount.GetName()).Return(feesAccount)
@@ -68,6 +69,7 @@ func (suite *KeeperTestSuite) TestExportingPopulatedGenesis() {
 	params.RewardEmissionPeriod = 600
 	params.AuctionInterval = 1000
 	params.AuctionThresholdUsdValue = sdk.NewDec(1000000)
+	params.ProceedsPortion = sdk.MustNewDecFromStr("0.5")
 	cellarfeesKeeper.SetParams(ctx, params)
 	peak := sdk.NewInt(1337)
 	cellarfeesKeeper.SetLastRewardSupplyPeak(ctx, peak)

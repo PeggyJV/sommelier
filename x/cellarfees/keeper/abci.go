@@ -3,8 +3,8 @@ package keeper
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
-	paramstypes "github.com/peggyjv/sommelier/v8/app/params"
-	"github.com/peggyjv/sommelier/v8/x/cellarfees/types"
+	paramstypes "github.com/peggyjv/sommelier/v9/app/params"
+	"github.com/peggyjv/sommelier/v9/x/cellarfees/types"
 )
 
 // BeginBlocker emits rewards each block they are available by sending them to the distribution module's fee collector
@@ -66,7 +66,68 @@ func (k Keeper) handleFeeAuctions(ctx sdk.Context) {
 		usdValue := k.GetBalanceUsdValue(ctx, balance, tokenPrice)
 
 		if usdValue.GTE(params.AuctionThresholdUsdValue) {
-			k.beginAuction(ctx, balance)
+			// Send portion to proceeds module
+			auctionBalance := k.handleProceeds(ctx, balance)
+
+			if auctionBalance.IsZero() {
+				continue
+			}
+
+			// Begin auction with remaining balance
+			k.beginAuction(ctx, auctionBalance)
 		}
 	}
+}
+
+// handleProceeds transfers the proceeds portion of the balance to the proceeds account and returns the remaining balance for auction
+func (k Keeper) handleProceeds(ctx sdk.Context, balance sdk.Coin) sdk.Coin {
+	portion := k.GetParams(ctx).ProceedsPortion
+
+	if portion.IsZero() || balance.IsZero() {
+		return balance
+	}
+
+	zeroBalance := sdk.NewCoin(balance.Denom, sdk.ZeroInt())
+	proceedsAccount := k.GetProceedsAccount(ctx)
+	if proceedsAccount == nil {
+		ctx.Logger().Error("Proceeds account not found", "address", proceedsAddress)
+		// Don't auction the funds so that the account can be created and balance processed later
+		return zeroBalance
+	}
+
+	// Special case: if proceeds portion is 100%, send entire balance to proceeds
+	if portion.Equal(sdk.OneDec()) {
+		err := k.bankKeeper.SendCoinsFromModuleToAccount(
+			ctx,
+			types.ModuleName,
+			proceedsAccount.GetAddress(),
+			sdk.NewCoins(balance),
+		)
+		if err != nil {
+			ctx.Logger().Error("Error sending proceeds to proceeds account", "error", err)
+		}
+
+		return zeroBalance
+	}
+
+	// Normal case: calculate proceeds amount
+	proceedsAmount := balance.Amount.ToLegacyDec().Mul(portion).TruncateInt()
+	if proceedsAmount.IsZero() {
+		return balance
+	}
+
+	auctionBalance := balance.Sub(sdk.NewCoin(balance.Denom, proceedsAmount))
+	proceedsCoin := sdk.NewCoin(balance.Denom, proceedsAmount)
+
+	err := k.bankKeeper.SendCoinsFromModuleToAccount(
+		ctx,
+		types.ModuleName,
+		proceedsAccount.GetAddress(),
+		sdk.NewCoins(proceedsCoin),
+	)
+	if err != nil {
+		ctx.Logger().Error("Error sending proceeds to proceeds account", "error", err)
+	}
+
+	return auctionBalance
 }

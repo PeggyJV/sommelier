@@ -4,14 +4,26 @@ import (
 	"cosmossdk.io/math"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
-	"github.com/peggyjv/sommelier/v8/app/params"
-	auctiontypes "github.com/peggyjv/sommelier/v8/x/auction/types"
-	"github.com/peggyjv/sommelier/v8/x/cellarfees/types"
+	"github.com/peggyjv/sommelier/v9/app/params"
+	auctiontypes "github.com/peggyjv/sommelier/v9/x/auction/types"
+	"github.com/peggyjv/sommelier/v9/x/cellarfees/types"
 )
+
+const proceedsAddress = "somm1rvu9w27sstm2z7jgyq7kll0hfj4fdhsgnw0tat"
 
 // Getter for module account that holds the fee pool funds
 func (k Keeper) GetFeesAccount(ctx sdk.Context) authtypes.ModuleAccountI {
 	return k.accountKeeper.GetModuleAccount(ctx, types.ModuleName)
+}
+
+// GetProceedsAccount returns the account that receives platform fees
+func (k Keeper) GetProceedsAccount(ctx sdk.Context) authtypes.AccountI {
+	addr, err := sdk.AccAddressFromBech32(proceedsAddress)
+	if err != nil {
+		panic(err)
+	}
+
+	return k.accountKeeper.GetAccount(ctx, addr)
 }
 
 func (k Keeper) GetEmission(ctx sdk.Context, remainingRewardsSupply math.Int) sdk.Coins {

@@ -4,7 +4,7 @@ import (
 	"testing"
 
 	errorsmod "cosmossdk.io/errors"
-	types "github.com/peggyjv/sommelier/v8/x/cork/types"
+	types "github.com/peggyjv/sommelier/v9/x/cork/types"
 	"github.com/stretchr/testify/require"
 )
 

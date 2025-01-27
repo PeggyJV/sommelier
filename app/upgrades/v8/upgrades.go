@@ -15,7 +15,7 @@ import (
 	ibcexported "github.com/cosmos/ibc-go/v7/modules/core/exported"
 	ibckeeper "github.com/cosmos/ibc-go/v7/modules/core/keeper"
 	ibctmmigrations "github.com/cosmos/ibc-go/v7/modules/light-clients/07-tendermint/migrations"
-	auctiontypes "github.com/peggyjv/sommelier/v8/x/auction/types"
+	auctiontypes "github.com/peggyjv/sommelier/v9/x/auction/types"
 )
 
 func CreateUpgradeHandler(

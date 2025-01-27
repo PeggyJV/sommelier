@@ -16,8 +16,8 @@ import (
 	govtypesv1beta1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/golang/protobuf/proto" //nolint:staticcheck
-	"github.com/peggyjv/sommelier/v8/x/axelarcork/types"
-	pubsubtypes "github.com/peggyjv/sommelier/v8/x/pubsub/types"
+	"github.com/peggyjv/sommelier/v9/x/axelarcork/types"
+	pubsubtypes "github.com/peggyjv/sommelier/v9/x/pubsub/types"
 )
 
 func (s *IntegrationTestSuite) TestAxelarCork() {
@@ -493,6 +493,7 @@ func (s *IntegrationTestSuite) TestAxelarCork() {
 		usommToSend := sdk.NewCoin(testDenom, math.NewInt(1000))
 		found, sweepDenomToSend := orch0Balances.Find(axelarSweepDenom)
 		s.Require().True(found, "orch0 doesn't have any sweep test denom funds")
+
 		orch0SweepFunds := sdk.Coins{
 			sweepDenomToSend,
 			usommToSend,
@@ -509,13 +510,21 @@ func (s *IntegrationTestSuite) TestAxelarCork() {
 		s.Require().NoError(err)
 		s.Require().Zero(sendResponse.Code, "raw log: %s", sendResponse.RawLog)
 
-		s.T().Log("Verifying distribution community pool balances includes the swept funds")
+		s.T().Log("Verifying distribution community pool balances includes the swept funds (excluding overflow)")
 		poolAfterSweep := initialPool.Add(sdk.NewDecCoinsFromCoins(usommToSend)...).Add(sdk.NewDecCoinsFromCoins(sweepDenomToSend)...)
 		s.Require().Eventually(func() bool {
 			distributionCommunityPoolResponse, err := distributionQueryClient.CommunityPool(context.Background(), &distributiontypes.QueryCommunityPoolRequest{})
 			s.Require().NoError(err)
 			return poolAfterSweep.IsEqual(distributionCommunityPoolResponse.Pool)
 		}, time.Second*60, time.Second*5, "swept funds never reached community pool")
+
+		s.T().Log("Verifying overflow denom was burned")
+		moduleBalanceResponse, err := bankQueryClient.Balance(context.Background(), &banktypes.QueryBalanceRequest{
+			Address: axelarcorkModuleAddress.String(),
+			Denom:   "overflow",
+		})
+		s.Require().NoError(err)
+		s.Require().True(moduleBalanceResponse.Balance.IsZero(), "overflow denom was not burned")
 	})
 }
 

@@ -5,7 +5,7 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
-	"github.com/peggyjv/sommelier/v8/x/pubsub/types"
+	"github.com/peggyjv/sommelier/v9/x/pubsub/types"
 	"github.com/spf13/cobra"
 )
 
