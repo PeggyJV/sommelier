@@ -1,4 +1,4 @@
-FROM golang:1.22.2-alpine3.21 AS build-env
+FROM golang:1.22.11-alpine3.21 AS build-env
 
 RUN apk add --no-cache curl make git libc-dev bash gcc linux-headers eudev-dev python3
 
