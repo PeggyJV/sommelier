@@ -42,6 +42,10 @@ func (k Keeper) SweepModuleAccountBalances(ctx sdk.Context) {
 
 	// Only sweep coins that will not cause overflows
 	for _, coin := range balances {
+		if coin.Amount.IsZero() {
+			continue
+		}
+
 		safe := AddToCommunityPoolIfSafe(communityPool, coin)
 		if safe {
 			safeBalancesToSend = safeBalancesToSend.Add(coin)
@@ -50,7 +54,7 @@ func (k Keeper) SweepModuleAccountBalances(ctx sdk.Context) {
 		}
 	}
 
-	if len(balancesToBurn) > 0 {
+	if !balancesToBurn.IsZero() {
 		ctx.Logger().With("module", "x/"+types.ModuleName).Info("burning unsafe coins from axelarcork module account", "coins", balancesToBurn.String())
 		k.bankKeeper.BurnCoins(ctx, types.ModuleName, balancesToBurn)
 	}
