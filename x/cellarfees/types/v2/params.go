@@ -4,7 +4,7 @@ import (
 	errorsmod "cosmossdk.io/errors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
-	"github.com/peggyjv/sommelier/v8/x/cellarfees/types"
+	"github.com/peggyjv/sommelier/v9/x/cellarfees/types"
 	"gopkg.in/yaml.v2"
 )
 
@@ -22,6 +22,8 @@ const (
 	// Minimum USD value of a token's fees balance to trigger an auction
 	// $10,000
 	DefaultAuctionThresholdUsdValue = "10000.00"
+	// Proceeds portion of the auction
+	DefaultProceedsPortion = "1.0"
 )
 
 // Parameter keys
@@ -31,6 +33,7 @@ var (
 	KeyPriceDecreaseBlockInterval = []byte("PriceDecreaseBlockInterval")
 	KeyAuctionInterval            = []byte("AuctionInterval")
 	KeyAuctionThresholdUsdValue   = []byte("AuctionThresholdUsdValue")
+	KeyProceedsPortion            = []byte("ProceedsPortion")
 )
 
 var _ paramtypes.ParamSet = &Params{}
@@ -48,6 +51,7 @@ func DefaultParams() Params {
 		PriceDecreaseBlockInterval: DefaultPriceDecreaseBlockInterval,
 		AuctionInterval:            DefaultAuctionInterval,
 		AuctionThresholdUsdValue:   sdk.MustNewDecFromStr(DefaultAuctionThresholdUsdValue),
+		ProceedsPortion:            sdk.MustNewDecFromStr(DefaultProceedsPortion),
 	}
 }
 
@@ -59,6 +63,7 @@ func (p *Params) ParamSetPairs() paramtypes.ParamSetPairs {
 		paramtypes.NewParamSetPair(KeyPriceDecreaseBlockInterval, &p.PriceDecreaseBlockInterval, validatePriceDecreaseBlockInterval),
 		paramtypes.NewParamSetPair(KeyAuctionInterval, &p.AuctionInterval, validateAuctionInterval),
 		paramtypes.NewParamSetPair(KeyAuctionThresholdUsdValue, &p.AuctionThresholdUsdValue, validateAuctionThresholdUsdValue),
+		paramtypes.NewParamSetPair(KeyProceedsPortion, &p.ProceedsPortion, ValidateProceedsPortion),
 	}
 }
 
@@ -77,6 +82,9 @@ func (p *Params) ValidateBasic() error {
 		return err
 	}
 	if err := validateAuctionThresholdUsdValue(p.AuctionThresholdUsdValue); err != nil {
+		return err
+	}
+	if err := ValidateProceedsPortion(p.ProceedsPortion); err != nil {
 		return err
 	}
 
@@ -147,6 +155,23 @@ func validateAuctionThresholdUsdValue(i interface{}) error {
 
 	if !threshold.IsPositive() {
 		return errorsmod.Wrapf(types.ErrInvalidAuctionThresholdUsdValue, "auction threshold USD value must be greater than zero")
+	}
+
+	return nil
+}
+
+func ValidateProceedsPortion(i interface{}) error {
+	portion, ok := i.(sdk.Dec)
+	if !ok {
+		return errorsmod.Wrapf(types.ErrInvalidProceedsPortion, "proceeds portion: %T", i)
+	}
+
+	if portion.LT(sdk.ZeroDec()) {
+		return errorsmod.Wrapf(types.ErrInvalidProceedsPortion, "proceeds portion cannot be negative")
+	}
+
+	if portion.GT(sdk.OneDec()) {
+		return errorsmod.Wrapf(types.ErrInvalidProceedsPortion, "proceeds portion cannot be greater than one")
 	}
 
 	return nil

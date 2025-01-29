@@ -5,7 +5,7 @@ import (
 	"time"
 
 	"github.com/ethereum/go-ethereum/common"
-	"github.com/peggyjv/sommelier/v8/x/addresses/types"
+	"github.com/peggyjv/sommelier/v9/x/addresses/types"
 )
 
 func (s *IntegrationTestSuite) TestAddresses() {

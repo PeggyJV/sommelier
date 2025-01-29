@@ -19,7 +19,7 @@ import (
 	porttypes "github.com/cosmos/ibc-go/v7/modules/core/05-port/types"
 	"github.com/cosmos/ibc-go/v7/modules/core/exported"
 	"github.com/ethereum/go-ethereum/common"
-	"github.com/peggyjv/sommelier/v8/x/axelarcork/types"
+	"github.com/peggyjv/sommelier/v9/x/axelarcork/types"
 )
 
 var _ porttypes.ICS4Wrapper = &Keeper{}

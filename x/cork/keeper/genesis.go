@@ -4,7 +4,7 @@ import (
 	"sort"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	types "github.com/peggyjv/sommelier/v8/x/cork/types/v2"
+	types "github.com/peggyjv/sommelier/v9/x/cork/types/v2"
 )
 
 // InitGenesis initialize default parameters

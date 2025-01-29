@@ -4,8 +4,8 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/peggyjv/sommelier/v8/x/axelarcork/tests/mocks"
-	"github.com/peggyjv/sommelier/v8/x/axelarcork/types"
+	"github.com/peggyjv/sommelier/v9/x/axelarcork/tests/mocks"
+	"github.com/peggyjv/sommelier/v9/x/axelarcork/types"
 
 	tmdb "github.com/cometbft/cometbft-db"
 	"github.com/cometbft/cometbft/libs/log"

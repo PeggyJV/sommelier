@@ -14,8 +14,8 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
-	"github.com/peggyjv/sommelier/v8/app/params"
-	"github.com/peggyjv/sommelier/v8/x/auction/types"
+	"github.com/peggyjv/sommelier/v9/app/params"
+	"github.com/peggyjv/sommelier/v9/x/auction/types"
 )
 
 // Keeper of the auction store

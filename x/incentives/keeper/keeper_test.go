@@ -11,10 +11,10 @@ import (
 	mintTypes "github.com/cosmos/cosmos-sdk/x/mint/types"
 	paramskeeper "github.com/cosmos/cosmos-sdk/x/params/keeper"
 	"github.com/golang/mock/gomock"
-	"github.com/peggyjv/sommelier/v8/app/params"
-	moduletestutil "github.com/peggyjv/sommelier/v8/testutil"
-	incentivestestutil "github.com/peggyjv/sommelier/v8/x/incentives/testutil"
-	incentivesTypes "github.com/peggyjv/sommelier/v8/x/incentives/types"
+	"github.com/peggyjv/sommelier/v9/app/params"
+	moduletestutil "github.com/peggyjv/sommelier/v9/testutil"
+	incentivestestutil "github.com/peggyjv/sommelier/v9/x/incentives/testutil"
+	incentivesTypes "github.com/peggyjv/sommelier/v9/x/incentives/types"
 	"github.com/stretchr/testify/suite"
 )
 

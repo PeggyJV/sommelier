@@ -5,7 +5,7 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/query"
-	"github.com/peggyjv/sommelier/v8/x/auction/types"
+	"github.com/peggyjv/sommelier/v9/x/auction/types"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )

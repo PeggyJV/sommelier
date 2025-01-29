@@ -5,7 +5,7 @@ import "auction/v1/tx.proto";
 import "auction/v1/auction.proto";
 import "gogoproto/gogo.proto";
 
-option go_package = "github.com/peggyjv/sommelier/v8/x/auction/types";
+option go_package = "github.com/peggyjv/sommelier/v9/x/auction/types";
 
 message GenesisState {
   Params params = 1 [ (gogoproto.nullable) = false ];

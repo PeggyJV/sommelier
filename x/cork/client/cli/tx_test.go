@@ -4,7 +4,7 @@ import (
 	"os"
 	"testing"
 
-	types "github.com/peggyjv/sommelier/v8/x/cork/types/v2"
+	types "github.com/peggyjv/sommelier/v9/x/cork/types/v2"
 
 	"github.com/cosmos/cosmos-sdk/testutil"
 	moduletestutil "github.com/cosmos/cosmos-sdk/types/module/testutil"

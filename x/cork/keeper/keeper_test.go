@@ -13,10 +13,10 @@ import (
 	paramskeeper "github.com/cosmos/cosmos-sdk/x/params/keeper"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/golang/mock/gomock"
-	moduletestutil "github.com/peggyjv/sommelier/v8/testutil"
-	corktestutil "github.com/peggyjv/sommelier/v8/x/cork/testutil"
-	corktypes "github.com/peggyjv/sommelier/v8/x/cork/types"
-	types "github.com/peggyjv/sommelier/v8/x/cork/types/v2"
+	moduletestutil "github.com/peggyjv/sommelier/v9/testutil"
+	corktestutil "github.com/peggyjv/sommelier/v9/x/cork/testutil"
+	corktypes "github.com/peggyjv/sommelier/v9/x/cork/types"
+	types "github.com/peggyjv/sommelier/v9/x/cork/types/v2"
 	"github.com/stretchr/testify/suite"
 )
 

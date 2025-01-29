@@ -7,9 +7,9 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	gravitytypes "github.com/peggyjv/gravity-bridge/module/v5/x/gravity/types"
-	"github.com/peggyjv/sommelier/v8/x/cork/types"
-	v2types "github.com/peggyjv/sommelier/v8/x/cork/types/v2"
+	gravitytypes "github.com/peggyjv/gravity-bridge/module/v6/x/gravity/types"
+	"github.com/peggyjv/sommelier/v9/x/cork/types"
+	v2types "github.com/peggyjv/sommelier/v9/x/cork/types/v2"
 )
 
 // BeginBlocker is called at the beginning of every block

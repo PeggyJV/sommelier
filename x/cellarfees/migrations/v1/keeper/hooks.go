@@ -5,9 +5,9 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/ethereum/go-ethereum/common"
-	gravitytypes "github.com/peggyjv/gravity-bridge/module/v5/x/gravity/types"
-	"github.com/peggyjv/sommelier/v8/app/params"
-	"github.com/peggyjv/sommelier/v8/x/cellarfees/types"
+	gravitytypes "github.com/peggyjv/gravity-bridge/module/v6/x/gravity/types"
+	"github.com/peggyjv/sommelier/v9/app/params"
+	"github.com/peggyjv/sommelier/v9/x/cellarfees/types"
 )
 
 type Hooks struct {

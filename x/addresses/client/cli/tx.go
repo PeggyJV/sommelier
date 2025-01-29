@@ -13,7 +13,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/version"
 
 	// "github.com/cosmos/cosmos-sdk/client/flags"
-	"github.com/peggyjv/sommelier/v8/x/addresses/types"
+	"github.com/peggyjv/sommelier/v9/x/addresses/types"
 )
 
 // GetTxCmd returns the transaction commands for this module

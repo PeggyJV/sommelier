@@ -9,7 +9,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	transfertypes "github.com/cosmos/ibc-go/v7/modules/apps/transfer/types"
 	"github.com/ethereum/go-ethereum/common"
-	"github.com/peggyjv/sommelier/v8/x/axelarcork/types"
+	"github.com/peggyjv/sommelier/v9/x/axelarcork/types"
 )
 
 func (k Keeper) ValidateAxelarPacket(ctx sdk.Context, sourceChannel string, data []byte) error {

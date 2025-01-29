@@ -12,7 +12,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
-	"github.com/peggyjv/sommelier/v8/x/pubsub/types"
+	"github.com/peggyjv/sommelier/v9/x/pubsub/types"
 )
 
 type Keeper struct {

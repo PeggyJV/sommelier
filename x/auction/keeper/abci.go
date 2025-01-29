@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/peggyjv/sommelier/v8/x/auction/types"
+	"github.com/peggyjv/sommelier/v9/x/auction/types"
 )
 
 // BeginBlocker is called at the beginning of every block

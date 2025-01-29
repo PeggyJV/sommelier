@@ -19,7 +19,7 @@ import (
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
-	appparams "github.com/peggyjv/sommelier/v8/app/params"
+	appparams "github.com/peggyjv/sommelier/v9/app/params"
 	"github.com/stretchr/testify/require"
 )
 

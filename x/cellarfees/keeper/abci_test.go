@@ -2,11 +2,12 @@ package keeper
 
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	"github.com/golang/mock/gomock"
-	appParams "github.com/peggyjv/sommelier/v8/app/params"
-	auctiontypes "github.com/peggyjv/sommelier/v8/x/auction/types"
-	cellarfeestypes "github.com/peggyjv/sommelier/v8/x/cellarfees/types"
-	cellarfeestypesv2 "github.com/peggyjv/sommelier/v8/x/cellarfees/types/v2"
+	appParams "github.com/peggyjv/sommelier/v9/app/params"
+	auctiontypes "github.com/peggyjv/sommelier/v9/x/auction/types"
+	cellarfeestypes "github.com/peggyjv/sommelier/v9/x/cellarfees/types"
+	cellarfeestypesv2 "github.com/peggyjv/sommelier/v9/x/cellarfees/types/v2"
 )
 
 func (suite *KeeperTestSuite) TestBeginBlockerZeroRewardsBalance() {
@@ -147,6 +148,7 @@ func (suite *KeeperTestSuite) TestHandleFeeAuctionsHappyPath() {
 
 	params.AuctionInterval = 1
 	params.AuctionThresholdUsdValue = sdk.MustNewDecFromStr("100.00")
+	params.ProceedsPortion = sdk.MustNewDecFromStr("0.0")
 
 	cellarfeesKeeper.SetParams(ctx, params)
 
@@ -214,4 +216,137 @@ func (suite *KeeperTestSuite) TestHandleFeeAuctionsHappyPath() {
 	// we only set expected calls for two auctions because the third token price is $99, so no auction should be started.
 
 	cellarfeesKeeper.handleFeeAuctions(ctx)
+}
+
+func (suite *KeeperTestSuite) TestHandleFeeAuctionsWithProceeds() {
+	testCases := []struct {
+		name             string
+		proceedsPortion  string
+		balance          sdk.Coin
+		expectedProceeds sdk.Coin
+		expectedAuction  sdk.Coin
+	}{
+		{
+			name:             "100% to proceeds",
+			proceedsPortion:  "1.0",
+			balance:          sdk.NewCoin("denom1", sdk.NewInt(1000000)),
+			expectedProceeds: sdk.NewCoin("denom1", sdk.NewInt(1000000)),
+			expectedAuction:  sdk.NewCoin("denom1", sdk.NewInt(0)),
+		},
+		{
+			name:             "0% to proceeds",
+			proceedsPortion:  "0.0",
+			balance:          sdk.NewCoin("denom1", sdk.NewInt(1000000)),
+			expectedProceeds: sdk.NewCoin("denom1", sdk.NewInt(0)),
+			expectedAuction:  sdk.NewCoin("denom1", sdk.NewInt(1000000)),
+		},
+		{
+			name:             "50% split",
+			proceedsPortion:  "0.5",
+			balance:          sdk.NewCoin("denom1", sdk.NewInt(1000000)),
+			expectedProceeds: sdk.NewCoin("denom1", sdk.NewInt(500000)),
+			expectedAuction:  sdk.NewCoin("denom1", sdk.NewInt(500000)),
+		},
+		{
+			name:             "25% to proceeds",
+			proceedsPortion:  "0.25",
+			balance:          sdk.NewCoin("denom1", sdk.NewInt(1000000)),
+			expectedProceeds: sdk.NewCoin("denom1", sdk.NewInt(250000)),
+			expectedAuction:  sdk.NewCoin("denom1", sdk.NewInt(750000)),
+		},
+	}
+
+	for _, tc := range testCases {
+		tc := tc
+		suite.Run(tc.name, func() {
+			ctx, cellarfeesKeeper := suite.ctx, suite.cellarfeesKeeper
+			params := cellarfeestypesv2.DefaultParams()
+			params.ProceedsPortion = sdk.MustNewDecFromStr(tc.proceedsPortion)
+			cellarfeesKeeper.SetParams(ctx, params)
+
+			// Mock the proceeds account
+			addr := sdk.MustAccAddressFromBech32(proceedsAddress)
+			acc := authtypes.NewBaseAccount(addr, nil, 0, 0)
+
+			suite.accountKeeper.EXPECT().GetAccount(ctx, addr).Return(acc)
+
+			if !tc.expectedProceeds.IsZero() {
+				suite.bankKeeper.EXPECT().SendCoinsFromModuleToAccount(
+					ctx,
+					cellarfeestypes.ModuleName,
+					addr,
+					sdk.NewCoins(tc.expectedProceeds),
+				).Return(nil)
+			}
+
+			result := cellarfeesKeeper.handleProceeds(ctx, tc.balance)
+			suite.Require().Equal(tc.expectedAuction, result)
+		})
+	}
+}
+
+func (suite *KeeperTestSuite) TestHandleProceedsWithZeroBalance() {
+	ctx, cellarfeesKeeper := suite.ctx, suite.cellarfeesKeeper
+	params := cellarfeestypesv2.DefaultParams()
+	params.ProceedsPortion = sdk.MustNewDecFromStr("0.5")
+	cellarfeesKeeper.SetParams(ctx, params)
+
+	zeroBalance := sdk.NewCoin("denom1", sdk.ZeroInt())
+	result := cellarfeesKeeper.handleProceeds(ctx, zeroBalance)
+
+	// Should return the zero balance without attempting to send proceeds
+	suite.Require().Equal(zeroBalance, result)
+}
+
+func (suite *KeeperTestSuite) TestHandleProceedsWithRoundingEdgeCases() {
+	testCases := []struct {
+		name             string
+		proceedsPortion  string
+		balance          sdk.Coin
+		expectedProceeds sdk.Coin
+		expectedAuction  sdk.Coin
+	}{
+		{
+			name:             "Small balance with 33% split",
+			proceedsPortion:  "0.33",
+			balance:          sdk.NewCoin("denom1", sdk.NewInt(10)),
+			expectedProceeds: sdk.NewCoin("denom1", sdk.NewInt(3)),
+			expectedAuction:  sdk.NewCoin("denom1", sdk.NewInt(7)),
+		},
+		{
+			name:             "Tiny balance with 50% split",
+			proceedsPortion:  "0.5",
+			balance:          sdk.NewCoin("denom1", sdk.NewInt(3)),
+			expectedProceeds: sdk.NewCoin("denom1", sdk.NewInt(1)),
+			expectedAuction:  sdk.NewCoin("denom1", sdk.NewInt(2)),
+		},
+	}
+
+	for _, tc := range testCases {
+		tc := tc
+		suite.Run(tc.name, func() {
+			ctx, cellarfeesKeeper := suite.ctx, suite.cellarfeesKeeper
+			params := cellarfeestypesv2.DefaultParams()
+			params.ProceedsPortion = sdk.MustNewDecFromStr(tc.proceedsPortion)
+			cellarfeesKeeper.SetParams(ctx, params)
+
+			// Mock the proceeds account
+			addr := sdk.MustAccAddressFromBech32(proceedsAddress)
+			acc := authtypes.NewBaseAccount(addr, nil, 0, 0)
+
+			suite.accountKeeper.EXPECT().GetAccount(ctx, addr).Return(acc)
+
+			if !tc.expectedProceeds.IsZero() {
+				suite.bankKeeper.EXPECT().SendCoinsFromModuleToAccount(
+					ctx,
+					cellarfeestypes.ModuleName,
+					addr,
+					sdk.NewCoins(tc.expectedProceeds),
+				).Return(nil)
+			}
+
+			result := cellarfeesKeeper.handleProceeds(ctx, tc.balance)
+			suite.Require().Equal(tc.expectedAuction, result)
+		})
+	}
 }

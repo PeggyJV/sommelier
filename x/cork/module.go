@@ -13,11 +13,11 @@ import (
 	"github.com/cosmos/cosmos-sdk/types/module"
 	sim "github.com/cosmos/cosmos-sdk/types/simulation"
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
-	"github.com/peggyjv/sommelier/v8/x/cork/client/cli"
-	"github.com/peggyjv/sommelier/v8/x/cork/keeper"
-	corktypes "github.com/peggyjv/sommelier/v8/x/cork/types"
-	v1types "github.com/peggyjv/sommelier/v8/x/cork/types/v1"
-	types "github.com/peggyjv/sommelier/v8/x/cork/types/v2"
+	"github.com/peggyjv/sommelier/v9/x/cork/client/cli"
+	"github.com/peggyjv/sommelier/v9/x/cork/keeper"
+	corktypes "github.com/peggyjv/sommelier/v9/x/cork/types"
+	v1types "github.com/peggyjv/sommelier/v9/x/cork/types/v1"
+	types "github.com/peggyjv/sommelier/v9/x/cork/types/v2"
 	"github.com/spf13/cobra"
 )
 

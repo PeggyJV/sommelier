@@ -13,15 +13,15 @@ import (
 	errorsmod "cosmossdk.io/errors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	"github.com/peggyjv/sommelier/v8/app/params"
-	moduletestutil "github.com/peggyjv/sommelier/v8/testutil"
-	auctionTypes "github.com/peggyjv/sommelier/v8/x/auction/types"
+	"github.com/peggyjv/sommelier/v9/app/params"
+	moduletestutil "github.com/peggyjv/sommelier/v9/testutil"
+	auctionTypes "github.com/peggyjv/sommelier/v9/x/auction/types"
 
 	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
 	tmtime "github.com/cometbft/cometbft/types/time"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	paramskeeper "github.com/cosmos/cosmos-sdk/x/params/keeper"
-	auctiontestutil "github.com/peggyjv/sommelier/v8/x/auction/testutil"
+	auctiontestutil "github.com/peggyjv/sommelier/v9/x/auction/testutil"
 )
 
 var (

@@ -385,6 +385,9 @@ e2e_auction_test: e2e_clean_slate
 e2e_cellarfees_test: e2e_clean_slate
 	@E2E_SKIP_CLEANUP=true integration_tests/integration_tests.test -test.failfast -test.v -test.run IntegrationTestSuite -testify.m TestCellarFees || make -s fail
 
+e2e_cellarfees_with_proceeds_test: e2e_clean_slate
+	@E2E_SKIP_CLEANUP=true integration_tests/integration_tests.test -test.failfast -test.v -test.run IntegrationTestSuite -testify.m TestProceeds || make -s fail
+
 e2e_incentives_test: e2e_clean_slate
 	@E2E_SKIP_CLEANUP=true integration_tests/integration_tests.test -test.failfast -test.v -test.run IntegrationTestSuite -testify.m TestIncentives || make -s fail
 

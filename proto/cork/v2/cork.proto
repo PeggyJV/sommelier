@@ -3,7 +3,7 @@ package cork.v2;
 
 import "gogoproto/gogo.proto";
 
-option go_package = "github.com/peggyjv/sommelier/v8/x/cork/types/v2";
+option go_package = "github.com/peggyjv/sommelier/v9/x/cork/types/v2";
 
 message Cork {
   // call body containing the ABI encoded bytes to send to the contract

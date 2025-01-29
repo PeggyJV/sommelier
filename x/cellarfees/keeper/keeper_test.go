@@ -11,14 +11,14 @@ import (
 	minttypes "github.com/cosmos/cosmos-sdk/x/mint/types"
 	paramskeeper "github.com/cosmos/cosmos-sdk/x/params/keeper"
 	"github.com/golang/mock/gomock"
-	"github.com/peggyjv/sommelier/v8/app/params"
-	cellarfeestestutil "github.com/peggyjv/sommelier/v8/x/cellarfees/testutil"
+	"github.com/peggyjv/sommelier/v9/app/params"
+	cellarfeestestutil "github.com/peggyjv/sommelier/v9/x/cellarfees/testutil"
 
 	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
 	tmtime "github.com/cometbft/cometbft/types/time"
-	moduletestutil "github.com/peggyjv/sommelier/v8/testutil"
-	cellarfeestypes "github.com/peggyjv/sommelier/v8/x/cellarfees/types"
-	cellarfeestypesv2 "github.com/peggyjv/sommelier/v8/x/cellarfees/types/v2"
+	moduletestutil "github.com/peggyjv/sommelier/v9/testutil"
+	cellarfeestypes "github.com/peggyjv/sommelier/v9/x/cellarfees/types"
+	cellarfeestypesv2 "github.com/peggyjv/sommelier/v9/x/cellarfees/types/v2"
 	"github.com/stretchr/testify/suite"
 )
 

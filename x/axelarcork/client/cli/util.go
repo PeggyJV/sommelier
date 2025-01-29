@@ -4,7 +4,7 @@ import (
 	"os"
 
 	"github.com/cosmos/cosmos-sdk/codec"
-	"github.com/peggyjv/sommelier/v8/x/axelarcork/types"
+	"github.com/peggyjv/sommelier/v9/x/axelarcork/types"
 )
 
 // ParseCommunityPoolSpendProposal reads and parses a CommunityPoolEthereumSpendProposalForCLI from a file.

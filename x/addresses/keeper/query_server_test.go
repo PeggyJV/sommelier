@@ -7,7 +7,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	query "github.com/cosmos/cosmos-sdk/types/query"
 	"github.com/ethereum/go-ethereum/common"
-	"github.com/peggyjv/sommelier/v8/x/addresses/types"
+	"github.com/peggyjv/sommelier/v9/x/addresses/types"
 )
 
 // Happy path test for query server functions

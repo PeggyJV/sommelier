@@ -1,4 +1,4 @@
-FROM golang:1.22.2-alpine AS build-env
+FROM golang:1.22.11-alpine3.21 AS build-env
 
 RUN apk add --no-cache curl make git libc-dev bash gcc linux-headers eudev-dev python3
 
@@ -14,7 +14,7 @@ RUN go mod download
 COPY . .
 
 # build Sommelier
-RUN make install
+RUN make install -j1
 
 # Final image
 FROM alpine:edge

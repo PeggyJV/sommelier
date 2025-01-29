@@ -7,8 +7,8 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	"github.com/peggyjv/sommelier/v8/x/auction/keeper"
-	"github.com/peggyjv/sommelier/v8/x/auction/types"
+	"github.com/peggyjv/sommelier/v9/x/auction/keeper"
+	"github.com/peggyjv/sommelier/v9/x/auction/types"
 )
 
 // NewHandler returns a handler for "auction" type messages.

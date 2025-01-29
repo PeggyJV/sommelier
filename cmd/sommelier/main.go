@@ -5,8 +5,8 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/server"
 	scmd "github.com/cosmos/cosmos-sdk/server/cmd"
-	"github.com/peggyjv/sommelier/v8/app"
-	"github.com/peggyjv/sommelier/v8/cmd/sommelier/cmd"
+	"github.com/peggyjv/sommelier/v9/app"
+	"github.com/peggyjv/sommelier/v9/cmd/sommelier/cmd"
 )
 
 func main() {

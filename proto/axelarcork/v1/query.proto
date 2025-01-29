@@ -7,7 +7,7 @@ import "axelarcork/v1/genesis.proto";
 import "axelarcork/v1/axelarcork.proto";
 import "cosmos/query/v1/query.proto";
 
-option go_package = "github.com/peggyjv/sommelier/v8/x/axelarcork/types";
+option go_package = "github.com/peggyjv/sommelier/v9/x/axelarcork/types";
 
 // Query defines the gRPC query service for the cork module.
 service Query {

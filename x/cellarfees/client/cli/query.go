@@ -9,8 +9,8 @@ import (
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 
-	cellarfeestypes "github.com/peggyjv/sommelier/v8/x/cellarfees/types"
-	cellarfeestypesv2 "github.com/peggyjv/sommelier/v8/x/cellarfees/types/v2"
+	cellarfeestypes "github.com/peggyjv/sommelier/v9/x/cellarfees/types"
+	cellarfeestypesv2 "github.com/peggyjv/sommelier/v9/x/cellarfees/types/v2"
 )
 
 // GetQueryCmd returns the cli query commands for this module

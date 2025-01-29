@@ -5,8 +5,8 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	distributionTypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
 	"github.com/golang/mock/gomock"
-	"github.com/peggyjv/sommelier/v8/app/params"
-	incentivesTypes "github.com/peggyjv/sommelier/v8/x/incentives/types"
+	"github.com/peggyjv/sommelier/v9/app/params"
+	incentivesTypes "github.com/peggyjv/sommelier/v9/x/incentives/types"
 )
 
 func (suite *KeeperTestSuite) TestEndBlockerIncentivesDisabledDoesNothing() {

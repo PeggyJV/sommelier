@@ -9,7 +9,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/types/bech32"
 	"github.com/cosmos/cosmos-sdk/types/query"
 	"github.com/ethereum/go-ethereum/common"
-	"github.com/peggyjv/sommelier/v8/x/addresses/types"
+	"github.com/peggyjv/sommelier/v9/x/addresses/types"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )

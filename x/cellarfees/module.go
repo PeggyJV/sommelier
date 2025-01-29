@@ -14,10 +14,10 @@ import (
 	sim "github.com/cosmos/cosmos-sdk/types/simulation"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
-	"github.com/peggyjv/sommelier/v8/x/cellarfees/client/cli"
-	"github.com/peggyjv/sommelier/v8/x/cellarfees/keeper"
-	"github.com/peggyjv/sommelier/v8/x/cellarfees/types"
-	typesv2 "github.com/peggyjv/sommelier/v8/x/cellarfees/types/v2"
+	"github.com/peggyjv/sommelier/v9/x/cellarfees/client/cli"
+	"github.com/peggyjv/sommelier/v9/x/cellarfees/keeper"
+	"github.com/peggyjv/sommelier/v9/x/cellarfees/types"
+	typesv2 "github.com/peggyjv/sommelier/v9/x/cellarfees/types/v2"
 	"github.com/spf13/cobra"
 )
 
@@ -116,7 +116,7 @@ func (AppModule) QuerierRoute() string { return types.QuerierRoute }
 
 // ConsensusVersion implements AppModule/ConsensusVersion.
 func (AppModule) ConsensusVersion() uint64 {
-	return 2
+	return 3
 }
 
 func (am AppModule) WeightedOperations(simState module.SimulationState) []sim.WeightedOperation {
@@ -131,6 +131,9 @@ func (am AppModule) RegisterServices(cfg module.Configurator) {
 	migrator := keeper.NewMigrator(am.keeper, am.legacySubspace)
 	if err := cfg.RegisterMigration(types.ModuleName, 1, migrator.Migrate1to2); err != nil {
 		panic(fmt.Sprintf("failed to migrate x/cellarfees from version 1 to 2: %v", err))
+	}
+	if err := cfg.RegisterMigration(types.ModuleName, 2, migrator.Migrate2to3); err != nil {
+		panic(fmt.Sprintf("failed to migrate x/cellarfees from version 2 to 3: %v", err))
 	}
 }
 

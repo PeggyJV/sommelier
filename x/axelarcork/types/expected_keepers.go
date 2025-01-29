@@ -17,7 +17,7 @@ import (
 	clienttypes "github.com/cosmos/ibc-go/v7/modules/core/02-client/types"
 	channeltypes "github.com/cosmos/ibc-go/v7/modules/core/04-channel/types"
 	ibcexported "github.com/cosmos/ibc-go/v7/modules/core/exported"
-	pubsubtypes "github.com/peggyjv/sommelier/v8/x/pubsub/types"
+	pubsubtypes "github.com/peggyjv/sommelier/v9/x/pubsub/types"
 )
 
 // AccountKeeper defines the expected account keeper.
@@ -38,6 +38,7 @@ type BankKeeper interface {
 	SendCoinsFromAccountToModule(ctx sdk.Context, senderAddr sdk.AccAddress, recipientModule string, amt sdk.Coins) error
 	GetAllBalances(ctx sdk.Context, addr sdk.AccAddress) sdk.Coins
 	GetDenomMetaData(ctx sdk.Context, denom string) (banktypes.Metadata, bool)
+	BurnCoins(ctx sdk.Context, moduleName string, coins sdk.Coins) error
 }
 
 type ICS4Wrapper interface {
