@@ -1,8 +1,6 @@
 module github.com/peggyjv/sommelier/v9
 
-go 1.22.7
-
-toolchain go1.23.3
+go 1.23.5
 
 require (
 	cosmossdk.io/api v0.3.1
