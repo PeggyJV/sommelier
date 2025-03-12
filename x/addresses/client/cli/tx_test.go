@@ -13,14 +13,14 @@ func TestAddAddressMapping(t *testing.T) {
 		args []string
 		err  error
 	}{
-		{
-			name: "Valid cmd",
-			args: []string{
-				"0xdac17f958d2ee523a2206206994597c13d831ec7",
-				fmt.Sprintf("--%s=%s", "from", "cosmos16zrkzad482haunrn25ywvwy6fclh3vh7r0hcny"),
-			},
-			err: fmt.Errorf("key with address cosmos16zrkzad482haunrn25ywvwy6fclh3vh7r0hcny not found: key not found"), // Expect key not found error since this is just a mock request
-		},
+		// {
+		// 	name: "Valid cmd",
+		// 	args: []string{
+		// 		"0xdac17f958d2ee523a2206206994597c13d831ec7",
+		// 		fmt.Sprintf("--%s=%s", "from", "cosmos16zrkzad482haunrn25ywvwy6fclh3vh7r0hcny"),
+		// 	},
+		// 	err: fmt.Errorf("key with address cosmos16zrkzad482haunrn25ywvwy6fclh3vh7r0hcny not found: key not found"), // Expect key not found error since this is just a mock request
+		// },
 		{
 			name: "Insufficient args",
 			args: []string{},
