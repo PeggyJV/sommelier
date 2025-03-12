@@ -29,7 +29,7 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v1
       - name: Cache Docker layers
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         id: docker-cache
         with:
           path: /tmp/.buildx-cache
@@ -76,7 +76,7 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v1
       - name: Cache Docker layers
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         id: docker-cache
         with:
           path: /tmp/.buildx-cache
@@ -115,20 +115,21 @@ jobs:
   integration-tests:
     environment: CI
     runs-on: ubuntu-20.04
-    needs: [ sommelier-build, hardhat-build ]
+    needs: [sommelier-build, hardhat-build]
     strategy:
       fail-fast: false
       matrix:
-        test_type: [
-          "ScheduledCork",
-          "AxelarCork",
-          "Auction",
-          "CellarFees",
-          "Incentives",
-          "ValidatorIncentives",
-          "Pubsub",
-          "Addresses",
-        ]
+        test_type:
+          [
+            "ScheduledCork",
+            "AxelarCork",
+            "Auction",
+            "CellarFees",
+            "Incentives",
+            "ValidatorIncentives",
+            "Pubsub",
+            "Addresses",
+          ]
     steps:
       - name: Set up Go 1.22
         uses: actions/setup-go@v2
@@ -137,7 +138,7 @@ jobs:
       - name: checkout
         uses: actions/checkout@v2
       - name: go-cache
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: |
             ~/.cache/go-build
