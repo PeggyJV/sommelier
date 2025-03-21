@@ -19,4 +19,3 @@ pub mod incentives {
 pub mod cellarfees {
     include!("prost/cellarfees.v1.rs");
 }
-

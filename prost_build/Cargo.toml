@@ -1,15 +1,15 @@
 [package]
-name = "somme_prost_build"
-version = "5.0.0"
+name = "somm_prost_build"
+version = "9.0.0"
 authors = ["PeggyJV","Justin Kilpatrick <justin@althea.net>"]
-edition = "2018"
+edition = "2021"
 
 
 [dependencies]
-prost = "0.7"
-tonic = "0.4"
-prost-build = "0.7"
+prost = "0.13"
+tonic = "0.12"
+prost-build = "0.13"
 tempdir = "0.3"
 walkdir = "2"
-tonic-build = "0.4"
+tonic-build = "0.12"
 regex = "1.5"
