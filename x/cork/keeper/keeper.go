@@ -285,6 +285,14 @@ func (k Keeper) GetApprovedScheduledCorks(ctx sdk.Context) (approvedCorks []type
 	powers := []uint64{}
 	k.IterateScheduledCorksByBlockHeight(ctx, currentBlockHeight, func(val sdk.ValAddress, _ uint64, id []byte, addr common.Address, cork types.Cork) (stop bool) {
 		validator := k.stakingKeeper.Validator(ctx, val)
+
+		// Skip if validator no longer exists (e.g., fully unbonded)
+		if validator == nil {
+			k.DeleteScheduledCork(ctx, currentBlockHeight, id, val, addr)
+			k.DecrementValidatorCorkCount(ctx, val)
+			return false
+		}
+
 		validatorPower := uint64(validator.GetConsensusPower(k.stakingKeeper.PowerReduction(ctx)))
 		found := false
 		for i, c := range corks {
