@@ -365,6 +365,14 @@ func (k Keeper) GetApprovedScheduledAxelarCorks(ctx sdk.Context, chainID uint64)
 	powers := []uint64{}
 	k.IterateScheduledAxelarCorksByBlockHeight(ctx, chainID, currentBlockHeight, func(val sdk.ValAddress, _ uint64, id []byte, addr common.Address, cork types.AxelarCork) (stop bool) {
 		validator := k.stakingKeeper.Validator(ctx, val)
+
+		// Skip if validator no longer exists (e.g., fully unbonded)
+		if validator == nil {
+			k.DeleteScheduledAxelarCork(ctx, chainID, currentBlockHeight, id, val, addr)
+			k.DecrementValidatorAxelarCorkCount(ctx, val)
+			return false
+		}
+
 		validatorPower := uint64(validator.GetConsensusPower(k.stakingKeeper.PowerReduction(ctx)))
 		found := false
 		for i, c := range corks {
