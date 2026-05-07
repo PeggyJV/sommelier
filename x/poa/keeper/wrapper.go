@@ -119,6 +119,21 @@ func (w WrappedStakingKeeper) GetValidator(ctx sdk.Context, op sdk.ValAddress) (
 	return v, true
 }
 
+// GetAllValidators returns the full validator set with authority Tokens
+// rescaled. Consumed by slashing and distribution.
+func (w WrappedStakingKeeper) GetAllValidators(ctx sdk.Context) []stakingtypes.Validator {
+	raw := w.StakingKeeper.GetAllValidators(ctx)
+	out := make([]stakingtypes.Validator, len(raw))
+	for i, v := range raw {
+		op, err := sdk.ValAddressFromBech32(v.OperatorAddress)
+		if err == nil {
+			v.Tokens = w.boostedTokens(ctx, op, v.Tokens)
+		}
+		out[i] = v
+	}
+	return out
+}
+
 // ----------------------------------------------------------------------------
 // Slash normalisation
 // ----------------------------------------------------------------------------

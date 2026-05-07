@@ -176,3 +176,20 @@ func (f *fakeStakingKeeper) ValidatorQueueIterator(_ sdk.Context, _ time.Time, _
 	return nil
 }
 func (f *fakeStakingKeeper) Hooks() stakingtypes.StakingHooks { return nil }
+
+func (f *fakeStakingKeeper) GetAllValidators(_ sdk.Context) []stakingtypes.Validator {
+	out := make([]stakingtypes.Validator, 0, len(f.validators))
+	for _, v := range f.validators {
+		out = append(out, v)
+	}
+	return out
+}
+
+func (f *fakeStakingKeeper) IterateDelegations(_ sdk.Context, _ sdk.AccAddress, _ func(int64, stakingtypes.DelegationI) bool) {
+}
+func (f *fakeStakingKeeper) GetAllSDKDelegations(_ sdk.Context) []stakingtypes.Delegation {
+	return nil
+}
+func (f *fakeStakingKeeper) GetAllDelegatorDelegations(_ sdk.Context, _ sdk.AccAddress) []stakingtypes.Delegation {
+	return nil
+}

@@ -66,3 +66,12 @@ func (k Keeper) GetParams(ctx sdk.Context) (p types.Params) {
 func (k Keeper) SetParams(ctx sdk.Context, p types.Params) {
 	k.paramSpace.SetParamSet(ctx, &p)
 }
+
+// SetSlashingKeeper wires the slashing-keeper dependency post-construction.
+// PoA's keeper is created BEFORE slashing in app.go (so slashing's NewKeeper
+// can take the wrapped staking keeper); this setter fills in the back-reference
+// once slashing has been built. The slashing keeper is only consulted in the
+// EndBlocker for snapshot retention.
+func (k *Keeper) SetSlashingKeeper(sk types.SlashingKeeper) {
+	k.slashingKeeper = sk
+}

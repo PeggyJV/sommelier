@@ -23,6 +23,15 @@ type StakingKeeper interface {
 	IterateLastValidators(sdk.Context, func(int64, stakingtypes.ValidatorI) bool)
 	IterateLastValidatorPowers(sdk.Context, func(sdk.ValAddress, int64) (stop bool))
 
+	// GetAllValidators returns the full validator set; consumed by slashing and
+	// distribution. Wrapper rescales tokens for authority entries.
+	GetAllValidators(ctx sdk.Context) []stakingtypes.Validator
+
+	// Delegation listing — required by distribution; pass-through.
+	IterateDelegations(ctx sdk.Context, delegator sdk.AccAddress, fn func(int64, stakingtypes.DelegationI) bool)
+	GetAllSDKDelegations(ctx sdk.Context) []stakingtypes.Delegation
+	GetAllDelegatorDelegations(ctx sdk.Context, delegator sdk.AccAddress) []stakingtypes.Delegation
+
 	Validator(sdk.Context, sdk.ValAddress) stakingtypes.ValidatorI
 	ValidatorByConsAddr(sdk.Context, sdk.ConsAddress) stakingtypes.ValidatorI
 

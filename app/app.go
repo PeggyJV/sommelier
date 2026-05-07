@@ -132,6 +132,9 @@ import (
 	"github.com/peggyjv/sommelier/v9/x/incentives"
 	incentiveskeeper "github.com/peggyjv/sommelier/v9/x/incentives/keeper"
 	incentivestypes "github.com/peggyjv/sommelier/v9/x/incentives/types"
+	"github.com/peggyjv/sommelier/v9/x/poa"
+	poakeeper "github.com/peggyjv/sommelier/v9/x/poa/keeper"
+	poatypes "github.com/peggyjv/sommelier/v9/x/poa/types"
 	"github.com/peggyjv/sommelier/v9/x/pubsub"
 	pubsubclient "github.com/peggyjv/sommelier/v9/x/pubsub/client"
 	pubsubkeeper "github.com/peggyjv/sommelier/v9/x/pubsub/keeper"
@@ -211,6 +214,7 @@ var (
 		incentives.AppModuleBasic{},
 		auction.AppModuleBasic{},
 		pubsub.AppModuleBasic{},
+		poa.AppModuleBasic{},
 		addresses.AppModuleBasic{},
 	)
 
@@ -288,6 +292,7 @@ type SommelierApp struct {
 	IncentivesKeeper incentiveskeeper.Keeper
 	AuctionKeeper    auctionkeeper.Keeper
 	PubsubKeeper     pubsubkeeper.Keeper
+	PoaKeeper        poakeeper.Keeper
 	AddressesKeeper  addresseskeeper.Keeper
 
 	// make capability scoped keepers public for test purposes (IBC only)
@@ -356,6 +361,7 @@ func NewSommelierApp(
 		auctiontypes.StoreKey,
 		cellarfeestypes.StoreKey,
 		pubsubtypes.StoreKey,
+		poatypes.StoreKey,
 		addressestypes.StoreKey,
 	)
 	tkeys := sdk.NewTransientStoreKeys(paramstypes.TStoreKey)
@@ -398,19 +404,42 @@ func NewSommelierApp(
 	stakingKeeper := stakingkeeper.NewKeeper(
 		appCodec, keys[stakingtypes.StoreKey], app.AccountKeeper, app.BankKeeper, authority,
 	)
+
+	// Construct the PoA keeper between staking and the power-sensitive
+	// consumers below. The PoA keeper must exist before slashing/distribution
+	// so they can be wired with the wrapped staking keeper. PoA's slashing
+	// keeper dependency is filled in via SetSlashingKeeper once slashing is
+	// constructed.
+	app.PoaKeeper = poakeeper.NewKeeper(
+		appCodec, keys[poatypes.StoreKey],
+		app.GetSubspace(poatypes.ModuleName),
+		stakingKeeper, // raw concrete *stakingkeeper.Keeper satisfies poatypes.StakingKeeper
+		nil,           // slashingKeeper set later
+		authority,
+	)
+	wrappedSk := app.PoaKeeper.WrappedStakingKeeper()
+
+	// Mint stays on RAW staking: inflation/BondedRatio must reflect actual
+	// bonded tokens, not boosted consensus power.
 	app.MintKeeper = mintkeeper.NewKeeper(
 		appCodec, keys[minttypes.StoreKey], stakingKeeper,
 		app.AccountKeeper, app.BankKeeper, authtypes.FeeCollectorName,
 		authority,
 	)
+
+	// Distribution, slashing, and evidence below use the wrapped keeper so
+	// authority validators see boosted consensus power.
 	app.DistrKeeper = distrkeeper.NewKeeper(
 		appCodec, keys[distrtypes.StoreKey], app.AccountKeeper, app.BankKeeper,
-		stakingKeeper, authtypes.FeeCollectorName,
+		wrappedSk, authtypes.FeeCollectorName,
 		authority,
 	)
 	app.SlashingKeeper = slashingkeeper.NewKeeper(
-		appCodec, legacyAmino, keys[slashingtypes.StoreKey], stakingKeeper, authority,
+		appCodec, legacyAmino, keys[slashingtypes.StoreKey], wrappedSk, authority,
 	)
+	// Now that the slashing keeper exists, wire it back into PoA for snapshot
+	// retention math in EndBlocker.
+	app.PoaKeeper.SetSlashingKeeper(app.SlashingKeeper)
 	app.CrisisKeeper = *crisiskeeper.NewKeeper(
 		appCodec, app.keys[crisistypes.StoreKey], invCheckPeriod, app.BankKeeper, authtypes.FeeCollectorName, authority,
 	)
@@ -446,7 +475,7 @@ func NewSommelierApp(
 	// todo: check if default power reduction is appropriate
 	app.GravityKeeper = gravitykeeper.NewKeeper(
 		appCodec, keys[gravitytypes.StoreKey], app.GetSubspace(gravitytypes.ModuleName),
-		app.AccountKeeper, app.StakingKeeper, app.BankKeeper, app.SlashingKeeper,
+		app.AccountKeeper, wrappedSk, app.BankKeeper, app.SlashingKeeper,
 		app.DistrKeeper, sdk.DefaultPowerReduction,
 		app.ModuleAccountAddressesToNames([]string{cellarfeestypes.ModuleName}),
 		app.ModuleAccountAddressesToNames([]string{distrtypes.ModuleName}),
@@ -454,7 +483,7 @@ func NewSommelierApp(
 
 	app.PubsubKeeper = pubsubkeeper.NewKeeper(
 		appCodec, keys[pubsubtypes.StoreKey], app.GetSubspace(pubsubtypes.ModuleName),
-		app.StakingKeeper, app.GravityKeeper,
+		wrappedSk, app.GravityKeeper,
 	)
 
 	// create axelar cork keeper
@@ -464,7 +493,7 @@ func NewSommelierApp(
 		app.GetSubspace(axelarcorktypes.ModuleName),
 		app.AccountKeeper,
 		app.BankKeeper,
-		app.StakingKeeper,
+		wrappedSk,
 		app.TransferKeeper, // will be nil, circular dependency avoided by calling SetTransferKeeper later
 		app.DistrKeeper,
 		app.IBCKeeper.ChannelKeeper,
@@ -511,7 +540,7 @@ func NewSommelierApp(
 
 	app.CorkKeeper = corkkeeper.NewKeeper(
 		appCodec, keys[corktypes.StoreKey], app.GetSubspace(corktypes.ModuleName),
-		app.StakingKeeper, app.GravityKeeper, app.PubsubKeeper,
+		wrappedSk, app.GravityKeeper, app.PubsubKeeper,
 	)
 
 	app.AuctionKeeper = auctionkeeper.NewKeeper(
@@ -526,7 +555,7 @@ func NewSommelierApp(
 	)
 
 	app.IncentivesKeeper = incentiveskeeper.NewKeeper(
-		appCodec, keys[incentivestypes.StoreKey], app.GetSubspace(incentivestypes.ModuleName), app.DistrKeeper, app.BankKeeper, app.MintKeeper, app.StakingKeeper,
+		appCodec, keys[incentivestypes.StoreKey], app.GetSubspace(incentivestypes.ModuleName), app.DistrKeeper, app.BankKeeper, app.MintKeeper, wrappedSk,
 	)
 
 	app.GravityKeeper = *app.GravityKeeper.SetHooks(
@@ -570,9 +599,11 @@ func NewSommelierApp(
 		AddRoute(icahosttypes.SubModuleName, icaHostIBCModule)
 	app.IBCKeeper.SetRouter(ibcRouter)
 
-	// create evidence keeper with router
+	// create evidence keeper with router. Pass the wrapped keeper so
+	// ValidatorByConsAddr returns boosted ValidatorI; the actual Slash call
+	// goes through SlashingKeeper, which is already wrapped.
 	evidenceKeeper := evidencekeeper.NewKeeper(
-		appCodec, keys[evidencetypes.StoreKey], &app.StakingKeeper, app.SlashingKeeper,
+		appCodec, keys[evidencetypes.StoreKey], &wrappedSk, app.SlashingKeeper,
 	)
 	// If evidence needs to be handled for the app, set routes in router here and seal
 	app.EvidenceKeeper = *evidenceKeeper
@@ -603,7 +634,7 @@ func NewSommelierApp(
 		mint.NewAppModule(appCodec, app.MintKeeper, app.AccountKeeper, nil, app.GetSubspace(minttypes.ModuleName)),
 		slashing.NewAppModule(appCodec, app.SlashingKeeper, app.AccountKeeper, app.BankKeeper, app.StakingKeeper, app.GetSubspace(slashingtypes.ModuleName)),
 		distr.NewAppModule(appCodec, app.DistrKeeper, app.AccountKeeper, app.BankKeeper, app.StakingKeeper, app.GetSubspace(distrtypes.ModuleName)),
-		staking.NewAppModule(appCodec, &app.StakingKeeper, app.AccountKeeper, app.BankKeeper, app.GetSubspace(stakingtypes.ModuleName)),
+		stakingNoopEndBlocker{staking.NewAppModule(appCodec, &app.StakingKeeper, app.AccountKeeper, app.BankKeeper, app.GetSubspace(stakingtypes.ModuleName))},
 		upgrade.NewAppModule(&app.UpgradeKeeper),
 		evidence.NewAppModule(app.EvidenceKeeper),
 		ibc.NewAppModule(app.IBCKeeper),
@@ -618,6 +649,16 @@ func NewSommelierApp(
 		cellarfees.NewAppModule(app.CellarFeesKeeper, appCodec, app.AccountKeeper, app.BankKeeper, app.MintKeeper, app.CorkKeeper, app.AuctionKeeper, app.GetSubspace(cellarfeestypes.ModuleName)),
 		auction.NewAppModule(app.AuctionKeeper, app.BankKeeper, app.AccountKeeper, appCodec),
 		pubsub.NewAppModule(appCodec, app.PubsubKeeper, app.StakingKeeper, app.GravityKeeper),
+		// PoA owns the staking EndBlocker. x/staking is registered in
+		// module.NewManager above so its InitGenesis/BeginBlock/ExportGenesis
+		// still run, but it is intentionally OMITTED from SetOrderEndBlockers
+		// — PoA invokes staking.EndBlocker via this closure exactly once per
+		// block, then rescales the resulting ValidatorUpdates. SDK 0.47's
+		// module.Manager panics if two modules return non-empty validator
+		// updates from EndBlock.
+		poa.NewAppModule(appCodec, app.PoaKeeper, func(ctx sdk.Context) []abci.ValidatorUpdate {
+			return staking.EndBlocker(ctx, stakingKeeper)
+		}),
 		addresses.NewAppModule(appCodec, app.AddressesKeeper),
 	)
 
@@ -653,13 +694,20 @@ func NewSommelierApp(
 		cellarfeestypes.ModuleName,
 		auctiontypes.ModuleName,
 		pubsubtypes.ModuleName,
+		poatypes.ModuleName,
 		addressestypes.ModuleName,
 	)
 
 	// NOTE gov must come before staking
+	// NOTE: stakingtypes.ModuleName is registered here to satisfy the SDK's
+	// "all modules must appear in EndBlocker order" check, but its AppModule
+	// has been wrapped (stakingNoopEndBlocker) so its EndBlock is a no-op.
+	// PoA's EndBlocker drives staking.EndBlocker directly. See x/poa/keeper.EndBlocker
+	// and the comment on stakingNoopEndBlocker.
 	app.mm.SetOrderEndBlockers(
 		crisistypes.ModuleName,
 		govtypes.ModuleName,
+		poatypes.ModuleName,
 		stakingtypes.ModuleName,
 		icaexported.ModuleName,
 		ibctransfertypes.ModuleName,
@@ -684,6 +732,7 @@ func NewSommelierApp(
 		cellarfeestypes.ModuleName,
 		auctiontypes.ModuleName,
 		pubsubtypes.ModuleName,
+		poatypes.ModuleName,
 		addressestypes.ModuleName,
 	)
 
@@ -723,6 +772,7 @@ func NewSommelierApp(
 		cellarfeestypes.ModuleName,
 		auctiontypes.ModuleName,
 		pubsubtypes.ModuleName,
+		poatypes.ModuleName,
 		addressestypes.ModuleName,
 	)
 
@@ -759,6 +809,9 @@ func NewSommelierApp(
 		cellarfees.NewAppModule(app.CellarFeesKeeper, appCodec, app.AccountKeeper, app.BankKeeper, app.MintKeeper, app.CorkKeeper, app.AuctionKeeper, app.GetSubspace(cellarfeestypes.ModuleName)),
 		auction.NewAppModule(app.AuctionKeeper, app.BankKeeper, app.AccountKeeper, appCodec),
 		pubsub.NewAppModule(appCodec, app.PubsubKeeper, app.StakingKeeper, app.GravityKeeper),
+		poa.NewAppModule(appCodec, app.PoaKeeper, func(ctx sdk.Context) []abci.ValidatorUpdate {
+			return staking.EndBlocker(ctx, stakingKeeper)
+		}),
 		addresses.NewAppModule(appCodec, app.AddressesKeeper),
 	)
 
@@ -1011,6 +1064,7 @@ func initParamsKeeper(appCodec codec.BinaryCodec, legacyAmino *codec.LegacyAmino
 	paramsKeeper.Subspace(incentivestypes.ModuleName)
 	paramsKeeper.Subspace(auctiontypes.ModuleName)
 	paramsKeeper.Subspace(pubsubtypes.ModuleName)
+	paramsKeeper.Subspace(poatypes.ModuleName)
 	paramsKeeper.Subspace(addressestypes.ModuleName)
 
 	return paramsKeeper
