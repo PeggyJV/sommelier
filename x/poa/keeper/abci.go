@@ -1,0 +1,202 @@
+package keeper
+
+import (
+	abci "github.com/cometbft/cometbft/abci/types"
+	"cosmossdk.io/math"
+	sdk "github.com/cosmos/cosmos-sdk/types"
+
+	"github.com/peggyjv/sommelier/v9/x/poa/types"
+)
+
+// StakingEndBlockerFn is the callback PoA uses to drive staking's own
+// EndBlocker exactly once per block. The wrapping is necessary because PoA
+// owns staking's slot in the EndBlocker order: x/staking is NOT registered as
+// a standalone EndBlocker (SDK 0.47's module manager would otherwise panic if
+// two modules both returned non-empty validator updates).
+type StakingEndBlockerFn func(sdk.Context) []abci.ValidatorUpdate
+
+// EndBlocker runs the PoA per-block logic.
+//
+//  1. Run staking's EndBlocker to advance unbonding queues and emit raw
+//     ValidatorUpdates against the just-written staking.LastValidatorPower.
+//  2. Partition bonded-and-unjailed validators into authority and community
+//     buckets, compute the boost multiplier M, and store a snapshot.
+//  3. Overwrite staking.LastValidatorPower for authority validators with the
+//     boosted value (so any subsequent reads see the rescaled power).
+//  4. Merge raw updates with boosted entries and return the combined slice.
+func EndBlocker(ctx sdk.Context, k Keeper, runStakingEndBlocker StakingEndBlockerFn) []abci.ValidatorUpdate {
+	rawUpdates := runStakingEndBlocker(ctx)
+
+	params := k.GetParams(ctx)
+	if !params.Enabled {
+		return rawUpdates
+	}
+
+	authSet := authoritySetMap(k.GetAuthoritySet(ctx))
+
+	// Gather raw bonded powers from the just-written LastValidatorPower.
+	var (
+		authPower = math.ZeroInt()
+		comPower  = math.ZeroInt()
+		authVals  []sdk.ValAddress
+	)
+	k.sk.IterateLastValidatorPowers(ctx, func(op sdk.ValAddress, power int64) bool {
+		v, found := k.sk.GetValidator(ctx, op)
+		if !found || v.Jailed || !v.IsBonded() {
+			return false
+		}
+		if _, isAuth := authSet[op.String()]; isAuth {
+			authPower = authPower.Add(math.NewInt(power))
+			authVals = append(authVals, op)
+		} else {
+			comPower = comPower.Add(math.NewInt(power))
+		}
+		return false
+	})
+
+	if authPower.IsZero() {
+		if params.HaltWhenAuthorityEmpty {
+			panic(types.ErrNoBondedAuthority)
+		}
+		// Feature flag for ops emergencies: pass through staking's own updates.
+		return rawUpdates
+	}
+
+	m := types.ComputeMultiplier(authPower, comPower, params.FloorFraction)
+	if m.LTE(sdk.OneDec()) {
+		// No boost needed. Record an empty snapshot anyway so Slash math at
+		// this height has a found-snapshot.
+		k.SetMultiplierSnapshot(ctx, types.MultiplierSnapshot{Height: ctx.BlockHeight()})
+		k.pruneSnapshots(ctx)
+		return rawUpdates
+	}
+
+	// Build snapshot and overwrite LastValidatorPower for authority validators.
+	snap := types.MultiplierSnapshot{Height: ctx.BlockHeight()}
+	boostedByOp := make(map[string]int64, len(authVals))
+	for _, op := range authVals {
+		rawPower := k.sk.GetLastValidatorPower(ctx, op)
+		// Ceiling, not floor: floor() can drop the post-rescale share just
+		// below the configured floor due to integer truncation.
+		boosted := sdk.NewDec(rawPower).Mul(m).Ceil().TruncateInt64()
+		if boosted == rawPower {
+			continue
+		}
+		k.sk.SetLastValidatorPower(ctx, op, boosted)
+		boostedByOp[op.String()] = boosted
+		snap.Entries = append(snap.Entries, &types.MultiplierEntry{
+			OperatorAddress: op.String(),
+			Multiplier:      m.String(),
+		})
+	}
+	k.SetMultiplierSnapshot(ctx, snap)
+	k.pruneSnapshots(ctx)
+
+	finalUpdates := mergeUpdatesWithBoost(ctx, k, rawUpdates, boostedByOp)
+
+	ctx.EventManager().EmitEvent(sdk.NewEvent(
+		types.EventTypeAuthorityRescale,
+		sdk.NewAttribute(types.AttributeMultiplier, m.String()),
+		sdk.NewAttribute(types.AttributeAuthorityPower, authPower.String()),
+		sdk.NewAttribute(types.AttributeCommunityPower, comPower.String()),
+	))
+
+	return finalUpdates
+}
+
+// authoritySetMap is a O(1) lookup keyed by operator bech32.
+func authoritySetMap(vals []sdk.ValAddress) map[string]struct{} {
+	m := make(map[string]struct{}, len(vals))
+	for _, v := range vals {
+		m[v.String()] = struct{}{}
+	}
+	return m
+}
+
+// mergeUpdatesWithBoost rewrites Power on raw updates that correspond to
+// boosted authority entries, and appends explicit entries for authority
+// validators whose power changed but were absent from raw.
+func mergeUpdatesWithBoost(ctx sdk.Context, k Keeper, raw []abci.ValidatorUpdate, boostedByOp map[string]int64) []abci.ValidatorUpdate {
+	if len(boostedByOp) == 0 {
+		return raw
+	}
+
+	// Build a pubkey -> operator lookup for the boosted set so we can match
+	// against entries in `raw` by pubkey bytes.
+	pkToOp := make(map[string]string, len(boostedByOp))
+	opPk := make(map[string]abci.ValidatorUpdate, len(boostedByOp))
+	for opStr := range boostedByOp {
+		op, err := sdk.ValAddressFromBech32(opStr)
+		if err != nil {
+			continue
+		}
+		v, found := k.sk.GetValidator(ctx, op)
+		if !found {
+			continue
+		}
+		pk, err := v.TmConsPublicKey()
+		if err != nil {
+			continue
+		}
+		key := string(pk.GetEd25519())
+		if key == "" {
+			// Try secp256k1 if Ed25519 is not set.
+			key = string(pk.GetSecp256K1())
+		}
+		pkToOp[key] = opStr
+		opPk[opStr] = abci.ValidatorUpdate{PubKey: pk, Power: boostedByOp[opStr]}
+	}
+
+	out := make([]abci.ValidatorUpdate, 0, len(raw)+len(boostedByOp))
+	seen := make(map[string]struct{}, len(boostedByOp))
+
+	for _, u := range raw {
+		key := string(u.PubKey.GetEd25519())
+		if key == "" {
+			key = string(u.PubKey.GetSecp256K1())
+		}
+		if op, ok := pkToOp[key]; ok {
+			// Override with boosted value.
+			u.Power = boostedByOp[op]
+			seen[op] = struct{}{}
+		}
+		out = append(out, u)
+	}
+
+	// Append boosted entries for authority validators not present in raw.
+	for op, upd := range opPk {
+		if _, already := seen[op]; already {
+			continue
+		}
+		out = append(out, upd)
+	}
+	return out
+}
+
+// pruneSnapshots deletes per-block multiplier snapshots older than
+// max(unbonding_blocks, evidence_max_age_blocks) + signed_blocks_window.
+// The retention covers both unbonding-driven slashing and evidence-based
+// slashing whose infraction height can lag by `evidence.max_age_num_blocks`.
+func (k Keeper) pruneSnapshots(ctx sdk.Context) {
+	const avgBlockNanos = 6 * 1_000_000_000 // conservative for sommelier; adjust if blocktime drifts
+	unbonding := k.sk.UnbondingTime(ctx)
+	unbondingBlocks := int64(unbonding.Nanoseconds()/avgBlockNanos) + 1
+
+	var evidenceBlocks int64
+	if cp := ctx.ConsensusParams(); cp != nil && cp.Evidence != nil {
+		evidenceBlocks = cp.Evidence.MaxAgeNumBlocks
+	}
+	longest := unbondingBlocks
+	if evidenceBlocks > longest {
+		longest = evidenceBlocks
+	}
+
+	var signedWindow int64
+	if k.slashingKeeper != nil {
+		signedWindow = k.slashingKeeper.SignedBlocksWindow(ctx)
+	}
+	retention := longest + signedWindow
+	if ctx.BlockHeight() > retention {
+		k.PruneSnapshotsBefore(ctx, ctx.BlockHeight()-retention)
+	}
+}

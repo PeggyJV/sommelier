@@ -15,6 +15,7 @@ type fakeStakingKeeper struct {
 	validators       map[string]stakingtypes.Validator        // operator bech32 -> validator
 	consToOperator   map[string]sdk.ValAddress                // consAddr string -> op
 	bondedOrder      []sdk.ValAddress                          // for IterateBondedValidatorsByPower
+	lastPower        map[string]int64                          // operator bech32 -> overwritten LastValidatorPower
 	lastSlashPower   int64                                     // last `power` arg passed to Slash
 	lastSlashConsAddr sdk.ConsAddress
 	slashCalled      bool
@@ -24,6 +25,7 @@ func newFakeStaking() *fakeStakingKeeper {
 	return &fakeStakingKeeper{
 		validators:     map[string]stakingtypes.Validator{},
 		consToOperator: map[string]sdk.ValAddress{},
+		lastPower:      map[string]int64{},
 	}
 }
 
@@ -54,6 +56,9 @@ func (f *fakeStakingKeeper) GetValidator(ctx sdk.Context, op sdk.ValAddress) (st
 }
 
 func (f *fakeStakingKeeper) GetLastValidatorPower(ctx sdk.Context, op sdk.ValAddress) int64 {
+	if p, ok := f.lastPower[op.String()]; ok {
+		return p
+	}
 	v, ok := f.validators[op.String()]
 	if !ok {
 		return 0
@@ -111,7 +116,12 @@ func (f *fakeStakingKeeper) IterateLastValidatorPowers(ctx sdk.Context, cb func(
 		if !ok {
 			continue
 		}
-		power := sdk.TokensToConsensusPower(v.Tokens, sdk.DefaultPowerReduction)
+		var power int64
+		if p, has := f.lastPower[op.String()]; has {
+			power = p
+		} else {
+			power = sdk.TokensToConsensusPower(v.Tokens, sdk.DefaultPowerReduction)
+		}
 		if cb(op, power) {
 			return
 		}
@@ -156,8 +166,12 @@ func (f *fakeStakingKeeper) PowerReduction(_ sdk.Context) math.Int       { retur
 func (f *fakeStakingKeeper) BondDenom(_ sdk.Context) string              { return "usomm" }
 func (f *fakeStakingKeeper) UnbondingTime(_ sdk.Context) time.Duration   { return 21 * 24 * time.Hour }
 func (f *fakeStakingKeeper) IsValidatorJailed(_ sdk.Context, _ sdk.ConsAddress) bool { return false }
-func (f *fakeStakingKeeper) SetLastValidatorPower(_ sdk.Context, _ sdk.ValAddress, _ int64) {}
-func (f *fakeStakingKeeper) DeleteLastValidatorPower(_ sdk.Context, _ sdk.ValAddress) {}
+func (f *fakeStakingKeeper) SetLastValidatorPower(_ sdk.Context, op sdk.ValAddress, power int64) {
+	f.lastPower[op.String()] = power
+}
+func (f *fakeStakingKeeper) DeleteLastValidatorPower(_ sdk.Context, op sdk.ValAddress) {
+	delete(f.lastPower, op.String())
+}
 func (f *fakeStakingKeeper) ValidatorQueueIterator(_ sdk.Context, _ time.Time, _ int64) sdk.Iterator {
 	return nil
 }

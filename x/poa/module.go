@@ -59,15 +59,20 @@ func (AppModuleBasic) GetQueryCmd() *cobra.Command { return nil }
 // AppModule wires the PoA keeper into the SDK module manager.
 type AppModule struct {
 	AppModuleBasic
-	keeper keeper.Keeper
-	cdc    codec.Codec
+	keeper             keeper.Keeper
+	cdc                codec.Codec
+	stakingEndBlocker  keeper.StakingEndBlockerFn
 }
 
-func NewAppModule(cdc codec.Codec, k keeper.Keeper) AppModule {
+// NewAppModule constructs the PoA AppModule. `stakingEndBlocker` MUST be a
+// closure over the production *stakingkeeper.Keeper so PoA can drive
+// staking's EndBlocker exactly once per block; see x/poa/keeper.EndBlocker.
+func NewAppModule(cdc codec.Codec, k keeper.Keeper, stakingEndBlocker keeper.StakingEndBlockerFn) AppModule {
 	return AppModule{
-		AppModuleBasic: AppModuleBasic{},
-		keeper:         k,
-		cdc:            cdc,
+		AppModuleBasic:    AppModuleBasic{},
+		keeper:            k,
+		cdc:               cdc,
+		stakingEndBlocker: stakingEndBlocker,
 	}
 }
 
@@ -99,7 +104,8 @@ func (am AppModule) ExportGenesis(ctx sdk.Context, cdc codec.JSONCodec) json.Raw
 
 func (am AppModule) BeginBlock(_ sdk.Context, _ abci.RequestBeginBlock) {}
 
-// EndBlock is filled in Task 7.
-func (am AppModule) EndBlock(_ sdk.Context, _ abci.RequestEndBlock) []abci.ValidatorUpdate {
-	return nil
+// EndBlock runs the PoA EndBlocker, which itself drives staking's EndBlocker
+// (see keeper.EndBlocker for ordering rationale).
+func (am AppModule) EndBlock(ctx sdk.Context, _ abci.RequestEndBlock) []abci.ValidatorUpdate {
+	return keeper.EndBlocker(ctx, am.keeper, am.stakingEndBlocker)
 }

@@ -50,17 +50,17 @@ func TestComputeMultiplier_ZeroAuthority(t *testing.T) {
 }
 
 func TestComputeMultiplier_DefaultFloorRoundingSafe(t *testing.T) {
-	// Use the production default floor and verify the post-boost share is
-	// strictly above 2/3 even after integer truncation in EndBlocker.
+	// Use the production default floor and verify that ceil()-based boost
+	// (which is what EndBlocker applies) lands the post-rescale share at or
+	// above the floor.
 	floor := types.DefaultFloorFraction
 	auth := math.NewInt(100)
 	com := math.NewInt(1000)
 
 	m := types.ComputeMultiplier(auth, com, floor)
-	boosted := sdk.NewDecFromInt(auth).Mul(m).TruncateInt() // simulate floor() in EndBlocker
+	boosted := sdk.NewDecFromInt(auth).Mul(m).Ceil().TruncateInt() // EndBlocker uses Ceil()
 	total := boosted.Add(com)
 	share := sdk.NewDecFromInt(boosted).Quo(sdk.NewDecFromInt(total))
-	twoThirds := sdk.MustNewDecFromStr("0.666666666666666666")
-	require.True(t, share.GT(twoThirds),
-		"post-boost share %s should exceed 2/3 (%s)", share, twoThirds)
+	require.True(t, share.GTE(floor),
+		"post-boost share %s should be >= floor %s", share, floor)
 }
