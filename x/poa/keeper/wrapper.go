@@ -34,17 +34,32 @@ func (k Keeper) WrappedStakingKeeper() WrappedStakingKeeper {
 // Internal helpers
 // ----------------------------------------------------------------------------
 
-// boostedTokens scales `raw` by the current-block multiplier for `op` if
-// `op` is in the authority allowlist; otherwise returns raw unchanged.
-func (w WrappedStakingKeeper) boostedTokens(ctx sdk.Context, op sdk.ValAddress, raw math.Int) math.Int {
+// currentMultiplier returns the boost multiplier for `op` at the current
+// block height, or 1 if the operator is not in the authority allowlist or
+// no boost is in effect this block.
+func (w WrappedStakingKeeper) currentMultiplier(ctx sdk.Context, op sdk.ValAddress) sdk.Dec {
 	if !w.poa.IsAuthority(ctx, op) {
-		return raw
+		return sdk.OneDec()
 	}
 	m := w.poa.MultiplierForValidator(ctx, op, ctx.BlockHeight())
 	if m.LTE(sdk.OneDec()) {
+		return sdk.OneDec()
+	}
+	return m
+}
+
+// boostedTokens scales `raw` by the current-block multiplier with Ceil
+// semantics, matching the EndBlocker's overwrite of LastValidatorPower.
+// Using Ceil consistently across all boosted reads (Tokens, ConsensusPower)
+// avoids the asymmetry where one path returned floor(raw*m) and another
+// returned ceil(raw*m), which under-slashed authority validators by 1 power
+// unit at the boundary.
+func (w WrappedStakingKeeper) boostedTokens(ctx sdk.Context, op sdk.ValAddress, raw math.Int) math.Int {
+	m := w.currentMultiplier(ctx, op)
+	if m.Equal(sdk.OneDec()) {
 		return raw
 	}
-	return sdk.NewDecFromInt(raw).Mul(m).TruncateInt()
+	return sdk.NewDecFromInt(raw).Mul(m).Ceil().TruncateInt()
 }
 
 // adaptValidator wraps `v` in a boostedValidator if the operator is authority
@@ -54,16 +69,31 @@ func (w WrappedStakingKeeper) adaptValidator(ctx sdk.Context, v stakingtypes.Val
 		return nil
 	}
 	op := v.GetOperator()
-	boosted := w.boostedTokens(ctx, op, v.GetTokens())
-	if boosted.Equal(v.GetTokens()) {
+	m := w.currentMultiplier(ctx, op)
+	if m.Equal(sdk.OneDec()) {
 		return v
 	}
-	return boostedValidator{ValidatorI: v, boostedTokens: boosted}
+	return boostedValidator{ValidatorI: v, multiplier: m}
 }
 
 // ----------------------------------------------------------------------------
 // Validator-returning read methods
 // ----------------------------------------------------------------------------
+
+// GetLastTotalPower returns the boosted aggregate consensus power. The
+// embedded staking keeper's LastTotalPower in the store reflects the raw
+// total computed inside ApplyAndReturnValidatorSetUpdates BEFORE PoA
+// overwrites individual LastValidatorPower entries, so we must recompute
+// here to keep gravity-bridge / cork / axelarcork quorum thresholds in sync
+// with the boosted per-validator powers they iterate.
+func (w WrappedStakingKeeper) GetLastTotalPower(ctx sdk.Context) math.Int {
+	total := math.ZeroInt()
+	w.StakingKeeper.IterateLastValidatorPowers(ctx, func(_ sdk.ValAddress, power int64) bool {
+		total = total.Add(math.NewInt(power))
+		return false
+	})
+	return total
+}
 
 func (w WrappedStakingKeeper) Validator(ctx sdk.Context, op sdk.ValAddress) stakingtypes.ValidatorI {
 	return w.adaptValidator(ctx, w.StakingKeeper.Validator(ctx, op))

@@ -733,7 +733,6 @@ func NewSommelierApp(
 		cellarfeestypes.ModuleName,
 		auctiontypes.ModuleName,
 		pubsubtypes.ModuleName,
-		poatypes.ModuleName,
 		addressestypes.ModuleName,
 	)
 
@@ -754,6 +753,9 @@ func NewSommelierApp(
 		govtypes.ModuleName,
 		stakingtypes.ModuleName,
 		slashingtypes.ModuleName,
+		// PoA initialises after slashing (so its dependencies are ready) and
+		// before gravity (which reads validator power during InitGenesis).
+		poatypes.ModuleName,
 		minttypes.ModuleName,
 		crisistypes.ModuleName,
 		genutiltypes.ModuleName,
@@ -773,7 +775,6 @@ func NewSommelierApp(
 		cellarfeestypes.ModuleName,
 		auctiontypes.ModuleName,
 		pubsubtypes.ModuleName,
-		poatypes.ModuleName,
 		addressestypes.ModuleName,
 	)
 

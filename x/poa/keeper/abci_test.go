@@ -129,6 +129,10 @@ func TestEndBlocker_DisabledIsNoop(t *testing.T) {
 	authPowerAfter := fake.GetLastValidatorPower(ctx, auth)
 	require.Equal(t, authPowerBefore, authPowerAfter)
 
-	_, ok := k.GetMultiplierSnapshot(ctx, ctx.BlockHeight())
-	require.False(t, ok, "no snapshot when disabled")
+	// When disabled, an empty snapshot is still written so any future slash
+	// for a height in this window does not hit the missing-snapshot refuse
+	// path in WrappedStakingKeeper.Slash.
+	snap, ok := k.GetMultiplierSnapshot(ctx, ctx.BlockHeight())
+	require.True(t, ok)
+	require.Empty(t, snap.Entries)
 }

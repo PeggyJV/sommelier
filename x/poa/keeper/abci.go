@@ -29,6 +29,11 @@ func EndBlocker(ctx sdk.Context, k Keeper, runStakingEndBlocker StakingEndBlocke
 
 	params := k.GetParams(ctx)
 	if !params.Enabled {
+		// Record an empty snapshot at this height so a future slash for an
+		// authority validator at this height does not hit the
+		// missing-snapshot refuse path in WrappedStakingKeeper.Slash.
+		k.SetMultiplierSnapshot(ctx, types.MultiplierSnapshot{Height: ctx.BlockHeight()})
+		k.pruneSnapshots(ctx)
 		return rawUpdates
 	}
 
@@ -178,7 +183,11 @@ func mergeUpdatesWithBoost(ctx sdk.Context, k Keeper, raw []abci.ValidatorUpdate
 // The retention covers both unbonding-driven slashing and evidence-based
 // slashing whose infraction height can lag by `evidence.max_age_num_blocks`.
 func (k Keeper) pruneSnapshots(ctx sdk.Context) {
-	const avgBlockNanos = 6 * 1_000_000_000 // conservative for sommelier; adjust if blocktime drifts
+	// Use 4s as a conservative LOWER bound on actual block time (sommelier
+	// runs ~5.5–6s). A smaller divisor produces MORE retention blocks per
+	// unit time, which is the safe direction: missing snapshots cause
+	// authority slashes to be skipped, so we prefer to over-retain.
+	const avgBlockNanos = 4 * 1_000_000_000
 	unbonding := k.sk.UnbondingTime(ctx)
 	unbondingBlocks := int64(unbonding.Nanoseconds()/avgBlockNanos) + 1
 
