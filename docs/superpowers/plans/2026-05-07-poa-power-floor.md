@@ -883,9 +883,16 @@ func (b boostedValidator) ConsensusPower(r math.Int) int64 {
     if !b.IsBonded() { return 0 }
     return sdk.TokensToConsensusPower(b.boostedTokens, r)
 }
+// GetConsensusPower is the canonical method on ValidatorI in SDK 0.47 (alongside ConsensusPower
+// for backwards compat). Override both.
+func (b boostedValidator) GetConsensusPower(r math.Int) int64 { return b.ConsensusPower(r) }
 func (b boostedValidator) PotentialConsensusPower(r math.Int) int64 {
     return sdk.TokensToConsensusPower(b.boostedTokens, r)
 }
+// TokensFromShares* / SharesFromTokens* are intentionally NOT overridden. Delegation share math
+// must operate on RAW tokens — boosting shares would let authority validators dilute community
+// delegators' share allocations. This is the correct semantic split: power is boosted, ownership
+// math is not.
 
 // adaptValidator wraps v in a boostedValidator if op is an authority and the
 // current-block multiplier > 1; otherwise returns v unchanged.
@@ -962,10 +969,17 @@ func (w WrappedStakingKeeper) Slash(ctx sdk.Context, consAddr sdk.ConsAddress, i
     m, snapFound := w.poa.MultiplierForValidatorWithStatus(ctx, op, infractionHeight)
     if !snapFound {
         // Authority validator but no snapshot at infractionHeight (snapshot pruned or never written).
-        // Refuse silent over-slashing: log and skip the power scaling, treating power as already raw.
-        ctx.Logger().Error("poa: missing multiplier snapshot for authority slash; using raw power",
+        // The caller's `power` is the boosted CometBFT consensus power; using it as-if-raw would
+        // OVER-slash the authority validator. Per spec constraint #2, refuse to slash and log
+        // loudly. Operators must restore the snapshot from state-sync or replay to apply the slash.
+        ctx.Logger().Error("poa: missing multiplier snapshot for authority slash; SKIPPING slash",
             "operator", op.String(), "infraction_height", infractionHeight)
-        return w.StakingKeeper.Slash(ctx, consAddr, infractionHeight, power, slashFactor)
+        ctx.EventManager().EmitEvent(sdk.NewEvent(
+            types.EventTypeSlashSkippedNoSnapshot,
+            sdk.NewAttribute("operator", op.String()),
+            sdk.NewAttribute("infraction_height", fmt.Sprintf("%d", infractionHeight)),
+        ))
+        return math.ZeroInt()
     }
     if m.LTE(sdk.OneDec()) {
         return w.StakingKeeper.Slash(ctx, consAddr, infractionHeight, power, slashFactor)
@@ -1008,7 +1022,11 @@ git commit -m "poa: wrapped staking keeper with Slash power normalisation"
 
 ---
 
-## Task 7: EndBlocker — overwrite LastValidatorPower & emit ABCI updates
+## Task 7: EndBlocker — own staking's validator updates and emit boosted set
+
+**CRITICAL DESIGN POINT (revised after Codex review):** SDK 0.47's `module.Manager.EndBlock` **panics** if two registered modules each return non-empty `[]abci.ValidatorUpdate` (`module.go:585`). The earlier plan assumed "last writer wins", which is false. We therefore **remove `x/staking` from the EndBlocker order** and have PoA's EndBlocker call `staking.EndBlocker` internally, capture the raw updates, rescale them, and return the boosted set as PoA's own output. PoA becomes the sole producer of ABCI validator updates.
+
+This also avoids the next-block "fight" problem: staking's `ApplyAndReturnValidatorSetUpdates` writes `LastValidatorPower` rows itself; we then rewrite the authority entries before returning. Next block, staking's EndBlocker (called from inside PoA's) re-reads its own overwritten `LastValidatorPower`, computes a diff against current `Tokens`, emits raw updates, and PoA again rescales. No conflict because only PoA returns to the manager.
 
 **Files:**
 - Create: `x/poa/keeper/abci.go`, `x/poa/keeper/abci_test.go`, `x/poa/abci.go`
@@ -1101,17 +1119,24 @@ import (
     abci "github.com/cometbft/cometbft/abci/types"
     sdk "github.com/cosmos/cosmos-sdk/types"
     "cosmossdk.io/math"
+    staking "github.com/cosmos/cosmos-sdk/x/staking"
 
     "github.com/peggyjv/sommelier/v9/x/poa/types"
 )
 
 func EndBlocker(ctx sdk.Context, k Keeper) []abci.ValidatorUpdate {
+    // 1. Run staking's full EndBlocker (matured unbondings + ApplyAndReturnValidatorSetUpdates).
+    //    We OWN this call because staking is no longer registered in the module manager's
+    //    EndBlocker order; this is the only place its EndBlocker runs.
+    rawUpdates := staking.EndBlocker(ctx, k.sk.UnderlyingKeeper())
+    _ = rawUpdates // we recompute the final set below from LastValidatorPower
+
     params := k.GetParams(ctx)
     if !params.Enabled {
-        return nil
+        return rawUpdates
     }
 
-    // 1. Gather raw powers from staking's just-written LastValidatorPower.
+    // 2. Gather raw powers from staking's just-written LastValidatorPower.
     auth := authoritySetMap(k.GetAuthoritySet(ctx))
     var (
         authPower = math.ZeroInt()
@@ -1136,31 +1161,28 @@ func EndBlocker(ctx sdk.Context, k Keeper) []abci.ValidatorUpdate {
         if params.HaltWhenAuthorityEmpty {
             panic(types.ErrNoBondedAuthority)
         }
-        return nil
+        return rawUpdates
     }
 
     m := types.ComputeMultiplier(authPower, comPower, params.FloorFraction)
     if m.LTE(sdk.OneDec()) {
         // No boost needed; still record an empty snapshot to enable consistent slashing math.
         k.SetMultiplierSnapshot(ctx, types.MultiplierSnapshot{Height: ctx.BlockHeight()})
-        k.pruneSnapshots(ctx, params)
-        return nil
+        k.pruneSnapshots(ctx)
+        return rawUpdates
     }
 
-    var updates []abci.ValidatorUpdate
+    // 3. Build the FINAL set of ABCI updates by merging rawUpdates with our boosted authority entries.
+    //    rawUpdates already contains adds/removes from staking; we just need to overwrite the Power
+    //    on entries for authority validators (or append boosted entries for those not in rawUpdates).
+    finalUpdates := mergeUpdatesWithBoost(rawUpdates, k, ctx, authVals, m)
+
     snap := types.MultiplierSnapshot{Height: ctx.BlockHeight()}
     for _, op := range authVals {
         rawPower := k.sk.GetLastValidatorPower(ctx, op)
         boosted := sdk.NewDec(rawPower).Mul(m).TruncateInt64()
-        if boosted == rawPower {
-            continue
-        }
-        v, _ := k.sk.GetValidator(ctx, op)
-        pk, err := v.TmConsPublicKey()
-        if err != nil { panic(err) }
-
+        if boosted == rawPower { continue }
         k.sk.SetLastValidatorPower(ctx, op, boosted)
-        updates = append(updates, abci.ValidatorUpdate{PubKey: pk, Power: boosted})
         snap.Entries = append(snap.Entries, types.MultiplierEntry{
             OperatorAddress: op.String(),
             Multiplier:      m.String(),
@@ -1168,7 +1190,7 @@ func EndBlocker(ctx sdk.Context, k Keeper) []abci.ValidatorUpdate {
     }
 
     k.SetMultiplierSnapshot(ctx, snap)
-    k.pruneSnapshots(ctx, params)
+    k.pruneSnapshots(ctx)
 
     ctx.EventManager().EmitEvent(sdk.NewEvent(
         types.EventTypeAuthorityRescale,
@@ -1177,7 +1199,32 @@ func EndBlocker(ctx sdk.Context, k Keeper) []abci.ValidatorUpdate {
         sdk.NewAttribute(types.AttributeCommunityPower, comPower.String()),
     ))
 
-    return updates
+    return finalUpdates
+}
+
+// mergeUpdatesWithBoost overrides the Power field for any authority entry already in `raw`,
+// and appends an explicit boosted entry for authority validators whose power differs from
+// what staking emitted (i.e., raw included no entry for them this block but our boost
+// changes their effective consensus power).
+func mergeUpdatesWithBoost(raw []abci.ValidatorUpdate, k Keeper, ctx sdk.Context, authVals []sdk.ValAddress, m sdk.Dec) []abci.ValidatorUpdate {
+    out := make([]abci.ValidatorUpdate, 0, len(raw)+len(authVals))
+    seenPK := map[string]int{} // pk-bytes -> index in out
+    for _, u := range raw { seenPK[string(u.PubKey.GetEd25519())] = len(out); out = append(out, u) }
+
+    for _, op := range authVals {
+        v, _ := k.sk.GetValidator(ctx, op)
+        pk, err := v.TmConsPublicKey()
+        if err != nil { panic(err) }
+        rawPower := k.sk.GetLastValidatorPower(ctx, op)          // pre-overwrite raw
+        boosted := sdk.NewDec(rawPower).Mul(m).TruncateInt64()
+        if boosted == rawPower { continue }
+        if idx, ok := seenPK[string(pk.GetEd25519())]; ok {
+            out[idx].Power = boosted
+        } else {
+            out = append(out, abci.ValidatorUpdate{PubKey: pk, Power: boosted})
+        }
+    }
+    return out
 }
 
 func authoritySetMap(vals []sdk.ValAddress) map[string]struct{} {
@@ -1186,13 +1233,29 @@ func authoritySetMap(vals []sdk.ValAddress) map[string]struct{} {
     return m
 }
 
-func (k Keeper) pruneSnapshots(ctx sdk.Context, _ types.Params) {
-    // retention_blocks = ceil(unbonding_time / avg_block_time) + signed_blocks_window
+func (k Keeper) pruneSnapshots(ctx sdk.Context) {
+    // retention_blocks = max(
+    //   ceil(unbonding_time / avg_block_time),
+    //   evidence.max_age_num_blocks (CometBFT consensus param),
+    // ) + signed_blocks_window
+    //
+    // Evidence-based slashing in SDK 0.47 routes through evidence/keeper/infraction.go which
+    // calls Slash with `distributionHeight = infractionHeight - ValidatorUpdateDelay`. The
+    // infraction height can be as old as the consensus evidence max-age, which exceeds the
+    // unbonding-derived bound on long-unbonding chains.
     unbonding := k.sk.UnbondingTime(ctx)
     const avgBlockNanos = 6 * 1_000_000_000 // 6s; conservative for sommelier
     unbondingBlocks := int64(unbonding.Nanoseconds()/avgBlockNanos) + 1
-    signedWindow := k.slashingKeeper.SignedBlocksWindow(ctx) // wire SlashingKeeper into Keeper struct
-    retention := unbondingBlocks + signedWindow
+
+    var evidenceBlocks int64
+    if cp := ctx.ConsensusParams(); cp != nil && cp.Evidence != nil {
+        evidenceBlocks = cp.Evidence.MaxAgeNumBlocks
+    }
+    longest := unbondingBlocks
+    if evidenceBlocks > longest { longest = evidenceBlocks }
+
+    signedWindow := k.slashingKeeper.SignedBlocksWindow(ctx) // SlashingKeeper interface dep
+    retention := longest + signedWindow
     if ctx.BlockHeight() > retention {
         k.PruneSnapshotsBefore(ctx, ctx.BlockHeight()-retention)
     }
@@ -1218,6 +1281,8 @@ const (
     AttributeMultiplier       = "multiplier"
     AttributeAuthorityPower   = "authority_power"
     AttributeCommunityPower   = "community_power"
+
+    EventTypeSlashSkippedNoSnapshot = "slash_skipped_no_snapshot"
 )
 ```
 
@@ -1340,7 +1405,7 @@ wrappedSk := app.PoaKeeper.WrappedStakingKeeper()
 
 Edit, build, repeat for **consumers that must see boosted power**:
 - `slashingkeeper.NewKeeper(..., wrappedSk, ...)`
-- `distrkeeper.NewKeeper(..., wrappedSk, ...)` — note: distribution rewards are still calculated from real bonded ratio because distribution allocates rewards by `ConsensusPower` from validators it iterates, but reward *math* (inflation, fee splits) flows from mint/bank which use raw values; in practice rewarding by boosted power is acceptable since boosted relative weights == raw relative weights for community↔community comparisons and authority validators are already incentivised separately. Document this in `docs/poa.md` (Task 12).
+- `distrkeeper.NewKeeper(..., wrappedSk, ...)` — **CORRECTION (Codex review):** distribution allocates block rewards from CometBFT's `LastCommitInfo` voting power (`x/distribution/keeper/allocation.go`), which carries our **boosted** powers. Authority validators therefore receive boosted gross rewards proportional to their inflated consensus weight. This is an intentional consequence of PoA — authority validators bear the security responsibility and earn proportional reward — but operators MUST be informed. Document explicitly in `docs/poa.md` (Task 12).
 - `evidencekeeper.NewKeeper(..., &wrappedSk, ...)`
 - `gravitykeeper.NewKeeper(..., wrappedSk, ...)`
 - `corkkeeper.NewKeeper(..., wrappedSk, ...)`
@@ -1371,9 +1436,15 @@ app.mm = module.NewManager(
 
 Also add `poa.NewAppModule(appCodec, app.PoaKeeper)` to the `simulationManager` constructor (`app.sm = module.NewSimulationManager(...)`).
 
-- [ ] **Step 5: EndBlocker order**
+- [ ] **Step 5: EndBlocker order — REMOVE staking, ADD poa**
 
-Insert `poatypes.ModuleName` immediately after `stakingtypes.ModuleName` in `mm.SetOrderEndBlockers(...)`.
+**CRITICAL:** Per Task 7's revised design, `x/staking` no longer runs as a registered EndBlocker (PoA owns its EndBlocker invocation). In `mm.SetOrderEndBlockers(...)`:
+- DELETE the `stakingtypes.ModuleName` entry.
+- INSERT `poatypes.ModuleName` at that position.
+
+If any other module's EndBlocker depends on `staking.LastValidatorPower` being already-updated for the current block (e.g., gravity-bridge's `OutgoingTxBatchExecutedEvent` handling), confirm those modules run AFTER `poatypes.ModuleName` in the order — they will, because PoA replaces staking's slot.
+
+Verify the staking module's `Hooks()` chain is unaffected (hooks fire from inside operations like `BeginRedelegation`, not from `EndBlock`).
 
 - [ ] **Step 6: BeginBlocker order**
 
@@ -1414,6 +1485,22 @@ git commit -m "app: wire x/poa and route validator-power consumers through wrapp
 **Files:**
 - Create: `x/poa/keeper/integration_test.go`
 
+- [ ] **Step 0: Sentinel test — confirm only PoA emits validator updates**
+
+```go
+func TestEndBlocker_OnlyPoaEmitsValidatorUpdates(t *testing.T) {
+    app, ctx := setupSimApp(t)
+    // Force a validator power change so staking's internal EndBlocker would emit updates.
+    delegateAndBond(t, app, ctx, ...)
+    res := app.EndBlocker(ctx, abci.RequestEndBlock{Height: ctx.BlockHeight()})
+    // Updates should appear (from PoA) but the chain must NOT have panicked from
+    // module.Manager's two-modules-emitting-updates check.
+    require.NotEmpty(t, res.ValidatorUpdates)
+}
+```
+
+This is the canary for the Codex-flagged ModuleManager panic. Run it first.
+
 - [ ] **Step 1: simapp test — bond mixed validators, run blocks, assert floor**
 
 ```go
@@ -1431,11 +1518,15 @@ func TestPoa_FloorMaintainedAcrossBlocks(t *testing.T) {
 
 - [ ] **Step 2: gravity-bridge SignerSetTx weight check**
 
+Note (Codex review): gravity v6's `SignerSetTx` weight is built from `GetLastValidatorPower` (not `Validator.Tokens`), so the EndBlocker's overwrite of `LastValidatorPower` is the load-bearing mechanism for gravity. The wrapper's `boostedValidator` adapter is defensive belt-and-suspenders for other consumers.
+
 Inspect the SignerSetTx the gravity module would produce next; assert authority signers' summed weight `>= 67%`. (Use `app.GravityKeeper.CreateSignerSetTx(ctx)` semantics — exact API depends on gravity v6.)
 
 - [ ] **Step 3: Slashing integration**
 
-Trigger a downtime slash on an authority validator; assert burned tokens == `slashFraction * actual_bonded`, NOT `slashFraction * boosted_bonded`.
+Trigger a downtime slash on an authority validator; assert burned tokens == `slashFraction * actual_bonded`, NOT `slashFraction * boosted_bonded`. Use a tolerance of ±1 consensus-power unit to account for the floor(power*M)/floor(power/M) round-trip rounding.
+
+Add a separate test `TestSlash_MissingSnapshot_Skips`: prune all snapshots, then trigger an authority slash with `infractionHeight` older than retention; assert the slash is skipped (returns 0) and a `slash_skipped_no_snapshot` event is emitted.
 
 - [ ] **Step 4: Halt-on-empty integration**
 
@@ -1548,8 +1639,10 @@ git commit -m "v10: upgrade handler that registers x/poa and seeds authority set
   - What changed in v10 (PoA semantics, 67% floor).
   - Why a community validator with 50% stake will only show ~30% consensus power.
   - How slashing works (slash on raw stake, not boosted).
+  - **Reward semantics:** authority validators receive *boosted* block rewards (proportional to their inflated CometBFT power, since `x/distribution` allocates from `LastCommitInfo`). Community validators earn rewards proportional to their unboosted consensus share. Explicitly note this so authority operators understand they accept slashing exposure on raw stake but receive rewards proportional to boosted power — which is the deliberate incentive alignment.
   - How to propose adding/removing an authority validator (`MsgUpdateAuthoritySet`).
   - Warning about chain halt if all authority validators are jailed.
+  - Operator note on missing-snapshot slash skip: extremely rare; only relevant if state-sync prunes snapshots before evidence is processed.
 
 - [ ] **Step 2: Commit**
 
