@@ -2,7 +2,7 @@
 
 **Date:** 2026-05-07
 **Author:** Zaki (with Claude)
-**Status:** Draft for review
+**Status:** Implemented in PR [#340](https://github.com/PeggyJV/sommelier/pull/340)
 
 ## 1. Summary
 
@@ -35,26 +35,31 @@ Authority is enforced not by replacing `x/staking`, but by a new `x/poa` module 
 ## 3. Architecture
 
 ```
-                   ┌────────────────────────────────────┐
-                   │  CometBFT (consumes ValidatorUpdates)
-                   └────────────────▲───────────────────┘
-                                    │ rescaled updates
-                                    │
-   ┌──────────────────┐    EndBlocker order:                ┌────────────────┐
-   │  x/staking       │── 1. staking ──▶ 2. x/poa ─────────▶│ ABCI updates   │
-   │  (unchanged)     │                                     └────────────────┘
-   └────────▲─────────┘
-            │ Keeper interface
-            │
-   ┌────────┴───────────┐         ┌─────────────────────────┐
-   │  x/poa keeper      │◀────────│  Gravity, Slashing,     │
-   │  (wraps staking)   │         │  Distribution, Cork,    │
-   │                    │         │  Pubsub, Axelarcork,    │
-   │  - GetLastVP*      │         │  Incentives, Evidence    │
-   │  - GetLastTotal*   │         └─────────────────────────┘
-   │  - Iterate*        │
-   │  - Slash (norm.)   │
-   └────────────────────┘
+                       ┌────────────────────────────────────┐
+                       │  CometBFT (consumes ValidatorUpdates)
+                       └────────────────▲───────────────────┘
+                                        │ merged (boosted) updates
+                                        │
+   ┌──────────────────────┐         ┌───┴────────────────────┐
+   │  x/staking           │         │  x/poa AppModule       │
+   │  AppModule (no-op    │         │  EndBlock              │
+   │  EndBlock; PoA owns) │◀────────│   1. invoke staking    │
+   │                      │ closure │      EndBlocker        │
+   └─────────▲────────────┘         │   2. compute M         │
+             │                      │   3. overwrite         │
+             │ embedded             │      LastValidatorPower│
+             │                      │   4. merge updates     │
+   ┌─────────┴────────────┐         └───────────▲────────────┘
+   │ poakeeper.Keeper     │                     │ keeper interface
+   │  (raw concrete + sk) │                     │
+   └─────────▲────────────┘         ┌───────────┴────────────┐
+             │ exposes              │  Gravity, Slashing,    │
+             │                      │  Distribution, Cork,   │
+   ┌─────────┴────────────┐         │  Pubsub, Axelarcork,   │
+   │ WrappedStakingKeeper │◀────────│  Incentives, Evidence  │
+   │  - boosted reads     │         └────────────────────────┘
+   │  - normalised Slash  │
+   └──────────────────────┘
 ```
 
 ### 3.1 New module: `x/poa`
@@ -85,15 +90,17 @@ Authority is enforced not by replacing `x/staking`, but by a new `x/poa` module 
 
 **Read methods (apply multiplier to authority validators):**
 
-- `GetLastValidatorPower(ctx, operator) → int64`
-- `GetLastTotalPower(ctx) → math.Int`
-- `GetBondedValidatorsByPower(ctx) → []Validator` (returns validators with `ConsensusPower`-equivalent token shifts; see §3.3 for representation)
-- `IterateBondedValidatorsByPower`, `IterateLastValidators`, `IterateLastValidatorPowers`, `IterateValidators` — yield rescaled powers via a `ValidatorI` adapter
-- `Validator(addr)`, `ValidatorByConsAddr(addr)` — return a `ValidatorI` adapter that reports rescaled `ConsensusPower(...)`
+- `GetLastValidatorPower(ctx, operator) → int64` — pass-through; boost is realised via the EndBlocker's `LastValidatorPower` overwrite.
+- `GetLastTotalPower(ctx) → math.Int` — recomputes the boosted total by re-iterating overwritten `LastValidatorPower` (the staking module's own `LastTotalPower` slot is set inside `ApplyAndReturnValidatorSetUpdates` *before* PoA's overwrite, so it reflects the pre-rescale total).
+- `GetBondedValidatorsByPower(ctx) → []Validator`, `GetAllValidators(ctx) → []Validator`, `GetValidator(...)` — return concrete validators with `Tokens` field rescaled (`Ceil(rawTokens * M)`).
+- `IterateBondedValidatorsByPower`, `IterateLastValidators`, `IterateValidators` — yield a `boostedValidator` adapter overriding `GetTokens` / `GetBondedTokens` / `GetConsensusPower`. `IterateLastValidatorPowers` is pass-through (the underlying store already holds boosted values).
+- `Validator(addr)`, `ValidatorByConsAddr(addr)` — return the `boostedValidator` adapter.
 
 **Pass-through methods (unchanged):**
 
-- `GetParams`, `GetValidator`, `Delegation`, `MaxValidators`, `IsValidatorJailed`, `Jail`, `Unjail`, `PowerReduction`, `ValidatorQueueIterator`.
+- `GetParams`, `Delegation`, `MaxValidators`, `IsValidatorJailed`, `Jail`, `Unjail`, `PowerReduction`, `BondDenom`, `UnbondingTime`, `ValidatorQueueIterator`, `Hooks`, `SetLastValidatorPower`, `DeleteLastValidatorPower`, `IterateDelegations`, `GetAllSDKDelegations`, `GetAllDelegatorDelegations`.
+
+The adapter intentionally does NOT override `TokensFromShares*` / `SharesFromTokens*`: delegation share allocation must operate on raw tokens so boosted authority validators do not dilute community delegators' shares. Boost is a property of consensus power and slashing exposure, not a property of token ownership.
 
 **Normalised-write method:**
 
@@ -121,30 +128,31 @@ If `M ≤ 1` (authority already controls ≥ f), the multiplier is clamped to 1 
 
 - `B = 0` (no bonded authority validators): module emits a critical-level event `AuthoritySetUnavailable` and returns the staking-module's raw updates verbatim. CometBFT will continue producing blocks based on community alone — *but* in practice gravity-bridge cellar txs and slashing semantics depend on the invariant; ops should treat this as an immediate halt-worthy alert. (See §3.5 for halt option.)
 - `C = 0`: no rescale needed; authority already at 100%.
-- Rounding: integer floor on each authority power; surplus residue is acceptable (M is chosen such that the post-rescale authority share is ≥ f even after floor).
+- Rounding: ceil on each authority power so the post-rescale authority share is ≥ f even after integer truncation. The wrapper applies the same Ceil semantics to `GetTokens` / `GetConsensusPower` to keep reads consistent with the consensus power written to the store.
 
 ### 3.4 EndBlocker
 
-PoA's EndBlocker runs **after** `x/staking`'s EndBlocker and **before** any module that reads validator power for the next block. App ordering (relevant slice):
+PoA owns the only EndBlocker that returns validator updates for the chain. SDK v0.47's `module.Manager.EndBlock` panics if more than one registered module returns a non-empty `[]abci.ValidatorUpdate`. To avoid this, `x/staking` is registered in the module manager (so its `InitGenesis` / `BeginBlock` / `ExportGenesis` continue to run) but its `AppModule` is wrapped (`app/staking_endblocker_noop.go`) to make `EndBlock` a no-op. PoA's `AppModule` instead receives a closure over the production `*stakingkeeper.Keeper` and invokes `staking.EndBlocker` exactly once per block from inside its own EndBlocker.
+
+App ordering (relevant slice):
 
 ```
-... → staking → poa → cork → axelarcork → pubsub → ...
+... → crisis → gov → poa → staking(no-op) → ica → ... → community modules → ...
 ```
 
-Per block:
+Per block, PoA's EndBlocker:
 
-1. Read `staking.LastValidatorPower` rows just written this block.
-2. Partition into authority (A) and community (C) sets, filtering bonded & unjailed.
-3. Compute `M`.
-4. For each authority validator, compute boosted power and:
-   a. Overwrite `staking.LastValidatorPower[v]` with the boosted value.
-   b. Append/overwrite an `abci.ValidatorUpdate{v.cons_pubkey, boosted_power}` in the EndBlocker return slice.
-5. Persist `(block_height → per_authority_multiplier_snapshot)` to PoA state. Pruning rule: at the end of each block, delete any snapshot with `key < current_height - retention_blocks`, where `retention_blocks = ceil(staking.UnbondingTime / avg_block_time) + slashing.SignedBlocksWindow`. The pruning constant is computed once per block from current params. This bounds state and ensures any infraction old enough to have unbonded cannot reference a missing snapshot.
-6. Emit telemetry events (`AuthorityShare`, `Multiplier`, per-validator boost).
+1. Calls the staking-end-blocker closure to advance unbonding queues and produce raw `abci.ValidatorUpdate` against the just-written `staking.LastValidatorPower`.
+2. Iterates `LastValidatorPower`, partitioning bonded-and-unjailed validators into authority (A) and community (C) buckets.
+3. Computes `M = floor / (1 - floor) * C / B`, clamped to 1 when authority already exceeds the floor.
+4. For each authority validator, computes `Ceil(rawPower * M)` and:
+   a. Overwrites `staking.LastValidatorPower[v]` with the boosted value.
+   b. Records the per-validator multiplier in the block's snapshot.
+5. Merges raw updates with boosted entries (`mergeUpdatesWithBoost`): rewrites `Power` on raw entries that match a boosted authority pubkey and appends explicit entries for boosted authorities not present in raw. Returns the merged slice as the chain's only `[]abci.ValidatorUpdate` for the block.
+6. Persists `(block_height → per_authority_multiplier_snapshot)` to PoA state. Retention covers `max(unbonding_blocks, evidence.MaxAgeNumBlocks) + slashing.SignedBlocksWindow`; the unbonding-blocks term uses a conservative lower bound on block time so retention errs toward over-keeping (missing snapshots cause authority slashes to be skipped, so over-retention is the safe direction).
+7. Emits the `authority_rescale` telemetry event with `multiplier`, `authority_power`, `community_power`.
 
-Overwriting `staking.LastValidatorPower` resolves three issues at once:
-- All callers of `staking.GetLastValidatorPower` see the boosted value (no wrapper required for reads from staking itself).
-- Staking's *next* block diff computation will see "last = boosted, new raw = raw", emit a delta back to raw, and our PoA EndBlocker will re-overwrite — net result, last writer wins per `consAddr` in BaseApp's update aggregator. This is deterministic but fragile; the wrapper layer in §3.2 is the durable surface for downstream consumers.
+Reads from the wrapper layer (§3.2) provide the durable surface for the floor invariant. The `LastValidatorPower` overwrite is belt-and-suspenders: any consumer that queries staking directly via `GetLastValidatorPower` also sees the boosted value, and `WrappedStakingKeeper.GetLastTotalPower` recomputes the boosted aggregate by re-iterating the store (the staking module's `LastTotalPower` slot is set inside `ApplyAndReturnValidatorSetUpdates` *before* PoA's overwrite, so it reflects the pre-rescale total).
 
 ### 3.5 Halt-on-empty-authority
 
@@ -166,7 +174,7 @@ For each consumer currently passed `app.StakingKeeper`, replace with `app.PoaKee
 
 `x/staking` itself continues to receive the real keeper for its internal bookkeeping.
 
-EndBlocker order: insert `poatypes.ModuleName` directly after `stakingtypes.ModuleName` in `mm.SetOrderEndBlockers`.
+EndBlocker order: `poatypes.ModuleName` immediately after `govtypes.ModuleName` and before `stakingtypes.ModuleName` in `mm.SetOrderEndBlockers`. `stakingtypes.ModuleName` remains in the slice (SDK requires every registered module to appear) but its EndBlock is the no-op variant from `app/staking_endblocker_noop.go`; PoA invokes `staking.EndBlocker` itself.
 
 InitGenesis order: `poatypes.ModuleName` after `staking` and `slashing`, before `gravity`.
 
