@@ -1,0 +1,30 @@
+syntax = "proto3";
+package poa.v1;
+
+option go_package = "github.com/peggyjv/sommelier/v9/x/poa/types";
+
+// AuthorityValidator identifies a validator in the binary-specified PoA
+// authority allowlist by operator (bech32 ValAddress) address.
+message AuthorityValidator {
+  string operator_address = 1;
+}
+
+// AuthoritySetWrapper is the on-disk representation written under
+// AuthoritySetKey.
+message AuthoritySetWrapper {
+  repeated AuthorityValidator validators = 1;
+}
+
+// MultiplierEntry records the per-block boost multiplier applied to a single
+// authority validator. Multiplier is an sdk.Dec string.
+message MultiplierEntry {
+  string operator_address = 1;
+  string multiplier = 2;
+}
+
+// MultiplierSnapshot records the boosts applied at a given block height,
+// used at slash time to normalise consensus power back to raw stake.
+message MultiplierSnapshot {
+  int64 height = 1;
+  repeated MultiplierEntry entries = 2;
+}

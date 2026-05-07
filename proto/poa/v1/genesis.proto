@@ -1,0 +1,13 @@
+syntax = "proto3";
+package poa.v1;
+
+option go_package = "github.com/peggyjv/sommelier/v9/x/poa/types";
+
+import "gogoproto/gogo.proto";
+import "poa/v1/params.proto";
+import "poa/v1/poa.proto";
+
+message GenesisState {
+  Params params = 1 [(gogoproto.nullable) = false];
+  repeated AuthorityValidator authority_set = 2 [(gogoproto.nullable) = false];
+}
