@@ -111,6 +111,7 @@ import (
 	appParams "github.com/peggyjv/sommelier/v9/app/params"
 	v8 "github.com/peggyjv/sommelier/v9/app/upgrades/v8"
 	v9 "github.com/peggyjv/sommelier/v9/app/upgrades/v9"
+	v10 "github.com/peggyjv/sommelier/v9/app/upgrades/v10"
 	"github.com/peggyjv/sommelier/v9/x/addresses"
 	addresseskeeper "github.com/peggyjv/sommelier/v9/x/addresses/keeper"
 	addressestypes "github.com/peggyjv/sommelier/v9/x/addresses/types"
@@ -1092,6 +1093,14 @@ func (app *SommelierApp) setupUpgradeStoreLoaders() {
 		}
 	}
 
+	if upgradeInfo.Name == v10.UpgradeName {
+		storeUpgrades = &storetypes.StoreUpgrades{
+			Added: []string{
+				poatypes.ModuleName,
+			},
+		}
+	}
+
 	if storeUpgrades != nil {
 		app.SetStoreLoader(upgradetypes.UpgradeStoreLoader(upgradeInfo.Height, storeUpgrades))
 	}
@@ -1153,6 +1162,15 @@ func (app *SommelierApp) setupUpgradeHandlers() {
 		v9.CreateUpgradeHandler(
 			app.mm,
 			app.configurator,
+		),
+	)
+
+	app.UpgradeKeeper.SetUpgradeHandler(
+		v10.UpgradeName,
+		v10.CreateUpgradeHandler(
+			app.mm,
+			app.configurator,
+			app.PoaKeeper,
 		),
 	)
 }
