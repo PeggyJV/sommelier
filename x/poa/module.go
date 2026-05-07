@@ -81,25 +81,22 @@ func (AppModule) RegisterInvariants(_ sdk.InvariantRegistry) {}
 func (AppModule) QuerierRoute() string                       { return types.QuerierRoute }
 func (AppModule) ConsensusVersion() uint64                   { return 1 }
 
-// RegisterServices is a placeholder; msg/query servers are wired in Task 8.
+// RegisterServices wires the msg/query servers.
 func (am AppModule) RegisterServices(cfg module.Configurator) {
-	// TODO(Task 8): types.RegisterMsgServer(cfg.MsgServer(), keeper.NewMsgServerImpl(am.keeper))
-	// TODO(Task 8): types.RegisterQueryServer(cfg.QueryServer(), keeper.NewQuerier(am.keeper))
-	_ = cfg
+	types.RegisterMsgServer(cfg.MsgServer(), keeper.NewMsgServerImpl(am.keeper))
+	types.RegisterQueryServer(cfg.QueryServer(), keeper.NewQuerier(am.keeper))
 }
 
 func (am AppModule) InitGenesis(ctx sdk.Context, cdc codec.JSONCodec, data json.RawMessage) []abci.ValidatorUpdate {
 	var gs types.GenesisState
 	cdc.MustUnmarshalJSON(data, &gs)
-	// TODO(Task 8): keeper.InitGenesis(ctx, am.keeper, gs)
-	_ = ctx
-	_ = gs
+	keeper.InitGenesis(ctx, am.keeper, gs)
 	return nil
 }
 
 func (am AppModule) ExportGenesis(ctx sdk.Context, cdc codec.JSONCodec) json.RawMessage {
-	// TODO(Task 8): export real state.
-	return cdc.MustMarshalJSON(types.DefaultGenesis())
+	gs := keeper.ExportGenesis(ctx, am.keeper)
+	return cdc.MustMarshalJSON(&gs)
 }
 
 func (am AppModule) BeginBlock(_ sdk.Context, _ abci.RequestBeginBlock) {}
