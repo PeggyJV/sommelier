@@ -65,6 +65,7 @@ Authority is enforced not by replacing `x/staking`, but by a new `x/poa` module 
 - `Params`:
   - `floor_fraction` (`sdk.Dec`, default `"0.670000000000000001"`) — minimum aggregate share required for the authority set.
   - `enabled` (`bool`, default `true`) — feature flag for emergency disable.
+  - `halt_when_authority_empty` (`bool`, default `true`) — panic in EndBlocker when no bonded-and-unjailed authority validator exists (see §3.5).
 
 **Messages (gov-only authority):**
 
@@ -138,7 +139,7 @@ Per block:
 4. For each authority validator, compute boosted power and:
    a. Overwrite `staking.LastValidatorPower[v]` with the boosted value.
    b. Append/overwrite an `abci.ValidatorUpdate{v.cons_pubkey, boosted_power}` in the EndBlocker return slice.
-5. Persist `(infraction_height → multiplier_snapshot)` to PoA state, retained for `UnbondingTime + SignedBlocksWindow` so `Slash` can normalise historical power values.
+5. Persist `(block_height → per_authority_multiplier_snapshot)` to PoA state. Pruning rule: at the end of each block, delete any snapshot with `key < current_height - retention_blocks`, where `retention_blocks = ceil(staking.UnbondingTime / avg_block_time) + slashing.SignedBlocksWindow`. The pruning constant is computed once per block from current params. This bounds state and ensures any infraction old enough to have unbonded cannot reference a missing snapshot.
 6. Emit telemetry events (`AuthorityShare`, `Multiplier`, per-validator boost).
 
 Overwriting `staking.LastValidatorPower` resolves three issues at once:
@@ -197,7 +198,7 @@ Rollback note: removing `x/poa` would require a follow-up upgrade restoring all 
 
 ### End-to-end (`integration_tests/`)
 
-- New scenario: community delegator delegates large stake to a community validator; assert that the validator never appears with > ~33% consensus power.
+- New scenario: community delegator delegates large stake to a community validator; assert each block's community share `< (1 - floor_fraction)` (deterministic against the configured floor param).
 - Governance proposal to add/remove an authority validator; assert allowlist update lands in the next block and rescaling reflects it.
 
 ## 7. Risks & open questions
