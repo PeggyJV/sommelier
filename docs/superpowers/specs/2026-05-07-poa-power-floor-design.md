@@ -154,9 +154,59 @@ Per block, PoA's EndBlocker:
 
 Reads from the wrapper layer (§3.2) provide the durable surface for the floor invariant. The `LastValidatorPower` overwrite is belt-and-suspenders: any consumer that queries staking directly via `GetLastValidatorPower` also sees the boosted value, and `WrappedStakingKeeper.GetLastTotalPower` recomputes the boosted aggregate by re-iterating the store (the staking module's `LastTotalPower` slot is set inside `ApplyAndReturnValidatorSetUpdates` *before* PoA's overwrite, so it reflects the pre-rescale total).
 
-### 3.5 Halt-on-empty-authority
+### 3.5 Authority-empty behavior
 
-Add a param `halt_when_authority_empty` (default `true`). When the bonded-and-unjailed authority set is empty in EndBlocker, panic with a descriptive message. This is the correct PoA failure mode: the security guarantee is broken, do not produce more blocks.
+When the bonded-and-unjailed authority set is empty in EndBlocker (`authPower == 0`), the floor cannot be enforced — there is no validator to boost. The module supports three behaviors, selected by param:
+
+- **`halt`** (implemented, current default): panic with a descriptive message. Fail-closed: the security guarantee is broken, so do not produce more blocks. This protects bridge/cork funds from being signed by an untrusted set, but recovery requires an off-chain coordinated restart because governance cannot run on a halted chain (see §7, risk 7).
+- **`passthrough`** (implemented as `halt_when_authority_empty=false`): return staking's raw `ValidatorUpdates` with no boost. The chain runs as ordinary PoS on community stake. Fail-open: preserves liveness but **silently removes the PoA guarantee while the bridge and cork keep operating** — an attacker who can DoS the authority validators into downtime-jailing converts a liveness attack into a full consensus + bridge takeover. Not recommended for a bridge chain.
+- **`safe_mode`** (Option A, specified in §3.6): keep producing blocks on community stake (so on-chain governance can recover the authority set) **but freeze the value-bearing modules** (gravity-bridge, cork, axelarcork) until a trusted authority set is restored. Decouples chain liveness from privileged-operation security.
+
+§3.6 specifies `safe_mode`. As part of it, the existing `halt_when_authority_empty bool` param would be superseded by an enum `authority_empty_behavior` (`halt` | `passthrough` | `safe_mode`); migration maps `true → halt`, `false → passthrough`.
+
+### 3.6 Option A: authority-empty safe mode
+
+> **Status: PROPOSED — not yet implemented.** §3.5's `halt` (default) and `passthrough` ship today via the `halt_when_authority_empty` bool. Everything in §3.6 — `safe_mode`, the `authority_empty_behavior` enum, the safe-mode state flag, and the module-freeze wiring — is a design for a follow-up change and is not in the current code.
+
+**Motivation.** `halt` and `passthrough` are the two ends of a safety/liveness tradeoff, and both are bad for a bridge chain: `halt` makes recovery an off-chain social-consensus event (no blocks → governance is dead), while `passthrough` exposes bridge/cork funds to an untrusted quorum exactly when the trust model has failed, and makes a liveness attack escalate into a fund-takeover. Safe mode is the decomposition: separate **chain liveness** (keep it, for recoverability) from **privileged-operation security** (suspend it, until trust is restored).
+
+**Behavior.** On `authPower == 0` with `authority_empty_behavior == safe_mode`, the PoA EndBlocker:
+
+1. Does **not** panic and does **not** boost. It returns staking's raw `ValidatorUpdates`, so community validators continue to produce blocks under ordinary PoS economic security.
+2. Writes an **empty multiplier snapshot** for the height (preserving the §3.4 invariant that every at/after-activation height has a snapshot, so slashing at these heights passes through un-boosted).
+3. Sets a persistent **safe-mode flag** in PoA state (`SafeModeKey → bool`) and emits `authority_safe_mode_entered` on the transition into the mode.
+4. On the first subsequent block where `authPower > 0` again (e.g. after a governance `MsgUpdateAuthoritySet` re-seeds and the new validators are bonded+unjailed), clears the flag, emits `authority_safe_mode_exited`, and resumes normal boosting.
+
+The flag is derived deterministically from on-chain state inside EndBlocker, so all nodes agree on safe-mode status at every height.
+
+**Frozen modules.** While the safe-mode flag is set, the value-bearing modules consult `poaKeeper.SafeModeActive(ctx) bool` and suspend operations that would commit trust-bearing actions under the community-only set:
+
+| Module | Suspend in EndBlock / handler | Effect |
+|---|---|---|
+| gravity-bridge | skip `SignerSetTx` and outgoing `BatchTx` creation/confirmation; reject `MsgSendToEthereum` (queue, do not process) at the msg server | no bridge withdrawals signed under an untrusted set |
+| cork | skip the EndBlock cork vote tally → scheduled-cork execution; reject `MsgScheduleCork` submission | no cellar/strategy calls executed |
+| axelarcork | same as cork for its EndBlock execution and submission msgs | no axelar-routed cork execution |
+
+Pending items (e.g. an already-queued `SendToEthereum`, a scheduled cork at a future height) remain in their module stores untouched; they are simply **not advanced** while frozen, and resume processing once safe mode clears. No state is dropped.
+
+**Why this is safe under the induced-downtime attack.** An attacker who knocks the authority validators offline still cannot sign bridge withdrawals: the worst outcome is that bridge/cork are frozen (a liveness degradation of privileged ops), while consensus stays live so the legitimate authority set can be restored by governance. The attacker never gains the ability to move funds — which is the property `passthrough` loses.
+
+**Param / proto changes.**
+
+- `proto/poa/v1/params.proto`: replace `bool halt_when_authority_empty` with `string authority_empty_behavior` (validated against the enum set). Keep field-number discipline / reserve the old number.
+- `x/poa/types/params.go`: enum constants, `validateAuthorityEmptyBehavior`, default. **Open question (Zaki):** the recommended default for a bridge chain is `safe_mode`; the current default is `halt`. Confirm which ships in the v10 params and whether existing `halt` semantics should be preserved on upgrade.
+
+**State.**
+
+- `x/poa/types/keys.go`: `SafeModeKey = []byte{0x05}`.
+- `x/poa/keeper`: `SetSafeMode(ctx, bool)`, `SafeModeActive(ctx) bool`.
+
+**Wiring (`app/app.go`).** gravity, cork, and axelarcork keepers gain a read-only dependency on a minimal `PoaSafeModeReader` interface (`SafeModeActive(ctx) bool`) so they avoid a hard import cycle on the full PoA keeper. The dependency is injected post-construction (same pattern as `SetSlashingKeeper`) since PoA is constructed before the bridge modules.
+
+**Open questions.**
+
+- Exact freeze surface: is freezing `MsgSendToEthereum` + signerset/batch creation sufficient, or must inbound attestation (`MsgSendToCosmosClaim`) confirmation also pause? Inbound is arguably safe to keep (it only credits the chain), but the validator set confirming attestations is the untrusted community set — recommend freezing inbound confirmation too and re-examining with the bridge owner.
+- Whether `incentives`/`pubsub` need gating (assessed: no — they do not move external funds), to be confirmed in review.
 
 ## 4. Module wiring changes (`app/app.go`)
 
@@ -202,7 +252,8 @@ Rollback note: removing `x/poa` would require a follow-up upgrade restoring all 
 - `x/poa` simapp test: bond 3 authority + 5 community validators with mixed stake; run 10 blocks; assert `staking.GetLastTotalPower` reports authority share ≥ 67% every block.
 - Gravity-bridge validator-set update (`SignerSetTx`): authority signers' weights sum ≥ 67% of total.
 - Slashing: double-sign by an authority validator burns tokens equal to `slashFraction × actual_bonded`, not boosted.
-- Downtime jail of all authority validators ⇒ chain halt panic (with `halt_when_authority_empty=true`).
+- Downtime jail of all authority validators ⇒ chain halt panic (with `authority_empty_behavior=halt`).
+- Safe mode (§3.6): jail all authority validators with `authority_empty_behavior=safe_mode` ⇒ chain keeps producing blocks, `SafeModeActive` is true, `MsgSendToEthereum` / `MsgScheduleCork` are rejected and bridge/cork EndBlock execution is skipped; a governance `MsgUpdateAuthoritySet` re-seeds the set ⇒ next block exits safe mode, boosting resumes, and frozen modules resume processing queued items.
 
 ### End-to-end (`integration_tests/`)
 
@@ -219,6 +270,7 @@ Rollback note: removing `x/poa` would require a follow-up upgrade restoring all 
 | 4 | IBC light client assumptions about validator set churn. | Authority rescale changes voting power abruptly when set changes; document for relayer operators. Mitigated because authority set changes are infrequent (gov-mediated). |
 | 5 | A community validator's stake grows large enough that even with M=1 it exceeds 33%. | Cannot happen by construction: when authority set is healthy, `M` is chosen so authority is ≥67%, hence community ≤33%. The only failure is `B=0`. |
 | 6 | Multiplier snapshot retention bloats state. | Prune snapshots older than `UnbondingTime + SignedBlocksWindow`. |
+| 7 | `halt` on empty authority requires an off-chain coordinated restart to recover (governance is dead on a halted chain); `passthrough` exposes bridge/cork to an untrusted community set and lets an induced-downtime liveness attack escalate to a fund takeover. | §3.6 `safe_mode` (Option A): keep consensus live for on-chain governance recovery while freezing gravity-bridge / cork / axelarcork until a trusted authority set is restored. |
 
 ## 8. Out-of-scope follow-ups
 
