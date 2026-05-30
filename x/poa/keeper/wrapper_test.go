@@ -158,7 +158,7 @@ func TestWrapper_Slash_CommunityPassesThrough(t *testing.T) {
 	require.Equal(t, int64(300), fake.lastSlashPower)
 }
 
-func TestWrapper_Slash_NoSnapshotSkips(t *testing.T) {
+func TestWrapper_Slash_NoSnapshotPassesThrough(t *testing.T) {
 	k, ctx, fake, w := newWrapperTestKeeper(t)
 
 	auth := sdk.ValAddress([]byte("auth-validator-aaaa"))
@@ -167,11 +167,38 @@ func TestWrapper_Slash_NoSnapshotSkips(t *testing.T) {
 	fake.mapCons(cons, auth)
 
 	k.SetAuthoritySet(ctx, []sdk.ValAddress{auth})
-	// NOTE: no snapshot at the infraction height.
+	// NOTE: no snapshot at the infraction height. A missing snapshot means a
+	// pre-PoA / beyond-retention height where no boost was applied, so the
+	// slash passes through against raw power unchanged.
+	w.Slash(ctx, cons, 999, 500, sdk.MustNewDecFromStr("0.05"))
+	require.True(t, fake.slashCalled)
+	require.Equal(t, int64(500), fake.lastSlashPower)
+}
 
-	burned := w.Slash(ctx, cons, 999, 500, sdk.MustNewDecFromStr("0.05"))
-	require.False(t, fake.slashCalled, "Slash should be refused when no snapshot exists")
-	require.True(t, burned.IsZero())
+// TestWrapper_Slash_NormalisesByInfractionHeightSnapshot exercises the core
+// fix: a validator boosted at the infraction height must be normalised even if
+// it has since been removed from the current authority set.
+func TestWrapper_Slash_NormalisesByInfractionHeightSnapshot(t *testing.T) {
+	k, ctx, fake, w := newWrapperTestKeeper(t)
+
+	auth := sdk.ValAddress([]byte("auth-validator-aaaa"))
+	cons := sdk.ConsAddress([]byte("auth-cons-aaaaaaaaaa"))
+	fake.addValidator(auth, sdk.NewInt(1_000_000))
+	fake.mapCons(cons, auth)
+
+	// Snapshot records a 5x boost at height 50, but the validator is NOT in the
+	// current authority set (removed after the infraction). Normalisation must
+	// still divide out the snapshot multiplier.
+	k.SetMultiplierSnapshot(ctx, types.MultiplierSnapshot{
+		Height: 50,
+		Entries: []*types.MultiplierEntry{
+			{OperatorAddress: auth.String(), Multiplier: "5.0"},
+		},
+	})
+
+	w.Slash(ctx, cons, 50, 500, sdk.MustNewDecFromStr("0.05"))
+	require.True(t, fake.slashCalled)
+	require.Equal(t, int64(100), fake.lastSlashPower)
 }
 
 func TestWrapper_Slash_AuthorityNoBoostPassesThrough(t *testing.T) {

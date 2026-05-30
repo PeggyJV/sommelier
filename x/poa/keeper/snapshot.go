@@ -46,7 +46,10 @@ func (k Keeper) MultiplierForValidatorWithStatus(ctx sdk.Context, val sdk.ValAdd
 		if e.OperatorAddress == addr {
 			d, err := sdk.NewDecFromStr(e.Multiplier)
 			if err != nil {
-				return sdk.OneDec(), true
+				// Corrupt snapshot data: treat as a missing snapshot so the
+				// slash is refused rather than silently normalizing with a 1x
+				// multiplier (which would over-slash a boosted validator).
+				return sdk.OneDec(), false
 			}
 			return d, true
 		}

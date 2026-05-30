@@ -59,7 +59,10 @@ func validateFloor(i interface{}) error {
 	if v.IsNil() {
 		return fmt.Errorf("floor_fraction must not be nil")
 	}
-	if !v.GT(sdk.MustNewDecFromStr("0.5")) || v.GTE(sdk.OneDec()) {
+	// Enforce the design invariant: the floor must guarantee at least a 2/3
+	// supermajority for the authority set. Allowing anything down to >0.5 would
+	// let governance silently weaken the core safety property of this module.
+	if v.LT(DefaultFloorFraction) || v.GTE(sdk.OneDec()) {
 		return ErrInvalidFloor
 	}
 	return nil

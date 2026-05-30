@@ -6,8 +6,8 @@ import (
 	sdkerrors "cosmossdk.io/errors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/errors"
-	status "google.golang.org/grpc/status"
 	codes "google.golang.org/grpc/codes"
+	status "google.golang.org/grpc/status"
 
 	"github.com/peggyjv/sommelier/v9/x/poa/types"
 )

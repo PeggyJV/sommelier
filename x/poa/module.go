@@ -60,9 +60,9 @@ func (AppModuleBasic) GetQueryCmd() *cobra.Command { return nil }
 // AppModule wires the PoA keeper into the SDK module manager.
 type AppModule struct {
 	AppModuleBasic
-	keeper             keeper.Keeper
-	cdc                codec.Codec
-	stakingEndBlocker  keeper.StakingEndBlockerFn
+	keeper            keeper.Keeper
+	cdc               codec.Codec
+	stakingEndBlocker keeper.StakingEndBlockerFn
 }
 
 // NewAppModule constructs the PoA AppModule. `stakingEndBlocker` MUST be a
@@ -77,7 +77,7 @@ func NewAppModule(cdc codec.Codec, k keeper.Keeper, stakingEndBlocker keeper.Sta
 	}
 }
 
-func (AppModule) Name() string                              { return types.ModuleName }
+func (AppModule) Name() string                               { return types.ModuleName }
 func (AppModule) RegisterInvariants(_ sdk.InvariantRegistry) {}
 func (AppModule) QuerierRoute() string                       { return types.QuerierRoute }
 func (AppModule) ConsensusVersion() uint64                   { return 1 }
@@ -110,7 +110,7 @@ func (am AppModule) EndBlock(ctx sdk.Context, _ abci.RequestEndBlock) []abci.Val
 
 // AppModuleSimulation: PoA does not currently participate in the simulator.
 
-func (AppModule) GenerateGenesisState(_ *module.SimulationState) {}
+func (AppModule) GenerateGenesisState(_ *module.SimulationState)  {}
 func (AppModule) RegisterStoreDecoder(_ sdk.StoreDecoderRegistry) {}
 func (AppModule) WeightedOperations(_ module.SimulationState) []sim.WeightedOperation {
 	return nil

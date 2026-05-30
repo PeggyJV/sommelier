@@ -13,8 +13,10 @@ var (
 
 // GetSigners returns the signers (gov authority).
 func (m *MsgUpdateAuthoritySet) GetSigners() []sdk.AccAddress {
-	addr, _ := sdk.AccAddressFromBech32(m.Authority)
-	return []sdk.AccAddress{addr}
+	// Panic on an invalid authority rather than returning a zero-value signer.
+	// ValidateBasic runs first in the tx pipeline, so this should be
+	// unreachable; failing fast prevents an ambiguous signer if it isn't.
+	return []sdk.AccAddress{sdk.MustAccAddressFromBech32(m.Authority)}
 }
 
 // ValidateBasic performs static checks on MsgUpdateAuthoritySet.
@@ -40,8 +42,7 @@ func (m *MsgUpdateAuthoritySet) ValidateBasic() error {
 
 // GetSigners returns the signers (gov authority).
 func (m *MsgUpdateParams) GetSigners() []sdk.AccAddress {
-	addr, _ := sdk.AccAddressFromBech32(m.Authority)
-	return []sdk.AccAddress{addr}
+	return []sdk.AccAddress{sdk.MustAccAddressFromBech32(m.Authority)}
 }
 
 // ValidateBasic performs static checks on MsgUpdateParams.

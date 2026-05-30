@@ -1,6 +1,8 @@
 package keeper
 
 import (
+	"fmt"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	"github.com/peggyjv/sommelier/v9/x/poa/types"
@@ -13,7 +15,10 @@ func InitGenesis(ctx sdk.Context, k Keeper, gs types.GenesisState) {
 	for _, v := range gs.AuthoritySet {
 		addr, err := sdk.ValAddressFromBech32(v.OperatorAddress)
 		if err != nil {
-			continue
+			// Fail fast: silently skipping a malformed entry could drop an
+			// authority and later trip HaltWhenAuthorityEmpty, or silently run
+			// the chain below the intended supermajority floor.
+			panic(fmt.Sprintf("poa InitGenesis: invalid authority address %q: %v", v.OperatorAddress, err))
 		}
 		addrs = append(addrs, addr)
 	}

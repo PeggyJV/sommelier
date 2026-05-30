@@ -179,21 +179,23 @@ func (w WrappedStakingKeeper) Slash(ctx sdk.Context, consAddr sdk.ConsAddress, i
 		return w.StakingKeeper.Slash(ctx, consAddr, infractionHeight, power, slashFactor)
 	}
 	op := val.GetOperator()
-	if !w.poa.IsAuthority(ctx, op) {
-		return w.StakingKeeper.Slash(ctx, consAddr, infractionHeight, power, slashFactor)
-	}
+	// Authority status MUST be evaluated at the infraction height, not "now".
+	// The current allowlist may differ from the set in effect when the
+	// infraction occurred (e.g. delayed evidence after an authority-set change),
+	// and gating on current membership would over- or under-slash. The
+	// infraction-height snapshot is the source of truth for whether the
+	// validator was boosted at that height.
 	m, snapFound := w.poa.MultiplierForValidatorWithStatus(ctx, op, infractionHeight)
 	if !snapFound {
-		ctx.Logger().Error("poa: missing multiplier snapshot for authority slash; SKIPPING slash",
-			"operator", op.String(), "infraction_height", infractionHeight)
-		ctx.EventManager().EmitEvent(sdk.NewEvent(
-			types.EventTypeSlashSkippedNoSnapshot,
-			sdk.NewAttribute(types.AttributeOperator, op.String()),
-			sdk.NewAttribute(types.AttributeInfractionHeight, sdk.NewInt(infractionHeight).String()),
-		))
-		return math.ZeroInt()
+		// No snapshot at this height: either a pre-PoA infraction (no boost
+		// ever applied) or a height older than the retention window. The
+		// retention window covers the full slashable window for PoA heights, so
+		// a missing snapshot means the validator was not boosted at that height
+		// — pass the slash through against raw power unchanged.
+		return w.StakingKeeper.Slash(ctx, consAddr, infractionHeight, power, slashFactor)
 	}
 	if m.LTE(sdk.OneDec()) {
+		// Snapshot found but the validator was not boosted at that height.
 		return w.StakingKeeper.Slash(ctx, consAddr, infractionHeight, power, slashFactor)
 	}
 	rawPower := sdk.NewDec(power).Quo(m).TruncateInt64()
@@ -208,19 +210,12 @@ func (w WrappedStakingKeeper) SlashWithInfractionReason(ctx sdk.Context, consAdd
 		return w.StakingKeeper.SlashWithInfractionReason(ctx, consAddr, infractionHeight, power, slashFactor, infraction)
 	}
 	op := val.GetOperator()
-	if !w.poa.IsAuthority(ctx, op) {
-		return w.StakingKeeper.SlashWithInfractionReason(ctx, consAddr, infractionHeight, power, slashFactor, infraction)
-	}
+	// See Slash: authority/boost status is evaluated at the infraction height
+	// via the snapshot, never against the current allowlist.
 	m, snapFound := w.poa.MultiplierForValidatorWithStatus(ctx, op, infractionHeight)
 	if !snapFound {
-		ctx.Logger().Error("poa: missing multiplier snapshot for authority slash; SKIPPING slash",
-			"operator", op.String(), "infraction_height", infractionHeight, "infraction", infraction)
-		ctx.EventManager().EmitEvent(sdk.NewEvent(
-			types.EventTypeSlashSkippedNoSnapshot,
-			sdk.NewAttribute(types.AttributeOperator, op.String()),
-			sdk.NewAttribute(types.AttributeInfractionHeight, sdk.NewInt(infractionHeight).String()),
-		))
-		return math.ZeroInt()
+		// Pre-PoA or beyond-retention height: no boost was applied, slash raw.
+		return w.StakingKeeper.SlashWithInfractionReason(ctx, consAddr, infractionHeight, power, slashFactor, infraction)
 	}
 	if m.LTE(sdk.OneDec()) {
 		return w.StakingKeeper.SlashWithInfractionReason(ctx, consAddr, infractionHeight, power, slashFactor, infraction)

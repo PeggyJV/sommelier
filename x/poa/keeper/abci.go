@@ -1,8 +1,8 @@
 package keeper
 
 import (
-	abci "github.com/cometbft/cometbft/abci/types"
 	"cosmossdk.io/math"
+	abci "github.com/cometbft/cometbft/abci/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	"github.com/peggyjv/sommelier/v9/x/poa/types"
