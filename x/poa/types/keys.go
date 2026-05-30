@@ -29,6 +29,11 @@ var (
 	// SafeModeKey stores the authority-empty safe-mode flag (Option A). When
 	// set, value-bearing modules (gravity, cork, axelarcork) are frozen.
 	SafeModeKey = []byte{0x05}
+	// SafeModeThawHeightKey stores the height at which value-bearing modules may
+	// resume after the authority set is restored. The freeze is held past the
+	// re-bond block until the restored set is actually securing consensus
+	// (CometBFT validator-update delay).
+	SafeModeThawHeightKey = []byte{0x06}
 )
 
 // MultiplierSnapshotKey returns the store key for the snapshot at `height`,

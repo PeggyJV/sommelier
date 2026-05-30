@@ -4,6 +4,7 @@ import (
 	errorsmod "cosmossdk.io/errors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	"github.com/cosmos/cosmos-sdk/x/authz"
 	gravitytypes "github.com/peggyjv/gravity-bridge/module/v6/x/gravity/types"
 )
 
@@ -27,7 +28,7 @@ func NewSafeModeAnteHandler(poa PoaSafeModeReader, next sdk.AnteHandler) sdk.Ant
 	return func(ctx sdk.Context, tx sdk.Tx, simulate bool) (sdk.Context, error) {
 		if poa != nil && poa.SafeModeActive(ctx) {
 			for _, msg := range tx.GetMsgs() {
-				if isFrozenGravityMsg(msg) {
+				if containsFrozenGravityMsg(msg) {
 					return ctx, errorsmod.Wrapf(sdkerrors.ErrInvalidRequest,
 						"x/poa safe mode active: %s is frozen until the authority set is restored", sdk.MsgTypeURL(msg))
 				}
@@ -35,6 +36,27 @@ func NewSafeModeAnteHandler(poa PoaSafeModeReader, next sdk.AnteHandler) sdk.Ant
 		}
 		return next(ctx, tx, simulate)
 	}
+}
+
+// containsFrozenGravityMsg reports whether msg is a frozen gravity message or an
+// authz MsgExec that wraps one (recursively). A MsgExec whose inner messages
+// cannot be decoded is treated as frozen (fail-closed) while in safe mode.
+func containsFrozenGravityMsg(msg sdk.Msg) bool {
+	if isFrozenGravityMsg(msg) {
+		return true
+	}
+	if exec, ok := msg.(*authz.MsgExec); ok {
+		inner, err := exec.GetMessages()
+		if err != nil {
+			return true
+		}
+		for _, m := range inner {
+			if containsFrozenGravityMsg(m) {
+				return true
+			}
+		}
+	}
+	return false
 }
 
 // isFrozenGravityMsg reports whether msg is a gravity message that authorizes

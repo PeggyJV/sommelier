@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/cosmos/cosmos-sdk/x/authz"
 	gravitytypes "github.com/peggyjv/gravity-bridge/module/v6/x/gravity/types"
 	"github.com/stretchr/testify/require"
 )
@@ -66,4 +67,22 @@ func TestSafeModeAnteHandler(t *testing.T) {
 	_, err := h(ctx, stubTx{msgs: []sdk.Msg{&gravitytypes.MsgDelegateKeys{}, &gravitytypes.MsgSendToEthereum{}}}, false)
 	require.Error(t, err)
 	require.False(t, called)
+}
+
+// A frozen gravity message wrapped in an authz MsgExec must also be rejected in
+// safe mode; an allowed message wrapped the same way must pass.
+func TestSafeModeAnteHandler_AuthzExecRecursion(t *testing.T) {
+	next := func(ctx sdk.Context, tx sdk.Tx, simulate bool) (sdk.Context, error) { return ctx, nil }
+	ctx := sdk.Context{}
+	grantee := sdk.AccAddress([]byte("grantee-aaaaaaaaaaaa"))
+
+	h := NewSafeModeAnteHandler(stubSafeMode{active: true}, next)
+
+	frozenExec := authz.NewMsgExec(grantee, []sdk.Msg{&gravitytypes.MsgSendToEthereum{}})
+	_, err := h(ctx, stubTx{msgs: []sdk.Msg{&frozenExec}}, false)
+	require.Error(t, err, "authz-wrapped frozen gravity msg must be rejected")
+
+	allowedExec := authz.NewMsgExec(grantee, []sdk.Msg{&gravitytypes.MsgDelegateKeys{}})
+	_, err = h(ctx, stubTx{msgs: []sdk.Msg{&allowedExec}}, false)
+	require.NoError(t, err, "authz-wrapped allowed msg must pass")
 }

@@ -107,6 +107,9 @@ func HandleRemoveManagedCellarsProposal(ctx sdk.Context, k Keeper, p types.Remov
 
 // HandleScheduledCorkProposal is a handler for executing a passed scheduled cork proposal
 func HandleScheduledCorkProposal(ctx sdk.Context, k Keeper, p types.AxelarScheduledCorkProposal) error {
+	if k.inSafeMode(ctx) {
+		return fmt.Errorf("x/poa safe mode active: scheduling axelar corks is frozen until the authority set is restored")
+	}
 	config, ok := k.GetChainConfigurationByID(ctx, p.ChainId)
 	if !ok {
 		return fmt.Errorf("chain by id %d not found", p.ChainId)
@@ -120,6 +123,9 @@ func HandleScheduledCorkProposal(ctx sdk.Context, k Keeper, p types.AxelarSchedu
 }
 
 func HandleCommunityPoolSpendProposal(ctx sdk.Context, k Keeper, p types.AxelarCommunityPoolSpendProposal) error {
+	if k.inSafeMode(ctx) {
+		return fmt.Errorf("x/poa safe mode active: community pool spends are frozen until the authority set is restored")
+	}
 	params := k.GetParamSet(ctx)
 	config, ok := k.GetChainConfigurationByID(ctx, p.ChainId)
 	if !ok {
@@ -217,6 +223,9 @@ func HandleRemoveChainConfigurationProposal(ctx sdk.Context, k Keeper, p types.R
 
 // HandleUpgradeAxelarProxyContractProposal is a handler for executing a passed axelar proxy contract upgrade proposal
 func HandleUpgradeAxelarProxyContractProposal(ctx sdk.Context, k Keeper, p types.UpgradeAxelarProxyContractProposal) error {
+	if k.inSafeMode(ctx) {
+		return fmt.Errorf("x/poa safe mode active: axelar proxy upgrades are frozen until the authority set is restored")
+	}
 	_, ok := k.GetChainConfigurationByID(ctx, p.ChainId)
 	if !ok {
 		return fmt.Errorf("chain by id %d not found", p.ChainId)

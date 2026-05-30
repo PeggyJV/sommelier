@@ -81,6 +81,9 @@ func HandleRemoveManagedCellarsProposal(ctx sdk.Context, k Keeper, p types.Remov
 
 // HandleScheduledCorkProposal is a handler for executing a passed scheduled cork proposal
 func HandleScheduledCorkProposal(ctx sdk.Context, k Keeper, p types.ScheduledCorkProposal) error {
+	if k.inSafeMode(ctx) {
+		return fmt.Errorf("x/poa safe mode active: scheduling corks is frozen until the authority set is restored")
+	}
 	if !k.HasCellarID(ctx, common.HexToAddress(p.TargetContractAddress)) {
 		return errorsmod.Wrapf(corktypes.ErrUnmanagedCellarAddress, "id: %s", p.TargetContractAddress)
 	}

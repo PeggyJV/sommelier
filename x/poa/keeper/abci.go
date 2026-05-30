@@ -1,6 +1,8 @@
 package keeper
 
 import (
+	"sort"
+
 	"cosmossdk.io/math"
 	abci "github.com/cometbft/cometbft/abci/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -78,8 +80,11 @@ func EndBlocker(ctx sdk.Context, k Keeper, runStakingEndBlocker StakingEndBlocke
 		return rawUpdates
 	}
 
-	// Authority set is healthy — clear safe mode if it was set.
-	k.exitSafeModeIfActive(ctx)
+	// Authority set is healthy. Boosting resumes immediately below, but if we
+	// were in safe mode the value-bearing freeze is held until the restored set
+	// is actually securing consensus (CometBFT validator-update delay), not the
+	// instant authority re-bonds — see maybeThawSafeMode.
+	k.maybeThawSafeMode(ctx)
 
 	m := types.ComputeMultiplier(authPower, comPower, params.FloorFraction)
 	if m.LTE(sdk.OneDec()) {
@@ -182,12 +187,19 @@ func mergeUpdatesWithBoost(ctx sdk.Context, k Keeper, raw []abci.ValidatorUpdate
 		out = append(out, u)
 	}
 
-	// Append boosted entries for authority validators not present in raw.
-	for op, upd := range opPk {
+	// Append boosted entries for authority validators not present in raw, in
+	// deterministic operator-address order: Go map iteration is randomized and
+	// the ABCI ValidatorUpdates slice must be byte-identical across all nodes.
+	missing := make([]string, 0, len(opPk))
+	for op := range opPk {
 		if _, already := seen[op]; already {
 			continue
 		}
-		out = append(out, upd)
+		missing = append(missing, op)
+	}
+	sort.Strings(missing)
+	for _, op := range missing {
+		out = append(out, opPk[op])
 	}
 	return out
 }

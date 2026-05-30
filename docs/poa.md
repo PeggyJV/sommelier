@@ -201,19 +201,26 @@ validators offline (e.g. a DoS that downtime-jails them all): the worst outcome
 is frozen value-bearing operations, never a fund movement signed by the
 community set.
 
-Frozen while in safe mode:
+Frozen while in safe mode (txs, module BeginBlock/EndBlock, and legacy gov
+proposals — the latter run in gov EndBlock and bypass the ante/msg servers):
 
 | Module | Frozen |
 |---|---|
-| gravity-bridge | `MsgSendToEthereum`, `MsgSubmitEthereumEvent`, `MsgSubmitEthereumTxConfirmation` (rejected by the ante handler). `MsgDelegateKeys`, `MsgCancelSendToEthereum`, `MsgEthereumHeightVote` stay enabled. |
-| cork | `MsgScheduleCork`; scheduled-cork execution in EndBlock |
-| axelarcork | `MsgScheduleAxelarCork`, `MsgRelayAxelarCork`, `MsgRelayAxelarProxyUpgrade`, `MsgBumpAxelarCorkGas`; cork tally / fund sweep in EndBlock |
+| gravity-bridge | `MsgSendToEthereum`, `MsgSubmitEthereumEvent`, `MsgSubmitEthereumTxConfirmation` (and the same wrapped in an authz `MsgExec`), rejected by the ante handler; the module's BeginBlock/EndBlock (signer-set/batch creation, attestation observation, non-signing slashing) are no-op'd; the community-pool Ethereum spend gov proposal is rejected. `MsgDelegateKeys`, `MsgCancelSendToEthereum`, `MsgEthereumHeightVote` stay enabled. |
+| cork | `MsgScheduleCork` and the `ScheduledCork` gov proposal; scheduled-cork execution in EndBlock |
+| axelarcork | `MsgScheduleAxelarCork`, `MsgRelayAxelarCork`, `MsgRelayAxelarProxyUpgrade`, `MsgBumpAxelarCorkGas` msgs and the `AxelarScheduledCork` / `AxelarCommunityPoolSpend` / `UpgradeAxelarProxyContract` gov proposals; cork tally / fund sweep in EndBlock |
 
 Pending items (a queued send-to-Ethereum, a cork scheduled for a future height)
 are **not** dropped — they stay in module state and resume once safe mode
 clears. Governance (`MsgUpdateAuthoritySet`), staking, and bank txs are not
 frozen, so the recovery path stays open. Entry/exit emit the
 `authority_safe_mode_entered` / `authority_safe_mode_exited` events.
+
+**Thaw delay.** When the authority set is restored, boosting resumes
+immediately but the value-bearing freeze is held for 2 more blocks — CometBFT
+only applies the re-boosted validator set two blocks after it is emitted, so
+thawing earlier would let the frozen modules act in a block still secured by
+the old community-only set.
 
 ### A community validator grows large enough to exceed 33%
 Cannot happen by construction. As long as the authority set is healthy,

@@ -172,29 +172,31 @@ The earlier "passthrough" behavior (run as plain PoS with the bridge live) is in
 1. Does **not** panic and does **not** boost. It returns staking's raw `ValidatorUpdates`, so community validators continue to produce blocks under ordinary PoS economic security.
 2. Writes an **empty multiplier snapshot** for the height (preserving the §3.4 invariant that every at/after-activation height has a snapshot, so slashing at these heights passes through un-boosted).
 3. Sets a persistent **safe-mode flag** in PoA state (`SafeModeKey`) and emits `authority_safe_mode_entered` on the transition into the mode.
-4. On the first subsequent block where `authPower > 0` again (e.g. after a governance `MsgUpdateAuthoritySet` re-seeds and the new validators are bonded+unjailed), or if the module is disabled (`enabled=false`), clears the flag, emits `authority_safe_mode_exited`, and resumes normal boosting.
+4. When the authority set is healthy again (e.g. after a governance `MsgUpdateAuthoritySet` re-seeds and the new validators bond), boosting resumes immediately, but the value-bearing freeze is **held through a thaw delay** of `safeModeThawDelayBlocks` (2) blocks. CometBFT applies the validator updates emitted in block H's EndBlock at H+2, so the re-boosted authority set only secures consensus from H+2; thawing the instant authority re-bonds would let the frozen modules act in a block still validated by the old community-only set. If the set re-empties during the window the pending thaw is cancelled. At/after the thaw height the flag clears and `authority_safe_mode_exited` is emitted. Disabling the module (`enabled=false`) clears safe mode immediately (no thaw delay).
 
 The flag is derived deterministically from on-chain state inside EndBlocker, so all nodes agree on safe-mode status at every height. `enter`/`exit` emit only on the edge, so the event is not repeated every block.
 
-**Frozen modules.** While the safe-mode flag is set, the value-bearing modules consult `SafeModeActive(ctx) bool` and reject/skip operations that would commit trust-bearing actions under the community-only set:
+**Frozen modules.** While the safe-mode flag is set, every path that could commit a trust-bearing action is closed — tx messages, module BeginBlock/EndBlock, and legacy gov proposals (which run in gov EndBlock and bypass the ante + msg servers):
 
 | Module | How it is gated | Frozen surface |
 |---|---|---|
-| gravity-bridge (external dep) | ante-handler decorator (`app/ante_safemode.go`) — gravity cannot gate its own handlers | rejects `MsgSendToEthereum` (outbound), `MsgSubmitEthereumEvent` (inbound attestation/minting), `MsgSubmitEthereumTxConfirmation` (batch/logic-call/signerset confirmations). Leaves `MsgDelegateKeys`, `MsgCancelSendToEthereum`, `MsgEthereumHeightVote` enabled. |
-| cork (in-repo) | keeper `inSafeMode` check | EndBlocker skips scheduled-cork execution; `ScheduleCork` rejected |
-| axelarcork (in-repo) | keeper `inSafeMode` check | EndBlocker skips cork tally / fund sweep; `ScheduleCork`, `RelayCork`, `RelayProxyUpgrade`, `BumpCorkGas` rejected (`CancelScheduledCork` left enabled) |
+| gravity-bridge (external dep) | (a) ante decorator (`app/ante_safemode.go`); (b) `AppModule` BeginBlock/EndBlock no-op wrapper (`app/gravity_safemode_module.go`); (c) gov-proposal wrapper (`app/gov_safemode.go`) | ante rejects `MsgSendToEthereum`, `MsgSubmitEthereumEvent`, `MsgSubmitEthereumTxConfirmation` (and the same nested in an authz `MsgExec`); the module no-op stops signer-set/batch creation, inbound attestation observation, and non-signing slashing; the gov wrapper rejects the community-pool Ethereum spend. `MsgDelegateKeys`, `MsgCancelSendToEthereum`, `MsgEthereumHeightVote` stay enabled. |
+| cork (in-repo) | keeper `inSafeMode` check | EndBlocker skips scheduled-cork execution; `MsgScheduleCork` and the `ScheduledCorkProposal` gov handler rejected |
+| axelarcork (in-repo) | keeper `inSafeMode` check | EndBlocker skips cork tally / fund sweep; `ScheduleCork`/`RelayCork`/`RelayProxyUpgrade`/`BumpCorkGas` msgs and the `AxelarScheduledCork` / `AxelarCommunityPoolSpend` / `UpgradeAxelarProxyContract` gov handlers rejected |
 
-In-repo modules gate themselves in both their msg servers (robust against authz-wrapped msgs) and EndBlockers; gravity is gated via the ante handler (top-level messages only). Pending items (a queued `SendToEthereum`, a scheduled cork at a future height) remain in their stores untouched and resume once safe mode clears. No state is dropped.
+Why the ante alone is insufficient for gravity: gravity's BeginBlock/EndBlock run regardless of the ante, and would both create bridge state and **slash validators for not submitting the very confirmations the ante is blocking** — hence the module no-op wrapper. In-repo modules gate themselves in their msg servers, EndBlockers, and gov handlers. Pending items (a queued `SendToEthereum`, a scheduled cork at a future height) remain in their stores untouched and resume once safe mode clears. No state is dropped.
 
 **Why this is safe under the induced-downtime attack.** An attacker who knocks the authority validators offline still cannot sign bridge withdrawals or mint via inbound attestation: the worst outcome is that bridge/cork are frozen (a liveness degradation of privileged ops), while consensus stays live so the legitimate authority set can be restored by governance. The attacker never gains the ability to move funds — which is the property `passthrough` loses.
 
 **Implementation (no proto change).** Rather than introduce a new enum param (which would require regenerating the params proto), the existing `halt_when_authority_empty` bool is reused: `true` = halt, `false` = safe mode, default `false`. Concrete changes:
 
 - `x/poa/types/params.go`: `DefaultParams().HaltWhenAuthorityEmpty = false`.
-- `x/poa/types/keys.go`: `SafeModeKey = []byte{0x05}`; `x/poa/types/events.go`: `authority_safe_mode_entered` / `_exited`.
-- `x/poa/keeper/safemode.go`: `SetSafeMode`, `SafeModeActive`, `enterSafeMode`, `exitSafeModeIfActive`; EndBlocker branch in `abci.go`.
-- `x/cork/types` + `x/axelarcork/types`: minimal `PoaKeeper` interface (`SafeModeActive(ctx) bool`); keeper field + `SetPoaKeeper` setter + `inSafeMode` helper (nil → not frozen). Injected post-construction in `app/app.go` (PoA is constructed first).
-- `app/ante_safemode.go`: `NewSafeModeAnteHandler` wraps the SDK ante handler to reject frozen gravity messages; wired at `app.SetAnteHandler`.
+- `x/poa/types/keys.go`: `SafeModeKey = []byte{0x05}`, `SafeModeThawHeightKey = []byte{0x06}`; `x/poa/types/events.go`: `authority_safe_mode_entered` / `_exited`.
+- `x/poa/keeper/safemode.go`: `SetSafeMode`, `SafeModeActive`, `enterSafeMode`, `maybeThawSafeMode` (thaw-delay scheduling), `exitSafeModeIfActive`; EndBlocker branch in `abci.go`. `mergeUpdatesWithBoost` appends boosted validator updates in sorted order (deterministic ABCI output).
+- `x/cork/types` + `x/axelarcork/types`: minimal `PoaKeeper` interface (`SafeModeActive(ctx) bool`); keeper field + `SetPoaKeeper` setter + `inSafeMode` helper (nil → not frozen). Injected post-construction in `app/app.go` (PoA is constructed first). In-repo gates cover msg servers, EndBlockers, and the value-bearing gov proposal handlers.
+- `app/ante_safemode.go`: `NewSafeModeAnteHandler` wraps the SDK ante handler to reject frozen gravity messages, recursing into authz `MsgExec`; wired at `app.SetAnteHandler`.
+- `app/gravity_safemode_module.go`: `gravitySafeModeModule` wraps `gravity.AppModule` to no-op BeginBlock/EndBlock in safe mode; registered in the module manager in place of the bare gravity module.
+- `app/gov_safemode.go`: `freezeGovHandlerInSafeMode` wraps the gravity community-pool Ethereum spend gov handler.
 
 **Resolved design questions.**
 

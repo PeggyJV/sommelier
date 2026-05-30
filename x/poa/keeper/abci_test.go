@@ -139,9 +139,10 @@ func TestEndBlocker_SafeModeOnEmptyAuthority(t *testing.T) {
 	require.Empty(t, snap.Entries)
 }
 
-// Once a bonded authority validator returns, the next EndBlocker clears safe
-// mode and resumes boosting.
-func TestEndBlocker_SafeModeClearsWhenAuthorityReturns(t *testing.T) {
+// When a bonded authority validator returns, safe mode is held through the
+// validator-update propagation delay (so value-bearing modules don't act in a
+// block still secured by the old community-only set), then clears.
+func TestEndBlocker_SafeModeThawsAfterDelay(t *testing.T) {
 	k, ctx, fake, _ := newWrapperTestKeeper(t)
 
 	auth := sdk.ValAddress([]byte("auth-validator-aaaa"))
@@ -150,14 +151,52 @@ func TestEndBlocker_SafeModeClearsWhenAuthorityReturns(t *testing.T) {
 	fake.bondedOrder = []sdk.ValAddress{com}
 	k.SetAuthoritySet(ctx, []sdk.ValAddress{auth}) // auth not bonded yet
 
+	ctx = ctx.WithBlockHeight(10)
 	keeper.EndBlocker(ctx, k, noopStakingEndBlocker)
 	require.True(t, k.SafeModeActive(ctx))
 
-	// Authority validator bonds; safe mode must clear on the next block.
+	// Authority validator bonds at height 11. Safe mode schedules a thaw but
+	// stays active through the delay window.
 	fake.addValidatorWithPubkey(t, auth, sdk.NewInt(50*1_000_000))
 	fake.bondedOrder = []sdk.ValAddress{auth, com}
-	keeper.EndBlocker(ctx, k, noopStakingEndBlocker)
-	require.False(t, k.SafeModeActive(ctx), "safe mode must clear once authority is bonded again")
+	keeper.EndBlocker(ctx.WithBlockHeight(11), k, noopStakingEndBlocker)
+	require.True(t, k.SafeModeActive(ctx), "must stay frozen on the re-bond block (thaw scheduled)")
+	keeper.EndBlocker(ctx.WithBlockHeight(12), k, noopStakingEndBlocker)
+	require.True(t, k.SafeModeActive(ctx), "must stay frozen within the thaw delay")
+
+	// At/after the thaw height (11 + 2 = 13), safe mode clears.
+	keeper.EndBlocker(ctx.WithBlockHeight(13), k, noopStakingEndBlocker)
+	require.False(t, k.SafeModeActive(ctx), "safe mode must clear once the restored set is securing consensus")
+}
+
+// If the authority set re-empties during the thaw window, the freeze is held
+// (pending thaw cancelled) rather than thawing on schedule.
+func TestEndBlocker_SafeModeReFreezesIfAuthorityReEmpties(t *testing.T) {
+	k, ctx, fake, _ := newWrapperTestKeeper(t)
+
+	auth := sdk.ValAddress([]byte("auth-validator-aaaa"))
+	com := sdk.ValAddress([]byte("com-validator-aaaaa"))
+	fake.addValidatorWithPubkey(t, com, sdk.NewInt(100*1_000_000))
+	fake.bondedOrder = []sdk.ValAddress{com}
+	k.SetAuthoritySet(ctx, []sdk.ValAddress{auth})
+
+	keeper.EndBlocker(ctx.WithBlockHeight(10), k, noopStakingEndBlocker)
+	require.True(t, k.SafeModeActive(ctx))
+
+	// Authority bonds at 11 (thaw scheduled for 13)...
+	fake.addValidatorWithPubkey(t, auth, sdk.NewInt(50*1_000_000))
+	fake.bondedOrder = []sdk.ValAddress{auth, com}
+	keeper.EndBlocker(ctx.WithBlockHeight(11), k, noopStakingEndBlocker)
+
+	// ...but is unbonded again at 12 (dropped from the bonded set), before the
+	// thaw completes.
+	fake.bondedOrder = []sdk.ValAddress{com}
+	keeper.EndBlocker(ctx.WithBlockHeight(12), k, noopStakingEndBlocker)
+	require.True(t, k.SafeModeActive(ctx))
+
+	// The cancelled thaw must not fire at the old scheduled height.
+	keeper.EndBlocker(ctx.WithBlockHeight(13), k, noopStakingEndBlocker)
+	require.True(t, k.SafeModeActive(ctx), "freeze must hold; the prior thaw was cancelled when authority re-emptied")
 }
 
 func TestEndBlocker_DisabledIsNoop(t *testing.T) {

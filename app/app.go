@@ -578,7 +578,7 @@ func NewSommelierApp(
 		AddRoute(ibcclienttypes.RouterKey, ibcclient.NewClientProposalHandler(app.IBCKeeper.ClientKeeper)).
 		AddRoute(corktypes.RouterKey, cork.NewProposalHandler(app.CorkKeeper)).
 		AddRoute(axelarcorktypes.RouterKey, axelarcork.NewProposalHandler(app.AxelarCorkKeeper)).
-		AddRoute(gravitytypes.RouterKey, gravity.NewCommunityPoolEthereumSpendProposalHandler(app.GravityKeeper)).
+		AddRoute(gravitytypes.RouterKey, freezeGovHandlerInSafeMode(app.PoaKeeper, gravity.NewCommunityPoolEthereumSpendProposalHandler(app.GravityKeeper))).
 		AddRoute(auctiontypes.RouterKey, auction.NewSetTokenPricesProposalHandler(app.AuctionKeeper)).
 		AddRoute(pubsubtypes.RouterKey, pubsub.NewPubsubProposalHandler(app.PubsubKeeper))
 
@@ -645,7 +645,9 @@ func NewSommelierApp(
 		params.NewAppModule(app.ParamsKeeper),
 		transferModule,
 		axelarcork.NewAppModule(app.AxelarCorkKeeper, appCodec),
-		gravity.NewAppModule(app.GravityKeeper, app.BankKeeper),
+		// Wrapped so gravity's BeginBlock/EndBlock no-op while x/poa is in
+		// authority-empty safe mode (see app/gravity_safemode_module.go).
+		gravitySafeModeModule{AppModule: gravity.NewAppModule(app.GravityKeeper, app.BankKeeper), poa: app.PoaKeeper},
 		authzmodule.NewAppModule(appCodec, app.AuthzKeeper, app.AccountKeeper, app.BankKeeper, app.interfaceRegistry),
 		cork.NewAppModule(app.CorkKeeper, appCodec),
 		incentives.NewAppModule(app.IncentivesKeeper, app.DistrKeeper, app.BankKeeper, app.MintKeeper, appCodec),
@@ -806,7 +808,9 @@ func NewSommelierApp(
 		params.NewAppModule(app.ParamsKeeper),
 		transferModule,
 		axelarcork.NewAppModule(app.AxelarCorkKeeper, appCodec),
-		gravity.NewAppModule(app.GravityKeeper, app.BankKeeper),
+		// Wrapped so gravity's BeginBlock/EndBlock no-op while x/poa is in
+		// authority-empty safe mode (see app/gravity_safemode_module.go).
+		gravitySafeModeModule{AppModule: gravity.NewAppModule(app.GravityKeeper, app.BankKeeper), poa: app.PoaKeeper},
 		authzmodule.NewAppModule(appCodec, app.AuthzKeeper, app.AccountKeeper, app.BankKeeper, app.interfaceRegistry),
 		cork.NewAppModule(app.CorkKeeper, appCodec),
 		incentives.NewAppModule(app.IncentivesKeeper, app.DistrKeeper, app.BankKeeper, app.MintKeeper, appCodec),
