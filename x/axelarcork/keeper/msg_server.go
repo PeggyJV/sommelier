@@ -24,6 +24,9 @@ var _ types.MsgServer = Keeper{}
 // ScheduleCork implements types.MsgServer
 func (k Keeper) ScheduleCork(c context.Context, msg *types.MsgScheduleAxelarCorkRequest) (*types.MsgScheduleAxelarCorkResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
+	if k.inSafeMode(ctx) {
+		return nil, errorsmod.Wrap(sdkerrors.ErrInvalidRequest, "x/poa safe mode active: scheduling axelar corks is frozen until the authority set is restored")
+	}
 	params := k.GetParamSet(ctx)
 	if !params.Enabled {
 		return nil, types.ErrDisabled
@@ -71,6 +74,9 @@ func (k Keeper) ScheduleCork(c context.Context, msg *types.MsgScheduleAxelarCork
 
 func (k Keeper) RelayCork(c context.Context, msg *types.MsgRelayAxelarCorkRequest) (*types.MsgRelayAxelarCorkResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
+	if k.inSafeMode(ctx) {
+		return nil, errorsmod.Wrap(sdkerrors.ErrInvalidRequest, "x/poa safe mode active: relaying axelar corks is frozen until the authority set is restored")
+	}
 	params := k.GetParamSet(ctx)
 
 	if !params.Enabled {
@@ -147,6 +153,9 @@ func (k Keeper) RelayCork(c context.Context, msg *types.MsgRelayAxelarCorkReques
 // the payload's execution threshold, and then deletes the upgrade data.
 func (k Keeper) RelayProxyUpgrade(c context.Context, msg *types.MsgRelayAxelarProxyUpgradeRequest) (*types.MsgRelayAxelarProxyUpgradeResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
+	if k.inSafeMode(ctx) {
+		return nil, errorsmod.Wrap(sdkerrors.ErrInvalidRequest, "x/poa safe mode active: relaying proxy upgrades is frozen until the authority set is restored")
+	}
 	params := k.GetParamSet(ctx)
 
 	if !params.Enabled {
@@ -211,6 +220,9 @@ func (k Keeper) RelayProxyUpgrade(c context.Context, msg *types.MsgRelayAxelarPr
 
 func (k Keeper) BumpCorkGas(c context.Context, msg *types.MsgBumpAxelarCorkGasRequest) (*types.MsgBumpAxelarCorkGasResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
+	if k.inSafeMode(ctx) {
+		return nil, errorsmod.Wrap(sdkerrors.ErrInvalidRequest, "x/poa safe mode active: bumping axelar cork gas is frozen until the authority set is restored")
+	}
 	params := k.GetParamSet(ctx)
 
 	if !params.Enabled {

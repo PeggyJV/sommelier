@@ -29,6 +29,9 @@ func EndBlocker(ctx sdk.Context, k Keeper, runStakingEndBlocker StakingEndBlocke
 
 	params := k.GetParams(ctx)
 	if !params.Enabled {
+		// Module disabled: no PoA enforcement, so safe mode (if it was set) no
+		// longer applies — clear it and let consumers resume.
+		k.exitSafeModeIfActive(ctx)
 		// Record an empty snapshot at this height so a future slash for an
 		// authority validator at this height does not hit the
 		// missing-snapshot refuse path in WrappedStakingKeeper.Slash.
@@ -61,11 +64,22 @@ func EndBlocker(ctx sdk.Context, k Keeper, runStakingEndBlocker StakingEndBlocke
 
 	if authPower.IsZero() {
 		if params.HaltWhenAuthorityEmpty {
+			// Fail-closed: refuse to produce further blocks.
 			panic(types.ErrNoBondedAuthority)
 		}
-		// Feature flag for ops emergencies: pass through staking's own updates.
+		// Safe mode (Option A): keep producing blocks on community stake so
+		// governance can re-seed the authority set on-chain, but flag safe mode
+		// so the value-bearing modules (gravity/cork/axelarcork) freeze. No
+		// boost is applied; record an empty snapshot so slashing at this height
+		// passes through un-boosted.
+		k.enterSafeMode(ctx)
+		k.SetMultiplierSnapshot(ctx, types.MultiplierSnapshot{Height: ctx.BlockHeight()})
+		k.pruneSnapshots(ctx)
 		return rawUpdates
 	}
+
+	// Authority set is healthy — clear safe mode if it was set.
+	k.exitSafeModeIfActive(ctx)
 
 	m := types.ComputeMultiplier(authPower, comPower, params.FloorFraction)
 	if m.LTE(sdk.OneDec()) {

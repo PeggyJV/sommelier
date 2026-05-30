@@ -20,6 +20,10 @@ var _ types.MsgServer = Keeper{}
 func (k Keeper) ScheduleCork(c context.Context, msg *types.MsgScheduleCorkRequest) (*types.MsgScheduleCorkResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
 
+	if k.inSafeMode(ctx) {
+		return nil, errorsmod.Wrap(sdkerrors.ErrInvalidRequest, "x/poa safe mode active: scheduling corks is frozen until the authority set is restored")
+	}
+
 	signer := msg.MustGetSigner()
 	validatorAddr := k.gravityKeeper.GetOrchestratorValidatorAddress(ctx, signer)
 	if validatorAddr == nil {

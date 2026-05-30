@@ -54,6 +54,13 @@ func (k Keeper) submitContractCall(ctx sdk.Context, cork v2types.Cork) {
 // 2) Submits all winning votes as contract calls via the gravity bridge
 
 func (k Keeper) EndBlocker(ctx sdk.Context) {
+	// PoA authority-empty safe mode: do not submit contract calls under an
+	// untrusted, community-only validator set. Scheduled corks remain in state
+	// and resume once a trusted authority set is restored.
+	if k.inSafeMode(ctx) {
+		k.Logger(ctx).Error("x/poa safe mode active: skipping scheduled cork execution")
+		return
+	}
 	k.Logger(ctx).Info("tallying scheduled cork votes", "height", fmt.Sprintf("%d", ctx.BlockHeight()))
 	winningScheduledVotes := k.GetApprovedScheduledCorks(ctx)
 	if len(winningScheduledVotes) > 0 {

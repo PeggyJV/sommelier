@@ -105,9 +105,59 @@ func TestEndBlocker_HaltOnEmptyAuthority(t *testing.T) {
 	missing := sdk.ValAddress([]byte("absent-aaaaaaaaaaaaa"))
 	k.SetAuthoritySet(ctx, []sdk.ValAddress{missing})
 
+	// Opt into fail-closed behavior (the default is safe mode).
+	params := k.GetParams(ctx)
+	params.HaltWhenAuthorityEmpty = true
+	k.SetParams(ctx, params)
+
 	require.Panics(t, func() {
 		keeper.EndBlocker(ctx, k, noopStakingEndBlocker)
 	})
+}
+
+// With the default params (HaltWhenAuthorityEmpty=false), an empty authority
+// set enters safe mode instead of halting: blocks keep flowing on community
+// stake and the safe-mode flag is set.
+func TestEndBlocker_SafeModeOnEmptyAuthority(t *testing.T) {
+	k, ctx, fake, _ := newWrapperTestKeeper(t)
+
+	com := sdk.ValAddress([]byte("com-validator-aaaaa"))
+	fake.addValidatorWithPubkey(t, com, sdk.NewInt(100*1_000_000))
+	fake.bondedOrder = []sdk.ValAddress{com}
+
+	missing := sdk.ValAddress([]byte("absent-aaaaaaaaaaaaa"))
+	k.SetAuthoritySet(ctx, []sdk.ValAddress{missing})
+
+	require.NotPanics(t, func() {
+		keeper.EndBlocker(ctx, k, noopStakingEndBlocker)
+	})
+	require.True(t, k.SafeModeActive(ctx), "empty authority must enter safe mode by default")
+
+	// Community validator runs unboosted; an empty snapshot is recorded.
+	snap, ok := k.GetMultiplierSnapshot(ctx, ctx.BlockHeight())
+	require.True(t, ok)
+	require.Empty(t, snap.Entries)
+}
+
+// Once a bonded authority validator returns, the next EndBlocker clears safe
+// mode and resumes boosting.
+func TestEndBlocker_SafeModeClearsWhenAuthorityReturns(t *testing.T) {
+	k, ctx, fake, _ := newWrapperTestKeeper(t)
+
+	auth := sdk.ValAddress([]byte("auth-validator-aaaa"))
+	com := sdk.ValAddress([]byte("com-validator-aaaaa"))
+	fake.addValidatorWithPubkey(t, com, sdk.NewInt(100*1_000_000))
+	fake.bondedOrder = []sdk.ValAddress{com}
+	k.SetAuthoritySet(ctx, []sdk.ValAddress{auth}) // auth not bonded yet
+
+	keeper.EndBlocker(ctx, k, noopStakingEndBlocker)
+	require.True(t, k.SafeModeActive(ctx))
+
+	// Authority validator bonds; safe mode must clear on the next block.
+	fake.addValidatorWithPubkey(t, auth, sdk.NewInt(50*1_000_000))
+	fake.bondedOrder = []sdk.ValAddress{auth, com}
+	keeper.EndBlocker(ctx, k, noopStakingEndBlocker)
+	require.False(t, k.SafeModeActive(ctx), "safe mode must clear once authority is bonded again")
 }
 
 func TestEndBlocker_DisabledIsNoop(t *testing.T) {

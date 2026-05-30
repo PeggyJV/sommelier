@@ -23,11 +23,19 @@ func ParamKeyTable() paramtypes.KeyTable {
 }
 
 // DefaultParams returns the default PoA parameters.
+//
+// HaltWhenAuthorityEmpty defaults to false, selecting authority-empty SAFE MODE
+// (Option A) over a hard halt: when the bonded authority set collapses the chain
+// keeps producing blocks on community stake so governance can re-seed the
+// authority set on-chain, while the value-bearing modules (gravity, cork,
+// axelarcork) freeze so nothing is committed under the untrusted set. Set it to
+// true to instead fail-closed and halt the chain (recovery then requires an
+// off-chain coordinated restart).
 func DefaultParams() Params {
 	return Params{
 		FloorFraction:          DefaultFloorFraction,
 		Enabled:                true,
-		HaltWhenAuthorityEmpty: true,
+		HaltWhenAuthorityEmpty: false,
 	}
 }
 

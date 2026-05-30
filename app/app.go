@@ -109,9 +109,9 @@ import (
 	gravitykeeper "github.com/peggyjv/gravity-bridge/module/v6/x/gravity/keeper"
 	gravitytypes "github.com/peggyjv/gravity-bridge/module/v6/x/gravity/types"
 	appParams "github.com/peggyjv/sommelier/v9/app/params"
+	v10 "github.com/peggyjv/sommelier/v9/app/upgrades/v10"
 	v8 "github.com/peggyjv/sommelier/v9/app/upgrades/v8"
 	v9 "github.com/peggyjv/sommelier/v9/app/upgrades/v9"
-	v10 "github.com/peggyjv/sommelier/v9/app/upgrades/v10"
 	"github.com/peggyjv/sommelier/v9/x/addresses"
 	addresseskeeper "github.com/peggyjv/sommelier/v9/x/addresses/keeper"
 	addressestypes "github.com/peggyjv/sommelier/v9/x/addresses/types"
@@ -517,6 +517,7 @@ func NewSommelierApp(
 	)
 
 	app.AxelarCorkKeeper.SetTransferKeeper(app.TransferKeeper)
+	app.AxelarCorkKeeper.SetPoaKeeper(app.PoaKeeper)
 
 	transferModule := ibctransfer.NewAppModule(app.TransferKeeper)
 	transferIBCModule := ibctransfer.NewIBCModule(app.TransferKeeper)
@@ -543,6 +544,7 @@ func NewSommelierApp(
 		appCodec, keys[corktypes.StoreKey], app.GetSubspace(corktypes.ModuleName),
 		wrappedSk, app.GravityKeeper, app.PubsubKeeper,
 	)
+	app.CorkKeeper.SetPoaKeeper(app.PoaKeeper)
 
 	app.AuctionKeeper = auctionkeeper.NewKeeper(
 		appCodec, keys[auctiontypes.StoreKey], app.GetSubspace(auctiontypes.ModuleName),
@@ -851,7 +853,9 @@ func NewSommelierApp(
 		panic(fmt.Errorf("failed to create ante handler: %s", err))
 	}
 
-	app.SetAnteHandler(anteHandler)
+	// Freeze value-bearing gravity messages while x/poa is in authority-empty
+	// safe mode (see app/ante_safemode.go). cork/axelarcork gate themselves.
+	app.SetAnteHandler(NewSafeModeAnteHandler(app.PoaKeeper, anteHandler))
 	app.SetEndBlocker(app.EndBlocker)
 
 	if loadLatest {

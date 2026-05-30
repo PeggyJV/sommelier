@@ -25,6 +25,7 @@ type Keeper struct {
 	stakingKeeper corktypes.StakingKeeper
 	gravityKeeper corktypes.GravityKeeper
 	pubsubKeeper  corktypes.PubsubKeeper
+	poaKeeper     corktypes.PoaKeeper
 }
 
 // NewKeeper creates a new x/cork Keeper instance
@@ -45,6 +46,18 @@ func NewKeeper(
 		gravityKeeper: gravityKeeper,
 		pubsubKeeper:  pubsubKeeper,
 	}
+}
+
+// SetPoaKeeper wires the read-only PoA safe-mode dependency post-construction
+// (PoA is constructed before cork in app.go).
+func (k *Keeper) SetPoaKeeper(poaKeeper corktypes.PoaKeeper) {
+	k.poaKeeper = poaKeeper
+}
+
+// inSafeMode reports whether the chain is in authority-empty safe mode, in which
+// case cork operations are frozen. A nil PoA keeper means no freeze.
+func (k Keeper) inSafeMode(ctx sdk.Context) bool {
+	return k.poaKeeper != nil && k.poaKeeper.SafeModeActive(ctx)
 }
 
 // Logger returns a module-specific logger.

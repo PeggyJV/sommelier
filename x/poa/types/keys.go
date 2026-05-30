@@ -26,6 +26,9 @@ var (
 	// was ever applied, so a missing snapshot is benign; at or above it a
 	// missing snapshot indicates corruption and a slash must be refused.
 	ActivationHeightKey = []byte{0x04}
+	// SafeModeKey stores the authority-empty safe-mode flag (Option A). When
+	// set, value-bearing modules (gravity, cork, axelarcork) are frozen.
+	SafeModeKey = []byte{0x05}
 )
 
 // MultiplierSnapshotKey returns the store key for the snapshot at `height`,

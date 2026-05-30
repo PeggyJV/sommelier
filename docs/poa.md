@@ -25,7 +25,7 @@ Module params (`x/poa/types/params.go`):
 |---|---|---|
 | `floor_fraction` | `0.670000000000000001` | Minimum authority share. The trailing decimal cushion guarantees a strict supermajority after integer rounding. |
 | `enabled` | `true` | When false, EndBlocker is a no-op. Emergency disable. |
-| `halt_when_authority_empty` | `true` | Panic in EndBlocker if no authority validator is bonded and unjailed. |
+| `halt_when_authority_empty` | `false` | Behavior when no authority validator is bonded and unjailed. `false` (default) → **safe mode**: keep producing blocks but freeze the value-bearing modules (see [Safe mode](#safe-mode-authority-empty)). `true` → halt the chain via panic. |
 
 Authority allowlist:
 - Seeded at the v10 upgrade from `app/upgrades/v10/constants.go::DefaultAuthorityValidators`.
@@ -161,26 +161,59 @@ validators as an off-chain admission criterion (there is currently no on-chain
 Boost only applies to **bonded, unjailed** authority validators. As authority
 validators are jailed (downtime) or tombstoned (double-sign), the remaining
 authority validators must absorb the entire 67% floor, so their multiplier `M`
-climbs. If the bonded authority set shrinks to zero, the chain halts (see
-below).
+climbs. If the bonded authority set shrinks to zero, the chain enters safe mode
+(or halts, depending on `halt_when_authority_empty`; see below).
 
 Operational runbook:
-- **Monitor** the bonded+unjailed authority count and the live `multiplier`
-  attribute on the `authority_rescale` event. A rising multiplier is an early
-  warning that the authority set is thinning.
+- **Monitor** the bonded+unjailed authority count, the live `multiplier`
+  attribute on the `authority_rescale` event (a rising multiplier warns the set
+  is thinning), and the `authority_safe_mode_entered` event.
 - **Re-seed quickly** via `MsgUpdateAuthoritySet` (gov) to add healthy
   validators, and unjail recoverable ones, before the set collapses.
 - Keep a standing governance process (and signer availability) so an emergency
   `MsgUpdateAuthoritySet` / `MsgUpdateParams` can pass on a short voting period.
+  With safe mode (the default), governance still runs because the chain keeps
+  producing blocks — recovery is on-chain.
 
 ### All authority validators are jailed or unbonded
-With `halt_when_authority_empty=true` (default), the chain halts via panic.
-This is the correct PoA failure mode: the security guarantee is broken,
-production of further blocks is refused. Recovery requires governance
-intervention to update or unjail authority validators. As a last-resort
-emergency lever, `enabled=false` (via `MsgUpdateParams`, if still passable) or
-`halt_when_authority_empty=false` makes the EndBlocker pass through staking's
-own updates without boosting, trading the security guarantee for liveness.
+Behavior depends on `halt_when_authority_empty`:
+
+- **Default (`false`) → safe mode.** The chain keeps producing blocks on
+  community stake so governance can re-seed the authority set on-chain, while
+  the value-bearing modules freeze (see [Safe mode](#safe-mode-authority-empty)).
+  Recovery: pass a `MsgUpdateAuthoritySet` to restore a bonded authority set; on
+  the next block boosting resumes, safe mode clears, and the frozen modules
+  resume.
+- **`true` → halt.** The chain halts via panic. The security guarantee is
+  broken, so production of further blocks is refused; recovery requires an
+  off-chain coordinated restart (governance cannot run on a halted chain).
+
+## Safe mode (authority-empty)
+
+When the bonded, unjailed authority set is empty and `halt_when_authority_empty`
+is `false` (default), the chain enters **safe mode**: it keeps producing blocks
+on community stake — so governance can recover the authority set on-chain —
+while freezing every module that would commit a trust-bearing action under the
+untrusted, community-only validator set.
+
+This protects bridge/cellar funds from an attack that knocks the authority
+validators offline (e.g. a DoS that downtime-jails them all): the worst outcome
+is frozen value-bearing operations, never a fund movement signed by the
+community set.
+
+Frozen while in safe mode:
+
+| Module | Frozen |
+|---|---|
+| gravity-bridge | `MsgSendToEthereum`, `MsgSubmitEthereumEvent`, `MsgSubmitEthereumTxConfirmation` (rejected by the ante handler). `MsgDelegateKeys`, `MsgCancelSendToEthereum`, `MsgEthereumHeightVote` stay enabled. |
+| cork | `MsgScheduleCork`; scheduled-cork execution in EndBlock |
+| axelarcork | `MsgScheduleAxelarCork`, `MsgRelayAxelarCork`, `MsgRelayAxelarProxyUpgrade`, `MsgBumpAxelarCorkGas`; cork tally / fund sweep in EndBlock |
+
+Pending items (a queued send-to-Ethereum, a cork scheduled for a future height)
+are **not** dropped — they stay in module state and resume once safe mode
+clears. Governance (`MsgUpdateAuthoritySet`), staking, and bank txs are not
+frozen, so the recovery path stays open. Entry/exit emit the
+`authority_safe_mode_entered` / `authority_safe_mode_exited` events.
 
 ### A community validator grows large enough to exceed 33%
 Cannot happen by construction. As long as the authority set is healthy,
@@ -209,6 +242,8 @@ adjusted ABCI ValidatorUpdates that reflect the new partition.
 |---|---|---|
 | `authority_rescale` | EndBlocker each block when boost is applied | `multiplier`, `authority_power`, `community_power` |
 | `slash_skipped_no_snapshot` | Slash refused: snapshot missing for an at/after-activation infraction height (treated as corruption) | `operator`, `infraction_height` |
+| `authority_safe_mode_entered` | Authority set became empty; chain entered safe mode (value-bearing modules frozen) | — |
+| `authority_safe_mode_exited` | Authority set restored; safe mode cleared | — |
 | `authority_set_updated` | After successful `MsgUpdateAuthoritySet` | `size` |
 | `params_updated` | After successful `MsgUpdateParams` | `floor_fraction` |
 

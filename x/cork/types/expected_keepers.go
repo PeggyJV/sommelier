@@ -50,3 +50,10 @@ type PubsubKeeper interface {
 	SetDefaultSubscription(ctx sdk.Context, defaultSubscription pubsubtypes.DefaultSubscription)
 	DeleteDefaultSubscription(ctx sdk.Context, subscriptionID string)
 }
+
+// PoaKeeper is the read-only view of x/poa used to freeze cork operations when
+// the chain is in authority-empty safe mode. Optional: a nil keeper is treated
+// as "not in safe mode" (no freeze).
+type PoaKeeper interface {
+	SafeModeActive(ctx sdk.Context) bool
+}

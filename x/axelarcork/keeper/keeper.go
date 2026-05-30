@@ -36,6 +36,7 @@ type Keeper struct {
 	distributionKeeper types.DistributionKeeper
 	gravityKeeper      types.GravityKeeper
 	pubsubKeeper       types.PubsubKeeper
+	poaKeeper          types.PoaKeeper
 
 	Ics4Wrapper types.ICS4Wrapper
 }
@@ -76,6 +77,18 @@ func (k Keeper) Logger(ctx sdk.Context) log.Logger {
 // SetTransferKeeper sets the transferKeeper
 func (k *Keeper) SetTransferKeeper(transferKeeper types.TransferKeeper) {
 	k.transferKeeper = transferKeeper
+}
+
+// SetPoaKeeper wires the read-only PoA safe-mode dependency post-construction
+// (PoA is constructed before axelarcork in app.go).
+func (k *Keeper) SetPoaKeeper(poaKeeper types.PoaKeeper) {
+	k.poaKeeper = poaKeeper
+}
+
+// inSafeMode reports whether the chain is in authority-empty safe mode, in which
+// case axelarcork operations are frozen. A nil PoA keeper means no freeze.
+func (k Keeper) inSafeMode(ctx sdk.Context) bool {
+	return k.poaKeeper != nil && k.poaKeeper.SafeModeActive(ctx)
 }
 
 ////////////

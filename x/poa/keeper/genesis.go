@@ -23,8 +23,8 @@ func InitGenesis(ctx sdk.Context, k Keeper, gs types.GenesisState) {
 		addr, err := sdk.ValAddressFromBech32(v.OperatorAddress)
 		if err != nil {
 			// Fail fast: silently skipping a malformed entry could drop an
-			// authority and later trip HaltWhenAuthorityEmpty, or silently run
-			// the chain below the intended supermajority floor.
+			// authority and later trip the authority-empty path (safe mode or
+			// halt), or silently run the chain below the supermajority floor.
 			panic(fmt.Sprintf("poa InitGenesis: invalid authority address %q: %v", v.OperatorAddress, err))
 		}
 		addrs = append(addrs, addr)

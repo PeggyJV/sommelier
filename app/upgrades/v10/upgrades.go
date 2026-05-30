@@ -15,9 +15,11 @@ import (
 // migrations and seeds the PoA module's params and authority allowlist from
 // DefaultAuthorityValidators.
 //
-// The handler refuses to proceed when DefaultAuthorityValidators is empty:
-// PoA's default Params has HaltWhenAuthorityEmpty=true, so an empty allowlist
-// would halt the chain on the very next block (Codex review item 5).
+// The handler refuses to proceed when DefaultAuthorityValidators is empty: with
+// the default params (authority-empty safe mode), an empty allowlist would put
+// the chain into safe mode on the very next block — value-bearing modules
+// (gravity/cork/axelarcork) frozen — which is not a usable production state
+// (Codex review item 5).
 func CreateUpgradeHandler(
 	mm *module.Manager,
 	configurator module.Configurator,
@@ -30,8 +32,8 @@ func CreateUpgradeHandler(
 			return vm, fmt.Errorf(
 				"v10 upgrade refuses to run: DefaultAuthorityValidators is empty. " +
 					"Populate app/upgrades/v10/constants.go with the production authority validator " +
-					"set before tagging the release, or the chain will halt on the next block " +
-					"because Params.HaltWhenAuthorityEmpty defaults to true.",
+					"set before tagging the release, or the chain will enter safe mode on the next " +
+					"block (value-bearing modules frozen) because the authority set is empty.",
 			)
 		}
 

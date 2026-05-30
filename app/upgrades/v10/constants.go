@@ -12,8 +12,8 @@ const (
 //
 // Operators: replace this slice with the production authority validator set
 // before tagging the v10 release. The upgrade handler refuses to run if the
-// slice is empty (otherwise the chain would halt on the first block after
-// upgrade because Params.HaltWhenAuthorityEmpty defaults to true).
+// slice is empty (otherwise the chain would enter authority-empty safe mode on
+// the first block after upgrade, freezing the value-bearing modules).
 var DefaultAuthorityValidators = []string{
 	// "sommvaloper1...",
 }

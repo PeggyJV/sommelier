@@ -21,6 +21,13 @@ func (k Keeper) BeginBlocker(ctx sdk.Context) {}
 // 2) Stores all winning votes as corks that strategists are allowed to relay via Axelar
 
 func (k Keeper) EndBlocker(ctx sdk.Context) {
+	// PoA authority-empty safe mode: do not mark corks relayable or sweep funds
+	// under an untrusted, community-only validator set. Scheduled corks remain
+	// in state and resume once a trusted authority set is restored.
+	if k.inSafeMode(ctx) {
+		k.Logger(ctx).Error("x/poa safe mode active: skipping axelarcork processing")
+		return
+	}
 	k.IterateChainConfigurations(ctx, func(config types.ChainConfiguration) (stop bool) {
 		k.Logger(ctx).Info("tallying scheduled cork votes",
 			"height", fmt.Sprintf("%d", ctx.BlockHeight()),
