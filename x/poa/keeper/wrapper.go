@@ -34,15 +34,21 @@ func (k Keeper) WrappedStakingKeeper() WrappedStakingKeeper {
 // Internal helpers
 // ----------------------------------------------------------------------------
 
-// currentMultiplier returns the boost multiplier for `op` at the current
-// block height, or 1 if the operator is not in the authority allowlist or
-// no boost is in effect this block.
+// currentMultiplier returns the boost multiplier in effect for `op` for reads
+// during this block, or 1 if no boost applies.
+//
+// The boost is sourced purely from the latest committed snapshot (height <=
+// current), NOT from the live authority allowlist. This keeps every boosted
+// read consistent with the LastValidatorPower the staking store holds: both
+// reflect the last EndBlocker's decision and ignore mid-block authority-set
+// mutations, which only take effect when the next EndBlocker recomputes powers.
+// Gating on the live allowlist instead would (a) de-boost a validator the
+// instant it is removed, before its consensus power actually changes at
+// EndBlock, and (b) return no boost during BeginBlock/DeliverTx because the
+// current height's snapshot is not written until that height's EndBlocker.
 func (w WrappedStakingKeeper) currentMultiplier(ctx sdk.Context, op sdk.ValAddress) sdk.Dec {
-	if !w.poa.IsAuthority(ctx, op) {
-		return sdk.OneDec()
-	}
-	m := w.poa.MultiplierForValidator(ctx, op, ctx.BlockHeight())
-	if m.LTE(sdk.OneDec()) {
+	m, found := w.poa.LatestMultiplierForValidator(ctx, op, ctx.BlockHeight())
+	if !found || m.LTE(sdk.OneDec()) {
 		return sdk.OneDec()
 	}
 	return m
@@ -168,37 +174,62 @@ func (w WrappedStakingKeeper) GetAllValidators(ctx sdk.Context) []stakingtypes.V
 // Slash normalisation
 // ----------------------------------------------------------------------------
 
-// Slash converts caller-supplied (boosted) consensus power back to raw stake
-// for authority validators before delegating to the underlying keeper. If a
-// snapshot at the infraction height is missing for an authority validator,
-// the slash is REFUSED (returns 0) to avoid silently over-slashing — see
-// design spec §3.4 and Codex review item 3.
+// rawSlashPower converts caller-supplied (boosted) consensus power back to the
+// raw stake that should actually be slashed for operator `op`, using the boost
+// recorded at the infraction height. It returns refuse=true when the slash must
+// be skipped to avoid over-slashing.
+//
+// Authority/boost status is evaluated at the infraction height via the
+// snapshot, NEVER against the current allowlist: the live set may differ from
+// the set in effect when the infraction occurred (e.g. delayed evidence after
+// an authority-set change), and gating on current membership would over- or
+// under-slash.
+//
+// Missing-snapshot handling keys off the PoA activation height:
+//   - infractionHeight < activation (or activation unset): a pre-PoA height
+//     where no boost was ever applied — slash the raw power unchanged.
+//   - infractionHeight >= activation: an empty snapshot is written every block
+//     and retention covers the full slashable window, so a gap here means
+//     corruption — refuse rather than risk over-slashing on boosted power.
+func (w WrappedStakingKeeper) rawSlashPower(ctx sdk.Context, op sdk.ValAddress, infractionHeight, power int64) (int64, bool) {
+	m, snapFound := w.poa.MultiplierForValidatorWithStatus(ctx, op, infractionHeight)
+	if snapFound {
+		if m.LTE(sdk.OneDec()) {
+			return power, false
+		}
+		return sdk.NewDec(power).Quo(m).TruncateInt64(), false
+	}
+	activation, ok := w.poa.GetActivationHeight(ctx)
+	if !ok || infractionHeight < activation {
+		return power, false
+	}
+	return 0, true
+}
+
+// emitSlashSkipped logs and emits the event for a refused slash.
+func (w WrappedStakingKeeper) emitSlashSkipped(ctx sdk.Context, op sdk.ValAddress, infractionHeight int64) {
+	ctx.Logger().Error("poa: missing multiplier snapshot for post-activation authority slash; SKIPPING slash",
+		"operator", op.String(), "infraction_height", infractionHeight)
+	ctx.EventManager().EmitEvent(sdk.NewEvent(
+		types.EventTypeSlashSkippedNoSnapshot,
+		sdk.NewAttribute(types.AttributeOperator, op.String()),
+		sdk.NewAttribute(types.AttributeInfractionHeight, sdk.NewInt(infractionHeight).String()),
+	))
+}
+
+// Slash normalizes boosted consensus power back to raw stake before delegating
+// to the underlying keeper. See rawSlashPower for the snapshot/activation rules.
 func (w WrappedStakingKeeper) Slash(ctx sdk.Context, consAddr sdk.ConsAddress, infractionHeight int64, power int64, slashFactor sdk.Dec) math.Int {
 	val := w.StakingKeeper.ValidatorByConsAddr(ctx, consAddr) // raw lookup, NOT adapted
 	if val == nil {
 		return w.StakingKeeper.Slash(ctx, consAddr, infractionHeight, power, slashFactor)
 	}
 	op := val.GetOperator()
-	// Authority status MUST be evaluated at the infraction height, not "now".
-	// The current allowlist may differ from the set in effect when the
-	// infraction occurred (e.g. delayed evidence after an authority-set change),
-	// and gating on current membership would over- or under-slash. The
-	// infraction-height snapshot is the source of truth for whether the
-	// validator was boosted at that height.
-	m, snapFound := w.poa.MultiplierForValidatorWithStatus(ctx, op, infractionHeight)
-	if !snapFound {
-		// No snapshot at this height: either a pre-PoA infraction (no boost
-		// ever applied) or a height older than the retention window. The
-		// retention window covers the full slashable window for PoA heights, so
-		// a missing snapshot means the validator was not boosted at that height
-		// — pass the slash through against raw power unchanged.
-		return w.StakingKeeper.Slash(ctx, consAddr, infractionHeight, power, slashFactor)
+	rawPower, refuse := w.rawSlashPower(ctx, op, infractionHeight, power)
+	if refuse {
+		w.emitSlashSkipped(ctx, op, infractionHeight)
+		return math.ZeroInt()
 	}
-	if m.LTE(sdk.OneDec()) {
-		// Snapshot found but the validator was not boosted at that height.
-		return w.StakingKeeper.Slash(ctx, consAddr, infractionHeight, power, slashFactor)
-	}
-	rawPower := sdk.NewDec(power).Quo(m).TruncateInt64()
 	return w.StakingKeeper.Slash(ctx, consAddr, infractionHeight, rawPower, slashFactor)
 }
 
@@ -210,16 +241,10 @@ func (w WrappedStakingKeeper) SlashWithInfractionReason(ctx sdk.Context, consAdd
 		return w.StakingKeeper.SlashWithInfractionReason(ctx, consAddr, infractionHeight, power, slashFactor, infraction)
 	}
 	op := val.GetOperator()
-	// See Slash: authority/boost status is evaluated at the infraction height
-	// via the snapshot, never against the current allowlist.
-	m, snapFound := w.poa.MultiplierForValidatorWithStatus(ctx, op, infractionHeight)
-	if !snapFound {
-		// Pre-PoA or beyond-retention height: no boost was applied, slash raw.
-		return w.StakingKeeper.SlashWithInfractionReason(ctx, consAddr, infractionHeight, power, slashFactor, infraction)
+	rawPower, refuse := w.rawSlashPower(ctx, op, infractionHeight, power)
+	if refuse {
+		w.emitSlashSkipped(ctx, op, infractionHeight)
+		return math.ZeroInt()
 	}
-	if m.LTE(sdk.OneDec()) {
-		return w.StakingKeeper.SlashWithInfractionReason(ctx, consAddr, infractionHeight, power, slashFactor, infraction)
-	}
-	rawPower := sdk.NewDec(power).Quo(m).TruncateInt64()
 	return w.StakingKeeper.SlashWithInfractionReason(ctx, consAddr, infractionHeight, rawPower, slashFactor, infraction)
 }

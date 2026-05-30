@@ -1,6 +1,8 @@
 package keeper
 
 import (
+	"encoding/binary"
+
 	"github.com/cometbft/cometbft/libs/log"
 	"github.com/cosmos/cosmos-sdk/codec"
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
@@ -74,4 +76,24 @@ func (k Keeper) SetParams(ctx sdk.Context, p types.Params) {
 // EndBlocker for snapshot retention.
 func (k *Keeper) SetSlashingKeeper(sk types.SlashingKeeper) {
 	k.slashingKeeper = sk
+}
+
+// SetActivationHeight records the height at which PoA became active. Called
+// once from InitGenesis (and the v10 upgrade handler); idempotent callers
+// should guard with GetActivationHeight.
+func (k Keeper) SetActivationHeight(ctx sdk.Context, height int64) {
+	bz := make([]byte, 8)
+	binary.BigEndian.PutUint64(bz, uint64(height))
+	ctx.KVStore(k.storeKey).Set(types.ActivationHeightKey, bz)
+}
+
+// GetActivationHeight returns the PoA activation height and whether it has been
+// set. A false found-bool means the module is not yet active (no height should
+// be treated as post-activation).
+func (k Keeper) GetActivationHeight(ctx sdk.Context) (int64, bool) {
+	bz := ctx.KVStore(k.storeKey).Get(types.ActivationHeightKey)
+	if bz == nil {
+		return 0, false
+	}
+	return int64(binary.BigEndian.Uint64(bz)), true
 }

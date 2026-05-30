@@ -12,13 +12,13 @@ import (
 // to exercise the WrappedStakingKeeper. Methods not exercised by tests panic
 // with "not implemented" so missing coverage is loud.
 type fakeStakingKeeper struct {
-	validators       map[string]stakingtypes.Validator        // operator bech32 -> validator
-	consToOperator   map[string]sdk.ValAddress                // consAddr string -> op
-	bondedOrder      []sdk.ValAddress                          // for IterateBondedValidatorsByPower
-	lastPower        map[string]int64                          // operator bech32 -> overwritten LastValidatorPower
-	lastSlashPower   int64                                     // last `power` arg passed to Slash
+	validators        map[string]stakingtypes.Validator // operator bech32 -> validator
+	consToOperator    map[string]sdk.ValAddress         // consAddr string -> op
+	bondedOrder       []sdk.ValAddress                  // for IterateBondedValidatorsByPower
+	lastPower         map[string]int64                  // operator bech32 -> overwritten LastValidatorPower
+	lastSlashPower    int64                             // last `power` arg passed to Slash
 	lastSlashConsAddr sdk.ConsAddress
-	slashCalled      bool
+	slashCalled       bool
 }
 
 func newFakeStaking() *fakeStakingKeeper {
@@ -155,16 +155,16 @@ func (f *fakeStakingKeeper) SlashWithInfractionReason(ctx sdk.Context, c sdk.Con
 	return f.Slash(ctx, c, h, power, d)
 }
 
-func (f *fakeStakingKeeper) Jail(ctx sdk.Context, _ sdk.ConsAddress)    {}
-func (f *fakeStakingKeeper) Unjail(ctx sdk.Context, _ sdk.ConsAddress)  {}
+func (f *fakeStakingKeeper) Jail(ctx sdk.Context, _ sdk.ConsAddress)   {}
+func (f *fakeStakingKeeper) Unjail(ctx sdk.Context, _ sdk.ConsAddress) {}
 
 func (f *fakeStakingKeeper) Delegation(_ sdk.Context, _ sdk.AccAddress, _ sdk.ValAddress) stakingtypes.DelegationI {
 	return nil
 }
-func (f *fakeStakingKeeper) MaxValidators(_ sdk.Context) uint32          { return 100 }
-func (f *fakeStakingKeeper) PowerReduction(_ sdk.Context) math.Int       { return sdk.DefaultPowerReduction }
-func (f *fakeStakingKeeper) BondDenom(_ sdk.Context) string              { return "usomm" }
-func (f *fakeStakingKeeper) UnbondingTime(_ sdk.Context) time.Duration   { return 21 * 24 * time.Hour }
+func (f *fakeStakingKeeper) MaxValidators(_ sdk.Context) uint32                      { return 100 }
+func (f *fakeStakingKeeper) PowerReduction(_ sdk.Context) math.Int                   { return sdk.DefaultPowerReduction }
+func (f *fakeStakingKeeper) BondDenom(_ sdk.Context) string                          { return "usomm" }
+func (f *fakeStakingKeeper) UnbondingTime(_ sdk.Context) time.Duration               { return 21 * 24 * time.Hour }
 func (f *fakeStakingKeeper) IsValidatorJailed(_ sdk.Context, _ sdk.ConsAddress) bool { return false }
 func (f *fakeStakingKeeper) SetLastValidatorPower(_ sdk.Context, op sdk.ValAddress, power int64) {
 	f.lastPower[op.String()] = power

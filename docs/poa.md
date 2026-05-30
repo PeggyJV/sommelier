@@ -96,13 +96,91 @@ accrual is on boosted weight.
 Community validators earn rewards proportional to their unboosted
 consensus share.
 
+## Slashing semantics
+
+Because authority validators report *boosted* consensus power, a naive slash
+would burn `slash_factor × boosted_power`, i.e. up to `M×` their real stake —
+an over-slash. To prevent this, `x/poa` wraps the staking keeper and, at slash
+time, converts the caller-supplied (boosted) power back to raw stake using the
+boost multiplier recorded **at the infraction height**, then delegates to the
+underlying keeper. Net effect: an authority validator is penalised on its
+**real stake**, not on its boosted consensus power.
+
+Key rules:
+- **Infraction-height membership, not current.** Whether a validator was
+  boosted is read from the per-height snapshot at the infraction height, never
+  from the live allowlist. Evidence can arrive after an authority-set change;
+  using current membership would over- or under-slash.
+- **Per-block snapshots.** Every block writes a multiplier snapshot (an *empty*
+  one when no boost is applied), so for any height at or after activation a
+  snapshot is always present. Snapshots are retained to cover the full slashable
+  window: `max(unbonding_blocks, evidence_max_age_blocks) + signed_blocks_window`
+  (computed with a conservative lower-bound block time).
+- **Activation height.** The height at which PoA went live (recorded at the v10
+  upgrade / genesis init) is the boundary for missing-snapshot handling:
+  - infraction height **below** activation → pre-PoA, no boost was ever applied
+    → slash passes through against raw power.
+  - infraction height **at or above** activation with a missing snapshot →
+    treated as corruption → slash is **refused** (`slash_skipped_no_snapshot`)
+    rather than risk over-slashing.
+- **Tombstoning is the real deterrent.** Double-sign tombstoning and jailing
+  happen in the evidence/slashing modules independent of the burn amount, so a
+  misbehaving authority validator is still permanently ejected from consensus
+  even when the token penalty is small or refused.
+
+### Snapshots and chain restarts
+
+Multiplier snapshots are **not** included in `ExportGenesis` (exporting the full
+retained window would bloat genesis). On an export/restart the activation height
+is re-recorded at the new initial height, so any infraction height before it —
+including all pre-restart heights — passes through as un-boosted. This is safe
+because CometBFT evidence cannot reference pre-restart heights after a genesis
+restart.
+
+## Economic security considerations
+
+The slash normalisation above is correct accounting, but it has a deliberate
+consequence operators must understand: **slashing is a weak economic deterrent
+for boosted authority validators.** A validator wielding 67% of consensus power
+via boost may have only a small real self-stake, so `slash_factor × real_stake`
+is a small absolute penalty relative to the consensus damage it could do. The
+same applies to rewards — distribution allocates by boosted power, so authority
+validators earn rewards proportional to their boosted share, not their real
+stake.
+
+This is inherent to hybrid PoA and is intended: authority validators are trusted,
+binary-/governance-designated operators, and the primary enforcement is
+**tombstoning + governance removal**, not the token burn. To keep the burn
+meaningful, operators SHOULD require a **minimum real self-stake** for authority
+validators as an off-chain admission criterion (there is currently no on-chain
+`min_self_stake` param enforcing this; adding one is a possible future change).
+
 ## Failure modes
+
+### Authority validators get jailed (liveness)
+Boost only applies to **bonded, unjailed** authority validators. As authority
+validators are jailed (downtime) or tombstoned (double-sign), the remaining
+authority validators must absorb the entire 67% floor, so their multiplier `M`
+climbs. If the bonded authority set shrinks to zero, the chain halts (see
+below).
+
+Operational runbook:
+- **Monitor** the bonded+unjailed authority count and the live `multiplier`
+  attribute on the `authority_rescale` event. A rising multiplier is an early
+  warning that the authority set is thinning.
+- **Re-seed quickly** via `MsgUpdateAuthoritySet` (gov) to add healthy
+  validators, and unjail recoverable ones, before the set collapses.
+- Keep a standing governance process (and signer availability) so an emergency
+  `MsgUpdateAuthoritySet` / `MsgUpdateParams` can pass on a short voting period.
 
 ### All authority validators are jailed or unbonded
 With `halt_when_authority_empty=true` (default), the chain halts via panic.
 This is the correct PoA failure mode: the security guarantee is broken,
 production of further blocks is refused. Recovery requires governance
-intervention to update or unjail authority validators.
+intervention to update or unjail authority validators. As a last-resort
+emergency lever, `enabled=false` (via `MsgUpdateParams`, if still passable) or
+`halt_when_authority_empty=false` makes the EndBlocker pass through staking's
+own updates without boosting, trading the security guarantee for liveness.
 
 ### A community validator grows large enough to exceed 33%
 Cannot happen by construction. As long as the authority set is healthy,
@@ -114,7 +192,7 @@ by definition.
 
 Submit a `MsgUpdateAuthoritySet` through gov. The message body lists the
 new authority validators by operator address. The signer must be the chain's
-gov authority (typically `cosmos1...gov` derived from the gov module account).
+gov authority (the `somm1...` address derived from the gov module account).
 
 Validation:
 - Empty list rejected.
@@ -130,7 +208,7 @@ adjusted ABCI ValidatorUpdates that reflect the new partition.
 | Event | When | Attributes |
 |---|---|---|
 | `authority_rescale` | EndBlocker each block when boost is applied | `multiplier`, `authority_power`, `community_power` |
-| `slash_skipped_no_snapshot` | Authority slash refused due to missing snapshot | `operator`, `infraction_height` |
+| `slash_skipped_no_snapshot` | Slash refused: snapshot missing for an at/after-activation infraction height (treated as corruption) | `operator`, `infraction_height` |
 | `authority_set_updated` | After successful `MsgUpdateAuthoritySet` | `size` |
 | `params_updated` | After successful `MsgUpdateParams` | `floor_fraction` |
 

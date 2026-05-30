@@ -46,8 +46,13 @@ func CreateUpgradeHandler(
 
 		poaKeeper.SetParams(ctx, poatypes.DefaultParams())
 		poaKeeper.SetAuthoritySet(ctx, addrs)
+		// Record the activation height: the first block at which PoA boosting is
+		// in effect. Slashes for infraction heights below this predate the
+		// module (no boost) and pass through; at or above it a missing snapshot
+		// indicates corruption and the slash is refused.
+		poaKeeper.SetActivationHeight(ctx, ctx.BlockHeight())
 		ctx.Logger().Info("v10 upgrade: PoA params and authority set initialised",
-			"authority_count", len(addrs))
+			"authority_count", len(addrs), "activation_height", ctx.BlockHeight())
 
 		return mm.RunMigrations(ctx, configurator, vm)
 	}

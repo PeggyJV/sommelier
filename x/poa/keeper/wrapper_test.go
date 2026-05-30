@@ -167,12 +167,47 @@ func TestWrapper_Slash_NoSnapshotPassesThrough(t *testing.T) {
 	fake.mapCons(cons, auth)
 
 	k.SetAuthoritySet(ctx, []sdk.ValAddress{auth})
-	// NOTE: no snapshot at the infraction height. A missing snapshot means a
-	// pre-PoA / beyond-retention height where no boost was applied, so the
-	// slash passes through against raw power unchanged.
+	// NOTE: no snapshot and no activation height set. With activation unset the
+	// module is treated as not-yet-active, so the slash passes through against
+	// raw power unchanged.
 	w.Slash(ctx, cons, 999, 500, sdk.MustNewDecFromStr("0.05"))
 	require.True(t, fake.slashCalled)
 	require.Equal(t, int64(500), fake.lastSlashPower)
+}
+
+// Below the activation height, a missing snapshot is benign (pre-PoA, no boost
+// was ever applied) — the slash passes through against raw power.
+func TestWrapper_Slash_PreActivationNoSnapshotPassesThrough(t *testing.T) {
+	k, ctx, fake, w := newWrapperTestKeeper(t)
+
+	auth := sdk.ValAddress([]byte("auth-validator-aaaa"))
+	cons := sdk.ConsAddress([]byte("auth-cons-aaaaaaaaaa"))
+	fake.addValidator(auth, sdk.NewInt(1_000_000))
+	fake.mapCons(cons, auth)
+
+	k.SetActivationHeight(ctx, 100)
+	// Infraction at height 50 < activation 100, no snapshot.
+	w.Slash(ctx, cons, 50, 500, sdk.MustNewDecFromStr("0.05"))
+	require.True(t, fake.slashCalled)
+	require.Equal(t, int64(500), fake.lastSlashPower)
+}
+
+// At or above the activation height an empty snapshot is written every block,
+// so a missing snapshot means corruption — the slash must be refused rather
+// than risk over-slashing on (possibly boosted) power.
+func TestWrapper_Slash_PostActivationMissingSnapshotRefused(t *testing.T) {
+	k, ctx, fake, w := newWrapperTestKeeper(t)
+
+	auth := sdk.ValAddress([]byte("auth-validator-aaaa"))
+	cons := sdk.ConsAddress([]byte("auth-cons-aaaaaaaaaa"))
+	fake.addValidator(auth, sdk.NewInt(1_000_000))
+	fake.mapCons(cons, auth)
+
+	k.SetActivationHeight(ctx, 100)
+	// Infraction at height 200 >= activation 100, but no snapshot exists.
+	burned := w.Slash(ctx, cons, 200, 500, sdk.MustNewDecFromStr("0.05"))
+	require.False(t, fake.slashCalled, "post-activation slash with missing snapshot must be refused")
+	require.True(t, burned.IsZero())
 }
 
 // TestWrapper_Slash_NormalisesByInfractionHeightSnapshot exercises the core
@@ -221,4 +256,29 @@ func TestWrapper_Slash_AuthorityNoBoostPassesThrough(t *testing.T) {
 	w.Slash(ctx, cons, 50, 100, sdk.MustNewDecFromStr("0.05"))
 	require.True(t, fake.slashCalled)
 	require.Equal(t, int64(100), fake.lastSlashPower)
+}
+
+// Boosted reads must use the latest committed snapshot, not the current block's
+// (not-yet-written) snapshot. During block N, the snapshot for N is written
+// only in N's EndBlocker, so mid-block reads must fall back to N-1's snapshot —
+// matching the LastValidatorPower the staking store still holds from N-1.
+func TestWrapper_BoostUsesLatestCommittedSnapshot(t *testing.T) {
+	k, ctx, fake, w := newWrapperTestKeeper(t)
+
+	auth := sdk.ValAddress([]byte("auth-validator-aaaa"))
+	fake.addValidator(auth, sdk.NewInt(1_000_000))
+	k.SetAuthoritySet(ctx, []sdk.ValAddress{auth})
+
+	// Snapshot committed at height 9; no snapshot yet for the current block 10.
+	ctx = ctx.WithBlockHeight(10)
+	k.SetMultiplierSnapshot(ctx.WithBlockHeight(9), types.MultiplierSnapshot{
+		Height: 9,
+		Entries: []*types.MultiplierEntry{
+			{OperatorAddress: auth.String(), Multiplier: "5.0"},
+		},
+	})
+
+	// Reading at height 10 must still see the 5x boost from height 9.
+	vAuth := w.Validator(ctx, auth)
+	require.Equal(t, sdk.NewInt(5_000_000), vAuth.GetTokens())
 }
