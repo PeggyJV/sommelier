@@ -5,6 +5,7 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/authz"
+	govtypesv1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1"
 	gravitytypes "github.com/peggyjv/gravity-bridge/module/v6/x/gravity/types"
 	"github.com/stretchr/testify/require"
 )
@@ -85,4 +86,25 @@ func TestSafeModeAnteHandler_AuthzExecRecursion(t *testing.T) {
 	allowedExec := authz.NewMsgExec(grantee, []sdk.Msg{&gravitytypes.MsgDelegateKeys{}})
 	_, err = h(ctx, stubTx{msgs: []sdk.Msg{&allowedExec}}, false)
 	require.NoError(t, err, "authz-wrapped allowed msg must pass")
+}
+
+// A gov v1 MsgSubmitProposal carrying a frozen gravity message is rejected at
+// submission while in safe mode (gov executes embedded msgs in EndBlock,
+// bypassing the ante, so the submission tx is the lever).
+func TestSafeModeAnteHandler_GovSubmitProposalRecursion(t *testing.T) {
+	next := func(ctx sdk.Context, tx sdk.Tx, simulate bool) (sdk.Context, error) { return ctx, nil }
+	ctx := sdk.Context{}
+	h := NewSafeModeAnteHandler(stubSafeMode{active: true}, next)
+
+	frozenProp, err := govtypesv1.NewMsgSubmitProposal(
+		[]sdk.Msg{&gravitytypes.MsgSendToEthereum{}}, sdk.NewCoins(), "proposer", "", "t", "s")
+	require.NoError(t, err)
+	_, err = h(ctx, stubTx{msgs: []sdk.Msg{frozenProp}}, false)
+	require.Error(t, err, "gov proposal embedding a frozen gravity msg must be rejected at submission")
+
+	okProp, err := govtypesv1.NewMsgSubmitProposal(
+		[]sdk.Msg{&gravitytypes.MsgDelegateKeys{}}, sdk.NewCoins(), "proposer", "", "t", "s")
+	require.NoError(t, err)
+	_, err = h(ctx, stubTx{msgs: []sdk.Msg{okProp}}, false)
+	require.NoError(t, err, "gov proposal with only allowed msgs must pass")
 }

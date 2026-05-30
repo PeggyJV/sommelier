@@ -5,6 +5,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/cosmos/cosmos-sdk/x/authz"
+	govtypesv1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1"
 	gravitytypes "github.com/peggyjv/gravity-bridge/module/v6/x/gravity/types"
 )
 
@@ -38,20 +39,41 @@ func NewSafeModeAnteHandler(poa PoaSafeModeReader, next sdk.AnteHandler) sdk.Ant
 	}
 }
 
-// containsFrozenGravityMsg reports whether msg is a frozen gravity message or an
-// authz MsgExec that wraps one (recursively). A MsgExec whose inner messages
+// containsFrozenGravityMsg reports whether msg is a frozen gravity message or a
+// wrapper that carries one (recursively): an authz MsgExec, or a gov v1
+// MsgSubmitProposal. Gov v1 executes a proposal's embedded messages through the
+// message router in gov's EndBlock, bypassing the ante handler, so blocking the
+// submission tx is the lever available here (the gov keeper takes a concrete
+// MsgServiceRouter that cannot be wrapped). A wrapper whose inner messages
 // cannot be decoded is treated as frozen (fail-closed) while in safe mode.
+//
+// NOTE: this closes the submission path. A gov v1 proposal already in voting
+// when safe mode triggers is not caught here; its only reachable gravity msg is
+// MsgSendToEthereum signed by the gov module account (others require a
+// registered orchestrator signer), which is a negligible residual. In-repo
+// cork/axelarcork msgs executed via gov v1 ARE gated by their msg servers.
 func containsFrozenGravityMsg(msg sdk.Msg) bool {
 	if isFrozenGravityMsg(msg) {
 		return true
 	}
-	if exec, ok := msg.(*authz.MsgExec); ok {
-		inner, err := exec.GetMessages()
+	switch m := msg.(type) {
+	case *authz.MsgExec:
+		inner, err := m.GetMessages()
 		if err != nil {
 			return true
 		}
-		for _, m := range inner {
-			if containsFrozenGravityMsg(m) {
+		for _, im := range inner {
+			if containsFrozenGravityMsg(im) {
+				return true
+			}
+		}
+	case *govtypesv1.MsgSubmitProposal:
+		inner, err := m.GetMsgs()
+		if err != nil {
+			return true
+		}
+		for _, im := range inner {
+			if containsFrozenGravityMsg(im) {
 				return true
 			}
 		}
