@@ -4,7 +4,9 @@ import (
 	"testing"
 
 	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
+	"github.com/cosmos/cosmos-sdk/crypto/keys/ed25519"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/stretchr/testify/require"
@@ -29,6 +31,7 @@ func TestV10UpgradeHandlerSeedsAuthorityAndDrainsLegacyQueues(t *testing.T) {
 
 	app.CorkKeeper.SetParams(ctx, corkv2types.DefaultParams())
 	app.AxelarCorkKeeper.SetParams(ctx, axelarcorktypes.DefaultParams())
+	seedBondedAuthorityValidator(t, app, ctx)
 
 	corkStore := ctx.KVStore(app.GetKey(corktypes.StoreKey))
 	axelarStore := ctx.KVStore(app.GetKey(axelarcorktypes.StoreKey))
@@ -115,6 +118,7 @@ func TestV10UpgradeHandlerKeepsAuthoritySetThroughRunMigrations(t *testing.T) {
 
 	app.CorkKeeper.SetParams(ctx, corkv2types.DefaultParams())
 	app.AxelarCorkKeeper.SetParams(ctx, axelarcorktypes.DefaultParams())
+	seedBondedAuthorityValidator(t, app, ctx)
 
 	handler := v10.CreateUpgradeHandler(
 		app.mm,
@@ -139,4 +143,92 @@ func TestV10UpgradeHandlerKeepsAuthoritySetThroughRunMigrations(t *testing.T) {
 			"DefaultGenesis; the chain would enter authority-empty safe mode on the "+
 			"next block with no on-chain recovery")
 	require.Len(t, app.PoaKeeper.GetAuthoritySet(ctx), len(v10.DefaultAuthorityValidators))
+}
+
+// seedBondedAuthorityValidator makes the first configured authority validator
+// exist as bonded and unjailed, which is what the chain looks like at the real
+// upgrade height. The handler refuses to seed an allowlist with no usable
+// validator, since that would enter authority-empty safe mode with no on-chain
+// recovery.
+func seedBondedAuthorityValidator(t *testing.T, app *SommelierApp, ctx sdk.Context) {
+	t.Helper()
+
+	opAddr, err := sdk.ValAddressFromBech32(v10.DefaultAuthorityValidators[0])
+	require.NoError(t, err)
+
+	val, err := stakingtypes.NewValidator(
+		opAddr,
+		ed25519.GenPrivKey().PubKey(),
+		stakingtypes.Description{Moniker: "authority-0"},
+	)
+	require.NoError(t, err)
+	val.Status = stakingtypes.Bonded
+	val.Jailed = false
+	val.Tokens = sdk.NewInt(1_000_000)
+	val.DelegatorShares = sdk.NewDecFromInt(val.Tokens)
+
+	app.StakingKeeper.SetValidator(ctx, val)
+}
+
+// A valid-looking but non-live authority address must abort the upgrade, not
+// seed an allowlist whose members carry no power.
+//
+// The empty-slice guard catches a forgotten constant; it cannot catch a typo, a
+// stale operator address, or every listed validator being jailed at the upgrade
+// height. Any of those puts the chain into authority-empty safe mode on the
+// next block, where MsgUpdateAuthoritySet and MsgUpdateParams are both frozen
+// and there is no on-chain recovery. Halting at the upgrade height is
+// recoverable; that state is not.
+func TestV10UpgradeHandlerRefusesWhenNoAuthorityValidatorIsLive(t *testing.T) {
+	app := Setup(true)
+	ctx := app.BaseApp.NewContext(true, tmproto.Header{Height: 10})
+
+	app.CorkKeeper.SetParams(ctx, corkv2types.DefaultParams())
+	app.AxelarCorkKeeper.SetParams(ctx, axelarcorktypes.DefaultParams())
+	// Deliberately seed NO validator.
+
+	handler := v10.CreateUpgradeHandler(
+		app.mm,
+		app.configurator,
+		app.PoaKeeper,
+		app.CorkKeeper,
+		app.AxelarCorkKeeper,
+		app.GetKey(corktypes.StoreKey),
+		app.GetKey(axelarcorktypes.StoreKey),
+	)
+
+	fromVM := app.mm.GetVersionMap()
+	delete(fromVM, poatypes.ModuleName)
+
+	_, err := handler(ctx, upgradetypes.Plan{Name: v10.UpgradeName}, fromVM)
+	require.Error(t, err)
+	require.Contains(t, err.Error(), "bonded and unjailed")
+}
+
+// A jailed authority validator does not count as live.
+func TestV10UpgradeHandlerRefusesWhenAuthorityValidatorIsJailed(t *testing.T) {
+	app := Setup(true)
+	ctx := app.BaseApp.NewContext(true, tmproto.Header{Height: 10})
+
+	app.CorkKeeper.SetParams(ctx, corkv2types.DefaultParams())
+	app.AxelarCorkKeeper.SetParams(ctx, axelarcorktypes.DefaultParams())
+
+	opAddr, err := sdk.ValAddressFromBech32(v10.DefaultAuthorityValidators[0])
+	require.NoError(t, err)
+	val, err := stakingtypes.NewValidator(opAddr, ed25519.GenPrivKey().PubKey(),
+		stakingtypes.Description{Moniker: "jailed-authority"})
+	require.NoError(t, err)
+	val.Status = stakingtypes.Bonded
+	val.Jailed = true
+	app.StakingKeeper.SetValidator(ctx, val)
+
+	handler := v10.CreateUpgradeHandler(
+		app.mm, app.configurator, app.PoaKeeper, app.CorkKeeper, app.AxelarCorkKeeper,
+		app.GetKey(corktypes.StoreKey), app.GetKey(axelarcorktypes.StoreKey),
+	)
+	fromVM := app.mm.GetVersionMap()
+	delete(fromVM, poatypes.ModuleName)
+
+	_, err = handler(ctx, upgradetypes.Plan{Name: v10.UpgradeName}, fromVM)
+	require.Error(t, err, "a jailed authority validator must not satisfy the liveness check")
 }

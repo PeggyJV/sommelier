@@ -77,6 +77,39 @@ func CreateUpgradeHandler(
 			addrs = append(addrs, addr)
 		}
 
+		// Refuse to seed an authority set with no usable validator.
+		//
+		// The empty-slice guard above catches a forgotten constant, but not a
+		// valid-looking typo, a stale operator address, or every listed
+		// validator being jailed or unbonded at the upgrade height. Any of
+		// those seeds an allowlist whose members carry no power, the next
+		// EndBlocker sees authPower == 0 and enters safe mode, and both
+		// MsgUpdateAuthoritySet and MsgUpdateParams are frozen there -- no
+		// on-chain recovery. MsgUpdateAuthoritySet already refuses such a set
+		// (ErrNoBondedAuthority); the upgrade path must too.
+		//
+		// Failing here halts the chain at the upgrade height, which operators
+		// can fix and restart. Proceeding cannot be fixed on-chain at all.
+		sk := poaKeeper.StakingKeeper()
+		live := 0
+		for _, addr := range addrs {
+			v, found := sk.GetValidator(ctx, addr)
+			if found && !v.Jailed && v.IsBonded() {
+				live++
+			}
+		}
+		if live == 0 {
+			return vm, fmt.Errorf(
+				"v10 upgrade refuses to run: none of the %d configured authority validators "+
+					"is bonded and unjailed at this height. Seeding them would enter "+
+					"authority-empty safe mode on the next block, freezing gravity/cork/"+
+					"axelarcork with no on-chain recovery (poa governance msgs are frozen "+
+					"in safe mode). Check app/upgrades/v10/constants.go against the live "+
+					"validator set", len(addrs))
+		}
+		ctx.Logger().Info("v10 upgrade: authority validator liveness verified",
+			"configured", len(addrs), "bonded_and_unjailed", live)
+
 		poaKeeper.SetParams(ctx, poatypes.DefaultParams())
 		poaKeeper.SetAuthoritySet(ctx, addrs)
 		// Record the activation height: the first block at which PoA boosting is
