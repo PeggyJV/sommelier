@@ -179,6 +179,51 @@ func (k Keeper) IterateScheduledAxelarCorksByPrefix(ctx sdk.Context, prefix []by
 	}
 }
 
+// SetAuthorityAxelarCork stores a cork scheduled by the cork authority for
+// execution at blockHeight on chainID, and returns its ID.
+func (k Keeper) SetAuthorityAxelarCork(ctx sdk.Context, chainID uint64, blockHeight uint64, cork types.AxelarCork) []byte {
+	id := cork.IDHash(blockHeight)
+	bz := k.cdc.MustMarshal(&cork)
+	ctx.KVStore(k.storeKey).Set(
+		types.GetAuthorityCorkKey(chainID, blockHeight, id, common.HexToAddress(cork.TargetContractAddress)),
+		bz,
+	)
+	return id
+}
+
+// DeleteAuthorityAxelarCork removes a scheduled authority cork.
+func (k Keeper) DeleteAuthorityAxelarCork(ctx sdk.Context, chainID uint64, blockHeight uint64, id []byte, contract common.Address) {
+	ctx.KVStore(k.storeKey).Delete(types.GetAuthorityCorkKey(chainID, blockHeight, id, contract))
+}
+
+// IterateAuthorityAxelarCorksByBlockHeight walks the authority corks targeting
+// blockHeight on chainID.
+func (k Keeper) IterateAuthorityAxelarCorksByBlockHeight(
+	ctx sdk.Context,
+	chainID uint64,
+	blockHeight uint64,
+	cb func(id []byte, contract common.Address, cork types.AxelarCork) (stop bool),
+) {
+	store := ctx.KVStore(k.storeKey)
+	iter := sdk.KVStorePrefixIterator(store, types.GetAuthorityCorkKeyByBlockHeightPrefix(chainID, blockHeight))
+	defer iter.Close()
+
+	for ; iter.Valid(); iter.Next() {
+		var cork types.AxelarCork
+		keyPair := bytes.NewBuffer(iter.Key())
+		keyPair.Next(1) // trim prefix byte
+		keyPair.Next(8) // trim chain id, filtered by the prefix
+		keyPair.Next(8) // trim block height, filtered by the prefix
+		id := keyPair.Next(32)
+		contract := common.BytesToAddress(keyPair.Next(20))
+
+		k.cdc.MustUnmarshal(iter.Value(), &cork)
+		if cb(id, contract, cork) {
+			break
+		}
+	}
+}
+
 func (k Keeper) GetScheduledAxelarCorks(ctx sdk.Context, chainID uint64) []*types.ScheduledAxelarCork {
 	var scheduledCorks []*types.ScheduledAxelarCork
 	k.IterateScheduledAxelarCorks(ctx, chainID, func(val sdk.ValAddress, blockHeight uint64, id []byte, _ common.Address, cork types.AxelarCork) (stop bool) {
