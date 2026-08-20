@@ -24,7 +24,7 @@ func InitGenesis(ctx sdk.Context, k Keeper, gs types.GenesisState) {
 	// Idempotent: the v10 upgrade handler may have already set it before
 	// RunMigrations ran this.
 	if _, ok := k.GetActivationHeight(ctx); !ok {
-		if gs.ActivationHeight > 0 {
+		if gs.ActivationHeight > 0 && gs.ActivationHeight <= ctx.BlockHeight() {
 			// Never persist a zero timestamp. A genesis carrying
 			// activation_height without a stamp (hand-written, or exported
 			// before ActivationTimeKey existed) would otherwise make
@@ -39,6 +39,12 @@ func InitGenesis(ctx sdk.Context, k Keeper, gs types.GenesisState) {
 			}
 			k.SetActivationStamp(ctx, gs.ActivationHeight, activationTime)
 		} else {
+			// Either unset, or a stamp from a height space this chain is not
+			// in: an export taken at height H relaunched with a lower
+			// initial_height carries H forward, and rawSlashPower would then
+			// treat every infraction on the new chain as pre-activation and
+			// slash authority validators on BOOSTED power -- the exact
+			// inversion its comment says it guards against.
 			k.SetActivationHeight(ctx, ctx.BlockHeight())
 		}
 	}
@@ -63,7 +69,17 @@ func InitGenesis(ctx sdk.Context, k Keeper, gs types.GenesisState) {
 	if gs.SafeMode {
 		k.SetSafeMode(ctx, true)
 		if gs.SafeModeThawHeight > 0 {
-			k.setThawHeight(ctx, gs.SafeModeThawHeight)
+			// Clamp into this chain's height space. An export taken at height H
+			// while frozen carries thaw=H+delay; relaunching at a lower
+			// initial_height leaves a thaw the EndBlocker can never reach, so
+			// safe mode never lifts even with a fully healthy authority set --
+			// and MsgUpdateParams/MsgUpdateAuthoritySet are themselves frozen,
+			// so there is no on-chain exit.
+			thaw := gs.SafeModeThawHeight
+			if max := ctx.BlockHeight() + safeModeThawDelayBlocks; thaw > max {
+				thaw = max
+			}
+			k.setThawHeight(ctx, thaw)
 		}
 	}
 }
