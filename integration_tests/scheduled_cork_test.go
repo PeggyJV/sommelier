@@ -164,13 +164,15 @@ func (s *IntegrationTestSuite) TestScheduledCork() {
 			return found
 		}, 10*time.Second, 2*time.Second, "did not find address in managed cellars")
 
-		s.T().Log("verify a default subscription was created")
+		// x/cork no longer creates a pubsub default subscription when a cellar is
+		// added: the modules are decoupled as of v10, and x/pubsub is left
+		// standing with no callers. Asserting a subscription here would be
+		// asserting the retired coupling.
+		s.T().Log("verify no default subscription is created (cork/pubsub decoupled)")
 		pubsubQueryClient := pubsubtypes.NewQueryClient(proposerCtx)
 		subscriptionID := fmt.Sprintf("1:%s", counterContract.String())
-		pubsubResponse, err := pubsubQueryClient.QueryDefaultSubscription(context.Background(), &pubsubtypes.QueryDefaultSubscriptionRequest{SubscriptionId: subscriptionID})
-		s.Require().NoError(err)
-		s.Require().Equal(pubsubResponse.DefaultSubscription.SubscriptionId, subscriptionID)
-		s.Require().Equal(pubsubResponse.DefaultSubscription.PublisherDomain, "example.com")
+		_, err = pubsubQueryClient.QueryDefaultSubscription(context.Background(), &pubsubtypes.QueryDefaultSubscriptionRequest{SubscriptionId: subscriptionID})
+		s.Require().Error(err, "adding a managed cellar must no longer create a pubsub subscription")
 
 		s.T().Log("schedule a cork for the future")
 		node, err := proposerCtx.GetNode()
@@ -198,27 +200,31 @@ func (s *IntegrationTestSuite) TestScheduledCork() {
 			uint64(targetBlockHeight),
 			authority.address())
 		s.Require().NoError(err, "failed to construct cork")
-		response, err := s.chain.sendMsgs(*authorityCtx, corkMsg)
+		_, err = s.chain.sendMsgs(*authorityCtx, corkMsg)
 		s.Require().NoError(err, "failed to send cork from the cork authority")
-		s.Require().Zero(response.Code, "authority cork was rejected: %v", response)
 		s.T().Log("cork msg sent successfully by the cork authority")
 
 		// A non-authority orchestrator must be refused.
+		//
+		// It targets a DIFFERENT height so its cork would occupy a distinct
+		// store key; scheduling the identical cork would collapse onto the
+		// authority's entry and prove nothing. The rejection cannot be observed
+		// from the broadcast response: sendMsgs uses BroadcastSync, so the code
+		// reflects CheckTx while the authority check runs in the msg server at
+		// DeliverTx (and chain.go's sendMsgs returns a zero-value response
+		// regardless). State is the only reliable witness.
+		unauthorizedHeight := uint64(targetBlockHeight) + 1
 		other := s.chain.orchestrators[1]
 		otherCtx, err := s.chain.clientContext("tcp://localhost:26657", other.keyring, "orch", other.address())
 		s.Require().NoError(err)
 		otherMsg, err := types.NewMsgScheduleCorkRequest(
 			ABIEncodedInc(),
 			counterContract,
-			uint64(targetBlockHeight),
+			unauthorizedHeight,
 			other.address())
 		s.Require().NoError(err, "failed to construct cork")
-		otherResponse, err := s.chain.sendMsgs(*otherCtx, otherMsg)
-		if err == nil {
-			s.Require().NotZero(otherResponse.Code,
-				"a non-authority orchestrator must not be able to schedule a cork")
-		}
-		s.T().Log("non-authority cork correctly refused")
+		_, _ = s.chain.sendMsgs(*otherCtx, otherMsg)
+		s.T().Log("non-authority cork submitted; verifying it was refused")
 
 		s.T().Log("verify scheduled corks were created")
 		corkQueryClient := types.NewQueryClient(proposerCtx)
@@ -230,6 +236,17 @@ func (s *IntegrationTestSuite) TestScheduledCork() {
 			}
 			return len(res.Corks) == 1
 		}, 10*time.Second, 1*time.Second, "scheduled cork was not created")
+
+		// The non-authority cork must never appear at its target height.
+		s.Require().Never(func() bool {
+			res, err := corkQueryClient.QueryScheduledCorksByBlockHeight(context.Background(), &types.QueryScheduledCorksByBlockHeightRequest{BlockHeight: unauthorizedHeight})
+			if err != nil {
+				return false
+			}
+			return len(res.Corks) > 0
+		}, 8*time.Second, 1*time.Second,
+			"a non-authority orchestrator must not be able to schedule a cork")
+		s.T().Log("non-authority cork correctly refused")
 
 		s.T().Log("wait for scheduled height")
 		gbClient := gbtypes.NewQueryClient(proposerCtx)

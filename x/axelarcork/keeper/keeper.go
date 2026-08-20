@@ -151,7 +151,10 @@ func (k Keeper) IterateAuthorityAxelarCorksByBlockHeight(
 		keyPair.Next(1) // trim prefix byte
 		keyPair.Next(8) // trim chain id, filtered by the prefix
 		keyPair.Next(8) // trim block height, filtered by the prefix
-		id := keyPair.Next(32)
+		// Copy: Next returns a slice into the buffer backed by iter.Key(), and
+		// callers retain the id past iter.Close().
+		id := make([]byte, 32)
+		copy(id, keyPair.Next(32))
 		contract := common.BytesToAddress(keyPair.Next(20))
 
 		k.cdc.MustUnmarshal(iter.Value(), &cork)
@@ -174,7 +177,9 @@ func (k Keeper) IterateAllAuthorityAxelarCorks(ctx sdk.Context, chainID uint64, 
 		keyPair.Next(1) // trim prefix byte
 		keyPair.Next(8) // trim chain id, filtered by the prefix
 		blockHeight := sdk.BigEndianToUint64(keyPair.Next(8))
-		id := keyPair.Next(32)
+		// Copy: Next returns a slice into the buffer backed by iter.Key().
+		id := make([]byte, 32)
+		copy(id, keyPair.Next(32))
 		contract := common.BytesToAddress(keyPair.Next(20))
 
 		k.cdc.MustUnmarshal(iter.Value(), &cork)

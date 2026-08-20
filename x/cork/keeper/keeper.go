@@ -97,7 +97,11 @@ func (k Keeper) IterateAuthorityCorksByBlockHeight(
 		// key layout after the 1-byte prefix: height(8) | id(32) | contract(20)
 		idStart := 1 + 8
 		contractStart := idStart + 32
-		id := key[idStart:contractStart]
+		// Copy: this sub-slice aliases the iterator's key buffer, and callers
+		// retain the id past iter.Close() (the EndBlocker collects ids, then
+		// deletes after iteration). common.BytesToAddress already copies.
+		id := make([]byte, contractStart-idStart)
+		copy(id, key[idStart:contractStart])
 		contract := common.BytesToAddress(key[contractStart:])
 
 		var cork types.Cork
@@ -121,7 +125,9 @@ func (k Keeper) IterateAllAuthorityCorks(ctx sdk.Context, cb func(blockHeight ui
 		keyPair := bytes.NewBuffer(iter.Key())
 		keyPair.Next(1) // trim prefix byte
 		blockHeight := sdk.BigEndianToUint64(keyPair.Next(8))
-		id := keyPair.Next(32)
+		// Copy: Next returns a slice into the buffer backed by iter.Key().
+		id := make([]byte, 32)
+		copy(id, keyPair.Next(32))
 		contract := common.BytesToAddress(keyPair.Next(20))
 
 		k.cdc.MustUnmarshal(iter.Value(), &cork)

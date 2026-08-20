@@ -70,12 +70,21 @@ func (s *ScheduledCork) ValidateBasic() error {
 		return fmt.Errorf("block height must be non-zero")
 	}
 
-	if _, err := sdk.ValAddressFromBech32(s.Validator); err != nil {
-		return errorsmod.Wrap(sdkerrors.ErrInvalidAddress, err.Error())
+	// Validator is vestigial as of v10: corks are scheduled by the cork
+	// authority, which is an account, not a validator. The field is retained on
+	// the type for wire compatibility and is empty on every cork the chain now
+	// produces, so it is validated only when set.
+	if s.Validator != "" {
+		if _, err := sdk.ValAddressFromBech32(s.Validator); err != nil {
+			return errorsmod.Wrap(sdkerrors.ErrInvalidAddress, err.Error())
+		}
 	}
 
-	if len(s.Id) != 64 {
-		return fmt.Errorf("invalid ID length, must be a keccak256 hash")
+	// Id is the raw 32-byte keccak256 digest, not its hex encoding. This
+	// previously compared against 64 and so could never pass, which made any
+	// genesis carrying a scheduled cork unimportable.
+	if len(s.Id) != 32 {
+		return fmt.Errorf("invalid ID length, must be a 32-byte keccak256 hash")
 	}
 
 	return nil
