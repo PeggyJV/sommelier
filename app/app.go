@@ -586,7 +586,18 @@ func NewSommelierApp(
 	// register the proposal types
 	govRouter := govtypesv1beta1.NewRouter()
 	govRouter.AddRoute(govtypes.RouterKey, govtypesv1beta1.ProposalHandler).
-		AddRoute(paramproposal.RouterKey, params.NewParamChangeProposalHandler(app.ParamsKeeper)).
+		// Frozen in safe mode. Left unwrapped, this route is a complete bypass
+		// of every other freeze: gov v1beta1 proposals execute through the
+		// message router in gov's EndBlock, so they never touch the ante
+		// handler, and x/poa, x/cork and x/axelarcork are all registered param
+		// subspaces. A community-only validator set -- the set safe mode exists
+		// to distrust -- could otherwise set poa/Enabled=false to clear the
+		// freeze with no thaw delay, or point cork/corkauthority at an address
+		// it controls and hold cork authority the moment the freeze lifts.
+		//
+		// Recovery from safe mode is unjail-or-rebond, which needs no param
+		// change, so freezing this route creates no deadlock.
+		AddRoute(paramproposal.RouterKey, freezeGovHandlerInSafeMode(app.PoaKeeper, params.NewParamChangeProposalHandler(app.ParamsKeeper))).
 		AddRoute(upgradetypes.RouterKey, upgrade.NewSoftwareUpgradeProposalHandler(&app.UpgradeKeeper)).
 		AddRoute(ibcclienttypes.RouterKey, ibcclient.NewClientProposalHandler(app.IBCKeeper.ClientKeeper)).
 		AddRoute(corktypes.RouterKey, cork.NewProposalHandler(app.CorkKeeper)).

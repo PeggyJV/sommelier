@@ -157,3 +157,44 @@ func TestSafeModeAnteCapsWrapperDepth(t *testing.T) {
 	require.NoError(t, err, "depth cap only applies while frozen")
 	require.True(t, called)
 }
+
+// authz grants are frozen during safe mode.
+//
+// A grant outlives the freeze. A community-only validator set that passes a
+// MsgGrant naming the governance module account as granter, with a
+// non-expiring GenericAuthorization for poa MsgUpdateAuthoritySet /
+// MsgUpdateParams or gov MsgExecLegacyContent, retains that capability
+// permanently -- turning a temporary governance capture into a standing
+// unilateral one, exercisable after the authority set is restored.
+func TestSafeModeAnteFreezesAuthzGrants(t *testing.T) {
+	called := false
+	next := func(ctx sdk.Context, tx sdk.Tx, simulate bool) (sdk.Context, error) {
+		called = true
+		return ctx, nil
+	}
+
+	grant := &authz.MsgGrant{Granter: "somm1granter", Grantee: "somm1grantee"}
+
+	// Frozen while safe mode is active...
+	h := NewSafeModeAnteHandler(stubSafeMode{active: true}, next)
+	_, err := h(sdk.Context{}, stubTx{msgs: []sdk.Msg{grant}}, false)
+	require.Error(t, err)
+	require.False(t, called)
+
+	// ...including when wrapped in a gov proposal submission.
+	called = false
+	wrapped, err := govtypesv1.NewMsgSubmitProposal(
+		[]sdk.Msg{grant}, sdk.NewCoins(), "somm1proposer", "", "t", "s",
+	)
+	require.NoError(t, err)
+	_, err = h(sdk.Context{}, stubTx{msgs: []sdk.Msg{wrapped}}, false)
+	require.Error(t, err, "a grant hidden inside a proposal submission must also be refused")
+	require.False(t, called)
+
+	// ...and unaffected when the chain is healthy.
+	called = false
+	off := NewSafeModeAnteHandler(stubSafeMode{active: false}, next)
+	_, err = off(sdk.Context{}, stubTx{msgs: []sdk.Msg{grant}}, false)
+	require.NoError(t, err)
+	require.True(t, called)
+}

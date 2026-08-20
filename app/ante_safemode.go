@@ -46,11 +46,22 @@ func NewSafeModeAnteHandler(poa PoaSafeModeReader, next sdk.AnteHandler) sdk.Ant
 // MsgServiceRouter that cannot be wrapped). A wrapper whose inner messages
 // cannot be decoded is treated as frozen (fail-closed) while in safe mode.
 //
-// NOTE: this closes the submission path. A gov v1 proposal already in voting
-// when safe mode triggers is not caught here; its only reachable gravity msg is
-// MsgSendToEthereum signed by the gov module account (others require a
-// registered orchestrator signer), which is a negligible residual. In-repo
-// cork/axelarcork msgs executed via gov v1 ARE gated by their msg servers.
+// NOTE: this closes the SUBMISSION path only. A gov v1 proposal already in
+// voting when safe mode triggers is not caught here: gov executes a passed
+// proposal's messages through the message router in EndBlock, which never
+// reaches the ante handler.
+//
+// For gravity that residual is small: the only reachable message is
+// MsgSendToEthereum signed by the gov module account, since the others require
+// a registered orchestrator signer. In-repo cork/axelarcork msgs executed via
+// gov v1 ARE gated by their own msg servers.
+//
+// For authz.MsgGrant the residual is NOT small -- a pre-staged proposal can
+// still install a standing grant from the governance account. Closing that
+// properly requires rejecting gov-account granters inside the authz msg server
+// (or a wrapped authz MsgServer), which is a module-wiring change rather than
+// an ante-layer one. Until then, audit outstanding grants whose granter is the
+// governance module account before and after any safe-mode episode.
 func containsFrozenGravityMsg(msg sdk.Msg) bool {
 	return containsFrozenGravityMsgAtDepth(msg, 0)
 }
@@ -102,15 +113,27 @@ func containsFrozenGravityMsgAtDepth(msg sdk.Msg, depth int) bool {
 	return false
 }
 
-// isFrozenGravityMsg reports whether msg is a gravity message that authorizes
-// outbound fund movement, inbound minting via attestation, or Ethereum-side
-// validator-set rotation. Non-fund messages (delegate-keys, height vote, cancel
-// send) are intentionally left enabled.
+// isFrozenGravityMsg reports whether msg is frozen while safe mode is active.
+//
+// Gravity messages that authorize outbound fund movement, inbound minting via
+// attestation, or Ethereum-side validator-set rotation. Non-fund messages
+// (delegate-keys, height vote, cancel send) are intentionally left enabled.
+//
+// authz.MsgGrant is frozen too, for a different reason. A grant outlives the
+// freeze: a community-only validator set that passes a MsgGrant naming the
+// governance module account as granter, with a non-expiring
+// GenericAuthorization for poa MsgUpdateAuthoritySet, poa MsgUpdateParams, or
+// gov MsgExecLegacyContent, keeps that capability permanently -- converting a
+// temporary governance capture into a standing, unilateral one exercisable
+// long after the authority set is restored. Blocking grant creation while
+// frozen is cheap; nothing legitimate needs a new grant mid-incident.
 func isFrozenGravityMsg(msg sdk.Msg) bool {
 	switch msg.(type) {
 	case *gravitytypes.MsgSendToEthereum,
 		*gravitytypes.MsgSubmitEthereumEvent,
 		*gravitytypes.MsgSubmitEthereumTxConfirmation:
+		return true
+	case *authz.MsgGrant:
 		return true
 	default:
 		return false

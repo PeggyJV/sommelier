@@ -4,10 +4,23 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
-// DefaultGenesis returns the default PoA genesis state.
+// DefaultGenesis returns the default PoA genesis state, with the module
+// DISABLED.
+//
+// DefaultParams has Enabled=true, which is correct for the v10 upgrade handler
+// that turns PoA on alongside a seeded authority set. It is not correct as a
+// genesis default: Enabled=true with an empty AuthoritySet makes the first
+// EndBlocker see authPower == 0 and enter authority-empty safe mode, where
+// MsgUpdateAuthoritySet and MsgUpdateParams are both frozen -- a chain started
+// from default genesis would brick itself with no on-chain recovery.
+//
+// PoA is therefore opt-in: a genesis must name an authority set and enable the
+// module together, which Validate enforces.
 func DefaultGenesis() *GenesisState {
+	params := DefaultParams()
+	params.Enabled = false
 	return &GenesisState{
-		Params:       DefaultParams(),
+		Params:       params,
 		AuthoritySet: nil,
 	}
 }
@@ -16,6 +29,12 @@ func DefaultGenesis() *GenesisState {
 func (gs GenesisState) Validate() error {
 	if err := gs.Params.Validate(); err != nil {
 		return err
+	}
+	// Enabling PoA without an authority set is self-bricking: safe mode
+	// activates on the first block and its own recovery messages are frozen
+	// there. Reject at import rather than at the first EndBlocker.
+	if gs.Params.Enabled && len(gs.AuthoritySet) == 0 {
+		return ErrNoBondedAuthority
 	}
 	seen := make(map[string]struct{}, len(gs.AuthoritySet))
 	for _, v := range gs.AuthoritySet {
