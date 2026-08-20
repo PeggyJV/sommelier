@@ -25,7 +25,19 @@ func InitGenesis(ctx sdk.Context, k Keeper, gs types.GenesisState) {
 	// RunMigrations ran this.
 	if _, ok := k.GetActivationHeight(ctx); !ok {
 		if gs.ActivationHeight > 0 {
-			k.SetActivationStamp(ctx, gs.ActivationHeight, gs.ActivationTime)
+			// Never persist a zero timestamp. A genesis carrying
+			// activation_height without a stamp (hand-written, or exported
+			// before ActivationTimeKey existed) would otherwise make
+			// estimateBlockNanos measure from the Unix epoch: the block rate
+			// explodes, the retention window collapses to a few blocks, and
+			// rawSlashPower then refuses every post-activation authority slash
+			// whose snapshot was pruned -- disabling authority slashing with
+			// nothing but a log line.
+			activationTime := gs.ActivationTime
+			if activationTime <= 0 {
+				activationTime = ctx.BlockTime().UnixNano()
+			}
+			k.SetActivationStamp(ctx, gs.ActivationHeight, activationTime)
 		} else {
 			k.SetActivationHeight(ctx, ctx.BlockHeight())
 		}

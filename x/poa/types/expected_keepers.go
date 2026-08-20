@@ -18,6 +18,12 @@ type StakingKeeper interface {
 	GetLastTotalPower(ctx sdk.Context) math.Int
 	GetBondedValidatorsByPower(ctx sdk.Context) []stakingtypes.Validator
 
+	// TotalBondedTokens is the gov quorum denominator. The wrapper overrides it
+	// so the denominator is boosted in step with the boosted per-validator
+	// BondedTokens that x/gov's tally numerator uses; leaving it raw would make
+	// every proposal appear to have super-unit turnout.
+	TotalBondedTokens(ctx sdk.Context) math.Int
+
 	IterateValidators(sdk.Context, func(int64, stakingtypes.ValidatorI) bool)
 	IterateBondedValidatorsByPower(sdk.Context, func(int64, stakingtypes.ValidatorI) bool)
 	IterateLastValidators(sdk.Context, func(int64, stakingtypes.ValidatorI) bool)

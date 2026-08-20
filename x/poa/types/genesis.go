@@ -27,5 +27,27 @@ func (gs GenesisState) Validate() error {
 		}
 		seen[v.OperatorAddress] = struct{}{}
 	}
+	if gs.ActivationHeight < 0 || gs.ActivationTime < 0 || gs.SafeModeThawHeight < 0 {
+		return ErrInvalidGenesis
+	}
+	// Snapshot multipliers are stored as strings and are load-bearing for slash
+	// normalisation; a malformed one would be treated as a corrupt entry at
+	// slash time and silently skip the slash. Reject at import instead.
+	for _, s := range gs.MultiplierSnapshots {
+		if s.Height < 0 {
+			return ErrInvalidGenesis
+		}
+		for _, e := range s.Entries {
+			if e == nil {
+				continue
+			}
+			if _, err := sdk.ValAddressFromBech32(e.OperatorAddress); err != nil {
+				return err
+			}
+			if _, err := sdk.NewDecFromStr(e.Multiplier); err != nil {
+				return err
+			}
+		}
+	}
 	return nil
 }

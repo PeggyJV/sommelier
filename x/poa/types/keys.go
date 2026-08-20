@@ -34,6 +34,10 @@ var (
 	// re-bond block until the restored set is actually securing consensus
 	// (CometBFT validator-update delay).
 	SafeModeThawHeightKey = []byte{0x06}
+	// ActivationTimeKey stores the block time (unix nanos) observed at the
+	// activation height. Paired with ActivationHeightKey it yields the chain's
+	// measured average block time, which drives snapshot retention.
+	ActivationTimeKey = []byte{0x07}
 )
 
 // MultiplierSnapshotKey returns the store key for the snapshot at `height`,

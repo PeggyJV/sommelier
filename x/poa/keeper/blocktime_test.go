@@ -5,6 +5,8 @@ import (
 	"time"
 
 	"github.com/stretchr/testify/require"
+
+	"github.com/peggyjv/sommelier/v10/x/poa/types"
 )
 
 // estimateBlockNanos previously was a compiled-in 4s constant, justified as a
@@ -79,4 +81,37 @@ func TestEstimateBlockNanos_FasterChainRetainsMore(t *testing.T) {
 	slow := blocksFor(2000, 12000*time.Second) // 6s/block
 	fast := blocksFor(2000, 2000*time.Second)  // 1s/block
 	require.Greater(t, fast, slow)
+}
+
+// A genesis carrying activation_height without an activation_time must not
+// persist a zero stamp.
+//
+// Zero is the proto zero value, not a timestamp -- reachable from a
+// hand-written genesis or an export produced before ActivationTimeKey existed.
+// Persisting it makes estimateBlockNanos measure from the Unix epoch: the
+// block rate explodes, the retention window collapses to a handful of blocks,
+// pruneSnapshots drops snapshots for still-slashable heights, and
+// rawSlashPower then refuses every post-activation authority slash -- silently
+// disabling authority slashing with nothing but a log line.
+func TestInitGenesisNeverPersistsZeroActivationTime(t *testing.T) {
+	k, ctx := NewTestKeeper(t)
+
+	now := time.Unix(1_787_000_000, 0)
+	ctx = ctx.WithBlockHeight(15_000_000).WithBlockTime(now)
+
+	InitGenesis(ctx, k, types.GenesisState{
+		Params:           types.DefaultParams(),
+		ActivationHeight: 15_000_000,
+		ActivationTime:   0, // absent
+	})
+
+	stamped, ok := k.GetActivationTime(ctx)
+	require.True(t, ok)
+	require.Equal(t, now.UnixNano(), stamped,
+		"a missing activation time must be stamped from the current block, not stored as 0")
+
+	// And the derived block rate must stay sane rather than measuring from 1970.
+	ctx = ctx.WithBlockHeight(15_010_000).WithBlockTime(now.Add(10_000 * 6 * time.Second))
+	require.Less(t, k.estimateBlockNanos(ctx), int64(30*time.Second),
+		"block rate must reflect real elapsed time, not the Unix epoch")
 }

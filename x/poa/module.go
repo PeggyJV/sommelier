@@ -14,8 +14,9 @@ import (
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
 	"github.com/spf13/cobra"
 
-	"github.com/peggyjv/sommelier/v9/x/poa/keeper"
-	"github.com/peggyjv/sommelier/v9/x/poa/types"
+	"github.com/peggyjv/sommelier/v10/x/poa/client/cli"
+	"github.com/peggyjv/sommelier/v10/x/poa/keeper"
+	"github.com/peggyjv/sommelier/v10/x/poa/types"
 )
 
 var (
@@ -54,8 +55,11 @@ func (AppModuleBasic) RegisterGRPCGatewayRoutes(clientCtx client.Context, mux *r
 	}
 }
 
-func (AppModuleBasic) GetTxCmd() *cobra.Command    { return nil }
-func (AppModuleBasic) GetQueryCmd() *cobra.Command { return nil }
+// GetTxCmd returns nil: both PoA messages are gov-only, so there is no
+// user-submittable tx. They are proposed through `tx gov submit-proposal`.
+func (AppModuleBasic) GetTxCmd() *cobra.Command { return nil }
+
+func (AppModuleBasic) GetQueryCmd() *cobra.Command { return cli.GetQueryCmd() }
 
 // AppModule wires the PoA keeper into the SDK module manager.
 type AppModule struct {
