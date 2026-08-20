@@ -25,12 +25,18 @@ func ParamKeyTable() paramtypes.KeyTable {
 // DefaultParams returns the default PoA parameters.
 //
 // HaltWhenAuthorityEmpty defaults to false, selecting authority-empty SAFE MODE
-// (Option A) over a hard halt: when the bonded authority set collapses the chain
-// keeps producing blocks on community stake so governance can re-seed the
-// authority set on-chain, while the value-bearing modules (gravity, cork,
-// axelarcork) freeze so nothing is committed under the untrusted set. Set it to
-// true to instead fail-closed and halt the chain (recovery then requires an
-// off-chain coordinated restart).
+// over a hard halt: when the bonded authority set collapses the chain keeps
+// producing blocks on community stake, while the value-bearing modules
+// (gravity, cork, axelarcork) freeze so nothing is committed under the
+// untrusted set. Set it to true to instead fail-closed and halt the chain
+// (recovery then requires an off-chain coordinated restart).
+//
+// Recovery from safe mode is by UNJAILING OR RE-BONDING an existing authority
+// validator -- NOT by governance. MsgUpdateAuthoritySet and MsgUpdateParams are
+// both rejected with ErrSafeModeGovFrozen while safe mode is active, precisely
+// because governance is community-only there and Enabled=false would clear the
+// freeze with no thaw delay. Choosing false on the assumption that a
+// governance escape hatch exists would be a mistake. See docs/poa.md.
 func DefaultParams() Params {
 	return Params{
 		FloorFraction:          DefaultFloorFraction,

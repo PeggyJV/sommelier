@@ -70,10 +70,12 @@ func EndBlocker(ctx sdk.Context, k Keeper, runStakingEndBlocker StakingEndBlocke
 			// Fail-closed: refuse to produce further blocks.
 			panic(types.ErrNoBondedAuthority)
 		}
-		// Safe mode (Option A): keep producing blocks on community stake so
-		// governance can re-seed the authority set on-chain, but flag safe mode
-		// so the value-bearing modules (gravity/cork/axelarcork) freeze. No
-		// boost is applied; record an empty snapshot so slashing at this height
+		// Safe mode: keep producing blocks on community stake, but flag safe
+		// mode so the value-bearing modules (gravity/cork/axelarcork) freeze.
+		// Recovery is by unjailing or re-bonding an existing authority
+		// validator; governance CANNOT re-seed the set here, since
+		// MsgUpdateAuthoritySet and MsgUpdateParams are both frozen. No boost
+		// is applied; record an empty snapshot so slashing at this height
 		// passes through un-boosted.
 		k.enterSafeMode(ctx)
 		k.SetMultiplierSnapshot(ctx, types.MultiplierSnapshot{Height: ctx.BlockHeight()})
