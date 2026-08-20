@@ -811,7 +811,17 @@ git commit -m "axelarcork: decouple from x/pubsub"
 
 **Interfaces:**
 - Consumes: Tasks 2, 4, 7, 9
-- Produces: `DrainLegacyCorkQueues(ctx sdk.Context, corkKeeper corkkeeper.Keeper, axelarcorkKeeper axelarcorkkeeper.Keeper) (drained int, err error)`
+- Produces: `DrainLegacyCorkQueues(ctx sdk.Context, corkStoreKey, axelarcorkStoreKey storetypes.StoreKey) int`
+- Produces: `deletePrefix(store storetypes.KVStore, prefix []byte) int`
+
+Note on the signature: the drain takes **store keys, not keepers**, and iterates
+raw prefixes. The typed iterators (`IterateScheduledCorks`,
+`GetApprovedScheduledCorks`) are deleted in Tasks 4 and 9, so the migration
+cannot depend on them. Param seeding in Step 4 does use the keepers — both
+`corkkeeper.Keeper` and `axelarcorkkeeper.Keeper` expose `GetParamSet(ctx)` and
+`SetParams(ctx, params)`. `CreateUpgradeHandler` therefore takes both keepers
+**and** both store keys; `app/app.go` has `keys[corktypes.StoreKey]` and
+`keys[axelarcorktypes.StoreKey]` in scope at the registration site.
 
 **This is the highest-consequence task in the plan.** Once the tally is gone, nothing else deletes from the legacy queues. Any cork left behind is stranded in state permanently.
 
