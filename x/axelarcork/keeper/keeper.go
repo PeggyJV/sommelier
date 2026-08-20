@@ -95,8 +95,6 @@ func (k Keeper) inSafeMode(ctx sdk.Context) bool {
 // Params //
 ////////////
 
-const CorkVoteThresholdStr = "0.67"
-
 // GetParamSet returns the vote period from the parameters
 func (k Keeper) GetParamSet(ctx sdk.Context) types.Params {
 	var p types.Params
@@ -416,66 +414,6 @@ func (k Keeper) GetAxelarCorkResults(ctx sdk.Context, chainID uint64) []*types.A
 // Votes //
 ///////////
 
-func (k Keeper) GetApprovedScheduledAxelarCorks(ctx sdk.Context, chainID uint64) (approvedCorks []types.AxelarCork) {
-	currentBlockHeight := uint64(ctx.BlockHeight())
-	totalPower := k.stakingKeeper.GetLastTotalPower(ctx)
-	corks := []types.AxelarCork{}
-	powers := []uint64{}
-	k.IterateScheduledAxelarCorksByBlockHeight(ctx, chainID, currentBlockHeight, func(val sdk.ValAddress, _ uint64, id []byte, addr common.Address, cork types.AxelarCork) (stop bool) {
-		validator := k.stakingKeeper.Validator(ctx, val)
-
-		// Skip if validator no longer exists (e.g., fully unbonded)
-		if validator == nil {
-			k.DeleteScheduledAxelarCork(ctx, chainID, currentBlockHeight, id, val, addr)
-			k.DecrementValidatorAxelarCorkCount(ctx, val)
-			return false
-		}
-
-		validatorPower := uint64(validator.GetConsensusPower(k.stakingKeeper.PowerReduction(ctx)))
-		found := false
-		for i, c := range corks {
-			if c.Equals(cork) {
-				powers[i] += validatorPower
-
-				found = true
-				break
-			}
-		}
-
-		if !found {
-			corks = append(corks, cork)
-			powers = append(powers, validatorPower)
-		}
-
-		k.DeleteScheduledAxelarCork(ctx, chainID, currentBlockHeight, id, val, addr)
-		k.DecrementValidatorAxelarCorkCount(ctx, val)
-
-		return false
-	})
-
-	threshold := sdk.MustNewDecFromStr(CorkVoteThresholdStr)
-	for i, power := range powers {
-		cork := corks[i]
-		approvalPercentage := sdk.NewDecFromInt(sdk.NewIntFromUint64(power)).Quo(sdk.NewDecFromInt(totalPower))
-		quorumReached := approvalPercentage.GT(threshold)
-		corkResult := types.AxelarCorkResult{
-			Cork:               &cork,
-			BlockHeight:        currentBlockHeight,
-			Approved:           quorumReached,
-			ApprovalPercentage: approvalPercentage.Mul(sdk.NewDec(100)).String(),
-		}
-		corkID := cork.IDHash(currentBlockHeight)
-
-		k.SetAxelarCorkResult(ctx, chainID, corkID, corkResult)
-
-		if quorumReached {
-			approvedCorks = append(approvedCorks, cork)
-		}
-	}
-
-	return approvedCorks
-}
-
 /////////////
 // Cellars //
 /////////////
@@ -612,34 +550,6 @@ func (k Keeper) IterateAxelarProxyUpgradeData(ctx sdk.Context, cb func(chainID u
 ///////////////////////////
 // Validator Cork counts //
 ///////////////////////////
-
-func (k Keeper) GetValidatorAxelarCorkCount(ctx sdk.Context, val sdk.ValAddress) (count uint64) {
-	store := ctx.KVStore(k.storeKey)
-	bz := store.Get(types.GetValidatorAxelarCorkCountKey(val))
-	if len(bz) == 0 {
-		return 0
-	}
-
-	return binary.BigEndian.Uint64(bz)
-}
-
-func (k Keeper) SetValidatorAxelarCorkCount(ctx sdk.Context, val sdk.ValAddress, count uint64) {
-	bz := make([]byte, 8)
-	binary.BigEndian.PutUint64(bz, count)
-	ctx.KVStore(k.storeKey).Set(types.GetValidatorAxelarCorkCountKey(val), bz)
-}
-
-func (k Keeper) IncrementValidatorAxelarCorkCount(ctx sdk.Context, val sdk.ValAddress) {
-	count := k.GetValidatorAxelarCorkCount(ctx, val)
-	k.SetValidatorAxelarCorkCount(ctx, val, count+1)
-}
-
-func (k Keeper) DecrementValidatorAxelarCorkCount(ctx sdk.Context, val sdk.ValAddress) {
-	count := k.GetValidatorAxelarCorkCount(ctx, val)
-	if count > 0 {
-		k.SetValidatorAxelarCorkCount(ctx, val, count-1)
-	}
-}
 
 /////////////////////
 // Module Accounts //

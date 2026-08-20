@@ -26,6 +26,8 @@ import (
 type mocksForCork struct {
 	mockStakingKeeper *mocks.MockStakingKeeper
 	mockValidator     *mocks.MockValidatorI
+	mockAccountKeeper *mocks.MockAccountKeeper
+	mockBankKeeper    *mocks.MockBankKeeper
 }
 
 func setupCorkKeeper(t *testing.T) (
@@ -83,6 +85,8 @@ func setupCorkKeeper(t *testing.T) (
 	return k, ctx, mocksForCork{
 		mockStakingKeeper: mockStakingKeeper,
 		mockValidator:     mocks.NewMockValidatorI(ctrl),
+		mockAccountKeeper: mockAccountKeeper,
+		mockBankKeeper:    mockBankKeeper,
 	}, ctrl
 }
 

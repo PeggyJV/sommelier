@@ -12,7 +12,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/testutil"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/cosmos/cosmos-sdk/types/bech32"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	paramskeeper "github.com/cosmos/cosmos-sdk/x/params/keeper"
 	"github.com/ethereum/go-ethereum/common"
@@ -176,45 +175,6 @@ func (suite *KeeperTestSuite) TestSetGetDeleteScheduledCork() {
 
 	axelarcorkKeeper.DeleteScheduledAxelarCork(ctx, TestEVMChainID, testHeight, expectedID, sdk.ValAddress(val), sampleCellarAddr)
 	require.Empty(axelarcorkKeeper.GetScheduledAxelarCorks(ctx, TestEVMChainID))
-}
-
-func (suite *KeeperTestSuite) TestGetWinningVotes() {
-	ctx, axelarcorkKeeper := suite.ctx, suite.axelarcorkKeeper
-	require := suite.Require()
-
-	axelarcorkKeeper.SetChainConfiguration(ctx, TestEVMChainID, types.ChainConfiguration{
-		Name:         "testevm",
-		Id:           TestEVMChainID,
-		ProxyAddress: "0x123",
-	})
-
-	testHeight := uint64(ctx.BlockHeight())
-	deadline := uint64(100000000000000)
-	cork := types.AxelarCork{
-		EncodedContractCall:   []byte("testcall"),
-		TargetContractAddress: sampleCellarHex,
-		Deadline:              deadline,
-	}
-	_, bytes, err := bech32.DecodeAndConvert("somm1fcl08ymkl70dhyg3vmx4hjsqvxym7dawnp0zfp")
-	require.NoError(err)
-	require.Equal(20, len(bytes))
-	axelarcorkKeeper.SetScheduledAxelarCork(ctx, TestEVMChainID, testHeight, bytes, cork)
-
-	suite.stakingKeeper.EXPECT().GetLastTotalPower(ctx).Return(sdk.NewInt(100))
-	suite.stakingKeeper.EXPECT().Validator(ctx, gomock.Any()).Return(suite.validator)
-	suite.validator.EXPECT().GetConsensusPower(gomock.Any()).Return(int64(100))
-	suite.stakingKeeper.EXPECT().PowerReduction(ctx).Return(sdk.OneInt())
-
-	winningScheduledVotes := axelarcorkKeeper.GetApprovedScheduledAxelarCorks(ctx, TestEVMChainID)
-	results := axelarcorkKeeper.GetAxelarCorkResults(ctx, TestEVMChainID)
-	require.Len(winningScheduledVotes, 1)
-	require.Equal(cork, winningScheduledVotes[0])
-	require.Equal(&cork, results[0].Cork)
-	require.True(results[0].Approved)
-	require.Equal("100.000000000000000000", results[0].ApprovalPercentage)
-
-	// scheduled cork should be deleted at the scheduled height
-	require.Empty(axelarcorkKeeper.GetScheduledAxelarCorksByBlockHeight(ctx, TestEVMChainID, testHeight))
 }
 
 func (suite *KeeperTestSuite) TestCorkResults() {
