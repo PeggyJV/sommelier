@@ -220,6 +220,46 @@ func (k Keeper) IterateAuthorityAxelarCorksByBlockHeight(
 	}
 }
 
+// IterateAllAuthorityAxelarCorks walks every queued authority cork on a chain,
+// at any height. Used by ExportGenesis; the per-height iterator is the hot path.
+func (k Keeper) IterateAllAuthorityAxelarCorks(ctx sdk.Context, chainID uint64, cb func(blockHeight uint64, id []byte, contract common.Address, cork types.AxelarCork) (stop bool)) {
+	store := ctx.KVStore(k.storeKey)
+	iter := sdk.KVStorePrefixIterator(store, types.GetAuthorityCorkKeyPrefix(chainID))
+	defer iter.Close()
+
+	for ; iter.Valid(); iter.Next() {
+		var cork types.AxelarCork
+		keyPair := bytes.NewBuffer(iter.Key())
+		keyPair.Next(1) // trim prefix byte
+		keyPair.Next(8) // trim chain id, filtered by the prefix
+		blockHeight := sdk.BigEndianToUint64(keyPair.Next(8))
+		id := keyPair.Next(32)
+		contract := common.BytesToAddress(keyPair.Next(20))
+
+		k.cdc.MustUnmarshal(iter.Value(), &cork)
+		if cb(blockHeight, id, contract, cork) {
+			break
+		}
+	}
+}
+
+// GetAuthorityAxelarCorks returns every queued authority cork on a chain for
+// genesis export. The Validator field is left empty: authority corks have no
+// scheduling validator. It is retained on the type for wire compatibility.
+func (k Keeper) GetAuthorityAxelarCorks(ctx sdk.Context, chainID uint64) []*types.ScheduledAxelarCork {
+	var out []*types.ScheduledAxelarCork
+	k.IterateAllAuthorityAxelarCorks(ctx, chainID, func(blockHeight uint64, id []byte, _ common.Address, cork types.AxelarCork) (stop bool) {
+		c := cork
+		out = append(out, &types.ScheduledAxelarCork{
+			Cork:        &c,
+			BlockHeight: blockHeight,
+			Id:          hex.EncodeToString(id),
+		})
+		return false
+	})
+	return out
+}
+
 func (k Keeper) GetScheduledAxelarCorks(ctx sdk.Context, chainID uint64) []*types.ScheduledAxelarCork {
 	var scheduledCorks []*types.ScheduledAxelarCork
 	k.IterateScheduledAxelarCorks(ctx, chainID, func(val sdk.ValAddress, blockHeight uint64, id []byte, _ common.Address, cork types.AxelarCork) (stop bool) {

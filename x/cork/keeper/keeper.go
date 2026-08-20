@@ -167,6 +167,45 @@ func (k Keeper) IterateAuthorityCorksByBlockHeight(
 	}
 }
 
+// IterateAllAuthorityCorks walks every queued authority cork, at any height.
+// Used by ExportGenesis; the per-height iterator is the hot path.
+func (k Keeper) IterateAllAuthorityCorks(ctx sdk.Context, cb func(blockHeight uint64, id []byte, contract common.Address, cork types.Cork) (stop bool)) {
+	store := ctx.KVStore(k.storeKey)
+	iter := sdk.KVStorePrefixIterator(store, corktypes.GetAuthorityCorkKeyPrefix())
+	defer iter.Close()
+
+	for ; iter.Valid(); iter.Next() {
+		var cork types.Cork
+		keyPair := bytes.NewBuffer(iter.Key())
+		keyPair.Next(1) // trim prefix byte
+		blockHeight := sdk.BigEndianToUint64(keyPair.Next(8))
+		id := keyPair.Next(32)
+		contract := common.BytesToAddress(keyPair.Next(20))
+
+		k.cdc.MustUnmarshal(iter.Value(), &cork)
+		if cb(blockHeight, id, contract, cork) {
+			break
+		}
+	}
+}
+
+// GetAuthorityCorks returns every queued authority cork for genesis export.
+// The Validator field is left empty: authority corks have no scheduling
+// validator. The field is retained on the type for wire compatibility.
+func (k Keeper) GetAuthorityCorks(ctx sdk.Context) []*types.ScheduledCork {
+	var out []*types.ScheduledCork
+	k.IterateAllAuthorityCorks(ctx, func(blockHeight uint64, id []byte, _ common.Address, cork types.Cork) (stop bool) {
+		c := cork
+		out = append(out, &types.ScheduledCork{
+			Cork:        &c,
+			BlockHeight: blockHeight,
+			Id:          id,
+		})
+		return false
+	})
+	return out
+}
+
 func (k Keeper) GetScheduledCorks(ctx sdk.Context) []*types.ScheduledCork {
 	var scheduledCorks []*types.ScheduledCork
 	k.IterateScheduledCorks(ctx, func(val sdk.ValAddress, blockHeight uint64, id []byte, _ common.Address, cork types.Cork) (stop bool) {

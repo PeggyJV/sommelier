@@ -18,13 +18,11 @@ func InitGenesis(ctx sdk.Context, k Keeper, gs types.GenesisState) {
 		k.SetCorkResult(ctx, corkResult.Cork.IDHash(corkResult.BlockHeight), *corkResult)
 	}
 
+	// Imported into the authority queue, not the retired validator-keyed queue:
+	// nothing drains or executes the latter, so anything written there would be
+	// stranded. The Validator field on the genesis entry is ignored.
 	for _, scheduledCork := range gs.ScheduledCorks {
-		valAddr, err := sdk.ValAddressFromHex(scheduledCork.Validator)
-		if err != nil {
-			panic(err)
-		}
-
-		k.SetScheduledCork(ctx, scheduledCork.BlockHeight, valAddr, *scheduledCork.Cork)
+		k.SetAuthorityCork(ctx, scheduledCork.BlockHeight, *scheduledCork.Cork)
 	}
 }
 
@@ -45,7 +43,7 @@ func ExportGenesis(ctx sdk.Context, k Keeper) types.GenesisState {
 		Params:            k.GetParamSet(ctx),
 		CellarIds:         cellarIDSet,
 		InvalidationNonce: k.GetLatestInvalidationNonce(ctx),
-		ScheduledCorks:    k.GetScheduledCorks(ctx),
+		ScheduledCorks:    k.GetAuthorityCorks(ctx),
 		CorkResults:       k.GetCorkResults(ctx),
 	}
 }
