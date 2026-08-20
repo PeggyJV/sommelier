@@ -52,6 +52,22 @@ func CreateUpgradeHandler(
 			)
 		}
 
+		// Migrations MUST run before the seeding below.
+		//
+		// x/poa is new in v10, so it is absent from the on-chain version map and
+		// RunMigrations therefore calls its InitGenesis with DefaultGenesis, whose
+		// AuthoritySet is nil. poa InitGenesis calls SetAuthoritySet
+		// unconditionally, so seeding first meant the set was wiped moments later.
+		// The chain would then enter authority-empty safe mode on the very next
+		// block -- gravity/cork/axelarcork frozen -- with MsgUpdateAuthoritySet and
+		// MsgUpdateParams both rejected by ErrSafeModeGovFrozen, i.e. no on-chain
+		// recovery. Guarded by
+		// TestV10UpgradeHandlerKeepsAuthoritySetThroughRunMigrations.
+		vm, err := mm.RunMigrations(ctx, configurator, vm)
+		if err != nil {
+			return vm, err
+		}
+
 		addrs := make([]sdk.ValAddress, 0, len(DefaultAuthorityValidators))
 		for _, s := range DefaultAuthorityValidators {
 			addr, err := sdk.ValAddressFromBech32(s)
@@ -87,6 +103,6 @@ func CreateUpgradeHandler(
 		ctx.Logger().Info("v10 upgrade: cork authority seeded and legacy queues drained",
 			"authority", CorkAuthorityAddress, "drained_keys", drained)
 
-		return mm.RunMigrations(ctx, configurator, vm)
+		return vm, nil
 	}
 }
