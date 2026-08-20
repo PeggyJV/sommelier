@@ -1,12 +1,10 @@
-package keeper_test
+package keeper
 
 import (
 	"testing"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/require"
-
-	"github.com/peggyjv/sommelier/v10/x/poa/keeper"
 )
 
 func valAddr(t *testing.T, hex string) sdk.ValAddress {
@@ -17,7 +15,7 @@ func valAddr(t *testing.T, hex string) sdk.ValAddress {
 }
 
 func TestAuthoritySet_RoundTrip(t *testing.T) {
-	k, ctx := keeper.NewTestKeeper(t)
+	k, ctx := NewTestKeeper(t)
 	a := valAddr(t, "validator-aaaaaaaaaa")
 	b := valAddr(t, "validator-bbbbbbbbbb")
 	k.SetAuthoritySet(ctx, []sdk.ValAddress{a, b})
@@ -33,13 +31,13 @@ func TestAuthoritySet_RoundTrip(t *testing.T) {
 }
 
 func TestAuthoritySet_Empty(t *testing.T) {
-	k, ctx := keeper.NewTestKeeper(t)
+	k, ctx := NewTestKeeper(t)
 	require.Empty(t, k.GetAuthoritySet(ctx))
 	require.False(t, k.IsAuthority(ctx, valAddr(t, "anyone-xxxxxxxxxxxxx")))
 }
 
 func TestAuthoritySet_Replace(t *testing.T) {
-	k, ctx := keeper.NewTestKeeper(t)
+	k, ctx := NewTestKeeper(t)
 	a := valAddr(t, "validator-aaaaaaaaaa")
 	b := valAddr(t, "validator-bbbbbbbbbb")
 	c := valAddr(t, "validator-cccccccccc")

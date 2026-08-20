@@ -40,6 +40,12 @@ func (f *fakeStakingKeeper) addValidator(op sdk.ValAddress, tokens math.Int) sta
 	return v
 }
 
+// setValidator overwrites an existing entry, for tests that mutate Jailed or
+// Status after addValidator (which returns a copy).
+func (f *fakeStakingKeeper) setValidator(v stakingtypes.Validator) {
+	f.validators[v.OperatorAddress] = v
+}
+
 func (f *fakeStakingKeeper) mapCons(cons sdk.ConsAddress, op sdk.ValAddress) {
 	f.consToOperator[cons.String()] = op
 }
@@ -70,6 +76,18 @@ func (f *fakeStakingKeeper) GetLastTotalPower(ctx sdk.Context) math.Int {
 	total := math.ZeroInt()
 	for _, v := range f.validators {
 		total = total.Add(math.NewInt(sdk.TokensToConsensusPower(v.Tokens, sdk.DefaultPowerReduction)))
+	}
+	return total
+}
+
+// TotalBondedTokens is the raw sum of bonded tokens. The wrapper overrides it
+// with a boosted sum; this is the pass-through baseline.
+func (f *fakeStakingKeeper) TotalBondedTokens(ctx sdk.Context) math.Int {
+	total := math.ZeroInt()
+	for _, v := range f.validators {
+		if v.IsBonded() && !v.Jailed {
+			total = total.Add(v.Tokens)
+		}
 	}
 	return total
 }

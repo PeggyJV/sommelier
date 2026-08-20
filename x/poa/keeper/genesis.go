@@ -5,19 +5,32 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	"github.com/peggyjv/sommelier/v9/x/poa/types"
+	"github.com/peggyjv/sommelier/v10/x/poa/types"
 )
 
-// InitGenesis loads PoA params and the authority allowlist from genesis.
+// InitGenesis loads PoA params, the authority allowlist, the activation stamp,
+// the safe-mode flag, and the retained multiplier snapshots.
+//
+// Everything past params/authority-set exists so an export/import round-trip is
+// faithful. A restart that silently reset them would (a) reset the activation
+// height, making rawSlashPower treat post-activation infractions as pre-PoA and
+// slash them on BOOSTED power, and (b) drop the safe-mode flag, unfreezing the
+// value-bearing modules for the blocks before the first EndBlocker re-derives
+// it.
 func InitGenesis(ctx sdk.Context, k Keeper, gs types.GenesisState) {
 	k.SetParams(ctx, gs.Params)
-	// Record the activation height once. This is the first height at which PoA
-	// boosting is in effect; infraction heights below it predate the module and
-	// carry no boost, so a missing snapshot there is benign. Idempotent: the
-	// v10 upgrade handler may have already set it before RunMigrations ran this.
+
+	// Prefer an exported activation stamp; otherwise stamp the current height.
+	// Idempotent: the v10 upgrade handler may have already set it before
+	// RunMigrations ran this.
 	if _, ok := k.GetActivationHeight(ctx); !ok {
-		k.SetActivationHeight(ctx, ctx.BlockHeight())
+		if gs.ActivationHeight > 0 {
+			k.SetActivationStamp(ctx, gs.ActivationHeight, gs.ActivationTime)
+		} else {
+			k.SetActivationHeight(ctx, ctx.BlockHeight())
+		}
 	}
+
 	addrs := make([]sdk.ValAddress, 0, len(gs.AuthoritySet))
 	for _, v := range gs.AuthoritySet {
 		addr, err := sdk.ValAddressFromBech32(v.OperatorAddress)
@@ -30,6 +43,17 @@ func InitGenesis(ctx sdk.Context, k Keeper, gs types.GenesisState) {
 		addrs = append(addrs, addr)
 	}
 	k.SetAuthoritySet(ctx, addrs)
+
+	for _, s := range gs.MultiplierSnapshots {
+		k.SetMultiplierSnapshot(ctx, s)
+	}
+
+	if gs.SafeMode {
+		k.SetSafeMode(ctx, true)
+		if gs.SafeModeThawHeight > 0 {
+			k.setThawHeight(ctx, gs.SafeModeThawHeight)
+		}
+	}
 }
 
 // ExportGenesis returns the PoA module's GenesisState.
@@ -39,8 +63,18 @@ func ExportGenesis(ctx sdk.Context, k Keeper) types.GenesisState {
 	for i, a := range addrs {
 		out[i] = types.AuthorityValidator{OperatorAddress: a.String()}
 	}
+
+	activationHeight, _ := k.GetActivationHeight(ctx)
+	activationTime, _ := k.GetActivationTime(ctx)
+	thaw, _ := k.getThawHeight(ctx)
+
 	return types.GenesisState{
-		Params:       k.GetParams(ctx),
-		AuthoritySet: out,
+		Params:              k.GetParams(ctx),
+		AuthoritySet:        out,
+		ActivationHeight:    activationHeight,
+		ActivationTime:      activationTime,
+		SafeMode:            k.SafeModeActive(ctx),
+		SafeModeThawHeight:  thaw,
+		MultiplierSnapshots: k.AllMultiplierSnapshots(ctx),
 	}
 }

@@ -9,7 +9,7 @@ import (
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
 
-	"github.com/peggyjv/sommelier/v9/x/poa/types"
+	"github.com/peggyjv/sommelier/v10/x/poa/types"
 )
 
 var _ types.QueryServer = Querier{}
@@ -49,5 +49,28 @@ func (q Querier) EffectivePower(c context.Context, req *types.QueryEffectivePowe
 	return &types.QueryEffectivePowerResponse{
 		Power:       q.sk.GetLastValidatorPower(ctx, op),
 		IsAuthority: q.IsAuthority(ctx, op),
+	}, nil
+}
+
+// SafeMode reports the authority-empty freeze state. This is the module's
+// primary operational health check: while active, gravity / cork / axelarcork
+// are frozen, and previously the only way to observe that was to scrape events
+// or node logs.
+func (q Querier) SafeMode(c context.Context, _ *types.QuerySafeModeRequest) (*types.QuerySafeModeResponse, error) {
+	ctx := sdk.UnwrapSDKContext(c)
+
+	var bonded uint64
+	for _, op := range q.GetAuthoritySet(ctx) {
+		v, found := q.sk.GetValidator(ctx, op)
+		if found && !v.Jailed && v.IsBonded() {
+			bonded++
+		}
+	}
+
+	thaw, _ := q.getThawHeight(ctx)
+	return &types.QuerySafeModeResponse{
+		Active:               q.SafeModeActive(ctx),
+		ThawHeight:           thaw,
+		BondedAuthorityCount: bonded,
 	}, nil
 }

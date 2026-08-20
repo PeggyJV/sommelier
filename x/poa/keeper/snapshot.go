@@ -6,7 +6,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	"github.com/peggyjv/sommelier/v9/x/poa/types"
+	"github.com/peggyjv/sommelier/v10/x/poa/types"
 )
 
 // SetMultiplierSnapshot persists a per-block snapshot of authority boost
@@ -91,6 +91,24 @@ func (k Keeper) LatestMultiplierForValidator(ctx sdk.Context, val sdk.ValAddress
 func (k Keeper) MultiplierForValidator(ctx sdk.Context, val sdk.ValAddress, height int64) sdk.Dec {
 	m, _ := k.MultiplierForValidatorWithStatus(ctx, val, height)
 	return m
+}
+
+// AllMultiplierSnapshots returns every retained snapshot in ascending height
+// order. Used by ExportGenesis: dropping snapshots across a restart would make
+// in-flight authority slashes either refused or, worse, applied to boosted
+// power.
+func (k Keeper) AllMultiplierSnapshots(ctx sdk.Context) []types.MultiplierSnapshot {
+	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.MultiplierSnapshotPrefix)
+	iter := store.Iterator(nil, nil)
+	defer iter.Close()
+
+	out := []types.MultiplierSnapshot{}
+	for ; iter.Valid(); iter.Next() {
+		var s types.MultiplierSnapshot
+		k.cdc.MustUnmarshal(iter.Value(), &s)
+		out = append(out, s)
+	}
+	return out
 }
 
 // PruneSnapshotsBefore deletes all snapshots with height < `height`.

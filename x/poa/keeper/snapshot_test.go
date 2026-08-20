@@ -1,4 +1,4 @@
-package keeper_test
+package keeper
 
 import (
 	"testing"
@@ -6,12 +6,11 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/require"
 
-	"github.com/peggyjv/sommelier/v10/x/poa/keeper"
 	"github.com/peggyjv/sommelier/v10/x/poa/types"
 )
 
 func TestSnapshot_RoundTrip(t *testing.T) {
-	k, ctx := keeper.NewTestKeeper(t)
+	k, ctx := NewTestKeeper(t)
 	op := sdk.ValAddress([]byte("validator-aaaaaaaaaa")).String()
 
 	snap := types.MultiplierSnapshot{
@@ -31,13 +30,13 @@ func TestSnapshot_RoundTrip(t *testing.T) {
 }
 
 func TestSnapshot_NotFound(t *testing.T) {
-	k, ctx := keeper.NewTestKeeper(t)
+	k, ctx := NewTestKeeper(t)
 	_, ok := k.GetMultiplierSnapshot(ctx, 999)
 	require.False(t, ok)
 }
 
 func TestSnapshot_MultiplierForValidator(t *testing.T) {
-	k, ctx := keeper.NewTestKeeper(t)
+	k, ctx := NewTestKeeper(t)
 	op := sdk.ValAddress([]byte("validator-aaaaaaaaaa"))
 	other := sdk.ValAddress([]byte("validator-bbbbbbbbbb"))
 
@@ -64,7 +63,7 @@ func TestSnapshot_MultiplierForValidator(t *testing.T) {
 }
 
 func TestSnapshot_Prune(t *testing.T) {
-	k, ctx := keeper.NewTestKeeper(t)
+	k, ctx := NewTestKeeper(t)
 	for h := int64(1); h <= 50; h++ {
 		k.SetMultiplierSnapshot(ctx, types.MultiplierSnapshot{Height: h})
 	}

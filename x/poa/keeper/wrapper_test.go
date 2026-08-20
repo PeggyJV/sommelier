@@ -16,8 +16,8 @@ import (
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 	"github.com/stretchr/testify/require"
 
-	"github.com/peggyjv/sommelier/v9/x/poa/keeper"
-	"github.com/peggyjv/sommelier/v9/x/poa/types"
+	"github.com/peggyjv/sommelier/v10/x/poa/keeper"
+	"github.com/peggyjv/sommelier/v10/x/poa/types"
 )
 
 // newWrapperTestKeeper builds a real PoA Keeper backed by an in-memory store
@@ -43,7 +43,7 @@ func newWrapperTestKeeper(t *testing.T) (keeper.Keeper, sdk.Context, *fakeStakin
 	subspace := pk.Subspace(types.ModuleName).WithKeyTable(types.ParamKeyTable())
 
 	fake := newFakeStaking()
-	k := keeper.NewKeeper(cdc, storeKey, subspace, fake, nil, "cosmos1zkmrn5j2t9k3s7n9z2c5w0n9c0w8e8mq8w8mq8")
+	k := keeper.NewKeeper(cdc, storeKey, subspace, fake, nil, testGovAuthority)
 	ctx := sdk.NewContext(cms, tmproto.Header{}, false, log.NewNopLogger())
 	k.SetParams(ctx, types.DefaultParams())
 

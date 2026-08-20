@@ -7,7 +7,7 @@ import (
 	abci "github.com/cometbft/cometbft/abci/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	"github.com/peggyjv/sommelier/v9/x/poa/types"
+	"github.com/peggyjv/sommelier/v10/x/poa/types"
 )
 
 // StakingEndBlockerFn is the callback PoA uses to drive staking's own
@@ -209,13 +209,10 @@ func mergeUpdatesWithBoost(ctx sdk.Context, k Keeper, raw []abci.ValidatorUpdate
 // The retention covers both unbonding-driven slashing and evidence-based
 // slashing whose infraction height can lag by `evidence.max_age_num_blocks`.
 func (k Keeper) pruneSnapshots(ctx sdk.Context) {
-	// Use 4s as a conservative LOWER bound on actual block time (sommelier
-	// runs ~5.5–6s). A smaller divisor produces MORE retention blocks per
-	// unit time, which is the safe direction: missing snapshots cause
-	// authority slashes to be skipped, so we prefer to over-retain.
-	const avgBlockNanos = 4 * 1_000_000_000
 	unbonding := k.sk.UnbondingTime(ctx)
-	unbondingBlocks := int64(unbonding.Nanoseconds()/avgBlockNanos) + 1
+	// Round UP and add a block so the estimate never lands short.
+	blockNanos := k.estimateBlockNanos(ctx)
+	unbondingBlocks := (unbonding.Nanoseconds()+blockNanos-1)/blockNanos + 1
 
 	var evidenceBlocks int64
 	if cp := ctx.ConsensusParams(); cp != nil && cp.Evidence != nil {
@@ -234,4 +231,54 @@ func (k Keeper) pruneSnapshots(ctx sdk.Context) {
 	if ctx.BlockHeight() > retention {
 		k.PruneSnapshotsBefore(ctx, ctx.BlockHeight()-retention)
 	}
+}
+
+const (
+	// fallbackBlockNanos is used until enough blocks have elapsed since
+	// activation to measure the real rate. Deliberately small (1s) so the
+	// fallback OVER-retains: the failure mode of under-retention is that
+	// authority slashes are silently skipped (see rawSlashPower's refuse path),
+	// which is far worse than keeping extra snapshots.
+	fallbackBlockNanos int64 = 1_000_000_000
+	// minBlockNanos floors the measured rate so a clock anomaly (or a chain
+	// that genuinely runs sub-100ms) cannot collapse retention to nothing.
+	minBlockNanos int64 = 100_000_000
+	// blockRateSampleBlocks is how many blocks must elapse post-activation
+	// before the measured rate is trusted over the fallback.
+	blockRateSampleBlocks int64 = 1000
+	// blockRateSafetyNumer/Denom shade the measured rate DOWN by 20%, so the
+	// derived block count is ~25% higher than measured. Block times shorten
+	// under load; retention must survive that without a migration.
+	blockRateSafetyNumer int64 = 4
+	blockRateSafetyDenom int64 = 5
+)
+
+// estimateBlockNanos returns the chain's average block time in nanoseconds,
+// measured from the activation height/time to now, shaded down for safety.
+//
+// This replaces a compiled-in block-time constant. The constant's "conservative
+// lower bound" argument only held if the assumed value really was a lower
+// bound: if actual block times ever fell below it (load, a consensus param
+// change, a chain relaunch), retention would silently under-cover the slashable
+// window and authority slashes would start being refused with no signal beyond
+// a log line.
+func (k Keeper) estimateBlockNanos(ctx sdk.Context) int64 {
+	activationHeight, okH := k.GetActivationHeight(ctx)
+	activationTime, okT := k.GetActivationTime(ctx)
+	if !okH || !okT {
+		return fallbackBlockNanos
+	}
+
+	elapsedBlocks := ctx.BlockHeight() - activationHeight
+	elapsedNanos := ctx.BlockTime().UnixNano() - activationTime
+	if elapsedBlocks < blockRateSampleBlocks || elapsedNanos <= 0 {
+		return fallbackBlockNanos
+	}
+
+	measured := elapsedNanos / elapsedBlocks
+	shaded := measured * blockRateSafetyNumer / blockRateSafetyDenom
+	if shaded < minBlockNanos {
+		return minBlockNanos
+	}
+	return shaded
 }

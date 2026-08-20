@@ -7,7 +7,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 
-	"github.com/peggyjv/sommelier/v9/x/poa/types"
+	"github.com/peggyjv/sommelier/v10/x/poa/types"
 )
 
 // WrappedStakingKeeper is the rescaling adapter passed to every consumer of
@@ -21,12 +21,15 @@ import (
 // penalised on raw stake rather than on boosted consensus power.
 type WrappedStakingKeeper struct {
 	types.StakingKeeper
-	poa Keeper
+	poa *Keeper
 }
 
-// WrappedStakingKeeper returns the wrapper. The wrapper holds a reference to
-// the underlying keeper, so reads see live state.
-func (k Keeper) WrappedStakingKeeper() WrappedStakingKeeper {
+// WrappedStakingKeeper returns the wrapper. The wrapper holds a POINTER to the
+// PoA keeper, not a copy: app.go must build the wrapper before x/slashing
+// exists (slashing's constructor takes the wrapper) and only calls
+// SetSlashingKeeper afterwards. With a value copy the wrapper would capture a
+// keeper whose slashingKeeper is permanently nil.
+func (k *Keeper) WrappedStakingKeeper() WrappedStakingKeeper {
 	return WrappedStakingKeeper{StakingKeeper: k.sk, poa: k}
 }
 
@@ -96,6 +99,25 @@ func (w WrappedStakingKeeper) GetLastTotalPower(ctx sdk.Context) math.Int {
 	total := math.ZeroInt()
 	w.StakingKeeper.IterateLastValidatorPowers(ctx, func(_ sdk.ValAddress, power int64) bool {
 		total = total.Add(math.NewInt(power))
+		return false
+	})
+	return total
+}
+
+// TotalBondedTokens returns the BOOSTED aggregate bonded tokens.
+//
+// This is the quorum denominator in x/gov's tally. The tally numerator is built
+// from per-validator GetBondedTokens(), which this wrapper boosts, so the
+// denominator must be boosted the same way or every proposal's turnout is
+// overstated by the authority boost factor (potentially exceeding 100%).
+//
+// Note this deliberately differs from GetLastTotalPower, which sums consensus
+// power out of the LastValidatorPower store; here we sum boosted *tokens* over
+// the live bonded set so the two sides of the tally agree exactly.
+func (w WrappedStakingKeeper) TotalBondedTokens(ctx sdk.Context) math.Int {
+	total := math.ZeroInt()
+	w.IterateBondedValidatorsByPower(ctx, func(_ int64, v stakingtypes.ValidatorI) bool {
+		total = total.Add(v.GetBondedTokens())
 		return false
 	})
 	return total
