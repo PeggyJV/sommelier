@@ -140,38 +140,35 @@ func (suite *KeeperTestSuite) TestSetGetDeleteScheduledCork() {
 	})
 
 	testHeight := uint64(123)
-	val := []byte("testaddress")
 	deadline := uint64(10000000000)
 	expectedCork := types.AxelarCork{
 		EncodedContractCall:   []byte("testcall"),
 		TargetContractAddress: sampleCellarHex,
 		Deadline:              deadline,
+		ChainId:               TestEVMChainID,
 	}
 	expectedID := expectedCork.IDHash(testHeight)
-	actualID := axelarcorkKeeper.SetScheduledAxelarCork(ctx, TestEVMChainID, testHeight, val, expectedCork)
+	actualID := axelarcorkKeeper.SetAuthorityAxelarCork(ctx, TestEVMChainID, testHeight, expectedCork)
 	require.Equal(expectedID, actualID)
-	actualCork, found := axelarcorkKeeper.GetScheduledAxelarCork(ctx, TestEVMChainID, testHeight, actualID, val, sampleCellarAddr)
-	require.True(found)
-	require.Equal(expectedCork, actualCork)
 
-	actualCorks := axelarcorkKeeper.GetScheduledAxelarCorks(ctx, TestEVMChainID)
-	require.Equal(&expectedCork, actualCorks[0].Cork)
-
-	actualCorks = axelarcorkKeeper.GetScheduledAxelarCorksByID(ctx, TestEVMChainID, actualID)
+	actualCorks := axelarcorkKeeper.GetAuthorityAxelarCorks(ctx, TestEVMChainID)
 	require.Len(actualCorks, 1)
 	require.Equal(&expectedCork, actualCorks[0].Cork)
+	require.Empty(actualCorks[0].Validator, "authority corks have no scheduling validator")
+
+	actualCorks = axelarcorkKeeper.GetAuthorityAxelarCorksByID(ctx, TestEVMChainID, actualID)
+	require.Len(actualCorks, 1)
 	require.Equal(hex.EncodeToString(expectedID), actualCorks[0].Id)
 
 	actualHeights := axelarcorkKeeper.GetScheduledBlockHeights(ctx, TestEVMChainID)
 	require.Equal(actualCorks[0].BlockHeight, actualHeights[0])
 
-	actualCorks = axelarcorkKeeper.GetScheduledAxelarCorksByBlockHeight(ctx, TestEVMChainID, testHeight)
-	require.Equal(&expectedCork, actualCorks[0].Cork)
+	actualCorks = axelarcorkKeeper.GetAuthorityAxelarCorksByBlockHeight(ctx, TestEVMChainID, testHeight)
+	require.Len(actualCorks, 1)
 	require.Equal(testHeight, actualCorks[0].BlockHeight)
-	require.Equal(hex.EncodeToString(expectedID), actualCorks[0].Id)
 
-	axelarcorkKeeper.DeleteScheduledAxelarCork(ctx, TestEVMChainID, testHeight, expectedID, sdk.ValAddress(val), sampleCellarAddr)
-	require.Empty(axelarcorkKeeper.GetScheduledAxelarCorks(ctx, TestEVMChainID))
+	axelarcorkKeeper.DeleteAuthorityAxelarCork(ctx, TestEVMChainID, testHeight, expectedID, sampleCellarAddr)
+	require.Empty(axelarcorkKeeper.GetAuthorityAxelarCorks(ctx, TestEVMChainID))
 }
 
 func (suite *KeeperTestSuite) TestCorkResults() {

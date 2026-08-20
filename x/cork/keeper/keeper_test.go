@@ -105,40 +105,37 @@ func (suite *KeeperTestSuite) TestSetGetCellarIDsHappyPath() {
 	require.True(corkKeeper.HasCellarID(ctx, sampleCellarAddr))
 }
 
-func (suite *KeeperTestSuite) TestSetGetDeleteScheduledCork() {
+func (suite *KeeperTestSuite) TestSetGetDeleteAuthorityCork() {
 	ctx, corkKeeper := suite.ctx, suite.corkKeeper
 	require := suite.Require()
 
 	testHeight := uint64(123)
-	val := []byte("testaddress")
 	expectedCork := types.Cork{
 		EncodedContractCall:   []byte("testcall"),
 		TargetContractAddress: sampleCellarHex,
 	}
 	expectedID := expectedCork.IDHash(testHeight)
-	actualID := corkKeeper.SetScheduledCork(ctx, testHeight, val, expectedCork)
+	actualID := corkKeeper.SetAuthorityCork(ctx, testHeight, expectedCork)
 	require.Equal(expectedID, actualID)
-	actualCork, found := corkKeeper.GetScheduledCork(ctx, testHeight, actualID, val, sampleCellarAddr)
-	require.True(found)
-	require.Equal(expectedCork, actualCork)
 
-	actualCorks := corkKeeper.GetScheduledCorks(ctx)
+	actualCorks := corkKeeper.GetAuthorityCorks(ctx)
+	require.Len(actualCorks, 1)
 	require.Equal(&expectedCork, actualCorks[0].Cork)
+	require.Empty(actualCorks[0].Validator, "authority corks have no scheduling validator")
 
-	actualCorks = corkKeeper.GetScheduledCorksByID(ctx, actualID)
-	require.Equal(&expectedCork, actualCorks[0].Cork)
+	actualCorks = corkKeeper.GetAuthorityCorksByID(ctx, actualID)
+	require.Len(actualCorks, 1)
 	require.Equal(expectedID, actualCorks[0].Id)
 
 	actualHeights := corkKeeper.GetScheduledBlockHeights(ctx)
 	require.Equal(actualCorks[0].BlockHeight, actualHeights[0])
 
-	actualCorks = corkKeeper.GetScheduledCorksByBlockHeight(ctx, testHeight)
-	require.Equal(&expectedCork, actualCorks[0].Cork)
+	actualCorks = corkKeeper.GetAuthorityCorksByBlockHeight(ctx, testHeight)
+	require.Len(actualCorks, 1)
 	require.Equal(testHeight, actualCorks[0].BlockHeight)
-	require.Equal(expectedID, actualCorks[0].Id)
 
-	corkKeeper.DeleteScheduledCork(ctx, testHeight, expectedID, sdk.ValAddress(val), sampleCellarAddr)
-	require.Empty(corkKeeper.GetScheduledCorks(ctx))
+	corkKeeper.DeleteAuthorityCork(ctx, testHeight, actualID, sampleCellarAddr)
+	require.Empty(corkKeeper.GetAuthorityCorks(ctx))
 }
 
 func (suite *KeeperTestSuite) TestInvalidationNonce() {

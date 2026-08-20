@@ -20,17 +20,14 @@ func (suite *KeeperTestSuite) TestQueriesHappyPath() {
 		TargetContractAddress: sampleCellarHex,
 	}
 	id := cork.IDHash(testHeight)
-	val := sdk.ValAddress("12345678901234567890")
+	// Validator is empty: an authority cork has no scheduling validator. The
+	// field is retained on the type for wire compatibility.
 	expectedScheduledCork := types.ScheduledCork{
 		Cork:        &cork,
 		BlockHeight: testHeight,
-		// somm-prefixed: the package now installs the chain's real bech32 config
-		// (app/params) rather than falling through to the SDK "cosmos" default,
-		// so this asserts what the production chain actually emits.
-		Validator: "sommvaloper1xyerxdp4xcmnswfsxyerxdp4xcmnswfsnej2mc",
-		Id:        id,
+		Id:          id,
 	}
-	corkKeeper.SetScheduledCork(ctx, testHeight, val, cork)
+	corkKeeper.SetAuthorityCork(ctx, testHeight, cork)
 
 	corkResult := types.CorkResult{
 		Cork:               &cork,

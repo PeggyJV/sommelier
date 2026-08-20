@@ -3,10 +3,12 @@ package keeper
 import (
 	"testing"
 
+	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/stretchr/testify/require"
 
 	_ "github.com/peggyjv/sommelier/v10/app/params"
+	corktypes "github.com/peggyjv/sommelier/v10/x/cork/types"
 	v2types "github.com/peggyjv/sommelier/v10/x/cork/types/v2"
 )
 
@@ -50,6 +52,12 @@ func TestGenesisRoundTripsAuthorityCorks(t *testing.T) {
 	})
 	require.Equal(t, 1, restored, "authority cork must be restored into the authority queue")
 
-	require.Empty(t, k2.GetScheduledCorks(ctx2),
-		"import must not resurrect the retired validator-keyed queue")
+	// The typed legacy accessors are deleted, so check the raw prefix directly.
+	legacy := 0
+	legacyIter := sdk.KVStorePrefixIterator(ctx2.KVStore(k2.storeKey), []byte{corktypes.ScheduledCorkKeyPrefix})
+	for ; legacyIter.Valid(); legacyIter.Next() {
+		legacy++
+	}
+	legacyIter.Close()
+	require.Zero(t, legacy, "import must not resurrect the retired validator-keyed queue")
 }

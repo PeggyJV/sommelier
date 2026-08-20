@@ -81,15 +81,7 @@ func (k Keeper) QueryScheduledCorks(c context.Context, req *types.QueryScheduled
 
 	response := types.QueryScheduledCorksResponse{}
 
-	k.IterateScheduledAxelarCorks(ctx, config.Id, func(val sdk.ValAddress, blockHeight uint64, id []byte, cel common.Address, cork types.AxelarCork) (stop bool) {
-		response.Corks = append(response.Corks, &types.ScheduledAxelarCork{
-			Cork:        &cork,
-			BlockHeight: blockHeight,
-			Validator:   val.String(),
-			Id:          hex.EncodeToString(id),
-		})
-		return false
-	})
+	response.Corks = k.GetAuthorityAxelarCorks(ctx, config.Id)
 	return &response, nil
 }
 
@@ -121,7 +113,7 @@ func (k Keeper) QueryScheduledCorksByBlockHeight(c context.Context, req *types.Q
 	}
 
 	response := types.QueryScheduledCorksByBlockHeightResponse{}
-	response.Corks = k.GetScheduledAxelarCorksByBlockHeight(ctx, config.Id, req.BlockHeight)
+	response.Corks = k.GetAuthorityAxelarCorksByBlockHeight(ctx, config.Id, req.BlockHeight)
 	return &response, nil
 }
 
@@ -142,7 +134,7 @@ func (k Keeper) QueryScheduledCorksByID(c context.Context, req *types.QuerySched
 	}
 
 	response := types.QueryScheduledCorksByIDResponse{}
-	response.Corks = k.GetScheduledAxelarCorksByID(ctx, config.Id, id)
+	response.Corks = k.GetAuthorityAxelarCorksByID(ctx, config.Id, id)
 	return &response, nil
 }
 

@@ -68,8 +68,14 @@ func TestScheduleCorkAcceptsAuthority(t *testing.T) {
 
 	require.Equal(t, 1, countAt(k, ctx, testChainArbitrum, msg.BlockHeight),
 		"cork must land in the authority queue")
-	require.Empty(t, k.GetScheduledAxelarCorks(ctx, testChainArbitrum),
-		"legacy validator queue must not be written")
+	// The typed legacy accessors are deleted; check the raw prefix directly.
+	legacy := 0
+	it := sdk.KVStorePrefixIterator(ctx.KVStore(k.storeKey), types.GetScheduledAxelarCorkKeyPrefix(testChainArbitrum))
+	for ; it.Valid(); it.Next() {
+		legacy++
+	}
+	it.Close()
+	require.Zero(t, legacy, "legacy validator queue must not be written")
 }
 
 // Every mutating handler must reject a signer that is not the cork authority,

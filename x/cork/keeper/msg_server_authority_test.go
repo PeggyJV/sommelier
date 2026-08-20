@@ -60,7 +60,14 @@ func TestScheduleCorkAcceptsAuthority(t *testing.T) {
 	})
 	require.Equal(t, 1, found)
 
-	require.Empty(t, k.GetScheduledCorks(ctx), "legacy validator queue must not be written")
+	// The typed legacy accessors are deleted; check the raw prefix directly.
+	legacy := 0
+	it := sdk.KVStorePrefixIterator(ctx.KVStore(k.storeKey), []byte{corktypes.ScheduledCorkKeyPrefix})
+	for ; it.Valid(); it.Next() {
+		legacy++
+	}
+	it.Close()
+	require.Zero(t, legacy, "legacy validator queue must not be written")
 }
 
 func TestScheduleCorkRejectsNonAuthority(t *testing.T) {

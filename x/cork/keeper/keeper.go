@@ -65,64 +65,6 @@ func (k Keeper) Logger(ctx sdk.Context) log.Logger {
 // Scheduled Corks //
 /////////////////////
 
-func (k Keeper) SetScheduledCork(ctx sdk.Context, blockHeight uint64, val sdk.ValAddress, cork types.Cork) []byte {
-	id := cork.IDHash(blockHeight)
-	bz := k.cdc.MustMarshal(&cork)
-	ctx.KVStore(k.storeKey).Set(corktypes.GetScheduledCorkKey(blockHeight, id, val, common.HexToAddress(cork.TargetContractAddress)), bz)
-	return id
-}
-
-// GetScheduledCork gets the scheduled cork for a given validator
-// CONTRACT: must provide the validator address here not the delegate address
-func (k Keeper) GetScheduledCork(ctx sdk.Context, blockHeight uint64, id []byte, val sdk.ValAddress, contract common.Address) (types.Cork, bool) {
-	store := ctx.KVStore(k.storeKey)
-
-	bz := store.Get(corktypes.GetScheduledCorkKey(blockHeight, id, val, contract))
-	if len(bz) == 0 {
-		return types.Cork{}, false
-	}
-
-	var cork types.Cork
-	k.cdc.MustUnmarshal(bz, &cork)
-	return cork, true
-}
-
-// DeleteScheduledCork deletes the scheduled cork for a given validator
-// CONTRACT: must provide the validator address here not the delegate address
-func (k Keeper) DeleteScheduledCork(ctx sdk.Context, blockHeight uint64, id []byte, val sdk.ValAddress, contract common.Address) {
-	ctx.KVStore(k.storeKey).Delete(corktypes.GetScheduledCorkKey(blockHeight, id, val, contract))
-}
-
-// IterateScheduledCorks iterates over all scheduled corks in the store
-func (k Keeper) IterateScheduledCorks(ctx sdk.Context, cb func(val sdk.ValAddress, blockHeight uint64, id []byte, cel common.Address, cork types.Cork) (stop bool)) {
-	k.IterateScheduledCorksByPrefix(ctx, corktypes.GetScheduledCorkKeyPrefix(), cb)
-}
-
-func (k Keeper) IterateScheduledCorksByBlockHeight(ctx sdk.Context, blockHeight uint64, cb func(val sdk.ValAddress, blockHeight uint64, id []byte, cel common.Address, cork types.Cork) (stop bool)) {
-	k.IterateScheduledCorksByPrefix(ctx, corktypes.GetScheduledCorkKeyByBlockHeightPrefix(blockHeight), cb)
-}
-
-func (k Keeper) IterateScheduledCorksByPrefix(ctx sdk.Context, prefix []byte, cb func(val sdk.ValAddress, blockHeight uint64, id []byte, cel common.Address, cork types.Cork) (stop bool)) {
-	store := ctx.KVStore(k.storeKey)
-	iter := sdk.KVStorePrefixIterator(store, prefix)
-	defer iter.Close()
-
-	for ; iter.Valid(); iter.Next() {
-		var cork types.Cork
-		keyPair := bytes.NewBuffer(iter.Key())
-		keyPair.Next(1) // trim prefix byte
-		blockHeight := sdk.BigEndianToUint64(keyPair.Next(8))
-		id := keyPair.Next(32)
-		val := sdk.ValAddress(keyPair.Next(20))
-		contract := common.BytesToAddress(keyPair.Bytes())
-
-		k.cdc.MustUnmarshal(iter.Value(), &cork)
-		if cb(val, blockHeight, id, contract, cork) {
-			break
-		}
-	}
-}
-
 // SetAuthorityCork stores a cork scheduled by the cork authority for execution
 // at blockHeight and returns its ID.
 func (k Keeper) SetAuthorityCork(ctx sdk.Context, blockHeight uint64, cork types.Cork) []byte {
@@ -189,6 +131,30 @@ func (k Keeper) IterateAllAuthorityCorks(ctx sdk.Context, cb func(blockHeight ui
 	}
 }
 
+// GetAuthorityCorksByBlockHeight returns queued authority corks for one height.
+func (k Keeper) GetAuthorityCorksByBlockHeight(ctx sdk.Context, height uint64) []*types.ScheduledCork {
+	var out []*types.ScheduledCork
+	k.IterateAuthorityCorksByBlockHeight(ctx, height, func(blockHeight uint64, id []byte, _ common.Address, cork types.Cork) (stop bool) {
+		c := cork
+		out = append(out, &types.ScheduledCork{Cork: &c, BlockHeight: blockHeight, Id: id})
+		return false
+	})
+	return out
+}
+
+// GetAuthorityCorksByID returns queued authority corks matching a cork ID.
+func (k Keeper) GetAuthorityCorksByID(ctx sdk.Context, queriedID []byte) []*types.ScheduledCork {
+	var out []*types.ScheduledCork
+	k.IterateAllAuthorityCorks(ctx, func(blockHeight uint64, id []byte, _ common.Address, cork types.Cork) (stop bool) {
+		if bytes.Equal(id, queriedID) {
+			c := cork
+			out = append(out, &types.ScheduledCork{Cork: &c, BlockHeight: blockHeight, Id: id})
+		}
+		return false
+	})
+	return out
+}
+
 // GetAuthorityCorks returns every queued authority cork for genesis export.
 // The Validator field is left empty: authority corks have no scheduling
 // validator. The field is retained on the type for wire compatibility.
@@ -206,55 +172,6 @@ func (k Keeper) GetAuthorityCorks(ctx sdk.Context) []*types.ScheduledCork {
 	return out
 }
 
-func (k Keeper) GetScheduledCorks(ctx sdk.Context) []*types.ScheduledCork {
-	var scheduledCorks []*types.ScheduledCork
-	k.IterateScheduledCorks(ctx, func(val sdk.ValAddress, blockHeight uint64, id []byte, _ common.Address, cork types.Cork) (stop bool) {
-		scheduledCorks = append(scheduledCorks, &types.ScheduledCork{
-			Validator:   val.String(),
-			Cork:        &cork,
-			BlockHeight: blockHeight,
-			Id:          id,
-		})
-		return false
-	})
-
-	return scheduledCorks
-}
-
-func (k Keeper) GetScheduledCorksByBlockHeight(ctx sdk.Context, height uint64) []*types.ScheduledCork {
-	var scheduledCorks []*types.ScheduledCork
-	k.IterateScheduledCorksByBlockHeight(ctx, height, func(val sdk.ValAddress, blockHeight uint64, Id []byte, _ common.Address, cork types.Cork) (stop bool) {
-		scheduledCorks = append(scheduledCorks, &types.ScheduledCork{
-			Validator:   val.String(),
-			Cork:        &cork,
-			BlockHeight: blockHeight,
-			Id:          Id,
-		})
-
-		return false
-	})
-
-	return scheduledCorks
-}
-
-func (k Keeper) GetScheduledCorksByID(ctx sdk.Context, queriedID []byte) []*types.ScheduledCork {
-	var scheduledCorks []*types.ScheduledCork
-	k.IterateScheduledCorks(ctx, func(val sdk.ValAddress, blockHeight uint64, id []byte, _ common.Address, cork types.Cork) (stop bool) {
-		if bytes.Equal(id, queriedID) {
-			scheduledCorks = append(scheduledCorks, &types.ScheduledCork{
-				Validator:   val.String(),
-				Cork:        &cork,
-				BlockHeight: blockHeight,
-				Id:          id,
-			})
-		}
-
-		return false
-	})
-
-	return scheduledCorks
-}
-
 ///////////////////////////
 // ScheduledBlockHeights //
 ///////////////////////////
@@ -263,7 +180,7 @@ func (k Keeper) GetScheduledBlockHeights(ctx sdk.Context) []uint64 {
 	var heights []uint64
 
 	latestHeight := uint64(0)
-	k.IterateScheduledCorks(ctx, func(_ sdk.ValAddress, blockHeight uint64, _ []byte, _ common.Address, _ types.Cork) (stop bool) {
+	k.IterateAllAuthorityCorks(ctx, func(blockHeight uint64, _ []byte, _ common.Address, _ types.Cork) (stop bool) {
 		if blockHeight > latestHeight {
 			heights = append(heights, blockHeight)
 		}
