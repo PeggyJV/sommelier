@@ -27,7 +27,6 @@ import (
 type mocksForCork struct {
 	mockStakingKeeper *mock.MockStakingKeeper
 	mockGravityKeeper *mock.MockGravityKeeper
-	mockPubsubKeeper  *mock.MockPubsubKeeper
 	mockValidator     *mock.MockValidatorI
 }
 
@@ -60,7 +59,6 @@ func setupCorkKeeper(t *testing.T) (
 	ctrl := gomock.NewController(t)
 	mockStakingKeeper := mock.NewMockStakingKeeper(ctrl)
 	mockGravityKeeper := mock.NewMockGravityKeeper(ctrl)
-	mockPubsubKeeper := mock.NewMockPubsubKeeper(ctrl)
 
 	k := NewKeeper(
 		protoCodec,
@@ -68,7 +66,6 @@ func setupCorkKeeper(t *testing.T) (
 		subSpace,
 		mockStakingKeeper,
 		mockGravityKeeper,
-		mockPubsubKeeper,
 	)
 
 	ctx := sdk.NewContext(commitMultiStore, tmproto.Header{}, false, log.NewNopLogger())
@@ -76,7 +73,6 @@ func setupCorkKeeper(t *testing.T) (
 	return k, ctx, mocksForCork{
 		mockStakingKeeper: mockStakingKeeper,
 		mockGravityKeeper: mockGravityKeeper,
-		mockPubsubKeeper:  mockPubsubKeeper,
 		mockValidator:     mock.NewMockValidatorI(ctrl),
 	}, ctrl
 }

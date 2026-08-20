@@ -30,7 +30,6 @@ type KeeperTestSuite struct {
 	ctx           sdk.Context
 	corkKeeper    Keeper
 	gravityKeeper *corktestutil.MockGravityKeeper
-	pubsubKeeper  *corktestutil.MockPubsubKeeper
 	stakingKeeper *corktestutil.MockStakingKeeper
 	validator     *corktestutil.MockValidatorI
 
@@ -51,7 +50,6 @@ func (suite *KeeperTestSuite) SetupTest() {
 	defer ctrl.Finish()
 
 	suite.gravityKeeper = corktestutil.NewMockGravityKeeper(ctrl)
-	suite.pubsubKeeper = corktestutil.NewMockPubsubKeeper(ctrl)
 	suite.stakingKeeper = corktestutil.NewMockStakingKeeper(ctrl)
 	suite.validator = corktestutil.NewMockValidatorI(ctrl)
 	suite.ctx = ctx
@@ -73,7 +71,6 @@ func (suite *KeeperTestSuite) SetupTest() {
 		subSpace,
 		suite.stakingKeeper,
 		suite.gravityKeeper,
-		suite.pubsubKeeper,
 	)
 
 	types.RegisterInterfaces(encCfg.InterfaceRegistry)

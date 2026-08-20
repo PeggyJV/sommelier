@@ -60,8 +60,6 @@ import (
 	gravitytypes "github.com/peggyjv/gravity-bridge/module/v6/x/gravity/types"
 	corktypes "github.com/peggyjv/sommelier/v10/x/cork/types"
 	types "github.com/peggyjv/sommelier/v10/x/cork/types/v2"
-	pubsubkeeper "github.com/peggyjv/sommelier/v10/x/pubsub/keeper"
-	pubsubtypes "github.com/peggyjv/sommelier/v10/x/pubsub/types"
 	"github.com/stretchr/testify/require"
 )
 
@@ -217,7 +215,6 @@ func CreateTestEnv(t *testing.T) TestInput {
 
 	// Initialize store keys
 	keyGravity := sdk.NewKVStoreKey(gravitytypes.StoreKey)
-	keyPubsub := sdk.NewKVStoreKey(pubsubtypes.StoreKey)
 	keyAcc := sdk.NewKVStoreKey(authtypes.StoreKey)
 	keyStaking := sdk.NewKVStoreKey(stakingtypes.StoreKey)
 	keyBank := sdk.NewKVStoreKey(banktypes.StoreKey)
@@ -369,14 +366,6 @@ func CreateTestEnv(t *testing.T) TestInput {
 		senderModuleAccounts,
 	)
 
-	pubsubKeeper := pubsubkeeper.NewKeeper(
-		marshaler,
-		keyPubsub,
-		getSubspace(paramsKeeper, pubsubtypes.DefaultParamspace),
-		stakingKeeper,
-		gravityKeeper,
-	)
-
 	stakingKeeper.SetHooks(
 		stakingtypes.NewMultiStakingHooks(
 			distKeeper.Hooks(),
@@ -391,7 +380,6 @@ func CreateTestEnv(t *testing.T) TestInput {
 		getSubspace(paramsKeeper, types.DefaultParamspace),
 		stakingKeeper,
 		gravityKeeper,
-		pubsubKeeper,
 	)
 
 	k.SetParams(ctx, TestingcorkParams)

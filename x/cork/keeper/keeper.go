@@ -22,14 +22,13 @@ type Keeper struct {
 	paramSpace    paramtypes.Subspace
 	stakingKeeper corktypes.StakingKeeper
 	gravityKeeper corktypes.GravityKeeper
-	pubsubKeeper  corktypes.PubsubKeeper
 	poaKeeper     corktypes.PoaKeeper
 }
 
 // NewKeeper creates a new x/cork Keeper instance
 func NewKeeper(
 	cdc codec.BinaryCodec, key storetypes.StoreKey, paramSpace paramtypes.Subspace,
-	stakingKeeper corktypes.StakingKeeper, gravityKeeper corktypes.GravityKeeper, pubsubKeeper corktypes.PubsubKeeper,
+	stakingKeeper corktypes.StakingKeeper, gravityKeeper corktypes.GravityKeeper,
 ) Keeper {
 	// set KeyTable if it has not already been set
 	if !paramSpace.HasKeyTable() {
@@ -42,7 +41,6 @@ func NewKeeper(
 		paramSpace:    paramSpace,
 		stakingKeeper: stakingKeeper,
 		gravityKeeper: gravityKeeper,
-		pubsubKeeper:  pubsubKeeper,
 	}
 }
 
@@ -328,7 +326,6 @@ func (k Keeper) GetCorkResults(ctx sdk.Context) []*types.CorkResult {
 
 	return corkResults
 }
-
 
 /////////////
 // Cellars //
