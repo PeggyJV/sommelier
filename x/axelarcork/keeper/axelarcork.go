@@ -6,7 +6,7 @@ import (
 	"cosmossdk.io/math"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	distributionTypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
-	"github.com/peggyjv/sommelier/v9/x/axelarcork/types"
+	"github.com/peggyjv/sommelier/v10/x/axelarcork/types"
 )
 
 var maxSafeInt math.Int

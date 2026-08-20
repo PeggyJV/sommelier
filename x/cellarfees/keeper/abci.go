@@ -3,8 +3,8 @@ package keeper
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
-	paramstypes "github.com/peggyjv/sommelier/v9/app/params"
-	"github.com/peggyjv/sommelier/v9/x/cellarfees/types"
+	paramstypes "github.com/peggyjv/sommelier/v10/app/params"
+	"github.com/peggyjv/sommelier/v10/x/cellarfees/types"
 )
 
 // BeginBlocker emits rewards each block they are available by sending them to the distribution module's fee collector

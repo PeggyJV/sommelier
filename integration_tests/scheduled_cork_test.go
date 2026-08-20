@@ -16,8 +16,8 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/ethclient"
 	gbtypes "github.com/peggyjv/gravity-bridge/module/v6/x/gravity/types"
-	types "github.com/peggyjv/sommelier/v9/x/cork/types/v2"
-	pubsubtypes "github.com/peggyjv/sommelier/v9/x/pubsub/types"
+	types "github.com/peggyjv/sommelier/v10/x/cork/types/v2"
+	pubsubtypes "github.com/peggyjv/sommelier/v10/x/pubsub/types"
 )
 
 func (s *IntegrationTestSuite) TestScheduledCork() {

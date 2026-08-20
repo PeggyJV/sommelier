@@ -5,7 +5,7 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	"github.com/peggyjv/sommelier/v9/x/poa/types"
+	"github.com/peggyjv/sommelier/v10/x/poa/types"
 )
 
 // safeModeThawDelayBlocks is how long value-bearing modules stay frozen after

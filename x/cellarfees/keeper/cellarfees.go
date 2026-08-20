@@ -4,9 +4,9 @@ import (
 	"cosmossdk.io/math"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
-	"github.com/peggyjv/sommelier/v9/app/params"
-	auctiontypes "github.com/peggyjv/sommelier/v9/x/auction/types"
-	"github.com/peggyjv/sommelier/v9/x/cellarfees/types"
+	"github.com/peggyjv/sommelier/v10/app/params"
+	auctiontypes "github.com/peggyjv/sommelier/v10/x/auction/types"
+	"github.com/peggyjv/sommelier/v10/x/cellarfees/types"
 )
 
 const proceedsAddress = "somm1rvu9w27sstm2z7jgyq7kll0hfj4fdhsgnw0tat"

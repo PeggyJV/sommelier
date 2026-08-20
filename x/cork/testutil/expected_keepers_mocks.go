@@ -14,7 +14,7 @@ import (
 	common "github.com/ethereum/go-ethereum/common"
 	gomock "github.com/golang/mock/gomock"
 	types1 "github.com/peggyjv/gravity-bridge/module/v6/x/gravity/types"
-	types2 "github.com/peggyjv/sommelier/v9/x/pubsub/types"
+	types2 "github.com/peggyjv/sommelier/v10/x/pubsub/types"
 )
 
 // MockStakingKeeper is a mock of StakingKeeper interface.

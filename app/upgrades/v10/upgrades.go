@@ -7,8 +7,8 @@ import (
 	"github.com/cosmos/cosmos-sdk/types/module"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
 
-	poakeeper "github.com/peggyjv/sommelier/v9/x/poa/keeper"
-	poatypes "github.com/peggyjv/sommelier/v9/x/poa/types"
+	poakeeper "github.com/peggyjv/sommelier/v10/x/poa/keeper"
+	poatypes "github.com/peggyjv/sommelier/v10/x/poa/types"
 )
 
 // CreateUpgradeHandler builds the v10 upgrade handler. It runs module

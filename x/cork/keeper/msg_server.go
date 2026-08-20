@@ -10,8 +10,8 @@ import (
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/ethereum/go-ethereum/common"
 	gravitytypes "github.com/peggyjv/gravity-bridge/module/v6/x/gravity/types"
-	corktypes "github.com/peggyjv/sommelier/v9/x/cork/types"
-	types "github.com/peggyjv/sommelier/v9/x/cork/types/v2"
+	corktypes "github.com/peggyjv/sommelier/v10/x/cork/types"
+	types "github.com/peggyjv/sommelier/v10/x/cork/types/v2"
 )
 
 var _ types.MsgServer = Keeper{}

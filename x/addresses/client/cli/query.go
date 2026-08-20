@@ -14,7 +14,7 @@ import (
 	// "github.com/cosmos/cosmos-sdk/client/flags"
 	// sdk "github.com/cosmos/cosmos-sdk/types"
 
-	"github.com/peggyjv/sommelier/v9/x/addresses/types"
+	"github.com/peggyjv/sommelier/v10/x/addresses/types"
 )
 
 // GetQueryCmd returns the cli query commands for this module

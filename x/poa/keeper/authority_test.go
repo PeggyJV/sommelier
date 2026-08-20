@@ -6,7 +6,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/require"
 
-	"github.com/peggyjv/sommelier/v9/x/poa/keeper"
+	"github.com/peggyjv/sommelier/v10/x/poa/keeper"
 )
 
 func valAddr(t *testing.T, hex string) sdk.ValAddress {

@@ -143,7 +143,7 @@ Write the union as a single Go file or markdown table; commit nothing in this ta
 ```proto
 syntax = "proto3";
 package poa.v1;
-option go_package = "github.com/peggyjv/sommelier/v9/x/poa/types";
+option go_package = "github.com/peggyjv/sommelier/v10/x/poa/types";
 
 import "gogoproto/gogo.proto";
 import "amino/amino.proto";
@@ -163,7 +163,7 @@ message Params {
 ```proto
 syntax = "proto3";
 package poa.v1;
-option go_package = "github.com/peggyjv/sommelier/v9/x/poa/types";
+option go_package = "github.com/peggyjv/sommelier/v10/x/poa/types";
 
 message AuthorityValidator {
   // operator address (sdk.ValAddress bech32)
@@ -192,7 +192,7 @@ message MultiplierSnapshot {
 ```proto
 syntax = "proto3";
 package poa.v1;
-option go_package = "github.com/peggyjv/sommelier/v9/x/poa/types";
+option go_package = "github.com/peggyjv/sommelier/v10/x/poa/types";
 
 import "gogoproto/gogo.proto";
 import "poa/v1/params.proto";
@@ -209,7 +209,7 @@ message GenesisState {
 ```proto
 syntax = "proto3";
 package poa.v1;
-option go_package = "github.com/peggyjv/sommelier/v9/x/poa/types";
+option go_package = "github.com/peggyjv/sommelier/v10/x/poa/types";
 
 import "cosmos/msg/v1/msg.proto";
 import "gogoproto/gogo.proto";
@@ -240,7 +240,7 @@ message MsgUpdateParamsResponse {}
 ```proto
 syntax = "proto3";
 package poa.v1;
-option go_package = "github.com/peggyjv/sommelier/v9/x/poa/types";
+option go_package = "github.com/peggyjv/sommelier/v10/x/poa/types";
 
 import "google/api/annotations.proto";
 import "gogoproto/gogo.proto";
@@ -471,7 +471,7 @@ package types_test
 import (
     "testing"
     sdk "github.com/cosmos/cosmos-sdk/types"
-    "github.com/peggyjv/sommelier/v9/x/poa/types"
+    "github.com/peggyjv/sommelier/v10/x/poa/types"
     "github.com/stretchr/testify/require"
 )
 
@@ -1121,7 +1121,7 @@ import (
     "cosmossdk.io/math"
     staking "github.com/cosmos/cosmos-sdk/x/staking"
 
-    "github.com/peggyjv/sommelier/v9/x/poa/types"
+    "github.com/peggyjv/sommelier/v10/x/poa/types"
 )
 
 func EndBlocker(ctx sdk.Context, k Keeper) []abci.ValidatorUpdate {
@@ -1556,7 +1556,7 @@ package v10
 
 import (
     storetypes "github.com/cosmos/cosmos-sdk/store/types"
-    poatypes "github.com/peggyjv/sommelier/v9/x/poa/types"
+    poatypes "github.com/peggyjv/sommelier/v10/x/poa/types"
 )
 
 const Name = "v10"

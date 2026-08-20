@@ -11,7 +11,7 @@ import (
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 	"github.com/stretchr/testify/require"
 
-	"github.com/peggyjv/sommelier/v9/x/poa/keeper"
+	"github.com/peggyjv/sommelier/v10/x/poa/keeper"
 )
 
 // noopStakingEndBlocker is a StakingEndBlockerFn that does nothing — used by

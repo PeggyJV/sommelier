@@ -15,7 +15,7 @@ import (
 	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
 	"github.com/stretchr/testify/require"
 
-	"github.com/peggyjv/sommelier/v9/x/poa/types"
+	"github.com/peggyjv/sommelier/v10/x/poa/types"
 )
 
 // NewTestKeeper builds a PoA keeper backed by an in-memory store. Staking and

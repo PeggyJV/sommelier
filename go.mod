@@ -1,4 +1,4 @@
-module github.com/peggyjv/sommelier/v9
+module github.com/peggyjv/sommelier/v10
 
 go 1.22.7
 

@@ -2,7 +2,7 @@ package keeper
 
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/peggyjv/sommelier/v9/x/incentives/types"
+	"github.com/peggyjv/sommelier/v10/x/incentives/types"
 )
 
 // InitGenesis initialize default parameters

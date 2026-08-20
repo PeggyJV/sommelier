@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"os"
 
-	corktypes "github.com/peggyjv/sommelier/v9/x/cork/types/v2"
+	corktypes "github.com/peggyjv/sommelier/v10/x/cork/types/v2"
 
 	tmrand "github.com/cometbft/cometbft/libs/rand"
 	rpchttp "github.com/cometbft/cometbft/rpc/client/http"
@@ -44,8 +44,8 @@ import (
 	ibc "github.com/cosmos/ibc-go/v7/modules/core"
 	gravityclient "github.com/peggyjv/gravity-bridge/module/v6/x/gravity/client"
 	gravitytypes "github.com/peggyjv/gravity-bridge/module/v6/x/gravity/types"
-	"github.com/peggyjv/sommelier/v9/app"
-	"github.com/peggyjv/sommelier/v9/app/params"
+	"github.com/peggyjv/sommelier/v10/app"
+	"github.com/peggyjv/sommelier/v10/app/params"
 )
 
 const (
