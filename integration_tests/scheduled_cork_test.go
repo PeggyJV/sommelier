@@ -271,19 +271,21 @@ func (s *IntegrationTestSuite) TestScheduledCork() {
 					return false
 				}
 
-				// verify that the scheduled corks have not yet been consumed
-				s.Require().Len(res.Corks, len(s.chain.validators))
+				// verify that the scheduled cork has not yet been consumed.
+				// One entry, not one per validator: the authority schedules a
+				// single cork rather than each validator voting for its own.
+				s.Require().Len(res.Corks, 1)
 			}
 
 			return false
 		}, 3*time.Minute, 1*time.Second, "never reached scheduled height")
 
-		s.T().Log("verify the cork was approved")
-		resultRes, err := corkQueryClient.QueryCorkResult(context.Background(), &types.QueryCorkResultRequest{Id: hex.EncodeToString(corkID)})
-		s.Require().NoError(err, "failed to query cork result")
-		s.Require().True(resultRes.CorkResult.Approved, "cork was not approved")
-		s.Require().True(sdk.MustNewDecFromStr(resultRes.CorkResult.ApprovalPercentage).GT(corkVoteThreshold))
-		s.Require().Equal(counterContract, common.HexToAddress(resultRes.CorkResult.Cork.TargetContractAddress))
+		// There is no approval step to verify any more. CorkResult records were
+		// written by the power tally, which v10 removes: a cork queued by the
+		// authority is executed outright at its target height. Existing
+		// CorkResult records remain queryable for history, but no new ones are
+		// produced. Execution itself is verified below, on Ethereum, by the
+		// counter contract having been incremented.
 
 		s.T().Log("verify scheduled corks were deleted")
 		res, err := corkQueryClient.QueryScheduledCorksByBlockHeight(context.Background(), &types.QueryScheduledCorksByBlockHeightRequest{BlockHeight: uint64(targetBlockHeight)})
