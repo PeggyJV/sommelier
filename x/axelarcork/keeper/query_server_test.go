@@ -45,7 +45,7 @@ func (suite *KeeperTestSuite) TestQueriesHappyPath() {
 	expectedScheduledCork := types.ScheduledAxelarCork{
 		Cork:        &cork,
 		BlockHeight: testHeight,
-		Validator:   "cosmosvaloper1xyerxdp4xcmnswfsxyerxdp4xcmnswfs008wpw",
+		Validator:   "sommvaloper1xyerxdp4xcmnswfsxyerxdp4xcmnswfsnej2mc",
 		Id:          hex.EncodeToString(id),
 	}
 	axelarcorkKeeper.SetScheduledAxelarCork(ctx, TestEVMChainID, testHeight, val, cork)

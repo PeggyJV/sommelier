@@ -33,14 +33,11 @@ func (k Keeper) ScheduleCork(c context.Context, msg *types.MsgScheduleAxelarCork
 	}
 
 	signer := msg.MustGetSigner()
-	validatorAddr := k.gravityKeeper.GetOrchestratorValidatorAddress(ctx, signer)
-	if validatorAddr == nil {
-		return nil, errorsmod.Wrapf(sdkerrors.ErrUnauthorized, "signer %s is not a delegate", signer.String())
-	}
-
-	validatorAxelarCorkCount := k.GetValidatorAxelarCorkCount(ctx, validatorAddr)
-	if validatorAxelarCorkCount >= types.MaxAxelarCorksPerValidator {
-		return nil, types.ErrValidatorAxelarCorkCapacityReached
+	// Fail-closed: an unset authority means no address may act. There is
+	// deliberately no fallback to the retired validator-delegate path.
+	if params.CorkAuthority == "" || signer.String() != params.CorkAuthority {
+		return nil, errorsmod.Wrapf(sdkerrors.ErrUnauthorized,
+			"signer %s is not the cork authority", signer.String())
 	}
 
 	config, ok := k.GetChainConfigurationByID(ctx, msg.ChainId)
@@ -56,12 +53,10 @@ func (k Keeper) ScheduleCork(c context.Context, msg *types.MsgScheduleAxelarCork
 		return nil, types.ErrSchedulingInThePast
 	}
 
-	corkID := k.SetScheduledAxelarCork(ctx, config.Id, msg.BlockHeight, validatorAddr, *msg.Cork)
-	k.IncrementValidatorAxelarCorkCount(ctx, validatorAddr)
+	corkID := k.SetAuthorityAxelarCork(ctx, config.Id, msg.BlockHeight, *msg.Cork)
 
 	if err := ctx.EventManager().EmitTypedEvent(&types.ScheduleCorkEvent{
 		Signer:      signer.String(),
-		Validator:   validatorAddr.String(),
 		Cork:        msg.Cork.String(),
 		BlockHeight: msg.BlockHeight,
 		ChainId:     config.Id,
@@ -83,6 +78,14 @@ func (k Keeper) RelayCork(c context.Context, msg *types.MsgRelayAxelarCorkReques
 		return nil, types.ErrDisabled
 	}
 
+	// Authority-only. Placed before any side effect so a rejected caller can
+	// never move funds. Fail-closed: an unset authority rejects everyone.
+	signer := msg.MustGetSigner()
+	if params.CorkAuthority == "" || signer.String() != params.CorkAuthority {
+		return nil, errorsmod.Wrapf(sdkerrors.ErrUnauthorized,
+			"signer %s is not the cork authority", signer.String())
+	}
+
 	config, ok := k.GetChainConfigurationByID(ctx, msg.ChainId)
 	if !ok {
 		return nil, fmt.Errorf("chain by id %d not found", msg.ChainId)
@@ -95,7 +98,6 @@ func (k Keeper) RelayCork(c context.Context, msg *types.MsgRelayAxelarCorkReques
 	}
 
 	// transfer tokens to the module account
-	signer := msg.MustGetSigner()
 	err := k.bankKeeper.SendCoinsFromAccountToModule(ctx, signer, types.ModuleName, sdk.NewCoins(msg.Token))
 	if err != nil {
 		return nil, err
@@ -162,6 +164,14 @@ func (k Keeper) RelayProxyUpgrade(c context.Context, msg *types.MsgRelayAxelarPr
 		return nil, types.ErrDisabled
 	}
 
+	// Authority-only. Placed before any side effect so a rejected caller can
+	// never move funds. Fail-closed: an unset authority rejects everyone.
+	signer := msg.MustGetSigner()
+	if params.CorkAuthority == "" || signer.String() != params.CorkAuthority {
+		return nil, errorsmod.Wrapf(sdkerrors.ErrUnauthorized,
+			"signer %s is not the cork authority", signer.String())
+	}
+
 	config, ok := k.GetChainConfigurationByID(ctx, msg.ChainId)
 	if !ok {
 		return nil, fmt.Errorf("chain by id %d not found", msg.ChainId)
@@ -177,7 +187,6 @@ func (k Keeper) RelayProxyUpgrade(c context.Context, msg *types.MsgRelayAxelarPr
 	}
 
 	// transfer tokens to the module account
-	signer := msg.MustGetSigner()
 	err := k.bankKeeper.SendCoinsFromAccountToModule(ctx, signer, types.ModuleName, sdk.NewCoins(msg.Token))
 	if err != nil {
 		return nil, err
@@ -229,6 +238,14 @@ func (k Keeper) BumpCorkGas(c context.Context, msg *types.MsgBumpAxelarCorkGasRe
 		return nil, types.ErrDisabled
 	}
 
+	// Authority-only. Placed before any side effect so a rejected caller can
+	// never move funds. Fail-closed: an unset authority rejects everyone.
+	signer := msg.MustGetSigner()
+	if params.CorkAuthority == "" || signer.String() != params.CorkAuthority {
+		return nil, errorsmod.Wrapf(sdkerrors.ErrUnauthorized,
+			"signer %s is not the cork authority", signer.String())
+	}
+
 	memo := msg.MessageId
 	transferMsg := transfertypes.NewMsgTransfer(
 		params.IbcPort,
@@ -249,6 +266,17 @@ func (k Keeper) BumpCorkGas(c context.Context, msg *types.MsgBumpAxelarCorkGasRe
 }
 
 func (k Keeper) CancelScheduledCork(c context.Context, msg *types.MsgCancelAxelarCorkRequest) (*types.MsgCancelAxelarCorkResponse, error) {
+	ctx := sdk.UnwrapSDKContext(c)
+	params := k.GetParamSet(ctx)
+
+	// Authority-only, enforced even though the body is still unimplemented, so
+	// that whoever implements it inherits the gate rather than having to
+	// remember to add one.
+	signer := msg.MustGetSigner()
+	if params.CorkAuthority == "" || signer.String() != params.CorkAuthority {
+		return nil, errorsmod.Wrapf(sdkerrors.ErrUnauthorized,
+			"signer %s is not the cork authority", signer.String())
+	}
 
 	// todo: implement
 
