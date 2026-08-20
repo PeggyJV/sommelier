@@ -97,6 +97,13 @@ func (k Keeper) RelayCork(c context.Context, msg *types.MsgRelayAxelarCorkReques
 		return nil, fmt.Errorf("no cork on chain %d found for address %s", config.Id, msg.TargetContractAddress)
 	}
 
+	// Re-check the allowlist at relay time. A cork becomes relayable at its
+	// target height and can sit in the winning queue until it times out, so
+	// removing the cellar must stop it being pushed to the destination chain.
+	if !k.HasCellarID(ctx, config.Id, common.HexToAddress(cork.TargetContractAddress)) {
+		return nil, types.ErrUnmanagedCellarAddress
+	}
+
 	// transfer tokens to the module account
 	err := k.bankKeeper.SendCoinsFromAccountToModule(ctx, signer, types.ModuleName, sdk.NewCoins(msg.Token))
 	if err != nil {

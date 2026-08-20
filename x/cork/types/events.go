@@ -11,6 +11,10 @@ const (
 	// re-scheduled after recovery.
 	EventTypeCorksDroppedInSafeMode = "corks_dropped_safe_mode"
 
+	// EventTypeCorkDroppedUnmanagedCellar reports a due cork discarded because
+	// its target cellar was removed from the allowlist after scheduling.
+	EventTypeCorkDroppedUnmanagedCellar = "cork_dropped_unmanaged_cellar"
+
 	AttributeKeySigner            = "signer"
 	AttributeKeyValidator         = "validator"
 	AttributeKeyPrevoteHash       = "hash"

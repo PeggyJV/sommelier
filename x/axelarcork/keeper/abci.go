@@ -51,8 +51,20 @@ func (k Keeper) EndBlocker(ctx sdk.Context) {
 			k.DeleteAuthorityAxelarCork(ctx, config.Id, height, d.id, d.contract)
 		}
 
+		// Re-check the allowlist at EXECUTION, not just at scheduling. A cork
+		// can be queued for an arbitrarily distant height, so validating only
+		// at schedule time means a compromised authority key can stage calls
+		// that removing the target cellar cannot stop. This makes
+		// RemoveManagedCellarIDs an actual kill switch for queued corks.
 		winningScheduledVotes := make([]types.AxelarCork, 0, len(due))
 		for _, d := range due {
+			if !k.HasCellarID(ctx, config.Id, d.contract) {
+				k.Logger(ctx).Error("dropping due axelar cork for a cellar no longer managed",
+					"height", fmt.Sprintf("%d", ctx.BlockHeight()),
+					"chain id", config.Id,
+					"target contract address", d.cork.TargetContractAddress)
+				continue
+			}
 			winningScheduledVotes = append(winningScheduledVotes, d.cork)
 		}
 

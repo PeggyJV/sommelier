@@ -97,10 +97,32 @@ func (k Keeper) EndBlocker(ctx sdk.Context) {
 		return
 	}
 
-	k.Logger(ctx).Info("submitting due authority corks as contract calls",
-		"height", fmt.Sprintf("%d", ctx.BlockHeight()), "count", len(due))
-	// todo: implement batch sends to save on gas
+	// Re-check the allowlist at EXECUTION, not just at scheduling.
+	//
+	// A cork can be queued for an arbitrarily distant height, so validating
+	// only at schedule time means a compromised authority key can stage calls
+	// that neither an authority rotation nor removing the target cellar can
+	// stop. Re-checking here makes RemoveManagedCellarIDs an actual kill
+	// switch for already-queued corks, which is the de-escalation path the
+	// design relies on.
+	submitted := 0
 	for _, d := range due {
+		if !k.HasCellarID(ctx, d.contract) {
+			k.Logger(ctx).Error("dropping due cork for a cellar no longer managed",
+				"height", fmt.Sprintf("%d", ctx.BlockHeight()),
+				"target contract address", d.cork.TargetContractAddress)
+			ctx.EventManager().EmitEvent(sdk.NewEvent(
+				types.EventTypeCorkDroppedUnmanagedCellar,
+				sdk.NewAttribute(sdk.AttributeKeyModule, types.AttributeValueCategory),
+				sdk.NewAttribute(types.AttributeKeyBlockHeight, fmt.Sprintf("%d", ctx.BlockHeight())),
+				sdk.NewAttribute(types.AttributeKeyCork, d.cork.String()),
+			))
+			continue
+		}
 		k.submitContractCall(ctx, d.cork)
+		submitted++
 	}
+
+	k.Logger(ctx).Info("submitted due authority corks as contract calls",
+		"height", fmt.Sprintf("%d", ctx.BlockHeight()), "count", submitted)
 }

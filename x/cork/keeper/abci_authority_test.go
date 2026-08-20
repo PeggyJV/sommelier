@@ -113,3 +113,38 @@ func (suite *KeeperTestSuite) TestEndBlockerNoDueAuthorityCorksIsNoop() {
 			"must not report drops when there was nothing due")
 	}
 }
+
+// Removing a cellar from the allowlist must stop corks ALREADY queued against
+// it, not just block new ones.
+//
+// The allowlist is checked when a cork is scheduled. Without a re-check at
+// execution, a compromised authority key can queue calls far into the future
+// and neither rotating the authority nor removing the target cellar stops them
+// reaching the bridge -- so the documented de-escalation path (remove the
+// cellar ID) does not actually work against a staged attack.
+func (suite *KeeperTestSuite) TestEndBlockerDropsCorksForDelistedCellars() {
+	ctx, corkKeeper := suite.ctx, suite.corkKeeper
+	require := suite.Require()
+
+	corkKeeper.SetPoaKeeper(stubPoaKeeper{active: false})
+
+	height := uint64(ctx.BlockHeight())
+	allowed := common.HexToAddress("0x1111111111111111111111111111111111111111")
+	delisted := common.HexToAddress("0x2222222222222222222222222222222222222222")
+
+	corkKeeper.SetAuthorityCork(ctx, height, authorityTestCork("stillOk", allowed))
+	corkKeeper.SetAuthorityCork(ctx, height, authorityTestCork("revoked", delisted))
+
+	// Only the first cellar remains managed.
+	corkKeeper.SetCellarIDs(ctx, types.CellarIDSet{Ids: []string{allowed.String()}})
+
+	// Exactly one submission: the delisted cork must not reach the bridge.
+	suite.gravityKeeper.EXPECT().
+		CreateContractCallTx(ctx, gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).
+		Times(1)
+
+	corkKeeper.EndBlocker(ctx)
+
+	require.Zero(countAuthorityCorksAt(corkKeeper, ctx, height),
+		"both corks must leave the queue; a dropped cork must not be stranded")
+}

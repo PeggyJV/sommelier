@@ -45,6 +45,20 @@ func endBlockerFixture(t *testing.T, safeMode bool) (Keeper, sdk.Context) {
 		})
 	}
 
+	// Allowlist every cellar these tests target. The EndBlocker re-checks the
+	// allowlist at execution, so an unmanaged target is dropped rather than
+	// becoming relayable.
+	managed := []string{
+		"0x1111111111111111111111111111111111111111",
+		"0x2222222222222222222222222222222222222222",
+		"0x3333333333333333333333333333333333333333",
+		"0x4444444444444444444444444444444444444444",
+		"0x5555555555555555555555555555555555555555",
+	}
+	for _, id := range []uint64{testChainArbitrum, testChainOptimism} {
+		k.SetCellarIDs(ctx, id, types.CellarIDSet{ChainId: id, Ids: managed})
+	}
+
 	return k, ctx
 }
 
@@ -169,4 +183,32 @@ func TestEndBlockerTimeoutSweepStillRuns(t *testing.T) {
 
 	require.Zero(t, countWinning(k, later, testChainArbitrum),
 		"an unrelayed cork past cork_timeout_blocks must be swept")
+}
+
+// Removing a cellar must stop corks already queued against it, not just block
+// new scheduling. Without this, a compromised authority key can stage calls far
+// into the future that no revocation reaches.
+func TestEndBlockerDropsCorksForDelistedCellars(t *testing.T) {
+	k, ctx := endBlockerFixture(t, false)
+
+	height := uint64(ctx.BlockHeight())
+	delisted := common.HexToAddress("0x2222222222222222222222222222222222222222")
+	k.SetAuthorityAxelarCork(ctx, testChainArbitrum, height, types.AxelarCork{
+		TargetContractAddress: delisted.String(),
+		EncodedContractCall:   []byte{0x99},
+		ChainId:               testChainArbitrum,
+	})
+
+	// Narrow the allowlist so the queued target is no longer managed.
+	k.SetCellarIDs(ctx, testChainArbitrum, types.CellarIDSet{
+		ChainId: testChainArbitrum,
+		Ids:     []string{"0x1111111111111111111111111111111111111111"},
+	})
+
+	k.EndBlocker(ctx)
+
+	require.Zero(t, countAt(k, ctx, testChainArbitrum, height),
+		"the cork must leave the scheduled queue rather than being stranded")
+	require.Zero(t, countWinning(k, ctx, testChainArbitrum),
+		"a delisted cellar's cork must not become relayable")
 }
