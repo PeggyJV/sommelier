@@ -24,8 +24,11 @@ func (suite *KeeperTestSuite) TestQueriesHappyPath() {
 	expectedScheduledCork := types.ScheduledCork{
 		Cork:        &cork,
 		BlockHeight: testHeight,
-		Validator:   "cosmosvaloper1xyerxdp4xcmnswfsxyerxdp4xcmnswfs008wpw",
-		Id:          id,
+		// somm-prefixed: the package now installs the chain's real bech32 config
+		// (app/params) rather than falling through to the SDK "cosmos" default,
+		// so this asserts what the production chain actually emits.
+		Validator: "sommvaloper1xyerxdp4xcmnswfsxyerxdp4xcmnswfsnej2mc",
+		Id:        id,
 	}
 	corkKeeper.SetScheduledCork(ctx, testHeight, val, cork)
 

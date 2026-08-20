@@ -25,15 +25,12 @@ func (k Keeper) ScheduleCork(c context.Context, msg *types.MsgScheduleCorkReques
 	}
 
 	signer := msg.MustGetSigner()
-	validatorAddr := k.gravityKeeper.GetOrchestratorValidatorAddress(ctx, signer)
-	if validatorAddr == nil {
-		return nil, errorsmod.Wrapf(sdkerrors.ErrUnauthorized, "signer %s is not a delegate", signer.String())
-	}
-
 	params := k.GetParamSet(ctx)
-	validatorCorkCount := k.GetValidatorCorkCount(ctx, validatorAddr)
-	if validatorCorkCount >= params.MaxCorksPerValidator {
-		return nil, corktypes.ErrValidatorCorkCapacityReached
+	// Fail-closed: an unset authority means no address may schedule a cork.
+	// There is deliberately no fallback to the retired validator-delegate path.
+	if params.CorkAuthority == "" || signer.String() != params.CorkAuthority {
+		return nil, errorsmod.Wrapf(sdkerrors.ErrUnauthorized,
+			"signer %s is not the cork authority", signer.String())
 	}
 
 	if !k.HasCellarID(ctx, common.HexToAddress(msg.Cork.TargetContractAddress)) {
@@ -44,11 +41,10 @@ func (k Keeper) ScheduleCork(c context.Context, msg *types.MsgScheduleCorkReques
 		return nil, corktypes.ErrSchedulingInThePast
 	}
 
-	corkID := k.SetScheduledCork(ctx, msg.BlockHeight, validatorAddr, *msg.Cork)
-	k.IncrementValidatorCorkCount(ctx, validatorAddr)
+	corkID := k.SetAuthorityCork(ctx, msg.BlockHeight, *msg.Cork)
 
 	invalidationScope := msg.Cork.InvalidationScope()
-	// If the vote succeeds, the current invalidation nonce will be incremented
+	// The nonce the EndBlocker will consume when it submits this cork.
 	invalidationNonce := k.GetLatestInvalidationNonce(ctx) + 1
 
 	ctx.EventManager().EmitEvents(
@@ -57,7 +53,6 @@ func (k Keeper) ScheduleCork(c context.Context, msg *types.MsgScheduleCorkReques
 				corktypes.EventTypeCork,
 				sdk.NewAttribute(sdk.AttributeKeyModule, corktypes.AttributeValueCategory),
 				sdk.NewAttribute(corktypes.AttributeKeySigner, signer.String()),
-				sdk.NewAttribute(corktypes.AttributeKeyValidator, validatorAddr.String()),
 				sdk.NewAttribute(corktypes.AttributeKeyCork, msg.Cork.String()),
 				sdk.NewAttribute(corktypes.AttributeKeyBlockHeight, fmt.Sprintf("%d", msg.BlockHeight)),
 				sdk.NewAttribute(corktypes.AttributeKeyCorkID, hex.EncodeToString(corkID)),
