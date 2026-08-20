@@ -188,9 +188,10 @@ var (
 		BondDenom:         "stake",
 	}
 
-	// TestingcorkParams is a set of gravity params for testing
+	// TestingcorkParams is a set of cork params for testing. VoteThreshold is a
+	// retired field kept for wire compatibility; it is no longer read.
 	TestingcorkParams = types.Params{
-		VoteThreshold: sdk.MustNewDecFromStr(corkVoteThresholdStr),
+		VoteThreshold: sdk.MustNewDecFromStr("0.67"),
 	}
 )
 

@@ -9,7 +9,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/testutil"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/cosmos/cosmos-sdk/types/bech32"
 	paramskeeper "github.com/cosmos/cosmos-sdk/x/params/keeper"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/golang/mock/gomock"
@@ -143,38 +142,6 @@ func (suite *KeeperTestSuite) TestSetGetDeleteScheduledCork() {
 
 	corkKeeper.DeleteScheduledCork(ctx, testHeight, expectedID, sdk.ValAddress(val), sampleCellarAddr)
 	require.Empty(corkKeeper.GetScheduledCorks(ctx))
-}
-
-func (suite *KeeperTestSuite) TestGetWinningVotes() {
-	ctx, corkKeeper := suite.ctx, suite.corkKeeper
-	require := suite.Require()
-	testHeight := uint64(ctx.BlockHeight())
-	params := types.DefaultParams()
-	params.VoteThreshold = sdk.ZeroDec()
-	corkKeeper.SetParams(ctx, params)
-	cork := types.Cork{
-		EncodedContractCall:   []byte("testcall"),
-		TargetContractAddress: sampleCellarHex,
-	}
-	_, bytes, err := bech32.DecodeAndConvert("somm1fcl08ymkl70dhyg3vmx4hjsqvxym7dawnp0zfp")
-	require.NoError(err)
-	require.Equal(20, len(bytes))
-	corkKeeper.SetScheduledCork(ctx, testHeight, bytes, cork)
-
-	suite.stakingKeeper.EXPECT().GetLastTotalPower(ctx).Return(sdk.NewInt(100))
-	suite.stakingKeeper.EXPECT().Validator(ctx, gomock.Any()).Return(suite.validator)
-	suite.validator.EXPECT().GetConsensusPower(gomock.Any()).Return(int64(100))
-	suite.stakingKeeper.EXPECT().PowerReduction(ctx).Return(sdk.OneInt())
-
-	winningScheduledVotes := corkKeeper.GetApprovedScheduledCorks(ctx)
-	results := corkKeeper.GetCorkResults(ctx)
-	require.Equal(cork, winningScheduledVotes[0])
-	require.Equal(&cork, results[0].Cork)
-	require.True(results[0].Approved)
-	require.Equal("100.000000000000000000", results[0].ApprovalPercentage)
-
-	// scheduled cork should be deleted at the scheduled height
-	require.Empty(corkKeeper.GetScheduledCorksByBlockHeight(ctx, testHeight))
 }
 
 func (suite *KeeperTestSuite) TestInvalidationNonce() {

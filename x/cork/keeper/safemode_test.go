@@ -3,7 +3,7 @@ package keeper
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	types "github.com/peggyjv/sommelier/v9/x/cork/types/v2"
+	types "github.com/peggyjv/sommelier/v10/x/cork/types/v2"
 )
 
 type stubPoaKeeper struct{ active bool }
@@ -22,7 +22,4 @@ func (suite *KeeperTestSuite) TestScheduleCorkFrozenInSafeMode() {
 	)
 	require.Error(err)
 	require.Contains(err.Error(), "safe mode")
-
-	// Sanity: the EndBlocker is a no-op in safe mode and does not panic.
-	suite.corkKeeper.EndBlocker(suite.ctx)
 }

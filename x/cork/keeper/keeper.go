@@ -15,8 +15,6 @@ import (
 	types "github.com/peggyjv/sommelier/v10/x/cork/types/v2"
 )
 
-const corkVoteThresholdStr = "0.67"
-
 // Keeper of the oracle store
 type Keeper struct {
 	storeKey      storetypes.StoreKey
@@ -331,69 +329,6 @@ func (k Keeper) GetCorkResults(ctx sdk.Context) []*types.CorkResult {
 	return corkResults
 }
 
-///////////
-// Votes //
-///////////
-
-func (k Keeper) GetApprovedScheduledCorks(ctx sdk.Context) (approvedCorks []types.Cork) {
-	currentBlockHeight := uint64(ctx.BlockHeight())
-	totalPower := k.stakingKeeper.GetLastTotalPower(ctx)
-	corks := []types.Cork{}
-	powers := []uint64{}
-	k.IterateScheduledCorksByBlockHeight(ctx, currentBlockHeight, func(val sdk.ValAddress, _ uint64, id []byte, addr common.Address, cork types.Cork) (stop bool) {
-		validator := k.stakingKeeper.Validator(ctx, val)
-
-		// Skip if validator no longer exists (e.g., fully unbonded)
-		if validator == nil {
-			k.DeleteScheduledCork(ctx, currentBlockHeight, id, val, addr)
-			k.DecrementValidatorCorkCount(ctx, val)
-			return false
-		}
-
-		validatorPower := uint64(validator.GetConsensusPower(k.stakingKeeper.PowerReduction(ctx)))
-		found := false
-		for i, c := range corks {
-			if c.Equals(cork) {
-				powers[i] += validatorPower
-
-				found = true
-				break
-			}
-		}
-
-		if !found {
-			corks = append(corks, cork)
-			powers = append(powers, validatorPower)
-		}
-
-		k.DeleteScheduledCork(ctx, currentBlockHeight, id, val, addr)
-		k.DecrementValidatorCorkCount(ctx, val)
-
-		return false
-	})
-
-	threshold := sdk.MustNewDecFromStr(corkVoteThresholdStr)
-	for i, power := range powers {
-		cork := corks[i]
-		approvalPercentage := sdk.NewDecFromInt(sdk.NewIntFromUint64(power)).Quo(sdk.NewDecFromInt(totalPower))
-		quorumReached := approvalPercentage.GT(threshold)
-		corkResult := types.CorkResult{
-			Cork:               &cork,
-			BlockHeight:        currentBlockHeight,
-			Approved:           quorumReached,
-			ApprovalPercentage: approvalPercentage.Mul(sdk.NewDec(100)).String(),
-		}
-		corkID := cork.IDHash(currentBlockHeight)
-
-		k.SetCorkResult(ctx, corkID, corkResult)
-
-		if quorumReached {
-			approvedCorks = append(approvedCorks, cork)
-		}
-	}
-
-	return approvedCorks
-}
 
 /////////////
 // Cellars //
@@ -439,30 +374,8 @@ func (k Keeper) HasCellarID(ctx sdk.Context, address common.Address) (found bool
 // Validator Cork counts //
 ///////////////////////////
 
-func (k Keeper) GetValidatorCorkCount(ctx sdk.Context, val sdk.ValAddress) (count uint64) {
-	store := ctx.KVStore(k.storeKey)
-	bz := store.Get(corktypes.GetValidatorCorkCountKey(val))
-	if len(bz) == 0 {
-		return 0
-	}
-
-	return binary.BigEndian.Uint64(bz)
-}
-
 func (k Keeper) SetValidatorCorkCount(ctx sdk.Context, val sdk.ValAddress, count uint64) {
 	bz := make([]byte, 8)
 	binary.BigEndian.PutUint64(bz, count)
 	ctx.KVStore(k.storeKey).Set(corktypes.GetValidatorCorkCountKey(val), bz)
-}
-
-func (k Keeper) IncrementValidatorCorkCount(ctx sdk.Context, val sdk.ValAddress) {
-	count := k.GetValidatorCorkCount(ctx, val)
-	k.SetValidatorCorkCount(ctx, val, count+1)
-}
-
-func (k Keeper) DecrementValidatorCorkCount(ctx sdk.Context, val sdk.ValAddress) {
-	count := k.GetValidatorCorkCount(ctx, val)
-	if count > 0 {
-		k.SetValidatorCorkCount(ctx, val, count-1)
-	}
 }
