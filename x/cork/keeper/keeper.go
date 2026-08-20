@@ -127,6 +127,50 @@ func (k Keeper) IterateScheduledCorksByPrefix(ctx sdk.Context, prefix []byte, cb
 	}
 }
 
+// SetAuthorityCork stores a cork scheduled by the cork authority for execution
+// at blockHeight and returns its ID.
+func (k Keeper) SetAuthorityCork(ctx sdk.Context, blockHeight uint64, cork types.Cork) []byte {
+	id := cork.IDHash(blockHeight)
+	bz := k.cdc.MustMarshal(&cork)
+	ctx.KVStore(k.storeKey).Set(
+		corktypes.GetAuthorityCorkKey(blockHeight, id, common.HexToAddress(cork.TargetContractAddress)),
+		bz,
+	)
+	return id
+}
+
+// DeleteAuthorityCork removes a scheduled authority cork.
+func (k Keeper) DeleteAuthorityCork(ctx sdk.Context, blockHeight uint64, id []byte, contract common.Address) {
+	ctx.KVStore(k.storeKey).Delete(corktypes.GetAuthorityCorkKey(blockHeight, id, contract))
+}
+
+// IterateAuthorityCorksByBlockHeight walks authority corks targeting blockHeight.
+func (k Keeper) IterateAuthorityCorksByBlockHeight(
+	ctx sdk.Context,
+	blockHeight uint64,
+	cb func(blockHeight uint64, id []byte, contract common.Address, cork types.Cork) (stop bool),
+) {
+	prefix := corktypes.GetAuthorityCorkKeyByBlockHeightPrefix(blockHeight)
+	iter := sdk.KVStorePrefixIterator(ctx.KVStore(k.storeKey), prefix)
+	defer iter.Close()
+
+	for ; iter.Valid(); iter.Next() {
+		key := iter.Key()
+		// key layout after the 1-byte prefix: height(8) | id(32) | contract(20)
+		idStart := 1 + 8
+		contractStart := idStart + 32
+		id := key[idStart:contractStart]
+		contract := common.BytesToAddress(key[contractStart:])
+
+		var cork types.Cork
+		k.cdc.MustUnmarshal(iter.Value(), &cork)
+
+		if cb(blockHeight, id, contract, cork) {
+			break
+		}
+	}
+}
+
 func (k Keeper) GetScheduledCorks(ctx sdk.Context) []*types.ScheduledCork {
 	var scheduledCorks []*types.ScheduledCork
 	k.IterateScheduledCorks(ctx, func(val sdk.ValAddress, blockHeight uint64, id []byte, _ common.Address, cork types.Cork) (stop bool) {

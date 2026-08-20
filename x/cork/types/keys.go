@@ -49,6 +49,11 @@ const (
 
 	// ValidatorCorkCountKey - <prefix><val_address> -> uint64(count)
 	ValidatorCorkCountKey
+
+	// AuthorityCorkKeyPrefix - <prefix><block_height><cork_id><contract_address> -> <cork>
+	// Corks scheduled by the cork authority. Replaces ScheduledCorkKeyPrefix,
+	// which is retained above but no longer written.
+	AuthorityCorkKeyPrefix
 )
 
 func MakeCellarIDsKey() []byte {
@@ -66,6 +71,21 @@ func GetScheduledCorkKeyByBlockHeightPrefix(blockHeight uint64) []byte {
 func GetScheduledCorkKey(blockHeight uint64, id []byte, val sdk.ValAddress, contract common.Address) []byte {
 	blockHeightBytes := sdk.Uint64ToBigEndian(blockHeight)
 	return bytes.Join([][]byte{GetScheduledCorkKeyPrefix(), blockHeightBytes, id, val.Bytes(), contract.Bytes()}, []byte{})
+}
+
+func GetAuthorityCorkKeyPrefix() []byte {
+	return []byte{AuthorityCorkKeyPrefix}
+}
+
+func GetAuthorityCorkKeyByBlockHeightPrefix(blockHeight uint64) []byte {
+	return append(GetAuthorityCorkKeyPrefix(), sdk.Uint64ToBigEndian(blockHeight)...)
+}
+
+func GetAuthorityCorkKey(blockHeight uint64, id []byte, contract common.Address) []byte {
+	return bytes.Join(
+		[][]byte{GetAuthorityCorkKeyPrefix(), sdk.Uint64ToBigEndian(blockHeight), id, contract.Bytes()},
+		[]byte{},
+	)
 }
 
 func GetCorkResultPrefix() []byte {
