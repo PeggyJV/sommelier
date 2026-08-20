@@ -13,7 +13,6 @@ import (
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	distributiontypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
 	govtypesv1beta1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
-	"github.com/ethereum/go-ethereum/common"
 	"github.com/golang/protobuf/proto" //nolint:staticcheck
 	"github.com/peggyjv/sommelier/v10/x/axelarcork/types"
 	pubsubtypes "github.com/peggyjv/sommelier/v10/x/pubsub/types"
@@ -252,19 +251,20 @@ func (s *IntegrationTestSuite) TestAxelarCork() {
 					return false
 				}
 
-				// verify that the scheduled corks have not yet been consumed
-				s.Require().Len(scheduledCorksResponse.Corks, len(s.chain.validators))
+				// verify that the scheduled cork has not yet been consumed.
+				// One entry, not one per validator: the authority schedules a
+				// single cork rather than each validator voting for its own.
+				s.Require().Len(scheduledCorksResponse.Corks, 1)
 			}
 
 			return false
 		}, 3*time.Minute, 1*time.Second, "never reached scheduled height")
 
-		s.T().Log("Verifying axelar cork was approved")
-		corkResultResponse, err := axelarcorkQueryClient.QueryCorkResult(context.Background(), &types.QueryCorkResultRequest{Id: axelarCorkIDHex, ChainId: arbitrumChainID})
-		s.Require().NoError(err)
-		s.Require().True(corkResultResponse.CorkResult.Approved)
-		s.Require().True(sdk.MustNewDecFromStr(corkResultResponse.CorkResult.ApprovalPercentage).GT(corkVoteThreshold))
-		s.Require().Equal(counterContract, common.HexToAddress(corkResultResponse.CorkResult.Cork.TargetContractAddress))
+		// There is no approval step to verify any more. AxelarCorkResult records
+		// were written by the power tally, which v10 removes: a cork queued by
+		// the authority becomes relayable outright at its target height.
+		// Existing records stay queryable, but no new ones are produced. What
+		// matters is the transition to the relayable queue, verified below.
 
 		// the corks are deleted when it's converted into a WinningAxelarCork and is relayable
 		s.T().Log("Verifying scheduled axelar corks were deleted")
