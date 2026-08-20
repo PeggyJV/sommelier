@@ -4,6 +4,15 @@ const (
 	// UpgradeName is the on-chain upgrade plan name for the v10 release that
 	// introduces the PoA power-floor module.
 	UpgradeName = "v10"
+
+	// CorkAuthorityAddress is seeded as the sole cork authority for x/cork and
+	// x/axelarcork at the v10 upgrade. It replaces the retired
+	// validator-supermajority path: this address alone may schedule corks, and
+	// for axelarcork also relay, bump gas, and cancel.
+	//
+	// Rotated afterwards by governance via ParameterChangeProposal, which is
+	// the only recovery path if the key is lost or compromised.
+	CorkAuthorityAddress = "somm1lcsjy2d5s33h0sddd8lpuqvwyz5ruz7ju4aeqa"
 )
 
 // DefaultAuthorityValidators is the binary-specified initial authority

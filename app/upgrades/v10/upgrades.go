@@ -7,6 +7,10 @@ import (
 	"github.com/cosmos/cosmos-sdk/types/module"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
 
+	storetypes "github.com/cosmos/cosmos-sdk/store/types"
+
+	axelarcorkkeeper "github.com/peggyjv/sommelier/v10/x/axelarcork/keeper"
+	corkkeeper "github.com/peggyjv/sommelier/v10/x/cork/keeper"
 	poakeeper "github.com/peggyjv/sommelier/v10/x/poa/keeper"
 	poatypes "github.com/peggyjv/sommelier/v10/x/poa/types"
 )
@@ -24,9 +28,20 @@ func CreateUpgradeHandler(
 	mm *module.Manager,
 	configurator module.Configurator,
 	poaKeeper poakeeper.Keeper,
+	corkKeeper corkkeeper.Keeper,
+	axelarcorkKeeper axelarcorkkeeper.Keeper,
+	corkStoreKey storetypes.StoreKey,
+	axelarcorkStoreKey storetypes.StoreKey,
 ) upgradetypes.UpgradeHandler {
 	return func(ctx sdk.Context, _ upgradetypes.Plan, vm module.VersionMap) (module.VersionMap, error) {
 		ctx.Logger().Info("v10 upgrade: entering handler")
+
+		// Fail fast on a malformed constant: a bad authority would be written to
+		// params and, being fail-closed, would make cork scheduling impossible
+		// until a governance proposal completed.
+		if _, err := sdk.AccAddressFromBech32(CorkAuthorityAddress); err != nil {
+			return vm, fmt.Errorf("v10: invalid CorkAuthorityAddress %q: %w", CorkAuthorityAddress, err)
+		}
 
 		if len(DefaultAuthorityValidators) == 0 {
 			return vm, fmt.Errorf(
@@ -55,6 +70,22 @@ func CreateUpgradeHandler(
 		poaKeeper.SetActivationHeight(ctx, ctx.BlockHeight())
 		ctx.Logger().Info("v10 upgrade: PoA params and authority set initialised",
 			"authority_count", len(addrs), "activation_height", ctx.BlockHeight())
+
+		// Seed the cork authority in both modules.
+		corkParams := corkKeeper.GetParamSet(ctx)
+		corkParams.CorkAuthority = CorkAuthorityAddress
+		corkKeeper.SetParams(ctx, corkParams)
+
+		axelarcorkParams := axelarcorkKeeper.GetParamSet(ctx)
+		axelarcorkParams.CorkAuthority = CorkAuthorityAddress
+		axelarcorkKeeper.SetParams(ctx, axelarcorkParams)
+
+		// Drain the retired validator-scheduled queues. MUST happen here: v10
+		// removes the power tally that was the only deleter of these prefixes,
+		// so anything left behind is permanently undeletable state.
+		drained := DrainLegacyCorkQueues(ctx, corkStoreKey, axelarcorkStoreKey)
+		ctx.Logger().Info("v10 upgrade: cork authority seeded and legacy queues drained",
+			"authority", CorkAuthorityAddress, "drained_keys", drained)
 
 		return mm.RunMigrations(ctx, configurator, vm)
 	}

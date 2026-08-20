@@ -1209,6 +1209,10 @@ func (app *SommelierApp) setupUpgradeHandlers() {
 			app.mm,
 			app.configurator,
 			app.PoaKeeper,
+			app.CorkKeeper,
+			app.AxelarCorkKeeper,
+			app.GetKey(corktypes.StoreKey),
+			app.GetKey(axelarcorktypes.StoreKey),
 		),
 	)
 }
