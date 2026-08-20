@@ -22,9 +22,8 @@ type PoaSafeModeReader interface {
 // cork and axelarcork modules instead gate themselves in their msg servers and
 // EndBlockers.
 //
-// Only top-level messages are inspected. A frozen gravity message nested inside
-// an authz MsgExec is not the relayer's normal submission path; extend
-// isFrozenGravityMsg to recurse if that surface ever matters.
+// Inspection recurses into message wrappers (authz MsgExec, gov v1
+// MsgSubmitProposal) — see containsFrozenGravityMsg.
 func NewSafeModeAnteHandler(poa PoaSafeModeReader, next sdk.AnteHandler) sdk.AnteHandler {
 	return func(ctx sdk.Context, tx sdk.Tx, simulate bool) (sdk.Context, error) {
 		if poa != nil && poa.SafeModeActive(ctx) {
@@ -53,7 +52,29 @@ func NewSafeModeAnteHandler(poa PoaSafeModeReader, next sdk.AnteHandler) sdk.Ant
 // registered orchestrator signer), which is a negligible residual. In-repo
 // cork/axelarcork msgs executed via gov v1 ARE gated by their msg servers.
 func containsFrozenGravityMsg(msg sdk.Msg) bool {
+	return containsFrozenGravityMsgAtDepth(msg, 0)
+}
+
+// safeModeMaxMsgDepth caps wrapper recursion.
+//
+// This handler is installed OUTSIDE the SDK ante chain (see app.go), so it runs
+// before SetUpContextDecorator installs a gas meter and before signature
+// verification. Unbounded recursion there is unmetered work an unauthenticated
+// sender can trigger during safe mode -- exactly when the chain is least able
+// to absorb it -- and each level re-unpacks every Any it contains, so cost
+// grows faster than tx size.
+//
+// Real txs nest at most a couple of levels (authz MsgExec around a gov
+// proposal). Anything deeper is treated as frozen rather than walked, matching
+// the fail-closed handling of an undecodable wrapper below.
+const safeModeMaxMsgDepth = 8
+
+func containsFrozenGravityMsgAtDepth(msg sdk.Msg, depth int) bool {
 	if isFrozenGravityMsg(msg) {
+		return true
+	}
+	if depth >= safeModeMaxMsgDepth {
+		// Fail closed: refuse rather than recurse further.
 		return true
 	}
 	switch m := msg.(type) {
@@ -63,7 +84,7 @@ func containsFrozenGravityMsg(msg sdk.Msg) bool {
 			return true
 		}
 		for _, im := range inner {
-			if containsFrozenGravityMsg(im) {
+			if containsFrozenGravityMsgAtDepth(im, depth+1) {
 				return true
 			}
 		}
@@ -73,7 +94,7 @@ func containsFrozenGravityMsg(msg sdk.Msg) bool {
 			return true
 		}
 		for _, im := range inner {
-			if containsFrozenGravityMsg(im) {
+			if containsFrozenGravityMsgAtDepth(im, depth+1) {
 				return true
 			}
 		}

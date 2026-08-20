@@ -108,3 +108,52 @@ func TestSafeModeAnteHandler_GovSubmitProposalRecursion(t *testing.T) {
 	_, err = h(ctx, stubTx{msgs: []sdk.Msg{okProp}}, false)
 	require.NoError(t, err, "gov proposal with only allowed msgs must pass")
 }
+
+// buildNestedExec wraps an innocuous message in `depth` layers of authz.MsgExec.
+func buildNestedExec(t *testing.T, depth int) sdk.Msg {
+	t.Helper()
+
+	inner := authz.NewMsgExec(sdk.AccAddress("grantee"), []sdk.Msg{&gravitytypes.MsgEthereumHeightVote{}})
+	cur := &inner
+	for i := 0; i < depth; i++ {
+		next := authz.NewMsgExec(sdk.AccAddress("grantee"), []sdk.Msg{cur})
+		cur = &next
+	}
+	return cur
+}
+
+// This handler is installed OUTSIDE the SDK ante chain (app.go), so it runs
+// before SetUpContextDecorator installs a gas meter and before signature
+// verification. Unbounded wrapper recursion would be unmetered work an
+// unauthenticated sender could trigger during safe mode -- precisely when the
+// chain is least able to absorb it.
+//
+// Past the depth cap the handler must fail closed rather than keep walking.
+func TestSafeModeAnteCapsWrapperDepth(t *testing.T) {
+	called := false
+	next := func(ctx sdk.Context, tx sdk.Tx, simulate bool) (sdk.Context, error) {
+		called = true
+		return ctx, nil
+	}
+
+	deep := buildNestedExec(t, safeModeMaxMsgDepth+5)
+	h := NewSafeModeAnteHandler(stubSafeMode{active: true}, next)
+
+	_, err := h(sdk.Context{}, stubTx{msgs: []sdk.Msg{deep}}, false)
+	require.Error(t, err, "wrapper nested past the cap must be rejected")
+	require.False(t, called, "must not fall through to the rest of the ante chain")
+
+	// A realistically shallow wrapper carrying nothing frozen still passes.
+	called = false
+	shallow := buildNestedExec(t, 1)
+	_, err = h(sdk.Context{}, stubTx{msgs: []sdk.Msg{shallow}}, false)
+	require.NoError(t, err, "ordinary nesting must still pass")
+	require.True(t, called)
+
+	// And the cap must not run at all when safe mode is off.
+	called = false
+	off := NewSafeModeAnteHandler(stubSafeMode{active: false}, next)
+	_, err = off(sdk.Context{}, stubTx{msgs: []sdk.Msg{deep}}, false)
+	require.NoError(t, err, "depth cap only applies while frozen")
+	require.True(t, called)
+}
