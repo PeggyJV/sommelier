@@ -15,5 +15,19 @@ const (
 // slice is empty (otherwise the chain would enter authority-empty safe mode on
 // the first block after upgrade, freezing the value-bearing modules).
 var DefaultAuthorityValidators = []string{
-	// "sommvaloper1...",
+	// Sommelier Foundation -- the existing majority validator. Included so the
+	// authority bucket keeps a member that already clears the cork approval
+	// threshold (>67% of consensus power), preserving the ability to schedule
+	// wind-down corks without coordinating all three new nodes. While the
+	// Foundation is bonded its raw share already meets FloorFraction, so
+	// ComputeMultiplier returns 1 and PoA redistributes nothing; the boost only
+	// engages if the Foundation drops out, at which point the three nodes below
+	// are raised to the floor.
+	"sommvaloper1rtt69afx4dtj4t3urgm93qq7kxypzzeew4w8t0",
+	// Sommelier Authority 1 -- sommelier-authority-1, us-east4-b
+	"sommvaloper16zxydy6u5ep50dhs987hgq6lqawkcdpfzefs7j",
+	// Sommelier Authority 2 -- sommelier-authority-2, europe-west1-b
+	"sommvaloper1rntnc0k545976kzgtn8jm749azry8kpwazcptz",
+	// Sommelier Authority 3 -- sommelier-authority-3, us-west1-b
+	"sommvaloper1n0qvtedunhxqr84gvz0avar0tc4cnc3xm2wks4",
 }
