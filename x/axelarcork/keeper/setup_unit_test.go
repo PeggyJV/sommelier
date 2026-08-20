@@ -64,7 +64,6 @@ func setupCorkKeeper(t *testing.T) (
 	mockDistributionKeeper := mocks.NewMockDistributionKeeper(ctrl)
 	mockICS4wrapper := mocks.NewMockICS4Wrapper(ctrl)
 	mockGravityKeeper := mocks.NewMockGravityKeeper(ctrl)
-	mockPubsubKeeper := mocks.NewMockPubsubKeeper(ctrl)
 
 	k := NewKeeper(
 		protoCodec,
@@ -77,7 +76,6 @@ func setupCorkKeeper(t *testing.T) (
 		mockDistributionKeeper,
 		mockICS4wrapper,
 		mockGravityKeeper,
-		mockPubsubKeeper,
 	)
 
 	ctx := sdk.NewContext(commitMultiStore, tmproto.Header{}, false, log.NewNopLogger())

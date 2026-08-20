@@ -513,7 +513,6 @@ func NewSommelierApp(
 		app.DistrKeeper,
 		app.IBCKeeper.ChannelKeeper,
 		app.GravityKeeper,
-		app.PubsubKeeper,
 	)
 
 	// Create Transfer Keepers

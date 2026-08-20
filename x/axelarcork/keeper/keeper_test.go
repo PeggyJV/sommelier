@@ -43,7 +43,6 @@ type KeeperTestSuite struct {
 	distributionKeeper *mocks.MockDistributionKeeper
 	ics4wrapper        *mocks.MockICS4Wrapper
 	gravityKeeper      *mocks.MockGravityKeeper
-	pubsubKeeper       *mocks.MockPubsubKeeper
 
 	validator *mocks.MockValidatorI
 
@@ -70,7 +69,6 @@ func (suite *KeeperTestSuite) SetupTest() {
 	suite.distributionKeeper = mocks.NewMockDistributionKeeper(ctrl)
 	suite.ics4wrapper = mocks.NewMockICS4Wrapper(ctrl)
 	suite.gravityKeeper = mocks.NewMockGravityKeeper(ctrl)
-	suite.pubsubKeeper = mocks.NewMockPubsubKeeper(ctrl)
 	suite.validator = mocks.NewMockValidatorI(ctrl)
 	suite.ctx = ctx
 
@@ -96,7 +94,6 @@ func (suite *KeeperTestSuite) SetupTest() {
 		suite.distributionKeeper,
 		suite.ics4wrapper,
 		suite.gravityKeeper,
-		suite.pubsubKeeper,
 	)
 
 	//types.RegisterInterfaces(encCfg.InterfaceRegistry)

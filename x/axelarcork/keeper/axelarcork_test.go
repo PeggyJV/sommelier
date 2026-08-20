@@ -139,7 +139,6 @@ func (suite *KeeperTestSuite) TestSweepModuleAccountBalances() {
 				suite.distributionKeeper,
 				suite.ics4wrapper,
 				suite.gravityKeeper,
-				suite.pubsubKeeper,
 			)
 
 			// Reset context
