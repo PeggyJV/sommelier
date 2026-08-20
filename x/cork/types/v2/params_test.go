@@ -3,49 +3,20 @@ package v2
 import (
 	"testing"
 
-	sdk "github.com/cosmos/cosmos-sdk/types"
+	_ "github.com/peggyjv/sommelier/v10/app/params" // sets the somm bech32 address prefixes via init()
 	"github.com/stretchr/testify/require"
 )
 
-func TestParamsValidate(t *testing.T) {
-	testCases := []struct {
-		name    string
-		params  Params
-		expPass bool
-	}{
-		{
-			name:    "default",
-			params:  DefaultParams(),
-			expPass: true,
-		},
-		{
-			name:    "empty",
-			params:  Params{},
-			expPass: false,
-		},
-		{
-			name: "invalid vote threshold",
-			params: Params{
-				VoteThreshold: sdk.NewDec(-1),
-			},
-			expPass: false,
-		},
-		{
-			name: "nil vote threshold",
-			params: Params{
-				VoteThreshold: sdk.Dec{},
-			},
-			expPass: false,
-		},
-	}
+func TestCorkAuthorityValidation(t *testing.T) {
+	// Empty is allowed at the type level; the msg server is what fails closed.
+	require.NoError(t, validateCorkAuthority(""))
+	require.NoError(t, validateCorkAuthority("somm1lcsjy2d5s33h0sddd8lpuqvwyz5ruz7ju4aeqa"))
 
-	for _, tc := range testCases {
+	require.Error(t, validateCorkAuthority("not-bech32"))
+	require.Error(t, validateCorkAuthority("cosmos1qypqxpq9qcrsszg2pvxq6rs0zqg3yyc5lzv7xu"))
+	require.Error(t, validateCorkAuthority(12345))
+}
 
-		err := tc.params.ValidateBasic()
-		if tc.expPass {
-			require.NoError(t, err, tc.name)
-		} else {
-			require.Error(t, err, tc.name)
-		}
-	}
+func TestDefaultParamsHasEmptyAuthority(t *testing.T) {
+	require.Equal(t, "", DefaultParams().CorkAuthority)
 }

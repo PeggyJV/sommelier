@@ -13,6 +13,7 @@ var (
 	KeyVotePeriod           = []byte("voteperiod")
 	KeyVoteThreshold        = []byte("votethreshold")
 	KeyMaxCorksPerValidator = []byte("maxcorkspervalidator")
+	KeyCorkAuthority        = []byte("corkauthority")
 )
 
 var _ paramtypes.ParamSet = &Params{}
@@ -28,6 +29,7 @@ func DefaultParams() Params {
 		// Deprecated
 		VoteThreshold:        sdk.NewDecWithPrec(67, 2), // 67%
 		MaxCorksPerValidator: 1000,
+		CorkAuthority:        "",
 	}
 }
 
@@ -36,6 +38,7 @@ func (p *Params) ParamSetPairs() paramtypes.ParamSetPairs {
 	return paramtypes.ParamSetPairs{
 		paramtypes.NewParamSetPair(KeyVoteThreshold, &p.VoteThreshold, validateVoteThreshold),
 		paramtypes.NewParamSetPair(KeyMaxCorksPerValidator, &p.MaxCorksPerValidator, validateMaxCorksPerValidator),
+		paramtypes.NewParamSetPair(KeyCorkAuthority, &p.CorkAuthority, validateCorkAuthority),
 	}
 }
 
@@ -45,6 +48,9 @@ func (p *Params) ValidateBasic() error {
 		return err
 	}
 	if err := validateMaxCorksPerValidator(p.MaxCorksPerValidator); err != nil {
+		return err
+	}
+	if err := validateCorkAuthority(p.CorkAuthority); err != nil {
 		return err
 	}
 	return nil
@@ -77,5 +83,21 @@ func validateMaxCorksPerValidator(i interface{}) error {
 		return errors.New("max corks per validator cannot be 0")
 	}
 
+	return nil
+}
+
+// validateCorkAuthority accepts the empty string (fail-closed: no address can
+// schedule) or a well-formed somm1 account address.
+func validateCorkAuthority(i interface{}) error {
+	authority, ok := i.(string)
+	if !ok {
+		return fmt.Errorf("invalid parameter type: %T", i)
+	}
+	if authority == "" {
+		return nil
+	}
+	if _, err := sdk.AccAddressFromBech32(authority); err != nil {
+		return fmt.Errorf("invalid cork authority address %q: %w", authority, err)
+	}
 	return nil
 }

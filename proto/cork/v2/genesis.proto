@@ -29,4 +29,8 @@ message Params {
         (gogoproto.nullable)   = false
     ];
     uint64 max_corks_per_validator = 2;
+    // cork_authority is the single address permitted to schedule corks.
+    // Rotated by governance via ParameterChangeProposal. Empty means no
+    // address can schedule a cork (fail-closed).
+    string cork_authority = 3 [(gogoproto.moretags) = "yaml:\"cork_authority\""];
 }
