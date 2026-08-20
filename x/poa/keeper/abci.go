@@ -5,6 +5,7 @@ import (
 
 	"cosmossdk.io/math"
 	abci "github.com/cometbft/cometbft/abci/types"
+	tmprotocrypto "github.com/cometbft/cometbft/proto/tendermint/crypto"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	"github.com/peggyjv/sommelier/v10/x/poa/types"
@@ -162,10 +163,13 @@ func mergeUpdatesWithBoost(ctx sdk.Context, k Keeper, raw []abci.ValidatorUpdate
 		if err != nil {
 			continue
 		}
-		key := string(pk.GetEd25519())
-		if key == "" {
-			// Try secp256k1 if Ed25519 is not set.
-			key = string(pk.GetSecp256K1())
+		key, ok := consPubKeyIndex(pk)
+		if !ok {
+			// Unrecognised key type. Skip rather than indexing it: an empty
+			// key would collide every such validator onto one map slot, and a
+			// raw update with an equally unrecognised key would then match it
+			// and be assigned an unrelated validator's boosted power.
+			continue
 		}
 		pkToOp[key] = opStr
 		opPk[opStr] = abci.ValidatorUpdate{PubKey: pk, Power: boostedByOp[opStr]}
@@ -175,14 +179,12 @@ func mergeUpdatesWithBoost(ctx sdk.Context, k Keeper, raw []abci.ValidatorUpdate
 	seen := make(map[string]struct{}, len(boostedByOp))
 
 	for _, u := range raw {
-		key := string(u.PubKey.GetEd25519())
-		if key == "" {
-			key = string(u.PubKey.GetSecp256K1())
-		}
-		if op, ok := pkToOp[key]; ok {
-			// Override with boosted value.
-			u.Power = boostedByOp[op]
-			seen[op] = struct{}{}
+		if key, ok := consPubKeyIndex(u.PubKey); ok {
+			if op, matched := pkToOp[key]; matched {
+				// Override with boosted value.
+				u.Power = boostedByOp[op]
+				seen[op] = struct{}{}
+			}
 		}
 		out = append(out, u)
 	}
@@ -202,6 +204,22 @@ func mergeUpdatesWithBoost(ctx sdk.Context, k Keeper, raw []abci.ValidatorUpdate
 		out = append(out, opPk[op])
 	}
 	return out
+}
+
+// consPubKeyIndex builds a map key that identifies a consensus public key by
+// both type and bytes, and reports whether the type is one we recognise.
+//
+// Keying on bytes alone would let an unrecognised type collapse to the empty
+// string, colliding distinct validators onto one slot; including the type tag
+// also stops an ed25519 key from ever aliasing a secp256k1 key.
+func consPubKeyIndex(pk tmprotocrypto.PublicKey) (string, bool) {
+	if b := pk.GetEd25519(); len(b) > 0 {
+		return "ed25519:" + string(b), true
+	}
+	if b := pk.GetSecp256K1(); len(b) > 0 {
+		return "secp256k1:" + string(b), true
+	}
+	return "", false
 }
 
 // pruneSnapshots deletes per-block multiplier snapshots older than
