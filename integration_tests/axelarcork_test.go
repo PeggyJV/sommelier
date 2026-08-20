@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/hex"
 	"fmt"
-	"sort"
 	"time"
 
 	"cosmossdk.io/math"
@@ -39,12 +38,6 @@ func (s *IntegrationTestSuite) TestAxelarCork() {
 		proposerCtx, err := s.chain.clientContext("tcp://localhost:26657", proposer.keyring, "proposer", proposer.address())
 		s.Require().NoError(err)
 		propID := uint64(1)
-
-		sortedValidators := make([]string, 0, 4)
-		for _, validator := range s.chain.validators {
-			sortedValidators = append(sortedValidators, validator.validatorAddress().String())
-		}
-		sort.Strings(sortedValidators)
 
 		axelarcorkQueryClient := types.NewQueryClient(val0ClientCtx)
 		pubsubQueryClient := pubsubtypes.NewQueryClient(orch0ClientCtx)
@@ -165,29 +158,42 @@ func (s *IntegrationTestSuite) TestAxelarCork() {
 		axelarCorkID := axelarCork.IDHash(targetBlockHeight)
 		axelarCorkIDHex := hex.EncodeToString(axelarCorkID)
 		s.T().Logf("Axelar cork ID is %s", axelarCorkIDHex)
-		for i, orch := range s.chain.orchestrators {
-			i := i
-			orch := orch
-			clientCtx, err := s.chain.clientContext("tcp://localhost:26657", orch.keyring, "orch", orch.address())
-			s.Require().NoError(err)
-			axelarCorkMsg, err := types.NewMsgScheduleAxelarCorkRequest(
-				arbitrumChainID,
-				ABIEncodedInc(),
-				counterContract,
-				deadline,
-				targetBlockHeight,
-				orch.address())
-			s.Require().NoError(err, "Failed to construct axelar cork")
-			response, err := s.chain.sendMsgs(*clientCtx, axelarCorkMsg)
-			s.Require().NoError(err, "Failed to send axelar cork to node %d", i)
-			if response.Code != 0 {
-				if response.Code != 32 {
-					s.T().Log(response)
-				}
-			}
+		// A single cork from the cork authority. The validator-supermajority
+		// path is retired: one authorized message schedules the cork outright.
+		authority := s.chain.orchestrators[0]
+		authorityCtx, err := s.chain.clientContext("tcp://localhost:26657", authority.keyring, "orch", authority.address())
+		s.Require().NoError(err)
+		axelarCorkMsg, err := types.NewMsgScheduleAxelarCorkRequest(
+			arbitrumChainID,
+			ABIEncodedInc(),
+			counterContract,
+			deadline,
+			targetBlockHeight,
+			authority.address())
+		s.Require().NoError(err, "Failed to construct axelar cork")
+		response, err := s.chain.sendMsgs(*authorityCtx, axelarCorkMsg)
+		s.Require().NoError(err, "Failed to send axelar cork from the cork authority")
+		s.Require().Zero(response.Code, "authority axelar cork was rejected: %v", response)
+		s.T().Log("Axelar cork msg sent successfully by the cork authority")
 
-			s.T().Logf("Axelar cork msg for orch %d sent successfully", i)
+		// A non-authority orchestrator must be refused.
+		other := s.chain.orchestrators[1]
+		otherCtx, err := s.chain.clientContext("tcp://localhost:26657", other.keyring, "orch", other.address())
+		s.Require().NoError(err)
+		otherMsg, err := types.NewMsgScheduleAxelarCorkRequest(
+			arbitrumChainID,
+			ABIEncodedInc(),
+			counterContract,
+			deadline,
+			targetBlockHeight,
+			other.address())
+		s.Require().NoError(err, "Failed to construct axelar cork")
+		otherResponse, err := s.chain.sendMsgs(*otherCtx, otherMsg)
+		if err == nil {
+			s.Require().NotZero(otherResponse.Code,
+				"a non-authority orchestrator must not be able to schedule an axelar cork")
 		}
+		s.T().Log("Non-authority axelar cork correctly refused")
 
 		s.T().Log("Verifying scheduled axelar corks were created")
 		corks := []*types.ScheduledAxelarCork{}
@@ -197,7 +203,7 @@ func (s *IntegrationTestSuite) TestAxelarCork() {
 				return false
 			}
 
-			if len(res.Corks) == 4 {
+			if len(res.Corks) == 1 {
 				corks = res.Corks
 				return true
 			}
@@ -205,39 +211,16 @@ func (s *IntegrationTestSuite) TestAxelarCork() {
 			return false
 		}, time.Second*30, time.Second*5, "scheduled corks never created")
 
-		s.T().Log("Checking that corks have expected values")
+		s.T().Log("Checking that the cork has expected values")
 		cork0 := corks[0]
-		cork1 := corks[1]
-		cork2 := corks[2]
-		cork3 := corks[3]
 		s.Require().Equal(cork0.Cork.EncodedContractCall, ABIEncodedInc())
 		s.Require().Equal(cork0.Cork.ChainId, arbitrumChainID)
 		s.Require().Equal(cork0.Cork.TargetContractAddress, counterContract.Hex())
 		s.Require().Equal(cork0.Cork.Deadline, deadline)
 		s.Require().Equal(cork0.BlockHeight, targetBlockHeight)
 		s.Require().Equal(cork0.Id, axelarCorkIDHex)
-		s.Require().Equal(cork1.Cork.EncodedContractCall, ABIEncodedInc())
-		s.Require().Equal(cork1.Cork.ChainId, arbitrumChainID)
-		s.Require().Equal(cork1.Cork.TargetContractAddress, counterContract.Hex())
-		s.Require().Equal(cork1.Cork.Deadline, deadline)
-		s.Require().Equal(cork1.BlockHeight, targetBlockHeight)
-		s.Require().Equal(cork1.Id, axelarCorkIDHex)
-		s.Require().Equal(cork2.Cork.EncodedContractCall, ABIEncodedInc())
-		s.Require().Equal(cork2.Cork.ChainId, arbitrumChainID)
-		s.Require().Equal(cork2.Cork.TargetContractAddress, counterContract.Hex())
-		s.Require().Equal(cork2.Cork.Deadline, deadline)
-		s.Require().Equal(cork2.BlockHeight, targetBlockHeight)
-		s.Require().Equal(cork2.Id, axelarCorkIDHex)
-		s.Require().Equal(cork3.Cork.EncodedContractCall, ABIEncodedInc())
-		s.Require().Equal(cork3.Cork.ChainId, arbitrumChainID)
-		s.Require().Equal(cork3.Cork.TargetContractAddress, counterContract.Hex())
-		s.Require().Equal(cork3.Cork.Deadline, deadline)
-		s.Require().Equal(cork3.BlockHeight, targetBlockHeight)
-		s.Require().Equal(cork3.Id, axelarCorkIDHex)
-
-		corkValidators := []string{cork0.Validator, cork1.Validator, cork2.Validator, cork3.Validator}
-		sort.Strings(corkValidators)
-		s.Require().Equal(corkValidators, sortedValidators)
+		// Authority corks carry no scheduling validator.
+		s.Require().Empty(cork0.Validator)
 
 		s.T().Log("Waiting for scheduled height")
 		s.Require().Eventuallyf(func() bool {

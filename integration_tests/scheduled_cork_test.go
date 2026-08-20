@@ -187,27 +187,38 @@ func (s *IntegrationTestSuite) TestScheduledCork() {
 		}
 		corkID := cork.IDHash(uint64(targetBlockHeight))
 		s.T().Logf("cork ID is %s", hex.EncodeToString(corkID))
-		for i, orch := range s.chain.orchestrators {
-			i := i
-			orch := orch
-			clientCtx, err := s.chain.clientContext("tcp://localhost:26657", orch.keyring, "orch", orch.address())
-			s.Require().NoError(err)
-			corkMsg, err := types.NewMsgScheduleCorkRequest(
-				ABIEncodedInc(),
-				counterContract,
-				uint64(targetBlockHeight),
-				orch.address())
-			s.Require().NoError(err, "failed to construct cork")
-			response, err := s.chain.sendMsgs(*clientCtx, corkMsg)
-			s.Require().NoError(err, "failed to send cork to node %d", i)
-			if response.Code != 0 {
-				if response.Code != 32 {
-					s.T().Log(response)
-				}
-			}
+		// A single cork from the cork authority. The validator-supermajority
+		// path is retired: one authorized message schedules the cork outright.
+		authority := s.chain.orchestrators[0]
+		authorityCtx, err := s.chain.clientContext("tcp://localhost:26657", authority.keyring, "orch", authority.address())
+		s.Require().NoError(err)
+		corkMsg, err := types.NewMsgScheduleCorkRequest(
+			ABIEncodedInc(),
+			counterContract,
+			uint64(targetBlockHeight),
+			authority.address())
+		s.Require().NoError(err, "failed to construct cork")
+		response, err := s.chain.sendMsgs(*authorityCtx, corkMsg)
+		s.Require().NoError(err, "failed to send cork from the cork authority")
+		s.Require().Zero(response.Code, "authority cork was rejected: %v", response)
+		s.T().Log("cork msg sent successfully by the cork authority")
 
-			s.T().Logf("cork msg for orch %d sent successfully", i)
+		// A non-authority orchestrator must be refused.
+		other := s.chain.orchestrators[1]
+		otherCtx, err := s.chain.clientContext("tcp://localhost:26657", other.keyring, "orch", other.address())
+		s.Require().NoError(err)
+		otherMsg, err := types.NewMsgScheduleCorkRequest(
+			ABIEncodedInc(),
+			counterContract,
+			uint64(targetBlockHeight),
+			other.address())
+		s.Require().NoError(err, "failed to construct cork")
+		otherResponse, err := s.chain.sendMsgs(*otherCtx, otherMsg)
+		if err == nil {
+			s.Require().NotZero(otherResponse.Code,
+				"a non-authority orchestrator must not be able to schedule a cork")
 		}
+		s.T().Log("non-authority cork correctly refused")
 
 		s.T().Log("verify scheduled corks were created")
 		corkQueryClient := types.NewQueryClient(proposerCtx)
@@ -217,8 +228,8 @@ func (s *IntegrationTestSuite) TestScheduledCork() {
 			if err != nil {
 				return false
 			}
-			return len(res.Corks) == 4
-		}, 10*time.Second, 1*time.Second, "scheduled corks were not created")
+			return len(res.Corks) == 1
+		}, 10*time.Second, 1*time.Second, "scheduled cork was not created")
 
 		s.T().Log("wait for scheduled height")
 		gbClient := gbtypes.NewQueryClient(proposerCtx)

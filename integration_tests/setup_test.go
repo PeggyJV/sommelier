@@ -17,15 +17,15 @@ import (
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 	gravitytypes "github.com/peggyjv/gravity-bridge/module/v6/x/gravity/types"
-	"github.com/peggyjv/sommelier/v9/app/params"
-	addressestypes "github.com/peggyjv/sommelier/v9/x/addresses/types"
-	auctiontypes "github.com/peggyjv/sommelier/v9/x/auction/types"
-	axelarcorktypes "github.com/peggyjv/sommelier/v9/x/axelarcork/types"
-	cellarfeestypes "github.com/peggyjv/sommelier/v9/x/cellarfees/types"
-	cellarfeestypesv2 "github.com/peggyjv/sommelier/v9/x/cellarfees/types/v2"
-	corktypesunversioned "github.com/peggyjv/sommelier/v9/x/cork/types"
-	corktypes "github.com/peggyjv/sommelier/v9/x/cork/types/v2"
-	pubsubtypes "github.com/peggyjv/sommelier/v9/x/pubsub/types"
+	"github.com/peggyjv/sommelier/v10/app/params"
+	addressestypes "github.com/peggyjv/sommelier/v10/x/addresses/types"
+	auctiontypes "github.com/peggyjv/sommelier/v10/x/auction/types"
+	axelarcorktypes "github.com/peggyjv/sommelier/v10/x/axelarcork/types"
+	cellarfeestypes "github.com/peggyjv/sommelier/v10/x/cellarfees/types"
+	cellarfeestypesv2 "github.com/peggyjv/sommelier/v10/x/cellarfees/types/v2"
+	corktypesunversioned "github.com/peggyjv/sommelier/v10/x/cork/types"
+	corktypes "github.com/peggyjv/sommelier/v10/x/cork/types/v2"
+	pubsubtypes "github.com/peggyjv/sommelier/v10/x/pubsub/types"
 
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/ethclient"
@@ -474,6 +474,9 @@ func (s *IntegrationTestSuite) initGenesis() {
 		ExecutorAccount:   "axelar1zl3rxpp70lmte2xr6c4lgske2fyuj3hupcsvcd",
 		TimeoutDuration:   uint64(6 * time.Hour),
 		CorkTimeoutBlocks: 5000,
+		// Orchestrator 0 is the sole cork authority for the suite. The
+		// validator-supermajority path is retired as of v10.
+		CorkAuthority: s.chain.orchestrators[0].address().String(),
 	}
 	bz, err = cdc.MarshalJSON(&axelarcorkGenState)
 	s.Require().NoError(err)
@@ -545,6 +548,8 @@ func (s *IntegrationTestSuite) initGenesis() {
 	corkGenState.CellarIds = corktypes.CellarIDSet{Ids: []string{unusedGenesisContract.String(), s.chain.validators[0].ethereumKey.address}}
 	corkGenState.Params = corktypes.DefaultParams()
 	corkGenState.Params.VoteThreshold = corkVoteThreshold
+	// Orchestrator 0 is the sole cork authority for the suite.
+	corkGenState.Params.CorkAuthority = s.chain.orchestrators[0].address().String()
 	bz, err = cdc.MarshalJSON(&corkGenState)
 	s.Require().NoError(err)
 	appGenState[corktypesunversioned.ModuleName] = bz
@@ -560,6 +565,9 @@ func (s *IntegrationTestSuite) initGenesis() {
 
 	// set incentives gen state
 	s.Require().NoError(s.setIncentivesGenState(appGenState))
+
+	// set poa gen state
+	s.Require().NoError(s.setPoaGenState(appGenState))
 
 	// serialize genesis state
 	bz, err = json.MarshalIndent(appGenState, "", "  ")

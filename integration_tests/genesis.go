@@ -12,8 +12,9 @@ import (
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	"github.com/cosmos/cosmos-sdk/x/genutil"
 	genutiltypes "github.com/cosmos/cosmos-sdk/x/genutil/types"
-	"github.com/peggyjv/sommelier/v9/app/params"
-	incentivestypes "github.com/peggyjv/sommelier/v9/x/incentives/types"
+	"github.com/peggyjv/sommelier/v10/app/params"
+	incentivestypes "github.com/peggyjv/sommelier/v10/x/incentives/types"
+	poatypes "github.com/peggyjv/sommelier/v10/x/poa/types"
 )
 
 func getGenDoc(path string) (*tmtypes.GenesisDoc, error) {
@@ -122,5 +123,41 @@ func (s *IntegrationTestSuite) setIncentivesGenState(appGenState map[string]json
 	incentivesGenState.Params.ValidatorMaxDistributionPerBlock = sdk.NewCoin(params.BaseCoinUnit, sdk.NewInt(0))
 
 	appGenState[incentivestypes.ModuleName] = cdc.MustMarshalJSON(&incentivesGenState)
+	return nil
+}
+
+// setPoaGenState seeds the x/poa authority allowlist with every validator in
+// the test chain.
+//
+// Without this the module's DefaultGenesis leaves the allowlist EMPTY, the
+// first EndBlocker enters authority-empty safe mode, and the whole
+// value-bearing surface freezes: gravity's BeginBlock/EndBlock become no-ops
+// and MsgSendToEthereum / MsgSubmitEthereumEvent /
+// MsgSubmitEthereumTxConfirmation / MsgScheduleCork are all rejected. Every
+// bridge and cork scenario in this suite would fail for reasons that have
+// nothing to do with what it is testing.
+//
+// All test validators are authority validators, so the boost multiplier clamps
+// to 1 and consensus power is unchanged from a pre-PoA run. Tests that want to
+// exercise the community bucket (or safe mode) should narrow this set.
+func (s *IntegrationTestSuite) setPoaGenState(appGenState map[string]json.RawMessage) error {
+	poaGenState := poatypes.DefaultGenesis()
+	if err := cdc.UnmarshalJSON(appGenState[poatypes.ModuleName], poaGenState); err != nil {
+		return fmt.Errorf("failed to unmarshal poa genesis state: %w", err)
+	}
+
+	authoritySet := make([]poatypes.AuthorityValidator, 0, len(s.chain.validators))
+	for _, val := range s.chain.validators {
+		authoritySet = append(authoritySet, poatypes.AuthorityValidator{
+			OperatorAddress: val.validatorAddress().String(),
+		})
+	}
+	poaGenState.AuthoritySet = authoritySet
+
+	if err := poaGenState.Validate(); err != nil {
+		return fmt.Errorf("invalid poa genesis state: %w", err)
+	}
+
+	appGenState[poatypes.ModuleName] = cdc.MustMarshalJSON(poaGenState)
 	return nil
 }
