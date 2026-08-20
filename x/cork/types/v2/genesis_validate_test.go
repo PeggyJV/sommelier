@@ -28,3 +28,18 @@ func TestScheduledCorkValidateBasicAcceptsAuthorityCork(t *testing.T) {
 	}
 	require.NoError(t, sc.ValidateBasic())
 }
+
+// A genesis entry with a null cork must be rejected, not panic. An absent
+// embedded message decodes to a nil pointer, so this is reachable from a
+// malformed genesis file or a decoded MsgScheduleCorkRequest -- and both
+// modules' InitGenesis dereference Cork directly afterwards.
+func TestScheduledCorkValidateBasicRejectsNilCork(t *testing.T) {
+	sc := ScheduledCork{
+		Cork:        nil,
+		BlockHeight: 42,
+		Id:          make([]byte, 32),
+	}
+	require.NotPanics(t, func() {
+		require.Error(t, sc.ValidateBasic())
+	})
+}

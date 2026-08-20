@@ -100,18 +100,33 @@ func (k Keeper) EndBlocker(ctx sdk.Context) {
 			"height", fmt.Sprintf("%d", ctx.BlockHeight()),
 			"chain id", config.Id)
 
+		// Hoisted out of the loop: params cannot change mid-block, and reading
+		// them per cork per chain is a store read plus unmarshal on every
+		// validator, in consensus-critical gas-metered work.
+		corkTimeoutBlocks := k.GetParamSet(ctx).CorkTimeoutBlocks
 		currentHeight := uint64(ctx.BlockHeight())
-		k.IterateWinningAxelarCorks(ctx, config.Id, func(_ common.Address, blockHeight uint64, cork types.AxelarCork) (stop bool) {
-			timeoutHeight := blockHeight + k.GetParamSet(ctx).CorkTimeoutBlocks
-			if currentHeight >= timeoutHeight {
-				k.Logger(ctx).Info("deleting expired approved scheduled axelar cork",
-					"scheduled height", fmt.Sprintf("%d", blockHeight),
-					"target contract address", cork.TargetContractAddress)
 
-				k.DeleteWinningAxelarCorkByBlockheight(ctx, config.Id, blockHeight, cork)
+		type expiredCork struct {
+			blockHeight uint64
+			cork        types.AxelarCork
+		}
+		var expired []expiredCork
+
+		// Collect before mutating, for the same reason as the due-cork pass
+		// above: deleting through a live iterator is undefined.
+		k.IterateWinningAxelarCorks(ctx, config.Id, func(_ common.Address, blockHeight uint64, cork types.AxelarCork) (stop bool) {
+			if currentHeight >= blockHeight+corkTimeoutBlocks {
+				expired = append(expired, expiredCork{blockHeight: blockHeight, cork: cork})
 			}
 			return false
 		})
+
+		for _, e := range expired {
+			k.Logger(ctx).Info("deleting expired approved scheduled axelar cork",
+				"scheduled height", fmt.Sprintf("%d", e.blockHeight),
+				"target contract address", e.cork.TargetContractAddress)
+			k.DeleteWinningAxelarCorkByBlockheight(ctx, config.Id, e.blockHeight, e.cork)
+		}
 
 		return false
 	})

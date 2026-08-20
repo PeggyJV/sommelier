@@ -65,6 +65,13 @@ func (c *AxelarCork) ValidateBasic() error {
 }
 
 func (s *ScheduledAxelarCork) ValidateBasic() error {
+	// An absent embedded message decodes to nil, so this is reachable from a
+	// malformed genesis file or a decoded msg. Reject it rather than
+	// dereferencing: InitGenesis dereferences Cork directly afterwards, so a
+	// panic here would abort InitChain instead of failing validation.
+	if s.Cork == nil {
+		return fmt.Errorf("scheduled cork must carry a cork")
+	}
 	if err := s.Cork.ValidateBasic(); err != nil {
 		return err
 	}
