@@ -121,13 +121,15 @@ func CreateUpgradeHandler(
 			"authority_count", len(addrs), "activation_height", ctx.BlockHeight())
 
 		// Seed the cork authority in both modules.
-		corkParams := corkKeeper.GetParamSet(ctx)
-		corkParams.CorkAuthority = CorkAuthorityAddress
-		corkKeeper.SetParams(ctx, corkParams)
-
-		axelarcorkParams := axelarcorkKeeper.GetParamSet(ctx)
-		axelarcorkParams.CorkAuthority = CorkAuthorityAddress
-		axelarcorkKeeper.SetParams(ctx, axelarcorkParams)
+		//
+		// Write the single new key rather than round-tripping the whole param
+		// set. cork_authority does not exist in v9 state, and GetParamSet reads
+		// every registered pair, so it panics on the missing key
+		// ("UnmarshalJSON cannot decode empty bytes") before returning --
+		// halting the chain inside this BeginBlocker. Verified against a
+		// mainnet-state rehearsal, where the round-trip form did exactly that.
+		corkKeeper.SetCorkAuthority(ctx, CorkAuthorityAddress)
+		axelarcorkKeeper.SetCorkAuthority(ctx, CorkAuthorityAddress)
 
 		// Drain the retired validator-scheduled queues. MUST happen here: v10
 		// removes the power tally that was the only deleter of these prefixes,

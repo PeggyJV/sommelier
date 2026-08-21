@@ -1,6 +1,7 @@
 package app
 
 import (
+	"reflect"
 	"testing"
 
 	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
@@ -117,8 +118,7 @@ func TestV10UpgradeHandlerKeepsAuthoritySetThroughRunMigrations(t *testing.T) {
 	app := Setup(true)
 	ctx := app.BaseApp.NewContext(true, tmproto.Header{Height: 10})
 
-	app.CorkKeeper.SetParams(ctx, corkv2types.DefaultParams())
-	app.AxelarCorkKeeper.SetParams(ctx, axelarcorktypes.DefaultParams())
+	seedV9CorkParams(t, app, ctx)
 	seedBondedAuthorityValidator(t, app, ctx)
 
 	handler := v10.CreateUpgradeHandler(
@@ -241,4 +241,39 @@ func TestV10UpgradeHandlerRefusesWhenAuthorityValidatorIsJailed(t *testing.T) {
 
 	_, err = handler(ctx, upgradetypes.Plan{Name: v10.UpgradeName}, fromVM)
 	require.Error(t, err, "a jailed authority validator must not satisfy the liveness check")
+}
+
+// seedV9CorkParams writes the cork/axelarcork params the way a v9 chain
+// actually carries them: every key EXCEPT cork_authority, which does not exist
+// before v10.
+//
+// Calling SetParams(DefaultParams()) instead -- as these tests originally did
+// -- writes cork_authority too, which is state no v9 chain has. That hid a
+// chain-halting bug: the handler read the whole param set back through
+// GetParamSet, which panics on the missing key with "UnmarshalJSON cannot
+// decode empty bytes". A mainnet-state rehearsal caught it; no unit test could,
+// because they had all seeded the key themselves.
+func seedV9CorkParams(t *testing.T, app *SommelierApp, ctx sdk.Context) {
+	t.Helper()
+
+	corkSS, ok := app.ParamsKeeper.GetSubspace(corktypes.ModuleName)
+	require.True(t, ok)
+	corkSS.Set(ctx, corkv2types.KeyVoteThreshold, sdk.NewDecWithPrec(67, 2))
+	corkSS.Set(ctx, corkv2types.KeyMaxCorksPerValidator, uint64(1000))
+
+	axSS, ok := app.ParamsKeeper.GetSubspace(axelarcorktypes.ModuleName)
+	require.True(t, ok)
+	def := axelarcorktypes.DefaultParams()
+	for _, pair := range def.ParamSetPairs() {
+		if string(pair.Key) == string(axelarcorktypes.KeyCorkAuthority) {
+			continue // new in v10; absent on v9
+		}
+		axSS.Set(ctx, pair.Key, reflect.Indirect(reflect.ValueOf(pair.Value)).Interface())
+	}
+
+	// Precondition: the tests below are only meaningful if the key really is absent.
+	require.False(t, corkSS.Has(ctx, corkv2types.KeyCorkAuthority),
+		"cork_authority must be absent to model v9 state")
+	require.False(t, axSS.Has(ctx, axelarcorktypes.KeyCorkAuthority),
+		"cork_authority must be absent to model v9 state")
 }

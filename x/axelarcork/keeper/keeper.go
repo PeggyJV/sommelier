@@ -100,6 +100,21 @@ func (k Keeper) GetParamSet(ctx sdk.Context) types.Params {
 	return p
 }
 
+// SetCorkAuthority writes ONLY the cork authority param.
+//
+// The v10 upgrade must not go through GetParamSet/SetParams to seed this.
+// cork_authority is new in v10, so the key is absent from v9 state, and
+// GetParamSet reads every registered pair -- including this one -- through
+// Subspace.Get, which amino-unmarshals the empty bytes and panics with
+// "UnmarshalJSON cannot decode empty bytes" before it can return. That panic
+// lands in the upgrade handler's BeginBlocker and halts the chain.
+//
+// Writing the single new key leaves the existing params untouched and is the
+// correct shape for adding a param in an upgrade.
+func (k Keeper) SetCorkAuthority(ctx sdk.Context, authority string) {
+	k.paramSpace.Set(ctx, types.KeyCorkAuthority, authority)
+}
+
 // SetParams sets the parameters in the store
 func (k Keeper) SetParams(ctx sdk.Context, params types.Params) {
 	// using this direct method instead of k.paramSpace.SetParamSet because our
