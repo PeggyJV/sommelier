@@ -3,6 +3,13 @@ project_name: sommelier
 env:
   # Require use of Go modules.
   - GO111MODULE=on
+  # Build a fully static binary. With cgo enabled the release picks up the
+  # glibc symbol versions of whatever runner image built it: moving off the
+  # retired ubuntu-20.04 image raised the floor to GLIBC_2.34, which made
+  # v10.0.0 refuse to start on Debian 11 / Ubuntu 20.04 validators (glibc
+  # 2.31) -- every Foundation node included. Static linking removes the
+  # dependency on the builder's glibc entirely.
+  - CGO_ENABLED=0
 
 builds:
   - id: "sommelier"
