@@ -128,6 +128,8 @@ func CreateUpgradeHandler(
 		// ("UnmarshalJSON cannot decode empty bytes") before returning --
 		// halting the chain inside this BeginBlocker. Verified against a
 		// mainnet-state rehearsal, where the round-trip form did exactly that.
+		// Any future handler adding a param must do the same and must be
+		// rehearsed; see docs/upgrade-rehearsal.md.
 		corkKeeper.SetCorkAuthority(ctx, CorkAuthorityAddress)
 		axelarcorkKeeper.SetCorkAuthority(ctx, CorkAuthorityAddress)
 

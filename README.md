@@ -28,6 +28,13 @@ facilitates function calls by Strategists to Cellars. It's also a CLI that
 subsumes the functionality of `gorc`, and is used in this document to configure
 and run the orchestrator.
 
+### Documentation
+
+| Document | Audience |
+|---|---|
+| [`docs/poa.md`](docs/poa.md) | Operators — PoA power floor semantics introduced in v10 |
+| [`docs/upgrade-rehearsal.md`](docs/upgrade-rehearsal.md) | Maintainers — **required** runbook for rehearsing a consensus-breaking upgrade against real mainnet state before tagging a release |
+
 ## Join the mainnet!
 
 Running a validator node on the Sommelier mainnet requires three processes:
