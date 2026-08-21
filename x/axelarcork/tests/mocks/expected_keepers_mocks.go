@@ -20,7 +20,7 @@ import (
 	types7 "github.com/cosmos/ibc-go/v7/modules/core/04-channel/types"
 	exported "github.com/cosmos/ibc-go/v7/modules/core/exported"
 	gomock "github.com/golang/mock/gomock"
-	types8 "github.com/peggyjv/sommelier/v9/x/pubsub/types"
+	types8 "github.com/peggyjv/sommelier/v10/x/pubsub/types"
 )
 
 // MockAccountKeeper is a mock of AccountKeeper interface.

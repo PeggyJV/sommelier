@@ -27,7 +27,7 @@ import (
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/crypto"
 	gravitytypes "github.com/peggyjv/gravity-bridge/module/v6/x/gravity/types"
-	"github.com/peggyjv/sommelier/v9/app"
+	"github.com/peggyjv/sommelier/v10/app"
 )
 
 type validator struct {

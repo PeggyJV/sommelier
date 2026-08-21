@@ -2,7 +2,7 @@ package keeper
 
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	cellarfeestypesv2 "github.com/peggyjv/sommelier/v9/x/cellarfees/types/v2"
+	cellarfeestypesv2 "github.com/peggyjv/sommelier/v10/x/cellarfees/types/v2"
 )
 
 func (suite *KeeperTestSuite) TestImportingEmptyGenesis() {

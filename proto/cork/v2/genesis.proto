@@ -4,7 +4,7 @@ package cork.v2;
 import "cork/v2/cork.proto";
 import "gogoproto/gogo.proto";
 
-option go_package = "github.com/peggyjv/sommelier/v9/x/cork/types/v2";
+option go_package = "github.com/peggyjv/sommelier/v10/x/cork/types/v2";
 
 // GenesisState - all cork state that must be provided at genesis
 message GenesisState {
@@ -29,4 +29,8 @@ message Params {
         (gogoproto.nullable)   = false
     ];
     uint64 max_corks_per_validator = 2;
+    // cork_authority is the single address permitted to schedule corks.
+    // Rotated by governance via ParameterChangeProposal. Empty means no
+    // address can schedule a cork (fail-closed).
+    string cork_authority = 3 [(gogoproto.moretags) = "yaml:\"cork_authority\""];
 }

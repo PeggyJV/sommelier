@@ -4,7 +4,7 @@ import (
 	"encoding/hex"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	types "github.com/peggyjv/sommelier/v9/x/cork/types/v2"
+	types "github.com/peggyjv/sommelier/v10/x/cork/types/v2"
 )
 
 func (suite *KeeperTestSuite) TestQueriesHappyPath() {
@@ -20,14 +20,14 @@ func (suite *KeeperTestSuite) TestQueriesHappyPath() {
 		TargetContractAddress: sampleCellarHex,
 	}
 	id := cork.IDHash(testHeight)
-	val := sdk.ValAddress("12345678901234567890")
+	// Validator is empty: an authority cork has no scheduling validator. The
+	// field is retained on the type for wire compatibility.
 	expectedScheduledCork := types.ScheduledCork{
 		Cork:        &cork,
 		BlockHeight: testHeight,
-		Validator:   "cosmosvaloper1xyerxdp4xcmnswfsxyerxdp4xcmnswfs008wpw",
 		Id:          id,
 	}
-	corkKeeper.SetScheduledCork(ctx, testHeight, val, cork)
+	corkKeeper.SetAuthorityCork(ctx, testHeight, cork)
 
 	corkResult := types.CorkResult{
 		Cork:               &cork,

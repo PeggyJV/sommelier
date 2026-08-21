@@ -1,0 +1,57 @@
+syntax = "proto3";
+package poa.v1;
+
+option go_package = "github.com/peggyjv/sommelier/v10/x/poa/types";
+
+import "google/api/annotations.proto";
+import "gogoproto/gogo.proto";
+import "poa/v1/params.proto";
+
+service Query {
+  rpc Params(QueryParamsRequest) returns (QueryParamsResponse) {
+    option (google.api.http).get = "/sommelier/poa/v1/params";
+  }
+  rpc AuthoritySet(QueryAuthoritySetRequest) returns (QueryAuthoritySetResponse) {
+    option (google.api.http).get = "/sommelier/poa/v1/authority_set";
+  }
+  rpc EffectivePower(QueryEffectivePowerRequest) returns (QueryEffectivePowerResponse) {
+    option (google.api.http).get = "/sommelier/poa/v1/effective_power/{operator_address}";
+  }
+  // SafeMode reports whether the chain is in authority-empty safe mode, in
+  // which case the value-bearing modules (gravity, cork, axelarcork) are
+  // frozen. This is the primary operational health check for the module.
+  rpc SafeMode(QuerySafeModeRequest) returns (QuerySafeModeResponse) {
+    option (google.api.http).get = "/sommelier/poa/v1/safe_mode";
+  }
+}
+
+message QueryParamsRequest {}
+message QueryParamsResponse {
+  Params params = 1 [(gogoproto.nullable) = false];
+}
+
+message QueryAuthoritySetRequest {}
+message QueryAuthoritySetResponse {
+  repeated string validators = 1;
+}
+
+message QueryEffectivePowerRequest {
+  string operator_address = 1;
+}
+message QueryEffectivePowerResponse {
+  int64 power = 1;
+  bool is_authority = 2;
+}
+
+message QuerySafeModeRequest {}
+message QuerySafeModeResponse {
+  // active is true while value-bearing modules are frozen.
+  bool active = 1;
+  // thaw_height is the height at or after which the freeze lifts, once the
+  // authority set is healthy again. Zero when no thaw is scheduled (either not
+  // in safe mode, or in safe mode with the authority set still empty).
+  int64 thaw_height = 2;
+  // bonded_authority_count is how many allowlisted validators are currently
+  // bonded and unjailed. Zero is what puts (and keeps) the chain in safe mode.
+  uint64 bonded_authority_count = 3;
+}

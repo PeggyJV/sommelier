@@ -58,10 +58,8 @@ import (
 	"github.com/peggyjv/gravity-bridge/module/v6/x/gravity"
 	gravitykeeper "github.com/peggyjv/gravity-bridge/module/v6/x/gravity/keeper"
 	gravitytypes "github.com/peggyjv/gravity-bridge/module/v6/x/gravity/types"
-	corktypes "github.com/peggyjv/sommelier/v9/x/cork/types"
-	types "github.com/peggyjv/sommelier/v9/x/cork/types/v2"
-	pubsubkeeper "github.com/peggyjv/sommelier/v9/x/pubsub/keeper"
-	pubsubtypes "github.com/peggyjv/sommelier/v9/x/pubsub/types"
+	corktypes "github.com/peggyjv/sommelier/v10/x/cork/types"
+	types "github.com/peggyjv/sommelier/v10/x/cork/types/v2"
 	"github.com/stretchr/testify/require"
 )
 
@@ -188,9 +186,10 @@ var (
 		BondDenom:         "stake",
 	}
 
-	// TestingcorkParams is a set of gravity params for testing
+	// TestingcorkParams is a set of cork params for testing. VoteThreshold is a
+	// retired field kept for wire compatibility; it is no longer read.
 	TestingcorkParams = types.Params{
-		VoteThreshold: sdk.MustNewDecFromStr(corkVoteThresholdStr),
+		VoteThreshold: sdk.MustNewDecFromStr("0.67"),
 	}
 )
 
@@ -216,7 +215,6 @@ func CreateTestEnv(t *testing.T) TestInput {
 
 	// Initialize store keys
 	keyGravity := sdk.NewKVStoreKey(gravitytypes.StoreKey)
-	keyPubsub := sdk.NewKVStoreKey(pubsubtypes.StoreKey)
 	keyAcc := sdk.NewKVStoreKey(authtypes.StoreKey)
 	keyStaking := sdk.NewKVStoreKey(stakingtypes.StoreKey)
 	keyBank := sdk.NewKVStoreKey(banktypes.StoreKey)
@@ -368,14 +366,6 @@ func CreateTestEnv(t *testing.T) TestInput {
 		senderModuleAccounts,
 	)
 
-	pubsubKeeper := pubsubkeeper.NewKeeper(
-		marshaler,
-		keyPubsub,
-		getSubspace(paramsKeeper, pubsubtypes.DefaultParamspace),
-		stakingKeeper,
-		gravityKeeper,
-	)
-
 	stakingKeeper.SetHooks(
 		stakingtypes.NewMultiStakingHooks(
 			distKeeper.Hooks(),
@@ -390,7 +380,6 @@ func CreateTestEnv(t *testing.T) TestInput {
 		getSubspace(paramsKeeper, types.DefaultParamspace),
 		stakingKeeper,
 		gravityKeeper,
-		pubsubKeeper,
 	)
 
 	k.SetParams(ctx, TestingcorkParams)

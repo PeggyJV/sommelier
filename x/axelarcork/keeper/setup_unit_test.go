@@ -4,8 +4,8 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/peggyjv/sommelier/v9/x/axelarcork/tests/mocks"
-	"github.com/peggyjv/sommelier/v9/x/axelarcork/types"
+	"github.com/peggyjv/sommelier/v10/x/axelarcork/tests/mocks"
+	"github.com/peggyjv/sommelier/v10/x/axelarcork/types"
 
 	tmdb "github.com/cometbft/cometbft-db"
 	"github.com/cometbft/cometbft/libs/log"
@@ -26,6 +26,8 @@ import (
 type mocksForCork struct {
 	mockStakingKeeper *mocks.MockStakingKeeper
 	mockValidator     *mocks.MockValidatorI
+	mockAccountKeeper *mocks.MockAccountKeeper
+	mockBankKeeper    *mocks.MockBankKeeper
 }
 
 func setupCorkKeeper(t *testing.T) (
@@ -62,7 +64,6 @@ func setupCorkKeeper(t *testing.T) (
 	mockDistributionKeeper := mocks.NewMockDistributionKeeper(ctrl)
 	mockICS4wrapper := mocks.NewMockICS4Wrapper(ctrl)
 	mockGravityKeeper := mocks.NewMockGravityKeeper(ctrl)
-	mockPubsubKeeper := mocks.NewMockPubsubKeeper(ctrl)
 
 	k := NewKeeper(
 		protoCodec,
@@ -75,7 +76,6 @@ func setupCorkKeeper(t *testing.T) (
 		mockDistributionKeeper,
 		mockICS4wrapper,
 		mockGravityKeeper,
-		mockPubsubKeeper,
 	)
 
 	ctx := sdk.NewContext(commitMultiStore, tmproto.Header{}, false, log.NewNopLogger())
@@ -83,6 +83,8 @@ func setupCorkKeeper(t *testing.T) (
 	return k, ctx, mocksForCork{
 		mockStakingKeeper: mockStakingKeeper,
 		mockValidator:     mocks.NewMockValidatorI(ctrl),
+		mockAccountKeeper: mockAccountKeeper,
+		mockBankKeeper:    mockBankKeeper,
 	}, ctrl
 }
 

@@ -6,22 +6,17 @@ import (
 	errorsmod "cosmossdk.io/errors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/ethereum/go-ethereum/common"
-	corktypes "github.com/peggyjv/sommelier/v9/x/cork/types"
-	types "github.com/peggyjv/sommelier/v9/x/cork/types/v2"
-	pubsubtypes "github.com/peggyjv/sommelier/v9/x/pubsub/types"
+	corktypes "github.com/peggyjv/sommelier/v10/x/cork/types"
+	types "github.com/peggyjv/sommelier/v10/x/cork/types/v2"
 )
-
-func NewEthereumSubscriptionID(address common.Address) string {
-	return fmt.Sprintf("1:%s", address.String())
-}
 
 // HandleAddManagedCellarsProposal is a handler for executing a passed community cellar addition proposal
 func HandleAddManagedCellarsProposal(ctx sdk.Context, k Keeper, p types.AddManagedCellarIDsProposal) error {
-	_, publisherFound := k.pubsubKeeper.GetPublisher(ctx, p.PublisherDomain)
-	if !publisherFound {
-		return fmt.Errorf("not an approved publisher: %s", p.PublisherDomain)
+	// Frozen in safe mode: pre-staging new call targets under an untrusted,
+	// community-only set would let them be exploited the instant the freeze lifts.
+	if k.inSafeMode(ctx) {
+		return fmt.Errorf("x/poa safe mode active: adding managed cellar IDs is frozen until the authority set is restored")
 	}
-
 	cellarAddresses := k.GetCellarIDs(ctx)
 
 	for _, proposedCellarID := range p.CellarIds.Ids {
@@ -34,12 +29,6 @@ func HandleAddManagedCellarsProposal(ctx sdk.Context, k Keeper, p types.AddManag
 		}
 		if !found {
 			cellarAddresses = append(cellarAddresses, proposedCellarAddress)
-			subscriptionID := NewEthereumSubscriptionID(proposedCellarAddress)
-			defaultSubscription := pubsubtypes.DefaultSubscription{
-				SubscriptionId:  subscriptionID,
-				PublisherDomain: p.PublisherDomain,
-			}
-			k.pubsubKeeper.SetDefaultSubscription(ctx, defaultSubscription)
 		}
 	}
 
@@ -71,16 +60,14 @@ func HandleRemoveManagedCellarsProposal(ctx sdk.Context, k Keeper, p types.Remov
 	}
 	k.SetCellarIDs(ctx, outputCellarIDs)
 
-	for _, cellarToDelete := range p.CellarIds.Ids {
-		subscriptionID := NewEthereumSubscriptionID(common.HexToAddress(cellarToDelete))
-		k.pubsubKeeper.DeleteDefaultSubscription(ctx, subscriptionID)
-	}
-
 	return nil
 }
 
 // HandleScheduledCorkProposal is a handler for executing a passed scheduled cork proposal
 func HandleScheduledCorkProposal(ctx sdk.Context, k Keeper, p types.ScheduledCorkProposal) error {
+	if k.inSafeMode(ctx) {
+		return fmt.Errorf("x/poa safe mode active: scheduling corks is frozen until the authority set is restored")
+	}
 	if !k.HasCellarID(ctx, common.HexToAddress(p.TargetContractAddress)) {
 		return errorsmod.Wrapf(corktypes.ErrUnmanagedCellarAddress, "id: %s", p.TargetContractAddress)
 	}

@@ -6,7 +6,7 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/ethereum/go-ethereum/common"
-	"github.com/peggyjv/sommelier/v9/x/axelarcork/types"
+	"github.com/peggyjv/sommelier/v10/x/axelarcork/types"
 )
 
 // InitGenesis initialize default parameters
@@ -37,13 +37,11 @@ func InitGenesis(ctx sdk.Context, k Keeper, gs types.GenesisState) {
 		)
 	}
 
+	// Imported into the authority queue, not the retired validator-keyed queue:
+	// nothing drains or executes the latter, so anything written there would be
+	// stranded. The Validator field on the genesis entry is ignored.
 	for _, scheduledCork := range gs.ScheduledCorks.ScheduledCorks {
-		valAddr, err := sdk.ValAddressFromBech32(scheduledCork.Validator)
-		if err != nil {
-			panic(err)
-		}
-
-		k.SetScheduledAxelarCork(ctx, scheduledCork.Cork.ChainId, scheduledCork.BlockHeight, valAddr, *scheduledCork.Cork)
+		k.SetAuthorityAxelarCork(ctx, scheduledCork.Cork.ChainId, scheduledCork.BlockHeight, *scheduledCork.Cork)
 	}
 
 	// TODO(bolten): not a huge risk since they can be re-sent, but the genesis state is missing WinningAxelarCorks
@@ -94,7 +92,7 @@ func ExportGenesis(ctx sdk.Context, k Keeper) types.GenesisState {
 		cellarIDSet.Ids = cellarIDSetIDs
 		gs.CellarIds = append(gs.CellarIds, &cellarIDSet)
 
-		gs.ScheduledCorks.ScheduledCorks = append(gs.ScheduledCorks.ScheduledCorks, k.GetScheduledAxelarCorks(ctx, config.Id)...)
+		gs.ScheduledCorks.ScheduledCorks = append(gs.ScheduledCorks.ScheduledCorks, k.GetAuthorityAxelarCorks(ctx, config.Id)...)
 		gs.CorkResults.CorkResults = append(gs.CorkResults.CorkResults, k.GetAxelarCorkResults(ctx, config.Id)...)
 
 		return false

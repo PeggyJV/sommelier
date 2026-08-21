@@ -16,10 +16,10 @@ import (
 	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
 	porttypes "github.com/cosmos/ibc-go/v7/modules/core/05-port/types"
 	"github.com/golang/mock/gomock"
-	"github.com/peggyjv/sommelier/v9/x/axelarcork"
-	"github.com/peggyjv/sommelier/v9/x/axelarcork/keeper"
-	"github.com/peggyjv/sommelier/v9/x/axelarcork/tests/mocks"
-	"github.com/peggyjv/sommelier/v9/x/axelarcork/types"
+	"github.com/peggyjv/sommelier/v10/x/axelarcork"
+	"github.com/peggyjv/sommelier/v10/x/axelarcork/keeper"
+	"github.com/peggyjv/sommelier/v10/x/axelarcork/tests/mocks"
+	"github.com/peggyjv/sommelier/v10/x/axelarcork/types"
 	"github.com/stretchr/testify/require"
 )
 
@@ -49,12 +49,11 @@ func NewTestSetup(t *testing.T, ctl *gomock.Controller) *Setup {
 	ibcModuleMock := mocks.NewMockIBCModule(ctl)
 	ics4WrapperMock := mocks.NewMockICS4Wrapper(ctl)
 	gravityKeeper := mocks.NewMockGravityKeeper(ctl)
-	pubsubKeeper := mocks.NewMockPubsubKeeper(ctl)
 
 	paramsKeeper := initializer.paramsKeeper()
 	acKeeper := initializer.axelarcorkKeeper(
 		paramsKeeper, accountKeeperMock, bankKeeperMock, stakingKeeper, transferKeeperMock, distributionKeeperMock,
-		ics4WrapperMock, gravityKeeper, pubsubKeeper)
+		ics4WrapperMock, gravityKeeper)
 
 	require.NoError(t, initializer.StateStore.LoadLatestVersion())
 
@@ -155,7 +154,6 @@ func (i initializer) axelarcorkKeeper(
 	distributionKeeper types.DistributionKeeper,
 	ics4Wrapper porttypes.ICS4Wrapper,
 	gravityKeeper types.GravityKeeper,
-	pubsubKeeper types.PubsubKeeper,
 ) *keeper.Keeper {
 	storeKey := sdk.NewKVStoreKey(types.StoreKey)
 	i.StateStore.MountStoreWithDB(storeKey, storetypes.StoreTypeIAVL, i.DB)
@@ -172,7 +170,6 @@ func (i initializer) axelarcorkKeeper(
 		distributionKeeper,
 		ics4Wrapper,
 		gravityKeeper,
-		pubsubKeeper,
 	)
 
 	return &routerKeeper

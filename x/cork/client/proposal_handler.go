@@ -2,7 +2,7 @@ package client
 
 import (
 	govclient "github.com/cosmos/cosmos-sdk/x/gov/client"
-	"github.com/peggyjv/sommelier/v9/x/cork/client/cli"
+	"github.com/peggyjv/sommelier/v10/x/cork/client/cli"
 )
 
 var (

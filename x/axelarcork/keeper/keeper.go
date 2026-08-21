@@ -19,7 +19,7 @@ import (
 	porttypes "github.com/cosmos/ibc-go/v7/modules/core/05-port/types"
 	"github.com/cosmos/ibc-go/v7/modules/core/exported"
 	"github.com/ethereum/go-ethereum/common"
-	"github.com/peggyjv/sommelier/v9/x/axelarcork/types"
+	"github.com/peggyjv/sommelier/v10/x/axelarcork/types"
 )
 
 var _ porttypes.ICS4Wrapper = &Keeper{}
@@ -35,7 +35,7 @@ type Keeper struct {
 	transferKeeper     types.TransferKeeper
 	distributionKeeper types.DistributionKeeper
 	gravityKeeper      types.GravityKeeper
-	pubsubKeeper       types.PubsubKeeper
+	poaKeeper          types.PoaKeeper
 
 	Ics4Wrapper types.ICS4Wrapper
 }
@@ -45,7 +45,7 @@ func NewKeeper(
 	cdc codec.BinaryCodec, key storetypes.StoreKey, paramSpace paramtypes.Subspace,
 	accountKeeper types.AccountKeeper, bankKeeper types.BankKeeper, stakingKeeper types.StakingKeeper,
 	transferKeeper types.TransferKeeper, distributionKeeper types.DistributionKeeper,
-	wrapper types.ICS4Wrapper, gravityKeeper types.GravityKeeper, pubsubKeeper types.PubsubKeeper,
+	wrapper types.ICS4Wrapper, gravityKeeper types.GravityKeeper,
 ) Keeper {
 	// set KeyTable if it has not already been set
 	if !paramSpace.HasKeyTable() {
@@ -62,7 +62,6 @@ func NewKeeper(
 		transferKeeper:     transferKeeper,
 		distributionKeeper: distributionKeeper,
 		gravityKeeper:      gravityKeeper,
-		pubsubKeeper:       pubsubKeeper,
 
 		Ics4Wrapper: wrapper,
 	}
@@ -78,11 +77,21 @@ func (k *Keeper) SetTransferKeeper(transferKeeper types.TransferKeeper) {
 	k.transferKeeper = transferKeeper
 }
 
+// SetPoaKeeper wires the read-only PoA safe-mode dependency post-construction
+// (PoA is constructed before axelarcork in app.go).
+func (k *Keeper) SetPoaKeeper(poaKeeper types.PoaKeeper) {
+	k.poaKeeper = poaKeeper
+}
+
+// inSafeMode reports whether the chain is in authority-empty safe mode, in which
+// case axelarcork operations are frozen. A nil PoA keeper means no freeze.
+func (k Keeper) inSafeMode(ctx sdk.Context) bool {
+	return k.poaKeeper != nil && k.poaKeeper.SafeModeActive(ctx)
+}
+
 ////////////
 // Params //
 ////////////
-
-const CorkVoteThresholdStr = "0.67"
 
 // GetParamSet returns the vote period from the parameters
 func (k Keeper) GetParamSet(ctx sdk.Context) types.Params {
@@ -107,112 +116,119 @@ func (k Keeper) SetParams(ctx sdk.Context, params types.Params) {
 // Scheduled Corks //
 /////////////////////
 
-func (k Keeper) SetScheduledAxelarCork(ctx sdk.Context, chainID uint64, blockHeight uint64, val sdk.ValAddress, cork types.AxelarCork) []byte {
+// SetAuthorityAxelarCork stores a cork scheduled by the cork authority for
+// execution at blockHeight on chainID, and returns its ID.
+func (k Keeper) SetAuthorityAxelarCork(ctx sdk.Context, chainID uint64, blockHeight uint64, cork types.AxelarCork) []byte {
 	id := cork.IDHash(blockHeight)
 	bz := k.cdc.MustMarshal(&cork)
-	ctx.KVStore(k.storeKey).Set(types.GetScheduledAxelarCorkKey(chainID, blockHeight, id, val, common.HexToAddress(cork.TargetContractAddress)), bz)
+	ctx.KVStore(k.storeKey).Set(
+		types.GetAuthorityCorkKey(chainID, blockHeight, id, common.HexToAddress(cork.TargetContractAddress)),
+		bz,
+	)
 	return id
 }
 
-// GetScheduledAxelarCork gets the scheduled cork for a given validator
-// CONTRACT: must provide the validator address here not the delegate address
-func (k Keeper) GetScheduledAxelarCork(ctx sdk.Context, chainID uint64, blockHeight uint64, id []byte, val sdk.ValAddress, contract common.Address) (types.AxelarCork, bool) {
+// DeleteAuthorityAxelarCork removes a scheduled authority cork.
+func (k Keeper) DeleteAuthorityAxelarCork(ctx sdk.Context, chainID uint64, blockHeight uint64, id []byte, contract common.Address) {
+	ctx.KVStore(k.storeKey).Delete(types.GetAuthorityCorkKey(chainID, blockHeight, id, contract))
+}
+
+// IterateAuthorityAxelarCorksByBlockHeight walks the authority corks targeting
+// blockHeight on chainID.
+func (k Keeper) IterateAuthorityAxelarCorksByBlockHeight(
+	ctx sdk.Context,
+	chainID uint64,
+	blockHeight uint64,
+	cb func(id []byte, contract common.Address, cork types.AxelarCork) (stop bool),
+) {
 	store := ctx.KVStore(k.storeKey)
-
-	bz := store.Get(types.GetScheduledAxelarCorkKey(chainID, blockHeight, id, val, contract))
-	if len(bz) == 0 {
-		return types.AxelarCork{}, false
-	}
-
-	var cork types.AxelarCork
-	k.cdc.MustUnmarshal(bz, &cork)
-	return cork, true
-}
-
-// DeleteScheduledAxelarCork deletes the scheduled cork for a given validator
-// CONTRACT: must provide the validator address here not the delegate address
-func (k Keeper) DeleteScheduledAxelarCork(ctx sdk.Context, chainID uint64, blockHeight uint64, id []byte, val sdk.ValAddress, contract common.Address) {
-	ctx.KVStore(k.storeKey).Delete(types.GetScheduledAxelarCorkKey(chainID, blockHeight, id, val, contract))
-}
-
-// IterateScheduledAxelarCorks iterates over all scheduled corks by chain ID
-func (k Keeper) IterateScheduledAxelarCorks(ctx sdk.Context, chainID uint64, cb func(val sdk.ValAddress, blockHeight uint64, id []byte, cel common.Address, cork types.AxelarCork) (stop bool)) {
-	k.IterateScheduledAxelarCorksByPrefix(ctx, types.GetScheduledAxelarCorkKeyPrefix(chainID), cb)
-}
-
-func (k Keeper) IterateScheduledAxelarCorksByBlockHeight(ctx sdk.Context, chainID uint64, blockHeight uint64, cb func(val sdk.ValAddress, blockHeight uint64, id []byte, cel common.Address, cork types.AxelarCork) (stop bool)) {
-	k.IterateScheduledAxelarCorksByPrefix(ctx, types.GetScheduledAxelarCorkKeyByBlockHeightPrefix(chainID, blockHeight), cb)
-}
-
-func (k Keeper) IterateScheduledAxelarCorksByPrefix(ctx sdk.Context, prefix []byte, cb func(val sdk.ValAddress, blockHeight uint64, id []byte, cel common.Address, cork types.AxelarCork) (stop bool)) {
-	store := ctx.KVStore(k.storeKey)
-	iter := sdk.KVStorePrefixIterator(store, prefix)
+	iter := sdk.KVStorePrefixIterator(store, types.GetAuthorityCorkKeyByBlockHeightPrefix(chainID, blockHeight))
 	defer iter.Close()
 
 	for ; iter.Valid(); iter.Next() {
 		var cork types.AxelarCork
 		keyPair := bytes.NewBuffer(iter.Key())
 		keyPair.Next(1) // trim prefix byte
-		keyPair.Next(8) // trim chain id, it was filtered in the prefix
-		blockHeight := sdk.BigEndianToUint64(keyPair.Next(8))
-		id := keyPair.Next(32)
-		val := sdk.ValAddress(keyPair.Next(20))
+		keyPair.Next(8) // trim chain id, filtered by the prefix
+		keyPair.Next(8) // trim block height, filtered by the prefix
+		// Copy: Next returns a slice into the buffer backed by iter.Key(), and
+		// callers retain the id past iter.Close().
+		id := make([]byte, 32)
+		copy(id, keyPair.Next(32))
 		contract := common.BytesToAddress(keyPair.Next(20))
 
 		k.cdc.MustUnmarshal(iter.Value(), &cork)
-		if cb(val, blockHeight, id, contract, cork) {
+		if cb(id, contract, cork) {
 			break
 		}
 	}
 }
 
-func (k Keeper) GetScheduledAxelarCorks(ctx sdk.Context, chainID uint64) []*types.ScheduledAxelarCork {
-	var scheduledCorks []*types.ScheduledAxelarCork
-	k.IterateScheduledAxelarCorks(ctx, chainID, func(val sdk.ValAddress, blockHeight uint64, id []byte, _ common.Address, cork types.AxelarCork) (stop bool) {
-		scheduledCorks = append(scheduledCorks, &types.ScheduledAxelarCork{
-			Validator:   val.String(),
-			Cork:        &cork,
+// IterateAllAuthorityAxelarCorks walks every queued authority cork on a chain,
+// at any height. Used by ExportGenesis; the per-height iterator is the hot path.
+func (k Keeper) IterateAllAuthorityAxelarCorks(ctx sdk.Context, chainID uint64, cb func(blockHeight uint64, id []byte, contract common.Address, cork types.AxelarCork) (stop bool)) {
+	store := ctx.KVStore(k.storeKey)
+	iter := sdk.KVStorePrefixIterator(store, types.GetAuthorityCorkKeyPrefix(chainID))
+	defer iter.Close()
+
+	for ; iter.Valid(); iter.Next() {
+		var cork types.AxelarCork
+		keyPair := bytes.NewBuffer(iter.Key())
+		keyPair.Next(1) // trim prefix byte
+		keyPair.Next(8) // trim chain id, filtered by the prefix
+		blockHeight := sdk.BigEndianToUint64(keyPair.Next(8))
+		// Copy: Next returns a slice into the buffer backed by iter.Key().
+		id := make([]byte, 32)
+		copy(id, keyPair.Next(32))
+		contract := common.BytesToAddress(keyPair.Next(20))
+
+		k.cdc.MustUnmarshal(iter.Value(), &cork)
+		if cb(blockHeight, id, contract, cork) {
+			break
+		}
+	}
+}
+
+// GetAuthorityAxelarCorksByBlockHeight returns queued authority corks for one
+// chain at one height.
+func (k Keeper) GetAuthorityAxelarCorksByBlockHeight(ctx sdk.Context, chainID uint64, height uint64) []*types.ScheduledAxelarCork {
+	var out []*types.ScheduledAxelarCork
+	k.IterateAuthorityAxelarCorksByBlockHeight(ctx, chainID, height, func(id []byte, _ common.Address, cork types.AxelarCork) (stop bool) {
+		c := cork
+		out = append(out, &types.ScheduledAxelarCork{Cork: &c, BlockHeight: height, Id: hex.EncodeToString(id)})
+		return false
+	})
+	return out
+}
+
+// GetAuthorityAxelarCorksByID returns queued authority corks matching an ID.
+func (k Keeper) GetAuthorityAxelarCorksByID(ctx sdk.Context, chainID uint64, queriedID []byte) []*types.ScheduledAxelarCork {
+	var out []*types.ScheduledAxelarCork
+	k.IterateAllAuthorityAxelarCorks(ctx, chainID, func(blockHeight uint64, id []byte, _ common.Address, cork types.AxelarCork) (stop bool) {
+		if bytes.Equal(id, queriedID) {
+			c := cork
+			out = append(out, &types.ScheduledAxelarCork{Cork: &c, BlockHeight: blockHeight, Id: hex.EncodeToString(id)})
+		}
+		return false
+	})
+	return out
+}
+
+// GetAuthorityAxelarCorks returns every queued authority cork on a chain for
+// genesis export. The Validator field is left empty: authority corks have no
+// scheduling validator. It is retained on the type for wire compatibility.
+func (k Keeper) GetAuthorityAxelarCorks(ctx sdk.Context, chainID uint64) []*types.ScheduledAxelarCork {
+	var out []*types.ScheduledAxelarCork
+	k.IterateAllAuthorityAxelarCorks(ctx, chainID, func(blockHeight uint64, id []byte, _ common.Address, cork types.AxelarCork) (stop bool) {
+		c := cork
+		out = append(out, &types.ScheduledAxelarCork{
+			Cork:        &c,
 			BlockHeight: blockHeight,
 			Id:          hex.EncodeToString(id),
 		})
 		return false
 	})
-
-	return scheduledCorks
-}
-
-func (k Keeper) GetScheduledAxelarCorksByBlockHeight(ctx sdk.Context, chainID uint64, height uint64) []*types.ScheduledAxelarCork {
-	var scheduledCorks []*types.ScheduledAxelarCork
-	k.IterateScheduledAxelarCorksByBlockHeight(ctx, chainID, height, func(val sdk.ValAddress, blockHeight uint64, Id []byte, _ common.Address, cork types.AxelarCork) (stop bool) {
-		scheduledCorks = append(scheduledCorks, &types.ScheduledAxelarCork{
-			Validator:   val.String(),
-			Cork:        &cork,
-			BlockHeight: blockHeight,
-			Id:          hex.EncodeToString(Id),
-		})
-
-		return false
-	})
-
-	return scheduledCorks
-}
-
-func (k Keeper) GetScheduledAxelarCorksByID(ctx sdk.Context, chainID uint64, queriedID []byte) []*types.ScheduledAxelarCork {
-	var scheduledCorks []*types.ScheduledAxelarCork
-	k.IterateScheduledAxelarCorks(ctx, chainID, func(val sdk.ValAddress, blockHeight uint64, id []byte, _ common.Address, cork types.AxelarCork) (stop bool) {
-		if bytes.Equal(id, queriedID) {
-			scheduledCorks = append(scheduledCorks, &types.ScheduledAxelarCork{
-				Validator:   val.String(),
-				Cork:        &cork,
-				BlockHeight: blockHeight,
-				Id:          hex.EncodeToString(id),
-			})
-		}
-
-		return false
-	})
-
-	return scheduledCorks
+	return out
 }
 
 /////////////////
@@ -288,7 +304,7 @@ func (k Keeper) GetScheduledBlockHeights(ctx sdk.Context, chainID uint64) []uint
 	var heights []uint64
 
 	latestHeight := uint64(0)
-	k.IterateScheduledAxelarCorks(ctx, chainID, func(_ sdk.ValAddress, blockHeight uint64, _ []byte, _ common.Address, _ types.AxelarCork) (stop bool) {
+	k.IterateAllAuthorityAxelarCorks(ctx, chainID, func(blockHeight uint64, _ []byte, _ common.Address, _ types.AxelarCork) (stop bool) {
 		if blockHeight > latestHeight {
 			heights = append(heights, blockHeight)
 		}
@@ -357,66 +373,6 @@ func (k Keeper) GetAxelarCorkResults(ctx sdk.Context, chainID uint64) []*types.A
 ///////////
 // Votes //
 ///////////
-
-func (k Keeper) GetApprovedScheduledAxelarCorks(ctx sdk.Context, chainID uint64) (approvedCorks []types.AxelarCork) {
-	currentBlockHeight := uint64(ctx.BlockHeight())
-	totalPower := k.stakingKeeper.GetLastTotalPower(ctx)
-	corks := []types.AxelarCork{}
-	powers := []uint64{}
-	k.IterateScheduledAxelarCorksByBlockHeight(ctx, chainID, currentBlockHeight, func(val sdk.ValAddress, _ uint64, id []byte, addr common.Address, cork types.AxelarCork) (stop bool) {
-		validator := k.stakingKeeper.Validator(ctx, val)
-
-		// Skip if validator no longer exists (e.g., fully unbonded)
-		if validator == nil {
-			k.DeleteScheduledAxelarCork(ctx, chainID, currentBlockHeight, id, val, addr)
-			k.DecrementValidatorAxelarCorkCount(ctx, val)
-			return false
-		}
-
-		validatorPower := uint64(validator.GetConsensusPower(k.stakingKeeper.PowerReduction(ctx)))
-		found := false
-		for i, c := range corks {
-			if c.Equals(cork) {
-				powers[i] += validatorPower
-
-				found = true
-				break
-			}
-		}
-
-		if !found {
-			corks = append(corks, cork)
-			powers = append(powers, validatorPower)
-		}
-
-		k.DeleteScheduledAxelarCork(ctx, chainID, currentBlockHeight, id, val, addr)
-		k.DecrementValidatorAxelarCorkCount(ctx, val)
-
-		return false
-	})
-
-	threshold := sdk.MustNewDecFromStr(CorkVoteThresholdStr)
-	for i, power := range powers {
-		cork := corks[i]
-		approvalPercentage := sdk.NewDecFromInt(sdk.NewIntFromUint64(power)).Quo(sdk.NewDecFromInt(totalPower))
-		quorumReached := approvalPercentage.GT(threshold)
-		corkResult := types.AxelarCorkResult{
-			Cork:               &cork,
-			BlockHeight:        currentBlockHeight,
-			Approved:           quorumReached,
-			ApprovalPercentage: approvalPercentage.Mul(sdk.NewDec(100)).String(),
-		}
-		corkID := cork.IDHash(currentBlockHeight)
-
-		k.SetAxelarCorkResult(ctx, chainID, corkID, corkResult)
-
-		if quorumReached {
-			approvedCorks = append(approvedCorks, cork)
-		}
-	}
-
-	return approvedCorks
-}
 
 /////////////
 // Cellars //
@@ -554,34 +510,6 @@ func (k Keeper) IterateAxelarProxyUpgradeData(ctx sdk.Context, cb func(chainID u
 ///////////////////////////
 // Validator Cork counts //
 ///////////////////////////
-
-func (k Keeper) GetValidatorAxelarCorkCount(ctx sdk.Context, val sdk.ValAddress) (count uint64) {
-	store := ctx.KVStore(k.storeKey)
-	bz := store.Get(types.GetValidatorAxelarCorkCountKey(val))
-	if len(bz) == 0 {
-		return 0
-	}
-
-	return binary.BigEndian.Uint64(bz)
-}
-
-func (k Keeper) SetValidatorAxelarCorkCount(ctx sdk.Context, val sdk.ValAddress, count uint64) {
-	bz := make([]byte, 8)
-	binary.BigEndian.PutUint64(bz, count)
-	ctx.KVStore(k.storeKey).Set(types.GetValidatorAxelarCorkCountKey(val), bz)
-}
-
-func (k Keeper) IncrementValidatorAxelarCorkCount(ctx sdk.Context, val sdk.ValAddress) {
-	count := k.GetValidatorAxelarCorkCount(ctx, val)
-	k.SetValidatorAxelarCorkCount(ctx, val, count+1)
-}
-
-func (k Keeper) DecrementValidatorAxelarCorkCount(ctx sdk.Context, val sdk.ValAddress) {
-	count := k.GetValidatorAxelarCorkCount(ctx, val)
-	if count > 0 {
-		k.SetValidatorAxelarCorkCount(ctx, val, count-1)
-	}
-}
 
 /////////////////////
 // Module Accounts //

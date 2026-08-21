@@ -1,0 +1,34 @@
+syntax = "proto3";
+package poa.v1;
+
+option go_package = "github.com/peggyjv/sommelier/v10/x/poa/types";
+
+import "cosmos/msg/v1/msg.proto";
+import "gogoproto/gogo.proto";
+import "poa/v1/params.proto";
+
+service Msg {
+  rpc UpdateAuthoritySet(MsgUpdateAuthoritySet) returns (MsgUpdateAuthoritySetResponse);
+  rpc UpdateParams(MsgUpdateParams) returns (MsgUpdateParamsResponse);
+}
+
+// MsgUpdateAuthoritySet replaces the authority allowlist. Only callable by
+// the chain's gov authority.
+message MsgUpdateAuthoritySet {
+  option (cosmos.msg.v1.signer) = "authority";
+
+  string authority = 1;
+  repeated string validators = 2; // bech32 sdk.ValAddress strings
+}
+
+message MsgUpdateAuthoritySetResponse {}
+
+// MsgUpdateParams replaces the module params. Only callable by gov.
+message MsgUpdateParams {
+  option (cosmos.msg.v1.signer) = "authority";
+
+  string authority = 1;
+  Params params = 2 [(gogoproto.nullable) = false];
+}
+
+message MsgUpdateParamsResponse {}

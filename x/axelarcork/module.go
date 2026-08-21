@@ -12,9 +12,9 @@ import (
 	"github.com/cosmos/cosmos-sdk/types/module"
 	sim "github.com/cosmos/cosmos-sdk/types/simulation"
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
-	"github.com/peggyjv/sommelier/v9/x/axelarcork/client/cli"
-	"github.com/peggyjv/sommelier/v9/x/axelarcork/keeper"
-	"github.com/peggyjv/sommelier/v9/x/axelarcork/types"
+	"github.com/peggyjv/sommelier/v10/x/axelarcork/client/cli"
+	"github.com/peggyjv/sommelier/v10/x/axelarcork/keeper"
+	"github.com/peggyjv/sommelier/v10/x/axelarcork/types"
 	"github.com/spf13/cobra"
 )
 

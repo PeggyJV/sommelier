@@ -10,7 +10,7 @@ import (
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/crypto"
-	corktypes "github.com/peggyjv/sommelier/v9/x/cork/types"
+	corktypes "github.com/peggyjv/sommelier/v10/x/cork/types"
 )
 
 func (c *Cork) InvalidationScope() tmbytes.HexBytes {
@@ -62,6 +62,13 @@ func (c *Cork) ValidateBasic() error {
 }
 
 func (s *ScheduledCork) ValidateBasic() error {
+	// An absent embedded message decodes to nil, so this is reachable from a
+	// malformed genesis file or a decoded msg. Reject it rather than
+	// dereferencing: InitGenesis dereferences Cork directly afterwards, so a
+	// panic here would abort InitChain instead of failing validation.
+	if s.Cork == nil {
+		return fmt.Errorf("scheduled cork must carry a cork")
+	}
 	if err := s.Cork.ValidateBasic(); err != nil {
 		return err
 	}
@@ -70,12 +77,21 @@ func (s *ScheduledCork) ValidateBasic() error {
 		return fmt.Errorf("block height must be non-zero")
 	}
 
-	if _, err := sdk.ValAddressFromBech32(s.Validator); err != nil {
-		return errorsmod.Wrap(sdkerrors.ErrInvalidAddress, err.Error())
+	// Validator is vestigial as of v10: corks are scheduled by the cork
+	// authority, which is an account, not a validator. The field is retained on
+	// the type for wire compatibility and is empty on every cork the chain now
+	// produces, so it is validated only when set.
+	if s.Validator != "" {
+		if _, err := sdk.ValAddressFromBech32(s.Validator); err != nil {
+			return errorsmod.Wrap(sdkerrors.ErrInvalidAddress, err.Error())
+		}
 	}
 
-	if len(s.Id) != 64 {
-		return fmt.Errorf("invalid ID length, must be a keccak256 hash")
+	// Id is the raw 32-byte keccak256 digest, not its hex encoding. This
+	// previously compared against 64 and so could never pass, which made any
+	// genesis carrying a scheduled cork unimportable.
+	if len(s.Id) != 32 {
+		return fmt.Errorf("invalid ID length, must be a 32-byte keccak256 hash")
 	}
 
 	return nil

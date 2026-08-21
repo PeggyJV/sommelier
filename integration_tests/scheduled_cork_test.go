@@ -16,8 +16,8 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/ethclient"
 	gbtypes "github.com/peggyjv/gravity-bridge/module/v6/x/gravity/types"
-	types "github.com/peggyjv/sommelier/v9/x/cork/types/v2"
-	pubsubtypes "github.com/peggyjv/sommelier/v9/x/pubsub/types"
+	types "github.com/peggyjv/sommelier/v10/x/cork/types/v2"
+	pubsubtypes "github.com/peggyjv/sommelier/v10/x/pubsub/types"
 )
 
 func (s *IntegrationTestSuite) TestScheduledCork() {
@@ -164,13 +164,15 @@ func (s *IntegrationTestSuite) TestScheduledCork() {
 			return found
 		}, 10*time.Second, 2*time.Second, "did not find address in managed cellars")
 
-		s.T().Log("verify a default subscription was created")
+		// x/cork no longer creates a pubsub default subscription when a cellar is
+		// added: the modules are decoupled as of v10, and x/pubsub is left
+		// standing with no callers. Asserting a subscription here would be
+		// asserting the retired coupling.
+		s.T().Log("verify no default subscription is created (cork/pubsub decoupled)")
 		pubsubQueryClient := pubsubtypes.NewQueryClient(proposerCtx)
 		subscriptionID := fmt.Sprintf("1:%s", counterContract.String())
-		pubsubResponse, err := pubsubQueryClient.QueryDefaultSubscription(context.Background(), &pubsubtypes.QueryDefaultSubscriptionRequest{SubscriptionId: subscriptionID})
-		s.Require().NoError(err)
-		s.Require().Equal(pubsubResponse.DefaultSubscription.SubscriptionId, subscriptionID)
-		s.Require().Equal(pubsubResponse.DefaultSubscription.PublisherDomain, "example.com")
+		_, err = pubsubQueryClient.QueryDefaultSubscription(context.Background(), &pubsubtypes.QueryDefaultSubscriptionRequest{SubscriptionId: subscriptionID})
+		s.Require().Error(err, "adding a managed cellar must no longer create a pubsub subscription")
 
 		s.T().Log("schedule a cork for the future")
 		node, err := proposerCtx.GetNode()
@@ -187,27 +189,42 @@ func (s *IntegrationTestSuite) TestScheduledCork() {
 		}
 		corkID := cork.IDHash(uint64(targetBlockHeight))
 		s.T().Logf("cork ID is %s", hex.EncodeToString(corkID))
-		for i, orch := range s.chain.orchestrators {
-			i := i
-			orch := orch
-			clientCtx, err := s.chain.clientContext("tcp://localhost:26657", orch.keyring, "orch", orch.address())
-			s.Require().NoError(err)
-			corkMsg, err := types.NewMsgScheduleCorkRequest(
-				ABIEncodedInc(),
-				counterContract,
-				uint64(targetBlockHeight),
-				orch.address())
-			s.Require().NoError(err, "failed to construct cork")
-			response, err := s.chain.sendMsgs(*clientCtx, corkMsg)
-			s.Require().NoError(err, "failed to send cork to node %d", i)
-			if response.Code != 0 {
-				if response.Code != 32 {
-					s.T().Log(response)
-				}
-			}
+		// A single cork from the cork authority. The validator-supermajority
+		// path is retired: one authorized message schedules the cork outright.
+		authority := s.chain.orchestrators[0]
+		authorityCtx, err := s.chain.clientContext("tcp://localhost:26657", authority.keyring, "orch", authority.address())
+		s.Require().NoError(err)
+		corkMsg, err := types.NewMsgScheduleCorkRequest(
+			ABIEncodedInc(),
+			counterContract,
+			uint64(targetBlockHeight),
+			authority.address())
+		s.Require().NoError(err, "failed to construct cork")
+		_, err = s.chain.sendMsgs(*authorityCtx, corkMsg)
+		s.Require().NoError(err, "failed to send cork from the cork authority")
+		s.T().Log("cork msg sent successfully by the cork authority")
 
-			s.T().Logf("cork msg for orch %d sent successfully", i)
-		}
+		// A non-authority orchestrator must be refused.
+		//
+		// It targets a DIFFERENT height so its cork would occupy a distinct
+		// store key; scheduling the identical cork would collapse onto the
+		// authority's entry and prove nothing. The rejection cannot be observed
+		// from the broadcast response: sendMsgs uses BroadcastSync, so the code
+		// reflects CheckTx while the authority check runs in the msg server at
+		// DeliverTx (and chain.go's sendMsgs returns a zero-value response
+		// regardless). State is the only reliable witness.
+		unauthorizedHeight := uint64(targetBlockHeight) + 1
+		other := s.chain.orchestrators[1]
+		otherCtx, err := s.chain.clientContext("tcp://localhost:26657", other.keyring, "orch", other.address())
+		s.Require().NoError(err)
+		otherMsg, err := types.NewMsgScheduleCorkRequest(
+			ABIEncodedInc(),
+			counterContract,
+			unauthorizedHeight,
+			other.address())
+		s.Require().NoError(err, "failed to construct cork")
+		_, _ = s.chain.sendMsgs(*otherCtx, otherMsg)
+		s.T().Log("non-authority cork submitted; verifying it was refused")
 
 		s.T().Log("verify scheduled corks were created")
 		corkQueryClient := types.NewQueryClient(proposerCtx)
@@ -217,8 +234,19 @@ func (s *IntegrationTestSuite) TestScheduledCork() {
 			if err != nil {
 				return false
 			}
-			return len(res.Corks) == 4
-		}, 10*time.Second, 1*time.Second, "scheduled corks were not created")
+			return len(res.Corks) == 1
+		}, 10*time.Second, 1*time.Second, "scheduled cork was not created")
+
+		// The non-authority cork must never appear at its target height.
+		s.Require().Never(func() bool {
+			res, err := corkQueryClient.QueryScheduledCorksByBlockHeight(context.Background(), &types.QueryScheduledCorksByBlockHeightRequest{BlockHeight: unauthorizedHeight})
+			if err != nil {
+				return false
+			}
+			return len(res.Corks) > 0
+		}, 8*time.Second, 1*time.Second,
+			"a non-authority orchestrator must not be able to schedule a cork")
+		s.T().Log("non-authority cork correctly refused")
 
 		s.T().Log("wait for scheduled height")
 		gbClient := gbtypes.NewQueryClient(proposerCtx)
@@ -243,19 +271,21 @@ func (s *IntegrationTestSuite) TestScheduledCork() {
 					return false
 				}
 
-				// verify that the scheduled corks have not yet been consumed
-				s.Require().Len(res.Corks, len(s.chain.validators))
+				// verify that the scheduled cork has not yet been consumed.
+				// One entry, not one per validator: the authority schedules a
+				// single cork rather than each validator voting for its own.
+				s.Require().Len(res.Corks, 1)
 			}
 
 			return false
 		}, 3*time.Minute, 1*time.Second, "never reached scheduled height")
 
-		s.T().Log("verify the cork was approved")
-		resultRes, err := corkQueryClient.QueryCorkResult(context.Background(), &types.QueryCorkResultRequest{Id: hex.EncodeToString(corkID)})
-		s.Require().NoError(err, "failed to query cork result")
-		s.Require().True(resultRes.CorkResult.Approved, "cork was not approved")
-		s.Require().True(sdk.MustNewDecFromStr(resultRes.CorkResult.ApprovalPercentage).GT(corkVoteThreshold))
-		s.Require().Equal(counterContract, common.HexToAddress(resultRes.CorkResult.Cork.TargetContractAddress))
+		// There is no approval step to verify any more. CorkResult records were
+		// written by the power tally, which v10 removes: a cork queued by the
+		// authority is executed outright at its target height. Existing
+		// CorkResult records remain queryable for history, but no new ones are
+		// produced. Execution itself is verified below, on Ethereum, by the
+		// counter contract having been incremented.
 
 		s.T().Log("verify scheduled corks were deleted")
 		res, err := corkQueryClient.QueryScheduledCorksByBlockHeight(context.Background(), &types.QueryScheduledCorksByBlockHeightRequest{BlockHeight: uint64(targetBlockHeight)})

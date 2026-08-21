@@ -6,9 +6,9 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
-	appparams "github.com/peggyjv/sommelier/v9/app/params"
-	incentiveskeeper "github.com/peggyjv/sommelier/v9/x/incentives/keeper"
-	incentivestypes "github.com/peggyjv/sommelier/v9/x/incentives/types"
+	appparams "github.com/peggyjv/sommelier/v10/app/params"
+	incentiveskeeper "github.com/peggyjv/sommelier/v10/x/incentives/keeper"
+	incentivestypes "github.com/peggyjv/sommelier/v10/x/incentives/types"
 )
 
 func CreateUpgradeHandler(

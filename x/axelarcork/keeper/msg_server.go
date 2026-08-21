@@ -16,7 +16,7 @@ import (
 	clienttypes "github.com/cosmos/ibc-go/v7/modules/core/02-client/types"
 	"github.com/ethereum/go-ethereum/common"
 
-	"github.com/peggyjv/sommelier/v9/x/axelarcork/types"
+	"github.com/peggyjv/sommelier/v10/x/axelarcork/types"
 )
 
 var _ types.MsgServer = Keeper{}
@@ -24,20 +24,20 @@ var _ types.MsgServer = Keeper{}
 // ScheduleCork implements types.MsgServer
 func (k Keeper) ScheduleCork(c context.Context, msg *types.MsgScheduleAxelarCorkRequest) (*types.MsgScheduleAxelarCorkResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
+	if k.inSafeMode(ctx) {
+		return nil, errorsmod.Wrap(sdkerrors.ErrInvalidRequest, "x/poa safe mode active: scheduling axelar corks is frozen until the authority set is restored")
+	}
 	params := k.GetParamSet(ctx)
 	if !params.Enabled {
 		return nil, types.ErrDisabled
 	}
 
 	signer := msg.MustGetSigner()
-	validatorAddr := k.gravityKeeper.GetOrchestratorValidatorAddress(ctx, signer)
-	if validatorAddr == nil {
-		return nil, errorsmod.Wrapf(sdkerrors.ErrUnauthorized, "signer %s is not a delegate", signer.String())
-	}
-
-	validatorAxelarCorkCount := k.GetValidatorAxelarCorkCount(ctx, validatorAddr)
-	if validatorAxelarCorkCount >= types.MaxAxelarCorksPerValidator {
-		return nil, types.ErrValidatorAxelarCorkCapacityReached
+	// Fail-closed: an unset authority means no address may act. There is
+	// deliberately no fallback to the retired validator-delegate path.
+	if params.CorkAuthority == "" || signer.String() != params.CorkAuthority {
+		return nil, errorsmod.Wrapf(sdkerrors.ErrUnauthorized,
+			"signer %s is not the cork authority", signer.String())
 	}
 
 	config, ok := k.GetChainConfigurationByID(ctx, msg.ChainId)
@@ -53,12 +53,10 @@ func (k Keeper) ScheduleCork(c context.Context, msg *types.MsgScheduleAxelarCork
 		return nil, types.ErrSchedulingInThePast
 	}
 
-	corkID := k.SetScheduledAxelarCork(ctx, config.Id, msg.BlockHeight, validatorAddr, *msg.Cork)
-	k.IncrementValidatorAxelarCorkCount(ctx, validatorAddr)
+	corkID := k.SetAuthorityAxelarCork(ctx, config.Id, msg.BlockHeight, *msg.Cork)
 
 	if err := ctx.EventManager().EmitTypedEvent(&types.ScheduleCorkEvent{
 		Signer:      signer.String(),
-		Validator:   validatorAddr.String(),
 		Cork:        msg.Cork.String(),
 		BlockHeight: msg.BlockHeight,
 		ChainId:     config.Id,
@@ -71,10 +69,21 @@ func (k Keeper) ScheduleCork(c context.Context, msg *types.MsgScheduleAxelarCork
 
 func (k Keeper) RelayCork(c context.Context, msg *types.MsgRelayAxelarCorkRequest) (*types.MsgRelayAxelarCorkResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
+	if k.inSafeMode(ctx) {
+		return nil, errorsmod.Wrap(sdkerrors.ErrInvalidRequest, "x/poa safe mode active: relaying axelar corks is frozen until the authority set is restored")
+	}
 	params := k.GetParamSet(ctx)
 
 	if !params.Enabled {
 		return nil, types.ErrDisabled
+	}
+
+	// Authority-only. Placed before any side effect so a rejected caller can
+	// never move funds. Fail-closed: an unset authority rejects everyone.
+	signer := msg.MustGetSigner()
+	if params.CorkAuthority == "" || signer.String() != params.CorkAuthority {
+		return nil, errorsmod.Wrapf(sdkerrors.ErrUnauthorized,
+			"signer %s is not the cork authority", signer.String())
 	}
 
 	config, ok := k.GetChainConfigurationByID(ctx, msg.ChainId)
@@ -88,8 +97,14 @@ func (k Keeper) RelayCork(c context.Context, msg *types.MsgRelayAxelarCorkReques
 		return nil, fmt.Errorf("no cork on chain %d found for address %s", config.Id, msg.TargetContractAddress)
 	}
 
+	// Re-check the allowlist at relay time. A cork becomes relayable at its
+	// target height and can sit in the winning queue until it times out, so
+	// removing the cellar must stop it being pushed to the destination chain.
+	if !k.HasCellarID(ctx, config.Id, common.HexToAddress(cork.TargetContractAddress)) {
+		return nil, types.ErrUnmanagedCellarAddress
+	}
+
 	// transfer tokens to the module account
-	signer := msg.MustGetSigner()
 	err := k.bankKeeper.SendCoinsFromAccountToModule(ctx, signer, types.ModuleName, sdk.NewCoins(msg.Token))
 	if err != nil {
 		return nil, err
@@ -147,10 +162,21 @@ func (k Keeper) RelayCork(c context.Context, msg *types.MsgRelayAxelarCorkReques
 // the payload's execution threshold, and then deletes the upgrade data.
 func (k Keeper) RelayProxyUpgrade(c context.Context, msg *types.MsgRelayAxelarProxyUpgradeRequest) (*types.MsgRelayAxelarProxyUpgradeResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
+	if k.inSafeMode(ctx) {
+		return nil, errorsmod.Wrap(sdkerrors.ErrInvalidRequest, "x/poa safe mode active: relaying proxy upgrades is frozen until the authority set is restored")
+	}
 	params := k.GetParamSet(ctx)
 
 	if !params.Enabled {
 		return nil, types.ErrDisabled
+	}
+
+	// Authority-only. Placed before any side effect so a rejected caller can
+	// never move funds. Fail-closed: an unset authority rejects everyone.
+	signer := msg.MustGetSigner()
+	if params.CorkAuthority == "" || signer.String() != params.CorkAuthority {
+		return nil, errorsmod.Wrapf(sdkerrors.ErrUnauthorized,
+			"signer %s is not the cork authority", signer.String())
 	}
 
 	config, ok := k.GetChainConfigurationByID(ctx, msg.ChainId)
@@ -168,7 +194,6 @@ func (k Keeper) RelayProxyUpgrade(c context.Context, msg *types.MsgRelayAxelarPr
 	}
 
 	// transfer tokens to the module account
-	signer := msg.MustGetSigner()
 	err := k.bankKeeper.SendCoinsFromAccountToModule(ctx, signer, types.ModuleName, sdk.NewCoins(msg.Token))
 	if err != nil {
 		return nil, err
@@ -211,10 +236,21 @@ func (k Keeper) RelayProxyUpgrade(c context.Context, msg *types.MsgRelayAxelarPr
 
 func (k Keeper) BumpCorkGas(c context.Context, msg *types.MsgBumpAxelarCorkGasRequest) (*types.MsgBumpAxelarCorkGasResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
+	if k.inSafeMode(ctx) {
+		return nil, errorsmod.Wrap(sdkerrors.ErrInvalidRequest, "x/poa safe mode active: bumping axelar cork gas is frozen until the authority set is restored")
+	}
 	params := k.GetParamSet(ctx)
 
 	if !params.Enabled {
 		return nil, types.ErrDisabled
+	}
+
+	// Authority-only. Placed before any side effect so a rejected caller can
+	// never move funds. Fail-closed: an unset authority rejects everyone.
+	signer := msg.MustGetSigner()
+	if params.CorkAuthority == "" || signer.String() != params.CorkAuthority {
+		return nil, errorsmod.Wrapf(sdkerrors.ErrUnauthorized,
+			"signer %s is not the cork authority", signer.String())
 	}
 
 	memo := msg.MessageId
@@ -237,6 +273,17 @@ func (k Keeper) BumpCorkGas(c context.Context, msg *types.MsgBumpAxelarCorkGasRe
 }
 
 func (k Keeper) CancelScheduledCork(c context.Context, msg *types.MsgCancelAxelarCorkRequest) (*types.MsgCancelAxelarCorkResponse, error) {
+	ctx := sdk.UnwrapSDKContext(c)
+	params := k.GetParamSet(ctx)
+
+	// Authority-only, enforced even though the body is still unimplemented, so
+	// that whoever implements it inherits the gate rather than having to
+	// remember to add one.
+	signer := msg.MustGetSigner()
+	if params.CorkAuthority == "" || signer.String() != params.CorkAuthority {
+		return nil, errorsmod.Wrapf(sdkerrors.ErrUnauthorized,
+			"signer %s is not the cork authority", signer.String())
+	}
 
 	// todo: implement
 

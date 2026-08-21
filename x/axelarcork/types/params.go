@@ -19,6 +19,7 @@ var (
 	KeyExecutorAccount   = []byte("executoraccount")
 	KeyTimeoutDuration   = []byte("timeoutduration")
 	KeyCorkTimeoutBlocks = []byte("corktimeoutblocks")
+	KeyCorkAuthority     = []byte("corkauthority")
 )
 
 var _ paramtypes.ParamSet = &Params{}
@@ -38,6 +39,7 @@ func DefaultParams() Params {
 		ExecutorAccount:   "",
 		TimeoutDuration:   0,
 		CorkTimeoutBlocks: 10000,
+		CorkAuthority:     "",
 	}
 }
 
@@ -51,6 +53,7 @@ func (p *Params) ParamSetPairs() paramtypes.ParamSetPairs {
 		paramtypes.NewParamSetPair(KeyExecutorAccount, &p.ExecutorAccount, validateExecutorAccount),
 		paramtypes.NewParamSetPair(KeyTimeoutDuration, &p.TimeoutDuration, validateTimeoutDuration),
 		paramtypes.NewParamSetPair(KeyCorkTimeoutBlocks, &p.CorkTimeoutBlocks, validateCorkTimeoutBlocks),
+		paramtypes.NewParamSetPair(KeyCorkAuthority, &p.CorkAuthority, validateCorkAuthority),
 	}
 }
 
@@ -79,6 +82,14 @@ func (p *Params) ValidateBasic() error {
 		if err := validateCorkTimeoutBlocks(p.CorkTimeoutBlocks); err != nil {
 			return err
 		}
+	}
+
+	// Validated unconditionally, outside the Enabled guard: a malformed
+	// authority address is invalid whether or not the module is enabled, and
+	// leaving it unchecked while disabled would let a bad value be staged and
+	// only surface when the module is turned on.
+	if err := validateCorkAuthority(p.CorkAuthority); err != nil {
+		return err
 	}
 
 	return nil
@@ -176,5 +187,23 @@ func validateCorkTimeoutBlocks(i interface{}) error {
 		return errors.New("timeout blocks cannot be zero")
 	}
 
+	return nil
+}
+
+// validateCorkAuthority accepts the empty string (fail-closed: no address may
+// act) or a well-formed somm1 account address. Enforcement of the non-empty
+// requirement lives in the msg server, so that governance can revoke the
+// authority by setting it empty.
+func validateCorkAuthority(i interface{}) error {
+	authority, ok := i.(string)
+	if !ok {
+		return fmt.Errorf("invalid parameter type: %T", i)
+	}
+	if authority == "" {
+		return nil
+	}
+	if _, err := sdk.AccAddressFromBech32(authority); err != nil {
+		return fmt.Errorf("invalid cork authority address %q: %w", authority, err)
+	}
 	return nil
 }

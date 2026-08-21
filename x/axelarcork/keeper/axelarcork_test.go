@@ -9,8 +9,8 @@ import (
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	distributionTypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
 	"github.com/golang/mock/gomock"
-	"github.com/peggyjv/sommelier/v9/x/axelarcork/tests/mocks"
-	"github.com/peggyjv/sommelier/v9/x/axelarcork/types"
+	"github.com/peggyjv/sommelier/v10/x/axelarcork/tests/mocks"
+	"github.com/peggyjv/sommelier/v10/x/axelarcork/types"
 	"github.com/stretchr/testify/require"
 )
 
@@ -139,7 +139,6 @@ func (suite *KeeperTestSuite) TestSweepModuleAccountBalances() {
 				suite.distributionKeeper,
 				suite.ics4wrapper,
 				suite.gravityKeeper,
-				suite.pubsubKeeper,
 			)
 
 			// Reset context

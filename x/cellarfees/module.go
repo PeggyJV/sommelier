@@ -14,10 +14,10 @@ import (
 	sim "github.com/cosmos/cosmos-sdk/types/simulation"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
-	"github.com/peggyjv/sommelier/v9/x/cellarfees/client/cli"
-	"github.com/peggyjv/sommelier/v9/x/cellarfees/keeper"
-	"github.com/peggyjv/sommelier/v9/x/cellarfees/types"
-	typesv2 "github.com/peggyjv/sommelier/v9/x/cellarfees/types/v2"
+	"github.com/peggyjv/sommelier/v10/x/cellarfees/client/cli"
+	"github.com/peggyjv/sommelier/v10/x/cellarfees/keeper"
+	"github.com/peggyjv/sommelier/v10/x/cellarfees/types"
+	typesv2 "github.com/peggyjv/sommelier/v10/x/cellarfees/types/v2"
 	"github.com/spf13/cobra"
 )
 

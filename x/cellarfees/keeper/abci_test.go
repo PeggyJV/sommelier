@@ -4,10 +4,10 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	"github.com/golang/mock/gomock"
-	appParams "github.com/peggyjv/sommelier/v9/app/params"
-	auctiontypes "github.com/peggyjv/sommelier/v9/x/auction/types"
-	cellarfeestypes "github.com/peggyjv/sommelier/v9/x/cellarfees/types"
-	cellarfeestypesv2 "github.com/peggyjv/sommelier/v9/x/cellarfees/types/v2"
+	appParams "github.com/peggyjv/sommelier/v10/app/params"
+	auctiontypes "github.com/peggyjv/sommelier/v10/x/auction/types"
+	cellarfeestypes "github.com/peggyjv/sommelier/v10/x/cellarfees/types"
+	cellarfeestypesv2 "github.com/peggyjv/sommelier/v10/x/cellarfees/types/v2"
 )
 
 func (suite *KeeperTestSuite) TestBeginBlockerZeroRewardsBalance() {

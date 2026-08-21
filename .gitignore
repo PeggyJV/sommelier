@@ -67,3 +67,5 @@ artifacts
 
 # don't save the env file
 .env
+# scratch signed staking txs, never commit
+delegation_tx*.json

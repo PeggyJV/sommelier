@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/hex"
 	"fmt"
-	"sort"
 	"time"
 
 	"cosmossdk.io/math"
@@ -14,10 +13,9 @@ import (
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	distributiontypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
 	govtypesv1beta1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
-	"github.com/ethereum/go-ethereum/common"
 	"github.com/golang/protobuf/proto" //nolint:staticcheck
-	"github.com/peggyjv/sommelier/v9/x/axelarcork/types"
-	pubsubtypes "github.com/peggyjv/sommelier/v9/x/pubsub/types"
+	"github.com/peggyjv/sommelier/v10/x/axelarcork/types"
+	pubsubtypes "github.com/peggyjv/sommelier/v10/x/pubsub/types"
 )
 
 func (s *IntegrationTestSuite) TestAxelarCork() {
@@ -39,12 +37,6 @@ func (s *IntegrationTestSuite) TestAxelarCork() {
 		proposerCtx, err := s.chain.clientContext("tcp://localhost:26657", proposer.keyring, "proposer", proposer.address())
 		s.Require().NoError(err)
 		propID := uint64(1)
-
-		sortedValidators := make([]string, 0, 4)
-		for _, validator := range s.chain.validators {
-			sortedValidators = append(sortedValidators, validator.validatorAddress().String())
-		}
-		sort.Strings(sortedValidators)
 
 		axelarcorkQueryClient := types.NewQueryClient(val0ClientCtx)
 		pubsubQueryClient := pubsubtypes.NewQueryClient(orch0ClientCtx)
@@ -135,12 +127,13 @@ func (s *IntegrationTestSuite) TestAxelarCork() {
 		s.Require().Len(cellarIDsResponse.CellarIds, 1)
 		s.Require().Equal(cellarIDsResponse.CellarIds[0], counterContract.Hex())
 
-		s.T().Log("Verifying default subscription created")
+		// x/axelarcork no longer creates a pubsub default subscription when a
+		// cellar is added: the modules are decoupled as of v10. Asserting one
+		// exists here would be asserting the retired coupling.
+		s.T().Log("Verifying no default subscription is created (axelarcork/pubsub decoupled)")
 		subscriptionID := fmt.Sprintf("%d:%s", arbitrumChainID, counterContract.String())
-		pubsubResponse, err := pubsubQueryClient.QueryDefaultSubscription(context.Background(), &pubsubtypes.QueryDefaultSubscriptionRequest{SubscriptionId: subscriptionID})
-		s.Require().NoError(err)
-		s.Require().Equal(pubsubResponse.DefaultSubscription.SubscriptionId, subscriptionID)
-		s.Require().Equal(pubsubResponse.DefaultSubscription.PublisherDomain, "example.com")
+		_, err = pubsubQueryClient.QueryDefaultSubscription(context.Background(), &pubsubtypes.QueryDefaultSubscriptionRequest{SubscriptionId: subscriptionID})
+		s.Require().Error(err, "adding a managed cellar must no longer create a pubsub subscription")
 
 		/////////////////////////////
 		// Schedule an Axelar cork //
@@ -165,29 +158,43 @@ func (s *IntegrationTestSuite) TestAxelarCork() {
 		axelarCorkID := axelarCork.IDHash(targetBlockHeight)
 		axelarCorkIDHex := hex.EncodeToString(axelarCorkID)
 		s.T().Logf("Axelar cork ID is %s", axelarCorkIDHex)
-		for i, orch := range s.chain.orchestrators {
-			i := i
-			orch := orch
-			clientCtx, err := s.chain.clientContext("tcp://localhost:26657", orch.keyring, "orch", orch.address())
-			s.Require().NoError(err)
-			axelarCorkMsg, err := types.NewMsgScheduleAxelarCorkRequest(
-				arbitrumChainID,
-				ABIEncodedInc(),
-				counterContract,
-				deadline,
-				targetBlockHeight,
-				orch.address())
-			s.Require().NoError(err, "Failed to construct axelar cork")
-			response, err := s.chain.sendMsgs(*clientCtx, axelarCorkMsg)
-			s.Require().NoError(err, "Failed to send axelar cork to node %d", i)
-			if response.Code != 0 {
-				if response.Code != 32 {
-					s.T().Log(response)
-				}
-			}
+		// A single cork from the cork authority. The validator-supermajority
+		// path is retired: one authorized message schedules the cork outright.
+		authority := s.chain.orchestrators[0]
+		authorityCtx, err := s.chain.clientContext("tcp://localhost:26657", authority.keyring, "orch", authority.address())
+		s.Require().NoError(err)
+		axelarCorkMsg, err := types.NewMsgScheduleAxelarCorkRequest(
+			arbitrumChainID,
+			ABIEncodedInc(),
+			counterContract,
+			deadline,
+			targetBlockHeight,
+			authority.address())
+		s.Require().NoError(err, "Failed to construct axelar cork")
+		_, err = s.chain.sendMsgs(*authorityCtx, axelarCorkMsg)
+		s.Require().NoError(err, "Failed to send axelar cork from the cork authority")
+		s.T().Log("Axelar cork msg sent successfully by the cork authority")
 
-			s.T().Logf("Axelar cork msg for orch %d sent successfully", i)
-		}
+		// A non-authority orchestrator must be refused. It targets a DIFFERENT
+		// height so its cork occupies a distinct store key; an identical cork
+		// would collapse onto the authority's entry and prove nothing. The
+		// rejection is not observable from the broadcast response (BroadcastSync
+		// returns the CheckTx code, while the authority check runs in the msg
+		// server at DeliverTx), so state is the witness.
+		unauthorizedHeight := targetBlockHeight + 1
+		other := s.chain.orchestrators[1]
+		otherCtx, err := s.chain.clientContext("tcp://localhost:26657", other.keyring, "orch", other.address())
+		s.Require().NoError(err)
+		otherMsg, err := types.NewMsgScheduleAxelarCorkRequest(
+			arbitrumChainID,
+			ABIEncodedInc(),
+			counterContract,
+			deadline,
+			unauthorizedHeight,
+			other.address())
+		s.Require().NoError(err, "Failed to construct axelar cork")
+		_, _ = s.chain.sendMsgs(*otherCtx, otherMsg)
+		s.T().Log("Non-authority axelar cork submitted; verifying it was refused")
 
 		s.T().Log("Verifying scheduled axelar corks were created")
 		corks := []*types.ScheduledAxelarCork{}
@@ -197,7 +204,7 @@ func (s *IntegrationTestSuite) TestAxelarCork() {
 				return false
 			}
 
-			if len(res.Corks) == 4 {
+			if len(res.Corks) == 1 {
 				corks = res.Corks
 				return true
 			}
@@ -205,39 +212,27 @@ func (s *IntegrationTestSuite) TestAxelarCork() {
 			return false
 		}, time.Second*30, time.Second*5, "scheduled corks never created")
 
-		s.T().Log("Checking that corks have expected values")
+		// The non-authority cork must never appear at its target height.
+		s.Require().Never(func() bool {
+			res, err := axelarcorkQueryClient.QueryScheduledCorksByBlockHeight(context.Background(), &types.QueryScheduledCorksByBlockHeightRequest{ChainId: arbitrumChainID, BlockHeight: unauthorizedHeight})
+			if err != nil {
+				return false
+			}
+			return len(res.Corks) > 0
+		}, time.Second*8, time.Second*1,
+			"a non-authority orchestrator must not be able to schedule an axelar cork")
+		s.T().Log("Non-authority axelar cork correctly refused")
+
+		s.T().Log("Checking that the cork has expected values")
 		cork0 := corks[0]
-		cork1 := corks[1]
-		cork2 := corks[2]
-		cork3 := corks[3]
 		s.Require().Equal(cork0.Cork.EncodedContractCall, ABIEncodedInc())
 		s.Require().Equal(cork0.Cork.ChainId, arbitrumChainID)
 		s.Require().Equal(cork0.Cork.TargetContractAddress, counterContract.Hex())
 		s.Require().Equal(cork0.Cork.Deadline, deadline)
 		s.Require().Equal(cork0.BlockHeight, targetBlockHeight)
 		s.Require().Equal(cork0.Id, axelarCorkIDHex)
-		s.Require().Equal(cork1.Cork.EncodedContractCall, ABIEncodedInc())
-		s.Require().Equal(cork1.Cork.ChainId, arbitrumChainID)
-		s.Require().Equal(cork1.Cork.TargetContractAddress, counterContract.Hex())
-		s.Require().Equal(cork1.Cork.Deadline, deadline)
-		s.Require().Equal(cork1.BlockHeight, targetBlockHeight)
-		s.Require().Equal(cork1.Id, axelarCorkIDHex)
-		s.Require().Equal(cork2.Cork.EncodedContractCall, ABIEncodedInc())
-		s.Require().Equal(cork2.Cork.ChainId, arbitrumChainID)
-		s.Require().Equal(cork2.Cork.TargetContractAddress, counterContract.Hex())
-		s.Require().Equal(cork2.Cork.Deadline, deadline)
-		s.Require().Equal(cork2.BlockHeight, targetBlockHeight)
-		s.Require().Equal(cork2.Id, axelarCorkIDHex)
-		s.Require().Equal(cork3.Cork.EncodedContractCall, ABIEncodedInc())
-		s.Require().Equal(cork3.Cork.ChainId, arbitrumChainID)
-		s.Require().Equal(cork3.Cork.TargetContractAddress, counterContract.Hex())
-		s.Require().Equal(cork3.Cork.Deadline, deadline)
-		s.Require().Equal(cork3.BlockHeight, targetBlockHeight)
-		s.Require().Equal(cork3.Id, axelarCorkIDHex)
-
-		corkValidators := []string{cork0.Validator, cork1.Validator, cork2.Validator, cork3.Validator}
-		sort.Strings(corkValidators)
-		s.Require().Equal(corkValidators, sortedValidators)
+		// Authority corks carry no scheduling validator.
+		s.Require().Empty(cork0.Validator)
 
 		s.T().Log("Waiting for scheduled height")
 		s.Require().Eventuallyf(func() bool {
@@ -256,19 +251,20 @@ func (s *IntegrationTestSuite) TestAxelarCork() {
 					return false
 				}
 
-				// verify that the scheduled corks have not yet been consumed
-				s.Require().Len(scheduledCorksResponse.Corks, len(s.chain.validators))
+				// verify that the scheduled cork has not yet been consumed.
+				// One entry, not one per validator: the authority schedules a
+				// single cork rather than each validator voting for its own.
+				s.Require().Len(scheduledCorksResponse.Corks, 1)
 			}
 
 			return false
 		}, 3*time.Minute, 1*time.Second, "never reached scheduled height")
 
-		s.T().Log("Verifying axelar cork was approved")
-		corkResultResponse, err := axelarcorkQueryClient.QueryCorkResult(context.Background(), &types.QueryCorkResultRequest{Id: axelarCorkIDHex, ChainId: arbitrumChainID})
-		s.Require().NoError(err)
-		s.Require().True(corkResultResponse.CorkResult.Approved)
-		s.Require().True(sdk.MustNewDecFromStr(corkResultResponse.CorkResult.ApprovalPercentage).GT(corkVoteThreshold))
-		s.Require().Equal(counterContract, common.HexToAddress(corkResultResponse.CorkResult.Cork.TargetContractAddress))
+		// There is no approval step to verify any more. AxelarCorkResult records
+		// were written by the power tally, which v10 removes: a cork queued by
+		// the authority becomes relayable outright at its target height.
+		// Existing records stay queryable, but no new ones are produced. What
+		// matters is the transition to the relayable queue, verified below.
 
 		// the corks are deleted when it's converted into a WinningAxelarCork and is relayable
 		s.T().Log("Verifying scheduled axelar corks were deleted")
@@ -437,7 +433,8 @@ func (s *IntegrationTestSuite) TestAxelarCork() {
 		s.Require().NoError(err)
 		s.Require().Empty(cellarIDsResponse.CellarIds)
 
-		s.T().Log("Verifying default subscription removed")
+		// Still absent after removal -- nothing created it in the first place.
+		s.T().Log("Verifying no default subscription exists after cellar removal")
 		subscriptionID = fmt.Sprintf("%d:%s", arbitrumChainID, counterContract.String())
 		_, err = pubsubQueryClient.QueryDefaultSubscription(context.Background(), &pubsubtypes.QueryDefaultSubscriptionRequest{SubscriptionId: subscriptionID})
 		s.Require().Error(err)

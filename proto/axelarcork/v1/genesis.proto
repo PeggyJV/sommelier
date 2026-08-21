@@ -4,7 +4,7 @@ package axelarcork.v1;
 import "axelarcork/v1/axelarcork.proto";
 import "gogoproto/gogo.proto";
 
-option go_package = "github.com/peggyjv/sommelier/v9/x/axelarcork/types";
+option go_package = "github.com/peggyjv/sommelier/v10/x/axelarcork/types";
 
 // GenesisState - all cork state that must be provided at genesis
 message GenesisState {
@@ -25,4 +25,8 @@ message Params {
   string executor_account = 5 [(gogoproto.moretags) = "yaml:\"executor_account\""];
   uint64 timeout_duration = 6 [(gogoproto.moretags) = "yaml:\"timeout_duration\""];
   uint64 cork_timeout_blocks = 7 [(gogoproto.moretags) = "yaml:\"cork_timeout_blocks\""];
+  // cork_authority is the single address permitted to schedule, relay, bump,
+  // and cancel corks. Rotated by governance via ParameterChangeProposal.
+  // Empty means no address may act (fail-closed).
+  string cork_authority = 8 [(gogoproto.moretags) = "yaml:\"cork_authority\""];
 }

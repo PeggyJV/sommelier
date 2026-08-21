@@ -1,0 +1,49 @@
+package types
+
+import "encoding/binary"
+
+const (
+	// ModuleName is the name of the PoA module.
+	ModuleName = "poa"
+
+	// StoreKey is the primary store key.
+	StoreKey = ModuleName
+
+	// RouterKey is the message route.
+	RouterKey = ModuleName
+
+	// QuerierRoute is the querier route.
+	QuerierRoute = ModuleName
+)
+
+// KV store key prefixes.
+var (
+	ParamsKey                = []byte{0x01}
+	AuthoritySetKey          = []byte{0x02}
+	MultiplierSnapshotPrefix = []byte{0x03}
+	// ActivationHeightKey stores the block height at which the PoA module first
+	// became active (genesis init or v10 upgrade). Below this height no boost
+	// was ever applied, so a missing snapshot is benign; at or above it a
+	// missing snapshot indicates corruption and a slash must be refused.
+	ActivationHeightKey = []byte{0x04}
+	// SafeModeKey stores the authority-empty safe-mode flag (Option A). When
+	// set, value-bearing modules (gravity, cork, axelarcork) are frozen.
+	SafeModeKey = []byte{0x05}
+	// SafeModeThawHeightKey stores the height at which value-bearing modules may
+	// resume after the authority set is restored. The freeze is held past the
+	// re-bond block until the restored set is actually securing consensus
+	// (CometBFT validator-update delay).
+	SafeModeThawHeightKey = []byte{0x06}
+	// ActivationTimeKey stores the block time (unix nanos) observed at the
+	// activation height. Paired with ActivationHeightKey it yields the chain's
+	// measured average block time, which drives snapshot retention.
+	ActivationTimeKey = []byte{0x07}
+)
+
+// MultiplierSnapshotKey returns the store key for the snapshot at `height`,
+// using big-endian encoding so iteration is height-ordered.
+func MultiplierSnapshotKey(height int64) []byte {
+	bz := make([]byte, 8)
+	binary.BigEndian.PutUint64(bz, uint64(height))
+	return append(MultiplierSnapshotPrefix, bz...)
+}

@@ -1,0 +1,23 @@
+syntax = "proto3";
+package poa.v1;
+
+option go_package = "github.com/peggyjv/sommelier/v10/x/poa/types";
+
+import "gogoproto/gogo.proto";
+
+// Params defines configuration for the PoA power-floor module.
+message Params {
+  // Minimum aggregate share of consensus voting power that must be held by
+  // bonded, unjailed authority validators. Encoded as an sdk.Dec string.
+  string floor_fraction = 1 [
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+    (gogoproto.nullable) = false
+  ];
+
+  // Feature flag. When false, the PoA EndBlocker is a no-op.
+  bool enabled = 2;
+
+  // When true, the EndBlocker panics if no bonded, unjailed authority
+  // validator exists. This is the correct PoA failure mode.
+  bool halt_when_authority_empty = 3;
+}

@@ -10,7 +10,6 @@ import (
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 	"github.com/ethereum/go-ethereum/common"
 	gravitytypes "github.com/peggyjv/gravity-bridge/module/v6/x/gravity/types"
-	pubsubtypes "github.com/peggyjv/sommelier/v9/x/pubsub/types"
 )
 
 // StakingKeeper defines the expected staking keeper methods
@@ -45,8 +44,9 @@ type GravityKeeper interface {
 	SetOrchestratorValidatorAddress(ctx sdk.Context, val sdk.ValAddress, orchAddr sdk.AccAddress)
 }
 
-type PubsubKeeper interface {
-	GetPublisher(ctx sdk.Context, publisherDomain string) (publisher pubsubtypes.Publisher, found bool)
-	SetDefaultSubscription(ctx sdk.Context, defaultSubscription pubsubtypes.DefaultSubscription)
-	DeleteDefaultSubscription(ctx sdk.Context, subscriptionID string)
+// PoaKeeper is the read-only view of x/poa used to freeze cork operations when
+// the chain is in authority-empty safe mode. Optional: a nil keeper is treated
+// as "not in safe mode" (no freeze).
+type PoaKeeper interface {
+	SafeModeActive(ctx sdk.Context) bool
 }

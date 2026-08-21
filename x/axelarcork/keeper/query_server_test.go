@@ -6,7 +6,7 @@ import (
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/peggyjv/sommelier/v9/x/axelarcork/types"
+	"github.com/peggyjv/sommelier/v10/x/axelarcork/types"
 )
 
 const TestEVMChainID = 2
@@ -41,14 +41,13 @@ func (suite *KeeperTestSuite) TestQueriesHappyPath() {
 	}
 	id := cork.IDHash(testHeight)
 
-	val := sdk.ValAddress("12345678901234567890")
 	expectedScheduledCork := types.ScheduledAxelarCork{
 		Cork:        &cork,
 		BlockHeight: testHeight,
-		Validator:   "cosmosvaloper1xyerxdp4xcmnswfsxyerxdp4xcmnswfs008wpw",
+		Validator:   "",
 		Id:          hex.EncodeToString(id),
 	}
-	axelarcorkKeeper.SetScheduledAxelarCork(ctx, TestEVMChainID, testHeight, val, cork)
+	axelarcorkKeeper.SetAuthorityAxelarCork(ctx, TestEVMChainID, testHeight, cork)
 
 	corkResult := types.AxelarCorkResult{
 		Cork:               &cork,

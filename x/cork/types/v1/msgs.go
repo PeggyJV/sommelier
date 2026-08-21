@@ -5,7 +5,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/ethereum/go-ethereum/common"
-	corktypes "github.com/peggyjv/sommelier/v9/x/cork/types"
+	corktypes "github.com/peggyjv/sommelier/v10/x/cork/types"
 )
 
 var (

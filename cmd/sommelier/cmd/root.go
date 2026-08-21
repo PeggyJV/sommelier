@@ -28,8 +28,8 @@ import (
 	"github.com/spf13/cobra"
 
 	bridgecmd "github.com/peggyjv/gravity-bridge/module/v6/cmd/gravity/cmd"
-	"github.com/peggyjv/sommelier/v9/app"
-	"github.com/peggyjv/sommelier/v9/app/params"
+	"github.com/peggyjv/sommelier/v10/app"
+	"github.com/peggyjv/sommelier/v10/app/params"
 )
 
 // NewRootCmd creates a new root command for simd. It is called once in the

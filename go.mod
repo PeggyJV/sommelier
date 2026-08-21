@@ -1,4 +1,4 @@
-module github.com/peggyjv/sommelier/v9
+module github.com/peggyjv/sommelier/v10
 
 go 1.22.7
 
@@ -21,7 +21,7 @@ require (
 	github.com/grpc-ecosystem/grpc-gateway v1.16.0
 	github.com/miguelmota/go-ethereum-hdwallet v0.1.1
 	github.com/ory/dockertest/v3 v3.10.0
-	github.com/peggyjv/gravity-bridge/module/v6 v6.0.1
+	github.com/peggyjv/gravity-bridge/module/v6 v6.1.0
 	github.com/rakyll/statik v0.1.7
 	github.com/spf13/cast v1.6.0
 	github.com/spf13/cobra v1.8.1

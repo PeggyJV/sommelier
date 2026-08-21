@@ -4,10 +4,8 @@ import (
 	"context"
 	"encoding/hex"
 
-	"github.com/ethereum/go-ethereum/common"
-
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	types "github.com/peggyjv/sommelier/v9/x/cork/types/v2"
+	types "github.com/peggyjv/sommelier/v10/x/cork/types/v2"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
@@ -49,15 +47,7 @@ func (k Keeper) QueryScheduledCorks(c context.Context, req *types.QueryScheduled
 
 	response := types.QueryScheduledCorksResponse{}
 
-	k.IterateScheduledCorks(ctx, func(val sdk.ValAddress, blockHeight uint64, id []byte, cel common.Address, cork types.Cork) (stop bool) {
-		response.Corks = append(response.Corks, &types.ScheduledCork{
-			Cork:        &cork,
-			BlockHeight: blockHeight,
-			Validator:   val.String(),
-			Id:          id,
-		})
-		return false
-	})
+	response.Corks = k.GetAuthorityCorks(ctx)
 	return &response, nil
 }
 
@@ -80,7 +70,7 @@ func (k Keeper) QueryScheduledCorksByBlockHeight(c context.Context, req *types.Q
 	ctx := sdk.UnwrapSDKContext(c)
 
 	response := types.QueryScheduledCorksByBlockHeightResponse{}
-	response.Corks = k.GetScheduledCorksByBlockHeight(ctx, req.BlockHeight)
+	response.Corks = k.GetAuthorityCorksByBlockHeight(ctx, req.BlockHeight)
 	return &response, nil
 }
 
@@ -96,7 +86,7 @@ func (k Keeper) QueryScheduledCorksByID(c context.Context, req *types.QuerySched
 	}
 
 	response := types.QueryScheduledCorksByIDResponse{}
-	response.Corks = k.GetScheduledCorksByID(ctx, id)
+	response.Corks = k.GetAuthorityCorksByID(ctx, id)
 	return &response, nil
 }
 

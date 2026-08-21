@@ -52,6 +52,11 @@ const (
 
 	// ValidatorAxelarCorkCountKey - <prefix><val_address> -> uint64(count)
 	ValidatorAxelarCorkCountKey
+
+	// AuthorityCorkKeyPrefix - <prefix><chain_id><block_height><cork_id><address> -> <cork>
+	// Corks scheduled by the cork authority. Replaces ScheduledCorkKeyPrefix,
+	// which is retained above but no longer written.
+	AuthorityCorkKeyPrefix
 )
 
 // GetCorkValidatorKeyPrefix returns the key prefix for cork commits for a validator
@@ -124,4 +129,23 @@ func GetAxelarProxyUpgradeDataKey(chainID uint64) []byte {
 
 func GetValidatorAxelarCorkCountKey(val sdk.ValAddress) []byte {
 	return append([]byte{ValidatorAxelarCorkCountKey}, val.Bytes()...)
+}
+
+// GetAuthorityCorkKeyPrefix returns the authority cork prefix for a chain.
+func GetAuthorityCorkKeyPrefix(chainID uint64) []byte {
+	return append([]byte{AuthorityCorkKeyPrefix}, sdk.Uint64ToBigEndian(chainID)...)
+}
+
+// GetAuthorityCorkKeyByBlockHeightPrefix scopes the prefix to one target height.
+func GetAuthorityCorkKeyByBlockHeightPrefix(chainID uint64, blockHeight uint64) []byte {
+	return append(GetAuthorityCorkKeyPrefix(chainID), sdk.Uint64ToBigEndian(blockHeight)...)
+}
+
+// GetAuthorityCorkKey builds the full key:
+// prefix(1) | chain_id(8) | block_height(8) | cork_id(32) | contract(20)
+func GetAuthorityCorkKey(chainID uint64, blockHeight uint64, id []byte, contract common.Address) []byte {
+	return bytes.Join(
+		[][]byte{GetAuthorityCorkKeyPrefix(chainID), sdk.Uint64ToBigEndian(blockHeight), id, contract.Bytes()},
+		[]byte{},
+	)
 }

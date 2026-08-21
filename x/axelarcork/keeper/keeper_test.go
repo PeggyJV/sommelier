@@ -4,7 +4,7 @@ import (
 	"encoding/hex"
 	"testing"
 
-	"github.com/peggyjv/sommelier/v9/x/axelarcork/tests/mocks"
+	"github.com/peggyjv/sommelier/v10/x/axelarcork/tests/mocks"
 
 	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
 	tmtime "github.com/cometbft/cometbft/types/time"
@@ -12,13 +12,12 @@ import (
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/testutil"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/cosmos/cosmos-sdk/types/bech32"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	paramskeeper "github.com/cosmos/cosmos-sdk/x/params/keeper"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/golang/mock/gomock"
-	moduletestutil "github.com/peggyjv/sommelier/v9/testutil"
-	"github.com/peggyjv/sommelier/v9/x/axelarcork/types"
+	moduletestutil "github.com/peggyjv/sommelier/v10/testutil"
+	"github.com/peggyjv/sommelier/v10/x/axelarcork/types"
 	"github.com/stretchr/testify/suite"
 )
 
@@ -44,7 +43,6 @@ type KeeperTestSuite struct {
 	distributionKeeper *mocks.MockDistributionKeeper
 	ics4wrapper        *mocks.MockICS4Wrapper
 	gravityKeeper      *mocks.MockGravityKeeper
-	pubsubKeeper       *mocks.MockPubsubKeeper
 
 	validator *mocks.MockValidatorI
 
@@ -71,7 +69,6 @@ func (suite *KeeperTestSuite) SetupTest() {
 	suite.distributionKeeper = mocks.NewMockDistributionKeeper(ctrl)
 	suite.ics4wrapper = mocks.NewMockICS4Wrapper(ctrl)
 	suite.gravityKeeper = mocks.NewMockGravityKeeper(ctrl)
-	suite.pubsubKeeper = mocks.NewMockPubsubKeeper(ctrl)
 	suite.validator = mocks.NewMockValidatorI(ctrl)
 	suite.ctx = ctx
 
@@ -97,7 +94,6 @@ func (suite *KeeperTestSuite) SetupTest() {
 		suite.distributionKeeper,
 		suite.ics4wrapper,
 		suite.gravityKeeper,
-		suite.pubsubKeeper,
 	)
 
 	//types.RegisterInterfaces(encCfg.InterfaceRegistry)
@@ -144,77 +140,35 @@ func (suite *KeeperTestSuite) TestSetGetDeleteScheduledCork() {
 	})
 
 	testHeight := uint64(123)
-	val := []byte("testaddress")
 	deadline := uint64(10000000000)
 	expectedCork := types.AxelarCork{
 		EncodedContractCall:   []byte("testcall"),
 		TargetContractAddress: sampleCellarHex,
 		Deadline:              deadline,
+		ChainId:               TestEVMChainID,
 	}
 	expectedID := expectedCork.IDHash(testHeight)
-	actualID := axelarcorkKeeper.SetScheduledAxelarCork(ctx, TestEVMChainID, testHeight, val, expectedCork)
+	actualID := axelarcorkKeeper.SetAuthorityAxelarCork(ctx, TestEVMChainID, testHeight, expectedCork)
 	require.Equal(expectedID, actualID)
-	actualCork, found := axelarcorkKeeper.GetScheduledAxelarCork(ctx, TestEVMChainID, testHeight, actualID, val, sampleCellarAddr)
-	require.True(found)
-	require.Equal(expectedCork, actualCork)
 
-	actualCorks := axelarcorkKeeper.GetScheduledAxelarCorks(ctx, TestEVMChainID)
-	require.Equal(&expectedCork, actualCorks[0].Cork)
-
-	actualCorks = axelarcorkKeeper.GetScheduledAxelarCorksByID(ctx, TestEVMChainID, actualID)
+	actualCorks := axelarcorkKeeper.GetAuthorityAxelarCorks(ctx, TestEVMChainID)
 	require.Len(actualCorks, 1)
 	require.Equal(&expectedCork, actualCorks[0].Cork)
+	require.Empty(actualCorks[0].Validator, "authority corks have no scheduling validator")
+
+	actualCorks = axelarcorkKeeper.GetAuthorityAxelarCorksByID(ctx, TestEVMChainID, actualID)
+	require.Len(actualCorks, 1)
 	require.Equal(hex.EncodeToString(expectedID), actualCorks[0].Id)
 
 	actualHeights := axelarcorkKeeper.GetScheduledBlockHeights(ctx, TestEVMChainID)
 	require.Equal(actualCorks[0].BlockHeight, actualHeights[0])
 
-	actualCorks = axelarcorkKeeper.GetScheduledAxelarCorksByBlockHeight(ctx, TestEVMChainID, testHeight)
-	require.Equal(&expectedCork, actualCorks[0].Cork)
+	actualCorks = axelarcorkKeeper.GetAuthorityAxelarCorksByBlockHeight(ctx, TestEVMChainID, testHeight)
+	require.Len(actualCorks, 1)
 	require.Equal(testHeight, actualCorks[0].BlockHeight)
-	require.Equal(hex.EncodeToString(expectedID), actualCorks[0].Id)
 
-	axelarcorkKeeper.DeleteScheduledAxelarCork(ctx, TestEVMChainID, testHeight, expectedID, sdk.ValAddress(val), sampleCellarAddr)
-	require.Empty(axelarcorkKeeper.GetScheduledAxelarCorks(ctx, TestEVMChainID))
-}
-
-func (suite *KeeperTestSuite) TestGetWinningVotes() {
-	ctx, axelarcorkKeeper := suite.ctx, suite.axelarcorkKeeper
-	require := suite.Require()
-
-	axelarcorkKeeper.SetChainConfiguration(ctx, TestEVMChainID, types.ChainConfiguration{
-		Name:         "testevm",
-		Id:           TestEVMChainID,
-		ProxyAddress: "0x123",
-	})
-
-	testHeight := uint64(ctx.BlockHeight())
-	deadline := uint64(100000000000000)
-	cork := types.AxelarCork{
-		EncodedContractCall:   []byte("testcall"),
-		TargetContractAddress: sampleCellarHex,
-		Deadline:              deadline,
-	}
-	_, bytes, err := bech32.DecodeAndConvert("somm1fcl08ymkl70dhyg3vmx4hjsqvxym7dawnp0zfp")
-	require.NoError(err)
-	require.Equal(20, len(bytes))
-	axelarcorkKeeper.SetScheduledAxelarCork(ctx, TestEVMChainID, testHeight, bytes, cork)
-
-	suite.stakingKeeper.EXPECT().GetLastTotalPower(ctx).Return(sdk.NewInt(100))
-	suite.stakingKeeper.EXPECT().Validator(ctx, gomock.Any()).Return(suite.validator)
-	suite.validator.EXPECT().GetConsensusPower(gomock.Any()).Return(int64(100))
-	suite.stakingKeeper.EXPECT().PowerReduction(ctx).Return(sdk.OneInt())
-
-	winningScheduledVotes := axelarcorkKeeper.GetApprovedScheduledAxelarCorks(ctx, TestEVMChainID)
-	results := axelarcorkKeeper.GetAxelarCorkResults(ctx, TestEVMChainID)
-	require.Len(winningScheduledVotes, 1)
-	require.Equal(cork, winningScheduledVotes[0])
-	require.Equal(&cork, results[0].Cork)
-	require.True(results[0].Approved)
-	require.Equal("100.000000000000000000", results[0].ApprovalPercentage)
-
-	// scheduled cork should be deleted at the scheduled height
-	require.Empty(axelarcorkKeeper.GetScheduledAxelarCorksByBlockHeight(ctx, TestEVMChainID, testHeight))
+	axelarcorkKeeper.DeleteAuthorityAxelarCork(ctx, TestEVMChainID, testHeight, expectedID, sampleCellarAddr)
+	require.Empty(axelarcorkKeeper.GetAuthorityAxelarCorks(ctx, TestEVMChainID))
 }
 
 func (suite *KeeperTestSuite) TestCorkResults() {
