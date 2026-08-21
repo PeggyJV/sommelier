@@ -1,7 +1,7 @@
 syntax = "proto3";
 package poa.v1;
 
-option go_package = "github.com/peggyjv/sommelier/v9/x/poa/types";
+option go_package = "github.com/peggyjv/sommelier/v10/x/poa/types";
 
 import "gogoproto/gogo.proto";
 import "poa/v1/params.proto";
@@ -10,4 +10,26 @@ import "poa/v1/poa.proto";
 message GenesisState {
   Params params = 1 [(gogoproto.nullable) = false];
   repeated AuthorityValidator authority_set = 2 [(gogoproto.nullable) = false];
+  // activation_height is the height at which PoA boosting first took effect.
+  // Exported so a genesis restart does not reset it: rawSlashPower treats
+  // infraction heights BELOW activation as un-boosted and slashes them
+  // verbatim, so a reset activation height would let a post-activation
+  // infraction be slashed on boosted power. Zero means "not yet active", and
+  // InitGenesis will stamp the current height.
+  int64 activation_height = 3;
+  // activation_time is the block time (unix nanos) observed at
+  // activation_height. Paired with activation_height it gives the measured
+  // average block time that drives multiplier-snapshot retention.
+  int64 activation_time = 4;
+  // safe_mode carries the authority-empty freeze across an export/import so a
+  // restart cannot silently unfreeze the value-bearing modules for the blocks
+  // before the first EndBlocker re-derives it.
+  bool safe_mode = 5;
+  // safe_mode_thaw_height is the pending thaw height, if one is scheduled.
+  int64 safe_mode_thaw_height = 6;
+  // multiplier_snapshots are the retained per-height boost snapshots. Dropping
+  // them across a restart would make every in-flight authority slash either be
+  // refused or (worse, if activation_height also reset) applied to boosted
+  // power.
+  repeated MultiplierSnapshot multiplier_snapshots = 7 [(gogoproto.nullable) = false];
 }

@@ -144,9 +144,13 @@ consequence operators must understand: **slashing is a weak economic deterrent
 for boosted authority validators.** A validator wielding 67% of consensus power
 via boost may have only a small real self-stake, so `slash_factor × real_stake`
 is a small absolute penalty relative to the consensus damage it could do. The
-same applies to rewards — distribution allocates by boosted power, so authority
-validators earn rewards proportional to their boosted share, not their real
-stake.
+same applies to rewards — distribution allocates by boosted power (from
+`LastCommitInfo`), so authority validators earn rewards proportional to their
+boosted share, not their real stake. Symmetrically, **community validators earn
+in proportion to their capped consensus power (≤33% in aggregate), not their
+actual stake.** Note x/distribution itself is wired to the RAW staking keeper:
+allocation is boosted, but the per-token reward ratio is computed on raw tokens
+so rewards remain fully withdrawable.
 
 This is inherent to hybrid PoA and is intended: authority validators are trusted,
 binary-/governance-designated operators, and the primary enforcement is
@@ -169,21 +173,25 @@ Operational runbook:
   attribute on the `authority_rescale` event (a rising multiplier warns the set
   is thinning), and the `authority_safe_mode_entered` event.
 - **Re-seed quickly** via `MsgUpdateAuthoritySet` (gov) to add healthy
-  validators, and unjail recoverable ones, before the set collapses.
+  validators, and unjail recoverable ones, **before the set collapses**. Once
+  the bonded authority count hits zero this lever is gone: both x/poa gov
+  messages are frozen in safe mode (see below).
 - Keep a standing governance process (and signer availability) so an emergency
   `MsgUpdateAuthoritySet` / `MsgUpdateParams` can pass on a short voting period.
-  With safe mode (the default), governance still runs because the chain keeps
-  producing blocks — recovery is on-chain.
+- **Authority validators must independently hold enough raw stake to stay in the
+  active set.** The boost is applied to `LastValidatorPower` *after* x/staking
+  has already selected the top `MaxValidators` by raw tokens, so it cannot pull
+  a validator into the set. An authority validator that falls below the cutoff
+  is simply not bonded and contributes nothing to the floor.
 
 ### All authority validators are jailed or unbonded
 Behavior depends on `halt_when_authority_empty`:
 
 - **Default (`false`) → safe mode.** The chain keeps producing blocks on
-  community stake so governance can re-seed the authority set on-chain, while
-  the value-bearing modules freeze (see [Safe mode](#safe-mode-authority-empty)).
-  Recovery: pass a `MsgUpdateAuthoritySet` to restore a bonded authority set; on
-  the next block boosting resumes, safe mode clears, and the frozen modules
-  resume.
+  community stake while the value-bearing modules freeze (see
+  [Safe mode](#safe-mode-authority-empty)). **Recovery is by unjailing and
+  re-bonding the EXISTING authority validators, not by governance** — see
+  "Recovery" below.
 - **`true` → halt.** The chain halts via panic. The security guarantee is
   broken, so production of further blocks is refused; recovery requires an
   off-chain coordinated restart (governance cannot run on a halted chain).
@@ -201,6 +209,16 @@ validators offline (e.g. a DoS that downtime-jails them all): the worst outcome
 is frozen value-bearing operations, never a fund movement signed by the
 community set.
 
+**Check whether you are in safe mode:**
+
+```
+sommelier query poa safe-mode
+```
+
+Reports `active`, the pending `thaw_height`, and `bonded_authority_count` — the
+number of allowlisted validators currently bonded and unjailed. Zero is what
+puts and keeps the chain in safe mode.
+
 Frozen while in safe mode (txs, module BeginBlock/EndBlock, and legacy gov
 proposals — the latter run in gov EndBlock and bypass the ante/msg servers):
 
@@ -210,11 +228,55 @@ proposals — the latter run in gov EndBlock and bypass the ante/msg servers):
 | cork | `MsgScheduleCork` and the `ScheduledCork` gov proposal; scheduled-cork execution in EndBlock |
 | axelarcork | `MsgScheduleAxelarCork`, `MsgRelayAxelarCork`, `MsgRelayAxelarProxyUpgrade`, `MsgBumpAxelarCorkGas` msgs and the `AxelarScheduledCork` / `AxelarCommunityPoolSpend` / `UpgradeAxelarProxyContract` gov proposals; cork tally / fund sweep in EndBlock |
 
-Pending items (a queued send-to-Ethereum, a cork scheduled for a future height)
-are **not** dropped — they stay in module state and resume once safe mode
-clears. Governance (`MsgUpdateAuthoritySet`), staking, and bank txs are not
-frozen, so the recovery path stays open. Entry/exit emit the
-`authority_safe_mode_entered` / `authority_safe_mode_exited` events.
+Also frozen: the cork/axelarcork `AddManagedCellarIDs` and
+`AddChainConfiguration` gov proposals — pre-staging new call targets under an
+untrusted set would let them be exploited the instant the freeze lifts.
+
+**What survives the freeze, and what does not.** A queued send-to-Ethereum, or a
+cork scheduled for a height *after* recovery, stays in module state and resumes
+once safe mode clears. But a cork whose **target height falls inside the freeze
+is dropped**: it is still tallied and garbage-collected (so it does not strand
+in state or leak the scheduler's `MaxCorksPerValidator` quota), but it is not
+submitted. Deferring it would mean executing a call approved by a set we no
+longer trust, at an unbounded later time. Dropped corks emit
+`corks_dropped_safe_mode` / `axelar_corks_dropped_safe_mode` and **must be
+re-scheduled after recovery.**
+
+Staking (including unjail), bank, and every non-value-bearing module keep
+working normally. Entry/exit emit the `authority_safe_mode_entered` /
+`authority_safe_mode_exited` events.
+
+### Recovery from safe mode
+
+**Governance is frozen for x/poa in safe mode.** Both `MsgUpdateAuthoritySet`
+and `MsgUpdateParams` are rejected with `ErrSafeModeGovFrozen` while the flag is
+set. This is deliberate and is the core of the safe-mode security argument: in
+safe mode *no authority validator is bonded*, so 100% of the governance tally is
+community stake — the exact set the freeze exists to distrust. Leaving those
+messages open would let an attacker who induced the outage vote itself the
+authority set, or flip `enabled=false` (which clears safe mode immediately, with
+no thaw delay), and take the bridge. Safe mode would then be strictly worse than
+halting.
+
+**The recovery path is:**
+
+1. Bring the existing authority validators back online.
+2. `sommelier tx slashing unjail` from each (jailed validators must also still
+   satisfy the `MaxValidators` cutoff on raw stake to re-enter the bonded set).
+3. Once at least one is bonded and unjailed, the next EndBlocker resumes boosting
+   and schedules the thaw; two blocks later the freeze lifts and
+   `authority_safe_mode_exited` is emitted.
+4. Re-schedule any corks that were dropped during the freeze.
+
+No governance proposal is required, and this covers the overwhelmingly common
+case: the authority set went offline and comes back.
+
+**If the authority set is permanently lost** (keys destroyed, operators gone),
+there is no on-chain recovery — this is a social-consensus event requiring a
+coordinated restart with a patched binary or a modified genesis, the same as
+under `halt_when_authority_empty=true`. Safe mode does not remove that
+possibility; it removes it for the *common* failure, and refuses to trade the
+bridge for convenience in the rare one.
 
 **Thaw delay.** When the authority set is restored, boosting resumes
 immediately but the value-bearing freeze is held for 2 more blocks — CometBFT
@@ -238,6 +300,28 @@ Validation:
 - Empty list rejected.
 - Duplicate operator addresses rejected.
 - Malformed bech32 rejected.
+- **Rejected outright while in safe mode** (`ErrSafeModeGovFrozen`) — see
+  [Recovery from safe mode](#recovery-from-safe-mode).
+- **At least one proposed validator must be bonded and unjailed.** Otherwise the
+  proposal would drop the chain into safe mode on the very next block, freezing
+  the bridge — and, because x/poa governance is frozen in safe mode, would not
+  be undoable by a follow-up proposal.
+
+### Governance voting power is boosted
+
+x/gov runs on the PoA-wrapped staking keeper, so **voting power tracks consensus
+power, not raw token holdings**. The authority set therefore holds
+`floor_fraction` (~67%) of every tally.
+
+This is load-bearing rather than incidental: PoA caps the community's consensus
+power but places no cap on how many tokens it may hold. If governance were
+tallied on raw stake, a party holding >50% of bonded tokens — entirely permitted
+by design — could simply vote itself the authority set, and the consensus floor
+would be decorative.
+
+The consequence for delegators is real and should be communicated: **governance
+no longer follows token stake.** A community delegator's vote is weighted by the
+capped consensus power of their validator, not by their tokens.
 
 Once the gov proposal passes, the new allowlist takes effect on the next
 block. The boost is recomputed in the EndBlocker; CometBFT receives
@@ -248,6 +332,8 @@ adjusted ABCI ValidatorUpdates that reflect the new partition.
 | Event | When | Attributes |
 |---|---|---|
 | `authority_rescale` | EndBlocker each block when boost is applied | `multiplier`, `authority_power`, `community_power` |
+| `corks_dropped_safe_mode` | cork EndBlocker, when approved corks are discarded because safe mode is active | `block_height`, `dropped_count` |
+| `axelar_corks_dropped_safe_mode` | axelarcork EndBlocker, same | `block_height`, `chain_id`, `dropped_count` |
 | `slash_skipped_no_snapshot` | Slash refused: snapshot missing for an at/after-activation infraction height (treated as corruption) | `operator`, `infraction_height` |
 | `authority_safe_mode_entered` | Authority set became empty; chain entered safe mode (value-bearing modules frozen) | — |
 | `authority_safe_mode_exited` | Authority set restored; safe mode cleared | — |
@@ -258,3 +344,25 @@ Queries:
 - `/sommelier/poa/v1/params` — current params
 - `/sommelier/poa/v1/authority_set` — current allowlist
 - `/sommelier/poa/v1/effective_power/{operator}` — current `LastValidatorPower` (boosted if authority) and `is_authority` flag
+
+## Queries
+
+| Command | Purpose |
+|---|---|
+| `sommelier query poa safe-mode` | **Primary health check.** Reports `active`, `thaw_height`, and `bonded_authority_count`. |
+| `sommelier query poa authority-set` | The current authority allowlist. |
+| `sommelier query poa effective-power <valoper>` | A validator's post-boost consensus power and whether it is authority. |
+| `sommelier query poa params` | `floor_fraction`, `enabled`, `halt_when_authority_empty`. |
+
+There is no `tx poa` command: both PoA messages are gov-only and are submitted
+through `tx gov submit-proposal`.
+
+## A note on ABCI validator updates
+
+Because x/staking diffs the boosted `LastValidatorPower` against the raw power
+it recomputes each block, it re-emits an update for every authority validator
+every block, which PoA then re-boosts. The emitted power is correct and CometBFT
+treats a same-power update as a no-op (`NextValidatorsHash` is unchanged), but
+the ABCI `ValidatorUpdates` slice is permanently non-empty. Relayer and indexer
+operators should not treat "validator set updated" as meaning the set actually
+changed.

@@ -20,7 +20,7 @@ Authority is enforced not by replacing `x/staking`, but by a new `x/poa` module 
 
 - Authority validators collectively hold ≥67% of CometBFT voting power every block.
 - Gravity-bridge orchestrator signing weights match consensus weights (no security divergence).
-- Community validators may join, be delegated to, and earn rewards proportional to their actual stake.
+- Community validators may join and be delegated to. NOTE: they earn rewards proportional to their **capped consensus power**, not their actual stake — reward allocation is driven by `LastCommitInfo` voting power, which is the boosted power. See §4.2.
 - Authority allowlist is changeable via governance (`MsgUpdateAuthoritySet`) without a binary upgrade.
 - Slashing (downtime, double-sign) penalizes authority validators based on their **actual** bonded stake, not their boosted power.
 - The chain halts cleanly if zero authority validators are bonded-and-unjailed (correct PoA failure mode).
@@ -91,6 +91,7 @@ Authority is enforced not by replacing `x/staking`, but by a new `x/poa` module 
 **Read methods (apply multiplier to authority validators):**
 
 - `GetLastValidatorPower(ctx, operator) → int64` — pass-through; boost is realised via the EndBlocker's `LastValidatorPower` overwrite.
+- `TotalBondedTokens(ctx) → math.Int` — recomputes the boosted total **bonded tokens** by summing `GetBondedTokens()` over the adapted bonded set. This is x/gov's quorum denominator; see §4.1.
 - `GetLastTotalPower(ctx) → math.Int` — recomputes the boosted total by re-iterating overwritten `LastValidatorPower` (the staking module's own `LastTotalPower` slot is set inside `ApplyAndReturnValidatorSetUpdates` *before* PoA's overwrite, so it reflects the pre-rescale total).
 - `GetBondedValidatorsByPower(ctx) → []Validator`, `GetAllValidators(ctx) → []Validator`, `GetValidator(...)` — return concrete validators with `Tokens` field rescaled (`Ceil(rawTokens * M)`).
 - `IterateBondedValidatorsByPower`, `IterateLastValidators`, `IterateValidators` — yield a `boostedValidator` adapter overriding `GetTokens` / `GetBondedTokens` / `GetConsensusPower`. `IterateLastValidatorPowers` is pass-through (the underlying store already holds boosted values).
@@ -149,7 +150,7 @@ Per block, PoA's EndBlocker:
    a. Overwrites `staking.LastValidatorPower[v]` with the boosted value.
    b. Records the per-validator multiplier in the block's snapshot.
 5. Merges raw updates with boosted entries (`mergeUpdatesWithBoost`): rewrites `Power` on raw entries that match a boosted authority pubkey and appends explicit entries for boosted authorities not present in raw. Returns the merged slice as the chain's only `[]abci.ValidatorUpdate` for the block.
-6. Persists `(block_height → per_authority_multiplier_snapshot)` to PoA state. Retention covers `max(unbonding_blocks, evidence.MaxAgeNumBlocks) + slashing.SignedBlocksWindow`; the unbonding-blocks term uses a conservative lower bound on block time so retention errs toward over-keeping (missing snapshots cause authority slashes to be skipped, so over-retention is the safe direction).
+6. Persists `(block_height → per_authority_multiplier_snapshot)` to PoA state. Retention covers `max(unbonding_blocks, evidence.MaxAgeNumBlocks) + slashing.SignedBlocksWindow`. The unbonding-blocks term derives block time from the chain's **measured** rate — `(now - activation_time) / (height - activation_height)`, shaded down 20%, floored at 100ms, with a 1s fallback until 1000 blocks have elapsed — rather than a compiled-in constant. A constant's "conservative lower bound" argument only holds if the assumed value really is a lower bound; if actual block times ever fall below it (load, a consensus-param change, a relaunch), retention silently under-covers the slashable window and authority slashes start being **refused** with no signal beyond a log line. `activation_time` is stored alongside `activation_height` for this.
 7. Emits the `authority_rescale` telemetry event with `multiplier`, `authority_power`, `community_power`.
 
 Reads from the wrapper layer (§3.2) provide the durable surface for the floor invariant. The `LastValidatorPower` overwrite is belt-and-suspenders: any consumer that queries staking directly via `GetLastValidatorPower` also sees the boosted value, and `WrappedStakingKeeper.GetLastTotalPower` recomputes the boosted aggregate by re-iterating the store (the staking module's `LastTotalPower` slot is set inside `ApplyAndReturnValidatorSetUpdates` *before* PoA's overwrite, so it reflects the pre-rescale total).
@@ -186,7 +187,18 @@ The flag is derived deterministically from on-chain state inside EndBlocker, so 
 
 Why the ante alone is insufficient for gravity: gravity's BeginBlock/EndBlock run regardless of the ante, and would both create bridge state and **slash validators for not submitting the very confirmations the ante is blocking** — hence the module no-op wrapper. In-repo modules gate themselves in their msg servers, EndBlockers, and gov handlers. Pending items (a queued `SendToEthereum`, a scheduled cork at a future height) remain in their stores untouched and resume once safe mode clears. No state is dropped.
 
-**Why this is safe under the induced-downtime attack.** An attacker who knocks the authority validators offline still cannot sign bridge withdrawals or mint via inbound attestation: the worst outcome is that bridge/cork are frozen (a liveness degradation of privileged ops), while consensus stays live so the legitimate authority set can be restored by governance. The attacker never gains the ability to move funds — which is the property `passthrough` loses.
+**Why this is safe under the induced-downtime attack.** An attacker who knocks the authority validators offline still cannot sign bridge withdrawals or mint via inbound attestation: the worst outcome is that bridge/cork are frozen (a liveness degradation of privileged ops), while consensus stays live so the legitimate authority set can be restored.
+
+**Governance is NOT a recovery lever in safe mode — it is the attack surface.** This is the correction to the original Option A argument, which claimed "the attacker never gains the ability to move funds" while leaving x/poa's own gov messages open. In safe mode, by definition, *no authority validator is bonded*, so 100% of the tally is community stake — governance is decided entirely by the set the freeze exists to distrust. With `MsgUpdateAuthoritySet` and `MsgUpdateParams` reachable, the attacker who induced the outage could:
+
+- pass `MsgUpdateParams{enabled:false}`, which the EndBlocker treats as "PoA off" and clears safe mode **immediately, with no thaw delay** — unfreezing gravity/cork/axelarcork in a single block; or
+- pass `MsgUpdateAuthoritySet` naming its own validators, wait out the 2-block thaw, and hold ≥ `floor_fraction` of consensus plus the bridge.
+
+Either path converts the induced-downtime liveness attack into the fund takeover Option A was designed to prevent, at a cost of one voting period. So **both x/poa gov messages are rejected while `SafeModeActive`** (`ErrSafeModeGovFrozen`).
+
+The supported recovery from safe mode is therefore *not* governance: it is the **existing** authority validators unjailing and re-bonding, which requires no governance message at all and is the overwhelmingly common case (the authority set went offline; it comes back). Permanent loss of the authority set — lost keys, defected operators — remains a social-consensus event requiring a coordinated restart, exactly as under `halt`. Safe mode still buys what it was meant to buy: the chain keeps producing blocks, so unjail/re-bond, staking, bank, and every non-value-bearing module keep working through the incident, and no off-chain restart is needed for the common failure.
+
+**Corks approved during the freeze are dropped, not deferred.** `GetApprovedScheduledCorks` (and its axelarcork twin) is keyed on the *exact* current block height and is the only site that deletes scheduled corks and decrements the scheduler's cork count. The EndBlocker therefore still tallies and garbage-collects during the freeze, and gates only the submission step — an early return would strand every cork whose target height elapsed inside the freeze and permanently consume its scheduler's `MaxCorksPerValidator` quota. Deferring rather than dropping was also rejected: it would mean executing a call approved by a set we no longer trust, at an unbounded later time. Dropped corks emit `corks_dropped_safe_mode` / `axelar_corks_dropped_safe_mode` and must be re-scheduled after recovery.
 
 **Implementation (no proto change).** Rather than introduce a new enum param (which would require regenerating the params proto), the existing `halt_when_authority_empty` bool is reused: `true` = halt, `false` = safe mode, default `false`. Concrete changes:
 
@@ -197,6 +209,9 @@ Why the ante alone is insufficient for gravity: gravity's BeginBlock/EndBlock ru
 - `app/ante_safemode.go`: `NewSafeModeAnteHandler` wraps the SDK ante handler to reject frozen gravity messages, recursing into authz `MsgExec` and gov v1 `MsgSubmitProposal`; wired at `app.SetAnteHandler`. Gov v1 executes a proposal's embedded messages through the message router in gov EndBlock (bypassing the ante), and the gov keeper takes a concrete `*baseapp.MsgServiceRouter` that cannot be wrapped — so the submission tx is the gate. Residual: a gov v1 proposal already in voting when safe mode triggers could still execute a gravity msg, but the only reachable one is `MsgSendToEthereum` signed by the gov module account (event/confirmation msgs require a registered orchestrator signer; the community-pool spend is a separately-gated v1beta1 handler). In-repo cork/axelarcork msgs executed via gov v1 are gated by their msg servers.
 - `app/gravity_safemode_module.go`: `gravitySafeModeModule` wraps `gravity.AppModule` to no-op BeginBlock/EndBlock in safe mode; registered in the module manager in place of the bare gravity module.
 - `app/gov_safemode.go`: `freezeGovHandlerInSafeMode` wraps the gravity community-pool Ethereum spend gov handler.
+- `x/poa/keeper/msg_server.go`: both `UpdateAuthoritySet` and `UpdateParams` reject with `ErrSafeModeGovFrozen` while safe mode is active. `UpdateAuthoritySet` additionally requires at least one proposed validator to be bonded-and-unjailed, so a typo'd or stale set cannot drop the chain into safe mode the instant the proposal executes.
+- `x/cork/keeper/abci.go`, `x/axelarcork/keeper/abci.go`: freeze applied per-step (tally + GC always run; submission gated), not by early return.
+- Cork/axelarcork `AddManagedCellarIDs` and `AddChainConfiguration` gov handlers are also frozen: pre-staging new call targets under the untrusted set would let them be exploited the instant the freeze lifts.
 
 **Resolved design questions.**
 
@@ -209,7 +224,8 @@ Why the ante alone is insufficient for gravity: gravity's BeginBlock/EndBlock ru
 For each consumer currently passed `app.StakingKeeper`, replace with `app.PoaKeeper.WrappedStakingKeeper()`:
 
 - `slashingkeeper.NewKeeper(... stakingKeeper ...)` → `app.PoaKeeper.WrappedStakingKeeper()`
-- `distrkeeper.NewKeeper(...)` → wrapped
+- `govkeeper.NewKeeper(...)` → **wrapped** (see §4.1)
+- `distrkeeper.NewKeeper(...)` → **RAW** (see §4.2)
 - `evidencekeeper.NewKeeper(...)` → wrapped
 - `gravitykeeper.NewKeeper(...)` → wrapped
 - `corkkeeper.NewKeeper(...)` → wrapped
@@ -218,7 +234,27 @@ For each consumer currently passed `app.StakingKeeper`, replace with `app.PoaKee
 - `incentiveskeeper.NewKeeper(...)` → wrapped
 - Staking hooks (distribution, slashing) — registered against the **real** staking keeper (unchanged); hooks fire on real stake changes which is correct behavior.
 
-`x/staking` itself continues to receive the real keeper for its internal bookkeeping.
+`x/staking` itself continues to receive the real keeper for its internal bookkeeping. `x/mint` also stays raw: inflation and bonded-ratio must reflect actual bonded tokens.
+
+`WrappedStakingKeeper()` is a method on `*Keeper` and the wrapper holds a **pointer** to the PoA keeper. app.go must build the wrapper before x/slashing exists (slashing's constructor consumes it) and only calls `SetSlashingKeeper` afterwards; with a value copy the wrapper would capture a keeper whose `slashingKeeper` is permanently nil.
+
+### 4.1 Governance runs on the wrapped keeper
+
+This is load-bearing for the entire module, not a detail. The authority allowlist is mutable by governance, and PoA deliberately places **no cap on how many tokens the community may hold** — only on the consensus power those tokens translate into. On the raw keeper, a party holding >50% of bonded tokens (entirely permitted by design; neutralising exactly that is why the boost exists) would control governance outright and could simply vote itself the authority set. The 67% consensus floor would be decorative.
+
+Wrapping gov makes voting power track consensus power, so the authority set holds ≥ `floor_fraction` of every tally and cannot be replaced without its own consent.
+
+Both sides of the tally must be boosted consistently: x/gov builds its numerator from per-validator `GetBondedTokens()` (boosted by the adapter) and its quorum denominator from `TotalBondedTokens()`. Leaving the denominator raw would overstate turnout by the boost factor, potentially above 100% — hence the `TotalBondedTokens` override in §3.2.
+
+Consequence to accept explicitly: **token holders no longer govern proportionally to stake.** Governance follows consensus weight. On a chain whose whole premise is that consensus weight is assigned by an allowlist rather than earned by stake, that is the coherent choice — but it is a real change in the governance model and should be communicated to delegators.
+
+### 4.2 Distribution runs on the raw keeper
+
+x/distribution divides a validator's reward pool by `validator.GetTokens()` to build the per-token cumulative reward ratio (`IncrementValidatorPeriod`), but computes each delegator's stake with `TokensFromShares`, which the PoA adapter deliberately does **not** boost (share math must stay on raw tokens, per §3.2).
+
+Feeding distribution the wrapped keeper mixed a boosted denominator with raw numerators: delegators of a boosted authority validator could only ever withdraw ~1/M of the rewards allocated to them, and the remainder accumulated in `ValidatorOutstandingRewards` permanently un-withdrawable. It also violated the §2 non-goal "changing inflation, fee, or reward mechanics."
+
+Reward *allocation* is boosted regardless of this wiring — it is driven by `LastCommitInfo` voting power, not by the keeper — so authority validators still capture ~`floor_fraction` of block rewards. They are simply now fully withdrawable. The economic consequence is worth stating plainly and contradicts the §2 goal as originally written: **community validators earn in proportion to their capped consensus power (≤33% in aggregate), not to their actual stake.** That is inherent to allocating rewards by consensus power and cannot be fixed in the keeper wiring.
 
 EndBlocker order: `poatypes.ModuleName` immediately after `govtypes.ModuleName` and before `stakingtypes.ModuleName` in `mm.SetOrderEndBlockers`. `stakingtypes.ModuleName` remains in the slice (SDK requires every registered module to appear) but its EndBlock is the no-op variant from `app/staking_endblocker_noop.go`; PoA invokes `staking.EndBlocker` itself.
 
@@ -234,6 +270,16 @@ Ship as a `v10` upgrade (`app/upgrades/v10`). Upgrade handler:
 4. Runs the standard module-version migration map.
 
 Rollback note: removing `x/poa` would require a follow-up upgrade restoring all wired consumers to the raw staking keeper.
+
+### 5.1 Genesis export
+
+`ExportGenesis` emits the activation stamp (height + time), the safe-mode flag and pending thaw height, and **every retained multiplier snapshot**. All of it is security-relevant across a restart:
+
+- A reset `activation_height` would make `rawSlashPower` treat a post-activation infraction as pre-PoA and slash it on **boosted** power.
+- A dropped safe-mode flag would unfreeze the value-bearing modules for the blocks before the first EndBlocker re-derives it.
+- Dropped snapshots would make every in-flight authority slash hit the refuse path and be silently skipped.
+
+Cost: the snapshot set spans the full slashable window (~300k blocks at 6s over a 21-day unbonding period), so it dominates the module's genesis export — tens of MB. That is the accepted tradeoff; the alternative silently skips slashes.
 
 ## 6. Testing strategy
 
@@ -253,6 +299,8 @@ Rollback note: removing `x/poa` would require a follow-up upgrade restoring all 
 
 ### End-to-end (`integration_tests/`)
 
+`setPoaGenState` seeds the authority allowlist with every test validator. Without it the module's `DefaultGenesis` leaves the allowlist empty, the first EndBlocker enters safe mode, and every bridge/cork scenario in the suite fails for reasons unrelated to what it tests.
+
 - New scenario: community delegator delegates large stake to a community validator; assert each block's community share `< (1 - floor_fraction)` (deterministic against the configured floor param).
 - Governance proposal to add/remove an authority validator; assert allowlist update lands in the next block and rescaling reflects it.
 
@@ -266,7 +314,13 @@ Rollback note: removing `x/poa` would require a follow-up upgrade restoring all 
 | 4 | IBC light client assumptions about validator set churn. | Authority rescale changes voting power abruptly when set changes; document for relayer operators. Mitigated because authority set changes are infrequent (gov-mediated). |
 | 5 | A community validator's stake grows large enough that even with M=1 it exceeds 33%. | Cannot happen by construction: when authority set is healthy, `M` is chosen so authority is ≥67%, hence community ≤33%. The only failure is `B=0`. |
 | 6 | Multiplier snapshot retention bloats state. | Prune snapshots older than `UnbondingTime + SignedBlocksWindow`. |
-| 7 | `halt` on empty authority requires an off-chain coordinated restart to recover (governance is dead on a halted chain); `passthrough` exposes bridge/cork to an untrusted community set and lets an induced-downtime liveness attack escalate to a fund takeover. | §3.6 `safe_mode` (Option A): keep consensus live for on-chain governance recovery while freezing gravity-bridge / cork / axelarcork until a trusted authority set is restored. |
+| 7 | `halt` on empty authority requires an off-chain coordinated restart to recover (governance is dead on a halted chain); `passthrough` exposes bridge/cork to an untrusted community set and lets an induced-downtime liveness attack escalate to a fund takeover. | §3.6 `safe_mode` (Option A): keep consensus live while freezing gravity-bridge / cork / axelarcork until the authority set is restored. Recovery is by unjail/re-bond, NOT by governance — see risk 8. |
+| 8 | Governance decided by raw token stake would let a >50% token holder vote itself the authority set, making the consensus floor decorative. | §4.1: x/gov runs on the wrapped keeper, so tallies are boosted and the authority set holds ≥ `floor_fraction` of every vote. `TotalBondedTokens` is overridden so the quorum denominator matches. |
+| 9 | In safe mode governance is 100% community stake, so open x/poa gov messages let the attacker who induced the outage unfreeze the bridge (`enabled=false`, no thaw delay) or install its own authority set. | §3.6: `MsgUpdateAuthoritySet` and `MsgUpdateParams` both rejected with `ErrSafeModeGovFrozen` while safe mode is active. |
+| 10 | Distribution's reward ratio used boosted tokens while delegator stake used raw tokens, stranding ~(1 - 1/M) of authority delegators' rewards permanently. | §4.2: x/distribution wired to the RAW staking keeper. |
+| 11 | Safe mode's early-return skipped the cork tally/GC pass, stranding corks scheduled inside the freeze and permanently leaking `MaxCorksPerValidator` quota. | §3.6: freeze applied per-step — tally and GC always run, only submission is gated. |
+| 12 | An authority validator whose RAW stake falls below the `MaxValidators` cutoff is not bonded at all, so it contributes nothing to `authPower`. Enough of them dropping out ⇒ safe mode. The boost is applied to `LastValidatorPower` *after* staking has selected the bonded set by raw tokens, so it cannot pull a validator into the set. | Operational requirement: authority validators must independently maintain enough raw stake to stay in the active set. Documented in `docs/poa.md`; monitor via the `poa safe-mode` query's `bonded_authority_count`. |
+| 13 | Validator updates are emitted for every authority validator every block (staking diffs boosted `LastValidatorPower` against raw power and re-emits; PoA re-boosts). | Functionally correct — CometBFT applies a same-power update as a no-op and `NextValidatorsHash` is unchanged — but the ABCI update slice is permanently non-empty. Documented for relayers and indexers. |
 
 ## 8. Out-of-scope follow-ups
 
