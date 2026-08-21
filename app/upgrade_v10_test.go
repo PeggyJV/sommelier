@@ -9,6 +9,7 @@ import (
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
 	"github.com/ethereum/go-ethereum/common"
+	gravitytypes "github.com/peggyjv/gravity-bridge/module/v6/x/gravity/types"
 	"github.com/stretchr/testify/require"
 
 	v10 "github.com/peggyjv/sommelier/v10/app/upgrades/v10"
@@ -131,12 +132,21 @@ func TestV10UpgradeHandlerKeepsAuthoritySetThroughRunMigrations(t *testing.T) {
 	)
 
 	// Model a v9 chain: every module at its current version EXCEPT poa, which
-	// does not exist on v9.
+	// does not exist on v9, and gravity, which v9 carries at consensus version
+	// 6. Pinning gravity to 6 makes RunMigrations actually execute
+	// MigrateStoreV6ToV7 (the GHSA-4vf2-m5pw-3r3r fix). Leaving it at the
+	// binary's current version would skip that migration entirely, so the
+	// upgrade path it takes on mainnet would go untested.
 	fromVM := app.mm.GetVersionMap()
 	delete(fromVM, poatypes.ModuleName)
+	fromVM[gravitytypes.ModuleName] = 6
 
-	_, err := handler(ctx, upgradetypes.Plan{Name: v10.UpgradeName}, fromVM)
+	vm, err := handler(ctx, upgradetypes.Plan{Name: v10.UpgradeName}, fromVM)
 	require.NoError(t, err)
+
+	require.Equal(t, uint64(7), vm[gravitytypes.ModuleName],
+		"gravity must be migrated to consensus version 7; if it is not, the "+
+			"timeout-cleanup fix is registered but its store migration never ran")
 
 	require.NotEmpty(t, app.PoaKeeper.GetAuthoritySet(ctx),
 		"authority set was wiped by RunMigrations running poa InitGenesis with "+
