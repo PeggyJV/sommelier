@@ -23,6 +23,7 @@ func TestValidateFloor(t *testing.T) {
 		{"zero rejected", "0.0", false},
 	}
 	for _, tc := range cases {
+		tc := tc // capture per iteration; the subtests below close over it
 		t.Run(tc.name, func(t *testing.T) {
 			err := validateFloor(sdk.MustNewDecFromStr(tc.floor))
 			if tc.valid {
