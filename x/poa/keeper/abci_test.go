@@ -1,6 +1,7 @@
 package keeper_test
 
 import (
+	"cosmossdk.io/math"
 	"testing"
 
 	abci "github.com/cometbft/cometbft/abci/types"
@@ -21,7 +22,7 @@ func noopStakingEndBlocker(_ sdk.Context) []abci.ValidatorUpdate { return nil }
 // addValidatorWithPubkey is like fakeStakingKeeper.addValidator but also
 // attaches a deterministic ed25519 pubkey so mergeUpdatesWithBoost can
 // extract a TmConsPublicKey.
-func (f *fakeStakingKeeper) addValidatorWithPubkey(t *testing.T, op sdk.ValAddress, tokens sdk.Int) {
+func (f *fakeStakingKeeper) addValidatorWithPubkey(t *testing.T, op sdk.ValAddress, tokens math.Int) {
 	t.Helper()
 	v := f.addValidator(op, tokens)
 	pk := ed25519.GenPrivKeyFromSecret(op).PubKey()
