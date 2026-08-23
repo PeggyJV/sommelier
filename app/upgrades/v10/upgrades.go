@@ -48,7 +48,7 @@ func CreateUpgradeHandler(
 				"v10 upgrade refuses to run: DefaultAuthorityValidators is empty. " +
 					"Populate app/upgrades/v10/constants.go with the production authority validator " +
 					"set before tagging the release, or the chain will enter safe mode on the next " +
-					"block (value-bearing modules frozen) because the authority set is empty.",
+					"block (value-bearing modules frozen) because the authority set is empty",
 			)
 		}
 

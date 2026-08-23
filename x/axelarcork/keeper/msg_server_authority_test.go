@@ -132,6 +132,7 @@ func TestAllHandlersRejectNonAuthority(t *testing.T) {
 	}
 
 	for _, tc := range cases {
+		tc := tc // capture per iteration; the subtests below close over it
 		t.Run(tc.name, func(t *testing.T) {
 			k, ctx, contract := authorityFixture(t, testCorkAuthority)
 			err := tc.call(k, ctx, contract)

@@ -1,6 +1,7 @@
 package keeper_test
 
 import (
+	"cosmossdk.io/math"
 	"testing"
 
 	abci "github.com/cometbft/cometbft/abci/types"
@@ -8,7 +9,6 @@ import (
 	cryptocodec "github.com/cosmos/cosmos-sdk/crypto/codec"
 	"github.com/cosmos/cosmos-sdk/crypto/keys/ed25519"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 	"github.com/stretchr/testify/require"
 
 	"github.com/peggyjv/sommelier/v10/x/poa/keeper"
@@ -22,7 +22,7 @@ func noopStakingEndBlocker(_ sdk.Context) []abci.ValidatorUpdate { return nil }
 // addValidatorWithPubkey is like fakeStakingKeeper.addValidator but also
 // attaches a deterministic ed25519 pubkey so mergeUpdatesWithBoost can
 // extract a TmConsPublicKey.
-func (f *fakeStakingKeeper) addValidatorWithPubkey(t *testing.T, op sdk.ValAddress, tokens sdk.Int) stakingtypes.Validator {
+func (f *fakeStakingKeeper) addValidatorWithPubkey(t *testing.T, op sdk.ValAddress, tokens math.Int) {
 	t.Helper()
 	v := f.addValidator(op, tokens)
 	pk := ed25519.GenPrivKeyFromSecret(op).PubKey()
@@ -30,7 +30,6 @@ func (f *fakeStakingKeeper) addValidatorWithPubkey(t *testing.T, op sdk.ValAddre
 	require.NoError(t, err)
 	v.ConsensusPubkey = any
 	f.validators[op.String()] = v
-	return v
 }
 
 // init ensures crypto codec is registered so AnyWithValue serialises pubkeys.

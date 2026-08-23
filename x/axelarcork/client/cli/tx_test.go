@@ -5,12 +5,20 @@ import (
 	"testing"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/peggyjv/sommelier/v10/app/params"
 	"github.com/peggyjv/sommelier/v10/x/axelarcork/types"
 
 	"github.com/cosmos/cosmos-sdk/testutil"
 	moduletestutil "github.com/cosmos/cosmos-sdk/types/module/testutil"
 	"github.com/stretchr/testify/require"
 )
+
+// The SDK config defaults to the "cosmos" bech32 prefix; the app sets "somm" at
+// init. Without this, somm1... addresses fail ValidateBasic misleadingly.
+func TestMain(m *testing.M) {
+	params.SetAddressPrefixes()
+	os.Exit(m.Run())
+}
 
 func TestParseAddManagedCellarsProposal(t *testing.T) {
 	encodingConfig := moduletestutil.MakeTestEncodingConfig()
@@ -246,4 +254,66 @@ func TestParseCancelAxelarProxyContractUpgradeProposal(t *testing.T) {
 	require.Equal(t, "I have a hunch", proposal.Description)
 	require.Equal(t, uint64(42161), proposal.ChainId)
 	require.Equal(t, "10000usomm", proposal.Deposit)
+}
+
+// schedule-axelar-cork previously did []byte(args[3]) under a
+// "todo: how are contract calls submitted?" comment, which handed the cellar the
+// ASCII of the hex string rather than the ABI-encoded call. The transaction
+// succeeds on Sommelier and the call then reverts on the destination chain, with
+// nothing locally to indicate why -- a bad failure mode for a cellar wind-down.
+func TestBuildScheduleAxelarCorkMsg(t *testing.T) {
+	const (
+		cellar  = "0x123801a7D398351b8bE11C439e05C5B3259aeC9B"
+		signer  = "somm1lcsjy2d5s33h0sddd8lpuqvwyz5ruz7ju4aeqa"
+		chainID = uint64(42161)
+	)
+
+	t.Run("hex call is decoded to bytes", func(t *testing.T) {
+		msg, err := buildScheduleAxelarCorkMsg(signer, chainID, cellar, 1000, 1800000000, "0xdeadbeef")
+		require.NoError(t, err)
+		require.Equal(t, []byte{0xde, 0xad, 0xbe, 0xef}, msg.Cork.EncodedContractCall)
+		require.Equal(t, cellar, msg.Cork.TargetContractAddress)
+		require.Equal(t, chainID, msg.Cork.ChainId)
+		require.Equal(t, chainID, msg.ChainId)
+		require.Equal(t, uint64(1000), msg.BlockHeight)
+		require.Equal(t, signer, msg.Signer)
+	})
+
+	t.Run("0x prefix is optional", func(t *testing.T) {
+		msg, err := buildScheduleAxelarCorkMsg(signer, chainID, cellar, 1000, 1800000000, "deadbeef")
+		require.NoError(t, err)
+		require.Equal(t, []byte{0xde, 0xad, 0xbe, 0xef}, msg.Cork.EncodedContractCall)
+	})
+
+	t.Run("rejects a non-hex call", func(t *testing.T) {
+		_, err := buildScheduleAxelarCorkMsg(signer, chainID, cellar, 1000, 1800000000, "not-hex")
+		require.Error(t, err)
+	})
+
+	t.Run("rejects an invalid cellar address", func(t *testing.T) {
+		_, err := buildScheduleAxelarCorkMsg(signer, chainID, "0xnothex", 1000, 1800000000, "0xdeadbeef")
+		require.Error(t, err)
+	})
+
+	t.Run("rejects an empty call", func(t *testing.T) {
+		_, err := buildScheduleAxelarCorkMsg(signer, chainID, cellar, 1000, 1800000000, "0x")
+		require.Error(t, err)
+	})
+}
+
+// The deadline is what made this command unusable: it was never set, so
+// ValidateBasic rejected every invocation. Pin that it is required.
+func TestBuildScheduleAxelarCorkMsgRequiresDeadline(t *testing.T) {
+	_, err := buildScheduleAxelarCorkMsg(
+		"somm1lcsjy2d5s33h0sddd8lpuqvwyz5ruz7ju4aeqa", 42161,
+		"0x123801a7D398351b8bE11C439e05C5B3259aeC9B", 1000, 0, "0xdeadbeef")
+	require.ErrorContains(t, err, "deadline")
+}
+
+// The flag must actually be wired to the command, or the deadline silently
+// stays zero and every invocation fails again.
+func TestScheduleAxelarCorkCmdExposesDeadlineFlag(t *testing.T) {
+	cmd := CmdScheduleAxelarCork()
+	require.NotNil(t, cmd.Flags().Lookup(FlagDeadline),
+		"schedule-axelar-cork must expose --"+FlagDeadline)
 }
