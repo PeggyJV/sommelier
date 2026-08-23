@@ -14,6 +14,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/version"
 	govtypesv1beta1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
 	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/common/hexutil"
 	types "github.com/peggyjv/sommelier/v10/x/axelarcork/types"
 	pubsubtypes "github.com/peggyjv/sommelier/v10/x/pubsub/types"
 	"github.com/spf13/cobra"
@@ -42,6 +43,61 @@ func GetTxCmd() *cobra.Command {
 // Commands //
 //////////////
 
+// buildScheduleAxelarCorkMsg assembles a MsgScheduleAxelarCorkRequest from CLI
+// input.
+//
+// The encoded call is taken as hex and DECODED to bytes. This previously did
+// []byte(args[3]), which handed the cellar the ASCII of the hex string: the
+// Sommelier transaction succeeds, the relayed call then reverts on the
+// destination chain, and nothing locally indicates why.
+//
+// deadline is a unix timestamp enforced by the destination proxy contract. It
+// was never set by this command before, so ValidateBasic rejected every
+// invocation with "deadline must be non-zero" -- schedule-axelar-cork has never
+// worked. It is now a required --deadline flag.
+//
+// Split out from the cobra command so the encoding rules are testable without a
+// client context.
+// FlagDeadline names the required deadline flag on schedule-axelar-cork.
+const FlagDeadline = "deadline"
+
+func buildScheduleAxelarCorkMsg(signer string, chainID uint64, contractAddr string, blockHeight, deadline uint64, encodedCall string) (*types.MsgScheduleAxelarCorkRequest, error) {
+	if !common.IsHexAddress(contractAddr) {
+		return nil, fmt.Errorf("target contract address %s is invalid", contractAddr)
+	}
+
+	callBz, err := hexutil.Decode(withHexPrefix(encodedCall))
+	if err != nil {
+		return nil, fmt.Errorf("contract call must be hex-encoded ABI bytes: %w", err)
+	}
+	if len(callBz) == 0 {
+		return nil, fmt.Errorf("contract call is empty; an empty body is never a valid cellar instruction")
+	}
+
+	msg := &types.MsgScheduleAxelarCorkRequest{
+		Cork: &types.AxelarCork{
+			EncodedContractCall:   callBz,
+			ChainId:               chainID,
+			TargetContractAddress: contractAddr,
+			Deadline:              deadline,
+		},
+		ChainId:     chainID,
+		BlockHeight: blockHeight,
+		Signer:      signer,
+	}
+	if err := msg.ValidateBasic(); err != nil {
+		return nil, err
+	}
+	return msg, nil
+}
+
+func withHexPrefix(s string) string {
+	if strings.HasPrefix(s, "0x") || strings.HasPrefix(s, "0X") {
+		return s
+	}
+	return "0x" + s
+}
+
 func CmdScheduleAxelarCork() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "schedule-axelar-cork [chain-id] [contract-address] [block-height] [contract-call]",
@@ -62,35 +118,32 @@ func CmdScheduleAxelarCork() *cobra.Command {
 			}
 
 			contractAddr := args[1]
-			if !common.IsHexAddress(contractAddr) {
-				return fmt.Errorf("contract address %s is invalid", contractAddr)
-			}
 
 			blockHeight, err := math.ParseUint(args[2])
 			if err != nil {
 				return err
 			}
 
-			contractCallBz := []byte(args[3]) // todo: how are contract calls submitted?
-
-			scheduleCorkMsg := types.MsgScheduleAxelarCorkRequest{
-				Cork: &types.AxelarCork{
-					EncodedContractCall:   contractCallBz,
-					ChainId:               chainID.Uint64(),
-					TargetContractAddress: contractAddr,
-				},
-				ChainId:     chainID.Uint64(),
-				BlockHeight: blockHeight.Uint64(),
-				Signer:      from.String(),
-			}
-			if err := scheduleCorkMsg.ValidateBasic(); err != nil {
+			deadline, err := cmd.Flags().GetUint64(FlagDeadline)
+			if err != nil {
 				return err
 			}
-			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), &scheduleCorkMsg)
+			if deadline == 0 {
+				return fmt.Errorf("--%s is required: unix timestamp before which the call must execute on the destination chain", FlagDeadline)
+			}
+
+			scheduleCorkMsg, err := buildScheduleAxelarCorkMsg(
+				from.String(), chainID.Uint64(), contractAddr, blockHeight.Uint64(), deadline, args[3])
+			if err != nil {
+				return err
+			}
+			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), scheduleCorkMsg)
 
 		},
 	}
 
+	cmd.Flags().Uint64(FlagDeadline, 0,
+		"unix timestamp before which the contract call must execute on the destination chain (required; enforced by the proxy contract)")
 	flags.AddTxFlagsToCmd(cmd)
 	return cmd
 }
