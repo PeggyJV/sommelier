@@ -662,6 +662,12 @@ func NewSommelierApp(
 
 	// NOTE: Any module instantiated in the module manager that is later modified
 	// must be passed by reference here.
+	protectedAuthzModule := safeModeAuthzModule{
+		AppModule: authzmodule.NewAppModule(appCodec, app.AuthzKeeper, app.AccountKeeper, app.BankKeeper, app.interfaceRegistry),
+		keeper:    app.AuthzKeeper.SetBankKeeper(app.BankKeeper),
+		poa:       app.PoaKeeper,
+	}
+
 	app.mm = module.NewManager(
 		genutil.NewAppModule(
 			app.AccountKeeper, app.StakingKeeper, app.BaseApp.DeliverTx,
@@ -688,7 +694,7 @@ func NewSommelierApp(
 		// Wrapped so gravity's BeginBlock/EndBlock no-op while x/poa is in
 		// authority-empty safe mode (see app/gravity_safemode_module.go).
 		gravitySafeModeModule{AppModule: gravity.NewAppModule(app.GravityKeeper, app.BankKeeper), poa: app.PoaKeeper},
-		authzmodule.NewAppModule(appCodec, app.AuthzKeeper, app.AccountKeeper, app.BankKeeper, app.interfaceRegistry),
+		protectedAuthzModule,
 		cork.NewAppModule(app.CorkKeeper, appCodec),
 		incentives.NewAppModule(app.IncentivesKeeper, app.DistrKeeper, app.BankKeeper, app.MintKeeper, appCodec),
 		cellarfees.NewAppModule(app.CellarFeesKeeper, appCodec, app.AccountKeeper, app.BankKeeper, app.MintKeeper, app.CorkKeeper, app.AuctionKeeper, app.GetSubspace(cellarfeestypes.ModuleName)),
