@@ -56,12 +56,8 @@ func NewSafeModeAnteHandler(poa PoaSafeModeReader, next sdk.AnteHandler) sdk.Ant
 // a registered orchestrator signer. In-repo cork/axelarcork msgs executed via
 // gov v1 ARE gated by their own msg servers.
 //
-// For authz.MsgGrant the residual is NOT small -- a pre-staged proposal can
-// still install a standing grant from the governance account. Closing that
-// properly requires rejecting gov-account granters inside the authz msg server
-// (or a wrapped authz MsgServer), which is a module-wiring change rather than
-// an ante-layer one. Until then, audit outstanding grants whose granter is the
-// governance module account before and after any safe-mode episode.
+// authz.MsgGrant is also frozen by the registered authz message server, which
+// covers ICA callbacks and proposals submitted before safe mode began.
 func containsFrozenGravityMsg(msg sdk.Msg) bool {
 	return containsFrozenGravityMsgAtDepth(msg, 0)
 }
