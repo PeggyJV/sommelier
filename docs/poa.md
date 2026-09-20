@@ -66,8 +66,8 @@ will see their validator's *delegation share* allocations behave normally
 Authority validators are penalised on **raw stake**, not on their boosted
 consensus power. When CometBFT reports an infraction:
 
-1. The wrapper's `Slash` looks up the multiplier snapshot at the infraction
-   height.
+1. The wrapper looks up the multiplier snapshot from the EndBlock that
+   produced the supplied power (see the height conventions below).
 2. It divides the caller-supplied (boosted) power by that multiplier to
    recover raw stake.
 3. The underlying staking keeper is then slashed on the raw value.
@@ -102,13 +102,28 @@ Because authority validators report *boosted* consensus power, a naive slash
 would burn `slash_factor × boosted_power`, i.e. up to `M×` their real stake —
 an over-slash. To prevent this, `x/poa` wraps the staking keeper and, at slash
 time, converts the caller-supplied (boosted) power back to raw stake using the
-boost multiplier recorded **at the infraction height**, then delegates to the
+boost multiplier recorded **at the producing EndBlock height**, then delegates to the
 underlying keeper. Net effect: an authority validator is penalised on its
 **real stake**, not on its boosted consensus power.
 
+The SDK's distribution height is an unbonding/redelegation cutoff, not a
+multiplier snapshot index. With CometBFT 0.37 and SDK 0.47:
+
+| Caller | Supplied power | Snapshot used | Height forwarded to staking |
+| --- | --- | --- | --- |
+| Downtime at block H | LastCommit for H-1 | H-3 | H-2 |
+| Equivocation at block E | Validator set at E | E-2 | E-1 |
+| Gravity after PoA EndBlock H | Current adapted validator | H | H |
+
+`SlashWithInfractionReason` shifts the snapshot lookup back one block for
+SDK downtime and double-sign reasons. It preserves the original distribution
+height passed into staking. Direct `Slash` and unspecified-reason callers
+retain their supplied snapshot height. Future callers must use the appropriate
+power/height convention rather than changing the height forwarded to staking.
+
 Key rules:
-- **Infraction-height membership, not current.** Whether a validator was
-  boosted is read from the per-height snapshot at the infraction height, never
+- **Producing-height membership, not current.** Whether a validator was
+  boosted is read from the per-height snapshot at the producing height, never
   from the live allowlist. Evidence can arrive after an authority-set change;
   using current membership would over- or under-slash.
 - **Per-block snapshots.** Every block writes a multiplier snapshot (an *empty*
@@ -118,9 +133,9 @@ Key rules:
   (computed with a conservative lower-bound block time).
 - **Activation height.** The height at which PoA went live (recorded at the v10
   upgrade / genesis init) is the boundary for missing-snapshot handling:
-  - infraction height **below** activation → pre-PoA, no boost was ever applied
+  - producing snapshot height **below** activation → pre-PoA, no boost was ever applied
     → slash passes through against raw power.
-  - infraction height **at or above** activation with a missing snapshot →
+  - producing snapshot height **at or above** activation with a missing snapshot →
     treated as corruption → slash is **refused** (`slash_skipped_no_snapshot`)
     rather than risk over-slashing.
 - **Tombstoning is the real deterrent.** Double-sign tombstoning and jailing

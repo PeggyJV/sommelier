@@ -16,7 +16,8 @@ type fakeStakingKeeper struct {
 	consToOperator    map[string]sdk.ValAddress         // consAddr string -> op
 	bondedOrder       []sdk.ValAddress                  // for IterateBondedValidatorsByPower
 	lastPower         map[string]int64                  // operator bech32 -> overwritten LastValidatorPower
-	lastSlashPower    int64                             // last `power` arg passed to Slash
+	lastSlashHeight   int64
+	lastSlashPower    int64 // last `power` arg passed to Slash
 	lastSlashConsAddr sdk.ConsAddress
 	slashCalled       bool
 }
@@ -165,6 +166,7 @@ func (f *fakeStakingKeeper) ValidatorByConsAddr(ctx sdk.Context, c sdk.ConsAddre
 func (f *fakeStakingKeeper) Slash(ctx sdk.Context, c sdk.ConsAddress, infractionHeight int64, power int64, _ sdk.Dec) math.Int {
 	f.slashCalled = true
 	f.lastSlashPower = power
+	f.lastSlashHeight = infractionHeight
 	f.lastSlashConsAddr = c
 	return math.NewInt(power)
 }

@@ -17,7 +17,7 @@ import (
 // validators report their boosted ConsensusPower / Tokens.
 //
 // The Slash methods divide caller-supplied power by the snapshot multiplier
-// at the infraction height before delegating, so authority validators are
+// at the producing EndBlock height before delegating, so authority validators are
 // penalised on raw stake rather than on boosted consensus power.
 type WrappedStakingKeeper struct {
 	types.StakingKeeper
@@ -198,23 +198,23 @@ func (w WrappedStakingKeeper) GetAllValidators(ctx sdk.Context) []stakingtypes.V
 
 // rawSlashPower converts caller-supplied (boosted) consensus power back to the
 // raw stake that should actually be slashed for operator `op`, using the boost
-// recorded at the infraction height. It returns refuse=true when the slash must
-// be skipped to avoid over-slashing.
+// recorded at the producing EndBlock height. It returns refuse=true when the
+// slash must be skipped to avoid over-slashing.
 //
-// Authority/boost status is evaluated at the infraction height via the
+// Authority/boost status is evaluated at the producing height via the
 // snapshot, NEVER against the current allowlist: the live set may differ from
 // the set in effect when the infraction occurred (e.g. delayed evidence after
 // an authority-set change), and gating on current membership would over- or
 // under-slash.
 //
 // Missing-snapshot handling keys off the PoA activation height:
-//   - infractionHeight < activation (or activation unset): a pre-PoA height
+//   - snapshotHeight < activation (or activation unset): a pre-PoA height
 //     where no boost was ever applied — slash the raw power unchanged.
-//   - infractionHeight >= activation: an empty snapshot is written every block
+//   - snapshotHeight >= activation: an empty snapshot is written every block
 //     and retention covers the full slashable window, so a gap here means
 //     corruption — refuse rather than risk over-slashing on boosted power.
-func (w WrappedStakingKeeper) rawSlashPower(ctx sdk.Context, op sdk.ValAddress, infractionHeight, power int64) (int64, bool) {
-	m, snapFound := w.poa.MultiplierForValidatorWithStatus(ctx, op, infractionHeight)
+func (w WrappedStakingKeeper) rawSlashPower(ctx sdk.Context, op sdk.ValAddress, snapshotHeight, power int64) (int64, bool) {
+	m, snapFound := w.poa.MultiplierForValidatorWithStatus(ctx, op, snapshotHeight)
 	if snapFound {
 		if m.LTE(sdk.OneDec()) {
 			return power, false
@@ -222,7 +222,7 @@ func (w WrappedStakingKeeper) rawSlashPower(ctx sdk.Context, op sdk.ValAddress, 
 		return sdk.NewDec(power).Quo(m).TruncateInt64(), false
 	}
 	activation, ok := w.poa.GetActivationHeight(ctx)
-	if !ok || infractionHeight < activation {
+	if !ok || snapshotHeight < activation {
 		return power, false
 	}
 	return 0, true
@@ -255,15 +255,31 @@ func (w WrappedStakingKeeper) Slash(ctx sdk.Context, consAddr sdk.ConsAddress, i
 	return w.StakingKeeper.Slash(ctx, consAddr, infractionHeight, rawPower, slashFactor)
 }
 
-// SlashWithInfractionReason mirrors Slash for the v0.47 SDK API that includes
-// the infraction reason.
+// SlashWithInfractionReason handles SDK slashing/evidence powers. For downtime
+// and double-signing, infractionHeight is actually the SDK distribution height,
+// used to filter unbonding/redelegation entries. It is one greater than the
+// EndBlock height that produced the consensus power:
+//   - downtime at H: LastCommit signs H-1, powered by EndBlock H-3;
+//     the SDK supplies distribution height H-2.
+//   - evidence at E: power comes from EndBlock E-2;
+//     the SDK supplies distribution height E-1.
+//
+// CometBFT 0.37 applies EndBlock updates at H+2 (SDK ValidatorUpdateDelay=1
+// means the set first signs H+1+delay). Shift only the snapshot lookup, not
+// staking's distribution height. Direct Slash callers such as Gravity use
+// current application power and keep their own snapshot-height convention.
 func (w WrappedStakingKeeper) SlashWithInfractionReason(ctx sdk.Context, consAddr sdk.ConsAddress, infractionHeight int64, power int64, slashFactor sdk.Dec, infraction stakingtypes.Infraction) math.Int {
 	val := w.StakingKeeper.ValidatorByConsAddr(ctx, consAddr)
 	if val == nil {
 		return w.StakingKeeper.SlashWithInfractionReason(ctx, consAddr, infractionHeight, power, slashFactor, infraction)
 	}
 	op := val.GetOperator()
-	rawPower, refuse := w.rawSlashPower(ctx, op, infractionHeight, power)
+	snapshotHeight := infractionHeight
+	switch infraction {
+	case stakingtypes.Infraction_INFRACTION_DOWNTIME, stakingtypes.Infraction_INFRACTION_DOUBLE_SIGN:
+		snapshotHeight--
+	}
+	rawPower, refuse := w.rawSlashPower(ctx, op, snapshotHeight, power)
 	if refuse {
 		w.emitSlashSkipped(ctx, op, infractionHeight)
 		return math.ZeroInt()
