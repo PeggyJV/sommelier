@@ -627,7 +627,7 @@ func NewSommelierApp(
 		keys[govtypes.StoreKey],
 		app.AccountKeeper,
 		app.BankKeeper,
-		wrappedSk,
+		wrappedSk.ForGovernance(),
 		app.MsgServiceRouter(),
 		govtypes.DefaultConfig(),
 		authority,

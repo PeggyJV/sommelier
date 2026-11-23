@@ -17,7 +17,8 @@ import (
 // boosted authority validators do not dilute community delegators' shares.
 type boostedValidator struct {
 	stakingtypes.ValidatorI
-	multiplier sdk.Dec
+	multiplier           sdk.Dec
+	scaleDelegatorShares bool
 }
 
 func (b boostedValidator) GetTokens() math.Int {
@@ -29,6 +30,24 @@ func (b boostedValidator) GetBondedTokens() math.Int {
 		return math.ZeroInt()
 	}
 	return b.GetTokens()
+}
+
+// GetDelegatorShares scales the governance tally's denominator by the exact
+// effective token boost (including GetTokens' integer rounding). The SDK tally
+// leaves each stored delegation's shares raw, so an external delegation keeps
+// raw-stake voting power while the remaining authority boost belongs to the
+// validator operator. This override is enabled only by ForGovernance; token-
+// share math for staking and every other wrapped consumer stays raw.
+func (b boostedValidator) GetDelegatorShares() sdk.Dec {
+	rawShares := b.ValidatorI.GetDelegatorShares()
+	if !b.scaleDelegatorShares {
+		return rawShares
+	}
+	rawTokens := b.ValidatorI.GetTokens()
+	if rawTokens.IsZero() {
+		return rawShares
+	}
+	return rawShares.MulInt(b.GetTokens()).QuoInt(rawTokens)
 }
 
 func (b boostedValidator) GetConsensusPower(r math.Int) int64 {

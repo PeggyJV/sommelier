@@ -21,7 +21,8 @@ import (
 // penalised on raw stake rather than on boosted consensus power.
 type WrappedStakingKeeper struct {
 	types.StakingKeeper
-	poa *Keeper
+	poa                *Keeper
+	forGovernanceTally bool
 }
 
 // WrappedStakingKeeper returns the wrapper. The wrapper holds a POINTER to the
@@ -31,6 +32,14 @@ type WrappedStakingKeeper struct {
 // keeper whose slashingKeeper is permanently nil.
 func (k *Keeper) WrappedStakingKeeper() WrappedStakingKeeper {
 	return WrappedStakingKeeper{StakingKeeper: k.sk, poa: k}
+}
+
+// ForGovernance returns a scoped copy whose validator view assigns the PoA
+// boost to the validator operator without multiplying permissionless external
+// delegations. Other consumers keep the ordinary consensus-power adapter.
+func (w WrappedStakingKeeper) ForGovernance() WrappedStakingKeeper {
+	w.forGovernanceTally = true
+	return w
 }
 
 // ----------------------------------------------------------------------------
@@ -82,7 +91,11 @@ func (w WrappedStakingKeeper) adaptValidator(ctx sdk.Context, v stakingtypes.Val
 	if m.Equal(sdk.OneDec()) {
 		return v
 	}
-	return boostedValidator{ValidatorI: v, multiplier: m}
+	return boostedValidator{
+		ValidatorI:           v,
+		multiplier:           m,
+		scaleDelegatorShares: w.forGovernanceTally,
+	}
 }
 
 // ----------------------------------------------------------------------------

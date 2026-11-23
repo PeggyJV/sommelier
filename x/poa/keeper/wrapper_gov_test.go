@@ -7,6 +7,7 @@ import (
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 	"github.com/stretchr/testify/require"
 
+	"github.com/peggyjv/sommelier/v10/x/poa/keeper"
 	"github.com/peggyjv/sommelier/v10/x/poa/types"
 )
 
@@ -43,4 +44,51 @@ func TestWrapper_TotalBondedTokens_MatchesBoostedTally(t *testing.T) {
 
 	// Sanity: boosted (6,000,000 + 3,000,000), not the raw 4,000,000.
 	require.Equal(t, sdk.NewInt(9_000_000), w.TotalBondedTokens(ctx))
+}
+
+// Governance must assign the authority boost to the validator operator, not
+// to permissionless external delegators. The SDK tally derives delegation
+// voting power as shares*bondedTokens/delegatorShares, so the governance view
+// scales both bonded tokens and total shares while leaving each delegation's
+// stored shares raw.
+func TestWrapper_GovernanceDelegatorVotesUseRawStake(t *testing.T) {
+	k, ctx, fake, w := newWrapperTestKeeper(t)
+
+	auth := sdk.ValAddress([]byte("auth-validator-aaaa"))
+	fake.addValidator(auth, sdk.NewInt(10_000_000))
+	fake.bondedOrder = []sdk.ValAddress{auth}
+	k.SetAuthoritySet(ctx, []sdk.ValAddress{auth})
+	k.SetMultiplierSnapshot(ctx, types.MultiplierSnapshot{
+		Height: ctx.BlockHeight(),
+		Entries: []*types.MultiplierEntry{
+			{OperatorAddress: auth.String(), Multiplier: "10.0"},
+		},
+	})
+
+	type governanceWrapper interface {
+		ForGovernance() keeper.WrappedStakingKeeper
+	}
+	provider, ok := any(w).(governanceWrapper)
+	require.True(t, ok, "PoA wrapper must provide a governance-scoped validator view")
+	if !ok {
+		return
+	}
+
+	govWrapper := provider.ForGovernance()
+	var validator stakingtypes.ValidatorI
+	govWrapper.IterateBondedValidatorsByPower(ctx, func(_ int64, v stakingtypes.ValidatorI) bool {
+		validator = v
+		return true
+	})
+	require.NotNil(t, validator)
+
+	externalShares := sdk.NewDec(7_000_000)
+	externalPower := externalShares.MulInt(validator.GetBondedTokens()).Quo(validator.GetDelegatorShares())
+	operatorPower := validator.GetDelegatorShares().Sub(externalShares).
+		MulInt(validator.GetBondedTokens()).Quo(validator.GetDelegatorShares())
+
+	require.Equal(t, sdk.NewDec(7_000_000), externalPower,
+		"external delegation must retain raw-stake voting power")
+	require.Equal(t, sdk.NewDec(93_000_000), operatorPower,
+		"the authority operator must retain the boost plus undelegated voting power")
 }

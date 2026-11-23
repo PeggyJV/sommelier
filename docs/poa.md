@@ -61,6 +61,12 @@ will see their validator's *delegation share* allocations behave normally
 (token-share math is computed on raw stake), but the validator's
 `ConsensusPower` will not exceed the 33% community ceiling.
 
+Delegating to an authority validator does not transfer the authority boost.
+In governance, an external delegator votes with the raw stake represented by
+their shares. The validator operator retains the synthetic voting power added
+by `M`; this keeps permissionless delegation from becoming a way to capture the
+authority set without controlling an authority validator's operator vote.
+
 ## Slashing semantics
 
 Authority validators are penalised on **raw stake**, not on their boosted
