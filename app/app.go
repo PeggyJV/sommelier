@@ -714,7 +714,7 @@ func NewSommelierApp(
 		axelarcork.NewAppModule(app.AxelarCorkKeeper, appCodec),
 		// Wrapped so gravity's BeginBlock/EndBlock no-op while x/poa is in
 		// authority-empty safe mode (see app/gravity_safemode_module.go).
-		gravitySafeModeModule{AppModule: gravity.NewAppModule(app.GravityKeeper, app.BankKeeper), poa: app.PoaKeeper},
+		&gravitySafeModeModule{AppModule: gravity.NewAppModule(app.GravityKeeper, app.BankKeeper), poa: app.PoaKeeper},
 		protectedAuthzModule,
 		cork.NewAppModule(app.CorkKeeper, appCodec),
 		incentives.NewAppModule(app.IncentivesKeeper, app.DistrKeeper, app.BankKeeper, app.MintKeeper, appCodec),
@@ -779,10 +779,6 @@ func NewSommelierApp(
 	app.mm.SetOrderEndBlockers(
 		crisistypes.ModuleName,
 		govtypes.ModuleName,
-		// Gravity must observe safe mode before PoA can clear it at the thaw
-		// height. The following block then has a DeliverTx phase in which
-		// validators can submit confirmations before gravity slashing resumes.
-		gravitytypes.ModuleName,
 		poatypes.ModuleName,
 		stakingtypes.ModuleName,
 		icaexported.ModuleName,
@@ -802,6 +798,7 @@ func NewSommelierApp(
 		upgradetypes.ModuleName,
 		vestingtypes.ModuleName,
 		incentivestypes.ModuleName,
+		gravitytypes.ModuleName,
 		corktypes.ModuleName,
 		axelarcorktypes.ModuleName,
 		cellarfeestypes.ModuleName,

@@ -59,7 +59,7 @@ func newSafeModeSecurityApp(t *testing.T) (*SommelierApp, sdk.Context) {
 	return app, ctx
 }
 
-func TestEndBlockOrderKeepsGravityFrozenThroughThaw(t *testing.T) {
+func TestEndBlockOrderMakesPoaPowerVisibleToGravity(t *testing.T) {
 	app, _ := newSafeModeSecurityApp(t)
 
 	index := func(moduleName string) int {
@@ -75,8 +75,27 @@ func TestEndBlockOrderKeepsGravityFrozenThroughThaw(t *testing.T) {
 	poaIndex := index(poatypes.ModuleName)
 	require.NotEqual(t, -1, gravityIndex)
 	require.NotEqual(t, -1, poaIndex)
-	require.Less(t, gravityIndex, poaIndex,
-		"gravity must observe safe mode before PoA clears it in the thawing EndBlock")
+	require.Less(t, poaIndex, gravityIndex,
+		"gravity must observe PoA's current multiplier snapshot and validator powers")
+}
+
+type toggledSafeMode struct{ active bool }
+
+func (s *toggledSafeMode) SafeModeActive(sdk.Context) bool { return s.active }
+
+func TestGravitySafeModeModuleKeepsThawBlockFrozen(t *testing.T) {
+	poa := &toggledSafeMode{active: true}
+	module := &gravitySafeModeModule{poa: poa}
+	ctx := sdk.Context{}
+
+	// BeginBlock observes the freeze. PoA clears its persisted flag later in
+	// the same block, but gravity EndBlock must still no-op because validators
+	// had no unfrozen DeliverTx phase in which to submit confirmations.
+	module.BeginBlock(ctx, abci.RequestBeginBlock{})
+	poa.active = false
+	require.NotPanics(t, func() {
+		module.EndBlock(ctx, abci.RequestEndBlock{})
+	})
 }
 
 func TestSafeModeMessageRouterRejectsCommunityPoolSpend(t *testing.T) {

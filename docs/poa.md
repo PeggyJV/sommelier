@@ -285,8 +285,11 @@ halting.
 2. `sommelier tx slashing unjail` from each (jailed validators must also still
    satisfy the `MaxValidators` cutoff on raw stake to re-enter the bonded set).
 3. Once at least one is bonded and unjailed, the next EndBlocker resumes boosting
-   and schedules the thaw; two blocks later the freeze lifts and
-   `authority_safe_mode_exited` is emitted.
+   and schedules the thaw; two blocks later the safe-mode flag clears and
+   `authority_safe_mode_exited` is emitted. Gravity remains frozen through that
+   thawing block because its BeginBlock observed safe mode. Validators therefore
+   get the following block's DeliverTx phase to submit confirmations before
+   gravity's non-signing slashing resumes.
 4. Re-schedule any corks that were dropped during the freeze.
 
 No governance proposal is required, and this covers the overwhelmingly common
