@@ -290,6 +290,7 @@ func TestWrapper_SDKSlashSnapshotBoundary(t *testing.T) {
 		stakingtypes.Infraction_INFRACTION_DOWNTIME,
 		stakingtypes.Infraction_INFRACTION_DOUBLE_SIGN,
 	} {
+		infraction := infraction
 		for _, tc := range []struct {
 			name               string
 			distributionHeight int64
@@ -305,6 +306,7 @@ func TestWrapper_SDKSlashSnapshotBoundary(t *testing.T) {
 			{"unboosted_producing_snapshot", 51, 50, "1.0", 500, true},
 			{"negative_pre_genesis_height", -1, 50, "5.0", 500, true},
 		} {
+			tc := tc
 			t.Run(infraction.String()+"/"+tc.name, func(t *testing.T) {
 				k, ctx, fake, w := newWrapperTestKeeper(t)
 				auth := sdk.ValAddress([]byte("auth-validator-aaaa"))

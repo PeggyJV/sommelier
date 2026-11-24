@@ -28,8 +28,12 @@ import (
 // taken from the real PoA EndBlocker output and delivered two blocks later,
 // matching CometBFT 0.37's validator-update pipeline.
 func TestPoASlashMultiplierTransition(t *testing.T) {
+	const boostAdded = "boost_added"
+
 	for _, path := range []string{"downtime", "equivocation", "gravity"} {
+		path := path
 		for _, transition := range []string{"boost_removed", "boost_added", "stable"} {
+			transition := transition
 			t.Run(path+"/"+transition, func(t *testing.T) {
 				app, ctx, auth, community := newPoASlashApp(t)
 				boostedPower := int64(8122)
@@ -43,7 +47,7 @@ func TestPoASlashMultiplierTransition(t *testing.T) {
 				}
 				comCons, err := community.GetConsAddr()
 				require.NoError(t, err)
-				if transition == "boost_added" {
+				if transition == boostAdded {
 					app.StakingKeeper.Jail(ctx, comCons)
 				}
 				runEnd := func(height int64) []abci.ValidatorUpdate {
@@ -62,7 +66,7 @@ func TestPoASlashMultiplierTransition(t *testing.T) {
 						power = update.Power
 					}
 				}
-				if transition == "boost_added" {
+				if transition == boostAdded {
 					require.Equal(t, int64(1000), power)
 				} else {
 					require.Equal(t, boostedPower, power)
@@ -70,7 +74,7 @@ func TestPoASlashMultiplierTransition(t *testing.T) {
 				if transition == "boost_removed" {
 					app.StakingKeeper.Jail(ctx, comCons)
 				}
-				if transition == "boost_added" {
+				if transition == boostAdded {
 					app.StakingKeeper.Unjail(ctx, comCons)
 				}
 				runEnd(98)
