@@ -13,15 +13,18 @@ import (
 	"github.com/cosmos/cosmos-sdk/crypto/keys/secp256k1"
 	"github.com/cosmos/cosmos-sdk/testutil/mock"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	sdkmodule "github.com/cosmos/cosmos-sdk/types/module"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	"github.com/cosmos/cosmos-sdk/x/authz"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	distrtypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
+	gogogrpc "github.com/cosmos/gogoproto/grpc"
 	gravitytypes "github.com/peggyjv/gravity-bridge/module/v6/x/gravity/types"
 	poatypes "github.com/peggyjv/sommelier/v10/x/poa/types"
 	"github.com/stretchr/testify/require"
+	"google.golang.org/grpc"
 )
 
 func newSafeModeSecurityApp(t *testing.T) (*SommelierApp, sdk.Context) {
@@ -79,23 +82,37 @@ func TestEndBlockOrderMakesPoaPowerVisibleToGravity(t *testing.T) {
 		"gravity must observe PoA's current multiplier snapshot and validator powers")
 }
 
-type toggledSafeMode struct{ active bool }
-
-func (s *toggledSafeMode) SafeModeActive(sdk.Context) bool { return s.active }
-
 func TestGravitySafeModeModuleKeepsThawBlockFrozen(t *testing.T) {
-	poa := &toggledSafeMode{active: true}
-	module := &gravitySafeModeModule{poa: poa}
-	ctx := sdk.Context{}
+	app, thawCtx := newSafeModeSecurityApp(t)
+	gravityModule, ok := app.mm.Modules[gravitytypes.ModuleName].(*gravitySafeModeModule)
+	require.True(t, ok, "the app module manager must use the safe-mode Gravity wrapper")
+	require.NotNil(t, gravityModule)
+
+	// Exercise the exact wrapper instance installed in the app without running
+	// unrelated modules. Gravity BeginBlock creates the first signer-set tx, so
+	// its absence/presence is a durable observation of whether real processing
+	// ran rather than an assertion on the wrapper's private flag.
+	app.mm.OrderBeginBlockers = []string{gravitytypes.ModuleName}
+	app.mm.OrderEndBlockers = []string{gravitytypes.ModuleName}
+	require.Nil(t, app.GravityKeeper.GetLatestSignerSetTx(thawCtx))
 
 	// BeginBlock observes the freeze. PoA clears its persisted flag later in
 	// the same block, but gravity EndBlock must still no-op because validators
 	// had no unfrozen DeliverTx phase in which to submit confirmations.
-	module.BeginBlock(ctx, abci.RequestBeginBlock{})
-	poa.active = false
+	app.mm.BeginBlock(thawCtx, abci.RequestBeginBlock{})
+	app.PoaKeeper.SetSafeMode(thawCtx, false)
 	require.NotPanics(t, func() {
-		module.EndBlock(ctx, abci.RequestEndBlock{})
+		app.mm.EndBlock(thawCtx, abci.RequestEndBlock{})
 	})
+	require.Nil(t, app.GravityKeeper.GetLatestSignerSetTx(thawCtx),
+		"Gravity processing must remain frozen through the thaw block")
+
+	// The following block has an unfrozen DeliverTx phase. Its real Gravity
+	// BeginBlock must resume and create the first signer-set tx.
+	nextCtx := thawCtx.WithBlockHeight(thawCtx.BlockHeight() + 1)
+	app.mm.BeginBlock(nextCtx, abci.RequestBeginBlock{})
+	require.NotNil(t, app.GravityKeeper.GetLatestSignerSetTx(nextCtx),
+		"Gravity processing must resume in the block after thaw")
 }
 
 func TestSafeModeMessageRouterRejectsCommunityPoolSpend(t *testing.T) {
@@ -115,6 +132,23 @@ func TestSafeModeMessageRouterRejectsCommunityPoolSpend(t *testing.T) {
 	app.PoaKeeper.SetSafeMode(ctx, false)
 	_, err = handler(ctx, msg)
 	require.NoError(t, err, "community-pool spends must resume after safe mode")
+}
+
+func TestSafeModeMessageRouterRejectsDistributionParams(t *testing.T) {
+	app, ctx := newSafeModeSecurityApp(t)
+	msg := &distrtypes.MsgUpdateParams{
+		Authority: authtypes.NewModuleAddress(govtypes.ModuleName).String(),
+		Params:    app.DistrKeeper.GetParams(ctx),
+	}
+
+	handler := app.MsgServiceRouter().Handler(msg)
+	require.NotNil(t, handler)
+	_, err := handler(ctx, msg)
+	require.ErrorContains(t, err, "safe mode active")
+
+	app.PoaKeeper.SetSafeMode(ctx, false)
+	_, err = handler(ctx, msg)
+	require.NoError(t, err, "distribution parameter updates must resume after safe mode")
 }
 
 func TestSafeModeMessageRouterRejectsStakingParams(t *testing.T) {
@@ -154,4 +188,82 @@ func TestSafeModeMessageRouterRejectsAuthzGrant(t *testing.T) {
 		ctx, grantee, govAddr, sdk.MsgTypeURL(&poatypes.MsgUpdateAuthoritySet{}),
 	)
 	require.Nil(t, stored)
+}
+
+type recordingGRPCServer struct {
+	services []string
+}
+
+func (s *recordingGRPCServer) RegisterService(desc *grpc.ServiceDesc, _ interface{}) {
+	s.services = append(s.services, desc.ServiceName)
+}
+
+type migrationRegistration struct {
+	moduleName  string
+	fromVersion uint64
+	hasHandler  bool
+}
+
+type recordingConfigurator struct {
+	msgServer   recordingGRPCServer
+	queryServer recordingGRPCServer
+	migrations  []migrationRegistration
+}
+
+func (c *recordingConfigurator) MsgServer() gogogrpc.Server   { return &c.msgServer }
+func (c *recordingConfigurator) QueryServer() gogogrpc.Server { return &c.queryServer }
+func (c *recordingConfigurator) RegisterMigration(
+	moduleName string,
+	fromVersion uint64,
+	handler sdkmodule.MigrationHandler,
+) error {
+	c.migrations = append(c.migrations, migrationRegistration{
+		moduleName: moduleName, fromVersion: fromVersion, hasHandler: handler != nil,
+	})
+	return nil
+}
+
+func TestSafeModeModulesPreserveSDKServiceAndMigrationRegistrations(t *testing.T) {
+	tests := []struct {
+		name           string
+		register       func(sdkmodule.Configurator)
+		wantMigrations []migrationRegistration
+	}{
+		{
+			name:     authz.ModuleName,
+			register: safeModeAuthzModule{}.RegisterServices,
+			wantMigrations: []migrationRegistration{
+				{moduleName: authz.ModuleName, fromVersion: 1, hasHandler: true},
+			},
+		},
+		{
+			name:     distrtypes.ModuleName,
+			register: safeModeDistributionModule{}.RegisterServices,
+			wantMigrations: []migrationRegistration{
+				{moduleName: distrtypes.ModuleName, fromVersion: 1, hasHandler: true},
+				{moduleName: distrtypes.ModuleName, fromVersion: 2, hasHandler: true},
+			},
+		},
+		{
+			name:     stakingtypes.ModuleName,
+			register: safeModeStakingModule{}.RegisterServices,
+			wantMigrations: []migrationRegistration{
+				{moduleName: stakingtypes.ModuleName, fromVersion: 1, hasHandler: true},
+				{moduleName: stakingtypes.ModuleName, fromVersion: 2, hasHandler: true},
+				{moduleName: stakingtypes.ModuleName, fromVersion: 3, hasHandler: true},
+			},
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			cfg := &recordingConfigurator{}
+			tc.register(cfg)
+
+			require.Len(t, cfg.msgServer.services, 1, "SDK message service registration must be preserved")
+			require.Len(t, cfg.queryServer.services, 1, "SDK query service registration must be preserved")
+			require.Equal(t, tc.wantMigrations, cfg.migrations,
+				"SDK migration registrations must be preserved exactly")
+		})
+	}
 }

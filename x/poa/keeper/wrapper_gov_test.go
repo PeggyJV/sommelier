@@ -92,3 +92,40 @@ func TestWrapper_GovernanceDelegatorVotesUseRawStake(t *testing.T) {
 	require.Equal(t, sdk.NewDec(93_000_000), operatorPower,
 		"the authority operator must retain the boost plus undelegated voting power")
 }
+
+func TestWrapper_GovernanceDelegatorVotesUseRawStakeWithFractionalBoost(t *testing.T) {
+	k, ctx, fake, w := newWrapperTestKeeper(t)
+
+	auth := sdk.ValAddress([]byte("auth-validator-aaaa"))
+	validator := fake.addValidator(auth, sdk.NewInt(10))
+	validator.DelegatorShares = sdk.NewDec(4) // each raw share represents 2.5 tokens
+	fake.setValidator(validator)
+	fake.bondedOrder = []sdk.ValAddress{auth}
+	k.SetAuthoritySet(ctx, []sdk.ValAddress{auth})
+	k.SetMultiplierSnapshot(ctx, types.MultiplierSnapshot{
+		Height: ctx.BlockHeight(),
+		Entries: []*types.MultiplierEntry{
+			{OperatorAddress: auth.String(), Multiplier: "1.25"},
+		},
+	})
+
+	govValidator := w.ForGovernance().Validator(ctx, auth)
+	require.NotNil(t, govValidator)
+	require.Equal(t, sdk.NewInt(13), govValidator.GetBondedTokens(),
+		"10 raw tokens at 1.25x must use the consensus ceil rule")
+
+	// 1.4 shares represent 3.5 raw tokens. The governance share denominator
+	// must preserve that raw value even though the validator has 13 effective
+	// tokens after the fractional multiplier rounds up.
+	externalShares := sdk.MustNewDecFromStr("1.4")
+	externalPower := externalShares.MulInt(govValidator.GetBondedTokens()).
+		Quo(govValidator.GetDelegatorShares())
+	operatorPower := sdk.NewDecFromInt(govValidator.GetBondedTokens()).Sub(externalPower)
+
+	require.Equal(t, sdk.MustNewDecFromStr("3.5"), externalPower,
+		"a non-1:1 external delegation must retain raw-stake voting power")
+	require.Equal(t, sdk.MustNewDecFromStr("9.5"), operatorPower,
+		"the operator must receive the synthetic remainder after ceil rounding")
+	require.Equal(t, sdk.NewDec(13), externalPower.Add(operatorPower),
+		"delegator and operator power must conserve total boosted voting power")
+}

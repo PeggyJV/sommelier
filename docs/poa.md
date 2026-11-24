@@ -248,6 +248,9 @@ proposals — the latter run in gov EndBlock and bypass the ante/msg servers):
 | gravity-bridge | `MsgSendToEthereum`, `MsgSubmitEthereumEvent`, `MsgSubmitEthereumTxConfirmation` (and the same wrapped in an authz `MsgExec`), rejected by the ante handler; the module's BeginBlock/EndBlock (signer-set/batch creation, attestation observation, non-signing slashing) are no-op'd; the community-pool Ethereum spend gov proposal is rejected. `MsgDelegateKeys`, `MsgCancelSendToEthereum`, `MsgEthereumHeightVote` stay enabled. |
 | cork | `MsgScheduleCork` and the `ScheduledCork` gov proposal; scheduled-cork execution in EndBlock |
 | axelarcork | `MsgScheduleAxelarCork`, `MsgRelayAxelarCork`, `MsgRelayAxelarProxyUpgrade`, `MsgBumpAxelarCorkGas` msgs and the `AxelarScheduledCork` / `AxelarCommunityPoolSpend` / `UpgradeAxelarProxyContract` gov proposals; cork tally / fund sweep in EndBlock |
+| distribution | `MsgCommunityPoolSpend` and `MsgUpdateParams`, rejected at the message-router boundary. Reward allocation, withdrawal, and queries remain enabled. |
+| staking | `MsgUpdateParams`, rejected at the message-router boundary. Delegation, redelegation, unbonding, and unjail remain enabled. |
+| authz | `MsgGrant`, rejected at the message-router boundary, including grants executed by governance or ICA. Existing `MsgExec` and `MsgRevoke` remain enabled, but protected inner messages are still rejected by their owning modules. |
 
 Also frozen: the cork/axelarcork `AddManagedCellarIDs` and
 `AddChainConfiguration` gov proposals — pre-staging new call targets under an
@@ -263,9 +266,9 @@ longer trust, at an unbounded later time. Dropped corks emit
 `corks_dropped_safe_mode` / `axelar_corks_dropped_safe_mode` and **must be
 re-scheduled after recovery.**
 
-Staking (including unjail), bank, and every non-value-bearing module keep
-working normally. Entry/exit emit the `authority_safe_mode_entered` /
-`authority_safe_mode_exited` events.
+Ordinary staking and distribution operations not listed above, bank, and every
+non-value-bearing module keep working normally. Entry/exit emit the
+`authority_safe_mode_entered` / `authority_safe_mode_exited` events.
 
 ### Recovery from safe mode
 
@@ -331,11 +334,12 @@ Validation:
   the bridge — and, because x/poa governance is frozen in safe mode, would not
   be undoable by a follow-up proposal.
 
-### Governance voting power is boosted
+### Governance voting power preserves the authority boost
 
-x/gov runs on the PoA-wrapped staking keeper, so **voting power tracks consensus
-power, not raw token holdings**. The authority set therefore holds
-`floor_fraction` (~67%) of every tally.
+x/gov runs on a governance-scoped view of the PoA-wrapped staking keeper. The
+total voting-power pool includes the authority validators' synthetic boost, so
+the authority set retains `floor_fraction` (~67%) of a tally when its validator
+operators vote.
 
 This is load-bearing rather than incidental: PoA caps the community's consensus
 power but places no cap on how many tokens it may hold. If governance were
@@ -343,9 +347,13 @@ tallied on raw stake, a party holding >50% of bonded tokens — entirely permitt
 by design — could simply vote itself the authority set, and the consensus floor
 would be decorative.
 
-The consequence for delegators is real and should be communicated: **governance
-no longer follows token stake.** A community delegator's vote is weighted by the
-capped consensus power of their validator, not by their tokens.
+The synthetic boost belongs to the authority validator operator; it is not
+transferred by delegation. An external delegator who casts an explicit vote is
+weighted by the raw stake represented by their shares, including when they
+delegate to an authority validator. The validator operator's vote receives the
+remaining raw stake not overridden by explicit delegator votes plus the
+synthetic boost. This preserves total boosted voting power without allowing a
+permissionless delegator to capture the authority boost.
 
 Once the gov proposal passes, the new allowlist takes effect on the next
 block. The boost is recomputed in the EndBlocker; CometBFT receives
