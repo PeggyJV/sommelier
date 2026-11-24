@@ -31,7 +31,7 @@ func (k Keeper) GetEmission(ctx sdk.Context, remainingRewardsSupply math.Int) sd
 	} else if emissionAmount.GTE(remainingRewardsSupply) {
 		// We zero out the previous peak value here to avoid doing it every block. We set the final emission
 		// to the remaining supply here even though it's potentially redundant because it's less code than
-		// having another check where we would also have to zero out the prevoius peak supply.
+		// having another check where we would also have to zero out the previous peak supply.
 		k.SetLastRewardSupplyPeak(ctx, sdk.ZeroInt())
 		emissionAmount = remainingRewardsSupply
 	}
