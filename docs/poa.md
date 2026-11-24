@@ -61,13 +61,19 @@ will see their validator's *delegation share* allocations behave normally
 (token-share math is computed on raw stake), but the validator's
 `ConsensusPower` will not exceed the 33% community ceiling.
 
+Delegating to an authority validator does not transfer the authority boost.
+In governance, an external delegator votes with the raw stake represented by
+their shares. The validator operator retains the synthetic voting power added
+by `M`; this keeps permissionless delegation from becoming a way to capture the
+authority set without controlling an authority validator's operator vote.
+
 ## Slashing semantics
 
 Authority validators are penalised on **raw stake**, not on their boosted
 consensus power. When CometBFT reports an infraction:
 
-1. The wrapper's `Slash` looks up the multiplier snapshot at the infraction
-   height.
+1. The wrapper looks up the multiplier snapshot from the EndBlock that
+   produced the supplied power (see the height conventions below).
 2. It divides the caller-supplied (boosted) power by that multiplier to
    recover raw stake.
 3. The underlying staking keeper is then slashed on the raw value.
@@ -102,13 +108,28 @@ Because authority validators report *boosted* consensus power, a naive slash
 would burn `slash_factor × boosted_power`, i.e. up to `M×` their real stake —
 an over-slash. To prevent this, `x/poa` wraps the staking keeper and, at slash
 time, converts the caller-supplied (boosted) power back to raw stake using the
-boost multiplier recorded **at the infraction height**, then delegates to the
+boost multiplier recorded **at the producing EndBlock height**, then delegates to the
 underlying keeper. Net effect: an authority validator is penalised on its
 **real stake**, not on its boosted consensus power.
 
+The SDK's distribution height is an unbonding/redelegation cutoff, not a
+multiplier snapshot index. With CometBFT 0.37 and SDK 0.47:
+
+| Caller | Supplied power | Snapshot used | Height forwarded to staking |
+| --- | --- | --- | --- |
+| Downtime at block H | LastCommit for H-1 | H-3 | H-2 |
+| Equivocation at block E | Validator set at E | E-2 | E-1 |
+| Gravity after PoA EndBlock H | Current adapted validator | H | H |
+
+`SlashWithInfractionReason` shifts the snapshot lookup back one block for
+SDK downtime and double-sign reasons. It preserves the original distribution
+height passed into staking. Direct `Slash` and unspecified-reason callers
+retain their supplied snapshot height. Future callers must use the appropriate
+power/height convention rather than changing the height forwarded to staking.
+
 Key rules:
-- **Infraction-height membership, not current.** Whether a validator was
-  boosted is read from the per-height snapshot at the infraction height, never
+- **Producing-height membership, not current.** Whether a validator was
+  boosted is read from the per-height snapshot at the producing height, never
   from the live allowlist. Evidence can arrive after an authority-set change;
   using current membership would over- or under-slash.
 - **Per-block snapshots.** Every block writes a multiplier snapshot (an *empty*
@@ -118,9 +139,9 @@ Key rules:
   (computed with a conservative lower-bound block time).
 - **Activation height.** The height at which PoA went live (recorded at the v10
   upgrade / genesis init) is the boundary for missing-snapshot handling:
-  - infraction height **below** activation → pre-PoA, no boost was ever applied
+  - producing snapshot height **below** activation → pre-PoA, no boost was ever applied
     → slash passes through against raw power.
-  - infraction height **at or above** activation with a missing snapshot →
+  - producing snapshot height **at or above** activation with a missing snapshot →
     treated as corruption → slash is **refused** (`slash_skipped_no_snapshot`)
     rather than risk over-slashing.
 - **Tombstoning is the real deterrent.** Double-sign tombstoning and jailing
@@ -227,6 +248,9 @@ proposals — the latter run in gov EndBlock and bypass the ante/msg servers):
 | gravity-bridge | `MsgSendToEthereum`, `MsgSubmitEthereumEvent`, `MsgSubmitEthereumTxConfirmation` (and the same wrapped in an authz `MsgExec`), rejected by the ante handler; the module's BeginBlock/EndBlock (signer-set/batch creation, attestation observation, non-signing slashing) are no-op'd; the community-pool Ethereum spend gov proposal is rejected. `MsgDelegateKeys`, `MsgCancelSendToEthereum`, `MsgEthereumHeightVote` stay enabled. |
 | cork | `MsgScheduleCork` and the `ScheduledCork` gov proposal; scheduled-cork execution in EndBlock |
 | axelarcork | `MsgScheduleAxelarCork`, `MsgRelayAxelarCork`, `MsgRelayAxelarProxyUpgrade`, `MsgBumpAxelarCorkGas` msgs and the `AxelarScheduledCork` / `AxelarCommunityPoolSpend` / `UpgradeAxelarProxyContract` gov proposals; cork tally / fund sweep in EndBlock |
+| distribution | `MsgCommunityPoolSpend` and `MsgUpdateParams`, rejected at the message-router boundary. Reward allocation, withdrawal, and queries remain enabled. |
+| staking | `MsgUpdateParams`, rejected at the message-router boundary. Delegation, redelegation, unbonding, and unjail remain enabled. |
+| authz | `MsgGrant`, rejected at the message-router boundary, including grants executed by governance or ICA. Existing `MsgExec` and `MsgRevoke` remain enabled, but protected inner messages are still rejected by their owning modules. |
 
 Also frozen: the cork/axelarcork `AddManagedCellarIDs` and
 `AddChainConfiguration` gov proposals — pre-staging new call targets under an
@@ -242,9 +266,9 @@ longer trust, at an unbounded later time. Dropped corks emit
 `corks_dropped_safe_mode` / `axelar_corks_dropped_safe_mode` and **must be
 re-scheduled after recovery.**
 
-Staking (including unjail), bank, and every non-value-bearing module keep
-working normally. Entry/exit emit the `authority_safe_mode_entered` /
-`authority_safe_mode_exited` events.
+Ordinary staking and distribution operations not listed above, bank, and every
+non-value-bearing module keep working normally. Entry/exit emit the
+`authority_safe_mode_entered` / `authority_safe_mode_exited` events.
 
 ### Recovery from safe mode
 
@@ -264,8 +288,11 @@ halting.
 2. `sommelier tx slashing unjail` from each (jailed validators must also still
    satisfy the `MaxValidators` cutoff on raw stake to re-enter the bonded set).
 3. Once at least one is bonded and unjailed, the next EndBlocker resumes boosting
-   and schedules the thaw; two blocks later the freeze lifts and
-   `authority_safe_mode_exited` is emitted.
+   and schedules the thaw; two blocks later the safe-mode flag clears and
+   `authority_safe_mode_exited` is emitted. Gravity remains frozen through that
+   thawing block because its BeginBlock observed safe mode. Validators therefore
+   get the following block's DeliverTx phase to submit confirmations before
+   gravity's non-signing slashing resumes.
 4. Re-schedule any corks that were dropped during the freeze.
 
 No governance proposal is required, and this covers the overwhelmingly common
@@ -307,11 +334,12 @@ Validation:
   the bridge — and, because x/poa governance is frozen in safe mode, would not
   be undoable by a follow-up proposal.
 
-### Governance voting power is boosted
+### Governance voting power preserves the authority boost
 
-x/gov runs on the PoA-wrapped staking keeper, so **voting power tracks consensus
-power, not raw token holdings**. The authority set therefore holds
-`floor_fraction` (~67%) of every tally.
+x/gov runs on a governance-scoped view of the PoA-wrapped staking keeper. The
+total voting-power pool includes the authority validators' synthetic boost, so
+the authority set retains `floor_fraction` (~67%) of a tally when its validator
+operators vote.
 
 This is load-bearing rather than incidental: PoA caps the community's consensus
 power but places no cap on how many tokens it may hold. If governance were
@@ -319,9 +347,13 @@ tallied on raw stake, a party holding >50% of bonded tokens — entirely permitt
 by design — could simply vote itself the authority set, and the consensus floor
 would be decorative.
 
-The consequence for delegators is real and should be communicated: **governance
-no longer follows token stake.** A community delegator's vote is weighted by the
-capped consensus power of their validator, not by their tokens.
+The synthetic boost belongs to the authority validator operator; it is not
+transferred by delegation. An external delegator who casts an explicit vote is
+weighted by the raw stake represented by their shares, including when they
+delegate to an authority validator. The validator operator's vote receives the
+remaining raw stake not overridden by explicit delegator votes plus the
+synthetic boost. This preserves total boosted voting power without allowing a
+permissionless delegator to capture the authority boost.
 
 Once the gov proposal passes, the new allowlist takes effect on the next
 block. The boost is recomputed in the EndBlocker; CometBFT receives

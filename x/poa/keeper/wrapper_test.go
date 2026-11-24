@@ -282,3 +282,61 @@ func TestWrapper_BoostUsesLatestCommittedSnapshot(t *testing.T) {
 	vAuth := w.Validator(ctx, auth)
 	require.Equal(t, sdk.NewInt(5_000_000), vAuth.GetTokens())
 }
+
+// The SDK's distribution height filters unbondings; consensus power was
+// produced one EndBlock earlier. Both heights must keep their distinct roles.
+func TestWrapper_SDKSlashSnapshotBoundary(t *testing.T) {
+	for _, infraction := range []stakingtypes.Infraction{
+		stakingtypes.Infraction_INFRACTION_DOWNTIME,
+		stakingtypes.Infraction_INFRACTION_DOUBLE_SIGN,
+	} {
+		infraction := infraction
+		for _, tc := range []struct {
+			name               string
+			distributionHeight int64
+			snapshotHeight     int64
+			multiplier         string
+			wantPower          int64
+			wantCalled         bool
+		}{
+			{"activation_boundary_is_pre_poa", 50, 50, "5.0", 500, true},
+			{"first_boosted_power", 51, 50, "5.0", 100, true},
+			{"missing_producing_snapshot", 51, 51, "5.0", 0, false},
+			{"corrupt_producing_snapshot", 51, 50, "bad", 0, false},
+			{"unboosted_producing_snapshot", 51, 50, "1.0", 500, true},
+			{"negative_pre_genesis_height", -1, 50, "5.0", 500, true},
+		} {
+			tc := tc
+			t.Run(infraction.String()+"/"+tc.name, func(t *testing.T) {
+				k, ctx, fake, w := newWrapperTestKeeper(t)
+				auth := sdk.ValAddress([]byte("auth-validator-aaaa"))
+				cons := sdk.ConsAddress([]byte("auth-cons-aaaaaaaaaa"))
+				fake.addValidator(auth, sdk.NewInt(1000000000))
+				fake.mapCons(cons, auth)
+				k.SetActivationHeight(ctx, 50)
+				k.SetMultiplierSnapshot(ctx, types.MultiplierSnapshot{Height: tc.snapshotHeight, Entries: []*types.MultiplierEntry{{OperatorAddress: auth.String(), Multiplier: tc.multiplier}}})
+				w.SlashWithInfractionReason(ctx.WithBlockHeight(100), cons, tc.distributionHeight, 500, sdk.MustNewDecFromStr("0.05"), infraction)
+				require.Equal(t, tc.wantCalled, fake.slashCalled)
+				if tc.wantCalled {
+					require.Equal(t, tc.wantPower, fake.lastSlashPower)
+					require.Equal(t, tc.distributionHeight, fake.lastSlashHeight, "staking must retain the SDK's unbonding cutoff")
+				}
+			})
+		}
+	}
+}
+
+func TestWrapper_UnspecifiedSlashKeepsSuppliedSnapshotHeight(t *testing.T) {
+	k, ctx, fake, w := newWrapperTestKeeper(t)
+	auth := sdk.ValAddress([]byte("auth-validator-aaaa"))
+	cons := sdk.ConsAddress([]byte("auth-cons-aaaaaaaaaa"))
+	fake.addValidator(auth, sdk.NewInt(1000000000))
+	fake.mapCons(cons, auth)
+	for height, multiplier := range map[int64]string{50: "10.0", 51: "5.0"} {
+		k.SetMultiplierSnapshot(ctx, types.MultiplierSnapshot{Height: height, Entries: []*types.MultiplierEntry{{OperatorAddress: auth.String(), Multiplier: multiplier}}})
+	}
+	w.SlashWithInfractionReason(ctx.WithBlockHeight(100), cons, 51, 500, sdk.MustNewDecFromStr("0.05"), stakingtypes.Infraction_INFRACTION_UNSPECIFIED)
+	require.True(t, fake.slashCalled)
+	require.Equal(t, int64(100), fake.lastSlashPower)
+	require.Equal(t, int64(51), fake.lastSlashHeight)
+}

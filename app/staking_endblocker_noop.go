@@ -3,7 +3,6 @@ package app
 import (
 	abci "github.com/cometbft/cometbft/abci/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/cosmos/cosmos-sdk/x/staking"
 )
 
 // stakingNoopEndBlocker wraps staking.AppModule and overrides EndBlock to a
@@ -16,7 +15,7 @@ import (
 // ExportGenesis, RegisterServices, etc.) are inherited from the embedded
 // staking.AppModule unchanged.
 type stakingNoopEndBlocker struct {
-	staking.AppModule
+	safeModeStakingModule
 }
 
 // EndBlock is a no-op. Validator updates are emitted by x/poa.

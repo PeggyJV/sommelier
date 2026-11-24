@@ -627,7 +627,7 @@ func NewSommelierApp(
 		keys[govtypes.StoreKey],
 		app.AccountKeeper,
 		app.BankKeeper,
-		wrappedSk,
+		wrappedSk.ForGovernance(),
 		app.MsgServiceRouter(),
 		govtypes.DefaultConfig(),
 		authority,
@@ -662,6 +662,33 @@ func NewSommelierApp(
 
 	// NOTE: Any module instantiated in the module manager that is later modified
 	// must be passed by reference here.
+	protectedDistributionModule := safeModeDistributionModule{
+		AppModule: distr.NewAppModule(
+			appCodec, app.DistrKeeper, app.AccountKeeper, app.BankKeeper,
+			app.StakingKeeper, app.GetSubspace(distrtypes.ModuleName),
+		),
+		keeper:         app.DistrKeeper,
+		legacySubspace: app.GetSubspace(distrtypes.ModuleName),
+		poa:            app.PoaKeeper,
+	}
+	protectedStakingModule := safeModeStakingModule{
+		AppModule: staking.NewAppModule(
+			appCodec, &app.StakingKeeper, app.AccountKeeper, app.BankKeeper,
+			app.GetSubspace(stakingtypes.ModuleName),
+		),
+		keeper:         &app.StakingKeeper,
+		legacySubspace: app.GetSubspace(stakingtypes.ModuleName),
+		poa:            app.PoaKeeper,
+	}
+	protectedAuthzModule := safeModeAuthzModule{
+		AppModule: authzmodule.NewAppModule(
+			appCodec, app.AuthzKeeper, app.AccountKeeper, app.BankKeeper,
+			app.interfaceRegistry,
+		),
+		keeper: app.AuthzKeeper.SetBankKeeper(app.BankKeeper),
+		poa:    app.PoaKeeper,
+	}
+
 	app.mm = module.NewManager(
 		genutil.NewAppModule(
 			app.AccountKeeper, app.StakingKeeper, app.BaseApp.DeliverTx,
@@ -676,8 +703,8 @@ func NewSommelierApp(
 		feegrantmodule.NewAppModule(appCodec, app.AccountKeeper, app.BankKeeper, app.FeeGrantKeeper, app.interfaceRegistry),
 		mint.NewAppModule(appCodec, app.MintKeeper, app.AccountKeeper, nil, app.GetSubspace(minttypes.ModuleName)),
 		slashing.NewAppModule(appCodec, app.SlashingKeeper, app.AccountKeeper, app.BankKeeper, app.StakingKeeper, app.GetSubspace(slashingtypes.ModuleName)),
-		distr.NewAppModule(appCodec, app.DistrKeeper, app.AccountKeeper, app.BankKeeper, app.StakingKeeper, app.GetSubspace(distrtypes.ModuleName)),
-		stakingNoopEndBlocker{staking.NewAppModule(appCodec, &app.StakingKeeper, app.AccountKeeper, app.BankKeeper, app.GetSubspace(stakingtypes.ModuleName))},
+		protectedDistributionModule,
+		stakingNoopEndBlocker{safeModeStakingModule: protectedStakingModule},
 		upgrade.NewAppModule(&app.UpgradeKeeper),
 		evidence.NewAppModule(app.EvidenceKeeper),
 		ibc.NewAppModule(app.IBCKeeper),
@@ -687,8 +714,8 @@ func NewSommelierApp(
 		axelarcork.NewAppModule(app.AxelarCorkKeeper, appCodec),
 		// Wrapped so gravity's BeginBlock/EndBlock no-op while x/poa is in
 		// authority-empty safe mode (see app/gravity_safemode_module.go).
-		gravitySafeModeModule{AppModule: gravity.NewAppModule(app.GravityKeeper, app.BankKeeper), poa: app.PoaKeeper},
-		authzmodule.NewAppModule(appCodec, app.AuthzKeeper, app.AccountKeeper, app.BankKeeper, app.interfaceRegistry),
+		&gravitySafeModeModule{AppModule: gravity.NewAppModule(app.GravityKeeper, app.BankKeeper), poa: app.PoaKeeper},
+		protectedAuthzModule,
 		cork.NewAppModule(app.CorkKeeper, appCodec),
 		incentives.NewAppModule(app.IncentivesKeeper, app.DistrKeeper, app.BankKeeper, app.MintKeeper, appCodec),
 		cellarfees.NewAppModule(app.CellarFeesKeeper, appCodec, app.AccountKeeper, app.BankKeeper, app.MintKeeper, app.CorkKeeper, app.AuctionKeeper, app.GetSubspace(cellarfeestypes.ModuleName)),
